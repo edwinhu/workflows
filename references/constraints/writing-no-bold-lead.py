@@ -1,6 +1,23 @@
-#!/usr/bin/env -S uv run python3
-"""Constraint: writing-no-bold-lead — no bold inline-header paragraph starts in prose drafts."""
-import re
+#!/usr/bin/env -S uv run --with lxml,pyyaml python3
+"""Constraint: writing-no-bold-lead — no bold inline-header paragraph starts in prose drafts.
+
+ONE IMPLEMENTATION, NOT TWO. This module used to carry its own regex,
+`^\\*\\*[A-Z][^*]+[.?:]\\*\\*\\s+\\S`, which was markdown-only, `drafts/*.md`-only, had no concept
+of `#strong[]` or `\\textbf{}`, and no concept of a list item. `scripts/prose-audit.py` now owns
+the rule as `emphasis·bold-lead`, format-agnostic and list-item-exempt, so this constraint DELEGATES
+rather than reimplementing. Two implementations of one rule with different semantics is exactly the
+failure docs/DESIGN-prose-constraint-architecture.md was written about, and the reason System C was
+absorbed into System B in v5.127.0.
+
+What this file still owns, and why it is not simply deleted: the `CONSTRAINT`/`APPLIES_TO`/
+`SEVERITY` contract and the `drafts/<file>:<line>: …` violation shape that
+hooks/writing-mechanical-gate.ts names as part of the deterministic mechanical floor.
+
+COST: one `prose-audit.py` subprocess per draft, inside check-all.py. That is the price of having
+the rule live in exactly one place; a project with many drafts pays it linearly.
+"""
+import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -8,7 +25,25 @@ CONSTRAINT = "writing-no-bold-lead"
 APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
 SEVERITY = "hard"
 
-_BOLD_LEAD = re.compile(r'^\*\*[A-Z][^*]+[.?:]\*\*\s+\S')
+PROSE_AUDIT = Path(__file__).resolve().parents[2] / "scripts" / "prose-audit.py"
+_LABEL = "emphasis·bold-lead"
+
+
+def _bold_leads(path: Path) -> list[tuple[int, str]]:
+    """[(line, bold label text)] for one file, via the audit. Any failure yields nothing: a
+    constraint that cannot run must not manufacture violations."""
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(PROSE_AUDIT), "--json", str(path)],
+            capture_output=True, text=True, timeout=120, check=False)
+        payload = json.loads(proc.stdout)
+    except Exception:
+        return []
+    out = []
+    for span in payload.get("spans", []):
+        if any(lab.startswith(_LABEL) for lab in span.get("labels", [])):
+            out.append((int(span.get("line") or 0), span.get("quote", "")))
+    return out
 
 
 def check(context):
@@ -21,16 +56,11 @@ def check(context):
         return violations
 
     for md_file in sorted(drafts_dir.glob("*.md")):
-        lines = md_file.read_text(encoding="utf-8", errors="ignore").splitlines()
-        for i, line in enumerate(lines, 1):
-            stripped = line.strip()
-            if _BOLD_LEAD.match(stripped):
-                label = re.match(r'\*\*([^*]+)\*\*', stripped)
-                label_text = label.group(1) if label else stripped[:40]
-                violations.append(
-                    f"drafts/{md_file.name}:{i}: bold-lead pattern "
-                    f"'**{label_text}**' — use prose topic sentence or *italic* label"
-                )
+        for line, label_text in _bold_leads(md_file):
+            violations.append(
+                f"drafts/{md_file.name}:{line}: bold-lead pattern "
+                f"'**{label_text}**' — use prose topic sentence or *italic* label"
+            )
 
     return violations
 

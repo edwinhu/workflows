@@ -142,20 +142,30 @@ Words/phrases the model reaches for that don't match the user's voice:
 
 For detailed patterns and extensive examples, consult:
 
-| File | Contents |
-|------|----------|
-| `references/_index.md` | Overview and quick screening guide |
-| `references/01-puffery-and-exaggeration.md` | "Stands as", superficial analyses |
-| `references/02-promotional-language.md` | "Rich tapestry", disclaimers |
-| `references/03-structural-patterns.md` | Section summaries, negative parallelisms |
-| `references/04-stylistic-quirks.md` | Elegant variation, false ranges |
-| `references/05-formatting-and-typography.md` | Boldface, em dashes, emojis |
-| `references/06-communication-patterns.md` | Subject lines, "I hope this helps" |
-| `references/07-template-artifacts.md` | Mad Libs patterns, placeholders |
-| `references/08-markup-issues.md` | Markdown vs wikitext confusion |
-| `references/09-chatgpt-specific-artifacts.md` | turn0search, oaicite |
-| `references/10-citation-problems.md` | Hallucinated DOIs, dead links |
-| `references/11-meta-indicators.md` | Abrupt cutoffs, style discrepancies |
+**THE "ENFORCED BY" COLUMN IS THE POINT OF THIS TABLE.** Eleven chapters listed as reference
+material reads as eleven chapters of coverage; it is not. Four of them have no executable module
+and are marked reference-only here so nobody has to rediscover the gap by shipping a draft through
+a clean review pass. (That is exactly how chapter 05's boldface entry went unenforced until
+v5.134.0 — see `docs/investigations/2026-08-05_emphasis-enforcement.md`.)
+
+| File | Contents | Enforced by |
+|------|----------|-------------|
+| `references/_index.md` | Overview and quick screening guide | — |
+| `references/01-puffery-and-exaggeration.md` | "Stands as", superficial analyses | `wikipedia-puffery` |
+| `references/02-promotional-language.md` | "Rich tapestry", disclaimers | `wikipedia-promotional` |
+| `references/03-structural-patterns.md` | Section summaries, negative parallelisms | `wikipedia-structural` |
+| `references/04-stylistic-quirks.md` | Elegant variation, false ranges | **reference only** — regexable, but must clear the ai-tic corpus gate first |
+| `references/05-formatting-and-typography.md` | Boldface, em dashes, emojis | `emphasis`, `formatting`, `em-dash` (boldface/emoji since v5.134.0); inline-header lists partly |
+| `references/06-communication-patterns.md` | Subject lines, "I hope this helps" | `wikipedia-communication` |
+| `references/07-template-artifacts.md` | Mad Libs patterns, placeholders | `wikipedia-template-artifacts` |
+| `references/08-markup-issues.md` | Markdown vs wikitext confusion | **reference only** — wikitext-specific; no in-repo analogue |
+| `references/09-chatgpt-specific-artifacts.md` | turn0search, oaicite | `wikipedia-chatgpt-artifacts` |
+| `references/10-citation-problems.md` | Hallucinated DOIs, dead links | **reference only** — covered better by `skills/cite-check` + `skills/source-verify` and the `cite-fidelity-*` constraints, which check citations against sources rather than pattern-matching them |
+| `references/11-meta-indicators.md` | Abrupt cutoffs, style discrepancies | **reference only** — judgement; lives in the `agents/writing-prose-reviewer.md` rubric |
+
+Every named system is a `scripts/prose-audit.py` system, so a finding from it carries a span id.
+A chapter marked **reference only** produces no span, which by THE READER'S RULE means anything it
+surfaces is judgement, not a deterministic finding.
 
 ## Automatic Detection
 

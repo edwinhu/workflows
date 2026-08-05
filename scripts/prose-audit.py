@@ -323,6 +323,24 @@ def _blank_span(chars: list[str], start: int, end: int) -> None:
             chars[i] = " "
 
 
+def _find_closer(text: str, opener: int, open_ch: str, close_ch: str) -> int:
+    """Index of the delimiter closing `text[opener]`, or -1 if the construct never closes.
+
+    ONE implementation, shared by the neutraliser and by collect_emphasis(). Depth-matched, so a
+    nested `#emph[a #strong[b] c]` closes on the right bracket. An unbalanced opener returns -1,
+    which every caller treats as "blank/keep only the head" rather than eating the rest of the file.
+    """
+    depth = 0
+    for i in range(opener, len(text)):
+        if text[i] == open_ch:
+            depth += 1
+        elif text[i] == close_ch:
+            depth -= 1
+            if depth == 0:
+                return i
+    return -1
+
+
 def _neutralize_calls(text: str, head: re.Pattern, open_ch: str, close_ch: str) -> str:
     """Blank each `<call-head><open>…<close>` wrapper, keeping the content between the delimiters.
 
@@ -335,16 +353,7 @@ def _neutralize_calls(text: str, head: re.Pattern, open_ch: str, close_ch: str) 
         opener = m.end()
         if opener >= len(text) or text[opener] != open_ch:
             continue
-        depth = 0
-        closer = -1
-        for i in range(opener, len(text)):
-            if text[i] == open_ch:
-                depth += 1
-            elif text[i] == close_ch:
-                depth -= 1
-                if depth == 0:
-                    closer = i
-                    break
+        closer = _find_closer(text, opener, open_ch, close_ch)
         _blank_span(chars, m.start(), opener)          # `#emph` + any `(...)` args
         if closer != -1:
             chars[opener] = " "
@@ -368,6 +377,235 @@ def neutralize_latex_markup(text: str) -> str:
     return _LATEX_BARE.sub(lambda m: _blank(m.group(0)), text)
 
 
+# ── emphasis / markup, as a SIDE CHANNEL ─────────────────────────────────────
+# WHY THIS IS A SIDE CHANNEL AND NOT A PATTERN TABLE. Neutralisation above blanks the call head
+# and both delimiters while keeping the inner text, so by the time any scorer runs, emphasis is
+# structurally invisible on the `.typ` / `.tex` paths:
+#
+#     in:  The market saw #strong[546,088 trades] and #emph[substantial] growth.
+#     out: The market saw         546,088 trades  and       substantial  growth.
+#
+# That is CORRECT for `#cite[]` / `#footnote[]` and it is what fixed the v5.127.0 HARD false
+# positive documented above — so it is not being changed. Instead the spans are harvested from the
+# raw text BEFORE neutralising and carried alongside, and the emphasis rules read that list. The
+# prose scorers see exactly what they saw before.
+#
+# VALIDATION CAVEAT (verbatim, and it is load-bearing):
+#
+#   These rules cannot be validated by the ai-tic FP-hunt against the rjds corpus. That corpus is
+#   raw `fitz.get_text()` output from PDFs, in which bold and italic markup is not preserved; a
+#   0-hit result there would mean the signal is absent, not that the rule is clean — a gate that
+#   cannot fail. They were FP-hunted instead against locally authored Typst sources that *do*
+#   preserve markup, and they ship `soft` because they have not met the corpus-gated bar that
+#   `hard` denotes in this script (see the SEVERITY note at the top of the file).
+#
+# SCOPE IS TEXT FORMATS ONLY (`.md`, `.typ`, `.tex`). `.docx` bold runs are DEFERRED, not
+# forgotten: the em-dash system already skips docx for the same reason (`if masked_text is not
+# None`), and a docx paragraph list has no column anchoring to hang a span on.
+_TYPST_EMPH = re.compile(r"#(strong|emph)\s*(?:\([^()]*\))?\s*(?=\[)")
+_LATEX_EMPH = re.compile(r"\\(textbf|bfseries|bf|emph|textit|itshape|it)\s*(?=\{)")
+# `{\bf text}` — the declaration form, which has no braces of its own to walk.
+_LATEX_DECL = re.compile(r"\{\s*\\(bfseries|bf|itshape|it|em)\s+([^{}]*)\}")
+# Markdown STRONG ONLY. Single-character `*` / `_` is too ambiguous in real drafts (globs, math,
+# snake_case filenames) to score, and a rule that fires on `path/*.md` is worse than no rule.
+_MD_STRONG = re.compile(r"\*\*(?!\s)([^*\n]+?)\*\*|__(?!\s)([^_\n]+?)__")
+_STRONG_NAMES = {"strong", "textbf", "bfseries", "bf"}
+
+_TYPST_TABLE = re.compile(r"#(?:table|figure|grid)\s*(?=\()")
+_LATEX_TABLE_ENV = re.compile(r"\\begin\s*\{(tabular\*?|tabularx|table\*?|longtable|array)\}")
+_LIST_MARKER = re.compile(r"^(?:[+\-*]\s+|\d+[.)]\s+)")
+_PARA_BREAK = re.compile(r"^\s*$|^\s*(?:#{1,6}\s|={1,6}\s)")
+
+
+def _table_ranges(text: str, suffix: str) -> list[tuple[int, int]]:
+    """Character ranges that are table/figure markup, not running prose.
+
+    NOT AN OPTIMISATION — the thing that makes the bold rules viable at all. A measured local
+    corpus (`~/projects/mirror/paper/typst/body.typ`) carries 258 `#strong[]` spans of which the
+    overwhelming majority are table HEADER CELLS (`#strong[(%)]`, `#strong[Items]`). Without this,
+    a correctly formatted results table reads as bold saturation.
+    """
+    ranges: list[tuple[int, int]] = []
+    if suffix == ".typ":
+        for m in _TYPST_TABLE.finditer(text):
+            closer = _find_closer(text, m.end(), "(", ")")
+            ranges.append((m.start(), closer + 1 if closer != -1 else len(text)))
+    elif suffix in (".tex", ".latex"):
+        for m in _LATEX_TABLE_ENV.finditer(text):
+            end = re.compile(r"\\end\s*\{" + re.escape(m.group(1)) + r"\}").search(text, m.end())
+            ranges.append((m.start(), end.end() if end else len(text)))
+    return ranges
+
+
+def collect_emphasis(text: str, suffix: str) -> list[dict]:
+    """Every bold/italic span in `text`, with the structural context the emphasis rules need.
+
+    Returns [{line, col, end, kind: "strong"|"emph", text, in_table, list_item, para_start,
+              tail, line_text}] in document order. `line`/`col`/`end` use the same 1-based
+    convention as every other span in this script, so an emphasis finding collapses against a
+    scored-tic finding on the same words exactly like any other pair.
+
+    Call this on FOOTNOTE-MASKED text and BEFORE neutralisation — masking first is the same
+    ordering rationale as the comment above extract_lines: `#footnote[…]` matches the `#name[`
+    shape, so a `#strong` inside a note must already be blank by the time this runs.
+    """
+    lines = text.split("\n")
+    line_starts: list[int] = []
+    off = 0
+    for ln in lines:
+        line_starts.append(off)
+        off += len(ln) + 1
+
+    import bisect
+
+    def locate(pos: int) -> tuple[int, int]:
+        i = bisect.bisect_right(line_starts, pos) - 1
+        return i, pos - line_starts[i]
+
+    found: list[tuple[int, int, str, str]] = []   # (start, end, kind, inner)
+    if suffix == ".typ":
+        for m in _TYPST_EMPH.finditer(text):
+            closer = _find_closer(text, m.end(), "[", "]")
+            if closer == -1:
+                continue
+            found.append((m.start(), closer + 1,
+                          "strong" if m.group(1) in _STRONG_NAMES else "emph",
+                          text[m.end() + 1:closer]))
+    elif suffix in (".tex", ".latex"):
+        for m in _LATEX_EMPH.finditer(text):
+            closer = _find_closer(text, m.end(), "{", "}")
+            if closer == -1:
+                continue
+            found.append((m.start(), closer + 1,
+                          "strong" if m.group(1) in _STRONG_NAMES else "emph",
+                          text[m.end() + 1:closer]))
+        for m in _LATEX_DECL.finditer(text):
+            found.append((m.start(), m.end(),
+                          "strong" if m.group(1) in _STRONG_NAMES else "emph", m.group(2)))
+    else:
+        for m in _MD_STRONG.finditer(text):
+            found.append((m.start(), m.end(), "strong", m.group(1) or m.group(2) or ""))
+
+    tables = _table_ranges(text, suffix)
+    spans: list[dict] = []
+    for start, end, kind, inner in sorted(found):
+        idx, col0 = locate(start)
+        line_text = lines[idx]
+        stripped = line_text.lstrip()
+        marker = _LIST_MARKER.match(stripped)
+        in_table = (any(a <= start < b for a, b in tables)
+                    or (suffix not in (".typ", ".tex", ".latex") and stripped.startswith("|")))
+        # `para_start`: nothing but whitespace (and at most a list marker) precedes the span on its
+        # own line, and that line opens a blank-line-delimited paragraph.
+        lead = line_text[:col0].lstrip()
+        lead_marker = _LIST_MARKER.match(lead)
+        if lead_marker:
+            lead = lead[lead_marker.end():]
+        para_start = (not lead.strip()
+                      and (idx == 0 or bool(_PARA_BREAK.match(lines[idx - 1]))))
+        spans.append({
+            "line": idx + 1,
+            "col": col0 + 1,
+            "end": col0 + 1 + (end - start),
+            "kind": kind,
+            "text": inner,
+            "in_table": in_table,
+            "list_item": bool(marker),
+            "para_start": para_start,
+            "tail": line_text[col0 + (end - start):],
+            "line_text": line_text,
+        })
+    return spans
+
+
+# ── the emphasis rules ───────────────────────────────────────────────────────
+# Threshold DERIVED, not tuned to pass. Measured out-of-table `#strong` rates per 1,000 words:
+# opv/paper/typst/opv-body.typ 0.03, mirror/paper/typst/body.typ ~0.2 after table exclusion,
+# rule611 S7-2026-20_comment.typ 14.1. 3.0 sits an order of magnitude above every clean source and
+# well below the motivating case. See docs/investigations/2026-08-05_emphasis-enforcement.md.
+_BOLD_DENSITY_PER_1K = 3.0
+_BARE_NUMBER = re.compile(
+    r"""^\s*[$€£¥]?\s*\d[\d,]*(?:\.\d+)?\s*
+        (?:%|×|x|pp|bps|percentage\s+points?)?\s*
+        (?:more|less|higher|lower|fewer)?\s*$""",
+    re.IGNORECASE | re.VERBOSE)
+_BOLD_LEAD_TERM = (".", ":", "?")
+# FOUND BY THE FP HUNT, not anticipated: `#strong[Table 1:] Headline reform comparison…` is the
+# universal caption convention and accounted for ALL FIVE of mirror/paper/typst/body.typ's
+# out-of-table bold-lead hits. An exhibit label is not an inline header, so it is excluded by
+# shape rather than by lowering the bar. (The numbered scenario list at body.typ:161-169 was
+# already exempt via `list_item`, which is what that exemption exists for.)
+_EXHIBIT_LABEL = re.compile(
+    r"^(?:table|figure|fig\.?|panel|exhibit|appendix|chart|graph|note|notes|source|sources)\b",
+    re.IGNORECASE)
+# A document-level RATE needs a document. `mirror/paper/typst/style.typ` is a template with one
+# prose word in it, and one bold span over one word is 1,000 per 1,000 — an arithmetic artifact,
+# not saturation.
+_BOLD_DENSITY_MIN_WORDS = 300
+
+
+def _emphasis_hits(spans: list[dict], words: int) -> list[dict]:
+    """The three emphasis findings, as hit dicts for `add(...)`. All soft — see the caveat above."""
+    hits: list[dict] = []
+    strong = [s for s in spans if s["kind"] == "strong" and not s["in_table"]]
+    for s in strong:
+        inner = s["text"].strip()
+        context = s["line_text"].strip()[:160]
+        if inner and _BARE_NUMBER.match(inner):
+            hits.append({"line": s["line"], "col": s["col"], "end": s["end"],
+                         "label": f"emphasis·bold-bare-number: bold on the bare quantity "
+                                  f"{inner!r} — emphasise the claim, not the digits",
+                         "quote": inner, "context": context})
+        if (s["para_start"] and not s["list_item"] and inner
+                and inner[0].isupper() and inner.endswith(_BOLD_LEAD_TERM)
+                and not _EXHIBIT_LABEL.match(inner)
+                and re.match(r"\s+\S", s["tail"])):
+            hits.append({"line": s["line"], "col": s["col"], "end": s["end"],
+                         "label": f"emphasis·bold-lead: paragraph opens with the inline header "
+                                  f"{inner!r} — use a prose topic sentence or an italic label",
+                         "quote": inner, "context": context})
+    rate = len(strong) / max(1, words) * 1000
+    if rate > _BOLD_DENSITY_PER_1K and words >= _BOLD_DENSITY_MIN_WORDS:
+        hits.append({"line": 0, "col": 0, "end": 0,
+                     "label": f"emphasis·bold-density: {len(strong)} out-of-table bold spans "
+                              f"({rate:.1f} per 1,000 words; budget {_BOLD_DENSITY_PER_1K})",
+                     "quote": f"{len(strong)} bold spans", "context": "document-level"})
+    return hits
+
+
+# ── emojis ───────────────────────────────────────────────────────────────────
+# THE ONE `hard` RULE IN THIS SECTION, and it earns it by construction rather than by a corpus
+# sweep: an emoji in a law-review draft or an SEC comment letter is indefensible on its face,
+# which is exactly the property `hard` denotes here.
+#
+# Typographic characters that are NOT emoji are excluded by construction: `×` (U+00D7), `—`
+# (U+2014), `§` (U+00A7), `†` (U+2020) and `‡` (U+2021) are outside every block below. The
+# check/ballot marks U+2713–U+2718 (✓ ✔ ✗ ✘) sit inside Dingbats and ARE excluded by hand — a
+# checkmark in a comparison table is defensible prose, and a `hard` rule may not fire on it. Their
+# VS16-qualified emoji-presentation forms (`✔️`) still match, via the last alternative.
+_EMOJI_RX = re.compile(
+    "[\U0001F300-\U0001F5FF]"          # misc symbols & pictographs
+    "|[\U0001F600-\U0001F64F]"         # emoticons
+    "|[\U0001F680-\U0001F6FF]"         # transport & map
+    "|[\U0001F900-\U0001F9FF]"         # supplemental symbols & pictographs
+    "|[\U0001FA70-\U0001FAFF]"         # symbols & pictographs extended-A
+    "|[\u2700-\u2712\u2719-\u27BF]"    # dingbats, minus the check/ballot marks
+    "|[\u2000-\u3300]\uFE0F"           # VS16-qualified BMP emoji presentation
+)
+
+
+def _emoji_hits(text: str) -> list[dict]:
+    """Emoji in prose or headings. Runs over `_prose_only`, so a fenced code block, a quoted
+    source and YAML frontmatter are excluded — the same exclusions the em-dash budget uses."""
+    hits = []
+    for i, line in enumerate(_prose_only(text).split("\n"), 1):
+        for m in _EMOJI_RX.finditer(line):
+            hits.append({"line": i, "col": m.start() + 1, "end": m.end() + 1,
+                         "label": f"formatting·emoji: {m.group(0)!r} in prose",
+                         "quote": m.group(0), "context": line.strip()[:160]})
+    return hits
+
+
 def _docx_body_paragraph_count(path: Path) -> int:
     """How many non-empty paragraphs prose_extract will yield from word/document.xml.
 
@@ -389,8 +627,9 @@ def _docx_body_paragraph_count(path: Path) -> int:
     return count
 
 
-def extract_lines(path: Path, mask: bool = True) -> tuple[list[tuple[int, str]], str | None]:
-    """Return ([(lineno, text)], masked_full_text_or_None).
+def extract_lines(path: Path, mask: bool = True
+                  ) -> tuple[list[tuple[int, str]], str | None, list[dict]]:
+    """Return ([(lineno, text)], masked_full_text_or_None, emphasis_spans).
 
     Extraction is prose_extract's (docx paragraphs, Typst markup stripping, fenced-code skipping);
     masking runs BEFORE it by rewriting the masked bytes to a temp file with the same suffix, so
@@ -402,7 +641,7 @@ def extract_lines(path: Path, mask: bool = True) -> tuple[list[tuple[int, str]],
         if mask:
             body = _docx_body_paragraph_count(path)
             lines = [(i, t) for i, t in lines if i <= body]
-        return lines, None
+        return lines, None, []       # docx emphasis is deferred — see collect_emphasis()
 
     raw = path.read_text(encoding="utf-8", errors="ignore")
     suffix = path.suffix.lower()
@@ -420,6 +659,9 @@ def extract_lines(path: Path, mask: bool = True) -> tuple[list[tuple[int, str]],
         masked = mask_footnotes(masked)
         if suffix == ".typ":
             masked = mask_typst_footnotes(masked)
+    # HARVEST BEFORE NEUTRALISING. Neutralisation blanks the delimiters, so this is the last
+    # moment at which emphasis exists in the text at all. Footnotes are already masked above.
+    emphasis = collect_emphasis(masked, suffix)
     if suffix == ".typ":
         masked = neutralize_typst_markup(masked)
     elif suffix in (".tex", ".latex"):
@@ -429,7 +671,7 @@ def extract_lines(path: Path, mask: bool = True) -> tuple[list[tuple[int, str]],
         fd, tmp = tempfile.mkstemp(suffix=path.suffix or ".md")
         with os.fdopen(fd, "w", encoding="utf-8") as fh:
             fh.write(masked)
-        return list(prose_extract.iter_lines(Path(tmp))), masked
+        return list(prose_extract.iter_lines(Path(tmp))), masked, emphasis
     finally:
         if tmp:
             try:
@@ -639,7 +881,7 @@ def _merge(group: list[dict]) -> dict:
 def audit_document(path: Path, style: str | None = None, mask: bool = True,
                    tiers_on=("always_flag", "cluster", "density")) -> dict:
     """The unified deterministic audit. Returns {file, style, spans, signals, z, counts}."""
-    lines, masked_text = extract_lines(path, mask=mask)
+    lines, masked_text, emphasis_spans = extract_lines(path, mask=mask)
     patterns = load_pattern_systems(style)
     diction = load_diction()
     raw: list[dict] = []
@@ -713,6 +955,15 @@ def audit_document(path: Path, style: str | None = None, mask: bool = True,
     if masked_text is not None:
         for hit in _em_dash_hits(masked_text):
             add(hit["line"], 0, 0, "em-dash", hit["label"], SOFT, hit["quote"], hit["quote"])
+
+    # --- emphasis (bold/italic markup) and emojis; text formats only ---
+    for hit in _emphasis_hits(emphasis_spans, words):
+        add(hit["line"], hit["col"], hit["end"], "emphasis", hit["label"], SOFT,
+            hit["quote"], hit["context"])
+    if masked_text is not None:
+        for hit in _emoji_hits(masked_text):
+            add(hit["line"], hit["col"], hit["end"], "formatting", hit["label"], HARD,
+                hit["quote"], hit["context"])
 
     # --- stylometrics, over the SAME masked text the tables saw ---
     style_lint, style_score = _style_on_text(

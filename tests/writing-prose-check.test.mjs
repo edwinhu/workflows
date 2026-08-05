@@ -17,7 +17,7 @@
 import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
-import { auditStyle, isTypDeck, editRanges, inRanges } from '../hooks/writing-prose-check.ts'
+import { auditStyle, isTypDeck, editRanges, inRanges, runProseAudit, runCheckAll } from '../hooks/writing-prose-check.ts'
 
 let PASS = 0, FAIL = 0
 const ok = (name, condition, extra = '') => {
@@ -69,6 +69,36 @@ const write = (dir, name, body) => { const p = join(dir, name); writeFileSync(p,
   ok('an Edit spans the new string plus padding', JSON.stringify(er) === JSON.stringify([[1, 5]]), JSON.stringify(er))
   ok('inRanges accepts a line inside the edit', inRanges(3, er) === true)
   ok('inRanges rejects a line far outside it', inRanges(100, er) === false)
+}
+
+// ── emphasis reaches the model, and reaches it ONCE ──────────────────────────
+// THE THREE STACKED FAILURES, pinned at the hook layer. A `.typ` edit runs prose-audit only
+// (check-all is off on that path), so if emphasis were not a prose-audit system it would reach
+// nobody — which is exactly how a 66-`#strong[]` comment letter passed a clean review.
+{
+  const d = tmp()
+  const letter = write(d, 'comment.typ',
+    '#set page(margin: 1in)\n' +
+    '\n' +
+    'The market saw #strong[546,088] trades under the proposed rule this year.\n')
+  const spans = runProseAudit(letter, 'legal', [[1, 10]])
+  ok('a .typ edit touching a #strong[] line surfaces the emphasis span',
+    spans.some((s) => s.includes('emphasis') && s.includes('bold-bare-number')), JSON.stringify(spans))
+}
+{
+  // `constraints/writing-no-bold-lead` delegates to prose-audit now, so check-all would report the
+  // SAME span the audit already reported. The prefix list is what keeps it to one line.
+  const d = tmp()
+  mkdirSync(join(d, 'drafts'), { recursive: true })
+  const draft = write(join(d, 'drafts'), 'part2.md',
+    '**The objection.** A five percent stake could leverage mirror voting to control votes.\n')
+  const audit = runProseAudit(draft, 'legal', [[1, 10]])
+  const check = runCheckAll(d, draft, [[1, 10]])
+  const boldLead = [...audit, ...check].filter((v) => v.toLowerCase().includes('bold-lead'))
+  ok('a drafts/*.md bold-lead is reported once, not twice', boldLead.length === 1, JSON.stringify(boldLead))
+  ok('and it is the audit engine that reports it',
+    audit.some((v) => v.includes('bold-lead')) && !check.some((v) => v.includes('bold-lead')),
+    JSON.stringify({ audit, check }))
 }
 
 console.log(`\n${PASS}/${PASS + FAIL} passed`)

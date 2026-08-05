@@ -253,3 +253,53 @@ whole `SEVERITY` convention.
    Fixed to `(?![\s\S])`, the idiom `workflows/writing-review.js` already used.
 2. **`prose.ts` discarded the success-path transcript**, so `total_cost_usd` and the tool-use
    record survived only when the provider FAILED. `raw` is now returned on the `reviewed` path too.
+
+## 7. Emphasis and markup — a SIDE CHANNEL, not a sixth pattern table (v5.134.0)
+
+`neutralize_typst_markup` / `neutralize_latex_markup` blank the call head and both delimiters while
+keeping the inner text. That was the right fix for the v5.127.0 HARD false positive (`#emph[First],`
+matching the `[Name]` placeholder rule), and it stays exactly as it is. But it has a consequence
+nobody wrote down at the time: **emphasis is structurally invisible to every scorer on the `.typ`
+and `.tex` paths.** Verified —
+
+```
+in:  The market saw #strong[546,088 trades] and #emph[substantial] growth.
+out: The market saw         546,088 trades  and       substantial  growth.
+in:  Rates rose \textbf{sharply} in \emph{2024}.
+out: Rates rose         sharply  in       2024 .
+```
+
+The neutraliser treats presentational markup and citation plumbing identically, which is correct
+for `#cite[]` / `#footnote[]` and wrong for `#strong[]`. So the design here is deliberately NOT
+"stop neutralising" and NOT "add a regex table":
+
+- `collect_emphasis(text, suffix)` harvests bold/italic spans from the **raw text, after footnote
+  masking and before neutralisation** — the last moment at which emphasis exists at all.
+- `extract_lines` carries them as a third return value alongside the masked text. The prose
+  scorers see byte-for-byte what they saw before.
+- Two new systems read that list and nothing else: `emphasis` (`bold-lead`, `bold-bare-number`,
+  `bold-density`) and `formatting` (`emoji`, which reads prose directly rather than the span list).
+
+Emphasis spans use the same 1-based line/col convention as every other hit, so they collapse
+against a scored-tic hit on the same words like any other pair. `_find_closer` is shared with the
+neutraliser rather than duplicated — one depth-matched bracket walk, two consumers.
+
+**Severity.** All `emphasis` labels are `soft`. They could not clear the bar `hard` denotes in this
+script, because the ai-tic FP-hunt corpus is raw `fitz.get_text()` PDF output in which bold and
+italic markup is not preserved — a 0-hit result there means the signal is absent, not that the rule
+is clean, which is a gate that cannot fail. They were FP-hunted against local Typst/LaTeX sources
+instead. `formatting·emoji` is `hard` by construction, not by corpus: an emoji in a law-review
+draft is indefensible on its face. Full record:
+`docs/investigations/2026-08-05_emphasis-enforcement.md`.
+
+**`writing-no-bold-lead` now delegates.** The constraint kept its `CONSTRAINT` / `APPLIES_TO` /
+`SEVERITY` contract and its `drafts/<file>:<line>: …` violation shape, but its `check()` shells out
+to `prose-audit.py --json` and filters for `emphasis·bold-lead`. Leaving its own regex in place
+would have been System C all over again — the same rule built twice with different semantics — and
+would have double-reported on `drafts/*.md`, because `PROSE_ENGINE_PREFIXES` in
+`hooks/writing-prose-check.ts` covered `skills/ai-anti-patterns/` and `skills/writing-` but not
+`constraints/`. That prefix list now names `constraints/writing-no-bold-lead` explicitly; it is the
+one entry under `constraints/` that is no longer structural.
+
+**Scope.** Text formats only (`.md`, `.typ`, `.tex`). `.docx` bold runs are deferred — the em-dash
+system already skips docx for the same reason, and a docx paragraph list has no column anchoring.

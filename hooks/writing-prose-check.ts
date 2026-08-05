@@ -42,7 +42,15 @@ const PY = ["uv", "run", "--with", "lxml", "--with", "pyyaml", "python3"];
 
 /** check-all constraint families that prose-audit.py already owns. A check-all entry name is
  *  `constraints/<stem>` or `skills/<skill>/references/<stem>`, so a directory prefix is enough. */
-const PROSE_ENGINE_PREFIXES = ["skills/ai-anti-patterns/", "skills/writing-"];
+/*  `constraints/writing-no-bold-lead` is named explicitly rather than by directory: it is the one
+ *  entry under `constraints/` that now DELEGATES to prose-audit.py (as `emphasis·bold-lead`), so
+ *  leaving it in would report the same span from both engines — the exact double-reporting the
+ *  prefix rule below exists to end. Its siblings under `constraints/` are structural and stay. */
+const PROSE_ENGINE_PREFIXES = [
+  "skills/ai-anti-patterns/",
+  "skills/writing-",
+  "constraints/writing-no-bold-lead",
+];
 
 const _DECK_MARKERS = ["touying", "polylux", "#slide("];
 const _DECK_DIR_RE = /^(slides|presentation)/i;
@@ -198,7 +206,7 @@ export function runProseAudit(path: string, style: string | null, ranges: Range[
   return out;
 }
 
-function runCheckAll(projectRoot: string, path: string, ranges: Range[]): string[] {
+export function runCheckAll(projectRoot: string, path: string, ranges: Range[]): string[] {
   let results: Record<string, unknown> = {};
   try {
     const { stdout } = runPy([CHECK_ALL, projectRoot]);

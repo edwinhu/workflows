@@ -1,5 +1,24 @@
 # Formatting and Typography
 
+## What is deterministic here, and what is not
+
+Since v5.134.0 most of this chapter has executable coverage in `scripts/prose-audit.py`. A finding
+from one of these carries a span id; anything else in this file is a reading call.
+
+| Entry | System · label | Severity | Notes |
+|---|---|---|---|
+| Excessive use of boldface | `emphasis·bold-bare-number`, `emphasis·bold-density` | soft | format-agnostic (`.md` / `.typ` / `.tex`); table cells excluded |
+| Inline-header vertical lists | `emphasis·bold-lead` | soft | **plain paragraphs only** — list items are exempt by design, so the *inline-header list* proper is still a reading call; what is enforced is the bold inline header opening a prose paragraph |
+| Emojis | `formatting·emoji` | **hard** | over body prose and headings; fenced code, blockquotes and frontmatter excluded |
+| Em dashes | `em-dash` (paragraph + section budgets) | soft | absorbed from the deleted `writing-ai-smell-em-dash` constraint, thresholds unchanged |
+
+The emphasis rules ship `soft` on purpose. They could not be validated the way `hard` rules in this
+plugin are — the ai-tic FP-hunt corpus is raw PDF text extraction, which does not preserve bold or
+italic markup, so a 0-hit result there would mean the signal is absent rather than the rule clean.
+`formatting·emoji` is the exception and takes `hard` by construction: an emoji in a law-review
+draft or an SEC comment letter is indefensible on its face. See
+`docs/investigations/2026-08-05_emphasis-enforcement.md`.
+
 ## Excessive use of boldface
 
 AI chatbots may display various phrases in [boldface](https://en.wikipedia.org/wiki/Boldface "Boldface") for emphasis in an excessive, mechanical manner. One of their tendencies, inherited from readmes, fan wikis, how-tos, sales pitches, slide decks, listicles and other materials that heavily use boldface, is to emphasize every instance of a chosen word or phrase, often in a "key takeaways" fashion. Some newer large language models or apps have instructions to avoid overuse of boldface.

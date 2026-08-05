@@ -303,8 +303,192 @@ def test_hard_is_only_the_zero_false_positive_classes():
             continue
         assert any(
             lab.startswith(("wikipedia-chatgpt-artifacts", "wikipedia-template-artifacts",
-                            "wikipedia-communication", "ai-tic·sev4", "ai-tic·sev5"))
+                            "wikipedia-communication", "ai-tic·sev4", "ai-tic·sev5",
+                            # `formatting·emoji` earns hard by construction, not by a corpus
+                            # sweep: an emoji in a law-review draft is indefensible on its face.
+                            "formatting·emoji"))
             for lab in span["labels"]), span
+
+
+# ── emphasis: markup as a SIDE CHANNEL, format-agnostic ──────────────────────
+# THE THREE STACKED FAILURES THIS PINS. Before v5.134.0 a Typst document could carry arbitrary
+# boldface through a full writing-review pass unremarked, because (1) the only bold rule scanned
+# `<cwd>/drafts/*.md`, (2) its regex was markdown-only, and (3) neutralisation had already blanked
+# the markup before any scorer ran. Fixing 1 and 2 without 3 buys nothing, which is why the spans
+# are harvested from the raw text and carried alongside instead of being re-derived from prose.
+#
+# GOLDEN FIXTURES, NOT THE CORPUS. The FP hunt ran against `~/projects/{opv,mirror,rule611}` Typst
+# sources, which live outside this repo; machine-specific paths must not enter the suite. Results
+# are recorded in docs/investigations/2026-08-05_emphasis-enforcement.md.
+_BOLD_LEAD_SOURCES = [
+    (".typ", "#strong[The objection.] A five percent stake could leverage mirror voting.\n"),
+    (".tex", "\\textbf{The objection.} A five percent stake could leverage mirror voting.\n"),
+    (".md", "**The objection.** A five percent stake could leverage mirror voting.\n"),
+]
+
+
+@pytest.mark.parametrize(("suffix", "src"), _BOLD_LEAD_SOURCES)
+def test_bold_lead_is_flagged_in_every_text_format(tmp_path, suffix, src):
+    draft = tmp_path / f"lead{suffix}"
+    draft.write_text(src)
+    res = PA.audit_document(draft)
+    hits = [s for s in res["spans"] if s["system"] == "emphasis"]
+    assert any("bold-lead" in lab for s in hits for lab in s["labels"]), res["spans"]
+    assert hits[0]["line"] == 1 and hits[0]["col"] == 1, hits
+
+
+@pytest.mark.parametrize(("suffix", "src"), [
+    (".typ", "+ #strong[Market mirroring.] The block votes For and Against in proportion.\n"),
+    (".md", "- **Market mirroring.** The block votes For and Against in proportion.\n"),
+    (".md", "1. **Market mirroring.** The block votes For and Against in proportion.\n"),
+])
+def test_list_items_are_exempt_from_bold_lead(tmp_path, suffix, src):
+    """APPROVED DECISION, and a measured one. mirror/paper/typst/body.typ:161-169 is a numbered
+    scenario list whose items open `+ #strong[Market mirroring.]`. A numbered list of defined
+    scenarios is not an inline-header paragraph, and flagging it would make the rule unusable on
+    the one local source that carries the most emphasis."""
+    draft = tmp_path / f"list{suffix}"
+    draft.write_text(src)
+    res = PA.audit_document(draft)
+    assert not [s for s in res["spans"] if "bold-lead" in " ".join(s["labels"])], res["spans"]
+
+
+def test_exhibit_captions_are_exempt_from_bold_lead(tmp_path):
+    """FOUND BY THE FP HUNT: `#strong[Table 1:] Headline reform comparison…` accounted for ALL
+    FIVE out-of-table bold-lead hits in mirror/paper/typst/body.typ. A caption label is not an
+    inline header, and it is excluded by shape rather than by lowering the bar."""
+    draft = tmp_path / "caption.typ"
+    draft.write_text("#strong[Table 1:] Headline reform comparison across four block levels\n"
+                     "\n"
+                     "#strong[Figure 2.] Mirror pro-rata flips by vote category\n")
+    res = PA.audit_document(draft)
+    assert not [s for s in res["spans"] if "bold-lead" in " ".join(s["labels"])], res["spans"]
+
+
+def test_table_cells_are_exempt_from_every_bold_rule(tmp_path):
+    """NOT AN OPTIMISATION — the thing that makes the bold rules viable. mirror's 258 `#strong[]`
+    spans are overwhelmingly table header cells; without this a correctly formatted results table
+    reads as bold saturation."""
+    draft = tmp_path / "table.typ"
+    draft.write_text(
+        "#table(\n"
+        "  columns: 3,\n"
+        "  #strong[Items], #strong[Flips], #strong[(%)],\n"
+        "  [Say on pay], #strong[2,070], #strong[0.40%],\n"
+        ")\n")
+    res = PA.audit_document(draft)
+    assert not [s for s in res["spans"] if s["system"] == "emphasis"], res["spans"]
+
+
+@pytest.mark.parametrize(("suffix", "src"), [
+    (".typ", "The market saw #strong[546,088] trades and #strong[63% more] volume overall.\n"),
+    (".tex", "The market saw \\textbf{546,088} trades and \\textbf{63\\% more} volume.\n"),
+    (".md", "The market saw **546,088** trades and **63% more** volume overall today.\n"),
+])
+def test_bold_on_a_bare_number_is_flagged_in_every_text_format(tmp_path, suffix, src):
+    draft = tmp_path / f"num{suffix}"
+    draft.write_text(src)
+    res = PA.audit_document(draft)
+    quoted = {s["quote"] for s in res["spans"]
+              if "bold-bare-number" in " ".join(s["labels"])}
+    assert "546,088" in quoted, res["spans"]
+
+
+def test_bold_on_a_claim_is_not_a_bare_number(tmp_path):
+    """The rule is `emphasise the claim, not the digits`, so the claim itself must pass."""
+    draft = tmp_path / "claim.typ"
+    draft.write_text("The market saw #strong[546,088 trades] under the proposed rule.\n")
+    res = PA.audit_document(draft)
+    assert not [s for s in res["spans"] if "bold-bare-number" in " ".join(s["labels"])], res["spans"]
+
+
+def test_bold_density_needs_a_document(tmp_path):
+    """`mirror/paper/typst/style.typ` is a template with one prose word in it. One bold span over
+    one word is 1,000 per 1,000 — an arithmetic artifact, not saturation."""
+    draft = tmp_path / "style.typ"
+    draft.write_text("#let x = 1\n#strong[Note]\n")
+    res = PA.audit_document(draft)
+    assert not [s for s in res["spans"] if "bold-density" in " ".join(s["labels"])], res["spans"]
+
+
+def test_bold_density_fires_over_the_budget(tmp_path):
+    draft = tmp_path / "loud.typ"
+    body = " ".join(f"Word{i}" for i in range(400))
+    draft.write_text(body + "\n\n" + "\n".join(
+        f"Sentence {i} reports #strong[a finding] about the market." for i in range(20)))
+    res = PA.audit_document(draft)
+    hits = [s for s in res["spans"] if "bold-density" in " ".join(s["labels"])]
+    assert hits and hits[0]["line"] == 0, res["spans"]
+
+
+def test_strong_inside_a_typst_footnote_is_never_collected(tmp_path):
+    """Footnote masking runs FIRST, for the same reason it runs first before neutralisation: a
+    finding must never land inside a note."""
+    draft = tmp_path / "fn.typ"
+    draft.write_text("The rule applies.#footnote[See #strong[546,088] trades in the record.]\n")
+    _, _, spans = PA.extract_lines(draft)
+    assert not spans, spans
+
+
+def test_emphasis_collection_survives_neutralisation(tmp_path):
+    """The regression the whole side-channel design exists to prevent: the scorers still see
+    neutralised text (markup blanked, prose kept), and the emphasis spans exist anyway."""
+    draft = tmp_path / "both.typ"
+    draft.write_text("The market saw #strong[546,088] trades and #emph[substantial] growth.\n")
+    lines, masked, spans = PA.extract_lines(draft)
+    assert "#strong[" not in masked and "546,088" in masked   # neutralisation unchanged
+    assert [s["kind"] for s in spans] == ["strong", "emph"]
+    assert spans[0]["text"] == "546,088"
+
+
+def test_emphasis_does_not_reinstate_the_v5127_hard_false_positive(tmp_path):
+    """PINNED. `#emph[First],` matched wikipedia-template-artifacts' `[Name]` placeholder rule — a
+    HARD span the reviewer prompt calls "almost never defensible". Harvesting emphasis must not
+    bring it back by any route, and emphasis findings are soft besides."""
+    draft = tmp_path / "letter.typ"
+    draft.write_text(
+        "There are two reasons. #emph[First], the statistic is constructed oddly.\n"
+        "#emph[Second], the natural experiment says otherwise.\n")
+    res = PA.audit_document(draft)
+    assert res["n_hard"] == 0, [s for s in res["spans"] if s["severity"] == "hard"]
+    assert not [s for s in res["spans"] if "placeholder" in " ".join(s["labels"])], res["spans"]
+    assert all(s["severity"] == "soft" for s in res["spans"] if s["system"] == "emphasis")
+
+
+def test_docx_emphasis_is_deferred_not_silently_wrong(tmp_path):
+    """`.docx` bold runs are out of scope, and the contract says so explicitly rather than
+    implying it: no emphasis spans, no crash."""
+    lines, masked, spans = PA.extract_lines(_DOCX)
+    assert masked is None and spans == [] and lines
+
+
+# ── emojis: the one hard rule here ───────────────────────────────────────────
+def test_emoji_in_prose_is_hard(tmp_path):
+    draft = tmp_path / "emoji.md"
+    draft.write_text("The agency responded quickly 🚨 and the staff agreed.\n")
+    res = PA.audit_document(draft)
+    hits = [s for s in res["spans"] if s["system"] == "formatting"]
+    assert hits and hits[0]["severity"] == "hard", res["spans"]
+    assert hits[0]["line"] == 1
+
+
+def test_emoji_inside_a_fence_or_quote_is_clean(tmp_path):
+    """Same exclusions as the em-dash budget: a fenced code block and a quoted source are not the
+    author's prose, and a HARD rule may not fire on them."""
+    draft = tmp_path / "fenced.md"
+    draft.write_text("```\nprint('🚨 alert')\n```\n\n> The filing said 🚨 loudly.\n\nBody text.\n")
+    res = PA.audit_document(draft)
+    assert not [s for s in res["spans"] if s["system"] == "formatting"], res["spans"]
+
+
+@pytest.mark.parametrize("ch", ["×", "—", "§", "†", "‡", "✓", "✔"])
+def test_typographic_characters_are_not_emojis(tmp_path, ch):
+    """A `hard` rule may not fire on a multiplication sign, an em dash, a section mark, a dagger
+    or a checkmark in a comparison table. The VS16 emoji-presentation forms still match."""
+    draft = tmp_path / "typo.md"
+    draft.write_text(f"The ratio is 1.60{ch} across every specification in the table.\n")
+    res = PA.audit_document(draft)
+    assert not [s for s in res["spans"] if s["system"] == "formatting"], res["spans"]
 
 
 # ── the CLI contract the hook and the reviewers depend on ────────────────────

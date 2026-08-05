@@ -59,9 +59,11 @@ Read the full SKILL.md for the draft's domain:
 And, for the judgement calls no regex reaches (which tells have decayed, rhythm, burstiness):
 `{PLUGIN_ROOT}/skills/ai-anti-patterns/references/12-economist-2026-corpus-study.md`.
 
-The two structural constraints stay yours because they are not regex over prose:
-`{PLUGIN_ROOT}/references/constraints/writing-no-bold-lead.md` and
-`{PLUGIN_ROOT}/references/constraints/writing-topic-sentences.md`.
+Two structural constraints, neither of which is a regex over prose:
+`{PLUGIN_ROOT}/references/constraints/writing-no-bold-lead.md` — read it for the *rationale* and
+the acceptable alternatives; the detection is deterministic now (`emphasis·bold-lead`), so cite
+the span rather than re-scanning — and
+`{PLUGIN_ROOT}/references/constraints/writing-topic-sentences.md`, which stays entirely yours.
 
 ## Step 3: Grade Every Paragraph
 
@@ -83,10 +85,17 @@ spellings in US-register prose — every one of those is a regex over a corpus-g
 `prose-audit.py` already ran all of them. Working from this list instead of from the spans
 means re-deriving by eye what a scorer computed, and disagreeing with it silently.
 
-What is still yours here: **bold-lead** (`**Bold Header.** Text continues...`), **hedge stacking**
-("relatively", "somewhat", "arguably", "tends to" piled in one sentence), and **expletive
-constructions** ("There are three reasons...", "It is clear that..."). Those depend on how a
-sentence is built, not on which words it contains.
+**Bold-lead is a span now too, and so is every other emphasis finding** (v5.134.0). The
+`emphasis` system reports `bold-lead` (`**Bold Header.** Text continues...`, `#strong[…]`,
+`\textbf{…}` alike), `bold-bare-number` and `bold-density`; `formatting` reports emojis. Do not
+re-scan the draft by eye for bold — cite the spans. What the emphasis system deliberately does
+NOT flag, and therefore is still yours: bold inside a **list item**, which is exempt by design,
+and bold used for **defined-term emphasis** (`the #strong[index] block`), which is legitimate
+until it is not.
+
+What is still yours here: **hedge stacking** ("relatively", "somewhat", "arguably", "tends to"
+piled in one sentence) and **expletive constructions** ("There are three reasons...", "It is
+clear that..."). Those depend on how a sentence is built, not on which words it contains.
 
 ### Check Against Corpus-Derived Style Tells (the *rhythm/diction* signature)
 
