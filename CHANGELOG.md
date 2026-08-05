@@ -3,6 +3,15 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [5.130.0] - 2026-08-04
+
+### Added
+- **docx OOXML tooling, promoted out of the opv paper repo.** Four project-local scripts turned out to be general OOXML work with no knowledge of the manuscript they were written for, and three of them had independently rediscovered the same fact — that a hyperlink in OOXML is TWO facts in two parts, the run text a reader sees and the relationship Target the click follows, with nothing keeping them in sync.
+  - `skills/docx-repair/scripts/docx_links.py` — consolidates clean-links, normalize-SSRN and strip-footnote-links into one tool with three passes, each of which now rewrites both halves of a hyperlink instead of one.
+  - `skills/docx-repair/scripts/docx_spacers.py` and `skills/docx-typst/scripts/make_redline.py`.
+  - `skills/law-review-docx/references/title-page-spacing.md`.
+  - Landed via the `docx-promotion` branch, whose own `chore: release v5.126.0` was superseded by this release; the version sites were resolved forward to main rather than walked back.
+
 ## [5.129.0] - 2026-08-04
 
 ### Changed
