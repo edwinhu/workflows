@@ -98,7 +98,7 @@ export function extractJsonObject(source: string): string | undefined {
  * did.
  */
 export function reviewWithGemini(context: { projectDir: string; invoke: Invoke; scope?: ReviewScope; briefs?: unknown }): AdapterResult {
-  return { ...reviewDiff(context), briefSources: [] };
+  return { ...reviewDiff(context), briefSources: [], briefsDelivered: false };
 }
 
 function reviewDiff(context: { projectDir: string; invoke: Invoke; scope?: ReviewScope }): AdapterResult {

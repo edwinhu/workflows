@@ -505,8 +505,13 @@ console.log('the rules are the CALLER\'S, and what the reviewer got stays checka
     ok('and it carries a hash of the bytes handed over', /^[0-9a-f]{64}$/.test(resolved[0].sha256))
     ok('the reported path is skills-relative, not absolute', !resolved[0].path.startsWith('/'))
 
-    const bare = resolveSkillBriefs(ROOT, ['de-ai-revise'])
-    ok('a bare skill name falls back to SKILL.md', bare.length === 1 && bare[0].path === 'de-ai-revise/SKILL.md')
+    // A SKILL.md is written to drive a tool loop inside THIS harness — scripts to run, hooks, phase
+    // gates — so a purpose-built brief wins when one exists, and the fallback is only the fallback.
+    const preferred = resolveSkillBriefs(ROOT, ['de-ai-revise'])
+    ok('a bare skill name prefers a purpose-built third-party brief',
+      preferred.length === 1 && preferred[0].path === 'de-ai-revise/references/third-party-brief.md')
+    const bare = resolveSkillBriefs(ROOT, ['dev'])
+    ok('and falls back to SKILL.md when there is none', bare.length === 1 && bare[0].path === 'dev/SKILL.md')
 
     ok('no bundle is not an error', resolveSkillBriefs(ROOT, undefined).length === 0)
     ok('duplicates collapse rather than spending the cap twice',
@@ -544,6 +549,7 @@ console.log('the rules are the CALLER\'S, and what the reviewer got stays checka
     ok('the receipt names what was handed over',
       reviewed.briefSources.length === 1 && reviewed.briefSources[0].sha256 === briefs[0].sha256)
     ok('and the receipt carries no bytes, only the hash', reviewed.briefSources[0].text === undefined)
+    ok('a delivered bundle says so', reviewed.briefsDelivered === true)
 
     // ── 4. THE RECEIPT SURVIVES FAILURE ──────────────────────────────────────
     // `raw` is carried on every path for this reason and the receipt is no different: one that
@@ -551,9 +557,24 @@ console.log('the rules are the CALLER\'S, and what the reviewer got stays checka
     const dead = proseCodexAdapter.review({ projectDir: ROOT, scope, briefs, invoke: () => ({ code: 0, stdout: '', stderr: '' }) })
     ok('a provider that returned nothing is still unavailable', dead.status === 'unavailable')
     ok('and its briefSources are STILL populated', dead.briefSources.length === 1 && dead.briefSources[0].path === briefs[0].path)
+    ok('the bundle still counts as delivered — the call carried it', dead.briefsDelivered === true)
 
+    // ── DELIVERED IS NOT THE SAME CLAIM AS RESOLVED ──────────────────────────
+    // Every path that fails BEFORE the provider is reached reports what the adapter was handed
+    // while stating that no reviewer saw it. Reporting the list alone there is a receipt for
+    // something that did not happen — which reads as evidence, and is the same defect as a
+    // truncation that destroys the evidence for the failure it reports.
     const wrongScope = proseCodexAdapter.review({ projectDir: ROOT, scope: { kind: 'working-tree' }, briefs, invoke: () => ({ code: 0, stdout: '', stderr: '' }) })
     ok('even a refusal before the provider is reached carries the receipt', wrongScope.briefSources.length === 1)
+    ok('but does NOT claim the reviewer was given them', wrongScope.briefsDelivered === false)
+
+    const unreadable = proseCodexAdapter.review({ projectDir: ROOT, scope: { kind: 'document', path: join(docDir, 'nope.md') }, briefs, invoke: () => ({ code: 0, stdout: '', stderr: '' }) })
+    ok('an unreadable document reports the bundle undelivered',
+      unreadable.status === 'unavailable' && unreadable.briefSources.length === 1 && unreadable.briefsDelivered === false)
+
+    const noWrapper = proseCodexAdapter.review({ projectDir: ROOT, scope, briefs, invoke: () => { throw new Error('ENOENT wrapper') } })
+    ok('a wrapper that could not be spawned reports it undelivered',
+      noWrapper.status === 'unavailable' && noWrapper.briefSources.length === 1 && noWrapper.briefsDelivered === false)
 
     // ── 5. ZERO BRIEFS STILL REVIEWS ─────────────────────────────────────────
     // No regression for the callers that pass nothing, which is every existing one.
@@ -565,7 +586,35 @@ console.log('the rules are the CALLER\'S, and what the reviewer got stays checka
     ok('and an empty receipt, which is the honest answer', Array.isArray(plain.briefSources) && plain.briefSources.length === 0)
   }
 
-  // ── 6. A CODE ADAPTER REPORTS THE EMPTY RECEIPT RATHER THAN INHERITING ONE ──
+  // ── 6. THE WRITING BUNDLE ACTUALLY CARRIES THE RULES THAT LEFT prose.ts ────
+  // ASSERT THE PROMPT, NOT THE HASH. A bundle that resolves, hashes and delivers cleanly while
+  // containing none of the guidance it replaced is a receipt for the wrong bytes — and that is
+  // exactly what shipped for one commit: neither writing skill had a `third-party-brief.md`, so
+  // `["ai-anti-patterns","de-ai-revise"]` handed the reviewer two harness-facing SKILL.md files and
+  // the em-dash and register rules reached nobody. The hash-level assertions above all passed.
+  {
+    const docDir = mkdtempSync(join(tmpdir(), 'prose-writing-bundle-'))
+    const docPath = join(docDir, 'draft.md')
+    writeFileSync(docPath, 'The organisation recognised its behaviour.\n')
+    let spec
+    proseCodexAdapter.review({
+      projectDir: ROOT, scope: { kind: 'document', path: docPath },
+      // The exact bundle `workflows/writing-review.js` passes.
+      briefs: resolveSkillBriefs(ROOT, ['ai-anti-patterns', 'de-ai-revise']),
+      invoke: s => { spec = s; return { code: 0, stdout: '', stderr: '' } },
+    })
+    const prompt = spec.args.at(-1)
+    // The tell that is CLAUDE-SPECIFIC, which is the single reason a different model is worth
+    // paying for on a draft. A Claude reviewer reads its own strongest tell as ordinary prose.
+    ok('the em-dash-splits-by-model rule reaches the reviewer', /EM-DASHES SPLIT BY MODEL/.test(prompt))
+    ok('so does the tic half-life rule', /HALF-LIFE/.test(prompt))
+    ok('so does the register-decides rule', /THE REGISTER YOU\s+ARE READING DECIDES/.test(prompt))
+    // The false-positive suppression half — the most valuable thing to hand a reviewer that has not
+    // calibrated to this register.
+    ok('and the preserve-human suppressions reach it too', /Preserve-Human/.test(prompt) && /dropped/.test(prompt))
+  }
+
+  // ── 7. A CODE ADAPTER REPORTS THE EMPTY RECEIPT RATHER THAN INHERITING ONE ──
   // It ignores the bundle, so `[]` is the truth: the rules did not reach the reviewer. Copying the
   // beat's resolution over it would manufacture a receipt for rules nobody saw.
   {
@@ -577,6 +626,7 @@ console.log('the rules are the CALLER\'S, and what the reviewer got stays checka
     })
     ok('a code adapter still reviews when handed a bundle', result.status === 'reviewed')
     ok('and reports an EMPTY receipt, because the bundle did not reach the reviewer', result.briefSources.length === 0)
+    ok('and does not claim delivery', result.briefsDelivered === false)
   }
 }
 

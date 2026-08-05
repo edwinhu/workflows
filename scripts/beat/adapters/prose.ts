@@ -390,7 +390,13 @@ function proseReview(wrapper: string, name: string, context: { projectDir: strin
   // THE RECEIPT IS COMPUTED ONCE, BEFORE ANYTHING CAN FAIL, and spread into every return below —
   // including the ones that never reach the provider. A receipt that exists only on the success path
   // answers "which rules did the reviewer get" exactly where nobody needs to ask.
-  const receipt = { briefSources: briefSources(briefs) };
+  //
+  // `briefsDelivered` starts FALSE and is set only after the provider call returns. Every return
+  // above that point — a scope refusal, an unreadable document, a wrapper that could not be spawned
+  // — reports what this adapter was handed to give the reviewer while stating plainly that it never
+  // got there. Reporting the list alone on those paths would be a receipt for something that did not
+  // happen, which reads as evidence and is not.
+  const receipt = { briefSources: briefSources(briefs), briefsDelivered: false };
   const scope = context.scope ?? DEFAULT_SCOPE;
   if (scope.kind !== "document") {
     return { ...receipt, status: "unavailable", findings: [], reason: `${name} reviews documents; got scope "${scope.kind}"` };
@@ -424,6 +430,9 @@ function proseReview(wrapper: string, name: string, context: { projectDir: strin
   } catch (error) {
     return { ...receipt, status: "unavailable", findings: [], reason: `${wrapper} could not be run: ${(error as Error).message}` };
   }
+  // The call carrying the bundle returned. Everything below this line is about what came BACK, so
+  // delivery is settled regardless of how the reply is judged.
+  receipt.briefsDelivered = briefs.length > 0;
 
   const text = extractText(run.stdout);
   if (!text) {

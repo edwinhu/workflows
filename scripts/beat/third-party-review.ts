@@ -88,11 +88,17 @@ export type AdapterReview = {
   /** What this adapter cost and how hard it worked. Null fields mean the provider reported none. */
   usage: { totalCostUsd: number | null; durationMs: number | null; numTurns: number | null };
   /**
-   * The rules this adapter was actually given, hashed. Empty means it was given none — either the
+   * The rules this adapter was handed to give the reviewer, hashed. Empty means none — either the
    * caller supplied no bundle, or this adapter does not consume one. Present on every path, failures
-   * included, so "which rules did the reviewer get" never depends on the run having succeeded.
+   * included, so the bundle never becomes unknowable precisely where the run went wrong.
    */
   briefSources: SkillBriefSource[];
+  /**
+   * Whether the provider call actually carried them. Read this BEFORE concluding from `briefSources`
+   * that a reviewer applied anything: an adapter that refused the scope, could not read the document,
+   * or threw before invoking reports the list with `briefsDelivered: false`.
+   */
+  briefsDelivered: boolean;
 };
 
 export type ThirdPartyReviewResult = {
@@ -343,8 +349,10 @@ export function runThirdPartyReview(request: RunRequest): ThirdPartyReviewResult
         transcript: null, spanIds: [], usage: { totalCostUsd: null, durationMs: null, numTurns: null },
         // An adapter that THREW returned no receipt of its own, but the beat still knows what it was
         // about to hand over. Reporting the resolution keeps the failure path from being the one
-        // place the bundle becomes unknowable.
+        // place the bundle becomes unknowable — and `briefsDelivered: false` keeps that from being
+        // mistaken for evidence that a reviewer saw any of it.
         briefSources: resolvedSources,
+        briefsDelivered: false,
       });
       continue;
     }
@@ -372,6 +380,9 @@ export function runThirdPartyReview(request: RunRequest): ThirdPartyReviewResult
       // delivered — an adapter that ignores briefs reports `[]`, and overwriting that with the
       // beat's resolution would manufacture a receipt for rules no reviewer ever saw.
       briefSources: Array.isArray(result.briefSources) ? result.briefSources : [],
+      // Delivery is likewise the ADAPTER'S claim, defaulting to false: an adapter that says nothing
+      // about it has not delivered anything a caller may rely on.
+      briefsDelivered: result.briefsDelivered === true,
     });
   }
 

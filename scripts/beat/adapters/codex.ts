@@ -57,7 +57,7 @@ function unavailable(reason: string): AdapterResult {
  * the rules were applied.
  */
 export function reviewWithCodex(context: { projectDir: string; invoke: Invoke; scope?: ReviewScope; cacheDir?: string; briefs?: unknown }): AdapterResult {
-  return { ...reviewDiff(context), briefSources: [] };
+  return { ...reviewDiff(context), briefSources: [], briefsDelivered: false };
 }
 
 function reviewDiff(context: { projectDir: string; invoke: Invoke; scope?: ReviewScope; cacheDir?: string }): AdapterResult {

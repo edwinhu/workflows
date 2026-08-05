@@ -102,14 +102,29 @@ export type AdapterResult = {
   /** The provider's own accounting from its terminal `result` event, when it emits one. */
   usage?: { totalCostUsd?: number | null; durationMs?: number | null; numTurns?: number | null } | null;
   /**
-   * WHICH RULES THIS REVIEWER WAS ACTUALLY GIVEN — carried on EVERY return path, including the
-   * failure ones, for the same reason `raw` is.
+   * WHICH RULES THIS ADAPTER WAS HANDED TO GIVE THE REVIEWER — carried on EVERY return path,
+   * including the failure ones, for the same reason `raw` is. A receipt that exists only when the
+   * run succeeded answers the audit question exactly where it is least needed.
    *
-   * A receipt that exists only when the run succeeded answers the audit question exactly where it is
-   * least needed. An adapter that ignores briefs returns `[]`, which is the honest answer: the bundle
-   * did not reach the reviewer.
+   * An adapter that ignores briefs returns `[]`, which is the honest answer: the bundle did not
+   * reach the reviewer.
    */
   briefSources?: SkillBriefSource[];
+  /**
+   * WHETHER THE PROVIDER CALL ACTUALLY CARRIED THE BUNDLE, as opposed to the bundle merely having
+   * been resolved for it.
+   *
+   * These came apart the moment the receipt was carried on the pre-provider failure paths. A refusal
+   * over the scope, an unreadable document, or a wrapper that could not be spawned all return a
+   * populated `briefSources` while no reviewer ever saw a byte of it — and a receipt that reads as
+   * evidence of something that did not happen is worse than no receipt, for the same reason a
+   * truncation that destroys the evidence for the failure it reports is worse than no `raw`.
+   *
+   * So `briefSources` answers "what was this adapter given to hand over" and stays on every path;
+   * this answers "did it get handed over". Only `true` when a bundle was non-empty AND the provider
+   * invocation carrying it returned.
+   */
+  briefsDelivered?: boolean;
 };
 
 /** How an adapter shells out. Injectable so tests never make a paid external call. */

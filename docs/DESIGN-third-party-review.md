@@ -50,6 +50,22 @@ of every brief handed over, on *every* return path including the failures, for t
 is. An adapter that ignores bundles returns `[]` — the honest statement that the rules did not reach
 the reviewer, rather than a receipt for rules nobody saw.
 
+**Resolved and delivered are two claims, and carrying the receipt on the failure paths is what split
+them.** A scope refusal, an unreadable document or a wrapper that could not be spawned all return a
+populated `briefSources` while no reviewer saw a byte, so the list alone would be a receipt for
+something that did not happen — which reads as evidence, the same defect as a truncation that
+destroys the evidence for the failure it reports. `briefsDelivered` is therefore separate and only
+true when a non-empty bundle rode a provider call that returned. Two same-shaped fields
+(`briefSources` / `resolvedBriefSources`) were rejected as the alternative: the distinction is a
+predicate on one bundle, not two bundles.
+
+**A skill's `references/third-party-brief.md` is preferred over its `SKILL.md`**, because a SKILL.md
+drives a tool loop inside this harness and a foreign reviewer can act on none of it. This is not
+cosmetic: the first cut of this change shipped `["ai-anti-patterns", "de-ai-revise"]` when neither
+skill had a brief, so the bundle resolved, hashed and delivered two harness-facing documents while
+the corpus rules deleted from `prose.ts` reached nobody. Every hash-level assertion passed. The test
+suite now asserts the *prompt contents*, not just the receipt.
+
 Two rules follow from the same silent-zero principle as `status`: a named-but-missing bundle
 **throws** (a typo yielding zero rules is a reviewer judging against nothing and reporting cleanly),
 and exceeding the 60 KB cap throws rather than truncating a rule set mid-sentence.

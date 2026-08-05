@@ -75,10 +75,22 @@ nothing would produce a reviewer judging against nothing and reporting cleanly, 
 silent zero `status` exists to prevent, one layer up. Over the 60 KB cap throws too, rather than
 truncating a rule set mid-sentence.
 
-**`briefSources` on each review is the receipt** — skill, path, bytes and sha256 of exactly what was
-handed over — and it is carried on **every** path, failures included. Read it rather than assuming
-the `skills` you passed were applied: an adapter that does not consume bundles reports `[]`, which is
-the honest answer that the rules never reached the reviewer.
+A skill's `references/third-party-brief.md` is preferred over its `SKILL.md` **because a SKILL.md is
+written to drive a tool loop inside this harness** — scripts to run, hooks, phase gates — and a
+foreign reviewer can act on none of it. A skill that wants to be read by a different model writes the
+brief. Naming a skill that has neither a brief nor rules in its `SKILL.md` resolves and hashes
+cleanly while delivering nothing usable, so check the prompt, not just the receipt.
+
+**The receipt is two fields, and they are different claims:**
+
+| field | answers |
+|---|---|
+| `briefSources` | *what was this adapter handed to give the reviewer* — skill, path, bytes, sha256. Carried on **every** path, failures included, so the bundle never becomes unknowable exactly where the run went wrong |
+| `briefsDelivered` | *did it get there.* Only true when a non-empty bundle rode a provider call that returned |
+
+Read both. A scope refusal, an unreadable document or a wrapper that could not be spawned all report
+a populated `briefSources` with `briefsDelivered: false` — the list is what the adapter was holding,
+not evidence a reviewer saw it. An adapter that does not consume bundles reports `[]` and `false`.
 
 ## Reading the result
 
@@ -147,5 +159,6 @@ figure in a document.
 | Discard an `unparseable` adapter as silent | Seven real findings were lost this way | Read `raw` (head and tail) and `transcript` |
 | Treat a third-party `approve` as a gate pass | One unverified opinion from a model with no authority here | Run the gate; the third party never satisfies it |
 | Run it before the verifier | It reports on work nobody has vetted | Run it only after the verifier PASSes |
-| State which rules the reviewer applied from the `skills` you passed | That is the assertion this design replaced | Read `briefSources` |
+| State which rules the reviewer applied from the `skills` you passed | That is the assertion this design replaced | Read `briefSources` **and** `briefsDelivered` |
+| Read a populated `briefSources` as proof a reviewer saw the rules | Pre-provider failures carry the list too | Check `briefsDelivered` |
 | Add a domain's rules by editing an adapter | That is what made the adapter single-domain | Pass them in `skills` |
