@@ -177,6 +177,13 @@ audit's span list and (b) the ~15 lines of reference-12 findings that genuinely 
 regex-ed, inlined verbatim. The adapter gets the same span ids the other two reviewers got, so
 disagreement between them becomes meaningful.
 
+> **Superseded in part, 2026-08-05.** (a) still holds — deterministic spans are per-document and can
+> only be computed in the adapter. (b) does not: inlining the decay rules made `prose.ts` a writing
+> adapter under a general name, so the only way to give a reviewer another domain's rules was to edit
+> it. They are now caller-supplied via `skills` and receipted in `briefSources`; see
+> `docs/DESIGN-third-party-review.md`. The invariant this section was protecting — evidence in,
+> instruction out, and checkable afterwards — is unchanged and is what the receipt enforces.
+
 ### 3.4 Verification, so ignoring the evidence is checkable
 
 - Add `spanIds: string[]` to the prose finding schema. A reviewer handed spans must cite the ids it

@@ -41,11 +41,13 @@
  */
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { validateGeneratedPlanArtifact } from "../../workflows/lib/approved-artifact.ts";
 import { resolveAdapter, adapterNames } from "./adapters/registry.ts";
+import { briefSources, resolveSkillBriefs } from "./skill-brief.ts";
 // Imported for LOCAL use (a re-export alone creates no local binding) and re-exported below.
-import { DEFAULT_SCOPE, SEVERITIES, type AdapterResult, type Invoke, type NeutralFinding, type ReviewScope, type ReviewStatus } from "./contract.ts";
+import { DEFAULT_SCOPE, SEVERITIES, type AdapterResult, type Invoke, type NeutralFinding, type ReviewScope, type ReviewStatus, type SkillBrief, type SkillBriefSource } from "./contract.ts";
 
 // The contract itself lives in `contract.ts`, a LEAF module, so that an adapter needing
 // `DEFAULT_SCOPE` as a value does not have to import THIS file and close the cycle
@@ -60,7 +62,12 @@ export {
   type NeutralFinding,
   type ReviewScope,
   type ReviewStatus,
+  type SkillBrief,
+  type SkillBriefSource,
 } from "./contract.ts";
+
+/** This plugin's root, from which a caller's skill bundle is resolved. */
+const PLUGIN_ROOT = resolve(import.meta.dir, "..", "..");
 
 /** One adapter's outcome. Findings are attributed, because the value is in where adapters DISAGREE. */
 export type AdapterReview = {
@@ -80,6 +87,12 @@ export type AdapterReview = {
   spanIds: string[];
   /** What this adapter cost and how hard it worked. Null fields mean the provider reported none. */
   usage: { totalCostUsd: number | null; durationMs: number | null; numTurns: number | null };
+  /**
+   * The rules this adapter was actually given, hashed. Empty means it was given none — either the
+   * caller supplied no bundle, or this adapter does not consume one. Present on every path, failures
+   * included, so "which rules did the reviewer get" never depends on the run having succeeded.
+   */
+  briefSources: SkillBriefSource[];
 };
 
 export type ThirdPartyReviewResult = {
@@ -237,6 +250,16 @@ export type RunRequest = {
    * keeps meaning exactly what it meant.
    */
   scope?: ReviewScope;
+  /**
+   * The DOMAIN'S RULES, named by skill: `["ai-anti-patterns", "de-ai-revise"]`, or a skill-relative
+   * path for one reference file. Caller-supplied, exactly like `scope`, and for the same reason —
+   * `preflight.ts` accepts only `planFile`/`planHash` in `planReset`, and *which rules* is a property
+   * of the domain calling the beat rather than of the approval. The OPT-IN stays plan-carried and
+   * planHash-bound; only the rule set is caller-side.
+   *
+   * Omitting it is not an error: the reviewer then gets the generic second-opinion prompt.
+   */
+  skills?: unknown;
   /** Overrides the dispatching session identity. Tests set it; production reads the environment. */
   dispatchSession?: string;
 };
@@ -298,12 +321,17 @@ export function runThirdPartyReview(request: RunRequest): ThirdPartyReviewResult
     return resolved;
   });
 
+  // RESOLVED BEFORE ANY ADAPTER RUNS, for the same reason the adapter names are: a typo in a bundle
+  // name must not be discovered only after a paid call has been made. Every failure in here throws.
+  const briefs: SkillBrief[] = resolveSkillBriefs(PLUGIN_ROOT, request.skills);
+  const resolvedSources = briefSources(briefs);
+
   const invoke = request.invoke ?? shellInvoke;
   const reviews: AdapterReview[] = [];
   for (const adapter of adapters) {
     let result: AdapterResult;
     try {
-      result = adapter.review({ projectDir: project, invoke, scope });
+      result = adapter.review({ projectDir: project, invoke, scope, briefs });
     } catch (error) {
       // DEGRADE, NEVER BLOCK, AND NEVER ABANDON THE REST. The verifier already passed; this step can
       // only add. One adapter throwing must not turn a passing IMPLEMENT into a failing one, and it
@@ -313,6 +341,10 @@ export function runThirdPartyReview(request: RunRequest): ThirdPartyReviewResult
         adapter: adapter.name, status: "unavailable", verdict: null, summary: null,
         findings: [], reason: error instanceof Error ? error.message : String(error), raw: null,
         transcript: null, spanIds: [], usage: { totalCostUsd: null, durationMs: null, numTurns: null },
+        // An adapter that THREW returned no receipt of its own, but the beat still knows what it was
+        // about to hand over. Reporting the resolution keeps the failure path from being the one
+        // place the bundle becomes unknowable.
+        briefSources: resolvedSources,
       });
       continue;
     }
@@ -336,6 +368,10 @@ export function runThirdPartyReview(request: RunRequest): ThirdPartyReviewResult
         durationMs: typeof result.usage?.durationMs === "number" ? result.usage.durationMs : null,
         numTurns: typeof result.usage?.numTurns === "number" ? result.usage.numTurns : null,
       },
+      // The ADAPTER'S OWN answer wins, because it is the only party that knows what it actually
+      // delivered — an adapter that ignores briefs reports `[]`, and overwriting that with the
+      // beat's resolution would manufacture a receipt for rules no reviewer ever saw.
+      briefSources: Array.isArray(result.briefSources) ? result.briefSources : [],
     });
   }
 
@@ -349,4 +385,49 @@ export function runThirdPartyReview(request: RunRequest): ThirdPartyReviewResult
       : reviews.find(review => review.status !== "reviewed")!.status,
     findings: reviews.flatMap(review => review.findings.map(finding => ({ ...finding, adapter: review.adapter }))),
   };
+}
+
+/**
+ * THE CLI, which every caller has been documented to use and which did not exist.
+ *
+ * `beat-implement`, `ds-review` and `workflows/writing-review.js` all instruct an agent to run
+ *
+ *     echo '{...}' | bun scripts/beat/third-party-review.ts
+ *
+ * and until now that piped JSON into a module with no entrypoint: it defined some exports, wrote
+ * nothing, and exited 0. A caller reading the empty stdout had no `status` to branch on, so the one
+ * failure this whole file is built to prevent — an integration that produces nothing while looking
+ * like it ran — was reachable from the shipped instructions.
+ *
+ * Guarded on `import.meta.main` so importing this module from a test or an adapter still does
+ * nothing. Contract errors exit non-zero on stderr; review outcomes, including a provider being
+ * down, exit 0 with the JSON, because the step is advisory by construction.
+ */
+if (import.meta.main) {
+  let payload: any;
+  try {
+    // `readFileSync(0)` rather than a runtime-specific stdin API, so this behaves the same under any
+    // interpreter that can execute the file.
+    const input = readFileSync(0, "utf8");
+    if (!input.trim()) throw new Error("no request JSON was piped in");
+    payload = JSON.parse(input);
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) throw new Error("request JSON is not an object");
+  } catch (error) {
+    process.stderr.write(`third-party-review could not read its request: ${error instanceof Error ? error.message : String(error)}\n`);
+    process.exit(2);
+  }
+  try {
+    const result = runThirdPartyReview({
+      projectDir: payload.projectDir,
+      workflow: payload.workflow,
+      planReset: payload.planReset ?? {},
+      scope: payload.scope,
+      skills: payload.skills,
+      dispatchSession: payload.dispatchSession,
+    });
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } catch (error) {
+    process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
+    process.exit(1);
+  }
 }

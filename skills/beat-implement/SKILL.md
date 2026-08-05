@@ -274,38 +274,30 @@ attempted; untouched tasks remain untouched.
 Default OFF. It exists only if the **authenticated plan** carries the opt-in, elicited in CLARIFY and
 therefore bound to `planHash`. An absent line means this step does not exist; skip to the gate.
 
+**The beat owns the invocation and the rules for reading its result — follow
+`${CLAUDE_SKILL_DIR}/../beat-third-party/SKILL.md`.** Read `status` before `findings`; an
+`unparseable` adapter has not necessarily said nothing; the exit gate never consults any of it;
+budget $5–15 per adapter pair. Those warnings live there once rather than here, in `ds-review` and in
+`workflows/writing-review.js` three times over.
+
 ```bash
-echo '{"projectDir":"...","workflow":"...","planReset":{"planFile":"...","planHash":"..."}}' \
+echo '{"projectDir":"...","workflow":"...","planReset":{"planFile":"...","planHash":"..."},
+       "skills":["dev"]}' \
   | bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/third-party-review.ts
 ```
 
-It runs **after** Claude's own verifier has passed, never before. A third party that runs first
-duplicates a pass Claude was going to make anyway; one that runs last sees work already vetted and
-can only add. Convert each finding into one `TaskCreate` bound to the current `planHash`, **naming
-the adapter that raised it**, then proceed to the gate regardless of the outcome.
+`skills` hands the reviewer this domain's rules as data — it is a different model with no reason to
+know them, and telling it to go read them is the design this one replaced. It is caller-supplied and
+optional: omit it and the reviewer gets a generic second opinion. Note that the **diff** adapters do
+not consume a bundle and will report `briefSources: []`; read that field rather than assuming what
+you passed was applied.
 
-**The plan may name several adapters** (`codex, gemini`), and then all of them run. That is usually
-right rather than extravagant: over three review rounds of this feature, eight findings were raised
-and only **one** was found by more than one adapter. The value is in the disagreement, which is why
-findings carry attribution and why one adapter failing never suppresses another's results.
+It runs **after** Claude's own verifier has passed, never before. Convert each finding into one
+`TaskCreate` bound to the current `planHash`, **naming the adapter that raised it**, then proceed to
+the gate regardless of the outcome.
 
 **Scope defaults to the working tree.** Pass `"scope":{"kind":"branch","base":"origin/main"}` to
 review committed work — a pull request, or an episode whose changes are already committed.
-
-**The exit gate does not consult it.** Not the verdict, not the findings, not the status. The runner
-exits 0 when `critical` findings exist and 0 when a provider was unreachable; only its own contract
-errors are non-zero. That is structural, not a setting: an external model's claims are unverified by
-construction, and letting them gate a phase imports another model's false positives into our gates.
-
-Read `status` before you read `findings`. The top-level `status` is the **weakest** claim any adapter
-supports, and each entry in `reviews[]` carries its own:
-
-| status | meaning | `findings: []` means |
-|---|---|---|
-| `reviewed` | every adapter ran and its output was understood | genuinely clean |
-| `unavailable` | one could not be reached, or threw | **that adapter looked at nothing** |
-| `unparseable` | one ran but its output could not be read; raw text preserved | **nothing was parsed** |
-| `skipped` | the plan carries no opt-in | the step does not exist |
 
 ## Gate: exit IMPLEMENT
 

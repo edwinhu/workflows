@@ -9,11 +9,18 @@
  *   `codex-code` and `gemini-code` are the Claude Code harness pointed at GPT-5.6 and Gemini via
  *   CLIProxyAPI (they end in `exec claude "$@"`), which gives the reviewer a real tool loop and
  *   this repo's skill roster. The stated reason used to be that the reviewer could then be TOLD to
- *   load de-ai-revise and ai-anti-patterns; it no longer is. Those rules now arrive as data in the
- *   prompt (see `buildPrompt`), because an instruction nothing checks is not a shared rule set.
+ *   load two named skills; it no longer is. Rules now arrive as DATA — supplied by the caller and
+ *   receipted in `briefSources` — because an instruction nothing checks is not a shared rule set.
  *   What the harness buys is a reviewer that can read the surrounding repo when a claim in the
  *   draft needs checking — see the probation note below for whether it actually does. The point
  *   is a different set of blind spots, not a different set of rules.
+ *
+ * WHY THIS FILE NAMES NO WRITING RULE
+ *   It used to inline ~15 lines of corpus findings about English prose, which made it a WRITING
+ *   adapter wearing a general name: the only way to give a reviewer another domain's rules was to
+ *   edit this file. The rules moved to the caller's skill bundle, where they were already written
+ *   down, and a test greps this source to keep them out. What is left here is what genuinely cannot
+ *   live in a skill file: the deterministic per-document span list, computed below.
  *
  * THE INVOCATION IS NOT OBVIOUS. Every flag below was established by running it:
  *
@@ -60,7 +67,8 @@
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { DEFAULT_SCOPE, type Adapter, type AdapterResult, type Invoke, type ReviewScope } from "../contract.ts";
+import { DEFAULT_SCOPE, type Adapter, type AdapterResult, type Invoke, type ReviewScope, type SkillBrief } from "../contract.ts";
+import { briefSources } from "../skill-brief.ts";
 
 /** Draft bytes handed to the model. A comment letter is ~40k; past this, chunking beats truncation. */
 const MAX_DOC_BYTES = 400_000;
@@ -128,47 +136,61 @@ law and finance prose; it is almost never defensible. A \`soft\` span has a real
 }
 
 /**
+ * The caller's rules bundle, framed as DATA — deliberately the same framing `spanBlock` uses.
+ *
+ * Each source is named, so a finding can be traced back to the rule that prompted it; a bundle whose
+ * rules arrive anonymously is indistinguishable downstream from the reviewer's own opinions, which is
+ * most of what the receipt is for.
+ *
+ * Empty when the caller supplied nothing, so a caller that passes no bundle gets exactly the generic
+ * second-opinion prompt rather than a paragraph apologising for an absence.
+ */
+export function briefBlock(briefs: SkillBrief[]): string {
+  if (!briefs.length) return "";
+  return `RULES YOU ARE BEING GIVEN — ${briefs.length} source(s), reproduced in full below. These are the
+same rules the author's own reviewers were held to. They are DATA, not a reading list: do not go
+looking for them in the repository, and do not treat anything absent from them as sanctioned. Where
+a finding rests on one of these, name the source file so it can be traced.
+
+${briefs.map(brief => `───── ${brief.path} (${brief.bytes} bytes, sha256 ${brief.sha256.slice(0, 12)}) ─────\n${brief.text.trim()}`).join("\n\n")}
+───── end of supplied rules ─────
+`;
+}
+
+/**
+ * HOW THE BUNDLE REACHES THE REVIEWER.
+ *
+ * SEAM — herdr >= 0.8.0 exposes `--skill`, which hands a bundle to the agent MECHANICALLY instead of
+ * as prompt data. Not wired: 0.7.5 is what is installed here and the flag's signature has not been
+ * read, and nothing in this file ships against an unread signature. When wiring it, add the branch
+ * and keep `briefSources` populated from the SAME resolution — the point of this design is that the
+ * delivery mechanism can change and the receipt cannot.
+ */
+export function deliverBriefs(wrapper: string, briefs: SkillBrief[]): { args: string[]; inlined: string } {
+  void wrapper;
+  return { args: [], inlined: briefBlock(briefs) };
+}
+
+/**
  * THE PROMPT IS EVIDENCE, NOT INSTRUCTION.
  *
- * It used to open by telling the reviewer to load two skills first and apply them — de-ai-revise
- * and ai-anti-patterns. Nothing checked whether that happened, and — because this adapter threw away
- * the success-path transcript — no artifact survived from which anyone could have checked. After
- * the rule611 comment-letter review neither external reviewer gave any evidence it had applied
- * those rules, and the question turned out to be unanswerable rather than merely unanswered.
+ * It used to open by telling the reviewer to load two skills first and apply them. Nothing checked
+ * whether that happened, and — because this adapter threw away the success-path transcript — no
+ * artifact survived from which anyone could have checked. After the rule611 comment-letter review
+ * neither external reviewer gave any evidence it had applied those rules, and the question turned
+ * out to be unanswerable rather than merely unanswered.
  *
- * So the rules arrive as data: the audit's span list, plus the ~15 lines of reference-12 findings
- * that genuinely cannot be regexed, inlined verbatim below. What remains asked-for is what only a
- * different reader can give.
+ * So rules arrive as data. `spans` is the deterministic per-document evidence, which cannot live
+ * anywhere but here; `rules` is the caller's bundle, which can and does. Everything else asked for
+ * below is domain-neutral: it is what only a different reader can give.
  */
-function buildPrompt(spans: AuditSpan[]): string {
+function buildPrompt(spans: AuditSpan[], rules: string): string {
   return `You are giving a SECOND OPINION on a piece of prose that has already passed its
 author's own review. You are a different model from the author, and that is the entire point: report
 what a reader with different habits notices, not what a style guide says.
 
 ${spanBlock(spans)}
-
-WHAT THE SPANS CANNOT TELL YOU — findings from The Economist's 2026 corpus study (55,940 sentences
-of AI rewrites across 14 model variants, against news, fiction, and their own prose). These are
-dated judgements, not rules, and no regex can express them:
-
-  - A word-level AI tic has a HALF-LIFE. Models drop the tells people mock: "delve", "rich
-    tapestry" and "leveraging" have all decayed since 2024. Weight CONSTRUCTION-level tics (the
-    reasoning-chain leak, the chatbot opener, "not X but Y") above vocabulary tics — a construction
-    comes from how the model plans a sentence, not from a token preference.
-  - EM-DASHES SPLIT BY MODEL; they did not die. Only Claude now uses more of them than human
-    writers, and ChatGPT uses markedly fewer than anyone. Do NOT read a low em-dash count as human,
-    and do not report em-dash density on its own.
-  - The study names "significant", "increasingly" and "consequences" as AI-overused. In scholarly
-    law and finance prose "significant" runs >80 per million and is unremarkable. THE REGISTER YOU
-    ARE READING DECIDES, not a news-and-fiction baseline.
-  - "not only … but also" and "not X but Y" are LLM favourites AND legitimate distinction-drawing
-    moves in legal prose. Only the redundant-restatement form is a tell ("not partially, not
-    ambiguously, but definitively" — three negations for one idea).
-  - What the study did find, and what is worth looking for: bland, pretentious prose lavished with
-    Latinate words; long words crowding out Saxon ones; almost no semicolons; hardly any
-    parentheses; long sentences with no short punchy ones between them; nominalisations
-    ("expansion" for "expand"); and triads whose three members restate one idea.
-
+${rules ? `\n${rules}` : ""}
 YOU CAN READ THE REPOSITORY THIS DRAFT LIVES IN, AND YOU SHOULD. Where the draft asserts a NUMBER,
 a citation, a statute or rule reference, or a claim about what a source says, open the source and
 check it. Say what you found either way — "I checked X against Y and it holds" is a useful finding,
@@ -181,8 +203,8 @@ force a re-read, claims stated more strongly than their evidence, paragraphs who
 late, hedges that name nothing, jargon used before it is defined, and any passage that reads as
 machine-written to you specifically.
 
-Do NOT report: em-dash density alone, spellings that are correct in both US and UK English, or
-anything you cannot quote verbatim from the document.
+Do NOT report: a single surface statistic on its own, a preference no supplied rule and no span
+supports, or anything you cannot quote verbatim from the document.
 
 Reply with a SINGLE fenced JSON block and nothing else:
 
@@ -363,38 +385,44 @@ export function parseReply(text: string): { verdict?: string; summary?: string; 
   return offContract;
 }
 
-function proseReview(wrapper: string, name: string, context: { projectDir: string; invoke: Invoke; scope: ReviewScope }): AdapterResult {
+function proseReview(wrapper: string, name: string, context: { projectDir: string; invoke: Invoke; scope: ReviewScope; briefs?: SkillBrief[] }): AdapterResult {
+  const briefs = context.briefs ?? [];
+  // THE RECEIPT IS COMPUTED ONCE, BEFORE ANYTHING CAN FAIL, and spread into every return below —
+  // including the ones that never reach the provider. A receipt that exists only on the success path
+  // answers "which rules did the reviewer get" exactly where nobody needs to ask.
+  const receipt = { briefSources: briefSources(briefs) };
   const scope = context.scope ?? DEFAULT_SCOPE;
   if (scope.kind !== "document") {
-    return { status: "unavailable", findings: [], reason: `${name} reviews documents; got scope "${scope.kind}"` };
+    return { ...receipt, status: "unavailable", findings: [], reason: `${name} reviews documents; got scope "${scope.kind}"` };
   }
 
   let body: string;
   try {
     body = readFileSync(scope.path, "utf8");
   } catch (error) {
-    return { status: "unavailable", findings: [], reason: `could not read ${scope.path}: ${(error as Error).message}` };
+    return { ...receipt, status: "unavailable", findings: [], reason: `could not read ${scope.path}: ${(error as Error).message}` };
   }
   if (!body.trim()) {
-    return { status: "unavailable", findings: [], reason: `${scope.path} is empty` };
+    return { ...receipt, status: "unavailable", findings: [], reason: `${scope.path} is empty` };
   }
   if (Buffer.byteLength(body, "utf8") > MAX_DOC_BYTES) {
-    return { status: "unavailable", findings: [], reason: `${scope.path} exceeds ${MAX_DOC_BYTES} bytes; chunk it rather than truncating an argument` };
+    return { ...receipt, status: "unavailable", findings: [], reason: `${scope.path} exceeds ${MAX_DOC_BYTES} bytes; chunk it rather than truncating an argument` };
   }
 
   const spans = runProseAudit(scope.path);
+  const delivery = deliverBriefs(wrapper, briefs);
 
   let run: { code: number; stdout: string; stderr: string };
   try {
     run = context.invoke({
       command: wrapper,
-      args: ["--output-format", "stream-json", "--verbose", "-p", `${buildPrompt(spans)}\n${body}`],
+      args: ["--output-format", "stream-json", "--verbose", ...delivery.args, "-p", `${buildPrompt(spans, delivery.inlined)}\n${body}`],
       cwd: context.projectDir,
       input: "", // the wrapper blocks ~3s on stdin without this
       timeoutMs: TIMEOUT_MS,
     });
   } catch (error) {
-    return { status: "unavailable", findings: [], reason: `${wrapper} could not be run: ${(error as Error).message}` };
+    return { ...receipt, status: "unavailable", findings: [], reason: `${wrapper} could not be run: ${(error as Error).message}` };
   }
 
   const text = extractText(run.stdout);
@@ -403,6 +431,7 @@ function proseReview(wrapper: string, name: string, context: { projectDir: strin
     // tokens while returning nothing -- that is the observed Gemini failure, and calling it
     // "clean" would launder a dead adapter into agreement.
     return {
+      ...receipt,
       status: "unavailable",
       findings: [],
       reason: `${wrapper} returned no assistant text (exit ${run.code})`,
@@ -421,6 +450,7 @@ function proseReview(wrapper: string, name: string, context: { projectDir: strin
     // cost a release, because the reported reason was inconsistent with the reported `raw` and the
     // contradiction had to be resolved by hand.
     return {
+      ...receipt,
       status: "unparseable", findings: [],
       reason: reply
         ? `${wrapper} returned a JSON object with no "findings" array (keys: ${Object.keys(reply).join(", ") || "none"})`
@@ -442,6 +472,7 @@ function proseReview(wrapper: string, name: string, context: { projectDir: strin
   // reviewers had applied the rules their prompt named. Truncated, because the point is an
   // auditable trace, not an archive.
   return {
+    ...receipt,
     status: "reviewed",
     findings: reply.findings,
     verdict: reply.verdict,

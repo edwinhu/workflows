@@ -91,7 +91,17 @@ export function extractJsonObject(source: string): string | undefined {
   return undefined;
 }
 
-export function reviewWithGemini(context: { projectDir: string; invoke: Invoke; scope?: ReviewScope }): AdapterResult {
+/**
+ * The rules bundle is ACCEPTED AND IGNORED here, and `briefSources: []` says so on every path — see
+ * the same note in `codex.ts`. An empty receipt is the honest statement that the bundle did not reach
+ * the reviewer, which is strictly better than a caller inferring from its own `skills` list that it
+ * did.
+ */
+export function reviewWithGemini(context: { projectDir: string; invoke: Invoke; scope?: ReviewScope; briefs?: unknown }): AdapterResult {
+  return { ...reviewDiff(context), briefSources: [] };
+}
+
+function reviewDiff(context: { projectDir: string; invoke: Invoke; scope?: ReviewScope }): AdapterResult {
   const scope = context.scope ?? DEFAULT_SCOPE;
   // See codex.ts: refuse rather than silently reviewing a diff.
   if (scope.kind === "document") {

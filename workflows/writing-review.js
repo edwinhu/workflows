@@ -600,17 +600,18 @@ let thirdParty = { status: 'skipped', reviews: [], findings: [] }
 if (/^[ \t]*(?:[-*+][ \t]*)?(?:\*\*)?third-party review(?:\*\*)?[ \t]*:/im.test(PLAN_TEXT)) {
   const docs = sections.map(section => ({ name: section.name, file: section.draftFile }))
   log(`third-party prose review: opt-in found in the plan; ${docs.length} draft(s)`)
+  // The prompt is the INVOCATION plus a pointer. The reading rules ("status before findings", "an
+  // unparseable adapter has not necessarily said nothing") used to be spelled out here as well as
+  // in two SKILL.md files — three copies of a warning, two of them free to go stale.
   thirdParty = await agent(
     `READ-ONLY. Run the third-party PROSE review over the drafts below and return its JSON verbatim.
+FIRST read \${CLAUDE_PLUGIN_ROOT}/skills/beat-third-party/SKILL.md and follow it — it owns how this
+runner is invoked and how its result must be read. Do not fix anything.
 For each draft, run exactly:
-  echo '{"projectDir":"${PROJECT}","workflow":"writing-review","planReset":{"planFile":"${disc.planPath}","planHash":"${PLAN_HASH}"},"scope":{"kind":"document","path":"<draft>"}}' | bun \${CLAUDE_PLUGIN_ROOT}/scripts/beat/third-party-review.ts
+  echo '{"projectDir":"${PROJECT}","workflow":"writing-review","planReset":{"planFile":"${disc.planPath}","planHash":"${PLAN_HASH}"},"scope":{"kind":"document","path":"<draft>"},"skills":["ai-anti-patterns","de-ai-revise"]}' | bun \${CLAUDE_PLUGIN_ROOT}/scripts/beat/third-party-review.ts
 Drafts: ${JSON.stringify(docs)}
-Read each runner's \`status\` BEFORE its \`findings\`: 'unavailable' or 'unparseable' means that adapter
-looked at nothing, and an empty finding list there is NOT a clean review. Report per-adapter
-attribution — the value is in where adapters disagree.
-On 'unparseable' do NOT report the adapter as silent: quote its \`reason\`, and check \`raw\` (the
-assistant text, head and tail) and \`transcript\` (stdout) for findings the parse step dropped — a
-real run reported zero findings this way while having produced seven. Do not fix anything.`,
+Report per-adapter attribution — the value is in where adapters disagree — and report each adapter's
+\`briefSources\` verbatim, which is the receipt for which rules that reviewer was actually given.`,
     { label: 'third-party:prose', phase: 'L2-L3', model: 'sonnet' })
 }
 

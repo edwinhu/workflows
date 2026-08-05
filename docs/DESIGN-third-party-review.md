@@ -32,6 +32,39 @@ in plan review. Approved, not improvised mid-run.
 **Default OFF is the absence of the line**, not a line saying no, so every plan approved before this
 existed keeps authorising exactly what it did.
 
+**The RULES are caller-supplied; only the OPT-IN is plan-carried.** Added 2026-08-05. The domain
+knowledge a reviewer is judged against arrives as a `skills` key in the runner's stdin JSON, at the
+same authority level as `scope`, because *which rules* is a property of the domain calling the beat
+while *whether to run at all* is a property of the approval. Before this, the rules were ~15 lines of
+writing-specific corpus findings inlined in `adapters/prose.ts`, so the only way to give a reviewer
+another domain's rules was to edit that adapter — which is precisely why `ds` and `dev` could not use
+this path.
+
+They were inlined for a good reason, and it is the reason the receipt exists. The version before that
+merely *instructed* the reviewer to load two skills; nothing checked whether it had, and because the
+adapter also discarded the success-path transcript, no artifact survived from which anyone could have
+checked. After the rule611 review the question was unanswerable rather than unanswered. So the
+invariant that had to survive the move to caller-supplied rules is **what the reviewer was given
+stays checkable after the run**: `AdapterResult.briefSources` carries skill, path, bytes and sha256
+of every brief handed over, on *every* return path including the failures, for the same reason `raw`
+is. An adapter that ignores bundles returns `[]` — the honest statement that the rules did not reach
+the reviewer, rather than a receipt for rules nobody saw.
+
+Two rules follow from the same silent-zero principle as `status`: a named-but-missing bundle
+**throws** (a typo yielding zero rules is a reviewer judging against nothing and reporting cleanly),
+and exceeding the 60 KB cap throws rather than truncating a rule set mid-sentence.
+
+**Delivery is a marked seam.** `herdr >= 0.8.0` exposes `--skill`, which would hand the bundle over
+mechanically rather than as prompt data. It is not wired: 0.7.5 is installed and the flag's signature
+has not been read. `adapters/prose.ts:deliverBriefs` is the one function to change, and the point of
+the split is that the delivery mechanism can change while the receipt cannot.
+
+**The reading rules live in one skill.** `skills/beat-third-party/SKILL.md` owns the invocation,
+"read `status` before `findings`", "an `unparseable` adapter has not necessarily said nothing", the
+advisory guarantee and the cost figure. They were previously written out in `beat-implement`,
+`writing-review` and inline in `workflows/writing-review.js` — three copies, two of them free to go
+stale.
+
 ## The neutral contract
 
 ```
@@ -39,7 +72,9 @@ existed keeps authorising exactly what it did.
 ```
 
 `status` is `reviewed | unavailable | unparseable | skipped`. The runner returns
-`{enabled, adapter, planFile, planHash, status, verdict, summary, advisory: true, findings, reason, raw}`.
+`{enabled, reviews, scope, planFile, planHash, status, advisory: true, findings}`, and each entry in
+`reviews[]` carries `{adapter, status, verdict, summary, findings, reason, raw, transcript, spanIds,
+usage, briefSources}`.
 
 `skipped` is an addition to the three statuses the original plan named; it is the disabled case, and
 naming it beats leaving `status` undefined when `enabled` is false.
@@ -100,6 +135,22 @@ Recorded because the answer is not "flip a boolean":
 3. **The exit gate would have to consult it**, which today it deliberately does not.
 4. **It would need its own approval.** Advisory-only is what makes a default-OFF, plan-carried opt-in
    safe to ship without a separate review of the failure modes above.
+
+## Not shipped, and why
+
+**`herdr --skill`.** Seam only, until 0.8.0 is installed and its `--help` is read.
+
+**Findings that gate.** All four prerequisites above are still unmet.
+
+**Third-party review on by default for `ds`/`dev`.** They get documentation and a working `skills`
+value; default OFF stays the absence of the plan line. Enabling a $5–15 step for anyone whose plan
+did not ask for it is the opposite of what plan-carried opt-in is for.
+
+**Diff adapters that consume a bundle.** The two code adapters accept `briefs` and ignore them,
+reporting `briefSources: []`. That is a real gap rather than a design choice: a `dev` plan naming
+`skills:["dev"]` today gets a receipt saying the rules did not reach the reviewer. Closing it means
+the adapters' prompts — one of which belongs to an external companion with its own schema — would
+have to admit an injected block.
 
 ## Excluded
 

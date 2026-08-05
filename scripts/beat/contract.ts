@@ -23,6 +23,23 @@
  * public surface is unchanged.
  */
 
+/**
+ * ONE RESOLVED RULES SOURCE, WITH THE BYTES THE REVIEWER WAS ACTUALLY GIVEN.
+ *
+ * The domain rules used to be inlined in `adapters/prose.ts` — ~15 lines of writing-specific corpus
+ * findings welded into a prompt builder — because the version before THAT merely *told* the reviewer
+ * to load two skills and nothing checked whether it had. After the rule611 review the question turned
+ * out to be unanswerable rather than merely unanswered, so the rules became data.
+ *
+ * They are now caller-supplied data, which is what lets a second domain use this path without editing
+ * an adapter. The invariant that survives the move is the whole point: `sha256` and `bytes` are what
+ * make "which rules did the reviewer get" answerable AFTER the run, rather than asserted before it.
+ */
+export type SkillBrief = { skill: string; path: string; bytes: number; sha256: string; text: string };
+
+/** The receipt half of a brief — everything except the bytes themselves. */
+export type SkillBriefSource = Omit<SkillBrief, "text">;
+
 /** The neutral finding. Every adapter maps onto exactly this; nothing downstream sees a raw shape. */
 export type NeutralFinding = {
   severity: "critical" | "high" | "medium" | "low";
@@ -84,6 +101,15 @@ export type AdapterResult = {
   spanIds?: string[] | null;
   /** The provider's own accounting from its terminal `result` event, when it emits one. */
   usage?: { totalCostUsd?: number | null; durationMs?: number | null; numTurns?: number | null } | null;
+  /**
+   * WHICH RULES THIS REVIEWER WAS ACTUALLY GIVEN — carried on EVERY return path, including the
+   * failure ones, for the same reason `raw` is.
+   *
+   * A receipt that exists only when the run succeeded answers the audit question exactly where it is
+   * least needed. An adapter that ignores briefs returns `[]`, which is the honest answer: the bundle
+   * did not reach the reviewer.
+   */
+  briefSources?: SkillBriefSource[];
 };
 
 /** How an adapter shells out. Injectable so tests never make a paid external call. */
@@ -114,7 +140,15 @@ export const DEFAULT_SCOPE: ReviewScope = { kind: "working-tree" };
 
 export type Adapter = {
   name: string;
-  review(context: { projectDir: string; invoke: Invoke; scope: ReviewScope }): AdapterResult;
+  /**
+   * `briefs` is the caller's rules bundle, resolved to bytes before any adapter runs. It sits at the
+   * same authority level as `scope` — caller-supplied, not plan-carried — because *which rules* is a
+   * property of the domain calling the beat, while the *opt-in* remains bound to `planHash`.
+   *
+   * Optional so an adapter that has no use for one, and a caller that supplies none, both keep
+   * working unchanged.
+   */
+  review(context: { projectDir: string; invoke: Invoke; scope: ReviewScope; briefs?: SkillBrief[] }): AdapterResult;
 };
 
 export const SEVERITIES = ["critical", "high", "medium", "low"] as const;

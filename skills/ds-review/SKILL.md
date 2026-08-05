@@ -37,6 +37,33 @@ capture, the task queue, dispositions, and the meaning of `REJECT:`.
   generated plan. Do not patch the rejected generated plan, append criteria to it, or route this to
   `ds-implement`.
 
+## Optional third-party review — a different MODEL, advisory, off by default
+
+Every review surface in this workflow is Claude judging Claude, so a defect the model shares with
+itself survives all of them. A different model is the only thing that can see it.
+
+**Default OFF, and off is the absence of the line.** It exists only if the authenticated plan carries
+the opt-in, elicited in CLARIFY and therefore bound to `planHash`:
+
+```markdown
+- **Third-party review:** codex, gemini
+```
+
+This is documentation and a working `skills` value, **not a new automatic step**. It already reaches
+the runner through `ds-implement`; turning it on for an episode is still that plan line, and it costs
+$5–15 per adapter pair.
+
+Read `${CLAUDE_SKILL_DIR}/../beat-third-party/SKILL.md` and follow it — it owns the invocation, the
+four-status table, and why the gate never consults the result. This domain's rules bundle is:
+
+```json
+"skills": ["ds"]
+```
+
+Note that the diff adapters above do not consume a bundle and report `briefSources: []`, which is the
+honest statement that the rules did not reach the reviewer. Read that field rather than inferring
+from what you passed.
+
 ## Gate
 
 Before reporting acceptance, confirm that every feedback item has a disposition in the returned result and

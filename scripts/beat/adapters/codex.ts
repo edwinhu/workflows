@@ -48,7 +48,19 @@ function unavailable(reason: string): AdapterResult {
   return { status: "unavailable", findings: [], reason };
 }
 
-export function reviewWithCodex(context: { projectDir: string; invoke: Invoke; scope?: ReviewScope; cacheDir?: string }): AdapterResult {
+/**
+ * The rules bundle is ACCEPTED AND IGNORED here, and `briefSources: []` says so on every path.
+ *
+ * That empty list is not a formality. It is the honest receipt: this adapter delegates to a companion
+ * with its own prompt and schema, so a bundle handed to the beat does not reach the reviewer. A
+ * caller reading `briefSources` learns that, instead of inferring from the `skills` it passed that
+ * the rules were applied.
+ */
+export function reviewWithCodex(context: { projectDir: string; invoke: Invoke; scope?: ReviewScope; cacheDir?: string; briefs?: unknown }): AdapterResult {
+  return { ...reviewDiff(context), briefSources: [] };
+}
+
+function reviewDiff(context: { projectDir: string; invoke: Invoke; scope?: ReviewScope; cacheDir?: string }): AdapterResult {
   const script = findCompanionScript(context.cacheDir ?? PLUGIN_CACHE);
   if (!script) return unavailable(`codex companion is not installed under ${context.cacheDir ?? PLUGIN_CACHE}`);
 

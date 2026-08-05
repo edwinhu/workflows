@@ -152,23 +152,22 @@ construction. The 2026 Economist corpus study makes that concrete: the em-dash t
 findings are advisory minors. An external model's claims are unverified by construction, and letting
 them gate would import another model's false positives into ours.
 
-⚠ **Read `status` before `findings`.** `unavailable` or `unparseable` means that adapter looked at
-nothing — an empty finding list there is NOT a clean review. This is not hypothetical: `gemini-code`
-returns empty text while reporting `is_error:false`, `subtype:"success"` and billed output tokens,
-because the harness derives its `result` field from the last content block and Gemini-via-proxy
-appends an empty `thinking` block. The adapter reads the stream instead, and reports `unavailable`
-rather than "no findings" when nothing comes back.
+**The invocation and every rule for reading its result live in
+`${CLAUDE_SKILL_DIR}/../beat-third-party/SKILL.md`** — read `status` before `findings`, an
+`unparseable` adapter has not necessarily said nothing, and the real cost is $5–15 per pair rather
+than the $0.12 floor this section used to quote. Those warnings were written out here, in
+`beat-implement` and inline in `workflows/writing-review.js`; three copies of a warning is two too
+many, so they are now in one place.
 
-⚠ **An `unparseable` adapter has not necessarily said nothing — RE-READ IT BEFORE DISCARDING IT.**
-Measured on v5.131.0: `prose-codex` reported `unparseable` while having produced seven real
-findings, one of them a truncated sentence in the letter that no internal gate caught. They were
-lost at the parse step, not at the reviewer. The selection rule is fixed, but the lesson stands —
-on `unparseable`, read `raw` (the assistant text, now kept HEAD **and** tail) and `transcript` (the
-stdout, which is where `tool_use` appears) before concluding the run was worthless. The two reasons
-are now distinct: *no JSON object* means the reviewer answered in prose; *a JSON object with no
-`findings` array* means it answered in the wrong shape.
+**This workflow's rules bundle** — passed as `skills` in the runner's stdin JSON, per draft:
 
-**Cost.** The adapters shell `codex-code` / `gemini-code`, which are the Claude Code harness pointed
-at GPT-5.6 and Gemini — so the reviewer loads this repo's skills and applies the same corpus-gated
-rules while being a different model. Each call carries ~22k input tokens of system prompt and skill
-roster before the draft: roughly $0.12 per adapter per draft.
+```json
+"skills": ["ai-anti-patterns", "de-ai-revise"]
+```
+
+The reviewer is a different model with no reason to know this domain's standards, and the version
+that merely *told* it to load those two skills left nobody able to check whether it had. They are
+handed over as bytes now, and `briefSources` on each review says what was handed over. That the
+corpus rules matter here specifically is not incidental: the 2026 Economist corpus study found the
+em-dash tell is now *Claude-specific*, so a Claude reviewer reads its own strongest tell as ordinary
+prose.

@@ -21,6 +21,7 @@ import { reviewWithCodex } from '../scripts/beat/adapters/codex.ts'
 import { proseCodexAdapter, proseGeminiAdapter, extractText, parseReply, extractUsage, tailRaw, headTailRaw } from '../scripts/beat/adapters/prose.ts'
 import { reviewWithGemini } from '../scripts/beat/adapters/gemini.ts'
 import { adapterNames, resolveAdapter } from '../scripts/beat/adapters/registry.ts'
+import { resolveSkillBriefs } from '../scripts/beat/skill-brief.ts'
 
 const ROOT = new URL('..', import.meta.url).pathname
 let PASS = 0, FAIL = 0
@@ -434,8 +435,10 @@ console.log('the prose adapters survive the failures that were actually observed
     // The fixture draft is "The organisation recognised its behaviour." — three US-register
     // spelling spans, so the injected block is real audit output, not a placeholder.
     ok('the injected spans are the real audit output', /organisation|recognised|behaviour/.test(prompt))
-    ok('the reference-12 decay rules are inlined verbatim rather than cited',
-       /EM-DASHES SPLIT BY MODEL/.test(prompt) && /HALF-LIFE/.test(prompt))
+    // The corpus rules are NO LONGER inlined here — they are the caller's bundle, and with no
+    // bundle supplied the prompt is the generic second-opinion frame. See the domain-neutrality
+    // section below for the assertion that keeps them out of the source.
+    ok('with no bundle supplied the prompt carries no domain rules', !/RULES YOU ARE BEING GIVEN/.test(prompt))
     ok('each finding must name the span ids it rests on', /"spanIds"/.test(prompt))
     // The harness wrapper is only worth its skill-roster tokens if the reviewer is given a reason
     // to use the tool loop. It was not, and measured zero tool_use blocks on a real run.
@@ -469,6 +472,113 @@ console.log('the prose adapters survive the failures that were actually observed
   }
 }
 
+
+console.log('the rules are the CALLER\'S, and what the reviewer got stays checkable afterwards')
+{
+  // WHY THIS SECTION EXISTS. The domain rules used to be ~15 lines of writing-specific corpus
+  // findings welded into `prose.ts:buildPrompt`. They were inlined for a good reason — the version
+  // before that merely TOLD the reviewer to load two skills, nothing checked whether it had, and
+  // after the rule611 review the question turned out to be unanswerable rather than unanswered.
+  // The fix was right and it is exactly what made the adapter unusable by any other domain: the
+  // only way to give a reviewer a domain's rules was to edit this file. The rules moved to the
+  // caller's bundle; the INVARIANT that had to survive the move is that what the reviewer was
+  // given remains checkable after the run, which is what `briefSources` is.
+
+  // ── 1. THE ADAPTER NAMES NO WRITING RULE ───────────────────────────────────
+  // The mirror of the provider-neutrality assertion above, and the thing that keeps this adapter
+  // reusable: a domain rule that creeps back into the source is a domain the next caller cannot
+  // override without editing it.
+  {
+    const source = readFileSync(`${ROOT}scripts/beat/adapters/prose.ts`, 'utf8')
+    for (const literal of ['Economist', 'em-dash', 'nominalisation', 'Latinate', 'semicolon']) {
+      ok(`the prose adapter names no writing-domain rule: ${literal}`, !source.toLowerCase().includes(literal.toLowerCase()))
+    }
+  }
+
+  // ── 2. RESOLUTION IS STRICT ────────────────────────────────────────────────
+  // A typo that silently yielded no rules is the same silent zero the `status` field exists to
+  // prevent, one layer up: the reviewer runs, reports cleanly, and nobody learns it was judging
+  // against nothing.
+  {
+    const resolved = resolveSkillBriefs(ROOT, ['ai-anti-patterns/references/12-economist-2026-corpus-study.md'])
+    ok('an explicit reference path resolves', resolved.length === 1 && resolved[0].bytes > 0)
+    ok('and it carries a hash of the bytes handed over', /^[0-9a-f]{64}$/.test(resolved[0].sha256))
+    ok('the reported path is skills-relative, not absolute', !resolved[0].path.startsWith('/'))
+
+    const bare = resolveSkillBriefs(ROOT, ['de-ai-revise'])
+    ok('a bare skill name falls back to SKILL.md', bare.length === 1 && bare[0].path === 'de-ai-revise/SKILL.md')
+
+    ok('no bundle is not an error', resolveSkillBriefs(ROOT, undefined).length === 0)
+    ok('duplicates collapse rather than spending the cap twice',
+      resolveSkillBriefs(ROOT, ['de-ai-revise', 'de-ai-revise']).length === 1)
+
+    const throws = names => { try { resolveSkillBriefs(ROOT, names); return false } catch { return true } }
+    ok('a missing bundle THROWS rather than yielding zero rules', throws(['no-such-skill-at-all']))
+    ok('a traversal escape throws', throws(['../../../etc/passwd']))
+    ok('an absolute path outside the tree throws', throws(['/etc/passwd']))
+    ok('a non-string entry throws', throws([{}]))
+    // Truncating a rule set mid-sentence yields a reviewer applying half a rule, which still looks
+    // like a review. Refusing is the only honest option.
+    ok('over the byte cap throws rather than truncating a rule set',
+      throws(['writing-general/references/elements-of-style.md']))
+  }
+
+  // ── 3. BRIEFS REACH THE PROMPT, NAMED ──────────────────────────────────────
+  {
+    const docDir = mkdtempSync(join(tmpdir(), 'prose-briefs-'))
+    const docPath = join(docDir, 'draft.md')
+    writeFileSync(docPath, 'The organisation recognised its behaviour.\n')
+    const scope = { kind: 'document', path: docPath }
+    const briefs = resolveSkillBriefs(ROOT, ['ai-anti-patterns/references/12-economist-2026-corpus-study.md'])
+
+    let spec
+    const reviewed = proseCodexAdapter.review({
+      projectDir: ROOT, scope, briefs,
+      invoke: s => { spec = s; return { code: 0, stdout: JSON.stringify({ type: 'assistant', message: { content: [{ type: 'text', text: '```json\n{"verdict":"approve","summary":"s","findings":[]}\n```' }] } }), stderr: '' } },
+    })
+    const prompt = spec.args.at(-1)
+    ok('the bundle text reaches the prompt', prompt.includes(briefs[0].text.trim().split('\n')[0]))
+    ok('and the source file is NAMED, so a finding can be traced to its rule', prompt.includes(briefs[0].path))
+    ok('the bundle is framed as data, like the spans', /RULES YOU ARE BEING GIVEN/.test(prompt))
+    ok('the deterministic spans are still injected alongside it', /\bS001\b/.test(prompt))
+    ok('the receipt names what was handed over',
+      reviewed.briefSources.length === 1 && reviewed.briefSources[0].sha256 === briefs[0].sha256)
+    ok('and the receipt carries no bytes, only the hash', reviewed.briefSources[0].text === undefined)
+
+    // ── 4. THE RECEIPT SURVIVES FAILURE ──────────────────────────────────────
+    // `raw` is carried on every path for this reason and the receipt is no different: one that
+    // exists only when the run succeeded answers the audit question where nobody needs to ask it.
+    const dead = proseCodexAdapter.review({ projectDir: ROOT, scope, briefs, invoke: () => ({ code: 0, stdout: '', stderr: '' }) })
+    ok('a provider that returned nothing is still unavailable', dead.status === 'unavailable')
+    ok('and its briefSources are STILL populated', dead.briefSources.length === 1 && dead.briefSources[0].path === briefs[0].path)
+
+    const wrongScope = proseCodexAdapter.review({ projectDir: ROOT, scope: { kind: 'working-tree' }, briefs, invoke: () => ({ code: 0, stdout: '', stderr: '' }) })
+    ok('even a refusal before the provider is reached carries the receipt', wrongScope.briefSources.length === 1)
+
+    // ── 5. ZERO BRIEFS STILL REVIEWS ─────────────────────────────────────────
+    // No regression for the callers that pass nothing, which is every existing one.
+    const plain = proseGeminiAdapter.review({
+      projectDir: ROOT, scope,
+      invoke: () => ({ code: 0, stdout: JSON.stringify({ type: 'assistant', message: { content: [{ type: 'text', text: '```json\n{"verdict":"approve","summary":"s","findings":[]}\n```' }] } }), stderr: '' }),
+    })
+    ok('omitting the bundle still yields a reviewed result', plain.status === 'reviewed')
+    ok('and an empty receipt, which is the honest answer', Array.isArray(plain.briefSources) && plain.briefSources.length === 0)
+  }
+
+  // ── 6. A CODE ADAPTER REPORTS THE EMPTY RECEIPT RATHER THAN INHERITING ONE ──
+  // It ignores the bundle, so `[]` is the truth: the rules did not reach the reviewer. Copying the
+  // beat's resolution over it would manufacture a receipt for rules nobody saw.
+  {
+    const payload = { codex: { status: 0 }, result: { verdict: 'approve', summary: 'ok', findings: [], next_steps: [] }, rawOutput: null, parseError: null }
+    const result = reviewWithCodex({
+      projectDir: ROOT, cacheDir: `${ROOT}tests/fixtures/codex-plugin-cache`,
+      briefs: resolveSkillBriefs(ROOT, ['de-ai-revise']),
+      invoke: () => ({ code: 0, stdout: JSON.stringify(payload), stderr: '' }),
+    })
+    ok('a code adapter still reviews when handed a bundle', result.status === 'reviewed')
+    ok('and reports an EMPTY receipt, because the bundle did not reach the reviewer', result.briefSources.length === 0)
+  }
+}
 
 console.log(`\n${PASS} passed, ${FAIL} failed`)
 if (FAIL) process.exit(1)
