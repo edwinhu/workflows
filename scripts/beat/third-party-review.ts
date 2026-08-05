@@ -93,6 +93,8 @@ export type AdapterResult = {
    * weighed the spans and disagreed from one that never looked. Empty for code adapters.
    */
   spanIds?: string[] | null;
+  /** The provider's own accounting from its terminal `result` event, when it emits one. */
+  usage?: { totalCostUsd?: number | null; durationMs?: number | null; numTurns?: number | null } | null;
 };
 
 /** One adapter's outcome. Findings are attributed, because the value is in where adapters DISAGREE. */
@@ -105,6 +107,8 @@ export type AdapterReview = {
   reason: string | null;
   raw: string | null;
   spanIds: string[];
+  /** What this adapter cost and how hard it worked. Null fields mean the provider reported none. */
+  usage: { totalCostUsd: number | null; durationMs: number | null; numTurns: number | null };
 };
 
 export type ThirdPartyReviewResult = {
@@ -373,7 +377,7 @@ export function runThirdPartyReview(request: RunRequest): ThirdPartyReviewResult
       reviews.push({
         adapter: adapter.name, status: "unavailable", verdict: null, summary: null,
         findings: [], reason: error instanceof Error ? error.message : String(error), raw: null,
-        spanIds: [],
+        spanIds: [], usage: { totalCostUsd: null, durationMs: null, numTurns: null },
       });
       continue;
     }
@@ -391,6 +395,11 @@ export function runThirdPartyReview(request: RunRequest): ThirdPartyReviewResult
       spanIds: Array.isArray(result.spanIds)
         ? result.spanIds.filter((id): id is string => typeof id === "string" && id.trim() !== "")
         : [],
+      usage: {
+        totalCostUsd: typeof result.usage?.totalCostUsd === "number" ? result.usage.totalCostUsd : null,
+        durationMs: typeof result.usage?.durationMs === "number" ? result.usage.durationMs : null,
+        numTurns: typeof result.usage?.numTurns === "number" ? result.usage.numTurns : null,
+      },
     });
   }
 

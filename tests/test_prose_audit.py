@@ -1,4 +1,4 @@
-#!/usr/bin/env -S uv run --with lxml,pyyaml python3
+#!/usr/bin/env -S uv run --with lxml,pyyaml,pytest python3
 """Tests for scripts/prose-audit.py — the single deterministic prose/AI audit.
 
 What is worth testing here is exactly what the consolidation promised and the four previous
@@ -216,6 +216,83 @@ def test_em_dash_density_counts_body_prose_only(tmp_path):
     loud = tmp_path / "loud.md"
     loud.write_text("The rule — as written — fails, and the staff — who drafted it — knew.\n")
     assert [s for s in PA.audit_document(loud)["spans"] if s["system"] == "em-dash"]
+
+
+# ── markup is not prose, and it must never reach the HARD class ──────────────
+def test_typst_inline_markup_is_not_a_placeholder(tmp_path):
+    """THE MEASURED FALSE POSITIVE, pinned. `#emph[First],` in a real Typst comment letter matched
+    the `[Name]`-style placeholder rule — which is SEVERITY = hard, and the reviewer prompt calls a
+    hard span "a provenance leak … almost never defensible". Ordinary emphasis in a regulatory
+    filing was being injected into three reviewers as high-confidence evidence of AI authorship."""
+    draft = tmp_path / "letter.typ"
+    draft.write_text(
+        "#set page(margin: 1in)\n"
+        "\n"
+        "There are two reasons. #emph[First], the statistic is constructed oddly.\n"
+        "#emph[Second], the natural experiment says otherwise.\n"
+    )
+    res = PA.audit_document(draft)
+    assert res["n_hard"] == 0, [s for s in res["spans"] if s["severity"] == "hard"]
+    assert not [s for s in res["spans"] if "placeholder" in " ".join(s["labels"])], res["spans"]
+
+
+def test_typst_neutralisation_keeps_the_prose_and_the_offsets(tmp_path):
+    """Blanking the DELIMITERS and keeping the content is the point: `First` is a word the author
+    wrote. It also recovers prose that was being dropped entirely — prose_extract skips a Typst
+    line STARTING with `#`, so a paragraph opening `#emph[First],` never reached any scorer."""
+    src = "#emph[First], the market is a rich tapestry of incentives.\n"
+    out = PA.neutralize_typst_markup(src)
+    assert len(out) == len(src) and out.count("\n") == src.count("\n")
+    assert "First" in out and "#emph[" not in out
+
+    draft = tmp_path / "recovered.typ"
+    draft.write_text(src)
+    res = PA.audit_document(draft)
+    assert [s for s in res["spans"] if s["quote"].lower() == "rich tapestry"], res["spans"]
+
+
+def test_typst_code_lines_are_still_skipped(tmp_path):
+    """The neutraliser fires only on `#name[`, so `#let` / `#set` / `#import` stay code and stay
+    skipped. Loosening that would pour a `#let` dictionary's contents into the prose scan."""
+    draft = tmp_path / "code.typ"
+    draft.write_text(
+        '#import "@preview/letter:0.1.0": letter\n'
+        "#let recipient = (\n"
+        '  name: "A Delaware Court",\n'
+        ")\n"
+        "Real prose here.\n"
+    )
+    res = PA.audit_document(draft)
+    assert not [s for s in res["spans"] if "Delaware" in s["context"]], res["spans"]
+
+
+def test_keep_footnotes_does_not_reinstate_the_markup_false_positive(tmp_path):
+    """`--keep-footnotes` debugs the raw PROSE signal. Markup was never part of that signal, so it
+    is neutralised on both paths — otherwise the flag quietly brings the hard FP back."""
+    draft = tmp_path / "letter.typ"
+    draft.write_text("There are two reasons. #emph[First], the statistic is odd.\n")
+    assert PA.audit_document(draft, mask=False)["n_hard"] == 0
+
+
+def test_nested_typst_markup_closes_on_the_right_bracket():
+    out = PA.neutralize_typst_markup("#emph[a #strong[b] c] tail")
+    assert "#emph[" not in out and "#strong[" not in out
+    assert "a" in out and "b" in out and "c" in out and out.endswith("tail")
+
+
+def test_latex_markup_is_neutralised_too():
+    """`.tex` has no dedicated extractor, so without this every command is scored as the author's
+    own words — the same class of defect the Typst case proved."""
+    out = PA.neutralize_latex_markup("\\emph{First}, see \\cite[p. 5]{smith2019} and \\begin{quote}\n")
+    assert "\\emph" not in out and "\\cite" not in out and "\\begin" not in out
+    assert "First" in out and "smith2019" in out  # content kept, wrapper gone
+
+
+def test_unbalanced_markup_does_not_eat_the_document():
+    """An opener with no closer blanks only its head. Swallowing to end-of-file would silently
+    blank the rest of a draft and report it clean."""
+    out = PA.neutralize_typst_markup("#emph[unclosed and then more prose about a rich tapestry")
+    assert "rich tapestry" in out and "#emph" not in out
 
 
 # ── severity is a property of the source table, not of this script ───────────

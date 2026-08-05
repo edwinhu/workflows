@@ -18,7 +18,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { normalizeFindings, readOptIn, runThirdPartyReview } from '../scripts/beat/third-party-review.ts'
 import { reviewWithCodex } from '../scripts/beat/adapters/codex.ts'
-import { proseCodexAdapter, proseGeminiAdapter, extractText, parseReply } from '../scripts/beat/adapters/prose.ts'
+import { proseCodexAdapter, proseGeminiAdapter, extractText, parseReply, extractUsage, tailRaw } from '../scripts/beat/adapters/prose.ts'
 import { reviewWithGemini } from '../scripts/beat/adapters/gemini.ts'
 import { adapterNames, resolveAdapter } from '../scripts/beat/adapters/registry.ts'
 
@@ -317,6 +317,30 @@ console.log('the prose adapters survive the failures that were actually observed
     ].join('\n')) === 'ab')
   ok('parseReply reads a fenced block', parseReply('pre\n```json\n{"findings":[]}\n```\npost')?.findings.length === 0)
 
+  // ── raw KEEPS THE TAIL, BECAUSE THAT IS WHERE THE ACCOUNTING IS ────────────
+  // `raw` was the first 4000 bytes, which on a real review is SessionStart hook chatter — measured,
+  // `"total_cost_usd" in raw` was false for both adapters. The cost, the turn count and the
+  // tool-use record all live in the final events.
+  {
+    const noise = 'x'.repeat(6000)
+    const resultLine = JSON.stringify({ type: 'result', subtype: 'success', total_cost_usd: 0.66881, duration_ms: 139000, num_turns: 3 })
+    const stdout = `${noise}\n${resultLine}\n`
+    ok('the tail is kept, not the head', tailRaw(stdout).includes('total_cost_usd'))
+    ok('the head is dropped when it does not fit', !tailRaw(stdout).startsWith('xxxx'))
+    ok('a transcript under the cap is kept whole', tailRaw('short\n') === 'short\n')
+    // Slicing mid-token would leave an unparseable fragment; the cut lands on a line boundary.
+    for (const line of tailRaw(stdout).split('\n')) {
+      if (line.trim().startsWith('{')) JSON.parse(line)
+    }
+    ok('every JSON line in the tail is still parseable', true)
+
+    const usage = extractUsage(stdout)
+    ok('cost is extracted', usage.totalCostUsd === 0.66881, JSON.stringify(usage))
+    ok('duration and turns come with it', usage.durationMs === 139000 && usage.numTurns === 3)
+    ok('a transcript with no result event yields nulls, never zeros',
+       extractUsage('{"type":"assistant"}').totalCostUsd === null)
+  }
+
   // ── EVIDENCE IN, INSTRUCTION OUT ───────────────────────────────────────────
   // The prompt used to open "FIRST, load these skills and apply them". Nothing checked whether
   // that happened, and the success path threw away the transcript from which anyone could have
@@ -335,6 +359,10 @@ console.log('the prose adapters survive the failures that were actually observed
     ok('the reference-12 decay rules are inlined verbatim rather than cited',
        /EM-DASHES SPLIT BY MODEL/.test(prompt) && /HALF-LIFE/.test(prompt))
     ok('each finding must name the span ids it rests on', /"spanIds"/.test(prompt))
+    // The harness wrapper is only worth its skill-roster tokens if the reviewer is given a reason
+    // to use the tool loop. It was not, and measured zero tool_use blocks on a real run.
+    ok('the prompt asks the reviewer to check claims against the repo',
+       /READ THE REPOSITORY/.test(prompt) && /open the source and\ncheck it/.test(prompt), prompt.slice(0, 200))
   }
   {
     // A document with no spans must say so rather than leave the reviewer guessing.
@@ -355,6 +383,8 @@ console.log('the prose adapters survive the failures that were actually observed
     const reviewed = run(transcript)
     ok('a reviewed result carries raw', reviewed.status === 'reviewed' && typeof reviewed.raw === 'string')
     ok('and total_cost_usd survives in it', reviewed.raw.includes('total_cost_usd'))
+    ok('the accounting is lifted into typed fields, not left to survive truncation',
+       reviewed.usage.totalCostUsd === 0.1234, JSON.stringify(reviewed.usage))
     ok('spanIds survive the neutral shape', normalizeFindings(reviewed.findings)[0].spanIds[0] === 'S001')
     ok('a finding without spanIds gets [] rather than undefined',
        normalizeFindings([{ severity: 'low', title: 't', body: 'b' }])[0].spanIds.length === 0)

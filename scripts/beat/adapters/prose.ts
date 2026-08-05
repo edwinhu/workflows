@@ -11,8 +11,9 @@
  *   this repo's skill roster. The stated reason used to be that the reviewer could then be TOLD to
  *   load de-ai-revise and ai-anti-patterns; it no longer is. Those rules now arrive as data in the
  *   prompt (see `buildPrompt`), because an instruction nothing checks is not a shared rule set.
- *   What the harness still buys is a reviewer that can read the surrounding repo when a claim in
- *   the draft needs checking. The point is a different set of blind spots, not different rules.
+ *   What the harness buys is a reviewer that can read the surrounding repo when a claim in the
+ *   draft needs checking — see the probation note below for whether it actually does. The point
+ *   is a different set of blind spots, not a different set of rules.
  *
  * THE INVOCATION IS NOT OBVIOUS. Every flag below was established by running it:
  *
@@ -31,9 +32,21 @@
  *   3. Zero text blocks is `unavailable`, NEVER an empty finding list. That distinction is the
  *      whole reason this file does not read `result`.
  *
- * COST. Each call carries ~22k input tokens of system prompt and skill roster before the draft —
- * about $0.12 floor per adapter per review. That is the price of the skill access, and it is why
- * the step is opt-in and advisory.
+ * COST — MEASURED, and about 10x the figure this comment used to carry. One real review of a
+ * ~40k comment letter: prose-codex $0.669 (139s, 3 turns), prose-gemini $0.508 (31s, 1 turn),
+ * $1.18 for the pair. The old "$0.12 floor per adapter" counted the ~22k input tokens of system
+ * prompt and skill roster and nothing else; the draft, the injected span list and the reviewer's
+ * own reasoning dominate it. `extractUsage` now reports the real number per run rather than
+ * leaving it to a comment to be wrong about. This is why the step is opt-in and advisory.
+ *
+ * THE HARNESS WRAPPER IS ON PROBATION, AND THE PROMPT NOW ASKS FOR WHAT IT PAYS FOR. Shelling
+ * `codex-code`/`gemini-code` instead of a plain provider CLI buys a tool loop with repo access.
+ * On the first run measured end to end NEITHER adapter emitted a single tool_use block — but the
+ * prompt had never given a reason to open a file, so that measured the prompt, not the capability.
+ * `buildPrompt` now asks the reviewer to check the draft's numbers, cites and source claims
+ * against the repo. If `usage.numTurns` stays at 1 and tool_use stays at 0 across the next few
+ * real reviews, the capability is not being used and the honest move is a plain provider CLI —
+ * which also deletes the stream-json handling above, all of which is harness-specific.
  */
 
 import { spawnSync } from "node:child_process";
@@ -46,7 +59,14 @@ const MAX_DOC_BYTES = 400_000;
 
 const TIMEOUT_MS = 600_000;
 
-/** Provider transcript kept on EVERY return path, truncated. See `raw` below for why. */
+/**
+ * Provider transcript kept on EVERY return path, truncated to the TAIL.
+ *
+ * THE HEAD IS THE WRONG END. `raw` was `stdout.slice(0, 4000)`, and measured on a real review that
+ * is 4000 bytes of SessionStart hook chatter: `"total_cost_usd" in raw` was false for both
+ * adapters. The whole point of keeping `raw` is the accounting and the tool-use record, and both
+ * live in the FINAL events. The tail carries them.
+ */
 const MAX_RAW_BYTES = 4000;
 
 const PLUGIN_ROOT = resolve(dirname(import.meta.dir), "..", "..");
@@ -141,10 +161,17 @@ dated judgements, not rules, and no regex can express them:
     parentheses; long sentences with no short punchy ones between them; nominalisations
     ("expansion" for "expand"); and triads whose three members restate one idea.
 
-Now read the document and report only defects you can quote. Beyond the spans, look for: sentences
-that force a re-read, claims stated more strongly than their evidence, paragraphs whose point
-arrives late, hedges that name nothing, jargon used before it is defined, and any passage that
-reads as machine-written to you specifically.
+YOU CAN READ THE REPOSITORY THIS DRAFT LIVES IN, AND YOU SHOULD. Where the draft asserts a NUMBER,
+a citation, a statute or rule reference, or a claim about what a source says, open the source and
+check it. Say what you found either way — "I checked X against Y and it holds" is a useful finding,
+not a wasted one. A claim you could have checked and did not is the one thing a second reader is
+uniquely placed to catch, and it is the reason you are being run through a harness with file access
+rather than as a bare completion.
+
+Beyond the spans and those checks, report only defects you can quote. Look for: sentences that
+force a re-read, claims stated more strongly than their evidence, paragraphs whose point arrives
+late, hedges that name nothing, jargon used before it is defined, and any passage that reads as
+machine-written to you specifically.
 
 Do NOT report: em-dash density alone, spellings that are correct in both US and UK English, or
 anything you cannot quote verbatim from the document.
@@ -169,6 +196,41 @@ Reply with a SINGLE fenced JSON block and nothing else:
 
 THE DOCUMENT FOLLOWS.
 `;
+}
+
+/** The tail of the transcript — where the accounting is. Sliced on a line boundary so the
+ *  preserved fragment is still parseable rather than starting mid-token. */
+export function tailRaw(stdout: string, limit = MAX_RAW_BYTES): string {
+  if (stdout.length <= limit) return stdout;
+  const cut = stdout.slice(stdout.length - limit);
+  const nl = cut.indexOf("\n");
+  return nl === -1 ? cut : cut.slice(nl + 1);
+}
+
+/**
+ * The provider's own accounting, lifted out of the terminal `result` event into typed fields.
+ *
+ * Leaving it inside `raw` meant it survived only by luck of truncation, and a caller wanting the
+ * cost had to re-parse a transcript. These are the three numbers anyone actually asks for after an
+ * opt-in paid step: what it cost, how long it took, and how many turns it burned.
+ */
+export function extractUsage(stdout: string): { totalCostUsd: number | null; durationMs: number | null; numTurns: number | null } {
+  const out = { totalCostUsd: null as number | null, durationMs: null as number | null, numTurns: null as number | null };
+  for (const line of stdout.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("{")) continue;
+    let event: { type?: string; total_cost_usd?: unknown; duration_ms?: unknown; num_turns?: unknown };
+    try {
+      event = JSON.parse(trimmed);
+    } catch {
+      continue;
+    }
+    if (event.type !== "result") continue;
+    if (typeof event.total_cost_usd === "number") out.totalCostUsd = event.total_cost_usd;
+    if (typeof event.duration_ms === "number") out.durationMs = event.duration_ms;
+    if (typeof event.num_turns === "number") out.numTurns = event.num_turns;
+  }
+  return out;
 }
 
 /** Pull assistant text out of a stream-json transcript. See note 1 above for why not `result`. */
@@ -247,13 +309,18 @@ function proseReview(wrapper: string, name: string, context: { projectDir: strin
       status: "unavailable",
       findings: [],
       reason: `${wrapper} returned no assistant text (exit ${run.code})`,
-      raw: run.stdout.slice(0, MAX_RAW_BYTES),
+      raw: tailRaw(run.stdout),
+      usage: extractUsage(run.stdout),
     };
   }
 
   const reply = parseReply(text);
   if (!reply || !Array.isArray(reply.findings)) {
-    return { status: "unparseable", findings: [], reason: `${wrapper} output carried no JSON findings block`, raw: text.slice(0, MAX_RAW_BYTES) };
+    return {
+      status: "unparseable", findings: [],
+      reason: `${wrapper} output carried no JSON findings block`,
+      raw: tailRaw(text), usage: extractUsage(run.stdout),
+    };
   }
 
   // `raw` ON THE SUCCESS PATH TOO. It used to be carried only by `unavailable` and `unparseable`,
@@ -273,7 +340,8 @@ function proseReview(wrapper: string, name: string, context: { projectDir: strin
     spanIds: Array.isArray(reply.spanIds)
       ? reply.spanIds.filter((id): id is string => typeof id === "string" && id.trim() !== "")
       : [],
-    raw: run.stdout.slice(0, MAX_RAW_BYTES),
+    raw: tailRaw(run.stdout),
+    usage: extractUsage(run.stdout),
   };
 }
 

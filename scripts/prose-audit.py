@@ -295,6 +295,79 @@ def mask_typst_footnotes(text: str) -> str:
     return _TYPST_FN.sub(lambda m: _blank(m.group(0)), text)
 
 
+# ── markup neutralisation (Typst, LaTeX) ─────────────────────────────────────
+# MEASURED FALSE POSITIVE, and the worst kind. `#emph[First],` in a Typst comment letter matched
+# `wikipedia-template-artifacts`' `\[[A-Z][a-zA-Z\s']+\]` rule — a HARD span, which the reviewer
+# prompt describes as "a provenance leak … almost never defensible". So ordinary emphasis in a
+# regulatory filing was injected into three reviewers as high-confidence evidence of AI authorship.
+#
+# `prose_extract` skips a Typst line that STARTS with `#`, which is why this only ever showed up
+# mid-line — and why it also silently DROPPED the prose on lines that begin with `#emph[`. Both
+# problems have the same fix: neutralise the markup DELIMITERS and keep the prose between them, at
+# the same offsets. `#emph[First]` becomes `      First `, which is scored as the word it is and no
+# longer starts with `#`.
+#
+# Only the CONTENT-bearing bracket form is touched: `#name` (with an optional `(...)` argument
+# group) immediately followed by `[`. `#let`, `#set`, `#show`, `#import` have no `[` in that
+# position, so they stay code and stay skipped — which is what keeps a `#let` dict out of the prose.
+_TYPST_CALL = re.compile(r"#([a-zA-Z][\w.-]*)\s*(\([^()]*\))?\s*(?=\[)")
+_LATEX_CALL = re.compile(r"\\([a-zA-Z@]+)\s*(\[[^\]]*\])?\s*(?=\{)")
+_LATEX_ENV = re.compile(r"\\(?:begin|end)\s*\{[^}]*\}")
+_LATEX_BARE = re.compile(r"\\[a-zA-Z@]+\*?")
+
+
+def _blank_span(chars: list[str], start: int, end: int) -> None:
+    """Blank chars[start:end] in place, preserving newlines so line numbers never shift."""
+    for i in range(start, min(end, len(chars))):
+        if chars[i] != "\n":
+            chars[i] = " "
+
+
+def _neutralize_calls(text: str, head: re.Pattern, open_ch: str, close_ch: str) -> str:
+    """Blank each `<call-head><open>…<close>` wrapper, keeping the content between the delimiters.
+
+    Delimiters are matched by depth, so a nested `#emph[a #strong[b] c]` closes correctly. An
+    unbalanced opener (a construct spanning past the end of the text) blanks only its head, which
+    degrades to today's behaviour rather than eating the rest of the document.
+    """
+    chars = list(text)
+    for m in head.finditer(text):
+        opener = m.end()
+        if opener >= len(text) or text[opener] != open_ch:
+            continue
+        depth = 0
+        closer = -1
+        for i in range(opener, len(text)):
+            if text[i] == open_ch:
+                depth += 1
+            elif text[i] == close_ch:
+                depth -= 1
+                if depth == 0:
+                    closer = i
+                    break
+        _blank_span(chars, m.start(), opener)          # `#emph` + any `(...)` args
+        if closer != -1:
+            chars[opener] = " "
+            chars[closer] = " "
+    return "".join(chars)
+
+
+def neutralize_typst_markup(text: str) -> str:
+    return _neutralize_calls(text, _TYPST_CALL, "[", "]")
+
+
+def neutralize_latex_markup(text: str) -> str:
+    """LaTeX gets the same treatment, plus environment delimiters and bare control sequences.
+
+    `.tex` has no dedicated extractor — it falls through to the plain-text reader — so without
+    this every `\\emph{…}`, `\\cite[p. 5]{key}` and `\\begin{quote}` is scored as the author's own
+    words. Content inside `{…}` is kept for the same reason as Typst: it is prose.
+    """
+    text = _neutralize_calls(text, _LATEX_CALL, "{", "}")
+    text = _LATEX_ENV.sub(lambda m: _blank(m.group(0)), text)
+    return _LATEX_BARE.sub(lambda m: _blank(m.group(0)), text)
+
+
 def _docx_body_paragraph_count(path: Path) -> int:
     """How many non-empty paragraphs prose_extract will yield from word/document.xml.
 
@@ -332,11 +405,25 @@ def extract_lines(path: Path, mask: bool = True) -> tuple[list[tuple[int, str]],
         return lines, None
 
     raw = path.read_text(encoding="utf-8", errors="ignore")
-    if not mask:
-        return list(prose_extract.iter_lines(path)), raw
-    masked = mask_footnotes(raw)
-    if path.suffix.lower() == ".typ":
-        masked = mask_typst_footnotes(masked)
+    suffix = path.suffix.lower()
+    # MARKUP NEUTRALISATION IS NOT FOOTNOTE MASKING and is NOT under `--keep-footnotes`. That flag
+    # exists to debug the raw prose signal; markup was never part of the signal, and leaving
+    # `#emph[First]` intact would reinstate a HARD false positive whenever the flag is passed.
+    #
+    # ORDER IS LOAD-BEARING: footnotes are masked FIRST. `#footnote[...]` matches the neutraliser's
+    # `#name[` shape, so neutralising first strips the wrapper and leaves the citation text looking
+    # like body prose — masking then has nothing left to match, and a finding lands inside a
+    # footnote. Caught by test_footnotes_are_masked_in_every_format when this was written the other
+    # way round.
+    masked = raw
+    if mask:
+        masked = mask_footnotes(masked)
+        if suffix == ".typ":
+            masked = mask_typst_footnotes(masked)
+    if suffix == ".typ":
+        masked = neutralize_typst_markup(masked)
+    elif suffix in (".tex", ".latex"):
+        masked = neutralize_latex_markup(masked)
     tmp = None
     try:
         fd, tmp = tempfile.mkstemp(suffix=path.suffix or ".md")

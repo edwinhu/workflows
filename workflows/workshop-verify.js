@@ -261,12 +261,16 @@ const VISUAL_SCHEMA = {
 
 // ── Phase 1: Discover ─────────────────────────────────────────────────────────
 phase('Discover')
+// VERSION FALLBACKS SORT WITH `sort -V`, NOT `ls | tail -1`. Plain `ls` sorts lexically, so a
+// cache holding 5.99.1 and 5.130.0 hands `tail -1` the 5.99.1 tree — measured on a real cache,
+// 31 minor versions stale, and silently: the path exists and the script it names runs. The
+// tinymist fallback two lines down already had `sort -V`; these two did not.
 const lookAtHint = PLUGIN
   ? `${PLUGIN}/skills/look-at/scripts/look_at.py`
-  : 'command ls -d ~/.claude/plugins/cache/*/workflows/*/skills/look-at/scripts/look_at.py | tail -1 (or the in-repo skills/look-at path)'
+  : 'command ls -d ~/.claude/plugins/cache/*/workflows/*/skills/look-at/scripts/look_at.py | sort -V | tail -1 (or the in-repo skills/look-at path)'
 const checkAllHint = PLUGIN
   ? `${PLUGIN}/references/constraints/check-all.py`
-  : 'command ls -d ~/.claude/plugins/cache/*/workflows/*/references/constraints/check-all.py | tail -1 (or the in-repo references/constraints path)'
+  : 'command ls -d ~/.claude/plugins/cache/*/workflows/*/references/constraints/check-all.py | sort -V | tail -1 (or the in-repo references/constraints path)'
 const disc = await agent(
   `Enumerate the workshop deck's slides and diagrams and resolve the verification inputs. Working directory: ${PROJECT}
 

@@ -3,6 +3,21 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [5.131.0] - 2026-08-04
+
+### Fixed
+- **Typst markup was being reported as an AI provenance leak, at HARD severity.** `#emph[First],` in a real regulatory comment letter matched `wikipedia-template-artifacts`' `[Name]`-style placeholder rule — and the reviewer prompt tells every reviewer a hard span "is a provenance leak … almost never defensible". Ordinary emphasis in a Typst filing was therefore injected into three reviewers as high-confidence evidence of AI authorship. `prose-audit.py` now neutralises Typst (`#emph[…]`, `#strong[…]`, any `#name(…)[…]`) and LaTeX (`\emph{…}`, `\cite[…]{…}`, `\begin{…}`) markup before matching, blanking the DELIMITERS and keeping the prose between them at the same offsets.
+  - It also recovers prose that was being dropped silently: `prose_extract` skips a Typst line that STARTS with `#`, so a paragraph opening `#emph[First],` never reached any scorer at all. On the letter that is 3 more paragraphs scored and 2 fewer false hard spans — from 2 hard to 0.
+  - `#let` / `#set` / `#show` / `#import` stay code and stay skipped: the neutraliser fires only on `#name` immediately followed by `[`.
+  - Footnote masking runs BEFORE neutralisation. The other order strips the `#footnote[` wrapper and leaves the citation text looking like body prose.
+- **The cluster-diction tier used a paragraph offset as a column.** Every match past a paragraph's first line landed at a column beyond the end of its own line, mislocating the span and silently defeating overlap collapse against every other system's real columns. Found independently by both third-party reviewers.
+- **`prose.ts` kept the wrong end of the transcript.** `raw` was the FIRST 4000 bytes, which on a real review is SessionStart hook chatter — measured, `"total_cost_usd" in raw` was false for both adapters even after v5.129.0 started returning `raw` on the success path. It now keeps the TAIL, cut on a line boundary, and `extractUsage` lifts `total_cost_usd` / `duration_ms` / `num_turns` out of the terminal `result` event into typed fields on every `AdapterReview`.
+- **The cost comment was ~10x low.** Measured on one real review of a ~40k comment letter: prose-codex $0.669 (139s, 3 turns), prose-gemini $0.508 (31s, 1 turn) — $1.18 for the pair, against a documented "$0.12 floor per adapter".
+- **`workshop-verify.js` resolved plugin fallback paths with `ls | tail -1`.** Plain `ls` sorts lexically, so a cache holding 5.99.1 and 5.130.0 hands `tail -1` the **5.99.1** tree — measured on a real cache, 31 minor versions stale, and silently, because the path it names exists and runs. Both fallbacks now use `sort -V`, which the tinymist fallback three lines down already did.
+
+### Changed
+- **The prose reviewers are now asked to check the draft against the repository.** The harness wrappers (`codex-code` / `gemini-code`) are shelled instead of the raw provider CLIs to buy a tool loop with repo access, and on the first fully-measured run NEITHER adapter emitted a single `tool_use` block — but the prompt had never given a reason to open a file, so that measured the prompt, not the capability. `buildPrompt` now asks the reviewer to verify numbers, citations and source claims against the repo and to report what it found either way. If `numTurns` stays at 1 across the next few real reviews, the honest move is a plain provider CLI, and `usage` is now recorded per review so that is decided by evidence.
+
 ## [5.130.0] - 2026-08-04
 
 ### Added
