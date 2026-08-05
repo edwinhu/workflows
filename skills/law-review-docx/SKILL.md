@@ -201,6 +201,14 @@ appear as a single `<w:t> (…)</w:t>` run and lack the double-whitespace
 signature, so they are preserved. `build_docx.py` runs `fix_footnotes.py`
 automatically when `--fix-footnotes` is set (the default).
 
+## Title-page spacing
+
+Front matter is usually unstyled `Normal`, which defines no spacing, so the
+title page's rhythm rides on manual empty paragraphs. Measured norms from six
+published typesets, which one to copy (Griffin — the manuscript-laid-out one,
+uniform 2.0×, not the ~4× journal-page average), and the page-one fit trap:
+`references/title-page-spacing.md`.
+
 ## Red Flags
 
 | Action | Why Wrong | Do Instead |

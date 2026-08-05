@@ -47,6 +47,7 @@ directly, since the shebang is `uv run`) reads the header and provisions the dep
 | `comments.py` | docx or Drive → JSON | Extract comments with their anchor text, resolved state, and threading |
 | `provenance.py` | — | Read/write the stamp directly (build.py already applies it) |
 | `expand_citations.py` | typ → typ | Freeze every computed reference — `#cite(...)` **and** `@label` — into the literal body the docx path needs |
+| `make_redline.py` | docx × docx → docx | Rebuild a coauthor's **untracked** edits as real tracked changes, against a baseline (stdlib + LibreOffice; no PEP 723 header) |
 
 ## The `main.typ` / `body.typ` split
 
@@ -123,6 +124,47 @@ Ancestor resolution, in preference order:
 3. **The provenance stamp** — `git cat-file` on the recorded blob sha.
 
 If none resolves, the script **stops**. Pass `--base-docx` or `--base`.
+
+### When the coauthor edited with track changes OFF
+
+`reconcile.py` merges into Typst. When the human wants to *review* the edits in
+Word instead — one at a time, accept/reject — use `make_redline.py`.
+
+```bash
+python3 "${CLAUDE_SKILL_DIR}/scripts/make_redline.py" \
+    baseline.docx returned.docx outdir/ --label "Coauthor"
+```
+
+This is the common case, not an edge case: one real round carried **22 comments
+against only 4 tracked revisions**. Rejecting every tracked change still left
+~25 touched paragraphs. Word's review pane showed almost nothing, because the
+prose was typed with recording off. The script accepts any real tracked changes
+first (so the compare reflects the coauthor's final text), then compares against
+the baseline to reconstitute every difference as a tracked change.
+
+**It emits two files, and the second is the important one.** LibreOffice's
+`CompareDocuments` **does not diff footnote-internal text**. On a footnote-heavy
+document that is the dangerous failure, not a cosmetic one: the body redline
+silently carries the *baseline's* footnotes, so every footnote edit reads as
+"unchanged" — in one case hiding a coauthor's fix to a broken `ttps://` URL. So
+footnotes are lifted into body paragraphs and compared separately, with baseline
+footnotes relabelled to the revised file's numbering (otherwise a single
+inserted footnote renumbers everything after it and buries ~12 real edits under
+~128 spurious ones).
+
+Three traps, all of which cost a debugging cycle:
+
+- **Argument order is not what you'd guess.** LibreOffice treats the *loaded*
+  document as current and the compared file as the older one, so the revised
+  file must be the one opened. Backwards silently **inverts every insertion and
+  deletion** — a coauthor's typo *fix* renders as them introducing the typo.
+- `soffice` crashes partway through a full-article compare often enough to need
+  a retry on a fresh process and profile; the script does this.
+- A stale `.~lock.` file makes `loadComponentFromURL` return `None` rather than
+  raise.
+
+`supra note N` renumbering shows up as an edit in the footnote redline — those
+are cached `NOTEREF` display strings, not edits. See §[Live citations](#live-citations-and-cross-references).
 
 ## Live citations and cross-references
 
