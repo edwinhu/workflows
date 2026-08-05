@@ -491,6 +491,47 @@ def test_typographic_characters_are_not_emojis(tmp_path, ch):
     assert not [s for s in res["spans"] if s["system"] == "formatting"], res["spans"]
 
 
+def test_emoji_in_a_slide_deck_is_soft_not_hard(tmp_path):
+    """A deck is not a draft and emoji in one are deliberate. The hook refuses to lint a deck at
+    all; this covers the case it cannot — auditing a deck ON PURPOSE from the CLI. The finding
+    survives (you asked for the audit) but may not block a gate."""
+    deck = tmp_path / "08.typ"
+    deck.write_text('#slide(title: "Insider trading")[\n  The rule bites 🚨 here.\n]\n')
+    res = PA.audit_document(deck)
+    hits = [s for s in res["spans"] if s["system"] == "formatting"]
+    assert hits, res["spans"]
+    assert hits[0]["severity"] == "soft", hits
+    assert res["n_hard"] == 0, [s for s in res["spans"] if s["severity"] == "hard"]
+
+    # …and the identical content outside a deck is still hard.
+    draft = tmp_path / "letter.typ"
+    draft.write_text("#set page(margin: 1in)\n\nThe rule bites 🚨 here.\n")
+    assert [s for s in PA.audit_document(draft)["spans"]
+            if s["system"] == "formatting" and s["severity"] == "hard"]
+
+
+def test_deck_detection_matches_the_hooks_rules(tmp_path):
+    """`is_deck` mirrors `isTypDeck` in hooks/writing-prose-check.ts. The cross-LANGUAGE agreement
+    is pinned in tests/writing-prose-check.test.mjs; this pins the Python side's own rules."""
+    slides = tmp_path / "slides" / "03-security"
+    slides.mkdir(parents=True)
+    by_dir = slides / "08.typ"
+    by_dir.write_text("Dear Professor,\n")            # no marker at all
+    assert PA.is_deck(by_dir)
+    for marker in ('#import "@preview/touying:0.5.0": *\n',
+                   '#import "@preview/polylux:0.3.1": *\n',
+                   '#slide(title: "x")[ y ]\n'):
+        f = tmp_path / "theme.typ"
+        f.write_text(marker)
+        assert PA.is_deck(f), marker
+    letter = tmp_path / "letter.typ"
+    letter.write_text("#set page(margin: 1in)\nDear Professor,\nSincerely.\n")
+    assert not PA.is_deck(letter)
+    md = tmp_path / "slides" / "notes.md"
+    md.write_text("#slide(\n")
+    assert not PA.is_deck(md), "only .typ can be a deck"
+
+
 # ── the CLI contract the hook and the reviewers depend on ────────────────────
 def test_cli_json_and_exit_code():
     proc = subprocess.run(

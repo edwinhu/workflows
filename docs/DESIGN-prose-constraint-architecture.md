@@ -303,3 +303,26 @@ one entry under `constraints/` that is no longer structural.
 
 **Scope.** Text formats only (`.md`, `.typ`, `.tex`). `.docx` bold runs are deferred — the em-dash
 system already skips docx for the same reason, and a docx paragraph list has no column anchoring.
+
+### A slide deck is not a draft (v5.134.1)
+
+`hooks/writing-prose-check.ts` has always refused to lint a `.typ` slide deck, and that stays: a
+deck is fragments and labels, not running prose. But the hook is not the only way in — auditing a
+deck deliberately from the CLI is a real thing to want, and there `formatting·emoji` would have
+been `hard`, which is wrong. Emoji in teaching slides are the author's choice, not a provenance
+leak. So `prose-audit.py` detects the deck itself and drops that one rule to `soft`: the finding
+still appears (you asked for the audit) but it cannot block a gate, which is what `hard` is for.
+
+Nothing else is relaxed in a deck. `emphasis·bold-density` and `emphasis·bold-lead` will fire on
+most decks, because slides really are bold-heavy and fragmentary; that is a known, deliberate
+limit of auditing a deck, not a bug to work around by loosening the rules for drafts.
+
+**The predicate now exists twice, in two languages, and the duplication is pinned rather than
+hoped about.** The hook needs it BEFORE it spawns anything — it also skips check-all and the plan
+lookup — so it cannot ask the script; the script needs it independently for severity.
+`tests/writing-prose-check.test.mjs` runs both over a shared fixture set and asserts they agree,
+and asserts the expected answers besides, so "they agree with each other" cannot pass by both
+being wrong. It found a divergence the first time it ran: the TypeScript side never checked the
+suffix, so a `.md` file containing `#slide(` was a deck there and not here. Harmless at the hook's
+one call site, which already guarantees `.typ` — and exactly the kind of drift a duplicated
+predicate accumulates when nothing compares the two.

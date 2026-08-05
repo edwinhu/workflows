@@ -101,5 +101,36 @@ const write = (dir, name, body) => { const p = join(dir, name); writeFileSync(p,
     JSON.stringify({ audit, check }))
 }
 
+// ── deck detection exists TWICE, in two languages — pin that they agree ──────
+// The hook needs the predicate BEFORE it spawns anything (it also skips check-all and the plan
+// lookup), so it cannot ask prose-audit.py; and prose-audit.py needs it independently, to drop
+// `formatting·emoji` to soft when someone audits a deck on purpose from the CLI. A duplicated
+// predicate that nothing compares is a predicate that drifts.
+{
+  const d = tmp()
+  mkdirSync(join(d, 'slides'), { recursive: true })
+  const cases = [
+    write(d, 'touying.typ', '#import "@preview/touying:0.5.0": *\n= Slide\n'),
+    write(d, 'polylux.typ', '#import "@preview/polylux:0.3.1": *\n'),
+    write(d, 'call.typ', '#slide(title: "x")[ content ]\n'),
+    write(join(d, 'slides'), 'bare.typ', 'Dear Professor,\n'),
+    write(d, 'letter.typ', '#set page(margin: 1in)\nDear Professor,\nSincerely.\n'),
+    write(d, 'notes.md', '#slide(\n'),
+  ]
+  const py = Bun.spawnSync(['uv', 'run', '--with', 'lxml', '--with', 'pyyaml', 'python3', '-c',
+    'import importlib.util,sys,json\n' +
+    'spec=importlib.util.spec_from_file_location("pa",sys.argv[1])\n' +
+    'm=importlib.util.module_from_spec(spec); spec.loader.exec_module(m)\n' +
+    'from pathlib import Path\n' +
+    'print(json.dumps([m.is_deck(Path(p)) for p in sys.argv[2:]]))',
+    join(import.meta.dir, '..', 'scripts', 'prose-audit.py'), ...cases])
+  const pyOut = JSON.parse(new TextDecoder().decode(py.stdout).trim())
+  const tsOut = cases.map((p) => isTypDeck(p))
+  ok('Python is_deck and TypeScript isTypDeck agree on every case',
+    JSON.stringify(pyOut) === JSON.stringify(tsOut), JSON.stringify({ pyOut, tsOut, cases }))
+  ok('and they agree on the answers, not just with each other',
+    JSON.stringify(tsOut) === JSON.stringify([true, true, true, true, false, false]), JSON.stringify(tsOut))
+}
+
 console.log(`\n${PASS}/${PASS + FAIL} passed`)
 if (FAIL) process.exit(1)

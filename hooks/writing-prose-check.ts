@@ -128,6 +128,12 @@ export function auditStyle(style: string | null): string {
 }
 
 export function isTypDeck(path: string): boolean {
+  // ONLY A `.typ` CAN BE A DECK. The call site below already guarantees the suffix, so this is
+  // not a behaviour change there — it makes the predicate TOTAL, so it means the same thing as
+  // `is_deck` in scripts/prose-audit.py, which is called on every path and must check. Caught by
+  // the cross-language agreement test the first time it ran: a `.md` containing `#slide(` came
+  // back `true` here and `false` there.
+  if (pySuffix(path).toLowerCase() !== ".typ") return false;
   const parts = pyParts(path);
   for (const part of parts.slice(0, -1)) {
     if (_DECK_DIR_RE.test(part)) return true;

@@ -594,6 +594,35 @@ _EMOJI_RX = re.compile(
 )
 
 
+# A SLIDE DECK IS NOT A DRAFT, and emoji in one is deliberate. `hooks/writing-prose-check.ts`
+# already refuses to lint a deck at all, so nothing automated reaches here; this exists for the
+# case that hook cannot cover — running the audit on a deck ON PURPOSE, from the CLI. There,
+# `formatting·emoji` drops to `soft`. It stays a finding (you asked for the audit) but it may not
+# block a gate, because `hard` means "indefensible in a shipped draft" and a decorated slide
+# heading is not that.
+#
+# TWO IMPLEMENTATIONS IN TWO LANGUAGES, deliberately, and pinned. The hook needs the predicate
+# BEFORE it spawns anything (it also skips check-all and the plan lookup), so it cannot ask this
+# script. tests/writing-prose-check.test.mjs asserts the two agree over a shared fixture set —
+# which is the honest way to carry a duplicated predicate, as against hoping it stays in sync.
+_DECK_MARKERS = ("touying", "polylux", "#slide(")
+_DECK_DIR_RE = re.compile(r"^(slides|presentation)", re.IGNORECASE)
+
+
+def is_deck(path: Path) -> bool:
+    """True for a Typst SLIDE DECK. Mirrors `isTypDeck` in hooks/writing-prose-check.ts exactly:
+    a `slides`/`presentation*` component anywhere in the path, or a deck marker in the content."""
+    if path.suffix.lower() != ".typ":
+        return False
+    if any(_DECK_DIR_RE.match(part) for part in path.parts[:-1]):
+        return True
+    try:
+        text = path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return False
+    return any(marker in text for marker in _DECK_MARKERS)
+
+
 def _emoji_hits(text: str) -> list[dict]:
     """Emoji in prose or headings. Runs over `_prose_only`, so a fenced code block, a quoted
     source and YAML frontmatter are excluded — the same exclusions the em-dash budget uses."""
@@ -961,9 +990,11 @@ def audit_document(path: Path, style: str | None = None, mask: bool = True,
         add(hit["line"], hit["col"], hit["end"], "emphasis", hit["label"], SOFT,
             hit["quote"], hit["context"])
     if masked_text is not None:
+        deck = is_deck(path)
         for hit in _emoji_hits(masked_text):
-            add(hit["line"], hit["col"], hit["end"], "formatting", hit["label"], HARD,
-                hit["quote"], hit["context"])
+            add(hit["line"], hit["col"], hit["end"], "formatting",
+                hit["label"] + (" (slide deck — advisory)" if deck else ""),
+                SOFT if deck else HARD, hit["quote"], hit["context"])
 
     # --- stylometrics, over the SAME masked text the tables saw ---
     style_lint, style_score = _style_on_text(

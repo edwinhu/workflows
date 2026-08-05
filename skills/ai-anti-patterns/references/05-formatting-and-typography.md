@@ -9,15 +9,20 @@ from one of these carries a span id; anything else in this file is a reading cal
 |---|---|---|---|
 | Excessive use of boldface | `emphasis·bold-bare-number`, `emphasis·bold-density` | soft | format-agnostic (`.md` / `.typ` / `.tex`); table cells excluded |
 | Inline-header vertical lists | `emphasis·bold-lead` | soft | **plain paragraphs only** — list items are exempt by design, so the *inline-header list* proper is still a reading call; what is enforced is the bold inline header opening a prose paragraph |
-| Emojis | `formatting·emoji` | **hard** | over body prose and headings; fenced code, blockquotes and frontmatter excluded |
+| Emojis | `formatting·emoji` | **hard** in a draft, **soft** in a slide deck | over body prose and headings; fenced code, blockquotes and frontmatter excluded |
 | Em dashes | `em-dash` (paragraph + section budgets) | soft | absorbed from the deleted `writing-ai-smell-em-dash` constraint, thresholds unchanged |
 
 The emphasis rules ship `soft` on purpose. They could not be validated the way `hard` rules in this
 plugin are — the ai-tic FP-hunt corpus is raw PDF text extraction, which does not preserve bold or
 italic markup, so a 0-hit result there would mean the signal is absent rather than the rule clean.
 `formatting·emoji` is the exception and takes `hard` by construction: an emoji in a law-review
-draft or an SEC comment letter is indefensible on its face. See
-`docs/investigations/2026-08-05_emphasis-enforcement.md`.
+draft or an SEC comment letter is indefensible on its face.
+
+**A slide deck is not a draft.** Emoji in teaching slides are deliberate, so `formatting·emoji`
+drops to `soft` when the document is a Typst deck (a `slides/`/`presentation*` path component, or
+a touying / polylux / `#slide(` marker). `hooks/writing-prose-check.ts` refuses to lint a deck at
+all, so this only matters when you audit a deck on purpose from the CLI: the finding still appears,
+but it cannot block a gate. See `docs/investigations/2026-08-05_emphasis-enforcement.md`.
 
 ## Excessive use of boldface
 
