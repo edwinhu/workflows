@@ -32,27 +32,35 @@
  *   3. Zero text blocks is `unavailable`, NEVER an empty finding list. That distinction is the
  *      whole reason this file does not read `result`.
  *
- * COST — MEASURED, and about 10x the figure this comment used to carry. One real review of a
- * ~40k comment letter: prose-codex $0.669 (139s, 3 turns), prose-gemini $0.508 (31s, 1 turn),
- * $1.18 for the pair. The old "$0.12 floor per adapter" counted the ~22k input tokens of system
- * prompt and skill roster and nothing else; the draft, the injected span list and the reviewer's
- * own reasoning dominate it. `extractUsage` now reports the real number per run rather than
- * leaving it to a comment to be wrong about. This is why the step is opt-in and advisory.
+ * COST — MEASURED, AND THIS COMMENT HAS NOW BEEN WRONG TWICE, EACH TIME LOW.
  *
- * THE HARNESS WRAPPER IS ON PROBATION, AND THE PROMPT NOW ASKS FOR WHAT IT PAYS FOR. Shelling
- * `codex-code`/`gemini-code` instead of a plain provider CLI buys a tool loop with repo access.
- * On the first run measured end to end NEITHER adapter emitted a single tool_use block — but the
- * prompt had never given a reason to open a file, so that measured the prompt, not the capability.
- * `buildPrompt` now asks the reviewer to check the draft's numbers, cites and source claims
- * against the repo. If `usage.numTurns` stays at 1 and tool_use stays at 0 across the next few
- * real reviews, the capability is not being used and the honest move is a plain provider CLI —
- * which also deletes the stream-json handling above, all of which is harness-specific.
+ *   v5.127  "$0.12 per adapter"   counted only the ~22k input tokens of system prompt and skill
+ *                                 roster — the floor, mistaken for the bill.
+ *   v5.131  "$1.18 for the pair"  measured, but on a run where both adapters answered in 1-3 turns.
+ *   v5.132  $10.35 for the pair   prose-codex $4.198 (520s, 9 turns), prose-gemini $6.152 (144s,
+ *                                 18 turns), same ~40k comment letter.
+ *
+ * The pattern is the point: cost here is dominated by TURNS, not by the draft. Asking the reviewer
+ * to open sources (the probation fix below) is what moved 3 turns to 9-18, and it moved the bill
+ * about 9x. A caller sizing a budget from this comment should assume a $5-15 range per pair and
+ * read `usage.totalCostUsd` for the real number — which is why that field exists and why no future
+ * edit should replace it with a single reassuring figure.
+ *
+ * THE HARNESS WRAPPER IS OFF PROBATION. It was kept on the bet that a tool loop with repo access
+ * would be used if the prompt gave a reason to use it. Measured on v5.131.0 against the rule611
+ * comment letter, it is: prose-gemini ran 18 turns with 8 `tool_use` blocks and independently
+ * verified eight SEC release line-cites against the source, reporting them sound; prose-codex ran
+ * 9 turns over 520s and spawned three subagents of its own. Neither is a 1-turn completion, so the
+ * plain-provider-CLI fallback contemplated here is now the WRONG move — it would delete the
+ * capability that produced the only externally-verified claim either reviewer made.
+ *
+ * The cost of that capability is the 9x bill above. Both facts came from the same run.
  */
 
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { DEFAULT_SCOPE, type Adapter, type AdapterResult, type Invoke, type ReviewScope } from "../third-party-review.ts";
+import { DEFAULT_SCOPE, type Adapter, type AdapterResult, type Invoke, type ReviewScope } from "../contract.ts";
 
 /** Draft bytes handed to the model. A comment letter is ~40k; past this, chunking beats truncation. */
 const MAX_DOC_BYTES = 400_000;
@@ -208,6 +216,39 @@ export function tailRaw(stdout: string, limit = MAX_RAW_BYTES): string {
 }
 
 /**
+ * BOTH ENDS, for the FAILURE paths only.
+ *
+ * `tailRaw` is right on the success path: the answer parsed, so the transcript is kept for the
+ * accounting and the tool-use record, and both live at the end. On a PARSE FAILURE the calculus
+ * inverts — the preserved text is the only surviving artifact, and the reason it failed is at the
+ * HEAD, which is exactly the part `tailRaw` throws away.
+ *
+ * This is not hypothetical. The v5.131.0 `prose-codex` failure could not be diagnosed from its own
+ * report: `raw` was the last 3982 characters, all of them the well-formed answer, so the report
+ * showed a valid JSON object next to a message saying no JSON object was found. Reconstructing the
+ * offending head needed the provider's session transcript from disk — evidence that happened to
+ * exist and, for a run inside a plan, would not. A truncation that destroys the evidence for the
+ * failure it is reporting is worse than no `raw` at all, because it looks like evidence.
+ *
+ * Head and tail get half the budget each, both cut on line boundaries, with an explicit marker
+ * naming what was dropped so nobody mistakes the join for contiguous output.
+ */
+export function headTailRaw(text: string, limit = MAX_RAW_BYTES): string {
+  if (text.length <= limit) return text;
+  const half = Math.floor(limit / 2);
+  const head = text.slice(0, half);
+  const headCut = head.lastIndexOf("\n");
+  const keptHead = headCut === -1 ? head : head.slice(0, headCut);
+
+  const tail = text.slice(text.length - (limit - half));
+  const tailCut = tail.indexOf("\n");
+  const keptTail = tailCut === -1 ? tail : tail.slice(tailCut + 1);
+
+  const elided = text.length - keptHead.length - keptTail.length;
+  return `${keptHead}\n…[${elided} characters elided from the middle]…\n${keptTail}`;
+}
+
+/**
  * The provider's own accounting, lifted out of the terminal `result` event into typed fields.
  *
  * Leaving it inside `raw` meant it survived only by luck of truncation, and a caller wanting the
@@ -254,16 +295,72 @@ export function extractText(stdout: string): string {
   return parts.join("").trim();
 }
 
-/** The provider's reply, which is a fenced JSON block if it followed instructions. */
+/**
+ * Every substring of the reply that could plausibly BE the answer, in the order we should try them.
+ *
+ * Fenced blocks first and in document order, then an unterminated trailing fence (a reply cut off
+ * before its closing ```), then the whole text, then the widest brace slice. The last two matter
+ * for a provider that answers with bare JSON and no fence at all.
+ */
+function jsonCandidates(text: string): string[] {
+  const out: string[] = [];
+  for (const match of text.matchAll(/```(?:json)?\s*([\s\S]*?)```/g)) out.push(match[1]);
+  const unterminated = text.match(/```(?:json)?\s*([\s\S]*)$/);
+  if (unterminated && !unterminated[1].includes("```")) out.push(unterminated[1]);
+  out.push(text);
+  const first = text.indexOf("{"), last = text.lastIndexOf("}");
+  if (first !== -1 && last > first) out.push(text.slice(first, last + 1));
+  return out.map(candidate => candidate.trim()).filter(Boolean);
+}
+
+/**
+ * The provider's reply, selected BY CONTRACT rather than by position.
+ *
+ * THE BUG THIS REPLACES, measured on the rule611 letter at v5.131.0. `prose-codex` returned
+ * `unparseable` — "codex-code output carried no JSON findings block" — while having produced a
+ * complete, well-formed answer with SEVEN findings, one of them anchored to span S009 and one
+ * naming a truncated sentence in the letter that no internal gate had caught. All seven were
+ * discarded here. The old implementation took the FIRST fenced block in the whole concatenated
+ * reply and committed to it; the concatenation contained six earlier fences that were not the
+ * answer, and the first of them held an arithmetic aside:
+ *
+ *     ```text
+ *     49,135,555 − 19,751 − 9,150 = 49,106,654
+ *     ```
+ *
+ * which is not JSON, so `JSON.parse` threw and the answer three fences later was never reached.
+ * `prose-gemini` survived the same release only because its reply happened to contain exactly one
+ * fence — position was doing the work of a contract, and it worked until it didn't.
+ *
+ * WHAT IS CONFIRMED AND WHAT IS NOT. That the first fence wins and that a non-JSON earlier fence
+ * therefore kills the reply is CONFIRMED: replaying this function over the reviewer's reconstructed
+ * text reproduces `unparseable` exactly, and repairing the selection rule recovers all seven
+ * findings. WHERE those earlier fences came from is NOT confirmed — the reviewer's own turns hold
+ * only the final answer (twice, both parseable), and subagent text was measured NOT to reach stdout
+ * as assistant text. The stdout head that would say was destroyed by the truncation this file used
+ * to apply on the failure path; see `headTailRaw`. That is precisely why the fix is a contract and
+ * not a guess: selecting the first candidate that SATISFIES THE CONTRACT is correct under every
+ * candidate explanation, including the one we could not test.
+ *
+ * A parseable object that lacks `findings` is kept as a FALLBACK rather than returned outright, so
+ * the caller can still tell "no JSON anywhere" from "JSON that ignored the schema" — two failures
+ * that used to share one reason string and one remedy.
+ */
 export function parseReply(text: string): { verdict?: string; summary?: string; findings?: unknown[]; spanIds?: unknown } | undefined {
-  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/);
-  const candidate = (fenced ? fenced[1] : text).trim();
-  try {
-    const parsed = JSON.parse(candidate);
-    return parsed && typeof parsed === "object" ? parsed as Record<string, unknown> : undefined;
-  } catch {
-    return undefined;
+  let offContract: Record<string, unknown> | undefined;
+  for (const candidate of jsonCandidates(text)) {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(candidate);
+    } catch {
+      continue; // not JSON — an arithmetic aside, a quoted snippet, a diff the reviewer showed
+    }
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) continue;
+    const object = parsed as Record<string, unknown>;
+    if (Array.isArray(object.findings)) return object; // satisfies the contract; stop looking
+    offContract ??= object;
   }
+  return offContract;
 }
 
 function proseReview(wrapper: string, name: string, context: { projectDir: string; invoke: Invoke; scope: ReviewScope }): AdapterResult {
@@ -309,17 +406,32 @@ function proseReview(wrapper: string, name: string, context: { projectDir: strin
       status: "unavailable",
       findings: [],
       reason: `${wrapper} returned no assistant text (exit ${run.code})`,
-      raw: tailRaw(run.stdout),
+      // Head AND tail: a provider that emitted nothing usable fails at the START of the stream
+      // (a bad flag, a refused auth, a hook that aborted), which is the half `tailRaw` drops.
+      raw: headTailRaw(run.stdout),
       usage: extractUsage(run.stdout),
     };
   }
 
   const reply = parseReply(text);
   if (!reply || !Array.isArray(reply.findings)) {
+    // TWO DISTINCT FAILURES, and they used to share one sentence. "No JSON at all" means the
+    // reviewer answered in prose and the prompt needs work; "JSON without a findings array" means
+    // it answered in the wrong shape and the schema needs work. Reading the second as the first
+    // cost a release, because the reported reason was inconsistent with the reported `raw` and the
+    // contradiction had to be resolved by hand.
     return {
       status: "unparseable", findings: [],
-      reason: `${wrapper} output carried no JSON findings block`,
-      raw: tailRaw(text), usage: extractUsage(run.stdout),
+      reason: reply
+        ? `${wrapper} returned a JSON object with no "findings" array (keys: ${Object.keys(reply).join(", ") || "none"})`
+        : `${wrapper} output carried no JSON object`,
+      // BOTH ENDS: on this path `raw` is the only artifact, and the cause is at the head.
+      raw: headTailRaw(text),
+      // The stdout transcript SEPARATELY, because `raw` here is the extracted text and therefore
+      // can never contain a tool_use block. Without this, "did the reviewer open any files?" was
+      // answerable only when the run succeeded.
+      transcript: headTailRaw(run.stdout),
+      usage: extractUsage(run.stdout),
     };
   }
 

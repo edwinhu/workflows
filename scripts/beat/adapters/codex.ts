@@ -14,7 +14,7 @@
 import { existsSync, readdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { DEFAULT_SCOPE, type Adapter, type AdapterResult, type Invoke, type ReviewScope } from "../third-party-review.ts";
+import { DEFAULT_SCOPE, type Adapter, type AdapterResult, type Invoke, type ReviewScope } from "../contract.ts";
 
 const PLUGIN_CACHE = join(homedir(), ".claude", "plugins", "cache", "openai-codex", "codex");
 

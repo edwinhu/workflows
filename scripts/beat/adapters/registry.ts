@@ -6,7 +6,7 @@
  * tidiness: it is what makes the claim "the beat never names a provider" checkable instead of
  * asserted. Adding a third adapter is a new file plus one line here, and touches nothing else.
  */
-import type { Adapter } from "../third-party-review.ts";
+import type { Adapter } from "../contract.ts";
 import { codexAdapter } from "./codex.ts";
 import { geminiAdapter } from "./gemini.ts";
 import { proseCodexAdapter, proseGeminiAdapter } from "./prose.ts";

@@ -607,7 +607,10 @@ For each draft, run exactly:
 Drafts: ${JSON.stringify(docs)}
 Read each runner's \`status\` BEFORE its \`findings\`: 'unavailable' or 'unparseable' means that adapter
 looked at nothing, and an empty finding list there is NOT a clean review. Report per-adapter
-attribution — the value is in where adapters disagree. Do not fix anything.`,
+attribution — the value is in where adapters disagree.
+On 'unparseable' do NOT report the adapter as silent: quote its \`reason\`, and check \`raw\` (the
+assistant text, head and tail) and \`transcript\` (stdout) for findings the parse step dropped — a
+real run reported zero findings this way while having produced seven. Do not fix anything.`,
     { label: 'third-party:prose', phase: 'L2-L3', model: 'sonnet' })
 }
 

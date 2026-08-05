@@ -18,7 +18,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { normalizeFindings, readOptIn, runThirdPartyReview } from '../scripts/beat/third-party-review.ts'
 import { reviewWithCodex } from '../scripts/beat/adapters/codex.ts'
-import { proseCodexAdapter, proseGeminiAdapter, extractText, parseReply, extractUsage, tailRaw } from '../scripts/beat/adapters/prose.ts'
+import { proseCodexAdapter, proseGeminiAdapter, extractText, parseReply, extractUsage, tailRaw, headTailRaw } from '../scripts/beat/adapters/prose.ts'
 import { reviewWithGemini } from '../scripts/beat/adapters/gemini.ts'
 import { adapterNames, resolveAdapter } from '../scripts/beat/adapters/registry.ts'
 
@@ -316,6 +316,84 @@ console.log('the prose adapters survive the failures that were actually observed
       JSON.stringify({ type: 'assistant', message: { content: [{ type: 'text', text: 'b' }] } }),
     ].join('\n')) === 'ab')
   ok('parseReply reads a fenced block', parseReply('pre\n```json\n{"findings":[]}\n```\npost')?.findings.length === 0)
+
+  // ── THE ANSWER IS NOT ALWAYS THE FIRST FENCE ───────────────────────────────
+  // Reproduces the v5.131.0 prose-codex loss verbatim. Its reply carried six fenced blocks that
+  // were not the answer; the first held an arithmetic aside. Taking the first fence and committing
+  // to it threw away seven real findings — one anchored to span S009, one naming a truncated
+  // sentence in the letter that no internal gate had caught — and reported "no JSON findings
+  // block" while `raw` displayed a valid JSON object. prose-gemini survived the same release only
+  // because its reply happened to contain exactly one fence.
+  {
+    const answer = { verdict: 'needs-attention', summary: 's', spanIds: ['S009'], findings: [{ severity: 'medium', title: 'The replication caveat is broken', spanIds: ['S009'] }] }
+    const realShape = [
+      'PROSE QUALITY REVIEW: the letter\n',
+      '```text\n49,135,555 − 19,751 − 9,150 = 49,106,654\n```\n',
+      'SOURCE-FIDELITY REVIEW: checking the cites\n',
+      '```\nsome quoted snippet\n```\n',
+      '## Bottom line\n\n',
+      '```json\n' + JSON.stringify(answer, null, 2) + '\n```\n',
+    ].join('')
+
+    const parsed = parseReply(realShape)
+    ok('a non-JSON earlier fence no longer kills the reply', Array.isArray(parsed?.findings))
+    ok('the findings survive it', parsed?.findings.length === 1)
+    ok('the span anchoring survives it', parsed?.findings[0].spanIds[0] === 'S009')
+    ok('the considered-span list survives it', parsed?.spanIds[0] === 'S009')
+
+    // Selection is BY CONTRACT, not by position: an earlier fence holding valid JSON that is not
+    // the answer must also lose. This is the case "take the LAST fence" would get wrong too.
+    const decoyJson = '```json\n{"note":"a schema I was quoting"}\n```\n```json\n' + JSON.stringify(answer) + '\n```'
+    ok('an earlier VALID-JSON fence does not win either', parseReply(decoyJson)?.findings.length === 1)
+
+    // Shapes a provider actually produces when it half-follows the instruction.
+    ok('a reply cut off before its closing fence still parses',
+       parseReply('```json\n' + JSON.stringify(answer))?.findings.length === 1)
+    ok('bare JSON with no fence at all still parses',
+       parseReply(JSON.stringify(answer))?.findings.length === 1)
+    ok('prose with no JSON anywhere is still undefined', parseReply('I think it reads well.') === undefined)
+  }
+
+  // ── THE TWO PARSE FAILURES ARE DIFFERENT FAILURES ──────────────────────────
+  // "No JSON at all" means the prompt needs work; "JSON in the wrong shape" means the schema does.
+  // One reason string for both is what made the v5.131.0 report self-contradictory.
+  {
+    const stream = t => JSON.stringify({ type: 'assistant', message: { content: [{ type: 'text', text: t }] } })
+    const run = t => proseGeminiAdapter.review({ projectDir: ROOT, scope, invoke: () => ({ code: 0, stdout: stream(t), stderr: '' }) })
+
+    const chatty = run('Honestly it reads fine to me.')
+    ok('prose with no JSON says so', chatty.status === 'unparseable' && /no JSON object/.test(chatty.reason))
+
+    const wrongShape = run('```json\n{"verdict":"approve","notes":[]}\n```')
+    ok('JSON in the wrong shape is a DIFFERENT reason', wrongShape.status === 'unparseable' && /no "findings" array/.test(wrongShape.reason))
+    ok('and it names the keys it did get', /verdict/.test(wrongShape.reason) && /notes/.test(wrongShape.reason))
+  }
+
+  // ── THE FAILURE PATH KEEPS BOTH ENDS ───────────────────────────────────────
+  // `tailRaw` is right when the answer parsed. On a parse failure the preserved text is the ONLY
+  // artifact and the cause is at the HEAD — so the old truncation destroyed exactly the evidence
+  // for the failure it was reporting, which is worse than no `raw`, because it looks like evidence.
+  {
+    const head = 'CAUSE-OF-FAILURE-AT-THE-HEAD\n' + 'h'.repeat(4000)
+    const tail = 't'.repeat(4000) + '\nEND-OF-STREAM'
+    const both = headTailRaw(`${head}\n${tail}`)
+    ok('the head survives the failure path', both.includes('CAUSE-OF-FAILURE-AT-THE-HEAD'))
+    ok('the tail survives it too', both.includes('END-OF-STREAM'))
+    ok('the elision is marked, not silent', /characters elided from the middle/.test(both))
+    ok('text under the cap is untouched', headTailRaw('short') === 'short')
+
+    // And the stdout transcript is carried SEPARATELY on that path, because `raw` there is the
+    // extracted text and so can never contain a tool_use block. Without this, "did the reviewer
+    // open any files?" was answerable only when the run succeeded — an audit trail present
+    // exactly where it was least needed.
+    const withTools = [
+      JSON.stringify({ type: 'assistant', message: { content: [{ type: 'tool_use', name: 'Bash', id: 't1', input: {} }] } }),
+      JSON.stringify({ type: 'assistant', message: { content: [{ type: 'text', text: 'no json here' }] } }),
+    ].join('\n')
+    const failed = proseGeminiAdapter.review({ projectDir: ROOT, scope, invoke: () => ({ code: 0, stdout: withTools, stderr: '' }) })
+    ok('the failure path carries the stdout transcript too', failed.status === 'unparseable' && failed.transcript.includes('tool_use'))
+    ok('and raw stays the text that failed to parse', failed.raw.includes('no json here') && !failed.raw.includes('tool_use'))
+  }
 
   // ── raw KEEPS THE TAIL, BECAUSE THAT IS WHERE THE ACCOUNTING IS ────────────
   // `raw` was the first 4000 bytes, which on a real review is SessionStart hook chatter — measured,

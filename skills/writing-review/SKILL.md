@@ -159,6 +159,15 @@ because the harness derives its `result` field from the last content block and G
 appends an empty `thinking` block. The adapter reads the stream instead, and reports `unavailable`
 rather than "no findings" when nothing comes back.
 
+⚠ **An `unparseable` adapter has not necessarily said nothing — RE-READ IT BEFORE DISCARDING IT.**
+Measured on v5.131.0: `prose-codex` reported `unparseable` while having produced seven real
+findings, one of them a truncated sentence in the letter that no internal gate caught. They were
+lost at the parse step, not at the reviewer. The selection rule is fixed, but the lesson stands —
+on `unparseable`, read `raw` (the assistant text, now kept HEAD **and** tail) and `transcript` (the
+stdout, which is where `tool_use` appears) before concluding the run was worthless. The two reasons
+are now distinct: *no JSON object* means the reviewer answered in prose; *a JSON object with no
+`findings` array* means it answered in the wrong shape.
+
 **Cost.** The adapters shell `codex-code` / `gemini-code`, which are the Claude Code harness pointed
 at GPT-5.6 and Gemini — so the reviewer loads this repo's skills and applies the same corpus-gated
 rules while being a different model. Each call carries ~22k input tokens of system prompt and skill

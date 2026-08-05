@@ -18,7 +18,7 @@
  * is also the only way the neutrality of the shared contract is observed rather than claimed: a
  * contract with one implementation is shaped by that implementation whether or not anyone notices.
  */
-import { DEFAULT_SCOPE, type Adapter, type AdapterResult, type Invoke, type ReviewScope } from "../third-party-review.ts";
+import { DEFAULT_SCOPE, type Adapter, type AdapterResult, type Invoke, type ReviewScope } from "../contract.ts";
 
 /** Diff bytes handed to the model. Past this the prompt costs more than the extra context is worth. */
 const MAX_DIFF_BYTES = 240_000;

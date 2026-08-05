@@ -44,58 +44,23 @@ import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { validateGeneratedPlanArtifact } from "../../workflows/lib/approved-artifact.ts";
 import { resolveAdapter, adapterNames } from "./adapters/registry.ts";
+// Imported for LOCAL use (a re-export alone creates no local binding) and re-exported below.
+import { DEFAULT_SCOPE, SEVERITIES, type AdapterResult, type Invoke, type NeutralFinding, type ReviewScope, type ReviewStatus } from "./contract.ts";
 
-/** The neutral finding. Every adapter maps onto exactly this; nothing downstream sees a raw shape. */
-export type NeutralFinding = {
-  severity: "critical" | "high" | "medium" | "low";
-  title: string;
-  body: string;
-  file: string | null;
-  lineStart: number | null;
-  lineEnd: number | null;
-  confidence: number | null;
-  recommendation: string | null;
-  /**
-   * Deterministic prose-audit span ids this finding rests on (`S001`, …), or [] for a code
-   * adapter and for a judgement call no span produced. Carried through the neutral shape so a
-   * reader can tell which findings are anchored to evidence both reviewers saw and which are one
-   * model's opinion — the distinction the whole span-injection design exists to make visible.
-   */
-  spanIds: string[];
-};
-
-/**
- * `reviewed`     the provider ran and its output was understood. `findings: []` here means clean.
- * `unavailable`  the provider could not be reached or threw. `findings: []` means NOTHING WAS LOOKED AT.
- * `unparseable`  the provider ran but its output could not be understood. Raw text is preserved.
- * `skipped`      the approved plan carries no opt-in. The step does not exist for this episode.
- */
-export type ReviewStatus = "reviewed" | "unavailable" | "unparseable" | "skipped";
-
-export type AdapterResult = {
-  status: Exclude<ReviewStatus, "skipped">;
-  verdict?: string | null;
-  summary?: string | null;
-  /**
-   * Provider-shaped findings. Deliberately NOT `NeutralFinding[]` — every adapter hands its raw rows
-   * to `normalizeFindings` here, so the snake_case/camelCase mapping lives in exactly one place and
-   * two adapters cannot drift into two different neutral shapes.
-   */
-  findings: unknown[];
-  /** Why a non-`reviewed` status happened. Required for `unavailable` and `unparseable`. */
-  reason?: string | null;
-  /** Provider output that could not be parsed, preserved verbatim. */
-  raw?: string | null;
-  /**
-   * Every deterministic prose-audit span id the reviewer says it CONSIDERED, including the ones it
-   * judged fine. Distinct from the per-finding ids: those name the evidence a finding rests on,
-   * this names the evidence that was read at all — which is the only way to tell a reviewer that
-   * weighed the spans and disagreed from one that never looked. Empty for code adapters.
-   */
-  spanIds?: string[] | null;
-  /** The provider's own accounting from its terminal `result` event, when it emits one. */
-  usage?: { totalCostUsd?: number | null; durationMs?: number | null; numTurns?: number | null } | null;
-};
+// The contract itself lives in `contract.ts`, a LEAF module, so that an adapter needing
+// `DEFAULT_SCOPE` as a value does not have to import THIS file and close the cycle
+// prose -> third-party-review -> registry -> prose. Re-exported here because this module is the
+// public surface every existing caller and test imports from; see contract.ts for the measurement.
+export {
+  DEFAULT_SCOPE,
+  SEVERITIES,
+  type Adapter,
+  type AdapterResult,
+  type Invoke,
+  type NeutralFinding,
+  type ReviewScope,
+  type ReviewStatus,
+} from "./contract.ts";
 
 /** One adapter's outcome. Findings are attributed, because the value is in where adapters DISAGREE. */
 export type AdapterReview = {
@@ -106,6 +71,12 @@ export type AdapterReview = {
   findings: NeutralFinding[];
   reason: string | null;
   raw: string | null;
+  /**
+   * The provider stdout transcript on a FAILURE path, where `raw` is the assistant text instead.
+   * Null when the adapter did not supply one (every code adapter, and the success path, where
+   * `raw` already IS the transcript).
+   */
+  transcript: string | null;
   spanIds: string[];
   /** What this adapter cost and how hard it worked. Null fields mean the provider reported none. */
   usage: { totalCostUsd: number | null; durationMs: number | null; numTurns: number | null };
@@ -130,42 +101,6 @@ export type ThirdPartyReviewResult = {
   /** Every finding from every adapter, each carrying its `adapter` attribution. */
   findings: (NeutralFinding & { adapter: string })[];
 };
-
-/** How an adapter shells out. Injectable so tests never make a paid external call. */
-export type Invoke = (spec: {
-  command: string;
-  args: string[];
-  cwd: string;
-  input?: string;
-  timeoutMs?: number;
-}) => { code: number; stdout: string; stderr: string };
-
-/**
- * WHAT AN ADAPTER IS ASKED TO REVIEW.
- *
- * `working-tree` — uncommitted changes. The default, because that is the state IMPLEMENT usually
- *   leaves behind and because every already-approved plan was written against it.
- * `branch` — `<base>..HEAD`. Needed because the adapters could ONLY see uncommitted work, so
- *   reviewing a pull request was impossible through the shipped path: PR #130 had to be reviewed by
- *   hand-injecting a branch diff through the `invoke` seam. It also matters for the ordinary flow —
- *   the third-party step runs after the verifier, when the work may already be committed.
- * `document` — a FILE, not a diff. Prose review has no meaningful diff: a draft is judged whole,
- *   and the reviewer needs the surrounding argument to judge any sentence in it. Both git scopes
- *   would hand a prose reviewer a patch and ask it to assess writing it cannot see.
- */
-export type ReviewScope =
-  | { kind: "working-tree" }
-  | { kind: "branch"; base: string }
-  | { kind: "document"; path: string };
-
-export const DEFAULT_SCOPE: ReviewScope = { kind: "working-tree" };
-
-export type Adapter = {
-  name: string;
-  review(context: { projectDir: string; invoke: Invoke; scope: ReviewScope }): AdapterResult;
-};
-
-export const SEVERITIES = ["critical", "high", "medium", "low"] as const;
 
 /**
  * The opt-in line, as it appears in the approved plan.
@@ -377,7 +312,7 @@ export function runThirdPartyReview(request: RunRequest): ThirdPartyReviewResult
       reviews.push({
         adapter: adapter.name, status: "unavailable", verdict: null, summary: null,
         findings: [], reason: error instanceof Error ? error.message : String(error), raw: null,
-        spanIds: [], usage: { totalCostUsd: null, durationMs: null, numTurns: null },
+        transcript: null, spanIds: [], usage: { totalCostUsd: null, durationMs: null, numTurns: null },
       });
       continue;
     }
@@ -392,6 +327,7 @@ export function runThirdPartyReview(request: RunRequest): ThirdPartyReviewResult
       findings: result.status === "reviewed" ? normalizeFindings(result.findings) : [],
       reason: text(result.reason),
       raw: typeof result.raw === "string" && result.raw !== "" ? result.raw : null,
+      transcript: typeof result.transcript === "string" && result.transcript !== "" ? result.transcript : null,
       spanIds: Array.isArray(result.spanIds)
         ? result.spanIds.filter((id): id is string => typeof id === "string" && id.trim() !== "")
         : [],
