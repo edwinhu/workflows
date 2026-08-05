@@ -16,13 +16,33 @@ CONSTRAINT = "wikipedia-structural-patterns"
 APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
 SEVERITY = "soft"
 
+# ABSORBED writing-ai-smell-structure (v5.127.0) — see the merge note in
+# wikipedia-puffery-and-exaggeration.py. Its paragraph-start filler transitions and its broader
+# `Despite X,` formula had no counterpart here and were merged in below, marked `[ex-ai-smell]`.
+# NOTE ON ANCHORING — THIS IS A DELIBERATE WIDENING, NOT AN OVERSIGHT. ai-smell fired only on a
+# PARAGRAPH-start line, tracked with its own stateful prose scanner. These tables are matched line
+# by line by every loader, so `^` here means LINE start, and in a hard-wrapped draft a sentence
+# beginning "Moreover," or "Despite its success," mid-paragraph will now fire where it did not
+# before. Accepted for two reasons: a filler transition is a filler transition wherever the
+# sentence starts (Volokh would cut it either way), and the whole module is SEVERITY = "soft", so
+# the cost of the extra hits is an advisory line, never a blocked gate. If the noise proves real,
+# the fix is a paragraph-aware runner shared by every table — not a second stateful scanner.
 _STRUCTURAL_PATTERNS = [
-    # Section-ending filler
-    (r'^\s*(In\s+summary|In\s+conclusion|To\s+summarize|To\s+conclude|Overall),?\s*[A-Z]',
+    # Section-ending filler. `In closing` / `In sum` and the no-following-capital case came from
+    # writing-ai-smell-structure.
+    (r'^\s*(In\s+summary|In\s+conclusion|In\s+closing|In\s+sum|To\s+summarize|To\s+conclude|Overall)[,:\s]',
      "structure: section-ending summary filler ('In summary/conclusion') — cut or rewrite as argument"),
     # Despite-challenges formula
     (r'\bDespite\s+(these\s+)?(challenges?|obstacles?|difficulties|setbacks?)\b',
      "structure: 'Despite these challenges' formula — AI recovery arc, verify it's not formulaic"),
+    # [ex-ai-smell] The general concessive opener — "Despite its success, the agency faces …" —
+    # which the challenges/obstacles list above misses entirely.
+    (r'^Despite\s+\S[^,\n]{2,70},',
+     "structure: 'Despite X, Y' concessive opener — AI paragraph formula; lead with the point"),
+    # [ex-ai-smell] Filler transitions at the left margin. Volokh prefers these cut; law review
+    # prose uses them legitimately, which is why the whole module is SEVERITY = soft.
+    (r'^(Furthermore|Moreover|Additionally|In\s+addition|That\s+said|With\s+that\s+said)[,:]',
+     "structure: filler transition opener ('Furthermore,' / 'Moreover,' / 'Additionally,') — cut it or name the actual connection"),
     # Negative parallelism / antithesis flourishes — match BOTH contracted
     # ('it's') and uncontracted ('it is') forms. The uncontracted variant is
     # easy to overlook because most published examples use the contraction.

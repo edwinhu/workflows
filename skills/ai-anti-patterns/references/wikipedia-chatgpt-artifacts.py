@@ -16,10 +16,14 @@ CONSTRAINT = "wikipedia-chatgpt-artifacts"
 APPLIES_TO = ["writing-draft", "writing-review", "writing-revise", "writing-validate"]
 SEVERITY = "hard"  # These artifacts must be removed — they expose AI provenance unambiguously
 
+# ABSORBED writing-ai-smell-artifacts (v5.127.0) — see the merge note in
+# wikipedia-puffery-and-exaggeration.py. Nearly all of it duplicated this table and
+# wikipedia-template-artifacts.py; the one improvement was a wider `turn` placeholder, taken below.
 _ARTIFACT_PATTERNS = [
-    # ChatGPT citation placeholders
-    (r'\b(cite)?turn\d+search\d+\b', "ChatGPT artifact: citeturn0search0 citation placeholder"),
-    (r'\b(cite)?turn\d+image\d+\b', "ChatGPT artifact: turn0image0 citation placeholder"),
+    # ChatGPT citation placeholders. [ex-ai-smell] widened from two rules matching only
+    # search/image to one covering news and file, and the `iturn…` variant the web UI also emits.
+    (r'\b(cite)?(i)?turn\d+(search|image|news|file)\d+\b',
+     "ChatGPT artifact: citeturn0search0 citation placeholder"),
     # oaicite / contentReference artifacts
     (r':contentReference\[oaicite:\d+\]', "ChatGPT artifact: :contentReference[oaicite:X]"),
     (r'\[oai_citation:\d+', "ChatGPT artifact: [oai_citation:X‡...]"),

@@ -16,10 +16,27 @@ CONSTRAINT = "wikipedia-puffery-and-exaggeration"
 APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
 SEVERITY = "soft"  # warn — puffery phrases can appear in legitimate academic prose
 
+# ABSORBED writing-ai-smell-puffery (v5.127.0). That constraint and this table were the same
+# system built twice — 63 patterns against 75, overlapping on puffery, promotional superlatives,
+# filler transitions and artifacts — and running both is what reported one phrase two or three
+# times under three labels. Its duplicates were dropped (`rich tapestry` → wikipedia-promotional,
+# `stands as a`/`it is important to note` → already here and there, respectively) and the entries
+# it had that this table lacked were merged in below, marked `[ex-ai-smell]`.
 _PUFFERY_PATTERNS = [
     (r'\b(stands|serves)\s+as\b', "puffery: 'stands/serves as'"),
     (r'\bis\s+a\s+(testament|reminder)\b', "puffery: 'is a testament/reminder'"),
-    (r'\bplays\s+a\s+(vital|significant|crucial|pivotal|key)\s+role\b', "puffery: 'plays a X role'"),
+    # `central` came from writing-ai-smell-puffery; the rest were already here.
+    (r'\bplays\s+a\s+(vital|significant|crucial|pivotal|key|central)\s+role\b', "puffery: 'plays a X role'"),
+    # [ex-ai-smell] The de-hedging siblings of 'it is important to note' (which lives in
+    # wikipedia-promotional-language.py). Kept because a reader meets all three interchangeably.
+    (r'\bit\s+is\s+worth\s+noting\b', "puffery: 'it is worth noting'"),
+    (r'\bit\s+should\s+be\s+noted\s+that\b', "puffery: 'it should be noted that'"),
+    # [ex-ai-smell] `delves into`. NOTE THE TENSION, because it is worth keeping visible: the
+    # scored-tic corpus gate REJECTED the bare form (real authors write it) and kept only the
+    # narrowed 'delve into the intricacies of'. This entry survives the merge as a SOFT flag so
+    # the ai-smell family's coverage is not silently lost; if it false-positives in practice,
+    # delete this line rather than weakening the scored table.
+    (r'\bdelves?\s+into\b', "puffery: 'delves into'"),
     (r'\b(underscores?|highlights?|emphasizes?|showcases?)\s+(its|the)\s+(importance|significance)\b',
      "puffery: 'underscores its importance'"),
     (r'\b(reflects?|symboliz(es?|ing))\s+(the\s+)?(broader|wider)\b', "puffery: 'reflects broader'"),

@@ -18,7 +18,12 @@ SEVERITY = "hard"  # Placeholders must never appear in final draft
 
 _PLACEHOLDER_PATTERNS = [
     # Bracket placeholders: [Name], [Date], [Source URL], [describe X], [insert Y]
-    (r'\[[A-Z][a-zA-Z\s\']+\]', "placeholder: '[Name]'-style unfilled bracket"),
+    #
+    # `(?!\()` EXCLUDES MARKDOWN LINKS. `[Some Title](url)` matched this rule, and this module is
+    # SEVERITY = "hard" — which, since check-all started reporting severity and the gates started
+    # denying on it (v5.127.0), means an ordinary link in a draft could BLOCK a phase. Hard is the
+    # class that is supposed to have no false positives; a link is not an unfilled placeholder.
+    (r'\[[A-Z][a-zA-Z\s\']+\](?!\()', "placeholder: '[Name]'-style unfilled bracket"),
     (r'\[(describe|insert|add|enter|specify|include|provide|replace|your\s+\w+)[^\]]+\]',
      "placeholder: instructional bracket placeholder"),
     # Placeholder dates

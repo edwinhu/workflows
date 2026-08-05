@@ -85,6 +85,11 @@ ok('ds gates Workflow only, never Agent', src.includes('floor === "ds"') && src.
 ok('dev gates Agent only', src.includes('toolName !== "Agent"'))
 ok('the ds path names the fix-subagent escape (no deadlock)', /fix subagents? (must|stay)/i.test(src))
 ok('only failures block; tooling errors do not', src.includes('failed.length === 0') && src.includes('NOT blocking'))
+// SEVERITY IS THE CONSTRAINT'S TO DECLARE. check-all.py emits a per-entry `severity` and this gate
+// must deny only on `hard`; blocking on every failure equally is what made advisory puffery as
+// fatal as a provenance leak. Pinned so it cannot silently revert to "any failure blocks".
+ok('dev denies on HARD failures only', src.includes('function isHard') && /severity/.test(src))
+ok('soft failures are reported rather than dropped', /advisory, NOT blocking/.test(src))
 
 // A LAUNCH FAILURE IS NOT A PASS. runDs used to return ok:true when check-all-ds.sh could not be
 // spawned at all — the one condition under which the floor learns nothing was the one that let

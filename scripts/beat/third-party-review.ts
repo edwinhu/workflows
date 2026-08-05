@@ -55,6 +55,13 @@ export type NeutralFinding = {
   lineEnd: number | null;
   confidence: number | null;
   recommendation: string | null;
+  /**
+   * Deterministic prose-audit span ids this finding rests on (`S001`, …), or [] for a code
+   * adapter and for a judgement call no span produced. Carried through the neutral shape so a
+   * reader can tell which findings are anchored to evidence both reviewers saw and which are one
+   * model's opinion — the distinction the whole span-injection design exists to make visible.
+   */
+  spanIds: string[];
 };
 
 /**
@@ -79,6 +86,13 @@ export type AdapterResult = {
   reason?: string | null;
   /** Provider output that could not be parsed, preserved verbatim. */
   raw?: string | null;
+  /**
+   * Every deterministic prose-audit span id the reviewer says it CONSIDERED, including the ones it
+   * judged fine. Distinct from the per-finding ids: those name the evidence a finding rests on,
+   * this names the evidence that was read at all — which is the only way to tell a reviewer that
+   * weighed the spans and disagreed from one that never looked. Empty for code adapters.
+   */
+  spanIds?: string[] | null;
 };
 
 /** One adapter's outcome. Findings are attributed, because the value is in where adapters DISAGREE. */
@@ -90,6 +104,7 @@ export type AdapterReview = {
   findings: NeutralFinding[];
   reason: string | null;
   raw: string | null;
+  spanIds: string[];
 };
 
 export type ThirdPartyReviewResult = {
@@ -251,6 +266,9 @@ export function normalizeFindings(raw: unknown): NeutralFinding[] {
       lineEnd: integer(item.line_end) ?? integer(item.lineEnd),
       confidence: unit(item.confidence),
       recommendation: text(item.recommendation),
+      spanIds: Array.isArray(item.spanIds)
+        ? item.spanIds.filter((id): id is string => typeof id === "string" && id.trim() !== "")
+        : [],
     });
   }
   return out;
@@ -355,6 +373,7 @@ export function runThirdPartyReview(request: RunRequest): ThirdPartyReviewResult
       reviews.push({
         adapter: adapter.name, status: "unavailable", verdict: null, summary: null,
         findings: [], reason: error instanceof Error ? error.message : String(error), raw: null,
+        spanIds: [],
       });
       continue;
     }
@@ -369,6 +388,9 @@ export function runThirdPartyReview(request: RunRequest): ThirdPartyReviewResult
       findings: result.status === "reviewed" ? normalizeFindings(result.findings) : [],
       reason: text(result.reason),
       raw: typeof result.raw === "string" && result.raw !== "" ? result.raw : null,
+      spanIds: Array.isArray(result.spanIds)
+        ? result.spanIds.filter((id): id is string => typeof id === "string" && id.trim() !== "")
+        : [],
     });
   }
 

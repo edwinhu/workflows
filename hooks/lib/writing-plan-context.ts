@@ -11,7 +11,13 @@ export type AuthenticatedWritingPlan = Readonly<{
 
 function planSection(plan: string, heading: string): string {
   const escaped = heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return new RegExp(`^##\\s+${escaped}\\s*$([\\s\\S]*?)(?=^##\\s|$)`, "mi").exec(plan)?.[1] ?? "";
+  // `(?![\s\S])` IS END-OF-INPUT; `$` IS NOT, under the `m` flag. With `$` the lazy body matched
+  // the empty string at the first line break, so every section came back "" — which meant
+  // `style` was ALWAYS "" and the domain style guide (Volokh / McCloskey) never loaded for any
+  // draft this hook linted, silently, on a plan that declared its Domain correctly. Measured on a
+  // real approved plan before the fix. workflows/writing-review.js already uses this idiom for
+  // the same parse.
+  return new RegExp(`^##\\s+${escaped}\\s*$([\\s\\S]*?)(?=^##\\s|(?![\\s\\S]))`, "mi").exec(plan)?.[1] ?? "";
 }
 
 function sourceField(sourcePlan: string, field: string): string {

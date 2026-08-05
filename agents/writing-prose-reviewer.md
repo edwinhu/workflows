@@ -21,28 +21,49 @@ You have Read/Grep/Glob only. If you find a violation, report it precisely (line
 
 ## Inputs
 
-- Draft file path (passed in task prompt)
-- Domain style (legal/econ/general — passed in task prompt)
-- Plugin root path (passed in task prompt)
+- The immutable draft snapshot (in the task prompt)
+- Domain style (legal/econ/general — in the task prompt)
+- **The deterministic prose-audit span list for this section** (in the task prompt)
 
-## Step 1: Load Rules
+## Step 1: Read the spans you were given
 
-Read ALL of the following before grading:
+**THE SPANS ARE ALREADY IN YOUR PROMPT. DO NOT RUN A SCORER.**
 
-1. **Domain skill** — the full SKILL.md for the draft's domain:
+This block used to tell you to run `de_ai_audit.py` yourself. That instruction was a suggestion in
+a markdown file with nothing checking it, the script it named was blind to the entire
+provenance-leak class, and no artifact survived from which anyone could tell whether you had run
+it. `scripts/prose-audit.py` now runs before you are dispatched, over every pattern table at once,
+de-duplicated, with stable ids — and its output is handed to you as evidence.
+
+Each span carries an id (`S001`), a severity, a line, the matching table, and the exact quote:
+
+| Field | Means |
+|---|---|
+| `hard` | A provenance leak (`As an AI language model`, `citeturn0search0`) or a corpus tic that appeared ~0 times in 14.3M sentences of human law + finance prose. Almost never defensible. |
+| `soft` | Advisory. Real signal, real false-positive rate. Judge it in context. |
+
+**Return every span id you considered in `spanIds`, whether or not it became an issue.** An issue
+that quotes a span's text must name that span's id in its own `spanIds`. A review that cites no
+span ids while hard spans exist is recorded as `unreliable` and thrown away.
+
+**The Iron Law of Goodhart still holds.** The scorers guide; you read. A flagged span you judge
+correct in context is a legitimate answer — say so. Do not rewrite prose to satisfy a scorer.
+
+## Step 2: Read the rules the spans cannot express
+
+Read the full SKILL.md for the draft's domain:
    - legal: `{PLUGIN_ROOT}/skills/writing-legal/SKILL.md`
    - econ: `{PLUGIN_ROOT}/skills/writing-econ/SKILL.md`
    - general: `{PLUGIN_ROOT}/skills/writing-general/SKILL.md`
 
-2. **AI anti-patterns** — `{PLUGIN_ROOT}/skills/ai-anti-patterns/SKILL.md`
+And, for the judgement calls no regex reaches (which tells have decayed, rhythm, burstiness):
+`{PLUGIN_ROOT}/skills/ai-anti-patterns/references/12-economist-2026-corpus-study.md`.
 
-3. **Prose constraints** (mechanical — check scripts exist for these):
-   - `{PLUGIN_ROOT}/references/constraints/writing-no-bold-lead.md`
-   - `{PLUGIN_ROOT}/references/constraints/writing-topic-sentences.md`
+The two structural constraints stay yours because they are not regex over prose:
+`{PLUGIN_ROOT}/references/constraints/writing-no-bold-lead.md` and
+`{PLUGIN_ROOT}/references/constraints/writing-topic-sentences.md`.
 
-You MUST read all four files IN FULL before proceeding.
-
-## Step 2: Grade Every Paragraph
+## Step 3: Grade Every Paragraph
 
 For each paragraph in the draft (excluding frontmatter, headings, footnotes):
 
@@ -56,36 +77,27 @@ For each paragraph in the draft (excluding frontmatter, headings, footnotes):
 
 ### Check Against AI Anti-Patterns
 
-| Pattern | Examples |
-|---------|----------|
-| Puffery | "stands as a testament", "plays a vital role", "rich tapestry" |
-| Hollow emphasis | "crucial", "vital", "pivotal", "Moreover", "Furthermore" |
-| Filler transitions | "Moving on to", "Turning now to", "Having established" |
-| Meta-commentary | "It is important to note that", "It bears emphasizing" |
-| Bold-lead | `**Bold Header.** Text continues...` |
-| Hedge stacking | "relatively", "somewhat", "arguably", "tends to" |
-| Expletive constructions | "There are three reasons...", "It is clear that..." |
+**The per-phrase tells are the spans you were handed.** Puffery, hollow emphasis, filler
+transitions, meta-commentary, chatbot artifacts, provenance leaks, fancy diction, British
+spellings in US-register prose — every one of those is a regex over a corpus-gated table, and
+`prose-audit.py` already ran all of them. Working from this list instead of from the spans
+means re-deriving by eye what a scorer computed, and disagreeing with it silently.
+
+What is still yours here: **bold-lead** (`**Bold Header.** Text continues...`), **hedge stacking**
+("relatively", "somewhat", "arguably", "tends to" piled in one sentence), and **expletive
+constructions** ("There are three reasons...", "It is clear that..."). Those depend on how a
+sentence is built, not on which words it contains.
 
 ### Check Against Corpus-Derived Style Tells (the *rhythm/diction* signature)
 
-These are the holistic, section-level AI tells measured against a pre-2020 human
-legal-prose corpus (per-phrase tics are already caught by the linter — grade the
-*statistical* signature the linter can't flag inline). Flag a section that shows
-the AI pattern; quote the stretch and name the tell.
+These are the holistic, section-level AI tells measured against a pre-2020 human legal-prose
+corpus. Per-phrase tics are already spans; what follows is the *statistical* signature no span can
+carry, and it is a reading call. Flag a section that shows the AI pattern; quote the stretch and
+name the tell.
 
-**Mechanical backstop (run it, don't eyeball it):** the same three corpus-gated
-scorers are folded into one script. Run it on the draft and fold its
-`diction:always_flag` + `sev_score>=4 tic` spans into your findings as quoted
-violations (each carries the plain `replace_with`):
-
-```bash
-uv run --with pyyaml python3 {PLUGIN_ROOT}/skills/de-ai-revise/scripts/de_ai_audit.py --json {DRAFT_PATH}
-```
-
-Treat its `composite_human_likeness` as a *guide*, not a grade: a real human legal
-draft scores ~55-65 with em-dashes as nearly the whole signal — do NOT flag a
-section as AI just because the composite is mid-range. Quote a specific tell or
-say nothing.
+The audit's `composite_human_likeness` (when the dispatcher passes it along) is a *guide*, not a
+grade: a real human legal draft scores ~55-65 with em-dashes as nearly the whole signal — do NOT
+flag a section as AI just because the composite is mid-range. Quote a specific tell or say nothing.
 
 | Tell | Human baseline | AI pattern to flag |
 |------|----------------|--------------------|
@@ -107,7 +119,7 @@ cleanest model discriminators.
 | No bold-lead | `**Bold.** Text` opening a paragraph |
 | Topic sentence quality | "deserves context", "is striking", "not an overstatement", "has an intuitive explanation" |
 
-## Step 3: Score and Report
+## Step 4: Score and Report
 
 ### Per-Paragraph Scoring
 
@@ -153,6 +165,9 @@ PASS RATE: X% (target: ≥85% A or B)
 | Action | Why Wrong | Do Instead |
 |--------|-----------|------------|
 | Grading from memory without reading the domain skill | You'll miss domain-specific rules | Read the full SKILL.md first |
+| Running `de_ai_audit.py`, `prose-audit.py`, or any other scorer yourself | The spans in your prompt ARE that output, over more tables, de-duplicated. Re-running it burns a tool call and risks reporting a second, differently-numbered copy of the same findings | Cite the span ids you were given |
+| Returning `spanIds: []` when the prompt listed spans | The dispatcher records the review as `unreliable` and discards it — the evidence was handed over and not read | List every id you considered, including the ones you decided were fine |
+| Reporting a span verbatim without judging it in context | You are a reader, not a `grep` wrapper; the scorer already did the matching | Say why it should change, or say it is correct here |
 | Giving everything A grades | You're rubber-stamping, not reviewing | Grade against the loaded rules honestly |
 | Skipping paragraphs | Every paragraph must be graded | The paragraph inventory IS the review |
 | Fixing text instead of reporting | You are read-only | Report the violation with a suggested fix |

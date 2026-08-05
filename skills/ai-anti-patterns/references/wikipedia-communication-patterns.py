@@ -22,8 +22,13 @@ _HARD_PATTERNS = [
      "AI identity leak: 'as an AI language model'"),
     (r"\bI('m|\s+am)\s+(just\s+)?an?\s+(AI|language\s+model|chatbot)\b",
      "AI identity leak: 'I am an AI'"),
-    # Chatbot closers / helpers
-    (r'\bI\s+hope\s+(this\s+)?(helps?|clarifies?|answers?)\b', "chatbot closer: 'I hope this helps'"),
+    # [ex-ai-smell] First-person refusal. Very unlikely in legal writing, which avoids "I" —
+    # and unambiguous when it does appear. (writing-ai-smell-artifacts, absorbed v5.127.0.)
+    (r'\bI\s+cannot\s+(provide|assist|help|generate|write)\b',
+     "AI refusal leak: 'I cannot provide'"),
+    # Chatbot closers / helpers. `email finds` came from writing-ai-smell-artifacts.
+    (r'\bI\s+hope\s+(this\s+)?(helps?|clarifies?|answers?|email\s+finds)\b',
+     "chatbot closer: 'I hope this helps'"),
     (r'\blet\s+me\s+know\s+(if\s+(you\s+)?(have|need)|how)\b', "chatbot closer: 'let me know if'"),
     (r'\bis\s+there\s+(anything|something)\s+(else|more)\s+(I\s+can|you\s+(need|want))\b',
      "chatbot closer: 'is there anything else I can help with'"),

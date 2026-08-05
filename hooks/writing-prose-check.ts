@@ -1,49 +1,48 @@
 #!/usr/bin/env bun
 /**
- * PostToolUse hook: prose-lint + structural constraints after draft edits.
- *
- * TypeScript port of writing-prose-check.py — behavior-preserving, including the odd bits.
+ * PostToolUse hook: the deterministic prose audit + structural constraints after draft edits.
  *
  * Fires on Edit|Write to:
  *   - `drafts/*.md`   — markdown drafts (existing gate), AND
  *   - `*.typ` LETTERS — Typst letters (NOT slide decks; decks are skipped).
  *
- * Two engines run, complementary and de-duplicated:
- *   1. scripts/prose-lint.py — the comprehensive PROSE PATTERN engine.
- *   2. references/constraints/check-all.py — the GRANULAR engine (real logic, not regex tables).
- * Plus skills/ai-anti-patterns/scripts/style_metrics.py --lint for line-level stylometry.
+ * ONE PROSE ENGINE, ONE STRUCTURAL ENGINE:
+ *   1. scripts/prose-audit.py — every prose/AI-tell pattern system, de-duplicated, span-id'd.
+ *   2. references/constraints/check-all.py — STRUCTURAL constraints only (bold-lead,
+ *      topic-sentences, anchored-numbers, outline-sync): real logic, not regex over prose.
  *
- * The three engines are NOT reimplemented here: they are the same Python scripts, spawned from the
- * same PLUGIN_ROOT-relative paths, so their exact strings (and their regex tables) stay the source
- * of truth. Only the routing, masking, range-scoping and formatting are ported.
+ * WHY THAT SPLIT IS NOW A PREFIX RULE AND NOT A NAMED SET. This hook used to run prose-lint AND
+ * check-all and suppress the overlap with `PROSE_LINT_SUPERSEDES`, a hand-maintained set of three
+ * constraint names. It named the wrong three: the wikipedia-* tables are in BOTH engines and were
+ * in neither's supersede list, so every AI-tell inside an edited range was reported to the model
+ * twice. The set is gone. check-all's prose modules are skipped by the directory they live in,
+ * which cannot fall out of date as tables are added. See
+ * docs/DESIGN-prose-constraint-architecture.md.
+ *
+ * Neither engine is reimplemented here: both are the same Python scripts, spawned from the same
+ * PLUGIN_ROOT-relative paths, so their exact strings and regex tables stay the source of truth.
+ * Footnote masking, stylometrics and range-independent document signals now live inside
+ * prose-audit.py rather than being assembled here.
  *
  * Non-blocking: reports violations as an additionalContext message.
  */
 import { context, readPayload } from "./_gate_common";
-import { existsSync, readFileSync, writeFileSync, unlinkSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { authenticatedWritingPlan } from "./lib/writing-plan-context.ts";
-import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 
 const PLUGIN_ROOT = dirname(import.meta.dir);
 const CHECK_ALL = join(PLUGIN_ROOT, "references", "constraints", "check-all.py");
-const PROSE_LINT = join(PLUGIN_ROOT, "scripts", "prose-lint.py");
-const STYLE_LINT = join(PLUGIN_ROOT, "skills", "ai-anti-patterns", "scripts", "style_metrics.py");
+const PROSE_AUDIT = join(PLUGIN_ROOT, "scripts", "prose-audit.py");
 
-// The Python original spawns `sys.executable`; it is itself launched through
-// `#!/usr/bin/env -S uv run python3`, so the equivalent interpreter here is `uv run python3`.
-const PY = ["uv", "run", "python3"];
+// Both scripts declare their own dependencies in a `uv run --with …` shebang; spawning them
+// through the interpreter bypasses the shebang, so the deps are named here instead. Without
+// lxml the .docx and wikipedia-* paths die at import; without pyyaml the diction tier does.
+const PY = ["uv", "run", "--with", "lxml", "--with", "pyyaml", "python3"];
 
-const PROSE_LINT_SUPERSEDES = new Set([
-  "writing-ai-smell-artifacts",
-  "writing-ai-smell-puffery",
-  "writing-ai-smell-structure",
-]);
-
-const _STYLE_CATEGORY: Record<string, string> = {
-  legal: "writing-legal",
-  econ: "writing-econ",
-};
+/** check-all constraint families that prose-audit.py already owns. A check-all entry name is
+ *  `constraints/<stem>` or `skills/<skill>/references/<stem>`, so a directory prefix is enough. */
+const PROSE_ENGINE_PREFIXES = ["skills/ai-anti-patterns/", "skills/writing-"];
 
 const _DECK_MARKERS = ["touying", "polylux", "#slide("];
 const _DECK_DIR_RE = /^(slides|presentation)/i;
@@ -90,67 +89,10 @@ function reEscape(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-/** Python str.splitlines()-ish for the outputs we parse (no \r-only lines expected). */
-function splitLines(s: string): string[] {
-  const out = s.split("\n");
-  if (out.length && out[out.length - 1] === "") out.pop();
-  return out;
-}
-
-// ---------------------------------------------------------------------------
-// footnote_mask.py, inlined (the Python hook imports it from scripts/lib).
-// ---------------------------------------------------------------------------
-const _INLINE_FN = /\^\[(?:[^\[\]]|\[[^\]]*\])*\]/g;
-const _REF_FN_DEF = /^\s*\[\^[^\]]+\]:/;
-
-function _blank(s: string): string {
-  return s.replace(/[^\n]/g, " ");
-}
-
-function maskFootnotes(text: string): string {
-  text = text.replace(_INLINE_FN, (m) => _blank(m));
-  const lines = text.split("\n");
-  const n = lines.length;
-  const out: string[] = [];
-  let inDef = false;
-  let i = 0;
-  const indented = (s: string) => /^(\s{2,}|\t)/.test(s);
-  while (i < n) {
-    const ln = lines[i];
-    if (_REF_FN_DEF.test(ln)) {
-      inDef = true;
-      out.push(_blank(ln));
-      i += 1;
-      continue;
-    }
-    if (inDef) {
-      if (ln.trim() === "") {
-        let j = i;
-        while (j < n && lines[j].trim() === "") j += 1;
-        if (j < n && indented(lines[j])) {
-          out.push(_blank(ln));
-          i += 1;
-          continue;
-        }
-        inDef = false;
-        out.push(ln);
-        i += 1;
-        continue;
-      }
-      if (indented(ln)) {
-        out.push(_blank(ln));
-        i += 1;
-        continue;
-      }
-      inDef = false;
-    }
-    out.push(ln);
-    i += 1;
-  }
-  return out.join("\n");
-}
-
-// ---------------------------------------------------------------------------
+// FOOTNOTE MASKING USED TO BE INLINED HERE, a hand port of scripts/lib/footnote_mask.py kept in
+// sync by hand, because this hook fed style_metrics.py an on-disk draft directly. prose-audit.py
+// masks all three formats itself (markdown, Typst, docx footnotes.xml) before any scorer sees the
+// text, so the copy is gone rather than maintained in two languages.
 
 type Range = [number, number];
 const WHOLE_FILE: Range = [1, 10 ** 9];
@@ -169,11 +111,12 @@ function runPy(args: string[], cwd?: string): { stdout: string; ok: boolean } {
   }
 }
 
-export function proseLintCategories(style: string | null): string {
-  const cats = ["ai-anti-patterns", "writing-general"];
-  const extra = _STYLE_CATEGORY[(style || "").toLowerCase()];
-  if (extra) cats.push(extra);
-  return cats.join(",");
+/** The plan's domain, normalized to prose-audit.py's `--style` vocabulary. Anything the audit
+ *  does not know about degrades to `general` (Strunk + the AI-tell tables, no domain guide)
+ *  rather than erroring out and leaving the draft unlinted. */
+export function auditStyle(style: string | null): string {
+  const s = (style || "").toLowerCase();
+  return s === "legal" || s === "econ" ? s : "general";
 }
 
 export function isTypDeck(path: string): boolean {
@@ -222,54 +165,35 @@ export function inRanges(lineNo: number, ranges: Range[]): boolean {
   return ranges.some(([a, b]) => a <= lineNo && lineNo <= b);
 }
 
-function runProseLint(path: string, style: string | null, ranges: Range[]): string[] {
-  const { stdout, ok } = runPy([PROSE_LINT, "--only", proseLintCategories(style), path]);
+/** THE prose engine. One span per violation, already collapsed across every pattern system, so
+ *  what reaches the model is one line per finding rather than the same phrase under three labels. */
+export function runProseAudit(path: string, style: string | null, ranges: Range[]): string[] {
+  const { stdout, ok } = runPy([PROSE_AUDIT, "--json", "--style", auditStyle(style), path]);
   if (!ok) return [];
-  const locRe = new RegExp(`^${reEscape(path)}:(\\d+):\\d+\\s+(\\[.+)$`);
-  const out: string[] = [];
-  for (const line of splitLines(stdout)) {
-    const m = locRe.exec(line);
-    if (!m) continue;
-    if (inRanges(parseInt(m[1], 10), ranges)) out.push(`${pyName(path)}:${m[1]} ${m[2]}`);
-  }
-  return out;
-}
-
-function runStyleLint(path: string, ranges: Range[]): string[] {
-  let raw: string;
+  let result: Record<string, unknown>;
   try {
-    raw = readFileSync(path).toString("utf8");
+    result = JSON.parse(stdout);
   } catch {
     return [];
   }
-  let tmp: string | null = null;
-  let data: Record<string, unknown> = {};
-  try {
-    // tempfile.mkstemp(suffix=...) — a file in the SYSTEM temp dir, outside the project, so it
-    // never shows up as a working-tree side effect. Unlinked in `finally`, same as the original.
-    tmp = join(tmpdir(), `tmp${Math.random().toString(36).slice(2)}${pySuffix(path) || ".md"}`);
-    writeFileSync(tmp, maskFootnotes(raw), "utf8");
-    const { stdout } = runPy([STYLE_LINT, "--lint", "--json", tmp]);
-    data = JSON.parse(stdout || "{}");
-  } catch {
-    return [];
-  } finally {
-    if (tmp) {
-      try {
-        unlinkSync(tmp);
-      } catch {
-        /* ignore */
-      }
-    }
-  }
+  const spans = (result.spans as Record<string, unknown>[]) ?? [];
+  // A span at line 0 is document-level (diction saturation, per-section em-dash budget). It is
+  // real, but it does not belong to any edited line, so it is only reported on a whole-file Write
+  // — attaching it to an arbitrary Edit would repeat it on every subsequent keystroke.
+  const wholeFile = ranges.length === 1 && ranges[0][0] === 1 && ranges[0][1] >= 10 ** 9;
   const out: string[] = [];
-  for (const f of (data.findings as Record<string, unknown>[]) ?? []) {
-    const ln = f.line as unknown;
-    if (ln && inRanges(parseInt(String(ln), 10), ranges)) {
-      const type = f.type === undefined || f.type === null ? "None" : String(f.type);
-      const msg = f.message === undefined || f.message === null ? "" : String(f.message);
-      out.push(`${pyName(path)}:${ln} [style] ${type}: ${msg}`);
-    }
+  for (const span of spans) {
+    const line = Number(span.line ?? 0);
+    if (line === 0 ? !wholeFile : !inRanges(line, ranges)) continue;
+    // A span's labels carry their own `<system>: ` prefix so a reviewer citing a span id can tell
+    // which table produced which label. In a one-line hook message the system is already the
+    // bracket, so the prefix is stripped back off rather than printed twice.
+    const labels = ((span.labels as string[]) ?? [])
+      .map((l) => l.replace(/^[a-z0-9-]+: /, ""))
+      .join(" | ");
+    const where = line === 0 ? "doc" : String(line);
+    const severity = String(span.severity ?? "soft");
+    out.push(`${pyName(path)}:${where} [${span.system}${severity === "hard" ? "/HARD" : ""}] ${labels}`);
   }
   return out;
 }
@@ -303,7 +227,8 @@ function runCheckAll(projectRoot: string, path: string, ranges: Range[]): string
   const out: string[] = [];
   for (const entry of (results.failed as Record<string, unknown>[]) ?? []) {
     const name = (entry.name as string) ?? "";
-    if (PROSE_LINT_SUPERSEDES.has(name.split("/").pop() as string)) continue;
+    // Prose is prose-audit.py's job; check-all contributes only its structural constraints.
+    if (PROSE_ENGINE_PREFIXES.some((p) => name.startsWith(p))) continue;
     for (const v of (entry.violations as string[]) ?? []) {
       const m = lineRe.exec(v);
       if (m && inRanges(parseInt(m[1], 10), ranges)) out.push(v);
@@ -351,9 +276,12 @@ async function main(): Promise<void> {
   const style = writingPlan.style || null;
   const ranges = editRanges(toolName, toolInput, path);
 
-  let violations = runProseLint(path, style, ranges);
-  violations = violations.concat(runStyleLint(path, ranges));
+  let violations = runProseAudit(path, style, ranges);
   if (runCheckAllFlag) violations = violations.concat(runCheckAll(projectRoot, path, ranges));
+  // Belt and braces on the de-duplication invariant: the audit collapses overlapping spans, and
+  // check-all no longer contributes prose at all, so an identical line reaching here twice would
+  // be a wiring regression. Report it once regardless.
+  violations = [...new Set(violations)];
 
   if (!violations.length) process.exit(0);
 

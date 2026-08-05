@@ -44,6 +44,14 @@ author's choice is the right one (see Preserve-Human below).
 was gated against a 14.3M-sentence law+finance corpus, so flags are AI defaults
 real scholars don't write — not generic "fancy word" lint.
 
+The scorers themselves now live in `scripts/prose-audit.py`, the plugin's single deterministic
+prose audit, and `de_ai_audit.py` is a thin wrapper over its `--profile de-ai` view. The output
+shape below is unchanged and will stay that way — this skill needs the REWRITE view (a worklist of
+spans with plain replacements), which is a different shape from the audit's severity-ranked,
+id-bearing span list. Use `prose-audit.py` directly for anything that is not a de-AI rewrite: it
+also carries the wikipedia AI-tell tables, the domain style guides, and the provenance-leak class
+this profile is blind to.
+
 | Scorer | Catches | Remedy |
 |--------|---------|--------|
 | **Scored AI-tics** (`ai-anti-patterns/references/scored-tics-patterns.py`) | phrase/structure tics that passed the ~0-human-rate gate (`sev1-5`) | rewrite the construction; these have no honest use |
@@ -151,9 +159,11 @@ user's own published prose — uses them deliberately. Do NOT zero them out.
 
 ## When invoked inside the writing workflow
 
-- **/writing-review** runs `de_ai_audit.py` on every draft as a standard audit step; its
-  always_flag + sev≥4 tic spans become AI-ism findings in REVIEW.md (advisory minors
-  unless they cluster into a major).
+- **/writing-review** runs `scripts/prose-audit.py` on every draft before dispatching its prose
+  reviewers and INJECTS the resulting spans into their prompts as evidence — the reviewer is not
+  asked to run a scorer, and a reviewer that cites none of the hard spans it was handed is
+  recorded as unreliable. Those spans become AI-ism findings (advisory minors unless they cluster
+  into a major).
 - **/writing-revise** applies this skill (rewrite mode) as a non-optional pass on every
   edited draft after fixing REVIEW.md issues, then re-audits. The substrate gate is
   unchanged: AI-prose spans are advisory polish, not blocking criticals.

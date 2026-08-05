@@ -88,7 +88,7 @@
     {
       "name": "allow-clean-draft-no-violations",
       "kind": "allow",
-      "note": "Reaches all three engines but collects zero violations -> exit 0, no stdout.",
+      "note": "Reaches both engines but collects zero violations -> exit 0, no stdout.",
       "stdin": {
         "tool_name": "Write",
         "tool_input": {
@@ -117,7 +117,7 @@
     {
       "name": "context-md-draft-violations",
       "kind": "context",
-      "note": "Full path: prose-lint + style_metrics + check-all all contribute; additionalContext printed.",
+      "note": "No approved writing plan in the fixture, so the hook exits before either engine \u2014 empty stdout. Kept as the routing case it actually is.",
       "stdin": {
         "tool_name": "Write",
         "tool_input": {
@@ -156,7 +156,7 @@
     {
       "name": "context-typ-letter-violations",
       "kind": "context",
-      "note": ".typ letter branch: prose-lint + style only, run_check_all is False (no 'drafts/...' lines).",
+      "note": ".typ letter branch: prose-audit only, run_check_all is False (check-all only scans drafts/*.md). No approved plan here either, so the routing is what is pinned.",
       "stdin": {
         "tool_name": "Write",
         "tool_input": {
@@ -175,7 +175,7 @@
     {
       "name": "context-style-legal-adds-category",
       "kind": "context",
-      "note": "_detect_style reads style: legal -> writing-legal category added; output gains the [writing-legal] prose-lint line the no-style run lacks.",
+      "note": "The RETIRED ACTIVE_WORKFLOW.md ledger is not an authority: no approved plan means no lint, whatever style it declares. Style now comes from the writing plan \u2014 see context-approved-receipt-plan-legal-style-findings for the live legal path.",
       "stdin": {
         "tool_name": "Write",
         "tool_input": {
@@ -208,10 +208,11 @@
         "drafts/legal.md": "The trustee acted pursuant to the agreement and gave notice thereof.\n"
       },
       "tsExpected": {
-        "stdoutSha256": "526c3bb6c8c4812547de8c82cfa6ff61bed9afe9bcf904e99da0ee8433a01126",
+        "stdoutSha256": "642c87ebc664d5a7ea9eb6958aa3deaf47609e42524a27546486091e0c1c2fa7",
         "exit": 0,
         "fs": {}
-      }
+      },
+      "note": "The one case with an authenticated APPROVED legal plan, so the one case that reaches the engines. Output moved from check-all's `drafts/legal.md:1: <label>` to prose-audit's `legal.md:1 [writing-legal] <label>` \u2014 SAME finding, reported once, by the single prose engine instead of by whichever of the two happened to carry the table. It is also the first time the Volokh table loads through the hook's own --style path: `planSection` matched `$` under the /m flag, so the plan's Domain was always parsed as empty."
     },
     {
       "name": "allow-pending-receipt-no-prose-output",
@@ -251,6 +252,28 @@
       },
       "tsExpected": {
         "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
+    },
+    {
+      "name": "context-overlapping-tables-report-once",
+      "kind": "context",
+      "note": "DE-DUPLICATION, AS A HOOK-LEVEL FACT. `rich tapestry` matches the sev4 scored tic, wikipedia-promotional AND diction always_flag; `As an AI language model` is a hard provenance leak. Before the consolidation the overlapping tables reported the tapestry phrase once per engine. Exactly two bullets are expected, and the hard one is marked.",
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "drafts/legal.md"
+        }
+      },
+      "fixture": {
+        ".planning/writing-native.md": "## Writing Intent\n\n- Thesis: Disclosure works.\n- Audience: Scholars.\n- Purpose: Explain doctrine.\n- Hook: Stakes.\n- Scope: United States.\n- Domain: legal\n\n## Claims\n\n- **CLAIM-01**: Disclosure works.\n\n## Counterarguments\n\n- Critics disagree.\n\n## Document Structure\n\n### Introduction\n\n## Claim \u2192 Section Map\n\n| Claim | Section |\n|---|---|\n| CLAIM-01 | Introduction |\n\n## Source Plan\n\n- Bibliography: references/sources.bib\n- Notebook: none\n- Notebook URL: none\n- Key Sources: none\n\n## Section Outputs\n\n| Section | Outline | Draft | Depends On |\n|---|---|---|---|\n| Introduction | outlines/Introduction.md | drafts/Introduction.md | none |\n\n## Review Surfaces\n\n- drafts/Introduction.md\n",
+        ".planning/.state/review.json": "{\"workflow\":\"writing\",\"plan_file\":\"writing-native.md\",\"plan_hash\":\"57647af37c861b3850420e4614fa2d04b239fa146089be7e6ffdf07f15e0d1c8\",\"approved_session_id\":\"author\",\"approved_at\":\"2026-01-01T00:00:00.000Z\",\"status\":\"APPROVED\",\"reviewer_session_id\":\"reviewer\",\"reviewed_at\":\"2026-01-01T00:01:00.000Z\"}",
+        "references/sources.bib": "@article{a,title={A}}\n",
+        "drafts/legal.md": "The record is a rich tapestry of comment letters.\n\nAs an AI language model, I cannot verify that date.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "299b41be54d64e285e4357760035e297105bb40e4a240c27d85126ce03c8cc96",
         "exit": 0,
         "fs": {}
       }

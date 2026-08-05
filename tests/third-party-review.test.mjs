@@ -316,6 +316,49 @@ console.log('the prose adapters survive the failures that were actually observed
       JSON.stringify({ type: 'assistant', message: { content: [{ type: 'text', text: 'b' }] } }),
     ].join('\n')) === 'ab')
   ok('parseReply reads a fenced block', parseReply('pre\n```json\n{"findings":[]}\n```\npost')?.findings.length === 0)
+
+  // ── EVIDENCE IN, INSTRUCTION OUT ───────────────────────────────────────────
+  // The prompt used to open "FIRST, load these skills and apply them". Nothing checked whether
+  // that happened, and the success path threw away the transcript from which anyone could have
+  // checked — which is exactly why the rule611 review could not be audited after the fact. The
+  // deterministic audit now runs here and its spans go into the prompt with their ids.
+  const promptOf = spec => spec.args.at(-1)
+  {
+    let spec
+    proseCodexAdapter.review({ projectDir: ROOT, scope, invoke: s => { spec = s; return { code: 0, stdout: '', stderr: '' } } })
+    const prompt = promptOf(spec)
+    ok('the prompt no longer instructs the reviewer to load skills', !/load these skills/i.test(prompt))
+    ok('the audit spans are INJECTED, with their ids', /\bS001\b/.test(prompt), prompt.slice(0, 400))
+    // The fixture draft is "The organisation recognised its behaviour." — three US-register
+    // spelling spans, so the injected block is real audit output, not a placeholder.
+    ok('the injected spans are the real audit output', /organisation|recognised|behaviour/.test(prompt))
+    ok('the reference-12 decay rules are inlined verbatim rather than cited',
+       /EM-DASHES SPLIT BY MODEL/.test(prompt) && /HALF-LIFE/.test(prompt))
+    ok('each finding must name the span ids it rests on', /"spanIds"/.test(prompt))
+  }
+  {
+    // A document with no spans must say so rather than leave the reviewer guessing.
+    const cleanDir = mkdtempSync(join(tmpdir(), 'prose-clean-'))
+    const cleanPath = join(cleanDir, 'clean.md')
+    writeFileSync(cleanPath, 'Rain fell all night and the river rose by dawn.\n')
+    let spec
+    proseCodexAdapter.review({ projectDir: ROOT, scope: { kind: 'document', path: cleanPath }, invoke: s => { spec = s; return { code: 0, stdout: '', stderr: '' } } })
+    ok('no spans is stated, not implied', /produced no spans/.test(promptOf(spec)), promptOf(spec).slice(0, 300))
+  }
+  {
+    // COST AND THE TOOL-USE RECORD SURVIVE A SUCCESSFUL REVIEW. `raw` was carried only by the two
+    // failure paths, so the one case where the provider worked was the one that left no trace.
+    const transcript = [
+      JSON.stringify({ type: 'assistant', message: { content: [{ type: 'text', text: '```json\n{"verdict":"approve","summary":"s","spanIds":["S001"],"findings":[{"severity":"low","title":"t","body":"b","spanIds":["S001"]}]}\n```' }] } }),
+      JSON.stringify({ type: 'result', subtype: 'success', is_error: false, total_cost_usd: 0.1234 }),
+    ].join('\n')
+    const reviewed = run(transcript)
+    ok('a reviewed result carries raw', reviewed.status === 'reviewed' && typeof reviewed.raw === 'string')
+    ok('and total_cost_usd survives in it', reviewed.raw.includes('total_cost_usd'))
+    ok('spanIds survive the neutral shape', normalizeFindings(reviewed.findings)[0].spanIds[0] === 'S001')
+    ok('a finding without spanIds gets [] rather than undefined',
+       normalizeFindings([{ severity: 'low', title: 't', body: 'b' }])[0].spanIds.length === 0)
+  }
 }
 
 

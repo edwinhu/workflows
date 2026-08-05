@@ -1,439 +1,62 @@
-#!/usr/bin/env -S uv run --with pyyaml python3
-"""de-ai-revise AUDIT — the unified, corpus-validated AI-prose scorer.
+#!/usr/bin/env -S uv run --with lxml,pyyaml python3
+"""de-ai-revise AUDIT — thin wrapper over `scripts/prose-audit.py --profile de-ai`.
 
-Folds the three already-built, corpus-gated scorers into ONE finding set that
-GUIDES a de-AI rewrite (it does not grade for its own sake):
+THE SCORERS MOVED; THE OUTPUT DID NOT. Every scorer this script used to own — the corpus-gated
+scored AI-tics, the tiered diction table, the British-spelling locale check, the stylometric
+composite, and the footnote masking that keeps all of them out of citations — now lives in
+`scripts/prose-audit.py`, the single deterministic prose audit for the whole plugin. That
+consolidation is what makes it possible to hand ONE span list to every reviewer as evidence
+instead of three reviewers each assembling their own subset; see
+`docs/DESIGN-prose-constraint-architecture.md`.
 
-  1. Scored AI-tics  — skills/ai-anti-patterns/references/scored-tics-patterns.py
-     (every entry passed the ~0-human-rate gate vs the 14.3M-sentence
-     law+finance corpus; severity rides in the label as `ai-tic·sevN·id`).
-  2. Tiered diction  — references/diction.yaml (fancy->plain, tiered by empirical
-     corpus rate). always_flag = replace on sight; cluster = flag 2+/paragraph;
-     density = flag at saturation; dropped = legal-normal, NEVER flagged.
-  3. Stylometrics    — skills/ai-anti-patterns/scripts/style_metrics.py --lint
-     (composite_human_likeness 0-100 + line findings: em_dash / metronomic_run /
-     opener / nominalization; + draft-level rhythm/diction advisories).
+WHAT DID NOT CHANGE — deliberately — is the JSON this emits. `skills/de-ai-revise/SKILL.md`
+consumes `spans[]` with `type`/`sev_score`/`message`/`replace_with`, plus
+`composite_human_likeness`, `tic_density`, `by_type`, `advisories`, `density_words` and
+`z_report`; `tests/test_de_ai_audit.py` and `tests/test_de_ai_footnote_masking.py` assert on those
+exact keys and import this module by path. The de-ai profile reproduces that shape byte for byte,
+and this file re-exports the module-level names (`audit_text`, `audit_file`, `mask_footnotes`,
+`BRITISH`, …) that those importers reach for.
 
-Output is a SPAN LIST (line-anchored, each with a plain replacement where one
-exists) plus draft-level signals (composite, tic density, advisories). The
-rewrite revises the flagged spans — it does NOT chase the composite. Diction
-`dropped`-tier words are never emitted: flagging legal-normal vocabulary is the
-false-positive failure this tiering exists to prevent.
+Use `prose-audit.py` directly for anything new. This entry point exists for the de-ai REWRITE view
+— a worklist of spans with plain replacements — which is a different shape from the audit's
+severity-ranked, id-bearing span list, not a subset of it.
 
-FOOTNOTES ARE MASKED before scoring (default; `--keep-footnotes` to disable): pandoc inline
-`^[...]` and markdown `[^id]:` definition blocks are blanked to spaces (line numbers + offsets
-preserved) so NO finding lands inside a footnote. Footnotes/citations are off-limits to a de-AI
-rewrite — they carry [@bibkey] cites, quoted/statutory text, and legal-normal prose — and without
-masking the scorers emit metronomic-run / nominalization / em-dash findings inside citation text
-that the rewriter must exclude by hand. Masking enforces the SKILL's Preserve-Human rule
-mechanically. (Applies to the tics + diction scans AND style_metrics, which runs on the masked text.)
-
-Usage:
+Usage (unchanged):
   de_ai_audit.py draft.md                 # human-readable report
   de_ai_audit.py --json draft.md ...      # machine output (review/revise consume this)
-  de_ai_audit.py --tier always_flag x.md  # restrict diction to a tier (default: always_flag,cluster,density)
+  de_ai_audit.py --tier always_flag x.md  # restrict diction to a tier
+  de_ai_audit.py --keep-footnotes x.md    # do NOT mask footnotes before scoring
 """
 from __future__ import annotations
 
 import argparse
 import importlib.util
 import json
-import os
-import re
-import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
-SKILL_DIR = Path(__file__).resolve().parent.parent          # skills/de-ai-revise
-SKILLS_ROOT = SKILL_DIR.parent                              # skills/
-SCORED_TICS = SKILLS_ROOT / "ai-anti-patterns" / "references" / "scored-tics-patterns.py"
-STYLE_LINT = SKILLS_ROOT / "ai-anti-patterns" / "scripts" / "style_metrics.py"
-DICTION_YAML = SKILL_DIR / "references" / "diction.yaml"
+_PROSE_AUDIT = Path(__file__).resolve().parents[3] / "scripts" / "prose-audit.py"
 
-try:
-    import yaml
-except ImportError:
-    sys.exit("needs PyYAML: run via `uv run --with pyyaml python3 de_ai_audit.py ...`")
+# prose-audit.py is hyphenated, so it can only be loaded by path — the same importlib dance the
+# constraint loaders already use for the wikipedia tables.
+_spec = importlib.util.spec_from_file_location("prose_audit", _PROSE_AUDIT)
+_pa = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_pa)
 
-
-# ── tics ──────────────────────────────────────────────────────────────────────
-def _load_tics():
-    """Return [(compiled_regex, label, severity)] from the in-plugin scored table."""
-    spec = importlib.util.spec_from_file_location("scored_tics", SCORED_TICS)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    out = []
-    for pat, label in getattr(mod, "_TIC_PATTERNS", []):
-        m = re.search(r"sev(\d)", label)
-        sev = int(m.group(1)) if m else 1
-        out.append((re.compile(pat, re.I | re.M), label, sev))
-    return out
-
-
-# ── diction ─────────────────────────────────────────────────────────────────
-def _word_rx(word: str) -> re.Pattern:
-    """Match the word and its common inflections (delve->delving, meticulous->meticulously).
-
-    Hyphenated compounds (cutting-edge, ever-evolving) match literally.
-    """
-    esc = re.escape(word)
-    if "-" in word or word.endswith(("s", "es", "ies")):
-        return re.compile(r"\b" + esc + r"\b", re.I)
-    return re.compile(r"\b" + esc + r"(?:s|es|ed|d|ing|ly|ies)?\b", re.I)
-
-
-def _load_diction():
-    data = yaml.safe_load(DICTION_YAML.read_text())
-    tiers = {}
-    for tier in ("always_flag", "cluster", "density"):
-        entries = []
-        for e in data.get(tier, []):
-            entries.append({
-                "word": e["word"],
-                "replace_with": e.get("replace_with", ""),
-                "rate": float(e.get("rate_per_M", 0)),
-                "rx": _word_rx(e["word"]),
-            })
-        tiers[tier] = entries
-    return tiers
-
-
-# ── stylometrics ──────────────────────────────────────────────────────────────
-def _run_style(path: Path) -> dict:
-    try:
-        out = subprocess.run(
-            [sys.executable, str(STYLE_LINT), "--lint", "--json", str(path)],
-            capture_output=True, text=True, timeout=120)
-        if out.returncode not in (0, 1) or not out.stdout.strip():
-            return {}
-        return json.loads(out.stdout)
-    except Exception:
-        return {}
-
-
-def _run_style_score(path: Path) -> dict:
-    """Full per-feature corpus z-scores (style_metrics.py's plain --json mode, i.e.
-    score_text()): {composite_human_likeness, mean_abs_z, per_feature: {name: {value,
-    human_mean, ai_mean, z, flag}}}. A SEPARATE call from _run_style's --lint --json
-    (which only surfaces z on the handful of features that already cross the advisory
-    threshold) — this is the corpus-calibrated z-vs-human report item 4 asks for, reusing
-    style_metrics' existing HUMAN_STATS baseline (mean+std per feature) rather than
-    inventing new numbers. Best-effort: {} on any failure (never blocks the audit)."""
-    try:
-        out = subprocess.run(
-            [sys.executable, str(STYLE_LINT), "--json", str(path)],
-            capture_output=True, text=True, timeout=120)
-        if out.returncode not in (0, 1) or not out.stdout.strip():
-            return {}
-        return json.loads(out.stdout)
-    except Exception:
-        return {}
-
-
-def _diction_rate_report(text: str, diction: dict, words: int, tiers_on) -> dict:
-    """Draft-vs-corpus RATIO (not a z-score) for every diction word actually observed in the
-    draft: the corpus baseline here (references/diction.yaml rate_per_M) is a single point
-    estimate per word, not a mean+std over many human documents — there is no stored standard
-    deviation to divide by, so a true z-score isn't available for diction (unlike the
-    stylometric features below, which DO have human_std in style_metrics.HUMAN_STATS). Reported
-    as `draft_rate_per_M / human_rate_per_M` so a caller can see "12x the corpus rate" instead
-    of a bare count. A corpus rate of 0 is reported as `ratio: null` (undefined multiplier —
-    the word was never observed in 14.3M human sentences at all)."""
-    report = {}
-    for tier_name, entries in diction.items():
-        if tier_name not in tiers_on:
-            continue
-        for e in entries:
-            n = len(e["rx"].findall(text))
-            if not n:
-                continue
-            draft_rate = n * 1_000_000 / words
-            human_rate = e["rate"]
-            ratio = round(draft_rate / human_rate, 1) if human_rate > 0 else None
-            report[e["word"]] = {
-                "tier": tier_name, "count": n,
-                "draft_rate_per_M": round(draft_rate, 1),
-                "human_rate_per_M": human_rate,
-                "ratio_vs_human": ratio,
-            }
-    return report
-
-
-def _paragraphs(text: str):
-    """Yield (start_line, paragraph_text). Blank-line delimited."""
-    lines = text.split("\n")
-    buf, start = [], 1
-    for i, ln in enumerate(lines, 1):
-        if ln.strip() == "":
-            if buf:
-                yield start, "\n".join(buf)
-            buf, start = [], i + 1
-        else:
-            if not buf:
-                start = i
-            buf.append(ln)
-    if buf:
-        yield start, "\n".join(buf)
-
-
-# ── footnote masking ──────────────────────────────────────────────────────────
-# Footnotes/citations are OFF-LIMITS to a de-AI rewrite (they carry [@bibkey] cites, quoted and
-# statutory text, and legal-normal prose). The scorers (tics + diction + style_metrics) otherwise
-# treat footnote text as body and emit findings INSIDE footnotes — metronomic runs, nominalizations,
-# em-dashes — which the rewriter must then exclude by hand. Masking them here (blanking to spaces,
-# PRESERVING line count + offsets so line-anchoring stays exact) means findings never target a
-# footnote in the first place. Covers pandoc inline `^[...]` (one level of nested `[...]` for cites)
-# and markdown reference definitions `[^id]: ...` + their indented (incl. multi-paragraph)
-# continuation lines.
-#
-# Lives in scripts/lib/footnote_mask.py — shared with hooks/writing-prose-check.py, which masks a
-# draft the same way before invoking style_metrics.py --lint. Re-exported here (mask_footnotes,
-# _blank, the two regexes) so existing importers of this module keep working unchanged.
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts" / "lib"))
-from footnote_mask import mask_footnotes, _blank, _INLINE_FN, _REF_FN_DEF  # noqa: E402
-
-
-# --- British spelling in US-register prose -------------------------------
-# Not a "fancy word" signal, so it does not belong in diction.yaml's rate tiers:
-# it is a LOCALE mismatch.  LLMs trained on mixed corpora emit these into US
-# documents, and a US filing or law-review piece should not carry them.
-#
-# WORDS CORRECT IN BOTH DIALECTS ARE DELIBERATELY ABSENT and must stay absent:
-#   analysis, characteristic, basis, crisis, emphasis, thesis, hypothesis
-#   (the -sis nouns are not the -ise verbs), and practice/licence as NOUNS.
-# Adding any of them turns this into a false-positive generator.
-BRITISH = {
-    "recognise": "recognize", "recognised": "recognized", "recognising": "recognizing",
-    "organise": "organize", "organised": "organized", "organisation": "organization",
-    "normalise": "normalize", "normalised": "normalized", "normalisation": "normalization",
-    "summarise": "summarize", "summarised": "summarized",
-    "emphasise": "emphasize", "emphasised": "emphasized",
-    "minimise": "minimize", "minimised": "minimized",
-    "maximise": "maximize", "maximised": "maximized",
-    "generalise": "generalize", "generalised": "generalized",
-    "specialise": "specialize", "specialised": "specialized",
-    "analyse": "analyze", "analysed": "analyzed", "analysing": "analyzing",
-    "behaviour": "behavior", "behavioural": "behavioral",
-    "colour": "color", "favour": "favor", "favourable": "favorable",
-    "labour": "labor", "honour": "honor", "rigour": "rigor", "vigour": "vigor",
-    "centre": "center", "centred": "centered", "metre": "meter", "litre": "liter",
-    "defence": "defense", "offence": "offense",
-    "modelling": "modeling", "modelled": "modeled",
-    "labelling": "labeling", "labelled": "labeled",
-    "travelling": "traveling", "travelled": "traveled",
-    "cancelling": "canceling", "cancelled": "canceled",
-    "whilst": "while", "amongst": "among",
-    "programme": "program", "sceptical": "skeptical", "sceptic": "skeptic",
-    "judgement": "judgment", "grey": "gray",
-    # -s forms, needed because the match is strict
-    "recognises": "recognizes", "organises": "organizes", "normalises": "normalizes",
-    "analyses": "analyzes", "emphasises": "emphasizes", "minimises": "minimizes",
-    "behaviours": "behaviors", "colours": "colors", "favours": "favors",
-    "centres": "centers", "metres": "meters", "litres": "liters",
-    "programmes": "programs", "organisations": "organizations",
-    "defences": "defenses", "offences": "offenses", "judgements": "judgments",
-}
-# STRICT word match, not _word_rx: that helper matches inflections (delve->delving),
-# which is right for diction but wrong here, where every form is enumerated above.
-# Without this, "recognise" also matches inside "recognised" (two spans, one with
-# the wrong replacement) and "programme" matches "programmes" -> "program".
-_BRITISH_RX = {w: re.compile(r"\b" + re.escape(w) + r"\b", re.I) for w in BRITISH}
-
-
-def audit_text(text: str, path: str = "<text>",
-               tiers_on=("always_flag", "cluster", "density"),
-               mask_fn: bool = True) -> dict:
-    # OFF-LIMITS footnotes/citations are masked (to spaces, offsets preserved) BEFORE scoring so no
-    # finding lands inside one. --keep-footnotes disables this for debugging the raw signal.
-    if mask_fn:
-        text = mask_footnotes(text)
-    tics = _load_tics()
-    diction = _load_diction()
-    lines = text.split("\n")
-    words = max(1, len(re.findall(r"\b\w+\b", text)))
-    spans = []
-
-    # --- tics (line-anchored) ---
-    tic_weighted = 0
-    tic_flags = 0
-    for rx, label, sev in tics:
-        for i, ln in enumerate(lines, 1):
-            for m in rx.finditer(ln):
-                tic_flags += 1
-                tic_weighted += sev
-                spans.append({
-                    "line": i, "type": "tic", "severity": "major" if sev >= 4 else "minor",
-                    "sev_score": sev, "label": label, "text": m.group(0),
-                    "replace_with": "", "message": f"AI-tic ({label}) — rewrite; real authors do not write this.",
-                })
-
-    # --- British spelling (locale, not diction) ---
-    for w, rx in _BRITISH_RX.items():
-        for i, ln in enumerate(lines, 1):
-            for m in rx.finditer(ln):
-                spans.append({
-                    "line": i, "type": "spelling:british", "severity": "major",
-                    "sev_score": 3, "label": f"spelling·british·{w}",
-                    "text": m.group(0), "replace_with": BRITISH[w],
-                    "message": f"British spelling '{m.group(0)}' -> '{BRITISH[w]}' "
-                               f"(drop this check for a UK-register document).",
-                })
-
-    # --- diction: always_flag (every occurrence) ---
-    if "always_flag" in tiers_on:
-        for e in diction["always_flag"]:
-            for i, ln in enumerate(lines, 1):
-                for m in e["rx"].finditer(ln):
-                    spans.append({
-                        "line": i, "type": "diction:always_flag", "severity": "major",
-                        "sev_score": 4, "label": f"diction·always_flag·{e['word']}",
-                        "text": m.group(0), "replace_with": e["replace_with"],
-                        "message": f"'{m.group(0)}' -> {e['replace_with']}",
-                    })
-
-    # --- diction: cluster (flag when 2+ in one paragraph) ---
-    if "cluster" in tiers_on:
-        for pstart, ptext in _paragraphs(text):
-            phits = []
-            for e in diction["cluster"]:
-                for m in e["rx"].finditer(ptext):
-                    line_off = ptext[:m.start()].count("\n")
-                    phits.append((pstart + line_off, m.group(0), e))
-            if len(phits) >= 2:
-                for line, tok, e in phits:
-                    spans.append({
-                        "line": line, "type": "diction:cluster", "severity": "minor",
-                        "sev_score": 2, "label": f"diction·cluster·{e['word']}",
-                        "text": tok, "replace_with": e["replace_with"],
-                        "message": f"cluster ({len(phits)} fancy words this paragraph): '{tok}' -> {e['replace_with']}",
-                    })
-
-    # --- diction: density (flag at saturation ~3%+ of words) ---
-    density_words = []
-    if "density" in tiers_on:
-        dcount = 0
-        seen = []
-        for e in diction["density"]:
-            n = len(e["rx"].findall(text))
-            if n:
-                dcount += n
-                seen.append((e["word"], n))
-        density_rate = dcount / words
-        if density_rate >= 0.03:
-            density_words = sorted(seen, key=lambda x: -x[1])
-            for w, n in density_words:
-                spans.append({
-                    "line": 0, "type": "diction:density", "severity": "minor",
-                    "sev_score": 1, "label": f"diction·density·{w}",
-                    "text": w, "replace_with": "", "count": n,
-                    "message": f"density saturation ({density_rate*100:.1f}% fancy words): '{w}' x{n} — vary toward plainer diction",
-                })
-
-    # --- stylometrics (run on the MASKED text so footnote spans don't produce findings either;
-    #     blanking preserves line numbers, so style findings still anchor to the right body lines) ---
-    style = {}
-    style_score = {}
-    if path not in ("<text>",):
-        if mask_fn:
-            tmp = None
-            try:
-                fd, tmp = tempfile.mkstemp(suffix=".md")
-                with os.fdopen(fd, "w", encoding="utf-8") as tf:
-                    tf.write(text)  # already masked above
-                style = _run_style(Path(tmp))
-                style_score = _run_style_score(Path(tmp))
-            finally:
-                if tmp:
-                    try:
-                        os.unlink(tmp)
-                    except OSError:
-                        pass
-        else:
-            style = _run_style(Path(path))
-            style_score = _run_style_score(Path(path))
-    style_findings = style.get("findings", [])
-    for f in style_findings:
-        spans.append({
-            "line": f.get("line", 0), "type": f"style:{f.get('type')}",
-            "severity": f.get("severity", "minor"),
-            "sev_score": 3 if f.get("severity") == "high" else 1,
-            "label": f"style·{f.get('type')}", "text": f.get("excerpt", ""),
-            "replace_with": "", "message": f.get("message", ""),
-        })
-
-    tic_density = round(min(100.0, tic_weighted / words * 1000 * 8), 1)
-    composite = style.get("composite_human_likeness")
-
-    spans.sort(key=lambda s: (s["line"] if s["line"] else 10**9, -s["sev_score"]))
-    by_type = {}
-    for s in spans:
-        by_type[s["type"]] = by_type.get(s["type"], 0) + 1
-
-    # --- corpus-calibrated z-vs-human report (item: report z, not raw counts) ---
-    # Stylometric features have a REAL z-score (style_metrics.HUMAN_STATS carries mean+std
-    # over the human corpus build) — surfaced here in full, not just the subset that already
-    # crossed the advisory threshold. Diction only has a single corpus rate_per_M point
-    # estimate (no stored std across documents), so it gets a draft-vs-corpus RATIO instead of
-    # a z-score — labeled as such, not invented. AI-tics have no stored corpus rate at all (the
-    # scored-tics gate is pass/fail "~0-human-rate", not a rate number) — raw tic_flags/tic_density
-    # remain the only signal for tics; see PR body for this gap.
-    z_report = {
-        "stylometric_per_feature": style_score.get("per_feature", {}),
-        "stylometric_mean_abs_z": style_score.get("mean_abs_z"),
-        "diction_rate_vs_human": _diction_rate_report(text, diction, words, tiers_on),
-    }
-
-    return {
-        "file": path,
-        "words": words,
-        "composite_human_likeness": composite,
-        "tic_density": tic_density,
-        "tic_flags": tic_flags,
-        "n_spans": len(spans),
-        "by_type": by_type,
-        "spans": spans,
-        "advisories": style.get("advisories", []),
-        "density_words": density_words,
-        "z_report": z_report,
-    }
-
-
-def audit_file(path: str, tiers_on, mask_fn: bool = True) -> dict:
-    text = Path(path).read_text(encoding="utf-8", errors="ignore")
-    return audit_text(text, path, tiers_on, mask_fn=mask_fn)
-
-
-def _report(res: dict) -> None:
-    c = res["composite_human_likeness"]
-    print(f"\n{res['file']}")
-    print(f"  human-likeness composite: {c if c is not None else 'n/a'}/100   "
-          f"AI-tic density: {res['tic_density']}/100   spans: {res['n_spans']}")
-    if res["by_type"]:
-        print("  " + "  ".join(f"{k}:{v}" for k, v in sorted(res["by_type"].items())))
-    for s in res["spans"][:60]:
-        loc = f"L{s['line']}" if s["line"] else "doc"
-        print(f"    [{s['severity']:<5} {loc:>5}] {s['message']}")
-    if res["n_spans"] > 60:
-        print(f"    … +{res['n_spans']-60} more")
-    for a in res["advisories"]:
-        print(f"    [advisory] {a.get('message','')}")
-    if not res["spans"] and not res["advisories"]:
-        print("    (clean — no AI-prose tells)")
-    zr = res.get("z_report", {})
-    per_feat = zr.get("stylometric_per_feature", {})
-    flagged_feat = {k: v for k, v in per_feat.items() if v.get("flag")}
-    if flagged_feat:
-        print("  z-vs-human (stylometric features, |z|>2 on the AI side):")
-        for k, v in sorted(flagged_feat.items(), key=lambda kv: -abs(kv[1]["z"])):
-            print(f"    z={v['z']:+.2f}  {k}: {v['value']} (human mean {v['human_mean']})")
-    rate_vs_human = zr.get("diction_rate_vs_human", {})
-    if rate_vs_human:
-        print("  diction rate vs. human corpus (ratio, not z — no per-word std baseline):")
-        for w, v in sorted(rate_vs_human.items(), key=lambda kv: -(kv[1]["ratio_vs_human"] or 0)):
-            ratio = v["ratio_vs_human"]
-            ratio_s = f"{ratio}x" if ratio is not None else "unseen in corpus"
-            print(f"    {w}: draft {v['draft_rate_per_M']}/M vs human {v['human_rate_per_M']}/M ({ratio_s})")
+# ── Re-exports. Existing importers of this module must keep working unchanged. ──
+audit_text = _pa.de_ai_audit_text
+audit_file = _pa.de_ai_audit_file
+mask_footnotes = _pa.mask_footnotes
+_blank = _pa._blank
+_INLINE_FN = _pa._INLINE_FN
+_REF_FN_DEF = _pa._REF_FN_DEF
+BRITISH = _pa.BRITISH
+_BRITISH_RX = _pa._BRITISH_RX
+_load_tics = _pa._load_tics
+_load_diction = _pa.load_diction
+_word_rx = _pa._word_rx
+_paragraphs = _pa._de_ai_paragraphs
+_report = _pa.de_ai_report
 
 
 def main():

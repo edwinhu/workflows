@@ -4,9 +4,9 @@
 // `hooks/writing-prose-check.py` after the hook became `.ts`. That file did three unrelated jobs; the
 // port follows the code rather than the file:
 //
-//   - `.typ` prose extraction moved to scripts/prose_extract.py and the scored-tic table lives in
-//     skills/ai-anti-patterns/scripts/screen.py. Both are still Python, both are still tested there,
-//     and neither needed porting — the Python suite keeps them.
+//   - `.typ` prose extraction moved to scripts/prose_extract.py and the scored-tic table is now
+//     loaded by scripts/prose-audit.py. Both are still Python, both are still tested there, and
+//     neither needed porting — the Python suite keeps them.
 //   - The hook's own helpers are TypeScript now, so they are tested here.
 //   - `_detect_style` is NOT ported. It read `.planning/ACTIVE_WORKFLOW.md`, a ledger this repo
 //     deliberately retired (tests/work-skill-contract.test.mjs actively forbids reintroducing it).
@@ -17,7 +17,7 @@
 import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
-import { proseLintCategories, isTypDeck, editRanges, inRanges } from '../hooks/writing-prose-check.ts'
+import { auditStyle, isTypDeck, editRanges, inRanges } from '../hooks/writing-prose-check.ts'
 
 let PASS = 0, FAIL = 0
 const ok = (name, condition, extra = '') => {
@@ -43,12 +43,17 @@ const write = (dir, name, body) => { const p = join(dir, name); writeFileSync(p,
   ok('a letter is not a deck', isTypDeck(write(d, 'letter.typ', '#set page(margin: 1in)\nDear Professor,\nSincerely.\n')) === false)
 }
 
-// ── domain → prose-lint --only mapping ───────────────────────────────────────
+// ── domain → prose-audit --style mapping ─────────────────────────────────────
+// The hook used to assemble a prose-lint `--only` CATEGORY LIST; the single audit takes one
+// `--style` and decides for itself which tables that admits. Unknown values degrade to `general`
+// rather than erroring, because an unrecognised domain must still get the always-on tables.
 {
-  ok('no style maps to the general categories', proseLintCategories(null) === 'ai-anti-patterns,writing-general')
-  ok('"general" maps to the general categories', proseLintCategories('general') === 'ai-anti-patterns,writing-general')
-  ok('"legal" adds writing-legal', proseLintCategories('legal') === 'ai-anti-patterns,writing-general,writing-legal')
-  ok('"econ" adds writing-econ', proseLintCategories('econ') === 'ai-anti-patterns,writing-general,writing-econ')
+  ok('no style is general', auditStyle(null) === 'general')
+  ok('"general" is general', auditStyle('general') === 'general')
+  ok('"legal" selects the Volokh tables', auditStyle('legal') === 'legal')
+  ok('"econ" selects the McCloskey tables', auditStyle('econ') === 'econ')
+  ok('case is folded', auditStyle('Legal') === 'legal')
+  ok('an unknown domain degrades to general, it does not blank the lint', auditStyle('poetry') === 'general')
 }
 
 // ── edited-line scoping: review what changed, not the whole document ─────────

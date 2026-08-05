@@ -4,6 +4,7 @@ export const meta = {
   whenToUse: 'Called after mechanical checks with planPath, planHash, and a deterministic sectionIndex. Findings return to TaskList and selective re-review requires the same plan hash.',
   phases: [
     { title: 'Discover', detail: 'load authenticated PLAN section, source, and output context' },
+    { title: 'Audit', detail: 'deterministic prose-audit spans per section — the reviewers evidence' },
     { title: 'L1-Review', detail: 'per-section: structure + prose + fidelity reviewers, in parallel' },
     { title: 'Verify', detail: 'mechanically confirm quoted evidence resolves to the draft' },
     { title: 'L2-L3', detail: 'transition analysis + whole-document checks over L1 data' },
@@ -257,6 +258,11 @@ const ISSUE = {
     quote: { type: 'string', description: 'verbatim text from the draft backing this issue' },
     detail: { type: 'string' },
     fix: { type: 'string' },
+    // Optional, and it has to BE here: the prose reviewer is told an issue quoting a span's text
+    // must name that span's id, and `additionalProperties: false` would have made obeying that
+    // instruction a schema violation. Optional rather than required because most issues are
+    // judgement calls no span produced.
+    spanIds: { type: 'array', items: { type: 'string' }, description: 'prose-audit span id(s) this issue rests on' },
   },
 }
 
@@ -285,11 +291,40 @@ const STRUCTURE_SCHEMA = {
 }
 
 // Prose + fidelity reviewers — lean issue lists.
+//
+// `spanIds` IS WHAT MAKES IGNORING THE EVIDENCE CHECKABLE. The prose reviewer is handed the
+// deterministic prose-audit span list for its section (see the Audit phase). Requiring it to name
+// the ids it considered turns "did the reviewer actually apply the corpus-gated rules?" from an
+// unanswerable question into a field. The fidelity reviewer is handed no spans and returns [].
 const FINDINGS_SCHEMA = {
-  type: 'object', additionalProperties: false, required: ['section', 'check', 'itemsChecked', 'issues'],
+  type: 'object', additionalProperties: false, required: ['section', 'check', 'itemsChecked', 'issues', 'spanIds'],
   properties: {
     section: { type: 'string' }, check: { type: 'string', enum: ['prose', 'fidelity'] },
     itemsChecked: { type: 'integer' }, issues: { type: 'array', items: ISSUE },
+    spanIds: { type: 'array', items: { type: 'string' }, description: 'every prose-audit span id considered (S001, …); [] when no spans were supplied' },
+  },
+}
+
+// The deterministic audit, relayed by a read-only agent because the Workflow runtime forbids the
+// orchestrator from touching the filesystem. The agent runs one command per draft and returns its
+// JSON; it does no judging, and its output is checked against the section names dispatched here,
+// so a garbled relay degrades to "no evidence" rather than to fabricated evidence.
+const AUDIT_SCHEMA = {
+  type: 'object', additionalProperties: false, required: ['sections'],
+  properties: {
+    sections: { type: 'array', items: {
+      type: 'object', additionalProperties: false, required: ['section', 'spans'],
+      properties: {
+        section: { type: 'string' },
+        spans: { type: 'array', items: {
+          type: 'object', additionalProperties: false, required: ['id', 'line', 'system', 'severity', 'labels', 'quote'],
+          properties: {
+            id: { type: 'string' }, line: { type: 'integer' }, system: { type: 'string' },
+            severity: { type: 'string', enum: ['hard', 'soft'] },
+            labels: { type: 'array', items: { type: 'string' } },
+            quote: { type: 'string' }, replace_with: { type: 'string' },
+          } } },
+      } } },
   },
 }
 
@@ -359,7 +394,47 @@ let sections = disc.sections
 log(`Discover: authenticated PLAN index (${sections.length} sections, ${disc.style}, ${PLAN_HASH})`)
 log(`Document: ${sections.length} sections (${disc.style}); ${ONLY ? `re-review ${ONLY.size}` : 'full review'}`)
 
-// ── Phase 2: L1 Section Review (per-section × 3 reviewers, parallel) ───────────
+// ── Phase 2: the deterministic prose audit (evidence, not instruction) ─────────
+// EVERY PATH TO A REVIEWER USED TO BE A SUGGESTION. `writing-prose-reviewer.md` printed a Bash
+// line and hoped; `prose.ts` said "FIRST, load these skills" and hoped. Neither left an artifact
+// from which anyone could tell whether it happened — which is exactly the question that could not
+// be answered after the rule611 comment-letter review. The audit now runs BEFORE the reviewers and
+// its spans are injected into the prompt, so applying the corpus-gated rules is not something the
+// reviewer has to remember to do.
+phase('Audit')
+const AUDIT_CMD = `uv run --with lxml --with pyyaml python3 \${CLAUDE_PLUGIN_ROOT}/scripts/prose-audit.py --json --style ${disc.style}`
+const auditDocs = sections.map(s => ({ section: s.name, draft: s.draftFile }))
+const auditRelay = await agent(
+  `${REVIEW_IDENTITY}
+READ-ONLY. Run the deterministic prose audit over the drafts below and return its output verbatim. Judge nothing; add nothing; drop nothing.
+For each draft run exactly:
+  ${AUDIT_CMD} <draft>
+It prints one JSON object with a \`spans\` array. Copy each span's \`id\`, \`line\`, \`system\`, \`severity\`, \`labels\` and \`quote\` (and \`replace_with\` when non-empty) into the record for that section. A draft with no spans gets an empty array — do NOT omit its section.
+Exit code 1 means hard-severity spans were found; it is not an error.
+Drafts: ${JSON.stringify(auditDocs)}
+Return AUDIT_SCHEMA.`,
+  { label: 'prose-audit', phase: 'Audit', schema: AUDIT_SCHEMA, model: 'sonnet' })
+const auditByName = Object.fromEntries(sections.map(s => [s.name, []]))
+for (const record of (auditRelay?.sections || [])) {
+  if (Object.hasOwn(auditByName, String(record.section)) && Array.isArray(record.spans)) {
+    auditByName[String(record.section)] = record.spans
+  }
+}
+const hardSpanCount = Object.values(auditByName).reduce((n, spans) => n + spans.filter(sp => sp.severity === 'hard').length, 0)
+log(`Audit: ${Object.values(auditByName).reduce((n, spans) => n + spans.length, 0)} deterministic prose span(s), ${hardSpanCount} hard`)
+
+/** The span list as the prose reviewer sees it — evidence in the prompt, with its ids. */
+const spanBlock = (name) => {
+  const spans = auditByName[name] || []
+  if (!spans.length) return 'DETERMINISTIC PROSE AUDIT: no spans for this section. Return spanIds: [].'
+  return `DETERMINISTIC PROSE AUDIT (${spans.length} span(s), ${spans.filter(sp => sp.severity === 'hard').length} hard). These were computed for you; do NOT re-run any scorer.
+${spans.map(sp => `  ${sp.id}  [${sp.severity}] L${sp.line} ${sp.system}: ${sp.labels.join(' | ')} — ${JSON.stringify(sp.quote)}${sp.replace_with ? `  →  ${sp.replace_with}` : ''}`).join('\n')}
+
+Every span is deterministic and already de-duplicated across every pattern table. Read each one against the surrounding argument and decide whether it should change: a scorer guides, it does not grade. A \`hard\` span is a provenance leak or a ~0-human-rate corpus tic and is almost never defensible; a \`soft\` span may well be correct in context, and saying so is a real answer.
+Return in \`spanIds\` EVERY span id you considered, whether or not it became an issue. An issue that quotes a span's text must name that span's id in its own \`spanIds\`.`
+}
+
+// ── Phase 3: L1 Section Review (per-section × 3 reviewers, parallel) ───────────
 phase('L1-Review')
 const reviewOne = (s) => {
   const snapshots = artifactSnapshots[s.name]
@@ -377,11 +452,11 @@ Use the immutable draft and outline snapshots above; do not reread mutable artif
       { label: `${s.name}:structure`, phase: 'L1-Review', schema: STRUCTURE_SCHEMA, model: 'sonnet' }),
     // (b) Prose-quality reviewer — the real agent.
     () => agent(
-      `${REVIEW_IDENTITY}\nSet section="${s.name}", check="prose". Grade the immutable draft snapshot below (source location ${s.draftFile}; domain: ${disc.style}). Do not reread the mutable draft path. Read the domain skill, ai-anti-patterns, and prose constraints first. Grade every paragraph; report violations with file:line + verbatim quote. Map grades to severity: F→critical, C→major, lesser→minor. itemsChecked = paragraphs graded.\n${snapshots.draft.text}\nReturn FINDINGS_SCHEMA.`,
+      `${REVIEW_IDENTITY}\nSet section="${s.name}", check="prose". Grade the immutable draft snapshot below (source location ${s.draftFile}; domain: ${disc.style}). Do not reread the mutable draft path.\n${spanBlock(s.name)}\nBeyond the spans, grade what only a reader can: claims stated more strongly than their evidence, paragraphs whose point arrives late, hedges that name nothing, jargon used before it is defined, and rhythm. Grade every paragraph; report violations with file:line + verbatim quote. Map grades to severity: F→critical, C→major, lesser→minor. itemsChecked = paragraphs graded.\n${snapshots.draft.text}\nReturn FINDINGS_SCHEMA.`,
       { label: `${s.name}:prose`, phase: 'L1-Review', schema: FINDINGS_SCHEMA, model: 'sonnet', agentType: 'workflows:writing-prose-reviewer' }),
     // (c) Source-fidelity reviewer — the real agent.
     () => agent(
-      `${REVIEW_IDENTITY}\nSet section="${s.name}", check="fidelity". Verify citation fidelity for this immutable draft snapshot (source location ${s.draftFile}); do not reread mutable artifact paths. Use this immutable authenticated bibliography snapshot (${disc.sourcesBib}) for resolution:\n${BIB_SNAPSHOT.text}\nPLAN Source Plan context: ${JSON.stringify(disc.sourcePlan)}. Check every pandoc cite-key resolves to a bib entry; verify hand-written footnotes match. Severity: unanchored citation→critical, detail mismatch→major, claim-fidelity concern→minor. Each issue needs file:line + the citation text as quote. itemsChecked = citations checked.\n${snapshots.draft.text}\nReturn FINDINGS_SCHEMA.`,
+      `${REVIEW_IDENTITY}\nSet section="${s.name}", check="fidelity". Verify citation fidelity for this immutable draft snapshot (source location ${s.draftFile}); do not reread mutable artifact paths. Use this immutable authenticated bibliography snapshot (${disc.sourcesBib}) for resolution:\n${BIB_SNAPSHOT.text}\nPLAN Source Plan context: ${JSON.stringify(disc.sourcePlan)}. Check every pandoc cite-key resolves to a bib entry; verify hand-written footnotes match. Severity: unanchored citation→critical, detail mismatch→major, claim-fidelity concern→minor. Each issue needs file:line + the citation text as quote. itemsChecked = citations checked.\n${snapshots.draft.text}\nThis reviewer is handed no prose-audit spans; return spanIds: [].\nReturn FINDINGS_SCHEMA.`,
       { label: `${s.name}:fidelity`, phase: 'L1-Review', schema: FINDINGS_SCHEMA, model: 'sonnet', agentType: 'workflows:writing-source-fidelity-reviewer' }),
   ]).then(([rawStructure, rawProse, rawFidelity]) => {
     // Evidence is authorized by its dispatch target and reviewer role, not a
@@ -389,6 +464,15 @@ Use the immutable draft and outline snapshots above; do not reread mutable artif
     const structure = rawStructure && String(rawStructure.section) === s.name && rawStructure.check === 'structure' ? rawStructure : null
     const prose = rawProse && String(rawProse.section) === s.name && rawProse.check === 'prose' ? rawProse : null
     const fidelity = rawFidelity && String(rawFidelity.section) === s.name && rawFidelity.check === 'fidelity' ? rawFidelity : null
+    // EVIDENCE HANDED OVER AND NOT CITED IS EVIDENCE THAT WAS IGNORED. A prose reviewer that
+    // returns zero spanIds while the audit found HARD spans for its section did not read them —
+    // hard spans are provenance leaks and ~0-human-rate corpus tics, so there is no reading of
+    // the draft on which every one of them is fine and none is worth a mention. Same treatment as
+    // a reviewer whose quoted evidence turned out to be fabricated: flag it, do not trust it.
+    const auditSpans = auditByName[s.name] || []
+    const hardSpans = auditSpans.filter(sp => sp.severity === 'hard')
+    const citedSpans = Array.isArray(prose?.spanIds) ? prose.spanIds.filter(id => typeof id === 'string' && id.trim()) : []
+    const ignoredHardEvidence = hardSpans.length > 0 && citedSpans.length === 0
     return {
       section: s.name,
       planHash: PLAN_HASH,
@@ -408,7 +492,10 @@ Use the immutable draft and outline snapshots above; do not reread mutable artif
       argumentSummary: structure?.argumentSummary || [],
       planClaimAdvanced: structure?.planClaimAdvanced ?? null,
       itemsChecked: (structure?.itemsChecked || 0) + (prose?.itemsChecked || 0) + (fidelity?.itemsChecked || 0),
-      unreliable: !(structure && prose && fidelity) || !((structure?.itemsChecked || 0) > 0),
+      auditSpans,
+      citedSpanIds: citedSpans,
+      ignoredHardEvidence,
+      unreliable: !(structure && prose && fidelity) || !((structure?.itemsChecked || 0) > 0) || ignoredHardEvidence,
     }
   })
 }
@@ -440,7 +527,7 @@ for (const s of sections) {
 const liveSections = (await parallel(tasks)).filter(Boolean)
 if (ONLY) log(`Selective re-review: ${reran} section(s) live, ${carriedCount} carried`)
 
-// ── Phase 3: Verify quotes resolve to the draft (mechanical — kills fabrication) ─
+// ── Phase 4: Verify quotes resolve to the draft (mechanical — kills fabrication) ─
 phase('Verify')
 const draftByName = Object.fromEntries(sections.map(s => [s.name, s.draftFile]))
 const verificationResults = (await parallel(liveSections.map(sec => () =>
@@ -473,7 +560,7 @@ if (JSON.stringify(allSections.map(section => section.section)) !== JSON.stringi
   throw new Error('writing-review did not assemble exactly one review for every current PLAN section.')
 }
 
-// ── Phase 4: L2 transitions + L3 whole-document (single agents over L1 data) ───
+// ── Phase 5: L2 transitions + L3 whole-document (single agents over L1 data) ───
 phase('L2-L3')
 const boundaries = allSections.map(s => ({ section: s.section, boundary: s.boundary }))
 const argSummaries = allSections.map(s => ({ section: s.section, points: s.argumentSummary, claim: s.planClaims }))
@@ -587,7 +674,9 @@ const verdict = !substratePass ? 'ISSUES FOUND' : (sev.minor === 0 ? 'CLEAN' : '
 const overallPass = substratePass
 const rank = { critical: 0, major: 1, minor: 2 }
 const findings = [
-  ...allSections.filter(section => section.unreliable).map(section => ({ severity: 'critical', planHash: PLAN_HASH, section: section.section, claimIds: String(section.planClaims || '').split(/\s*,\s*/).filter(claim => /^CLAIM-[0-9]{2}$/.test(claim)), area: 'reviewer-integrity', detail: `${section.section} review evidence was missing or fabricated; a fresh independent review is required.`, location: draftByName[section.section], retryKey: `section:${section.section}:reviewer-unreliable` })),
+  ...allSections.filter(section => section.unreliable).map(section => ({ severity: 'critical', planHash: PLAN_HASH, section: section.section, claimIds: String(section.planClaims || '').split(/\s*,\s*/).filter(claim => /^CLAIM-[0-9]{2}$/.test(claim)), area: 'reviewer-integrity', detail: section.ignoredHardEvidence
+    ? `${section.section} prose review cited none of the ${(section.auditSpans || []).filter(sp => sp.severity === 'hard').length} HARD prose-audit span(s) it was handed; the evidence was ignored, so the review is not independent confirmation of anything. A fresh independent review is required.`
+    : `${section.section} review evidence was missing or fabricated; a fresh independent review is required.`, location: draftByName[section.section], retryKey: `section:${section.section}:reviewer-unreliable` })),
   ...allSections.flatMap(section => (section.issues || []).map((issue, index) => ({ ...issue, planHash: PLAN_HASH, section: section.section, claimIds: String(section.planClaims || '').split(/\s*,\s*/).filter(claim => /^CLAIM-[0-9]{2}$/.test(claim)), retryKey: `section:${section.section}:${issue.source || 'review'}:${index}` }))),
   ...transIssues.map((transition, index) => ({ severity: 'major', planHash: PLAN_HASH, area: 'transition', detail: transition.problem || `${transition.from} → ${transition.to} is ${transition.verdict}`, location: `${transition.from} → ${transition.to}`, retryKey: `transition:${index}` })),
   ...docIssues.map((issue, index) => ({ ...issue, planHash: PLAN_HASH, retryKey: `document:${issue.area}:${index}` })),
@@ -614,6 +703,8 @@ return {
   sections: allSections,            // per-section issues + boundary + argumentSummary for TaskList reconciliation
   transitions: l2?.transitions || [],
   documentLevel: l3 || null,
+  proseAudit: auditByName,           // the deterministic evidence every prose reviewer was handed
+  proseAuditHardSpans: hardSpanCount,
   findings,                         // normalized TaskList-ready section, transition, document, and integrity findings
   unreliableSections,               // sections where a reviewer returned nothing — flag, don't trust
   sectionsThatFlagged: allSections.filter(s => (s.issues || []).length || s.unreliable).map(s => s.section), // pass as onlyChecks on re-review

@@ -129,6 +129,20 @@ def _discover(directory, exclude_names=None):
     return md_stems, py_paths
 
 
+def _severity(mod) -> str:
+    """A constraint module's declared SEVERITY, normalized. Default `soft`.
+
+    THE GATES READ THIS. Every constraint has declared a SEVERITY for as long as the convention has
+    existed, and check-all threw it away — so `mechanical-floor-gate.ts` and
+    `writing-mechanical-gate.ts` blocked on every failure equally, and soft advisory puffery could
+    stop a phase while a `hard` `As an AI language model` carried no more weight than a filler
+    transition. Reporting it per entry is what lets a gate deny on `hard` and pass the rest through
+    as context. See docs/DESIGN-prose-constraint-architecture.md.
+    """
+    value = str(getattr(mod, "SEVERITY", "soft") or "soft").strip().lower()
+    return "hard" if value == "hard" else "soft"
+
+
 def _run_checks(md_stems, py_paths, directory_label, context, results, workflow=None):
     for name in sorted(md_stems):
         qualified = f"{directory_label}/{name}"
@@ -151,7 +165,8 @@ def _run_checks(md_stems, py_paths, directory_label, context, results, workflow=
             try:
                 violations = check_fn(context)
                 if violations:
-                    results["failed"].append({"name": qualified, "violations": violations})
+                    results["failed"].append({"name": qualified, "severity": _severity(mod),
+                                              "violations": violations})
                 else:
                     results["passed"].append(qualified)
             except Exception as e:
@@ -203,7 +218,8 @@ def main():
                 try:
                     violations = check_fn(context)
                     if violations:
-                        results["failed"].append({"name": label, "violations": violations})
+                        results["failed"].append({"name": label, "severity": _severity(mod),
+                                                  "violations": violations})
                     else:
                         results["passed"].append(label)
                 except Exception as e:
@@ -211,9 +227,10 @@ def main():
 
     total = len(results["passed"]) + len(results["failed"]) + len(results["conventions"]) + len(results["errors"]) + len(results["skipped"])
     print(json.dumps(results, indent=2))
+    hard = sum(1 for f in results["failed"] if f.get("severity") == "hard")
     print(
         f"\n{len(results['passed'])}/{total} passed, "
-        f"{len(results['failed'])} failed, "
+        f"{len(results['failed'])} failed ({hard} hard), "
         f"{len(results['conventions'])} conventions (judgment-only), "
         f"{len(results['skipped'])} skipped (domain filter), "
         f"{len(results['errors'])} errors"

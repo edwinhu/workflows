@@ -61,11 +61,54 @@ const reason = out => out?.hookSpecificOutput?.permissionDecisionReason ?? ''
   ok('writing-draft with sectionIndex → silent allow (no nag)', code === 0 && out === null, `out=${JSON.stringify(out)}`)
 }
 
+// ── Severity: HARD blocks, SOFT reports ──────────────────────────────────────
+// Before v5.127.0 check-all dropped the SEVERITY its constraint modules declare and this gate
+// blocked on ANY failure, so an advisory `Despite these challenges` stopped the review fan-out
+// exactly as hard as an `As an AI language model`. Both directions are pinned here, driven
+// through the real check-all rather than a stub, because the severity has to survive two hops
+// (the constraint module → check-all JSON → this gate) and a stub would only test the last one.
+function draftProject(prefix, body) {
+  const project = mkdtempSync(join(tmpdir(), prefix))
+  mkdirSync(join(project, 'drafts'), { recursive: true })
+  writeFileSync(join(project, 'drafts', 'a.md'), body)
+  return project
+}
+const reviewPayload = project => ({
+  tool_name: 'Workflow',
+  tool_input: { scriptPath: 'writing-review.js', args: { projectDir: project, sectionIndex: { sections: [1] } } },
+})
+
+{
+  // wikipedia-structural-patterns declares SEVERITY = "soft".
+  const project = draftProject('wmg-soft-', 'Despite these challenges, the agency issued the rule.\n')
+  const { code, out } = await run(reviewPayload(project))
+  ok('a SOFT-only failure does not deny', decision(out) !== 'deny', `out=${JSON.stringify(out)}`)
+  ok('a SOFT-only failure still allows the workflow through', code === 0, `code=${code}`)
+  ok('but the soft failure is reported as context, not swallowed',
+     /advisory, NOT blocking/.test(reason(out)) && /wikipedia-structural/.test(reason(out)),
+     `reason=${reason(out)}`)
+  rmSync(project, { recursive: true, force: true })
+}
+{
+  // wikipedia-communication-patterns declares SEVERITY = "hard".
+  const project = draftProject('wmg-hard-', 'As an AI language model, I cannot verify the filing date.\n')
+  const { code, out } = await run(reviewPayload(project))
+  ok('a HARD failure denies', decision(out) === 'deny', `out=${JSON.stringify(out)}`)
+  ok('the denial names the failing constraint',
+     /wikipedia-communication-patterns/.test(reason(out)), `reason=${reason(out)}`)
+  ok('the denial explains what "hard" means so the fix is obvious',
+     /SEVERITY = "hard"/.test(reason(out)), `reason=${reason(out)}`)
+  // A deny is delivered by payload; a non-zero exit reads as non-blocking.
+  ok('the denial is delivered by payload, not a non-zero exit', code === 0, `code=${code}`)
+  rmSync(project, { recursive: true, force: true })
+}
+
 // ── Source invariants, re-expressed for TypeScript ───────────────────────────
 const src = Bun.file(HOOK)
 const text = await src.text()
 ok('hook invokes check-all with --with lxml', text.includes('"--with", "lxml"') && /CHECK_ALL|check-all\.py/.test(text))
-ok('only failures block; tooling errors do not', text.includes('failed.length === 0') || text.includes('NOT blocking'))
+ok('only HARD failures block; soft failures and tooling errors do not',
+   text.includes('failed.length === 0') && text.includes('isHard') && text.includes('NOT blocking'))
 
 // ── Freshness cache, against the real runner ─────────────────────────────────
 {

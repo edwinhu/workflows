@@ -6,7 +6,7 @@ Distilled from a 7-iteration ad-hoc audit-fix run that lifted a law review intro
 
 Run rhythm-and-flow scoring as a subroutine inside `/writing-revise` when:
 
-- A regex sweep (`workflows:ai-anti-patterns` + Strunk + Volokh + McCloskey via `prose-lint.py`) is already clean OR has only false positives
+- A regex sweep (`workflows:ai-anti-patterns` + Strunk + Volokh + McCloskey via `prose-audit.py`) is already clean OR has only false positives
 - The user reports the draft "reads choppy" or asks for "rhythm review"
 - Recent edits removed paragraph-closing sentences (roadmap deletions, sentence merges) and may have created rhythm regressions
 - The draft is post-export `.docx` (regex-only review misses paragraph-level structural patterns)

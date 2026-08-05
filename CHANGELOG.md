@@ -3,6 +3,26 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [5.129.0] - 2026-08-04
+
+### Changed
+- **One deterministic prose audit, injected as evidence instead of asked for as an instruction.** Five pattern systems (238 entries) were loaded by four different loaders with no single answer to "what did this draft score?". `scripts/prose-audit.py` is now the only entry point: scored AI-tics, the six `wikipedia-*` tables, the domain style guides, tiered diction, stylometrics, US-register spelling and em-dash density, over `.md`, `.typ` and `.docx`, with footnotes masked in all three and stable `S###` span ids. Full investigation and the shipped-vs-proposed diff: `docs/DESIGN-prose-constraint-architecture.md`.
+  - **The double-report bug dissolved rather than being patched.** `writing-prose-check.ts` ran prose-lint AND check-all in one invocation, and its `PROSE_LINT_SUPERSEDES` set named three constraints — none of them the `wikipedia-*` tables, which were in both engines. Every AI-tell inside an edited range was reported to the model twice. Overlapping hits on the same column range now collapse into ONE span carrying every contributing label at the highest contributing severity; `rich tapestry`, which matches a sev4 scored tic, `wikipedia-promotional` and diction `always_flag`, is one finding.
+  - **The reviewers get the span list, not a suggestion to go and compute one.** `workflows/writing-review.js` runs the audit before the L1 fan-out and injects the spans into the prose reviewer's prompt; `agents/writing-prose-reviewer.md` no longer prints a Bash line and hopes. `scripts/beat/adapters/prose.ts` does the same for `prose-codex` and `prose-gemini`, replacing "load these skills first" with the spans plus the reference-12 decay findings inlined verbatim.
+  - **Ignoring the evidence is checkable.** The prose finding schema requires `spanIds`. A reviewer that returns none while hard spans exist for its section is marked `unreliable` and its findings discarded — the same treatment a reviewer with fabricated quotes already got.
+  - **`de_ai_audit.py` is a thin wrapper** over `--profile de-ai`. Its public JSON is unchanged and `tests/test_de_ai_audit.py` + `tests/test_de_ai_footnote_masking.py` pass unmodified.
+
+### Fixed
+- **`de_ai_audit.py` was blind to the entire provenance-leak class, and it was the one scorer the prose reviewer was pointed at.** On a tic-laden fixture it returned 9 spans and missed every hard artifact: `As an AI language model`, `I hope this helps`, `citeturn0search0`, `oaicite`, `stands as a testament`, `plays a vital role`, `Despite these challenges`. All seven are now reported, four of them `hard`.
+- **`check-all.py` threw away the `SEVERITY` its own constraint modules declare**, so `mechanical-floor-gate.ts` and `writing-mechanical-gate.ts` blocked on every failure equally: advisory puffery stopped a phase exactly as hard as a provenance leak. Severity now rides per `failed[]` entry and both gates deny only on `hard`, reporting soft failures in the allow payload as context.
+- **`hooks/lib/writing-plan-context.ts` never parsed the plan's Domain.** `planSection`'s `(?=^##\s|$)` uses `$` under the `/m` flag, which matches at the first line break, so every section came back empty — meaning `style` was ALWAYS `""` and the Volokh / McCloskey guides never loaded for any draft the prose hook linted. Measured on a real approved plan, not inferred.
+- **`prose.ts` discarded the success-path transcript.** `unavailable` and `unparseable` carried `raw`; `reviewed` did not, so the one case where the provider actually worked was the one that left no `total_cost_usd` and no tool-use record. That is why nobody could answer, after the rule611 comment-letter review, whether either external reviewer had applied the rules its prompt named. `raw` is now returned (truncated) on the success path too.
+
+### Removed
+- `references/constraints/writing-ai-smell-{puffery,structure,artifacts,em-dash}` (four `.md`/`.py` pairs) — the same system as the `wikipedia-*` tables, built twice. Their unique patterns were merged in and marked `[ex-ai-smell]`; the superlative self-attribution heuristic (a 60-char window to a self-contribution noun) survived as the better implementation and is now a table entry every loader can see. Em-dash density, which is paragraph- and section-level logic rather than a line regex, moved into `prose-audit.py` with its thresholds unchanged.
+- `skills/ai-anti-patterns/scripts/screen.py` — a third loader of tables two other loaders already ran, called by nothing but one test.
+- `PROSE_LINT_SUPERSEDES` — replaced by a directory prefix rule that cannot go stale as tables are added.
+
 ## [5.106.5] - 2026-08-02
 
 ### Fixed

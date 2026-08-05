@@ -89,10 +89,14 @@ function fixture() {
   return { project, planPath, planHash }
 }
 
-function reviewAgent(label) {
+// `audit` is the deterministic prose-audit relay; `proseSpanIds` is what the prose reviewer
+// claims to have considered. Both are parameterised because the reviewer-integrity rule under
+// test is precisely the relationship between them.
+function reviewAgent(label, opts = {}) {
+  if (label === 'prose-audit') return { sections: Object.entries(opts.audit ?? {}).map(([section, spans]) => ({ section, spans })) }
   if (label.endsWith(':structure')) return { section: label.split(':')[0], check: 'structure', itemsChecked: 4, issues: [{ severity: 'minor', location: 'x:1', quote: 'q', detail: 'd' }], planClaimAdvanced: true, boundary: { firstSentence: 'A.', lastSentence: 'B.', assumesFromPrev: '', handsOffToNext: '', argumentState: '', conceptsIntroduced: [], conceptsUsed: [], coreTerms: [] }, argumentSummary: ['point'] }
-  if (label.endsWith(':prose')) return { section: label.split(':')[0], check: 'prose', itemsChecked: 4, issues: [] }
-  if (label.endsWith(':fidelity')) return { section: label.split(':')[0], check: 'fidelity', itemsChecked: 2, issues: [] }
+  if (label.endsWith(':prose')) return { section: label.split(':')[0], check: 'prose', itemsChecked: 4, issues: [], spanIds: opts.proseSpanIds ?? [] }
+  if (label.endsWith(':fidelity')) return { section: label.split(':')[0], check: 'fidelity', itemsChecked: 2, issues: [], spanIds: [] }
   if (label.endsWith(':verify')) return { section: label.split(':')[0], quotesChecked: 0, fabricated: [] }
   if (label === 'L2:transitions') return { transitions: [{ from: 'Introduction', to: 'Part I', verdict: 'SMOOTH', closes: 'A.', opens: 'B.', problem: '', planned: '', suggestion: '' }] }
   if (label === 'L3:document') return { conceptOrderIssues: [], repetition: [], thesisIssues: [], completeness: { claimsAddressed: 'all', counterargsConfronted: 'all', scopeHonored: true, hookDelivered: true, conclusionFollows: true, issues: [] }, reviewSurfaces: [{ surface: 'Claim and structure coverage.', status: 'INSPECTED', evidence: 'e' }, { surface: 'Citation fidelity.', status: 'INSPECTED', evidence: 'e' }] }
@@ -104,9 +108,13 @@ function reviewAgent(label) {
 // runtime, where `globalThis.process` and `globalThis.Buffer` do not exist. `import()`
 // is syntax and cannot be shadowed; tests/workflow-runtime-purity.test.mjs is what
 // forbids it, and `import.meta` is a hard SyntaxError in a Function body regardless.
-async function exec(args) {
-  const trace = { labels: [] }
-  const agent = async (prompt, opts = {}) => { trace.labels.push(opts.label || ''); return reviewAgent(opts.label || '') }
+async function exec(args, stub = {}) {
+  const trace = { labels: [], prompts: {} }
+  const agent = async (prompt, opts = {}) => {
+    trace.labels.push(opts.label || '')
+    trace.prompts[opts.label || ''] = prompt
+    return reviewAgent(opts.label || '', stub)
+  }
   const parallel = async (thunks) => Promise.all(thunks.map(t => t()))
   const fn = new AsyncFunction(
     'agent', 'parallel', 'pipeline', 'log', 'phase', 'args', 'budget',
@@ -138,6 +146,7 @@ const check = (label, ok, extra = '') => { console.log(`${ok ? 'PASS' : 'FAIL'} 
     planPath: bundle.planPath, planHash: bundle.planHash, sectionIndex: bundle.index, artifacts: bundle.artifacts,
   })
   check('agents dispatched', trace.labels.length >= 10, `${trace.labels.length}: ${trace.labels.join(' ')}`)
+  check('the deterministic prose audit runs BEFORE the reviewers', trace.labels[0] === 'prose-audit', trace.labels.join(' '))
   check('structure reviewers = 2', trace.labels.filter(l => l.endsWith(':structure')).length === 2)
   check('overallPass true', result.overallPass === true, result.verdict)
   check('verifyRequired flagged', result.verifyRequired === true && result.driftVerified === false)
@@ -149,6 +158,45 @@ const check = (label, ok, extra = '') => { console.log(`${ok ? 'PASS' : 'FAIL'} 
   check('post-verify clean', finalized.driftVerified === true && finalized.overallPass === true && finalized.driftedArtifacts.length === 0)
   check('finalPlanHash carried', finalized.finalPlanHash === f.planHash)
   check('finalDraftHash set per section', finalized.sections.every(s => /^[0-9a-f]{64}$/.test(s.finalDraftHash) && /^[0-9a-f]{64}$/.test(s.finalOutlineHash)))
+}
+
+// ── Evidence handed over and not cited ───────────────────────────────────────
+// The whole point of injecting the audit spans is that ignoring them becomes CHECKABLE. A prose
+// reviewer that returns zero spanIds while HARD spans exist for its section did not read the
+// evidence — hard spans are provenance leaks and ~0-human-rate corpus tics, so there is no
+// reading on which every one is fine and none is worth a mention. It gets the same treatment as
+// a reviewer whose quoted evidence turned out to be fabricated.
+const HARD_SPAN = { id: 'S001', line: 5, system: 'wikipedia-communication', severity: 'hard', labels: ['AI identity leak'], quote: 'As an AI language model' }
+const SOFT_SPAN = { id: 'S001', line: 5, system: 'wikipedia-structural', severity: 'soft', labels: ['filler transition'], quote: 'Moreover,' }
+{
+  const f = fixture()
+  const bundle = JSON.parse(py('--authenticate', f.project))
+  const wire = { projectDir: f.project, projectReal: bundle.projectReal, planPath: bundle.planPath, planHash: bundle.planHash, sectionIndex: bundle.index, artifacts: bundle.artifacts }
+
+  const { result: ignored, trace } = await exec(wire, { audit: { 'Part I': [HARD_SPAN] }, proseSpanIds: [] })
+  check('the span list is INJECTED into the prose reviewer prompt, not fetched by it',
+        /S001/.test(trace.prompts['Part I:prose'] || '') && /As an AI language model/.test(trace.prompts['Part I:prose'] || ''),
+        (trace.prompts['Part I:prose'] || '').slice(0, 200))
+  check('a section with no spans says so rather than inventing evidence',
+        /no spans for this section/.test(trace.prompts['Introduction:prose'] || ''))
+  check('ignoring HARD spans marks the section unreliable', ignored.unreliableSections.includes('Part I'), JSON.stringify(ignored.unreliableSections))
+  check('the untouched sibling section stays reliable', !ignored.unreliableSections.includes('Introduction'))
+  check('the integrity finding says the evidence was ignored, not fabricated',
+        ignored.findings.some(x => x.area === 'reviewer-integrity' && x.section === 'Part I' && /cited none of the 1 HARD/.test(x.detail || '')),
+        JSON.stringify(ignored.findings.filter(x => x.area === 'reviewer-integrity')))
+  check('ignoring the evidence flips the gate', ignored.overallPass === false)
+  check('the audit output is returned so a caller can see what was handed over',
+        ignored.proseAuditHardSpans === 1 && ignored.proseAudit['Part I'][0].id === 'S001')
+
+  const { result: cited } = await exec(wire, { audit: { 'Part I': [HARD_SPAN] }, proseSpanIds: ['S001'] })
+  check('citing the span — even to dismiss it — is reliable', !cited.unreliableSections.includes('Part I') && cited.overallPass === true)
+
+  // SOFT-only is deliberately NOT an integrity failure. Soft spans have a real false-positive
+  // rate; a reviewer that reads them and reports nothing may simply be right.
+  const { result: softOnly } = await exec(wire, { audit: { 'Part I': [SOFT_SPAN] }, proseSpanIds: [] })
+  check('soft-only spans left uncited are not an integrity failure',
+        !softOnly.unreliableSections.includes('Part I') && softOnly.overallPass === true,
+        JSON.stringify(softOnly.unreliableSections))
 }
 
 // ── Drift run: mutate a draft between the workflow and the post-step ─────────

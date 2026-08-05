@@ -4,10 +4,9 @@
 Covers (per the v5.42.0 design):
   - .typ markup stripping (prose_extract._iter_typ_lines)
   - deck-skip logic (hook._is_typ_deck)
-  - hook routes .typ letters + .md drafts to prose-lint.py
-  - domain `style:` -> prose-lint `--only` mapping
+  - hook routes .typ letters + .md drafts to prose-audit.py
   - edited-line scoping (only violations on touched lines are reported)
-  - no double-reporting (granular ai-smell constraints superseded by prose-lint)
+  - no double-reporting (ONE span per violation, whatever tables matched it)
 
 Run with:  python3 -m pytest tests/test_prose_lint_hook.py
        or:  python3 tests/test_prose_lint_hook.py
@@ -31,8 +30,9 @@ import prose_extract  # noqa: E402
 # tests/writing-prose-check.test.mjs, and `_detect_style` was dropped rather than ported because it
 # read the retired `.planning/ACTIVE_WORKFLOW.md` ledger. What remains in THIS file is what is still
 # genuinely Python: `.typ` prose extraction (scripts/prose_extract.py), the scored AI-tic table
-# (skills/ai-anti-patterns/scripts/screen.py), and the hook's end-to-end behaviour, which is driven
-# as a subprocess and does not care what language the hook is written in.
+# (loaded via scripts/prose-audit.py, which replaced the deleted screen.py third loader), and the
+# hook's end-to-end behaviour, which is driven as a subprocess and does not care what language the
+# hook is written in.
 HOOK_PATH = REPO_ROOT / "hooks" / "writing-prose-check.ts"
 
 
@@ -190,7 +190,9 @@ def test_hook_lints_typ_letter(tmp_path):
     f.write_text('#set page(margin: 1in)\n'
                  "This article delves into the rich tapestry of the law.\n")
     ctx = _run_hook(f)
-    assert ctx is not None and "letter.typ:2" in ctx and "ai-anti-patterns" in ctx, ctx
+    # The hook reports the SYSTEM that produced each span (scored-tic, wikipedia-promotional, …)
+    # rather than the old prose-lint category bucket.
+    assert ctx is not None and "letter.typ:2" in ctx and "rich/vibrant tapestry" in ctx, ctx
 
 
 def test_hook_skips_typ_deck(tmp_path):
@@ -226,17 +228,22 @@ def test_hook_scopes_to_edited_lines(tmp_path):
 
 
 def test_hook_no_double_report_puffery(tmp_path):
+    """ONE line per violation. This used to be enforced by a hand-maintained supersede set naming
+    three constraints; it is now a property of the single engine, so assert the property."""
     drafts = tmp_path / "drafts"
     drafts.mkdir()
     f = drafts / "d.md"
     f.write_text("It is important to note this point.\n")
     ctx = _run_hook(f)
     assert ctx is not None
-    # prose-lint reports it under ai-anti-patterns ...
-    assert "ai-anti-patterns" in ctx, ctx
-    # ... and the superseded granular constraint label must NOT appear.
+    assert "it is important to note" in ctx.lower(), ctx
+    # The retired granular constraint and its labels are gone entirely.
     assert "puffery:important-to-note" not in ctx, ctx
-    assert "writing-ai-smell-puffery" not in ctx, ctx
+    assert "writing-ai-smell" not in ctx, ctx
+    # And nothing is reported twice.
+    bullets = [ln for ln in ctx.splitlines() if ln.strip().startswith("•")]
+    assert len(bullets) == len(set(bullets)), bullets
+    assert sum("important to note" in b for b in bullets) == 1, bullets
 
 
 def test_hook_flags_imperative_scene_setting_opener(tmp_path):
@@ -395,11 +402,14 @@ if __name__ == "__main__":
 # scored AI-tic table (gate-then-grade): positive fires, human near-miss doesn't
 # --------------------------------------------------------------------------
 def _scored_tic_patterns():
+    """The scored-tic table as the ONE loader now sees it. screen.py — a third loader nothing but
+    this test ever called — was deleted with the rest of the consolidation."""
     import importlib.util
-    p = REPO_ROOT / "skills" / "ai-anti-patterns" / "scripts" / "screen.py"
-    spec = importlib.util.spec_from_file_location("aap_screen", p)
+    p = REPO_ROOT / "scripts" / "prose-audit.py"
+    spec = importlib.util.spec_from_file_location("prose_audit", p)
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
-    return [(lab, rx) for cat, lab, rx in mod.load_patterns(only={"scored-tic"})]
+    return [(lab, rx) for system, lab, sev, rx in mod.load_pattern_systems()
+            if system == "scored-tic"]
 
 
 def test_scored_tic_fires_on_ai_phrase():

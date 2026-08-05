@@ -63,17 +63,35 @@ function runProc(cmd: string[]): RunOut {
   return { stdout, returncode: r.exitCode ?? 1 };
 }
 
-type FloorResult = { ok: boolean; failed: string[]; errors: string[]; summary: string };
+type FloorResult = { ok: boolean; failed: string[]; soft: string[]; errors: string[]; summary: string };
 
-/** check-all.py (dev). ok iff no hard content FAILURES. */
+/** A check-all `failed[]` entry's declared severity. Anything that is not literally `hard`
+ *  — including an entry from a check-all old enough not to emit the field — is `soft`. */
+function isHard(entry: unknown): boolean {
+  return (
+    entry !== null &&
+    typeof entry === "object" &&
+    !Array.isArray(entry) &&
+    String((entry as Record<string, unknown>).severity ?? "soft").toLowerCase() === "hard"
+  );
+}
+
+/** check-all.py (dev). ok iff no HARD-severity failures.
+ *
+ * SEVERITY IS THE CONSTRAINT'S TO DECLARE, NOT THIS GATE'S TO ASSUME. This used to block on any
+ * failure at all, which inverted the intent of the whole SEVERITY convention: advisory puffery
+ * (`soft`) stopped a phase, and an `As an AI language model` (`hard`) counted the same as a filler
+ * transition. Soft failures now ride along as context in the ALLOW path — reported, not blocking.
+ */
 function runDev(project: string): FloorResult {
   let out: RunOut;
   try {
     out = runProc(["uv", "run", "--with", "lxml", "python3", CHECK_ALL_PY, project]);
   } catch (e) {
-    return { ok: true, failed: [], errors: [], summary: `(check-all.py could not run: ${e})` };
+    return { ok: true, failed: [], soft: [], errors: [], summary: `(check-all.py could not run: ${e})` };
   }
   let failed: string[] = [];
+  let soft: string[] = [];
   let errors: string[] = [];
   try {
     const raw = out.stdout;
@@ -85,15 +103,19 @@ function runDev(project: string): FloorResult {
       f !== null && typeof f === "object" && !Array.isArray(f)
         ? String((f as Record<string, unknown>).name ?? "?")
         : String(f);
-    failed = ((data.failed ?? []) as unknown[]).map(name);
+    const all = (data.failed ?? []) as unknown[];
+    failed = all.filter(isHard).map(name);
+    soft = all.filter((f) => !isHard(f)).map(name);
     errors = ((data.errors ?? []) as unknown[]).map(name);
   } catch {
+    // A parse failure means severity is unknowable. Treat the run as hard-failing on a non-zero
+    // exit rather than inventing a soft classification for output nobody could read.
     if (out.returncode !== 0) {
       failed = [lastLine(out.stdout, "check-all reported failures")];
     }
   }
   const summary = lastLine(out.stdout, "(no output)");
-  return { ok: failed.length === 0, failed, errors, summary };
+  return { ok: failed.length === 0, failed, soft, errors, summary };
 }
 
 /** check-all-ds.sh (ds). ok iff exit 0. */
@@ -107,7 +129,7 @@ function runDs(project: string): FloorResult {
     // script is plugin-internal and always present, so a spawn failure means the environment is
     // broken, not that the project is clean. "We could not check" and "we checked and it is fine"
     // were being reported identically, and only the gate could tell them apart.
-    return { ok: false, failed: ["check-all-ds.sh"], errors: [String(e)], summary: `(check-all-ds.sh could not run: ${e})` };
+    return { ok: false, failed: ["check-all-ds.sh"], soft: [], errors: [String(e)], summary: `(check-all-ds.sh could not run: ${e})` };
   }
   let failed = pySplitlines(out.stdout)
     .filter((ln) => ln.includes("✗"))
@@ -115,7 +137,8 @@ function runDs(project: string): FloorResult {
   const summary = lastLine(out.stdout, "(no output)");
   const ok = out.returncode === 0;
   if (!ok && failed.length === 0) failed = [summary];
-  return { ok, failed, errors: [], summary };
+  // check-all-ds.sh has no per-check severity to report; every ✗ it prints is blocking.
+  return { ok, failed, soft: [], errors: [], summary };
 }
 
 async function main(): Promise<never> {
@@ -125,9 +148,10 @@ async function main(): Promise<never> {
   // CLI debug mode
   if (argv.length > 0 && argv[0] !== "-") {
     const runner = floor === "ds" ? runDs : runDev;
-    const { ok, failed, errors, summary } = runner(argv[0]);
+    const { ok, failed, soft, errors, summary } = runner(argv[0]);
     console.log(`FLOOR=${floor || "dev"} ok=${ok ? "True" : "False"} | ${summary}`);
-    if (failed.length) console.log("FAILED (blocking):\n- " + failed.join("\n- "));
+    if (failed.length) console.log("FAILED hard (blocking):\n- " + failed.join("\n- "));
+    if (soft.length) console.log("failed soft (advisory — NOT blocking):\n- " + soft.join("\n- "));
     if (errors.length) console.log("errors (non-blocking — tooling):\n- " + errors.join("\n- "));
     process.exit(ok ? 0 : 1);
   }
@@ -164,18 +188,36 @@ async function main(): Promise<never> {
   // FLOOR=dev (default): gate the goal-backward verifier Agent spawn.
   if (toolName !== "Agent") process.exit(0);
   const project = projectFromArgs(toolInput, hookInput);
-  const { ok, failed, errors, summary } = runDev(project);
+  const { ok, failed, soft, errors, summary } = runDev(project);
+  const softNote = soft.length
+    ? "\n\n(Plus " + String(soft.length) + " SOFT constraint failure(s) — advisory, NOT blocking:\n- " +
+      soft.join("\n- ") + ")"
+    : "";
   if (!ok) {
     const note = errors.length
       ? "\n\n(Plus " + String(errors.length) + " constraint(s) errored — tooling, NOT blocking.)"
       : "";
     deny(
-      "GATE BLOCKED: the constraint floor (check-all.py — Leg 1) has hard failures, so the " +
-        "goal-backward verifier must not run yet. Constraint failures are hard blocks — fix " +
-        "these first, then re-spawn the verifier:\n- " +
+      "GATE BLOCKED: the constraint floor (check-all.py — Leg 1) has HARD failures, so the " +
+        "goal-backward verifier must not run yet. A hard constraint is one whose module declares " +
+        "SEVERITY = \"hard\" — fix these first, then re-spawn the verifier:\n- " +
         (failed.length ? failed : [summary]).join("\n- ") +
         note +
+        softNote +
         "\n\n(Run `uv run --with lxml python3 references/constraints/check-all.py .` for details.)",
+    );
+  }
+  // Soft failures do not block, but they must not vanish either: the whole point of honoring
+  // severity is that the advisory findings still reach the model, just without a deny.
+  if (soft.length) {
+    console.log(
+      JSON.stringify({
+        hookSpecificOutput: {
+          hookEventName: "PreToolUse",
+          permissionDecision: "allow",
+          permissionDecisionReason: ("Constraint floor clean of HARD failures." + softNote).trim(),
+        },
+      }),
     );
   }
   process.exit(0);

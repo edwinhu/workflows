@@ -8,8 +8,11 @@
  *     Write/Edit, NOT on other workflows. (Skill-scoped to writing-review in the frontmatter too.)
  *   - RUNS check-all from the PROJECT dir, so check-all self-scopes to the WRITING constraints via its
  *     APPLIES_TO + detected-workflow filter (non-writing constraints are skipped, not run).
- *   - BLOCKS only on HARD failures (check-all exit 1 = `failed`/`errors`); advisory "conventions"
- *     (judgment-only) never block.
+ *   - BLOCKS only on HARD failures — meaning a failed constraint whose module declares
+ *     SEVERITY = "hard". Soft failures and advisory "conventions" (judgment-only) never block;
+ *     soft ones ride along in the allow payload as context. Before v5.127.0 check-all dropped the
+ *     declared severity entirely and this gate blocked on ANY failure, so advisory puffery could
+ *     stop the review fan-out while a provenance leak counted no higher.
  *
  * FRESHNESS CACHE (this gate ONLY): after a successful run this gate writes
  * `.planning/.checkall-cache.json`; on the next invocation, if the freshness hash (drafts/*.md +
@@ -158,6 +161,7 @@ function writeCache(
   project: string,
   ok: boolean,
   failed: unknown[],
+  soft: unknown[],
   errors: unknown[],
   summary: string,
   hash_: string,
@@ -167,14 +171,26 @@ function writeCache(
     mkdirSync(dirname(cachePath), { recursive: true });
     writeFileSync(
       cachePath,
-      pyJson({ exit_ok: ok, failed: failed, errors: errors, summary: summary, hash: hash_ }),
+      pyJson({ exit_ok: ok, failed: failed, soft: soft, errors: errors, summary: summary, hash: hash_ }),
     );
   } catch {
     // caching is advisory-only; never fail the gate over a cache-write error
   }
 }
 
-type CheckResult = { ok: boolean; failed: string[]; errors: string[]; summary: string };
+type CheckResult = { ok: boolean; failed: string[]; soft: string[]; errors: string[]; summary: string };
+
+/** A check-all `failed[]` entry's declared severity. Anything not literally `hard` — including an
+ *  entry from a check-all old enough not to emit the field, and a cached verdict written before
+ *  this gate understood severity — is `soft`. */
+function isHard(entry: unknown): boolean {
+  return (
+    entry !== null &&
+    typeof entry === "object" &&
+    !Array.isArray(entry) &&
+    String((entry as Record<string, unknown>).severity ?? "soft").toLowerCase() === "hard"
+  );
+}
 
 /** Last element of Python's `s.strip().splitlines() or [fallback]`.
  * Python splitlines() breaks on the full universal-newline set, and returns [] for "". */
@@ -211,13 +227,14 @@ function runCheckAll(project: string): CheckResult {
     // branch below and emitted a DENY. That inverted fail-open into fail-closed: a check-all
     // exceeding 180s would block writing-review instead of waving it through.
     if (proc.signalCode || (proc.exitCode === null && !stdout)) {
-      return { ok: true, failed: [], errors: [], summary: "(check-all could not run: timeout)" };
+      return { ok: true, failed: [], soft: [], errors: [], summary: "(check-all could not run: timeout)" };
     }
   } catch (e) {
     // Never hard-block the workflow on a harness error running the gate.
-    return { ok: true, failed: [], errors: [], summary: `(check-all could not run: ${e})` };
+    return { ok: true, failed: [], soft: [], errors: [], summary: `(check-all could not run: ${e})` };
   }
   let failed: string[] = [];
+  let soft: string[] = [];
   let errors: string[] = [];
   try {
     const raw = stdout;
@@ -226,16 +243,20 @@ function runCheckAll(project: string): CheckResult {
     if (data === null || typeof data !== "object" || Array.isArray(data)) throw new Error("not a dict");
     const f = (data as Record<string, unknown>).failed;
     const e = (data as Record<string, unknown>).errors;
-    failed = (Array.isArray(f) ? f : f === undefined ? [] : (() => { throw new Error("not iterable"); })()).map(nameOf);
+    const all = (Array.isArray(f) ? f : f === undefined ? [] : (() => { throw new Error("not iterable"); })());
+    failed = all.filter(isHard).map(nameOf);
+    soft = all.filter((x) => !isHard(x)).map(nameOf);
     errors = (Array.isArray(e) ? e : e === undefined ? [] : (() => { throw new Error("not iterable"); })()).map(nameOf);
   } catch {
-    // Parse failed → fall back to the process exit code, but never invent failures.
+    // Parse failed → severity is unknowable, so fall back to the process exit code and treat the
+    // run as hard-failing. Never invent failures, and never invent a soft classification either.
     failed = [];
+    soft = [];
     errors = [];
     if (returncode !== 0) failed = [lastLineOr(stdout, "check-all reported failures")];
   }
   const summary = lastLineOr(stdout, "(no output)");
-  return { ok: failed.length === 0, failed, errors, summary };
+  return { ok: failed.length === 0, failed, soft, errors, summary };
 }
 
 export function runCheckAllCached(project: string): CheckResult & { fromCache: boolean } {
@@ -245,11 +266,13 @@ export function runCheckAllCached(project: string): CheckResult & { fromCache: b
     if (cached && pyTruthy(cached) && cached.hash === curHash) {
       const ok = cached.exit_ok === undefined ? true : (cached.exit_ok as boolean);
       const failed = (cached.failed === undefined ? [] : cached.failed) as unknown[];
+      const soft = (cached.soft === undefined ? [] : cached.soft) as unknown[];
       const errors = (cached.errors === undefined ? [] : cached.errors) as unknown[];
       const summary = (cached.summary === undefined ? "(cached)" : cached.summary) as string;
       return {
         ok: pyTruthy(ok),
         failed: failed as string[],
+        soft: soft as string[],
         errors: errors as string[],
         summary: summary,
         fromCache: true,
@@ -257,7 +280,7 @@ export function runCheckAllCached(project: string): CheckResult & { fromCache: b
     }
   }
   const r = runCheckAll(project);
-  if (curHash !== null) writeCache(project, r.ok, r.failed, r.errors, r.summary, curHash);
+  if (curHash !== null) writeCache(project, r.ok, r.failed, r.soft, r.errors, r.summary, curHash);
   return { ...r, fromCache: false };
 }
 
@@ -267,7 +290,8 @@ async function main(): Promise<void> {
   if (argv.length > 0 && argv[0] !== "-") {
     const r = runCheckAllCached(argv[0]);
     console.log(`ok=${r.ok ? "True" : "False"} | ${r.summary}` + (r.fromCache ? " [cached]" : ""));
-    if (r.failed.length) console.log("FAILED (blocking):\n- " + r.failed.join("\n- "));
+    if (r.failed.length) console.log("FAILED hard (blocking):\n- " + r.failed.join("\n- "));
+    if (r.soft.length) console.log("failed soft (advisory — NOT blocking):\n- " + r.soft.join("\n- "));
     if (r.errors.length) console.log("errors (non-blocking — tooling):\n- " + r.errors.join("\n- "));
     process.exit(r.ok ? 0 : 1);
   }
@@ -327,28 +351,34 @@ async function main(): Promise<void> {
 
   const project = projectFromArgs(toolInput, hookInput);
   const r = runCheckAllCached(project);
+  const softNote = r.soft.length
+    ? "\n\n(Plus " + String(r.soft.length) + " SOFT constraint failure(s) — advisory, NOT blocking:\n- " +
+      r.soft.join("\n- ") + ")"
+    : "";
   if (!r.ok) {
     const note = r.errors.length
       ? "\n\n(Plus " + String(r.errors.length) + " constraint(s) errored — tooling, NOT blocking.)"
       : "";
     deny(
       "GATE BLOCKED: the deterministic mechanical floor (check-all.py — bold-lead, " +
-        "topic-sentences, anchored-numbers, AI-smell, outline-sync, etc.) has hard failures, so " +
-        "the semantic review fan-out must not run yet. Fix these first, then re-invoke:\n- " +
+        "topic-sentences, anchored-numbers, outline-sync, AI provenance artifacts, etc.) has HARD " +
+        "failures, so the semantic review fan-out must not run yet. A hard constraint is one whose " +
+        "module declares SEVERITY = \"hard\". Fix these first, then re-invoke:\n- " +
         (r.failed.length ? r.failed : [r.summary]).join("\n- ") +
         note +
+        softNote +
         sectionWarn +
-        "\n\n(Only writing constraints were checked; advisory 'conventions' do not block. " +
-        "Run `uv run --with lxml python3 references/constraints/check-all.py .` for details.)",
+        "\n\n(Only writing constraints were checked; soft failures and advisory 'conventions' do " +
+        "not block. Run `uv run --with lxml python3 references/constraints/check-all.py .` for details.)",
     );
   }
-  if (sectionWarn) {
+  if (sectionWarn || softNote) {
     console.log(
       pyJson({
         hookSpecificOutput: {
           hookEventName: "PreToolUse",
           permissionDecision: "allow",
-          permissionDecisionReason: "Mechanical floor clean." + sectionWarn,
+          permissionDecisionReason: "Mechanical floor clean of HARD failures." + softNote + sectionWarn,
         },
       }),
     );

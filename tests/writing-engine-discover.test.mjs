@@ -231,6 +231,10 @@ async function carriedRun(f) {
 }
 
 function reviewAgent(label, { missingSurface = false } = {}) {
+  // The deterministic prose audit runs before the reviewers and its spans are injected into the
+  // prose reviewer's prompt. These fixtures have clean drafts, so an empty relay is the honest
+  // stub: no spans handed over means nothing for a reviewer to have ignored.
+  if (label === 'prose-audit') return { sections: [{ section: 'Introduction', spans: [] }, { section: 'Part I', spans: [] }] }
   if (label.endsWith(':structure')) {
     return {
       section: label.split(':')[0], check: 'structure', itemsChecked: 4, issues: [],
@@ -242,8 +246,8 @@ function reviewAgent(label, { missingSurface = false } = {}) {
       argumentSummary: ['point'],
     }
   }
-  if (label.endsWith(':prose')) return { section: label.split(':')[0], check: 'prose', itemsChecked: 4, issues: [] }
-  if (label.endsWith(':fidelity')) return { section: label.split(':')[0], check: 'fidelity', itemsChecked: 2, issues: [] }
+  if (label.endsWith(':prose')) return { section: label.split(':')[0], check: 'prose', itemsChecked: 4, issues: [], spanIds: [] }
+  if (label.endsWith(':fidelity')) return { section: label.split(':')[0], check: 'fidelity', itemsChecked: 2, issues: [], spanIds: [] }
   if (label.endsWith(':verify')) return { section: label.split(':')[0], quotesChecked: 0, fabricated: [] }
   if (label === 'L2:transitions') return { transitions: [{ from: 'Introduction', to: 'Part I', verdict: 'SMOOTH', closes: 'A.', opens: 'B.', problem: '', planned: '', suggestion: '' }] }
   if (label === 'L3:document') {
