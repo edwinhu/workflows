@@ -57,7 +57,7 @@ this profile is blind to.
 | **Scored AI-tics** (`ai-anti-patterns/references/scored-tics-patterns.py`) | phrase/structure tics that passed the ~0-human-rate gate (`sev1-5`) | rewrite the construction; these have no honest use |
 | **Tiered diction** (`references/diction.yaml`) | fancy→plain words, tiered by corpus rate | `always_flag` → swap on sight; `cluster` → fix when 2+/para; `density` → vary at saturation; `dropped` → **never touch** (legal-normal) |
 | **British spelling** (`BRITISH` in `de_ai_audit.py`) | locale mismatch in US-register prose (`recognise`, `behaviour`, `whilst`, `labelled`) — LLMs emit these into US documents from mixed training corpora | swap for the US form; **drop the check for a UK-register document** |
-| **Stylometrics** (`ai-anti-patterns/scripts/style_metrics.py`) | rhythm/structure: `composite_human_likeness` 0-100, em-dash, metronomic runs, opener transitions, nominalization, burstiness/passive advisories | vary sentence length toward bursty; em-dash → semicolon/period; plainer Latinate→Anglo-Saxon |
+| **Stylometrics** (`ai-anti-patterns/scripts/style_metrics.py`) | rhythm/structure: `composite_human_likeness` 0-100, em-dash, metronomic runs, opener transitions, nominalization, false precision, burstiness/passive advisories | vary sentence length toward bursty; em-dash → semicolon/period; plainer Latinate→Anglo-Saxon; round a summarising figure to a fraction |
 
 ## Modes
 
@@ -85,6 +85,9 @@ START
   │     - diction:always_flag       → swap for the listed plain replacement
   │     - diction:cluster           → fix enough of the cluster to drop below 2/para
   │     - style:em_dash             → recast as semicolon / period / comma — but NOT all (see Preserve)
+  │     - style:false_precision     → round to a high-level fraction ("1.3771 percent" → "about one
+  │                                   and a half percent"); KEEP the exact value if the sentence sits
+  │                                   next to the exhibit that reports it
   │     - advisories (burstiness)   → vary sentence length where it reads flat; do NOT chop for chop's sake
   │     PRESERVE already-human passages (no spans) untouched.
   │     PRESERVE quoted material, block quotes, code, footnote citations.

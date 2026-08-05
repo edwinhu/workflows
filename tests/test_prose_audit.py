@@ -563,6 +563,29 @@ def test_bite_and_sharpest_version_respect_the_corpus_boundary(tmp_path, verdict
     assert hit == (verdict == "fire"), f"{sentence!r} -> {labels}"
 
 
+@pytest.mark.parametrize(("verdict", "sentence"), [
+    ("fire",  "The limits bound all of it, and the analysis cannot escape them"),
+    ("fire",  "Those constraints bound the analysis in ways the paper never confronts"),
+    # `bound` is 790/M in BOTH halves — the word is useless as a rule and only the OBJECT
+    # discriminates. Obligating a legal actor is core legal vocabulary (7 hits, 1.26/M in law
+    # reviews); a rule that fired on these would hit "the rule bound the agency" in any
+    # securities-law draft, which is the whole failure mode this gate exists to prevent.
+    ("clean", "Interpretive statements bound the agency, the Commission argued"),
+    ("clean", "The earlier Missouri decision bound the court to deny the rule"),
+    ("clean", "The parties are bound by the indenture"),
+    ("clean", "We report the upper bound of the estimate"),
+])
+def test_bound_fires_on_abstractions_not_on_obligated_parties(tmp_path, verdict, sentence):
+    """`bound-abstraction`: 0/14,294,148 for the transitive-against-an-abstraction sense.
+
+    Third instance of the same shape as rule-bites and sharpest-version — the word is ordinary
+    and the construction is the tell. Probing the family rather than the phrase is what found it."""
+    draft = tmp_path / f"bound-{abs(hash(sentence))}.md"
+    draft.write_text(sentence + "\n")
+    labels = _labels(PA.audit_document(draft))
+    assert ("bound-abstraction" in labels) == (verdict == "fire"), f"{sentence!r} -> {labels}"
+
+
 def test_the_new_tics_are_soft_not_hard():
     """sev>=4 is `hard` and blocks a gate. Neither of these earned that: `rule-bites` is a legal
     idiom in a register the control corpus under-covers, and `sharpest-version` sits inside a
@@ -570,9 +593,112 @@ def test_the_new_tics_are_soft_not_hard():
     import re as _re
     mod = PA._load_module(PA.SCORED_TICS)
     for _, label in mod._TIC_PATTERNS:
-        if "rule-bites" in label or "sharpest-version" in label:
+        if any(k in label for k in ("rule-bites", "sharpest-version", "bound-abstraction")):
             sev = int(_re.search(r"sev(\d)", label).group(1))
             assert sev <= 3, label
+
+
+# ── false precision: summary prose is not the exhibit ────────────────────────
+# EVERY "fire" case below is verbatim from a law-review manuscript edit (mirror/paper/typst), and
+# every one of them was CHANGED: "a rate of 1.3771 percent" -> "about one and a half percent";
+# "roughly ten times the 2.7361 percent rate" -> "…the abstention-wide rate"; "6,612 of 575,553
+# testable items --- 1.15 percent" -> "about one percent of testable items"; "85.63 percent of the
+# testable universe" -> "roughly six in seven"; "the 28.3328 percent figure" -> "that figure".
+#
+# THE NEGATIVES ARE THE RULE. A digit-heavy legal draft is mostly cites, years, dockets, versions
+# and money, and a rule that cannot tell those from a summary statistic is unusable on exactly the
+# documents this one exists for. Measured on mirror/paper/typst/body-src.typ: 12 hits, all in Part
+# I/II/III/IV summary prose, and ZERO on its 1,519 `table.cell(align: right)[…]` lines.
+def _fp_labels(draft: Path) -> str:
+    return " ".join(lab for s in PA.audit_document(draft)["spans"] for lab in s["labels"])
+
+
+@pytest.mark.parametrize("sentence", [
+    "The block flips at a rate of 1.3771 percent across the frozen panel today.",
+    "That is roughly ten times the 2.7361 percent rate reported in the appendix.",
+    "We find 6,612 of 575,553 testable items --- 1.15 percent --- fall below it.",
+    "The sample covers 85.63 percent of the testable universe of items today.",
+    "Compare the 28.3328 percent figure from the earlier draft of this paper.",
+])
+def test_false_precision_fires_on_summary_prose(tmp_path, sentence):
+    draft = tmp_path / f"fp-{abs(hash(sentence))}.md"
+    draft.write_text(sentence + "\n")
+    assert "false_precision" in _fp_labels(draft), sentence
+
+
+@pytest.mark.parametrize("sentence", [
+    # years — no decimal point exists to over-specify
+    "The rule was adopted in 1976 and amended again in 2005 by the Commission.",
+    # statutory / rule / section / order / bill cites
+    "See Rule 14a-8 and 17 C.F.R. § 240.14a-101 for the operative text here.",
+    "Executive Order 14,366 and S. 1670 both bear on the same question here.",
+    "The DGCL 216 default quorum applies unless the bylaws provide otherwise.",
+    "The disclosure obligation arises under § 208A of the amended statute.",
+    # version numbers and dotted identifiers
+    "We ran this under Python 3.11.4 with the touying 0.5.0 template package.",
+    # money, where the cents are the point
+    "The filing fee was $1,234.56 and the per-share price was $12.75 that day.",
+    # page / line / footnote locators
+    "See supra note 203 at 1055 for the full discussion of this point today.",
+    # under the thresholds: a bare two-decimal figure and a one-decimal percentage
+    "The mean turnout ratio was 1.60 across every specification in the panel.",
+    "Say-on-pay items flip at 0.4 percent under the market-mirroring scenario.",
+])
+def test_false_precision_does_not_fire_on_legitimate_digits(tmp_path, sentence):
+    draft = tmp_path / f"fp-neg-{abs(hash(sentence))}.md"
+    draft.write_text(sentence + "\n")
+    assert "false_precision" not in _fp_labels(draft), sentence
+
+
+def test_false_precision_ignores_exhibits_and_quoted_material(tmp_path):
+    """EXACT FIGURES NEXT TO THE EXHIBIT ARE LEGITIMATE — that is the whole shape of the rule.
+    The Typst `table.cell` case is the load-bearing one: body-src.typ carries 1,519 of them, and a
+    rule that flags a correctly formatted results table is worse than no rule."""
+    typ = tmp_path / "exhibit.typ"
+    typ.write_text(
+        "#figure(\n"
+        "  align(center)[#table(\n"
+        "    columns: 2,\n"
+        "    table.cell(align: right)[0.3952], table.cell(align: right)[2.7361],\n"
+        "    table.cell(align: right)[17.34], table.cell(align: right)[85.63%],\n"
+        "  )]\n"
+        ")\n")
+    assert "false_precision" not in _fp_labels(typ), typ.read_text()
+
+    md = tmp_path / "exhibit.md"
+    md.write_text(
+        "| Scenario | Rate |\n"
+        "|---|---|\n"
+        "| Market mirroring | 0.3952 percent |\n"
+        "\n"
+        "```\nflip_rate = 1.3771  # percent of testable items in the frozen panel\n```\n"
+        "\n"
+        "> The staff reported a flip rate of 2.7361 percent across all items.\n")
+    assert "false_precision" not in _fp_labels(md), md.read_text()
+
+
+def test_false_precision_never_lands_in_a_footnote(tmp_path):
+    """Same non-negotiable every other system here obeys: a finding must never land in a note."""
+    typ = tmp_path / "fn.typ"
+    typ.write_text("The reform changes few outcomes.#footnote[Precisely 1.3771 percent of them.]\n")
+    assert "false_precision" not in _fp_labels(typ), typ.read_text()
+
+    md = tmp_path / "fn.md"
+    md.write_text("The reform changes few outcomes.^[Precisely 1.3771 percent of them here.]\n"
+                  "\n[^a]: The abstention-wide rate is 2.7361 percent of testable items.\n")
+    assert "false_precision" not in _fp_labels(md), md.read_text()
+
+
+def test_false_precision_is_soft(tmp_path):
+    """`hard` is reserved for the zero-false-positive provenance classes. A rounded figure is a
+    style preference with a defensible exception (an exact value beside its exhibit), so this one
+    may report but may never block a gate."""
+    draft = tmp_path / "fp.md"
+    draft.write_text("The block flips at a rate of 1.3771 percent across the frozen panel.\n")
+    res = PA.audit_document(draft)
+    hits = [s for s in res["spans"] if any("false_precision" in lab for lab in s["labels"])]
+    assert hits and all(s["severity"] == "soft" for s in hits), res["spans"]
+    assert res["n_hard"] == 0, [s for s in res["spans"] if s["severity"] == "hard"]
 
 
 # ── the CLI contract the hook and the reviewers depend on ────────────────────

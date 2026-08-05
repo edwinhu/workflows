@@ -78,6 +78,11 @@ These patterns are unambiguous AI artifacts:
 - Weasel wording: "some experts say", "it is believed"
 
 **Stylistic Quirks:**
+- False precision — a summarising figure carried to spurious decimal places
+  ("a rate of 1.3771 percent", "covering 85.63 percent of the universe").
+  Prefer a high-level fraction in the abstract and introduction, where a figure
+  summarises rather than reports; keep the exact value next to the exhibit that
+  backs it. Enforced as `style·false_precision`.
 - Elegant variation (synonym cycling to avoid repetition)
 - False ranges ("from X to Y" without real data)
 - Title Case In All Headings
@@ -140,6 +145,24 @@ and refuses to add anything over the eligibility gate.
 | "Despite challenges..." | State the reality directly without formula |
 | Exactly three examples | Use the number that fits: 2, 4, 5, or just 1 |
 | "It's important to note" | Just state the important thing |
+
+### For False Precision
+
+A figure in the abstract or introduction is SUMMARISING; a figure beside its table is REPORTING.
+Only the second earns its decimal places. Carrying four of them into a summary implies a precision
+the estimate does not have and reads as machine output.
+
+| AI Pattern | Human Alternative |
+|------------|-------------------|
+| "a rate of 1.3771 percent" | "about one and a half percent" |
+| "roughly ten times the 2.7361 percent rate" | "roughly ten times the abstention-wide rate" |
+| "6,612 of 575,553 testable items — 1.15 percent — fall below" | "about one percent of testable items fall below" |
+| "covering 85.63 percent of the testable universe" | "covering roughly six in seven of the testable universe" |
+| "the 28.3328 percent figure" | "that figure" |
+
+Exceptions the rule already carries, and which must stay exceptions: exact values inside a table,
+figure caption, code block or footnote; years, statutory and rule cites, docket, page and version
+numbers; and money where the cents are the point.
 
 ### For Promotional Language
 

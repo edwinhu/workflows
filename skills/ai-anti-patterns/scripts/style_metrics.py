@@ -423,6 +423,131 @@ _RE_NOMINAL = re.compile(
     r"|\b\w{11,}(?:tion|sion|ment|ance|ence)\b", re.IGNORECASE)
 
 
+# --------------------------------------------------------------------------
+# False precision: spurious decimal places in summary prose.
+#
+# THE RULE. "a rate of 1.3771 percent" in an abstract is not more accurate than "about one and a
+# half percent"; it is less readable and it implies a precision the estimate does not carry. Exact
+# figures are legitimate NEXT TO THE EXHIBIT that backs them, which is why every table, cell,
+# caption row and code block below is excluded rather than the rule being softened. Motivating
+# edits (all made): "1.3771 percent" -> "about one and a half percent"; "6,612 of 575,553 testable
+# items --- 1.15 percent" -> "about one percent of testable items"; "85.63 percent of the testable
+# universe" -> "roughly six in seven".
+#
+# BIASED HARD TOWARD FALSE NEGATIVES. A bare numeral needs 3+ decimals; a percentage needs 2+.
+# Everything that carries digits for a NON-summary reason is excluded by construction:
+#   * years, section/rule/statute cites, docket and page numbers carry no decimal point at all,
+#     and the ones that could (`Rule 14a-8`, `§ 240.14a-101`, `S. 1670`) are additionally guarded
+#     by the citation-lead lookback;
+#   * version numbers and dotted identifiers (`0.5.0`, `Python 3.11.4`) are rejected by the
+#     `(?<![\d.])` / `(?![\d.])` guards — a digit-dot on either side disqualifies the match;
+#   * money keeps its cents: a currency-symbol lead is skipped outright, and $1,234.56 has only
+#     two decimals and no percent unit besides;
+#   * tables (markdown rows, Typst `#table(...)` / `table.cell(...)`), fenced code, blockquoted
+#     source material and footnotes are masked out before the scan.
+# A line must also read as PROSE — four or more alphabetic words — so a bare `[0.3952],` cell that
+# escaped the table mask still cannot fire.
+_FP_BARE_DECIMALS = 3
+_FP_PCT_DECIMALS = 2
+
+_RE_FALSE_PRECISION = re.compile(
+    r"(?<![\d.])\d[\d,]*\.(?P<dec>\d+)(?![\d.])"
+    r"(?P<unit>\s*(?:%|percent(?:age\s+points?)?|pp)\b)?"
+)
+# A token that, sitting immediately before the number, makes it an IDENTIFIER rather than a
+# measurement: a cite, a locator, a version. `\s*$` anchors it to the number itself.
+_RE_CITE_LEAD = re.compile(
+    r"(?:§|¶|\bRule|\bRules|\bSection|\bSecs?\.|\bNos?\.|\bPub\.\s*L\.|\bStat\.|\barts?\.|"
+    r"\bchs?\.|\bpp?\.|\bnotes?|\bnn?\.|\bOrder|\bRelease|\bDocket|\bForm|\bItem|\bReg\.|"
+    r"\bC\.F\.R\.|\bU\.S\.C\.|\bS\.|\bH\.R\.|\bDGCL|\bversion|\bv\.|\bat)\s*$",
+    re.IGNORECASE)
+_RE_CURRENCY_LEAD = re.compile(r"[$€£¥₹]\s*$")
+_RE_PROSE_WORD = re.compile(r"[A-Za-z]{3,}")
+
+_FP_FENCE = re.compile(r"^\s*(?:```|~~~)")
+_FP_MD_TABLE_ROW = re.compile(r"^\s*\|")
+_FP_BLOCKQUOTE = re.compile(r"^\s*>")
+_FP_MD_FN_DEF = re.compile(r"^\s*\[\^[^\]]*\]:")
+_FP_TYPST_CELL = re.compile(r"\btable\.cell\s*\(")
+_FP_TYPST_TABLE = re.compile(r"#(?:table|figure|grid)\s*(?=\()")
+_FP_TYPST_FOOTNOTE = re.compile(r"#footnote\s*(?=\[)")
+_FP_MD_INLINE_FN = re.compile(r"\^(?=\[)")
+
+
+def _fp_closer(text: str, opener: int, open_ch: str, close_ch: str) -> int:
+    """Index of the delimiter closing `text[opener]`, or -1 when the construct never closes."""
+    depth = 0
+    for i in range(opener, len(text)):
+        if text[i] == open_ch:
+            depth += 1
+        elif text[i] == close_ch:
+            depth -= 1
+            if depth == 0:
+                return i
+    return -1
+
+
+def mask_non_prose(raw: str) -> str:
+    """Blank every region that is not running prose, preserving length and line offsets.
+
+    Scoped to the false-precision rule ON PURPOSE: every other finding in this module scores the
+    raw text, and widening the mask would silently move em-dash, transition and nominalization
+    findings that have nothing to do with this change.
+    """
+    chars = list(raw)
+
+    def blank(a: int, b: int) -> None:
+        for i in range(max(0, a), min(b, len(chars))):
+            if chars[i] != "\n":
+                chars[i] = " "
+
+    # Balanced constructs first — they span lines, so they must be measured on the original text.
+    for rx, o, c in ((_FP_TYPST_TABLE, "(", ")"),
+                     (_FP_TYPST_FOOTNOTE, "[", "]"),
+                     (_FP_MD_INLINE_FN, "[", "]")):
+        for m in rx.finditer(raw):
+            closer = _fp_closer(raw, m.end(), o, c)
+            blank(m.start(), closer + 1 if closer != -1 else m.end())
+
+    # Then line-shaped exclusions.
+    off, in_fence = 0, False
+    for line in raw.split("\n"):
+        end = off + len(line)
+        if _FP_FENCE.match(line):
+            in_fence = not in_fence
+            blank(off, end)
+        elif (in_fence or _FP_MD_TABLE_ROW.match(line) or _FP_BLOCKQUOTE.match(line)
+              or _FP_MD_FN_DEF.match(line) or _FP_TYPST_CELL.search(line)):
+            blank(off, end)
+        off = end + 1
+    return "".join(chars)
+
+
+def false_precision_hits(raw: str) -> list[tuple[int, str]]:
+    """[(offset, matched_text)] for every spurious-precision figure in summary prose."""
+    masked = mask_non_prose(raw)
+    line_start = 0
+    line_bounds: list[tuple[int, int]] = []
+    for line in masked.split("\n"):
+        line_bounds.append((line_start, line_start + len(line)))
+        line_start += len(line) + 1
+
+    hits: list[tuple[int, str]] = []
+    for m in _RE_FALSE_PRECISION.finditer(masked):
+        decimals = len(m.group("dec"))
+        is_pct = bool(m.group("unit"))
+        if decimals < (_FP_PCT_DECIMALS if is_pct else _FP_BARE_DECIMALS):
+            continue
+        lead = masked[max(0, m.start() - 40):m.start()]
+        if _RE_CURRENCY_LEAD.search(lead) or _RE_CITE_LEAD.search(lead):
+            continue
+        a, b = next((p for p in line_bounds if p[0] <= m.start() <= p[1]), (0, len(masked)))
+        if len(_RE_PROSE_WORD.findall(masked[a:b])) < 4:
+            continue
+        hits.append((m.start(), m.group(0).strip()))
+    return hits
+
+
 def _line_offsets(raw: str) -> list[int]:
     offs = [0]
     for i, ch in enumerate(raw):
@@ -446,7 +571,8 @@ def lint_text(raw: str, stats: dict | None = None, max_per_type: int = 12) -> di
     """Locate the specific AI-style tells in a draft.
 
     Returns line-level `findings` (em-dashes, opener transitions,
-    nominalizations, passive constructions, metronomic sentence runs) plus
+    nominalizations, false precision, passive constructions, metronomic
+    sentence runs) plus
     draft-level `advisories` derived from the composite z-scores (for tells
     that are about *absence* or *global rhythm*, which have no single span).
     """
@@ -476,6 +602,10 @@ def lint_text(raw: str, stats: dict | None = None, max_per_type: int = 12) -> di
         add("nominalization", "low", m.start(),
             f"Heavy nominalization '{m.group(0)}' — prefer a plain verb/short "
             "Anglo-Saxon form.")
+    for pos, token in false_precision_hits(raw)[:max_per_type]:
+        add("false_precision", "med", pos,
+            f"false precision: {token} — prefer a rounded figure or fraction in summary "
+            "prose; keep exact values next to the exhibit.")
     pv = list(_PASSIVE.finditer(raw))
     # passive is register-appropriate in law; only surface if over budget
     pv_rate = len(pv) * (1000.0 / max(1, len(words(raw))))
