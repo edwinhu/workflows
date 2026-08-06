@@ -126,10 +126,19 @@ console.log('a domain whose transform is a fan-out delegates to its own workflow
   ok('the delegation goes through workflow(), the one-level-nesting primitive', /await workflow\(ADAPTER\.implementWorkflow/.test(source))
   // A domain workflow that cannot run must NOT quietly become the generic per-task path: that would
   // build a deck or a draft by a route nobody reviewed, under a gate claiming the domain ran.
-  ok('a failed domain workflow throws rather than falling back', /throw new Error\(`work: the \$\{ADAPTER\.implementWorkflow\} workflow failed/.test(source))
+  ok('a failed domain workflow throws rather than falling back', /throw new Error\(`work: the \$\{domainWorkflowLabel\(ADAPTER\.implementWorkflow\)\} workflow failed/.test(source))
   ok('domainArgs is forwarded unread', /passed through UNREAD/.test(source))
   // And it must reach the gate. A delegated implement that no score row mentions is invisible.
-  ok('the domain run appears in the score table', /domainRun \? \[\{ check: `\$\{ADAPTER\.implementWorkflow\} workflow`/.test(source))
+  ok('the domain run appears in the score table', /domainRun \? \[\{ check: `\$\{domainWorkflowLabel\(ADAPTER\.implementWorkflow\)\} workflow`/.test(source))
+  // AN EXTERNAL PLUGIN'S DOMAIN WORKFLOWS ARE NOT IN THE SAVED REGISTRY. `workflow()` resolves a
+  // NAME from `<project>/.claude/workflows/`, and `teaching` keeps its six scripts in
+  // `<plugin>/workflows/` — which no name resolves to. The `{scriptPath}` form already ran, because
+  // nothing validates this field; what did not work was SAYING so, since `${ref}` renders an object
+  // as `[object Object]` in the progress log and in the score-table row reporting whether it passed.
+  ok('a {scriptPath} ref is labelled readably rather than [object Object]',
+    /function domainWorkflowLabel\(ref\)/.test(source) && /ref\.scriptPath/.test(source))
+  ok('the label falls back to the basename without its extension',
+    /path\.split\('\/'\)\.pop\(\)\.replace\(\/\\\.js\$\/, ''\)/.test(source))
   ok('the domain run can fail the gate', /const domainPassed = \(domainRun \? domainRun\.overallPass !== false : true\)/.test(source))
   ok('the domain run is returned for the caller to render', /^  domainRun,$/m.test(source))
 }

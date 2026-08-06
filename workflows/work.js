@@ -143,6 +143,25 @@ const ADAPTERS = {
   },
 }
 
+/**
+ * A DOMAIN WORKFLOW MAY BE A NAME OR A `{scriptPath}` REF, AND AN EXTERNAL PLUGIN NEEDS THE REF.
+ *
+ * `workflow()` takes either: a NAME resolves from the saved-workflow registry
+ * (`<project>/.claude/workflows/`), a `{scriptPath}` runs a file directly. The built-in adapters use
+ * names because their scripts are registered; an external plugin's are not — `teaching` keeps its
+ * six domain workflows in `<plugin>/workflows/`, which no name resolves to.
+ *
+ * The ref already worked, by accident: nothing validates this field, so an object fell through to
+ * `workflow()` and ran. What did NOT work is saying so — `${ref}` renders an object as
+ * `[object Object]`, in the progress log AND in the score-table row that reports whether the domain
+ * workflow passed. A gate row nobody can read is a gate row nobody checks.
+ */
+function domainWorkflowLabel(ref) {
+  if (typeof ref === 'string') return ref
+  const path = ref && typeof ref === 'object' ? ref.scriptPath : undefined
+  return typeof path === 'string' && path ? path.split('/').pop().replace(/\.js$/, '') : 'domain workflow'
+}
+
 // ── Inputs ──────────────────────────────────────────────────────────────────────────────────
 // args = {
 //   projectDir: "/abs/project",          // REQUIRED
@@ -283,14 +302,14 @@ const IMPL_SCHEMA = {
 const DOMAIN_ARGS = cfg.domainArgs && typeof cfg.domainArgs === 'object' ? cfg.domainArgs : null
 let domainRun = null
 if (ADAPTER.implementWorkflow && DOMAIN_ARGS) {
-  log(`delegating IMPLEMENT to the ${ADAPTER.implementWorkflow} workflow`)
+  log(`delegating IMPLEMENT to the ${domainWorkflowLabel(ADAPTER.implementWorkflow)} workflow`)
   try {
     domainRun = await workflow(ADAPTER.implementWorkflow, { ...DOMAIN_ARGS, planPath: PLAN_PATH, planHash: PLAN_HASH, projectDir: PROJECT })
   } catch (error) {
     // A DOMAIN WORKFLOW THAT CANNOT RUN IS REPORTED, NOT SILENTLY REPLACED BY THE GENERIC PATH.
     // Falling back to per-task agents would produce a deck or a draft built by a route nobody
     // reviewed, under a gate that says the domain workflow passed.
-    throw new Error(`work: the ${ADAPTER.implementWorkflow} workflow failed for ${WORKFLOW}: ${error instanceof Error ? error.message : String(error)}`)
+    throw new Error(`work: the ${domainWorkflowLabel(ADAPTER.implementWorkflow)} workflow failed for ${WORKFLOW}: ${error instanceof Error ? error.message : String(error)}`)
   }
 }
 
@@ -348,11 +367,11 @@ const VERIFY_SCHEMA = {
  */
 let domainVerify = null
 if (ADAPTER.verifyWorkflow && DOMAIN_ARGS) {
-  log(`delegating VERIFY to the ${ADAPTER.verifyWorkflow} workflow`)
+  log(`delegating VERIFY to the ${domainWorkflowLabel(ADAPTER.verifyWorkflow)} workflow`)
   try {
     domainVerify = await workflow(ADAPTER.verifyWorkflow, { ...DOMAIN_ARGS, planPath: PLAN_PATH, planHash: PLAN_HASH, projectDir: PROJECT })
   } catch (error) {
-    throw new Error(`work: the ${ADAPTER.verifyWorkflow} workflow failed for ${WORKFLOW}: ${error instanceof Error ? error.message : String(error)}`)
+    throw new Error(`work: the ${domainWorkflowLabel(ADAPTER.verifyWorkflow)} workflow failed for ${WORKFLOW}: ${error instanceof Error ? error.message : String(error)}`)
   }
 }
 
@@ -469,8 +488,8 @@ const verdict = overallPass ? 'CLEAN' : 'ISSUES'
 const tasksThatFlagged = [...new Set([...notDone.map(r => r.id), ...failedVerify.map(v => v.id)])]
 
 const scoreTable = [
-  ...(domainRun ? [{ check: `${ADAPTER.implementWorkflow} workflow`, value: domainRun.overallPass === false ? 'ISSUES' : 'ran', pass: domainRun.overallPass !== false }] : []),
-  ...(domainVerify ? [{ check: `${ADAPTER.verifyWorkflow} workflow`, value: domainVerify.overallPass === false ? 'ISSUES' : 'ran', pass: domainVerify.overallPass !== false }] : []),
+  ...(domainRun ? [{ check: `${domainWorkflowLabel(ADAPTER.implementWorkflow)} workflow`, value: domainRun.overallPass === false ? 'ISSUES' : 'ran', pass: domainRun.overallPass !== false }] : []),
+  ...(domainVerify ? [{ check: `${domainWorkflowLabel(ADAPTER.verifyWorkflow)} workflow`, value: domainVerify.overallPass === false ? 'ISSUES' : 'ran', pass: domainVerify.overallPass !== false }] : []),
   { check: 'tasks implemented', value: `${implemented.length - notDone.length}/${implemented.length}`, pass: notDone.length === 0 },
   { check: 'tasks verified', value: `${verified.length - failedVerify.length}/${verified.length}`, pass: failedVerify.length === 0 },
   { check: 'critical findings (post-refutation)', value: String(criticals.length), pass: criticals.length === 0 },
