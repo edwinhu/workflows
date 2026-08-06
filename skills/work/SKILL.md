@@ -130,8 +130,58 @@ review state. Then obtain one independent whole-plan review bound to the same ha
 
 **Gate:** the receipt-selected `planFile` and `planHash` form an approved artifact for workflow `work`.
 
+## Beats 3–5 run as one program: `workflows/work.js`
+
+Beats 3, 4 and 5 run as a single orchestrated workflow rather than as three stretches of main-chat
+discipline. Two steps, in this order.
+
+**Step 1 — get the authenticated args. One call, and it is not optional.**
+
+```bash
+bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/work-args.ts <abs project> --workflow work --session ${CLAUDE_SESSION_ID}
+```
+
+It prints `{projectDir, workflow, planPath, planHash}` read from `.planning/.state/review.json` and
+re-hashed against the plan's current bytes, or it refuses and names the reason — `missing-artifact`
+(you have not been through PLAN), `review-pending`, `stale-receipt` (the plan was edited after
+approval), or a receipt identity disagreement. **Do not hand-copy `planPath`/`planHash` instead.**
+That is the step where a hash gets typed from memory and an unapproved plan gets implemented anyway.
+
+**Step 2 — run the beats, merging in the task list.**
+
+```
+Workflow({
+  scriptPath: "${CLAUDE_SKILL_DIR}/../../workflows/work.js",
+  args: {
+    ...<the JSON from step 1, verbatim>,
+    tasks: [{ id, name, work, writablePaths: [], acceptance }],   // from TaskList / the approved plan
+  },
+})
+```
+
+`tasks` is the one field step 1 will not produce: TaskList belongs to Claude Code and no script can
+read it, and deriving tasks from the plan's prose here would be exactly the LLM-discovery fallback
+every other authority path in this repo refuses. `work.js` refuses an empty list.
+
+It returns `{ workflow, planPath, planHash, overallPass, verdict, scoreTable, implemented, verified,
+findings, refutedFindings, reviews, tasksThatFlagged, carriedForward }`. Render the gate, drive the
+fix loop from `findings`, and re-invoke with `onlyChecks: tasksThatFlagged` plus `priorReviews` to
+re-judge only what flagged.
+
+**Why a program and not three beats of instruction.** The beat machinery restrains a free agent:
+guards deny reconnaissance, the mutation guard denies main-chat writes, an order gate refuses an
+out-of-order wave, a Stop hook refuses a turn end while review is owed. Every one of those exists
+because the orchestrator *could* do otherwise. A workflow script has no Write tool and no shell, so
+delegation is structural rather than enforced, and the beat order is the order of its statements.
+
+**What stays in main chat, and why the hooks do not all retire.** CLARIFY needs `AskUserQuestion`
+and PLAN approval needs `ExitPlanMode` — both are conversations with a human, which a workflow
+subagent cannot hold. Those two beats remain above, and remain hook-enforced. `work.js` refuses to
+start without `planPath` and a 64-hex `planHash`, so it cannot be used to skip them.
+
 ## 3. IMPLEMENT
 
+Dispatched by `workflows/work.js` above; this section is the adapter detail it enacts.
 Read `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md` for its implementation/verification doctrine,
 then read `${CLAUDE_SKILL_DIR}/beats/goal-work.md` for this adapter's reconciliation and dispatch.
 

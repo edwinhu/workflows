@@ -71,6 +71,46 @@ guess. Neither shortcut is helpful: it creates an analysis that is fast to start
 correct.
 </EXTREMELY-IMPORTANT>
 
+## Beats 3–5 run as one program: `workflows/work.js`
+
+Beats 3, 4 and 5 run as a single orchestrated workflow rather than three stretches of main-chat
+discipline. Two steps, in this order.
+
+**Step 1 — get the authenticated args. One call, and it is not optional.**
+
+```bash
+bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/work-args.ts <abs project> --workflow ds --session ${CLAUDE_SESSION_ID}
+```
+
+It prints `{projectDir, workflow, planPath, planHash}` read from `.planning/.state/review.json` and
+re-hashed against the plan's current bytes, or refuses and names the reason — `missing-artifact`
+(you have not been through PLAN), `review-pending`, `stale-receipt` (the plan was edited after
+approval), or a receipt identity disagreement. **Do not hand-copy `planPath`/`planHash` instead.**
+That is the step where a hash gets typed from memory and an unapproved plan gets implemented anyway.
+
+**Step 2 — run the beats, merging in the task list.**
+
+```
+Workflow({
+  scriptPath: "${CLAUDE_SKILL_DIR}/../../workflows/work.js",
+  args: { ...<the JSON from step 1, verbatim>, tasks: [{ id, name, work, writablePaths: [], acceptance }] },
+})
+```
+
+It returns `{ workflow, planPath, planHash, overallPass, verdict, scoreTable, implemented, verified,
+findings, refutedFindings, reviews, tasksThatFlagged, carriedForward, domainRun }`. Render the gate,
+drive the fix loop from `findings`, and re-invoke with `onlyChecks: tasksThatFlagged` plus
+`priorReviews` to re-judge only what flagged.
+
+**Why a program rather than three beats of instruction.** The beat machinery restrains a free agent:
+guards deny reconnaissance, the mutation guard denies main-chat writes, an order gate refuses an
+out-of-order wave, a Stop hook refuses a turn end while review is owed. Each exists because the
+orchestrator *could* do otherwise. A workflow script has no Write tool and no shell, so delegation is
+structural and the beat order is the order of its statements. CLARIFY and PLAN approval stay above,
+in main chat and hook-enforced, because both are conversations with a human that a subagent cannot
+hold — and `work.js` refuses to start without `planPath` and a 64-hex `planHash`, so it cannot be
+used to skip them.
+
 ## 1. CLARIFY
 
 Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and follow it before examining task files, data,

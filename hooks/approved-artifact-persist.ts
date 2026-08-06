@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 import { readFileSync } from "node:fs";
-import { isAbsolute } from "node:path";
+import { isAbsolute, join } from "node:path";
 import { bindApprovedGeneratedPlan, hookActorIdentity } from "../workflows/lib/approved-artifact.ts";
 import { workflowFromArg, workflowFromPlanningEvidence } from "./_workflow_policies.ts";
 import { governedRoot } from "./lib/governance-marker.ts";
@@ -49,6 +49,48 @@ const projectRoot = resolvedRoot ?? start;
 const policy = argPolicy
   ?? workflowFromPlanningEvidence(projectRoot, readEpisodeState(projectRoot)?.workflow ?? null)
   ?? defer("cannot determine which workflow this episode belongs to: more than one clarify sentinel is present, and binding a plan to the wrong workflow identity is worse than binding none");
+
+/**
+ * THE PLUGIN-WIDE COPY NEVER OVERWRITES AN IDENTITY THE SKILL-SCOPED COPY KNOWS BETTER.
+ *
+ * MEASURED 2026-08-06, in the first end-to-end `/writing` run that ever reached PLAN. Both copies of
+ * this hook fire on the SAME ExitPlanMode and hook order is not guaranteed. The skill-scoped copy
+ * KNOWS it is `writing` — it was registered with `--workflow writing`. The plugin-wide copy DERIVES
+ * it, and at that instant `episode.json` still read `work`, so it derived `work`. It wrote last, and
+ * the receipt came out:
+ *
+ *     review.json   "workflow": "work"        <- what every implementer gate compares against
+ *     episode.json  "workflow": "writing"     <- correct
+ *
+ * The receipt is written once at approval and never corrected, so that disagreement is PERMANENT.
+ * `validateApprovedArtifact` then refuses every `/writing` implementer with `workflow-mismatch`, and
+ * the live session spent its remaining turns diagnosing it, hand-wrote a retired
+ * `WRITING_CLARIFIED.json` trying to get unstuck, and finally asked the user to clear state.
+ *
+ * `episode-phase` already fixed this exact race for the episode record — `identityIsWrong` lets the
+ * authoritative copy correct an inferred one whatever the order. This is the same rule for the
+ * receipt, in the only direction that is safe: an INFERENCE must not overwrite a DECLARATION.
+ *
+ * WHY DEFERRING IS RIGHT RATHER THAN RE-DERIVING. The plugin-wide copy cannot tell whether an
+ * existing receipt came from the skill-scoped copy or from itself a moment ago — but it does not
+ * need to. If the identities agree there is nothing to add; if they disagree, the only copy that can
+ * hold a `--workflow` argument is the one that was told, so it is the one to believe.
+ *
+ * The cleared-context session — no skill loaded, so no skill-scoped registration — is unaffected:
+ * there is no competing receipt, so nothing to defer to, and this copy binds as it always did.
+ */
+if (!argPolicy) {
+  try {
+    const existing: unknown = JSON.parse(readFileSync(join(projectRoot, ".planning", ".state", "review.json"), "utf8"));
+    if (existing && typeof existing === "object" && !Array.isArray(existing)) {
+      const bound = (existing as Record<string, unknown>).workflow;
+      if (typeof bound === "string" && bound.trim() && bound !== policy.workflow) {
+        console.error(`[approved-artifact-persist] deferring: a receipt already binds workflow "${bound}" and this plugin-wide copy inferred "${policy.workflow}"; the copy that was TOLD its workflow is the one to believe`);
+        process.exit(0);
+      }
+    }
+  } catch { /* absent or unreadable: nothing to defer to, bind as normal */ }
+}
 /**
  * THE PLAN PATH COMES FROM THE PAYLOAD, NOT THE TRANSCRIPT. The transcript scan below is a fallback
  * and nothing more.
