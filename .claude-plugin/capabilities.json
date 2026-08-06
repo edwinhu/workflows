@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "plugin": {
     "name": "workflows",
-    "version": "5.143.0"
+    "version": "5.144.0"
   },
   "capabilities": [
     {
@@ -34,6 +34,16 @@
       "name": "beat-implement-runner",
       "contractVersion": 3,
       "implementation": "scripts/beat/preflight.ts"
+    },
+    {
+      "name": "beat-spine-runner",
+      "contractVersion": 1,
+      "implementation": "workflows/work.js"
+    },
+    {
+      "name": "beat-spine-args",
+      "contractVersion": 1,
+      "implementation": "scripts/beat/work-args.ts"
     },
     {
       "name": "plan-review-composer",

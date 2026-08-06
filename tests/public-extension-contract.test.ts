@@ -3,7 +3,7 @@ import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = realpathSync(join(import.meta.dir, ".."));
-const TARGET_VERSION = "5.143.0";
+const TARGET_VERSION = "5.144.0";
 
 type Capability = {
   name: string;
@@ -77,6 +77,24 @@ const EXPECTED_ROWS: ContractRow[] = [
     compatibility: "Contract 2 returned per-task execution records from a Workflow script that could not run under the Workflow runtime; contract 3 splits it into this pre-step and the observation hooks, which own execution evidence. Inputs are unchanged; consumers that read result records must read hook records instead",
   },
   {
+    capability: "beat-spine-runner",
+    descriptorSchema: "work.js args: projectDir + workflow + planPath + planHash + tasks, plus adapter for an external workflow",
+    contractVersion: "1",
+    discoveryInput: "Explicit projectDir + receipt-authenticated planPath/planHash + approved task list; never discovers planning authority",
+    successEvidence: "{ overallPass, verdict, scoreTable, implemented, verified, findings, reviews, domainRun, domainVerify, ... } — the gate computed in JS from raw counts",
+    rejectionEvidence: "Thrown Error before any agent is dispatched",
+    compatibility: "A BUILT-IN workflow is adapter-driven from the internal table and a caller-supplied adapter is refused, so a caller cannot choose who audits it. An EXTERNAL workflow must supply args.adapter and its shape is validated. This is the surface an external plugin uses to run the shared IMPLEMENT/VERIFY/REVIEW beats; beat-implement-runner remains the contract-3 pre-step for consumers that dispatch the wave themselves",
+  },
+  {
+    capability: "beat-spine-args",
+    descriptorSchema: "CLI: <projectDir> --workflow <name> [--session <id>]",
+    contractVersion: "1",
+    discoveryInput: "Explicit projectDir + workflow identity + current session",
+    successEvidence: "One JSON object { projectDir, workflow, planPath, planHash } re-hashed against the plan's current bytes",
+    rejectionEvidence: "Non-zero exit with a [work-args] diagnostic naming the receipt state — missing-artifact, review-pending, stale-receipt, or a receipt identity disagreement",
+    compatibility: "Emits the two authority fields only; tasks are never derived from plan prose, because TaskList is not readable from a script and inventing them would be the LLM-discovery fallback this lifecycle refuses",
+  },
+  {
     capability: "plan-review-composer",
     descriptorSchema: "No descriptor; PlanReviewComposition API schema 1",
     contractVersion: "1",
@@ -117,7 +135,7 @@ function parseContractRows(markdown: string): ContractRow[] {
 }
 
 describe("public extension contract integration", () => {
-  test("all three plugin version fields and capability identity agree at 5.143.0", () => {
+  test("all three plugin version fields and capability identity agree at 5.144.0", () => {
     const plugin = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/plugin.json"), "utf8"));
     const marketplace = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/marketplace.json"), "utf8"));
     const manifest = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/capabilities.json"), "utf8"));
