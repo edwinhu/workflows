@@ -55,6 +55,10 @@
           {
             "type": "command",
             "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/implementer-identity-gate.ts"
+          },
+          {
+            "type": "command",
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts"
           }
         ]
       },

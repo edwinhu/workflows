@@ -23,4 +23,6 @@ _TIC_PATTERNS = [
     ('\\bsharpest version of\\b', 'ai-tic·sev2·sharpest-version'),
     ('\\bbounds?\\s+(all of|the whole|everything|the entirety|the entire|the analysis|the inquiry|the conclusion|the discussion|much of)\\b', 'ai-tic·sev2·bound-abstraction'),
     ('\\b(?:panel|data|dataset|sample|table|record)(?:[\\x27’]s)?\\s+grain\\b|\\bgrain of the (?:data|panel|dataset|sample|table|analysis)\\b', 'ai-tic·sev2·data-grain'),
+    ('\\bfrozen (?:release|panel|sample|dataset|data|construction|snapshot|exhibits?|master|audit|artifacts?|ledger|inputs?|outputs?)\\b', 'ai-tic·sev2·frozen-artifact'),
+    ('\\bsharpest cut\\b|\\b(?:sharpest|starkest|cleanest|clearest)\\s+(?:cut|contrast|divide)\\s+in\\s+the\\s+(?:table|data|sample|panel|exhibit|figure)\\b', 'ai-tic·sev2·sharpest-cut'),
 ]

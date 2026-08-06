@@ -585,6 +585,28 @@ def test_data_grain_leaves_the_ordinary_senses_alone(tmp_path, verdict, sentence
     assert ("data-grain" in labels) == (verdict == "fire"), f"{sentence!r} -> {labels}"
 
 
+# sharpest-cut: companion to sharpest-version, same shape. `the sharpest <anything>` is thoroughly
+# human (5.67/M) and `sharpest contrast|distinction BETWEEN X and Y` is the attested form -- all
+# four corpus hits take that template ("the sharpest contrast between persistent and transitory
+# losses"). What is unattested is the superlative pointed at a data cut: `sharpest cut` is 0, and
+# `<superlative> <cut|contrast|divide> in the <table|data|sample>` is 0/14,294,148. Humans reach
+# for `most striking` (28.5/M) or `largest difference` (5.0/M). The negatives below are the human
+# template and the ordinary concrete-quantity superlative the rule must not touch.
+@pytest.mark.parametrize(("verdict", "sentence"), [
+    ("fire",  "The thirty-three-to-one ratio is the sharpest cut in the table"),
+    ("fire",  "That is the starkest contrast in the data we report"),
+    ("clean", "Panel A shows the sharpest contrast between persistent and transitory losses"),
+    ("clean", "This provides the sharpest distinction between the bonding hypothesis and others"),
+    ("clean", "The sharpest decline occurred between 1976 and 1978"),
+    ("clean", "The most striking difference in the table is the turnout gradient"),
+])
+def test_sharpest_cut_spares_the_human_template(tmp_path, verdict, sentence):
+    draft = tmp_path / f"scut-{abs(hash(sentence))}.md"
+    draft.write_text(sentence + "\n")
+    labels = _labels(PA.audit_document(draft))
+    assert ("sharpest-cut" in labels) == (verdict == "fire"), f"{sentence!r} -> {labels}"
+
+
 @pytest.mark.parametrize(("verdict", "sentence"), [
     ("fire",  "The limits bound all of it, and the analysis cannot escape them"),
     ("fire",  "Those constraints bound the analysis in ways the paper never confronts"),

@@ -290,6 +290,28 @@ function buildInProgressSection(): string {
       lines.push(`- Authenticated plan hash: \`${resolved.hash}\``);
       lines.push(`- Review state: ${resolved.receipt.status}`);
       lines.push("- Live progress is in TaskList; consult project auto-memory for durable technical facts.");
+      // THE ROUTING LINE, AND WHY REPORTING THE STATE WAS NOT ENOUGH.
+      //
+      // This block already fired on `clear` — it is in the SessionStart matcher — and it told the
+      // session what was approved without telling it to load anything. `showClearContextOnPlanAccept`
+      // is on by default, so accepting a plan clears context and starts a session with the plan text
+      // and NO SKILL LOADED, hence no frontmatter hooks and no delegation boundary, exactly as
+      // IMPLEMENT begins. Measured 2026-08-06: 32 unguarded main-chat edits to a manuscript in the
+      // session created by that accept, zero delegated.
+      //
+      // The workflow name comes from the receipt, so this names a real skill rather than guessing.
+      // Only the ROUTER is invocable — `beat-implement` and the domain implement skills are all
+      // `user-invocable: false` — and the router is the right target anyway, because it owns the
+      // resume classification that decides WHICH beat this is.
+      const workflow = typeof resolved.receipt.workflow === "string" ? resolved.receipt.workflow : "";
+      if (workflow) {
+        lines.push(
+          `- **Load the workflow before mutating anything: \`Skill(skill="workflows:${workflow}")\`.** ` +
+          `A cleared-context session has no skill loaded, so its delegation guard is not registered ` +
+          `until you do. This is a directive, not a suggestion; the plugin-wide guard will deny ` +
+          `project mutations until the episode is resumed properly.`,
+        );
+      }
     }
     lines.push("");
     return lines.join("\n");

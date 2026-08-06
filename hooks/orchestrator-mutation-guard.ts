@@ -2,20 +2,62 @@
 import { lstatSync } from "node:fs";
 import { isAbsolute, join, resolve } from "node:path";
 import { aliasRejectionReason, allowedNativePlanPath, hasUnsafeCompoundCommand, projectRelativePath, safeExactTarget } from "./_path_safety.ts";
-import { GOVERNANCE_MARKER } from "./lib/governance-marker.ts";
+import { GOVERNANCE_MARKER, governedRoot } from "./lib/governance-marker.ts";
 import { classifyBashMutation } from "./_bash_mutation.ts";
-import { workflowFromArg } from "./_workflow_policies.ts";
+import { readEpisodeState } from "./lib/episode-state.ts";
+import { workflowFromArg, workflowFromPlanningEvidence } from "./_workflow_policies.ts";
 import { allow, deny, denyOnCrash, readPayload } from "./_gate_common.ts";
 
 // FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an
 // exit-1, which Claude Code treats as NON-BLOCKING — i.e. a silent allow in a PreToolUse gate.
 denyOnCrash("ORCHESTRATOR MUTATION GUARD");
-const policy = workflowFromArg(Bun.argv.slice(2));
-if (!policy) { deny("Orchestrator mutation guard requires exactly one known --workflow ds|dev|writing|workshop|workflow-creator policy."); }
 const payload = await readPayload();
 const tool = String(payload.tool_name ?? "");
 const input = (payload.tool_input as Record<string, unknown>) ?? {};
 const cwd = String(payload.cwd ?? process.cwd());
+
+/**
+ * TWO REGISTRATIONS, BECAUSE THE BOUNDARY MUST FOLLOW THE EPISODE AND NOT THE SKILL.
+ *
+ * Skill-scoped (`--workflow <name>` from frontmatter) is the original and stays. Plugin-wide
+ * (no argument) is the one that closes the measured hole.
+ *
+ * THE HOLE, MEASURED 2026-08-06 IN TWO TRANSCRIPTS.
+ *   `showClearContextOnPlanAccept` is on by default. Accepting a plan therefore CLEARS CONTEXT and
+ *   starts a NEW session whose entire first message is "Implement the following plan: …". No skill
+ *   is loaded in that session, so no frontmatter hook is registered, so this guard did not exist —
+ *   at the exact moment IMPLEMENT begins, which is the only beat it is for.
+ *
+ *   Session e64e6d1d (`/writing`, then `/work`) denied `git add` at 16:13:25 and denied an Edit to
+ *   the manuscript at 16:21:48: the guard works. Session 8a748899 began at 16:37:23 — the same
+ *   second the first ended, on plan accept — invoked NO skill, and made 32 unguarded Edits to that
+ *   same manuscript with zero Agent dispatches. Nothing failed; the guard was simply absent, and
+ *   absence is silent.
+ *
+ * WHY DERIVING IS SAFE HERE. `approved-artifact-persist` is plugin-wide for the same reason and
+ * derives identity the same way. The episode record is written by a hook that OBSERVED an
+ * `AskUserQuestion`, so this reads evidence rather than a model's claim about itself.
+ *
+ * WHY THE AMBIENT PATH REQUIRES A RECORDED EPISODE AND THE MARKER, AND THE SKILL PATH DOES NOT.
+ *   Invoking a workflow skill IS the consent signal, so the skill path is unchanged in every
+ *   project. The ambient path runs in every project of every user, where "absent marker means byte
+ *   for byte untouched" is the invariant that must never regress — and it must not default to
+ *   `work` the way `workflowFromPlanningEvidence` does with no evidence, or every governed project
+ *   with no episode would start denying ordinary edits.
+ */
+const argv = Bun.argv.slice(2);
+let policy = workflowFromArg(argv);
+if (!policy && argv.includes("--workflow")) {
+  deny("Orchestrator mutation guard requires exactly one known --workflow ds|dev|writing|workshop|workflow-creator policy.");
+}
+if (!policy) {
+  const root = governedRoot(cwd);
+  if (root === undefined) allow();                       // ungoverned project: untouched.
+  const state = readEpisodeState(root);
+  if (state === null || state.exit) allow();             // no in-flight episode: nothing to bound.
+  policy = workflowFromPlanningEvidence(root, state.workflow);
+  if (!policy) allow();                                  // identity genuinely unknown: never guess.
+}
 // Modern workflows have one hidden, hook-owned receipt and one receipt-selected generated plan.
 // Visible predecessor artifacts are conversion input, never a second authority or a writable target.
 const RETIRED_MODERN_ARTIFACTS = new Set([
