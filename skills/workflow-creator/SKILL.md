@@ -31,6 +31,17 @@ hooks:
 
 Create a new workflow through the shared-v1 lifecycle. This entry orchestrates; it never directly writes target workflow files.
 
+## Write surface: main chat does not do the work
+
+**You may Write/Edit only under `.planning/` and `.claude/`. Every target workflow file — skills,
+hooks, scripts, tests — is written by a dispatched agent.** `orchestrator-mutation-guard` is
+registered in this skill's frontmatter, so the attempt is REFUSED, not corrected: a write you try
+anyway costs a turn and produces nothing. Reach for `Agent` first, not after a denial. Bash is held
+to the same line — only the named read-only checks and compilers are permitted from main chat.
+
+Two narrow exceptions: the generated plan while you are IN Plan mode, and `.claude-workflows.json`
+when adopting governance.
+
 ## Compatibility boundary
 
 If legacy `.planning/wc/` state exists, stop. Legacy Mode 1/2/3 state, numeric steps, review markers, and HANDOFF files are not resumable or convertible; a shared-v1 marker does not convert them. Start a fresh episode with a new receipt-selected generated plan.

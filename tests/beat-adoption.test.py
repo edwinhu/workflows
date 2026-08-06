@@ -312,6 +312,36 @@ def main() -> int:
         elif not defects:
             conforming += 1
 
+    # THE WRITE SURFACE IS STATED BEFORE IT IS ENFORCED.
+    #
+    # `orchestrator-mutation-guard` is registered in every entry skill's frontmatter, so it denies
+    # from the moment the skill loads — but four of the seven routers said NOTHING about the
+    # boundary, and the two that mentioned it did so at lines 119/160 and 85/89. The model therefore
+    # discovered the rule by being refused, and retried: observed 2026-08-06 in a live `/writing`
+    # run, where main chat attempted a write, was denied, and tried again.
+    #
+    # A denial is not a teaching mechanism. It costs a turn, produces nothing, and arrives after the
+    # decision it should have informed. `beat-implement` states this well — and is Read-loaded at
+    # IMPLEMENT, which is far too late to stop the attempts that happen before it.
+    for workflow in (*WORKFLOWS, "workflow-creator-improve"):
+        with open(f"skills/{workflow}/SKILL.md", encoding="utf-8") as handle:
+            body = handle.read().split("\n---\n", 1)[-1]
+        if "## Write surface" not in body:
+            failures.append(
+                f"skills/{workflow}/SKILL.md never states its write surface: the guard denies from "
+                f"the moment this skill loads, so the router must say so before the first attempt"
+            )
+            continue
+        # UPFRONT, NOT MERELY PRESENT. A statement below the halfway mark is read after the writes
+        # it was supposed to prevent — which is exactly the state workflow-creator-improve was in,
+        # with its one mention on line 85 of 89.
+        position = body.index("## Write surface") / max(len(body), 1)
+        if position > 0.35:
+            failures.append(
+                f"skills/{workflow}/SKILL.md states its write surface {position:.0%} of the way in; "
+                f"it must come before the beats it constrains"
+            )
+
     # Repo-state guards, reported rather than asserted: `work` is the reference spine, so if it
     # stops reaching a beat or presenting the spine, that is a scan regression AND a real failure.
     for beat in BEATS:

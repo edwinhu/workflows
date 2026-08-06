@@ -39,6 +39,17 @@ hooks:
 - **NO LLM OR DIRECTORY-DISCOVERY FALLBACK.** Missing, stale, pending, conflicting, or malformed plan state blocks.
 - **NO SELF-REVIEW.** Plan review, generation, verification, and human review remain distinct.
 
+## Write surface: main chat does not do the work
+
+**You may Write/Edit only under `.planning/` and `.claude/`. Slides, notes, and every other
+deliverable are written by a dispatched agent.** `orchestrator-mutation-guard` is registered in this
+skill's frontmatter, so the attempt is REFUSED, not corrected: a write you try anyway costs a turn
+and produces nothing. Reach for `Agent` first, not after a denial. Bash is held to the same line —
+only the named read-only checks and compilers are permitted from main chat.
+
+Two narrow exceptions: the generated plan while you are IN Plan mode, and `.claude-workflows.json`
+when adopting governance.
+
 Load constraints before implementation:
 
 !`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts workshop`

@@ -35,6 +35,16 @@ hooks:
 The lightweight, domain-agnostic workflow for a bounded task that deserves explicit intent,
 evidence, independent verification, and human review without becoming a full domain workflow.
 
+## Write surface: main chat does not do the work
+
+**You may Write/Edit only under `.planning/` and `.claude/`. Every other file the task touches is
+written by a dispatched agent.** `orchestrator-mutation-guard` is registered in this skill's
+frontmatter, so the attempt is REFUSED, not corrected: a write you try anyway costs a turn and
+produces nothing. Reach for `Agent` first, not after a denial.
+
+Two narrow exceptions: the generated plan while you are IN Plan mode, and `.claude-workflows.json`
+when adopting governance.
+
 ```text
  ┌──── OUTER LOOP: REJECT: → criteria were wrong → CLARIFY ───────────────────┐
  │                                                                            │

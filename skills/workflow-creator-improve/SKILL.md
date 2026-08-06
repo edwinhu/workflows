@@ -31,6 +31,17 @@ hooks:
 
 Correct an existing workflow through shared-v1. Audit-only requests never receive mutation authority.
 
+## Write surface: main chat does not do the work
+
+**You may Write/Edit only under `.planning/` and `.claude/`. Every target workflow file — skills,
+hooks, scripts, tests — is written by a dispatched agent.** `orchestrator-mutation-guard` is
+registered in this skill's frontmatter, so the attempt is REFUSED, not corrected: a write you try
+anyway costs a turn and produces nothing. Reach for `Agent` first, not after a denial. Bash is held
+to the same line — only the named read-only checks and compilers are permitted from main chat.
+
+Two narrow exceptions: the generated plan while you are IN Plan mode, and `.claude-workflows.json`
+when adopting governance.
+
 ## Entry and compatibility
 
 Reject legacy `.planning/wc/**` lifecycle state. A resumable episode must have `.planning/ACTIVE_WORKFLOW.md` with `workflow: workflow-creator`, `lifecycle: shared-v1`, and a semantic phase. Otherwise start a fresh corrective episode.

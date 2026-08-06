@@ -30,6 +30,19 @@ hooks:
 
 !`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts ${CLAUDE_SESSION_ID}`
 
+## Write surface: main chat does not do the analysis
+
+**You may Write/Edit only under `.planning/`, `.claude/`, `scripts/`, `hooks/`, `references/`,
+`skills/` and `CLAUDE.md` — and NEVER a `.py`, `.ipynb`, `.R`, `.sas`, `.sql` or `.qmd` file, not
+even inside those directories.** Analysis runs in a dispatched agent.
+`orchestrator-mutation-guard` is registered in this skill's frontmatter, so the attempt is REFUSED,
+not corrected: a write you try anyway costs a turn and produces nothing. Reach for `Agent` first,
+not after a denial. Bash is held to the same line — `python3 -c`, `pixi run python` and inline
+pandas/numpy imports are refused from main chat too.
+
+Two narrow exceptions: the generated plan while you are IN Plan mode, and `.claude-workflows.json`
+when adopting governance.
+
 `/ds` is the DS router. It runs the same five beats every workflow in this plugin runs, supplying the
 DS specifics at each one: clarify the research question, gather only the profile and domain facts
 needed to plan responsibly, use native Plan mode, implement through the shared runner, verify
