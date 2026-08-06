@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import argparse
 import difflib
+import json
 import sys
 from pathlib import Path
 
@@ -40,6 +41,11 @@ ROOT = Path(__file__).resolve().parent.parent
 SOURCE_DIR = ROOT / "references" / "registers"
 STYLE_DIR = ROOT / "output-styles"
 SKILL_FILE = ROOT / "skills" / "writing-register" / "SKILL.md"
+# The plan's `Domain` -> the output style's `name:`, for scripts/set-output-style.ts. Generated for
+# the same reason everything else here is: hand-writing `legal -> "Law review"` anywhere else is a
+# fourth copy that goes stale the first time a style is renamed, and it fails SILENTLY — an
+# unresolvable name just leaves the user on the default style with nothing reported.
+MAP_FILE = SOURCE_DIR / "output-style-map.json"
 
 # Order is load-bearing in the combined skill: general is the base layer the two domain registers
 # sit on top of, so it is read first there as well.
@@ -229,6 +235,13 @@ def build() -> dict[Path, str]:
             meta, general_style_body if style == "general" else body, shared
         )
     artifacts[SKILL_FILE] = render_skill({**sources, "general": (sources["general"][0], general_body)}, shared)
+    artifacts[MAP_FILE] = json.dumps(
+        {
+            "_generated": "scripts/emit-registers.py — do not hand-edit",
+            "styles": {sources[s][0]["style"]: sources[s][0]["name"] for s in STYLES},
+        },
+        indent=2,
+    ) + "\n"
     return artifacts
 
 

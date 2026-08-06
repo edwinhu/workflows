@@ -3,6 +3,22 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [5.137.0] - 2026-08-05
+
+### Added
+- **The writing workflow now offers to set the project's `outputStyle` to the register its plan declares.** Output styles are user-selected and nothing loads them for you, so the three registers shipped in v5.136.0 reached the main conversation only if someone remembered to pick one in `/config`. `writing-setup` step 7 asks once per project, after the receipt reads `APPROVED`, and runs `scripts/set-output-style.ts`.
+  - **It derives the register; it does not take one.** `set-output-style.ts` accepts a project root and reads the Domain through the same `authenticatedWritingPlan()` that `hooks/writing-prose-check.ts` uses to pick `--style`. A style argument would create a second source for "what register is this," and a CLARIFY answer the user revised during planning would silently outrank the plan while every gate enforced the other one. No APPROVED receipt means no write — not a default, not a guess.
+  - **It merges exactly one key, atomically.** `.claude/settings.local.json` carries `permissions`, outranks project settings, and is git-excluded by Claude Code when it writes there, so a clobber is both damaging and invisible to `git status`. Unparseable JSON is a REFUSAL: a settings file that failed to parse is far more likely mid-edit than garbage.
+  - **It takes effect next session, and says so.** The output style is part of the system prompt, read once at session start. Step 8 already requires a fresh session before implementation, so the boundary the setting needs is one the workflow was taking anyway. Unlike `plansDirectory` — where a mid-session write left the episode unauthenticated and an advisory line measurably lost to the task in progress, forcing `plans-directory-restart-gate.ts` — this is prose voice, not authentication, and the subagents get the same register through the preloaded skill either way. A notice is proportionate; a gate would not be.
+  - `emit-registers.py` also emits `references/registers/output-style-map.json` (`legal` -> `Law review`, …) from each source's `style:` and `name:`. Hand-writing that mapping anywhere else is a fourth copy that goes stale on the first rename and fails silently — an unresolvable name just leaves the user on the default with nothing reported.
+
+### Testing
+- Third-party review over the diff found four findings; three were real and are fixed, one was rejected.
+  - **The `PENDING` fixture proved the wrong thing.** It populated the reviewer fields, which `approved-artifact.ts:246` rejects as a *schema* error — so the test showed a malformed receipt being refused, not an unreviewed plan. Well-formed `PENDING` and `ISSUES_FOUND` cases now both assert the refusal.
+  - `styleMap()` did no type validation, so a truthy non-string map value would sail past `if (!name)` and be written as `outputStyle` — a value no style can match.
+  - The settings write was not atomic; it now writes a sibling and renames.
+  - **Rejected:** "an empty settings file is clobbered." An empty file has nothing to clobber, and if an editor truncates before writing, the loser of that race is this script's write, not the user's content. The empty-file case is tested as the intended behaviour.
+
 ## [5.136.0] - 2026-08-05
 
 ### Added

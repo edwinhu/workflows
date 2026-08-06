@@ -1,0 +1,8 @@
+{
+  "_generated": "scripts/emit-registers.py \u2014 do not hand-edit",
+  "styles": {
+    "general": "General prose",
+    "legal": "Law review",
+    "econ": "Econ journal"
+  }
+}

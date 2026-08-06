@@ -37,7 +37,25 @@ A substitute Markdown planning file cannot satisfy either gate.
 4. Enter native Plan mode and produce one native generated `.planning/<name>.md` specification with the exact grammar below. Retain the exact path returned by the completed Plan interaction.
 5. Exit Plan mode. The metadata-only binding hook — `approved-artifact-persist`, registered by `skills/writing/SKILL.md` on `PostToolUse: ExitPlanMode`, and by `hooks/hooks.json` plugin-wide, **not by this skill**, whose own frontmatter registers only `writing-precis-guard` — hashes those existing bytes and initializes `.planning/.state/review.json` as `PENDING`; it never copies the plan or writes `plan.json`. If it cannot determine the approved plan path it now exits **2** with `NO RECEIPT WAS WRITTEN`: stop and report, because re-approving cannot fix it.
 6. Dispatch an independent whole-plan reviewer with that exact path. The reviewer preserves approval-owned receipt fields and finalizes only status, reviewer session, and review time.
-7. End the approval/review episode. In a fresh third session distinct from approval and review, authenticate the final receipt, reconcile approved sections into TaskList by `planFile`, `planHash`, and stable section name, and delegate `writing-outline` work to authorized implementation agents.
+7. **Offer the matching output style — once per project, only after the receipt reads `APPROVED`.** Ask with `AskUserQuestion` whether to set the project's `outputStyle` to the register the plan declares, and default to **yes**. On yes, run `bun ${CLAUDE_PLUGIN_ROOT}/scripts/set-output-style.ts <projectRoot>` and report its output verbatim; on no, or on a refusal, say so in one line and move on. Never retry with different content, and never hand-edit `.claude/settings.local.json` yourself — see the gate below.
+8. End the approval/review episode. In a fresh third session distinct from approval and review, authenticate the final receipt, reconcile approved sections into TaskList by `planFile`, `planHash`, and stable section name, and delegate `writing-outline` work to authorized implementation agents.
+
+### Why step 7 sits here and not in CLARIFY
+
+**IRON LAW: NO `outputStyle` WRITE FROM AN UNAPPROVED STYLE — AND THE STYLE COMES FROM THE PLAN, NOT FROM THE ANSWER.**
+
+At CLARIFY the domain is an *answer*; it becomes authority when the receipt reads `APPROVED`. Every other consumer already reads it from there — `hooks/writing-prose-check.ts` picks `--style` from `authenticatedWritingPlan().style`, and `workflows/writing-draft.js` throws when the compiled section index disagrees with the plan's Writing Intent. Writing the setting from a clarify answer the user then revised during planning would leave the main conversation in one register while every gate enforced another, with nothing reporting the split.
+
+`set-output-style.ts` therefore takes **no style argument**: it derives one through the same `authenticatedWritingPlan()` and refuses outright when there is no approved plan. That is `.claude/CLAUDE.md`'s *derive before you record* enforced in code rather than asserted in a skill.
+
+**It takes effect next session, and that is why it runs at the end of this episode.** The output style is part of the system prompt, which Claude Code reads once at session start. Step 8 already requires a fresh session before implementation, so the boundary the setting needs is one this workflow was taking anyway. Compare `plans-directory-restart-gate.ts`, which had to become a *gate* because a mid-session `plansDirectory` left the episode unauthenticated and an advisory line measurably lost to the task in progress. This is prose voice, not authentication — the drafting and reviewing subagents get the same register through the preloaded `writing-register` skill either way — so a notice is proportionate where a gate would not be.
+
+| Action | Why wrong | Do instead |
+|---|---|---|
+| Set `outputStyle` during CLARIFY | The domain is not authority until the receipt is `APPROVED` | Ask at step 7 |
+| Pass the domain to `set-output-style.ts` | It would outrank the plan, silently | It takes a project root and derives the rest |
+| Hand-edit `.claude/settings.local.json` | It carries `permissions`, it outranks project settings, and Claude Code git-excludes it — a clobber is damaging and invisible to `git status` | Run the script; it merges one key and refuses on unparseable JSON |
+| Report the style as active in this session | It is not; the system prompt was read at session start | Quote the script's own notice |
 
 ## Exact PLAN Template
 
