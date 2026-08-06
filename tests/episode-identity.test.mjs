@@ -139,21 +139,44 @@ console.log('a MISRECORDED identity is corrected from the receipt, and only wher
   ok('a receipt that agrees changes nothing', episodeOf(agreeing).workflow === 'writing')
 }
 
-console.log('registration parity: every workflow entry skill wires its own name')
+console.log('registration parity: every workflow entry skill wires all three beat hooks')
 {
-  // The gap this closes is not hypothetical: `_workflow_policies.ts:59` cites two contract tests as
-  // pinning the skill-scoped registrations, and BOTH cover `approved-artifact-persist` only — for
-  // `dev` and `workflow-creator`. Nothing pinned `episode-phase` on any workflow, so a skill could
-  // lose the registration (or gain a wrong `--workflow`) with no test turning red.
+  // THE GAP THIS CLOSES IS NOT HYPOTHETICAL, AND IT WAS OPEN IN `work`. `_workflow_policies.ts:59`
+  // cites two contract tests as pinning the skill-scoped registrations, and BOTH cover
+  // `approved-artifact-persist` only — for `dev` and `workflow-creator`. Nothing pinned
+  // `episode-phase` or `clarify-before-recon-guard` on any workflow.
+  //
+  // Measured 2026-08-06: `skills/work/SKILL.md` wired NONE of the three, and its frontmatter carried
+  // a bare `PostToolUse:` with no entries under it — a YAML null that reads as a registration and
+  // registers nothing. So `/work` recorded no episode in an unmarked project, which means the
+  // ambient mutation guard (which needs an episode to derive a policy) never armed for it either,
+  // and its own skill-scoped guard vanishes on plan-accept context clear. The workflow whose diagram
+  // is captioned "This diagram is the specification" gated none of its own beats.
+  //
+  // This is the same class as v5.106.0's unregistered observation hook: every behaviour test passed
+  // because each proved the hook does the right thing WHEN INVOKED, and nothing asked whether it
+  // ever was. So the assertion is made per hook, per skill, by name.
   const EXPECTED = {
-    ds: 'ds', dev: 'dev', writing: 'writing', workshop: 'workshop',
+    ds: 'ds', dev: 'dev', work: 'work', writing: 'writing', workshop: 'workshop',
     'workflow-creator': 'workflow-creator', 'workflow-creator-improve': 'workflow-creator',
   }
+  const HOOKS = ['episode-phase', 'approved-artifact-persist', 'clarify-before-recon-guard']
   for (const [skill, workflow] of Object.entries(EXPECTED)) {
     const body = readFileSync(join(ROOT, 'skills', skill, 'SKILL.md'), 'utf8')
-    const wired = [...body.matchAll(/hooks\/episode-phase\.ts --workflow (\S+?)"/g)].map(match => match[1])
-    ok(`${skill} wires episode-phase exactly once`, wired.length === 1, JSON.stringify(wired))
-    ok(`${skill} wires --workflow ${workflow}`, wired[0] === workflow, JSON.stringify(wired[0]))
+    const frontmatter = body.slice(0, body.indexOf('\n---', 4))
+    for (const name of HOOKS) {
+      const wired = [...frontmatter.matchAll(new RegExp(`hooks/${name}\\.ts --workflow (\\S+?)"`, 'g'))].map(match => match[1])
+      ok(`${skill} wires ${name} --workflow ${workflow}`, wired.length > 0 && wired.every(value => value === workflow), JSON.stringify(wired))
+    }
+    // A REGISTRATION MUST HAVE A MATCHER THAT FIRES. `episode-phase` keys on the observed
+    // `AskUserQuestion` and `approved-artifact-persist` on `ExitPlanMode`; wiring either to the
+    // wrong matcher is the "registered on a matcher that never fires" shape
+    // `observation-hook-registration.test.py` was written for.
+    ok(`${skill} observes AskUserQuestion`, /matcher: "AskUserQuestion"/.test(frontmatter))
+    ok(`${skill} observes ExitPlanMode`, /matcher: "ExitPlanMode"/.test(frontmatter))
+    // THE EMPTY-KEY CLASS ITSELF. `PostToolUse:` followed by another key is valid YAML and a silent
+    // no-op; it is how `work` came to look registered while registering nothing.
+    ok(`${skill} declares no empty hook phase`, !/^ {2}(PreToolUse|PostToolUse|Stop|SubagentStop):\s*$\n(?= {2}\S)/m.test(frontmatter), 'a hook phase key has no entries')
   }
   // And the plugin-wide copy must still be registered, or the cleared-context session — the one that
   // starts at IMPLEMENT with no skill loaded — records nothing at all.

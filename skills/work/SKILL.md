@@ -3,7 +3,19 @@ name: work
 description: "Use when the user asks to 'run a work workflow', 'do this properly', 'clarify, plan, and verify this', 'small structured task', or 'don't just wing it' for a bounded task too small for a specialized workflow."
 hooks:
   PostToolUse:
+    - matcher: "AskUserQuestion"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/episode-phase.ts --workflow work"
+    - matcher: "ExitPlanMode"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-persist.ts --workflow work"
   PreToolUse:
+    - matcher: "Read|Glob|Grep|Bash"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/clarify-before-recon-guard.ts --workflow work"
     - matcher: "Write|Edit|MultiEdit|NotebookEdit"
       hooks:
         - type: command
