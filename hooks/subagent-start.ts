@@ -89,7 +89,24 @@ async function main(): Promise<void> {
     console.log(pyJson({
       hookSpecificOutput: {
         hookEventName: "SubagentStart",
-        additionalContext: "PLANNING STATE BLOCKED. Do not read or write visible planning files. Convert the retired state or create a fresh approved generated plan before resuming.",
+        /**
+         * THE EXEMPTION IS NOT A LOOPHOLE — IT IS THE DIFFERENCE BETWEEN DISCOVERY AND AUTHORITY.
+         *
+         * MEASURED 2026-08-06, in the first real run of `workflows/work.js`. Every implementer this
+         * hook briefs is handed ONE plan path pinned by sha256 in its own task, and its first act is
+         * to verify those bytes. This text told it not to read that file. The agent read it anyway —
+         * correctly, since the task designated it as sole authority and pinned it — and then FLAGGED
+         * THE CONFLICT in its report rather than silently resolving it, which is the behaviour we
+         * want and also a sign the instruction was wrong.
+         *
+         * An instruction that well-behaved agents must violate to do the job teaches them that this
+         * hook's output is advisory. That is a far worse outcome than the retired-state resumption
+         * this text exists to prevent, because it devalues every other thing the hook says.
+         *
+         * What is actually forbidden is DISCOVERY: choosing a plan by looking in `.planning/`. A
+         * file whose hash your caller pinned was not discovered, it was authenticated upstream.
+         */
+        additionalContext: "PLANNING STATE BLOCKED. Do not DISCOVER a plan by reading or listing visible planning files, and do not write them: the retired state here cannot authorize work. EXCEPTION — if your task pins one plan path by sha256, read that file and verify the hash before using it. That is not discovery; it was authenticated by your caller, and it is the only planning file you may read. Convert the retired state or create a fresh approved generated plan before resuming anything else.",
       },
     }));
     process.exit(0);
