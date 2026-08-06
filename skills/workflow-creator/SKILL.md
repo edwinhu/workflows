@@ -45,7 +45,7 @@ CLARIFY → planning evidence → native Plan approval → independent plan revi
 
 The diagram is authoritative.
 
-### 1. CLARIFY
+## 1. CLARIFY
 
 **Write no sentinel.** `.planning/WC_CLARIFIED.json` is retired — a hook records the clarify phase
 into `.planning/.state/episode.json` when it observes your `AskUserQuestion` call, which is evidence
@@ -71,11 +71,15 @@ Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md`. Ask in one batched interact
 - verification commands and human review surfaces;
 - explicit exclusions and completion evidence.
 
-After the user answers, write the clarified sentinel with the current `${CLAUDE_SESSION_ID}`. Only then inspect the target and build planning evidence.
+Nothing is written after the user answers: the observed phase is the evidence. Only then inspect the target and build planning evidence.
 
-### 2. PLAN
+**Gate:** the clarify phase is recorded in `.planning/.state/episode.json`, and outcome, entries,
+phase responsibilities, gate kinds, mutation owners, verification commands, review surfaces,
+exclusions, and completion evidence are all explicit.
 
-Create an executable native plan containing:
+## 2. PLAN
+
+Read `${CLAUDE_SKILL_DIR}/../beat-plan/SKILL.md`. Create an executable native plan containing:
 
 - intent, exclusions, target slug, and no-legacy policy;
 - fresh/corrective entries and ordered internal phases;
@@ -95,7 +99,12 @@ Enter native Plan mode only when this manifest is executable. `ExitPlanMode` bin
 
 Read `${CLAUDE_SKILL_DIR}/../workflow-creator-plan-reviewer/SKILL.md` and dispatch the independent plan checker. Issues return to native Plan mode for fresh approval.
 
-### 3. COMPILE + IMPLEMENT
+**Gate:** the receipt-selected `planFile` and `planHash` are `APPROVED` for workflow
+`workflow-creator` by a distinct reviewer session, and the Workflow Output Manifest compiles with no
+duplicate IDs or outputs, unsafe paths, globs, directory authority, missing evidence, or undeclared
+dependencies.
+
+## 3. IMPLEMENT
 
 In a distinct implementation session:
 
@@ -109,9 +118,13 @@ In a distinct implementation session:
 5. Set one budgeted `/goal` pinned to compiler success, all implementation records, focused checks, independent verification, and human review.
 6. Main chat may read results and update planning state; only delegated implementation agents mutate target files.
 
-### 4. VERIFY
+**Gate:** the compiler succeeded on the authenticated plan identity, every manifest row has a
+completed implementation record produced by a delegated agent, and exactly one budgeted `/goal` is
+active.
 
-Set `phase: verification`. **First run the deterministic compliance probe**, and pass its command as one of the required mechanical probes:
+## 4. VERIFY
+
+Read `${CLAUDE_SKILL_DIR}/../beat-verify/SKILL.md`. Set `phase: verification`. **First run the deterministic compliance probe**, and pass its command as one of the required mechanical probes:
 
 ```bash
 bun ${CLAUDE_SKILL_DIR}/../../scripts/wc/compliance-probe.ts --target "<plugin repo root>"
@@ -125,11 +138,17 @@ Then invoke `workflow-creator-verify` with the deterministic compiler manifest a
 
 Failures re-enter `/workflow-creator-improve`; retries preserve approved plan identity and only re-run proven attempted work.
 
-### 5. HUMAN REVIEW
+**Gate:** the compliance probe exits 0, `workflow-creator-verify` returns no blocking finding, and
+every evidence row passes on the command the plan named for it.
+
+## 5. REVIEW
 
 After independent PASS, set `phase: human-review`, read `${CLAUDE_SKILL_DIR}/../beat-review/SKILL.md`, present the diff and any rendered surfaces named by the plan, and record dispositions in `.planning/HUMAN_REVIEW.md`.
 
 Tactical feedback routes through `/workflow-creator-improve`. `REJECT:` invalidates the criteria and returns to CLARIFY.
+
+**Gate:** every disposition is recorded in `.planning/HUMAN_REVIEW.md`, the final review relaunch has
+no new annotations, and no `REJECT:` remains.
 
 ## Iron laws
 

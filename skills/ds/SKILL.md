@@ -30,19 +30,22 @@ hooks:
 
 !`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts ${CLAUDE_SESSION_ID}`
 
-`/ds` is the DS planning adapter: clarify the research question, gather only the profile and domain
-facts needed to plan responsibly, use native Plan mode, then independently review the approved plan.
-Claude Code owns the live task list; the native plan-persistence hook authenticates the exact generated
-plan selected by its hidden receipt. The receipt supplies the only `{planFile, planHash}` planning identity.
+`/ds` is the DS router. It runs the same five beats every workflow in this plugin runs, supplying the
+DS specifics at each one: clarify the research question, gather only the profile and domain facts
+needed to plan responsibly, use native Plan mode, implement through the shared runner, verify
+independently, and take the result to the user. Claude Code owns the live task list; the native
+plan-persistence hook authenticates the exact generated plan selected by its hidden receipt. The
+receipt supplies the only `{planFile, planHash}` planning identity.
 
 ```
-clarify with user → read-only profile / domain discovery → native Plan mode
-       → ExitPlanMode approval → receipt-selected generated plan → independent plan review
-       → /ds-implement
+CLARIFY → PLAN (read-only profile / domain discovery → native Plan mode → ExitPlanMode approval
+       → receipt-selected generated plan → independent plan review)
+       → IMPLEMENT → VERIFY → REVIEW
 ```
 
 This flowchart is authoritative. There is no DS `SPEC.md`, `STATE.md`, `LEARNINGS.md`, compiler,
-generated runner, custom task-table schema, or custom verification phase.
+generated runner, or custom task-table schema, and no verification phase outside the shared VERIFY
+beat below.
 
 <EXTREMELY-IMPORTANT>
 ## The Iron Law of DS Planning
@@ -55,7 +58,11 @@ guess. Neither shortcut is helpful: it creates an analysis that is fast to start
 correct.
 </EXTREMELY-IMPORTANT>
 
-## 1. Clarify
+## 1. CLARIFY
+
+Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and follow it before examining task files, data,
+code, or prior analysis artifacts. Reconnaissance unlocks when the phase is recorded, so the only way
+through the guard is to genuinely ask.
 
 **Write no sentinel.** `.planning/DS_CLARIFIED.json` is retired, and with it the two `printf`
 commands that used to live here. A hook records the clarify phase into
@@ -63,10 +70,6 @@ commands that used to live here. A hook records the clarify phase into
 evidence the user was actually asked. The sentinel was this skill telling the guard that it had
 clarified — a claim the guard had a special Bash exemption to let through, and one that could be
 made without ever asking a question.
-
-Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and follow it before examining task files, data,
-code, or prior analysis artifacts. Reconnaissance unlocks when the phase is recorded, so the only
-way through the guard is to genuinely ask.
 
 Supply the DS-specific axes the primitive needs:
 
@@ -80,28 +83,24 @@ Supply the DS-specific axes the primitive needs:
 
 Ask in one `AskUserQuestion` call when answers are independent. Ask cascading questions separately:
 a source choice that determines available variables must be answered before variable questions.
-
-### DS clarification facts
-
-- A sample period and an entity universe are research choices, not properties inferred from the first
-  query result. A rate at the wrong grain is a different statistic with a familiar label.
-- The universe predicate belongs where scope is decided. Applying it to a lookup or denominator can
-  turn available values into nulls; a 43.7% null-denominator incident came from exactly that duplicate
-  filtering mistake.
-- A criterion that cannot name evidence is a wish. Use the primitive's explicit `TBD (<phase>)`
-  convention only when profiling is the scheduled evidence-producing phase; never invent coverage.
-
 Record the user-approved intent and evidence criteria in the native plan when entering Plan mode —
 not in a preliminary DS artifact.
 
-## 2. Gather planning evidence without implementing
+**Gate:** the hook has recorded the clarify phase from an observed `AskUserQuestion`, and every axis
+above has an answer from the user rather than an inference from nearby files.
+
+## 2. PLAN
+
+Read `${CLAUDE_SKILL_DIR}/../beat-plan/SKILL.md` and follow it. It owns receipt binding, the
+declared-grammar rule, the whole-plan review boundary, and the fan-out check. The DS specifics follow.
+
+### Gather planning evidence without implementing
 
 After clarification, gather the minimum evidence needed to choose a feasible plan. This is
 reconnaissance, not analysis implementation.
 
-### Read-only data profile
-
-For each source that materially affects the plan, collect or dispatch a read-only profile covering:
+**Read-only data profile.** For each source that materially affects the plan, collect or dispatch a
+read-only profile covering:
 
 - location/access, approximate shape, columns/types, date coverage, and likely row grain/key;
 - nulls, duplicates, type drift, category/distribution anomalies, and likely join risks;
@@ -118,10 +117,8 @@ read `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-data-pull-profile.md` 
 profile must compare filtered raw and candidate aggregate/server-side paths before native planning
 commits to one. Do not pull a full source merely to estimate it.
 
-### Domain and example discovery
-
-When the plan will use another workflow skill or data provider, discover its relevant references and
-examples before choosing an approach. Read
+**Domain and example discovery.** When the plan will use another workflow skill or data provider,
+discover its relevant references and examples before choosing an approach. Read
 `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-external-skill-discovery.md` and follow it.
 Record the resulting ADOPT, PATCH, or GREENFIELD decision in the native plan itself.
 
@@ -132,13 +129,11 @@ filters or tunable thresholds, read
 `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-parameter-transparency.md`; name one
 configuration location, rationale, and treatment of convenience choices in the native plan.
 
-### Boundary
+**Boundary.** Do not write production analysis code, create task trackers, or claim findings in this
+step. If an answer depends on implementation, state it as a planned evidence task rather than
+pretending the profile established it.
 
-Do not write production analysis code, create task trackers, or claim findings in this step. If an
-answer depends on implementation, state it as a planned evidence task rather than pretending the
-profile established it.
-
-## 3. Use native Plan mode
+### Use native Plan mode
 
 Enter native Plan mode after the clarification and planning evidence are sufficient. The plan must
 express, in the user's terms:
@@ -149,13 +144,48 @@ express, in the user's terms:
 4. reproducibility decisions appropriate to the work (source vintages, seeds, environments, and
    config);
 5. a **Review Surfaces** section naming the concrete tables, figures, notebook exports, diagnostics,
-   or decisions the user will inspect during human review; and
-6. any domain-example decision, canonical dataset/grain, parameter rationale, or large-source
+   or decisions the user will inspect during human review;
+6. a **Data Outputs** section in the required grammar below; and
+7. any domain-example decision, canonical dataset/grain, parameter rationale, or large-source
    decision required by the planning evidence above.
 
 Use the native plan's natural structure. Do not manufacture a DS-specific executable table, a
 `SPEC.md`, or a second task list. Native Plan mode and `TaskList` are the sources of intent and
 live progress respectively.
+
+### Required plan grammar: `## Data Outputs`
+
+`## Data Outputs` is the ONE deterministic table `/ds` requires, and it is required because
+`scripts/checks/ds-dq.py` CONSUMES it during VERIFY. Outputs named only in prose cannot be checked:
+a runner given prose does not know what artifact to open, at what grain, against which key, or over
+what period. Every other executable-looking table remains forbidden by the paragraph above — the
+refusal to manufacture them is not weakened by this one exception, it is the reason this exception
+has to be stated explicitly.
+
+```markdown
+## Data Outputs
+
+| Path | Grain | Key Columns | Required Window |
+|---|---|---|---|
+| data/processed/panel.parquet | one row per firm-fiscal-year | pk: gvkey, fyear; event: gvkey, datadate | datadate: 2005-01-01..2025-12-31 |
+| data/processed/industry_xwalk.csv | one row per SIC code | sic | n/a |
+```
+
+- **Path** — the produced artifact, relative to the project root. `.parquet`, `.csv`, or `.tsv`; one
+  row per artifact the plan promises to produce.
+- **Grain** — the declared row grain, in words. This is the claim `DQ3` verifies rather than assumes.
+- **Key Columns** — the declared primary key `DQ3a` tests for uniqueness. Write `a, b` for a bare
+  primary key, or `pk: a, b; event: c, d` to also declare the coarser business/event key `DQ3c` needs
+  to catch amendments and restatements. Without an `event:` clause `DQ3c` reports `N/A`, and the
+  runner says why.
+- **Required Window** — the sample period `COV` checks, as `[column: ]YYYY-MM-DD..YYYY-MM-DD`. Write
+  `n/a` for an unwindowed output; `COV` then reports `N/A` with that as its reason. Naming the column
+  is optional only when exactly one date column exists; an ambiguous window is a `FAIL`, not a pass.
+
+Declaring an output here is what makes it verifiable. An artifact absent from this table is one the
+VERIFY beat will not check and cannot be claimed as verified.
+
+### Approval and independent review
 
 Before `ExitPlanMode`, ensure the user has had the opportunity to approve the approach. On exit, the
 native plan-persistence hook binds the exact generated plan and creates its hook-owned receipt at
@@ -166,21 +196,19 @@ Never inspect the state directory to choose a plan, write or patch its receipt, 
 plan yourself. If the plan changes, re-enter native Plan mode, obtain approval through `ExitPlanMode`, and
 let the hook bind the replacement atomically.
 
-## 4. Independent plan review
-
 Immediately read `${CLAUDE_SKILL_DIR}/../ds-plan-reviewer/SKILL.md` and follow its dispatch
 instructions. It dispatches a fresh `workflows:plan-checker` reviewer with the DS domain, concrete
-reference root, receipt-selected immutable plan, and authenticated approval receipt. The planner reads the reviewer-owned outcome
-but never self-approves. One reviewer produces one durable hash-bound verdict for the complete plan.
+reference root, receipt-selected immutable plan, and authenticated approval receipt. The planner reads the
+reviewer-owned outcome but never self-approves. One reviewer produces one durable hash-bound verdict for
+the complete plan.
 
 - If any reviewer returns **ISSUES_FOUND**, re-enter native Plan mode, revise there, obtain fresh
   approval through `ExitPlanMode`, and review the newly persisted copy. Repeat at most five times;
   then show the unresolved issues to the user and ask how to proceed.
-- If every reviewer returns **APPROVED**, immediately read
-  `${CLAUDE_SKILL_DIR}/../ds-implement/SKILL.md` and follow it. Do not ask a redundant
-  “should I continue?” question: approval is the transition.
+- If every reviewer returns **APPROVED**, continue immediately to IMPLEMENT. Do not ask a redundant
+  "should I continue?" question: approval is the transition.
 
-## Gate: ready for implementation
+**Gate:** ready for implementation.
 
 1. **IDENTIFY:** the hook-owned receipt selects one generated `planFile` and records its `planHash`.
 2. **RUN:** resolve that receipt; recompute SHA-256 over the selected generated plan and require an exact
@@ -192,6 +220,50 @@ but never self-approves. One reviewer produces one durable hash-bound verdict fo
    only in a new session distinct from approval and review.
 5. **CLAIM:** Only then invoke `/ds-implement`.
 
+## 3. IMPLEMENT
+
+Read `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md`, then
+`${CLAUDE_SKILL_DIR}/../ds-implement/SKILL.md` and follow it. The adapter reconciles the approved plan
+into `TaskList`, selects one complete ready wave, and dispatches its doers through the shared runner.
+The approved plan is immutable input: never reinterpret, compile, or patch it while implementing it.
+
+**Gate:** every task in the current ready wave has returned, its declared outputs exist at the paths
+the plan named, and no open `TaskList` item for the current `planHash` remains unaccounted for.
+The doer does not grade its own work — that belongs to the next beat.
+
+## 4. VERIFY
+
+Read `${CLAUDE_SKILL_DIR}/../beat-verify/SKILL.md`, then `${CLAUDE_SKILL_DIR}/../ds-verify/SKILL.md`.
+
+`ds-verify` is dispatched independently of `ds-implement` and has no edit tools. It runs
+`scripts/checks/ds-dq.py` over every row of `## Data Outputs`, and it reports `M1`, `UNI`, `DEN`,
+`DEL`, and `R1` as MODEL-EVALUATED judgements rather than computed passes.
+
+**Gate:** a verification round is recorded against the current `planHash` after the last mutation,
+the runner's JSON covers every declared output with each computed check `PASS` or `N/A` carrying the
+runner's own reason, `ENUM` is `PASS`, the five model-evaluated checks each carry a judgement with
+evidence, and `OVERALL: PASS`.
+
+## 5. REVIEW
+
+Read `${CLAUDE_SKILL_DIR}/../beat-review/SKILL.md`, then `${CLAUDE_SKILL_DIR}/../ds-accept/SKILL.md`
+and follow it. Present the plan's **Review Surfaces** to the user and ask for acceptance, tactical
+feedback, or `REJECT:`. A clean technical verification is evidence for that conversation, not human
+acceptance.
+
+**Gate:** every feedback item has a disposition (`addressed`, `answered`, or user-authorized
+`waived`) recorded in the returned result and `TaskList`, and no `REJECT:` is outstanding.
+
+## DS clarification facts
+
+- A sample period and an entity universe are research choices, not properties inferred from the first
+  query result. A rate at the wrong grain is a different statistic with a familiar label.
+- The universe predicate belongs where scope is decided. Applying it to a lookup or denominator can
+  turn available values into nulls; a 43.7% null-denominator incident came from exactly that duplicate
+  filtering mistake.
+- A criterion that cannot name evidence is a wish. Use the primitive's explicit `TBD (<phase>)`
+  convention only when profiling is the scheduled evidence-producing phase; never invent coverage.
+
 ## Red flags
 
 | About to | Stop because | Do instead |
@@ -202,3 +274,5 @@ but never self-approves. One reviewer produces one durable hash-bound verdict fo
 | Write `SPEC.md`, `STATE.md`, `LEARNINGS.md`, or a custom plan | It creates competing state and makes progress ambiguous | Use native Plan mode, the receipt-selected immutable generated plan, TaskList, and project auto-memory |
 | Patch a receipt-selected generated plan after review finds a gap | That falsifies the approved record and its hash | Re-enter Plan mode and obtain a new approved generated plan |
 | Infer live progress from plan checkboxes | The copied plan is immutable | Read `TaskList` |
+| Name a produced artifact only in prose | A runner given prose cannot open it, key it, or window it | Add its row to `## Data Outputs` before approval |
+| Let the implementer report its own DQ results | The doer cannot see the assumption it made in both places | Dispatch `ds-verify` independently |

@@ -41,7 +41,11 @@ export type Finding = {
   remedy: string;
 };
 
-const BEATS = ["beat-clarify", "beat-implement", "beat-review"] as const;
+// Five since 2026-08-06. PLAN and VERIFY were convention rather than primitive — they lived as
+// work-local `skills/work/beats/*.md`, so the approved-artifact receipt and "the verifier is never
+// the doer" were re-derived per workflow instead of enforced from one place. `/ds` is what that
+// cost: it ran its verifier inside its doer for months, and no probe could see it.
+const BEATS = ["beat-clarify", "beat-plan", "beat-implement", "beat-verify", "beat-review"] as const;
 
 function read(path: string): string {
   try { return readFileSync(path, "utf8"); } catch { return ""; }

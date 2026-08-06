@@ -78,24 +78,77 @@ The grammar is deterministic:
 ## Lifecycle
 
 ```text
-CLARIFY → gather/materialize sources → native Plan approval → independent whole-plan review
-        → detailed section outlines → deterministic section-index compile
-        → writing-draft → verification → independent writing-verify
-        → /writing-revise → writing-accept (human acceptance)
+CLARIFY → PLAN → IMPLEMENT → VERIFY → REVIEW
 ```
 
-1. Clarify thesis or angle, audience, purpose, scope, exclusions, source expectations, deliverables,
-   evidence, and review surfaces before reconnaissance. Read
-   `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and follow it — it owns the question set, the
-   stop condition, and how confirmed intent is carried forward as evidence. The
-   `clarify-before-recon-guard` hook enforces that this happens; the beat defines what it is.
-2. Gather sources through the librarian workflow and materialize real source artifacts under `references/`.
-3. Load `writing-setup` to enter native Plan mode and produce the required grammar. Do not write a substitute planning document.
-4. After approval, dispatch one independent whole-plan reviewer. Implementation waits for an `APPROVED` hash-bound `review.json` from a distinct reviewer session.
-5. Load `writing-outline` for detailed section outlines, then `writing-draft`. Its PLAN-based mechanical probe and semantic source verification replace the retired marker-based validation hop; proceed directly to independent `writing-verify`, then `/writing-revise`.
-6. Load `writing-accept` for terminal human acceptance. Independent machine review is not a
-   person's acceptance; the adapter carries the domain framing over `beat-review`.
-7. Represent live work as TaskList items bound to `planHash` and stable section/claim identifiers.
+## 1. CLARIFY
+
+Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and follow it — it owns the question set, the
+stop condition, and how confirmed intent is carried forward as evidence. The
+`clarify-before-recon-guard` hook enforces that this happens; the beat defines what it is. Clarify
+thesis or angle, audience, purpose, scope, exclusions, source expectations, deliverables, evidence,
+and review surfaces before reconnaissance.
+
+**Gate:** thesis, audience, purpose, scope, exclusions, deliverables, evidence, and review surfaces
+are explicit enough to enter native Plan mode without guessing.
+
+## 2. PLAN
+
+Read `${CLAUDE_SKILL_DIR}/../beat-plan/SKILL.md`, then `${CLAUDE_SKILL_DIR}/../writing-setup/SKILL.md`,
+then `${CLAUDE_SKILL_DIR}/../writing-plan-reviewer/SKILL.md`.
+
+1. Gather sources through the librarian workflow and materialize real source artifacts under
+   `references/`. All source searches go through the `workflows:librarian` agent. Clarify angle and
+   audience first, decompose the question into independent themes, search in parallel, deduplicate
+   results, and materialize the authoritative inputs under `references/`. Training-data recall is
+   not a source.
+2. Load `writing-setup` to enter native Plan mode and produce the required grammar. Do not write a
+   substitute planning document.
+3. After approval, dispatch one independent whole-plan reviewer. Implementation waits for an
+   `APPROVED` hash-bound `review.json` from a distinct reviewer session.
+
+Before implementation:
+
+1. **IDENTIFY** the exact generated `plan_file` and `plan_hash` in `.planning/.state/review.json` (exposed as `planFile` and `planHash` by the compiled section index).
+2. **RUN** approved-artifact admission for `writing` and compile the deterministic section index from that exact path.
+3. **READ** the exact path/hash, parser diagnostics, and whole-plan verdict.
+4. **VERIFY** required headings, stable claims, exact mappings, outputs, dependencies, workflow identity, chronology, and distinct sessions.
+5. **CLAIM** readiness only when admission and compilation both pass. Otherwise return to planning or conversion.
+
+Skipping authentication to appear faster is anti-helpful: it lets stale or competing prose silently control a document the user believes was approved.
+
+**Gate:** admission and deterministic section-index compilation both pass against the
+receipt-selected `planFile` and `planHash`, and every source the plan relies on exists under
+`references/`.
+
+## 3. IMPLEMENT
+
+Read `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md`, then
+`${CLAUDE_SKILL_DIR}/../writing-outline/SKILL.md` for detailed section outlines, then
+`${CLAUDE_SKILL_DIR}/../writing-draft/SKILL.md`. Represent live work as TaskList items bound to
+`planHash` and stable section/claim identifiers.
+
+**Gate:** every section named by `## Section Outputs` has its outline and draft produced under the
+authenticated `planHash`, with TaskList holding the complete current-plan task set.
+
+## 4. VERIFY
+
+Read `${CLAUDE_SKILL_DIR}/../beat-verify/SKILL.md`, then
+`${CLAUDE_SKILL_DIR}/../writing-verify/SKILL.md`. `writing-draft`'s PLAN-based mechanical probe and
+semantic source verification replace the retired marker-based validation hop; proceed directly to
+independent `writing-verify`, then `/writing-revise`.
+
+**Gate:** independent `writing-verify` reports no open finding against the current `planHash`, and
+every `/writing-revise` fix is re-verified rather than self-attested.
+
+## 5. REVIEW
+
+Read `${CLAUDE_SKILL_DIR}/../beat-review/SKILL.md`, then
+`${CLAUDE_SKILL_DIR}/../writing-accept/SKILL.md` for terminal human acceptance. Independent machine
+review is not a person's acceptance; the adapter carries the domain framing over `beat-review`.
+
+**Gate:** the user has accepted the deliverable, TaskList has no open current-plan item, and no
+`REJECT:` remains.
 
 ## Resume and Compatibility
 
@@ -107,19 +160,3 @@ Classify before resuming:
 - **Conflicting authority:** any caller, hook, or workflow attempts to use canonical PLAN and a retired file as active inputs. Stop and identify both paths; do not choose or merge automatically.
 
 Structural changes—including thesis, claim set, document order, claim homes, source configuration, section outputs, or dependencies—require a replacement native plan and fresh independent review. The immutable PLAN is never patched.
-
-## Source Gathering
-
-All source searches go through the `workflows:librarian` agent. Clarify angle and audience first, decompose the question into independent themes, search in parallel, deduplicate results, and materialize the authoritative inputs under `references/`. Training-data recall is not a source.
-
-## Gate
-
-Before implementation:
-
-1. **IDENTIFY** the exact generated `plan_file` and `plan_hash` in `.planning/.state/review.json` (exposed as `planFile` and `planHash` by the compiled section index).
-2. **RUN** approved-artifact admission for `writing` and compile the deterministic section index from that exact path.
-3. **READ** the exact path/hash, parser diagnostics, and whole-plan verdict.
-4. **VERIFY** required headings, stable claims, exact mappings, outputs, dependencies, workflow identity, chronology, and distinct sessions.
-5. **CLAIM** readiness only when admission and compilation both pass. Otherwise return to planning or conversion.
-
-Skipping authentication to appear faster is anti-helpful: it lets stale or competing prose silently control a document the user believes was approved.

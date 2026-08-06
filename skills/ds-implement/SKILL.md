@@ -170,9 +170,15 @@ The doer does not grade its work. Invoke **VERIFY** from
 `${CLAUDE_SKILL_DIR}/../../skills/beat-implement/SKILL.md` with the DS parameter reference:
 
 Read `${CLAUDE_SKILL_DIR}/references/ds-verification.md` and follow it. It loads
-`ds-checks.md`, supplies the required technical criterion, data-quality, code-quality, methodology, and
-reproducibility checks, and defines the mandatory `OVERALL:` report. This is one operation inside the
-IMPLEMENT beat — not a standalone validation or verification phase.
+`${CLAUDE_SKILL_DIR}/../ds-verify/references/ds-checks.md`, supplies the required technical criterion, data-quality, code-quality, methodology, and
+reproducibility checks, and defines the mandatory `OVERALL:` report.
+
+This is the wave-level check **inside** the IMPLEMENT beat: it tells this adapter whether the wave it
+just dispatched is done. It is NOT the VERIFY beat and it does not discharge it. The VERIFY beat is
+`ds-verify`, it runs after IMPLEMENT returns, it is dispatched by `/ds` rather than by the doer, and
+its gate reads a computed result from `scripts/checks/ds-dq.py` over the plan's declared
+`## Data Outputs`. A wave check run by the adapter that owns the doers cannot stand in for a verifier
+the doer never touched.
 
 Dispatch one fresh, read-only verifier with no implementation transcript. Provide only the approved plan's
 task criteria, declared outputs, completed task IDs, the output paths/configuration necessary to execute
@@ -190,7 +196,14 @@ Return the shared workflow's `reusableFacts` alongside the independent verificat
 candidates only: the main orchestrator decides which facts are durable enough for project auto-memory.
 Do not write a local learnings file or any agent-memory artifact.
 
-Repeat selection, dispatch, independent verification, and native-task completion until every approved
-plan task has passed. Only then immediately continue to human acceptance:
+Repeat selection, dispatch, wave-level verification, and native-task completion until every approved
+plan task has passed.
 
-Read `${CLAUDE_SKILL_DIR}/../../skills/ds-accept/SKILL.md` and follow its instructions.
+**Then return to `/ds` for the VERIFY beat. Do not route to human acceptance from here.** Going
+straight to `ds-accept` is exactly the bypass this workflow used to have: the adapter that owned the
+doers also owned the only check, and the deterministic runner over the declared `## Data Outputs`
+never ran. Acceptance is beat 5 and `ds-verify` is beat 4; skipping a beat because the wave check
+already said PASS is the doer grading itself one level up.
+
+Read `${CLAUDE_SKILL_DIR}/../ds-verify/SKILL.md` and follow it. Only after its gate passes does `/ds`
+continue to `${CLAUDE_SKILL_DIR}/../ds-accept/SKILL.md`.

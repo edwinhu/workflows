@@ -4,7 +4,7 @@ Use this reference for the single independent **VERIFY** operation required by
 `beat-implement`. It replaces the former standalone DS validation and verification phases. It does
 not ask the user for acceptance; human acceptance belongs to `ds-accept` after technical `OVERALL: PASS`.
 
-Read `ds-checks.md` with this reference. The approved native plan is the authority for objectives,
+Read `${CLAUDE_SKILL_DIR}/../ds-verify/references/ds-checks.md` with this reference. The approved native plan is the authority for objectives,
 criteria, sources, output paths, grain, constraints, and required windows. `TaskList` is the source
 of live completion status. Do not create or read `SPEC.md`, `STATE.md`, `LEARNINGS.md`,
 `VALIDATION.md`, or a separate verifier state file.
@@ -27,7 +27,7 @@ Dispatch a fresh, read-only verifier after the latest implementation change. It 
   grain/key decisions, and review-relevant claims;
 - the completed task IDs from `TaskList`;
 - the completed output paths and the project configuration needed to run them; and
-- this reference and `ds-checks.md`.
+- this reference and `${CLAUDE_SKILL_DIR}/../ds-verify/references/ds-checks.md`.
 
 It must not receive the doer’s reasoning transcript, mutable planning artifacts, or prior agent memory.
 It may read code, notebooks, configuration, provenance, and outputs; it may execute declared scripts or
@@ -79,7 +79,7 @@ summary or treat a warning-free output as a substitute for a static check.
 
 ### 3. Data-quality checks
 
-Select the applicable checks from `ds-checks.md` for every final artifact and every cross-task handoff:
+Select the applicable checks from `${CLAUDE_SKILL_DIR}/../ds-verify/references/ds-checks.md` for every final artifact and every cross-task handoff:
 
 | Check | Run when | Minimum evidence |
 |---|---|---|

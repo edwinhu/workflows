@@ -1,27 +1,47 @@
 # DS Common Checks
 
-Shared starter definitions for data-quality verification. `ds-implement`, `ds-accept`, and `ds-fix`
-load the checks relevant to their approved task or review surface.
+Canonical definitions for data-quality verification. `ds-verify` OWNS these checks; `ds-implement`
+(through `references/ds-verification.md`) and `ds-delegate` load them by the path
+`skills/ds-verify/references/ds-checks.md` for the tasks they dispatch.
 
 **Iron Law: Read this file before evaluating a data-quality claim. Inlined copies drift.**
 
+## Computed vs model-evaluated
+
+The **Runner** column below is the load-bearing distinction, not a convenience. `scripts/checks/ds-dq.py`
+COMPUTES the mechanical checks over the outputs declared in the approved plan's `## Data Outputs` table
+and emits a machine-generated reason for every `N/A`. Everything else is a judgement a model makes, and
+the runner reports it as `MODEL-EVALUATED` rather than `PASS` so that no reader can mistake a judgement
+for a computation. A runner that printed `PASS` for M1 would recreate the self-certification these
+checks exist to remove.
+
 ## Check Matrix
 
-| Check ID | Description | Implement | Review | Fix |
-|----------|-------------|-----------|--------|-----|
-| DQ1 | Empty/constant columns | ✅ | ✅ | ✅ |
-| DQ2 | High-null columns (>50%) | ✅ | ✅ | ✅ |
-| DQ3 | Duplicate rows on key columns | ✅ | ✅ | ✅ |
-| DQ4 | Row-count traceability against task-local evidence | ✅ | ✅ | ✅ |
-| DQ5 | Cardinality check on categoricals | ✅ | ✅ | ✅ |
-| DQ6 | Output-first verification (shape before/after) | ✅ | ✅ | ✅ |
-| COV | Sample-period coverage (each windowed source spans its Required window) | ✅ | ✅ | ✅ |
-| R1 | Reproducibility (same inputs → same outputs) | ✅ | ✅ | ✅ |
-| M1 | Approved-plan criterion compliance | ✅ | ✅ | ✅ |
-| UNI | Universe agreement (every source admits the same entities) | ✅ | ✅ | ✅ |
-| DEN | Every reported rate states its denominator | ✅ | ✅ | ✅ |
-| DEL | Coverage improved because the base shrank | ✅ | ✅ | ✅ |
-| ENUM | Every applicable check ran or is N/A with a reason | ✅ | ✅ | ✅ |
+| Check ID | Description | Runner | Implement | Review | Fix |
+|----------|-------------|--------|-----------|--------|-----|
+| DQ1 | Empty/constant columns | computed | ✅ | ✅ | ✅ |
+| DQ2 | High-null columns (>50%) | computed | ✅ | ✅ | ✅ |
+| DQ3 | Duplicate rows on key columns | computed | ✅ | ✅ | ✅ |
+| DQ4 | Row-count traceability against task-local evidence | always N/A | ✅ | ✅ | ✅ |
+| DQ5 | Cardinality check on categoricals | computed | ✅ | ✅ | ✅ |
+| DQ6 | Output-first verification (shape before/after) | always N/A | ✅ | ✅ | ✅ |
+| COV | Sample-period coverage (each windowed source spans its Required window) | computed | ✅ | ✅ | ✅ |
+| R1 | Reproducibility (same inputs → same outputs) | MODEL-EVALUATED | ✅ | ✅ | ✅ |
+| M1 | Approved-plan criterion compliance | MODEL-EVALUATED | ✅ | ✅ | ✅ |
+| UNI | Universe agreement (every source admits the same entities) | MODEL-EVALUATED | ✅ | ✅ | ✅ |
+| DEN | Every reported rate states its denominator | MODEL-EVALUATED | ✅ | ✅ | ✅ |
+| DEL | Coverage improved because the base shrank | MODEL-EVALUATED | ✅ | ✅ | ✅ |
+| ENUM | Every applicable check ran or is N/A with a reason | computed | ✅ | ✅ | ✅ |
+
+**`always N/A` is not a third kind of pass.** DQ4 and DQ6 are listed as runner checks because the
+runner emits a line for them — ENUM requires that — but neither can be COMPUTED from a finished
+artifact. DQ4 needs the input → transform → output count chain and DQ6 needs a before/after shape;
+the runner sees only the file that was produced. They were labelled `computed` in the first version
+of this table, which read as "the runner checked these and they were fine" when the runner had done
+no work at all. Third-party review caught it. Both still have to be dispositioned by the verifier
+against task-local evidence, exactly like the MODEL-EVALUATED rows — the `always N/A` label is what
+stops that obligation from looking discharged.
+
 
 ## Data Quality Checks (DQ1-DQ6)
 
@@ -189,11 +209,11 @@ assert hash1 == hash2, "Results not reproducible!"
 When dispatching a review or verification subagent, reference checks by ID:
 
 ```
-"Run checks DQ1-DQ5, COV, M1 from references/ds-checks.md on the final analysis data.
+"Run checks DQ1-DQ5, COV, M1 from skills/ds-verify/references/ds-checks.md on the final analysis data.
 Report any WARNING as confidence >= 80."
 ```
 
-This ensures both ds-accept and ds-fix run identical checks from a single source of truth.
+This ensures every reader runs identical checks from a single source of truth.
 
 ---
 

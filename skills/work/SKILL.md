@@ -24,13 +24,12 @@ The lightweight, domain-agnostic workflow for a bounded task that deserves expli
 evidence, independent verification, and human review without becoming a full domain workflow.
 
 ```text
- ┌──── OUTER LOOP: REJECT: → criteria were wrong → CLARIFY ──────────────────────┐
- │                                                                                │
- ▼                                                                                │
-CLARIFY ──► native PLAN ──► GOAL + WORK ──► independent VERIFY ──PASS──► REVIEW ─┤
-   │                    ▲                 │                              │          │
-   │                    └──── fix ◄──────FAIL                            ├─ clean → done
-   └──────────────────────────────────────────── REJECT: ────────────────┘
+ ┌──── OUTER LOOP: REJECT: → criteria were wrong → CLARIFY ───────────────────┐
+ │                                                                            │
+ ▼                                                                            │
+CLARIFY ──► PLAN ──► IMPLEMENT ──► VERIFY ──PASS──► REVIEW ──┬─ clean → done  │
+                        ▲              │                     │                │
+                        └── fix ◄───FAIL                     └─ REJECT: ──────┘
 ```
 
 **This diagram is the specification.** Tactical failures repair work against the approved criteria.
@@ -88,7 +87,7 @@ Classify before resuming:
 4. **Conflicting authority:** a legacy approval layout competes with the generated receipt for current
    authority. Stop, identify both layouts, and require explicit resolution; never merge automatically.
 5. On the same authenticated plan hash, reconcile TaskList and continue without duplicate tasks. A new
-   plan hash supersedes old open authority according to the deterministic rollover rules in GOAL + WORK.
+   plan hash supersedes old open authority according to the deterministic rollover rules in IMPLEMENT.
 
 ## 1. CLARIFY
 
@@ -102,13 +101,14 @@ to enter native Plan mode without guessing.
 
 ## 2. PLAN
 
-Read `${CLAUDE_SKILL_DIR}/beats/plan.md` and follow it. Use native Plan mode and obtain approval. The
+Read `${CLAUDE_SKILL_DIR}/../beat-plan/SKILL.md`, then `${CLAUDE_SKILL_DIR}/beats/plan.md` for work's
+required plan schema and proportionality ceiling. Use native Plan mode and obtain approval. The
 PostToolUse persistence hook binds the exact generated plan bytes in the receipt and invalidates stale
 review state. Then obtain one independent whole-plan review bound to the same hash.
 
 **Gate:** the receipt-selected `planFile` and `planHash` form an approved artifact for workflow `work`.
 
-## 3. GOAL + WORK
+## 3. IMPLEMENT
 
 Read `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md` for its implementation/verification doctrine,
 then read `${CLAUDE_SKILL_DIR}/beats/goal-work.md` for this adapter's reconciliation and dispatch.
@@ -119,7 +119,8 @@ current plan task set before `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md` re
 
 ## 4. VERIFY
 
-Read `${CLAUDE_SKILL_DIR}/beats/verify.md` and follow it. The verifier is never the doer.
+Read `${CLAUDE_SKILL_DIR}/../beat-verify/SKILL.md`, then `${CLAUDE_SKILL_DIR}/beats/verify.md` for the
+dispatch payload and where each outcome goes. The verifier is never the doer.
 
 **Gate:** every current-plan task has a post-change independent verification round recorded in TaskList,
 all criteria pass, and the implementation `/goal` is cleared before human review.

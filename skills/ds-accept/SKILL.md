@@ -8,7 +8,7 @@ disable-model-invocation: true
 # DS acceptance — the human-review beat
 
 This is the human acceptance beat. It does not perform technical, methodological, or peer review; those
-belong to the VERIFY operation inside `ds-implement`.
+belong to `ds-verify`, which runs as an independent beat before this one.
 
 Read `${CLAUDE_SKILL_DIR}/../../skills/beat-review/SKILL.md` and follow it. It owns human-feedback
 capture, the task queue, dispositions, and the meaning of `REJECT:`.

@@ -143,7 +143,7 @@ For every compatibility task, require the agent to read all three aggregate inde
 - `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-common-conventions.md`
 - `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-analysis-constraints.md`
 - `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-engineering-constraints.md`
-- `${CLAUDE_SKILL_DIR}/../../skills/ds-implement/references/ds-checks.md`
+- `${CLAUDE_SKILL_DIR}/../../skills/ds-verify/references/ds-checks.md`
 
 Add the task-specific atomic constraint files named by those indexes. Require deterministic schema and join checks for engineering work; require assumption, specification, robustness, and standard-error checks when applicable for analysis work.
 

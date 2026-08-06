@@ -45,13 +45,24 @@ Load constraints before implementation:
 
 !`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts ${CLAUDE_SESSION_ID}`
 
-## Native plan contract
+```text
+CLARIFY → PLAN → IMPLEMENT → VERIFY → REVIEW
+```
+
+## 1. CLARIFY
 
 Clarify paper, audience, duration, proportions, visual expectations, outputs, and review evidence.
 Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and follow it — it owns the question set, the
 stop condition, and how confirmed intent is carried forward as evidence. The
 `clarify-before-recon-guard` hook enforces that clarification happens; the beat defines what it
-is, which is why the gate alone was not adoption. Then enter native Plan mode. The exact receipt-selected plan must contain these exact H2 headings:
+is, which is why the gate alone was not adoption.
+
+**Gate:** paper, audience, venue, duration, proportions, visual expectations, outputs, and review
+evidence are explicit enough to enter native Plan mode without guessing.
+
+## 2. PLAN
+
+Read `${CLAUDE_SKILL_DIR}/../beat-plan/SKILL.md`, then enter native Plan mode. The exact receipt-selected plan must contain these exact H2 headings:
 
 1. `## Presentation Intent`
 2. `## Audience, Venue, Duration, and Proportions`
@@ -63,7 +74,11 @@ is, which is why the gate alone was not adoption. Then enter native Plan mode. T
 
 After approval, retain the exact generated `planPath` and `planHash`; run `${CLAUDE_SKILL_DIR}/../workshop-plan-reviewer/SKILL.md`. A fresh reviewer must make the receipt state `APPROVED`. Never choose a plan by listing `.planning/` or infer a replacement name.
 
-## Implementation
+**Gate:** the receipt state is `APPROVED` for the exact generated `planPath` and `planHash`, set by a
+reviewer session distinct from the approving session, and every required H2 heading is present with a
+complete seven-column Slide Spec.
+
+## 3. IMPLEMENT
 
 **NO WORKFLOW WITHOUT AN AUTHENTICATE PRE-STEP AND A `--verify` POST-STEP.** Both
 workshop workflow scripts are pure control flow — the Workflow runtime forbids
@@ -133,7 +148,15 @@ is not authentication.
    It re-runs the strict receipt parse over `artifacts.receipt.text` itself, keeps the
    seven-column specifications pinned, produces both Typst deliverables, and gates both
    compilations. Its temporary section fragments are outside planning state.
-5. Verify the built deck independently — re-authenticate first (step 2 again), then:
+**Gate:** the compiled index reports no `violations` and `reviewStatus: "APPROVED"`, the
+authenticator exits 0 with `ok === true`, the beat preflight exits 0 with one task per SECTION plus
+the assembler and every written path declared, and `workshop-generate` gated both compilations.
+
+## 4. VERIFY
+
+Read `${CLAUDE_SKILL_DIR}/../beat-verify/SKILL.md`. The verifier is never the generator.
+
+1. Verify the built deck independently — re-authenticate first (IMPLEMENT step 2 again), then:
    ```text
    Workflow(name="workshop-verify", args={
      "projectDir": "<absolute project root>", "projectReal": <bundle.projectReal>,
@@ -143,7 +166,7 @@ is not authentication.
    })
    ```
    The verifier enumerates built slides and makes the PLAN-to-slide join semantically, without injecting a candidate menu. It applies the parser's Source Inventory whitelist after the join.
-6. Finalize each return value (post-step). Both workflows return `verifyRequired: true`
+2. Finalize each return value (post-step). Both workflows return `verifyRequired: true`
    and `driftVerified: false` — the verdict is provisional until the plan and receipt
    are re-snapshotted against the entry bundle. Write the return value to disk and run:
    ```bash
@@ -154,10 +177,23 @@ is not authentication.
    `finalPlanHash`, prepends a critical `artifact-integrity` finding, and forces
    `overallPass: false` with `verdict: "ISSUES FOUND (artifact drift)"`. Drift means the
    planning authority changed under the agents: re-authenticate and re-run, do not patch.
-6. If `overallPass` is false, fix reported findings and re-run selectively with the same path and hash. A replacement plan invalidates carry-forward review state. If true, proceed immediately to `${CLAUDE_SKILL_DIR}/../beat-review/SKILL.md` and record user dispositions in `.planning/HUMAN_REVIEW.md`.
 
 Read every gate from the **finalized** post-step output, never from the raw workflow
 return: `verifyRequired: true` means the drift check has not run and the verdict is not
 yet trustworthy.
+
+If `overallPass` is false, fix reported findings and re-run selectively with the same path and hash. A replacement plan invalidates carry-forward review state.
+
+**Gate:** the finalized post-step output reports `overallPass: true` with `driftVerified` and a
+non-zero `finalPlanHash` matching the entry bundle, and no `artifact-integrity` finding is present.
+
+## 5. REVIEW
+
+Read `${CLAUDE_SKILL_DIR}/../beat-review/SKILL.md` and record user dispositions in `.planning/HUMAN_REVIEW.md`. Route requested changes through `${CLAUDE_SKILL_DIR}/../workshop-revise/SKILL.md`, which re-enters VERIFY on the same authenticated plan identity.
+
+**Gate:** every disposition is recorded in `.planning/HUMAN_REVIEW.md`, the rendered deck and notes
+the user inspected are the current build, and no `REJECT:` remains.
+
+## Deliverables
 
 Typst deliverables remain `presentation/slides.typ`, `presentation/notes.typ`, and their rendered PDFs. Preserve F/T/R/A fidelity, seven-column Slide Spec semantics, unbiased joins, and both compile gates.

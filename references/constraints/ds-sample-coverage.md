@@ -69,7 +69,7 @@ with the 2018 start before implementation.
 
 ## Runtime verification
 
-`COV` is defined in `skills/ds-implement/references/ds-checks.md`. Implementation and independent
+`COV` is defined in `skills/ds-verify/references/ds-checks.md`. Implementation and independent
 review compute actual `min/max` on each date key and compare it with the immutable plan's required
 window. Any uncovered, undispositioned span is a high-confidence failure. Re-plan through native
 Plan mode if the approved coverage decision must change; never patch the immutable plan copy.
