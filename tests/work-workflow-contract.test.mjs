@@ -48,6 +48,46 @@ console.log('the adapter table covers every built-in workflow')
   ok('every adapter names its deliverables', blocks.every(b => /deliverables: '/.test(b)))
 }
 
+console.log('an EXTERNAL plugin may bring its own adapter; a built-in may not be handed one')
+{
+  // MEASURED 2026-08-06, the first time this spine was pointed at another plugin. `~/projects/teaching`
+  // publishes `.claude-plugin/workflow-policy.json` with `"workflow": "teaching"` — a schema-v2
+  // external identity, which is a SUPPORTED public extension surface — and the membership test
+  // refused it outright. External plugins cannot edit `work.js`, so "generic spine" meant "generic
+  // across the six workflows that ship beside it", which is a closed set with a table.
+  ok('an external identity is admitted', /const BUILT_IN = Object\.hasOwn\(ADAPTERS, WORKFLOW\)/.test(source))
+  ok('the adapter is selected by that flag', /const ADAPTER = BUILT_IN \? ADAPTERS\[WORKFLOW\] : cfg\.adapter/.test(source))
+
+  // THE ASYMMETRY IS THE SECURITY PROPERTY. If a caller could hand `dev` an adapter, it could hand
+  // it a review table with no security lens and no test-coverage lens and still be reported CLEAN —
+  // the caller would be choosing who audits it. The table is what forecloses that.
+  ok('a caller-supplied adapter for a BUILT-IN is refused',
+    /if \(BUILT_IN && cfg\.adapter !== undefined\)/.test(source) && /cannot choose who audits it/.test(source))
+
+  // The one shape an external adapter must never have: a REVIEW phase with no lens runs over
+  // nothing and still computes CLEAN, which looks reviewed and is not.
+  ok('an empty reviewLenses is rejected, and the message says why',
+    /reviewLenses must be a non-empty array — a REVIEW phase with no lens reviews nothing and still computes CLEAN/.test(source))
+  ok('every review lens must carry both key and ask', /nonEmptyString\(l\.key\) \|\| !nonEmptyString\(l\.ask\)/.test(source))
+  ok('deliverables, reviewSurfaces and verifyLenses are all required',
+    /adapter\.deliverables must be a non-empty string/.test(source)
+    && /adapter\.reviewSurfaces must be a non-empty string/.test(source)
+    && /adapter\.verifyLenses must be a non-empty array/.test(source))
+  // Empty is allowed HERE and nowhere else, and the message has to say which of the two it is.
+  ok('an absent mechanicalChecks is distinguished from a declared-empty one',
+    /empty is allowed — an empty list is a statement that the domain has no toolchain, an absent key is an omission/.test(source))
+
+  // ALL PROBLEMS AT ONCE. An external adapter is authored once and debugged through this message
+  // alone; throwing on the first missing field turns one fix into five round trips.
+  ok('every shape problem is collected before throwing', /problems\.join\('; '\)/.test(source))
+  ok('the throw distinguishes "supplied nothing" from "supplied something unusable"',
+    /cfg\.adapter === undefined \? 'must supply args\.adapter' : 'supplied an args\.adapter this spine cannot use'/.test(source))
+
+  // Schema v2 admits arbitrary strings, including `constructor`. Nothing indexes a table with the
+  // value any more, but an identity that appears in task names and report headings must look like one.
+  ok('an external identity must look like an identity', /\/\^\[a-z\]\[a-z0-9-\]\{0,63\}\$\/\.test\(WORKFLOW\)/.test(source))
+}
+
 console.log('the declared phases are the phases that run')
 {
   const declared = [...source.matchAll(/\{ title: '([^']+)'/g)].map(m => m[1])

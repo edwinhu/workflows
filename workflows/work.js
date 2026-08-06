@@ -146,7 +146,12 @@ const ADAPTERS = {
 // ── Inputs ──────────────────────────────────────────────────────────────────────────────────
 // args = {
 //   projectDir: "/abs/project",          // REQUIRED
-//   workflow:   "writing",               // REQUIRED — selects the adapter; must be a known key
+//   workflow:   "writing",               // REQUIRED — selects the adapter; a key of ADAPTERS, or
+//                                        //   an external identity /^[a-z][a-z0-9-]{0,63}$/
+//   adapter?:   { deliverables, reviewSurfaces, verifyLenses, mechanicalChecks, reviewLenses,
+//                 implementer?, implementWorkflow?, verifyWorkflow? },
+//                                        // REQUIRED for an EXTERNAL workflow, REFUSED for a
+//                                        //   built-in one — see the asymmetry note below
 //   planPath:   "/abs/.planning/<native-name>.md",  // REQUIRED — the receipt-selected plan
 //   planHash:   "<64 hex>",              // REQUIRED — the receipt's plan_hash, unaltered
 //   tasks: [{ id, name, work, writablePaths: [], acceptance }],  // REQUIRED — from the plan
@@ -168,15 +173,69 @@ const TASKS = Array.isArray(cfg.tasks) ? cfg.tasks : []
 // plan", no LLM guess. A caller missing one of these has not been through an approved PLAN, and
 // running anyway would launder an unapproved plan into a delegated implementation.
 if (!PROJECT) throw new Error('work requires args.projectDir')
-if (!Object.hasOwn(ADAPTERS, WORKFLOW)) {
-  throw new Error(`work requires args.workflow to be one of ${Object.keys(ADAPTERS).join('|')}; got ${JSON.stringify(cfg.workflow)}`)
+// THE TABLE IS CLOSED FOR THE SIX, AND OPEN FOR EVERYONE ELSE — AND THE ASYMMETRY IS THE SECURITY
+// PROPERTY. Measured 2026-08-06, the first time this spine was pointed at another plugin: the
+// `teaching` plugin publishes a schema-v2 `.claude-plugin/workflow-policy.json` with
+// `"workflow": "teaching"`, which is a supported public extension surface, and yet the old
+// membership test rejected it — so "generic spine" really meant "generic across the six workflows
+// that happen to ship in this repo", since no external plugin can edit this file. Hence: an
+// EXTERNAL workflow must supply its own adapter, and a BUILT-IN one may never be handed one. If a
+// caller could pass `{workflow: 'dev', adapter: {...}}` it could hand `dev` a review table with no
+// security lens and no test-coverage lens, and the run would still report CLEAN; the built-in
+// table is precisely the thing that stops a caller choosing who audits it. An external workflow
+// has no such table to subvert — it is bringing its own reviewers, not replacing ours.
+const BUILT_IN = Object.hasOwn(ADAPTERS, WORKFLOW)
+if (BUILT_IN && cfg.adapter !== undefined) {
+  throw new Error(`work refuses args.adapter for the built-in workflow ${JSON.stringify(WORKFLOW)} — its review lenses are fixed by the ADAPTERS table so a caller cannot choose who audits it`)
+}
+if (!BUILT_IN) {
+  // Schema v2 admits arbitrary strings for `workflow`, including `constructor` and `__proto__`.
+  // Nothing here indexes a table with the value any more, so this is not a prototype-pollution
+  // fix — it is the plainer requirement that an identity appearing in error text, task names and
+  // report headings has to look like an identity.
+  if (!/^[a-z][a-z0-9-]{0,63}$/.test(WORKFLOW)) {
+    throw new Error(`work requires args.workflow to be one of ${Object.keys(ADAPTERS).join('|')}, or an external workflow identity matching /^[a-z][a-z0-9-]{0,63}$/; got ${JSON.stringify(cfg.workflow)}`)
+  }
+  // COLLECT EVERY SHAPE PROBLEM, THEN THROW ONCE. An external adapter is authored once and then
+  // debugged through this error message alone; throwing on the first missing field turns a
+  // five-minute fix into five round trips through a workflow the author cannot step through.
+  const a = cfg.adapter
+  const problems = []
+  const nonEmptyString = v => typeof v === 'string' && v.trim() !== ''
+  if (!a || typeof a !== 'object' || Array.isArray(a)) {
+    problems.push('args.adapter must be an object')
+  } else {
+    if (!nonEmptyString(a.deliverables)) problems.push('adapter.deliverables must be a non-empty string naming what the plan produces')
+    if (!nonEmptyString(a.reviewSurfaces)) problems.push('adapter.reviewSurfaces must be a non-empty string naming what REVIEW reads')
+    if (!Array.isArray(a.verifyLenses) || !a.verifyLenses.length) problems.push('adapter.verifyLenses must be a non-empty array')
+    // Empty is allowed here and nowhere else: a domain with no toolchain (see the `work` entry)
+    // saying so explicitly is a statement, whereas an absent key is an omission we cannot tell
+    // apart from a forgotten one.
+    if (!Array.isArray(a.mechanicalChecks)) problems.push('adapter.mechanicalChecks must be an array (empty is allowed — an empty list is a statement that the domain has no toolchain, an absent key is an omission)')
+    if (!Array.isArray(a.reviewLenses) || !a.reviewLenses.length) {
+      problems.push('adapter.reviewLenses must be a non-empty array — a REVIEW phase with no lens reviews nothing and still computes CLEAN, which looks reviewed and is not')
+    } else {
+      a.reviewLenses.forEach((l, i) => {
+        if (!l || typeof l !== 'object' || !nonEmptyString(l.key) || !nonEmptyString(l.ask)) {
+          problems.push(`adapter.reviewLenses[${i}] must have a non-empty string key and a non-empty string ask`)
+        }
+      })
+    }
+  }
+  if (problems.length) {
+    // "must supply" ONLY WHEN NOTHING WAS SUPPLIED. The first version said it either way, so an
+    // author who passed a real adapter with one malformed lens was told to supply the thing they
+    // were looking at. Disclosed by the implementing agent rather than quietly left in.
+    const verb = cfg.adapter === undefined ? 'must supply args.adapter' : 'supplied an args.adapter this spine cannot use'
+    throw new Error(`work: external workflow ${JSON.stringify(WORKFLOW)} ${verb} — ${problems.join('; ')}`)
+  }
 }
 if (!PLAN_PATH || !/^[0-9a-f]{64}$/.test(PLAN_HASH)) {
   throw new Error('work requires args.planPath and a 64-hex args.planHash from .planning/.state/review.json — this workflow never discovers planning authority')
 }
 if (!TASKS.length) throw new Error('work requires a non-empty args.tasks from the approved plan')
 
-const ADAPTER = ADAPTERS[WORKFLOW]
+const ADAPTER = BUILT_IN ? ADAPTERS[WORKFLOW] : cfg.adapter
 const ONLY = Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length ? new Set(cfg.onlyChecks.map(String)) : null
 const CARRIED = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).map(r => [String(r.id), r]))
 

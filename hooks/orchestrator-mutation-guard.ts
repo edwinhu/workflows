@@ -63,6 +63,10 @@ const cwd = String(payload.cwd ?? process.cwd());
  */
 const governed = governedRoot(cwd);
 const projectDir = governed ?? cwd;
+// Set only on the ambient path, where the policy was DERIVED from an episode record rather than
+// declared by a skill. Empty on the skill-scoped path: being inside /dev IS the reason there, and
+// pointing that reader at episode-exit.ts would be advice to leave the workflow they just started.
+let ambientEpisodeHint = "";
 
 /**
  * Every write-capable tool, not just the two that were listed.
@@ -136,6 +140,28 @@ if (!policy) {
   }
   policy = workflowFromPlanningEvidence(governed, state.workflow);
   if (!policy) allow();                                  // identity genuinely unknown: never guess.
+  /**
+   * THE DENIAL HAS TO NAME THE WAY OUT, AND ON THIS PATH "DELEGATE" IS NOT IT.
+   *
+   * MEASURED 2026-08-06. This repo's own `episode.json` held `workflow: dev`, `exit: null`, a
+   * clarify stamp from 2026-08-03 and the session id of a session that had long since ended. An
+   * episode with no exit is in flight FOREVER, so the guard resolved `dev`, whose write surface is
+   * `.planning` + `.claude`, and refused every write to `workflows/` — in a repo whose entire
+   * purpose is the contents of `workflows/`.
+   *
+   * The refusal said "delegate all project mutations". A dispatched agent was delegated to, and was
+   * refused by this same plugin-wide hook with the same message, because the guard is not
+   * skill-scoped and has no subagent exemption. So the advice was not merely unhelpful, it was a
+   * loop: the only thing the message suggests is the thing that cannot work, and nothing on screen
+   * names `episode-exit.ts`, which is the sanctioned discharge.
+   *
+   * `episode-transition-gate` already learned this lesson — its denial names the exit script for
+   * exactly this reason. A guard whose failure mode is undiagnosable from inside is worse than a
+   * slightly wider one; that principle is written into this file's own Bash branch, and it applies
+   * here too.
+   */
+  const clarified = state.phases.clarified;
+  ambientEpisodeHint = ` The policy came from an in-flight episode recorded in .planning/.state/episode.json (workflow "${state.workflow}"${clarified ? `, clarified ${clarified}` : ""}${state.sessionId ? `, session ${state.sessionId}` : ""}). If that episode is over — a stale record from an earlier session pins this surface forever, because an episode with no exit is never not in flight — discharge it with: bun scripts/beat/episode-exit.ts --project ${governed} --reason abandoned. Delegating will NOT help: this guard is plugin-wide and refuses a dispatched agent identically.`;
 }
 // Modern workflows have one hidden, hook-owned receipt and one receipt-selected generated plan.
 // Visible predecessor artifacts are conversion input, never a second authority or a writable target.
@@ -224,14 +250,14 @@ if (WRITE_TOOLS.has(tool)) {
     // A hard link or symlink escape reaches here too; naming the permitted directories for a file
     // that is already inside one reads as a permitted-list bug whose obvious fix reopens the escape.
     if (!allowedPath(target)) deny(aliasRejectionReason(projectDir, target)
-      ?? "DELEGATION VIOLATION: main chat may only Write/Edit canonical paths under .planning or .claude; delegate all project mutations.");
+      ?? `DELEGATION VIOLATION: main chat may only Write/Edit canonical paths under .planning or .claude; delegate all project mutations.${ambientEpisodeHint}`);
   } else {
     const path = String(target ?? "");
     const ext = [".py", ".ipynb", ".R", ".r", ".sas", ".sql", ".qmd"];
     // Administrative locations are compatibility exceptions, never permission to write analysis code.
     if (ext.some(suffix => path.endsWith(suffix))) deny("Iron Law: no analysis code in main chat. Use the shared ready-wave implementation workflow.");
     if (!allowedPath(path)) deny(aliasRejectionReason(projectDir, path)
-      ?? "Orchestrator mutation enforcement: use delegated implementation for non-planning project mutations.");
+      ?? `Orchestrator mutation enforcement: use delegated implementation for non-planning project mutations.${ambientEpisodeHint}`);
   }
   allow();
 }
