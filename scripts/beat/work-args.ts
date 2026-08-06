@@ -23,7 +23,15 @@
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { validateApprovedArtifact } from "../../workflows/lib/approved-artifact.ts";
+import { validateApprovedArtifact, validateGeneratedPlanArtifact } from "../../workflows/lib/approved-artifact.ts";
+
+/**
+ * The six identities `validateApprovedArtifact` treats as built-in. Restated here rather than
+ * imported because the library does not export the set, and getting it wrong is loud: a built-in
+ * routed to the external validator loses the descriptor-ambiguity check, and an external routed to
+ * the built-in one is refused with `unknown-workflow`.
+ */
+const BUILT_IN = new Set(["ds", "dev", "work", "writing", "workshop", "workflow-creator"]);
 
 const argv = Bun.argv.slice(2);
 const positional = argv.filter(value => !value.startsWith("--"));
@@ -73,7 +81,23 @@ if (receiptPeek !== null && receiptPeek !== workflow) {
   refuse(`receipt identity disagreement: you asked for "${workflow}" but .planning/.state/review.json binds "${receiptPeek}". Every implementer gate compares against the receipt, so this episode would be enforced as "${receiptPeek}" whatever you pass here. The receipt is written once at ExitPlanMode and never corrected, so the fix is a fresh approval under the right workflow — not a different argument.`);
 }
 
-const artifact = validateApprovedArtifact(projectDir, workflow, session);
+/**
+ * AN EXTERNAL WORKFLOW TAKES A DIFFERENT VALIDATOR, AND SENDING IT TO THE WRONG ONE LOOKS LIKE A
+ * MISSING RECEIPT.
+ *
+ * MEASURED 2026-08-06 against a real `teaching` receipt — `workflow: "teaching"`, status APPROVED,
+ * hash matching the plan's bytes. `validateApprovedArtifact` refused it with `unknown-workflow —
+ * external workflows require an explicit approval policy`, because that function's descriptor
+ * parameter is the schema-1 FIXED-artifact policy (planPath/metadataPath/verdictPath) and a
+ * schema-2 generated-plan plugin has none. There was nothing wrong with the receipt at all.
+ *
+ * `validateGeneratedPlanArtifact` is the entry for exactly this case — it is what the teaching
+ * plugin's own gate calls (`hooks/native-workflow.ts:155`), through the same published capability.
+ * Dispatching on identity is all that was missing.
+ */
+const artifact = BUILT_IN.has(workflow)
+  ? validateApprovedArtifact(projectDir, workflow, session)
+  : validateGeneratedPlanArtifact(projectDir, workflow, session);
 // `ArtifactError` is `{ code, message }` — the same discriminant `isError` uses inside the library.
 // Testing for a `.error` key instead (the first spelling of this) made EVERY refusal fall through
 // to the success path and crash on `approved.receipt.workflow`, so a project with no receipt at all
