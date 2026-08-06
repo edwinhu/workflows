@@ -65,22 +65,32 @@ function boundPlanFile(receiptPath: string): string | typeof NOTHING_BOUND | typ
  * `RETIRED_MODERN_ARTIFACTS` (`hooks/orchestrator-mutation-guard.ts:18`) and every ad-hoc note a
  * user keeps there, and the cost of a false positive here is a blocked turn.
  */
-const NATIVE_PLAN_NAME = /^[a-z]+-[a-z]+-[a-z]+\.md$/;
+export const NATIVE_PLAN_NAME = /^[a-z]+-[a-z]+-[a-z]+\.md$/;
 
 /**
- * A `.planning/` holding a LEGACY LEDGER is not a modern episode, and must never be judged as one.
- *
- * This repo's own `.planning/` is the case that forces the rule: it carries `SPEC.md`,
- * `HYPOTHESES.md`, `MINI.md`, `STATE.md`, `DEV_CLARIFIED.json` and friends from the pre-receipt era
- * — AND `snoopy-prancing-cookie.md`. Those files are preserved as provenance and are conversion
- * input, never authority (`orchestrator-mutation-guard.ts:16-17`), so a plan name sitting among them
- * says nothing about whether a modern approval was skipped.
+ * A LEGACY LEDGER is a pre-receipt artifact, and it is not a generated plan.
  *
  * Detected by leading capital rather than by enumerating `RETIRED_MODERN_ARTIFACTS`, because the
  * ledger family was never closed — `MINI-tasklist-2026-07-29.md`, `REVIEW-slice1-*.md` and the
  * `<X>_CLARIFIED.json` sentinel family are all outside that set — while the shared convention (a
  * SHOUTING basename for a visible ledger, lowercase for everything the modern flow writes) holds
- * across all of them. It errs toward silence, which is the only safe direction here.
+ * across all of them.
+ *
+ * THIS USED TO BE A WHOLE-DIRECTORY KILL SWITCH, AND THAT IS HOW THE CHECK DIED.
+ *   It was applied with `entries.some(...)`: ONE capitalised filename anywhere in `.planning/`
+ *   returned `null` and silenced the predicate completely. Measured 2026-08-06 against this
+ *   repository's own `.planning/`, which holds `ACTIVE_WORKFLOW.md` and `SPEC.md` — the check read
+ *   `null` LIVE. The turn-end safety net for a hand-written plan was dead in the repo that owns it,
+ *   and stayed dead through the `/writing` episode it exists to catch. A `README.md` would have done
+ *   it just as well in anyone else's project.
+ *
+ *   The reasoning behind the switch — "a plan name sitting among ledgers says nothing about whether
+ *   a modern approval was skipped" — is not wrong about ledgers, it is wrong about NEIGHBOURS. A
+ *   capitalised sibling is not evidence that a lowercase plan-shaped file beside it is legitimate.
+ *
+ * So it is a PER-ENTRY filter, which is what it always claimed to be. It is subsumed by
+ * `NATIVE_PLAN_NAME` today — nothing matching that regex can start with a capital — and is kept
+ * applied explicitly so the rule survives any future widening of the name pattern.
  */
 function isLegacyLedger(name: string): boolean {
   return /^[A-Z]/.test(name);
@@ -90,8 +100,8 @@ function isLegacyLedger(name: string): boolean {
  * The unbound plan's basename, or `null` when there is nothing to say.
  *
  * `null` when: `.planning` is absent, is a symlink, or is not a directory; a receipt binds the only
- * plan-shaped file (or is unreadable); the directory holds a legacy ledger; no entry matches the
- * plan shape; or anything at all throws.
+ * plan-shaped file (or is unreadable); no entry matches the plan shape; or anything at all throws.
+ * A legacy ledger beside a plan-shaped file is NOT a reason for `null` — see `isLegacyLedger`.
  * A symlinked `.planning` or a symlinked candidate is refused rather than followed, on the same
  * grounds as `hasReceiptSurface` — an alias is the documented route around a filesystem predicate.
  */
@@ -127,10 +137,8 @@ export function unboundGeneratedPlan(projectDir: string): string | null {
     return null;
   }
 
-  if (entries.some(entry => isLegacyLedger(entry.name))) return null;
-
   const plans = entries
-    .filter(entry => entry.isFile() && NATIVE_PLAN_NAME.test(entry.name))
+    .filter(entry => entry.isFile() && !isLegacyLedger(entry.name) && NATIVE_PLAN_NAME.test(entry.name))
     .map(entry => entry.name)
     .filter(name => name !== bound)
     .sort();

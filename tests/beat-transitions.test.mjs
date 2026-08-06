@@ -352,6 +352,107 @@ console.log('governance adoption is a one-way door: creation only, exact content
   ok('an ordinary project file is still denied', guard(project({ governed: null }), 'x', 'src/a.ts') === 'DENY')
 }
 
+console.log('the native-plan namespace is not a writable orchestrator surface')
+{
+  // THE SHORTCUT THIS CLOSES, MEASURED 2026-08-06 IN THE FIRST END-TO-END `/writing` RUN. Zero
+  // `EnterPlanMode` calls, zero `ExitPlanMode` calls — and a plan document produced by `Write`ing
+  // `.planning/ancient-doodling-meerkat.md`, a filename in native Plan mode's OWN namespace. The
+  // episode then proceeded as though it had planned. `approved-artifact-persist` only writes a
+  // receipt on an OBSERVED `ExitPlanMode`, so no receipt could exist; `approved-artifact-gate`
+  // correctly refused every implementer; and the episode had no way forward. A deadlock reached by
+  // taking a shortcut the guard permitted.
+  //
+  // `.planning` is an allowed orchestrator directory for all six workflows and must stay one — the
+  // beats write real notes there. What may not be written is the ONE name shape that the approval
+  // machinery itself generates and that `unboundGeneratedPlan` later looks for.
+  const write = (root, file, extra = {}) => execFileSync(
+    'bun', [join(ROOT, 'hooks', 'orchestrator-mutation-guard.ts'), '--workflow', 'writing'],
+    { cwd: root, encoding: 'utf8', input: JSON.stringify({ tool_name: 'Write', cwd: root, tool_input: { file_path: file, content: '# Plan\n' }, ...extra }) },
+  )
+  const root = project({ governed: true })
+
+  const denied = write(root, '.planning/ancient-doodling-meerkat.md')
+  ok('a native-plan-shaped filename is denied', denied.includes('"deny"'))
+  // THE DENIAL'S WORDING IS ITSELF A REVIEW SURFACE. It is the only thing standing between the
+  // reader and the deadlock above, so it must name the move that actually works.
+  ok('and the denial names ExitPlanMode as the way to create one', denied.includes('ExitPlanMode'), denied)
+
+  ok('an ordinary note in .planning is still permitted', !write(root, '.planning/notes.md').includes('"deny"'))
+  ok('a two-word lowercase note is still permitted', !write(root, '.planning/two-words.md').includes('"deny"'))
+  ok('a four-word name is not the native shape', !write(root, '.planning/four-word-name-here.md').includes('"deny"'))
+  ok('a plan-shaped name OUTSIDE .planning is not this rule\'s business',
+    !write(root, '.claude/ancient-doodling-meerkat.md').includes('"deny"'))
+
+  // PLAN MODE MUST STILL BE ABLE TO WRITE THE REAL ONE. With `plansDirectory: "./.planning"` — the
+  // precondition for the whole receipt chain (`scripts/ensure-plans-directory.ts`) — the genuine
+  // generated plan is written by the model INTO this directory while `permission_mode` is `plan`.
+  // Denying that would not close the shortcut, it would close the legitimate route and leave the
+  // shortcut as the only one.
+  ok('plan mode may still write the genuine generated plan',
+    !write(root, '.planning/ancient-doodling-meerkat.md', { permission_mode: 'plan' }).includes('"deny"'))
+
+  // Every write-capable tool, not just `Write`: editing an approved plan after the fact is the same
+  // forgery, and `MultiEdit`/`NotebookEdit` were both once absent from this guard's tool set.
+  const edited = execFileSync('bun', [join(ROOT, 'hooks', 'orchestrator-mutation-guard.ts'), '--workflow', 'writing'], {
+    cwd: root, encoding: 'utf8',
+    input: JSON.stringify({ tool_name: 'Edit', cwd: root, tool_input: { file_path: '.planning/ancient-doodling-meerkat.md' } }),
+  })
+  ok('Edit on the native-plan namespace is denied too', edited.includes('"deny"'))
+
+  // `ds` takes a different branch through the guard and must not be the way around it.
+  const ds = execFileSync('bun', [join(ROOT, 'hooks', 'orchestrator-mutation-guard.ts'), '--workflow', 'ds'], {
+    cwd: root, encoding: 'utf8',
+    input: JSON.stringify({ tool_name: 'Write', cwd: root, tool_input: { file_path: '.planning/ancient-doodling-meerkat.md', content: '# Plan\n' } }),
+  })
+  ok('the ds branch denies it as well', ds.includes('"deny"') && ds.includes('ExitPlanMode'), ds)
+
+  // THE RESIDUE, AND WHY IT IS ACCEPTABLE — raised by the codex adapter on this diff. The plan-mode
+  // exemption proves only that the session is IN Plan mode, not that Claude Code is persisting an
+  // approved plan: an actor can `EnterPlanMode`, write the file, and never call `ExitPlanMode`. T1
+  // cannot close that without closing the legitimate route and leaving the shortcut as the only one.
+  //
+  // What closes it is the OTHER half of this release. The forged file has no receipt, so the
+  // turn-end gate names it and refuses — the shortcut becomes LOUD instead of silent, which is the
+  // whole intent. The `SPEC.md` beside it is deliberate: before T2 it would have silenced this
+  // entirely, which is exactly how the check came to be dead in this repository.
+  const forged = project({ governed: true, episode: { ...OWED, reviewOwed: false } })
+  writeFileSync(join(forged, '.planning', 'ancient-doodling-meerkat.md'), '# Plan\n')
+  writeFileSync(join(forged, '.planning', 'SPEC.md'), 'a legacy ledger\n')
+  const refusal = JSON.parse(hook('episode-transition-gate.ts', forged, { stop_hook_active: false, cwd: forged }))
+  ok('a plan-mode write with no ExitPlanMode is caught at turn end', refusal.decision === 'block')
+  ok('and the refusal names the forged file', refusal.reason.includes('ancient-doodling-meerkat.md'), refusal.reason)
+
+  // THE AMBIENT PATH — no `--workflow`, identity derived from the episode record. Both cases below
+  // were found by the gemini adapter on this diff and reproduced before fixing.
+  const ambient = (root, cwd, file, extra = {}) => execFileSync(
+    'bun', [join(ROOT, 'hooks', 'orchestrator-mutation-guard.ts')],
+    { cwd: root, encoding: 'utf8', input: JSON.stringify({ tool_name: 'Write', cwd, tool_input: { file_path: file, content: 'x' }, ...extra }) },
+  ).includes('"deny"') ? 'DENY' : 'ALLOW'
+
+  // NO EPISODE YET IS NOT PERMISSION TO FORGE. The ambient path stands down without an in-flight
+  // episode — correctly, since there is no delegation boundary to enforce — and that `allow()` ran
+  // BEFORE the forgery check. Forging the plan before CLARIFY has happened is the easiest version of
+  // the same shortcut, so the one denial that does not depend on knowing the workflow is made first.
+  const noEpisode = project({ governed: true })
+  ok('forging with no episode recorded is still denied', ambient(noEpisode, noEpisode, '.planning/ancient-doodling-meerkat.md') === 'DENY')
+  ok('and an ordinary project edit with no episode is still untouched', ambient(noEpisode, noEpisode, 'src/app.ts') === 'ALLOW')
+  ok('and plan mode may still write the real plan with no episode',
+    ambient(noEpisode, noEpisode, '.planning/ancient-doodling-meerkat.md', { permission_mode: 'plan' }) === 'ALLOW')
+  const unmarked = project({ governed: null })
+  ok('an UNGOVERNED project is untouched by the ambient path, forgery included',
+    ambient(unmarked, unmarked, '.planning/ancient-doodling-meerkat.md') === 'ALLOW')
+
+  // THE SESSION cwd IS A SUBDIRECTORY WHENEVER THE USER OPENED THE PROJECT FROM ONE, and every path
+  // judgement was made against it. `<root>/.planning/notes.md` relativized to `../.planning/...`,
+  // failed containment, and was DENIED — the orchestrator could not write its own planning notes.
+  const sub = project({ governed: true, episode: { ...OWED, reviewOwed: false } })
+  const nested = join(sub, 'src', 'deep')
+  mkdirSync(nested, { recursive: true })
+  ok('a legitimate .planning write from a subdirectory is permitted', ambient(sub, nested, join(sub, '.planning', 'notes.md')) === 'ALLOW')
+  ok('and the forgery is still denied from there', ambient(sub, nested, join(sub, '.planning', 'ancient-doodling-meerkat.md')) === 'DENY')
+  ok('and an ordinary project file from there is still denied', ambient(sub, nested, join(nested, 'app.ts')) === 'DENY')
+}
+
 console.log('exit discharges the debt, records why, and never launders it')
 {
   const root = project({ governed: true, episode: OWED })

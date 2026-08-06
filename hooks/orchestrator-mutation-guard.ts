@@ -5,6 +5,7 @@ import { aliasRejectionReason, allowedNativePlanPath, hasUnsafeCompoundCommand, 
 import { GOVERNANCE_MARKER, governedRoot } from "./lib/governance-marker.ts";
 import { classifyBashMutation } from "./_bash_mutation.ts";
 import { readEpisodeState } from "./lib/episode-state.ts";
+import { NATIVE_PLAN_NAME } from "./lib/unbound-plan.ts";
 import { workflowFromArg, workflowFromPlanningEvidence } from "./_workflow_policies.ts";
 import { allow, deny, denyOnCrash, readPayload } from "./_gate_common.ts";
 
@@ -45,17 +46,95 @@ const cwd = String(payload.cwd ?? process.cwd());
  *   `work` the way `workflowFromPlanningEvidence` does with no evidence, or every governed project
  *   with no episode would start denying ordinary edits.
  */
+/**
+ * EVERY PATH JUDGEMENT IS MADE AGAINST THE GOVERNED ROOT, NOT THE SESSION DIRECTORY.
+ *
+ * `projectRelativePath(cwd, ...)` answers about `cwd`, and Claude Code reports the SESSION cwd —
+ * which is a subdirectory whenever the user opened the project from one. Measured on this diff by
+ * the gemini adapter and reproduced: from `<root>/src`, a write to `<root>/.planning/notes.md`
+ * relativizes to `../.planning/notes.md`, fails containment, and is DENIED as a delegation
+ * violation. The orchestrator could not write its own planning notes, and the denial named the
+ * permitted directories for a file that was already inside one — a message whose obvious fix
+ * reopens the escape.
+ *
+ * `episode-phase` already made exactly this correction for exactly this reason; two hooks disagreeing
+ * about where the project is, is how a governed episode ends up half-enforced.
+ * `?? cwd` keeps every ungoverned and every skill-scoped-in-an-unmarked-project case unchanged.
+ */
+const governed = governedRoot(cwd);
+const projectDir = governed ?? cwd;
+
+/**
+ * Every write-capable tool, not just the two that were listed.
+ *
+ * `MultiEdit` and `NotebookEdit` were both absent, so both fell past this branch to the final
+ * `allow()` — main chat could edit any project file by reaching for either. Three sibling hooks
+ * (`writing-precis-guard`, `workshop-phase-gate-guard`, `cite-fidelity-lint`) already matched
+ * MultiEdit; this one and `implementer-identity-gate` were the two that did not.
+ */
+const WRITE_TOOLS = new Set(["Write", "Edit", "MultiEdit", "NotebookEdit"]);
+// NotebookEdit names its target `notebook_path`; every other write tool uses `file_path`.
+const target = tool === "NotebookEdit" ? input.notebook_path : input.file_path;
+
+/**
+ * FORGING A GENERATED PLAN: writing the approval machinery's OWN filename shape into `.planning/`.
+ *
+ * MEASURED 2026-08-06, IN THE FIRST END-TO-END `/writing` RUN THIS REPO HAS EVER HAD. Zero
+ * `EnterPlanMode` calls, zero `ExitPlanMode` calls — and a plan document produced by `Write`ing
+ * `.planning/ancient-doodling-meerkat.md`, three lowercase words in native Plan mode's own
+ * namespace. The episode then proceeded as though it had planned. `approved-artifact-persist` only
+ * writes a receipt on an OBSERVED `ExitPlanMode` (`approved-artifact-persist.ts:40`), so no receipt
+ * could exist; `approved-artifact-gate` then correctly refused every implementer; and nothing told
+ * the episode to go back. A deadlock, reached entirely through moves this guard permitted.
+ *
+ * WHY THE WHOLE DIRECTORY IS NOT CLOSED. `.planning` is an allowed orchestrator directory for all
+ * six workflows and must stay one: the beats write real notes there. The one thing that may not be
+ * written is the name shape the approval machinery generates and that `unboundGeneratedPlan` later
+ * looks for — because a file with that name asserts an approval that never happened.
+ *
+ * `NATIVE_PLAN_NAME` IS IMPORTED, NEVER RESTATED. The write gate and the turn-end detector must
+ * recognise the same shape; two copies of a regex is how they drift apart, and a drift here means
+ * the gate denies a name the detector ignores, or worse, the reverse.
+ *
+ * PLAN MODE IS EXEMPT, AND THAT IS THE POINT RATHER THAN A HOLE. With `plansDirectory:
+ * "./.planning"` — the precondition for the entire receipt chain
+ * (`scripts/ensure-plans-directory.ts`) — the GENUINE generated plan is written into this directory
+ * by the model while `permission_mode` is `plan`. Denying that would close the legitimate route and
+ * leave the shortcut as the only one. `allowedNativePlanPath` cannot answer this: it authorizes
+ * `~/.claude/plans` only, which is the layout a governed project deliberately does not use.
+ *
+ * The residue — enter Plan mode, write the file, never call `ExitPlanMode` — is closed at the other
+ * end: no receipt binds it, so `unboundGeneratedPlan` names it and the turn-end gate refuses. The
+ * shortcut becomes LOUD rather than silent, which is all this pair was ever able to promise.
+ */
+function refuseGeneratedPlanForgery(): void {
+  if (!WRITE_TOOLS.has(tool) || payload.permission_mode === "plan") return;
+  const relative = projectRelativePath(projectDir, target);
+  if (!relative) return;
+  const segments = relative.split("/");
+  if (segments.length !== 2 || segments[0] !== ".planning" || !NATIVE_PLAN_NAME.test(segments[1])) return;
+  deny(`APPROVAL VIOLATION: ${relative} is a native generated-plan filename, and writing one by hand asserts an approval that never happened. A plan is created by planning: enter Plan mode and approve it with ExitPlanMode, which is the only event that writes the receipt every implementer gate reads. Ordinary notes in .planning are fine — just not this name shape.`);
+}
+
 const argv = Bun.argv.slice(2);
 let policy = workflowFromArg(argv);
 if (!policy && argv.includes("--workflow")) {
   deny("Orchestrator mutation guard requires exactly one known --workflow ds|dev|writing|workshop|workflow-creator policy.");
 }
 if (!policy) {
-  const root = governedRoot(cwd);
-  if (root === undefined) allow();                       // ungoverned project: untouched.
-  const state = readEpisodeState(root);
-  if (state === null || state.exit) allow();             // no in-flight episode: nothing to bound.
-  policy = workflowFromPlanningEvidence(root, state.workflow);
+  if (governed === undefined) allow();                    // ungoverned project: untouched.
+  const state = readEpisodeState(governed);
+  if (state === null || state.exit) {
+    // NO IN-FLIGHT EPISODE MEANS NO DELEGATION BOUNDARY TO ENFORCE — BUT THE PLAN NAMESPACE IS NOT
+    // PART OF THAT BOUNDARY. Found by the gemini adapter on this diff and reproduced: a governed
+    // project whose episode has not been recorded yet (CLARIFY has not happened, or the episode
+    // exited) fell straight to `allow()` and the forgery check below was never reached. Forging the
+    // plan BEFORE the episode exists is the easiest version of the same shortcut, so the one denial
+    // that does not depend on knowing which workflow this is, is made before standing down.
+    refuseGeneratedPlanForgery();
+    allow();
+  }
+  policy = workflowFromPlanningEvidence(governed, state.workflow);
   if (!policy) allow();                                  // identity genuinely unknown: never guess.
 }
 // Modern workflows have one hidden, hook-owned receipt and one receipt-selected generated plan.
@@ -83,7 +162,7 @@ function allowedPath(raw: unknown): boolean {
   // projectRelativePath canonicalizes every ancestor and the leaf and rejects hardlink aliasing;
   // the previous `safeProjectPath(...).slice(cwd.length + 1)` reasoned about an uncanonicalized
   // string. Schema-v2 routing (origin/main) selects the generated-plan layout by approvalMode.
-  const relative = projectRelativePath(cwd, raw);
+  const relative = projectRelativePath(projectDir, raw);
   if (!relative) return false;
   // Fixed schema-v1 external workflows retain their descriptor-declared legacy artifact layout.
   const generatedPlan = policy.approvalMode !== "external-fixed-v1";
@@ -132,33 +211,26 @@ function adoptsGovernance(target: unknown, content: unknown): boolean {
   return Object.keys(marker).length === 2 && marker.schemaVersion === 1 && marker.governed === true;
 }
 
-/**
- * Every write-capable tool, not just the two that were listed.
- *
- * `MultiEdit` and `NotebookEdit` were both absent, so both fell past this branch to the final
- * `allow()` — main chat could edit any project file by reaching for either. Three sibling hooks
- * (`writing-precis-guard`, `workshop-phase-gate-guard`, `cite-fidelity-lint`) already matched
- * MultiEdit; this one and `implementer-identity-gate` were the two that did not.
- */
-const WRITE_TOOLS = new Set(["Write", "Edit", "MultiEdit", "NotebookEdit"]);
 if (WRITE_TOOLS.has(tool)) {
-  // NotebookEdit names its target `notebook_path`; every other write tool uses `file_path`.
-  const target = tool === "NotebookEdit" ? input.notebook_path : input.file_path;
   if (payload.permission_mode === "plan" && allowedNativePlanPath(target)) allow();
   // Only `Write`. `Edit`/`MultiEdit` on the marker are modifications by definition, and
   // `NotebookEdit` cannot produce this file at all.
   if (tool === "Write" && adoptsGovernance(target, input.content)) allow();
+  // BEFORE the ds/non-ds split, because both branches reach `allowedPath` and both would otherwise
+  // admit the forgery — and because this denial has to name the remedy, which the generic
+  // delegation messages below cannot.
+  refuseGeneratedPlanForgery();
   if (policy.workflow !== "ds") {
     // A hard link or symlink escape reaches here too; naming the permitted directories for a file
     // that is already inside one reads as a permitted-list bug whose obvious fix reopens the escape.
-    if (!allowedPath(target)) deny(aliasRejectionReason(cwd, target)
+    if (!allowedPath(target)) deny(aliasRejectionReason(projectDir, target)
       ?? "DELEGATION VIOLATION: main chat may only Write/Edit canonical paths under .planning or .claude; delegate all project mutations.");
   } else {
     const path = String(target ?? "");
     const ext = [".py", ".ipynb", ".R", ".r", ".sas", ".sql", ".qmd"];
     // Administrative locations are compatibility exceptions, never permission to write analysis code.
     if (ext.some(suffix => path.endsWith(suffix))) deny("Iron Law: no analysis code in main chat. Use the shared ready-wave implementation workflow.");
-    if (!allowedPath(path)) deny(aliasRejectionReason(cwd, path)
+    if (!allowedPath(path)) deny(aliasRejectionReason(projectDir, path)
       ?? "Orchestrator mutation enforcement: use delegated implementation for non-planning project mutations.");
   }
   allow();

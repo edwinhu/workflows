@@ -80,9 +80,25 @@ const EPISODE = JSON.stringify({
   check('no .planning at all', noPlanning, null)
 }
 
-// THIS REPOSITORY, READ LIVE. `snoopy-prancing-cookie.md` sits beside SPEC.md, HYPOTHESES.md,
-// MINI.md and the rest of the pre-receipt ledgers. Legacy provenance is not an unbound plan.
-check("this repo's own legacy .planning (read live)", ROOT, null)
+// THIS REPOSITORY, READ LIVE — AND THE ROW THAT FLIPPED.
+//
+// It used to assert `null` on the grounds that `snoopy-prancing-cookie.md` sits beside SPEC.md,
+// HYPOTHESES.md and the rest of the pre-receipt ledgers, so the directory was "legacy". That
+// reasoning is exactly the kill switch T2 removed: `.planning/` is gitignored here, so its contents
+// are one developer's local residue rather than repo provenance, and no assertion about a specific
+// filename would hold in a fresh clone (which has no `.planning/` at all and reads `null`).
+//
+// So the live row now asserts the SHAPE of the answer rather than a value, and PRINTS what it got.
+// That printout is the record: it is what "the check is live in this repo again" is verified by.
+{
+  const live = unboundGeneratedPlan(ROOT)
+  const good = live === null || /^[a-z]+-[a-z]+-[a-z]+\.md$/.test(live)
+  if (good) PASS++
+  else { FAIL++; console.log(`FAIL  this repo, read live — got ${JSON.stringify(live)}`) }
+  rows.push(["this repo's own .planning (read live)", live === null ? '(silent)' : live, good ? 'ok' : 'FAIL'])
+  // A named plan here costs ONE bounded refusal at turn end (MAX_PLAN_BINDING_BLOCKS), dischargeable
+  // with `scripts/beat/episode-exit.ts`. That is the check working, not the check misfiring.
+}
 
 // THE ALIAS ROUTE, refused rather than followed — the same route `hasReceiptSurface` guards.
 {
@@ -120,11 +136,28 @@ check("this repo's own legacy .planning (read live)", ROOT, null)
   })
   check('two plan-shaped files: the answer is stable, not arbitrary', two.root, 'compressed-riding-mitten.md')
 
-  const legacyBeside = shape('a plan beside ONE retired ledger is legacy, not unbound', (_root, planning) => {
+  // ONE CAPITALISED FILE USED TO SILENCE THIS ENTIRE CHECK, AND THAT IS HOW IT DIED.
+  // `isLegacyLedger` was applied to EVERY entry as a whole-directory kill switch: a single `SPEC.md`,
+  // `README.md` or `ACTIVE_WORKFLOW.md` anywhere in `.planning/` returned `null` and the predicate
+  // said nothing about anything. Measured 2026-08-06 against this repository's own `.planning/`,
+  // which holds `ACTIVE_WORKFLOW.md` and `SPEC.md`: the check read `null` LIVE — the turn-end safety
+  // net for a hand-written plan was dead in the very repo that owns it, and stayed dead through the
+  // `/writing` episode it was built to catch.
+  //
+  // A capitalised sibling is not evidence that a lowercase plan-shaped file is legitimate. The
+  // suppression is now a per-entry filter, which is what it always claimed to be.
+  const legacyBeside = shape('a plan beside a retired ledger is still unbound', (_root, planning) => {
     file(planning, 'snoopy-prancing-cookie.md')
     file(planning, 'SPEC.md')
   })
-  check('a plan beside ONE retired ledger is legacy, not unbound', legacyBeside.root, null)
+  check('a plan beside a retired ledger is still unbound', legacyBeside.root, 'snoopy-prancing-cookie.md')
+
+  const onlyLedgers = shape('a .planning of ledgers ALONE is still silent', (_root, planning) => {
+    file(planning, 'SPEC.md')
+    file(planning, 'ACTIVE_WORKFLOW.md')
+    file(planning, 'MINI-tasklist-2026-07-29.md')
+  })
+  check('a .planning of ledgers ALONE is still silent', onlyLedgers.root, null)
 
   // AN UNPARSEABLE RECEIPT STAYS SILENT, AND THAT IS A CHOICE. It is already `blocked` for
   // `implementer-identity-gate`, which is where it is reported and where the cost is understood.
