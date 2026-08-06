@@ -82,7 +82,7 @@ test("exact match and 'all'", () => {
 
 test("reverse inheritance is gone; family scope is opt-in via -*", () => {
   expect(skillMatches(["ds-implement"], "ds")).toBe(false);
-  expect(skillMatches(["dev-review", "dev-verify"], "dev")).toBe(false);
+  expect(skillMatches(["dev-verify", "dev-accept"], "dev")).toBe(false);
   expect(skillMatches(["ds"], "ds-plan")).toBe(false);
   expect(skillMatches(["ds-*"], "ds")).toBe(true);
   expect(skillMatches(["ds-*"], "ds-implement")).toBe(true);

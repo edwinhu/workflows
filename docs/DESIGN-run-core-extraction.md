@@ -366,7 +366,7 @@ the birther converges to it, never keeps a parallel copy.** Concretely, after `r
   (the 3 functions `gateProbe`/`implementerPrompt`/`recheckTrigger`) + a `<domain>_compile.py` skeleton
   that **splices `run-core.js` + the fragment** (the §2 splice contract). So a newly-birthed workflow
   points at the shared `run-core.js`, identical to ds/dev.
-- wc-audit's P22–P26 checks then assert "splices run-core.js" rather than "matches the template body."
+- workflow-creator-verify's P22–P26 checks then assert "splices run-core.js" rather than "matches the template body."
 
 **Sequencing:** this is an **immediate follow-up** after `run-core.js` lands on origin, **co-owned with
 wc-creator-review**, who is (correctly) holding all birther-template-body hardening until then to avoid

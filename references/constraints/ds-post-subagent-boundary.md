@@ -1,7 +1,7 @@
 ---
 name: post-subagent-boundary
 description: After an agent returns, the DS orchestrator verifies from returned reports, the approved PLAN, and project auto-memory — never by investigating source or data
-applies-to: [ds, ds-fix, ds-implement, ds-review, ds-delegate]
+applies-to: [ds, ds-fix, ds-implement, ds-accept, ds-delegate]
 ---
 
 <EXTREMELY-IMPORTANT>
@@ -10,7 +10,7 @@ applies-to: [ds, ds-fix, ds-implement, ds-review, ds-delegate]
 
 **After ANY task agent returns, the DS orchestrator MUST NOT read source files, notebooks, or data. This is not negotiable.**
 
-The orchestrator coordinates work. It reads the agent's returned report, the immutable approved PLAN, project auto-memory, and the live `TaskList`; agents investigate and implement. Technical `VERIFY` belongs to `ds-implement`, not to the orchestrator or `ds-review`.
+The orchestrator coordinates work. It reads the agent's returned report, the immutable approved PLAN, project auto-memory, and the live `TaskList`; agents investigate and implement. Technical `VERIFY` belongs to `ds-implement`, not to the orchestrator or `ds-accept`.
 
 ### Verification vs Investigation
 

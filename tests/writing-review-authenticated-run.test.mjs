@@ -1,4 +1,4 @@
-// The writing-review contract, executed rather than asserted about.
+// The writing-verify contract, executed rather than asserted about.
 //
 // Builds a real writing project on disk, runs the deterministic authenticate
 // pre-step (`writing_section_index.py --authenticate`), drives the workflow
@@ -21,7 +21,7 @@ import { join } from 'node:path'
 const ROOT = new URL('..', import.meta.url).pathname
 const COMPILER = ROOT + 'scripts/writing/writing_section_index.py'
 const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
-const src = readFileSync(ROOT + 'workflows/writing-review.js', 'utf8').replace(/^export const meta/m, 'const meta')
+const src = readFileSync(ROOT + 'workflows/writing-verify.js', 'utf8').replace(/^export const meta/m, 'const meta')
 
 const PLAN = `# Article
 

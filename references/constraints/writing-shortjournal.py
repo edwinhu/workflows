@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 CONSTRAINT = "writing-shortjournal"
-APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
+APPLIES_TO = ["writing-draft", "writing-verify", "writing-revise"]
 SEVERITY = "soft"
 
 _ENTRY = re.compile(r'@article\s*\{\s*([^,\s]+)\s*,(.*?)(?=\n@|\Z)', re.DOTALL | re.IGNORECASE)

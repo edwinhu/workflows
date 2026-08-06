@@ -1,7 +1,7 @@
 ---
 name: structural-vs-runtime-verification
 description: Code existing in a file is not evidence it works — only runtime execution with pass output counts
-applies-to: [dev, dev-tdd, dev-implement, dev-review, dev-verify, dev-debug, dev-test, dev-test-gaps]
+applies-to: [dev, dev-tdd, dev-implement, dev-verify, dev-accept, dev-debug, dev-test, dev-test-gaps]
 ---
 
 ## Rule

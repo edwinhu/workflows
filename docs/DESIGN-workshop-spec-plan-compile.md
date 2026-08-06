@@ -10,7 +10,7 @@ Companions: `docs/DESIGN-ds-spec-plan-compile.md` (1st instance, exit-code gate,
 > **workshop is writing's structural twin, and is in fact MORE ready than writing was.** Its execute
 > layer (`workshop-generate.js`) is already a flat-parallel fan-out and its verify layer
 > (`workshop-verify.js`) is already a substrate-split JS gate with semantic authority outside
-> (independently confirmed: a `wc-audit` of the workshop workflow scored **9.64 / PASS, 0 critical**,
+> (independently confirmed: a `workflow-creator-verify` of the workshop workflow scored **9.64 / PASS, 0 critical**,
 > §9). What ports is narrow, the same shape writing took: it is about the **spec** (the slide table),
 > the **one shared parser**, and **honest fidelity/scope**, NOT a per-project `run.js`.
 
@@ -107,7 +107,7 @@ not flatten this. Gate computation is untouched.
 | **task** | **section** (a `=`/`==` run of slides; slide = sub-row) | no inter-section deps → no DAG, flat-parallel + a final **assembly barrier** (trivial 2-level, expressed directly in JS — not topo) |
 | **`implementerPrompt(t)`** | the per-**section** write-agent prompt (workshop-generate) | already exists; unchanged in shape |
 | **`gateProbe(t)`** | **two gates** (§4): generate = `{fragmentsWritten, deckCompiles}` (rich-mechanical); verify = substrate-split `{pass, evidence, scope}` | RICH-mechanical floor (real exit codes) + semantic ceiling — a **4th gate-type point** for pass #9 |
-| **adversarial layer OUTSIDE run.js** | **workshop-verify + visual-verify + the `/goal` revise loop** | stays outside; the per-slide reviewers are the writing-review L1/L2/L3 analog |
+| **adversarial layer OUTSIDE run.js** | **workshop-verify + visual-verify + the `/goal` revise loop** | stays outside; the per-slide reviewers are the writing-verify L1/L2/L3 analog |
 | **two-kinds-of-decision + stale-gate backstop** | **slide-edit vs spec-changing editorial decision** (§5) | structure/proportion reframe = gate-changing → edit OUTLINE + re-index |
 | **declared/dynamic PAUSE** | **R4 (structure reorder / proportion change)** — already in workshop Phase 3/4 | unchanged |
 
@@ -529,7 +529,7 @@ already-built shape and consumes the contracts, not the driver.)*
 
 ---
 
-## 9. wc-audit result (folded in — `workflows:wc-audit` on `workshop`, 2026-06-26)
+## 9. workflow-creator-verify result (folded in — `workflows:workflow-creator-verify` on `workshop`, 2026-06-26)
 
 **Verdict PASS · substrate gate ✅ clean · composite 9.64 / 10 (advisory; threshold 9.5) · 0 critical ·
 portability Clean · ultracode-candidacy 0 open.** This independently confirms the headline: workshop is

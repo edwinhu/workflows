@@ -119,11 +119,11 @@ These skills have `user-invocable: false` — Claude loads them automatically wh
 `look-at`, `visual-verify`, `visual-mockup`, `data-context`, `continuous-learning`, `pattern-capture`, `ai-anti-patterns`, `dev-tools`, `ds-tools`, `dev-worktree`, `obsidian-organize`, `pptx-render`, `headline-card`, `audit-fix-loop`
 
 ### Internal Workflow Phases
-Dev: `dev-clarify`, `dev-explore`, `dev-design`, `dev-delegate`, `dev-implement`, `dev-tdd`, `dev-review`, `dev-verify`, `dev-handoff`, `dev-plan-reviewer`, `dev-test`, `dev-test-*` (cross-turn iteration uses Claude Code's built-in `/goal`; `dev-spec-reviewer` is retired)
+Dev: `dev-clarify`, `dev-explore`, `dev-design`, `dev-delegate`, `dev-implement`, `dev-tdd`, `dev-verify`, `dev-accept`, `dev-handoff`, `dev-plan-reviewer`, `dev-test`, `dev-test-*` (cross-turn iteration uses Claude Code's built-in `/goal`; `dev-spec-reviewer` is retired)
 
-DS: `/ds` is the user-facing planning entry; internal `ds-implement` executes the approved tasks and internal `ds-review` handles terminal review. `/ds-fix` is the user-facing corrective re-entry for wrong results and notebook failures.
+DS: `/ds` is the user-facing planning entry; internal `ds-implement` executes the approved tasks and internal `ds-accept` handles terminal review. `/ds-fix` is the user-facing corrective re-entry for wrong results and notebook failures.
 
-Writing: `writing-setup`, `writing-outline`, `writing-outline-reviewer`, `writing-precis-reviewer`, `writing-plan-reviewer`, `writing-draft`, `writing-econ`, `writing-general`, `writing-legal`, internal `writing-review`, `writing-validate`, `writing-handoff`; `/writing-revise` is the corrective midpoint.
+Writing: `writing-setup`, `writing-outline`, `writing-outline-reviewer`, `writing-precis-reviewer`, `writing-plan-reviewer`, `writing-draft`, `writing-econ`, `writing-general`, `writing-legal`, internal `writing-verify`, `writing-validate`, `writing-handoff`; `/writing-revise` is the corrective midpoint.
 
 Workshop: `workshop-plan-reviewer` plus internal `workshop-generate`/`workshop-verify`; `/workshop-revise` is the corrective midpoint.
 

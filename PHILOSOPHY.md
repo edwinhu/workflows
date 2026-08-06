@@ -54,7 +54,7 @@ Break work into phases with single responsibilities. Each phase answers ONE ques
 
 The shape varies by domain:
 - **Dev**: question-first clarification and reconnaissance → explicit architecture choice → native plan → TaskList implementation → independent review and fresh verification
-- **DS**: three skills — `/ds` plans, `/ds-implement` executes native tasks, and `/ds-review` records independent review for a human decision
+- **DS**: three skills — `/ds` plans, `/ds-implement` executes native tasks, and `/ds-accept` records independent review for a human decision
 - **Writing**: Branching (quick vs. project, domain routing, progressive expansion)
 
 ### Gates (Deterministic and Judgment-Based)

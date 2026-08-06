@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 
 CONSTRAINT = "writing-no-bold-lead"
-APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
+APPLIES_TO = ["writing-draft", "writing-verify", "writing-revise"]
 SEVERITY = "hard"
 
 PROSE_AUDIT = Path(__file__).resolve().parents[2] / "scripts" / "prose-audit.py"

@@ -5,7 +5,7 @@ from pathlib import Path
 
 CONSTRAINT = "progressive-expansion-hierarchy"
 APPLIES_TO = ["writing", "writing-setup", "writing-outline", "writing-draft",
-               "writing-validate", "writing-review", "writing-revise",
+               "writing-validate", "writing-verify", "writing-revise",
                "writing-precis-reviewer", "writing-outline-reviewer"]
 SEVERITY = "hard"
 
@@ -64,7 +64,7 @@ def check(context):
     if has_revisions and not has_review:
         violations.append(
             f"revisions/ contains files but .planning/REVIEW.md does not exist — "
-            "NO REVISION WITHOUT REVIEW.md: run /writing-review first"
+            "NO REVISION WITHOUT REVIEW.md: run /writing-verify first"
         )
 
     # Check each draft has a matching outline file

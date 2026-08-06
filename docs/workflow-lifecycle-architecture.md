@@ -61,9 +61,9 @@ DS and workflow-creator use the shared sequential `beat-implement` runner. Writi
 authenticate the same approved-plan identity while retaining controlled parallel generators:
 
 ```text
-writing approved plan  → writing-draft section workflow → internal writing-review → /writing-revise
+writing approved plan  → writing-draft section workflow → internal writing-verify → /writing-revise
 workshop approved plan → workshop-generate sections     → workshop-verify       → /workshop-revise
-workflow-creator plan  → TypeScript manifest compiler   → beat-implement        → wc-audit → /workflow-creator-improve
+workflow-creator plan  → TypeScript manifest compiler   → beat-implement        → workflow-creator-verify → /workflow-creator-improve
 ```
 
 Domain generators do not select plans: deterministic section/slide indexes provide their work

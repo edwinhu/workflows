@@ -1,7 +1,7 @@
 ---
 name: drive-aligned-default
 description: When in doubt about skipping a step, ask — does the user's published work get worse?
-applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-review, writing-revise, writing-precis-reviewer, writing-outline-reviewer]
+applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-verify, writing-revise, writing-precis-reviewer, writing-outline-reviewer]
 ---
 
 ## Rule

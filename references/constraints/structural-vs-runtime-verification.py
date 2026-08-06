@@ -7,7 +7,7 @@ planning files. The dev test-gap, review, and verify skills perform the substant
 import sys
 
 CONSTRAINT = "structural-vs-runtime-verification"
-APPLIES_TO = ["dev", "dev-tdd", "dev-implement", "dev-review", "dev-verify", "dev-debug",
+APPLIES_TO = ["dev", "dev-tdd", "dev-implement", "dev-verify", "dev-accept", "dev-debug",
               "dev-test", "dev-test-gaps"]
 SEVERITY = "hard"
 

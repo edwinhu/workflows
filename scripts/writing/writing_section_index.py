@@ -732,7 +732,7 @@ def authenticate(project_or_planning: Path, drafts: str | list[str] = DRAFTS_ALL
     `drafts` selects which section drafts belong in the entry bundle, and the choice
     is not cosmetic — it is the difference between an INPUT and an OUTPUT:
 
-      "all"    — writing-review. Every draft already exists and is an input to be
+      "all"    — writing-verify. Every draft already exists and is an input to be
                  authenticated; drift in any of them invalidates the review.
       "none"   — a full writing-draft run. The drafts are what this run PRODUCES.
                  They do not exist yet, so there is nothing to authenticate, and a

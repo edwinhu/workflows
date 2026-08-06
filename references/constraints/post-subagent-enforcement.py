@@ -8,14 +8,14 @@ skill invokes `load-constraints.ts` (the auto-loader). The earlier version check
 """
 
 CONSTRAINT = "post-subagent-enforcement"
-APPLIES_TO = ["writing-review", "writing-revise"]
+APPLIES_TO = ["writing-verify", "writing-revise"]
 SEVERITY = "hard"
 
 import re
 from pathlib import Path
 
 # Skills that dispatch subagents must auto-load this constraint
-SUBAGENT_SKILLS = ['writing-review', 'writing-revise']
+SUBAGENT_SKILLS = ['writing-verify', 'writing-revise']
 
 
 def _md_applies_to(md_path):

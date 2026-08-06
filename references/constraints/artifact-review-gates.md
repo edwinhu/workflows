@@ -1,7 +1,7 @@
 ---
 name: artifact-review-gates
 description: Artifacts crossing phase boundaries must be independently reviewed by fresh subagents
-applies-to: [writing-setup, writing-outline, writing-review, writing-outline-reviewer]
+applies-to: [writing-setup, writing-outline, writing-verify, writing-outline-reviewer]
 ---
 
 ## Rule
@@ -12,7 +12,7 @@ Artifacts that cross phase boundaries MUST be independently reviewed:
 |----------|----------|------|
 | PRECIS.md | writing-precis-reviewer (subagent) | Before OUTLINE.md creation |
 | outlines/*.md | writing-outline-reviewer (subagent) | Before drafting begins |
-| drafts/*.md | writing-review (3-level hierarchical) | Before revision begins |
+| drafts/*.md | writing-verify (3-level hierarchical) | Before revision begins |
 
 **Self-review is rubber-stamping.** The reviewer must be a fresh subagent with no context from the writing phase.
 
@@ -69,7 +69,7 @@ The moment main chat reads a draft, it forms opinions about quality. Those opini
 
 ## Review-Gate Facts
 
-- REVIEW.md already summarizes every issue with citations — reading the draft "to understand the review" is investigation, and "glance" becomes "read" becomes "edit" becomes an unstructured session. Verifying the subagent's fixes means checking REVIEW.md exists with issues resolved — artifact existence, never prose content. Quick edits and tone checks bypass constraint loading; they go through /writing-revise and /writing-review.
+- REVIEW.md already summarizes every issue with citations — reading the draft "to understand the review" is investigation, and "glance" becomes "read" becomes "edit" becomes an unstructured session. Verifying the subagent's fixes means checking REVIEW.md exists with issues resolved — artifact existence, never prose content. Quick edits and tone checks bypass constraint loading; they go through /writing-revise and /writing-verify.
 - A review that "missed something obvious" gets a fresh review subagent — re-review will catch it; supplementing it yourself converts orchestration into review work.
 - "I wrote it, I know what needs fixing" is exactly why you can't review it — author blindness is real. A fresh subagent is the only honest reviewer.
 

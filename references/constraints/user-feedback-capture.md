@@ -1,7 +1,7 @@
 ---
 name: user-feedback-capture
 description: User-typed feedback during a review stage becomes TaskList items before any of it is acted on
-applies-to: [dev-verify, ds-fix, ds-review, writing-revise, writing-validate, workshop, workshop-revise]
+applies-to: [dev-accept, ds-fix, ds-accept, writing-revise, writing-validate, workshop, workshop-revise]
 ---
 
 ## Rule
@@ -37,14 +37,14 @@ New feedback arriving mid-round appends to the queue. It does not replace it or 
 
 **Record the disposition in the same step as the `TaskUpdate` that closes the item.** Not at the end of the round: a completed task is destroyed, not archived, so after gate close there is nothing left to fold. A round that defers its bookkeeping has no bookkeeping.
 
-For DS, `ds-review` owns human feedback only. It records each completed item's disposition in its returned review report; the main `ds` orchestrator curates reusable facts from that report into project auto-memory. Do not treat the review report as a technical verification artifact, and do not ask `ds-review` to run technical `VERIFY`.
+For DS, `ds-accept` owns human feedback only. It records each completed item's disposition in its returned review report; the main `ds` orchestrator curates reusable facts from that report into project auto-memory. Do not treat the review report as a technical verification artifact, and do not ask `ds-accept` to run technical `VERIFY`.
 
 | Stage | Durable record |
 |---|---|
 | `writing-validate` | Its validation ledger |
 | `writing-revise` | Its durable revision record |
-| `dev-verify` | Its durable verification record |
-| `ds-review`, `ds-fix` | Returned report, then main-orchestrator curation into project auto-memory |
+| `dev-accept` | Its durable verification record |
+| `ds-accept`, `ds-fix` | Returned report, then main-orchestrator curation into project auto-memory |
 | `workshop`, `workshop-revise` | Their durable workshop record |
 
 **Fold only into an artifact the stage writes.** `writing-revise` is the trap: `REVIEW.md` is its input and is regenerated on every iteration, so a disposition folded there is erased. For DS, the approved PLAN is immutable and is not a feedback ledger; project auto-memory is curated by the main orchestrator, not written wholesale by a review agent.
@@ -87,7 +87,7 @@ A plan cannot solve this. The approved PLAN predates a review round and remains 
 | About to `TaskUpdate … deleted` to clear a waived item | It destroys the record of the user's decision | Use `completed` + `metadata.disposition = "waived"` |
 | About to close the gate without calling `TaskList` | "I think I got everything" is the belief that produced the bug | Call it. An open item blocks the gate |
 | About to close a batch of items now and record outcomes "at the end" | Closed tasks are gone by then — `TaskGet` returns *Task not found* | Record the disposition and `TaskUpdate` in the same step, every time |
-| About to ask `ds-review` to technically VERIFY a feedback item | That converts human review into technical implementation and duplicates the role that belongs to `ds-implement` | Capture the feedback; dispatch `ds-implement` for technical work if needed; let `ds-review` own the human-feedback disposition |
+| About to ask `ds-accept` to technically VERIFY a feedback item | That converts human review into technical implementation and duplicates the role that belongs to `ds-implement` | Capture the feedback; dispatch `ds-implement` for technical work if needed; let `ds-accept` own the human-feedback disposition |
 
 ## Examples
 
@@ -95,10 +95,10 @@ A plan cannot solve this. The approved PLAN predates a review round and remains 
 
 ```
 User: the y-axis label is wrong on fig 2, and table 3 lost its footnote
-Agent (ds-review): TaskCreate("Fix fig 2 y-axis label"), TaskCreate("Restore table 3 footnote")
+Agent (ds-accept): TaskCreate("Fix fig 2 y-axis label"), TaskCreate("Restore table 3 footnote")
                    → returned review report: "implementation required" for both items
 Agent (ds-implement): corrects both items and runs technical VERIFY → returns evidence
-Agent (ds-review): TaskUpdate(1, completed) + returned review report: "fig 2 y-axis — addressed; implementation evidence received"
+Agent (ds-accept): TaskUpdate(1, completed) + returned review report: "fig 2 y-axis — addressed; implementation evidence received"
                    TaskUpdate(2, completed) + returned review report: "table 3 footnote — addressed; implementation evidence received"
                    TaskList → nothing open   (a check, not the record — both outcomes were already written)
 Main ds orchestrator: curates reusable feedback facts from returned reports into project auto-memory.

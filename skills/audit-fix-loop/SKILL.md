@@ -17,8 +17,8 @@ It is also the **generic fallback**. The domain workflows below are specialized,
 | **visual-verify** | improving slides/charts/rendered output (Gemini vision, zero-blocking-defects gate) |
 | **bluebook-audit** | correcting Bluebook citations in a DOCX |
 | **source-verify** | verifying citations exist + quotes match sources |
-| **writing-review / writing-revise** | improving a prose draft |
-| **workflow-creator** Mode 3 | hardening a skill/workflow (wc-audit substrate gate) |
+| **writing-verify / writing-revise** | improving a prose draft |
+| **workflow-creator** Mode 3 | hardening a skill/workflow (workflow-creator-verify substrate gate) |
 
 <EXTREMELY-IMPORTANT>
 ## Iron Law 1 — The auditor must not be the fixer

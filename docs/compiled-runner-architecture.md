@@ -70,7 +70,7 @@ The discovery LLM wasn't just redundant — sitting **between a structured produ
 checker**, it silently *tolerated* plan-format drift the guard rejects, masking spec-drift bugs while
 looking like it worked (the ds "sleeper": `docs/investigations/2026-06-26_llm-discovery-masked-spec-drift.md`).
 The re-analysis verifier "caught zero substantive bugs" in both ds and dev. Both were deleted.
-This is **Iron Law: NO LLM between a structured producer and a strict checker** — wc-audit flags the
+This is **Iron Law: NO LLM between a structured producer and a strict checker** — workflow-creator-verify flags the
 shape as `executionClass=generic-interpreter` → critical.
 
 ---
@@ -137,7 +137,7 @@ flowchart LR
 4. `node --check` the emitted `run.js` (a splice has more failure modes than a single-file fill).
 
 The birther scaffolds **only** the fragment (`compiled-runner-template.js` is the generic skeleton)
-and the compiler — never a copy of the driver. wc-audit P22 deducts a hand-copied parallel driver as
+and the compiler — never a copy of the driver. workflow-creator-verify P22 deducts a hand-copied parallel driver as
 drift-risk.
 
 ---
@@ -337,7 +337,7 @@ deterministic compile/parser replaced the LLM discovery and the guard shares it*
 
 ## 9. The audit view — `executionClass` and P22–P30
 
-wc-audit's runner-architecture reviewer classifies a workflow's execution shape, then scores the
+workflow-creator-verify's runner-architecture reviewer classifies a workflow's execution shape, then scores the
 compiled-runner principles only when they apply.
 
 ```mermaid
@@ -362,9 +362,9 @@ flowchart TD
 | P29 | guard passes the REAL shipped artifacts (phantom-canonical) | #6 |
 | P30 | the gate covers every declared output | workshop "gate only what you compile" |
 
-### Operating wc-audit at fleet scale (lessons from the 2026-06-26 compliance pass)
+### Operating workflow-creator-verify at fleet scale (lessons from the 2026-06-26 compliance pass)
 
-wc-audit fans out ~8–9 reviewer agents per run, each reading the (large) rubric. Running it is cheap for one workflow but expensive in aggregate:
+workflow-creator-verify fans out ~8–9 reviewer agents per run, each reading the (large) rubric. Running it is cheap for one workflow but expensive in aggregate:
 
 - **STAGGER fleet audits — never fire them concurrently.** Auditing N workflows at once spawns ~N×9 reviewers → **server-side rate-limiting** ("Server is temporarily limiting requests · not your usage limit"). In the fleet pass, 5 simultaneous audits throttled everyone. Run them one at a time (or 2 at most), and serialize the last few explicitly.
 - **The rate-limit FALSE result is unmistakable:** `composite: 0`, `executionClass: "not-applicable"`, every reviewer errored. That is NOT a real fail — it is total throttling returning the defaults.
@@ -401,4 +401,4 @@ wc-audit fans out ~8–9 reviewer agents per run, each reading the (large) rubri
 | The seam list (what/why) | `docs/common-infra-candidates.md` |
 | Per-domain designs | `docs/DESIGN-{ds,dev,writing,workshop}-spec-plan-compile.md` |
 | The extraction design (pass #9) | `docs/DESIGN-run-core-extraction.md` |
-| Birthing/auditing new runners | `skills/workflow-creator/` (Mode 1 Step 3 + references/dynamic-workflow-migration.md §0/§A; wc-audit P22-P30) |
+| Birthing/auditing new runners | `skills/workflow-creator/` (Mode 1 Step 3 + references/dynamic-workflow-migration.md §0/§A; workflow-creator-verify P22-P30) |

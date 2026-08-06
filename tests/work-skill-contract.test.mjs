@@ -183,8 +183,8 @@ describe("work workflow contract", () => {
     const devSkills = [
       "skills/dev-implement/SKILL.md",
       "skills/dev-test-gaps/SKILL.md",
-      "skills/dev-review/SKILL.md",
       "skills/dev-verify/SKILL.md",
+      "skills/dev-accept/SKILL.md",
       "skills/dev-handoff/SKILL.md",
       "skills/dev-delegate/SKILL.md",
       "skills/dev-debug/SKILL.md",
@@ -211,7 +211,7 @@ describe("work workflow contract", () => {
     expect(devImplement).toContain("red-not-red");
     expect(read("scripts/beat/preflight.ts")).toContain('request.workflow === "dev" && !task.redCommand');
     expect(devImplement).toContain("independent fresh verifier");
-    expect(read("skills/dev-review/SKILL.md")).toContain("Codex");
-    expect(read("skills/dev-verify/SKILL.md")).toContain("beat-review/SKILL.md");
+    expect(read("skills/dev-verify/SKILL.md")).toContain("Codex");
+    expect(read("skills/dev-accept/SKILL.md")).toContain("beat-review/SKILL.md");
   });
 });

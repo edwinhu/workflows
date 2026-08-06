@@ -15,7 +15,7 @@ function planSection(plan: string, heading: string): string {
   // the empty string at the first line break, so every section came back "" — which meant
   // `style` was ALWAYS "" and the domain style guide (Volokh / McCloskey) never loaded for any
   // draft this hook linted, silently, on a plan that declared its Domain correctly. Measured on a
-  // real approved plan before the fix. workflows/writing-review.js already uses this idiom for
+  // real approved plan before the fix. workflows/writing-verify.js already uses this idiom for
   // the same parse.
   return new RegExp(`^##\\s+${escaped}\\s*$([\\s\\S]*?)(?=^##\\s|(?![\\s\\S]))`, "mi").exec(plan)?.[1] ?? "";
 }

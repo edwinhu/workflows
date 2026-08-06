@@ -1,7 +1,7 @@
 ---
 name: claim-id-traceability
 description: CLAIM-XX IDs from PRECIS.md must flow through every downstream artifact
-applies-to: [writing-setup, writing-outline, writing-draft, writing-validate, writing-review, writing-revise, writing-precis-reviewer, writing-outline-reviewer]
+applies-to: [writing-setup, writing-outline, writing-draft, writing-validate, writing-verify, writing-revise, writing-precis-reviewer, writing-outline-reviewer]
 ---
 
 ## Rule

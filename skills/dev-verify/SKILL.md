@@ -1,6 +1,6 @@
 ---
 name: dev-verify
-description: "Internal fresh /dev verification and terminal human review routing."
+description: "Internal /dev VERIFY beat — independent machine verification over authenticated plan identity and TaskList."
 user-invocable: false
 disable-model-invocation: true
 hooks:
@@ -19,48 +19,47 @@ hooks:
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-gate.ts --workflow dev"
 ---
 
-# Dev verification
+# Dev verification — the verify beat
 
 !`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts dev-verify`
 
-Verification consumes the approved receipt-selected `{planFile, planHash}`, the returned test-gap and
-review results, and TaskList. It does not read or write `REVIEW_STATE.md`, `VERIFY_STATE.md`,
-`LEARNINGS.md`, `HUMAN_REVIEW.md`, or a fixed plan.
+Review the current receipt-selected generated `{planFile, planHash}` after the test-gap audit returns
+`COVERED`. Never use `REVIEW_STATE.md`, `VALIDATION.md`, `LEARNINGS.md`, a fixed plan, or a visible
+review ledger. TaskList is the live finding/retry record; the result below is the review account.
 
-## Fresh independent verification
+## Independent review loop
 
-1. Re-resolve and rehash the receipt-selected generated plan; reject any identity mismatch.
-2. Confirm the test-gap audit has no open current-plan gaps and review has returned `APPROVED` with no
-   pending review finding. These results are admission evidence, not substitutes for verification.
-3. Obtain a fresh run of the mechanical floor and the complete test suite. **Do not run them
-   yourself**: verification happens after approval, this conversation is the approver, and
-   `implementer-identity-gate` denies every Bash call from it — test runs included. Dispatch an agent
-   to execute them and return each `{command, exitCode, raw output}` verbatim. Read all of it.
-   Summarized or paraphrased results are not evidence; if an agent returns a verdict instead of
-   output, re-dispatch for the output.
-4. Dispatch a fresh read-only verifier, distinct from doers and reviewers, with plan requirements,
-   criteria, real-test contract, review surfaces, and the fresh command evidence. The verifier checks
-   every requirement with runtime evidence; structural existence alone is FAIL.
-5. Create exactly one TaskList repair item for each `PARTIAL` or `NOT_MET` result. Route repair items
-   through `dev-implement`, then repeat the full fresh verification. The verifier result must identify
-   the verifier and preserve raw evidence.
+1. Resolve and rehash the approved dev receipt. Read its requirements, architecture, task criteria,
+   evidence plan, and review surfaces.
+2. Dispatch fresh read-only reviewer(s) with the exact plan identity, changed-code scope, fresh test
+   evidence, and no implementation reasoning. Reviewer and doer must be different identities.
+3. Require evidence for each reported issue, reject pre-existing or speculative findings, and capture
+   actionable findings as one current-plan TaskList item each (`item_kind: review-finding`) with
+   requirement/criterion references and retry dependencies.
+4. Send fixes only through `dev-implement`; resume the reviewer after fixes and require a full fresh
+   re-review. The controller reconciles findings; it does not patch or silently suppress them.
+5. At the bounded retry limit, return `ESCALATE` with open TaskList IDs rather than fabricating an
+   approval.
 
-For user-facing work, declared E2E/real-system evidence is required. Unit-only proof does not verify a
-user-facing completion claim.
+## Optional Codex second pass
+
+After a primary PASS, Codex is optional. Record the user's launch, join, retry, decline, unavailability,
+or completed verdict in the current review TaskList item and the returned result. A launch is not a
+verdict: `requested` must be joined before approval. High-confidence actionable Codex findings create
+normal TaskList findings and re-enter the same repair/re-review loop. Do not create
+`codex-second-pass-*.json` or any planning ledger.
 
 ## Return contract
 
 ```text
-Dev verification result
+Dev review result
 - Plan: {planFile, planHash}
-- Mechanical floor and suite: [{command, exitCode, output}]
-- Requirement evidence: [{requirement, status: MET | PARTIAL | NOT_MET, evidence}]
-- Verifier: {identity, result}
-- Repairs: [TaskList IDs]
-- Verdict: PASS | REPAIR_REQUIRED
+- Reviewers: [{identity, scope, freshEvidence}]
+- Findings: [TaskList IDs with requirement/criterion links]
+- Codex: {status: completed | declined | unavailable | retrying, verdict?, reviewTaskId}
+- Verdict: APPROVED | CHANGES_REQUIRED | ESCALATE | BLOCKED
+- Required next action: [TaskList IDs or dev-accept]
 ```
 
-Only `PASS` with no open repair item may enter terminal user review. Load
-`${CLAUDE_SKILL_DIR}/../beat-review/SKILL.md`; present the plan's review surfaces and return its
-`ACCEPT`, `REJECT`, or `CONTINUE` result. Capture comments in TaskList. A rejection returns to
-clarification and a new approved plan; never create `REVIEW.md` or `HUMAN_REVIEW.md`.
+`APPROVED` means every reviewer has fresh evidence, no actionable current-plan finding remains, and any
+chosen Codex pass has returned or is explicitly declined/unavailable. Then continue to `dev-accept`.

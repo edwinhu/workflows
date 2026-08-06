@@ -2,7 +2,7 @@
 
 Use this reference for the single independent **VERIFY** operation required by
 `beat-implement`. It replaces the former standalone DS validation and verification phases. It does
-not ask the user for acceptance; human acceptance belongs to `ds-review` after technical `OVERALL: PASS`.
+not ask the user for acceptance; human acceptance belongs to `ds-accept` after technical `OVERALL: PASS`.
 
 Read `ds-checks.md` with this reference. The approved native plan is the authority for objectives,
 criteria, sources, output paths, grain, constraints, and required windows. `TaskList` is the source
@@ -49,7 +49,7 @@ run static / output / data-quality / methodology / reproducibility checks
         │       └─ return concrete evidence → targeted implementation retry → resume same verifier
         │
         └─ all applicable checks pass and ENUM accounts for the rest → OVERALL: PASS
-                └─ next ready wave, or ds-review after every native task passes
+                └─ next ready wave, or ds-accept after every native task passes
 ```
 
 This flowchart is authoritative. A check that is inapplicable is not silently omitted: record `N/A` and
@@ -203,4 +203,4 @@ cycles; then report the raw blocker to the user rather than repeatedly making th
 | Reuse a cached result as a reproduction attempt | It cannot expose changed data, code, or environment | Run fresh and compare evidence |
 | Treat an unrun check as benign | An unchecked requirement is an unknown, not a pass | Mark FAIL or record a specific N/A reason |
 | Report a methodology/style concern without evidence | Speculation dilutes real findings and creates needless work | Report only ≥80-confidence, impact-bearing defects |
-| Ask the user to waive a technical failure here | Human acceptance is separate and cannot make an unknown check pass | Return FAIL; take any later acceptance through ds-review |
+| Ask the user to waive a technical failure here | Human acceptance is separate and cannot make an unknown check pass | Return FAIL; take any later acceptance through ds-accept |

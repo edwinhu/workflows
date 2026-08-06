@@ -55,5 +55,5 @@ Test-gap audit result
 - Next ready wave: [TaskList IDs]
 ```
 
-Only `COVERED` with no open gap finding admits `dev-review`. Otherwise route the repair IDs through
+Only `COVERED` with no open gap finding admits `dev-verify`. Otherwise route the repair IDs through
 the shared implementation adapter and re-audit every requirement.

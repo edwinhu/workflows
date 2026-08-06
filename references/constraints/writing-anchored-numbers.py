@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 CONSTRAINT = "writing-anchored-numbers"
-APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
+APPLIES_TO = ["writing-draft", "writing-verify", "writing-revise"]
 SEVERITY = "hard"
 
 _EMPIRICAL_NUMBER = re.compile(

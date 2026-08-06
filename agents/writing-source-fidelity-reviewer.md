@@ -4,7 +4,7 @@ description: >
   Read-only reviewer that verifies every citation in a draft traces to
   references/sources.md and matches the source entry. Adapted from the
   teaching workflow's exam-source-fidelity-reviewer. Dispatched by
-  writing-review during Level 1 or Level 3 review.
+  writing-verify during Level 1 or Level 3 review.
 model: sonnet
 color: red
 tools: Read, Grep, Glob

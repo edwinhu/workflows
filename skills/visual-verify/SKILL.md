@@ -301,7 +301,7 @@ See `references/render-commands.md` for the full reference.
 ## When NOT to Use
 
 - **One-off visual checks**: Use Gemini CLI directly, not the full loop
-- **Text-only verification**: Use standard dev-verify
+- **Text-only verification**: Use standard dev-accept
 - **Compilation checks only**: Just run the compile command
 
 ## Reference Files

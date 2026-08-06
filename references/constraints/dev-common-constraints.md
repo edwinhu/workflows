@@ -1,7 +1,7 @@
 ---
 name: dev-common-constraints
 description: Common deterministic constraints index for the native-plan dev skill family
-applies-to: [dev, dev-tdd, dev-implement, dev-review, dev-verify, dev-debug, dev-delegate, dev-design, dev-explore, dev-handoff, dev-test, dev-test-gaps, dev-plan-reviewer]
+applies-to: [dev, dev-tdd, dev-implement, dev-verify, dev-accept, dev-debug, dev-delegate, dev-design, dev-explore, dev-handoff, dev-test, dev-test-gaps, dev-plan-reviewer]
 ---
 
 # Dev workflow: common constraints

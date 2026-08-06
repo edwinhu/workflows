@@ -1,7 +1,7 @@
 ---
 name: writing-common-constraints
 description: Common constraints index for the writing skill family
-applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-review, writing-revise, writing-precis-reviewer, writing-outline-reviewer]
+applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-verify, writing-revise, writing-precis-reviewer, writing-outline-reviewer]
 ---
 
 # Writing Workflow: Common Constraints

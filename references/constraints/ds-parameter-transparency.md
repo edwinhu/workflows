@@ -1,7 +1,7 @@
 ---
 name: parameter-transparency
 description: Every analytic threshold, filter, tuning value, and date window is centralized in one named configuration location and justified in the approved native plan.
-applies-to: [ds, ds-implement, ds-review, ds-delegate]
+applies-to: [ds, ds-implement, ds-accept, ds-delegate]
 ---
 
 ## Rule

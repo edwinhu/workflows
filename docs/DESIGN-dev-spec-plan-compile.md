@@ -59,7 +59,7 @@ implementer prompt carries the RED→GREEN protocol. Nothing about the driver/pa
 changes shape.
 
 **What does NOT change:** explore / clarify / design / plan-review stay conversational and
-human-gated; the **full test suite** + **`dev-test-gaps`** + **`dev-review`** stay the adversarial
+human-gated; the **full test suite** + **`dev-test-gaps`** + **`dev-verify`** stay the adversarial
 ground-truth layer **OUTSIDE** `run.js` (the ds lesson: the JS gate caught zero bugs; the deviation
 note + adversarial review did). The hook-enforced phase gates (`PLAN_REVIEWED.md` APPROVED,
 `VALIDATION.md` validated) are preserved.
@@ -77,7 +77,7 @@ Four phases per invocation, **once per dependency level** (the skill loops):
 | **Discover** | An LLM agent (`sonnet`) reads `PLAN.md`, re-parses the Implementation Order table into `{num,deps,files,failingTest,verifyCmd,implements,done,taskText,interfaces}`, parses `## Global Constraints`, computes topo levels, picks `levelToRun`. | **Redundant + fragile** — pure regex (see §1.4). Re-run every level. The discovery LLM silently tolerates plan/guard format drift (the ds disease). |
 | **Transform** | One `dev-implementer` per task **in the level, sequential** (each writes the shared tree in turn); TDD test-first; runs the per-task `Verify Command`. | The implementer is the real work and must stay. Sequential-within-level is intentional (shared tree, no worktree-merge in v1). |
 | **Verify** | A **second** LLM agent (`sonnet`) per task, read-only, checks `testPresent` + `verifyReproduced` (the tree backs the self-report). | **Double-work** that re-derives a gate the exit code already gives — but it *does* encode a real concern (test actually written, not faked). That concern moves into the probe's `testPresent`. |
-| **Gate** | Pure JS: `pass = implemented && tested && verified`. | Correct shape — keep. **But the wc-audit found its inputs are NOT a real exit code:** `verified = tr.verifyPassed===true && v.verifyReproduced!==false` — `verifyPassed` is a boolean the *implementer types*, and `verifyReproduced` is a *non-executing* corroboration (it checks files-present, never re-runs the command). So despite the meta claiming "real exit codes, not self-judgment", **no component ever runs the Verify Command into the gate.** The probe (§3.3) makes that claim true for the first time — this is the single highest-value fix, not a mere simplification. |
+| **Gate** | Pure JS: `pass = implemented && tested && verified`. | Correct shape — keep. **But the workflow-creator-verify found its inputs are NOT a real exit code:** `verified = tr.verifyPassed===true && v.verifyReproduced!==false` — `verifyPassed` is a boolean the *implementer types*, and `verifyReproduced` is a *non-executing* corroboration (it checks files-present, never re-runs the command). So despite the meta claiming "real exit codes, not self-judgment", **no component ever runs the Verify Command into the gate.** The probe (§3.3) makes that claim true for the first time — this is the single highest-value fix, not a mere simplification. |
 
 Returns `{ overallPass, level, levelTasks, levelsTotal, tasksRemaining, tasks, findings,
 tasksThatFailed, reviews }`. The **skill** drives the level loop, runs the **full suite** between
@@ -87,9 +87,9 @@ phase is "done".
 ### 1.2 The skill chain (`skills/dev-implement/SKILL.md`, ~688 lines)
 
 `dev` (explore) → `dev-clarify` → `dev-design` (+ `dev-plan-reviewer`) → **`dev-implement`** →
-`dev-test-gaps` → `dev-review` → `dev-verify`. Only `dev-implement` drives `dev-implement.js`; it
+`dev-test-gaps` → `dev-verify` → `dev-accept`. Only `dev-implement` drives `dev-implement.js`; it
 becomes a **thin compile→run/pause runner** (§5). Everything that catches real bugs — the full suite,
-`dev-test-gaps` (requirement-level coverage), `dev-review` — stays **outside** `run.js`, unchanged.
+`dev-test-gaps` (requirement-level coverage), `dev-verify` — stays **outside** `run.js`, unchanged.
 
 ### 1.3 Key discovery: the parse is already deterministic
 
@@ -235,7 +235,7 @@ async function gateProbe(t) {
 - Separate process from the implementer → catches "claimed GREEN, wrote nothing / faked the test".
 - `testPresent` absorbs the old read-only Verify phase's core check; `filesPresent` mirrors ds.
 - **Deep fake-test detection (`.skip()`, mock-only, doesn't exercise code) stays OUTSIDE `run.js`** —
-  it is `dev-test-gaps` + `dev-review` (§3.5). The probe is the cheap deterministic gate, not the
+  it is `dev-test-gaps` + `dev-verify` (§3.5). The probe is the cheap deterministic gate, not the
   semantic authority. (ds doctrine: adversarial layer outside the runner.)
 
 ### 3.4 `implementerPrompt` — TDD, Global Constraints, Interfaces, stale-gate backstop
@@ -265,7 +265,7 @@ Carries, baked into the template so generated scripts can't drift:
 - Uniform result schema (`overallPass`, `tasksThatFailed`, `findings`, `reviews`, `scoreTable`,
   `tasksRemaining`) — identical shape to today's return, so the skill's rendering is unchanged.
 - `pause()` is the only yield to a human.
-- The full suite, `dev-test-gaps`, `dev-review` are NOT folded into the probe — they stay the skill's
+- The full suite, `dev-test-gaps`, `dev-verify` are NOT folded into the probe — they stay the skill's
   adversarial ground-truth.
 
 ---
@@ -315,7 +315,7 @@ LOOP under /goal:
      - architectural R4 the user must design → hand back to dev-design, then recompile
 4. if r.done && r.overallPass:
      - GROUND-TRUTH (outside run.js): run the FULL suite + lint; then dev-test-gaps (VALIDATION.md);
-       then mark PLAN rows [x], progress.md ledger, LEARNINGS.md → dev-review
+       then mark PLAN rows [x], progress.md ledger, LEARNINGS.md → dev-verify
 5. if r.done && !overallPass: read r.findings, fix, re-invoke with onlyChecks=r.tasksThatFailed
 ```
 
@@ -343,7 +343,7 @@ adversarial layer stays outside. **New dev-specific decisions below need your ca
   `isolation:'worktree'` per task + a merge step — true intra-level parallelism (ds-like), but adds a
   merge/conflict layer the assessment flags as dev-specific and risky. **Recommendation: sequential
   for v1; worktree-parallel as a fast-follow once parity is proven.**
-- **D-dev-2 — Full-suite cadence: GENUINELY OPEN (your call).** The wc-audit flags the **per-level
+- **D-dev-2 — Full-suite cadence: GENUINELY OPEN (your call).** The workflow-creator-verify flags the **per-level
   full suite** as a load-bearing dev invariant (B7): each task's `Verify Command` runs in isolation, so
   only the full suite catches a *cross-level integration regression* — and catching it after level *k*
   (not after the whole DAG) is materially better for a long plan. But the per-level cadence only exists
@@ -364,7 +364,7 @@ adversarial layer stays outside. **New dev-specific decisions below need your ca
   this is the one place the audit and my first draft disagreed.**
 - **D-dev-3 — Probe shape: `{ exit0, filesPresent, testPresent, tail }` (recommended).** `testPresent`
   absorbs the retired read-only verifier's core "did you actually write the test" check; `filesPresent`
-  mirrors ds `outputsPresent`. Deep fake-test detection stays in dev-test-gaps/dev-review.
+  mirrors ds `outputsPresent`. Deep fake-test detection stays in dev-test-gaps/dev-verify.
 - **D-dev-4 — Retire `dev-implement.js` AFTER hylo parity passes (recommended).** Keep it as the A/B
   reference until the compiled runner is proven on the hylo `browserStore` slice + the `readwiseSync`
   signature canary. Mirror ds D3/Q3.
@@ -382,7 +382,7 @@ adversarial layer stays outside. **New dev-specific decisions below need your ca
 
 ## 7. Incremental, tested implementation plan
 
-Discipline: **wc-audit before rewriting**; **don't break working workflows**; **each step tested
+Discipline: **workflow-creator-verify before rewriting**; **don't break working workflows**; **each step tested
 before the next**; **hylo-parity stress-tests every claim** before retirement.
 
 **Build status (2026-06-26):** steps 1–8 DONE; step 9 (shared-core extraction) is a separate pass.
@@ -393,7 +393,7 @@ before the next**; **hylo-parity stress-tests every claim** before retirement.
 - ✅ step 7 parity PASSED on the real hylo-tauri repo (§8c) — AB1/AB2/AB3 green
 - ✅ step 8: `workflows/dev-implement.js` retired (parity-proven; no live `Workflow(name="dev-implement")` caller remained)
 
-1. **wc-audit `dev-implement.js`** (Mode 2, delegated) — baseline 7.5/10 + B1–B15 invariants (§8). ✅
+1. **workflow-creator-verify `dev-implement.js`** (Mode 2, delegated) — baseline 7.5/10 + B1–B15 invariants (§8). ✅
 2. **`scripts/dev/dev_plan_table.py`** — tolerant deterministic parser (dev columns + `## Global
    Constraints` + `## Task Interfaces`). **Tests** (`tests/dev_plan_table_test.py`): the plan-template
    golden, `after N,M` fan-in, `N/A` Failing Test, missing-column rejection, cycle/dangling-dep
@@ -425,11 +425,11 @@ before the next**; **hylo-parity stress-tests every claim** before retirement.
 9. **THEN** the shared-`run-core` extraction assessment (ds + dev as the two instances) — separate
    pass, not this one.
 
-`dev-test-gaps`, `dev-review`, `dev-verify` are untouched.
+`dev-test-gaps`, `dev-verify`, `dev-accept` are untouched.
 
 ---
 
-## 8. Invariants the port must preserve (from the wc-audit — baseline score 7.5/10)
+## 8. Invariants the port must preserve (from the workflow-creator-verify — baseline score 7.5/10)
 
 The audit enumerated 15 baseline invariants (B1–B15). Every one is preserved or improved by the
 template + slimmed skill; **none is dropped.**
@@ -513,7 +513,7 @@ split-brain return type: `browserStore.readwiseSync→ReadwiseSyncResult` while 
 `Promise<number>`, so `api.readwiseSync` becomes a union and `App.tsx`'s `Synced ${n} highlights` renders
 `[object Object]` on the browser path. **tsc-CLEAN, unit-GREEN, integration-BROKEN** — the "JS gate
 caught zero integration bugs" lesson reproduced on real code. NOT a runner defect (it faithfully built
-the plan); it is direct evidence FOR keeping the full-suite / dev-review layer OUTSIDE `run.js`, exactly
+the plan); it is direct evidence FOR keeping the full-suite / dev-verify layer OUTSIDE `run.js`, exactly
 as this design does.
 
 ### Hybrid FULLSUITE leg — PROVEN live (2nd hylo-parity slice, 2026-06-26)
@@ -585,7 +585,7 @@ a gate-changing decision leaves a stale UPSTREAM artifact and the deterministic 
   **SHARPENING from writing (record in canonical D1):** the runner-side `gateProbe.pass` is **always
   DETERMINISTIC** — exit-code is the strongest floor, mechanical-floor the next; a **pure judgment never
   lives INSIDE the probe.** The probe is a *necessary-not-sufficient floor*; the semantic authority
-  (writing-review + source-verify) stays the **external PRIMARY arbiter OUTSIDE `run.js`**. So
+  (writing-verify + source-verify) stays the **external PRIMARY arbiter OUTSIDE `run.js`**. So
   "judgment trust-class" = "deterministic floor in the runner + semantic authority outside," NOT "a
   judgment returned by the probe." Evidence is numbered because a semantic gate can be gamed where an
   exit code can't.

@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
 /** PreToolUse gate: guarantee the deterministic mechanical floor (check-all.py) actually ran and
- * PASSED before the writing-review semantic fan-out spends tokens. Prose "run check-all" is a
+ * PASSED before the writing-verify semantic fan-out spends tokens. Prose "run check-all" is a
  * suggestion the model can skip; this is the enforcement (the plugin's "Hooks over prompt" doctrine).
  *
  * TIGHTLY SCOPED on purpose (the "check-all runs all .py" history):
- *   - FIRES only on a `Workflow` tool call whose target is the writing-review engine — NOT on every
- *     Write/Edit, NOT on other workflows. (Skill-scoped to writing-review in the frontmatter too.)
+ *   - FIRES only on a `Workflow` tool call whose target is the writing-verify engine — NOT on every
+ *     Write/Edit, NOT on other workflows. (Skill-scoped to writing-verify in the frontmatter too.)
  *   - RUNS check-all from the PROJECT dir, so check-all self-scopes to the WRITING constraints via its
  *     APPLIES_TO + detected-workflow filter (non-writing constraints are skipped, not run).
  *   - BLOCKS only on HARD failures — meaning a failed constraint whose module declares
@@ -225,7 +225,7 @@ function runCheckAll(project: string): CheckResult {
     // ("never hard-block the workflow on a harness error"). Bun.spawnSync does NOT throw on
     // timeout; it returns a killed process, whose non-zero exit fell through to the returncode
     // branch below and emitted a DENY. That inverted fail-open into fail-closed: a check-all
-    // exceeding 180s would block writing-review instead of waving it through.
+    // exceeding 180s would block writing-verify instead of waving it through.
     if (proc.signalCode || (proc.exitCode === null && !stdout)) {
       return { ok: true, failed: [], soft: [], errors: [], summary: "(check-all could not run: timeout)" };
     }
@@ -310,9 +310,9 @@ async function main(): Promise<void> {
       ? (rawToolInput as Record<string, unknown>)
       : {};
 
-  // SCOPE: only the writing-draft / writing-review engines, nothing else.
+  // SCOPE: only the writing-draft / writing-verify engines, nothing else.
   const target = `${toolInput.scriptPath ?? ""} ${toolInput.name ?? ""}`;
-  const isReview = target.includes("writing-review");
+  const isReview = target.includes("writing-verify");
   const isDraft = target.includes("writing-draft");
   if (!(isReview || isDraft)) process.exit(0);
 

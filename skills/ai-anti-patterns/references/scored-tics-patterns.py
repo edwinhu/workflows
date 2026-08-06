@@ -22,4 +22,5 @@ _TIC_PATTERNS = [
     ('\\b(rule|statute|provision|section|act|law|reform|restriction|requirement|mandate|constraint)s?\\s+(should|would|will|may|might|does|do)?\\s*bites?\\b|\\bbites?\\s+hard(er|est)\\b', 'ai-tic·sev3·rule-bites'),
     ('\\bsharpest version of\\b', 'ai-tic·sev2·sharpest-version'),
     ('\\bbounds?\\s+(all of|the whole|everything|the entirety|the entire|the analysis|the inquiry|the conclusion|the discussion|much of)\\b', 'ai-tic·sev2·bound-abstraction'),
+    ('\\b(?:panel|data|dataset|sample|table|record)(?:[\\x27’]s)?\\s+grain\\b|\\bgrain of the (?:data|panel|dataset|sample|table|analysis)\\b', 'ai-tic·sev2·data-grain'),
 ]

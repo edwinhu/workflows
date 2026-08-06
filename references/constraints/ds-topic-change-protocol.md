@@ -1,7 +1,7 @@
 ---
 name: topic-change-protocol
 description: Off-topic messages during an active DS role require announce-pause-handle-resume
-applies-to: [ds, ds-fix, ds-implement, ds-review, ds-delegate]
+applies-to: [ds, ds-fix, ds-implement, ds-accept, ds-delegate]
 ---
 
 ## Rule

@@ -1,5 +1,5 @@
 export const meta = {
-  name: 'writing-review',
+  name: 'writing-verify',
   description: 'Independent review of authenticated PLAN-bound drafts: per-section structure, prose, source fidelity, quote verification, transitions, and whole-document checks.',
   whenToUse: 'Called after mechanical checks with planPath, planHash, and a deterministic sectionIndex. Findings return to TaskList and selective re-review requires the same plan hash.',
   phases: [
@@ -25,7 +25,7 @@ let cfg = args
 if (typeof cfg === 'string') { try { cfg = JSON.parse(cfg) } catch { cfg = {} } }
 cfg = cfg || {}
 const PROJECT = cfg.projectDir
-if (!PROJECT) throw new Error(`writing-review requires args.projectDir. Got "${typeof args}": ${JSON.stringify(args)?.slice(0, 200)}`)
+if (!PROJECT) throw new Error(`writing-verify requires args.projectDir. Got "${typeof args}": ${JSON.stringify(args)?.slice(0, 200)}`)
 const ONLY = Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length ? new Set(cfg.onlyChecks.map(String)) : null
 const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).map(s => [s.section, s]))
 const PLUGIN = cfg.pluginRoot || ''
@@ -35,20 +35,20 @@ const PLAN_PATH = typeof cfg.planPath === 'string' ? cfg.planPath : ''
 const PLAN_HASH = typeof cfg.planHash === 'string' ? cfg.planHash : ''
 const SECTION_INDEX = (cfg.sectionIndex && Array.isArray(cfg.sectionIndex.sections) && cfg.sectionIndex.sections.length) ? cfg.sectionIndex : null
 if (!PLAN_PATH || !PLAN_HASH || !SECTION_INDEX) {
-  throw new Error('writing-review requires args.planPath, args.planHash, and a non-empty deterministic args.sectionIndex; canonical review never falls back to an LLM or retired planning files.')
+  throw new Error('writing-verify requires args.planPath, args.planHash, and a non-empty deterministic args.sectionIndex; canonical review never falls back to an LLM or retired planning files.')
 }
 if (SECTION_INDEX.ok !== true || SECTION_INDEX.planPath !== PLAN_PATH || SECTION_INDEX.planHash !== PLAN_HASH) {
-  throw new Error('writing-review rejected a malformed or stale section index: ok, planPath, and planHash must match the authenticated PLAN input.')
+  throw new Error('writing-verify rejected a malformed or stale section index: ok, planPath, and planHash must match the authenticated PLAN input.')
 }
-if (cfg.style && cfg.style !== SECTION_INDEX.style) throw new Error('writing-review style override conflicts with authenticated PLAN Writing Intent.')
+if (cfg.style && cfg.style !== SECTION_INDEX.style) throw new Error('writing-verify style override conflicts with authenticated PLAN Writing Intent.')
 for (const prior of (Array.isArray(cfg.priorReviews) ? cfg.priorReviews : [])) {
-  if (prior.planHash !== PLAN_HASH) throw new Error('writing-review rejected priorReviews from a different plan hash.')
+  if (prior.planHash !== PLAN_HASH) throw new Error('writing-verify rejected priorReviews from a different plan hash.')
 }
 for (const key of ['precisPath', 'outlinePath', 'activeWorkflowPath', 'legacyPlanPath']) {
-  if (cfg[key]) throw new Error(`writing-review rejected mixed active authority: args.${key} is retired.`)
+  if (cfg[key]) throw new Error(`writing-verify rejected mixed active authority: args.${key} is retired.`)
 }
 if (SECTION_INDEX.precisPath || (SECTION_INDEX.outlinePath && SECTION_INDEX.outlinePath !== PLAN_PATH)) {
-  throw new Error('writing-review rejected an index carrying retired active planning authority.')
+  throw new Error('writing-verify rejected an index carrying retired active planning authority.')
 }
 
 // ── Authenticated artifact bundle (no filesystem access in here) ─────────────
@@ -90,31 +90,31 @@ const containedBy = (root, path) => typeof path === 'string' && path !== INVALID
 
 const PROJECT_REAL = typeof cfg.projectReal === 'string' ? cfg.projectReal : ''
 if (!isAbs(PROJECT_REAL) || normalizePath(PROJECT_REAL) !== PROJECT_REAL) {
-  throw new Error('writing-review requires args.projectReal: the absolute resolved projectDir emitted by writing_section_index.py --authenticate.')
+  throw new Error('writing-verify requires args.projectReal: the absolute resolved projectDir emitted by writing_section_index.py --authenticate.')
 }
 const ARTIFACTS = (cfg.artifacts && typeof cfg.artifacts === 'object' && !Array.isArray(cfg.artifacts)) ? cfg.artifacts : null
-if (!ARTIFACTS) throw new Error('writing-review requires args.artifacts: the authenticated bundle from writing_section_index.py --authenticate.')
+if (!ARTIFACTS) throw new Error('writing-verify requires args.artifacts: the authenticated bundle from writing_section_index.py --authenticate.')
 const HEX64 = /^[0-9a-f]{64}$/
 const artifact = key => {
   const snapshot = ARTIFACTS[key]
-  if (!snapshot || typeof snapshot !== 'object') throw new Error(`writing-review is missing an authenticated artifact: ${key}`)
+  if (!snapshot || typeof snapshot !== 'object') throw new Error(`writing-verify is missing an authenticated artifact: ${key}`)
   const { path, real, hash, text } = snapshot
   if (!isAbs(path) || !isAbs(real) || typeof text !== 'string' || !HEX64.test(String(hash))) {
-    throw new Error(`writing-review rejected a malformed authenticated artifact: ${key}`)
+    throw new Error(`writing-verify rejected a malformed authenticated artifact: ${key}`)
   }
-  if (!containedBy(PROJECT_REAL, normalizePath(real))) throw new Error(`writing-review artifact escapes projectDir: ${key} (${real})`)
+  if (!containedBy(PROJECT_REAL, normalizePath(real))) throw new Error(`writing-verify artifact escapes projectDir: ${key} (${real})`)
   return { path, real: normalizePath(real), hash, text }
 }
 const SECTION_KEY = (name, kind) => `section:${name}:${kind}`
 const PLAN_FILE = typeof SECTION_INDEX.planFile === 'string' ? SECTION_INDEX.planFile : ''
 if (!/^\.planning\/[A-Za-z0-9][A-Za-z0-9._-]*\.md$/.test(PLAN_FILE) || PLAN_FILE === '.planning/PLAN.md' || SECTION_INDEX.reviewStatus !== 'APPROVED') {
-  throw new Error('writing-review requires an APPROVED receipt-selected generated planFile; fixed PLAN.md and non-approved review state cannot authorize review.')
+  throw new Error('writing-verify requires an APPROVED receipt-selected generated planFile; fixed PLAN.md and non-approved review state cannot authorize review.')
 }
 const EXPECTED_PLAN = resolvePath(PROJECT_REAL, PLAN_FILE)
 const PLAN_SNAPSHOT = artifact('plan')
 const PLAN_REAL = PLAN_SNAPSHOT.real
 if (resolvePath(PLAN_PATH) !== resolvePath(PLAN_SNAPSHOT.path) || PLAN_REAL !== EXPECTED_PLAN || !containedBy(joinPath(PROJECT_REAL, '.planning'), PLAN_REAL)) {
-  throw new Error('writing-review planPath must equal the receipt-selected generated planFile and may not escape through a symlink.')
+  throw new Error('writing-verify planPath must equal the receipt-selected generated planFile and may not escape through a symlink.')
 }
 const parseFlatStringJson = raw => {
   const text = raw.trim(); let index = 0
@@ -146,25 +146,25 @@ const parseFlatStringJson = raw => {
 }
 const RECEIPT_PATH = joinPath(PROJECT_REAL, '.planning', '.state', 'review.json')
 const RECEIPT_SNAPSHOT = artifact('receipt')
-if (resolvePath(RECEIPT_SNAPSHOT.path) !== RECEIPT_PATH) throw new Error('writing-review authenticated receipt is not the projectDir combined review state.')
+if (resolvePath(RECEIPT_SNAPSHOT.path) !== RECEIPT_PATH) throw new Error('writing-verify authenticated receipt is not the projectDir combined review state.')
 const receiptKeys = ['workflow', 'plan_file', 'plan_hash', 'approved_session_id', 'approved_at', 'status', 'reviewer_session_id', 'reviewed_at']
 const strictUtc = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) && Number.isFinite(Date.parse(value)) && new Date(value).toISOString() === value
 const receiptApproved = value => Object.keys(value).length === receiptKeys.length && receiptKeys.every(key => Object.hasOwn(value, key)) && value.workflow === 'writing' && `.planning/${value.plan_file}` === PLAN_FILE && value.plan_hash === PLAN_HASH && value.status === 'APPROVED' && typeof value.approved_session_id === 'string' && !!value.approved_session_id.trim() && typeof value.reviewer_session_id === 'string' && !!value.reviewer_session_id.trim() && value.approved_session_id !== value.reviewer_session_id && strictUtc(value.approved_at) && strictUtc(value.reviewed_at) && Date.parse(value.reviewed_at) > Date.parse(value.approved_at)
 let receipt
-try { receipt = parseFlatStringJson(RECEIPT_SNAPSHOT.text) } catch { throw new Error('writing-review rejected malformed or duplicate combined review state.') }
+try { receipt = parseFlatStringJson(RECEIPT_SNAPSHOT.text) } catch { throw new Error('writing-verify rejected malformed or duplicate combined review state.') }
 if (!receiptApproved(receipt)) {
-  throw new Error('writing-review combined review state does not authenticate the supplied generated plan identity.')
+  throw new Error('writing-verify combined review state does not authenticate the supplied generated plan identity.')
 }
 const PLAN_TEXT = PLAN_SNAPSHOT.text
 const ACTUAL_PLAN_HASH = PLAN_SNAPSHOT.hash
-if (ACTUAL_PLAN_HASH !== PLAN_HASH) throw new Error('writing-review generated plan bytes no longer match args.planHash.')
+if (ACTUAL_PLAN_HASH !== PLAN_HASH) throw new Error('writing-verify generated plan bytes no longer match args.planHash.')
 const REQUIRED_H2 = ['Writing Intent', 'Claims', 'Counterarguments', 'Document Structure', 'Claim → Section Map', 'Source Plan', 'Section Outputs', 'Review Surfaces']
 const OBSERVED_H2 = [...PLAN_TEXT.matchAll(/^##\s+(.+?)\s*$/gm)].map(m => m[1])
-if (JSON.stringify(OBSERVED_H2) !== JSON.stringify(REQUIRED_H2)) throw new Error('writing-review PLAN grammar changed after compilation.')
+if (JSON.stringify(OBSERVED_H2) !== JSON.stringify(REQUIRED_H2)) throw new Error('writing-verify PLAN grammar changed after compilation.')
 const structureBlock = PLAN_TEXT.match(/^## Document Structure\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
 const plannedNames = [...structureBlock.matchAll(/^###\s+(.+?)\s*$/gm)].map(m => m[1])
 const indexedNames = SECTION_INDEX.sections.map(s => String(s.name))
-if (JSON.stringify(plannedNames) !== JSON.stringify(indexedNames)) throw new Error('writing-review section index is truncated, reordered, or not compiled from PLAN Document Structure.')
+if (JSON.stringify(plannedNames) !== JSON.stringify(indexedNames)) throw new Error('writing-verify section index is truncated, reordered, or not compiled from PLAN Document Structure.')
 const outputsBlock = PLAN_TEXT.match(/^## Section Outputs\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
 const tableLines = outputsBlock.split('\n').map(line => line.trim()).filter(line => line.startsWith('|'))
 const cells = line => line.slice(1, -1).split('|').map(cell => cell.trim())
@@ -182,7 +182,7 @@ const headers = tableLines.length ? cells(tableLines[0]).map(h => h.toLowerCase(
 const outputRows = tableLines.slice(2).map(line => Object.fromEntries(headers.map((h, i) => [h, cells(line)[i] || ''])))
 const intentBlock = PLAN_TEXT.match(/^## Writing Intent\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
 const plannedStyle = intentBlock.match(/^\s*(?:[-*]\s*)?(?:\*\*)?Domain(?:\*\*)?\s*:\s*(legal|econ|general)\s*$/mi)?.[1]?.toLowerCase() || ''
-if (SECTION_INDEX.style !== plannedStyle) throw new Error('writing-review section index style does not match PLAN Writing Intent.')
+if (SECTION_INDEX.style !== plannedStyle) throw new Error('writing-verify section index style does not match PLAN Writing Intent.')
 const sourceBlock = PLAN_TEXT.match(/^## Source Plan\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
 const plannedSourcePlan = {}
 for (const match of sourceBlock.matchAll(/^\s*(?:[-*]\s*)?(?:\*\*)?([A-Za-z][A-Za-z /_-]*?)(?:\*\*)?\s*:\s*(.+?)\s*$/gm)) {
@@ -192,13 +192,13 @@ const plannedBib = plannedSourcePlan.bibliography || ''
 const normalizedSourceEntries = value => JSON.stringify(Object.entries(value || {}).sort(([a], [b]) => a.localeCompare(b)))
 const EXPECTED_BIB = resolvePath(PROJECT_REAL, plannedBib)
 if (resolvePath(SECTION_INDEX.bibPath || '') !== EXPECTED_BIB || normalizedSourceEntries(SECTION_INDEX.sourcePlan) !== normalizedSourceEntries(plannedSourcePlan)) {
-  throw new Error('writing-review section index Source Plan context does not match the generated plan.')
+  throw new Error('writing-verify section index Source Plan context does not match the generated plan.')
 }
 const BIB_SNAPSHOT = artifact('bib')
-if (resolvePath(BIB_SNAPSHOT.path) !== EXPECTED_BIB) throw new Error('writing-review authenticated bibliography is not the PLAN Source Plan bibliography.')
+if (resolvePath(BIB_SNAPSHOT.path) !== EXPECTED_BIB) throw new Error('writing-verify authenticated bibliography is not the PLAN Source Plan bibliography.')
 const reviewBlock = PLAN_TEXT.match(/^## Review Surfaces\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
 const plannedSurfaces = [...reviewBlock.matchAll(/^\s*[-*]\s+(\S.*?)\s*$/gm)].map(match => match[1])
-if (JSON.stringify(SECTION_INDEX.reviewSurfaces || []) !== JSON.stringify(plannedSurfaces)) throw new Error('writing-review section index Review Surfaces do not match the generated plan.')
+if (JSON.stringify(SECTION_INDEX.reviewSurfaces || []) !== JSON.stringify(plannedSurfaces)) throw new Error('writing-verify section index Review Surfaces do not match the generated plan.')
 const mapBlock = PLAN_TEXT.match(/^## Claim → Section Map\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m)?.[1] || ''
 const mapLines = mapBlock.split('\n').map(line => line.trim()).filter(line => line.startsWith('|'))
 const mapHeaders = mapLines.length ? cells(mapLines[0]).map(h => h.toLowerCase()) : []
@@ -206,30 +206,30 @@ const mapRows = mapLines.slice(2).map(line => Object.fromEntries(mapHeaders.map(
 const expectedClaims = Object.fromEntries(indexedNames.map(name => [name, []]))
 const artifactSnapshots = {}
 for (const row of mapRows) if (expectedClaims[row.section]) expectedClaims[row.section].push(row.claim)
-if (outputRows.length !== SECTION_INDEX.sections.length) throw new Error('writing-review section index does not contain every PLAN Section Outputs row.')
+if (outputRows.length !== SECTION_INDEX.sections.length) throw new Error('writing-verify section index does not contain every PLAN Section Outputs row.')
 for (let i = 0; i < SECTION_INDEX.sections.length; i++) {
   const section = SECTION_INDEX.sections[i]
   const row = outputRows[i]
-  if (!row || row.section !== section.name) throw new Error('writing-review section index order does not match PLAN Section Outputs.')
+  if (!row || row.section !== section.name) throw new Error('writing-verify section index order does not match PLAN Section Outputs.')
   const expectedOutline = resolvePath(PROJECT_REAL, row.outline)
   const expectedDraft = resolvePath(PROJECT_REAL, row.draft)
   for (const path of [expectedOutline, expectedDraft, resolvePath(section.outlineFile), resolvePath(section.draftFile)]) {
-    if (!containedBy(PROJECT_REAL, path)) throw new Error('writing-review rejected an artifact path outside projectDir.')
+    if (!containedBy(PROJECT_REAL, path)) throw new Error('writing-verify rejected an artifact path outside projectDir.')
   }
   if (resolvePath(section.outlineFile) !== expectedOutline || resolvePath(section.draftFile) !== expectedDraft) {
-    throw new Error('writing-review section index artifact paths do not match PLAN Section Outputs.')
+    throw new Error('writing-verify section index artifact paths do not match PLAN Section Outputs.')
   }
   const expectedDependencies = !row['depends on'] || ['-', 'none', 'n/a'].includes(row['depends on'].toLowerCase()) ? [] : row['depends on'].split(/\s*(?:,|;)\s*/).filter(Boolean)
-  if (JSON.stringify(section.dependencies || []) !== JSON.stringify(expectedDependencies)) throw new Error('writing-review section index dependencies do not match PLAN Section Outputs.')
+  if (JSON.stringify(section.dependencies || []) !== JSON.stringify(expectedDependencies)) throw new Error('writing-verify section index dependencies do not match PLAN Section Outputs.')
   const claimsForSection = expectedClaims[section.name] || []
-  if (JSON.stringify(section.primaryClaims || []) !== JSON.stringify(claimsForSection)) throw new Error('writing-review section index claims do not match PLAN Claim → Section Map.')
+  if (JSON.stringify(section.primaryClaims || []) !== JSON.stringify(claimsForSection)) throw new Error('writing-verify section index claims do not match PLAN Claim → Section Map.')
   if (section.outlineCurrent !== true || section.draftCurrent !== true) {
-    throw new Error(`writing-review requires current PLAN-bound outline and draft artifacts for ${section.name}.`)
+    throw new Error(`writing-verify requires current PLAN-bound outline and draft artifacts for ${section.name}.`)
   }
   const outlineSnapshot = artifact(SECTION_KEY(section.name, 'outline'))
   const draftSnapshot = artifact(SECTION_KEY(section.name, 'draft'))
   if (resolvePath(outlineSnapshot.path) !== expectedOutline || resolvePath(draftSnapshot.path) !== expectedDraft) {
-    throw new Error(`writing-review authenticated artifacts for ${section.name} are not the PLAN Section Outputs paths.`)
+    throw new Error(`writing-verify authenticated artifacts for ${section.name} are not the PLAN Section Outputs paths.`)
   }
   artifactSnapshots[section.name] = { outline: outlineSnapshot, draft: draftSnapshot }
   const outlineText = outlineSnapshot.text
@@ -238,15 +238,15 @@ for (let i = 0; i < SECTION_INDEX.sections.length; i++) {
     const identity = artifactIdentity(text)
     return identity.valid && identity.planHash === PLAN_HASH && JSON.stringify(identity.implements) === JSON.stringify(claimsForSection)
   }
-  if (!artifactCurrent(outlineText) || !artifactCurrent(draftText)) throw new Error(`writing-review artifacts for ${section.name} are stale or do not implement mapped PLAN claims.`)
+  if (!artifactCurrent(outlineText) || !artifactCurrent(draftText)) throw new Error(`writing-verify artifacts for ${section.name} are stale or do not implement mapped PLAN claims.`)
 }
 const onlyInput = Array.isArray(cfg.onlyChecks) ? cfg.onlyChecks.map(String) : []
 if (new Set(onlyInput).size !== onlyInput.length || onlyInput.some(name => !indexedNames.includes(name))) {
-  throw new Error('writing-review onlyChecks must contain unique current PLAN section names.')
+  throw new Error('writing-verify onlyChecks must contain unique current PLAN section names.')
 }
 const priorInput = Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []
 if (new Set(priorInput.map(prior => String(prior.section))).size !== priorInput.length) {
-  throw new Error('writing-review priorReviews contains duplicate section records.')
+  throw new Error('writing-verify priorReviews contains duplicate section records.')
 }
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
@@ -376,7 +376,7 @@ function discFromIndex(idx) {
     reviewSurfaces: idx.reviewSurfaces || [],
     sourcesBib: idx.bibPath || '',
     domainSkillPath: PLUGIN ? `${PLUGIN}/../skills/writing-${style}/SKILL.md` : '',
-    repetitionScript: PLUGIN ? `${PLUGIN}/../skills/writing-review/scripts/bridge_repetition_check.py` : '',
+    repetitionScript: PLUGIN ? `${PLUGIN}/../skills/writing-verify/scripts/bridge_repetition_check.py` : '',
     sections: idx.sections.map(s => ({
       name: String(s.name),
       outlineFile: s.outlineFile || '',
@@ -515,7 +515,7 @@ for (const s of sections) {
     // would be presented as a current, reliable review of citations that no longer resolve the same
     // way. Every other input to the result is hash-bound here; this one was not.
     if (!prior || prior.planHash !== PLAN_HASH || prior.outlineHash !== currentOutlineHash || prior.draftHash !== currentDraftHash || prior.bibHash !== BIB_SNAPSHOT.hash || prior.unreliable !== false || !Array.isArray(prior.issues) || !prior.boundary || !Array.isArray(prior.argumentSummary)) {
-      throw new Error(`writing-review selective re-review requires one complete reliable current-content prior review for ${s.name}, produced against the CURRENT bibliography.`)
+      throw new Error(`writing-verify selective re-review requires one complete reliable current-content prior review for ${s.name}, produced against the CURRENT bibliography.`)
     }
     carried.push(prior)
     carriedCount++
@@ -557,7 +557,7 @@ const allSections = [...liveSections, ...carried]
 const order = Object.fromEntries(sections.map((s, i) => [s.name, i]))
 allSections.sort((a, b) => (order[a.section] ?? 99) - (order[b.section] ?? 99))
 if (JSON.stringify(allSections.map(section => section.section)) !== JSON.stringify(indexedNames)) {
-  throw new Error('writing-review did not assemble exactly one review for every current PLAN section.')
+  throw new Error('writing-verify did not assemble exactly one review for every current PLAN section.')
 }
 
 // ── Phase 5: L2 transitions + L3 whole-document (single agents over L1 data) ───
@@ -608,7 +608,7 @@ if (/^[ \t]*(?:[-*+][ \t]*)?(?:\*\*)?third-party review(?:\*\*)?[ \t]*:/im.test(
 FIRST read \${CLAUDE_PLUGIN_ROOT}/skills/beat-third-party/SKILL.md and follow it — it owns how this
 runner is invoked and how its result must be read. Do not fix anything.
 For each draft, run exactly:
-  echo '{"projectDir":"${PROJECT}","workflow":"writing-review","planReset":{"planFile":"${disc.planPath}","planHash":"${PLAN_HASH}"},"scope":{"kind":"document","path":"<draft>"},"skills":["ai-anti-patterns","de-ai-revise"]}' | bun \${CLAUDE_PLUGIN_ROOT}/scripts/beat/third-party-review.ts
+  echo '{"projectDir":"${PROJECT}","workflow":"writing-verify","planReset":{"planFile":"${disc.planPath}","planHash":"${PLAN_HASH}"},"scope":{"kind":"document","path":"<draft>"},"skills":["ai-anti-patterns","de-ai-revise"]}' | bun \${CLAUDE_PLUGIN_ROOT}/scripts/beat/third-party-review.ts
 Drafts: ${JSON.stringify(docs)}
 Report per-adapter attribution — the value is in where adapters disagree — and report each adapter's
 \`briefSources\` verbatim, which is the receipt for which rules that reviewer was actually given.`,

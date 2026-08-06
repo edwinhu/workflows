@@ -11,8 +11,8 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-REVIEW = (REPO / "skills" / "dev-review" / "SKILL.md").read_text()
-VERIFY = (REPO / "skills" / "dev-verify" / "SKILL.md").read_text()
+REVIEW = (REPO / "skills" / "dev-verify" / "SKILL.md").read_text()
+VERIFY = (REPO / "skills" / "dev-accept" / "SKILL.md").read_text()
 
 FAILURES = []
 

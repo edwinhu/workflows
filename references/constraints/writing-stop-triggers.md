@@ -1,7 +1,7 @@
 ---
 name: writing-stop-triggers
 description: Common rationalizations that cause main chat to bypass writing workflow structure
-applies-to: [writing-draft, writing-review, writing-revise]
+applies-to: [writing-draft, writing-verify, writing-revise]
 ---
 
 ## Rule
@@ -15,7 +15,7 @@ These are the most common rationalizations that cause main chat to bypass the wr
 ## Examples
 
 ### Correct
-1. Agent needs to check tone → Loads domain skill + ai-anti-patterns → Invokes /writing-review.
+1. Agent needs to check tone → Loads domain skill + ai-anti-patterns → Invokes /writing-verify.
 2. Agent sees a typo in the draft → Notes it for the revision phase → Continues current phase.
 3. Subagent returns a draft → Agent reports the subagent returned → Invokes next skill.
 
@@ -30,7 +30,7 @@ These are the most common rationalizations that cause main chat to bypass the wr
 |--------|-----------|------------|
 | Reading a draft file outside of a phase skill | Bypasses constraint loading; you'll form opinions and start editing | Load the appropriate skill first |
 | "Let me check the tone" without loading domain skill + ai-anti-patterns | Partial evaluation is worse than no evaluation — it creates false confidence | Load ALL constraint layers, then evaluate via the review skill |
-| "Quick edit to the intro" without REVIEW.md | Unstructured edits bypass review → revise pipeline | Run /writing-review first, then /writing-revise |
+| "Quick edit to the intro" without REVIEW.md | Unstructured edits bypass review → revise pipeline | Run /writing-verify first, then /writing-revise |
 | Editing prose after reading REVIEW.md (skipping /writing-revise) | REVIEW.md is for /writing-revise to consume, not for main chat to act on directly | Invoke /writing-revise |
 | "Let me polish this paragraph" mid-workflow | Polish is revision work; doing it ad-hoc bypasses the revision skill's constraint loading | Continue current phase; polish during revision |
 | Summarizing a subagent's draft in your own words | You're rewriting, not summarizing. This is investigation disguised as reporting. | Report the subagent returned, invoke next skill |

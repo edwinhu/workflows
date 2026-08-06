@@ -277,8 +277,8 @@ therefore bound to `planHash`. An absent line means this step does not exist; sk
 **The beat owns the invocation and the rules for reading its result — follow
 `${CLAUDE_SKILL_DIR}/../beat-third-party/SKILL.md`.** Read `status` before `findings`; an
 `unparseable` adapter has not necessarily said nothing; the exit gate never consults any of it;
-budget $5–15 per adapter pair. Those warnings live there once rather than here, in `ds-review` and in
-`workflows/writing-review.js` three times over.
+budget $5–15 per adapter pair. Those warnings live there once rather than here, in `ds-accept` and in
+`workflows/writing-verify.js` three times over.
 
 ```bash
 echo '{"projectDir":"...","workflow":"...","planReset":{"planFile":"...","planHash":"..."},

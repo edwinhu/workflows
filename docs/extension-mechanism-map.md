@@ -100,7 +100,7 @@ prompt template by the dispatching skill.
 |---|---:|---:|
 | `ds` | 94,325 | ~23,600 |
 | `ds-delegate` | 70,252 | ~17,600 |
-| `ds-review` | 54,557 | ~13,600 |
+| `ds-accept` | 54,557 | ~13,600 |
 | `ds-fix` | 54,041 | ~13,500 |
 | `ds-plan` | 51,122 | ~12,800 |
 | `ds-verify` | 38,368 | ~9,600 |

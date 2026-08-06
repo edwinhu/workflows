@@ -9,8 +9,8 @@ Any workflow whose gate is **computed in JS** and returns:
   `/goal` fix-loop consumes as `onlyChecks` on the next iteration, alongside `priorReviews` for
   carry-forward.
 
-This is the shape of the read-only `wc-audit.js` verifier and every compiled-runner or review-fan-out
-workflow this skill scaffolds (`workshop-verify`, `dev-verify`, and external self-grading gates). If a workflow you are creating or auditing matches this shape, the laws below are
+This is the shape of the read-only `workflow-creator-verify.js` verifier and every compiled-runner or review-fan-out
+workflow this skill scaffolds (`workshop-verify`, `dev-accept`, and external self-grading gates). If a workflow you are creating or auditing matches this shape, the laws below are
 **mandatory reading** — they consolidate repeated incidents across independent workflow campaigns, and the failure mode is structural rather than accidental.
 
 **Cross-references, not duplicates** — these laws build on doctrine already in this SKILL.md;
@@ -21,10 +21,10 @@ don't re-derive what's already there:
 - D1's `gateProbe` contract (~line 669) already requires `pass ⊥ artifactsPresent` as two
   independent booleans, never trusting `pass` alone. L4/L5 below generalize this beyond the
   compiled-runner D1 seam to every self-report field on any gate.
-- The compiled-runner principles P22-P30 (a CONDITIONAL cluster in `wc-audit.js`) already audit
+- The compiled-runner principles P22-P30 (a CONDITIONAL cluster in `workflow-creator-verify.js`) already audit
   the `gateProbe`/parser/emitter machinery for the DAG-of-mechanical-work case. This doctrine is
   broader: it applies to ANY self-grading gate, compiled-runner or not (a pure review fan-out like
-  `wc-audit` itself is in scope and is NOT a compiled runner).
+  `workflow-creator-verify` itself is in scope and is NOT a compiled runner).
 - `tests/workflow_return_shape_test.py` already exists in this repo and mechanically checks L1's
   return-shape contract. **Run it, don't rewrite it.**
 
@@ -69,7 +69,7 @@ with a visibly distinct status, never a bare pass.
 **(b) Enforcement/verification must survive the ONLY path.** An `if (ONLY) continue` that disables
 adversarial verification on a re-audit is a convergence blocker — the loop appears to iterate but
 never re-checks the thing that mattered.
-- This repo: `wc-audit`'s own worst bug — the `onlyChecks` path disabled all verification on
+- This repo: `workflow-creator-verify`'s own worst bug — the `onlyChecks` path disabled all verification on
   selective re-audits, meaning every re-audit after iteration 1 was unverified.
 - Another data-variant verifier skipped a review dimension under `ONLY` and passed vacuously, allowing a violating artifact to survive a re-run.
 

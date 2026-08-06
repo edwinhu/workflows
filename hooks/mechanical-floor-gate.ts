@@ -10,7 +10,7 @@
  *
  * Parameterized by the FLOOR env var (set in the skill frontmatter hook command):
  *
- *   FLOOR=dev  → gate the Agent spawn (the goal-backward verifier in dev-verify, Leg 2).
+ *   FLOOR=dev  → gate the Agent spawn (the goal-backward verifier in dev-accept, Leg 2).
  *                Runs references/constraints/check-all.py. Denies on HARD failures only.
  *
  *   FLOOR=ds   → gate the shared beat-implement Workflow spawn.

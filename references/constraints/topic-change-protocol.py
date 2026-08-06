@@ -10,7 +10,7 @@ false-failed once check-all correctly scoped it to writing projects.
 
 CONSTRAINT = "topic-change-protocol"
 APPLIES_TO = ["writing-setup", "writing-outline", "writing-draft",
-              "writing-validate", "writing-review", "writing-revise"]
+              "writing-validate", "writing-verify", "writing-revise"]
 SEVERITY = "hard"
 
 import re
@@ -18,7 +18,7 @@ from pathlib import Path
 
 # All workflow phase skills (except the entry router, which loads only the index) must auto-load this
 PHASE_SKILLS = ['writing-setup', 'writing-outline', 'writing-draft',
-                'writing-validate', 'writing-review', 'writing-revise']
+                'writing-validate', 'writing-verify', 'writing-revise']
 
 
 def _md_applies_to(md_path):

@@ -48,7 +48,7 @@ current native plan + TaskList + project auto-memory
        R4 (plan contract changes)? ── yes → /ds native replanning
                     │ no
                     ↓
- ordinary tactical repair → ds-implement ready-wave → independent VERIFY → ds-review
+ ordinary tactical repair → ds-implement ready-wave → independent VERIFY → ds-accept
 ```
 
 ## 1. Load and diagnose
@@ -101,7 +101,7 @@ criteria, evidence, dependencies, `writablePaths`, and outputs. Then read
 The adapter selects a complete ready wave, invokes `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md`, and independently
 verifies the changed work using the same technical verifier loop. A failure returns only the affected
 ready-wave task to repair; do not change plan intent or criteria to make it pass. After technical PASS,
-continue to `ds-review` for the existing human acceptance contract.
+continue to `ds-accept` for the existing human acceptance contract.
 
 ## Gate: claim a fix
 

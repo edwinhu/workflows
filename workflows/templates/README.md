@@ -32,7 +32,7 @@ are adapted directly to the shared IMPLEMENT beat by their implementation skills
 `scripts/beat/preflight.ts` to authenticate the wave and route it.
 ```
 
-There is **no LLM "discovery" agent** anywhere in this chain. An LLM between the structured plan and the strict guard absorbs spec-drift invisibly (the retired generic-interpreter anti-pattern; wc-audit flags it `executionClass=generic-interpreter` → critical). **Emitting only parser + guard (no canonical emitter) half-applies the rule — it relocates the tolerance into regex instead of removing it.**
+There is **no LLM "discovery" agent** anywhere in this chain. An LLM between the structured plan and the strict guard absorbs spec-drift invisibly (the retired generic-interpreter anti-pattern; workflow-creator-verify flags it `executionClass=generic-interpreter` → critical). **Emitting only parser + guard (no canonical emitter) half-applies the rule — it relocates the tolerance into regex instead of removing it.**
 
 ## The four INJECTED seams D1-D4 (the ONLY things that change per domain)
 

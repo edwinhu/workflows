@@ -80,7 +80,7 @@ The grammar is deterministic:
 ```text
 CLARIFY → gather/materialize sources → native Plan approval → independent whole-plan review
         → detailed section outlines → deterministic section-index compile
-        → writing-draft → verification → independent writing-review
+        → writing-draft → verification → independent writing-verify
         → /writing-revise → writing-accept (human acceptance)
 ```
 
@@ -92,7 +92,7 @@ CLARIFY → gather/materialize sources → native Plan approval → independent 
 2. Gather sources through the librarian workflow and materialize real source artifacts under `references/`.
 3. Load `writing-setup` to enter native Plan mode and produce the required grammar. Do not write a substitute planning document.
 4. After approval, dispatch one independent whole-plan reviewer. Implementation waits for an `APPROVED` hash-bound `review.json` from a distinct reviewer session.
-5. Load `writing-outline` for detailed section outlines, then `writing-draft`. Its PLAN-based mechanical probe and semantic source verification replace the retired marker-based validation hop; proceed directly to independent `writing-review`, then `/writing-revise`.
+5. Load `writing-outline` for detailed section outlines, then `writing-draft`. Its PLAN-based mechanical probe and semantic source verification replace the retired marker-based validation hop; proceed directly to independent `writing-verify`, then `/writing-revise`.
 6. Load `writing-accept` for terminal human acceptance. Independent machine review is not a
    person's acceptance; the adapter carries the domain framing over `beat-review`.
 7. Represent live work as TaskList items bound to `planHash` and stable section/claim identifiers.

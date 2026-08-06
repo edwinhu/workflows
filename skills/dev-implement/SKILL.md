@@ -134,7 +134,7 @@ corresponding TaskList finding/retry dependency and resume only affected attempt
 
 After all current-hash implementation items independently pass, run `dev-test-gaps`. Its returned
 requirement-to-test matrix, not a visible validation ledger, is the quality-gate result. Clear the
-goal after terminal verification PASS, then continue to `dev-review`.
+goal after terminal verification PASS, then continue to `dev-verify`.
 
 ## Red flags — STOP
 

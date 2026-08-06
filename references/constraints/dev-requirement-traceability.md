@@ -1,7 +1,7 @@
 ---
 name: dev-requirement-traceability
 description: REQ-NN IDs in the native dev plan must trace through TaskList work, tests, and fresh evidence
-applies-to: [dev-design, dev-plan-reviewer, dev-implement, dev-review, dev-verify, dev-test-gaps]
+applies-to: [dev-design, dev-plan-reviewer, dev-implement, dev-verify, dev-accept, dev-test-gaps]
 ---
 
 # Dev requirement traceability

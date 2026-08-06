@@ -1,14 +1,14 @@
 ---
 name: ds-common-conventions
 description: Common judgment-based conventions index for the ds skill family
-applies-to: [ds, ds-fix, ds-implement, ds-review, ds-delegate]
+applies-to: [ds, ds-fix, ds-implement, ds-accept, ds-delegate]
 ---
 
 # DS Workflow: Common Conventions
 
 Behavioral guidance for the DS skill family. Loaded ex-ante for prompt context and assessed by human or LLM judgment during review.
 
-**Skills that load this file:** ds (orchestrator), ds-fix (midpoint), ds-implement, ds-review, ds-delegate.
+**Skills that load this file:** ds (orchestrator), ds-fix (midpoint), ds-implement, ds-accept, ds-delegate.
 
 After reading this index, load the specific convention files needed for your current role.
 
@@ -35,5 +35,5 @@ After reading this index, load the specific convention files needed for your cur
 | **ds (orchestrator)** | V1, V2, V3 | Guard the approved PLAN against assumptions, deferred checks, and urgency shortcuts |
 | **ds-fix (midpoint)** | V1-V9 (all) | Midpoint can route to any role |
 | **ds-implement** | V1, V2, V4, V5, V6, V7 | Technical implementation and verification require evidence, statistics, and escape-pattern controls |
-| **ds-review** | V4 | Human-feedback review needs the pause/resume protocol, not technical verification conventions |
+| **ds-accept** | V4 | Human-feedback review needs the pause/resume protocol, not technical verification conventions |
 | **ds-delegate** | V5, V9 | Delegation needs escape-pattern and deviation controls |

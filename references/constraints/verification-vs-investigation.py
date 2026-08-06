@@ -7,7 +7,7 @@ runtime. A filesystem probe cannot reconstruct session ownership and must not co
 import sys
 
 CONSTRAINT = "verification-vs-investigation"
-APPLIES_TO = ["dev", "dev-tdd", "dev-implement", "dev-review", "dev-verify", "dev-debug",
+APPLIES_TO = ["dev", "dev-tdd", "dev-implement", "dev-verify", "dev-accept", "dev-debug",
               "dev-delegate", "dev-test", "dev-test-gaps"]
 SEVERITY = "hard"
 

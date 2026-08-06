@@ -36,7 +36,7 @@ registered by the skill that owns the *source* of the edge it defends:
 |---|---|---|
 | entry → recon | `clarify-before-recon-guard` + `.planning/<X>_CLARIFIED.json` | `dev`, `ds` |
 | plan → approval | `approved-artifact-persist` on `ExitPlanMode` | `dev`, `ds` |
-| approval → implement | `approved-artifact-gate` | `dev-implement`, `dev-verify`, `dev-review` |
+| approval → implement | `approved-artifact-gate` | `dev-implement`, `dev-accept`, `dev-verify` |
 | any → main-chat mutation | `orchestrator-mutation-guard` | ~10 skills |
 | **implement → review** | **nothing** | — |
 
@@ -46,8 +46,8 @@ Because each guard ships in the frontmatter of the skill preceding its edge, the
 `implementer-identity-gate` is the only plugin-wide `PreToolUse` mutation hook, so the entire beat
 machinery has exactly one enforcement anchor and it is off by default.
 
-`implement -> review` is unguarded in **every** workflow, not just the beats. `dev-review` registers
-`approved-artifact-gate`, but that guards `dev-review`'s own dispatches once you are already inside
+`implement -> review` is unguarded in **every** workflow, not just the beats. `dev-verify` registers
+`approved-artifact-gate`, but that guards `dev-verify`'s own dispatches once you are already inside
 it. `skills/beat-review` registers no hooks at all.
 
 ## The reframe: one bit is doing two jobs

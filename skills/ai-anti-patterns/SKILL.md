@@ -93,7 +93,7 @@ These patterns are unambiguous AI artifacts:
 
 **This section is a personal style preference, not a linter, and the name it used to carry
 ("User-Voice Lint") was doing real damage.** Nothing here was ever in an executable table, so a
-`writing-review` pass ran every scorer and knew none of these phrases — while the heading implied
+`writing-verify` pass ran every scorer and knew none of these phrases — while the heading implied
 four enforced rules. Three of the four have now been measured against 14,294,148 sentences of human
 scholarship (8.73M finance/accounting + 5.56M law review) and they are **normal human prose**:
 
@@ -119,8 +119,8 @@ present them as AI detection. Full record: `docs/investigations/2026-08-05_empha
   <noun>` at large is 86 hits. The word is ordinary; the collocation is the tell.
 
 **Bridge repetitions** remain the one genuinely enforced entry from the old list —
-`skills/writing-review/scripts/bridge_repetition_check.py`, invoked from
-`workflows/writing-review.js`. It is real logic over section openings, not a phrase table.
+`skills/writing-verify/scripts/bridge_repetition_check.py`, invoked from
+`workflows/writing-verify.js`. It is real logic over section openings, not a phrase table.
 
 **To check a phrase yourself:** `/ai-tic <phrase>` — it runs the FP-hunt against both corpus halves
 and refuses to add anything over the eligibility gate.

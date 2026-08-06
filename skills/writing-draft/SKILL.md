@@ -78,7 +78,7 @@ python3 ${CLAUDE_SKILL_DIR}/../../scripts/writing/writing_section_index.py \
 this run produces cannot be in an entry bundle — the file does not exist yet on a
 first run, and on a retry a pre-run snapshot of a draft the agents are about to
 rewrite would be reported as drift by the post-step, failing a good run. Passing
-`--drafts all` here (the default, and correct for `writing-review`) is a bug:
+`--drafts all` here (the default, and correct for `writing-verify`) is a bug:
 it makes a first run impossible and a clean re-draft un-passable.
 
 Non-zero exit or `ok !== true` blocks drafting — read `violations` and stop. The
@@ -189,4 +189,4 @@ return (`verifyRequired: true` means neither the drift check nor output verifica
 has run, and the verdict is not yet trustworthy). Read the workflow result, not a
 self-report. `overallPass` must be true, `driftVerified` true, `driftedArtifacts`
 empty, every `pendingDraftVerification` section resolved to a non-empty `draftHash`,
-`underGranular` empty, the generated plan hash unchanged, every reviewed outline unchanged after asynchronous verification, exact draft frontmatter valid, the deterministic probe clean, and semantic source verification clean. Store the evidence and result in TaskList. These checks replace the retired marker-based validation phase; continue directly to independent `writing-review` without creating a completion marker.
+`underGranular` empty, the generated plan hash unchanged, every reviewed outline unchanged after asynchronous verification, exact draft frontmatter valid, the deterministic probe clean, and semantic source verification clean. Store the evidence and result in TaskList. These checks replace the retired marker-based validation phase; continue directly to independent `writing-verify` without creating a completion marker.

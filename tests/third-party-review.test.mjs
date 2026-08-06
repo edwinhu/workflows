@@ -599,7 +599,7 @@ console.log('the rules are the CALLER\'S, and what the reviewer got stays checka
     let spec
     proseCodexAdapter.review({
       projectDir: ROOT, scope: { kind: 'document', path: docPath },
-      // The exact bundle `workflows/writing-review.js` passes.
+      // The exact bundle `workflows/writing-verify.js` passes.
       briefs: resolveSkillBriefs(ROOT, ['ai-anti-patterns', 'de-ai-revise']),
       invoke: s => { spec = s; return { code: 0, stdout: '', stderr: '' } },
     })

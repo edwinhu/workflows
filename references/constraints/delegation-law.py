@@ -8,7 +8,7 @@ does not infer authorship from retired planning ledgers or an uncommitted diff.
 import sys
 
 CONSTRAINT = "delegation-law"
-APPLIES_TO = ["dev", "dev-tdd", "dev-implement", "dev-review", "dev-verify", "dev-debug",
+APPLIES_TO = ["dev", "dev-tdd", "dev-implement", "dev-verify", "dev-accept", "dev-debug",
               "dev-delegate", "dev-design", "dev-explore", "dev-handoff", "dev-test",
               "dev-test-gaps", "dev-plan-reviewer"]
 SEVERITY = "hard"

@@ -70,11 +70,11 @@ instruction, and there is no artifact left over from which anyone could.
 Beyond the loaders: `hooks/hooks.json:117` (PostToolUse Edit|Write → `writing-prose-check.ts`, and
 only for `drafts/*.md` or non-deck `*.typ` under an **authenticated approved writing plan** — it
 exits silently otherwise); `hooks/writing-mechanical-gate.ts` and `hooks/mechanical-floor-gate.ts`
-(PreToolUse blocking gates over check-all); `workflows/writing-review.js:380` (dispatches
+(PreToolUse blocking gates over check-all); `workflows/writing-verify.js:380` (dispatches
 `writing-prose-reviewer` with "Read the domain skill, ai-anti-patterns, and prose constraints
-first"); `workflows/writing-review.js:513` (third-party opt-in parsed out of the plan text);
+first"); `workflows/writing-verify.js:513` (third-party opt-in parsed out of the plan text);
 `agents/writing-prose-reviewer.md:82` (the de_ai_audit Bash line, as prose in a markdown file);
-`skills/writing-review/SKILL.md:37` and `skills/writing-revise/SKILL.md:39,65` (load-the-skill
+`skills/writing-verify/SKILL.md:37` and `skills/writing-revise/SKILL.md:39,65` (load-the-skill
 instructions). **Nothing anywhere gates on a `de_ai_audit` result** — grep for `de_ai` across
 `hooks/` and `workflows/` returns nothing.
 
@@ -168,7 +168,7 @@ Every reviewer receives the **same audit output in its prompt**:
 
 | Reviewer | Today | Proposed |
 |---|---|---|
-| `writing-prose-reviewer` | markdown *suggests* a Bash line | `writing-review.js` runs `prose-audit.py`, injects spans into the agent prompt |
+| `writing-prose-reviewer` | markdown *suggests* a Bash line | `writing-verify.js` runs `prose-audit.py`, injects spans into the agent prompt |
 | `prose-codex` | prompt says "FIRST, load these skills" | `prose.ts` runs `prose-audit.py` and injects spans + inlined decay rules |
 | `prose-gemini` | same | same |
 
@@ -191,8 +191,8 @@ disagreement between them becomes meaningful.
 - `prose.ts` keeps `raw` on the **success** path (truncated), so `total_cost_usd` and the tool-use
   record survive. This is the fix that would have answered the rule611 question at the time.
 - A reviewer that returns zero `spanIds` while the audit produced hard-severity spans is reported
-  as `unreliable` — the same treatment `writing-review.js` already gives a section reviewer whose
-  evidence was missing or fabricated (`writing-review.js:590`).
+  as `unreliable` — the same treatment `writing-verify.js` already gives a section reviewer whose
+  evidence was missing or fabricated (`writing-verify.js:590`).
 
 ### 3.5 What a reader can tell at a glance
 
@@ -212,7 +212,7 @@ Three surfaces, one rule for telling them apart.
    `screen.py`; retarget `tests/test_prose_lint_hook.py`.
 3. Rewire `writing-prose-check.ts` to the one entry point; delete `PROSE_LINT_SUPERSEDES`.
    Golden-file update in `tests/golden/writing-prose-check.json`.
-4. Inject spans in `workflows/writing-review.js` and `agents/writing-prose-reviewer.md`.
+4. Inject spans in `workflows/writing-verify.js` and `agents/writing-prose-reviewer.md`.
 5. Rewrite the `prose.ts` prompt (evidence in, skill-loading instruction out); keep `raw` on
    success; add `spanIds` to the schema and the unreliable-reviewer rule.
 6. `scripts/bump-version.sh <minor>` + contract test + annotated `workflows--vX.Y.Z` tag.
@@ -241,7 +241,7 @@ whole `SEVERITY` convention.
 | overlaps collapse | collapse is by **overlapping column range within a line**, not by line: two distinct phrases on one line stay two findings. Line- and document-anchored spans (stylometrics, diction saturation, the per-section em-dash budget) carry `col: 0` and never merge |
 | `de_ai_audit.py` becomes a wrapper | as proposed; its public JSON is byte-identical and both of its test files pass unchanged |
 | merge the ai-smell tables into wikipedia-\* | as proposed, except **em-dash density**, which is paragraph- and section-level logic and could not become a line-regex table entry. It moved into `prose-audit.py` (`system: em-dash`, thresholds unchanged) rather than into a wikipedia module, so it is no longer a check-all constraint — it is soft either way, so no gate behaviour changed |
-| `writing-review.js` runs `prose-audit.py` | the Workflow runtime forbids the orchestrator from touching the filesystem, so a read-only relay agent runs it and returns the spans under a schema. The relay judges nothing and its output is bound to the section names dispatched, so a garbled relay degrades to "no evidence" rather than to fabricated evidence |
+| `writing-verify.js` runs `prose-audit.py` | the Workflow runtime forbids the orchestrator from touching the filesystem, so a read-only relay agent runs it and returns the spans under a schema. The relay judges nothing and its output is bound to the section names dispatched, so a garbled relay degrades to "no evidence" rather than to fabricated evidence |
 | hard = the ~33 provenance-leak patterns | hard = those tables **plus scored tics at sev>=4** (9 more). Both classes clear the same "no false positives" bar — the scored tics passed a ~0-human-rate gate against 14.3M sentences — and treating a `rich tapestry` as blocking is the same judgement as treating `citeturn0search0` as blocking |
 
 ### Two bugs found while wiring, fixed here
@@ -250,7 +250,7 @@ whole `SEVERITY` convention.
    `(?=^##\s|$)` uses `$` under the `/m` flag, which matches at the first line break, so every
    section came back `""` — meaning `style` was ALWAYS empty and the Volokh / McCloskey guides
    never loaded for any draft `writing-prose-check.ts` linted. Measured on a real approved plan.
-   Fixed to `(?![\s\S])`, the idiom `workflows/writing-review.js` already used.
+   Fixed to `(?![\s\S])`, the idiom `workflows/writing-verify.js` already used.
 2. **`prose.ts` discarded the success-path transcript**, so `total_cost_usd` and the tool-use
    record survived only when the provider FAILED. `raw` is now returned on the `reviewed` path too.
 

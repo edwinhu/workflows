@@ -13,7 +13,7 @@ if (_SCRIPTS_DIR / "prose_extract.py").exists():
 import prose_extract  # noqa: E402
 
 CONSTRAINT = "wikipedia-promotional-language"
-APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
+APPLIES_TO = ["writing-draft", "writing-verify", "writing-revise"]
 SEVERITY = "soft"
 
 _PROMOTIONAL_PATTERNS = [

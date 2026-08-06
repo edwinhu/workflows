@@ -4,7 +4,7 @@ Shared reference for review skills that run an optional **Codex second pass** â€
 an independent adversarial review that runs *after* the primary Claude reviewer
 approves, and *before* the phase writes its APPROVED verdict.
 
-Consumed by `skills/dev-review/SKILL.md` and `skills/ds-review/SKILL.md`.
+Consumed by `skills/dev-verify/SKILL.md` and `skills/ds-accept/SKILL.md`.
 
 ## The second pass is additive, never a substitute
 
@@ -32,7 +32,7 @@ blind spots. Codex runs out-of-process on a different model family, so its
 misses are uncorrelated. Two reviewers that fail the same way are one reviewer.
 
 **Where it sits relative to the gate:** `.planning/REVIEW_STATE.md`'s
-`status: APPROVED` is the structural gate that dev-verify / ds-verify hook on.
+`status: APPROVED` is the structural gate that dev-accept / ds-verify hook on.
 The second pass therefore runs BEFORE that line is written. A second pass that
 ran after the gate was already open would be decorative.
 
@@ -192,7 +192,7 @@ The companion emits a structured payload validated against
 
 ### Mapping to review verdicts
 
-Identical in dev-review and ds-review; the implement/verify phase names differ.
+Identical in dev-verify and ds-accept; the implement/verify phase names differ.
 
 | Codex verdict     | Map to               | Notes                                                                          |
 |-------------------|----------------------|--------------------------------------------------------------------------------|
@@ -236,7 +236,7 @@ use Codex when present, not to onboard it.
 
 ## Recording the outcome
 
-**This field is hook-enforced.** `dev-verify` / `ds-verify` declare a PreToolUse
+**This field is hook-enforced.** `dev-accept` / `ds-verify` declare a PreToolUse
 `phase-gate-guard.py` gate with:
 
 ```

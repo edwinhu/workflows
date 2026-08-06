@@ -1,7 +1,7 @@
 ---
 name: context-monitoring
 description: No new phase without sufficient context — check remaining context before each phase
-applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-review, writing-revise]
+applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-verify, writing-revise]
 ---
 
 ## Rule

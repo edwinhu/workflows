@@ -3,7 +3,7 @@ name: writing-prose-reviewer
 description: >
   Read-only reviewer that grades prose quality against domain style rules
   (Volokh/S&W/McCloskey), AI anti-patterns, and prose-quality constraints.
-  Dispatched by writing-review during Level 1 review. Does not fix — reports only.
+  Dispatched by writing-verify during Level 1 review. Does not fix — reports only.
 model: sonnet
 color: yellow
 tools: Read, Grep, Glob

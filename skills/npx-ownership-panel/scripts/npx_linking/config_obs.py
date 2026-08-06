@@ -1564,7 +1564,7 @@ L3D_RESIDUAL = OUT / "l3d_residual_gap_a.csv"
 
 
 # ===========================================================================
-# T6b -- corrections to the T6 validation battery (ds-review F1-F8, 2026-07-25)
+# T6b -- corrections to the T6 validation battery (ds-accept F1-F8, 2026-07-25)
 # ===========================================================================
 # Appended, never edited in place: the T6_* block above records what SHIPPED
 # and what was retracted, and the constants below record what replaced it.

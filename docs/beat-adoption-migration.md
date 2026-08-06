@@ -15,8 +15,8 @@ Adoption = the skill **loads the beat's `SKILL.md`**, or reaches it through an a
 
 | workflow | CLARIFY | IMPLEMENT | REVIEW |
 |---|---|---|---|
-| ds | ✅ `beat-clarify` | ✅ via `ds-implement` | ✅ via `ds-review` |
-| dev | ✅ `beat-clarify` pre-recon, `dev-clarify` post-recon | ✅ via `dev-implement` | ✅ via `dev-verify` |
+| ds | ✅ `beat-clarify` | ✅ via `ds-implement` | ✅ via `ds-accept` |
+| dev | ✅ `beat-clarify` pre-recon, `dev-clarify` post-recon | ✅ via `dev-implement` | ✅ via `dev-accept` |
 | work | ✅ | ✅ via `goal-work` | ✅ |
 | workflow-creator | ✅ | ✅ | ✅ |
 | writing | ✅ `beat-clarify` | ✅ via `writing-draft` | ✅ via `writing-accept` |
@@ -24,11 +24,11 @@ Adoption = the skill **loads the beat's `SKILL.md`**, or reaches it through an a
 
 ### Two things that look like gaps and are not
 
-`ds-review` and `dev-verify` are **adapters**: each loads `beat-review` and adds its domain framing.
+`ds-accept` and `dev-accept` are **adapters**: each loads `beat-review` and adds its domain framing.
 That is the intended shape, not a bypass — the beat holds the terminal-decision logic and the adapter
 supplies the surfaces.
 
-`dev-review` and `writing-review` are **not** review-beat lookalikes despite the names. Both are
+`dev-verify` and `writing-verify` are **not** review-beat lookalikes despite the names. Both are
 *independent machine review* of authenticated artifacts ("independent /dev review over authenticated
 plan identity"; "independent review phase for authenticated PLAN-bound drafts"). `beat-review`
 presents verified work *to a person* and returns their decision. Different beats entirely; a merge
@@ -72,7 +72,7 @@ file outside its section is caught, which today it is not.
 
 `writing`'s flow ends "→ /writing-revise → returned human review surface" — a hand-rolled terminal
 surface. It is the only workflow with no `beat-review` path. Add an adapter in the shape of
-`ds-review`/`dev-verify` rather than calling the beat from `writing/SKILL.md` directly, so the domain
+`ds-accept`/`dev-accept` rather than calling the beat from `writing/SKILL.md` directly, so the domain
 framing has somewhere to live.
 
 **Proves it:** the adapter loads `beat-review`; a registration-parity style test asserts every

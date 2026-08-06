@@ -6,7 +6,7 @@ from pathlib import Path
 
 CONSTRAINT = "claim-id-traceability"
 APPLIES_TO = ["writing-setup", "writing-outline", "writing-draft", "writing-validate",
-               "writing-review", "writing-revise", "writing-precis-reviewer",
+               "writing-verify", "writing-revise", "writing-precis-reviewer",
                "writing-outline-reviewer"]
 SEVERITY = "hard"
 

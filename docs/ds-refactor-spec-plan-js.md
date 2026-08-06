@@ -101,7 +101,7 @@ that table into a `run.js` literal + the template's loop.
    verify; workflow-creator: file generation; external consumer: domain-specific). Find the **shared core**
    (compile + run-template + pause protocol) vs the domain-specific template. Don't force a rewrite
    where the current shape already works.
-3. **Discipline:** use workflow-creator's own conventions; **audit before rewriting** (wc-audit);
+3. **Discipline:** use workflow-creator's own conventions; **audit before rewriting** (workflow-creator-verify);
    don't break working workflows; incremental + tested; write a `DESIGN.md` and get sign-off before
    touching the engines.
 
@@ -111,7 +111,7 @@ that table into a `run.js` literal + the template's loop.
   VERIFICATION) — the current ds flow end-to-end, including the executable Task Breakdown table that
   is the compile input, and the R4 escalations that are the natural pause points.
 - `workflows/ds-implement.js` and `workflows/ds-validate-coverage.js` — the current engines.
-- The ds skill chain: `skills/ds`, `skills/ds-plan`, `ds-implement`, `ds-validate`, `ds-review`,
+- The ds skill chain: `skills/ds`, `skills/ds-plan`, `ds-implement`, `ds-validate`, `ds-accept`,
   `ds-verify`.
 
 ## North star

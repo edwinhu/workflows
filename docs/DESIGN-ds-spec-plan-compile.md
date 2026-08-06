@@ -62,9 +62,9 @@ but it is low-frequency and lower priority — **out of scope for v1.**
 
 ### 1.3 The skill chain
 
-- `ds` (brainstorm) → `ds-plan` → `ds-implement` → `ds-validate` → `ds-review` → `ds-verify`.
+- `ds` (brainstorm) → `ds-plan` → `ds-implement` → `ds-validate` → `ds-accept` → `ds-verify`.
 - **Human-gated, conversational, stay in main loop:** `ds` (brainstorm), `ds-plan`, `ds-validate`
-  (fix/accept), `ds-review` (adversarial reviewers, max-3 cycles), `ds-verify` (reproducibility +
+  (fix/accept), `ds-accept` (adversarial reviewers, max-3 cycles), `ds-verify` (reproducibility +
   user acceptance). These are where every real muni bug was caught. **Untouched by this refactor.**
 - **`ds-implement` skill** is the only one that drives `ds-implement.js`. It becomes a **thin
   runner** (§5).
@@ -361,7 +361,7 @@ is explicit: prove on ds, then assess; don't force a rewrite where the current s
 
 ## 7. Incremental, tested implementation plan
 
-Discipline (per the brief + `.claude/CLAUDE.md`): **wc-audit before rewriting; don't break working
+Discipline (per the brief + `.claude/CLAUDE.md`): **workflow-creator-verify before rewriting; don't break working
 workflows; each step tested before the next.**
 
 **Build status (2026-06-26):** steps 2–3 done + tested; steps 1, 4–7 pending.
@@ -384,7 +384,7 @@ workflows; each step tested before the next.**
   dangling anchors. The deeper sections (output-first facts, deviation rules R1–R4, ETL enforcement,
   scale-up) are intact — they describe what the runner's implementers do (now embedded in the template
   prompt), not a main-chat dispatch loop.
-- ✅ **Step 1 (wc-audit / invariants)** — audited the retired engine's guarantees and confirmed each
+- ✅ **Step 1 (workflow-creator-verify / invariants)** — audited the retired engine's guarantees and confirmed each
   is preserved or improved by the template + slimmed skill (table below).
 - ✅ **Step 5 (parity)** — muni parity PASSED both rounds (compile + no-op + fork→pause + the full
   pause→decision→resume→gate-pass loop, incl. the two-kinds-of-R4-decision finding). See §8c.
@@ -406,7 +406,7 @@ workflows; each step tested before the next.**
 | Hooks/sentinels (`orchestrator-mutation-guard (--workflow ds)`, `phase-gate-guard`, `IMPLEMENT_COMPLETE.md`) | skill frontmatter + loop step 3 | preserved (untouched) |
 | Discovery DAG parse | `ds_compile.py` (deterministic) | **improved** (no LLM, no misparse, tolerant of real formats) |
 
-1. **wc-audit** `ds-implement.js` (Mode 2) — baseline score + the gates it must preserve. Record in
+1. **workflow-creator-verify** `ds-implement.js` (Mode 2) — baseline score + the gates it must preserve. Record in
    `.planning/wc/ds/`.
 2. **`scripts/ds-compile.py`** — deterministic PLAN→run.js compiler. Reuse `find_task_table()` from
    `ds-plan-executable-guard.py` (extract the parser into a shared module both import). **Tests:**
@@ -424,7 +424,7 @@ workflows; each step tested before the next.**
 6. **Retire / thin `ds-implement.js`** (decision D3). Update the executable-guard doc references.
 7. **Then** write a short generalization assessment (§6) and stop — no sibling rewrites this pass.
 
-`ds-validate-coverage.js`, `ds-review`, `ds-verify` are untouched.
+`ds-validate-coverage.js`, `ds-accept`, `ds-verify` are untouched.
 
 ---
 
@@ -492,10 +492,10 @@ directives, each now enforced + tested (`tests/ds-run-driver.test.mjs`, 27/27):
    (the funnel silently overwritten to 3 of 11 years). → `gateProbe` independently confirms each
    declared output exists + is non-empty; gate-first skip and the authoritative gate both require it.
 4. **Adversarial + cross-task layers stay OUTSIDE `run.js`.** `ds-validate-coverage` (caught the funnel
-   via DQ4 traceability) and the `ds-review` fan-out (caught the Table-3b sample mismatch and the
+   via DQ4 traceability) and the `ds-accept` fan-out (caught the Table-3b sample mismatch and the
    $1.05B-vs-$0.99B capture inconsistency) are not per-task gates and are not folded into the probe.
    Confirmed: the slimmed skill still chains implement → ds-validate-coverage (ground truth) →
-   ds-validate → ds-review → ds-verify.
+   ds-validate → ds-accept → ds-verify.
 
 **Q3 — parity is mandatory before retiring `ds-implement.js`.** Unit tests prove the components, not
 e2e equivalence. Sequence: **commit now → parity re-run against the real muni repo → retire

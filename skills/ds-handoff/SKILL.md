@@ -32,7 +32,7 @@ Return this summary directly to the caller; do not persist it:
 ```text
 Pause summary
 - Plan: receipt-selected `{planFile, planHash}`
-- Stage: [ds | ds-implement | ds-review]
+- Stage: [ds | ds-implement | ds-accept]
 - TaskList: [completed / active / blocked task IDs and concise status]
 - Auto-memory consulted: [paths or none]
 - Git state: [uncommitted changes or clean]

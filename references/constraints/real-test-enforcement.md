@@ -1,7 +1,7 @@
 ---
 name: real-test-enforcement
 description: Tests must execute code and verify runtime behavior — fake tests (grep, log-reading, code review) are not tests
-applies-to: [dev, dev-tdd, dev-implement, dev-verify, dev-debug, dev-test, dev-test-gaps, dev-spec-reviewer]
+applies-to: [dev, dev-tdd, dev-implement, dev-accept, dev-debug, dev-test, dev-test-gaps, dev-spec-reviewer]
 ---
 
 ## Rule

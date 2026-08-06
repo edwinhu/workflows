@@ -75,7 +75,7 @@ function draftProject(prefix, body) {
 }
 const reviewPayload = project => ({
   tool_name: 'Workflow',
-  tool_input: { scriptPath: 'writing-review.js', args: { projectDir: project, sectionIndex: { sections: [1] } } },
+  tool_input: { scriptPath: 'writing-verify.js', args: { projectDir: project, sectionIndex: { sections: [1] } } },
 })
 
 {

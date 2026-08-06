@@ -10,14 +10,14 @@ auto-loader superseded (the skills never inline-referenced constraints), so it f
 """
 
 CONSTRAINT = "writing-stop-triggers"
-APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
+APPLIES_TO = ["writing-draft", "writing-verify", "writing-revise"]
 SEVERITY = "hard"
 
 import re
 from pathlib import Path
 
 # Skills that produce or modify prose must auto-load stop triggers
-PROSE_SKILLS = ['writing-draft', 'writing-review', 'writing-revise']
+PROSE_SKILLS = ['writing-draft', 'writing-verify', 'writing-revise']
 
 
 def _md_applies_to(md_path):

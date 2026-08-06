@@ -105,7 +105,7 @@ Before proceeding to [next phase]:
 5. CLAIM: Only if steps 1-4 pass, proceed to next phase
 ```
 
-**Example** (dev-review):
+**Example** (dev-verify):
 > Prerequisites: LEARNINGS.md contains test output, all tests pass, PLAN.md tasks complete
 
 **Key insight:** Gates must be *programmatically verifiable*. "Quality is sufficient" is not a gate. "File X contains string Y" is a gate.
@@ -252,7 +252,7 @@ You skip this because you think it's faster. Here's what actually happens:
 [User-visible harm from the shortcut.]
 ```
 
-**Example** (dev-review):
+**Example** (dev-verify):
 > "Approving code without running tests is not helpful — it ships bugs to the user. Every skipped test is a future debugging session you're creating for them."
 
 **Example** (dev-debug):

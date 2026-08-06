@@ -19,7 +19,7 @@ const ROOT = new URL('..', import.meta.url).pathname
 const COMPILER = ROOT + 'scripts/writing/writing_section_index.py'
 const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
 const draftSrc = readFileSync(ROOT + 'workflows/writing-draft.js', 'utf8').replace(/^export const meta/m, 'const meta')
-const reviewSrc = readFileSync(ROOT + 'workflows/writing-review.js', 'utf8').replace(/^export const meta/m, 'const meta')
+const reviewSrc = readFileSync(ROOT + 'workflows/writing-verify.js', 'utf8').replace(/^export const meta/m, 'const meta')
 
 // The compiler exits non-zero whenever it refuses (failed authentication, detected drift);
 // those are the interesting cases, so the exit status is captured with the payload instead
@@ -29,7 +29,7 @@ function compiler(...argv) {
   catch (error) { return { payload: JSON.parse(error.stdout), status: error.status } }
 }
 // `drafts` selects which section drafts belong in the ENTRY bundle, and it is the
-// difference between an input and an output. writing-review authenticates every draft
+// difference between an input and an output. writing-verify authenticates every draft
 // (default `all`). A full writing-draft run authenticates NONE — those files are what the
 // run produces, and a pre-run snapshot of one would be reported as drift the moment the
 // drafting agent legitimately rewrote it. A selective retry authenticates exactly the
@@ -278,7 +278,7 @@ function priorSection(section, planHash, project) {
     draftHash: createHash('sha256').update(readFileSync(draftPath)).digest('hex'),
     // The bibliography is part of what a fidelity result depends on, so it is part of what
     // authenticates carrying that result forward — plan, outline and draft can all be untouched
-    // while references/sources.bib changes underneath them. `workflows/writing-review.js` began
+    // while references/sources.bib changes underneath them. `workflows/writing-verify.js` began
     // requiring `bibHash` on a carried prior review; this fixture was never updated to emit it, so
     // the carry-forward case rejected its own valid input and the suite shipped red.
     bibHash: createHash('sha256').update(readFileSync(join(project, 'references', 'sources.bib'))).digest('hex'),
@@ -858,7 +858,7 @@ describe('writing-draft authenticated PLAN discovery', () => {
   })
 })
 
-describe('writing-review authenticated PLAN discovery', () => {
+describe('writing-verify authenticated PLAN discovery', () => {
   test('requires canonical PLAN inputs', async () => {
     const { project } = fixture()
     await expect(exec(reviewSrc, { args: { projectDir: project } })).rejects.toThrow(/requires args\.planPath/)

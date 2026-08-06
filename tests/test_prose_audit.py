@@ -312,7 +312,7 @@ def test_hard_is_only_the_zero_false_positive_classes():
 
 # ── emphasis: markup as a SIDE CHANNEL, format-agnostic ──────────────────────
 # THE THREE STACKED FAILURES THIS PINS. Before v5.134.0 a Typst document could carry arbitrary
-# boldface through a full writing-review pass unremarked, because (1) the only bold rule scanned
+# boldface through a full writing-verify pass unremarked, because (1) the only bold rule scanned
 # `<cwd>/drafts/*.md`, (2) its regex was markdown-only, and (3) neutralisation had already blanked
 # the markup before any scorer ran. Fixing 1 and 2 without 3 buys nothing, which is why the spans
 # are harvested from the raw text and carried alongside instead of being re-derived from prose.
@@ -546,7 +546,7 @@ def test_deck_detection_matches_the_hooks_rules(tmp_path):
 #                     ordinary; the collocation is the tell.
 @pytest.mark.parametrize(("verdict", "sentence"), [
     # Both FIRE cases are verbatim from ~/projects/mirror/paper/typst/body-src.typ (:640 and :19),
-    # which passed a full writing-review with neither flagged.
+    # which passed a full writing-verify with neither flagged.
     ("fire",  "the reform should bite hardest there"),
     ("fire",  "The sharpest version of the objection names an actor"),
     ("fire",  "the rule bites in exactly these cases"),
@@ -561,6 +561,28 @@ def test_bite_and_sharpest_version_respect_the_corpus_boundary(tmp_path, verdict
     labels = _labels(PA.audit_document(draft))
     hit = "rule-bites" in labels or "sharpest-version" in labels
     assert hit == (verdict == "fire"), f"{sentence!r} -> {labels}"
+
+
+# data-grain: 0/14,294,148 over both halves. This one is an ETL-vocabulary leak rather than a
+# chatbot tic -- "the grain of the table" is dbt/warehouse jargon, and the two corpus hits for
+# `at the ... grain` are literal cereal ("grain futures regulation", "Tokyo Grain Exchange").
+# Humans writing the same idea reach for `unit of observation` (55/M in finance) or `one
+# observation per` (21/M). The negatives below are the ordinary English senses the rule must
+# never touch, plus the comma boundary that an earlier `\S{0,2}` draft of the pattern crossed.
+@pytest.mark.parametrize(("verdict", "sentence"), [
+    ("fire",  "The panel's grain is the agenda item crossed with the ownership block"),
+    ("fire",  "An undeduplicated lookup would change the data's grain"),
+    ("fire",  "We report results at the grain of the panel rather than the meeting"),
+    ("clean", "That claim should be taken with a grain of salt"),
+    ("clean", "The holding cuts against the grain of the earlier cases"),
+    ("clean", "in March 1935 at the time grain futures regulation was being debated"),
+    ("clean", "Note: In this table, grain trade includes cotton trade and brokerage firms"),
+])
+def test_data_grain_leaves_the_ordinary_senses_alone(tmp_path, verdict, sentence):
+    draft = tmp_path / f"grain-{abs(hash(sentence))}.md"
+    draft.write_text(sentence + "\n")
+    labels = _labels(PA.audit_document(draft))
+    assert ("data-grain" in labels) == (verdict == "fire"), f"{sentence!r} -> {labels}"
 
 
 @pytest.mark.parametrize(("verdict", "sentence"), [

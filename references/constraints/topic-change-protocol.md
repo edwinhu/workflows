@@ -1,7 +1,7 @@
 ---
 name: topic-change-protocol
 description: If user sends a non-workflow message mid-workflow, announce the pause before responding
-applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-review, writing-revise]
+applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-verify, writing-revise]
 ---
 
 ## Rule

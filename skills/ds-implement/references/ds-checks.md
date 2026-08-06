@@ -1,6 +1,6 @@
 # DS Common Checks
 
-Shared starter definitions for data-quality verification. `ds-implement`, `ds-review`, and `ds-fix`
+Shared starter definitions for data-quality verification. `ds-implement`, `ds-accept`, and `ds-fix`
 load the checks relevant to their approved task or review surface.
 
 **Iron Law: Read this file before evaluating a data-quality claim. Inlined copies drift.**
@@ -193,7 +193,7 @@ When dispatching a review or verification subagent, reference checks by ID:
 Report any WARNING as confidence >= 80."
 ```
 
-This ensures both ds-review and ds-fix run identical checks from a single source of truth.
+This ensures both ds-accept and ds-fix run identical checks from a single source of truth.
 
 ---
 

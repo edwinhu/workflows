@@ -1,7 +1,7 @@
 ---
 name: gate-function-standard
 description: Every phase exits through a 6-step evidence-based gate pattern
-applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-review, writing-revise, writing-precis-reviewer, writing-outline-reviewer]
+applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-verify, writing-revise, writing-precis-reviewer, writing-outline-reviewer]
 ---
 
 ## Rule

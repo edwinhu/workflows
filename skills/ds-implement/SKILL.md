@@ -193,4 +193,4 @@ Do not write a local learnings file or any agent-memory artifact.
 Repeat selection, dispatch, independent verification, and native-task completion until every approved
 plan task has passed. Only then immediately continue to human acceptance:
 
-Read `${CLAUDE_SKILL_DIR}/../../skills/ds-review/SKILL.md` and follow its instructions.
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds-accept/SKILL.md` and follow its instructions.

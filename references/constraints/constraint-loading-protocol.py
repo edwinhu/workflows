@@ -2,14 +2,14 @@
 """Constraint: constraint-loading-protocol — verify prose-writing skills load domain skill + ai-anti-patterns."""
 
 CONSTRAINT = "constraint-loading-protocol"
-APPLIES_TO = ["writing-draft", "writing-review", "writing-revise", "writing-validate"]
+APPLIES_TO = ["writing-draft", "writing-verify", "writing-revise", "writing-validate"]
 SEVERITY = "hard"
 
 import re
 from pathlib import Path
 
 # Skills that write/review prose must load BOTH constraint layers
-PROSE_SKILLS = ['writing-draft', 'writing-review', 'writing-revise', 'writing-validate']
+PROSE_SKILLS = ['writing-draft', 'writing-verify', 'writing-revise', 'writing-validate']
 
 # The domain skill is selected dynamically from the plan's `style` field (v5.98.0 native-Plan
 # migration) — skills no longer hardcode `writing-legal/SKILL.md`. The matcher therefore accepts

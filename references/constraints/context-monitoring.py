@@ -6,7 +6,7 @@ from pathlib import Path
 
 CONSTRAINT = "context-monitoring"
 APPLIES_TO = ["writing", "writing-setup", "writing-outline", "writing-draft",
-               "writing-validate", "writing-review", "writing-revise"]
+               "writing-validate", "writing-verify", "writing-revise"]
 SEVERITY = "hard"
 
 

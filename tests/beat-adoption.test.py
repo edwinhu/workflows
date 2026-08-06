@@ -23,11 +23,11 @@ WHY THIS EXISTS
 
 REACHING A BEAT, DIRECTLY OR THROUGH AN ADAPTER
     A workflow "reaches" a beat if its own skill loads the beat's SKILL.md, or if any skill in its
-    family does. The adapter shape is intended, not a bypass: `ds-review` and `dev-verify` each load
+    family does. The adapter shape is intended, not a bypass: `ds-accept` and `dev-accept` each load
     `beat-review` and add domain framing, which is where domain-specific surfaces belong.
 
     Two skills are NOT adapters despite their names, and must never be counted as ones:
-    `dev-review` and `writing-review` are independent MACHINE review of authenticated artifacts,
+    `dev-verify` and `writing-verify` are independent MACHINE review of authenticated artifacts,
     where `beat-review` presents verified work to a PERSON and returns their decision. Counting them
     would mark a real gap as covered.
 

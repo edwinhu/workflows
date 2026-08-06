@@ -1,7 +1,7 @@
 ---
 name: constraint-loading-protocol
 description: Every phase touching prose MUST load ALL constraint layers before editing
-applies-to: [writing-draft, writing-validate, writing-review, writing-revise]
+applies-to: [writing-draft, writing-validate, writing-verify, writing-revise]
 ---
 
 ## Rule

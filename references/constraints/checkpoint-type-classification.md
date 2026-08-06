@@ -1,7 +1,7 @@
 ---
 name: checkpoint-type-classification
 description: Gate types determine whether phases auto-advance or pause for human input
-applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-review, writing-revise]
+applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-verify, writing-revise]
 ---
 
 ## Rule

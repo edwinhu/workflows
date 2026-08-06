@@ -65,7 +65,7 @@ if (SECTION_INDEX.precisPath || (SECTION_INDEX.outlinePath && SECTION_INDEX.outl
 // asking the untrusted party to vouch for its own artifacts is not authentication.
 //
 // writing-draft is a WRITER, so the split matters here in a way it does not in
-// writing-review. Only the artifacts that exist BEFORE dispatch — receipt, plan, bib,
+// writing-verify. Only the artifacts that exist BEFORE dispatch — receipt, plan, bib,
 // every section outline, and the already-written drafts of carried selective-retry
 // sections — can be authenticated by an entry bundle. The drafts this run produces
 // come into existence AFTER dispatch, inside untrusted agents; no entry snapshot can
@@ -385,7 +385,7 @@ for (const s of draftable) {
     // `fidelityOk` MEANS "every citation resolves in the bibliography" — a claim about a specific
     // bibliography. Carrying it forward while references/sources.bib changes underneath keeps a
     // verdict whose subject has moved: a renamed key or a removed entry silently invalidates it.
-    // Symmetric with the same binding in writing-review.js.
+    // Symmetric with the same binding in writing-verify.js.
     if (!prior || prior.planHash !== PLAN_HASH || prior.outlineHash !== outlineHash || prior.draftHash !== draftSnapshot.hash || prior.bibHash !== BIB_SNAPSHOT.hash || prior.status !== 'drafted' || !verify || verify.coverageOk !== true || verify.fidelityOk !== true || verify.transitionOk === false || !Array.isArray(verify.findings)) {
       throw new Error(`writing-draft selective retry requires one complete current-content prior result for ${s.name}, produced against the CURRENT bibliography.`)
     }
@@ -429,7 +429,7 @@ Drafting contract (the Iron Laws of writing-draft):
 
 Write the full prose to the exact PLAN-owned path ${s.draftFile} with the Write tool. Frontmatter MUST include \`implements: [${s.precisClaim}]\` (or an empty list when this section has no primary claim) and the exact \`plan_hash: ${PLAN_HASH}\`. Then return TRANSFORM_SCHEMA with draftFile exactly equal to that path, status="drafted", content=the FULL exact file content you wrote, pointsExpanded=the number of outline points you expanded, and changedFiles=EVERY project-relative path you changed (the observation hook cross-checks this against the real filesystem delta).`
   const buildVerifyPrompt = (t) =>
-    `You are a READ-ONLY verifier. Do NOT create, edit, or overwrite any files. Confirm a drafted section faithfully EXECUTED its outline — this is execution-fidelity, NOT a document-quality review (writing-review does that later).
+    `You are a READ-ONLY verifier. Do NOT create, edit, or overwrite any files. Confirm a drafted section faithfully EXECUTED its outline — this is execution-fidelity, NOT a document-quality review (writing-verify does that later).
 Set section="${t.section}" verbatim.
 
 IMMUTABLE OUTLINE SNAPSHOT IT HAD TO EXPAND (${s.outlineFile}):
@@ -530,7 +530,7 @@ for (const s of draftable) {
   const vFindings = v?.findings || []
   const blocking = vFindings.filter(f => f.severity === 'critical' || f.severity === 'major')
   // Substrate: drafted AND coverage AND fidelity AND transitions hold AND no blocking finding.
-  // Minor prose nits are advisory here — writing-review owns document-quality polish.
+  // Minor prose nits are advisory here — writing-verify owns document-quality polish.
   const pass = isDrafted && coverage && fidelity && transition && blocking.length === 0
   // draftFile + reportedContent are the post-step's inputs for output verification: it
   // re-snapshots draftFile and fails the section if the bytes differ from reportedContent.

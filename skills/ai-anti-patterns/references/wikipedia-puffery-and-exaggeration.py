@@ -13,7 +13,7 @@ if (_SCRIPTS_DIR / "prose_extract.py").exists():
 import prose_extract  # noqa: E402
 
 CONSTRAINT = "wikipedia-puffery-and-exaggeration"
-APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
+APPLIES_TO = ["writing-draft", "writing-verify", "writing-revise"]
 SEVERITY = "soft"  # warn — puffery phrases can appear in legitimate academic prose
 
 # ABSORBED writing-ai-smell-puffery (v5.127.0). That constraint and this table were the same

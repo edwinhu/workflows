@@ -1,6 +1,6 @@
 ---
 name: de-ai-revise
-description: "Revise prose to read less AI-generated using corpus-validated scorers. Use when the user asks to 'de-AI this', 'make it sound less like AI', 'remove AI-isms', 'de-tic this draft', 'humanize the prose', 'fix AI writing tells', or 'less AI-sounding'. Also the standard AI-prose pass inside /writing-review and /writing-revise."
+description: "Revise prose to read less AI-generated using corpus-validated scorers. Use when the user asks to 'de-AI this', 'make it sound less like AI', 'remove AI-isms', 'de-tic this draft', 'humanize the prose', 'fix AI writing tells', or 'less AI-sounding'. Also the standard AI-prose pass inside /writing-verify and /writing-revise."
 allowed-tools: Read, Edit, Write, Bash, Grep, Glob
 ---
 
@@ -162,7 +162,7 @@ user's own published prose — uses them deliberately. Do NOT zero them out.
 
 ## When invoked inside the writing workflow
 
-- **/writing-review** runs `scripts/prose-audit.py` on every draft before dispatching its prose
+- **/writing-verify** runs `scripts/prose-audit.py` on every draft before dispatching its prose
   reviewers and INJECTS the resulting spans into their prompts as evidence — the reviewer is not
   asked to run a scorer, and a reviewer that cites none of the hard spans it was handed is
   recorded as unreliable. Those spans become AI-ism findings (advisory minors unless they cluster

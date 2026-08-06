@@ -27,7 +27,7 @@ import sys
 from pathlib import Path
 
 CONSTRAINT = "writing-outline-sync"
-APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
+APPLIES_TO = ["writing-draft", "writing-verify", "writing-revise"]
 SEVERITY = "soft"
 
 # Phase sets

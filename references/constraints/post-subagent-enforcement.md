@@ -1,7 +1,7 @@
 ---
 name: post-subagent-enforcement
 description: After any subagent returns, main chat MUST NOT read drafts or edit prose
-applies-to: [writing, writing-review, writing-revise]
+applies-to: [writing, writing-verify, writing-revise]
 ---
 
 ## Rule
@@ -49,7 +49,7 @@ The moment main chat reads a draft, it forms opinions about quality. Those opini
 ## Post-Subagent Facts
 
 - REVIEW.md already summarizes every issue with citations — reading the draft "to understand the review" is investigation, and "glance" becomes "read" becomes "edit" becomes an unstructured session. Verifying the subagent's fixes means checking REVIEW.md exists with issues resolved — artifact existence, never prose content.
-- Quick edits and tone checks bypass constraint loading and review — they go through /writing-revise and /writing-review. A review that "missed something obvious" gets a fresh review subagent; re-review will catch it.
+- Quick edits and tone checks bypass constraint loading and review — they go through /writing-revise and /writing-verify. A review that "missed something obvious" gets a fresh review subagent; re-review will catch it.
 
 ## Red Flags
 

@@ -12,8 +12,8 @@
 
 **The machinery is fine; the doctrine is one generation behind.**
 
-- wc-creator's *execution engines* — `wc-generate.js` (file-gen transform) and `wc-audit.js` (audit review) — work and should NOT be ripped out. The ds generalization assessment already (correctly) rates porting them "low priority."
-- But what wc-creator **teaches authors to build** — its decomposition model (SKILL.md Step 3), its fan-out migration playbook (`references/dynamic-workflow-migration.md`), and its audit rubric (P01–P21 in `wc-audit.js`) — still scaffolds the **generic-interpreter shape** that ds and dev just spent two refactors *removing*: an in-workflow LLM "discovery" agent that re-parses the plan every invocation → per-level/per-item fan-out → heavyweight re-analysis verifier → JS gate keyed on self-reports.
+- wc-creator's *execution engines* — `wc-generate.js` (file-gen transform) and `workflow-creator-verify.js` (audit review) — work and should NOT be ripped out. The ds generalization assessment already (correctly) rates porting them "low priority."
+- But what wc-creator **teaches authors to build** — its decomposition model (SKILL.md Step 3), its fan-out migration playbook (`references/dynamic-workflow-migration.md`), and its audit rubric (P01–P21 in `workflow-creator-verify.js`) — still scaffolds the **generic-interpreter shape** that ds and dev just spent two refactors *removing*: an in-workflow LLM "discovery" agent that re-parses the plan every invocation → per-level/per-item fan-out → heavyweight re-analysis verifier → JS gate keyed on self-reports.
 - The compiled-runner pattern (`spec → plan → deterministic compile → run.js` with a shared parser, a run-template, a pause/resume protocol, and four safety invariants) appears **nowhere** in the creator surface. Grep for `spec→plan`, `compile`, `run-template`, `run.js`, `topo-sort`, `two-kinds`, `stale-gate`, `gateProbe`, `run-core` across `skills/workflow-creator/**`, `workflows/wc-*.js`: **zero hits** (the single "compile" match is an unrelated Typst widow guard).
 - **Net:** wc-creator will *birth new workflows in the exact anti-pattern this whole effort removed, and its audit will bless them 9.5+.* That is a real defect — not "the old workflows just predate the pattern." The fix is to the **doctrine** (SKILL.md + the migration reference + the audit principle set), not to the engines.
 
@@ -40,9 +40,9 @@ This is where Step 3's "Ultracode-workflow check" sends authors. It teaches the 
 
 Nowhere does it mention: a deterministic parser shared with the guard, compiling the plan to a `run.js`, topo-sort with cross-item parallelism, gate-first idempotent skip, a pause/resume protocol, or the payload>pass/fail invariant.
 
-### 1.3 The audit rubric (`wc-audit.js`, P01–P21)
+### 1.3 The audit rubric (`workflow-creator-verify.js`, P01–P21)
 
-The 22 principles (`wc-audit.js:375–381`) score: phased decomposition, gates, structural enforcement, independent verification, artifact review, two entry points, cross-skill consistency, constraint coverage, iteration strategy, post-subagent enforcement, deviation rules, state, handoff, checkpoints, context monitoring, summary frontmatter, agent tool restrictions, traceability, autonomous chaining, visual output, hooks-over-prompt, auto-loader.
+The 22 principles (`workflow-creator-verify.js:375–381`) score: phased decomposition, gates, structural enforcement, independent verification, artifact review, two entry points, cross-skill consistency, constraint coverage, iteration strategy, post-subagent enforcement, deviation rules, state, handoff, checkpoints, context monitoring, summary frontmatter, agent tool restrictions, traceability, autonomous chaining, visual output, hooks-over-prompt, auto-loader.
 
 **None of them detect or reward any compiled-runner property.** There is no principle for:
 - deterministic compile (no discovery LLM);
@@ -89,7 +89,7 @@ The brief asks to separate these. The honest answer is **both apply, to differen
 | Component | Verdict | Why |
 |-----------|---------|-----|
 | `wc-generate.js` (the file-gen engine itself) | **FINE — leave it.** | It is a *pure transform*: its "discovery" reads an already-approved `DESIGN.md` (a real, human-gated spec), and file generation has no DAG/gate-loop/exit-code to compile. The discovery LLM here enumerates files from an approved design, not a structured table a deterministic parser could read better. The generalization assessment correctly rates a port "low priority." |
-| `wc-audit.js` (the audit engine itself) | **FINE structurally, but its RUBRIC is stale.** | The review/fan-out/JS-gate machinery is sound. But P01–P21 cannot see the compiled-runner axis (§1.3), so it scores the retired anti-pattern as excellent. |
+| `workflow-creator-verify.js` (the audit engine itself) | **FINE structurally, but its RUBRIC is stale.** | The review/fan-out/JS-gate machinery is sound. But P01–P21 cannot see the compiled-runner axis (§1.3), so it scores the retired anti-pattern as excellent. |
 | SKILL.md Step 3 decomposition model | **INCORRECT going forward.** | Teaches "workflow = chain of interpreted phase skills"; has no compiled-execution concept. New DAG-of-mechanical-work workflows will be born interpreter-shaped. |
 | `dynamic-workflow-migration.md` playbook | **INCORRECT going forward.** | Hardcodes the LLM-discovery + per-item-verify defaults (§1.2) that ds/dev deleted as harmful, not merely suboptimal. |
 | The old sibling workflows (`ds-implement`, `dev-implement`, etc.) | **Predated the pattern — already being fixed.** | ds done (PR#7), dev done (PR#8). Not a wc-creator defect per se — but they were *born from* wc's doctrine, which is why fixing the doctrine matters. |
@@ -131,7 +131,7 @@ This is exactly why dev-refactor's invariant (iii) ("probe asserts artifacts-exi
 
 Add to the DESIGN.md scaffold an explicit decision list: **gate-kind; sequential-vs-parallel within a level; implementer model policy; what "artifact present" means; retire-old-engine-AFTER-parity; do-NOT-extract-shared-core-until-2nd-instance.** These were silently hardcoded; the dev port shows a naive copy corrupts another domain's tree.
 
-### 4.5 Add compiled-runner principles to the audit rubric (wc-audit P22+)
+### 4.5 Add compiled-runner principles to the audit rubric (workflow-creator-verify P22+)
 
 So Mode 2 stops blessing the anti-pattern. Candidate new principles (and a **detector**, per the META-FIX): 
 - **P22 — Compile-vs-interpret fit:** if the workflow has a plan-table DAG, is execution *compiled* (deterministic parser → run.js/work-list) rather than re-discovered by an LLM each invocation?
@@ -164,7 +164,7 @@ wc-creator's engines are healthy; its **architecture doctrine is one generation 
 2. **(Core fix) Rewrite the migration playbook's default skeleton + add the Step 3 compile-vs-interpret gate + the gate-kind interview question (§4.1–4.4).** This is what makes the *next* workflow born-correct. Larger, touches the most-loaded doctrine file.
 3. **(Optional, later) A reference `compiled-runner` template set** in `workflows/templates/` the creator points authors at — harvestable directly from the ds + dev templates that now exist.
 
-Suggested next step: confirm tier 1 + tier 2 scope, then I (or a fresh session) draft the SKILL.md + migration-reference + wc-audit edits as a single reviewable PR. Both refactor sessions offered to review the corrected scaffold.
+Suggested next step: confirm tier 1 + tier 2 scope, then I (or a fresh session) draft the SKILL.md + migration-reference + workflow-creator-verify edits as a single reviewable PR. Both refactor sessions offered to review the corrected scaffold.
 
 ---
 
@@ -199,7 +199,7 @@ Suggested next step: confirm tier 1 + tier 2 scope, then I (or a fresh session) 
 
 ### A.2 ds-refactor (0010c649), original ds work
 
-> Honesty caveat first: I did NOT run wc-creator to scaffold from scratch this session — I REFACTORED the existing ds workflow and RETIRED its engine (ds-implement.js). So I'm reasoning from the INSTANCE the creator produced back to what it emits. Also: the "wc-audit before rewriting" step I did as a MANUAL checklist (DESIGN §1.1), not a wc-audit.js run.
+> Honesty caveat first: I did NOT run wc-creator to scaffold from scratch this session — I REFACTORED the existing ds workflow and RETIRED its engine (ds-implement.js). So I'm reasoning from the INSTANCE the creator produced back to what it emits. Also: the "workflow-creator-verify before rewriting" step I did as a MANUAL checklist (DESIGN §1.1), not a workflow-creator-verify.js run.
 >
 > WHAT THE SCAFFOLDED SHAPE HAD THAT I RIPPED OUT (the TRANSFORM-workflow template's defaults):
 > 1. An LLM "discovery" phase as step 1 — an agent re-reads PLAN.md and returns a structured DAG every invocation. RIPPED ENTIRELY → deterministic parser+compiler. The table was already regex-parseable. #1 finding.

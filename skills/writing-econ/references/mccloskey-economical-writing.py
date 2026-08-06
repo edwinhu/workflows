@@ -13,7 +13,7 @@ if (_SCRIPTS_DIR / "prose_extract.py").exists():
 import prose_extract  # noqa: E402
 
 CONSTRAINT = "mccloskey-economical-writing"
-APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
+APPLIES_TO = ["writing-draft", "writing-verify", "writing-revise"]
 SEVERITY = "soft"
 
 # Vague nouns — prefer concrete alternatives

@@ -1,7 +1,7 @@
 ---
 name: writing-no-bold-lead
 description: No bold-lead paragraph patterns in prose drafts — inline-header lists are AI tells
-applies-to: [writing-draft, writing-review, writing-revise]
+applies-to: [writing-draft, writing-verify, writing-revise]
 ---
 
 ## Rule
@@ -15,7 +15,7 @@ Acceptable alternatives:
 
 ## Scope (v5.134.0)
 
-**Format-agnostic.** The rule applies to markdown `**Bold Label.**`, Typst `#strong[Bold Label.]` and LaTeX `\textbf{Bold Label.}` alike. Before v5.134.0 the detector was a markdown-only regex over `<cwd>/drafts/*.md`, which is how a 620-line Typst comment letter carried 66 `#strong[]` spans through a full `writing-review` pass unremarked.
+**Format-agnostic.** The rule applies to markdown `**Bold Label.**`, Typst `#strong[Bold Label.]` and LaTeX `\textbf{Bold Label.}` alike. Before v5.134.0 the detector was a markdown-only regex over `<cwd>/drafts/*.md`, which is how a 620-line Typst comment letter carried 66 `#strong[]` spans through a full `writing-verify` pass unremarked.
 
 **List items are exempt.** `+ **Market mirroring.** The block votes For and Against in proportion.` is not flagged. A numbered or bulleted list of defined scenarios is a list, and its items are *supposed* to carry labels; the AI tell is the bold inline header opening a **plain prose paragraph**. The case that settled this is `~/projects/mirror/paper/typst/body.typ:161-169`, a five-item numbered list of counterfactual voting rules. Flagging it would have made the rule unusable on the one local source carrying the most legitimate emphasis. (The inline-header *vertical list* pattern proper — bullet, bold header, colon, descriptive text, repeated — remains a reading call for the prose reviewer.)
 

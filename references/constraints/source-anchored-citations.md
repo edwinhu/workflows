@@ -1,7 +1,7 @@
 ---
 name: source-anchored-citations
 description: All citations must be anchored to verified sources — no citing from training data
-applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-review, writing-revise]
+applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-verify, writing-revise]
 ---
 
 ## Rule

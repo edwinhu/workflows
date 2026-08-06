@@ -1,7 +1,7 @@
 ---
 name: master-datasets
 description: Multi-output DS work uses the minimal set of canonical analysis datasets, with declared grain, keys, and output mapping in the approved native plan.
-applies-to: [ds, ds-implement, ds-review, ds-delegate]
+applies-to: [ds, ds-implement, ds-accept, ds-delegate]
 ---
 
 ## Rule

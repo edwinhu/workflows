@@ -1,12 +1,12 @@
 ---
 name: ds-escape-patterns
 description: Four observed escape patterns where the DS orchestrator breaks its role — verification rationalization, silent topic change, urgency bypass, pre-delegation investigation
-applies-to: [ds, ds-fix, ds-implement, ds-review, ds-delegate]
+applies-to: [ds, ds-fix, ds-implement, ds-accept, ds-delegate]
 ---
 
 ## Rule
 
-The DS orchestrator must not escape its coordination role. Four specific escape patterns have been observed in delegated DS workflows. Recognize and interrupt each one. Technical `VERIFY` belongs to `ds-implement`; `ds-review` records and resolves human feedback only.
+The DS orchestrator must not escape its coordination role. Four specific escape patterns have been observed in delegated DS workflows. Recognize and interrupt each one. Technical `VERIFY` belongs to `ds-implement`; `ds-accept` records and resolves human feedback only.
 
 ## Rationale
 

@@ -1,11 +1,11 @@
 ---
-name: ds-review
-description: "Phase 5 of the /ds workflow — human review of an analysis after technical verification. Invoked by the workflow; not user-invocable."
+name: ds-accept
+description: "Internal /ds human-review beat — acceptance of an analysis after independent verification. Invoked by the workflow; not user-invocable."
 user-invocable: false
 disable-model-invocation: true
 ---
 
-# DS human review
+# DS acceptance — the human-review beat
 
 This is the human acceptance beat. It does not perform technical, methodological, or peer review; those
 belong to the VERIFY operation inside `ds-implement`.

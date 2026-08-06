@@ -1,7 +1,7 @@
 ---
 name: progress-gating
 description: If 5+ iterations on the same artifact without meaningful progress, STOP and escalate
-applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-review, writing-revise, writing-precis-reviewer, writing-outline-reviewer]
+applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-verify, writing-revise, writing-precis-reviewer, writing-outline-reviewer]
 ---
 
 ## Rule

@@ -401,7 +401,7 @@ export function runThirdPartyReview(request: RunRequest): ThirdPartyReviewResult
 /**
  * THE CLI, which every caller has been documented to use and which did not exist.
  *
- * `beat-implement`, `ds-review` and `workflows/writing-review.js` all instruct an agent to run
+ * `beat-implement`, `ds-accept` and `workflows/writing-verify.js` all instruct an agent to run
  *
  *     echo '{...}' | bun scripts/beat/third-party-review.ts
  *

@@ -1,7 +1,7 @@
 ---
 name: progressive-expansion-hierarchy
 description: Writing proceeds through 4 levels of detail — never skip levels
-applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-review, writing-revise, writing-precis-reviewer, writing-outline-reviewer]
+applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-verify, writing-revise, writing-precis-reviewer, writing-outline-reviewer]
 ---
 
 ## Rule
@@ -50,5 +50,5 @@ drafts/Part I.md           # Level 4: Prose expansion
 
 - **"Let me just start drafting"** → STOP. Does PRECIS.md exist? Does OUTLINE.md exist? Does an outline file exist for this section?
 - **"We don't need a precis for this"** → STOP. Every piece needs a thesis and claims, even short ones.
-- **"I can revise without a formal review"** → STOP. NO REVISION WITHOUT REVIEW.md. Invoke /writing-review first.
+- **"I can revise without a formal review"** → STOP. NO REVISION WITHOUT REVIEW.md. Invoke /writing-verify first.
 - **"The outline is implied by the precis"** → STOP. Implied is not written. Write OUTLINE.md.

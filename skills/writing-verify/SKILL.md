@@ -1,6 +1,6 @@
 ---
-name: writing-review
-description: Internal independent review phase for authenticated PLAN-bound writing drafts.
+name: writing-verify
+description: Internal /writing VERIFY beat — independent machine verification of authenticated PLAN-bound drafts.
 user-invocable: false
 disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Bash, Agent, Skill, Workflow, TaskCreate, TaskUpdate, TaskList, TaskGet
@@ -16,9 +16,9 @@ hooks:
           command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-mechanical-gate.ts"
 ---
 
-# Writing Review
+# Writing verification — the verify beat
 
-!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-review`
+!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts writing-verify`
 
 Run independent, evidence-grounded review against the authenticated PLAN's claims, counterarguments, source plan, section outputs, dependencies, and review surfaces. Findings live in TaskList; this phase does not create a competing planning or review ledger.
 
@@ -65,7 +65,7 @@ deterministic section index as the bare invocation), and `artifacts`, keyed
 
 ```text
 Workflow({
-  scriptPath: "${CLAUDE_SKILL_DIR}/../../workflows/writing-review.js",
+  scriptPath: "${CLAUDE_SKILL_DIR}/../../workflows/writing-verify.js",
   args: {
     projectDir: "<absolute project root>",
     projectReal: <bundle.projectReal>,
@@ -156,7 +156,7 @@ them gate would import another model's false positives into ours.
 `${CLAUDE_SKILL_DIR}/../beat-third-party/SKILL.md`** — read `status` before `findings`, an
 `unparseable` adapter has not necessarily said nothing, and the real cost is $5–15 per pair rather
 than the $0.12 floor this section used to quote. Those warnings were written out here, in
-`beat-implement` and inline in `workflows/writing-review.js`; three copies of a warning is two too
+`beat-implement` and inline in `workflows/writing-verify.js`; three copies of a warning is two too
 many, so they are now in one place.
 
 **This workflow's rules bundle** — passed as `skills` in the runner's stdin JSON, per draft:

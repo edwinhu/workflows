@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 CONSTRAINT = "writing-topic-sentences"
-APPLIES_TO = ["writing-draft", "writing-review", "writing-revise"]
+APPLIES_TO = ["writing-draft", "writing-verify", "writing-revise"]
 SEVERITY = "hard"
 
 _META_PATTERNS = [

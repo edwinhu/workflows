@@ -8,8 +8,8 @@ disable-model-invocation: true
 # Writing human acceptance
 
 This is the human acceptance beat. It does **not** perform prose, source-fidelity, or mechanical
-review; those belong to `writing-review`, which is independent MACHINE review of authenticated
-PLAN-bound drafts. Passing `writing-review` is evidence for this conversation, not acceptance by a
+review; those belong to `writing-verify`, which is independent MACHINE review of authenticated
+PLAN-bound drafts. Passing `writing-verify` is evidence for this conversation, not acceptance by a
 person — conflating the two is how a workflow ends up reporting "reviewed" for something no human
 ever read.
 
@@ -40,7 +40,7 @@ that somewhere is here rather than inside the beat or inside `writing/SKILL.md`.
 - **ACCEPTED:** record the acceptance in the returned result and TaskList. The beat is complete.
 - **Tactical feedback:** capture and disposition every item through `beat-review`, then send
   unresolved changes to `writing-revise` with the concrete returned items. Its independent
-  `writing-review` must re-run before this acceptance resumes. A reviser's claim that a finding is
+  `writing-verify` must re-run before this acceptance resumes. A reviser's claim that a finding is
   fixed is not a new acceptance.
 - **`REJECT:`** is not tactical feedback. The prose passed independent machine review and the user
   still rejected it, so the receipt-selected plan's criteria were wrong. Mark the drafting and review
@@ -59,6 +59,6 @@ that somewhere is here rather than inside the beat or inside `writing/SKILL.md`.
 
 | About to | Why wrong | Do instead |
 |---|---|---|
-| Report `writing-review` PASS as human acceptance | Machine review is not a person; the whole point of this beat is the person | Present the surfaces and wait for a decision |
+| Report `writing-verify` PASS as human acceptance | Machine review is not a person; the whole point of this beat is the person | Present the surfaces and wait for a decision |
 | Treat no response as acceptance | An unanswered question is not a yes | Ask again, or return that acceptance is outstanding |
 | Route a `REJECT:` to `writing-revise` | The criteria were wrong, not the prose | Return to `/writing` for a replacement plan |

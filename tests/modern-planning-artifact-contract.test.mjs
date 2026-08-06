@@ -12,7 +12,7 @@ const MODERN_PRODUCERS = [
   "skills/ds-plan-reviewer/SKILL.md",
   "skills/ds-implement/SKILL.md",
   "skills/ds-delegate/SKILL.md",
-  "skills/ds-review/SKILL.md",
+  "skills/ds-accept/SKILL.md",
   "skills/ds-handoff/SKILL.md",
   "skills/beat-implement/SKILL.md",
   "skills/workflow-creator/SKILL.md",
@@ -31,14 +31,14 @@ const RETIRED_VISIBLE_AUTHORITIES = [
 ];
 
 // These references can be dispatched to fresh reviewers or rediscovered by a
-// canonical writing-review episode. They may name retired artifacts only to
+// canonical writing-verify episode. They may name retired artifacts only to
 // prohibit their use, so test their positive authority contract semantically
 // rather than applying a bare retired-token ban.
 const ACTIVE_WRITING_REVIEW_REFERENCES = [
-  "skills/writing-review/references/reviewer-agent-prompt.md",
-  "skills/writing-review/references/agent-team-workflow.md",
-  "skills/writing-review/references/review-template.md",
-  "skills/writing-review/references/sequential-checklist.md",
+  "skills/writing-verify/references/reviewer-agent-prompt.md",
+  "skills/writing-verify/references/agent-team-workflow.md",
+  "skills/writing-verify/references/review-template.md",
+  "skills/writing-verify/references/sequential-checklist.md",
   "references/plan-review/writing/precis-outline-traceability.md",
   "references/plan-review/writing/section-execution.md",
   "references/plan-review/writing/sources-and-claims.md",
@@ -75,10 +75,10 @@ describe("modern planning artifact doctrine", () => {
 
   test("canonical review prompt mentions of retired writing files are prohibitions, never authority", () => {
     const prompts = [
-      "skills/writing-review/references/reviewer-agent-prompt.md",
-      "skills/writing-review/references/agent-team-workflow.md",
-      "skills/writing-review/references/review-template.md",
-      "skills/writing-review/references/sequential-checklist.md",
+      "skills/writing-verify/references/reviewer-agent-prompt.md",
+      "skills/writing-verify/references/agent-team-workflow.md",
+      "skills/writing-verify/references/review-template.md",
+      "skills/writing-verify/references/sequential-checklist.md",
     ];
     const retiredNames = ["PRECIS.md", "OUTLINE.md", "ACTIVE_WORKFLOW.md", "REVIEW.md", "AUTOMATED_REVIEW.md"];
     for (const path of prompts) {
@@ -96,7 +96,7 @@ describe("modern planning artifact doctrine", () => {
   });
 
   test("DS review and delegation have no fixed plan or visible review-ledger authority", () => {
-    for (const path of ["skills/ds-review/SKILL.md", "skills/ds-delegate/SKILL.md"]) {
+    for (const path of ["skills/ds-accept/SKILL.md", "skills/ds-delegate/SKILL.md"]) {
       const content = readFileSync(join(ROOT, path), "utf8");
       expect(content, `${path} must name the authenticated native identity`)
         .toContain("receipt-selected");

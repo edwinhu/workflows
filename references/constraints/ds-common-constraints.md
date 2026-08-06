@@ -1,14 +1,14 @@
 ---
 name: ds-common-constraints
 description: Common deterministic constraints index for the ds skill family
-applies-to: [ds, ds-fix, ds-implement, ds-review, ds-delegate]
+applies-to: [ds, ds-fix, ds-implement, ds-accept, ds-delegate]
 ---
 
 # DS Workflow: Common Constraints
 
 Deterministic rules for the DS skill family. Each constraint can be verified by a script returning pass/fail. Self-contained files under `constraints/`.
 
-**Skills that load this file:** ds (orchestrator), ds-fix (midpoint), ds-implement, ds-review, ds-delegate.
+**Skills that load this file:** ds (orchestrator), ds-fix (midpoint), ds-implement, ds-accept, ds-delegate.
 
 **See also:** `ds-common-conventions.md` for judgment-based behavioral guidance (V1-V9).
 
@@ -36,5 +36,5 @@ Not every role needs every constraint. Load by relevance:
 | **ds (orchestrator)** | C4, C5, C6 | Curate the approved immutable PLAN and dispatch work only after discovery, profiling, and coverage decisions are present |
 | **ds-fix (midpoint)** | C1-C6 (all) | Midpoint can route to any role — needs the full constraint set |
 | **ds-implement** | C1, C2, C3, C6 | Implementation performs technical checks, records deviations, and does not use a windowed source before coverage is asserted |
-| **ds-review** | C2 | Human-feedback review reads returned reports and records feedback without performing technical verification |
+| **ds-accept** | C2 | Human-feedback review reads returned reports and records feedback without performing technical verification |
 | **ds-delegate** | C2, C3, C6 | Delegation preserves the boundary, includes deviation handling, and supplies coverage assertions in task prompts |

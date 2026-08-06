@@ -52,15 +52,15 @@ Read `beat-clarify` and ask desired correction, exclusions, whether the request 
 ## Branch
 
 ```text
-CLARIFY → read-only wc-audit diagnosis
+CLARIFY → read-only workflow-creator-verify diagnosis
   ├─ audit-only → HUMAN REVIEW
   └─ repair/redesign/migrate → native Plan → plan review → compiler → beat-implement
-                              → independent wc-audit verification → HUMAN REVIEW
+                              → independent workflow-creator-verify verification → HUMAN REVIEW
 ```
 
 ### Audit-only
 
-Set `phase: diagnosis`. Invoke `wc-audit` with `auditOnly: true`, `readOnly: true`, a deterministic `targetFiles` manifest, semantic `phases`, approved `criteriaRows`, and `mechanicalProbes: []`. Pre-approval diagnosis dispatches only the `workflow-auditor` agent profile, whose tools are structurally limited to `Read`, `Grep`, and `Glob`; it never executes caller-supplied commands or project scripts. Hook-contract and mechanical-probe execution are explicitly deferred to an approved verification run. Render evidence-bearing findings into `.planning/AUTOMATED_REVIEW.md`, then set `phase: human-review` and load `beat-review`. Do not create a generated plan or receipt, dispatch an implementation workflow, or mutate target files.
+Set `phase: diagnosis`. Invoke `workflow-creator-verify` with `auditOnly: true`, `readOnly: true`, a deterministic `targetFiles` manifest, semantic `phases`, approved `criteriaRows`, and `mechanicalProbes: []`. Pre-approval diagnosis dispatches only the `workflow-auditor` agent profile, whose tools are structurally limited to `Read`, `Grep`, and `Glob`; it never executes caller-supplied commands or project scripts. Hook-contract and mechanical-probe execution are explicitly deferred to an approved verification run. Render evidence-bearing findings into `.planning/AUTOMATED_REVIEW.md`, then set `phase: human-review` and load `beat-review`. Do not create a generated plan or receipt, dispatch an implementation workflow, or mutate target files.
 
 ### Repair, redesign, or migration
 
@@ -70,7 +70,7 @@ After independent plan review:
 
 1. Compile the exact approved plan with `scripts/wc/workflow-plan-compiler.ts`.
 2. Dispatch the returned ready wave through `beat-implement` with `workflow: workflow-creator`.
-3. Re-run the deterministic compliance probe and `wc-audit` independently, selectively carrying authenticated prior reviews where valid:
+3. Re-run the deterministic compliance probe and `workflow-creator-verify` independently, selectively carrying authenticated prior reviews where valid:
 
 ```bash
 bun ${CLAUDE_SKILL_DIR}/../../scripts/wc/compliance-probe.ts --target "<plugin repo root>"

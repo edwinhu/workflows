@@ -8,9 +8,9 @@ Checks .planning/PHASE_SUMMARY.md for:
 """
 
 CONSTRAINT = "phase-summary-frontmatter"
-APPLIES_TO = ["dev", "dev-tdd", "dev-implement", "dev-review", "dev-verify",
+APPLIES_TO = ["dev", "dev-tdd", "dev-implement", "dev-verify", "dev-accept",
               "writing-setup", "writing-outline", "writing-draft", "writing-validate",
-              "writing-review", "writing-revise"]
+              "writing-verify", "writing-revise"]
 SEVERITY = "soft"
 
 import re

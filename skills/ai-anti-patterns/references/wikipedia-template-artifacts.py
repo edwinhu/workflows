@@ -13,7 +13,7 @@ if (_SCRIPTS_DIR / "prose_extract.py").exists():
 import prose_extract  # noqa: E402
 
 CONSTRAINT = "wikipedia-template-artifacts"
-APPLIES_TO = ["writing-draft", "writing-review", "writing-revise", "writing-validate"]
+APPLIES_TO = ["writing-draft", "writing-verify", "writing-revise", "writing-validate"]
 SEVERITY = "hard"  # Placeholders must never appear in final draft
 
 _PLACEHOLDER_PATTERNS = [

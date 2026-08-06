@@ -1,5 +1,5 @@
 export const meta = {
-  name: 'wc-audit',
+  name: 'workflow-creator-verify',
   description: "Read-only workflow diagnosis and independent verification: consume a deterministic target-file manifest and required mechanical probes, fan out architecture/enforcement/path/hook reviewers, adversarially verify critical and major findings, and compute an evidence-bearing gate in JS. Read-only; does not fix.",
   whenToUse: "Called by workflow-creator-improve for audit-only diagnosis and by both entries for independent verification. Requires deterministic targetFiles and semantic phases; post-approval verification also requires mechanicalProbes. Supports onlyChecks + priorReviews selective reruns.",
   phases: [
@@ -27,9 +27,9 @@ let cfg = args
 if (typeof cfg === 'string') { try { cfg = JSON.parse(cfg) } catch { cfg = {} } }
 cfg = cfg || {}
 const PROJECT = cfg.projectDir
-if (!PROJECT) throw new Error(`wc-audit requires args.projectDir. Got "${typeof args}": ${JSON.stringify(args)?.slice(0, 200)}`)
+if (!PROJECT) throw new Error(`workflow-creator-verify requires args.projectDir. Got "${typeof args}": ${JSON.stringify(args)?.slice(0, 200)}`)
 const TARGET = cfg.targetWorkflow
-if (!TARGET) throw new Error(`wc-audit requires args.targetWorkflow. Got "${typeof args}": ${JSON.stringify(args)?.slice(0, 200)}`)
+if (!TARGET) throw new Error(`workflow-creator-verify requires args.targetWorkflow. Got "${typeof args}": ${JSON.stringify(args)?.slice(0, 200)}`)
 const THRESHOLD = typeof cfg.threshold === 'number' ? cfg.threshold : 9.5
 const PLUGIN = cfg.pluginRoot || ''
 // Cross-repo fallback root: where workflow-creator's rubric + enforcement checklist + optional migration reference live when the
@@ -38,15 +38,15 @@ const WF_REPO = cfg.workflowsRepo || PROJECT
 // The shared-v1 rubric source. A cross-plugin target resolves it from the workflows repo by default;
 // an explicit rubricPath wins.
 const RUBRIC = cfg.rubricPath || `${WF_REPO}/references/plan-review/workflow-creator/audit-rubric.md`
-if (!Array.isArray(cfg.targetFiles) || !cfg.targetFiles.length) throw new Error('wc-audit requires args.targetFiles as a deterministic file manifest')
-if (!Array.isArray(cfg.phases) || !cfg.phases.length) throw new Error('wc-audit requires args.phases as semantic lifecycle columns')
-if (!Array.isArray(cfg.criteriaRows) || !cfg.criteriaRows.length) throw new Error('wc-audit requires args.criteriaRows from the approved manifest')
-if (cfg.criteriaRows.some(row => !row || typeof row.id !== 'string' || typeof row.criterion !== 'string' || typeof row.evidence !== 'string')) throw new Error('wc-audit criteriaRows require {id,criterion,evidence}')
+if (!Array.isArray(cfg.targetFiles) || !cfg.targetFiles.length) throw new Error('workflow-creator-verify requires args.targetFiles as a deterministic file manifest')
+if (!Array.isArray(cfg.phases) || !cfg.phases.length) throw new Error('workflow-creator-verify requires args.phases as semantic lifecycle columns')
+if (!Array.isArray(cfg.criteriaRows) || !cfg.criteriaRows.length) throw new Error('workflow-creator-verify requires args.criteriaRows from the approved manifest')
+if (cfg.criteriaRows.some(row => !row || typeof row.id !== 'string' || typeof row.criterion !== 'string' || typeof row.evidence !== 'string')) throw new Error('workflow-creator-verify criteriaRows require {id,criterion,evidence}')
 const AUDIT_ONLY = cfg.auditOnly === true
-if (AUDIT_ONLY && cfg.readOnly !== true) throw new Error('wc-audit auditOnly requires readOnly=true')
-if (!Array.isArray(cfg.mechanicalProbes) || (!AUDIT_ONLY && !cfg.mechanicalProbes.length)) throw new Error('wc-audit verification requires args.mechanicalProbes; completion cannot rest on semantic scores alone')
-if (AUDIT_ONLY && cfg.mechanicalProbes.length) throw new Error('wc-audit auditOnly forbids caller-supplied commands before plan approval')
-if (cfg.mechanicalProbes.some(probe => !probe || typeof probe.command !== 'string' || !probe.command.trim())) throw new Error('wc-audit mechanicalProbes require nonempty command identities')
+if (AUDIT_ONLY && cfg.readOnly !== true) throw new Error('workflow-creator-verify auditOnly requires readOnly=true')
+if (!Array.isArray(cfg.mechanicalProbes) || (!AUDIT_ONLY && !cfg.mechanicalProbes.length)) throw new Error('workflow-creator-verify verification requires args.mechanicalProbes; completion cannot rest on semantic scores alone')
+if (AUDIT_ONLY && cfg.mechanicalProbes.length) throw new Error('workflow-creator-verify auditOnly forbids caller-supplied commands before plan approval')
+if (cfg.mechanicalProbes.some(probe => !probe || typeof probe.command !== 'string' || !probe.command.trim())) throw new Error('workflow-creator-verify mechanicalProbes require nonempty command identities')
 const RUBRIC_IS_CROSS_REPO = !RUBRIC.startsWith(PROJECT)
 const ONLY = Array.isArray(cfg.onlyChecks) && cfg.onlyChecks.length ? new Set(cfg.onlyChecks.map(String)) : null
 const PRIOR = new Map((Array.isArray(cfg.priorReviews) ? cfg.priorReviews : []).map(d => [String(d.dimension), d]))
@@ -285,7 +285,7 @@ const disc = {
   skillFiles: cfg.targetFiles.map(file => typeof file === 'string' ? { path: file, role: 'phase' } : file),
   phases: cfg.phases.map(String),
 }
-if (disc.skillFiles.some(file => !file || typeof file.path !== 'string' || !file.path.startsWith('/'))) throw new Error('wc-audit targetFiles must contain absolute deterministic paths')
+if (disc.skillFiles.some(file => !file || typeof file.path !== 'string' || !file.path.startsWith('/'))) throw new Error('workflow-creator-verify targetFiles must contain absolute deterministic paths')
 if (!disc.skillFiles.length) throw new Error(`No skill files discovered for "${TARGET}" — check ${PROJECT}/skills/${TARGET}*/SKILL.md exists`)
 const fileList = disc.skillFiles.map(f => `${f.path} (${f.role})`).join('\n')
 const phaseList = disc.phases.length ? disc.phases.join(', ') : '(single-entry meta-tool — score modes/steps as columns)'

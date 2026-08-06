@@ -272,8 +272,8 @@ Do not summarize what you just did at the end of responses. The user reads diffs
 ### Example 2: Build Verification → Enforcement Pattern
 
 **Evidence:** Agent claimed "build passes" without running build in 4 sessions
-**Classification:** HOW → multi-step verification? Yes → but dev-verify already handles this → ENFORCEMENT PATTERN
-**Artifact:** Add to dev-verify's Red Flags table:
+**Classification:** HOW → multi-step verification? Yes → but dev-accept already handles this → ENFORCEMENT PATTERN
+**Artifact:** Add to dev-accept's Red Flags table:
 ```markdown
 | "Build should still pass from earlier" | Earlier results are stale — any code change invalidates them | Run `npm run build` fresh RIGHT NOW |
 ```

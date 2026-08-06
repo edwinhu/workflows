@@ -78,7 +78,7 @@ the split is that the delivery mechanism can change while the receipt cannot.
 **The reading rules live in one skill.** `skills/beat-third-party/SKILL.md` owns the invocation,
 "read `status` before `findings`", "an `unparseable` adapter has not necessarily said nothing", the
 advisory guarantee and the cost figure. They were previously written out in `beat-implement`,
-`writing-review` and inline in `workflows/writing-review.js` — three copies, two of them free to go
+`writing-verify` and inline in `workflows/writing-verify.js` — three copies, two of them free to go
 stale.
 
 ## The neutral contract

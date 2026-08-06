@@ -1,7 +1,7 @@
 ---
 name: phase-summary-frontmatter
 description: Every completed phase appends a structured YAML summary to PHASE_SUMMARY.md
-applies-to: [writing-setup, writing-outline, writing-draft, writing-validate, writing-review, writing-revise]
+applies-to: [writing-setup, writing-outline, writing-draft, writing-validate, writing-verify, writing-revise]
 ---
 
 ## Rule

@@ -91,7 +91,7 @@ Read receipt-selected `{planFile, planHash}` generated plan + TaskList + relevan
           Update TaskList / offer reusableFacts              Escalate to user
                          |
                          v
-    Continue ds-implement; human ds-review only after all implementation tasks finish
+    Continue ds-implement; human ds-accept only after all implementation tasks finish
 ```
 
 ## Select the Implementer
@@ -162,7 +162,7 @@ After an agent returns, read its returned report and evidence. Main chat may che
 
 If evidence is absent, incomplete, or the verifier returns `ISSUES`, redispatch a fresh implementation agent with the exact findings. There are **at most three total fix-and-verify cycles per task**. After the third unresolved cycle, mark or retain the task as blocked in TaskList and escalate the specific evidence and blocker to the user.
 
-Do not dispatch the human `ds-review` during this loop. `ds-review` is the post-implementation human review phase, after all implementation tasks have technical PASS.
+Do not dispatch the human `ds-accept` during this loop. `ds-accept` is the post-implementation human review phase, after all implementation tasks have technical PASS.
 
 ## Close the Task
 
@@ -179,7 +179,7 @@ On technical PASS:
 | Edit or infer a new requirement from an implementation result | The receipt-selected `{planFile, planHash}` generated plan is the approved scope | Escalate the ambiguity or create a new TaskList task only through the approved planning path. |
 | Mark a task complete from an agent's prose alone | A completion claim is not evidence | Read evidence and obtain technical PASS. |
 | Write `LEARNINGS.md`, `STATE.md`, `SPEC.md`, or agent memory | These conflict with the receipt-selected generated-plan/TaskList/project-memory architecture | Return reusableFacts for the main orchestrator to curate. |
-| Send work to `ds-review` before technical PASS | Human review cannot replace implementation verification | Finish the bounded technical loop inside `ds-implement`. |
+| Send work to `ds-accept` before technical PASS | Human review cannot replace implementation verification | Finish the bounded technical loop inside `ds-implement`. |
 | Fix an agent's work in main chat | It defeats delegated, evidence-based implementation | Redispatch a fresh task agent with precise findings. |
 
 ## Failure Handling

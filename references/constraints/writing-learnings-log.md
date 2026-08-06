@@ -1,7 +1,7 @@
 ---
 name: writing-learnings-log
 description: Append-only cross-phase decision log (.planning/LEARNINGS.md) plus the soft observe-record-offer loop for review checkpoints
-applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-review, writing-revise]
+applies-to: [writing, writing-setup, writing-outline, writing-draft, writing-validate, writing-verify, writing-revise]
 ---
 
 ## Rule

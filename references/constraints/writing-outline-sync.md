@@ -1,7 +1,7 @@
 ---
 name: writing-outline-sync
 description: OUTLINE.md section structure and Preview/Restatement numbers should match drafts/; framing is phase-aware (OUTLINE canonical during setup/outline/draft; drafts canonical during review/revise)
-applies-to: [writing-draft, writing-review, writing-revise]
+applies-to: [writing-draft, writing-verify, writing-revise]
 severity: soft
 ---
 
@@ -41,7 +41,7 @@ The check reads `.planning/ACTIVE_WORKFLOW.md` for the `phase:` field and change
 
 ## Rationale
 
-The canonical failure mode: author updates data, draft numbers change (e.g., flip count 15→14), OUTLINE is not updated. At the next `/writing-review` run, the Level 1 structure reviewer sees "OUTLINE says 15, draft says 14" and flags the draft as non-compliant — but the draft is correct and OUTLINE is stale. The reviewer burns an entire review-revise iteration on a false positive, and the author has to manually reconcile.
+The canonical failure mode: author updates data, draft numbers change (e.g., flip count 15→14), OUTLINE is not updated. At the next `/writing-verify` run, the Level 1 structure reviewer sees "OUTLINE says 15, draft says 14" and flags the draft as non-compliant — but the draft is correct and OUTLINE is stale. The reviewer burns an entire review-revise iteration on a false positive, and the author has to manually reconcile.
 
 The structural failure mode: author adds a new `### Force-voting robustness` sub-subsection during revision. OUTLINE has no entry for it. The reviewer flags the draft as adding content outside the plan. At review phase, the plan should follow the prose, not constrain it.
 

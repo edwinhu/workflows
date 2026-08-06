@@ -7,7 +7,7 @@ This compatibility probe must not revive fixed SPEC, PLAN, or VALIDATION files a
 import sys
 
 CONSTRAINT = "dev-requirement-traceability"
-APPLIES_TO = ["dev-design", "dev-plan-reviewer", "dev-implement", "dev-review", "dev-verify", "dev-test-gaps"]
+APPLIES_TO = ["dev-design", "dev-plan-reviewer", "dev-implement", "dev-verify", "dev-accept", "dev-test-gaps"]
 SEVERITY = "hard"
 
 

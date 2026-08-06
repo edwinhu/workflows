@@ -1,6 +1,6 @@
-// Regression tests for wc-audit.js's Phase 3 Verify batching (item 2 of the perf batch: one verifier
+// Regression tests for workflow-creator-verify.js's Phase 3 Verify batching (item 2 of the perf batch: one verifier
 // agent per architecture cluster re-checks ALL of that cluster's flagged gaps in one context, instead
-// of one agent per gap). Executes wc-audit.js with MOCKED Workflow primitives — static/extract-based
+// of one agent per gap). Executes workflow-creator-verify.js with MOCKED Workflow primitives — static/extract-based
 // like the sibling *-run-driver / *-engine-discover tests, no real agents spawned.
 //
 // Asserts:
@@ -17,7 +17,7 @@ const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
 let PASS = 0, FAIL = 0
 const ok = (n, c, x = '') => { if (c) { PASS++ } else { FAIL++; console.log(`FAIL  ${n} ${x}`) } }
 
-const src = readFileSync(ROOT + 'workflows/wc-audit.js', 'utf8').replace(/^export const meta/m, 'const meta')
+const src = readFileSync(ROOT + 'workflows/workflow-creator-verify.js', 'utf8').replace(/^export const meta/m, 'const meta')
 
 async function exec(args, onAgent) {
   const trace = { labels: [], prompts: {} }

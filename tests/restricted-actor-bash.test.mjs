@@ -67,7 +67,7 @@ const ORCHESTRATOR_WORK = [
   "ls -la", "cat src/a.js", "rg foo -n", "rg foo | head -20", "cat src/a.js | jq .",
   "sha256sum .planning/plan.md", "stat src/a.js", "du -sh .", "head -n 5 f",
   // Test and check runs — the capability `delegation-law.md` explicitly grants main chat, and the
-  // one `dev-verify` step 3 instructs it to use. Both now require a dispatched agent.
+  // one `dev-accept` step 3 instructs it to use. Both now require a dispatched agent.
   "bun test tests/x.test.ts", "bun test tests/*.test.ts", "npm test > /dev/null", "pytest tests/ -q",
   "cargo test", "go test ./...", "bash scripts/check-hooks.sh", "bun scripts/parity.ts --all",
   "uv run --with lxml python3 references/constraints/check-all.py .",
@@ -296,7 +296,7 @@ try {
   // 3. THE DENIAL MUST BE ACTIONABLE, or it gets "fixed" by reopening the hole.
   //
   // A denied `git status` reads as a broken allowlist. The message has to foreclose that reading
-  // explicitly, name test runs (because `delegation-law.md` and `dev-verify` both say the
+  // explicitly, name test runs (because `delegation-law.md` and `dev-accept` both say the
   // orchestrator runs them), and give the one move that works.
   // -----------------------------------------------------------------------------------------------
 

@@ -12,7 +12,7 @@ Self-contained prompt template for parallel review agents. Each teammate starts 
 - `PREV_SECTION` → prior indexed section name, or "none"
 - `NEXT_SECTION` → next indexed section name, or "none"
 - `STYLE` → domain from authenticated PLAN Writing Intent
-- `PLUGIN_ROOT` → resolved to `../..` (relative to the writing-review skill's base directory)
+- `PLUGIN_ROOT` → resolved to `../..` (relative to the writing-verify skill's base directory)
 - `PLAN_CLAIMS` → exact `CLAIM-NN` IDs mapped to this section, or `[]` for a claimless section
 - `SOURCE_PLAN_CONTEXT` → Source Plan context compiled from the authenticated PLAN
 
@@ -53,7 +53,7 @@ Read ALL of the following before reviewing. Do not skip any.
 Read("{PLAN_FILE}")
 Read("{OUTLINE_PATH}")
 {DRAFT_READ_INSTRUCTION}
-Read("{PLUGIN_ROOT}/skills/writing-review/SKILL.md")
+Read("{PLUGIN_ROOT}/skills/writing-verify/SKILL.md")
 Read("{PLUGIN_ROOT}/skills/writing-{STYLE}/SKILL.md")
 ```
 
@@ -63,7 +63,7 @@ that the plan's Claim → Section Map supports `{PLAN_CLAIMS}`. Use the PLAN's C
 Claim → Section Map, Source Plan, Section Outputs, and Review Surfaces as context.
 Do not substitute a legacy précis, master outline, workflow file, or review ledger.
 
-The writing-review SKILL.md contains the enforcement sections and Red Flags
+The writing-verify SKILL.md contains the enforcement sections and Red Flags
 that apply to your review. The domain skill contains style rules. You must
 read both IN FULL before proceeding. A compressed summary is not sufficient.
 

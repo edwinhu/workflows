@@ -50,7 +50,7 @@
  *   text this hook reads, so there is no next dimension for a review to relocate the hole into.
  *
  *   THE COST IS REAL AND IS NOT HIDDEN. `references/constraints/delegation-law.md` lists "Run test
- *   commands (verification)" and "Run git commands" as ALLOWED in main chat, and `dev-verify` step 3
+ *   commands (verification)" and "Run git commands" as ALLOWED in main chat, and `dev-accept` step 3
  *   tells the orchestrator to run the mechanical floor and the full suite itself. Post-approval the
  *   main conversation IS the approver, so both now require a dispatched agent that runs the suite
  *   and returns its raw output. One caller cannot be delegated at all: `scripts/goal-self-send.ts`
@@ -122,7 +122,7 @@ const RECEIPT_RELATIVE = `${RECEIPT_STATE_DIRECTORY}/review.json`;
  * It has to say THREE things or it gets misread as a bug. (1) Which rule fired — the reader's first
  * hypothesis for a denied `git status` is a broken allowlist, and "fixing" that reopens eight rounds
  * of holes, so the message states there is no allowlist to widen. (2) That running tests is included,
- * because `dev-verify` step 3 and `delegation-law.md` both say the orchestrator runs the suite, and
+ * because `dev-accept` step 3 and `delegation-law.md` both say the orchestrator runs the suite, and
  * an unexplained denial there reads as a contradiction rather than a deliberate cost. (3) What to do
  * instead, in one concrete move.
  */

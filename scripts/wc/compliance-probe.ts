@@ -2,8 +2,8 @@
 /**
  * Deterministic compliance probe for a plugin repo — including THIS one.
  *
- * WHY DETERMINISTIC, AND NOT ANOTHER wc-audit REVIEWER
- *   `wc-audit` fans out LLM reviewers per dimension. That is the right instrument for architecture and
+ * WHY DETERMINISTIC, AND NOT ANOTHER workflow-creator-verify REVIEWER
+ *   `workflow-creator-verify` fans out LLM reviewers per dimension. That is the right instrument for architecture and
  *   enforcement judgement, and the WRONG one for the three properties below, because every one of them
  *   is a CONFIGURATION fact and the characteristic way to get them wrong is to measure the reference
  *   instead of the mechanism. An agent asked "does this workflow use the beats" greps for the beat's
@@ -17,7 +17,7 @@
  *       the lifecycle it documents, so an upstream bump broke all 11 of its native skills.
  *
  *   One shape, four instances. So these checks read files and compare sets — no model, no judgement.
- *   They plug into wc-audit through its existing `mechanicalProbes` seam rather than adding a
+ *   They plug into workflow-creator-verify through its existing `mechanicalProbes` seam rather than adding a
  *   dimension, because a probe's exit status is evidence and a reviewer's score is an opinion.
  *
  * WHY IT MUST AUDIT THE PLUGIN THAT HOSTS IT

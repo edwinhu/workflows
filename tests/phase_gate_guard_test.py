@@ -116,7 +116,7 @@ with tempfile.TemporaryDirectory() as td:
     check('retired codex_second_pass: enabled -> blocked', not allowed)
 
     # --- the pending status alone blocks, whatever the field says ---
-    # Belt and braces: dev-review writes SECOND_PASS_PENDING before launching, so
+    # Belt and braces: dev-verify writes SECOND_PASS_PENDING before launching, so
     # even a stale APPROVED from a previous task cannot leave the gate open.
     for pending_status in ('SECOND_PASS_PENDING', 'IN_REVIEW'):
         art = write_state(td, f"---\nstatus: {pending_status}\ncodex_second_pass: requested\n---\n")

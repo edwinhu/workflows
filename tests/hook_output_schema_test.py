@@ -405,8 +405,8 @@ def test_wc_audit_has_a_hook_contract_dimension():
     ran fine and emitted a payload the harness discarded scored clean. This asserts the
     deterministic leg that closes that gap stays wired.
     """
-    audit = (REPO / 'workflows' / 'wc-audit.js').read_text(encoding='utf-8')
-    assert "key: 'hook-contract'" in audit, 'wc-audit.js lost its hook-contract dimension'
+    audit = (REPO / 'workflows' / 'workflow-creator-verify.js').read_text(encoding='utf-8')
+    assert "key: 'hook-contract'" in audit, 'workflow-creator-verify.js lost its hook-contract dimension'
     assert 'check-hooks.sh' in audit, 'the hook-contract dimension must RUN the harness, not read the hooks'
     assert "byDim['hook-contract']" in audit, 'hook-contract results must reach the gate'
     assert "hookStatus === 'Clean'" in audit, 'hook-contract must be part of the substrate gate'

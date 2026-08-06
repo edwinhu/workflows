@@ -207,8 +207,8 @@ def probe(
             ],
             "notChecked": [
                 "quote-in-source fidelity (→ source-verify)",
-                "claim-actually-supported-by-source (→ writing-review/source-verify)",
-                "coverage / prose-quality / transitions / thesis (→ writing-review)",
+                "claim-actually-supported-by-source (→ writing-verify/source-verify)",
+                "coverage / prose-quality / transitions / thesis (→ writing-verify)",
                 "spelled-out quantities",
                 "dataset provenance (number→cell)",
             ],

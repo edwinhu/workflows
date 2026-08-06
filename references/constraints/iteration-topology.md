@@ -1,7 +1,7 @@
 ---
 name: iteration-topology
 description: Each phase uses a specific iteration strategy with defined exit gates and escalation triggers
-applies-to: [writing-setup, writing-outline, writing-draft, writing-validate, writing-review, writing-revise]
+applies-to: [writing-setup, writing-outline, writing-draft, writing-validate, writing-verify, writing-revise]
 ---
 
 ## Rule

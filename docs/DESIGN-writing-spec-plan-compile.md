@@ -21,7 +21,7 @@ re-parsed `PLAN.md` once **per dependency level**, ran one level, then a heavywe
 one invocation, and gates each task on a real **exit code** via an independent probe.
 
 **Writing already did the part that mattered most.** `workflows/writing-draft.js` and
-`workflows/writing-review.js` are *already* ultracode workflows with a `discover → fan-out →
+`workflows/writing-verify.js` are *already* ultracode workflows with a `discover → fan-out →
 verify → gate` shape that runs the **whole document in ONE invocation** with **genuine per-section
 parallelism**. There is no per-level round-trip to collapse, and **there is no task DAG** — writing
 sections are deliberately independent (each write-agent reads the prior/next *outline*, never a
@@ -44,10 +44,10 @@ The honest, high-value port for writing is therefore **three surgical moves**, n
 3. **Formalize `gateProbe(s)` as the SEMANTIC fork** returning `{ pass, evidence }` with
    **numbered, specific evidence** — splitting it into a *deterministic floor* (bib-grep, claim-id,
    repetition, prose-lint, de-ai, quote-resolution — mostly already the "Leg-1" gate) and an
-   *irreducible LLM-judgment authority* that **stays OUTSIDE run.js** (writing-review + source-verify).
+   *irreducible LLM-judgment authority* that **stays OUTSIDE run.js** (writing-verify + source-verify).
 
 **What does NOT change:** brainstorm / lit-review / setup / outline stay conversational + human-gated;
-the **writing-review → writing-revise `/goal` loop stays OUTSIDE** any runner as the real correctness
+the **writing-verify → writing-revise `/goal` loop stays OUTSIDE** any runner as the real correctness
 authority (for semantic gates it becomes *more* load-bearing, not foldable — assessment §"Semantic
 gates raise the stakes"). **We do NOT generate a per-project `.planning/run.js`** (§7, a real
 divergence from ds/dev worth recording for the eventual shared-core pass).
@@ -75,7 +75,7 @@ Well-built TRANSFORM engine. Invariants are clean and largely structural. The 1.
   **already-mandatory `OUTLINE_REVIEWED.md = APPROVED` gate** mostly re-litigates — push it upstream;
   catch only the *regression* (placeholder / bare-headings) mechanically.
 
-### 1.2 `writing-review.js` + review/revise skills — baseline **9.3/10**
+### 1.2 `writing-verify.js` + review/revise skills — baseline **9.3/10**
 The layer **already separates the two halves the assessment predicts.** Leg-1 (`check-all.py` +
 de-ai-audit + bridge-repetition + prose-lint) is the deterministic probe floor that runs *before* the
 workflow; L1/L2/L3 are the irreducible semantic reviewers with evidence-rich payloads. Gaps:
@@ -92,7 +92,7 @@ workflow; L1/L2/L3 are the irreducible semantic reviewers with evidence-rich pay
 From the audits (B-numbered there): closed section set from `outlines/*.md`; **document order, not
 lexical**; the **executable-spec bounce** (`outlineGranular=false` ⇒ never drafted, fixed upstream);
 **genuine parallel fan-out** (prev/next *outlines*, never sibling drafts); **pure-JS substrate gate**
-(critical+major block, minors advisory — the wc-asymptote lesson, `writing-review.js:254`);
+(critical+major block, minors advisory — the wc-asymptote lesson, `writing-verify.js:254`);
 **selective re-run** (`onlyChecks`+`priorReviews`); **payload > pass/fail** (every issue carries
 `{severity, file:line, verbatim quote, detail}`); the **mechanical Verify stage drops fabricated
 quotes**; the **Iron Law of Re-Review**; the **Leg-1 mechanical hard gate runs BEFORE the workflow**;
@@ -107,11 +107,11 @@ the **mandatory source-verify / de-AI passes OUTSIDE run.js**.
 | **SPEC** (`SPEC.md`) | `PRECIS.md` (thesis, claims, scope, counterargs) | human-gated, conversational — unchanged |
 | **PLAN** (`PLAN.md` Task-Breakdown table) | `OUTLINE.md` + `outlines/*.md` (per-section, paragraph-granular, source-pinned) | **the spec to harden** (§3); the drafts already carry `implements: [CLAIM-XX]` frontmatter — a born traceability hook |
 | **compile** (`ds_plan_table.py` → `run.js` literal) | `writing_section_index.py` → a **data** artifact (section index), consumed by the *generic* engines | **divergence:** writing emits DATA, not code (§7) |
-| **run.js** (per-project compiled runner) | `writing-draft.js` / `writing-review.js` (**already generic dynamic workflows**) | already exist; we feed them a compiled index instead of an LLM `Discover` |
+| **run.js** (per-project compiled runner) | `writing-draft.js` / `writing-verify.js` (**already generic dynamic workflows**) | already exist; we feed them a compiled index instead of an LLM `Discover` |
 | **task** | **section** | no inter-section deps → no DAG, no topo-sort, flat-parallel |
 | **`implementerPrompt(t)`** | the per-section **write-agent** prompt (writing-draft Transform) | already exists; unchanged in shape |
 | **`gateProbe(t)` → `{exit0, outputsPresent, tail}`** | **`gateProbe(s)` → `{pass, evidence}`** | **THE REAL FORK** (§4) — semantic, not exit-code; evidence must be numbered |
-| **adversarial layer OUTSIDE run.js** (full suite / test-gaps / dev-review) | **writing-review + source-verify + the `/goal` revise loop** | stays outside; **more** load-bearing for semantic gates |
+| **adversarial layer OUTSIDE run.js** (full suite / test-gaps / dev-verify) | **writing-verify + source-verify + the `/goal` revise loop** | stays outside; **more** load-bearing for semantic gates |
 | **two-kinds-of-decision + stale-gate backstop** | **prose-only edit vs spec-changing editorial decision** (§5) | thesis reframe = gate-changing → edit outline + re-index |
 | **declared/dynamic PAUSE** | **R4 escalation / thesis-change** (§5) | the SEC-order reframe is the live writing R4 |
 
@@ -159,7 +159,7 @@ This is the genuinely-ports core and the highest-value work.
 - **prefix-tolerant column/heading lookup** (dev's gotcha: `h == name or h.startswith(name+" ")`),
   and **golden-tested against a REAL outline** (`tender_offers/outlines/`), not the template.
 
-**Both engines** (`writing-draft.js`, `writing-review.js`) drop their LLM `Discover` agent and consume
+**Both engines** (`writing-draft.js`, `writing-verify.js`) drop their LLM `Discover` agent and consume
 this index (passed in `args`, or read via a tiny deterministic pre-step). This closes the drift mask:
 today the section enumeration is an LLM judgment that can silently disagree with what the guards think
 the section set is.
@@ -246,7 +246,7 @@ payload, not the gate. For a semantic gate that funnel is the *only* safety net.
 carries the same specificity muni's row-counts and dev's AssertionError did. A `pass:true` with vague
 evidence is the failure mode wearing a judge's robe.
 
-**The authority stays outside.** `gateProbe.pass` (floor) is necessary; the **writing-review `/goal`
+**The authority stays outside.** `gateProbe.pass` (floor) is necessary; the **writing-verify `/goal`
 loop + source-verify** is sufficient and authoritative. We do **not** let the semantic floor self-
 certify a draft complete — exactly as ds keeps `ds-validate-coverage` and dev keeps the full suite
 outside `run.js`.
@@ -289,10 +289,10 @@ clobbered artifact.
 
 ## 6. What stays OUTSIDE the runner (unchanged)
 
-brainstorm · lit-review · setup · outline (conversational, human-gated) · **writing-review.js's L1/L2/L3
+brainstorm · lit-review · setup · outline (conversational, human-gated) · **writing-verify.js's L1/L2/L3
 semantic reviewers** · **source-verify** (deep quote-in-source) · **`check_section_cites.py`** (NLM
 semantic gate — G3′: keep it a gate, not a "deterministic probe") · **de-ai-revise** · the
-**writing-review → writing-revise `/goal` loop** with substrate-gate exit + max-3 + REVIEW_STATE.md.
+**writing-verify → writing-revise `/goal` loop** with substrate-gate exit + max-3 + REVIEW_STATE.md.
 
 ---
 
@@ -300,7 +300,7 @@ semantic gate — G3′: keep it a gate, not a "deterministic probe") · **de-ai
 
 ds/dev compile a **per-project `run.js` literal** because each project has a project-specific task DAG
 and project-specific `Verify` commands to inline. **Writing has neither** — its section structure is
-uniform and its runner (`writing-draft.js`/`writing-review.js`) is *generic*. So writing's "compile"
+uniform and its runner (`writing-draft.js`/`writing-verify.js`) is *generic*. So writing's "compile"
 output is best a **data artifact** (a section index) the generic runner consumes, **not generated
 code**. This is a genuine seam finding: the eventual `run-core.js` extraction should treat "compile"
 as *"produce the work-list,"* whose output may be **code (ds/dev) or data (writing)** — and
@@ -363,7 +363,7 @@ suites unaffected throughout.
   (`tests/writing_section_index_test.py`), **blind-oracle parity PASSED** vs `tender_offers`
   (clean canonical match). Stale-approval catch fires live. Emits `precis/outline/bib` paths so the
   index is a complete DATA artifact.
-- ✅ **Step 2 — engine reconciliation.** `writing-draft.js` + `writing-review.js` consume
+- ✅ **Step 2 — engine reconciliation.** `writing-draft.js` + `writing-verify.js` consume
   `args.sectionIndex` (skip the LLM Discover), back-compat fallback retained. Both skills wired to
   compile + pass the index. 13/13 (`tests/writing-engine-discover.test.mjs`: no-LLM path, granularity
   bounce, back-compat).
@@ -392,7 +392,7 @@ suites unaffected throughout.
   deterministically (oracle diff=0); downstream review code is byte-identical between paths; the only
   divergent variable is `precisClaim` form. **(A) focused `precisClaim` probe → BENIGN** (controlled
   output — `precisClaimAdvanced` + argument grasp — identical across bare-ids vs prose-gloss despite
-  reviewer noise). **(B) end-to-end compiled `/writing-review`** ran CLEAN on the real 12k-word paper:
+  reviewer noise). **(B) end-to-end compiled `/writing-verify`** ran CLEAN on the real 12k-word paper:
   consumed `args.sectionIndex` (no LLM Discover), 5 sections, 22 agents, 0 unreliable, transitions+L3
   ran, JS substrate gate computed the verdict (9C/57M/44m, `substratePass=false`) — a genuine,
   project-aware review. Cross-validated (A)'s Part III outline-leaks. **Nuance (non-blocking):**

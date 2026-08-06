@@ -39,7 +39,7 @@ If legacy `.planning/wc/` state exists, stop. Legacy Mode 1/2/3 state, numeric s
 
 ```text
 CLARIFY → planning evidence → native Plan approval → independent plan review
-        → deterministic plan compiler → beat-implement → independent wc-audit verification
+        → deterministic plan compiler → beat-implement → independent workflow-creator-verify verification
         → shared beat-review / HUMAN_REVIEW.md
 ```
 
@@ -121,7 +121,7 @@ It checks three CONFIGURATION properties no reviewer agent can hold, because the
 
 **Point `--target` at the plugin under audit, including this one.** `workflow-creator` is a meta workflow, so it must be able to audit the workflows plugin itself — an auditor that only inspects generated workflows catches the next workflow's version of a defect and never its own host's, and every defect this probe encodes was in the host. `tests/compliance-probe.test.mjs` runs it against this repo on every test run, with an asserted `KNOWN_FINDINGS` registry.
 
-Then invoke `wc-audit` with the deterministic compiler manifest and required mechanical probes. It is read-only and independently verifies architecture, enforcement, paths, hooks, and the approved criteria. A composite score is diagnostic only; completion requires no blocking finding and every evidence row passing.
+Then invoke `workflow-creator-verify` with the deterministic compiler manifest and required mechanical probes. It is read-only and independently verifies architecture, enforcement, paths, hooks, and the approved criteria. A composite score is diagnostic only; completion requires no blocking finding and every evidence row passing.
 
 Failures re-enter `/workflow-creator-improve`; retries preserve approved plan identity and only re-run proven attempted work.
 

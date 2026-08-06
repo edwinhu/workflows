@@ -1,7 +1,7 @@
 ---
 name: verification-vs-investigation
 description: Running the test suite is verification. Reading source code is investigation. These are NOT the same thing.
-applies-to: [dev, dev-tdd, dev-implement, dev-review, dev-verify, dev-debug, dev-delegate, dev-test, dev-test-gaps]
+applies-to: [dev, dev-tdd, dev-implement, dev-verify, dev-accept, dev-debug, dev-delegate, dev-test, dev-test-gaps]
 ---
 
 ## Rule

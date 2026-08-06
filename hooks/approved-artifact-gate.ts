@@ -17,7 +17,7 @@ const input = (payload.tool_input as Record<string, unknown>) ?? {};
 // Pre-approval dispatch is limited to explicitly read-only reviewers. Generic Agent and every
 // Workflow remain implementation-capable and require the exact approved-plan lifecycle.
 if (tool === "Agent" && ["Explore", "workflows:librarian", "workflows:plan-checker", "workflows:code-reviewer"].includes(String(input.subagent_type ?? ""))) allow();
-if (tool === "Workflow" && policy.workflow === "workflow-creator" && String(input.name ?? "") === "wc-audit") {
+if (tool === "Workflow" && policy.workflow === "workflow-creator" && String(input.name ?? "") === "workflow-creator-verify") {
   let args = input.args;
   if (typeof args === "string") { try { args = JSON.parse(args); } catch { args = null; } }
   if (args && typeof args === "object" && !Array.isArray(args)) {

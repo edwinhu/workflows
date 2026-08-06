@@ -8,7 +8,7 @@ Scans test files for patterns that indicate fake tests:
 """
 
 CONSTRAINT = "real-test-enforcement"
-APPLIES_TO = ["dev", "dev-tdd", "dev-implement", "dev-verify", "dev-test", "dev-test-gaps"]
+APPLIES_TO = ["dev", "dev-tdd", "dev-implement", "dev-accept", "dev-test", "dev-test-gaps"]
 SEVERITY = "hard"
 
 import re
