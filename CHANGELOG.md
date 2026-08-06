@@ -3,6 +3,32 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [5.136.0] - 2026-08-05
+
+### Added
+- **Register and voice guidance now reaches the drafting and reviewing subagents, from one source per domain.** Three style guides ship in this plugin — Strunk (`writing-general`), Volokh (`writing-legal`), McCloskey (`writing-econ`) — each ~588 lines of prose guidance plus a regex table. `prose-audit.py` loaded the *regex tables* and gated them by `--style`; **the prose guidance reached no agent at all.** Output styles are main-conversation only (a subagent runs its own system prompt), and the drafting agent had no file to attach anything to: `workflows/writing-draft.js` dispatched the *default* workflow subagent for Transform.
+  - New `references/registers/{general,legal,econ}.md` are the SOURCE OF TRUTH. `scripts/emit-registers.py` generates `output-styles/{law-review,econ-journal,general-prose}.md` and `skills/writing-register/SKILL.md` from them; `--check` exits 1 on drift, the same shape as `bump-version.sh --check`. Three hand-maintained copies of one register table drift, and the drift is silent because nothing reads all three at once.
+  - New `agents/writing-drafter.md` preloads `writing-register` + `ai-anti-patterns` via `skills:`, and `writing-draft.js` routes **Transform only** to it. Verify stays on the default agent: verification primed with the same guidance the drafter used is not independent verification.
+  - `agents/writing-prose-reviewer.md` preloads the same pair. Its `tools` are `Read, Grep, Glob` — no `Skill` tool — so preloading is its ONLY possible channel, and the register prose it used to restate inline is deleted so there is one copy.
+  - The preloaded artifact is ONE combined file, not three. The register facts are contrastive by construction (`we`: 0.87% of law sentences vs 7.75% of finance), and `skills:` frontmatter is static — it cannot vary by the plan's `style` at dispatch time.
+- **`writing-general` becomes a third register, not just a base layer.** `general-prose` covers SEC comment letters, memos and briefs — prose that is neither a law review nor a journal article, and had no register at all before.
+
+### Changed
+- **The guide rules are corpus-filtered into ship / advisory / dropped, with the measured rate beside each.** Running the three guides' own prescriptions through the two control corpora (5,560,816 law-review sentences; 8,733,332 finance/accounting) splits them three ways. *Ship*: `at this point in time` 1.8/M, `skyrocket` 2.9/M, `time frame` 37/M — cost-free. *Advisory*: sentence-initial `However,` 6,666/M, `the X process` 4,482/M, `very <adj>` 3,277/M, `in order to` 2,472/M, `the fact that` 2,176/M — a hard rule here fires on ~1 sentence in 15, so it is noise. *Dropped*: McCloskey's `agents`→`people` (1,728/M in finance) and `hypothesize`→`suppose` (683/M), Volokh's `pursuant to` (837/M in law, 26× finance) — those are terms of art and the legal register itself, and enforcing them damages the draft.
+  - `writing-prose-reviewer`'s three-row Volokh/S&W/McCloskey summary is gone. It predated the corpus check and told the reviewer to cut hedges from law review prose (`may`/`might`: 3.56% of law sentences, register-appropriate) and to prefer active voice on principle (passive: 7.91% law vs 8.55% finance — not a register marker at all).
+
+### Fixed
+- **Three agents carried a `hooks:` frontmatter block that had never done anything.** `hooks`, `mcpServers` and `permissionMode` are ignored for plugin-shipped agents; the linting `dev-implementer`, `ds-analyst` and `ds-engineer` appeared to configure came from `hooks/hooks.json` all along. This mattered beyond tidiness: the plan for this feature was written around that block as the proven pattern for closing an audit loop inside the drafting agent. Removed, with a note in each body pointing at the real registration, and `tests/writing-register-contract.test.mjs` now fails if any agent reintroduces one.
+
+### Testing
+- New `tests/writing-register-contract.test.mjs` (128 assertions). The load-bearing one: **every `skills:` entry in every `agents/*.md` must resolve to a real skill that does NOT set `disable-model-invocation: true`.** All three existing style skills set it, and a preloaded skill that does is skipped with a warning to the debug log only — the agent launches, the guidance never arrives, and the review reads as if it did. That assertion would have caught the blocker before implementation.
+- Third-party review over the diff (Codex + Gemini) found six real defects, every one a **vacuous pass** — a check that could not fail:
+  - The test's frontmatter reader understood block lists but not inline `skills: ["a", "b"]`, so an inline preload list put every per-skill assertion — including the one above — into an empty loop.
+  - `!== 'true'` let `disable-model-invocation: true  # why` through: valid YAML, boolean true, not the string `'true'`.
+  - `tools` read from `scalars` only, so a block-list `tools` made the "reviewer has no Skill tool" claim pass against an empty string.
+  - `emit-registers.py --check` validated only the expected paths, so an orphaned `output-styles/*.md` left after a source rename kept shipping (the directory is auto-discovered) while `--check` reported OK.
+  - `cut_block` matched its markers as substrings anywhere, so a source that merely *discussed* `SHARED-BASE:START` could relocate the cut; and it took only the first pair, so a second block survived into the output carrying stray markers.
+
 ## [5.133.0] - 2026-08-05
 
 ### Added

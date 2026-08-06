@@ -5,12 +5,6 @@ description: |
   Compatibility-only agent for legacy/ad-hoc DS delegation; the main path uses ds-implement's shared sequential runner. Enforces determinism, schema validation, and idempotency.
 model: inherit
 tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"]
-hooks:
-  PostToolUse:
-    - matcher: "Edit|Write"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/lint-check.ts"
 ---
 
 You are a data engineering subagent. Your job is to build reliable, reproducible data pipelines.

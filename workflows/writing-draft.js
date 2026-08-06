@@ -446,7 +446,12 @@ Check, and report every gap in findings with severity:
 Also return boundary.firstSentence and boundary.lastSentence verbatim (for the skill's seam audit).
 Return VERIFY_SCHEMA.`
   tasks.push(() => (async () => {
-    const t = await agent(draftPrompt, { label: String(s.name), phase: 'Transform', schema: TRANSFORM_SCHEMA })
+    // agentType ON TRANSFORM ONLY. writing-drafter preloads `writing-register` (and
+    // `ai-anti-patterns`) via its `skills:` frontmatter — the only channel that reaches a subagent,
+    // since an output style shapes the main conversation and never a subagent's system prompt.
+    // The VERIFY call below deliberately stays on the DEFAULT agent: verification primed with the
+    // same register guidance the drafter used is not independent verification.
+    const t = await agent(draftPrompt, { label: String(s.name), phase: 'Transform', schema: TRANSFORM_SCHEMA, agentType: 'workflows:writing-drafter' })
     if (!t) return null
     // The draft the agent just wrote is an OUTPUT: it did not exist when the bundle was
     // built, and this script cannot open or hash it. t.content is the agent's account of

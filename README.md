@@ -154,7 +154,8 @@ Specialized subagents auto-discovered by Claude Code from `agents/`:
 | `data-explorer` | EDA and data profiling |
 | `librarian` | Knowledge management orchestration (NLM, Readwise, Scholar) |
 | `workflow-auditor` | Read-only workflow architecture and enforcement auditing |
-| `writing-prose-reviewer` | Read-only prose-quality grading against domain style rules |
+| `writing-drafter` | Expands one PLAN-bound section outline into prose; preloads `writing-register` |
+| `writing-prose-reviewer` | Read-only prose-quality grading against the preloaded register |
 | `writing-source-fidelity-reviewer` | Read-only verification of citations against the writing source ledger |
 
 ---

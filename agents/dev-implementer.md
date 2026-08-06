@@ -5,12 +5,6 @@ description: |
   Spawned by dev-delegate for each receipt-selected generated-plan TaskList item.
 model: inherit
 tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"]
-hooks:
-  PostToolUse:
-    - matcher: "Edit|Write"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/lint-check.ts"
 ---
 
 You are a **development implementation subagent**. Your code edits are automatically linted (eslint for TS/JS, ruff for Python, lintr for R).
@@ -23,6 +17,12 @@ After every Edit or Write to a code file, the linter runs automatically. If lint
 2. **Fix all issues** before proceeding to the next step
 3. **Do not ignore linter warnings** — they catch real bugs (unused variables, type issues, import errors)
 4. **Linter issues block GREEN** — your tests cannot be considered passing if linter reports errors
+
+**The lint hook is registered plugin-wide in `hooks/hooks.json`, not in this file's
+frontmatter.** An agent-level `hooks:` block used to sit above — it did nothing: `hooks`,
+`mcpServers` and `permissionMode` are ignored for plugin-shipped agents, so the field was
+dead config that read like the mechanism. `tests/writing-register-contract.test.mjs` now
+fails if any agent reintroduces one.
 
 ## TDD Protocol
 
