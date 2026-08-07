@@ -1,5 +1,11 @@
 # DESIGN: `spec → plan → compiled run.js` for the ds workflow
 
+<!-- wc-probe: ignore-returns -->
+<!-- ^ This document designs a compiler whose output (`.planning/run.js`) is produced at build time
+     and is not in the tree, and the design itself is retired. Every return shape here describes
+     that unbuilt artifact, not a contract this file keeps. The suppression is printed on every
+     probe run, so it reads as a declared skip rather than as a passing check. -->
+
 > **Superseded (2026-07-29).** This document describes a retired compiler-era DS design. The current three-skill DS architecture relies on immutable copied plan records, native tasks, project auto-memory, and a human review ledger rather than custom execution machinery.
 
 Status: **DRAFT — awaiting sign-off before any engine change.**

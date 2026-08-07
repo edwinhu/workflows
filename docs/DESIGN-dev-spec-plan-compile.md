@@ -1,5 +1,11 @@
 # DESIGN: `spec → plan → compiled run.js` for the dev workflow
 
+<!-- wc-probe: ignore-returns -->
+<!-- ^ This document designs a compiler whose output (`.planning/run.js`) is produced at build time
+     and is not in the tree, and the design itself is retired. Every return shape here describes
+     that unbuilt artifact, not a contract this file keeps. The suppression is printed on every
+     probe run, so it reads as a declared skip rather than as a passing check. -->
+
 > **Historical and superseded (2026-07-31).** Dev now uses a receipt-selected native generated plan, TaskList, shared `beat-implement`, and returned review/verification results. The compiler, parser, generated `run.js`, fixed plan, and visible ledgers described below are retired conversion-era provenance only.
 
 Original status: **SIGNED OFF 2026-06-26 ("go").** Decisions resolved to the recommended options:

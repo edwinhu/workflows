@@ -111,6 +111,11 @@ Protocol (NON-NEGOTIABLE):
 Return TRANSFORM_SCHEMA.`
 }
 
+// The shape below is a CONTRACT FOR THE DOMAIN AUTHOR'S function, not a promise this template
+// keeps — the function is optional and is absent here on purpose. wc-probe's P5 reads a documented
+// return shape as this file's own contract, which is right for a workflow script and wrong for a
+// template that specifies one. Scoped to this block so a real contract added elsewhere is checked.
+// <!-- wc-probe: ignore-returns:start -->
 // ▼ OPTIONAL — recheckTrigger(results, li): yield-for-recheck (an AUTOMATED cross-cutting
 //   gate; NO human). Return { recheckKind, atLevel, payload } to make run-core yield so the
 //   SKILL runs the recheck (e.g. dev's full suite when a level re-touched an earlier level's
@@ -123,3 +128,4 @@ Return TRANSFORM_SCHEMA.`
 //   // return { recheckKind: 'fullsuite', atLevel: li, payload: { files: wrote } }
 //   return null
 // }
+// <!-- wc-probe: ignore-returns:end -->
