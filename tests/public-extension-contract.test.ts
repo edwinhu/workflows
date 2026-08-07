@@ -3,7 +3,7 @@ import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = realpathSync(join(import.meta.dir, ".."));
-const TARGET_VERSION = "5.147.0";
+const TARGET_VERSION = "5.148.0";
 
 type Capability = {
   name: string;
@@ -135,7 +135,7 @@ function parseContractRows(markdown: string): ContractRow[] {
 }
 
 describe("public extension contract integration", () => {
-  test("all three plugin version fields and capability identity agree at 5.147.0", () => {
+  test("all three plugin version fields and capability identity agree at 5.148.0", () => {
     const plugin = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/plugin.json"), "utf8"));
     const marketplace = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/marketplace.json"), "utf8"));
     const manifest = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/capabilities.json"), "utf8"));
@@ -164,6 +164,46 @@ describe("public extension contract integration", () => {
       expect(capability.implementation.split("/")).not.toContain("..");
       expect(existsSync(join(ROOT, capability.implementation))).toBe(true);
     }
+  });
+
+  test("a published capability is safe for the way it is actually consumed", () => {
+    // TWO CONSUMPTION MODES SHARE ONE MANIFEST, AND THEY HAVE DIFFERENT SAFETY PROPERTIES.
+    //
+    // A MODULE capability is reached by `import(implementationPath)` — literally what
+    // `teaching/scripts/native-workflow-adapter.ts:71` does. Importing it must not DO anything.
+    // Measured 2026-08-06: `beat-spine-args` shipped in v5.144.0 with no `import.meta.main` guard,
+    // so importing it read the consumer's argv, found no --workflow, and called `process.exit(2)` —
+    // terminating the consuming process on import. Published and unusable by its only mechanism.
+    //
+    // A WORKFLOW SCRIPT capability is reached by `Workflow({scriptPath})`. Its top-level `phase()`,
+    // `agent()` and `args` exist only inside the Workflow runtime, so importing one THROWS by
+    // construction and an import-safety assertion on it is simply the wrong question. What it owes
+    // instead is that it parses — a syntax error there fails inside a dispatched episode.
+    //
+    // The kind is derived from the path rather than declared, because `capabilities.json` is a
+    // published schema-1 surface and adding a field to it is a change to somebody else's contract.
+    const manifest = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/capabilities.json"), "utf8")) as {
+      capabilities: Capability[];
+    };
+    let modules = 0;
+    let scripts = 0;
+    for (const capability of manifest.capabilities) {
+      const absolute = join(ROOT, capability.implementation);
+      const isWorkflowScript = capability.implementation.startsWith("workflows/") && capability.implementation.endsWith(".js");
+      // Each probe runs in its own subprocess: the failure mode under test is EXITING, and an
+      // in-process import would take this runner down with it rather than failing an assertion.
+      const probe = isWorkflowScript
+        ? Bun.spawnSync(["node", "--check", absolute], { stdout: "pipe", stderr: "pipe" })
+        : Bun.spawnSync(["bun", "-e", `await import(${JSON.stringify(absolute)}); process.stdout.write("OK");`], { stdout: "pipe", stderr: "pipe" });
+      if (isWorkflowScript) scripts += 1; else modules += 1;
+      expect(`${capability.name}: exit ${probe.exitCode}`).toBe(`${capability.name}: exit 0`);
+      if (!isWorkflowScript) {
+        expect(`${capability.name}: ${new TextDecoder().decode(probe.stdout)}`).toBe(`${capability.name}: OK`);
+      }
+    }
+    // Both kinds must actually be present, or this test silently stops covering one of them.
+    expect(modules).toBeGreaterThan(0);
+    expect(scripts).toBeGreaterThan(0);
   });
 
   test("publishes a PATH broker for the exact installed dependency root", () => {

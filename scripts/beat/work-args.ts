@@ -33,92 +33,107 @@ import { validateApprovedArtifact, validateGeneratedPlanArtifact } from "../../w
  */
 const BUILT_IN = new Set(["ds", "dev", "work", "writing", "workshop", "workflow-creator"]);
 
-const argv = Bun.argv.slice(2);
-const positional = argv.filter(value => !value.startsWith("--"));
-const flag = (name: string): string => {
-  const index = argv.indexOf(`--${name}`);
-  return index >= 0 && index + 1 < argv.length ? argv[index + 1] : "";
-};
-
-const projectDir = positional[0] ?? "";
-const workflow = flag("workflow");
-// The actor is only used for the reviewer/approver separation check inside the validator. A caller
-// that omits it gets the same refusal a session with no identity would, which is the honest answer.
-const session = flag("session") || process.env.CLAUDE_SESSION_ID || "";
-
-function refuse(message: string): never {
-  console.error(`[work-args] ${message}`);
-  process.exit(2);
-}
-
-if (!projectDir) refuse("usage: bun scripts/beat/work-args.ts <projectDir> --workflow <name> [--session <id>]");
-if (!workflow) refuse("--workflow is required and selects the domain adapter in workflows/work.js");
-if (!session) refuse("--session (or CLAUDE_SESSION_ID) is required: the receipt records who approved, and approver/reviewer separation cannot be checked without the current identity");
+export type SpineArgs = { projectDir: string; workflow: string; planPath: string; planHash: string };
 
 /**
- * THE IDENTITY DISAGREEMENT IS DIAGNOSED BEFORE THE VALIDATOR RUNS, BECAUSE THE VALIDATOR CANNOT
- * SAY WHAT WENT WRONG.
+ * A PUBLISHED CAPABILITY IS IMPORTED, SO IT MUST NOT DO ANYTHING ON IMPORT.
  *
- * `validateApprovedArtifact` passes `workflow` down as `expectedWorkflow`, and `parseReviewState`
- * folds that comparison into one boolean with seven others — so a receipt naming a DIFFERENT
- * workflow comes back as `review-schema: combined review state has an invalid strict schema`. That
- * message sends the reader to look for a malformed field, and every field is well-formed.
+ * MEASURED 2026-08-06, scoping the teaching port. `beat-spine-args` was published in v5.144.0 and
+ * consumers reach a capability exactly one way — `import(implementationPath)`, which is what
+ * `teaching/scripts/native-workflow-adapter.ts:71` does. This file had no `import.meta.main` guard,
+ * so importing it RAN it: it read the consumer's argv, found no `--workflow`, and called
+ * `process.exit(2)` — terminating the consuming process on import. The capability was unusable by
+ * the only mechanism its consumers have, which is the same shape as the closed adapter table and the
+ * unpublished spine, one layer further in. `beat-implement-runner` had the guard all along
+ * (`preflight.ts:453`); this one simply never got it.
  *
- * Measured 2026-08-06: a live `/writing` episode whose `review.json` read `"workflow": "work"`. The
- * session spent its remaining turns diagnosing it, hand-wrote a retired `WRITING_CLARIFIED.json`
- * trying to get unstuck, and finally had to ask the user to clear state. The receipt was correct
- * JSON throughout. So this reads the one field first and says the true thing about it.
+ * So the work is an exported function that THROWS, and the CLI is a thin `import.meta.main` block
+ * that catches and exits. Same diagnostics either way.
  */
-const receiptPeek = ((): string | null => {
+export function spineArgs(projectDir: string, workflow: string, session: string): SpineArgs {
+  const refuse = (message: string): never => { throw new Error(message); };
+
+  if (!projectDir) refuse("usage: bun scripts/beat/work-args.ts <projectDir> --workflow <name> [--session <id>]");
+  if (!workflow) refuse("--workflow is required and selects the domain adapter in workflows/work.js");
+  if (!session) refuse("--session (or CLAUDE_SESSION_ID) is required: the receipt records who approved, and approver/reviewer separation cannot be checked without the current identity");
+
+  /**
+   * THE IDENTITY DISAGREEMENT IS DIAGNOSED BEFORE THE VALIDATOR RUNS, BECAUSE THE VALIDATOR CANNOT
+   * SAY WHAT WENT WRONG.
+   *
+   * `validateApprovedArtifact` passes `workflow` down as `expectedWorkflow`, and `parseReviewState`
+   * folds that comparison into one boolean with seven others — so a receipt naming a DIFFERENT
+   * workflow comes back as `review-schema: combined review state has an invalid strict schema`. That
+   * message sends the reader to look for a malformed field, and every field is well-formed.
+   *
+   * Measured 2026-08-06: a live `/writing` episode whose `review.json` read `"workflow": "work"`. The
+   * session spent its remaining turns diagnosing it, hand-wrote a retired `WRITING_CLARIFIED.json`
+   * trying to get unstuck, and finally had to ask the user to clear state. The receipt was correct
+   * JSON throughout. So this reads the one field first and says the true thing about it.
+   */
+  const receiptPeek = ((): string | null => {
+    try {
+      const raw: unknown = JSON.parse(readFileSync(join(projectDir, ".planning", ".state", "review.json"), "utf8"));
+      if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+      const named = (raw as Record<string, unknown>).workflow;
+      return typeof named === "string" && named.trim() ? named : null;
+    } catch { return null; }   // absent/unreadable is the validator's story to tell, not this one's.
+  })();
+  if (receiptPeek !== null && receiptPeek !== workflow) {
+    refuse(`receipt identity disagreement: you asked for "${workflow}" but .planning/.state/review.json binds "${receiptPeek}". Every implementer gate compares against the receipt, so this episode would be enforced as "${receiptPeek}" whatever you pass here. The receipt is written once at ExitPlanMode and never corrected, so the fix is a fresh approval under the right workflow — not a different argument.`);
+  }
+
+  /**
+   * AN EXTERNAL WORKFLOW TAKES A DIFFERENT VALIDATOR, AND SENDING IT TO THE WRONG ONE LOOKS LIKE A
+   * MISSING RECEIPT.
+   *
+   * MEASURED 2026-08-06 against a real `teaching` receipt — `workflow: "teaching"`, status APPROVED,
+   * hash matching the plan's bytes. `validateApprovedArtifact` refused it with `unknown-workflow —
+   * external workflows require an explicit approval policy`, because that function's descriptor
+   * parameter is the schema-1 FIXED-artifact policy (planPath/metadataPath/verdictPath) and a
+   * schema-2 generated-plan plugin has none. There was nothing wrong with the receipt at all.
+   *
+   * `validateGeneratedPlanArtifact` is the entry for exactly this case — it is what the teaching
+   * plugin's own gate calls (`hooks/native-workflow.ts:155`), through the same published capability.
+   * Dispatching on identity is all that was missing.
+   */
+  const artifact = BUILT_IN.has(workflow)
+    ? validateApprovedArtifact(projectDir, workflow, session)
+    : validateGeneratedPlanArtifact(projectDir, workflow, session);
+  // `ArtifactError` is `{ code, message }` — the same discriminant `isError` uses inside the library.
+  // Testing for a `.error` key instead (the first spelling of this) made EVERY refusal fall through
+  // to the success path and crash on `approved.receipt.workflow`, so a project with no receipt at all
+  // got a TypeError instead of "you have not been through PLAN". Caught by running the four cases.
+  if (artifact && typeof artifact === "object" && "code" in artifact) {
+    const failure = artifact as { code: string; message?: string };
+    // NAME THE RECEIPT STATE, NOT JUST "no". Every deadlock this repo has debugged was a gate that
+    // refused without saying which field was wrong, so the reader could not tell "you skipped PLAN"
+    // from "your plan was edited after approval".
+    refuse(`no authenticated plan for workflow "${workflow}" in ${projectDir}: ${failure.code}${failure.message ? ` — ${failure.message}` : ""}. Take the plan through native Plan mode and ExitPlanMode; work.js cannot run without a receipt.`);
+  }
+
+  const approved = artifact as { planPath: string; hash: string; receipt: { workflow: string } };
+  // THE RECEIPT'S OWN WORKFLOW IS ECHOED BACK RATHER THAN THE ARGUMENT. They can disagree —
+  // measured 2026-08-06, a `/writing` episode whose receipt read `work` — and when they do, the
+  // receipt is what every downstream gate compares against, so it is what the workflow must run as.
+  // Emitting the argument here would hide the disagreement behind a value that merely looks right.
+  return { projectDir, workflow: approved.receipt.workflow, planPath: approved.planPath, planHash: approved.hash };
+}
+
+if (import.meta.main) {
+  const argv = Bun.argv.slice(2);
+  const positional = argv.filter(value => !value.startsWith("--"));
+  const flag = (name: string): string => {
+    const index = argv.indexOf(`--${name}`);
+    return index >= 0 && index + 1 < argv.length ? argv[index + 1] : "";
+  };
   try {
-    const raw: unknown = JSON.parse(readFileSync(join(projectDir, ".planning", ".state", "review.json"), "utf8"));
-    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
-    const named = (raw as Record<string, unknown>).workflow;
-    return typeof named === "string" && named.trim() ? named : null;
-  } catch { return null; }   // absent/unreadable is the validator's story to tell, not this one's.
-})();
-if (receiptPeek !== null && receiptPeek !== workflow) {
-  refuse(`receipt identity disagreement: you asked for "${workflow}" but .planning/.state/review.json binds "${receiptPeek}". Every implementer gate compares against the receipt, so this episode would be enforced as "${receiptPeek}" whatever you pass here. The receipt is written once at ExitPlanMode and never corrected, so the fix is a fresh approval under the right workflow — not a different argument.`);
+    // The actor is only used for the reviewer/approver separation check inside the validator. A
+    // caller that omits it gets the same refusal a session with no identity would.
+    const result = spineArgs(positional[0] ?? "", flag("workflow"), flag("session") || process.env.CLAUDE_SESSION_ID || "");
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } catch (error) {
+    console.error(`[work-args] ${error instanceof Error ? error.message : String(error)}`);
+    process.exit(2);
+  }
 }
-
-/**
- * AN EXTERNAL WORKFLOW TAKES A DIFFERENT VALIDATOR, AND SENDING IT TO THE WRONG ONE LOOKS LIKE A
- * MISSING RECEIPT.
- *
- * MEASURED 2026-08-06 against a real `teaching` receipt — `workflow: "teaching"`, status APPROVED,
- * hash matching the plan's bytes. `validateApprovedArtifact` refused it with `unknown-workflow —
- * external workflows require an explicit approval policy`, because that function's descriptor
- * parameter is the schema-1 FIXED-artifact policy (planPath/metadataPath/verdictPath) and a
- * schema-2 generated-plan plugin has none. There was nothing wrong with the receipt at all.
- *
- * `validateGeneratedPlanArtifact` is the entry for exactly this case — it is what the teaching
- * plugin's own gate calls (`hooks/native-workflow.ts:155`), through the same published capability.
- * Dispatching on identity is all that was missing.
- */
-const artifact = BUILT_IN.has(workflow)
-  ? validateApprovedArtifact(projectDir, workflow, session)
-  : validateGeneratedPlanArtifact(projectDir, workflow, session);
-// `ArtifactError` is `{ code, message }` — the same discriminant `isError` uses inside the library.
-// Testing for a `.error` key instead (the first spelling of this) made EVERY refusal fall through
-// to the success path and crash on `approved.receipt.workflow`, so a project with no receipt at all
-// got a TypeError instead of "you have not been through PLAN". Caught by running the four cases.
-if (artifact && typeof artifact === "object" && "code" in artifact) {
-  const failure = artifact as { code: string; message?: string };
-  // NAME THE RECEIPT STATE, NOT JUST "no". Every deadlock this repo has debugged was a gate that
-  // refused without saying which field was wrong, so the reader could not tell "you skipped PLAN"
-  // from "your plan was edited after approval".
-  refuse(`no authenticated plan for workflow "${workflow}" in ${projectDir}: ${failure.code}${failure.message ? ` — ${failure.message}` : ""}. Take the plan through native Plan mode and ExitPlanMode; work.js cannot run without a receipt.`);
-}
-
-const approved = artifact as { planPath: string; hash: string; receipt: { workflow: string } };
-// THE RECEIPT'S OWN WORKFLOW IS ECHOED BACK RATHER THAN THE ARGUMENT. They can disagree —
-// measured 2026-08-06, a `/writing` episode whose receipt read `work` — and when they do, the
-// receipt is what every downstream gate compares against, so it is what the workflow must run as.
-// Emitting the argument here would hide the disagreement behind a value that merely looks right.
-const receiptWorkflow = approved.receipt.workflow;
-process.stdout.write(`${JSON.stringify({
-  projectDir,
-  workflow: receiptWorkflow,
-  planPath: approved.planPath,
-  planHash: approved.hash,
-}, null, 2)}\n`);
