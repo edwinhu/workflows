@@ -128,6 +128,16 @@ console.log('a domain whose transform is a fan-out delegates to its own workflow
   // build a deck or a draft by a route nobody reviewed, under a gate claiming the domain ran.
   ok('a failed domain workflow throws rather than falling back', /throw new Error\(`work: the \$\{domainWorkflowLabel\(ADAPTER\.implementWorkflow\)\} workflow failed/.test(source))
   ok('domainArgs is forwarded unread', /passed through UNREAD/.test(source))
+  // DECLARING A DOMAIN WORKFLOW MAKES `domainArgs` REQUIRED. Measured 2026-08-06: the delegation was
+  // gated on `implementWorkflow && DOMAIN_ARGS`, so a caller omitting domainArgs — which is exactly
+  // what skills/writing/SKILL.md instructs, its pre-step returning only the four authority fields —
+  // skipped the domain workflow entirely, took the generic per-task path, and computed CLEAN. The
+  // comment promising "reported, not silently replaced" guarded only failures INSIDE the call.
+  ok('an absent domainArgs with a declared domain workflow throws', /if \(DECLARED_DOMAIN\.length && !DOMAIN_ARGS\)/.test(source))
+  ok('the throw names both fields that can declare one',
+    /\['implementWorkflow', ADAPTER\.implementWorkflow\]/.test(source) && /\['verifyWorkflow', ADAPTER\.verifyWorkflow\]/.test(source))
+  ok('and it names the remedy rather than just refusing',
+    /Supply domainArgs from the domain's authenticate pre-step, or remove the declaration from the adapter/.test(source))
   // And it must reach the gate. A delegated implement that no score row mentions is invisible.
   ok('the domain run appears in the score table', /domainRun \? \[\{ check: `\$\{domainWorkflowLabel\(ADAPTER\.implementWorkflow\)\} workflow`/.test(source))
   // AN EXTERNAL PLUGIN'S DOMAIN WORKFLOWS ARE NOT IN THE SAVED REGISTRY. `workflow()` resolves a

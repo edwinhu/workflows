@@ -300,6 +300,35 @@ const IMPL_SCHEMA = {
  * domain authority in the one file that is supposed to be domain-agnostic.
  */
 const DOMAIN_ARGS = cfg.domainArgs && typeof cfg.domainArgs === 'object' ? cfg.domainArgs : null
+/**
+ * A DECLARED DOMAIN WORKFLOW IS A PROMISE, AND AN ABSENT `domainArgs` MUST NOT QUIETLY VOID IT.
+ *
+ * MEASURED 2026-08-06 by the agent auditing whether `writing` was converted or only declared. The
+ * delegation was gated on `if (ADAPTER.implementWorkflow && DOMAIN_ARGS)`, so a caller who omitted
+ * `domainArgs` — which is exactly what `skills/writing/SKILL.md` instructs, since its step-1
+ * pre-step returns only `{projectDir, workflow, planPath, planHash}` — skipped the domain workflow
+ * ENTIRELY. No throw, no log line, no score-table row. The run then took the generic per-task path
+ * and computed a CLEAN gate on it.
+ *
+ * The comment below this block says a domain workflow that cannot run is reported rather than
+ * silently replaced. That was true only for a failure INSIDE the call, and false for the case that
+ * actually happens: never making it. Six entry skills repeat that guarantee in prose. A comment
+ * that lies about the code beneath it is worse than no comment, and this is the shape it takes.
+ *
+ * So: declaring `implementWorkflow`/`verifyWorkflow` MAKES `domainArgs` REQUIRED. The spine has no
+ * filesystem and cannot compute what those workflows need — `writing-draft` alone requires
+ * `sectionIndex`, `projectReal` and `artifacts`, all produced by an authenticate pre-step — so the
+ * caller must supply them, and a caller who did not needs to be told which pre-step produces them
+ * rather than handed a clean gate for work that never ran.
+ */
+const DECLARED_DOMAIN = [
+  ['implementWorkflow', ADAPTER.implementWorkflow],
+  ['verifyWorkflow', ADAPTER.verifyWorkflow],
+].filter(([, ref]) => ref)
+if (DECLARED_DOMAIN.length && !DOMAIN_ARGS) {
+  throw new Error(`work: the ${WORKFLOW} adapter declares ${DECLARED_DOMAIN.map(([field, ref]) => `${field}: ${domainWorkflowLabel(ref)}`).join(' and ')}, but args.domainArgs is absent. Those workflows have their own required inputs and this script has no filesystem to compute them, so running without domainArgs would skip them and gate the generic per-task path as if they had run. Supply domainArgs from the domain's authenticate pre-step, or remove the declaration from the adapter.`)
+}
+
 let domainRun = null
 if (ADAPTER.implementWorkflow && DOMAIN_ARGS) {
   log(`delegating IMPLEMENT to the ${domainWorkflowLabel(ADAPTER.implementWorkflow)} workflow`)
