@@ -213,6 +213,31 @@ propagates to every workflow scaffolded from it.
 
 ---
 
+## L12 — A lens that an exit code could decide is a defect, not a design choice
+
+A self-grading gate has two kinds of input: mechanical checks (a command, an exit code) and lenses
+(a subagent's reading, scored by the JS). **Mechanical is first-best and lens is the fallback**, so
+every lens in the gate stands under one question: why is this not a command?
+
+The characteristic failure is a lens whose `ask` is already decidable — "does every acceptance
+clause name a command?", "is the artifact inside `writablePaths`?", "does it compile?". Dispatched
+as a lens, that question gets a different answer per run, costs a dispatch each time, and can be
+argued with; as a lint rule it is settled once. The tell at audit time is a finding raised by a lens
+that could have been computed: when a reviewer raises one, ask why it wasn't a lint rule — the
+answer is normally that the format left the fact implicit, and the real fix is to make the field
+explicit and lint it.
+
+Corollaries:
+- **One entry point.** Every mechanical check reachable from a single command whose exit code is the
+  mechanical verdict. A gate that runs N independent commands loses one silently — nothing reports
+  a check it never knew about.
+- **Lenses score, they do not loop.** A fix loop's exit condition is mechanical. An open-ended prose
+  critique does not terminate: the fix for round *n* adds text round *n+1* finds real defects in.
+- **Direction of travel.** Compare a gate against its own prior version. Lens count going up with no
+  lens converted is drift, and is a finding.
+
+---
+
 ## L11 (meta) — put these two in both checklists below
 
 - **`node --check` is not an eval test.** A stray backtick inside a template-literal prompt string
@@ -257,6 +282,10 @@ propagates to every workflow scaffolded from it.
 - [ ] Smoke-test with a bogus `projectDir`/target and confirm the workflow's own arg-validation
       fires, not a template-literal crash; adversarial verification is planned as a permanent,
       regression-tested layer, not a launch-time-only pass (L11).
+- [ ] Every planned lens has been tested against "could a command decide this?" and the survivors
+      name the judgement that no exit code can make; all mechanical checks sit behind ONE entry
+      point that the gate runs; the fix loop's exit condition is mechanical, not a prose verdict
+      (L12).
 
 ## AUDIT-TIME CHECKLIST (apply when auditing an existing self-grading gate)
 
@@ -285,6 +314,9 @@ propagates to every workflow scaffolded from it.
 - [ ] If the workflow shares an extracted core with sibling domains, is each domain's gate
       semantics still correct post-extraction, or did one domain's logic leak into another's (L9)?
 - [ ] Spot-check 2-3 enforcement-prose claims against the actual mechanism they cite (L10).
+- [ ] For each lens the gate dispatches, read its `ask`: is it already decidable by a command? Is
+      any mechanical check invoked outside the single entry point? Did lens count grow since the
+      last version with nothing converted? Does any loop exit on a lens verdict (L12)?
 - [ ] Confirm `node --check` was NOT the only eval test run; check the workflow reaches its own
       arg-validation on a bogus target; confirm adversarial verification exists as a permanent
       layer and was exercised against real (not fabricated) inputs during authoring (L11).

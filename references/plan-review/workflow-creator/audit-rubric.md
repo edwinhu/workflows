@@ -33,3 +33,5 @@ Use 0–10 scores only as diagnostics. A blocking finding or failed mechanical p
 - **P28 Mutation isolation:** changed files remain within declared authority.
 - **P29 Retry integrity:** retries include only proven attempted work.
 - **P30 Completion:** mechanical checks, independent semantic PASS, and human review are all required.
+- **P31 Mechanization:** every constraint a command could decide is a mechanical check, not a lens; each surviving lens names the judgement no exit code can make.
+- **P32 Single entry point:** all mechanical checks are reachable from one command, and that command is what the gate runs.

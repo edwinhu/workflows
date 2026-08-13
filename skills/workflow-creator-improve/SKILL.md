@@ -60,6 +60,20 @@ target: <workflow slug>
 
 Read `beat-clarify` and ask desired correction, exclusions, whether the request is audit-only or mutation-bearing, required evidence, and human review surface before inspecting the target.
 
+## Constraints are the unit of correction
+
+A workflow is its set of constraints (see *What a workflow IS* in `workflow-creator/SKILL.md`); a
+correction is therefore a change to that set, not a change to phase prose. Two standing questions on
+every corrective pass, audit-only included:
+
+- **Which lens should have been a command?** A lens that flags the same shape repeatedly is a lint
+  rule nobody wrote. Converting it is the highest-value repair available, and it is the only repair
+  that makes the next run cheaper instead of longer.
+- **Is there still exactly one mechanical entry point, and does the gate run it?** A check added
+  since the last pass as a second standalone command is a check on its way to being forgotten.
+
+Report both in the diagnosis; a redesign that adds a lens without answering the first must say why.
+
 ## Branch
 
 ```text

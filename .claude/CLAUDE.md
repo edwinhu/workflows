@@ -65,6 +65,17 @@ observation records live there, and they stay **one file per record on purpose**
 bracket every dispatch, so a single shared JSON would mean read-modify-write races in the one place
 that must not lose data. Splitting for concurrency is not sprawl.
 
+### `.planning/*.md` is governed by the same law — and is where the growth actually went
+
+The inventory above disciplined `.state/`, and `.state/` held. The sprawl moved next door, into the
+markdown surface nobody counts. A workflow's `.planning/` is **one cursor, one receipt-selected
+generated plan, one human review** — `ACTIVE_WORKFLOW.md`, `<generated-slug>.md`, `HUMAN_REVIEW.md`
+(plus `AUTOMATED_REVIEW.md` on an audit-only run). Everything else is a phase's scratch that outlived
+its phase: fold it into the plan or the review surface, not a new noun.
+
+Dated variants are the worst form. `REVIEW-tasklist-2026-07-29.md` beside `REVIEW.md` is not a second
+document, it is a second *reader* — and nothing records which one the gate read.
+
 ### Rules
 
 1. **New state goes in `episode.json`.** Not a new file, and *never* a new per-workflow file.
@@ -75,6 +86,11 @@ that must not lose data. Splitting for concurrency is not sprawl.
    boundary is load-bearing rather than convenient.
 4. **Do not "consolidate" `review.json`.** The pressure this section creates points the wrong way if
    you follow it blindly. See the table.
+5. **The audit covers both halves.** `ls .planning/ .planning/.state/` — every entry counts, `.md`
+   included. A rule enforced only over the directory someone thought to look in is a rule that
+   relocates the problem rather than solving it.
+6. **Retiring a file means sweeping its residue.** Deleting the writer leaves the artifacts behind,
+   still readable, indistinguishable from live state to the next reader.
 
 ### Facts
 
@@ -89,6 +105,12 @@ that must not lose data. Splitting for concurrency is not sprawl.
   (`hooks/writing-suggest-verify.ts:59`). One consumer is not a reason for a file.
 - A proposal in that same session was reported as "+1 file" **three times** before anyone checked the
   baseline. The count was wrong every time because the sentinel family was never in it.
+- Measured 2026-08-13, this repo: `.planning/.state/` holds **1** file and `.planning/` holds **20
+  `.md` files** — four of them dated duplicates of a sibling. The discipline worked exactly as far as
+  the directory it named.
+- `.planning/DEV_CLARIFIED.json` is still on disk in this repo. The sentinel family was retired and
+  its writers removed; nobody swept the files, so a retired mechanism still looks live to anyone
+  reading the directory.
 
 ### Red flags — STOP
 
@@ -99,6 +121,9 @@ that must not lose data. Splitting for concurrency is not sprawl.
 | Write a state file the model itself populates and the gate then trusts | Self-certification is not evidence | Observe the tool call in a hook |
 | Report a state addition as "+1" | The baseline is probably not what you think | Run `ls .planning/.state/` and grep the sentinel family, then state the real total |
 | Merge anything into `review.json` | A mutable-state bug would cost the user Bash | Leave the receipt alone |
+| Add `SPEC.md`, `LEARNINGS.md`, `WORK.md` or another phase-scratch noun | It outlives its phase and the next reader cannot tell it from live state | A section in the plan or the review surface |
+| Save `REVIEW-<topic>-<date>.md` next to `REVIEW.md` | Two readers, no record of which one the gate read | Overwrite the one file; git holds the history |
+| Count only `.planning/.state/` when auditing | That is the half that already held | `ls .planning/ .planning/.state/`, count both |
 
 ## Required Skills
 
