@@ -1,10 +1,12 @@
 ---
 name: typst-overflow
 description: Overflow detection and handling — cut content, split slides, use columns, run mechanical checks after every compile
-applies-to: [workshop, workshop-revise]
+type: convention
+graduated: false
+applies-to: [workshop, workshop-revise, lecture-prep, slides-edit, notes-edit, lecture-prep-edit]
 ---
 
-## Rule
+## Rule — Overflow Handling
 
 ### Overflow Fix Strategies (in order)
 
@@ -30,6 +32,12 @@ This script:
 Exit code 1 = overflow found. **Gate does NOT pass until 0 overflows.**
 
 A PostToolUse hook also fires automatically after every `typst compile` on slides files.
+
+In lecture material, run the full slide check suite after a batch of edits (not after every individual edit):
+
+```bash
+SCRIPTS_DIR="${CLAUDE_PLUGIN_ROOT}/scripts" && "$SCRIPTS_DIR/check-all-slides.sh" slides/XX-topic.typ
+```
 
 ### Heuristic Source-Level Checks
 

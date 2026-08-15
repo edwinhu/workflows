@@ -1,7 +1,10 @@
 ---
 name: typst-cetz-diagrams
-description: CeTZ canvas conventions — minimum length 2em, visual-verify loop required after creation, cetz-plot FORBIDDEN
-applies-to: [workshop, workshop-revise]
+description: CeTZ canvas conventions — minimum length 2em, storytelling comment required, visual-verify loop after creation, cetz-plot FORBIDDEN
+type: convention
+graduated: true
+check-script: cetz-diagrams.py
+applies-to: [workshop, workshop-revise, lecture-prep, slides-edit, notes-edit, lecture-prep-edit]
 ---
 
 ## Rule
@@ -32,3 +35,9 @@ After creating or modifying any `cetz.canvas` block:
 
 **A diagram that compiles is NOT a diagram that works.** Compilation verifies syntax; visual-verify verifies that the audience can actually read it. Shipping an unverified diagram means the presenter discovers clipped labels at the podium.
 </EXTREMELY-IMPORTANT>
+
+## CeTZ Diagrams
+
+In lecture material, CeTZ canvas diagrams (value lines, trading volume, information/control matrices) are used for quantitative and conceptual visuals that don't fit the Fletcher flowchart model.
+
+The default `length: 1cm` is too small for 16:9 lecture slides viewed from the back of a classroom.
