@@ -55,7 +55,9 @@ export function spineArgs(projectDir: string, workflow: string, session: string)
 
   if (!projectDir) refuse("usage: bun scripts/beat/work-args.ts <projectDir> --workflow <name> [--session <id>]");
   if (!workflow) refuse("--workflow is required and selects the domain adapter in workflows/work.js");
-  if (!session) refuse("--session (or CLAUDE_SESSION_ID) is required: the receipt records who approved, and approver/reviewer separation cannot be checked without the current identity");
+  // Do not offer CLAUDE_SESSION_ID as an alternative here: Claude Code never sets it as an
+  // environment variable, so naming it sends the reader to export something that changes nothing.
+  if (!session) refuse("--session is required: the receipt records who approved, and approver/reviewer separation cannot be checked without the current identity. The routers pass it as `--session ${CLAUDE_SESSION_ID}`, which is substituted into SKILL.md content by Claude Code — that is a different mechanism from the environment, and only the substitution works.");
 
   /**
    * THE IDENTITY DISAGREEMENT IS DIAGNOSED BEFORE THE VALIDATOR RUNS, BECAUSE THE VALIDATOR CANNOT
@@ -123,14 +125,30 @@ export function spineArgs(projectDir: string, workflow: string, session: string)
 if (import.meta.main) {
   const argv = Bun.argv.slice(2);
   const positional = argv.filter(value => !value.startsWith("--"));
+  // A FLAG IS NOT A VALUE. `--session --workflow writing` used to bind session to the literal
+  // string "--workflow", which then failed the receipt's approver/reviewer comparison as though a
+  // real but unrecognised identity had approved the plan — a typo reported as a policy violation.
   const flag = (name: string): string => {
     const index = argv.indexOf(`--${name}`);
-    return index >= 0 && index + 1 < argv.length ? argv[index + 1] : "";
+    if (index < 0 || index + 1 >= argv.length) return "";
+    const value = argv[index + 1];
+    return value.startsWith("--") ? "" : value;
   };
   try {
-    // The actor is only used for the reviewer/approver separation check inside the validator. A
-    // caller that omits it gets the same refusal a session with no identity would.
-    const result = spineArgs(positional[0] ?? "", flag("workflow"), flag("session") || process.env.CLAUDE_SESSION_ID || "");
+    /**
+     * `--session` IS REQUIRED, AND THERE IS NO `process.env.CLAUDE_SESSION_ID` FALLBACK.
+     *
+     * Claude Code does not set that variable — `tests/dead-session-variable.test.mjs` exists because
+     * reading it always yields `undefined`, so every comparison against it denies silently. This CLI
+     * had the read anyway, which the suite reported and `bun` swallowed (the assertion surfaces as an
+     * "unhandled error between tests", so the run still exits 0).
+     *
+     * Nothing is lost by removing it. `${CLAUDE_SESSION_ID}` is substituted into SKILL.md *content*,
+     * which is a different mechanism and does work; all six routers already pass `--session` that
+     * way. The fallback only ever fired for a hand-run command, where the right answer is the
+     * refusal below rather than an empty identity that reads as "no approver recorded".
+     */
+    const result = spineArgs(positional[0] ?? "", flag("workflow"), flag("session"));
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   } catch (error) {
     console.error(`[work-args] ${error instanceof Error ? error.message : String(error)}`);

@@ -51,7 +51,13 @@ const WORKFLOWS = ["ds", "dev", "work", "writing", "workshop", "workflow-creator
  * 5 each — only what their own lists name. A workflow that started denying everything would look
  * identical to a correct one on the deny side alone, which is why this exists.
  */
-const ALLOW_SIDE_EXPECTED = { ds: 26, dev: 26, work: 26, writing: 5, workshop: 5, "workflow-creator": 5 };
+// 5 -> 7 for the three allowlist workflows in `0e5386b3`, which added `ls` and
+// `cat|head|tail|wc|stat|file` to the read-only regex so an orchestrator can READ the files it is
+// reasoning about. The two newly-admitted corpus entries are exactly `ls -la` and `cat src/a.js`;
+// verified command-by-command rather than by adjusting the number until the assertion passed. This
+// number is the whole point of the check, so moving it without naming the commit and the commands
+// converts the test into a rubber stamp.
+const ALLOW_SIDE_EXPECTED = { ds: 26, dev: 26, work: 26, writing: 7, workshop: 7, "workflow-creator": 7 };
 
 /**
  * The eighteen techniques as they were originally attempted, one per row of the matrix. They are

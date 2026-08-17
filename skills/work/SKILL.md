@@ -165,8 +165,8 @@ every other authority path in this repo refuses. `work.js` refuses an empty list
 
 It returns `{ workflow, planPath, planHash, overallPass, verdict, scoreTable, implemented, verified,
 findings, refutedFindings, reviews, tasksThatFlagged, carriedForward }`. Render the gate, drive the
-fix loop from `findings`, and re-invoke with `onlyChecks: tasksThatFlagged` plus `priorReviews` to
-re-judge only what flagged.
+fix loop from `findings`, and re-invoke with `onlyChecks: tasksThatFlagged` plus `priorReviews` to redo them. `onlyChecks` narrows EVERY beat, not just REVIEW: those tasks are
+IMPLEMENTED again, so their implementers will edit files. It is a redo, not a re-judge.
 
 **Why a program and not three beats of instruction.** The beat machinery restrains a free agent:
 guards deny reconnaissance, the mutation guard denies main-chat writes, an order gate refuses an

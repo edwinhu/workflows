@@ -350,6 +350,7 @@ export RDP_APP_KEY=”YOUR_APP_KEY”
 - **`references/syndicated-loans.md`** - Syndicated loan deals (SDC Platinum)
 - **`references/infrastructure.md`** - Infrastructure/project finance deals (SDC Platinum)
 - **`references/private-equity.md`** - Private equity/venture capital investments (SDC Platinum)
+- **`references/people-and-boards.md`** - Officers/directors: the four `TR.Officer*` fields, no person id and no employment history, private companies reachable by PI, and why board data belongs in CIQ/BoardEx instead
 - **`references/municipal-bonds.md`** - Municipal bond issuances (SDC Platinum)
 - **`references/workspace-web-cdp.md`** - Driving the Workspace web client over CDP: session setup, token lifting, endpoint matrix, entitlement gotchas
 - **`references/codebook.md`** - Codebook (hosted JupyterHub): REST surface, and the kernel-execution blocker

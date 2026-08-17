@@ -223,7 +223,9 @@ See **`references/sas-etl.md`** for complete patterns:
 | CRSP v2 | `crsp` | `dsf_v2`, `msf_v2`, `stocknames_v2` |
 | Form 4 Insiders | `tr_insiders` | `table1`, `header`, `company` |
 | ISS Incentive Lab | `iss_incentive_lab` | `comppeer`, `sumcomp`, `participantfy` |
-| Capital IQ | `ciq` | `wrds_compensation` |
+| Capital IQ | `ciq` (views), `ciq_pplintel`, `ciq_common` | `wrds_professional` (board/professional panel), `ciqcompanyrel` (company-to-company), `wrds_compensation`. **Account-split: `ciq_pplintel` and `boardex_na` are on opposite WRDS accounts; `ciq_transactions` is denied on both.** See `references/capiq.md` |
+| BoardEx | `boardex_na` (**`edwin_hu` only**) | `na_wrds_org_composition` (directors **+ senior managers** — filter `seniority`), `na_wrds_company_names`, `na_dir_profile_details` (`usualname` = nickname). History starts **1999**, ~20k mostly-large companies. See `references/boardex.md` |
+| WRDS People Link | `wrdsapps_plink_exec_ciq`, `_exec_boardex`, `_exec_trinsider`, `_trinsider_ciq` | pairwise PERSON id links (execid ↔ directorid ↔ CIQ personid ↔ TR personid). `plink_boardex_ciq` denied unless the account holds both. See `references/people-linking.md` |
 | IBES | `tr_ibes` | `det_epsus`, `statsum_epsus` |
 | Form D / Reg D | `wrdssec` | `wrds_vc_formd` (parsed, 2000–2020); index: `wrdssec_all.forms` (all CIKs) or `wrds_forms` (filer only) — default to `forms`, see `references/wrds-forms-tables.md` |
 | SEC EDGAR | `wrdssec_all` | `forms` (raw index, all CIKs per filing — default), `wrds_forms` (filer-only view), `wciklink_cusip` |
@@ -331,6 +333,8 @@ Detailed query patterns and table documentation:
 - **`references/insider-form4.md`** - Thomson Reuters Form 4, rolecodes, insider types
 - **`references/iss-compensation.md`** - ISS Incentive Lab, peer companies, compensation
 - **`references/formd.md`** - Form D / Reg D (canonical): two sources (WRDS `wrds_vc_formd` + SEC EDGAR TSV/XML), grain & keys, denormalization gotcha, exemption + industry codes, post-2020 gap, validated benchmarks
+- **`references/boardex.md`** - BoardEx: 1999 coverage start and ~20k-company universe, `wrds_org_composition` is directors PLUS senior managers, sentinel dates, feed 4.2 succession ids, the reused-ticker linking trap, measured recall vs proxy statements
+- **`references/people-linking.md`** - WRDS People Link: the pairwise person-id tables, which are readable per account, and the Execucomp chain when BoardEx↔CIQ is denied
 - **`references/edgar.md`** - SEC EDGAR filings, URL construction, DCN vs accession numbers
 - **`references/connection.md`** - Connection pooling, caching, error handling
 - **`references/taq.md`** - TAQ: master files, IID, raw tick processing (NBBO, VWAP, closing auctions), CRSP–TAQ merge, era transition (legacy vs millisecond)
@@ -341,6 +345,7 @@ Detailed query patterns and table documentation:
 - **`references/fisd-bonds.md`** - FISD/Mergent: corporate bond issuances, IG vs HY, 144A vs registered, rating classification, TRACE linking
 - **`references/sdc-ma.md`** - SDC M&A: deal counts, PE/LBO vs strategic buyer, deal status codes, public vs private target
 - **`references/fund-formation.md`** - Fund formation: Form D (pooled investment funds), EDGAR N-2 (closed-end fund IPOs), Form ADV (RIA registrations)
+- **`references/capiq.md`** - Capital IQ: the `eddyhu`/`edwin_hu` account split (`ciq_pplintel` vs `boardex_na`, both plink tables denied), `wrds_professional` board panel + the `boardflag`/`sponsorflag` traps, `ciqcompanyrel` relationship types, the keyed sponsor→portco→director→sponsor-employment join
 - **`references/pitchbook.md`** - PitchBook: schema architecture, dealsize/fundsize in USD millions, dealdate outliers, CIK crosswalk, fund performance (wrds_fund_returns), PE/VC/fund formation patterns
 - **`references/proxy-advisors.md`** - Proxy-advisor customer identification: 485BPOS/485APOS body scan for ISS/Glass Lewis/Egan-Jones name variants; CRSP MFDB lift to mgmt_cd × year; validates against chongshu published CSV
 - **`references/linkage.md`** - Cross-dataset linkage map: which identifiers are spines, the load-bearing link tables (CCM, wciklink, dswslink, MFDB), a "how do I join X to Y" table, and which vendor ids never cross
