@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
-
 import { createHash } from "node:crypto";
+
 import { readFile, stat } from "node:fs/promises";
 import { isAbsolute, posix, resolve } from "node:path";
 import {
@@ -73,6 +73,21 @@ const DEBT_COMMAND_PATTERN = ["teaching", ":find-slide-page"].join("");
 const DEBT_PLUGIN_PATTERN = ["teaching", "-plugin"].join("");
 const TEACHING_CACHE_PATTERN = ["teaching", "teaching"].join("\\/");
 const ACCEPTED_BINARY_DISPOSITIONS = new Set(["preserve"]);
+// Code-owned: the only tracked binaries this repo may publish, each pinned to its REVIEWED sha256.
+// A binary outside this list has no disposition and fails the scan; a listed one whose bytes change
+// fails on the digest. Both are the point — a preserved binary is never text-scanned, so the digest
+// is the only thing standing between a payload and publication. Re-review before repinning.
+const PRESERVED_BINARIES: ReadonlyArray<{ path: string; digest: string }> = [
+  { path: "skills/law-econ-docx/examples/sample/figure1.png", digest: "70a977e0f296010321ccf92afa731b46d9e66dc52efbb7067474efaccb21f775" },
+  { path: "skills/workshop/fixtures/clean/presentation/notes.pdf", digest: "a75cde5738b43c406c2df69436bc37efbbe573e83fbdde0c3b92597410220016" },
+  { path: "skills/workshop/fixtures/clean/presentation/slides.pdf", digest: "4df2355eaa9d1e8495130f32833199f92617bd5ab986c1b96c0c551a63ded609" },
+  { path: "skills/wrds/scripts/parse_13f/parse_13f_go/parse_13f_go", digest: "b445eb303ff6395c40a54af52f30c464e42a65dec074f3edd9621fc4d2c98ad2" },
+  { path: "references/templates/law_econ_template.docx", digest: "368ce014d5c452672fa1c70aa093a5a5dae264207284b91cbe581e61b7f8e57e" },
+  // Pre-move locations, still in HEAD until the move commits. Same bytes, same reviewed digests.
+  { path: "skills/writing-legal/templates/law_econ_template.docx", digest: "368ce014d5c452672fa1c70aa093a5a5dae264207284b91cbe581e61b7f8e57e" },
+  { path: "skills/writing-legal/templates/law_review_template.docx", digest: "f53eca12fa5b3e575cbfcb589b5f2d190e3b375bc89a8f378227dfe61c40c7f6" },
+  { path: "references/templates/law_review_template.docx", digest: "f53eca12fa5b3e575cbfcb589b5f2d190e3b375bc89a8f378227dfe61c40c7f6" },
+];
 const REQUIRED_DENY_RULES: DenyRule[] = [
   { id: "private-identifier", pattern: `(?:${DEBT_COMMAND_PATTERN}|${DEBT_PLUGIN_PATTERN}|private (?:repository|repo|plugin|consumer))`, flags: "gi" },
   { id: "cache-path", pattern: `\\.claude\\/plugins\\/cache\\/${TEACHING_CACHE_PATTERN}\\/`, flags: "g" },
@@ -341,7 +356,11 @@ async function captureAndScanTrackedTree(
   if (!rootStat.isDirectory()) throw new Error(`scan root is not a directory: ${canonicalRoot}`);
   const policy = JSON.parse(await readFile(resolve(canonicalRoot, policyPath), "utf8")) as PrivacyPolicy;
   validatePrivacyPolicy(policy);
-  const candidate = captureCandidate({ repositoryRoot: canonicalRoot, baseRef: "HEAD" });
+  // Authorization is the code-owned path list; captureCandidate binds each disposition to the bytes
+  // it actually captured, and a path this candidate does not carry contributes nothing.
+  const binaryInventory = PRESERVED_BINARIES.flatMap(({ path, digest: reviewed }) =>
+    (["index", "worktree"] as const).map((representation) => ({ path, representation, digest: reviewed, disposition: "preserve" })));
+  const candidate = captureCandidate({ repositoryRoot: canonicalRoot, baseRef: "HEAD", binaryInventory });
   await options.afterCapture?.(candidate);
   const findings: CandidatePrivacyFinding[] = [];
   const seen = new Set<string>();

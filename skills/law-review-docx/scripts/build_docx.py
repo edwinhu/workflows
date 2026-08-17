@@ -24,7 +24,7 @@ from typing import Optional
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "bluebook-audit" / "scripts"))
 from bluebook_signal_linter import lint as bluebook_lint, find_stacked_footnotes  # noqa: E402
 
-TEMPLATE = Path(__file__).resolve().parent.parent.parent / "writing-legal" / "templates" / "law_review_template.docx"
+TEMPLATE = Path(__file__).resolve().parents[3] / "references" / "templates" / "law_review_template.docx"
 
 SECTION_ORDER = [
     "Introduction",

@@ -286,7 +286,7 @@ describe("public privacy scanner", () => {
   test("standalone scan rejects PNG, ZIP, and ELF magic-prefix payload substitution", async () => {
     const cases = [
       ["skills/law-econ-docx/examples/sample/figure1.png", Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, ...Buffer.from(DEBT_PLUGIN)])],
-      ["skills/writing-legal/templates/law_econ_template.docx", Buffer.from([0x50, 0x4b, 0x03, 0x04, ...Buffer.from(DEBT_PLUGIN)])],
+      ["references/templates/law_econ_template.docx", Buffer.from([0x50, 0x4b, 0x03, 0x04, ...Buffer.from(DEBT_PLUGIN)])],
       ["skills/wrds/scripts/parse_13f/parse_13f_go/parse_13f_go", Buffer.from([0x7f, 0x45, 0x4c, 0x46, ...Buffer.from(DEBT_PLUGIN)])],
     ] as const;
     for (const [path, bytes] of cases) {

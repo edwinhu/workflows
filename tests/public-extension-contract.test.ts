@@ -3,7 +3,7 @@ import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = realpathSync(join(import.meta.dir, ".."));
-const TARGET_VERSION = "5.150.0";
+const TARGET_VERSION = "6.0.0";
 
 type Capability = {
   name: string;
@@ -41,76 +41,13 @@ const EXPECTED_ROWS: ContractRow[] = [
     compatibility: "API result and existing CLI output remain compatible within contract 1",
   },
   {
-    capability: "phase-gate-evaluator",
-    descriptorSchema: "No descriptor; PhaseGateConfig/Payload API schema 1",
+    capability: "craft-spine-runner",
+    descriptorSchema: "craft:dispatch args: projectDir + planPath + specHash + goal + tasks, run under the Workflow runtime",
     contractVersion: "1",
-    discoveryInput: "Caller-supplied canonical project root + config + hook payload",
-    successEvidence: "PhaseGateDecision allow or deny(reason)",
-    rejectionEvidence: "Typed deny decision; malformed invocation fails closed",
-    compatibility: "Decision union and existing hook bytes remain compatible within contract 1",
-  },
-  {
-    capability: "approved-artifact-policy",
-    descriptorSchema: "Receipt-selected generated-plan state or ApprovalPolicyDescriptor schema 1",
-    contractVersion: "3",
-    discoveryInput: "Explicit project root + validated workflow policy + current session",
-    successEvidence: "ApprovedArtifact bound to the authenticated plan identity and approval mode",
-    rejectionEvidence: "ArtifactError { code, message }",
-    compatibility: "Security invariants cannot be disabled; validated external generated-plan workflows are contract 3",
-  },
-  {
-    capability: "workflow-policy-loader",
-    descriptorSchema: "WorkflowPolicyDescriptor schema 1 or native schema 2",
-    contractVersion: "2",
-    discoveryInput: "Explicit descriptor file path or one built-in workflow argument",
-    successEvidence: "Frozen WorkflowPolicy with explicit approvalMode",
-    rejectionEvidence: "Thrown Error prefixed Invalid workflow policy descriptor",
-    compatibility: "Schema 1 fixed artifacts remain compatible; schema 2 adds generated-plan mode without ambient inference",
-  },
-  {
-    capability: "beat-implement-runner",
-    descriptorSchema: "preflight request + validated WorkflowPolicy",
-    contractVersion: "3",
-    discoveryInput: "Explicit projectDir + workflow policy + readyWave + immutable approval reset",
-    successEvidence: "PreflightResult with per-task approval bindings, routing decision, derived adjudication expectation, and the emitted script path when one is warranted",
-    rejectionEvidence: "Thrown Error before any dispatch",
-    compatibility: "Contract 2 returned per-task execution records from a Workflow script that could not run under the Workflow runtime; contract 3 splits it into this pre-step and the observation hooks, which own execution evidence. Inputs are unchanged; consumers that read result records must read hook records instead",
-  },
-  {
-    capability: "beat-spine-runner",
-    descriptorSchema: "work.js args: projectDir + workflow + planPath + planHash + tasks, plus adapter for an external workflow",
-    contractVersion: "1",
-    discoveryInput: "Explicit projectDir + receipt-authenticated planPath/planHash + approved task list; never discovers planning authority",
-    successEvidence: "{ overallPass, verdict, scoreTable, implemented, verified, findings, reviews, domainRun, domainVerify, ... } — the gate computed in JS from raw counts",
+    discoveryInput: "Explicit projectDir + the plan's canonical craft:dispatch specHash + the approved task list; never discovers planning authority",
+    successEvidence: "{ overallPass, verdict, scoreTable, implemented, verified, findings, refutedFindings, reviews, tasksThatFlagged, carriedForward, domainRun } — the gate computed in JS from raw counts",
     rejectionEvidence: "Thrown Error before any agent is dispatched",
-    compatibility: "A BUILT-IN workflow is adapter-driven from the internal table and a caller-supplied adapter is refused, so a caller cannot choose who audits it. An EXTERNAL workflow must supply args.adapter and its shape is validated. This is the surface an external plugin uses to run the shared IMPLEMENT/VERIFY/REVIEW beats; beat-implement-runner remains the contract-3 pre-step for consumers that dispatch the wave themselves",
-  },
-  {
-    capability: "beat-spine-args",
-    descriptorSchema: "CLI: <projectDir> --workflow <name> [--session <id>]",
-    contractVersion: "1",
-    discoveryInput: "Explicit projectDir + workflow identity + current session",
-    successEvidence: "One JSON object { projectDir, workflow, planPath, planHash } re-hashed against the plan's current bytes",
-    rejectionEvidence: "Non-zero exit with a [work-args] diagnostic naming the receipt state — missing-artifact, review-pending, stale-receipt, or a receipt identity disagreement",
-    compatibility: "Emits the two authority fields only; tasks are never derived from plan prose, because TaskList is not readable from a script and inventing them would be the LLM-discovery fallback this lifecycle refuses",
-  },
-  {
-    capability: "plan-review-composer",
-    descriptorSchema: "No descriptor; PlanReviewComposition API schema 1",
-    contractVersion: "1",
-    discoveryInput: "Explicit projectDir + validated generated-plan policy + non-empty common/domain checks",
-    successEvidence: "Frozen PlanReviewComposition with one verdict, findings, and executed check IDs",
-    rejectionEvidence: "ArtifactError { code, message }; no partial evidence or finalization on failure",
-    compatibility: "Common-before-domain ordering, authenticated whole-plan input, and review-owned finalization remain compatible within contract 1",
-  },
-  {
-    capability: "tasklist-reconciler",
-    descriptorSchema: "No descriptor; TaskList reconciliation API schema 1",
-    contractVersion: "1",
-    discoveryInput: "Explicit current planHash + plan TaskContracts + existing TaskList snapshot",
-    successEvidence: "Frozen tool-neutral actions and current implementation-ID mapping",
-    rejectionEvidence: "Thrown Error for invalid input; block action for ambiguous live identity",
-    compatibility: "Identity is exactly planHash + plan_task_id + item_kind; task-kind and supersession changes require a new contract version",
+    compatibility: "The spec block in the approved plan is the sole authority and its hash is verified by every dispatched agent; the returned gate keys and the fail-closed-on-dead-agent rule remain compatible within contract 1",
   },
 ];
 
@@ -135,7 +72,7 @@ function parseContractRows(markdown: string): ContractRow[] {
 }
 
 describe("public extension contract integration", () => {
-  test("all three plugin version fields and capability identity agree at 5.150.0", () => {
+  test("all three plugin version fields and capability identity agree at 6.0.0", () => {
     const plugin = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/plugin.json"), "utf8"));
     const marketplace = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/marketplace.json"), "utf8"));
     const manifest = JSON.parse(readFileSync(join(ROOT, ".claude-plugin/capabilities.json"), "utf8"));
@@ -170,7 +107,7 @@ describe("public extension contract integration", () => {
     // TWO CONSUMPTION MODES SHARE ONE MANIFEST, AND THEY HAVE DIFFERENT SAFETY PROPERTIES.
     //
     // A MODULE capability is reached by `import(implementationPath)` — literally what
-    // `teaching/scripts/native-workflow-adapter.ts:71` does. Importing it must not DO anything.
+    // a consumer's native workflow adapter does. Importing it must not DO anything.
     // Measured 2026-08-06: `beat-spine-args` shipped in v5.144.0 with no `import.meta.main` guard,
     // so importing it read the consumer's argv, found no --workflow, and called `process.exit(2)` —
     // terminating the consuming process on import. Published and unusable by its only mechanism.
@@ -189,7 +126,7 @@ describe("public extension contract integration", () => {
     let scripts = 0;
     for (const capability of manifest.capabilities) {
       const absolute = join(ROOT, capability.implementation);
-      const isWorkflowScript = capability.implementation.startsWith("workflows/") && capability.implementation.endsWith(".js");
+      const isWorkflowScript = capability.implementation.endsWith(".js");
       // Each probe runs in its own subprocess: the failure mode under test is EXITING, and an
       // in-process import would take this runner down with it rather than failing an assertion.
       const probe = isWorkflowScript

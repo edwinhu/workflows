@@ -49,21 +49,21 @@ PATTERN_TABLES: list[tuple[str, str, str, str]] = [
     ("ai-anti-patterns", "ai-anti-patterns", "wikipedia-communication-patterns.py",   "_HARD_PATTERNS"),
     ("ai-anti-patterns", "ai-anti-patterns", "wikipedia-communication-patterns.py",   "_SOFT_PATTERNS"),
     # writing-general — Strunk & White
-    ("writing-general",  "writing-general",  "strunk-elements-of-style.py", "_HARD_VIOLATIONS"),
-    ("writing-general",  "writing-general",  "strunk-elements-of-style.py", "_SOFT_VIOLATIONS"),
+    ("writing-general",  "writing",  "strunk-elements-of-style.py", "_HARD_VIOLATIONS"),
+    ("writing-general",  "writing",  "strunk-elements-of-style.py", "_SOFT_VIOLATIONS"),
     # writing-econ — McCloskey
-    ("writing-econ",     "writing-econ",     "mccloskey-economical-writing.py", "_VAGUE_NOUNS"),
-    ("writing-econ",     "writing-econ",     "mccloskey-economical-writing.py", "_PRETENTIOUS_VERBS"),
-    ("writing-econ",     "writing-econ",     "mccloskey-economical-writing.py", "_ERSATZ_ECON"),
-    ("writing-econ",     "writing-econ",     "mccloskey-economical-writing.py", "_STRUCTURAL"),
+    ("writing-econ",     "writing",     "mccloskey-economical-writing.py", "_VAGUE_NOUNS"),
+    ("writing-econ",     "writing",     "mccloskey-economical-writing.py", "_PRETENTIOUS_VERBS"),
+    ("writing-econ",     "writing",     "mccloskey-economical-writing.py", "_ERSATZ_ECON"),
+    ("writing-econ",     "writing",     "mccloskey-economical-writing.py", "_STRUCTURAL"),
     # writing-legal — Volokh
-    ("writing-legal",    "writing-legal",    "volokh-distilled.py", "_LEGALESE"),
-    ("writing-legal",    "writing-legal",    "volokh-distilled.py", "_LONG_SYNONYMS"),
-    ("writing-legal",    "writing-legal",    "volokh-distilled.py", "_NOMINALIZATION"),
-    ("writing-legal",    "writing-legal",    "volokh-distilled.py", "_HARSH_WORDS"),
-    ("writing-legal",    "writing-legal",    "volokh-distilled.py", "_EMPTY_QUALIFIERS"),
-    ("writing-legal",    "writing-legal",    "volokh-distilled.py", "_DOUBLETS"),
-    ("writing-legal",    "writing-legal",    "volokh-distilled.py", "_INTRO_CLAUSES"),
+    ("writing-legal",    "writing",    "volokh-distilled.py", "_LEGALESE"),
+    ("writing-legal",    "writing",    "volokh-distilled.py", "_LONG_SYNONYMS"),
+    ("writing-legal",    "writing",    "volokh-distilled.py", "_NOMINALIZATION"),
+    ("writing-legal",    "writing",    "volokh-distilled.py", "_HARSH_WORDS"),
+    ("writing-legal",    "writing",    "volokh-distilled.py", "_EMPTY_QUALIFIERS"),
+    ("writing-legal",    "writing",    "volokh-distilled.py", "_DOUBLETS"),
+    ("writing-legal",    "writing",    "volokh-distilled.py", "_INTRO_CLAUSES"),
 ]
 
 

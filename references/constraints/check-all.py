@@ -32,6 +32,14 @@ DOMAIN_SKILL_MAP = {
     "writing-econ": {"econ"},
 }
 
+# The three style guides live together in the one `writing` skill, so the skill directory no longer
+# carries the domain. Gating by FILE keeps Volokh off an econ draft and McCloskey off a legal one —
+# the same scoping prose-audit.py applies to the identical tables.
+DOMAIN_FILE_MAP = {
+    "volokh-distilled": {"legal"},
+    "mccloskey-economical-writing": {"econ"},
+}
+
 
 def _find_active_workflow(cwd: str) -> Path | None:
     """Locate the nearest .planning/ACTIVE_WORKFLOW.md by walking UP from cwd.
@@ -203,6 +211,9 @@ def main():
             py_files = sorted(skill_refs.glob("*.py"))
             for py_path in py_files:
                 label = f"skills/{skill_name}/references/{py_path.stem}"
+                if py_path.stem in DOMAIN_FILE_MAP and domain not in DOMAIN_FILE_MAP[py_path.stem]:
+                    results["skipped"].append(f"{label} (domain={domain})")
+                    continue
                 try:
                     mod = import_check(py_path)
                 except Exception as e:

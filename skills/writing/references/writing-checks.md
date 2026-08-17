@@ -1,0 +1,239 @@
+# Writing Common Checks
+
+Canonical definitions for writing verification. Three vendored runners OWN the computed rows; the
+review lenses OWN the four they cannot settle. Both load these definitions by the path
+`${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md`.
+
+**Iron Law: Read this file before evaluating a writing claim. Inlined copies drift.**
+
+## COMPUTED vs MODEL-EVALUATED
+
+The **Kind** column below is the load-bearing distinction, not a convenience. A COMPUTED check is
+settled by a runner's exit code, which craft reads through `mechanicalChecks`; the row names the
+exact command, and no other command settles it. A MODEL-EVALUATED check has no runner: a model reads
+the draft, the outline and the plan and forms a judgement.
+
+**The four MODEL-EVALUATED checks are reported as `MODEL-EVALUATED`, with the evidence actually
+read, and NEVER as `PASS`.** `PASS` is the vocabulary of a computation. Reporting a judgement in it
+tells a reader that a program checked something no program looked at, and that is how a gate stops
+meaning anything without anyone noticing it stopped. Name the outline points, the pinned sources,
+the sentences and the counterarguments you inspected; a `MODEL-EVALUATED` line with no quoted
+evidence is a self-report, and per gate law L5 a self-report is not a gate.
+
+Symmetrically, a COMPUTED check is never reported from reading the code and concluding it would
+pass. It is reported from an exit code observed on this run.
+
+## Check Matrix
+
+| Check ID | Description | Kind | Produced by | Severity floor |
+|----------|-------------|------|-------------|----------------|
+| GRAMMAR | The plan's eight required headings, unique `CLAIM-NN`, total claim→section map, backward-pointing `Depends On` | COMPUTED | `writing_section_index.py` | CRITICAL |
+| CITE | Every draft citation resolves to a bibliography key and to an outline-pinned source | COMPUTED | `writing_gate_probe.py` | CRITICAL |
+| CLAIM | Every drafted section carries the claims the Claim → Section Map assigns it | COMPUTED | `writing_gate_probe.py` | CRITICAL |
+| PROSE-HARD | The hard-severity structural prose constraints | COMPUTED | `writing_prose_gate.py` (wraps `prose-audit.py`) | MAJOR |
+| COVER | Every outline point is expanded in the draft | MODEL-EVALUATED | review lens | MAJOR |
+| FIDELITY | No claim goes beyond the sources its outline pinned | MODEL-EVALUATED | review lens | CRITICAL |
+| TRANSITION | Each section's first and last sentences connect to its neighbours | MODEL-EVALUATED | review lens | MAJOR |
+| COUNTER | Every counterargument the plan names is answered in the prose | MODEL-EVALUATED | review lens | MAJOR |
+
+**Severity floors.** A failed check, or a judgement the evidence does not support, is **major at
+minimum**. It is **critical** where it invalidates the document's thesis, its claim set, or its
+sourcing: a broken plan grammar (the claim set is unreadable), an unresolved or unpinned citation
+(the sourcing is unsound), a section missing its mapped claims (the thesis is not carried), or a
+claim beyond its pinned sources (the sourcing does not support the thesis). Craft blocks only on
+`critical|major`, so a finding filed below the floor is a finding the gate ignores.
+
+---
+
+## COMPUTED checks
+
+Each command below is quoted verbatim and must appear byte-identically in the SKILL.md
+`mechanicalChecks` list. `<proj>` is the writing project root, `<Section>` a name taken verbatim
+from `## Section Outputs`, `<bib>` the Source Plan `Bibliography:` path, `<slug>` the basename of
+craft's approved plan under `<proj>/.planning/`, and `<craft plan hash>` craft's own `planHash`.
+
+### GRAMMAR: the PLAN grammar is well-formed
+
+The one thing craft cannot supply. Four conditions, all computed from craft's approved plan:
+
+1. The eight required headings each appear exactly once — `Writing Intent`, `Claims`,
+   `Counterarguments`, `Document Structure`, `Claim → Section Map`, `Source Plan`,
+   `Section Outputs`, `Review Surfaces`.
+2. `CLAIM-NN` identifiers are unique and stable — an id means the same claim for the life of the
+   document, so a renumbering is a defect, not a tidy-up.
+3. The Claim → Section Map is total and single-valued: every claim gets exactly one primary section.
+   A claim with none is undrafted; a claim with two has no owner, which is the same failure wearing
+   a fuller table.
+4. Every `Section Outputs` `Depends On` points **backward**, to a section already named above it. A
+   forward or circular dependency means no drafting order exists.
+
+```
+uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_section_index.py <proj>
+```
+
+Exit codes: `0` = grammar clean; `1` = violations, listed as JSON on stdout; `2` = usage. **Treat
+`2` as a check defect, not a content failure** — a usage exit means the check did not run, and per
+gate law L4 an unrun check is never a pass. The parser also refuses to parse at all without a
+well-formed `<proj>/.planning/.state/review.json`; that receipt is generated by
+`scripts/writing_receipt.py` from craft's own two approvals and is an artifact of craft's authority,
+never a competing one.
+
+### The draft frontmatter contract (CITE and CLAIM both enforce it)
+
+`writing_gate_probe.py` reads every draft through `_frontmatter` (`writing_gate_probe.py:150-159`,
+defined at `writing_section_index.py:458`) **before** it looks at a single citation. A draft that
+does not satisfy the contract below fails with `implementsMismatch` — and, where the section has
+mapped claims but the body carries no `CLAIM-NN`, additionally with `claimIdsMissing`. Both set the
+floor fail, so the probe exits `1`. This is stated here because it is otherwise invisible: nothing
+in the prose of a section announces it, and every section fails on the first real run for a contract
+nobody was told about.
+
+Every draft file opens with YAML frontmatter:
+
+```markdown
+---
+implements: [CLAIM-01, CLAIM-04]
+plan_hash: <craft's current plan hash>
+---
+```
+
+- `implements:` must equal, **exactly**, the claim set the `Claim → Section Map` assigns this
+  section as primary — same members, ascending by claim number (the parser sorts the expected set by
+  `int(claim.split("-")[1])` and compares lists, so `[CLAIM-04, CLAIM-01]` fails). Each entry
+  matches `CLAIM-NN` with **two digits**; duplicates are rejected. Exactly one `implements:` line.
+- `plan_hash:` must be lowercase 64-hex and must equal **craft's current plan hash** — the same
+  value passed as `--plan-hash`. Exactly one `plan_hash:` line. A draft written against an earlier
+  plan revision fails here, which is the point: it is stale, not merely out of date.
+- Missing frontmatter, an unterminated block, a wrong count of either field, or a non-`CLAIM-NN`
+  entry each produce a named error inside `implementsMismatch`.
+
+This is the plugin's approved-artifact admission surviving into the port, and it is kept
+deliberately rather than inherited silently: it is what binds a drafted section to the specific
+approved plan revision that authorized its claims. **When craft's plan hash changes, every draft's
+`plan_hash:` must be updated in the same run that re-drafts against the new plan** — otherwise the
+per-section gate blocks on staleness and reports nothing about citations at all.
+
+### CITE: every citation resolves
+
+Every citation in a draft must resolve **twice** — to a key defined in the bibliography, and to a
+source that section's outline actually pinned. A citation that resolves to a bib key alone proves
+only that the key exists somewhere, not that this section was sourced for it. Unfilled markers
+(`[cite]`, `[citation needed]` and kin) count as unresolved, not as work in progress.
+
+```
+uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_gate_probe.py "<proj>/drafts/<Section>.md" --bib "<proj>/<bib>.bib" --plan "<proj>/.planning/<slug>.md" --plan-hash <craft plan hash>
+```
+
+Exit codes: `0` = pass; `1` = fail, with the offending keys and line numbers under `evidence`. One
+invocation per section — this is the per-section fan-out, expressed as one craft task row per
+section rather than as a private `.js`.
+
+### CLAIM: every section carries its mapped claims
+
+Every drafted section carries the claims the Claim → Section Map assigns to it, traceable by
+`CLAIM-NN`, and carries **no** claim id the plan does not define. A section that silently drops a
+mapped claim leaves the thesis with a hole the prose reads over; a section that invents an id has
+made a claim nobody approved. The mapped set is declared in the draft's `implements:` frontmatter
+field and carried in the body as `CLAIM-NN` traces — see *The draft frontmatter contract* above; a
+body trace without the matching frontmatter fails just as loudly as the reverse.
+
+Same command as CITE (one probe settles both per section):
+
+```
+uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_gate_probe.py "<proj>/drafts/<Section>.md" --bib "<proj>/<bib>.bib" --plan "<proj>/.planning/<slug>.md" --plan-hash <craft plan hash>
+```
+
+### PROSE-HARD: the hard-severity structural constraints
+
+The prose and AI-tell spans the engine rates `severity: "hard"` — anchored numbers, citation tense,
+no bold lead, outline sync, topic sentences, short-journal form and the stop triggers. Soft-severity
+spans are advisory: they print, and they never set the exit code.
+
+```
+uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_prose_gate.py --project <proj> --style <domain>
+```
+
+`<domain>` is the plan's `Domain:` — `legal`, `econ` or `general` — which is what makes the domain
+selection real rather than decorative. The gate reads the `Draft` column of `## Section Outputs`, so
+the documents it audits are exactly the ones the plan declares.
+
+Exit codes: `0` = no hard span; `1` = blocked by a hard span; `2` = **gate defect** — a missing
+engine, an unrunnable engine, unparseable output, or output with no `spans` key. Per gate law L4,
+treat `2` like GRAMMAR's `2`: the check did not run, and unparsed is UNCHECKED, never clean.
+
+**Never wire `prose-audit.py`'s own exit code to the gate.** It ends in `sys.exit(worst)`, which
+conflates hard and soft: advisory puffery would block a run just as a hard violation does.
+`writing_prose_gate.py` is the only sanctioned path — it invokes
+`${CLAUDE_PLUGIN_ROOT}/scripts/prose-audit.py` **in place** (never forked, never modified,
+that tree is read-only), parses the JSON span list, and blocks only on `severity == "hard"`.
+
+The wrapper invokes the engine through `uv run --with lxml --with pyyaml python3` itself, so the
+gate's own command line does not carry those flags. Do not add or strip them: the engine reaches
+`lxml` through `prose_extract.py` and PyYAML through `diction.yaml`, and raises `SystemExit` without
+them — which the wrapper reports as a gate defect rather than as clean prose.
+
+A PROSE-HARD result produced by any command other than the one quoted above is not a PROSE-HARD
+result.
+
+---
+
+## MODEL-EVALUATED checks
+
+No runner settles these. Report each as `MODEL-EVALUATED` with the evidence read — **never** as
+`PASS`.
+
+### COVER: every outline point is expanded
+
+Read the section's outline and the drafted section side by side. Every outline point must be
+expanded in the prose, not merely gestured at by a heading that shares its wording. Report the
+outline points inspected and, for any that are unexpanded or expanded in a single unsupported
+sentence, quote the outline point and the prose that was supposed to carry it.
+
+An outline point silently dropped is the failure mode: the draft reads complete because the missing
+argument left no gap behind it.
+
+### FIDELITY: no claim beyond the pinned sources
+
+For each claim in the drafted section, check that what the prose asserts stays inside what the
+outline's pinned sources support. Three distinct failures, all of which read as fluent prose:
+a claim with no pinned source at all; a claim whose pinned source supports a weaker version of it
+(scope creep between the source and the sentence); and a claim whose citation is real but is doing
+decorative work — the source exists and says something adjacent, not the thing claimed.
+
+Report the claim, the source pinned for it, and what that source actually supports. **Critical**
+when it reaches the thesis: an overreaching claim in a load-bearing section invalidates the
+document's argument, not just one sentence.
+
+### TRANSITION: sections connect to their neighbours
+
+Read each section's first and last sentences against the sections on either side, in the order
+`Document Structure` declares. The last sentence must hand something forward, and the first must
+pick something up. A section that opens by restating its own heading and closes by summarizing
+itself is a self-contained essay sitting in the middle of an argument.
+
+Report the sentence pairs read, quoted, at each boundary — including the boundaries that hold.
+
+### COUNTER: every planned counterargument is answered
+
+Every counterargument the plan's `## Counterarguments` names must be actually answered in the prose
+— stated fairly and then met, not named and left, and not quietly dropped between plan and draft.
+Report each counterargument by its plan wording, where in the draft it is answered, and what the
+answer is. A counterargument mentioned in a subordinate clause and never returned to is unanswered.
+
+---
+
+## How to use in lens and subagent prompts
+
+Reference checks by id, and name the kind expected:
+
+```
+"Judge COVER, FIDELITY, TRANSITION and COUNTER from
+${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md against the drafted sections
+and their outlines. Read the definitions in full first. Report each as MODEL-EVALUATED with the
+evidence read — never as PASS. Findings are MAJOR at minimum, CRITICAL where the thesis, the claim
+set or the sourcing is invalidated."
+```
+
+The four COMPUTED ids are not judged by a lens. They are `mechanicalChecks`, and craft's JS reads
+their exit codes; a lens that reports `GRAMMAR: PASS` from reading the plan has recreated the
+self-certification these checks exist to remove.

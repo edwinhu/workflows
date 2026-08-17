@@ -31,7 +31,7 @@ same prose, and neither path degrades the other.
 
 Usage:
     build.py body.typ --output paper.docx
-    build.py body.typ --output paper.docx --reference-doc ../writing-legal/templates/law_review_template.docx
+    build.py body.typ --output paper.docx --reference-doc ../../references/templates/law_review_template.docx
 """
 
 from __future__ import annotations

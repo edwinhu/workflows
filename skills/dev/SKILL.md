@@ -1,173 +1,179 @@
 ---
 name: dev
-description: "Use for feature development and engineering changes."
-allowed-tools: Read, Grep, Glob, Bash, Skill, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Workflow, TaskCreate, TaskUpdate, TaskList, TaskGet
-hooks:
-  PreToolUse:
-    - matcher: "Read|Glob|Grep|Bash"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/clarify-before-recon-guard.ts --workflow dev"
-    - matcher: "Write|Edit|MultiEdit|NotebookEdit"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow dev"
-    - matcher: "Bash"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow dev"
-  PostToolUse:
-    - matcher: "AskUserQuestion"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/episode-phase.ts --workflow dev"
-    - matcher: "ExitPlanMode"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-persist.ts --workflow dev"
+description: Feature development and engineering changes under test-first discipline. Use when the user says "build this feature", "implement X", "fix this bug properly", "add support for", "/dev", or wants a code change taken through clarification, an approved plan, TDD-gated implementation, independent verification and human review.
+argument-hint: 'the feature, change, or bug to develop'
+allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
 ---
 
-**Announce:** "I'm using dev to clarify the outcome before I inspect the codebase."
+# dev — a code change, run through craft with a test-first gate
 
-!`bun ${CLAUDE_SKILL_DIR}/../../scripts/load-constraints.ts dev`
+The lifecycle is [craft](${CLAUDE_PLUGIN_ROOT}/skills/craft/SKILL.md). Read it and follow it.
+This file is a **delta**: it supplies the domain — the CLARIFY axes, the task-row shape, the lenses,
+the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
+craft's mechanics.
 
-!`bun ${CLAUDE_SKILL_DIR}/../../scripts/ensure-plans-directory.ts ${CLAUDE_SESSION_ID}`
+What makes a run `dev` rather than plain craft is one thing: **every implementation task carries a
+`redCommand`**, so craft's probes execute the failing test before the implementer and the passing
+test after it, and the JS reads both exit codes. A task whose acceptance cannot be expressed as one
+command that fails now and passes later is not ready to plan.
 
-# Dev planning entry
+## Phase 1 — CLARIFY
 
-```text
-CLARIFY → PLAN → IMPLEMENT → VERIFY → REVIEW
-```
+Craft's Phase 1, on these axes. Ask them **before any reconnaissance**: code says how the system
+works, not what the user wants.
 
-## Write surface: main chat does not do the work
+1. **Outcome** — what behaviour exists after this run that does not exist now, and what does done
+   look like for one user.
+2. **Exclusions** — what must not change: files, interfaces, dependencies, behaviour other callers
+   rely on.
+3. **Automated test framework and the exact command** — the runner, and the literal command string a
+   probe will execute. No framework in the repo means the first task is test infrastructure, decided
+   here. **A manual-only test proposal is a blocker**: resolve an automated approach or leave this
+   workflow. Never waive it silently.
+4. **The user workflow, production protocol and transport the real test must exercise** — the action
+   sequence a user performs, the protocol production actually uses, and the observable result. A test
+   over an alternate path proves nothing about the one that ships.
+5. **The first failing test and what RED looks like** — which test fails first, and the failure
+   output that counts. A syntax error, an import error, a broken fixture, a missing dependency or an
+   unrelated failure elsewhere in the suite is **not** the RED this workflow accepts.
+6. **Required runtime evidence** — what has to be observed at runtime rather than read in source:
+   logs, HTTP/WS exchanges, rendered output, exit codes, screenshots.
+7. **Review surface** — working tree, commit range, or PR.
 
-**You may Write/Edit only under `.planning/` and `.claude/`. Every other file — source, tests,
-config — is written by a dispatched agent.** `orchestrator-mutation-guard` is registered in this
-skill's frontmatter, so the attempt is REFUSED, not corrected: a write you try anyway costs a turn
-and produces nothing. Reach for `Agent` first, not after a denial.
+Craft's remaining axes are taken as craft states them, with one domain binding: craft axis 4
+(observable success criteria) is answered with the **target project's own** test, lint and build
+commands, and those strings become `mechanicalChecks` verbatim.
 
-Two narrow exceptions: the generated plan while you are IN Plan mode, and `.claude-workflows.json`
-when adopting governance.
+Then reconnoitre — a scouting `Explore` or `Plan` subagent, never a read of the whole tree into this
+conversation — and return: the entry point and data flow, the integration boundaries, the existing
+test harness and the files a new test extends, and the decisions code cannot answer. Re-ask only what
+reconnaissance newly raised.
 
-## Beats 3–5 run as one program: `workflows/work.js`
+Before planning, present 2–3 feasible architectures with their boundaries, testing implications and
+trade-offs, and obtain an explicit choice. A sole viable option still needs its trade-off accepted.
 
-Beats 3, 4 and 5 run as a single orchestrated workflow rather than three stretches of main-chat
-discipline. Two steps, in this order.
+## Phase 2 — PLAN
 
-**Step 1 — get the authenticated args. One call, and it is not optional.**
+Craft's Phase 2. Three domain requirements on the table:
+
+- **`redCommand` per implementation task** — one invocation, no shell operators, failing now for the
+  intended missing behaviour and passing once the task is done. It goes in the plan's Run sizing
+  `Test-first:` block too, because it costs 2 agents against the fan-out ceiling.
+- **`refs` per task row and per lens** — required, may be empty. Craft's spine does not validate it;
+  `wc-probe` P7 refuses an absent key in THIS file, so a live run assembled from an approved plan is
+  unchecked. Write `refs: []` to state "no domain rules" rather than omitting the key.
+- **Narrow `writablePaths`** — the probe runs a command that loads code the implementer can edit, so
+  a wide writable set lets the implementer reach the thing proving its own RED.
+
+## Phase 3 — GOAL
+
+Craft's Phase 3 unchanged.
+
+## Phase 4 — the craft call
+
+The args go in the plan's `<!-- craft:dispatch -->` arming block, and the dispatch is **craft's own
+`craft-dispatch.sh`** — never a hand-written `farm.ts` line. That script owns the TIER 1 plan-lint
+gate, which refuses to dispatch on a `major`/`critical` plan finding and fails CLOSED on a verdict it
+cannot count; hand-rolling the invocation silently drops it. Craft owns the wait, the result handling
+and the return shape too, and `craft-result.sh` reads the verdict. This run's `projectDir` is the
+session repo, so craft's own run directory is already inside it and no `--run-dir` override applies.
+There is no built-in `Workflow` call — the guard at
+`~/.claude/hooks/main-thread-guard.sh` denies that tool outright.
 
 ```bash
-bun ${CLAUDE_SKILL_DIR}/../../scripts/beat/work-args.ts <abs project> --workflow dev --session ${CLAUDE_SESSION_ID}
+bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan; or pass one
 ```
 
-It prints `{projectDir, workflow, planPath, planHash}` read from `.planning/.state/review.json` and
-re-hashed against the plan's current bytes, or refuses and names the reason — `missing-artifact`
-(you have not been through PLAN), `review-pending`, `stale-receipt` (the plan was edited after
-approval), or a receipt identity disagreement. **Do not hand-copy `planPath`/`planHash` instead.**
-That is the step where a hash gets typed from memory and an unapproved plan gets implemented anyway.
+```js
+{
+  projectDir,
+  goal: "<one sentence>",
 
-**Step 2 — run the beats, merging in the task list.**
+  // The plan's table verbatim. Every implementation task carries redCommand and refs.
+  tasks: [
+    { id: "T1",
+      name: "<task name>",
+      work: "<what to build>",
+      writablePaths: ["<narrow — see Phase 2>"],
+      acceptance: "<the criterion the verifier checks>",
+      redCommand: "<the exact command from CLARIFY axis 3, scoped to the first failing test>",
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/dev/references/tdd.md"] },
+  ],
 
+  // The TARGET project's own commands, collected at CLARIFY. Nothing generic — a check that does
+  // not run this repo's suite gates nothing.
+  mechanicalChecks: [
+    { name: "tests", cmd: "<the project's full test command>" },
+    { name: "lint",  cmd: "<the project's lint command>" },
+    { name: "build", cmd: "<the project's build command>" },
+  ],
+
+  // Judged BEFORE any implementer is dispatched; a surviving critical|major returns FAIL having
+  // built nothing. Cheap: a spec defect costs a few read-only agents instead of a whole round.
+  // Passing reviewLenses REPLACES craft's defaults, so the two defaults are spelled out here
+  // rather than elided — an array of three would silently drop them.
+  reviewLenses: [
+    { key: "criteria-vs-artifacts",
+      agentType: "Explore",
+      refs: [],
+      prompt: "Judge the deliverable strictly against the success criteria in the plan and goal: for each criterion, is there an artifact in the working tree that satisfies it? Missing or partial satisfaction is a finding." },
+
+    { key: "scope-fidelity",
+      agentType: "Explore",
+      refs: [],
+      prompt: "Judge scope fidelity: did the changes stay inside the plan's task table and writable paths? Out-of-scope edits, unrequested features, and silently skipped plan items are findings." },
+
+    { key: "security",
+      agentType: "Explore",
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/dev/references/lens-security.md"],
+      prompt: "Judge only the security of the changed code, against the finding classes in the refs. Read them in full first. A finding names a file and line and states the concrete attack vector: the input an attacker controls, the path it travels, and what it reaches. Pre-existing defects this change did not introduce are out of scope." },
+
+    { key: "performance",
+      agentType: "Explore",
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/dev/references/lens-performance.md"],
+      prompt: "Judge only the runtime cost of the changed code, against the finding classes in the refs. Read them in full first. A finding names a file and line, sits on a path that runs often enough to matter, and states the cost as Big-O over the input that actually grows or as concrete latency/memory. Speculation without a growing input is not a finding." },
+
+    { key: "tests",
+      agentType: "Explore",
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/dev/references/lens-tests.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/dev/references/tdd.md"],
+      prompt: "Judge only the tests covering this change, against the finding classes in the refs. Read them in full first. Read the tests before claiming a gap. Findings: behaviour that ships unverified, an assertion that would not fail when the behaviour it names breaks, a test that exercises a path production does not use, and evidence that reads source or logs where the task required runtime behaviour." },
+  ],
+
+  authorityExtra: [
+    "TDD RULE — no implementation before a genuine RED observation.",
+    "Write the smallest real test that exercises the production path this task names, run it, and read the output. Accept RED only when it fails for the intended MISSING BEHAVIOUR — never a syntax error, an import error, a broken fixture, an unavailable dependency, or an unrelated failure elsewhere in the suite. If you implemented before observing RED, delete the implementation and restart the task; a test written beside its fix passes whether or not it ever exercised the defect.",
+    "A test must do what the user does. Exercising an alternate protocol or transport, or inspecting source and logs instead of runtime behaviour, is not evidence for a task whose acceptance names a user-visible result.",
+    "Your task's redCommand is executed by probes outside your control, before and after you work. A self-reported RED is not evidence and never was.",
+    "Rules: ${CLAUDE_PLUGIN_ROOT}/skills/dev/references/tdd.md governs every task. Browser and web work also follows ${CLAUDE_PLUGIN_ROOT}/skills/dev/references/testing-web.md; desktop and native work also follows ${CLAUDE_PLUGIN_ROOT}/skills/dev/references/testing-desktop.md.",
+  ].join("\n"),
+
+  verifierAgentType: "Explore",
+}
 ```
-Workflow({
-  scriptPath: "${CLAUDE_SKILL_DIR}/../../workflows/work.js",
-  args: { ...<the JSON from step 1, verbatim>, tasks: [{ id, name, work, writablePaths: [], acceptance }] },
-})
-```
 
-It returns `{ workflow, planPath, planHash, overallPass, verdict, scoreTable, implemented, verified,
-findings, refutedFindings, reviews, tasksThatFlagged, carriedForward, domainRun }`. Render the gate,
-drive the fix loop from `findings`, and re-invoke with `onlyChecks: tasksThatFlagged` plus
-`priorReviews` to redo them. `onlyChecks` narrows EVERY beat, not just REVIEW: those tasks are
-IMPLEMENTED again, so their implementers will edit files. It is a redo, not a re-judge.
+`verifierAgentType` and every lens `agentType` pin `Explore` because it has no Edit and no Write: a
+judge that structurally cannot modify the tree beats a prompt asking it not to.
 
-**Why a program rather than three beats of instruction.** The beat machinery restrains a free agent:
-guards deny reconnaissance, the mutation guard denies main-chat writes, an order gate refuses an
-out-of-order wave, a Stop hook refuses a turn end while review is owed. Each exists because the
-orchestrator *could* do otherwise. A workflow script has no Write tool and no shell, so delegation is
-structural and the beat order is the order of its statements. CLARIFY and PLAN approval stay above,
-in main chat and hook-enforced, because both are conversations with a human that a subagent cannot
-hold — and `work.js` refuses to start without `planPath` and a 64-hex `planHash`, so it cannot be
-used to skip them.
+Add `${CLAUDE_PLUGIN_ROOT}/skills/dev/references/testing-web.md` or
+`${CLAUDE_PLUGIN_ROOT}/skills/dev/references/testing-desktop.md` to a task's `refs` when that
+task's real test drives a browser or a native app. `authorityExtra` names them; `refs` is what makes
+an implementer read one in full.
 
-## 1. CLARIFY
+Handle the result per craft's Phase 4 — including that a `red-not-red`, `red-unproven` or
+`green-not-green` verdict lands in `tasksThatFlagged` and is fixed as a task, not as a lens.
 
-**Write no sentinel.** `.planning/DEV_CLARIFIED.json` is retired: a hook now records the clarify
-phase into `.planning/.state/episode.json` when it OBSERVES your `AskUserQuestion` call. That is
-direct evidence the user was asked. The sentinel was the model writing `{"status":"clarified"}` about
-itself, which is an assertion, not a proof — and it could be written without ever asking.
+## Phase 5 — HUMAN REVIEW
 
-Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and follow it. **The beat owns the procedure** —
-one `AskUserQuestion` call, done-ness always established, every criterion naming its own evidence,
-and the ask-before-you-look Iron Law the recorded phase now proves. `/dev` supplies only the domain
-question axes, which is exactly the split the beat defines:
+Craft's Phase 5 unchanged, on the review surface from CLARIFY axis 7.
 
-> outcome, exclusions, constraints, acceptance evidence, automated real-test strategy, intended
-> first failing test, user workflow, protocol/transport, and review surfaces.
+## Red flags
 
-This step is `/dev`'s **pre-reconnaissance** clarification and is distinct from `dev-clarify`, which
-runs *after* reconnaissance to resolve what only the codebase can surface. The two are a sequence,
-not duplicates — asking everything up front cannot work, because the questions reconnaissance raises
-do not exist yet, and asking everything afterwards lets existing shapes anchor the framing. That
-distinction was previously implicit, which is how this pre-recon step ended up hand-rolled: the guard
-enforced that it happened while nothing defined what it was.
-
-Nothing is written after the user answers. The recorded phase IS the evidence, and it is
-evidence precisely because a hook observed the tool call rather than reading the model's account of
-it. Never create `SPEC.md`, `SPEC_REVIEWED.md`, `EXPLORATION.md`, `ACTIVE_WORKFLOW.md`,
-`STATE.md`, `LEARNINGS.md`, `BACKLOG.md`, or `HANDOFF.md`.
-
-**Iron law: ask before reconnaissance.** Code explains how the current system works, not what
-the user wants. A manual-only test proposal is a blocker: resolve an automated test approach or
-leave this workflow rather than silently waive TDD.
-
-Then reconnoitre and resolve what only the codebase can surface:
-
-1. Read `${CLAUDE_SKILL_DIR}/../dev-explore/SKILL.md`; return its findings directly to the user.
-2. Read `${CLAUDE_SKILL_DIR}/../dev-clarify/SKILL.md`; resolve ambiguities exposed by reconnaissance.
-
-**Gate:** the pre-reconnaissance `AskUserQuestion` phase is recorded in `.planning/.state/episode.json`,
-every criterion names its own evidence, an automated test approach exists, and post-recon ambiguities
-are resolved.
-
-## 2. PLAN
-
-Read `${CLAUDE_SKILL_DIR}/../beat-plan/SKILL.md`, then:
-
-1. Read `${CLAUDE_SKILL_DIR}/../dev-design/SKILL.md`; present alternatives and obtain the architecture choice.
-2. Enter native Plan mode. The generated plan returned by `ExitPlanMode` is the sole plan and
-   exact-byte approval boundary. Do not copy, rename, or replace it.
-3. Read `${CLAUDE_SKILL_DIR}/../dev-plan-reviewer/SKILL.md` and dispatch the independent whole-plan
-   review for that exact generated path. Only its hidden receipt can admit implementation.
-
-**Gate:** the receipt-selected `planFile` and `planHash` are `APPROVED` for workflow `dev` by a
-reviewer session distinct from the approving session.
-
-## 3. IMPLEMENT
-
-Read `${CLAUDE_SKILL_DIR}/../beat-implement/SKILL.md`, then `${CLAUDE_SKILL_DIR}/../dev-implement/SKILL.md`.
-
-**Gate:** TaskList holds the complete current-plan task set, each implemented task records its
-first failing test and the change that made it pass, and no task ran without the beat's preflight.
-
-## 4. VERIFY
-
-Read `${CLAUDE_SKILL_DIR}/../beat-verify/SKILL.md`, then `${CLAUDE_SKILL_DIR}/../dev-verify/SKILL.md`.
-The verifier is never the implementer.
-
-**Gate:** every current-plan task has a post-change independent verification round recorded in
-TaskList and every acceptance criterion passes on its named evidence.
-
-## 5. REVIEW
-
-Read `${CLAUDE_SKILL_DIR}/../beat-review/SKILL.md`, then `${CLAUDE_SKILL_DIR}/../dev-accept/SKILL.md`.
-Automated PASS is not a person's acceptance.
-
-**Gate:** TaskList has no open current-plan implementation, verification, or review item; the final
-review relaunch has no new annotations; and no `REJECT:` remains.
-
-## Resume and compatibility
-
-A prior fixed dev plan or visible ledger is conversion-only provenance. Do not resume it. If the
-user needs changed requirements, architecture, task dependencies, test contract, or evidence,
-create a new native generated plan and obtain a new receipt.
+| Situation | Wrong move | Right move |
+|---|---|---|
+| No test harness in the repo | proceed and test by hand | test infrastructure is the first task, decided at CLARIFY — absence of tests is never a waiver |
+| The failing test needs two steps | `redCommand: "build && test"` | craft throws on shell operators; put the steps in a script and name the script |
+| Task's real test would drive a browser or an app | assert on source or logs | the runtime references are refs on that task; a screenshot with no assertion is not evidence |
+| Adding domain lenses | pass the three and let craft add its own | passing `reviewLenses` REPLACES the defaults — spell all five out |
+| RED reported by the implementer | accept it | probes execute `redCommand` on both sides; the verdict is the JS's, never the doer's |
+| Something craft does not obviously do | write a `dev/workflow.js` | ask which craft parameter is missing — `redCommand` itself came from exactly this question |

@@ -141,30 +141,22 @@ def test_typ_prose_rule_fires_on_body_not_code(tmp_path):
 # --------------------------------------------------------------------------
 
 def _authenticate(project_root: Path, domain: str | None = None) -> None:
-    """Give the project an APPROVED receipt-selected generated plan.
+    """Give the project an ARMED craft writing plan.
 
     The canonical writing hooks refuse to lint a project that has none — see the
-    `authenticatedWritingPlan` guard in hooks/writing-prose-check.ts. That guard postdates this
-    suite, which built bare tmp directories; without a receipt the hook exits 0 with no output, so
-    every integration assertion below was reading `None` and failing for a reason that had nothing to
-    do with the prose rule under test. Omitting Domain leaves style unset, which is the general
-    category set the original tests assumed.
+    `authenticatedWritingPlan` guard in hooks/lib/writing-plan-context.ts. Without one the hook
+    exits 0 with no output, so every integration assertion below would read `None` and fail for a
+    reason unrelated to the prose rule under test. Omitting Domain leaves style unset, which is the
+    general category set the original tests assumed.
     """
-    state = project_root / ".planning" / ".state"
-    state.mkdir(parents=True, exist_ok=True)
+    plans = project_root / ".claude" / "plans"
+    plans.mkdir(parents=True, exist_ok=True)
     body = "## Writing Intent\n\n"
     if domain:
         body += f"- Domain: {domain}\n\n"
-    body += "## Source Plan\n\n- Bibliography: references/sources.bib\n- Notebook: none\n"
-    plan_file = "writing-native.md"
-    (project_root / ".planning" / plan_file).write_text(body)
-    (state / "review.json").write_text(json.dumps({
-        "workflow": "writing", "plan_file": plan_file,
-        "plan_hash": hashlib.sha256(body.encode()).hexdigest(),
-        "approved_session_id": "approval", "approved_at": "2026-01-01T00:00:00.000Z",
-        "status": "APPROVED", "reviewer_session_id": "review",
-        "reviewed_at": "2026-01-01T00:00:01.000Z",
-    }))
+    body += "## Source Plan\n\n- Bibliography: references/sources.bib\n- Notebook: none\n\n"
+    body += '<!-- craft:dispatch {"runId":"test","args":{"tasks":[]}} -->\n'
+    (plans / "writing-plan.md").write_text(body)
 
 
 def _run_hook(file_path: Path, tool_name="Write", new_string=None, domain=None):

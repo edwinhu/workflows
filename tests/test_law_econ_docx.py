@@ -19,7 +19,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "skills" / "law-econ-docx" / "scripts"
-TEMPLATE = ROOT / "skills" / "writing-legal" / "templates" / "law_econ_template.docx"
+TEMPLATE = ROOT / "references" / "templates" / "law_econ_template.docx"
 SAMPLE = ROOT / "skills" / "law-econ-docx" / "examples" / "sample" / "paper.md"
 
 sys.path.insert(0, str(SCRIPTS))

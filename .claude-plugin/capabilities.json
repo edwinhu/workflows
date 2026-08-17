@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "plugin": {
     "name": "workflows",
-    "version": "5.150.0"
+    "version": "6.0.0"
   },
   "capabilities": [
     {
@@ -16,44 +16,9 @@
       "implementation": "scripts/load-constraints.ts"
     },
     {
-      "name": "phase-gate-evaluator",
+      "name": "craft-spine-runner",
       "contractVersion": 1,
-      "implementation": "hooks/lib/phase-gate.ts"
-    },
-    {
-      "name": "approved-artifact-policy",
-      "contractVersion": 3,
-      "implementation": "workflows/lib/approved-artifact.ts"
-    },
-    {
-      "name": "workflow-policy-loader",
-      "contractVersion": 2,
-      "implementation": "hooks/lib/workflow-policy.ts"
-    },
-    {
-      "name": "beat-implement-runner",
-      "contractVersion": 3,
-      "implementation": "scripts/beat/preflight.ts"
-    },
-    {
-      "name": "beat-spine-runner",
-      "contractVersion": 1,
-      "implementation": "workflows/work.js"
-    },
-    {
-      "name": "beat-spine-args",
-      "contractVersion": 1,
-      "implementation": "scripts/beat/work-args.ts"
-    },
-    {
-      "name": "plan-review-composer",
-      "contractVersion": 1,
-      "implementation": "workflows/lib/plan-review-composer.ts"
-    },
-    {
-      "name": "tasklist-reconciler",
-      "contractVersion": 1,
-      "implementation": "workflows/lib/tasklist-reconciler.ts"
+      "implementation": "skills/craft/workflow.js"
     }
   ]
 }

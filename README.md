@@ -35,20 +35,23 @@ These are the skills you invoke directly with `/name`:
 
 ### Core Workflows
 
-`/work` is the lightweight generic entry point; the domain workflows retain their specialized
-planning and execution guarantees:
+`/craft` is the spine: clarify with the user, draft a plan they edit and approve, self-set a goal,
+run `workflow.js` to implement and independently verify, then put the result in front of a human in
+tuicr. Human rejection routes back to CLARIFY. The domain workflows dispatch through it and add
+their own computed gate.
 
-| Start Fresh | Midpoint Re-entry | Domain |
-|-------------|-------------------|--------|
-| `/work` | Resume the receipt-selected generated plan (`{planFile, planHash}`) with TaskList | Bounded cross-domain work: clarify, approve a proportional plan, execute under `/goal`, independently verify, and obtain human review |
-| `/dev` | `/dev-debug` | Native-plan feature development: conversational clarification/reconnaissance, explicit architecture choice, TDD, TaskList execution, independent review, and fresh verification |
-| `/ds` | `/ds-fix` | Native-plan data science: plan, implement, independently review, and correct wrong results or notebook failures |
-| `/writing` | `/writing-revise` | 6-phase writing with claim validation and deviation rules |
-| `/workshop` | `/workshop-revise` | 4-phase workshop presentations from research papers |
+| Workflow | Adds to the craft loop |
+|----------|------------------------|
+| `/craft` | nothing — the generic loop for any task worth doing properly |
+| `/dev` | TDD discipline: a failing test before the change, and lens reviews for security, performance and test coverage |
+| `/ds` | a computed data-quality gate (DQ1-DQ6, M1, R1) over the panel the run builds |
+| `/writing` | a computed plan-grammar and citation gate, plus the domain style register the plan's `Domain:` selects |
+| `/workshop` | a computed deck gate over the Typst slides and speaker notes built from a paper |
+| `/workflow-creator` | designs, repairs and audits workflows themselves |
 
-`/work` composes the shared clarify, generated-plan authentication, implementation/verification, and
-human-review doctrine. It reconciles the receipt-selected plan into TaskList and dispatches approved
-ready waves through the shared IMPLEMENT beat.
+Plan review is **computed and happens before dispatch**: `plan-lint.ts` over the built args and
+`plan-preflight.ts` executing their commands at baseline, enforced by `craft-dispatch.sh` while the
+run is still armed. No agent reads the plan markdown looking for defects.
 
 ### Document Formats
 
@@ -116,16 +119,12 @@ These skills have `user-invocable: false` — Claude loads them automatically wh
 `marimo`, `jupytext`, `notebook-debug`
 
 ### Utilities
-`look-at`, `visual-verify`, `visual-mockup`, `data-context`, `continuous-learning`, `pattern-capture`, `ai-anti-patterns`, `dev-tools`, `ds-tools`, `dev-worktree`, `obsidian-organize`, `pptx-render`, `headline-card`, `audit-fix-loop`
+`look-at`, `visual-verify`, `visual-mockup`, `data-context`, `continuous-learning`, `pattern-capture`, `ai-anti-patterns`, `obsidian-organize`, `pptx-render`, `headline-card`
 
 ### Internal Workflow Phases
-Dev: `dev-clarify`, `dev-explore`, `dev-design`, `dev-delegate`, `dev-implement`, `dev-tdd`, `dev-verify`, `dev-accept`, `dev-handoff`, `dev-plan-reviewer`, `dev-test`, `dev-test-*` (cross-turn iteration uses Claude Code's built-in `/goal`; `dev-spec-reviewer` is retired)
 
-DS: `/ds` is the user-facing planning entry; internal `ds-implement` executes the approved tasks and internal `ds-accept` handles terminal review. `/ds-fix` is the user-facing corrective re-entry for wrong results and notebook failures.
-
-Writing: `writing-setup`, `writing-outline`, `writing-outline-reviewer`, `writing-precis-reviewer`, `writing-plan-reviewer`, `writing-draft`, `writing-econ`, `writing-general`, `writing-legal`, internal `writing-verify`, `writing-validate`, `writing-handoff`; `/writing-revise` is the corrective midpoint.
-
-Workshop: `workshop-plan-reviewer` plus internal `workshop-generate`/`workshop-verify`; `/workshop-revise` is the corrective midpoint.
+None. The craft spine has no sub-skills: the phases are beats inside `skills/craft/workflow.js`,
+dispatched as agents, so there is nothing to invoke by name and nothing to keep in sync.
 
 ---
 
@@ -135,34 +134,22 @@ Specialized subagents auto-discovered by Claude Code from `agents/`:
 
 | Agent | Role |
 |-------|------|
-| `planner` | Implementation planning for complex features |
-| `architect` | System design and technical decisions |
-| `tdd-guide` | TDD workflow enforcement |
-| `dev-implementer` | Feature implementation with automatic linting |
-| `dev-debugger` | Hypothesis-driven debugging with serial iteration |
-| `dev-verifier` | Goal-backward verification (4-level: exists, substantive, wired, functional) |
-| `plan-checker` | Generic domain-loaded plan review before implementation |
-| `test-gap-auditor` | Requirement-to-test coverage mapping and gap filling |
-| `ds-analyst` | Data analysis with output-first verification |
-| `ds-engineer` | Data engineering pipelines, ETL, and transformations |
-| `code-reviewer` | Code quality, security, and maintainability review |
-| `security-reviewer` | Security vulnerability detection |
-| `build-error-resolver` | Fix build/type errors with minimal diffs |
-| `e2e-runner` | Playwright E2E testing |
-| `refactor-cleaner` | Dead code cleanup and consolidation |
-| `doc-updater` | Documentation sync and codemap updates |
-| `data-explorer` | EDA and data profiling |
 | `librarian` | Knowledge management orchestration (NLM, Readwise, Scholar) |
-| `workflow-auditor` | Read-only workflow architecture and enforcement auditing |
-| `writing-drafter` | Expands one PLAN-bound section outline into prose; preloads `writing-register` |
 | `writing-prose-reviewer` | Read-only prose-quality grading against the preloaded register |
-| `writing-source-fidelity-reviewer` | Read-only verification of citations against the writing source ledger |
+
+The craft spine's implementers, verifiers and reviewers are dispatched from
+`skills/craft/workflow.js` with the prompt the run needs; they are not named subagent types, so the
+per-role agent files the beat spine required are gone.
 
 ---
 
 ## Workflow lifecycle architecture
 
-Shared lifecycle enforcement is documented in [Workflow lifecycle architecture](docs/workflow-lifecycle-architecture.md). All six built-ins use reusable clarification, receipt-selected generated-plan identity (`{planFile, planHash}`), hidden reviewer finalization, mutation boundaries, TaskList, and human review. Their adapters preserve domain-specific execution and verification rigor; `/work` is lightweight in scope, not in authority.
+Every workflow runs the same loop, in `skills/craft/workflow.js`. The plan's `<!-- craft:dispatch -->`
+block is the sole authority and its canonical `specHash` is verified by each dispatched agent; the
+gate is computed in JS from raw counts, fails closed on a dead agent, and returns the selector that
+drives the fix loop. A domain workflow contributes its own mechanical checks and review lenses — it
+does not get its own lifecycle.
 
 ## Hooks
 
@@ -170,26 +157,26 @@ Hooks auto-run at specific lifecycle events. The table has one row per command t
 
 | Script | Event | Trigger | Purpose |
 |--------|-------|---------|---------|
-| `session-start.ts` | SessionStart | startup/resume/clear/compact | Inject using-skills meta-skill |
+| `session-start.ts` | SessionStart | startup/resume/clear/compact | Inject using-skills meta-skill; report an unfinished craft run |
 | `session-end.ts` | Stop | * | Update LEARNINGS.md timestamp |
-| `pre-compact.ts` | PreCompact | * | Preserve state before compaction |
 | `suggest-compact.ts` | PreToolUse | Edit/Write | Suggest compaction when context is large |
 | `image-read-guard.ts` | PreToolUse | Read | Redirect to look-at for media files |
 | `lint-check.ts` | PostToolUse | Edit/Write | Lint after file changes (ESLint, ruff, lintr) |
-| `writing-suggest-verify.ts` | PostToolUse | Edit/Write | Suggest visual verification for writing |
 | `atomic-constraint-guard.ts` | PostToolUse | Edit/Write | Validate atomic constraint file structure |
 | `writing-prose-check.ts` | PostToolUse | Edit/Write | Check edited prose for writing-quality violations |
 | `cite-fidelity-lint.ts` | PostToolUse | Edit/Write | Check edited writing for citation-ledger fidelity |
 | `pr-url-logger.ts` | PostToolUse | Bash | Log PR URLs and GitHub Actions status |
 | `overflow-check.ts` | PostToolUse | Bash | Detect Typst content overflow after compilation |
 | `pattern-scan.ts` | SessionEnd | clear/logout/prompt_input_exit/other | Scan session for reusable patterns |
-| `subagent-start.ts` | SubagentStart | * | Inject role-specific context when subagents start |
 
 ---
 
 ## Session Continuity
 
-Built-in native-plan workflows separate durable records by purpose: a hook-owned receipt authenticates and selects one immutable generated plan by `{planFile, planHash}`, Claude Code's `TaskList` is the live task and review-finding record, project auto-memory retains reusable facts, project directories retain real inputs and deliverables, and `.planning/.state/` holds only narrow machine-owned state such as the hash-bound review verdict. External descriptor schema v1 retains its separate compatibility contract.
+A craft run keeps two records, one owner each: the approved plan at `.claude/plans/<slug>.md` is the
+run's authority and the file craft hashes in place, and `.craft/<run-id>/` holds the args, the
+verdict JSON and the plan bytes each round actually ran under. Project auto-memory retains reusable
+facts; project directories retain real inputs and deliverables.
 
 For cross-session task persistence, set `CLAUDE_CODE_TASK_LIST_ID` in `.envrc`:
 
@@ -208,8 +195,8 @@ workflows/
 │   └── marketplace.json        # Marketplace listing
 ├── agents/                     # Specialized subagents
 ├── skills/                     # User-facing and internal skills
-│   ├── work/, dev/, ds/, writing*/, workshop*/  # Workflow entry points
-│   ├── beat-clarify/, beat-implement/, beat-review/  # Shared lifecycle primitives
+│   ├── craft/                  # The spine: workflow.js, plan-lint, dispatch, gate
+│   ├── dev/, ds/, writing/, workshop/, workflow-creator/  # Domain workflows
 │   ├── docx, pdf, pptx, xlsx  # Document formats (symlinks)
 │   └── ...                     # Internal phases and auto-invoked skills
 ├── bin/                        # Optional dependency installer

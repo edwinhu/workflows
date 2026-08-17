@@ -23,7 +23,7 @@
  * reads once at session start, so this cannot change the session that runs it. That is why the
  * caller invokes it at the end of the approval/review episode: `writing-setup` already requires a
  * fresh session before implementation, so the boundary the setting needs is one the workflow was
- * taking anyway. Compare `plans-directory-restart-gate.ts`, which had to become a GATE because a
+ * taking anyway. Compare the retired plans-directory restart gate, which had to become a GATE because a
  * mid-session `plansDirectory` left the episode unauthenticated. This is prose voice, not
  * authentication — the drafting subagent's preloaded `writing-register` and the plugin-wide prose
  * audit both still apply — so a notice is proportionate where a gate would not be.

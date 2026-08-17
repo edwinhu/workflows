@@ -2,79 +2,105 @@
   {
     "constraint": "ds-determinism.md",
     "disposition": "direct-aggregate",
-    "aggregate": "references/constraints/ds-engineering-constraints.md",
-    "taskBriefs": ["skills/ds-implement/SKILL.md", "skills/ds-delegate/SKILL.md"]
+    "aggregate": "skills/ds/references/ds-engineering-constraints.md",
+    "taskBriefs": [
+      "skills/ds/SKILL.md"
+    ]
   },
   {
     "constraint": "ds-deviation-rules-analysis.md",
     "disposition": "direct-aggregate",
-    "aggregate": "references/constraints/ds-common-conventions.md",
-    "taskBriefs": ["skills/ds-implement/SKILL.md", "skills/ds-delegate/SKILL.md"]
+    "aggregate": "skills/ds/references/ds-common-conventions.md",
+    "taskBriefs": [
+      "skills/ds/SKILL.md"
+    ]
   },
   {
     "constraint": "ds-error-handling.md",
     "disposition": "direct-aggregate",
-    "aggregate": "references/constraints/ds-engineering-constraints.md",
-    "taskBriefs": ["skills/ds-implement/SKILL.md", "skills/ds-delegate/SKILL.md"]
+    "aggregate": "skills/ds/references/ds-engineering-constraints.md",
+    "taskBriefs": [
+      "skills/ds/SKILL.md"
+    ]
   },
   {
     "constraint": "ds-idempotency.md",
     "disposition": "direct-aggregate",
-    "aggregate": "references/constraints/ds-engineering-constraints.md",
-    "taskBriefs": ["skills/ds-implement/SKILL.md", "skills/ds-delegate/SKILL.md"]
+    "aggregate": "skills/ds/references/ds-engineering-constraints.md",
+    "taskBriefs": [
+      "skills/ds/SKILL.md"
+    ]
   },
   {
     "constraint": "ds-join-audits.md",
     "disposition": "direct-aggregate",
-    "aggregate": "references/constraints/ds-engineering-constraints.md",
-    "taskBriefs": ["skills/ds-implement/SKILL.md", "skills/ds-delegate/SKILL.md"]
+    "aggregate": "skills/ds/references/ds-engineering-constraints.md",
+    "taskBriefs": [
+      "skills/ds/SKILL.md"
+    ]
   },
   {
     "constraint": "ds-p-hacking-prevention.md",
     "disposition": "direct-aggregate",
-    "aggregate": "references/constraints/ds-common-conventions.md",
-    "taskBriefs": ["skills/ds-implement/SKILL.md", "skills/ds-delegate/SKILL.md"]
+    "aggregate": "skills/ds/references/ds-common-conventions.md",
+    "taskBriefs": [
+      "skills/ds/SKILL.md"
+    ]
   },
   {
     "constraint": "ds-robustness-checks.md",
     "disposition": "direct-aggregate",
-    "aggregate": "references/constraints/ds-analysis-constraints.md",
-    "taskBriefs": ["skills/ds-implement/SKILL.md", "skills/ds-delegate/SKILL.md"]
+    "aggregate": "skills/ds/references/ds-analysis-constraints.md",
+    "taskBriefs": [
+      "skills/ds/SKILL.md"
+    ]
   },
   {
     "constraint": "ds-sample-selection.md",
     "disposition": "direct-aggregate",
-    "aggregate": "references/constraints/ds-common-conventions.md",
-    "taskBriefs": ["skills/ds-implement/SKILL.md", "skills/ds-delegate/SKILL.md"]
+    "aggregate": "skills/ds/references/ds-common-conventions.md",
+    "taskBriefs": [
+      "skills/ds/SKILL.md"
+    ]
   },
   {
     "constraint": "ds-schema-contracts.md",
     "disposition": "direct-aggregate",
-    "aggregate": "references/constraints/ds-engineering-constraints.md",
-    "taskBriefs": ["skills/ds-implement/SKILL.md", "skills/ds-delegate/SKILL.md"]
+    "aggregate": "skills/ds/references/ds-engineering-constraints.md",
+    "taskBriefs": [
+      "skills/ds/SKILL.md"
+    ]
   },
   {
     "constraint": "ds-standard-error-spec.md",
     "disposition": "direct-aggregate",
-    "aggregate": "references/constraints/ds-analysis-constraints.md",
-    "taskBriefs": ["skills/ds-implement/SKILL.md", "skills/ds-delegate/SKILL.md"]
+    "aggregate": "skills/ds/references/ds-analysis-constraints.md",
+    "taskBriefs": [
+      "skills/ds/SKILL.md"
+    ]
   },
   {
     "constraint": "ds-statistical-validity.md",
     "disposition": "direct-aggregate",
-    "aggregate": "references/constraints/ds-common-conventions.md",
-    "taskBriefs": ["skills/ds-implement/SKILL.md", "skills/ds-delegate/SKILL.md"]
+    "aggregate": "skills/ds/references/ds-common-conventions.md",
+    "taskBriefs": [
+      "skills/ds/SKILL.md"
+    ]
   },
   {
     "constraint": "ds-table-figure-pairing.md",
     "disposition": "direct-aggregate",
-    "aggregate": "references/constraints/ds-analysis-constraints.md",
-    "taskBriefs": ["skills/ds-implement/SKILL.md", "skills/ds-delegate/SKILL.md"]
+    "aggregate": "skills/ds/references/ds-analysis-constraints.md",
+    "taskBriefs": [
+      "skills/ds/SKILL.md"
+    ]
   },
   {
     "constraint": "ds-visualization-integrity.md",
     "disposition": "direct-aggregate",
-    "aggregate": "references/constraints/ds-analysis-constraints.md",
-    "taskBriefs": ["skills/ds-implement/SKILL.md", "skills/ds-delegate/SKILL.md"]
+    "aggregate": "skills/ds/references/ds-analysis-constraints.md",
+    "taskBriefs": [
+      "skills/ds/SKILL.md"
+    ]
   }
 ]

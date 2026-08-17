@@ -71,8 +71,8 @@ FN_PSTYLE = "FNStyleBest"
 # to pandoc as --reference-doc. Used to restore footnote style *definitions*
 # (FNStyleBest etc.) when a Google Docs round-trip has stripped them from
 # styles.xml, leaving the pStyle reference dangling at an undefined style.
-TEMPLATE = (Path(__file__).resolve().parent.parent.parent
-            / "writing-legal" / "templates" / "law_review_template.docx")
+TEMPLATE = (Path(__file__).resolve().parents[3]
+            / "references" / "templates" / "law_review_template.docx")
 
 
 def read_zip_member(zf, name):

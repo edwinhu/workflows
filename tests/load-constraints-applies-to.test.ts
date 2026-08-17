@@ -33,11 +33,11 @@ const expectedDirectAggregate = [
 ].sort();
 
 const expectedAggregates = new Set([
-  "references/constraints/ds-analysis-constraints.md",
-  "references/constraints/ds-engineering-constraints.md",
-  "references/constraints/ds-common-conventions.md",
+  "skills/ds/references/ds-analysis-constraints.md",
+  "skills/ds/references/ds-engineering-constraints.md",
+  "skills/ds/references/ds-common-conventions.md",
 ]);
-const expectedTaskBriefs = ["skills/ds-implement/SKILL.md", "skills/ds-delegate/SKILL.md"];
+const expectedTaskBriefs = ["skills/ds/SKILL.md"];
 
 type Disposition = {
   constraint: string;
@@ -51,25 +51,27 @@ function readDispositions(): Disposition[] {
   return JSON.parse(readFileSync(FIXTURE, "utf8")) as Disposition[];
 }
 
+/**
+ * A repo-root constraint is reached when a file under `skills/` names it by its plugin-root path.
+ * The craft-era skills read their constraints directly; nothing calls the loader from a SKILL.md,
+ * so caller-name scanning would report every constraint as an orphan.
+ */
 function collectDirectReachability() {
-  const callers = new Set<string>();
   const readReached = new Set<string>();
-
-  for (const d of readdirSync(join(ROOT, "skills"))) {
-    let text: string;
-    try {
-      text = readFileSync(join(ROOT, "skills", d, "SKILL.md"), "utf8");
-    } catch {
-      continue;
+  const walk = (dir: string) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const p = join(dir, entry.name);
+      if (entry.isDirectory()) { walk(p); continue; }
+      if (!/\.(md|ts|js|sh|py)$/.test(entry.name)) continue;
+      let text: string;
+      try { text = readFileSync(p, "utf8"); } catch { continue; }
+      for (const m of text.matchAll(/\$\{CLAUDE_PLUGIN_ROOT\}\/references\/constraints\/([a-z0-9-]+)\.md/g)) {
+        readReached.add(m[1]);
+      }
     }
-    for (const m of text.matchAll(/load-constraints\.(?:py|ts)\s+([a-z0-9-]+)/g)) callers.add(m[1]);
-    for (const line of text.split("\n")) {
-      if (!line.includes("Read") && !line.includes("CLAUDE_SKILL_DIR")) continue;
-      for (const m of line.matchAll(/references\/constraints\/([a-z0-9-]+)\.md/g)) readReached.add(m[1]);
-    }
-  }
-  callers.delete("skill-name");
-  return { callers, readReached };
+  };
+  walk(join(ROOT, "skills"));
+  return { readReached };
 }
 
 test("exact match and 'all'", () => {
@@ -128,8 +130,8 @@ test("obsolete creator constraints are deleted", () => {
 });
 
 test("every shipped constraint reaches a loader-calling skill or exact aggregate authority", () => {
-  const { callers, readReached } = collectDirectReachability();
-  expect(callers.size).toBeGreaterThan(10);
+  const { readReached } = collectDirectReachability();
+  expect(readReached.size).toBeGreaterThan(10);
   const aggregateReached = new Set(readDispositions().map((entry) => entry.constraint.replace(/\.md$/, "")));
 
   const orphans: string[] = [];

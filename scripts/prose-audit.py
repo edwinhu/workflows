@@ -115,19 +115,19 @@ _WIKI_TABLES = [
 # style-guide advice on a different axis (Strunk/Volokh/McCloskey), already domain-gated, and
 # folding them into the AI-tell families would misreport a house-style preference as an AI tell.
 _DOMAIN_TABLES = [
-    ("writing-general", "writing-general", "strunk-elements-of-style.py",     "_HARD_VIOLATIONS"),
-    ("writing-general", "writing-general", "strunk-elements-of-style.py",     "_SOFT_VIOLATIONS"),
-    ("writing-econ",    "writing-econ",    "mccloskey-economical-writing.py", "_VAGUE_NOUNS"),
-    ("writing-econ",    "writing-econ",    "mccloskey-economical-writing.py", "_PRETENTIOUS_VERBS"),
-    ("writing-econ",    "writing-econ",    "mccloskey-economical-writing.py", "_ERSATZ_ECON"),
-    ("writing-econ",    "writing-econ",    "mccloskey-economical-writing.py", "_STRUCTURAL"),
-    ("writing-legal",   "writing-legal",   "volokh-distilled.py",             "_LEGALESE"),
-    ("writing-legal",   "writing-legal",   "volokh-distilled.py",             "_LONG_SYNONYMS"),
-    ("writing-legal",   "writing-legal",   "volokh-distilled.py",             "_NOMINALIZATION"),
-    ("writing-legal",   "writing-legal",   "volokh-distilled.py",             "_HARSH_WORDS"),
-    ("writing-legal",   "writing-legal",   "volokh-distilled.py",             "_EMPTY_QUALIFIERS"),
-    ("writing-legal",   "writing-legal",   "volokh-distilled.py",             "_DOUBLETS"),
-    ("writing-legal",   "writing-legal",   "volokh-distilled.py",             "_INTRO_CLAUSES"),
+    ("writing-general", "writing", "strunk-elements-of-style.py",     "_HARD_VIOLATIONS"),
+    ("writing-general", "writing", "strunk-elements-of-style.py",     "_SOFT_VIOLATIONS"),
+    ("writing-econ",    "writing",    "mccloskey-economical-writing.py", "_VAGUE_NOUNS"),
+    ("writing-econ",    "writing",    "mccloskey-economical-writing.py", "_PRETENTIOUS_VERBS"),
+    ("writing-econ",    "writing",    "mccloskey-economical-writing.py", "_ERSATZ_ECON"),
+    ("writing-econ",    "writing",    "mccloskey-economical-writing.py", "_STRUCTURAL"),
+    ("writing-legal",   "writing",   "volokh-distilled.py",             "_LEGALESE"),
+    ("writing-legal",   "writing",   "volokh-distilled.py",             "_LONG_SYNONYMS"),
+    ("writing-legal",   "writing",   "volokh-distilled.py",             "_NOMINALIZATION"),
+    ("writing-legal",   "writing",   "volokh-distilled.py",             "_HARSH_WORDS"),
+    ("writing-legal",   "writing",   "volokh-distilled.py",             "_EMPTY_QUALIFIERS"),
+    ("writing-legal",   "writing",   "volokh-distilled.py",             "_DOUBLETS"),
+    ("writing-legal",   "writing",   "volokh-distilled.py",             "_INTRO_CLAUSES"),
 ]
 
 _MODULE_CACHE: dict[str, object] = {}

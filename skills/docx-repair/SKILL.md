@@ -150,7 +150,7 @@ Detects and repairs OOXML footnote damage. Handles multiple sources. Idempotent.
 - Missing style *definitions* — restores `FNStyleBest` (and the basedOn/link
   styles it depends on) from the canonical law-review reference template when
   a round-trip stripped them from `styles.xml`. The template is the same
-  `writing-legal/templates/law_review_template.docx` that `law-review-docx`'s
+  `references/templates/law_review_template.docx` that `law-review-docx`'s
   `build_docx.py` feeds to pandoc, so style definitions stay consistent.
 - Mutated style *definitions* — when the `FNStyleBest` /
   `FNStyleBestChar` block survives the round-trip but picks up Google Docs
@@ -188,7 +188,7 @@ Detects and repairs OOXML footnote damage. Handles multiple sources. Idempotent.
 - `--no-hygiene`: Skip the Google Docs OOXML hygiene pass. Hygiene is **on by default** — strips all-zero rsids, redundant off/default run formatting, no-op shading, black color, and default-font residue across content parts; keeps all "on" formatting. See §C Feature 3.
 - `--normalize-body-indent`: Normalize body first-line indents to the document's dominant value — apply it to paragraphs that lack one, AND convert Google Docs **leading-tab indents** (a literal `<w:tab/>` jumping to a tab stop) to real `firstLine` indents (editorial; off by default). See §C.
 - `--restyle-body`: Ensure the template's body styles (`Normal`/`BodyText`/…) **exist** and are **applied** — restyle direct-indented body paragraphs to `BodyText` and strip their direct `ind`/`spacing`/`pBdr` so formatting is style-driven, not per-paragraph. Implies the body-indent passes. **Reflows** the document (template spacing). Editorial; off by default. See §C.
-- `--template PATH`: Reference template (.docx) to restore missing footnote style definitions from (default: bundled `writing-legal/templates/law_review_template.docx`)
+- `--template PATH`: Reference template (.docx) to restore missing footnote style definitions from (default: bundled `references/templates/law_review_template.docx`)
 
 #### create_crossrefs.py
 

@@ -97,7 +97,7 @@ git add body.typ media/ && git commit -m "bootstrap from paper.docx"
 ```bash
 uv run --script "${CLAUDE_SKILL_DIR}/scripts/build.py" body.typ \
     -o paper.docx \
-    --reference-doc "${CLAUDE_SKILL_DIR}/../writing-legal/templates/law_review_template.docx"
+    --reference-doc "${CLAUDE_PLUGIN_ROOT}/references/templates/law_review_template.docx"
 ```
 
 Produces real `Heading1`/`Heading2`/`FirstParagraph` Word styles, and stamps

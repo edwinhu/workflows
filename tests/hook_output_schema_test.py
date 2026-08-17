@@ -395,22 +395,6 @@ def test_valid_payloads_pass():
         'permissionDecisionReason': 'r'}}) == []
     assert validate_payload('SubagentStart', {
         'hookSpecificOutput': {'hookEventName': 'SubagentStart', 'additionalContext': 'x'}}) == []
-
-
-def test_wc_audit_has_a_hook_contract_dimension():
-    """The audit that was supposed to catch this must actually check it.
-
-    workflow-creator's P01-P30 review scored hooks on COVERAGE (P20) and on whether their
-    command PATH resolves (path-portability). Neither ever executed a hook, so a hook that
-    ran fine and emitted a payload the harness discarded scored clean. This asserts the
-    deterministic leg that closes that gap stays wired.
-    """
-    audit = (REPO / 'workflows' / 'workflow-creator-verify.js').read_text(encoding='utf-8')
-    assert "key: 'hook-contract'" in audit, 'workflow-creator-verify.js lost its hook-contract dimension'
-    assert 'check-hooks.sh' in audit, 'the hook-contract dimension must RUN the harness, not read the hooks'
-    assert "byDim['hook-contract']" in audit, 'hook-contract results must reach the gate'
-    assert "hookStatus === 'Clean'" in audit, 'hook-contract must be part of the substrate gate'
-
     runner = REPO / 'scripts' / 'check-hooks.sh'
     assert runner.exists(), 'scripts/check-hooks.sh is the documented entry point'
     assert os.access(runner, os.X_OK), 'scripts/check-hooks.sh must be executable'

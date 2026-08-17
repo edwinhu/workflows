@@ -13,25 +13,6 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Agent",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/episode-order-gate.ts"
-          }
-        ]
-      },
-      {
-        "matcher": "Agent",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase pre",
-            "timeout": 660
-          }
-        ]
-      },
-      {
         "matcher": "Read",
         "hooks": [
           {
@@ -48,69 +29,15 @@
             "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/suggest-compact.ts"
           }
         ]
-      },
-      {
-        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/implementer-identity-gate.ts"
-          },
-          {
-            "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts"
-          }
-        ]
-      },
-      {
-        "matcher": "EnterPlanMode|ExitPlanMode",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/plans-directory-restart-gate.ts"
-          }
-        ]
       }
     ],
     "PostToolUse": [
-      {
-        "matcher": "ExitPlanMode",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-persist.ts"
-          }
-        ]
-      },
-      {
-        "matcher": "AskUserQuestion",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/episode-phase.ts"
-          }
-        ]
-      },
-      {
-        "matcher": "Agent",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-implement-observation.ts --phase post",
-            "timeout": 660
-          }
-        ]
-      },
       {
         "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",
             "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/lint-check.ts"
-          },
-          {
-            "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-suggest-verify.ts"
           },
           {
             "type": "command",
@@ -145,27 +72,7 @@
         ]
       }
     ],
-    "PreCompact": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/pre-compact.ts"
-          }
-        ]
-      }
-    ],
     "Stop": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/episode-transition-gate.ts"
-          }
-        ]
-      },
       {
         "matcher": "*",
         "hooks": [
@@ -185,16 +92,6 @@
             "type": "command",
             "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/pattern-scan.ts",
             "async": true
-          }
-        ]
-      }
-    ],
-    "SubagentStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/subagent-start.ts"
           }
         ]
       }

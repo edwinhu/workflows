@@ -31,6 +31,10 @@
 
 #let todo(content: text(style: "oblique")[TODO]) = box(stroke: 2pt + red, content)
 
+// Source Inventory declaration. Renders nothing: it exists so a slide states, in its own source,
+// which inventory IDs it draws on, which is what INV greps for.
+#let inv(..ids) = none
+
 #let large-center-text(content) = [
   #set text(72pt)
   #set align(center)

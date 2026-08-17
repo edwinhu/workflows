@@ -57,7 +57,7 @@ from build_docx import (  # noqa: E402
     attach_svg_blips,
 )
 
-TEMPLATE = SKILLS / "writing-legal" / "templates" / "law_econ_template.docx"
+TEMPLATE = SKILLS.parent / "references" / "templates" / "law_econ_template.docx"
 DEFAULT_CSL = Path(__file__).resolve().parent.parent / "assets" / "chicago-author-date.csl"
 
 LINE_RULE = {"double": 480, "onehalf": 360, "single": 240}

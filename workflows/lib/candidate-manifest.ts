@@ -383,7 +383,16 @@ export function captureCandidate(options: CaptureCandidateOptions): CapturedCand
     if (!target) throw new Error(`exclusion does not name a captured representation: ${path}`);
     return { path, representation: exclusion.representation, digest: target.digest, rationale: exclusion.rationale };
   }).sort(compareLogical);
-  const binaryInventory = (options.binaryInventory ?? []).map((item) => ({ ...item, path: validateCandidatePath(item.path) })).sort(compareLogical);
+  // A disposition naming a path this candidate does not carry — or a representation that carries no
+  // bytes — is INERT rather than an error: the authorized list is code-owned and stable while the
+  // candidate changes with every edit. The digest is still the caller's and is still checked below,
+  // because it is the only control that catches byte substitution behind a preserved path.
+  const binaryInventory: CandidateBinaryDispositionV1[] = (options.binaryInventory ?? []).flatMap((item) => {
+    const path = validateCandidatePath(item.path);
+    const target = byKey.get(entryKey(path, item.representation));
+    if (!target || !target.binary) return [];
+    return [{ ...item, path }];
+  }).sort(compareLogical);
 
   const manifest = parseCandidateManifest({ schemaVersion: 1, repositoryRoot: root, baseCommit, headCommit, entries, exclusions, binaryInventory });
   const manifestDigest = digestCandidateManifest(manifest);

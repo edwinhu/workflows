@@ -16,7 +16,6 @@ import { existsSync, readFileSync, readdirSync, statSync, appendFileSync, unlink
 import { join, resolve } from "node:path";
 import { homedir } from "node:os";
 import { parsePayload, pyJson } from "./_gate_common.ts";
-import { classifyPlanningLifecycle } from "../workflows/lib/approved-artifact.ts";
 
 /** Process-local mirror of os.environ — mutated by the loaders exactly as Python mutates os.environ. */
 const env: Record<string, string> = { ...(process.env as Record<string, string>) };
@@ -272,187 +271,30 @@ function truthy(v: string | string[] | undefined): boolean {
   return Array.isArray(v) ? v.length > 0 : v !== "";
 }
 
+/**
+ * A craft run that is armed but unfinished. `.craft/<run>/args.json` exists once a dispatch was
+ * armed; a missing `result.json` means the round never landed. The plan is the authority, so it is
+ * named rather than summarised — the session reads it.
+ */
 function buildInProgressSection(): string {
-  const planningDir = join(process.cwd(), ".planning");
-  const legacyDir = join(process.cwd(), ".claude");
-  const lifecycle = classifyPlanningLifecycle(process.cwd());
-
-  // Modern episodes have a single source of authority. Missing, malformed, or stale receipts
-  // block conversion residue rather than letting this display revive a visible planning ledger.
-  if (lifecycle.kind === "canonical" || lifecycle.kind === "blocked") {
-    const lines = ["## IN-PROGRESS WORK DETECTED", ""];
-    if (lifecycle.kind === "blocked") {
-      lines.push("- Native planning state is blocked; do not resume from visible planning files.");
-      lines.push("- Convert the retired state or return to native Plan mode to create a fresh approved generated plan.");
-    } else {
-      const { resolved } = lifecycle;
-      lines.push(`- Approved generated plan: \`.planning/${resolved.planFile}\``);
-      lines.push(`- Authenticated plan hash: \`${resolved.hash}\``);
-      lines.push(`- Review state: ${resolved.receipt.status}`);
-      lines.push("- Live progress is in TaskList; consult project auto-memory for durable technical facts.");
-      // THE ROUTING LINE, AND WHY REPORTING THE STATE WAS NOT ENOUGH.
-      //
-      // This block already fired on `clear` — it is in the SessionStart matcher — and it told the
-      // session what was approved without telling it to load anything. `showClearContextOnPlanAccept`
-      // is on by default, so accepting a plan clears context and starts a session with the plan text
-      // and NO SKILL LOADED, hence no frontmatter hooks and no delegation boundary, exactly as
-      // IMPLEMENT begins. Measured 2026-08-06: 32 unguarded main-chat edits to a manuscript in the
-      // session created by that accept, zero delegated.
-      //
-      // The workflow name comes from the receipt, so this names a real skill rather than guessing.
-      // Only the ROUTER is invocable — `beat-implement` and the domain implement skills are all
-      // `user-invocable: false` — and the router is the right target anyway, because it owns the
-      // resume classification that decides WHICH beat this is.
-      const workflow = typeof resolved.receipt.workflow === "string" ? resolved.receipt.workflow : "";
-      if (workflow) {
-        lines.push(
-          `- **Load the workflow before mutating anything: \`Skill(skill="workflows:${workflow}")\`.** ` +
-          `A cleared-context session has no skill loaded, so its delegation guard is not registered ` +
-          `until you do. This is a directive, not a suggestion; the plugin-wide guard will deny ` +
-          `project mutations until the episode is resumed properly.`,
-        );
-      }
-    }
-    lines.push("");
-    return lines.join("\n");
+  const craftDir = join(process.cwd(), ".craft");
+  if (!isDir(craftDir)) return "";
+  const pending: string[] = [];
+  for (const run of readdirSync(craftDir)) {
+    const dir = join(craftDir, run);
+    if (!isDir(dir) || !existsSync(join(dir, "args.json"))) continue;
+    if (existsSync(join(dir, "result.json"))) continue;
+    pending.push(run);
   }
-
-  let stateDir: string;
-  let statePrefix: string;
-  if (existsSync(planningDir) && isDir(planningDir) && readdirSync(planningDir).length > 0) {
-    stateDir = planningDir;
-    statePrefix = ".planning";
-  } else if (existsSync(legacyDir) && existsSync(join(legacyDir, "PLAN.md"))) {
-    stateDir = legacyDir;
-    statePrefix = ".claude";
-  } else {
-    return "";
-  }
-
-  const stateFiles: string[] = [];
-  const keyFiles = ["PLAN.md", "WORK.md", "ACTIVE_WORKFLOW.md", "HANDOFF.md", "PRECIS.md", "OUTLINE.md",
-    "VALIDATION.md", "REVIEW.md", "REVIEW_STATE.md", "PHASE_SUMMARY.md"];
-  for (const name of keyFiles) {
-    if (existsSync(join(stateDir, name))) stateFiles.push(name);
-  }
-
-  const subdirs: string[] = [];
-  for (const subdirName of ["outlines", "drafts"]) {
-    const subdir = join(stateDir, subdirName);
-    if (existsSync(subdir) && isDir(subdir)) {
-      const files = readdirSync(subdir).filter((f) => f.endsWith(".md"));
-      if (files.length) subdirs.push(`${subdirName}/ (${files.length} files)`);
-    }
-  }
-
-  if (!stateFiles.length && !subdirs.length) return "";
-
+  if (!pending.length) return "";
   const lines = ["## IN-PROGRESS WORK DETECTED", ""];
-  lines.push(`State directory: \`${statePrefix}/\``);
-  lines.push(`Files: ${stateFiles.join(", ")}`);
-  if (subdirs.length) lines.push(`Subdirs: ${subdirs.join(", ")}`);
+  for (const run of pending.sort()) {
+    lines.push(`- craft run \`${run}\` was dispatched and has no result.json yet.`);
+  }
+  lines.push("- The approved plan under `.claude/plans/` is the authority; craft-result.sh reads the verdict.");
   lines.push("");
-
-  // --- Handoff (highest priority — explicit pause point) ---
-  const handoffPath = join(stateDir, "HANDOFF.md");
-  if (existsSync(handoffPath)) {
-    try {
-      const content = readFileSync(handoffPath, "utf8");
-      const fm = parseYamlSimple(content);
-      const phaseName = str(fm["stage"] ?? fm["phase_name"], "unknown");
-      const task = str(fm["task"], "?");
-      const totalTasks = str(fm["open_tasks"] ?? fm["total_tasks"], "?");
-      const lastUpdated = str(fm["last_updated"], "unknown");
-
-      let nextAction = "";
-      let inNext = false;
-      for (const line of content.split("\n")) {
-        if (line.trim().startsWith("## Next Action")) {
-          inNext = true;
-          continue;
-        }
-        if (inNext) {
-          const s = line.trim();
-          if (s && !s.startsWith("#")) {
-            nextAction = s;
-            break;
-          }
-        }
-      }
-
-      lines.push("### Handoff from previous session");
-      lines.push(`- Phase: **${phaseName}** | Task ${task}/${totalTasks} | Updated: ${lastUpdated}`);
-      if (nextAction) lines.push(`- Next action: ${nextAction}`);
-      lines.push(`- Full context: \`${statePrefix}/HANDOFF.md\``);
-      lines.push("");
-    } catch {
-      // pass
-    }
-  }
-
-  // --- Active Workflow ---
-  const workflowPath = join(stateDir, "ACTIVE_WORKFLOW.md");
-  if (existsSync(workflowPath)) {
-    try {
-      const content = readFileSync(workflowPath, "utf8");
-      const wf = parseYamlSimple(content);
-      const wfTypeRaw = wf["workflow"] ?? "";
-      const wfType = str(wfTypeRaw, "");
-      const phaseName = wf["phase_name"] !== undefined ? str(wf["phase_name"], "unknown") : str(wf["phase"], "unknown");
-
-      if (truthy(wfTypeRaw)) {
-        lines.push(`### Active workflow: **${wfType}** — phase: **${phaseName}**`);
-
-        if (wfType === "writing") {
-          const style = str(wf["style"], "general");
-          const currentPart = str(wf["current_part"], "");
-          lines.push(`- Style: ${style}`);
-          if (truthy(wf["current_part"] ?? "")) lines.push(`- Current part: ${currentPart}`);
-          if (str(wf["lifecycle"], "") !== "shared-v1") lines.push("- Resume: incompatible legacy state; restart or manually align through `/writing`");
-          else if (["human-review", "review", "human_review"].includes(phaseName)) lines.push("- Resume: reload the shared `beat-review` skill");
-          else lines.push(["draft", "implement", "implementation", "verify", "verification", "revise", "revision"].includes(phaseName) ? "- Resume: `/writing-revise`" : "- Resume: `/writing`");
-        } else if (wfType === "workshop") {
-          if (str(wf["lifecycle"], "") !== "shared-v1") lines.push("- Resume: incompatible legacy state; restart or manually align through `/workshop`");
-          else if (["human-review", "review", "human_review"].includes(phaseName)) lines.push("- Resume: reload the shared `beat-review` skill");
-          else lines.push(["generate", "implement", "implementation", "verify", "verification", "revise", "revision"].includes(phaseName) ? "- Resume: `/workshop-revise`" : "- Resume: `/workshop`");
-        } else if (wfType === "workflow-creator") {
-          if (str(wf["lifecycle"], "") !== "shared-v1") lines.push("- Resume: incompatible legacy state; restart through `/workflow-creator` or `/workflow-creator-improve`");
-          else if (["human-review", "review", "human_review"].includes(phaseName)) lines.push("- Resume: reload the shared `beat-review` skill");
-          else lines.push(["diagnose", "diagnosis", "compile", "implement", "implementation", "verify", "verification", "revise", "revision"].includes(phaseName) ? "- Resume: `/workflow-creator-improve`" : "- Resume: `/workflow-creator`");
-        } else if (wfType === "work") {
-          lines.push("- State: `.planning/WORK.md`");
-          lines.push("- Resume: `/work`");
-        } else if (wfType === "ds") {
-          lines.push("- Resume: `/ds` or `/ds-debug`");
-        }
-
-        lines.push("");
-      }
-    } catch {
-      // pass
-    }
-  }
-
-  // --- Approved native plan summary ---
-  // PLAN.md is the exact ExitPlanMode hook copy. It is immutable, so never infer progress from checkboxes.
-  const planPath = join(stateDir, "PLAN.md");
-  if (existsSync(planPath)) {
-    try {
-      const content = readFileSync(planPath, "utf8");
-      const summary = extractFirstHeadingAndSummary(content, 3);
-      lines.push("### Approved native plan");
-      if (summary) lines.push("```\n" + summary + "\n```");
-      lines.push("- Progress is in TaskList; the copied plan is immutable.");
-      lines.push(`- Full plan: \`${statePrefix}/PLAN.md\``);
-      lines.push("");
-    } catch {
-      // pass
-    }
-  }
-
   lines.push("**Read the full state files before taking action.** Do not ask the user to summarize — the context is in the files.");
   lines.push("");
-
   return lines.join("\n");
 }
 

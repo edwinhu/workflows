@@ -130,7 +130,7 @@ It starts from `pandoc --print-default-data-file reference.docx` (guaranteeing
 every part and styleId pandoc's writer emits is present), transplants the
 Latin Modern typography, adds the JLE heading numbering and page-number footer,
 and self-verifies. Output:
-`${CLAUDE_SKILL_DIR}/../writing-legal/templates/law_econ_template.docx`.
+`${CLAUDE_PLUGIN_ROOT}/references/templates/law_econ_template.docx`.
 
 **Never open the template in Word and save it.** Change `make_le_template.py`
 and regenerate.

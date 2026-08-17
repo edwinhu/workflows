@@ -76,7 +76,7 @@ The pattern:
 
 Why instructions fail: context pressure causes the main chat to shortcut past "mandatory" steps. The agent that skips the gate is the same agent reading the instruction not to skip. Why artifacts work: the check is in the PREREQUISITES section, read before any work starts — binary pass/fail, no rationalization possible.
 
-**Hook-enforced gates (strongest):** Even artifact checks in instructional text can be compressed away during context compaction or rationalized past ("the file probably exists"). The strongest enforcement is a skill-scoped PreToolUse hook that blocks code-modifying tools until the current receipt has authenticated the generated plan and independent review. Claude Code fires the hook on every tool call — no escape, no rationalization, no context dependency. Built-ins use `approved-artifact-gate.ts` for this identity and chronology check; `reviewer-verdict-guard.ts` admits only the hash-bound hidden receipt write.
+**Hook-enforced gates (strongest):** Even artifact checks in instructional text can be compressed away during context compaction or rationalized past ("the file probably exists"). The strongest enforcement is a skill-scoped PreToolUse hook that blocks code-modifying tools until the current receipt has authenticated the generated plan and independent review. Claude Code fires the hook on every tool call — no escape, no rationalization, no context dependency. The craft spine spends that enforcement budget differently: the gate is a program, not a hook — `craft-dispatch.sh` refuses to arm a run whose plan fails `plan-lint.ts`, and every dispatched agent re-verifies the plan's `specHash` before acting. A hook cannot be compressed away, but neither can a dispatch that never happened.
 
 **The enforcement gradient for gates:** hook-enforced > artifact check in instructions > advisory text. Design for hook-enforced; fall back to artifact checks only when hooks cannot express the constraint.
 
@@ -221,7 +221,7 @@ The sections below preserve the prior compiler-era rationale for domains that st
 
 **Born-canonical producers.** Tolerance in the parser is a back-compat shim, not the primary defense. The real fix is upstream: the phase that *emits* the plan emits it in the canonical format, so the parser rarely needs to tolerate anything and the guard can be strict. One format spec, shared by the emitter, the parser, and the guard.
 
-This is the *why*; the *how* (the compile step, the shared runner, the gate contract, the pause/resume protocol) is documented in `docs/compiled-runner-architecture.md` (a visual walkthrough) and the seam list in `docs/common-infra-candidates.md`. The throughline: **keep judgment with the human and the review layer; keep the machine deterministic, honest, and dumb.**
+This is the *why*; the *how* — the dispatch step, the gate contract, the fix-loop selector — lives in `skills/craft/SKILL.md` and `skills/craft/workflow.js`, with the seam list in `docs/common-infra-candidates.md`. The throughline: **keep judgment with the human and the review layer; keep the machine deterministic, honest, and dumb.**
 
 ### Lifecycle mechanisms are shared; policies are not
 
@@ -232,8 +232,9 @@ commands are legitimate. Execution adapters remain independent: dev's RED-first 
 DS's data-task adapter, and the writing/workshop generators share lifecycle proof without sharing
 domain semantics.
 
-See [Workflow lifecycle architecture](docs/workflow-lifecycle-architecture.md) for the current
-built-in authority boundary and adapter seams.
+The craft spine is where this landed: one loop, one authority (the plan's `craft:dispatch` spec and
+its hash), and per-domain contribution limited to mechanical checks and review lenses. A domain does
+not get its own lifecycle — see `skills/craft/SKILL.md`.
 
 ## 5. Enforcement and Its Limits
 

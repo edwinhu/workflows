@@ -48,7 +48,7 @@ If the user doesn't specify a path, detect it from context:
 
 The reference template lives at:
 ```
-${CLAUDE_SKILL_DIR}/../writing-legal/templates/law_review_template.docx
+${CLAUDE_PLUGIN_ROOT}/references/templates/law_review_template.docx
 ```
 
 This template defines all styles that pandoc applies:

@@ -1,10 +1,9 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { resolveGeneratedPlanReviewState, type ResolvedGeneratedPlan } from "../../workflows/lib/approved-artifact.ts";
 
 export type AuthenticatedWritingPlan = Readonly<{
   projectRoot: string;
-  plan: ResolvedGeneratedPlan;
+  planPath: string;
   style: string;
   notebook: string;
 }>;
@@ -14,9 +13,7 @@ function planSection(plan: string, heading: string): string {
   // `(?![\s\S])` IS END-OF-INPUT; `$` IS NOT, under the `m` flag. With `$` the lazy body matched
   // the empty string at the first line break, so every section came back "" — which meant
   // `style` was ALWAYS "" and the domain style guide (Volokh / McCloskey) never loaded for any
-  // draft this hook linted, silently, on a plan that declared its Domain correctly. Measured on a
-  // real approved plan before the fix. workflows/writing-verify.js already uses this idiom for
-  // the same parse.
+  // draft this hook linted, silently, on a plan that declared its Domain correctly.
   return new RegExp(`^##\\s+${escaped}\\s*$([\\s\\S]*?)(?=^##\\s|(?![\\s\\S]))`, "mi").exec(plan)?.[1] ?? "";
 }
 
@@ -26,9 +23,33 @@ function sourceField(sourcePlan: string, field: string): string {
     .exec(sourcePlan)?.[1]?.trim() ?? "";
 }
 
+/** The newest `.claude/plans/*.md` under `dir` that is an armed writing plan, or null. */
+function armedWritingPlan(dir: string): string | null {
+  const plansDir = join(dir, ".claude", "plans");
+  if (!existsSync(plansDir)) return null;
+  let newest: { path: string; mtime: number } | null = null;
+  for (const name of readdirSync(plansDir)) {
+    if (!name.endsWith(".md")) continue;
+    const path = join(plansDir, name);
+    let text: string;
+    try {
+      text = readFileSync(path, "utf8");
+    } catch {
+      continue;
+    }
+    // Armed = carries a craft:dispatch spec. A writing plan = declares Writing Intent.
+    if (!text.includes("<!-- craft:dispatch") || !/^##\s+Writing Intent\s*$/mi.test(text)) continue;
+    const mtime = statSync(path).mtimeMs;
+    if (!newest || mtime > newest.mtime) newest = { path, mtime };
+  }
+  return newest?.path ?? null;
+}
+
 /**
- * Find an APPROVED receipt-selected native writing plan enclosing `path`.
- * Legacy planning files are deliberately not probed: they are conversion-only.
+ * Find the armed craft writing plan governing `path`: the nearest enclosing directory whose
+ * `.claude/plans/` holds a plan carrying a `craft:dispatch` block and a `## Writing Intent`
+ * section. The plan file is the authority — craft hashes it in place, so there is no separate
+ * receipt to consult.
  */
 export function authenticatedWritingPlan(path: string): AuthenticatedWritingPlan | null {
   let cursor: string;
@@ -38,14 +59,14 @@ export function authenticatedWritingPlan(path: string): AuthenticatedWritingPlan
     return null;
   }
   for (;;) {
-    const resolved = resolveGeneratedPlanReviewState(cursor, "writing");
-    if (!("code" in resolved) && resolved.receipt.status === "APPROVED") {
+    const planPath = armedWritingPlan(cursor);
+    if (planPath) {
       try {
-        const planText = readFileSync(resolved.planPath, "utf8");
+        const planText = readFileSync(planPath, "utf8");
         const intent = planSection(planText, "Writing Intent");
         const style = sourceField(intent, "Domain").toLowerCase();
         const notebook = sourceField(planSection(planText, "Source Plan"), "Notebook");
-        return { projectRoot: cursor, plan: resolved, style, notebook: notebook.toLowerCase() === "none" ? "" : notebook };
+        return { projectRoot: cursor, planPath, style, notebook: notebook.toLowerCase() === "none" ? "" : notebook };
       } catch {
         return null;
       }
@@ -54,17 +75,4 @@ export function authenticatedWritingPlan(path: string): AuthenticatedWritingPlan
     if (parent === cursor) return null;
     cursor = parent;
   }
-}
-
-/**
- * RETIRED. The writing edit counter moved to `editsSinceVerify` on the shared
- * `.planning/.state/episode.json` — see `hooks/lib/episode-state.ts`. `writing.json` was a
- * per-workflow state file with exactly one consumer, which is the pattern that took the planning
- * directory to eight state files across three classes (`.claude/CLAUDE.md` -> "State Files").
- *
- * Kept only to name the path an upgrade may still find on disk. Nothing reads it; a stale
- * `writing.json` is inert and may be deleted.
- */
-export function retiredWritingStatePath(projectRoot: string): string {
-  return join(projectRoot, ".planning", ".state", "writing.json");
 }

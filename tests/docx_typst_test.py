@@ -42,7 +42,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "skills" / "docx-typst" / "scripts"
-TEMPLATE = ROOT / "skills" / "writing-legal" / "templates" / "law_review_template.docx"
+TEMPLATE = ROOT / "references" / "templates" / "law_review_template.docx"
 DRIVE_FIXTURE = ROOT / "tests" / "fixtures" / "drive-comments-list.json"
 
 sys.path.insert(0, str(SCRIPTS))
