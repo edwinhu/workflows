@@ -83,9 +83,6 @@ const PRESERVED_BINARIES: ReadonlyArray<{ path: string; digest: string }> = [
   { path: "skills/workshop/fixtures/clean/presentation/slides.pdf", digest: "4df2355eaa9d1e8495130f32833199f92617bd5ab986c1b96c0c551a63ded609" },
   { path: "skills/wrds/scripts/parse_13f/parse_13f_go/parse_13f_go", digest: "b445eb303ff6395c40a54af52f30c464e42a65dec074f3edd9621fc4d2c98ad2" },
   { path: "references/templates/law_econ_template.docx", digest: "368ce014d5c452672fa1c70aa093a5a5dae264207284b91cbe581e61b7f8e57e" },
-  // Pre-move locations, still in HEAD until the move commits. Same bytes, same reviewed digests.
-  { path: "skills/writing-legal/templates/law_econ_template.docx", digest: "368ce014d5c452672fa1c70aa093a5a5dae264207284b91cbe581e61b7f8e57e" },
-  { path: "skills/writing-legal/templates/law_review_template.docx", digest: "f53eca12fa5b3e575cbfcb589b5f2d190e3b375bc89a8f378227dfe61c40c7f6" },
   { path: "references/templates/law_review_template.docx", digest: "f53eca12fa5b3e575cbfcb589b5f2d190e3b375bc89a8f378227dfe61c40c7f6" },
 ];
 const REQUIRED_DENY_RULES: DenyRule[] = [
