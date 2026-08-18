@@ -47,7 +47,16 @@ set -euo pipefail
 
 # Self-locating: the skill root is this script's parent, so the copy runs wherever it is installed.
 SKILL=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-FARM=${CRAFT_FARM:-$HOME/.claude/skills/farm-out/scripts/farm.ts}
+# farm-out ships alongside craft; a sibling copy wins, an installed one is the fallback, and
+# CRAFT_FARM overrides both. farm.ts installs its own SDK on first run.
+FARM=${CRAFT_FARM:-}
+if [ -z "$FARM" ]; then
+  if [ -f "$SKILL/../farm-out/scripts/farm.ts" ]; then
+    FARM="$SKILL/../farm-out/scripts/farm.ts"
+  else
+    FARM="$HOME/.claude/skills/farm-out/scripts/farm.ts"
+  fi
+fi
 
 die() { printf 'craft-redispatch: %s\n' "$1" >&2; exit 1; }
 

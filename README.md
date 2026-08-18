@@ -119,7 +119,10 @@ These skills have `user-invocable: false` — Claude loads them automatically wh
 `marimo`, `jupytext`, `notebook-debug`
 
 ### Utilities
-`look-at`, `visual-verify`, `visual-mockup`, `data-context`, `continuous-learning`, `pattern-capture`, `ai-anti-patterns`, `obsidian-organize`, `pptx-render`, `headline-card`
+`farm-out`, `look-at`, `visual-verify`, `visual-mockup`, `data-context`, `continuous-learning`, `pattern-capture`, `ai-anti-patterns`, `obsidian-organize`, `pptx-render`, `headline-card`
+
+`farm-out` is the dispatcher craft runs its agents through — `craft-dispatch.sh` uses the sibling copy
+by default, so the plugin dispatches without an outside install. It fetches its own SDK on first run.
 
 ### Internal Workflow Phases
 
@@ -197,6 +200,7 @@ workflows/
 ├── skills/                     # User-facing and internal skills
 │   ├── craft/                  # The spine: workflow.js, plan-lint, dispatch, gate
 │   ├── dev/, ds/, writing/, workshop/, workflow-creator/  # Domain workflows
+│   ├── farm-out/               # The dispatcher craft farms agents out through
 │   ├── docx, pdf, pptx, xlsx  # Document formats (symlinks)
 │   └── ...                     # Internal phases and auto-invoked skills
 ├── bin/                        # Optional dependency installer

@@ -58,8 +58,16 @@ set -uo pipefail
 
 # Self-locating: the skill root is this script's parent, so the copy runs wherever it is installed.
 SKILL=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-# farm-out ships separately; CRAFT_FARM overrides for an install that keeps it elsewhere.
-FARM=${CRAFT_FARM:-$HOME/.claude/skills/farm-out/scripts/farm.ts}
+# farm-out ships alongside craft; a sibling copy wins, an installed one is the fallback, and
+# CRAFT_FARM overrides both. farm.ts installs its own SDK on first run.
+FARM=${CRAFT_FARM:-}
+if [ -z "$FARM" ]; then
+  if [ -f "$SKILL/../farm-out/scripts/farm.ts" ]; then
+    FARM="$SKILL/../farm-out/scripts/farm.ts"
+  else
+    FARM="$HOME/.claude/skills/farm-out/scripts/farm.ts"
+  fi
+fi
 
 # ---------------------------------------------------------------- the spec hash (the authority)
 # sha256 of json.dumps(parsed, sort_keys=True, separators=(',',':')) — the canonical form of the
