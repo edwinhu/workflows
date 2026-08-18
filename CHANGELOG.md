@@ -3,6 +3,12 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [6.0.1] - 2026-08-17
+
+### Changed
+
+- **The three published descriptions now describe craft.** `plugin.json`, `marketplace.json`'s metadata, and its `workflows` entry all still read "Generic structured work, development, data science, writing, and workshop presentation workflows … with TDD enforcement and session handoff" — a listing written for the beat spine, naming a session-handoff surface that 6.0.0 removed. They now lead with the loop and what gates it: an approved plan as the run's only authority, delegated implementation, independent verification against **computed** gates, human review. Documentation only; nothing an installed plugin executes changed.
+
 ## [6.0.0] - 2026-08-17
 
 ### Changed — BREAKING: the beat spine is replaced by craft

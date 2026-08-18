@@ -1,7 +1,7 @@
 {
   "name": "workflows",
-  "version": "6.0.0",
-  "description": "Generic structured work, development, data science, writing, and workshop presentation workflows with evidence-driven verification, TDD enforcement, and session handoff.",
+  "version": "6.0.1",
+  "description": "One loop — craft — for work worth doing properly: clarify, an approved plan that is the run's only authority, delegated implementation, independent verification against computed gates, and human review. Domain workflows for code (test-first), data, writing and workshop presentations.",
   "author": {
     "name": "edwinhu"
   },
