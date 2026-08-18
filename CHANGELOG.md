@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.2.1] - 2026-08-18
+
+### Changed
+
+- **`agents/librarian.md` picks up the copy that had drifted ahead in dotfiles.** The two had diverged in one substantive way: this copy declared `mcp__consensus__search` in its `tools`, which the `consensus` skill explicitly forbids — "NEVER use `mcp__consensus__search`. ALWAYS use the CLI binary", because the MCP is rate-limited to 3 results. The agent could reach a tool its own skill bans. That tool is dropped, the plugin-namespaced `Skill(skill="workflows:…")` calls are kept, and two relative paths (`../skills/google-scholar/…`, `cd skills/deep-research`) become `${CLAUDE_PLUGIN_ROOT}`-anchored so they resolve from any cwd.
+- `consensus`, `deep-research`, `google-scholar`, `nlm` and `readwise-chat` are now published here only. Identical copies had been loading from a personal skills directory as well, so each was paid for twice in always-on budget and the two sets could drift independently.
+
 ## [6.2.0] - 2026-08-18
 
 ### Added

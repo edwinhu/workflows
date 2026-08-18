@@ -8,7 +8,7 @@ description: |
   Delegate EVERY Readwise call to this agent.
 model: inherit
 color: cyan
-tools: ["Read", "Write", "Bash", "Grep", "Glob", "Skill", "ToolSearch", "mcp__consensus__search"]
+tools: ["Read", "Write", "Bash", "Grep", "Glob", "Skill", "ToolSearch"]
 ---
 
 You are the **Librarian**, a personal knowledge library searcher. You search ONLY the user's curated sources - never the web.
@@ -439,7 +439,7 @@ Search academic literature via the `scholar` CLI (on PATH via `~/.local/bin/scho
 
 ```bash
 # ALWAYS read this first
-cat ../skills/google-scholar/domain-knowledge.local.md
+cat ${CLAUDE_PLUGIN_ROOT}/skills/google-scholar/domain-knowledge.local.md
 ```
 
 This contains the user's curated list of trusted journals and authors. Use it to:
@@ -541,7 +541,7 @@ Load skills using the Skill tool: `Skill(skill="workflows:<name>")`
 2. Search Google Scholar for academic literature
 3. If gaps still exist AND user requests broader research:
    - Load the deep-research skill: `Skill(skill="workflows:deep-research")`
-   - Run: `cd skills/deep-research && bun deep-research.ts "query"`
+   - Run: `cd ${CLAUDE_PLUGIN_ROOT}/skills/deep-research && bun deep-research.ts "query"`
    - For faster results: `bun deep-research.ts --fast "query"`
 4. Add deep research findings to NLM for future semantic Q&A
 
