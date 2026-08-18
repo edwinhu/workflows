@@ -175,11 +175,11 @@ marimo export html notebook.py -o __marimo__/notebook.html --watch
 
 ## Live Session (marimo-pair)
 
-For working inside a **running** marimo notebook kernel — executing code, creating/editing cells, and building notebooks interactively — use the marimo-pair protocol. Full details: `marimo-pair/SKILL.md`.
+For working inside a **running** marimo notebook kernel — executing code, creating/editing cells, and building notebooks interactively — invoke `Skill(skill="marimo-pair:marimo-pair")`. That skill owns the live-session protocol and its own CLI; read its SKILL.md for the current command surface (`scripts/discover-servers.sh`, `scripts/execute-code.sh`) rather than any command remembered from here. This section carries only what marimo-pair does *not*: how we start servers, and what we do after a data-only change.
 
 ### Starting a Server
 
-See `marimo-pair/reference/finding-marimo.md` for the full decision tree. Quick start:
+marimo-pair's `reference/finding-marimo.md` has the full binary-resolution decision tree. Quick start:
 
 ```bash
 # pixi project (our standard)
@@ -219,7 +219,7 @@ Then hand the user `http://$TS_IP:2718`. `--headless` is correct here (the oppos
 local-box default above): a remote host has no browser to open.
 
 **Tear it down when the review closes.** A `--no-token` server left running is an open notebook
-kernel on the tailnet, and the next session's `discover-servers.sh` finds a stale one bound to a
+kernel on the tailnet, and the next session's server discovery finds a stale one bound to a
 notebook nobody is reviewing.
 
 ```bash
@@ -298,14 +298,14 @@ affected. Guessing which cells a data change touches is exactly what lets a stal
 through — the dependency DAG cannot tell you, because no variable changed. For a thin-reader
 notebook (cells that just `pl.read_parquet(...)`) a full re-run is cheap.
 
-```bash
-bash ${CLAUDE_SKILL_DIR}/marimo-pair/scripts/execute-code.sh <<'EOF'
+Run this in the live kernel (via marimo-pair — see the pointer at the top of this section):
+
+```python
 import marimo._code_mode as cm
 
 async with cm.get_context() as ctx:
     for c in ctx.cells:
         ctx.run_cell(c.id)
-EOF
 ```
 
 Better still, wrap regenerate + refresh + export in one project script so the refresh cannot
@@ -316,41 +316,13 @@ be lost by forgetting it — this project does, at `scripts/repro/refresh.sh`.
 the environment. Re-run the cells instead. Note `cm.get_context()` likewise needs
 `async with`, not `with`.
 
-### Discovery and Execution
+### While a Session Is Live
 
-```bash
-# Discover running servers
-bash ${CLAUDE_SKILL_DIR}/marimo-pair/scripts/discover-servers.sh
-
-# Execute code in the kernel (one-liner)
-bash ${CLAUDE_SKILL_DIR}/marimo-pair/scripts/execute-code.sh -c "df.head()"
-
-# Execute code (multiline — use heredoc to avoid shell escaping)
-bash ${CLAUDE_SKILL_DIR}/marimo-pair/scripts/execute-code.sh <<'EOF'
-import marimo._code_mode as cm
-
-async with cm.get_context() as ctx:
-    cid = ctx.create_cell("x = 1")
-    ctx.run_cell(cid)
-EOF
-```
-
-Use `--port` to target a specific server, `--session` for a specific notebook, `--url` for remote servers.
-
-### Key Concepts
-
-- **Scratchpad execution**: Code runs in the kernel with all cell variables in scope, but nothing persists between calls. Use this to explore and validate.
-- **Cell mutations**: Use `marimo._code_mode` with `async with cm.get_context() as ctx:` to create/edit/delete cells and install packages. All `ctx.*` methods are synchronous — do NOT await them.
-- **Cells are not auto-executed**: `create_cell` and `edit_cell` are structural only — call `ctx.run_cell(cid)` to execute.
-- **Install packages via `ctx.install_packages()`**, not `uv add` or `pip`.
-- **NEVER write to the `.py` file directly while a session is running** — the kernel owns it.
-
-### marimo-pair References
-
-- `marimo-pair/reference/finding-marimo.md` — How to find and invoke the right marimo binary
-- `marimo-pair/reference/gotchas.md` — Cached module proxies and other traps
-- `marimo-pair/reference/rich-representations.md` — Custom anywidgets, `_display_()`, Arrow IPC for large data
-- `marimo-pair/reference/notebook-improvements.md` — Setup cells, lifting functions, `mo.persistent_cache`
+**NEVER write to the `.py` file directly while a session is running** — the kernel owns it. Make
+cell changes through marimo-pair. Everything else about scratchpad execution, cell mutation and
+package installation is marimo-pair's to document; read its SKILL.md and `reference/` files
+(`finding-marimo.md`, `gotchas.md`, `rich-representations.md`, `notebook-improvements.md`) rather
+than a copy here.
 
 ## Data and Visualization
 
@@ -392,10 +364,9 @@ For detailed patterns and advanced techniques, consult:
 - **`references/debugging.md`** - Error patterns, runtime debugging, environment-specific issues
 - **`references/widgets.md`** - Interactive UI components and mo.ui patterns
 - **`references/sql.md`** - SQL cells and database integration techniques
-- **`marimo-pair/reference/finding-marimo.md`** - How to find and invoke marimo across project types
-- **`marimo-pair/reference/gotchas.md`** - Cached module proxies (e.g., polars + pyarrow mid-session)
-- **`marimo-pair/reference/rich-representations.md`** - Custom anywidgets, Arrow IPC, `_display_()` protocol
-- **`marimo-pair/reference/notebook-improvements.md`** - Setup cells, lifting functions, `mo.persistent_cache`
+
+Live-session references (finding the marimo binary, cached-module gotchas, rich representations,
+notebook improvements) ship with the `marimo-pair` plugin — invoke `Skill(skill="marimo-pair:marimo-pair")`.
 
 ### Examples
 
@@ -409,10 +380,8 @@ Working examples available in `examples/`:
 Validation and live-session utilities:
 - **`scripts/check_notebook.sh`** - Primary validation: syntax check, marimo validation, cell structure overview
 - **`scripts/get_cell_map.py`** - Extract cell metadata (invoked by check_notebook.sh)
-- **`marimo-pair/scripts/discover-servers.sh`** - Find running marimo servers
-- **`marimo-pair/scripts/execute-code.sh`** - Execute code in a running marimo kernel
 
 ### Related Skills
 
 - **`notebook-debug`** - Debugging executed ipynb files with tracebacks and output inspection
-- **`marimo-pair/SKILL.md`** - Full marimo-pair protocol for live kernel interaction
+- **`marimo-pair:marimo-pair`** - Full live-kernel protocol: server discovery, scratchpad execution, cell mutation

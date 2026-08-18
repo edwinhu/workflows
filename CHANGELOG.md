@@ -1,5 +1,15 @@
 # Changelog
 
+## [6.3.0] - 2026-08-18
+
+### Removed
+
+- **The vendored `marimo-pair` submodule.** `skills/marimo/marimo-pair` pinned upstream at an April 2026 commit; upstream has since reached v0.0.18, restructured itself into a plugin, rewritten its discovery and execution scripts (WSL fix), and added a `retro-marimo-pair` skill. It is now consumed as the installed `marimo-pair` plugin rather than vendored, so it updates on its own.
+
+### Changed
+
+- **`skills/marimo` stops restating marimo-pair's CLI.** Its live-session section inlined `execute-code.sh` invocations that v0.0.18 rejects outright — `--url` is now required and stdin needs an explicit `-`, so every example here would have exited on a usage error. The mechanics now route to `Skill(skill="marimo-pair:marimo-pair")`, which documents its own current surface; duplicating it is what let this go stale. What upstream does not carry is kept: the pixi/uv/uvx start commands and the `--watch` rule, background-task-not-`--headless`, tailnet binding instead of SSH forwarding, the re-run-**every**-cell doctrine for data-only changes, and the `ctx.screenshot()` coroutine caveat.
+
 ## [6.2.1] - 2026-08-18
 
 ### Changed
