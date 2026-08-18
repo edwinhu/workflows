@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.2.0] - 2026-08-18
+
+### Added
+
+- **`tuicr` ships here now**, as one tracked copy. It had been symlinked into `skills/tuicr` as an absolute path into the author's dotfiles checkout — meaningless to anyone else, and which git records as a mode-120000 link rather than the skill's files. The 6 real files are committed and the dotfiles original is deleted, so the skill has a single home like the rest of the spine.
+
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
