@@ -1,7 +1,7 @@
 ---
 name: bright-data
 version: 1.0
-description: Use when "query Bright Data", "Bright Data datasets", "Bright Data Web Archive / Wayback alternative", "scrape with Web Unlocker", "FINRA BrokerCheck data", "SEC IAPD / adviserinfo data", "Investment Adviser Public Disclosure", "broker/adviser disclosure snapshots", "LinkedIn/Crunchbase/Glassdoor company or people dataset", or any use of the Bright Data API (datasets/list, Web Archive search/dump, Web Unlocker zones). Covers the verified FINRA BrokerCheck + SEC IAPD archive coverage finding.
+description: Use when "query Bright Data", "Bright Data datasets", "Bright Data Web Archive / Wayback alternative", "scrape with Web Unlocker", "FINRA BrokerCheck data", "SEC IAPD / adviserinfo data", "Investment Adviser Public Disclosure", "broker/adviser disclosure snapshots", "LinkedIn/Crunchbase/Glassdoor company or people dataset", or any use of the Bright Data API (datasets/list, Web Archive search/dump, Web Unlocker zones).
 user-invocable: false
 ---
 

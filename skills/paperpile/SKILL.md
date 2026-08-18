@@ -1,6 +1,6 @@
 ---
 name: paperpile
-description: This skill should be used when the user asks to "add paper", "paperpile add", "fetch PDF for", "find and add", "search paperpile", "find in paperpile", "paperpile search", "label paper", "trash paper", "download paper", "paperpile index", "edit paper metadata", "update paper title", "fix paper author", "paperpile edit", "find PDF online", "search google for PDF", "resolve PDF", "fetch PDF for citation", "get full-text for DOI", "resolve cite to PDF", or any request to manage their Paperpile library or resolve a citation to a local PDF.
+description: Use when the user asks to "add paper", "paperpile add", "fetch PDF for", "find and add", "search paperpile", "find in paperpile", "paperpile search", "label paper", "trash paper", "download paper", "paperpile index", "edit paper metadata", "update paper title", "fix paper author", "paperpile edit", "find PDF online", "search google for PDF", "resolve PDF", "fetch PDF for citation", "get full-text for DOI", "resolve cite to PDF", or any request to manage their Paperpile library or resolve a citation to a local PDF.
 version: 0.5.0
 user-invocable: false
 ---

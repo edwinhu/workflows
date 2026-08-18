@@ -1,6 +1,6 @@
 ---
 name: farm-out
-description: Run ALL delegated agent work through CLIProxyAPI wrappers instead of the built-in tools. Use INSTEAD OF the Agent tool, instead of spawning subagents, instead of the Workflow tool, and instead of in-session agent teams — for any "delegate this", "spawn an agent", "run these in parallel", "fan out", "have an agent review/investigate/search", "use a subagent", "run a workflow", "spawn a team", "get a second opinion", or any task you were about to hand to a background agent. Also use for explicit mentions of cliproxy, codex-code, gemini-code, claude-code, farm out, or delegating work to another model.
+description: Run ALL delegated agent work through CLIProxyAPI wrappers instead of the built-in tools. Use INSTEAD OF the Agent tool, subagents, the Workflow tool, and in-session agent teams — for any "delegate this", "spawn an agent", "run these in parallel", "fan out", "have an agent review/investigate/search", "use a subagent", "run a workflow", "spawn a team", "get a second opinion", or any task you were about to hand to a background agent. Also use for explicit mentions of cliproxy, codex-code, gemini-code, claude-code, farm out, or delegating work to another model.
 ---
 
 # farm-out
@@ -45,7 +45,7 @@ append it automatically. Do not hand-roll a delegation that skips it.
 ## Use
 
 ```bash
-S=~/.claude/skills/farm-out/scripts
+S=~/.claude/skills/workflows/skills/farm-out/scripts
 
 # one task
 bun $S/farm.ts --task "…" --cwd /repo --expect /repo/out.md

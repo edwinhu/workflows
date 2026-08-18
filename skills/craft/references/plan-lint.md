@@ -14,8 +14,8 @@ review*. What a reader would catch belongs here as a rule instead.
 ## Running them
 
 ```bash
-bun ~/.claude/skills/craft/scripts/plan-lint.ts      <plan.md|args.json> [--json]
-bun ~/.claude/skills/craft/scripts/plan-preflight.ts <plan.md|args.json> --cwd <repo> [--json] \
+bun ~/.claude/skills/workflows/skills/craft/scripts/plan-lint.ts      <plan.md|args.json> [--json]
+bun ~/.claude/skills/workflows/skills/craft/scripts/plan-preflight.ts <plan.md|args.json> --cwd <repo> [--json] \
     [--only redCommand|mechanical|acceptance] [--skip <key,key>] [--timeout N] [--unsafe]
 ```
 

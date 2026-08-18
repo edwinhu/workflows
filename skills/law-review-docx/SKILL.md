@@ -1,6 +1,6 @@
 ---
 name: law-review-docx
-description: "Use this skill to BUILD a formatted Word document from law review / legal MARKDOWN drafts via the law_review_template + pandoc (footnotes, TOC, styled tables) — NOT the generic 'docx' skill (which edits docx content) and NOT 'docx-render' (which only converts an existing .docx to PDF). Triggers: 'generate a docx', 'create the Word file', 'export to docx', 'build the document', 'compile/finalize the draft', 'build the law review document', 'make a Word version', 'turn my markdown draft into Word', 'make the submission docx', 'apply the law review template'."
+description: "Use this skill to BUILD a formatted Word document from law review / legal MARKDOWN drafts via the law_review_template + pandoc (footnotes, TOC, styled tables) — NOT the generic 'docx' skill (edits docx content), NOT 'docx-render' (docx to PDF only). Triggers: 'generate a docx', 'create the Word file', 'export to docx', 'build the document', 'compile/finalize the draft', 'build the law review document', 'make a Word version', 'turn my markdown draft into Word', 'make the submission docx', 'apply the law review template'."
 user-invocable: true
 ---
 

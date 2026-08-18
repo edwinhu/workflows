@@ -3,6 +3,18 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [6.1.0] - 2026-08-17
+
+### Changed
+
+- **The spine runs from one copy, as `workflows@skills-dir`.** This repo is symlinked to `~/.claude/skills/workflows`, where `.claude-plugin/plugin.json` auto-loads it — no marketplace install, no cache copy. The seven skills that were duplicated into `~/dotfiles/.claude/skills` (`craft`, `dev`, `ds`, `writing`, `workshop`, `workflow-creator`, `farm-out`) are deleted there; this is now the only copy. Note that an *installed* plugin takes name precedence over a skills-dir one **even when disabled**, so `workflows@edwinhu-plugins` had to be uninstalled for this copy to load; the marketplace itself stays registered.
+- **The repo's own `~/.claude/skills/<skill>` self-references are repointed** to `~/.claude/skills/workflows/skills/<skill>`, including craft's `skillRoot` fallback in `workflow.js`. Those paths all dangled the moment the per-skill symlinks were removed.
+
+### Changed — progressive disclosure
+
+- **`docx-typst` and `docx-repair` no longer pay their whole body on every invocation.** Both shipped nearly all their procedure in `SKILL.md` (579 and 524 lines, zero and one reference file). The procedural detail moves verbatim into `references/`, leaving a routing index: **on-invoke drops ~13.2k → ~3.0k and ~14.5k → ~2.8k**, a combined ~21.9k saved per invocation. Every code block from the originals is present in the new set, and `docx-repair/footnotes-reference.md` moves under `references/` with its referrers updated.
+- **Ten over-long descriptions lose their prose, not their triggers.** `docx-typst`, `law-econ-docx`, `law-review-docx`, `look-at`, `paperpile`, `bright-data`, `lseg-data`, `farm-out` shed redundant framing and disambiguation asides. All 158 quoted trigger phrases are preserved — the description *is* the triggering surface, so a cut trigger is a silent regression no test catches. Always-on falls ~9,612 → ~9,430; the lever is nearly exhausted, since always-on is just the sum of the 62 descriptions and the long ones are long *because* they are triggers.
+
 ## [6.0.1] - 2026-08-17
 
 ### Changed

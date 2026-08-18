@@ -52,7 +52,7 @@ rather than a vacuous pass.
 
 `skillRoot` is injected by `craft-dispatch.sh` so the prompts the runner builds name paths that
 resolve on the installing machine. A caller that builds args by hand and omits it gets
-`~/.claude/skills/craft`.
+`~/.claude/skills/workflows/skills/craft`.
 
 ## Compatibility
 

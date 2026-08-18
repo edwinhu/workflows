@@ -171,7 +171,7 @@ actually wrote it** — resolve the path, don't assume it:
 ```bash
 PLAN=$(ls -t .claude/plans/*.md 2>/dev/null | head -1)   # project-local, the configured location
 [ -n "$PLAN" ] || PLAN=$(ls -t ~/.claude/plans/*.md | head -1)   # fallback: the default location
-bash ~/.claude/skills/craft/scripts/craft-dispatch.sh --spec-hash "$PLAN"   # 64-hex spec hash
+bash ~/.claude/skills/workflows/skills/craft/scripts/craft-dispatch.sh --spec-hash "$PLAN"   # 64-hex spec hash
 ```
 
 Whichever it resolves to is `planPath`. **Never copy the plan** — one file, hashed in place, is the
@@ -422,8 +422,8 @@ response to its own output.
 finding exits 3 with the run still armed and every artifact byte-identical. Both run by hand too:
 
 ```
-bun ~/.claude/skills/craft/scripts/plan-lint.ts      <plan.md|args.json>
-bun ~/.claude/skills/craft/scripts/plan-preflight.ts <plan.md|args.json> --cwd <repo> [--only acceptance]
+bun ~/.claude/skills/workflows/skills/craft/scripts/plan-lint.ts      <plan.md|args.json>
+bun ~/.claude/skills/workflows/skills/craft/scripts/plan-preflight.ts <plan.md|args.json> --cwd <repo> [--only acceptance]
 ```
 
 **Tier 1 — `plan-lint`** decides the plan's structured fields. Its `major`/`critical` rules block:
@@ -585,7 +585,7 @@ set closed?"**, which is finite and shrinks.
   `scripts/converge-check.ts` — a computed diagnosis over the run's own `result-round*.json`
   (blocking sequence, generation slope, repeat rate, deliverable-vs-gate split, accretion markers).
   **Advisory**: it explains why a run had to be stopped, it does not stop one. Run it by hand any
-  time: `bun ~/.claude/skills/craft/scripts/converge-check.ts <run-dir> [--json]` — exit 0
+  time: `bun ~/.claude/skills/workflows/skills/craft/scripts/converge-check.ts <run-dir> [--json]` — exit 0
   CONVERGING, 1 NOT CONVERGING with reasons, 2 too short to judge.
 
 ### Text-only findings: fix inline, confirm with `readOnly`

@@ -37,10 +37,10 @@ if (!goal) throw new Error('craft: goal required (one sentence + criteria from .
 const readOnly = args.readOnly === true
 // Where this skill is installed. Dispatch injects it (craft-dispatch.sh knows $SKILL); the fallback
 // is the stowed location, so a hand-built args object still names paths an agent can actually run.
-// is `~/.claude/skills/craft` — tilde, not an absolute path, because the sandbox has no env access
+// is `~/.claude/skills/workflows/skills/craft` — tilde, not an absolute path, because the sandbox has no env access
 // and a machine-specific literal would be wrong everywhere but one box. Both uses are prompt text a
 // shell or an agent expands.
-const skillRoot = args.skillRoot || '~/.claude/skills/craft'
+const skillRoot = args.skillRoot || '~/.claude/skills/workflows/skills/craft'
 if (!readOnly && (!Array.isArray(tasks) || tasks.length === 0)) throw new Error('craft: tasks[] required')
 // Every later reference goes through taskList. When tasks[] is present this IS tasks (same array),
 // so nothing downstream changes; it is [] only on a readOnly run that supplied no tasks.

@@ -458,7 +458,7 @@ The control matters: it shows the skill hook was registered and firing, so the t
 a reach limit, not a broken apparatus.
 
 **This skill's own validate-on-write hook was then confirmed the same way.** With
-`~/.claude/skills/workflow-creator` symlinked into place and this skill invoked in a fresh session,
+`~/.claude/skills/workflows/skills/workflow-creator` symlinked into place and this skill invoked in a fresh session,
 a real `Write` of a scratch `SKILL.md` carrying a deliberately broken skill-dir reference produced,
 from that session's transcript (`attachment.type: "hook_success"`,
 `hookName: "PostToolUse:Write"`, `exitCode: 0`):
