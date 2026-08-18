@@ -10,7 +10,16 @@ A curated collection of development, data science, writing, workshop, legal, and
 
 # 2. (Optional) Install CLI dependencies for knowledge management, email, and calendar
 bash ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/bin/install-deps.sh
+
+# 3. (Optional) Live marimo kernel work — only needed by the `marimo` skill
+claude plugin marketplace add marimo-team/marimo-pair
+claude plugin install marimo-pair@marimo-pair
 ```
+
+`marimo-pair` is a separate upstream plugin, deliberately not declared as a hard dependency: an
+uninstalled dependency stops the *whole* plugin from loading, and one skill should not be able to
+take the other sixty with it. The `marimo` skill routes live-kernel work to
+`Skill(skill="marimo-pair:marimo-pair")` and works for notebook authoring without it.
 
 The install script is only needed for skills that use the external tools below. The plugin's own TypeScript hooks and JavaScript/TypeScript workflow runners use Bun; the core workflows do not require the optional CLIs installed by this script.
 

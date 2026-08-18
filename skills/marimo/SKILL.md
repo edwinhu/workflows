@@ -175,7 +175,14 @@ marimo export html notebook.py -o __marimo__/notebook.html --watch
 
 ## Live Session (marimo-pair)
 
-For working inside a **running** marimo notebook kernel — executing code, creating/editing cells, and building notebooks interactively — invoke `Skill(skill="marimo-pair:marimo-pair")`. That skill owns the live-session protocol and its own CLI; read its SKILL.md for the current command surface (`scripts/discover-servers.sh`, `scripts/execute-code.sh`) rather than any command remembered from here. This section carries only what marimo-pair does *not*: how we start servers, and what we do after a data-only change.
+For working inside a **running** marimo notebook kernel — executing code, creating/editing cells, and building notebooks interactively — invoke `Skill(skill="marimo-pair:marimo-pair")`. It ships separately, so install it once if that skill is not found:
+
+```bash
+claude plugin marketplace add marimo-team/marimo-pair
+claude plugin install marimo-pair@marimo-pair
+```
+
+That skill owns the live-session protocol and its own CLI; read its SKILL.md for the current command surface rather than any command remembered from here. This section carries only what marimo-pair does *not*: how we start servers, and what we do after a data-only change.
 
 ### Starting a Server
 

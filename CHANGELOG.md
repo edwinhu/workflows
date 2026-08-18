@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.3.1] - 2026-08-18
+
+### Documentation
+
+- **How to install `marimo-pair`, in both places a reader would look.** The `marimo` skill routes live-kernel work to `Skill(skill="marimo-pair:marimo-pair")`, which ships as a separate upstream plugin — so the skill and the README now each carry the two commands that install it. It is deliberately NOT a `dependencies` entry: an uninstalled hard dependency stops the entire plugin from loading, and one skill of sixty-one should not be able to take the rest with it. Notebook authoring works without it; only the live-session section needs it.
+
 ## [6.3.0] - 2026-08-18
 
 ### Removed
