@@ -1,6 +1,6 @@
 # Public Extension Contracts
 
-Version 5.101.0 introduced a domain-neutral capability manifest for plugins that explicitly depend on `workflows`. Consumers resolve the installed dependency root from an explicit host/installer value or the `workflows-capability-root` executable that Claude Code publishes on `PATH` while the dependency is enabled. These contracts never search upward, inspect cache globs, select a “latest” installation, or assume a marketplace path.
+Version 5.101.0 introduced a domain-neutral capability manifest for plugins that explicitly depend on `workflows`. Version 6.0.0 retired the beat-spine capabilities with the spine itself and published `craft-spine-runner` in their place. Consumers resolve the installed dependency root from an explicit host/installer value or the `workflows-capability-root` executable that Claude Code publishes on `PATH` while the dependency is enabled. These contracts never search upward, inspect cache globs, select a “latest” installation, or assume a marketplace path.
 
 ## Discovery
 
@@ -31,43 +31,32 @@ Resolution succeeds only when the manifest and implementation are contained by t
 
 `loadConstraints` accepts an explicit `constraintsDir`, `skillName`, and optional `markerPath`. It returns deterministic combined content plus `ConstraintLoadEvidence`: skill name, matched/skipped counts, sorted constraint filenames, marker path, and whether the marker write succeeded. Invalid or escaping roots/files throw; the compatibility CLI preserves its existing stdout and nonzero-error behavior.
 
-### Phase-gate evaluator
+### Craft spine runner
 
-`evaluatePhaseGate(projectRoot, config, payload)` returns the closed union `{ kind: "allow" }` or `{ kind: "deny", reason: string }`. Configuration and payload are caller supplied; no ambient descriptor discovery occurs. Unsafe, ambiguous, stale, malformed, or missing gate evidence denies rather than weakening enforcement. The existing hook adapter retains its established allow/deny bytes.
+`skills/craft/workflow.js` is a **Workflow script**, not an importable module: its top-level
+`phase()`, `agent()` and `args` exist only inside the Workflow runtime, so importing it throws by
+construction. What it owes a consumer instead is that it parses, and that its args contract and
+returned gate keys are stable within contract 1.
 
-### Approved-artifact policy
+Required args: `projectDir`, `planPath`, `specHash` (the 64-hex sha256 of the plan's canonical
+`craft:dispatch` block), `goal`, and `tasks`. `readOnly: true` drops the implement leg and the
+per-task verifiers, and is the only mode in which an empty `tasks` list is valid. The runner never
+discovers planning authority: a missing or malformed arg throws before any agent is dispatched.
 
-Fixed external workflows retain `ApprovalPolicyDescriptor` schema 1 with exactly `schemaVersion`, `workflow`, `planPath`, `metadataPath`, and `verdictPath`. Built-ins and validated external-native workflows use a hook-owned receipt that selects one generated plan by `{planFile, planHash}`. External-native callers must arrive through a strict workflow-policy schema-2 descriptor with `approvalMode: "generated-plan-receipt-v1"`; an opaque name alone never selects this mode. Success returns the authenticated current `ApprovedArtifact`; rejection returns `ArtifactError { code, message }`. No mode can disable exact-byte hashing, workflow/session separation, chronology, strict UTC timestamps, review matching, canonical containment, symlink rejection, or race checks.
+The return is `{ overallPass, verdict, scoreTable, implemented, verified, findings, refutedFindings,
+reviews, tasksThatFlagged, carriedForward, domainRun }`. `overallPass` is computed in JS from raw
+counts, never asserted by an agent. Three invariants hold on every path and are covered by
+`skills/craft/scripts/workflow.test.ts`: a dead agent fails the run closed rather than being skipped;
+`overallPass === false` implies a non-empty re-run selector; and `readOnly` dimensions report `n/a`
+rather than a vacuous pass.
 
-### Workflow-policy loader
-
-`loadExternalWorkflowPolicy(descriptorPath)` requires an explicit descriptor file and returns a frozen policy with an explicit approval mode. Schema 1 preserves the fixed-artifact workflow identity, clarification/reviewer/policy paths, reason, and allowed orchestrator directories, normalized to `external-fixed-v1`. Schema 2 contains exactly `schemaVersion`, opaque external `workflow`, `approvalMode: "generated-plan-receipt-v1"`, and nonempty `allowedOrchestratorDirectories`; it has no fixed lifecycle paths. Built-ins normalize to `built-in-native`. Unknown keys, built-in replacement, invalid or duplicate paths, malformed JSON, and unsupported schemas or modes throw an error prefixed `Invalid workflow policy descriptor:`. `workflowPolicyFromArg` accepts exactly one built-in workflow selection or one explicit external descriptor selection and performs no ambient lookup.
-
-### Beat-implement runner
-
-The runner requires explicit `projectDir`, a validated workflow policy, complete `readyWave`, and an immutable approval reset. Fixed-artifact schema-1 workflows retain their captured approval bundle; generated-plan workflows bind every result to workflow, plan file, and plan hash. Invalid top-level inputs fail before dispatch; an individual dispatch failure is represented by its structured failed task record. External policy cannot expand writable authority or bypass approval authentication.
-
-### Plan-review composer
-
-`composePlanReview` accepts an explicit project root, a validated generated-plan workflow policy, and non-empty common and domain check sets. It authenticates the receipt-selected exact plan before dispatch, gives every check the same immutable whole-plan context, runs checks in deterministic common-then-domain lexical order, and re-authenticates plan bytes and receipt before returning one frozen composition. Any missing, duplicate, thrown, or malformed check fails closed as `ArtifactError` without partial evidence. `finalizeComposedPlanReview` accepts only the exact in-process composition object issued by `composePlanReview`, re-authenticates again at the write boundary, and changes only `status`, `reviewer_session_id`, and `reviewed_at`; it cannot finalize a cloned, tampered, or stale composition.
-
-**`reviewerSessionId` is ASSERTED by the caller, and this library cannot check it.** `finalizeComposedPlanReview` and `finalizeGeneratedPlanReview` write `review.json` with `fs`, so no hook observes that write, and `approver != reviewer` is a comparison against whatever literal the caller passed. An in-process caller can therefore finalize an APPROVED receipt naming a reviewer that never reviewed anything. Do not read these functions as an identity control.
-
-The split is between AUTHENTICATION and SEPARATION, and only the first is hook-only. **Authenticating** the reviewer — establishing that the actor writing the verdict is the one named in it — happens exclusively in the hooks, on the `Write` tool call the shipping reviewer actually makes (`agents/plan-checker.md` step 5), because only there does a payload-derived identity exist. `hooks/implementer-identity-gate.ts` is plugin-wide and therefore observes the dispatched reviewer subagent: it refuses every write under `.planning/.state/` except one PENDING→final finalization of `.planning/.state/review.json`, from a dispatched subagent that is not the approver, whose `reviewer_session_id` equals the actor `hookActorIdentity` reads out of the payload, and which reproduces every approval-owned field. `hooks/reviewer-verdict-guard.ts` applies the same identity rule at skill scope for the dispatching conversation. Both gates derive the identity from the payload; neither accepts one from the caller.
-
-**Separation** between the asserted strings is enforced by this library as well, and the earlier "entirely in the hooks" phrasing contradicted the paragraph directly above it: `approverReviewerSeparation` (`approved-artifact.ts:162`) rejects `reviewer === approver`, `parseReviewState` (`:249`) re-checks it on every final receipt it parses, and `finalizeGeneratedPlanReview` (`:628`) applies it at the write boundary. What the library cannot do is decide whether either string names the actor that actually ran — that is the authentication the hooks own. Two independent facts, two enforcement points; neither substitutes for the other.
-
-**Any dispatched subagent may finalize the receipt.** Neither gate checks `agent_type`, so "a reviewer reviewed this plan" reduces to "some subagent that is not the approver wrote a verdict". This is close to inherent: the orchestrator chooses whom to dispatch and what to tell it, so an `agent_type` check would only require the forging orchestrator to spell `workflows:plan-checker` in the dispatch it was already writing. It is recorded rather than enforced so that no reader mistakes the receipt for evidence about *which* agent reviewed.
-
-A round-9 revision replaced `reviewerSessionId` with a hook-issued single-use nonce and claimed the library "derives" the identity. It was reverted: it guarded a function with no production callers, and it did not close the hole either — `issueReviewerAuthorization` took the hook *payload*, and `hookActorIdentity` is a pure function of that payload, so hand-writing a payload spelled an arbitrary actor just as directly as passing a literal, and hand-writing the authorization record was easier still.
-
-### TaskList reconciler
-
-`reconcileTaskList` is a pure planner: callers supply the current `planHash`, validated `TaskContract` rows with dependencies and explicit item kinds, and a tool-neutral TaskList snapshot. Canonical identity is exactly `(planHash, plan_task_id, item_kind)`. The result contains deterministic create/update/delete/block actions and mappings only for existing current-plan implementation IDs; the adapter, not this library, executes TaskList tools. Replacement-plan pending items may be deleted, while started or completed work receives an explicit `superseded` disposition. Duplicate live identities block reconciliation, and malformed identities, missing dependencies, or cycles throw before actions are returned.
+`skillRoot` is injected by `craft-dispatch.sh` so the prompts the runner builds name paths that
+resolve on the installing machine. A caller that builds args by hand and omits it gets
+`~/.claude/skills/craft`.
 
 ## Compatibility
 
-Manifest schema 1 and every capability contract are independently versioned. Additive documentation or implementation changes that preserve a capability's documented inputs, evidence shapes, rejection categories, and fail-closed security invariants may ship under its current contract version. A breaking change requires a new capability contract version (or manifest schema version when discovery itself changes). Existing built-in and schema-1 fixed-external entry points remain behavior-compatible; schema-2 external-native workflows receive generated-plan support only through explicit validated policy selection.
+Manifest schema 1 and every capability contract are independently versioned. Additive documentation or implementation changes that preserve a capability's documented inputs, evidence shapes, rejection categories, and fail-closed security invariants may ship under its current contract version. A breaking change requires a new capability contract version (or manifest schema version when discovery itself changes). The beat-spine capabilities — `phase-gate-evaluator`, `approved-artifact-policy`, `workflow-policy-loader`, `beat-implement-runner`, `beat-spine-runner`, `beat-spine-args`, `plan-review-composer`, `tasklist-reconciler` — were removed in 6.0.0 along with their implementations. There is no shim: a consumer resolving one of those names now gets the documented absent-capability rejection from `capability-resolver`, which is the honest answer, and must move to `craft-spine-runner`.
 
 ## Release boundary
 

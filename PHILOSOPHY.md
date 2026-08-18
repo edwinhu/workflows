@@ -52,16 +52,22 @@ The RL framing is most useful for: identifying reward hacking, designing action 
 
 Break work into phases with single responsibilities. Each phase answers ONE question. Phases are sequential: you can't design before exploring, can't implement before designing.
 
-The shape varies by domain:
-- **Dev**: question-first clarification and reconnaissance → explicit architecture choice → native plan → TaskList implementation → independent review and fresh verification
-- **DS**: three skills — `/ds` plans, `/ds-implement` executes native tasks, and `/ds-accept` records independent review for a human decision
-- **Writing**: Branching (quick vs. project, domain routing, progressive expansion)
+The shape no longer varies by domain, and that is the v6 lesson. Every workflow runs one loop —
+CLARIFY → PLAN → GOAL → dispatch (IMPLEMENT, then VERIFY ∥ MECHANICAL ∥ third-party) → HUMAN REVIEW
+— and a domain contributes only its *checks*: `mechanicalChecks` commands, `reviewLenses`, and a
+`redCommand` per task. Five domains once spelled that loop out as 63 skills that drifted against each
+other; the phases are now beats inside one program, so there is nothing to keep in sync.
 
 ### Gates (Deterministic and Judgment-Based)
 
 Workflows prevent drift by making the current status legible. Use reproducible evidence where it is meaningful, and reserve quality decisions for independent review and the human.
 
-For every built-in workflow, a hook-authenticated receipt selects one generated plan by `{planFile, planHash}` and native `TaskList` is the live execution and review-finding record. Human feedback is returned through the terminal review surface and tracked as live work when it requires follow-up. These records are distinct because approved intent, live task state, and human judgment are distinct facts.
+For every workflow, the approved plan's `<!-- craft:dispatch -->` block is the authority and its
+canonical `specHash` is the identity: sorted-key JSON of the parsed block, so reordering or a typo
+fix in the surrounding prose moves nothing and changing any executed value moves it. `.craft/<run>/`
+holds the args, the verdict and the plan bytes each round actually ran under. Human feedback comes
+back through tuicr. These records are distinct because approved intent, what a round executed, and
+human judgment are distinct facts.
 
 ### Structural Gate Artifacts
 
@@ -70,9 +76,12 @@ A gate that exists only as instructional text ("you must run X before Y") is adv
 **The principle: every mandatory inter-phase gate must produce a concrete artifact that the consuming phase checks before starting.** If the main chat skips the gate skill entirely and jumps straight to the next phase, the next phase must REFUSE to start.
 
 The pattern:
-1. A gate finalizes a hook-owned receipt that binds the selected generated plan hash and reviewer identity.
-2. The consuming phase authenticates the current receipt-selected plan at startup — missing or stale state = STOP.
-3. The state contains the reviewer's actual outcome (not just a flag), so it cannot be fabricated without running the reviewer.
+1. The dispatcher refuses to arm a run whose plan fails the computed lint — the artifact is the
+   absence of a dispatch, which no downstream phase can misread.
+2. Every dispatched agent re-derives the plan's `specHash` before acting and reports a mismatch as a
+   failure rather than proceeding.
+3. The verdict records raw counts — implemented, verified, findings, which tasks flagged — not a
+   flag, so a pass cannot be asserted without the counts that produce it.
 
 Why instructions fail: context pressure causes the main chat to shortcut past "mandatory" steps. The agent that skips the gate is the same agent reading the instruction not to skip. Why artifacts work: the check is in the PREREQUISITES section, read before any work starts — binary pass/fail, no rationalization possible.
 
@@ -159,7 +168,7 @@ A spec with a missing edge case survives into exploration (exploring the wrong a
 
 This is advisory — Claude Code doesn't yet support model routing — but documenting the intent prevents over-allocating expensive models to trivial tasks.
 
-### Shared Constraints Between Entry and Midpoint
+### Shared constraints, and why the family structure went away
 
 When both the entry point and midpoint evaluate the same quality dimensions, the enforcement rules must live in a **single shared location** — not inlined independently in each skill.
 
@@ -181,9 +190,9 @@ entry verification            midpoint audit
 
 **The design principle:** If the same quality dimension is checked in both the entry point and midpoint, the enforcement rule MUST be shared. Inlining the same check in two places guarantees drift. The co-located architecture makes sharing automatic — both entry and midpoint point at the same `constraints/` directory.
 
-### Three-Layer Cross-Skill Consistency
+### Three-Layer Consistency
 
-Shared constraints (the section above) address only one layer of cross-skill enforcement. In practice, skill families need consistency across **three layers**:
+Shared constraints (the section above) address only one layer. Any enforcement change has to land consistently across **three layers**, and the v6 migration was itself an instance: moving the writing style tables meant moving the tables, repointing the two engines that load them, and re-keying the domain filter that gates them — three edits for one move, and skipping the third silently double-reported every legal span.
 
 | Layer | What It Covers | Drift Mechanism |
 |-------|---------------|-----------------|
@@ -197,11 +206,13 @@ Shared constraints (the section above) address only one layer of cross-skill enf
 
 **The design principle:** When adding enforcement to any skill in a family, propagate across all three layers — or document why a layer doesn't apply to a specific skill.
 
-### Deterministic Execution: Compile, Don't Interpret
+### Deterministic Execution: A Program, Not an Interpretation
 
-> **Historical note for DS (2026-07-29):** The compiler-era material in this section records a retired DS design. DS now uses a receipt-selected immutable generated native plan, native `TaskList` for live execution state, project auto-memory for reusable facts, and `HUMAN_REVIEW.md` for human review.
-
-The sections below preserve the prior compiler-era rationale for domains that still use it.
+> **v6.0.0:** the compiler is gone — there is no `spec → plan → run.js` compile step and no
+> `workflows/templates/`. What replaced it is the same idea one level up: `skills/craft/workflow.js`
+> IS the program. The plan supplies data (tasks, commands, lenses); the schedule, the fix loop and
+> the gate are code that reads it. The findings below survived the change intact, because they were
+> about determinism and honesty, not about code generation.
 
 **Two execution shapes.** Look at what a workflow does between its human gates:
 - If it runs a **DAG of mechanical work driven by a structured plan** (an implement/transform phase whose tasks have dependencies and a per-task check), that plan is a machine-readable artifact. **Compile it into a deterministic runner; do not have an LLM re-interpret it on every run.**
@@ -221,16 +232,17 @@ The sections below preserve the prior compiler-era rationale for domains that st
 
 **Born-canonical producers.** Tolerance in the parser is a back-compat shim, not the primary defense. The real fix is upstream: the phase that *emits* the plan emits it in the canonical format, so the parser rarely needs to tolerate anything and the guard can be strict. One format spec, shared by the emitter, the parser, and the guard.
 
-This is the *why*; the *how* — the dispatch step, the gate contract, the fix-loop selector — lives in `skills/craft/SKILL.md` and `skills/craft/workflow.js`, with the seam list in `docs/common-infra-candidates.md`. The throughline: **keep judgment with the human and the review layer; keep the machine deterministic, honest, and dumb.**
+This is the *why*; the *how* — the dispatch step, the gate contract, the fix-loop selector — lives in `skills/craft/SKILL.md` and `skills/craft/workflow.js`. The throughline: **keep judgment with the human and the review layer; keep the machine deterministic, honest, and dumb.**
 
 ### Lifecycle mechanisms are shared; policies are not
 
-A gate's mechanism should be reusable when its proof is domain-neutral: session-bound opening
-clarification, exact approved-artifact hashes, reviewer-owned hash-bound verdicts, canonical mutation
-boundaries, and task identities. The policy decides what counts as reconnaissance and which paths or
-commands are legitimate. Execution adapters remain independent: dev's RED-first TaskList adapter,
-DS's data-task adapter, and the writing/workshop generators share lifecycle proof without sharing
-domain semantics.
+A gate's mechanism should be reusable when its proof is domain-neutral: an exact hash over approved
+intent, a per-task write boundary, a red-before-green check, an independent verifier. The policy
+decides what a check *is* — dev's failing test, DS's data-quality thresholds, writing's citation
+ledger, workshop's overflow probe. Mechanism is code; policy is data in the plan.
+
+The v5 spine got this half right. The mechanisms were shared, but each domain also got its own
+skills to *invoke* them, so the invocation drifted even where the mechanism did not.
 
 The craft spine is where this landed: one loop, one authority (the plan's `craft:dispatch` spec and
 its hash), and per-domain contribution limited to mechanical checks and review lenses. A domain does
@@ -296,7 +308,7 @@ Fresh subagents achieve the same effect within a single session. Each subagent g
 
 **Core principle: Progress lives in files, not in conversation.**
 
-For DS, orchestration is native rather than custom: Claude Code's `TaskList` is the live loop and status authority, while the receipt-selected immutable generated plan explains the approved work. This removes a duplicate execution driver without changing the value of fresh perspectives and independent review. Other domains may use different orchestration mechanisms when their needs justify them.
+Under craft the loop is the workflow script: `workflow.js` schedules the task graph, dispatches one fresh agent per beat, and writes the verdict to `.craft/<run>/result.json`. The approved plan holds intent; the result file holds what a round actually did. Neither is a conversation, and there is no second execution driver for any domain.
 
 ### The Three Topologies
 

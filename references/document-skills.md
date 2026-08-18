@@ -43,7 +43,7 @@ Vendored from [anthropics/skills](https://github.com/anthropics/skills) under
 
 The two tracks are **distinct concerns** under one front door — package wiring
 (never touches content) vs. footnote markup. A file can need either, both, or
-neither. See `docs/investigations/2026-06-23_gdocs-customxml-case.md`.
+neither.
 
 ### Build — generate a formatted .docx from source
 | Skill | Role |

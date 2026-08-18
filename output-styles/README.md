@@ -17,8 +17,8 @@ this prose sound," where CLAUDE.md is the right home for "what is this project."
 ## Three surfaces, one source, and why the split is not optional
 
 An output style shapes the **main conversation only**. A subagent runs its own system prompt, so a
-style reaches no subagent — which means it cannot shape the prose `workflows/writing-draft.js`
-actually generates, and cannot inform `writing-prose-reviewer`'s grading. That gap is what the
+style reaches no subagent — which means it cannot shape the prose the drafting agents craft
+dispatches actually generate, and cannot inform `writing-prose-reviewer`'s grading. That gap is what the
 generated skill closes:
 
 | surface | channel | artifact |

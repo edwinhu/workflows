@@ -26,9 +26,15 @@ description: "This skill should be used when the user asks to 'query WRDS', 'acc
 
 ### 2. Workflow Phase Skills (Orchestrator-Triggered)
 
-**Examples:** dev-explore, dev-clarify, dev-design, dev-implement, ds-plan, ds-implement
+> **This plugin no longer has any.** v6.0.0 replaced 63 phase skills with beats inside one program
+> (`skills/craft/workflow.js`), because a phase expressed as a skill is a phase that can be invoked
+> out of order, skipped, or drift from its siblings. The pattern is kept here for plugins that still
+> decompose a workflow into skills — but prefer a program if the phases are sequential and you
+> control the caller.
 
-**Invocation:** Parent orchestrator skills (/dev or /ds) invoke these as specific workflow phases, not users directly.
+**Examples:** (historical) dev-explore, dev-clarify, dev-design, dev-implement, ds-plan
+
+**Invocation:** A parent orchestrator skill invokes these as specific workflow phases, not users directly.
 
 **Description Pattern:** Context-focused with phase information
 
@@ -52,9 +58,11 @@ description: "REQUIRED Phase 2 of /dev workflow after dev-brainstorm. This skill
 
 ### 3. Internal-Only Skills (Never User-Triggered)
 
-**Examples:** dev-delegate, ds-delegate
+> **This plugin no longer has any**, for the same reason as category 2.
 
-**Invocation:** Called ONLY by other skills (e.g., dev-implement → dev-delegate inside each turn under an active `/goal`), never by users or even orchestrators directly.
+**Examples:** (historical) dev-delegate, ds-delegate
+
+**Invocation:** Called ONLY by other skills, never by users or even orchestrators directly.
 
 **Description Pattern:** Explicit internal-only designation
 

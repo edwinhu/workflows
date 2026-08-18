@@ -154,8 +154,15 @@ describe("public extension contract integration", () => {
 
   test("ships without ignored planning files as public contract authority", () => {
     const documentation = readFileSync(join(ROOT, "docs/extension-contracts.md"), "utf8");
+    // A gitignored scratch path can never be a public consumer's authority.
     expect(documentation).not.toContain(".planning/STAGE1_EVIDENCE.md");
-    expect(documentation).toContain("exact-byte");
-    expect(documentation).toContain("TaskList");
+    expect(documentation).not.toContain(".claude/plans/");
+    // The two facts a craft-spine-runner consumer cannot discover for itself.
+    expect(documentation).toContain("specHash");
+    expect(documentation).toContain("overallPass");
+    // Retired names must stay documented as retired, so a consumer of one learns why it broke.
+    for (const retired of ["beat-spine-runner", "approved-artifact-policy", "tasklist-reconciler"]) {
+      expect(documentation).toContain(retired);
+    }
   });
 });

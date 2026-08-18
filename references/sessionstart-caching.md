@@ -40,7 +40,7 @@ hooks:
   SessionStart:
     - hooks:
         - type: command
-          command: "expensive-operation --query something > .planning/MY_CACHED_VALUE"
+          command: "expensive-operation --query something > $CLAUDE_SESSION_CACHE/MY_CACHED_VALUE"
           once: true
 ---
 ```
@@ -48,14 +48,14 @@ hooks:
 Then in skill instructions:
 
 ```
-Read the cached value from `.planning/MY_CACHED_VALUE` and use it for all subsequent commands.
+Read the cached value from `$CLAUDE_SESSION_CACHE/MY_CACHED_VALUE` and use it for all subsequent commands.
 ```
 
 ## Key Rules
 
 1. **`once: true` is required** — without it, the hook fires on every session event
-2. **Write to `.planning/`** — gitignored, ephemeral, won't pollute the project
-3. **Use descriptive filenames** — `.planning/SCRIPTS_DIR` not `.planning/cache`
+2. **Write outside the project** — a session-scoped temp dir, not a tracked directory. `.planning/` was this plugin's answer until v6.0.0 retired it; a session-scoped, high-frequency cache belongs in `gettempdir()`, never in the repo
+3. **Use descriptive filenames** — `$CLAUDE_SESSION_CACHE/SCRIPTS_DIR` not `$CLAUDE_SESSION_CACHE/cache`
 4. **Skill instructions must reference the cached file** — the hook writes it, the skill reads it
 
 ## Real Example

@@ -155,8 +155,7 @@ A docx exported from Google Docs can carry OOXML package corruption (case-broken
 on open — fatal to a headless render. The Word path **auto-repairs** it via a
 preflight (`scripts/docx_repair.py`); you'll see `Word preflight — repaired
 Google-export package …` on stderr. Repair a docx standalone with
-`python3 scripts/docx_repair.py in.docx [out.docx]`. Root cause:
-`docs/investigations/2026-06-23_gdocs-customxml-case.md`.
+`python3 scripts/docx_repair.py in.docx [out.docx]`.
 
 ## Related skills
 

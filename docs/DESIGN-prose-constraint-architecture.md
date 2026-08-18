@@ -326,3 +326,41 @@ being wrong. It found a divergence the first time it ran: the TypeScript side ne
 suffix, so a `.md` file containing `#slide(` was a deck there and not here. Harmless at the hook's
 one call site, which already guarantees `.typ` — and exactly the kind of drift a duplicated
 predicate accumulates when nothing compares the two.
+
+---
+
+## 7. What v6.0.0 changed (2026-08-17)
+
+The investigation above is preserved as written; this section records where the wiring has since
+moved. The five pattern systems and the four loaders are unchanged. What changed is who calls them.
+
+**Three consumers were retired with the beat spine.** `hooks/writing-mechanical-gate.ts`,
+`hooks/mechanical-floor-gate.ts` and `workflows/writing-verify.js` no longer exist. The live
+consumers of `check-all.py` are now `hooks/writing-prose-check.ts` and the workshop skill's own
+`workshop-deck.py`. Under craft, the mechanical floor is not a PreToolUse gate at all: it is the
+`mechanicalChecks` list in the plan's `craft:dispatch` block, executed at baseline by
+`plan-preflight.ts` before dispatch and again by `workflow.js` in the gate. A check that cannot run
+(exit 127) refuses the dispatch rather than being discovered a round later.
+
+**The three domain style guides moved into one skill.** `strunk-elements-of-style.py`,
+`mccloskey-economical-writing.py` and `volokh-distilled.py` were in `writing-general`,
+`writing-econ` and `writing-legal`; they are now all in `skills/writing/references/`. Domain gating
+therefore could no longer key on the skill directory, so `check-all.py` gained `DOMAIN_FILE_MAP`
+and gates by filename instead — Volokh for `legal`, McCloskey for `econ`. `prose-audit.py` and
+`prose-lint.py` keep their own `_DOMAIN_TABLES` gating, which was already per-table and needed only
+a path change. The regression this prevents is concrete and was observed during the migration: with
+the directory-keyed filter inert, a general-register draft got Volokh findings on top of the
+wikipedia-promotional finding for the same span.
+
+**Five authoring lints moved with them** — `writing-anchored-numbers`, `writing-no-bold-lead`,
+`writing-outline-sync`, `writing-shortjournal`, `writing-topic-sentences` — and are still picked up
+automatically, because `check-all.py` already globbed `skills/*/references/*.py`. A sixth,
+`writing-stop-triggers`, was deleted rather than moved: it checked that a constraint's `applies-to`
+frontmatter named a skill that called `load-constraints.ts`, and craft's skills do not call the
+loader, so the property it verified no longer exists.
+
+**The plan lookup changed shape.** `hooks/lib/writing-plan-context.ts` resolved an APPROVED
+receipt-selected plan under `.planning/.state/review.json`. It now walks up to the nearest
+`.claude/plans/*.md` carrying a `craft:dispatch` block and a `## Writing Intent` heading. The plan
+grammar it parses — `Domain:` under Writing Intent, `Notebook:` under Source Plan — is unchanged,
+which is why the domain style guides still load for the right drafts.

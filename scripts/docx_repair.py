@@ -43,8 +43,6 @@ CLI:
     python3 scripts/docx_repair.py in.docx out.docx
     python3 scripts/docx_repair.py in.docx --dry-run      # report only
     python3 scripts/docx_repair.py in.docx --no-reserialize
-
-See docs/investigations/2026-06-23_gdocs-customxml-case.md.
 """
 
 from __future__ import annotations

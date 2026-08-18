@@ -52,15 +52,17 @@ NO  → Proceed normally
 
 ## Workflow Commands
 
-Each workflow has two entry points — start fresh or re-enter mid-workflow:
+One loop, five entry points. There is no separate mid-workflow command: a run that failed its gate
+is re-entered with `craft-redispatch.sh`, which re-hashes the amended plan and re-runs only the
+tasks that flagged plus their dependents.
 
-| Start Fresh | Mid-Workflow | Purpose |
-|-------------|-------------|---------|
-| `/work` | resume the receipt-selected generated plan (`{planFile, planHash}`) with TaskList | Lightweight structured work: clarify, plan, verify, human review |
-| `/dev` | `/dev-debug` | Feature development (7 phases) / debug, fix, re-test |
-| `/ds` | `/ds-fix` | Data analysis (5 phases) / wrong results, notebook errors, revisions |
-| `/writing` | `/writing-revise` | Writing projects / apply review fixes, polish |
-| `/workshop` | `/workshop-revise` | Workshop presentations (4 phases) / revise slides, fix notes |
+| Command | Purpose |
+|---------|---------|
+| `/craft` | Any task worth doing properly: clarify, approved plan, delegated implementation, independent verification, human review |
+| `/dev` | Feature development and bug fixes, under test-first discipline |
+| `/ds` | Data analysis and panel construction, with a computed data-quality gate |
+| `/writing` | Articles, essays, briefs and chapters, with a computed plan-grammar and citation gate |
+| `/workshop` | Typst slides and speaker notes built from a research paper |
 
 ## IRON LAW: Companion Transport Priority
 
@@ -92,17 +94,15 @@ RIGHT: invoke companion skill, put "use workflows:skill-creator" in the prompt
 | User Intent | Command | Trigger Words |
 |-------------|---------|---------------|
 | **Session/companion** | **companion** | **companion session, new session, separate session, background session, hand off, in a new session** |
-| Lightweight structured work | `/work` | do this properly, clarify and plan this, plan and verify this, small structured task, don't just wing it |
-| Bug/fix | `/dev-debug` | bug, broken, fix, doesn't work, crash, error, fails |
-| Wrong results | `/ds-fix` | results wrong, notebook error, reviewer feedback, data changed |
+| Structured work | `/craft` | do this properly, clarify and plan this, plan and verify this, craft this, don't just wing it |
+| Bug/fix | `/dev` | bug, broken, fix, doesn't work, crash, error, fails, implement, add support for |
+| Data work | `/ds` | analyze this data, build the panel, run the regression, results wrong, notebook error |
 | Writing | `/writing` | write, draft, document, essay, paper |
 | **Media analysis** | **look-at** | describe image, analyze PDF, what's in this, screenshot, diagram |
 | Create/edit skill | `workflows:skill-creator` | create skill, improve skill, edit skill, add enforcement, audit skill, SKILL.md |
-| Create workflow | `workflows:workflow-creator` | create workflow, design new workflow, break a new workflow into phases |
-| Improve workflow | `workflows:workflow-creator-improve` | audit workflow, repair workflow, redesign workflow, migrate workflow, improve existing workflow |
+| Create/repair workflow | `workflows:workflow-creator` | create workflow, design new workflow, audit workflow, repair workflow, improve existing workflow |
 | Create/edit plugin | `workflows:plugin-creator` | create plugin, scaffold plugin, new plugin, plugin structure, edit plugin |
-| Workshop presentation | `/workshop` | workshop presentation, workshop slides, faculty workshop, workshop talk, slides from paper |
-| Revise workshop | `/workshop-revise` | revise workshop, fix slides, update presentation, workshop feedback |
+| Workshop presentation | `/workshop` | workshop presentation, workshop slides, faculty workshop, workshop talk, slides from paper, revise the deck |
 
 ## Red Flags
 
@@ -122,9 +122,8 @@ DO NOT:
 3. "Take a look" without structure
 
 INSTEAD:
-1. Invoke dev-debug — it runs its own progress-gated subagent loop
-   (no /goal needed; dev-debug uses main-chat-runs-the-test gating instead of an evaluator)
-2. Follow the /dev-debug protocol
+1. Invoke /dev — it clarifies, plans, and dispatches the fix under a failing test
+2. Follow the /dev protocol
 ```
 
 **Any code reading before starting the workflow is a violation.**
@@ -134,23 +133,20 @@ INSTEAD:
 When multiple skills could apply:
 
 1. **Transport skills first** - companion session routes EVERYTHING else inside the session prompt
-2. **Specialized task shape next** - bugs use dev-debug; analysis uses ds; long-form writing uses writing; workshop decks use workshop
-3. **Generic structure next** - use work only for the bounded middle category that needs criteria, verification, and human review
+2. **Specialized task shape next** - code uses dev; analysis uses ds; long-form prose uses writing; decks use workshop
+3. **Generic structure next** - use craft for work that needs criteria, verification and human review but has no domain gate
 4. **Direct execution for trivial work** - a lookup, one-line answer, or tiny edit does not earn workflow ceremony
-5. **Then implementation** - follow the selected workflow's execution adapter
+5. **Then implementation** - the selected workflow dispatches it; the main chat does not do the work
 
-`/work` is not a universal wrapper. Specialized workflows win when the task clearly has their shape.
+`/craft` is not a universal wrapper. A domain workflow wins when the task has its shape, because it brings a gate craft does not have.
 
 ## How to Invoke
 
 Use the Skill tool to invoke skills:
 
 ```bash
-# work: Lightweight cross-domain workflow with independent verification and human review
-Skill(skill="workflows:work")
-
-# dev-debug: Midpoint entry for dev workflow - debug, fix, re-test
-Skill(skill="dev-debug")
+# craft: the spine — clarify, approved plan, delegated implementation, independent verification, human review
+Skill(skill="workflows:craft")
 
 # dev: Feature development workflow with 7 phases and TDD enforcement
 Skill(skill="dev")
@@ -159,13 +155,10 @@ Skill(skill="dev")
 Skill(skill="ds")
 ```
 
-For implementation phases, set a `/goal` at the top of the phase (dev-implement walks you through writing the condition):
-
-```
-/goal All tasks in PLAN.md marked [x], [test command] exits 0, VALIDATION.md status = validated. Stop after [N] turns.
-```
-
-For debugging, invoke `dev-debug` directly; it runs its own progress-gated loop.
+craft composes the goal for you and self-sends it — `compose-goal.sh` builds the condition from the
+approved plan and `goal-self-send.sh` sets it, so the loop's exit condition is derived from what was
+approved rather than typed from memory. Do not hand-write a `/goal` for a craft run; amend the plan
+and re-dispatch instead.
 
 ## IRON LAW: Multimodal File Analysis
 
@@ -336,9 +329,7 @@ What type of creator activity?
     ↓
     +---> Skill creation/editing ------> Invoke workflows:skill-creator
     |
-    +---> New workflow creation -------> Invoke workflows:workflow-creator
-    |
-    +---> Existing workflow change ----> Invoke workflows:workflow-creator-improve
+    +---> Workflow creation, repair or audit -> Invoke workflows:workflow-creator
     |
     +---> Plugin creation/editing ------> Invoke workflows:plugin-creator
     ↓
@@ -353,8 +344,7 @@ plugin-dev:skill-development, plugin-dev:plugin-structure, etc.)
 | Activity | Route To | Wraps |
 |----------|----------|-------|
 | Create/edit a skill | `workflows:skill-creator` | `skill-creator:skill-creator` |
-| Create a workflow | `workflows:workflow-creator` | shared-v1 fresh entry |
-| Audit/edit/migrate a workflow | `workflows:workflow-creator-improve` | shared-v1 corrective entry |
+| Create, repair or audit a workflow | `workflows:workflow-creator` | the craft loop plus `wc-probe.ts` |
 | Create/edit a plugin | `workflows:plugin-creator` | `plugin-dev:create-plugin` |
 
 Trigger words: see Skill Triggers table above.

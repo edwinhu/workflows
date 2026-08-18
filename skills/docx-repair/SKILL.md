@@ -42,8 +42,6 @@ issues = opc_integrity_issues("returned.docx")   # [] = clean
 repair_docx("returned.docx", "fixed.docx")        # -> RepairResult
 ```
 
-Detail and the root-cause investigation: `docs/investigations/2026-06-23_gdocs-customxml-case.md`.
-
 ---
 
 ## B. Footnote & cross-reference repair

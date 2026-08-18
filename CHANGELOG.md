@@ -3,6 +3,52 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [6.0.0] - 2026-08-17
+
+### Changed — BREAKING: the beat spine is replaced by craft
+
+- **One loop replaces 63 skills.** `work` plus `beat-{clarify,plan,implement,verify,review,third-party}`, expanded into `dev-*` (21), `ds-*` (11), `writing-*` (17), `workshop-*` and `workflow-creator-*`, are gone. `craft` is the spine: clarify with the user, an approved plan whose `<!-- craft:dispatch -->` block is the sole authority, a self-set goal, `skills/craft/workflow.js` to implement and independently verify, then human review in tuicr. Rejection routes back to CLARIFY.
+  - **The phases are beats in a program, not skills.** A phase expressed as a skill is a phase that can be invoked out of order, skipped, or drift from its four siblings — which is what happened: five domains each accumulated their own clarify, plan-reviewer, implement gate and verifier, and the same fix had to be applied five times and diverged between applications. `workflow.js` schedules the task graph, dispatches one fresh agent per beat, and computes the gate in JS from raw counts.
+  - **The identity is the spec hash, not a receipt.** `specHash` is the sha256 of the canonical (sorted-key, whitespace-free) JSON of the parsed `craft:dispatch` block. Reordering the block or fixing a typo in the surrounding prose moves nothing; changing any executed value moves it. Every dispatched agent re-derives it before acting. The `.planning/.state/review.json` receipt, the reviewer-identity gates, and the approver/reviewer separation machinery are retired with the spine that needed them.
+  - **Plan review is computed and happens before dispatch.** `plan-lint.ts` (21 rules — dependency cycles, unmapped criteria, uncommanded acceptance clauses, red-command disagreement, writable-path overlap, self-gating tasks) scores the built args, and `plan-preflight.ts` executes every `redCommand` and `mechanicalCheck` at baseline, both enforced by `craft-dispatch.sh` while the run is still armed. No agent reads plan markdown looking for defects. This is the `CLAUDE.md` #9 rule applied to our own machinery: an open-ended critique of a document does not terminate, because the fix for round *n* adds text that round *n+1* finds real new defects in.
+
+- **Six skills came from the author's dotfiles tree:** `craft`, `dev`, `ds`, `writing`, `workshop`, `workflow-creator` — plus `farm-out`, the dispatcher craft runs its agents through, so the plugin dispatches without an outside install. Paths are `${CLAUDE_PLUGIN_ROOT}`-relative or self-locating (`BASH_SOURCE` in shell, `import.meta.dir` in tests), and `craft-dispatch.sh` injects `skillRoot` into the workflow args so the prompts `workflow.js` builds name paths that resolve on the installing machine.
+
+### Removed
+
+- `scripts/beat/`, `scripts/wc/`, `scripts/dev/`, `scripts/workshop/`, `scripts/writing/`, and the per-domain runners `workflows/{work,writing-draft,writing-verify,workshop-generate,workshop-verify,workflow-creator-verify}.js`.
+- 28 hooks: the `episode-*`, `approved-artifact-*`, `implementer-identity-gate`, `orchestrator-mutation-guard`, `reviewer-verdict-guard`, `phase-gate-guard`, `mechanical-floor-gate`, `work-implement-observation`, `ds-*-subagent-*`, `workshop-*-guard` and `writing-*-guard` families, plus `pre-compact.ts` and `subagent-start.ts`, whose entire function was classifying `.planning` lifecycle state.
+- The compiled-runner cluster — `workflows/templates/`, `scripts/lib/{compile_core,plan_table_core,artifact_snapshot}.py` — which nothing outside itself referenced once the domains stopped compiling `run.js`.
+- 20 role agents (`dev-implementer`, `ds-analyst`, `writing-drafter`, `plan-checker`, …). craft dispatches implementers, verifiers and reviewers with the prompt the run needs; they are not named subagent types. `librarian` and `writing-prose-reviewer` remain, because surviving skills name them.
+- `references/plan-review/` (32 files of judged plan-review criteria) and 51 orphaned constraints. Where a criterion mattered it became a `plan-lint.ts` rule; the rest described machinery that no longer exists.
+- The plans-directory restart gate (`scripts/ensure-plans-directory.ts`, `hooks/plans-directory-restart-gate.ts`, `hooks/lib/plans-restart-marker.ts`). It wrote `plansDirectory: "./.planning"`, which is wrong for craft, and no craft skill invoked its preamble. **This is a capability reduction:** craft's `SKILL.md` now instructs the user to set `plansDirectory` and warns about the restart, where a hook used to enforce it.
+- ~70 test files whose subject no longer exists, and 12 golden fixtures for deleted hooks.
+
+Every deletion followed one rule — an empty referrer set once the skills were gone — re-derived after each wave rather than taken from the first pass.
+
+### Changed — machinery that was reworked rather than dropped
+
+- **`hooks/lib/writing-plan-context.ts`** resolved an APPROVED receipt-selected plan under `.planning/.state/`. It now walks up to the nearest `.claude/plans/*.md` carrying a `craft:dispatch` block and a `## Writing Intent` heading. The plan grammar it parses is unchanged, which is why `writing-prose-check.ts`, `cite-fidelity-lint.ts` and `set-output-style.ts` still pick the right register.
+- **The three domain style guides moved into one skill.** `strunk-elements-of-style.py`, `mccloskey-economical-writing.py` and `volokh-distilled.py` were carried by `writing-general`/`writing-econ`/`writing-legal`; they now live in `skills/writing/references/`, and `prose-audit.py` and `prose-lint.py` follow them. Domain gating could no longer key on the skill *directory*, so `check-all.py` gained `DOMAIN_FILE_MAP` and gates by filename. The regression this prevents was observed during the migration: with the directory filter inert, a general-register draft got Volokh findings stacked on top of the wikipedia-promotional finding for the same span.
+- **Five writing authoring-lints moved with them** and are still auto-discovered, because `check-all.py` already globbed `skills/*/references/*.py`. A sixth, `writing-stop-triggers.py`, was deleted rather than moved: it asserted that a constraint's `applies-to` frontmatter named a skill calling `load-constraints.ts`, and craft's skills do not call the loader.
+- **The law-review and law-econ docx templates moved to `references/templates/`.** They lived in `skills/writing-legal/templates/` but four surviving skills — `law-review-docx`, `law-econ-docx`, `docx-typst`, `docx-repair` — depend on them, so the spine deletion would have taken assets that were never the spine's.
+- **`scan-public-privacy.ts` grew a code-owned `PRESERVED_BINARIES` list**, each entry pinned to its reviewed sha256. The scanner previously accepted no tracked binary at all, which the workshop skill's fixture PDFs tripped. A preserved binary is never text-scanned, so the digest is the only control standing between a payload and publication: `captureCandidate` now treats a disposition for a path the candidate does not carry as inert, but still refuses a digest that does not bind.
+- **`capabilities.json` publishes `craft-spine-runner`** (`skills/craft/workflow.js`, contract 1) in place of `phase-gate-evaluator`, `approved-artifact-policy`, `workflow-policy-loader`, `beat-implement-runner`, `beat-spine-runner`, `beat-spine-args`, `plan-review-composer` and `tasklist-reconciler`. There is no shim — a consumer resolving a retired name gets the documented absent-capability rejection, which is the honest answer.
+
+### Documentation
+
+- `README.md`, `PHILOSOPHY.md` and `skills/using-skills/SKILL.md` rewritten around the craft loop. `PHILOSOPHY.md` keeps its doctrine and marks what the migration falsified: the compile-don't-interpret section records that the compiler is gone and the same idea moved one level up, and the shared-constraints section records that sharing was the mitigation and removing the second copy was the fix.
+- `docs/DESIGN-third-party-review.md` retargeted to craft's runner; the retired `briefSources`/`briefsDelivered` receipt is recorded as retired along with the principle it encoded. `docs/DESIGN-prose-constraint-architecture.md` keeps its investigation as written and gains a §7 recording where the wiring moved. `docs/extension-contracts.md` documents the new capability and names every retired one so a broken consumer learns why.
+- Deleted as superseded: `docs/{DESIGN-beat-transitions,beat-adoption-migration,workflow-lifecycle-architecture,compiled-runner-architecture,common-infra-candidates,ds-generalization-assessment,ds-plan-canonical-table,wc-creator-assessment,wc-creator-followup-survey,model-profiles,extension-mechanism-map}.md`, the four `DESIGN-*-spec-plan-compile.md` records, `docs/t8-live-runs/`, and `references/codex-availability.md`.
+
+### Testing
+
+- `bun test tests/` reports 0 failures; the pre-migration baseline had 1.
+- `scripts/check-tests.sh` reports 24 passed, 1 failed — `ds_dq_runner_test.py`, which needs `polars` the runner does not inject and fails identically at the baseline commit.
+- `scan-public-privacy.ts` reports 0 findings across the seven added skills. `plugin-validate` passes. All six version sites agree at 6.0.0.
+- In their new home, craft's own suite passes 388 tests and workflow-creator's 403. The workshop suite's 19 failures out of 108 were verified to match the untouched dotfiles copy exactly, so they are pre-existing rather than migration damage.
+- No `/home/eh` paths remain in any moved skill.
+
 ## [5.137.0] - 2026-08-05
 
 ### Added

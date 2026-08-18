@@ -25,7 +25,7 @@ Source: [obra/superpowers](https://github.com/obra/superpowers)
 </EXTREMELY-IMPORTANT>
 ```
 
-**Example** (dev-implement):
+**Example** (`skills/dev`):
 > "NO IMPLEMENTATION WITHOUT FAILING TEST FIRST. This is not negotiable."
 
 **Key insight:** Iron Laws work because they use the strongest framing available. Weakening the language ("try to", "should", "consider") makes them ignorable.
@@ -76,7 +76,7 @@ Source: [obra/superpowers](https://github.com/obra/superpowers)
 | [observable wrong action] | [consequence] | [correct action] |
 ```
 
-**Example** (dev-brainstorm):
+**Example** (`skills/dev`, CLARIFY):
 > | About to explore codebase before asking questions | Codebase biases thinking toward existing patterns | Ask questions first, explore after |
 
 **Key insight:** Red flags work on *actions*, not intentions. "About to X" is detectable; "thinking about X" is not.
@@ -149,8 +149,8 @@ usually the *block* branch, which only a real payload reaches.
 └─────────────┘                         └─────────────┘
 ```
 
-**Example** (dev-implement):
-> Main Chat → set `/goal` for phase → delegate per task → Task agent → verify → next task (turns refire under the active goal)
+**Example** (`skills/craft`):
+> CLARIFY → PLAN → GOAL → `workflow.js` (IMPLEMENT, then VERIFY ∥ MECHANICAL ∥ third-party) → JS gate → HUMAN REVIEW, with FAIL routing back into a re-dispatch scoped to `tasksThatFlagged`
 
 **Key insight:** The flowchart IS the spec. If the text and diagram disagree, the diagram wins.
 
@@ -177,8 +177,8 @@ usually the *block* branch, which only a real payload reaches.
 5. If clean, proceed.
 ```
 
-**Example** (dev-implement):
-> Per-task review under one phase-level `/goal`: implement → test → review → fix → re-test (max 3 iterations per task; turn budget encoded in the goal condition)
+**Example** (`skills/craft`):
+> Per-task implement → verify → fix, with `maxRounds` (default 3) enforced by `craft-redispatch.sh`: the dispatch that would exceed it is refused with exit 4 and hands the run to human review
 
 **Key insight:** Loops need iteration limits. Without limits, the agent can loop forever on edge cases.
 
@@ -217,10 +217,13 @@ Partial fixes to wrong-order work create worse outcomes than restarting.
 After completing this phase, discover and read the next phase:Read `${CLAUDE_SKILL_DIR}/../../TARGET/SKILL.md` and follow its instructions. Then follow its instructions immediately.
 ```
 
-**Example** (every dev phase):
-> dev-brainstorm ends with: discover dev-explore SKILL.md via cache → Read → execute
+**Example** (`skills/craft`):
+> The chain is not documented, it is executed: `craft-dispatch.sh` runs the plan hash, goal
+> composition and dispatch in one call, and `craft-pending.sh` answers "is a dispatch owed?" so a
+> session that lost its context can resume without re-deriving anything.
 
-**Key insight:** Without explicit chaining, the agent will "finish" a phase and wait for instructions instead of continuing the workflow.
+**Key insight:** Without explicit chaining, the agent will "finish" a phase and wait for instructions
+instead of continuing the workflow. A phase boundary that is a function call cannot be waited at.
 
 ---
 
@@ -299,8 +302,8 @@ description: "This skill should be used when the user asks to '[trigger 1]', '[t
 description: "Design workflow by first reading philosophy, then interviewing user, then proposing phases..."
 ```
 
-**Example** (dev-brainstorm):
-> description contains only trigger phrases like "start development", "new feature", "begin /dev workflow"
+**Example** (`skills/dev`):
+> description contains only trigger phrases like "build this feature", "implement X", "fix this bug properly"
 
 **Key insight:** If the description contains a process summary, Claude follows the short summary instead of reading the detailed body. This is the single most common skill design mistake.
 
@@ -322,8 +325,8 @@ After completing task N, IMMEDIATELY start task N+1. Do NOT:
 Pausing between tasks is procrastination disguised as courtesy.
 ```
 
-**Example** (dev-implement):
-> "After each task completes and passes review, immediately begin the next task. Do not pause."
+**Example** (`skills/craft`):
+> The task graph is scheduled by `workflow.js`, so there is no between-task moment in which to pause: a ready task dispatches as soon as its dependencies land.
 
 **Key insight:** Every pause is an opportunity for the agent to lose context or for the user to accidentally derail the workflow.
 
@@ -358,13 +361,17 @@ A bad spec that survives into exploration means exploring the wrong areas.
 A bad plan that survives into implementation means building the wrong tasks.
 ```
 
-**Example** (dev-brainstorm → dev-explore):
-> After SPEC.md is written, dispatch spec reviewer. Only proceed to explore after reviewer approves.
+**Example** (`skills/craft`, plan → dispatch):
+> Before a run is armed, `plan-lint.ts` scores the built args and `plan-preflight.ts` executes every
+> `redCommand` and `mechanicalCheck` at baseline. A major or critical finding aborts with the run
+> still armed. No agent reads the plan markdown looking for defects.
 
-**Example** (dev-design → dev-implement):
-> After PLAN.md is written, dispatch plan reviewer. For plans with >15 tasks, review per-chunk. Only proceed to implement after reviewer approves.
-
-**Key insight:** Self-review of your own artifact is rubber-stamping. The reviewer must be a fresh subagent with no context from the writing phase — it sees only the artifact and the checklist.
+**Key insight:** Self-review of your own artifact is rubber-stamping — but so is a *judged* review of
+a plan, which is where this pattern was originally applied. v6.0.0 replaced the plan-reviewer
+subagent with a computed check for the reason in `~/.claude/CLAUDE.md` #9: an open-ended critique of
+a document does not terminate, because the fix for round *n* adds text that round *n+1* finds real
+new defects in. Where a claim about a plan can be computed, compute it; reserve a fresh-subagent
+reviewer for artifacts whose defects genuinely cannot be.
 
 **Chunking rule:** When an artifact exceeds ~15 discrete items (tasks, sections, requirements), break it into ordered chunks and review each separately. Monolithic review of large documents produces shallow feedback.
 
