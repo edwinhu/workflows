@@ -21,45 +21,45 @@
 ### Research Papers
 ```bash
 # Extract methodology section
-uv run --script look_at.py --file paper.pdf \
+look_at.sh --file paper.pdf \
     --goal "Extract the methodology section, including sample size and statistical methods"
 
 # Extract findings
-uv run --script look_at.py --file paper.pdf \
+look_at.sh --file paper.pdf \
     --goal "List the main findings and conclusions"
 
 # Extract citations for a specific topic
-uv run --script look_at.py --file paper.pdf \
+look_at.sh --file paper.pdf \
     --goal "List all citations related to machine learning methods"
 ```
 
 ### Financial Reports
 ```bash
 # Extract key metrics
-uv run --script look_at.py --file quarterly_report.pdf \
+look_at.sh --file quarterly_report.pdf \
     --goal "Extract revenue, profit margin, and YoY growth percentages"
 
 # Summarize risks
-uv run --script look_at.py --file 10k_filing.pdf \
+look_at.sh --file 10k_filing.pdf \
     --goal "Summarize the top 3 risk factors mentioned"
 
 # Extract balance sheet data
-uv run --script look_at.py --file financial_statements.pdf \
+look_at.sh --file financial_statements.pdf \
     --goal "Extract total assets, liabilities, and equity as JSON"
 ```
 
 ### Contracts and Legal Documents
 ```bash
 # Extract key terms
-uv run --script look_at.py --file contract.pdf \
+look_at.sh --file contract.pdf \
     --goal "Extract payment terms, termination clause, and effective date"
 
 # Identify obligations
-uv run --script look_at.py --file agreement.pdf \
+look_at.sh --file agreement.pdf \
     --goal "List all obligations for Party A"
 
 # Extract definitions
-uv run --script look_at.py --file legal_doc.pdf \
+look_at.sh --file legal_doc.pdf \
     --goal "Extract all defined terms and their definitions"
 ```
 
@@ -68,45 +68,45 @@ uv run --script look_at.py --file legal_doc.pdf \
 ### UI/UX Screenshots
 ```bash
 # Inventory UI elements
-uv run --script look_at.py --file app_screenshot.png \
+look_at.sh --file app_screenshot.png \
     --goal "List all buttons, text fields, and navigation elements with their labels"
 
 # Describe layout
-uv run --script look_at.py --file wireframe.png \
+look_at.sh --file wireframe.png \
     --goal "Describe the layout structure: header, sidebar, main content, footer"
 
 # Identify accessibility issues
-uv run --script look_at.py --file interface.png \
+look_at.sh --file interface.png \
     --goal "Identify potential accessibility issues: contrast, button sizes, text legibility"
 ```
 
 ### Architecture Diagrams
 ```bash
 # Explain system design
-uv run --script look_at.py --file system_diagram.png \
+look_at.sh --file system_diagram.png \
     --goal "Explain the data flow between components and their relationships"
 
 # List components
-uv run --script look_at.py --file architecture.png \
+look_at.sh --file architecture.png \
     --goal "List all components/services shown and their responsibilities"
 
 # Identify bottlenecks
-uv run --script look_at.py --file performance_diagram.png \
+look_at.sh --file performance_diagram.png \
     --goal "Identify potential bottlenecks or single points of failure"
 ```
 
 ### Charts and Graphs
 ```bash
 # Extract data points
-uv run --script look_at.py --file line_chart.png \
+look_at.sh --file line_chart.png \
     --goal "Extract the data points for each line series as JSON"
 
 # Describe trends
-uv run --script look_at.py --file sales_chart.png \
+look_at.sh --file sales_chart.png \
     --goal "Describe the main trends and any notable patterns or anomalies"
 
 # Extract legend
-uv run --script look_at.py --file complex_chart.png \
+look_at.sh --file complex_chart.png \
     --goal "List what each color/line represents according to the legend"
 ```
 
@@ -115,30 +115,30 @@ uv run --script look_at.py --file complex_chart.png \
 ### Tables
 ```bash
 # Full table extraction
-uv run --script look_at.py --file data_table.pdf \
+look_at.sh --file data_table.pdf \
     --goal "Extract the entire table as JSON array with all columns preserved"
 
 # Filtered extraction
-uv run --script look_at.py --file large_table.pdf \
+look_at.sh --file large_table.pdf \
     --goal "Extract only rows where Status = 'Active' as CSV"
 
 # Summary statistics
-uv run --script look_at.py --file spreadsheet.png \
+look_at.sh --file spreadsheet.png \
     --goal "Calculate and report: sum, average, min, max for the 'Amount' column"
 ```
 
 ### Forms
 ```bash
 # Extract filled values
-uv run --script look_at.py --file filled_form.pdf \
+look_at.sh --file filled_form.pdf \
     --goal "Extract all filled-in values with their corresponding field labels"
 
 # Identify missing fields
-uv run --script look_at.py --file incomplete_form.pdf \
+look_at.sh --file incomplete_form.pdf \
     --goal "List all empty/unfilled fields"
 
 # Convert to structured data
-uv run --script look_at.py --file application_form.pdf \
+look_at.sh --file application_form.pdf \
     --goal "Extract as JSON: {name, email, phone, address, date_submitted}"
 ```
 
@@ -147,33 +147,33 @@ uv run --script look_at.py --file application_form.pdf \
 ### API Documentation Screenshots
 ```bash
 # Extract endpoint details
-uv run --script look_at.py --file api_docs.png \
+look_at.sh --file api_docs.png \
     --goal "Extract all API endpoints with their methods, paths, and descriptions"
 
 # Extract request/response examples
-uv run --script look_at.py --file api_example.png \
+look_at.sh --file api_example.png \
     --goal "Extract the request and response JSON examples shown"
 ```
 
 ### Whiteboards and Sketches
 ```bash
 # Transcribe whiteboard session
-uv run --script look_at.py --file whiteboard.jpg \
+look_at.sh --file whiteboard.jpg \
     --goal "Transcribe all text and describe any diagrams or sketches"
 
 # Extract action items
-uv run --script look_at.py --file meeting_notes.jpg \
+look_at.sh --file meeting_notes.jpg \
     --goal "Extract all action items with assigned owners if visible"
 ```
 
 ### Database Schemas
 ```bash
 # Extract table definitions
-uv run --script look_at.py --file db_schema.png \
+look_at.sh --file db_schema.png \
     --goal "List all tables with their columns, types, and relationships"
 
 # Identify relationships
-uv run --script look_at.py --file erd_diagram.png \
+look_at.sh --file erd_diagram.png \
     --goal "Describe all foreign key relationships and their cardinality"
 ```
 
@@ -182,22 +182,22 @@ uv run --script look_at.py --file erd_diagram.png \
 ### Video Frames
 ```bash
 # Analyze key frame
-uv run --script look_at.py --file video_frame.jpg \
+look_at.sh --file video_frame.jpg \
     --goal "Describe what's happening in this frame: people, actions, objects"
 
 # Extract visible text
-uv run --script look_at.py --file presentation_slide.mp4 \
+look_at.sh --file presentation_slide.mp4 \
     --goal "Extract all text visible on the slide"
 ```
 
 ### Presentations
 ```bash
 # Extract slide content
-uv run --script look_at.py --file slide_deck.pdf \
+look_at.sh --file slide_deck.pdf \
     --goal "Extract title and main points from slides 5-10"
 
 # Create outline
-uv run --script look_at.py --file presentation.pdf \
+look_at.sh --file presentation.pdf \
     --goal "Create an outline of the entire presentation with section headings"
 ```
 
@@ -206,10 +206,10 @@ uv run --script look_at.py --file presentation.pdf \
 ### Comparative Analysis
 ```bash
 # Compare two diagrams
-uv run --script look_at.py --file version1.png \
+look_at.sh --file version1.png \
     --goal "List all components and connections"
 
-uv run --script look_at.py --file version2.png \
+look_at.sh --file version2.png \
     --goal "List all components and connections"
 
 # Then use Claude to compare the extracted information
@@ -218,22 +218,22 @@ uv run --script look_at.py --file version2.png \
 ### Multi-step Extraction
 ```bash
 # Step 1: Identify sections
-uv run --script look_at.py --file document.pdf \
+look_at.sh --file document.pdf \
     --goal "List all section headings with page numbers"
 
 # Step 2: Extract specific section
-uv run --script look_at.py --file document.pdf \
+look_at.sh --file document.pdf \
     --goal "Extract only the 'Results' section on pages 12-15"
 ```
 
 ### Validation
 ```bash
 # Verify data quality
-uv run --script look_at.py --file data_report.pdf \
+look_at.sh --file data_report.pdf \
     --goal "Check if all required fields are present: date, amount, signature"
 
 # Cross-reference
-uv run --script look_at.py --file invoice.pdf \
+look_at.sh --file invoice.pdf \
     --goal "Extract invoice number and total amount for verification"
 ```
 
@@ -242,25 +242,25 @@ uv run --script look_at.py --file invoice.pdf \
 ### ❌ Too Vague
 ```bash
 # Bad: Too general
-uv run --script look_at.py --file doc.pdf --goal "Tell me about this document"
+look_at.sh --file doc.pdf --goal "Tell me about this document"
 
 # Good: Specific request
-uv run --script look_at.py --file doc.pdf --goal "Extract the author, date, and main conclusion"
+look_at.sh --file doc.pdf --goal "Extract the author, date, and main conclusion"
 ```
 
 ### ❌ Asking for Everything
 ```bash
 # Bad: Requesting full content
-uv run --script look_at.py --file book.pdf --goal "Extract all text from this book"
+look_at.sh --file book.pdf --goal "Extract all text from this book"
 
 # Good: Extract what you need
-uv run --script look_at.py --file book.pdf --goal "Extract the table of contents"
+look_at.sh --file book.pdf --goal "Extract the table of contents"
 ```
 
 ### ❌ Using for Plain Text
 ```bash
 # Bad: Using look_at for source code
-uv run --script look_at.py --file script.py --goal "Show me the code"
+look_at.sh --file script.py --goal "Show me the code"
 
 # Good: Use Read tool instead
 cat script.py
@@ -269,10 +269,10 @@ cat script.py
 ### ❌ Relative Paths
 ```bash
 # Bad: Relative path
-uv run --script look_at.py --file ../docs/report.pdf --goal "Extract title"
+look_at.sh --file ../docs/report.pdf --goal "Extract title"
 
 # Good: Absolute path
-uv run --script look_at.py --file /home/user/docs/report.pdf --goal "Extract title"
+look_at.sh --file /home/user/docs/report.pdf --goal "Extract title"
 ```
 
 ## Cost Optimization Tips
@@ -288,20 +288,20 @@ uv run --script look_at.py --file /home/user/docs/report.pdf --goal "Extract tit
 ### Data Science Workflow
 ```bash
 # In exploration phase, analyze data documentation
-uv run --script look_at.py --file data_dictionary.pdf \
+look_at.sh --file data_dictionary.pdf \
     --goal "Extract all column names, types, and descriptions as JSON"
 ```
 
 ### Development Workflow
 ```bash
 # Analyze design mockups
-uv run --script look_at.py --file mockup.png \
+look_at.sh --file mockup.png \
     --goal "List all UI components that need to be implemented"
 ```
 
 ### Writing Workflow
 ```bash
 # Extract quotes from source material
-uv run --script look_at.py --file research_paper.pdf \
+look_at.sh --file research_paper.pdf \
     --goal "Extract all quotes related to climate change impacts"
 ```

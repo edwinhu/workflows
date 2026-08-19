@@ -4,31 +4,67 @@
     {
       "name": "allow-non-read-tool",
       "kind": "allow",
-      "stdin": { "tool_name": "Bash", "tool_input": { "command": "ls" } }
+      "stdin": {
+        "tool_name": "Bash",
+        "tool_input": {
+          "command": "ls"
+        }
+      }
     },
     {
       "name": "allow-read-missing-file-path",
       "kind": "allow",
-      "stdin": { "tool_name": "Read", "tool_input": {} }
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": {}
+      }
     },
     {
       "name": "allow-read-non-image-extension",
       "kind": "allow",
-      "stdin": { "tool_name": "Read", "tool_input": { "file_path": "/x/notes.md" } }
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": "/x/notes.md"
+        }
+      }
     },
     {
       "name": "allow-unparseable-stdin",
       "kind": "allow"
     },
     {
+      "name": "allow-read-png-when-look-at-nested",
+      "kind": "allow",
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": "/x/chart.png"
+        }
+      },
+      "env": {
+        "LOOK_AT_NESTED": "1"
+      }
+    },
+    {
       "name": "deny-read-png",
       "kind": "deny",
-      "stdin": { "tool_name": "Read", "tool_input": { "file_path": "/x/chart.png" } }
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": "/x/chart.png"
+        }
+      }
     },
     {
       "name": "deny-read-uppercase-extension-preserves-original-case-in-reason",
       "kind": "deny",
-      "stdin": { "tool_name": "Read", "tool_input": { "file_path": "/x/Scan.PNG" } }
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": "/x/Scan.PNG"
+        }
+      }
     }
   ]
 }

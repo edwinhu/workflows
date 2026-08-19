@@ -1,5 +1,20 @@
 # Changelog
 
+## [6.4.0] - 2026-08-18
+
+### Changed
+
+- **`look-at` routes to four subscription CLIs instead of a metered API.** Backends are now `claude` (`claude-code -p` — the CLIProxyAPI wrapper over the pooled OAuth accounts, *not* plain `claude`, which bills the calling session's own account), `agy` (`agy -p`), `codex` (`codex exec`) and `copilot`. `--consensus` takes a comma-separated list instead of a hardcoded pair and defaults to all four, so a diagram can get four independent looks concurrently — wall-clock is the slowest backend, not the sum. The `api` backend survives for agentic mode and native PDF ingestion but is opt-in only and excluded from consensus.
+- **The `gemini` backend is removed.** It was the documented default and the SKILL.md table advertised it as "Bundled quota, no API key needed" — false: `resolve_gemini_key()` falls back to `GOOGLE_API_KEY` and the backend hard-fails without a key, so the free-looking default billed exactly like `api`. The consumer `gemini` binary was also sunset 2026-06-18 and no longer runs here at all ("Please set an Auth method…").
+
+### Fixed
+
+- **`image-read-guard.ts` sent every blocked Read to the metered path.** The hook exists to save context and money, and its deny message handed back `uv run --script … look_at.py` — the `google-genai` backend — bypassing `look_at.sh`'s routing entirely. It now points at `look_at.sh`. Same rewrite applied to the ~74 documented call sites that named `look_at.py` directly: `references/use-cases.md` (50), `skills/using-skills/SKILL.md` (6, and that file is auto-loaded every session), `README.md`, and the three `examples/*.sh`.
+- **The `claude` backend would have recursed without bound.** Its child `claude-code -p` loads this same plugin, so `image-read-guard` denied the child's Read of the image and pointed it back at `look_at.sh`, which spawns another child. `look_at.sh` now sets `LOOK_AT_NESTED=1` and the guard stands down when it sees it. Covered by a new golden case, because the failure mode is a fork bomb rather than a wrong answer.
+- **`codex exec` needs `--` before the prompt.** `-i/--image` is variadic, so a bare trailing prompt is swallowed as another image path and codex then blocks reading stdin (`No prompt provided via stdin`). Also `-p` in Codex is `--profile`, not print mode. Both recorded as comments where the invocation is built.
+- **`examples/*.sh` hardcoded `SCRIPT_DIR="../scripts"`**, so they only ran from one directory. Now self-locating via `BASH_SOURCE`.
+- **The stale `public-extension-contract` test title.** It still said 6.0.1 against a 6.3.1 manifest — the one version site of six that nothing enforces, so it rots silently. `scripts/bump-version.sh` rewrote it as designed; the suite is green again.
+
 ## [6.3.1] - 2026-08-18
 
 ### Documentation

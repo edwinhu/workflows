@@ -7,7 +7,7 @@ user-invocable: false
 
 # Look At - Multimodal File Analysis
 
-Multi-backend vision tool for PDFs, images, diagrams, and other media files. Routes to Gemini CLI (default), GitHub Copilot (GPT-5.4), or the legacy Python API.
+Multi-backend vision router for PDFs, images, diagrams, and other media files. Routes to `claude-code -p` (default), `agy -p`, `codex exec`, or GitHub Copilot (GPT-5.4) — all on subscription, none metered — and can run all four at once for independent looks at the same file.
 
 ## Tool Selection Enforcement
 
@@ -15,7 +15,9 @@ Multi-backend vision tool for PDFs, images, diagrams, and other media files. Rou
 
 - Read on a media file loads the full content into context regardless of how briefly you look at it — a "quick glance" costs the same thousands of tokens as a full read. Content type, not file size, determines the tool.
 - Read on a PDF extracts raw text and loses table structure and visual information; look_at returns it as structured data.
-- Gemini's extraction is accurate for most use cases — start with look_at, escalate to Read only if the extraction is insufficient. Defaulting to Read "for exact text" wastes the context this skill exists to save.
+- The point is context economy, not vision capability. Read pulls the whole image into *this* session's context; look_at spends a subprocess's context instead and returns text. Better vision models do not change that arithmetic — they make the cheap backends sufficient.
+- Backend extraction is accurate for most use cases — start with look_at, escalate to Read only if the extraction is insufficient. Defaulting to Read "for exact text" wastes the context this skill exists to save.
+- The `claude` backend spawns a child `claude-code -p`. `look_at.sh` sets `LOOK_AT_NESTED=1` so `image-read-guard.ts` stands down inside that child — without it the guard denies the child's Read and points it back at `look_at.sh`, which spawns another child. That is unbounded recursion, not a slow call.
 
 ### Red Flags
 
@@ -51,7 +53,7 @@ Multi-backend vision tool for PDFs, images, diagrams, and other media files. Rou
 ## How It Works
 
 1. Provide a file path and a specific goal (what to extract)
-2. `look_at.sh` routes to the selected backend (Gemini CLI by default)
+2. `look_at.sh` routes to the selected backend (`claude-code -p` by default)
 3. The backend analyzes the file and extracts requested information
 4. Only the relevant extracted information is returned (saves context tokens)
 
@@ -64,28 +66,28 @@ description: "look-at: [goal text]"
 ```
 
 ```bash
-# Default (Gemini CLI — uses bundled quota, no API key needed)
+# Default (claude-code -p — pooled OAuth, reads images and PDFs natively)
 "${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
     --file "/path/to/file.pdf" \
     --goal "Extract the title and date from this document"
 
-# GPT-5.4 via GitHub Copilot
+# A different model family (agy, codex, copilot all work the same way)
 "${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
     --file "/path/to/diagram.png" \
     --goal "Describe the architecture" \
-    --backend copilot
+    --backend codex
 
-# Multi-model consensus (gemini + copilot in parallel)
+# Four independent looks at once (claude, agy, codex, copilot)
 "${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
     --file "/path/to/diagram.png" \
     --goal "Score this diagram 0-10" \
     --consensus
 
-# Legacy Python API (uses your GOOGLE_API_KEY)
+# METERED — spends GOOGLE_API_KEY. Only for agentic mode.
 "${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
     --file "/path/to/file.pdf" \
     --goal "Extract the table data" \
-    --backend api
+    --backend api --agentic
 ```
 
 `${CLAUDE_SKILL_DIR}` is substituted at skill load time, so the full path is already resolved — no per-call discovery needed.
@@ -98,13 +100,33 @@ description: "look-at: [goal text]"
 
 | Backend | CLI | Model | Cost | Best For |
 |---------|-----|-------|------|----------|
-| `gemini` (default) | `gemini` CLI | Gemini (CLI default) | Bundled quota | General vision, diagrams, documents |
-| `copilot` | GitHub Copilot CLI | GPT-5.4 | Copilot subscription | Second opinions, consensus |
-| `api` | `look_at.py` | Gemini API (configurable) | Your API key | Agentic mode, custom models |
+| `claude` (default) | `claude-code -p` | `claude-opus-5[1m]` unless `--model` | Pooled OAuth via CLIProxyAPI | Everything. Reads images and PDFs natively — no rasterization |
+| `agy` | `agy -p` | Antigravity default | Subscription | Second opinion from a different family |
+| `codex` | `codex exec` | Codex default | Subscription | Attaches the image with `-i`, so it needs no read tool at all |
+| `copilot` | `copilot -p` | GPT-5.4 | Copilot subscription | Fourth opinion. PDFs rasterized first |
+| `api` | `look_at.py` | Gemini API | **Metered — your `GOOGLE_API_KEY`** | Agentic mode only. Never a default, never in `--consensus` |
+
+**`claude`, not `claude-code`, is the backend *name*; `claude-code` is the binary it runs.** Plain
+`claude` would bill this session's own account — `claude-code` routes through CLIProxyAPI to the
+pooled OAuth accounts, which is the cost this backend exists to avoid.
+
+Only `claude` ingests PDFs directly. `agy` and `copilot` get page PNGs from `pdftoppm`; `codex`
+gets every page attached as a separate `-i`.
+
+The `gemini` backend is gone. It required `GEMINI_API_KEY`/`GOOGLE_API_KEY` and billed like `api` despite being documented as bundled quota, and the consumer `gemini` binary was sunset 2026-06-18.
 
 ## Consensus Mode
 
-`--consensus` runs gemini and copilot **in parallel** and outputs both results under labeled headers (`=== GEMINI ===`, `=== COPILOT (GPT-5.4) ===`).
+`--consensus` runs a comma-separated list of backends **in parallel** and outputs each result under a labeled header (`=== CLAUDE (claude-code) ===`, `=== AGY (Antigravity) ===`, …). The list is optional and defaults to all four CLI backends:
+
+```bash
+--consensus                            # claude,agy,codex,copilot
+--consensus claude,codex               # narrow it to two
+```
+
+Wall-clock is the slowest backend, not the sum — they run concurrently.
+
+A failed backend prints `[ERROR] <name> backend failed` followed by its output; the others still report, and the exit status stays 0.
 
 **When to use:** Visual verification of diagrams where a single model may miss or underscore defects. Trust the **stricter** score — if any backend flags BLOCKING, treat it as BLOCKING.
 
@@ -126,18 +148,20 @@ Use this extracted information directly in continued work without loading the fu
 | Audio | .wav, .mp3, .aiff, .aac, .ogg, .flac | audio/* |
 | Documents | .pdf, .txt, .csv, .md, .html | application/pdf, text/* |
 
-## Model Options
+## Model Options (`api` backend only)
+
+These apply to `--backend api`, which is metered. The `claude` backend takes `--model` as a Claude model alias; `copilot` is pinned to GPT-5.4.
 
 | Model | Use Case | Speed | Cost |
 |-------|----------|-------|------|
-| `gemini-2.5-flash-lite` | Default - fast, cheap analysis | Fastest | Lowest |
+| `gemini-3.1-flash-lite-preview` | Default - fast, cheap analysis | Fastest | Lowest |
 | `gemini-3-flash` | More complex extraction needs | Fast | Low |
 | `gemini-3-flash-preview` | Agentic vision with code execution | Fast | Low |
 | `gemini-3-pro-preview` | Highest accuracy required | Medium | Medium |
 
-**Default is gemini-2.5-flash-lite** for optimal speed/cost ratio.
+**Default is `gemini-3.1-flash-lite-preview`** (the value in `look_at.py`).
 
-## Agentic Vision Mode
+## Agentic Vision Mode (`api` backend only)
 
 For complex visual reasoning tasks, use the `--agentic` flag to enable code execution. This allows Gemini to:
 - **Zoom into specific regions** of an image for detailed analysis
@@ -223,25 +247,24 @@ For complex visual reasoning tasks, use the `--agentic` flag to enable code exec
 
 ## Environment Setup
 
-**Required environment variable:**
+The four CLI backends need nothing beyond their own binaries being installed and signed in
+(`claude-code`, `agy`, `codex`, `copilot`). No API key, no Python environment. `agy`, `codex` and
+`copilot` additionally need `pdftoppm` (poppler-utils) to accept a PDF.
+
+Only `--backend api` needs setup, and only because it is metered:
+
 ```bash
-export GOOGLE_API_KEY="your-api-key-here"
+export GOOGLE_API_KEY="your-api-key-here"   # or GEMINI_API_KEY
 ```
 
-**Required Python package:**
-```bash
-pip install google-genai
-```
-
-For pixi-managed projects, add to `pixi.toml`:
-```toml
-[dependencies]
-google-genai = ">=1.0.0"
-```
+`look_at.sh` launches it with `uv run --script`, which honours `look_at.py`'s inline PEP 723
+metadata and provisions `google-genai` itself — `uv run python3` does not, and fails at the import
+with a message that reads like an auth problem.
 
 ## Cost Optimization
 
-- **Gemini 2.5 Flash Lite** is the most cost-effective option
+- **`claude`, `agy`, `codex` and `copilot` are subscription backends — none bills per call.** `api`
+  is the only metered path; reach for it only when you need agentic mode.
 - Only extracts requested information (saves on output tokens)
 - Avoids loading full files into main conversation context
 - Use specific goals to minimize unnecessary processing
@@ -250,7 +273,10 @@ google-genai = ">=1.0.0"
 
 | Issue | Solution |
 |-------|----------|
-| API key not set | Set `GOOGLE_API_KEY` environment variable |
+| A CLI backend fails | Check that binary is installed and signed in: `claude-code`, `agy`, `codex`, `copilot` |
+| `codex` blocks on stdin | The prompt must follow `--`; `-i/--image` is variadic and otherwise swallows it |
+| Backend hangs or recurses | Confirm `look_at.sh` is the entry point — it sets `LOOK_AT_NESTED=1`; calling `claude-code -p` by hand does not, and `image-read-guard.ts` will then deny the child's Read |
+| API key not set (`api` backend) | Set `GOOGLE_API_KEY` or `GEMINI_API_KEY` |
 | File not found | Use absolute paths, verify file exists |
 | Large file timeout | Break into smaller files or use lower-quality images |
 | Rate limit errors | Add retry logic or use batch processing |

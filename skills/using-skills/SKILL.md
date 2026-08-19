@@ -171,7 +171,7 @@ User asks about image/PDF/media content
     ↓
 Is it a media file requiring interpretation?
     ↓
-YES → Use look-at skill (bash call to look_at.py)
+YES → Use look-at skill (bash call to look_at.sh)
 NO  → Use Read tool for source code/text
 ```
 
@@ -187,7 +187,7 @@ NO  → Use Read tool for source code/text
 **Pattern:**
 ```bash
 # look-at: Extract information from media file with specific goal
-uv run --script "${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py" \
+"${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.sh" \
     --file "/absolute/path/to/file" \
     --goal "What specific information to extract"
 ```
@@ -220,17 +220,17 @@ uv run --script "${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py" \
 
 ```bash
 # look-at: Extract specific information from image file
-uv run --script "${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py" \
+"${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.sh" \
     --file "$HOME/Downloads/screenshot.png" \
     --goal "List all buttons and their labels"
 
 # look-at: Analyze diagram to understand data flow
-uv run --script "${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py" \
+"${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.sh" \
     --file "$HOME/Documents/architecture.png" \
     --goal "Explain the data flow between components"
 
 # look-at: Extract information from PDF document
-uv run --script "${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py" \
+"${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.sh" \
     --file "$HOME/Downloads/report.pdf" \
     --goal "Extract the executive summary section"
 ```
@@ -275,13 +275,13 @@ When a skill requires `description` parameter on Bash calls (like look-at), you 
 
 ```bash
 # ❌ WRONG: No description parameter
-uv run --script "${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py" \
+"${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.sh" \
     --file "/path/to/file.pdf" \
     --goal "Extract title"
 
 # ✅ CORRECT: With description parameter as skill requires
 Bash(
-    command='uv run --script "${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.py" --file "/path/to/file.pdf" --goal "Extract title"',
+    command='"${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.sh" --file "/path/to/file.pdf" --goal "Extract title"',
     description="look-at: Extract title"
 )
 ```

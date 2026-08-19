@@ -38,7 +38,7 @@ echo 'export GOOGLE_API_KEY="your-api-key-here"' >> ~/.bashrc
 ### 3. Use the Skill
 
 ```bash
-uv run --script scripts/look_at.py \
+scripts/look_at.sh \
     --file "/path/to/file.pdf" \
     --goal "Extract the title and date"
 ```
@@ -67,7 +67,8 @@ look-at/
 ├── README.md             # This file
 ├── requirements.txt      # Python dependencies
 ├── scripts/
-│   └── look_at.py       # Main analysis script
+│   ├── look_at.sh       # Backend router (entry point)
+│   └── look_at.py       # api backend only (metered Gemini SDK)
 ├── examples/
 │   ├── analyze_pdf.sh   # PDF extraction examples
 │   ├── describe_image.sh # Image analysis examples
@@ -81,28 +82,28 @@ look-at/
 
 ### Extract from PDF
 ```bash
-uv run --script scripts/look_at.py \
+scripts/look_at.sh \
     --file "/home/user/report.pdf" \
     --goal "Extract the executive summary section"
 ```
 
 ### Describe Image
 ```bash
-uv run --script scripts/look_at.py \
+scripts/look_at.sh \
     --file "/home/user/diagram.png" \
     --goal "Describe the system architecture and data flow"
 ```
 
 ### Extract Table Data
 ```bash
-uv run --script scripts/look_at.py \
+scripts/look_at.sh \
     --file "/home/user/data.pdf" \
     --goal "Extract the table as JSON: {name, value, date}"
 ```
 
 ### With Custom Model
 ```bash
-uv run --script scripts/look_at.py \
+scripts/look_at.sh \
     --file "/home/user/complex_doc.pdf" \
     --goal "Extract methodology section" \
     --model "gemini-2.5-flash"
