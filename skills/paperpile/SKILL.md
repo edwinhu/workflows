@@ -38,6 +38,7 @@ If the CLI fails, it is almost always stale auth — refresh cookies (below), do
 | Add web source by URL | `paperpile add https://example.com/article` |
 | Add remote PDF | `paperpile add https://example.com/report.pdf` |
 | Add local PDF | `paperpile add /path/to/report.pdf` |
+| Attach PDF to an EXISTING item | `paperpile attach <bibkey-or-_id> /path/to/report.pdf --confirm` |
 | Add DOI stub (no metadata) | `paperpile add <doi> --force` |
 | List labels | `paperpile label list` |
 | Create label | `paperpile label create "My Label"` |
@@ -177,7 +178,11 @@ is registered with publishers for IP-based access — and bypasses EZproxy entir
 which wrds-tunnel && which fetch-paper-browser && echo "fetch-paper available" || echo "fetch-paper not available — falling back to EZproxy/CDP"
 ```
 
-If available: use `/fetch-paper` for PDF acquisition, then `paperpile add <local.pdf>` to add to library.
+If available: use `/fetch-paper` for PDF acquisition, then attach the result:
+- **entry already in the library** (a DOI add that got no PDF) → `paperpile attach <_id> <local.pdf> --confirm`.
+  Do NOT `add` the PDF — that creates a SECOND entry and lets the server's PDF-text extractor
+  write the metadata (see the damage note above).
+- **nothing in the library yet** → `paperpile add <local.pdf>`.
 If not available: use the EZproxy/CDP pipeline in `find-and-add` as before.
 
 See `${CLAUDE_SKILL_DIR}/references/institutional_access.md` for technical details.
