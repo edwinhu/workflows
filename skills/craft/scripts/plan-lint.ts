@@ -29,6 +29,8 @@ type Task = {
 type Lens = { key: string; text: string }
 type Plan = {
   tasks: Task[]
+  /** Paths the plan authors BEFORE dispatch; the guard lets the main thread write these. */
+  scaffoldPaths?: string[]
   mechanicalChecks: { name: string; cmd: string }[]
   reviewLenses: Lens[]
   successCriteria: string[]
@@ -214,6 +216,8 @@ const parseMarkdown = (md: string): Plan => {
     successCriteria: sectionItems(md, /Success criteria/i),
     verification: sectionItems(md, /Verification/i),
     testFirst,
+    // Declared in the dispatch block, not the prose; a markdown-only lint sees none.
+    scaffoldPaths: [],
     source: 'md',
     runSizingText: sectionText(md, /Run sizing/i),
     planText: md,
@@ -242,6 +246,7 @@ const cleanCmd = (s: string): string | null => {
 }
 
 const parseArgs = (j: any): Plan => ({
+  scaffoldPaths: Array.isArray(j.scaffoldPaths) ? j.scaffoldPaths.filter((x: any) => typeof x === 'string') : [],
   tasks: (j.tasks ?? []).map((t: any) => ({
     id: t.id ?? '',
     name: t.name ?? '',
@@ -421,6 +426,29 @@ const lint = (p: Plan): Finding[] => {
       for (const form of forms)
         if (coveredBy(form, t.writablePaths) && !deliverer.has(form)) deliverer.set(form, t.id)
     }
+
+  // R0 — scaffoldPaths is a hole in the write guard, so a scaffold that swallows a whole task's
+  // writable surface is a blanket disarm wearing a declaration. The legitimate shape is narrow: the
+  // one stub a redCommand needs in order to fail behaviourally instead of failing to import.
+  // Callers construct Plan objects directly (the tests, and craft's own round linting), so this
+  // key is not guaranteed present even though the type declares it.
+  const scaffold = p.scaffoldPaths ?? []
+  // Containment, not overlap: `coveredBy` is symmetric, so a stub `src/stub.py` would read as
+  // "covering" the directory `src/` and flag the very shape this rule is meant to permit.
+  const trim = (x: string) => x.replace(/\*+$/, '').replace(/\/+$/, '')
+  const inside = (child: string, parent: string) =>
+    trim(child) === trim(parent) || trim(child).startsWith(trim(parent) + '/')
+  for (const t of p.tasks) {
+    if (!t.writablePaths.length || !scaffold.length) continue
+    if (t.writablePaths.every(w => scaffold.some(sp => inside(w, sp))))
+      add(
+        'scaffold-swallows-task',
+        'major',
+        `task ${t.id}`,
+        `every writablePath of this task is inside scaffoldPaths, so the main thread may write the task's entire surface before it is ever dispatched — name the specific stub, not the task's directory`,
+        `${t.writablePaths.join(', ')} ⊆ ${scaffold.join(', ')}`,
+      )
+  }
 
   for (const t of p.tasks) {
     const where = `task ${t.id}`

@@ -38,6 +38,30 @@ const task = (over: Partial<Plan['tasks'][0]> = {}) => ({
 
 const rules = (p: Plan) => lint(p).map(f => f.rule)
 
+// ---------------------------------------------------------------- scaffoldPaths
+
+// scaffoldPaths is a hole in the write guard: it lets the main thread author a path a task also
+// owns, which is the only way a stub can exist before wave 1. A scaffold as wide as the task is
+// that hole with a declaration wrapped round it.
+test('a scaffold naming one stub inside a wider writable surface is fine', () => {
+  const p = base({ tasks: [task({ writablePaths: ['src/'] })], scaffoldPaths: ['src/stub.py'] })
+  expect(rules(p)).not.toContain('scaffold-swallows-task')
+})
+
+test("a scaffold covering the task's whole writable surface is a blanket disarm", () => {
+  const p = base({ tasks: [task({ writablePaths: ['src/'] })], scaffoldPaths: ['src/'] })
+  expect(rules(p)).toContain('scaffold-swallows-task')
+  expect(lint(p).find(f => f.rule === 'scaffold-swallows-task')!.severity).toBe('major')
+})
+
+test('a plan declaring no scaffoldPaths fires nothing', () => {
+  expect(rules(base({ tasks: [task()] }))).not.toContain('scaffold-swallows-task')
+})
+
+test('parseArgs carries scaffoldPaths through from the dispatch block', () => {
+  expect(parseArgs({ tasks: [], scaffoldPaths: ['a/b.py', 7] }).scaffoldPaths).toEqual(['a/b.py'])
+})
+
 // ---------------------------------------------------------------- acceptance clauses
 
 test('acceptance clause with no command is flagged', () => {

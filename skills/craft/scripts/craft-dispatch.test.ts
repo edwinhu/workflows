@@ -552,6 +552,13 @@ describe('--covers separates the run\'s own output from what no task may write',
       return 0
     } catch (e: any) { return e.status ?? -1 }
   }
+  /** 0 declared pre-dispatch scaffolding, 1 not, 2 undecidable. */
+  function scaffold(plan: string, path: string): number {
+    try {
+      execFileSync('bash', [SCRIPT, '--scaffold', plan, path], { encoding: 'utf8' })
+      return 0
+    } catch (e: any) { return e.status ?? -1 }
+  }
   const TASKS = [
     { id: 'T1', writablePaths: ['src/impl.ts'] },
     { id: 'T2', writablePaths: ['lib/'] },
@@ -591,6 +598,36 @@ describe('--covers separates the run\'s own output from what no task may write',
   test('a spec naming no writable surface is undecidable, never a "no"', () => {
     expect(covers(planWith([{ id: 'T1' }]).plan, '/tmp/x')).toBe(2)
     expect(covers(planWith([], { readOnly: true }).plan, '/tmp/x')).toBe(2)
+  })
+
+  test('--scaffold: a declared path is 0 even though a task also writes it — the whole point', () => {
+    // The deadlock this breaks: a stub is BOTH the implementer's output and a thing that must
+    // exist before wave 1, so `--covers` alone can only ever say "deny".
+    const f = planWith(TASKS, { scaffoldPaths: ['src/impl.ts'] })
+    expect(covers(f.plan, join(f.dir, 'src/impl.ts'))).toBe(0)
+    expect(scaffold(f.plan, join(f.dir, 'src/impl.ts'))).toBe(0)
+  })
+
+  test('--scaffold: a covered path that was NOT declared stays 1, so the hole is only as wide as the plan says', () => {
+    const f = planWith(TASKS, { scaffoldPaths: ['src/impl.ts'] })
+    expect(scaffold(f.plan, join(f.dir, 'lib/other.ts'))).toBe(1)
+  })
+
+  test('--scaffold: a declared DIRECTORY covers what is under it', () => {
+    const f = planWith(TASKS, { scaffoldPaths: ['tests/'] })
+    expect(scaffold(f.plan, join(f.dir, 'tests/deep/test_x.py'))).toBe(0)
+  })
+
+  test('--scaffold: no scaffoldPaths is a decidable NO, not undecidable — the common plan must not fail closed', () => {
+    expect(scaffold(planWith(TASKS).plan, join(tmpdir(), 'x'))).toBe(1)
+  })
+
+  test('--scaffold: an unparseable plan is undecidable, so the guard fails closed there too', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'craft-scaffold-'))
+    scratch.push(dir)
+    const p = join(dir, 'plan.md')
+    writeFileSync(p, '# Plan\n\nno dispatch block\n')
+    expect(scaffold(p, join(dir, 'x'))).toBe(2)
   })
 
   test('an unparseable or blockless plan is undecidable, so the guard fails closed', () => {

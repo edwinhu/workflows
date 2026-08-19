@@ -16,6 +16,7 @@
 #                                      by craft-redispatch.sh so there is one implementation)
 #   craft-dispatch.sh --archive-plan SRC DIR HASH  archive a plan into a run dir (same reuse)
 #   craft-dispatch.sh --spec-hash PLAN print the plan's spec hash and nothing else
+#   craft-dispatch.sh --scaffold PLAN PATH is PATH declared in scaffoldPaths? 0 yes, 1 no, 2 undecidable
 #   craft-dispatch.sh --covers PLAN PATH  is PATH inside some task's writablePaths? 0 yes, 1 no,
 #                                      2 undecidable (read by main-thread-guard.sh, which fails closed)
 #   CRAFT_DISPATCH_DRYRUN=1            build + lint + probe + size, stop before dispatching
@@ -141,6 +142,51 @@ t = os.path.normpath(os.path.abspath(target))
 raise SystemExit(0 if any(t == w or t.startswith(w + os.sep) for w in writable) else 1)
 PY
 }
+
+# ------------------------------------------------- paths this plan authors BEFORE the dispatch
+# `--covers` alone cannot answer the pre-dispatch question, because the two facts it conflates are
+# genuinely different: a stub is BOTH the implementer's output (so it belongs in writablePaths) and
+# a thing that must exist before wave 1 (so the main thread must be able to write it now). Without a
+# separate list the only way to author one was to disarm the guard entirely — which also switches
+# off the Stop-hook nudge, so the run loses its own reminder that a dispatch is still owed.
+# 0 = declared scaffold, 1 = not, 2 = undecidable, and the caller must fail CLOSED.
+scaffolds() {
+  python3 - "$1" "$2" <<'SCAFFOLD_PY'
+import json, os, re, sys
+plan, target = sys.argv[1], sys.argv[2]
+try:
+    src = open(plan).read()
+except OSError:
+    raise SystemExit(2)
+m = re.search(r'<!--\s*craft:dispatch\s*(.*?)-->', src, re.S)
+if not m:
+    raise SystemExit(2)
+try:
+    block = json.loads(m.group(1))
+except json.JSONDecodeError:
+    raise SystemExit(2)
+args = block.get("args") if isinstance(block.get("args"), dict) else block
+if not isinstance(args, dict):
+    raise SystemExit(2)
+root = args.get("projectDir") or os.path.dirname(os.path.abspath(plan))
+declared = [
+    os.path.normpath(os.path.join(root, sp.strip()))
+    for sp in (args.get("scaffoldPaths") or []) if isinstance(sp, str) and sp.strip()
+]
+# An absent list is a decidable NO, unlike covers(): declaring no scaffold is the common case and
+# must not fail the guard closed on every write in every project.
+if not declared:
+    raise SystemExit(1)
+t = os.path.normpath(os.path.abspath(target))
+raise SystemExit(0 if any(t == d or t.startswith(d + os.sep) for d in declared) else 1)
+SCAFFOLD_PY
+}
+
+if [ "${1:-}" = "--scaffold" ]; then
+  [ -f "${2:-}" ] && [ -n "${3:-}" ] || { echo "--scaffold needs <plan> <path>" >&2; exit 2; }
+  scaffolds "$2" "$3"
+  exit $?
+fi
 
 if [ "${1:-}" = "--covers" ]; then
   [ -f "${2:-}" ] && [ -n "${3:-}" ] || { echo "--covers needs <plan> <path>" >&2; exit 2; }
