@@ -39,6 +39,39 @@ works, not what the user wants.
 6. **Required runtime evidence** — what has to be observed at runtime rather than read in source:
    logs, HTTP/WS exchanges, rendered output, exit codes, screenshots.
 7. **Review surface** — working tree, commit range, or PR.
+8. **Language and its language server** — the language this change is written in (observed for an
+   existing repo, decided here for new code), and the LSP that follows from it. Install it
+   **before** reconnaissance, project-scoped, so recon and every implementer navigate by symbol
+   rather than by grep.
+
+**Installing the LSP is two things, and the plugin is only one of them.**
+
+```bash
+claude plugin install <lang>-lsp@claude-plugins-official --scope project
+```
+
+`--scope project` writes `enabledPlugins` into `.claude/settings.json` — a committed file, so it
+enables the server for everyone who opens the repo; `--scope local` writes
+`.claude/settings.local.json` instead. Official servers: `pyright` (py), `typescript` (ts/js),
+`gopls`, `rust-analyzer`, `clangd`, `jdtls`, `kotlin`, `csharp`, `php`, `ruby`, `lua`, `swift`,
+`liquid`.
+
+The plugin declares a **command**, never a binary — `pyright-lsp` is just
+`{"command": "pyright-langserver"}`. Enabling it while the server is absent registers something
+that fails at first use with `ENOENT: Executable not found in $PATH`.
+
+**The binary is global, and that is not a preference.** Claude Code resolves `command` from the
+process PATH only — never the plugin root, never `${CLAUDE_PROJECT_DIR}`, never a project
+`node_modules/.bin` or pixi env. A project-local language server is unreachable by construction;
+install it the way this machine installs system tools (nix here, or the distro package), not with
+`pixi add`. What stays project-scoped is the *enablement* above and the server's own config —
+`pyrightconfig.json` points a global pyright at the project interpreter, and a global
+`typescript-language-server` still loads the project's own `typescript` from `node_modules`.
+
+Registration is separate again: a mid-session install is inert until `/reload-plugins`. Self-send
+it rather than asking the user to type it. Then **prove it with one `LSP` call on a real file in
+the repo** — `documentSymbol` is enough. The install command's exit code says the plugin was
+enabled, not that a server answers.
 
 Craft's remaining axes are taken as craft states them, with one domain binding: craft axis 4
 (observable success criteria) is answered with the **target project's own** test, lint and build
@@ -171,6 +204,7 @@ Craft's Phase 5 unchanged, on the review surface from CLARIFY axis 7.
 
 | Situation | Wrong move | Right move |
 |---|---|---|
+| LSP enabled, binary never installed | trust the install's exit 0 | one `LSP documentSymbol` on a repo file before recon; `ENOENT` there is the whole failure |
 | No test harness in the repo | proceed and test by hand | test infrastructure is the first task, decided at CLARIFY — absence of tests is never a waiver |
 | The failing test needs two steps | `redCommand: "build && test"` | craft throws on shell operators; put the steps in a script and name the script |
 | Task's real test would drive a browser or an app | assert on source or logs | the runtime references are refs on that task; a screenshot with no assertion is not evidence |
