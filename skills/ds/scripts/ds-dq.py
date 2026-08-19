@@ -165,6 +165,41 @@ def parse_keys(spec: str) -> tuple[list[str], list[str]]:
     return pk, event
 
 
+def parse_annotations(spec: str) -> dict[str, list[str]]:
+    """Columns the artifact's own shape exempts from a generic heuristic.
+
+    Same `label: a, b` grammar as `parse_keys`, read from the same Key Columns cell:
+
+      `sparse:`   null for most rows BY DESIGN — a diagnostic column populated only
+                  on the rows that need it. DQ2 flags any column over 50% null
+                  because that usually means a broken join or a failed populate; on
+                  an `error` column that only failed rows carry, a fully-populated
+                  column would be the alarming outcome. DQ2 cannot tell those apart,
+                  so the plan says which it is and the reviewer sees the claim.
+      `freetext:` a name, title or path. DQ5 flags near-unique non-key string columns
+                  as "likely IDs, not categories"; a firm name is near-unique because
+                  firms have distinct names, not because it is a mis-declared key.
+
+    Declaring a column here is a claim in the approved plan, hashed with it, and it
+    narrows exactly one check on exactly one column — unlike moving the column into
+    `pk`/`event`, which would silence DQ5 by making a false statement about the key.
+    """
+    out: dict[str, list[str]] = {"sparse": [], "freetext": []}
+    spec = (spec or "").strip().strip("`")
+    if not spec or ":" not in spec:
+        return out
+    for part in spec.split(";"):
+        if ":" not in part:
+            continue
+        label, cols = part.split(":", 1)
+        key = label.strip().lower()
+        if key in {"sparse", "sparse by design"}:
+            out["sparse"] = [c.strip().strip("`") for c in cols.split(",") if c.strip()]
+        elif key in {"freetext", "free text", "names"}:
+            out["freetext"] = [c.strip().strip("`") for c in cols.split(",") if c.strip()]
+    return out
+
+
 DATE_RE = r"\d{4}-\d{2}-\d{2}"
 
 
@@ -213,16 +248,20 @@ def check_dq1(df) -> dict:
     return result("PASS", "No constant or empty columns.", f"{df.width} columns checked")
 
 
-def check_dq2(df) -> dict:
+def check_dq2(df, sparse: list[str] | None = None) -> dict:
     height = df.height
-    high = [(c, df[c].null_count() / height) for c in df.columns if df[c].null_count() / height > HIGH_NULL_THRESHOLD]
+    sparse = sparse or []
+    high = [(c, df[c].null_count() / height) for c in df.columns
+            if c not in sparse and df[c].null_count() / height > HIGH_NULL_THRESHOLD]
     if high:
         return result(
             "FAIL",
             f"{len(high)} column(s) exceed the >{HIGH_NULL_THRESHOLD:.0%} null threshold.",
             "; ".join(f"{c}={pct:.1%} null" for c, pct in high),
         )
-    return result("PASS", f"No column exceeds the >{HIGH_NULL_THRESHOLD:.0%} null threshold.", f"{df.width} columns checked")
+    note = f"; {len(sparse)} declared sparse-by-design and not checked: {', '.join(sparse)}" if sparse else ""
+    return result("PASS", f"No column exceeds the >{HIGH_NULL_THRESHOLD:.0%} null threshold.",
+                  f"{df.width} columns checked{note}")
 
 
 def check_dq3(df, pk: list[str], event: list[str]) -> dict[str, dict]:
@@ -312,10 +351,10 @@ def check_dq4(df) -> dict:
     )
 
 
-def check_dq5(df, pk: list[str], event: list[str]) -> dict:
+def check_dq5(df, pk: list[str], event: list[str], freetext: list[str] | None = None) -> dict:
     import polars as pl
 
-    keys = set(pk) | set(event)
+    keys = set(pk) | set(event) | set(freetext or [])
     categorical = [
         c for c in df.columns
         if df.schema[c] in (pl.String, pl.Categorical, pl.Enum) and c not in keys
@@ -426,6 +465,7 @@ def check_output(path: Path, keys_spec: str, window_spec: str) -> dict:
         return checks
 
     pk, event = parse_keys(keys_spec)
+    ann = parse_annotations(keys_spec)
 
     if df.height == 0:
         for check in ("DQ1", "DQ2", "DQ3", "DQ5"):
@@ -435,10 +475,10 @@ def check_output(path: Path, keys_spec: str, window_spec: str) -> dict:
         checks["COV"] = result("FAIL", "Artifact has zero rows, so it covers no window at all.")
     else:
         checks["DQ1"] = check_dq1(df)
-        checks["DQ2"] = check_dq2(df)
+        checks["DQ2"] = check_dq2(df, ann["sparse"])
         checks.update(check_dq3(df, pk, event))
         checks["DQ4"] = check_dq4(df)
-        checks["DQ5"] = check_dq5(df, pk, event)
+        checks["DQ5"] = check_dq5(df, pk, event, ann["freetext"])
         checks["DQ6"] = check_dq6()
         checks["COV"] = check_cov(df, window_spec)
 
