@@ -35,7 +35,11 @@ works, not what the user wants.
    over an alternate path proves nothing about the one that ships.
 5. **The first failing test and what RED looks like** — which test fails first, and the failure
    output that counts. A syntax error, an import error, a broken fixture, a missing dependency or an
-   unrelated failure elsewhere in the suite is **not** the RED this workflow accepts.
+   unrelated failure elsewhere in the suite is **not** the RED this workflow accepts. This is
+   computed, not asserted: `red_probe_gate` classifies a collection/import error as `could-not-run`
+   and refuses to dispatch. **For a surface that does not exist yet, that means a stub** — one that
+   exists and raises, so the failure is an assertion rather than an ImportError — and the stub is
+   named in the plan's `scaffoldPaths` so the main thread may author it while the run is armed.
 6. **Required runtime evidence** — what has to be observed at runtime rather than read in source:
    logs, HTTP/WS exchanges, rendered output, exit codes, screenshots.
 7. **Review surface** — working tree, commit range, or PR.
@@ -97,6 +101,11 @@ Craft's Phase 2. Three domain requirements on the table:
   unchecked. Write `refs: []` to state "no domain rules" rather than omitting the key.
 - **Narrow `writablePaths`** — the probe runs a command that loads code the implementer can edit, so
   a wide writable set lets the implementer reach the thing proving its own RED.
+- **`scaffoldPaths` for greenfield only, naming files and not directories** — the test suite needs
+  no entry (no task writes it, so the guard already allows it); the stub does, because it is the
+  implementer's output *and* a precondition of its own red gate. A scaffold as wide as a task's
+  writable surface is `scaffold-swallows-task` at plan-lint, and it is the guard turned off with
+  extra steps.
 
 ## Phase 3 — GOAL
 
@@ -204,6 +213,8 @@ Craft's Phase 5 unchanged, on the review surface from CLARIFY axis 7.
 
 | Situation | Wrong move | Right move |
 |---|---|---|
+| Guard denies a pre-dispatch write | `--abandon` to get moving | read the denial: an uncovered path is already writable, and a covered one that must pre-exist goes in `scaffoldPaths`. `--abandon` unguards the rest of the session and silences the Stop nudge with it |
+| RED is an ImportError on the module being built | call it red and dispatch | the probe refuses it as `could-not-run`; write the throwing stub, declare it in `scaffoldPaths` |
 | LSP enabled, binary never installed | trust the install's exit 0 | one `LSP documentSymbol` on a repo file before recon; `ENOENT` there is the whole failure |
 | No test harness in the repo | proceed and test by hand | test infrastructure is the first task, decided at CLARIFY — absence of tests is never a waiver |
 | The failing test needs two steps | `redCommand: "build && test"` | craft throws on shell operators; put the steps in a script and name the script |
