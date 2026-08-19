@@ -127,6 +127,24 @@ describe('the redCommand probe runs at dispatch, not a round later', () => {
     expect(r.out).not.toMatch(/red-probe T2/)
   })
 
+  test('a suite that never LOADED is could-not-run — an import error is not a behavioural red', () => {
+    // dev CLARIFY axis 5 refuses this shape in prose; before this rule the probe accepted it.
+    // Measured: pytest exits 2 and prints "1 error in 0.04s", which the EVIDENCE regex matches,
+    // so a plan whose surface did not exist yet dispatched on a red that proved nothing.
+    const f = fixture({ redCommand: 'bash scripts/collect.sh' })
+    script(f.dir, 'collect.sh', 'echo "ERROR test_x.py"\necho "Interrupted: 1 error during collection"\necho "1 error in 0.04s"\nexit 2')
+    const r = dispatch(f)
+    expect(r.code).toBe(3)
+    expect(r.out).toMatch(/never loaded/)
+  })
+
+  test('a genuine assertion failure is still red — the collection rule must not eat real reds', () => {
+    const f = fixture({ redCommand: 'bash scripts/assert.sh' })
+    script(f.dir, 'assert.sh', 'echo "E   AssertionError: 2 != 1"\necho "1 failed in 0.05s"\nexit 1')
+    const r = dispatch(f)
+    expect(r.out).toMatch(/red-probe .*: red /)
+  })
+
   test('a readOnly run probes nothing — no redCommand is dispatched there either', () => {
     const f = fixture({ redCommand: 'bash scripts/green.sh', extraArgs: { readOnly: true } })
     script(f.dir, 'green.sh', 'echo "3 passed"\nexit 0')

@@ -195,6 +195,13 @@ EVIDENCE = re.compile(
 # a genuinely failing test legitimately prints.
 MISSING = re.compile(r"command not found|:\s*not found\b|is not recognized as", re.I)
 NOMODULE = re.compile(r"No module named ['\"]?([\w.]+)")
+# The suite never LOADED. Distinct from a missing runner (above): the runner ran, and died reading
+# the test files. dev CLARIFY axis 5 refuses this shape of red explicitly, and until this rule the
+# refusal was prose only — measured: a test importing a nonexistent module exits pytest 2 and prints
+# "1 error in 0.04s", which EVIDENCE matches, so the probe called it a genuine RED and dispatched.
+COLLECT = re.compile(
+    r"errors? during collection|ImportError while importing test module"
+    r"|Cannot find module|ERR_MODULE_NOT_FOUND", re.I)
 TOKEN = r"(?<![\w.\-])%s(?![\w.\-])"
 
 
@@ -212,6 +219,11 @@ def classify(cmd, code, out):
         return "could-not-run", (
             f"'{m.group(1)}' is named in the command but is not importable — the RUNNER is "
             "missing, so this exit code is an import error, not a test verdict")
+    if COLLECT.search(out):
+        return "could-not-run", (
+            "the suite never loaded — a collection/import error is not a behavioural failure. "
+            "The surface under test has to EXIST before its red means anything; a stub that "
+            "raises is enough, and the plan declares it in scaffoldPaths")
     if code in (4, 5) and re.search(TOKEN % "pytest", cmd):
         return "could-not-run", (
             f"pytest exit {code} — " + ("usage error" if code == 4 else "no tests were collected"))

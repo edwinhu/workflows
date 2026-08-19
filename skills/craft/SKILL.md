@@ -450,6 +450,9 @@ so give it a quiet tree. Live-service and network commands are skipped unless `-
   a file a later task creates is refused too, and a run's failing tests must exist before it starts —
   author them before dispatching, which the guard permits because no task's `writablePaths` covers a
   suite that gates the run (one that did would be `self-gating-task`).
+  **A suite that never loaded is `could-not-run`, not red**: a collection or import error means the
+  surface under test does not exist, and a red that only proves that proves nothing about behaviour.
+
   Run by hand, `plan-preflight` decides on the exit code alone — `red-gate-already-green` (0),
   `gate-command-not-found` (127), `gate-timeout` (no status); it has no could-not-run classifier,
   which reads the probe's OUTPUT and lives only in `craft-dispatch.sh`'s `red_probe_gate`.
