@@ -1,5 +1,22 @@
 # Changelog
 
+## [6.5.0] - 2026-08-19
+
+### Fixed
+
+- **The red probe accepted an import error as a genuine RED.** Measured: a test importing a nonexistent module exits pytest 2 and prints `1 error in 0.04s`, which `red_probe_gate`'s EVIDENCE regex matches — so a run whose surface did not exist yet dispatched on a red that proved nothing about behaviour. dev CLARIFY axis 5 already refused that shape in prose, and nothing executed the prose. The classifier now returns `could-not-run` for a collection error, an `ImportError while importing test module`, or node's `Cannot find module` / `ERR_MODULE_NOT_FOUND`. The existing `NOMODULE` rule never covered this: it fires only when the missing module is named in the command, which catches a missing *runner*, not the module under construction.
+- **dev's RED rule and craft's write guard were jointly unsatisfiable for greenfield work.** Axis 5 forbids an import-error red, so a new surface needs a stub that exists and raises; a stub is the implementer's output, so it sits in some task's `writablePaths`; and the guard denies exactly those while a run is armed. Every exit was sealed, and `--abandon` was the only one left — which releases the guard for the whole rest of the session and switches off the Stop-hook nudge with it, since that nudge fires only when a dispatch is still pending. A plan defect therefore became a disarmed run that implemented in chat and never reached farm-out.
+
+### Added
+
+- **`scaffoldPaths`** — the plan declares what it authors *before* the dispatch, and `craft-dispatch.sh --scaffold PLAN PATH` (0 declared, 1 not, 2 undecidable) answers for `main-thread-guard.sh`. Kept separate from `--covers` deliberately: a stub is both the implementer's output and a precondition of its own red gate, so one predicate can never answer both. An absent list returns a decidable 1, not 2, so the ordinary plan does not fail the guard closed on every write. Nothing about how implementers run changes.
+- **`scaffold-swallows-task` (plan-lint, major)** — a scaffold covering a task's entire writable surface is the write guard turned off with extra steps. Uses directional containment rather than craft's symmetric `pathOverlap`, which flagged the legitimate narrow case on the first attempt (`src/stub.py` under a `src/` task) and is now a test.
+
+### Changed
+
+- **dev CLARIFY gains axis 8: the language, and its project-scoped LSP, installed before reconnaissance.** Three separable steps, only one of which is the plugin. The binary must be **global** — Claude Code resolves an LSP `command` from PATH alone, never the plugin root, `${CLAUDE_PROJECT_DIR}`, a project venv or `node_modules/.bin` — so a project-local server is unreachable by construction; project fidelity comes from config (`pyrightconfig.json`, or the project's own tsserver) instead. Registration is separate again: a mid-session install is inert until `/reload-plugins`. Found by running it — `pyright-lsp` was enabled with no `pyright-langserver` on PATH, so every LSP call had been failing `ENOENT`. Hence the red flag: prove it with one `LSP` call, never the install's exit code.
+- **`main-thread-guard.sh` explains its denial** (in `~/dotfiles`, committed separately). It offered only "dispatch, or `--abandon`" and never mentioned that an uncovered path is already writable — which is why `--abandon` got used for a case the guard was designed to permit. It now names the wall it hit and points at `scaffoldPaths`.
+
 ## [6.4.0] - 2026-08-18
 
 ### Changed
