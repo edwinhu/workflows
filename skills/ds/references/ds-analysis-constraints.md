@@ -22,10 +22,11 @@ Deterministic rules for data analysis tasks (statistical analysis, modeling, vis
 | A2 | Standard Error Spec | [ds-standard-error-spec.md](${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-standard-error-spec.md) | Match SE type to data structure — wrong SEs invalidate all inference |
 | A3 | Visualization Integrity | [ds-visualization-integrity.md](${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-visualization-integrity.md) | Charts must not mislead — no truncated axes, dual-axis tricks, or 3D |
 | A4 | Table-Figure Pairing | [ds-table-figure-pairing.md](${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-table-figure-pairing.md) | Every main result table needs a companion figure (the "Hendershott" rule) |
+| A5 | Chart Typography | [ds-chart-typography.md](${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-chart-typography.md) | Charts inherit the host document's type and palette — one registered theme, never per-chart styling |
 
 ## Loading Guide
 
-For analysis tasks, load all A1-A4. The most critical for preventing silent errors:
+For analysis tasks, load all A1-A5. The most critical for preventing silent errors:
 
 | Priority | Constraints | Why |
 |----------|-------------|-----|

@@ -143,6 +143,14 @@ def _(df, pl):
 - Variables cannot be redefined across cells
 - All used variables must be returned from their defining cell
 - **Markdown cells: Always wrap `$` in backticks** - `mo.md("Cost: `$50`")` not `mo.md("Cost: $50")`
+- **Markdown cells: never hard-code a number, and never hard-code the QUANTIFIER either.**
+  Every figure is an f-string off the data (`mo.md(f"{_n:,} advisers")`), so a rebuild
+  cannot leave prose asserting last month's count. The subtler half: words like "all",
+  "every", "none", "both" and "only" go stale even when the number beside them
+  interpolates. Measured: a sentence reading "**{_io} advisers use it, and all {_io_bd} of
+  them describe board seats**" survived a corpus rebuild that took it from 62 advisers to
+  4 — of which 2 had board seats. Both numbers were correct and the sentence was false.
+  Compute the quantifier (`{_io_bd} of the {_io}`) or phrase it so the count carries it.
 
 ## Core CLI Commands
 
