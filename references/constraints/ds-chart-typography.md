@@ -15,6 +15,21 @@ typography and palette ONCE, as a registered theme, before any chart is built.
 | **Register a theme; never style chart by chart** | A chart added later silently keeps the library default. The failure is invisible to the author and obvious to the reader |
 | **Labels are written for a reader, in Title Case** — `factual_description` is a field name, `Factual Description` is a label | A raw identifier in an exhibit reads as unfinished work. The exception is quoted source language, which stays verbatim: title-casing a filer's words misquotes them |
 
+**Raster resolution follows the ART CLASS, not a single number.** 300 DPI is the standard
+for continuous-tone images and is the floor everywhere. Charts are line art with type —
+hard edges and small serif characters — which publishers hold to a higher bar (roughly 300
+halftone / 500 combination / 1000 line art). Derive the scale factor from the width the
+figure is PLACED at, never guess it, and assert the result:
+
+```python
+scale = ceil(TARGET_DPI * placed_width_in / chart_width_px * 100) / 100
+assert chart_width_px * scale / placed_width_in >= 300
+```
+
+Spend the resolution where the raster is TERMINAL — a figure flattened into a legacy
+format nobody can re-render is the one that has to last. Where a vector copy travels
+alongside, the raster is only a fallback and 300 is enough.
+
 Chart-level config beats theme config. A single `.configure_axis(...)`, `rcParams` write, or
 inline `font=` re-opens the hole the theme closed, so the lint below refuses them.
 
