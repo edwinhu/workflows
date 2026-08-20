@@ -1,5 +1,14 @@
 # Changelog
 
+## [6.6.0] - 2026-08-20
+
+Both entries are one incident, diagnosed from a 20h transcript: a mail-bridge session ran 9h21m unattended — 1,055 turns, 11 auto-compactions, **zero commits** — while converging perfectly well on the work (surviving blocking findings 19 → 2, suite at 610 pass / 2 fail). It could not stop and it could not pass, for two independent mechanical reasons.
+
+### Fixed
+
+- **A mechanical check killed by a timeout was scored as a failing gate.** 124/137/143 mean the command was still running when something stopped it, not that the code under it failed. One "production aggregate gate" returned 143 in two consecutive ~3h rounds — both killed at 10m0s inside a 50k scale phase — so `overallPass` could never be true and each round re-derived the same non-answer. `craft-result.sh` now refuses a kill code (exit 2) rather than adjudicating it. The constraint behind it is now stated in SKILL.md: a check's `cmd` is run **twice** by two callers that both cap at ~10 minutes — the probe agent's Bash tool (600s, not tunable) and `craft-result.sh`'s own re-run for adjudication — so anything genuinely long belongs *behind* the gate, running detached and writing an artifact the check reads fast.
+- **The goal's machine escape was denominated in rounds, and a round has no time bound.** `compose-goal.sh` was already careful — it refused undecidable clauses and paired the human review event with "or the rounds field reads N or more". But rounds took 3h+ against `maxRounds` 4, so the guaranteed stop sat twelve hours out, and the only reachable exit before then was a human who was asleep. The goal now carries a third clause: a wall-clock ceiling (default 8h, `CRAFT_GOAL_MAX_HOURS`), settled by the new `craft-elapsed.sh`, which prints elapsed time, completed rounds on disk, and `CEILING REACHED` or not — so the Stop judge reads a verdict instead of subtracting timestamps. Elapsed comes from the run **directory**, not `args.json`, which a re-dispatch rewrites.
+
 ## [6.5.0] - 2026-08-19
 
 ### Fixed
