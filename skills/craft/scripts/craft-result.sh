@@ -136,6 +136,22 @@ while IFS=' ' read -r name64 cmd64; do
     die "REFUSED — mechanical check \"$name\" claims exitCode $claimed, yet the result claims overallPass true"
   fi
 
+  # 124/137/143 are a KILL, not an exit: the command was still running when something stopped it —
+  # `timeout`, SIGKILL, or the Bash tool's 10-minute ceiling. That says the gate is unrunnable as
+  # written, not that the code under it fails, and re-running it here would hit the same wall.
+  # Measured 2026-08-19 (mail-bridge): the same check returned 143 in two consecutive rounds, each
+  # ~3h, and each was scored as a failing gate — so overallPass could never be true and the run
+  # burned its rounds on a verdict that carried no information about the work.
+  case "$claimed" in
+    124|137|143)
+      printf 'craft-result.sh: REFUSED — mechanical check "%s" reports exitCode %s, which is a kill (timeout/SIGKILL), not a result.\n' "$name" "$claimed" >&2
+      printf '  The gate could not run to completion, so it says nothing about the code. Split it: the\n' >&2
+      printf '  slow part runs detached and writes an artifact, and the check reads that artifact fast\n' >&2
+      printf '  enough to be re-run here. A gate this shell cannot re-run cannot be adjudicated.\n' >&2
+      printf '  cmd: %s\n' "$cmd" >&2
+      exit 2 ;;
+  esac
+
   # -1 is the fail-closed sentinel ../workflow.js writes for a probe that died or was skipped: NO
   # claim was made, so there is nothing to re-run against. Structurally unadjudicable, and a
   # legitimate FAIL carried by overallPass — refusing here would lose a verdict the gate got right.

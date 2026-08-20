@@ -604,3 +604,39 @@ describe('craft-result.sh does not let a re-run consume the check list', () => {
     expect(r.stderr).toContain('liar')
   })
 })
+
+describe('a kill code is not a verdict about the code', () => {
+  // Measured 2026-08-19 (mail-bridge): the same gate returned 143 in two consecutive ~3h rounds --
+  // the Bash tool's 600s ceiling killing a 50k scale phase -- and each round scored it as a failing
+  // gate, so overallPass could never be true no matter how good the work got.
+  for (const code of [124, 137, 143]) {
+    test(`exitCode ${code} is REFUSED, not scored as a failing gate`, () => {
+      const r = runRaw(
+        JSON.stringify({
+          ...valid(),
+          overallPass: false,
+          verdict: 'FAIL',
+          mechanical: [{ name: 'agg', exitCode: code, output: 'killed' }],
+          mechanicalThatFailed: [{ name: 'agg', exitCode: code }],
+        }),
+        { args: { projectDir: tmpdir(), mechanicalChecks: [{ name: 'agg', cmd: 'true' }] } },
+      )
+      expect(r.code).toBe(2)
+      expect(r.stderr).toMatch(/kill \(timeout\/SIGKILL\)/)
+    })
+  }
+
+  test('an ordinary non-zero exit is still adjudicated by re-running, not refused', () => {
+    const r = runRaw(
+      JSON.stringify({
+        ...valid(),
+        overallPass: false,
+        verdict: 'FAIL',
+        mechanical: [{ name: 'agg', exitCode: 1, output: 'x' }],
+        mechanicalThatFailed: [{ name: 'agg', exitCode: 1 }],
+      }),
+      { args: { projectDir: tmpdir(), mechanicalChecks: [{ name: 'agg', cmd: 'exit 1' }] } },
+    )
+    expect(r.code).toBe(1)
+  })
+})
