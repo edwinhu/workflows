@@ -23,12 +23,21 @@ family, or when cross-checking one family against another.
 | persistent / remote agents | the `agent-spawn` skill (it reaches other machines; this skill does not) |
 
 A description cannot carry this on its own — three rewrites all plateaued near
-40% recall, so the routing is enforced by the `Agent|Workflow` PreToolUse hook
-at `~/.claude/hooks/main-thread-guard.sh`. It denies with a reason that names the
-runner, which a bare `permissions.deny` rule cannot do. The hook exempts
-`FARM_OUT_CHILD=1` (our own runners' children, else farm-team.sh blocks itself)
-and named agent types like Explore/Plan/librarian. Add to its `case` to exempt
-another one.
+40% recall, so the routing is enforced by `~/.claude/hooks/main-thread-guard.sh`
+(PreToolUse on `Agent|Task|Workflow|Edit|Write|NotebookEdit`). It denies with a
+reason that names the runner, which a bare `permissions.deny` rule cannot do. The
+hook exempts `FARM_OUT_CHILD=1` (our own runners' children, else farm-team.sh
+blocks itself) and named agent types like Explore/Plan/librarian. Add to its
+`case` to exempt another one.
+
+**Delegating is a choice the hook cannot make for you** — the `Agent|Workflow`
+branch only redirects delegation you already chose. To make a project refuse
+main-thread implementation outright, set `"farmOutOnly": true` in its committed
+`.claude-workflows.json`; every `Edit`/`Write` there is then denied unless it
+targets that file, `.claude/plans/`, or `.craft/`. Without it the `Edit` branch
+allows unconditionally whenever no craft dispatch is owed — measured 2026-08-20:
+313 main-thread writes in mail-bridge over 28 hours with the hook enabled, the
+user objecting three times.
 
 ## Two rules that are not optional
 
