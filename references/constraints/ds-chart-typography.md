@@ -13,9 +13,7 @@ typography and palette ONCE, as a registered theme, before any chart is built.
 |---|---|
 | **Every glyph in the chart matches the document's type** — title, axis labels, axis titles, legend title and labels, in-chart annotations | A serif page with a sans axis label reads as two documents. Half-converting (title only) is worse than not converting |
 | **Register a theme; never style chart by chart** | A chart added later silently keeps the library default. The failure is invisible to the author and obvious to the reader |
-| **One palette object, sampled from the continuous scheme in use** | A viridis swarm beside a `tab10` bar chart reads as two studies |
-| **Reserve exactly one out-of-scheme colour for the one thing that must stand out** — a defendant, a treated unit, the focal firm | If everything is emphasised, nothing is. Pick a hue the scheme does not contain, so it cannot be mistaken for a value on the ramp |
-| **Grey is for absence** — missing, "neither", not-applicable | A category that means "nothing here" should not compete for attention with one that means something |
+| **Labels are written for a reader, in Title Case** — `factual_description` is a field name, `Factual Description` is a label | A raw identifier in an exhibit reads as unfinished work. The exception is quoted source language, which stays verbatim: title-casing a filer's words misquotes them |
 
 Chart-level config beats theme config. A single `.configure_axis(...)`, `rcParams` write, or
 inline `font=` re-opens the hole the theme closed, so the lint below refuses them.
@@ -32,6 +30,8 @@ def _theme():
 # matplotlib
 plt.rcParams.update({"font.family": DOC_FONT, "axes.titlesize": 13})
 ```
+
+Colour is A6 (`ds-chart-color.md`); this file is type only.
 
 Find the document's font rather than assuming: read it off the rendered page (marimo sets
 Lora/PT Sans; a Typst deck uses whatever the template declares; a docx uses its style).
