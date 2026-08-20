@@ -640,3 +640,40 @@ describe('a kill code is not a verdict about the code', () => {
     expect(r.code).toBe(1)
   })
 })
+
+describe('a claimed/observed disagreement says WHICH direction it went', () => {
+  // Measured 2026-08-20 (mail-bridge): a probe reported the aggregate gate exiting 1 after
+  // timing-sensitive tests blew a 5s budget under concurrent load; the re-run exited 0. Both
+  // directions refused identically, so a flake read as an untrustworthy gate and blocked human
+  // review. Both still exit 2 -- passing a non-reproducing failure would wave a flaky gate through.
+  const mech = (claimed: number, cmd: string) =>
+    runRaw(
+      JSON.stringify({
+        ...valid(),
+        overallPass: claimed === 0,
+        verdict: claimed === 0 ? 'PASS' : 'FAIL',
+        mechanical: [{ name: 'agg', exitCode: claimed, output: 'x' }],
+        mechanicalThatFailed: claimed === 0 ? [] : [{ name: 'agg', exitCode: claimed }],
+      }),
+      { args: { projectDir: tmpdir(), mechanicalChecks: [{ name: 'agg', cmd }] } },
+    )
+
+  test('a claimed FAILURE that passes on re-run is named a probe-side flake, and says re-run not re-plan', () => {
+    const r = mech(1, 'true')
+    expect(r.code).toBe(2)
+    expect(r.stderr).toMatch(/claimed FAILURE does not reproduce/)
+    expect(r.stderr).toMatch(/RE-RUN the gate, do not re-plan/)
+  })
+
+  test('a claimed PASS that fails on re-run is named untrusted — the case the adjudicator exists for', () => {
+    const r = mech(0, 'exit 3')
+    expect(r.code).toBe(2)
+    expect(r.stderr).toMatch(/claimed PASS does not reproduce/)
+  })
+
+  test('two different non-zero codes read as non-determinism, not as either direction', () => {
+    const r = mech(1, 'exit 4')
+    expect(r.code).toBe(2)
+    expect(r.stderr).toMatch(/not deterministic/)
+  })
+})

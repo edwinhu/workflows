@@ -161,9 +161,24 @@ while IFS=' ' read -r name64 cmd64; do
   # stdin would otherwise eat the remaining checks and end the loop early — a silent skip.
   if out=$( (cd "$CWD" && eval "$cmd") </dev/null 2>&1 ); then observed=0; else observed=$?; fi
   if [ "$observed" != "$claimed" ]; then
+    # The two directions of this disagreement mean opposite things, and reporting them
+    # identically is how a flake reads as a lie and stalls the workflow. Measured
+    # 2026-08-20 (mail-bridge): a probe reported the aggregate gate exiting 1 after
+    # timing-sensitive tests blew a 5s budget under concurrent load; this re-run exited 0.
+    # That refusal blocked human review as though the gate could not be trusted, when what
+    # actually happened is that the FAILURE could not be reproduced.
+    #
+    # Both still exit 2. Passing a non-reproducing failure would wave a genuinely flaky
+    # gate straight through, which is the opposite lesson.
+    case "$claimed/$observed" in
+      0/*) direction='the claimed PASS does not reproduce — the probe reported success this shell cannot observe. Treat the result as untrusted: this is the case the adjudicator exists for.' ;;
+      */0) direction='the claimed FAILURE does not reproduce — this shell ran the same command and it PASSED. That is a probe-side flake, not a verdict about the code; a check that is load-sensitive (a default test timeout, a wall-clock budget) fails this way while craft runs agents concurrently. RE-RUN the gate, do not re-plan or dispatch another round on it.' ;;
+      *)   direction='both runs failed, with different exit codes — the check is not deterministic.' ;;
+    esac
     {
       printf 'craft-result.sh: REFUSED — mechanical check "%s" claims exitCode %s, the shell observed %s\n' \
         "$name" "$claimed" "$observed"
+      printf '  %s\n' "$direction"
       printf '  cmd: %s\n  cwd: %s\n  last output:\n' "$cmd" "$CWD"
       printf '%s\n' "$out" | tail -n 20 | sed 's/^/    /'
     } >&2

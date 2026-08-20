@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.6.1] - 2026-08-20
+
+### Changed
+
+- **The adjudicator's refusal now names which direction the disagreement went.** `craft-result.sh` re-runs every declared mechanical check and refuses (exit 2) when the observed exit code differs from the claim — but the two directions mean opposite things. A claimed **FAILURE** that passes on re-run is a probe-side flake: load-sensitive checks (a default test timeout, a wall-clock budget) fail that way while craft runs agents concurrently, and the right response is to re-run the gate, not re-plan or spend another round. A claimed **PASS** that fails on re-run is the case the adjudicator exists for. Measured 2026-08-20 (mail-bridge): a probe reported the aggregate gate exiting 1 after three tests blew Bun's 5s default budget under concurrent load; the re-run exited 0, and the identical refusal message made a flake read as an untrustworthy gate and blocked human review. Both directions still exit 2 — passing a non-reproducing failure would wave a genuinely flaky gate straight through.
+
 ## [6.6.0] - 2026-08-20
 
 Both entries are one incident, diagnosed from a 20h transcript: a mail-bridge session ran 9h21m unattended — 1,055 turns, 11 auto-compactions, **zero commits** — while converging perfectly well on the work (surviving blocking findings 19 → 2, suite at 610 pass / 2 fail). It could not stop and it could not pass, for two independent mechanical reasons.
