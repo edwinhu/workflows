@@ -91,3 +91,23 @@ describe('compose-goal.sh', () => {
     }
   })
 })
+
+describe('the goal carries a wall-clock escape, not only a round count', () => {
+  // Measured 2026-08-19 (mail-bridge): rounds ran 3h+, so `rounds >= 4` put the guaranteed stop
+  // twelve hours out. The session worked all night and could not close its own goal.
+  test('the emitted goal names craft-elapsed.sh and an hours ceiling', () => {
+    const r = compose({ rounds: '4' })
+    expect(r.code).toBe(0)
+    expect(r.out).toMatch(/craft-elapsed\.sh/)
+    expect(r.out).toMatch(/8 hours or more/)
+  })
+
+  test('a readOnly goal carries it too', () => {
+    expect(compose({ readOnly: true }).out).toMatch(/craft-elapsed\.sh/)
+  })
+
+  test('the rounds escape survives alongside it', () => {
+    const out = compose({ rounds: '4' }).out
+    expect(out).toMatch(/reads 4 or more/)
+  })
+})
