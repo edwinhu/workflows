@@ -5,6 +5,8 @@ Account-gated: `boardex_na` is readable by **`edwin_hu` only**; `eddyhu` sees `b
 `boardex_trial` and gets `permission denied for schema boardex_na` on every real table.
 `boardex_uk`, `boardex_eur`, `boardex_row` are denied to both. See `capiq.md` for the mirror-image
 split — the two best board sources cannot share a connection.
+Use BoardEx employment, not PitchBook's `representingname`, to decide sponsor affiliation —
+see the measured disagreement in `pitchbook.md`.
 
 ## Coverage — the number that decides whether BoardEx fits your sample
 

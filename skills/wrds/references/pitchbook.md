@@ -95,6 +95,23 @@ PitchBook covers private market activity: VC/PE deals, fund formation, LP commit
 
 ## CRITICAL: Quirks and Gotchas
 
+### 0. `representingname` measures DOCUMENTATION, not affiliation
+
+To decide whether a board member is affiliated with a sponsor, use BoardEx director
+employment — does this person work at the firm — not PitchBook's `representingname`
+label. The label is populated unevenly ACROSS FIRMS, so any cross-firm comparison built
+on it is partly a comparison of how completely each firm's deals were documented.
+
+Measured on take-private targets: `representingname` counts Thoma Bravo 70 times against
+Blackstone's 23, and puts TB at **48% pre-deal board presence (p<0.001 against peers)**.
+BoardEx employment on the same deals puts TB at **14% against a 17% peer average
+(p=0.82)**. Same question, opposite answers, and only the second is independent of who
+filled in the label.
+
+The two sources are account-split (`boardex.md`, `capiq.md`), so the honest version of
+this comparison needs both connections — which is exactly the friction that makes the
+convenient single-source answer attractive.
+
 ### 1. `dealsize` is in **USD millions** — not dollars
 
 ```python
