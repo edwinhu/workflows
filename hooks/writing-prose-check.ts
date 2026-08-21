@@ -27,7 +27,7 @@
  * Non-blocking: reports violations as an additionalContext message.
  */
 import { context, readPayload } from "./_gate_common";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { authenticatedWritingPlan } from "./lib/writing-plan-context.ts";
 import { join, dirname } from "node:path";
 
@@ -251,6 +251,55 @@ export function runCheckAll(projectRoot: string, path: string, ranges: Range[]):
   return out;
 }
 
+/** The most recently modified prose file (drafts/*.md or a non-deck *.typ) that git reports as
+ *  dirty under `cwd`. Empty string when there is none, git is absent, or cwd is not a repo. */
+/** Changed line ranges for `path` from git, padded by 2 lines for context. Whole file when the
+ *  file is untracked or git cannot answer. Edit/Write carry their own ranges; a Bash heredoc does
+ *  not, and without this every command re-reports the whole document's standing findings — which
+ *  is how a hook earns being ignored. */
+export function gitChangedRanges(path: string): Range[] {
+  try {
+    const dir = pyParent(path);
+    const d = Bun.spawnSync(["git", "-C", dir, "diff", "-U0", "--", path],
+      { stdout: "pipe", stderr: "ignore" });
+    if (d.exitCode !== 0) return [WHOLE_FILE];
+    const out = new TextDecoder().decode(d.stdout);
+    if (!out.trim()) return [WHOLE_FILE];        // untracked, or staged-only
+    const ranges: Range[] = [];
+    for (const m of out.matchAll(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/gm)) {
+      const start = parseInt(m[1], 10);
+      const count = m[2] === undefined ? 1 : parseInt(m[2], 10);
+      if (count === 0) continue;                 // pure deletion: nothing to lint
+      ranges.push([Math.max(1, start - 2), start + count + 2]);
+    }
+    return ranges.length ? ranges : [WHOLE_FILE];
+  } catch { return [WHOLE_FILE]; }
+}
+
+function bashTouchedProseFile(cwd: string): string {
+  try {
+    const r = Bun.spawnSync(["git", "-C", cwd, "status", "--porcelain", "--untracked-files=all"],
+      { stdout: "pipe", stderr: "ignore" });
+    if (r.exitCode !== 0) return "";
+    const root = Bun.spawnSync(["git", "-C", cwd, "rev-parse", "--show-toplevel"],
+      { stdout: "pipe", stderr: "ignore" });
+    const base = new TextDecoder().decode(root.stdout).trim();
+    if (!base) return "";
+    const cands: { path: string; mtime: number }[] = [];
+    for (const line of new TextDecoder().decode(r.stdout).split("\n")) {
+      const rel = line.slice(3).trim();
+      if (!rel) continue;
+      const abs = join(base, rel);
+      const isDraftMd = rel.endsWith(".md") && pyName(pyParent(abs)) === "drafts";
+      const isTyp = rel.endsWith(".typ") && !isTypDeck(abs);
+      if (!isDraftMd && !isTyp) continue;
+      try { cands.push({ path: abs, mtime: statSync(abs).mtimeMs }); } catch { /* deleted */ }
+    }
+    cands.sort((a, b) => b.mtime - a.mtime);
+    return cands[0]?.path ?? "";
+  } catch { return ""; }
+}
+
 async function main(): Promise<void> {
   let hookInput: Record<string, unknown>;
   try {
@@ -260,10 +309,18 @@ async function main(): Promise<void> {
   }
 
   const toolName = (hookInput.tool_name as string) ?? "";
-  if (toolName !== "Edit" && toolName !== "Write") process.exit(0);
+  if (toolName !== "Edit" && toolName !== "Write" && toolName !== "Bash") process.exit(0);
 
   const toolInput = (hookInput.tool_input as Record<string, unknown>) ?? {};
-  const filePath = (toolInput.file_path as string) ?? "";
+  // GATE ON THE ARTIFACT, NOT THE TOOL. Edit/Write name their target; a Bash heredoc, sed, or
+  // python rewrite does not, and an `Edit|Write` matcher therefore misses every prose file
+  // written that way. For Bash we ask git which tracked prose files the command dirtied, which
+  // is derived state, not a mtime ledger we would have to keep.
+  let filePath = (toolInput.file_path as string) ?? "";
+  if (toolName === "Bash") {
+    const cwd = (hookInput.cwd as string) ?? process.cwd();
+    filePath = bashTouchedProseFile(cwd);
+  }
   if (!filePath) process.exit(0);
 
   const path = pyStr(filePath);
@@ -284,11 +341,17 @@ async function main(): Promise<void> {
   }
 
   const writingPlan = authenticatedWritingPlan(projectRoot);
-  // Canonical writing hooks run only for an authenticated APPROVED receipt-selected plan.
-  // Missing, pending, malformed, and legacy-only projects fail safe without lint output.
-  if (!writingPlan) process.exit(0);
-  const style = writingPlan.style || null;
-  const ranges = editRanges(toolName, toolInput, path);
+  // STRUCTURAL checks stay gated on an authenticated APPROVED plan — they encode craft-workflow
+  // invariants (outline-sync, anchored-numbers) that are meaningless outside a craft run.
+  //
+  // The PROSE AUDIT is not gated, and used to be. `if (!writingPlan) process.exit(0)` meant a
+  // draft written outside a craft workflow was never linted AND never said so, which reads
+  // identically to "clean". Measured 2026-08-21: a 1,150-word blog post under docs/blog/ carried
+  // an `ai-tic·sev3·rule-bites` hit through nine editing rounds because rule611 has no
+  // .claude/plans/. Silence that cannot be distinguished from a pass is not failing safe.
+  if (!writingPlan) runCheckAllFlag = false;
+  const style = writingPlan?.style || null;
+  const ranges = toolName === "Bash" ? gitChangedRanges(path) : editRanges(toolName, toolInput, path);
 
   let violations = runProseAudit(path, style, ranges);
   if (runCheckAllFlag) violations = violations.concat(runCheckAll(projectRoot, path, ranges));
