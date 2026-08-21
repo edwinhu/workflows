@@ -1,12 +1,12 @@
 # Dewey Data Catalog (UVA/NYU subscription)
 
-Auto-generated map of the Dewey catalog under the institutional subscription — **249 datasets / 39 partners**, **11,264 columns total**. Access: **DL**=downloadable, **sample**=sample-only, **—**=view-only. Coverage = date-partition range (else `snapshot`). Per-dataset **full column schemas** (name/type/description) are in `schemas.json` (keyed by slug).
+Auto-generated map of the Dewey catalog under the institutional subscription — **250 datasets / 40 partners**, **11,282 columns total**. Access: **DL**=downloadable, **sample**=sample-only, **—**=view-only. Coverage = date-partition range (else `snapshot`). Per-dataset **full column schemas** (name/type/description) are in `schemas.json` (keyed by slug).
 
-> Pick a dataset here → look up its columns in `schemas.json` (or MCP `get_dataset_schema`) → `read_sample` → bulk pull (SKILL Iron Law). Regenerate via the MCP sweep (see `mcp.md`).
+> Pick a dataset here → look up its columns in `schemas.json` (or MCP `get_dataset_schema`) → `read_sample` → bulk pull (SKILL Iron Law). Regenerate via the MCP sweep (see `mcp.md`). **GovFiles / Business Entity was added by hand after the last sweep** — the next regeneration should pick it up from the platform and this note can go.
 
 ## Categories
 
-- **Company Insights** — 78 datasets (57 downloadable)
+- **Company Insights** — 79 datasets (58 downloadable)
 - **Consumer Transactions** — 53 datasets (53 downloadable)
 - **Finance** — 11 datasets (11 downloadable)
 - **Government** — 8 datasets (3 downloadable)
@@ -19,7 +19,7 @@ Auto-generated map of the Dewey catalog under the institutional subscription —
 - **Weather & ESG** — 6 datasets (5 downloadable)
 
 
-## Company Insights  (78 datasets, 57 DL)
+## Company Insights  (79 datasets, 58 DL)
 
 | Partner | Dataset | Coverage | Rows | Cols | Size | Access |
 |---|---|---|---|---|---|---|
@@ -50,6 +50,7 @@ Auto-generated map of the Dewey catalog under the institutional subscription —
 | BrightQuery | Stock Time Series - Daily | snapshot | 1.3B | 11 | 6GB | DL |
 | BrightQuery | Stock Time Series - Most Recent | snapshot | 406K | 13 | 19MB | DL |
 | Capology | Professional Football Salary Data | snapshot | 152K | 33 | 9MB | DL |
+| GovFiles | Business Entity | snapshot | 84.4M | 18 | 4.8GB | DL |
 | LinkUp | Company Analytics | 2007-08→2026-05 | 123.3M | 7 |  | DL |
 | LinkUp | Company and Ticker Reference | snapshot | 201K | 7 |  | DL |
 | LinkUp | Job Records | 2007-08→2026-05 | 342.0M | 15 |  | DL |

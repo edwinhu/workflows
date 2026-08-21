@@ -40,10 +40,16 @@ After logging in, mint an **API key** (Connections → Add Connection → API Ke
 ### Workforce & corporate
 | Provider | Description |
 |----------|-------------|
-| **LinkUp** | Job postings & labor-market activity (ONET-coded) |
+| **LinkUp** | Job postings & labor-market activity — 342M postings back to 2007, plus full description text, extracted salary (Jun 2026), structured fields, remote/FT-PT tags, ONET codes. See `linkup-job-postings.md`. |
+| **GovFiles** | US business-entity registry — all 50 Secretary of State offices, 84.4M entities incl. dissolved. Better dead-shell coverage than OpenCorporates. See `govfiles-business-entity.md`. |
 | **People Data Labs** | Aggregated employee insights by company |
 | **WageScape** | Salary / wage data |
 | **Rhetorik** | Company technographics & office locations |
+
+### Corporate actions & global market reference
+| Provider | Description |
+|----------|-------------|
+| **Exchange Data International** | WCA/RCAN global equity corporate actions (2001→, 8.6M events, 175 cols), EOD pricing w/ adjustment factors, FX rates, futures & options. See `edi-corporate-actions.md`. |
 
 ### Other
 **7 Chord** (bond pricing), **Vizion** (shipping / supply-chain), **Veridion** (firmographics), **LobbyingData** (legislative tracking).

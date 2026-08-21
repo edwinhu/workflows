@@ -1,7 +1,7 @@
 ---
 name: dewey
 version: 1.0
-description: Use when "query Dewey Data", "deweydata.io", "SafeGraph places/patterns/spend", "Advan foot traffic", "POI / points of interest", "mobility data", "dataplor", "Veraset", "PassBy", "crypto/Bitcoin ATM locations", or any pull from the Dewey Data academic marketplace (UVA/NYU Platform Subscription) via the deweypy/deweydatapy client, DuckDB, or the Dewey MCP server.
+description: Use when "query Dewey Data", "deweydata.io", "SafeGraph places/patterns/spend", "Advan foot traffic", "POI / points of interest", "mobility data", "dataplor", "Veraset", "PassBy", "crypto/Bitcoin ATM locations", "GovFiles", "business entity / Secretary of State registry data", "OpenCorporates alternative", "LinkUp job postings", "job-postings panel", "Exchange Data International / EDI", "WCA / RCAN corporate actions", "global corporate actions (dividends, splits, mergers, tenders)", or any pull from the Dewey Data academic marketplace (UVA/NYU Platform Subscription) via the deweypy/deweydatapy client, DuckDB, or the Dewey MCP server.
 user-invocable: false
 ---
 
@@ -116,7 +116,9 @@ Institutional login (to browse the catalog / create the key) is via **UVA NetBad
 | **Veraset** | Movement | Device-level mobility (institutional license only) |
 | **PassBy** | Foot Traffic | Per-POI foot-traffic analytics |
 | Consumer Edge / PDI | Spend / transactions | Card & product-level purchasing |
-| LinkUp | Job postings | Labor-market activity |
+| **GovFiles** | US Business Entity | All 50 Secretary of State registries — 84.4M entities incl. dissolved (OpenCorporates alternative) |
+| **Exchange Data International** | Global Equity Corporate Actions (WCA/RCAN) | Dividends, splits, mergers, tenders — 2001→, global, w/ CUSIP/SEDOL/ISIN/FIGI bridges |
+| LinkUp | Job postings | Labor-market activity, scraped from employer career sites (2007→) |
 | ATTOM / Dwellsy / RentHub | Real estate | Property records, rentals |
 
 **Full catalog (all ~250 datasets):** `references/catalog.md` — every dataset grouped by category with time coverage, row count, size, and download access (machine-readable: `references/catalog.csv`). Featured-dataset detail + discovery workflow: `references/datasets.md`.
@@ -145,6 +147,9 @@ Core POI schema — **columns are UPPERCASE**, `NAICS_CODE` is a **string**, `BR
 - **`references/access-options.md`** — all download methods (UI, deweypy, deweydatapy, DuckDB, MCP, R), 24h link expiry, partitioning, reading data on disk
 - **`references/deweypy-client.md`** — `deweypy` (modern CLI + `auth`/`download`) and `deweydatapy` (`get_meta`, `get_file_list`, `read_sample`, `download_files0/1`) function reference; `deweyr` for R
 - **`references/duckdb.md`** — selective remote-Parquet pulls, `COPY TO … PARTITION_BY` pattern, querying downloaded files
+- **`references/govfiles-business-entity.md`** — GovFiles US business-entity registry: all 7 table schemas w/ fill rates, the **SEC CIK / LEI / FEIN bridge** in Identifiers, the missing officers/parties table, the ungraphable Relationships table (1% counterparty key), `FILED_ON` sentinel dates, **launched Jun 2026 / empty changelog — which sparse fields may backfill and which won't**, worked DuckDB join
+- **`references/linkup-job-postings.md`** — LinkUp: 12 tables across 2 products (incl. **Extracted Salary, Job Descriptions, Structured Fields, Remote Tag** — added Jun 2026, NOT in the stale `catalog.csv`), join keys (`COMPANY_ID`/`JOB_HASH`/`BASE_HASH`/`REQID`), salary top-coding at 12k/1M, point-in-time ticker joins, the scrape-log structural-break trap, worked firm-quarter vacancy panel
+- **`references/edi-corporate-actions.md`** — EDI WCA/RCAN corporate actions: event grain (options=ORs, serials=ANDs), identifier hierarchy + outturn ids, generic label/value slots, future-dated rows, Notes-table coverage gap, worked dividend/CUSIP query + `EVENTCD` enumeration
 - **`references/mcp.md`** — Dewey MCP server URL, JSON config, the 9 tools, discovery → schema → sample workflow
 - **`references/datasets.md`** — featured-dataset catalog, UVA NetBadge / NYU institutional access, discovery workflow
 - **`references/catalog.md`** + **`catalog.csv`** — full enumerated catalog (~250 datasets / 39 partners) by category, with coverage / rows / **column count** / size / access
