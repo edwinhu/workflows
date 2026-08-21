@@ -505,12 +505,14 @@ function values(fm, key) {
      readFileSync(join(ROOT, 'hooks', 'writing-prose-check.ts'), 'utf8').includes('--style'))
 }
 
-// ── SessionStart setup DETECTION: enumerates agents/, silent when clean ─────────────────────────
+// ── SessionStart install DETECTION: enumerates agents/, silent when clean ──────────────────────
 //
-// The hook DETECTS and REPORTS; commands/start.md DECIDES and WRITES. Two facts are asserted here
-// because both fail silently: a detector that names agents literally stops covering agents added
-// later (the very drift it exists to catch), and a detector that is not silent on a clean project
-// becomes a banner everyone learns to skip — at which point it is not a check.
+// The hook DETECTS and REPORTS; skills/setup/SKILL.md DECIDES and WRITES. Three facts are asserted
+// here because all three fail silently: a detector that names agents literally stops covering
+// agents added later (the very drift it exists to catch); a detector that is not silent on a clean
+// project becomes a banner everyone learns to skip — at which point it is not a check; and a
+// detector that reports working defaults (unset `plansDirectory`, absent `.claude-workflows.json`)
+// is nagging, which is the same thing by a different route.
 {
   const HOOK = join(ROOT, 'hooks', 'session-start.ts')
   const src = readFileSync(HOOK, 'utf8')
@@ -540,56 +542,92 @@ function values(fm, key) {
     ok(`the detector does not name agent "${a}" literally`, !literal.test(detector))
   }
 
-  // The hook must never write the files /start owns.
+  // The hook must never write the files the setup skill owns.
   ok('the detector writes nothing', !/writeFileSync|appendFileSync|renameSync|mkdirSync/.test(detector))
+
+  // CONFIGURATION IS NOT A FINDING. `plansDirectory` resolves at either tier and falls back to
+  // `.claude/plans`; `.claude-workflows.json` is an opt-in whose absence is the normal state.
+  ok('the detector no longer reports plansDirectory', !/plansDirectory/.test(detector))
+  ok('the detector no longer reports the governance opt-in',
+     !/governance opt-in/.test(detector))
 
   const { buildSetupSection } = await import('../hooks/session-start.ts')
 
-  // A fully-configured project: governance opt-in present, plansDirectory set, preloads all resolve.
+  // A project that uses the plugin, with every preload resolving.
   const clean = mkdtempSync(join(tmpdir(), 'setup-clean-'))
   writeFileSync(join(clean, '.claude-workflows.json'), '{"farmOutOnly": true}\n')
   spawnSync('mkdir', ['-p', join(clean, '.claude')])
   writeFileSync(join(clean, '.claude', 'settings.json'), '{"plansDirectory": "./.planning"}\n')
-  const cleanOut = buildSetupSection(clean, ROOT, join(clean, 'no-user-settings.json'))
-  ok('the detector is SILENT on a fully-configured project', cleanOut === '', JSON.stringify(cleanOut))
+  const cleanOut = buildSetupSection(clean, ROOT)
+  ok('the detector is SILENT on a healthy project', cleanOut === '', JSON.stringify(cleanOut))
 
   // Unrelated repo — no governance file, no .planning/, no .craft/: the gate keeps it quiet.
   const unrelated = mkdtempSync(join(tmpdir(), 'setup-unrelated-'))
-  ok('the detector does not nag in an unrelated repo',
-     buildSetupSection(unrelated, ROOT, join(unrelated, 'none.json')) === '')
+  ok('the detector does not nag in an unrelated repo', buildSetupSection(unrelated, ROOT) === '')
 
-  // plansDirectory unset at BOTH tiers fires; set at the USER tier alone does not.
+  // UNSET plansDirectory is a working default, not a finding.
   const noplans = mkdtempSync(join(tmpdir(), 'setup-noplans-'))
   writeFileSync(join(noplans, '.claude-workflows.json'), '{}\n')
-  ok('unset plansDirectory at both tiers is reported',
-     /plansDirectory/.test(buildSetupSection(noplans, ROOT, join(noplans, 'none.json'))))
-  const userTier = join(noplans, 'user.json')
-  writeFileSync(userTier, '{"plansDirectory": "./.claude/plans"}\n')
-  ok('plansDirectory set at the user tier alone satisfies the check',
-     buildSetupSection(noplans, ROOT, userTier) === '')
+  ok('unset plansDirectory is NOT reported', buildSetupSection(noplans, ROOT) === '',
+     JSON.stringify(buildSetupSection(noplans, ROOT)))
 
-  // A missing governance opt-in is reachable via the .planning/ gate.
+  // An ABSENT .claude-workflows.json is the normal state for a project that never opted in.
   const nogov = mkdtempSync(join(tmpdir(), 'setup-nogov-'))
   spawnSync('mkdir', ['-p', join(nogov, '.planning')])
-  const govOut = buildSetupSection(nogov, ROOT, userTier)
-  ok('an absent .claude-workflows.json is reported', /claude-workflows\.json/.test(govOut), govOut)
+  ok('an absent .claude-workflows.json is NOT reported', buildSetupSection(nogov, ROOT) === '',
+     JSON.stringify(buildSetupSection(nogov, ROOT)))
 
-  // A DANGLING PRELOAD in a fixture plugin root — the failure that survived a major version.
+  // A DANGLING PRELOAD in a fixture plugin root — the failure that survived a major version, and
+  // the ONLY finding this detector still emits.
   const fakePlugin = mkdtempSync(join(tmpdir(), 'setup-plugin-'))
   spawnSync('mkdir', ['-p', join(fakePlugin, 'agents')])
   spawnSync('mkdir', ['-p', join(fakePlugin, 'skills', 'real-skill')])
   writeFileSync(join(fakePlugin, 'skills', 'real-skill', 'SKILL.md'), '---\nname: real-skill\n---\n')
   writeFileSync(join(fakePlugin, 'agents', 'zz-fixture.md'),
     '---\nname: zz-fixture\nskills:\n  - real-skill\n  - ghost-skill\n---\nbody\n')
-  const dangling = buildSetupSection(clean, fakePlugin, join(clean, 'none.json'))
+  const dangling = buildSetupSection(clean, fakePlugin)
   ok('a dangling preload is reported', /ghost-skill/.test(dangling), JSON.stringify(dangling))
   ok('a resolving preload is NOT reported', !/real-skill/.test(dangling), JSON.stringify(dangling))
   ok('the dangling report names the agent it came from', /zz-fixture\.md/.test(dangling))
-  ok('the dangling report points at /start', /\/start/.test(dangling))
+  ok('the dangling report points at the setup skill', /setup/.test(dangling), JSON.stringify(dangling))
 
   // This repo's own agents all resolve — no dangling preload ships.
   ok('no agent in this repo has a dangling preload',
-     !/does not resolve/.test(buildSetupSection(clean, ROOT, join(clean, 'none.json'))))
+     !/does not resolve/.test(buildSetupSection(clean, ROOT)))
+}
+
+// ── /start is gone: no dangling reference to a command that no longer exists ────────────────────
+{
+  ok('commands/start.md is deleted', !existsSync(join(ROOT, 'commands', 'start.md')))
+  ok('the setup skill exists', existsSync(join(SKILLS, 'setup', 'SKILL.md')))
+
+  const setup = readFileSync(join(SKILLS, 'setup', 'SKILL.md'), 'utf8')
+  ok('the setup skill enumerates agents at runtime rather than naming them',
+     /readdirSync\(/.test(setup))
+  for (const a of readdirSync(AGENTS).filter(f => f.endsWith('.md')).map(f => f.replace(/\.md$/, ''))) {
+    ok(`the setup skill does not name agent "${a}" literally`,
+       !new RegExp(`["'\`]${a.replace(/[-]/g, '\\-')}(\\.md)?["'\`]`).test(setup))
+  }
+  ok('the setup skill refuses rather than overwrites a malformed settings file',
+     /REFUSED/.test(setup) && /not valid JSON/.test(setup))
+  ok('the setup skill only REPORTS the main-thread guard', /DO NOT EDIT THIS FILE/.test(setup))
+
+  // Every shipped .md/.ts, minus the changelog, scratch, vendored docs and this file: no reference
+  // to the dead command. The lookahead keeps unrelated paths like `data_ref/start.html` out.
+  const STALE = /commands\/start\.md|\/start(?![\w./-])/
+  const stale = []
+  const walk = dir => {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      if (['node_modules', '.git', 'scratch', 'vendor', 'external', 'CHANGELOG.md',
+           'agent-contract.test.mjs'].includes(e.name)) continue
+      const p = join(dir, e.name)
+      if (e.isDirectory()) { walk(p); continue }
+      if (!/\.(md|ts|mjs)$/.test(e.name)) continue
+      if (STALE.test(readFileSync(p, 'utf8'))) stale.push(p.slice(ROOT.length + 1))
+    }
+  }
+  walk(ROOT)
+  ok('nothing references the deleted /start command', stale.length === 0, stale.join(', '))
 }
 
 console.log(`\n${PASS} passed, ${FAIL} failed`)

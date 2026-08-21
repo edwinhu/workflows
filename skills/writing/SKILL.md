@@ -125,7 +125,7 @@ Three further domain requirements on the plan:
   one row's work, never two rows. This is where the plugin's per-section drafting fan-out went: craft
   implements the rows sequentially against one tree and verifies each independently. Parallelism
   across sections is the acknowledged loss; a shared spine and a single gate are the gain.
-- **`plansDirectory` is `"./.planning"`** for a writing project — what `/start` sets — so craft's
+- **`plansDirectory` is `"./.planning"`** for a writing project — so craft's
   approved plan is already the generated plan the parser authenticates. Craft honours whatever the
   setting says (default `.claude/plans`), so read the configured value rather than assuming this
   one. **Never copy the plan.**

@@ -311,20 +311,6 @@ function findProjectRoot(start: string): string {
   }
 }
 
-/** True iff this settings file parses to an object carrying a non-empty `plansDirectory`. */
-function declaresPlansDirectory(settingsPath: string): boolean {
-  if (!existsSync(settingsPath)) return false;
-  try {
-    const parsed = JSON.parse(readFileSync(settingsPath, "utf8"));
-    if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return false;
-    return typeof parsed["plansDirectory"] === "string" && parsed["plansDirectory"].trim() !== "";
-  } catch {
-    // A malformed settings file is not evidence that the key is set; report it as unset rather
-    // than raising. /start refuses to touch such a file, which is where that belongs.
-    return false;
-  }
-}
-
 /** A frontmatter field's values however it was written — block list, inline array, or scalar. */
 function frontmatterValues(fm: Record<string, string | string[]>, key: string): string[] {
   const v = fm[key];
@@ -370,26 +356,24 @@ function danglingPreloads(pluginRoot: string): DanglingPreload[] {
 }
 
 /**
- * Setup problems in the session's project — DETECTED and REPORTED, never fixed.
+ * Install problems reachable from this session — DETECTED and REPORTED, never fixed.
  *
- * This hook must not write `.claude/settings.json` or `.claude-workflows.json`. Two reasons:
- * `.claude-workflows.json` is the COMMITTED governance opt-in, so a hook that writes it IS the
- * invented sentinel the State Files section forbids; and `plansDirectory` is read once at session
- * start, so a write from here could not affect the very session doing it — the auto-fix would read
- * as successful while the run still wrote plans to the wrong place. `/start` decides and writes.
+ * ONE finding: a `skills:` preload that does not resolve. That failure is silent by construction
+ * (the runtime skips it with a debug-log warning, the agent launches anyway), so nothing but a
+ * check surfaces it. Configuration is NOT a finding: `plansDirectory` resolves at either tier and
+ * falls back to `.claude/plans`, and `.claude-workflows.json` is an opt-in whose absence is the
+ * normal state — reporting either would be nagging about a working default. The `setup` skill
+ * decides and writes; this hook writes nothing.
  *
- * SILENT WHEN CLEAN. Returns "" unless something is actually wrong, and emits only the failing
- * lines: a banner that prints every session stops being read, and then it is not a check.
+ * SILENT WHEN CLEAN. Returns "" unless something is actually wrong: a banner that prints every
+ * session stops being read, and then it is not a check.
  */
 export function buildSetupSection(
   projectRoot: string = findProjectRoot(process.cwd()),
   pluginRoot: string = getPluginRoot(),
-  userSettingsPath: string = join(homedir(), ".claude", "settings.json"),
 ): string {
-  // GATE: only projects that actually use this plugin. The signal is a project-side artifact of
-  // the plugin having been used or opted into — the governance file, a plans directory, or a craft
-  // run. `.claude-workflows.json` alone cannot be the gate (its absence is one of the findings), so
-  // `.planning/` and `.craft/` keep that finding reachable. Nothing here fires in an unrelated repo.
+  // GATE: only projects that actually use this plugin — a project-side artifact of the plugin
+  // having been used or opted into. Nothing here fires in an unrelated repo.
   const usesPlugin =
     existsSync(join(projectRoot, ".claude-workflows.json")) ||
     isDir(join(projectRoot, ".planning")) ||
@@ -397,27 +381,6 @@ export function buildSetupSection(
   if (!usesPlugin) return "";
 
   const problems: string[] = [];
-
-  if (
-    !declaresPlansDirectory(join(projectRoot, ".claude", "settings.json")) &&
-    !declaresPlansDirectory(userSettingsPath)
-  ) {
-    problems.push(
-      "- `plansDirectory` is unset at BOTH tiers (`" +
-        join(projectRoot, ".claude", "settings.json") +
-        "` and `" +
-        userSettingsPath +
-        "`) — the default plans directory will be used. Run `/start` to set one.",
-    );
-  }
-
-  if (!existsSync(join(projectRoot, ".claude-workflows.json"))) {
-    problems.push(
-      "- `" +
-        join(projectRoot, ".claude-workflows.json") +
-        "` is absent — the committed governance opt-in is not recorded for this project. Run `/start`.",
-    );
-  }
 
   for (const { agent, skill } of danglingPreloads(pluginRoot)) {
     problems.push(
@@ -428,16 +391,16 @@ export function buildSetupSection(
         "`, which does not resolve to `skills/" +
         skill +
         "/SKILL.md` — a dangling preload is skipped with a debug-log warning only, so the agent " +
-        "launches and the guidance never arrives. Run `/start`.",
+        "launches and the guidance never arrives. Run the `setup` skill.",
     );
   }
 
   if (!problems.length) return "";
 
-  const lines = ["## Workflows Setup — Problems Detected", ""];
+  const lines = ["## Workflows Install — Problems Detected", ""];
   lines.push(...problems);
   lines.push("");
-  lines.push("Detection only — nothing was written. `/start` decides and writes.");
+  lines.push("Detection only — nothing was written. The `setup` skill decides and writes.");
   lines.push("");
   return lines.join("\n");
 }
