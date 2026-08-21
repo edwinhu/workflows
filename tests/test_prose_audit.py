@@ -769,5 +769,26 @@ def test_cli_exits_zero_on_soft_only_prose(tmp_path):
     assert payload["spans"] and payload["n_hard"] == 0
 
 
+# start-with-abstraction: the imperative opener is thoroughly human -- sentence-initial
+# `Start|Begin with` is 30/14,294,148 (2.5/M finance, 1.4/M law), well over the rate line. What is
+# unattested is the wh-complement: humans start with a THING ("Start with an index fund", "Start
+# with the case of MZ twins"), never with a meta-move about the argument. `(Start|Begin) with
+# (what|why|how|who|the question|the premise|...)` is 0/14,294,148 over both halves. The negatives
+# below are the attested concrete form the rule must never touch.
+@pytest.mark.parametrize(("verdict", "sentence"), [
+    ("fire",  "Start with what the analysis actually does"),
+    ("fire",  "Begin with the question the release never asks"),
+    ("fire",  "Start with why the tiers run on price"),
+    ("clean", "Start with an index fund"),
+    ("clean", "Start with the case of MZ twins"),
+    ("clean", "Begin with the optimal contract and work backwards"),
+])
+def test_start_with_abstraction_leaves_the_concrete_opener_alone(tmp_path, verdict, sentence):
+    draft = tmp_path / f"startwith-{abs(hash(sentence))}.md"
+    draft.write_text(sentence + "\n")
+    labels = _labels(PA.audit_document(draft))
+    assert ("start-with-abstraction" in labels) == (verdict == "fire"), f"{sentence!r} -> {labels}"
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-q"]))

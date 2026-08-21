@@ -21,6 +21,7 @@ _TIC_PATTERNS = [
     ('\\bfrom [a-z]+ to [a-z]+, and everything in between\\b', 'ai-tic·sev3·false-range-sweep'),
     ('\\b(rule|statute|provision|section|act|law|reform|restriction|protection|requirement|mandate|constraint)s?\\s+(should|would|will|may|might|does|do)?\\s*bites?\\b|\\bbites?\\s+hard(er|est)\\b', 'ai-tic·sev3·rule-bites'),
     ('\\bthe gradient (in|across)\\b', 'ai-tic·sev3·gradient-in-across'),
+    ('\\b(Start|Begin) with (what|why|how|who|the (question|fact|premise|observation|basics|obvious))\\b', 'ai-tic·sev3·start-with-abstraction'),
     ('\\bsharpest version of\\b', 'ai-tic·sev2·sharpest-version'),
     ('\\bbounds?\\s+(all of|the whole|everything|the entirety|the entire|the analysis|the inquiry|the conclusion|the discussion|much of)\\b', 'ai-tic·sev2·bound-abstraction'),
     ('\\b(?:panel|data|dataset|sample|table|record)(?:[\\x27’]s)?\\s+grain\\b|\\bgrain of the (?:data|panel|dataset|sample|table|analysis)\\b', 'ai-tic·sev2·data-grain'),
