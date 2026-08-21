@@ -505,5 +505,92 @@ function values(fm, key) {
      readFileSync(join(ROOT, 'hooks', 'writing-prose-check.ts'), 'utf8').includes('--style'))
 }
 
+// ── SessionStart setup DETECTION: enumerates agents/, silent when clean ─────────────────────────
+//
+// The hook DETECTS and REPORTS; commands/start.md DECIDES and WRITES. Two facts are asserted here
+// because both fail silently: a detector that names agents literally stops covering agents added
+// later (the very drift it exists to catch), and a detector that is not silent on a clean project
+// becomes a banner everyone learns to skip — at which point it is not a check.
+{
+  const HOOK = join(ROOT, 'hooks', 'session-start.ts')
+  const src = readFileSync(HOOK, 'utf8')
+
+  /** A named function's source, brace-balanced, so the assertions below scope to the detector and
+   *  not to the rest of the file. */
+  const fnSource = name => {
+    const at = src.search(new RegExp(`(export )?function ${name}\\b`))
+    if (at === -1) return ''
+    const open = src.indexOf('{', at)
+    let depth = 0
+    for (let i = open; i < src.length; i++) {
+      if (src[i] === '{') depth++
+      else if (src[i] === '}' && --depth === 0) return src.slice(at, i + 1)
+    }
+    return src.slice(at)
+  }
+
+  const detector = fnSource('buildSetupSection') + '\n' + fnSource('danglingPreloads')
+  ok('hooks/session-start.ts exports buildSetupSection', /export function buildSetupSection/.test(src))
+  ok('the detector enumerates agents/ at runtime', /readdirSync\(/.test(detector))
+  ok('the detector reads the agents directory, not a list', /join\([^)]*"agents"\)/.test(detector))
+
+  // NO HARDCODED ROSTER. Every real agent basename, checked as a quoted/backticked literal.
+  for (const a of readdirSync(AGENTS).filter(f => f.endsWith('.md')).map(f => f.replace(/\.md$/, ''))) {
+    const literal = new RegExp(`["'\`]${a.replace(/[-]/g, '\\-')}(\\.md)?["'\`]`)
+    ok(`the detector does not name agent "${a}" literally`, !literal.test(detector))
+  }
+
+  // The hook must never write the files /start owns.
+  ok('the detector writes nothing', !/writeFileSync|appendFileSync|renameSync|mkdirSync/.test(detector))
+
+  const { buildSetupSection } = await import('../hooks/session-start.ts')
+
+  // A fully-configured project: governance opt-in present, plansDirectory set, preloads all resolve.
+  const clean = mkdtempSync(join(tmpdir(), 'setup-clean-'))
+  writeFileSync(join(clean, '.claude-workflows.json'), '{"farmOutOnly": true}\n')
+  spawnSync('mkdir', ['-p', join(clean, '.claude')])
+  writeFileSync(join(clean, '.claude', 'settings.json'), '{"plansDirectory": "./.planning"}\n')
+  const cleanOut = buildSetupSection(clean, ROOT, join(clean, 'no-user-settings.json'))
+  ok('the detector is SILENT on a fully-configured project', cleanOut === '', JSON.stringify(cleanOut))
+
+  // Unrelated repo — no governance file, no .planning/, no .craft/: the gate keeps it quiet.
+  const unrelated = mkdtempSync(join(tmpdir(), 'setup-unrelated-'))
+  ok('the detector does not nag in an unrelated repo',
+     buildSetupSection(unrelated, ROOT, join(unrelated, 'none.json')) === '')
+
+  // plansDirectory unset at BOTH tiers fires; set at the USER tier alone does not.
+  const noplans = mkdtempSync(join(tmpdir(), 'setup-noplans-'))
+  writeFileSync(join(noplans, '.claude-workflows.json'), '{}\n')
+  ok('unset plansDirectory at both tiers is reported',
+     /plansDirectory/.test(buildSetupSection(noplans, ROOT, join(noplans, 'none.json'))))
+  const userTier = join(noplans, 'user.json')
+  writeFileSync(userTier, '{"plansDirectory": "./.claude/plans"}\n')
+  ok('plansDirectory set at the user tier alone satisfies the check',
+     buildSetupSection(noplans, ROOT, userTier) === '')
+
+  // A missing governance opt-in is reachable via the .planning/ gate.
+  const nogov = mkdtempSync(join(tmpdir(), 'setup-nogov-'))
+  spawnSync('mkdir', ['-p', join(nogov, '.planning')])
+  const govOut = buildSetupSection(nogov, ROOT, userTier)
+  ok('an absent .claude-workflows.json is reported', /claude-workflows\.json/.test(govOut), govOut)
+
+  // A DANGLING PRELOAD in a fixture plugin root — the failure that survived a major version.
+  const fakePlugin = mkdtempSync(join(tmpdir(), 'setup-plugin-'))
+  spawnSync('mkdir', ['-p', join(fakePlugin, 'agents')])
+  spawnSync('mkdir', ['-p', join(fakePlugin, 'skills', 'real-skill')])
+  writeFileSync(join(fakePlugin, 'skills', 'real-skill', 'SKILL.md'), '---\nname: real-skill\n---\n')
+  writeFileSync(join(fakePlugin, 'agents', 'zz-fixture.md'),
+    '---\nname: zz-fixture\nskills:\n  - real-skill\n  - ghost-skill\n---\nbody\n')
+  const dangling = buildSetupSection(clean, fakePlugin, join(clean, 'none.json'))
+  ok('a dangling preload is reported', /ghost-skill/.test(dangling), JSON.stringify(dangling))
+  ok('a resolving preload is NOT reported', !/real-skill/.test(dangling), JSON.stringify(dangling))
+  ok('the dangling report names the agent it came from', /zz-fixture\.md/.test(dangling))
+  ok('the dangling report points at /start', /\/start/.test(dangling))
+
+  // This repo's own agents all resolve — no dangling preload ships.
+  ok('no agent in this repo has a dangling preload',
+     !/does not resolve/.test(buildSetupSection(clean, ROOT, join(clean, 'none.json'))))
+}
+
 console.log(`\n${PASS} passed, ${FAIL} failed`)
 process.exit(FAIL ? 1 : 0)

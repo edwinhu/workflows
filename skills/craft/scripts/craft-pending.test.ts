@@ -27,16 +27,28 @@ const DISPATCH = join(SCRIPTS, 'craft-dispatch.sh')
 const TMP = mkdtempSync(join(tmpdir(), 'craft-pending-test-'))
 afterAll(() => rmSync(TMP, { recursive: true, force: true }))
 
-/** A project root carrying one plan whose dispatch block is `block` (raw text, so it may be junk). */
-function plantPlan(name: string, block: string): string {
+const EMPTY_HOME = join(TMP, 'empty-home')
+mkdirSync(EMPTY_HOME, { recursive: true })
+
+/**
+ * A project root carrying one plan whose dispatch block is `block` (raw text, so it may be junk).
+ * `plansDir` is where plan mode wrote it, project-root-relative; the default is the default.
+ */
+function plantPlan(name: string, block: string, plansDir = '.claude/plans'): string {
   const root = join(TMP, name)
-  mkdirSync(join(root, '.claude/plans'), { recursive: true })
-  writeFileSync(join(root, '.claude/plans/p.md'), `# ${name}\n\n<!-- craft:dispatch ${block} -->\n`)
+  mkdirSync(join(root, plansDir), { recursive: true })
+  writeFileSync(join(root, plansDir, 'p.md'), `# ${name}\n\n<!-- craft:dispatch ${block} -->\n`)
   return root
 }
 
-function specHash(root: string): string {
-  return execFileSync('bash', [DISPATCH, '--spec-hash', join(root, '.claude/plans/p.md')], {
+/** Declare `plansDirectory` in one of `root`'s settings tiers. */
+function setPlansDirectory(root: string, value: string, file = 'settings.json') {
+  mkdirSync(join(root, '.claude'), { recursive: true })
+  writeFileSync(join(root, '.claude', file), JSON.stringify({ plansDirectory: value }))
+}
+
+function specHash(root: string, plansDir = '.claude/plans'): string {
+  return execFileSync('bash', [DISPATCH, '--spec-hash', join(root, plansDir, 'p.md')], {
     encoding: 'utf8',
   }).trim()
 }
@@ -47,9 +59,13 @@ function recordDispatch(dir: string, runId: string, hash: string) {
   writeFileSync(join(dir, '.craft', runId, 'args.json'), JSON.stringify({ specHash: hash }))
 }
 
-/** The guard's own read of this script: the plan path, or '' for "nothing pending". */
+/**
+ * The guard's own read of this script: the plan path, or '' for "nothing pending".
+ * HOME points at an empty dir so the developer's own user-tier `plansDirectory` cannot decide
+ * these cases — the script reads three settings tiers now, and one of them is `$HOME`.
+ */
 function pending(root: string): string {
-  const r = Bun.spawnSync(['bash', PENDING, root])
+  const r = Bun.spawnSync(['bash', PENDING, root], { env: { ...process.env, HOME: EMPTY_HOME } })
   return new TextDecoder().decode(r.stdout).split('\t')[0].trim()
 }
 
@@ -160,5 +176,50 @@ describe('craft-pending: the root-relative path is untouched', () => {
     const root = join(TMP, 'bare')
     mkdirSync(root, { recursive: true })
     expect(pending(root)).toBe('')
+  })
+})
+
+describe('craft-pending: plansDirectory decides where the plan is', () => {
+  test('a custom plansDirectory is where the armed plan is found', () => {
+    const root = plantPlan('custom-plansdir', JSON.stringify({ runId: 'r', args: { goal: 'g' } }), '.planning')
+    setPlansDirectory(root, './.planning')
+    expect(pending(root)).toBe(join(root, '.planning/p.md'))
+  })
+
+  test('a plan left at the default path is invisible once plansDirectory moves', () => {
+    const root = plantPlan('moved-plansdir', JSON.stringify({ runId: 'r', args: { goal: 'g' } }))
+    setPlansDirectory(root, './.planning')
+    expect(pending(root)).toBe('')
+  })
+
+  test('a dispatch under the custom directory disarms', () => {
+    const root = plantPlan('custom-dispatched', JSON.stringify({ runId: 'r', args: { goal: 'g' } }), '.planning')
+    setPlansDirectory(root, './.planning')
+    recordDispatch(root, 'r', specHash(root, '.planning'))
+    expect(pending(root)).toBe('')
+  })
+
+  test('settings.local.json wins over settings.json — Claude Code precedence', () => {
+    const root = plantPlan('local-tier', JSON.stringify({ runId: 'r', args: { goal: 'g' } }), 'plans-local')
+    setPlansDirectory(root, './plans-shared')
+    setPlansDirectory(root, './plans-local', 'settings.local.json')
+    mkdirSync(join(root, 'plans-shared'), { recursive: true })
+    expect(pending(root)).toBe(join(root, 'plans-local/p.md'))
+  })
+
+  test('an absolute plansDirectory is honoured as written', () => {
+    const root = join(TMP, 'abs-plansdir')
+    const plans = join(TMP, 'abs-plansdir-elsewhere')
+    mkdirSync(plans, { recursive: true })
+    setPlansDirectory(root, plans)
+    writeFileSync(join(plans, 'p.md'), `# abs\n\n<!-- craft:dispatch ${JSON.stringify({ runId: 'r', args: { goal: 'g' } })} -->\n`)
+    expect(pending(root)).toBe(join(plans, 'p.md'))
+  })
+
+  test('a malformed settings file falls back to the default, it does not crash', () => {
+    const root = plantPlan('bad-settings', JSON.stringify({ runId: 'r', args: { goal: 'g' } }))
+    mkdirSync(join(root, '.claude'), { recursive: true })
+    writeFileSync(join(root, '.claude/settings.json'), '{ NOT JSON')
+    expect(pending(root)).toBe(join(root, '.claude/plans/p.md'))
   })
 })

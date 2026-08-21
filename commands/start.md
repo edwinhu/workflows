@@ -64,9 +64,11 @@ then ask via AskUserQuestion:
 the workflow either cannot find the plan or someone copies it in. **A copy drifts from what
 the user approved.** One file, hashed in place, is the run's only authority.
 
-This plugin's domain workflows (`/writing`, `/ds`, `/workshop`) read the plan from
-`./.planning` (`skills/writing/SKILL.md:128`), and `.planning/` is already gitignored. Craft
-resolves whichever directory is set, so `./.planning` serves a bare `/craft` run too.
+Any value works: the plugin resolves `plansDirectory` (project local, then shared project, then
+user tier; relative to the project root; default `.claude/plans`) rather than assuming a path.
+`./.planning` is this command's recommended default — the domain workflows (`/writing`, `/ds`,
+`/workshop`) describe the plan as living there and `.planning/` is already gitignored — but
+`./.claude/plans` is equally valid, and a project that already sets one should keep it.
 
 Read the file, then merge **exactly one key**:
 
@@ -76,19 +78,20 @@ rg -n '"plansDirectory"' "$ROOT/.claude/settings.json" ~/.claude/settings.json 2
   || echo "plansDirectory: UNSET at both tiers"
 ```
 
-If it is already `./.planning`, say so and do nothing.
+If it is already set at either tier, say so and do nothing — the value is honoured whatever it
+is. Only if the user asks to change it, show the current value and confirm the new one first;
+**never silently rewrite a set value.**
 
-If it is set to something else, **do not silently change it** — show the current value and ask
-whether to keep it or move to `./.planning`.
-
-If unset, ask via AskUserQuestion whether to set it, then merge. Use the surgical-merge
+If unset, ask via AskUserQuestion whether to set it and to what (offer `./.planning`, the
+recommended default, and `./.claude/plans`), then merge that answer as `PLANS` below. Use the
+surgical-merge
 discipline of `scripts/set-output-style.ts` (`mergeOutputStyle`, lines 61–105): parse the
 existing object, refuse on unparseable JSON or a non-object, spread every sibling key through
 unchanged, serialize with two-space indent and a trailing newline, and write via a sibling
 temp file plus `rename` so a crash cannot leave a half-written settings file.
 
 ```bash
-ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd) bun -e '
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd) PLANS=./.planning bun -e '   # PLANS = the value the user chose
 import { existsSync, readFileSync, writeFileSync, mkdirSync, renameSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 // Same discipline as scripts/set-output-style.ts:mergeOutputStyle — one key, siblings preserved,
@@ -107,13 +110,14 @@ if (existsSync(p)) {
     existing = parsed;
   }
 }
-if (existing.plansDirectory === "./.planning") { console.log("already ./.planning — nothing to do"); process.exit(0); }
-const merged = { ...existing, plansDirectory: "./.planning" };
+const plans = process.env.PLANS;
+if (existing.plansDirectory === plans) { console.log(`already ${plans} — nothing to do`); process.exit(0); }
+const merged = { ...existing, plansDirectory: plans };
 mkdirSync(dirname(p), { recursive: true });
 const tmp = `${p}.${process.pid}.tmp`;
 try { writeFileSync(tmp, JSON.stringify(merged, null, 2) + "\n", "utf8"); renameSync(tmp, p); }
 catch (e) { try { rmSync(tmp, { force: true }); } catch {} ; console.error(`could not write ${p}: ${e.message}`); process.exit(1); }
-console.log(`set plansDirectory = "./.planning" in ${p}`);
+console.log(`set plansDirectory = "${plans}" in ${p}`);
 '
 ```
 
@@ -121,14 +125,15 @@ console.log(`set plansDirectory = "./.planning" in ${p}`);
 session enters it, so a session that started before this write still writes to
 `~/.claude/plans/`. Do not copy the file to make the path look right; start a new session.
 
-Also confirm `.planning/` is gitignored:
+Also confirm the configured plans directory is gitignored:
 
 ```bash
-ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
-grep -qx '.planning/' "$ROOT/.gitignore" 2>/dev/null && echo "gitignored" || echo "NOT gitignored"
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd); PLANS=./.planning   # the configured value
+DIR="${PLANS#./}/"
+grep -qx "$DIR" "$ROOT/.gitignore" 2>/dev/null && echo "gitignored" || echo "NOT gitignored"
 ```
 
-If not, offer to append `.planning/` to `.gitignore`.
+If not, offer to append that directory to `.gitignore`.
 
 ---
 

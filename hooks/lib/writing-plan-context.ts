@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
+import { resolvePlansDir } from "./plans-dir.ts";
 
 export type AuthenticatedWritingPlan = Readonly<{
   projectRoot: string;
@@ -23,9 +24,12 @@ function sourceField(sourcePlan: string, field: string): string {
     .exec(sourcePlan)?.[1]?.trim() ?? "";
 }
 
-/** The newest `.claude/plans/*.md` under `dir` that is an armed writing plan, or null. */
+/**
+ * The newest plan under `dir`'s configured `plansDirectory` that is an armed writing plan, or
+ * null. Each candidate directory is resolved on its own, so an ancestor may declare its own.
+ */
 function armedWritingPlan(dir: string): string | null {
-  const plansDir = join(dir, ".claude", "plans");
+  const plansDir = resolvePlansDir(dir);
   if (!existsSync(plansDir)) return null;
   let newest: { path: string; mtime: number } | null = null;
   for (const name of readdirSync(plansDir)) {
@@ -47,7 +51,8 @@ function armedWritingPlan(dir: string): string | null {
 
 /**
  * Find the armed craft writing plan governing `path`: the nearest enclosing directory whose
- * `.claude/plans/` holds a plan carrying a `craft:dispatch` block and a `## Writing Intent`
+ * configured plans directory (see `resolvePlansDir`) holds a plan carrying a `craft:dispatch`
+ * block and a `## Writing Intent`
  * section. The plan file is the authority — craft hashes it in place, so there is no separate
  * receipt to consult.
  */

@@ -53,12 +53,15 @@ Two locations, one owner each:
 
 | Path | Holds | Owner |
 |---|---|---|
-| `.claude/plans/<slug>.md` | the approved plan — **the run's authority**, the file that gets hashed | plan mode (native); craft only reads and hashes it |
+| `<plansDirectory>/<slug>.md` | the approved plan — **the run's authority**, the file that gets hashed | plan mode (native); craft only reads and hashes it |
 | `.craft/<run-id>/` | args, verdict JSON, and `plan-<hash12>.md` — the archived bytes each round ran under | craft |
 
-`plansDirectory` is `"./.claude/plans"`, resolved relative to the project root, so the plan is
-project-local and craft hashes it in place — no copy. `run-id` is a short date-slug like
-`0806-fix-auth`. Both `.craft/` and `.claude/plans/` want to be gitignored — add them before the
+`plansDirectory` decides where that plan lives, and craft **honours whatever it is set to** —
+`"./.claude/plans"` and `"./.planning"` (what `/start` sets, and what the domain workflows use) are
+equally valid. The value is resolved relative to the project root, so the plan is project-local and
+craft hashes it in place — no copy. Unset at every tier, the default is `.claude/plans`. `run-id` is
+a short date-slug like `0806-fix-auth`. Both `.craft/` and the plans directory want to be
+gitignored — add them before the
 first run if the repo would otherwise track them. Clean up `.craft/<run-id>/` when the run
 completes, unless the user wants provenance kept; leave the plan file alone either way, it's plan
 mode's. **The plan file is not durable and craft does not own it** — plan mode memoizes one slug per
@@ -173,8 +176,11 @@ The user edits the plan file and approves via ExitPlanMode. Then **hash the plan
 actually wrote it** — resolve the path, don't assume it:
 
 ```bash
-PLAN=$(ls -t .claude/plans/*.md 2>/dev/null | head -1)   # project-local, the configured location
-[ -n "$PLAN" ] || PLAN=$(ls -t ~/.claude/plans/*.md | head -1)   # fallback: the default location
+# The configured location — plansDirectory, project-root-relative, default .claude/plans.
+PLANS=$(jq -r '.plansDirectory // empty' .claude/settings.local.json .claude/settings.json \
+  ~/.claude/settings.json 2>/dev/null | head -1); PLANS=${PLANS:-.claude/plans}
+PLAN=$(ls -t "$PLANS"/*.md 2>/dev/null | head -1)
+[ -n "$PLAN" ] || PLAN=$(ls -t ~/.claude/plans/*.md | head -1)   # fallback: a pre-setting session
 bash ~/.claude/skills/workflows/skills/craft/scripts/craft-dispatch.sh --spec-hash "$PLAN"   # 64-hex spec hash
 ```
 
@@ -185,15 +191,18 @@ dispatch and never read as authority, so nothing can edit it or drift from it.)
 
 **Ensure `plansDirectory` is set.** Plans belong inside `projectDir`, alongside the work and the
 agents. `plansDirectory` is [relative to the project
-root](https://code.claude.com/docs/en/settings), so `"./.claude/plans"` puts them there:
+root](https://code.claude.com/docs/en/settings), so any project-relative value puts them there —
+`"./.claude/plans"` and `"./.planning"` both work, and craft resolves whichever is set:
 
 ```bash
-rg -n '"plansDirectory"' .claude/settings.json ~/.claude/settings.json 2>/dev/null
+rg -n '"plansDirectory"' .claude/settings.local.json .claude/settings.json ~/.claude/settings.json 2>/dev/null
 ```
 
-If neither tier sets it, add `"plansDirectory": "./.claude/plans"` to the project's
-`.claude/settings.json` and gitignore `.claude/plans/`. Setting it at the user tier covers every
-project at once, which is usually what you want.
+If no tier sets it, add one — `"plansDirectory": "./.claude/plans"` is this skill's default,
+`"./.planning"` is what `/start` and the domain workflows use — to the project's
+`.claude/settings.json`, and gitignore that directory. Setting it at the user tier covers every
+project at once, which is usually what you want. Precedence is Claude Code's own:
+`.claude/settings.local.json` beats `.claude/settings.json` beats `~/.claude/settings.json`.
 
 **It takes effect next session, not this one.** Plan mode fixes the plan's path when you enter it, so
 a session that started before the setting was live still writes to `~/.claude/plans/` — which is why

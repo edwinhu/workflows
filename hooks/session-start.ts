@@ -291,9 +291,153 @@ function buildInProgressSection(): string {
   for (const run of pending.sort()) {
     lines.push(`- craft run \`${run}\` was dispatched and has no result.json yet.`);
   }
-  lines.push("- The approved plan under `.claude/plans/` is the authority; craft-result.sh reads the verdict.");
+  lines.push(
+    "- The approved plan under the configured `plansDirectory` is the authority; craft-result.sh reads the verdict.",
+  );
   lines.push("");
   lines.push("**Read the full state files before taking action.** Do not ask the user to summarize — the context is in the files.");
+  lines.push("");
+  return lines.join("\n");
+}
+
+/** Nearest ancestor holding `.git`, else the starting directory. No subprocess, no guess. */
+function findProjectRoot(start: string): string {
+  let dir = resolve(start);
+  for (;;) {
+    if (existsSync(join(dir, ".git"))) return dir;
+    const parent = resolve(dir, "..");
+    if (parent === dir) return resolve(start);
+    dir = parent;
+  }
+}
+
+/** True iff this settings file parses to an object carrying a non-empty `plansDirectory`. */
+function declaresPlansDirectory(settingsPath: string): boolean {
+  if (!existsSync(settingsPath)) return false;
+  try {
+    const parsed = JSON.parse(readFileSync(settingsPath, "utf8"));
+    if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return false;
+    return typeof parsed["plansDirectory"] === "string" && parsed["plansDirectory"].trim() !== "";
+  } catch {
+    // A malformed settings file is not evidence that the key is set; report it as unset rather
+    // than raising. /start refuses to touch such a file, which is where that belongs.
+    return false;
+  }
+}
+
+/** A frontmatter field's values however it was written — block list, inline array, or scalar. */
+function frontmatterValues(fm: Record<string, string | string[]>, key: string): string[] {
+  const v = fm[key];
+  if (v === undefined) return [];
+  if (Array.isArray(v)) return v.map((s) => s.trim()).filter(Boolean);
+  return stripChar(stripChar(v.trim(), "["), "]")
+    .split(",")
+    .map((s) => stripChar(stripChar(s.trim(), '"'), "'"))
+    .filter(Boolean);
+}
+
+type DanglingPreload = { agent: string; skill: string };
+
+/**
+ * Every `skills:` preload under `agents/` that does not resolve to a real `skills/<name>/SKILL.md`.
+ * The roster is ENUMERATED, never listed: a hardcoded set silently stops covering agents added
+ * later, which is the same silent-drift bug this detector exists to catch.
+ */
+function danglingPreloads(pluginRoot: string): DanglingPreload[] {
+  const agentsDir = join(pluginRoot, "agents");
+  if (!isDir(agentsDir)) return [];
+  const out: DanglingPreload[] = [];
+  let names: string[];
+  try {
+    names = readdirSync(agentsDir).filter((f) => f.endsWith(".md")).sort();
+  } catch {
+    return [];
+  }
+  for (const name of names) {
+    let fm: Record<string, string | string[]>;
+    try {
+      fm = parseYamlSimple(readFileSync(join(agentsDir, name), "utf8"));
+    } catch {
+      continue;
+    }
+    for (const skill of frontmatterValues(fm, "skills")) {
+      const dir = join(pluginRoot, "skills", skill);
+      if (isDir(dir) && existsSync(join(dir, "SKILL.md"))) continue;
+      out.push({ agent: name, skill });
+    }
+  }
+  return out;
+}
+
+/**
+ * Setup problems in the session's project — DETECTED and REPORTED, never fixed.
+ *
+ * This hook must not write `.claude/settings.json` or `.claude-workflows.json`. Two reasons:
+ * `.claude-workflows.json` is the COMMITTED governance opt-in, so a hook that writes it IS the
+ * invented sentinel the State Files section forbids; and `plansDirectory` is read once at session
+ * start, so a write from here could not affect the very session doing it — the auto-fix would read
+ * as successful while the run still wrote plans to the wrong place. `/start` decides and writes.
+ *
+ * SILENT WHEN CLEAN. Returns "" unless something is actually wrong, and emits only the failing
+ * lines: a banner that prints every session stops being read, and then it is not a check.
+ */
+export function buildSetupSection(
+  projectRoot: string = findProjectRoot(process.cwd()),
+  pluginRoot: string = getPluginRoot(),
+  userSettingsPath: string = join(homedir(), ".claude", "settings.json"),
+): string {
+  // GATE: only projects that actually use this plugin. The signal is a project-side artifact of
+  // the plugin having been used or opted into — the governance file, a plans directory, or a craft
+  // run. `.claude-workflows.json` alone cannot be the gate (its absence is one of the findings), so
+  // `.planning/` and `.craft/` keep that finding reachable. Nothing here fires in an unrelated repo.
+  const usesPlugin =
+    existsSync(join(projectRoot, ".claude-workflows.json")) ||
+    isDir(join(projectRoot, ".planning")) ||
+    isDir(join(projectRoot, ".craft"));
+  if (!usesPlugin) return "";
+
+  const problems: string[] = [];
+
+  if (
+    !declaresPlansDirectory(join(projectRoot, ".claude", "settings.json")) &&
+    !declaresPlansDirectory(userSettingsPath)
+  ) {
+    problems.push(
+      "- `plansDirectory` is unset at BOTH tiers (`" +
+        join(projectRoot, ".claude", "settings.json") +
+        "` and `" +
+        userSettingsPath +
+        "`) — the default plans directory will be used. Run `/start` to set one.",
+    );
+  }
+
+  if (!existsSync(join(projectRoot, ".claude-workflows.json"))) {
+    problems.push(
+      "- `" +
+        join(projectRoot, ".claude-workflows.json") +
+        "` is absent — the committed governance opt-in is not recorded for this project. Run `/start`.",
+    );
+  }
+
+  for (const { agent, skill } of danglingPreloads(pluginRoot)) {
+    problems.push(
+      "- `agents/" +
+        agent +
+        "` preloads `" +
+        skill +
+        "`, which does not resolve to `skills/" +
+        skill +
+        "/SKILL.md` — a dangling preload is skipped with a debug-log warning only, so the agent " +
+        "launches and the guidance never arrives. Run `/start`.",
+    );
+  }
+
+  if (!problems.length) return "";
+
+  const lines = ["## Workflows Setup — Problems Detected", ""];
+  lines.push(...problems);
+  lines.push("");
+  lines.push("Detection only — nothing was written. `/start` decides and writes.");
   lines.push("");
   return lines.join("\n");
 }
@@ -389,9 +533,14 @@ async function main(): Promise<void> {
   const inProgressSection = buildInProgressSection();
   const patternSection = checkPendingPatterns();
   const calendarSection = buildCalendarSection();
+  const setupSection = buildSetupSection();
 
+  // Appended only when it fires. The other sections are joined unconditionally to stay byte-identical
+  // to session-start.py (scripts/parity.ts compares bytes); a separator emitted for a silent section
+  // would be a diff on every clean project.
   const combinedContext =
-    envSection + "\n" + calendarSection + "\n" + inProgressSection + "\n" + patternSection + "\n" + usingSkills;
+    envSection + "\n" + calendarSection + "\n" + (setupSection ? setupSection + "\n" : "") +
+    inProgressSection + "\n" + patternSection + "\n" + usingSkills;
 
   console.log(
     pyJson({
@@ -403,4 +552,5 @@ async function main(): Promise<void> {
   );
 }
 
-await main();
+// Run only as the hook entry point, so tests can import buildSetupSection without reading stdin.
+if (import.meta.main) await main();

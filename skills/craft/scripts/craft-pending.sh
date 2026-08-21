@@ -17,9 +17,37 @@ set -uo pipefail
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 cd "${1:-$PWD}" 2>/dev/null || exit 1
-[ -d .claude/plans ] || exit 1
 
-plan=$(ls -t .claude/plans/*.md 2>/dev/null | head -1)
+# The plans directory is `plansDirectory`, not a fixed path — the shell twin of
+# hooks/lib/plans-dir.ts. Precedence is Claude Code's own (project local > shared project > user),
+# the value is project-root-relative, and an unset or unparseable setting falls back to the default.
+plans_dir=""
+for s in .claude/settings.local.json .claude/settings.json "$HOME/.claude/settings.json"; do
+  [ -f "$s" ] || continue
+  if command -v jq >/dev/null 2>&1; then
+    v=$(jq -r 'if type == "object" and (.plansDirectory | type) == "string" then .plansDirectory else "" end' "$s" 2>/dev/null) || v=""
+  else
+    v=$(python3 -c 'import json,sys
+try:
+    d = json.load(open(sys.argv[1]))
+    print(d["plansDirectory"] if isinstance(d, dict) and isinstance(d.get("plansDirectory"), str) else "")
+except Exception:
+    print("")' "$s" 2>/dev/null) || v=""
+  fi
+  v=${v#"${v%%[![:space:]]*}"}; v=${v%"${v##*[![:space:]]}"}
+  if [ -n "$v" ]; then plans_dir=$v; break; fi
+done
+case "$plans_dir" in
+  "") plans_dir="$PWD/.claude/plans" ;;
+  "~") plans_dir="$HOME" ;;
+  "~/"*) plans_dir="$HOME/${plans_dir#\~/}" ;;
+  /*) ;;
+  *) plans_dir="$PWD/$plans_dir" ;;
+esac
+
+[ -d "$plans_dir" ] || exit 1
+
+plan=$(ls -t "$plans_dir"/*.md 2>/dev/null | head -1)
 [ -n "$plan" ] || exit 1
 grep -q '<!-- craft:dispatch' "$plan" || exit 1
 

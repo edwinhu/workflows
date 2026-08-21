@@ -125,8 +125,10 @@ Three further domain requirements on the plan:
   one row's work, never two rows. This is where the plugin's per-section drafting fan-out went: craft
   implements the rows sequentially against one tree and verifies each independently. Parallelism
   across sections is the acknowledged loss; a shared spine and a single gate are the gain.
-- **`plansDirectory` is `"./.planning"`** for a writing project, so craft's approved plan is already
-  the generated plan the parser authenticates. **Never copy it.**
+- **`plansDirectory` is `"./.planning"`** for a writing project — what `/start` sets — so craft's
+  approved plan is already the generated plan the parser authenticates. Craft honours whatever the
+  setting says (default `.claude/plans`), so read the configured value rather than assuming this
+  one. **Never copy the plan.**
 
 ## Phase 3 — GOAL
 
@@ -205,9 +207,9 @@ result handling and the return shape too, and `craft-result.sh` reads the verdic
 `--run-dir` override applies. There is no built-in `Workflow` call — the guard at
 `~/.claude/hooks/main-thread-guard.sh` denies that tool outright.
 
-**Pass `$PLAN` explicitly — the argument is not optional here.** Bare, `craft-dispatch.sh` resolves
-the armed plan through `craft-pending.sh`, which looks only in `.claude/plans`; a writing project's
-`plansDirectory` is `./.planning`, so a bare invocation exits 2 with "no armed craft run".
+**Pass `$PLAN` explicitly.** Bare, `craft-dispatch.sh` resolves the armed plan through
+`craft-pending.sh`, which now reads `plansDirectory` — so a writing project's `./.planning` plan is
+found. Naming the path still beats relying on that resolution when you already know it.
 
 ```bash
 PLAN=<proj>/.planning/<slug>.md
