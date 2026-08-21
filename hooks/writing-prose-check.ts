@@ -348,7 +348,8 @@ async function main(): Promise<void> {
   // draft written outside a craft workflow was never linted AND never said so, which reads
   // identically to "clean". Measured 2026-08-21: a 1,150-word blog post under docs/blog/ carried
   // an `ai-tic·sev3·rule-bites` hit through nine editing rounds because rule611 has no
-  // .claude/plans/. Silence that cannot be distinguished from a pass is not failing safe.
+  // armed plan in its plans directory. Silence that cannot be distinguished from a pass is not
+  // failing safe.
   if (!writingPlan) runCheckAllFlag = false;
   const style = writingPlan?.style || null;
   const ranges = toolName === "Bash" ? gitChangedRanges(path) : editRanges(toolName, toolInput, path);
