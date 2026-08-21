@@ -147,7 +147,7 @@ Specialized subagents auto-discovered by Claude Code from `agents/`:
 | Agent | Role |
 |-------|------|
 | `librarian` | Knowledge management orchestration (NLM, Readwise, Scholar) |
-| `writing-prose-reviewer` | Read-only prose-quality grading against the preloaded register |
+| `writing-reviewer` | Read-only prose-quality grading against the preloaded register |
 
 The craft spine's implementers, verifiers and reviewers are dispatched from
 `skills/craft/workflow.js` with the prompt the run needs; they are not named subagent types, so the

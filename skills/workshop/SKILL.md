@@ -211,6 +211,17 @@ resolves them against no particular directory; `writablePaths` and every `mechan
       agentType: "Explore",
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md"],
       prompt: "You OWN check VIS, defined in the refs. Read them in full first, along with the built slides.typ and the Visual cell of each ## Slide Spec row. VIS is MODEL-EVALUATED: report it as MODEL-EVALUATED with the evidence you actually read — never as PASS, and never as N/A, which is not a third kind of pass. Findings, judged on the Typst diagram source: clipped or overlapping labels, arrows routed through nodes, illegible sizing, a diagram contradicting its caption. MAJOR min. Source, not a render — look_at.py is not vendored, so say what you could not determine from source rather than papering over it." },
+
+    // This lens does NOT pin Explore. Explore is a built-in agent with a PREDEFINED prompt that no
+    // preloaded skill reaches, and it skips the CLAUDE.md hierarchy — so the three lenses above
+    // grade fifteen Typst modules from whatever their refs list actually got read, which is
+    // discretionary. workshop-reviewer preloads workshop-constraints (all fifteen, verbatim) and is
+    // read-only by tools allowlist AND by tests/agent-contract.test.mjs — the same structural
+    // property Explore is pinned for, in an agent that already holds the rules.
+    { key: "deck-constraints",
+      agentType: "workflows:workshop-reviewer",
+      refs: [],
+      prompt: "Grade the built slides.typ and notes.typ against the fifteen Typst modules in the preloaded workshop-constraints skill, and ONLY on the judgement half no checker reaches: a takeaway that names a topic instead of asserting a claim, a bullet restating its own slide title, notes duplicating the slide instead of carrying the spoken words, outline fragments where speakable sentences belong, a section hierarchy the argument does not have, a table whose numbers are not traceable to the paper or whose synthesis is undocumented, and diagram legibility judged on the Typst SOURCE — clipped or overlapping labels, arrows through nodes, illegible sizing, a diagram contradicting its caption. Do NOT re-derive what run-constraints.py already computed. Report every finding with the quoted text and a file:line, naming the module, and list every module you considered including those you judged satisfied. NEVER report a module judgement as a computation and never as N/A — it is MODEL-EVALUATED, with the evidence you actually read. MAJOR min; CRITICAL where the deck asserts something its source does not support." },
   ],
 
   authorityExtra: [
@@ -223,15 +234,19 @@ resolves them against no particular directory; `writablePaths` and every `mechan
     "Craft runs a mechanicalCheck cmd VERBATIM, with the working directory at the project root. Every path in a cmd is therefore project-relative and literal; a placeholder shipped into a cmd targets a directory of that literal name, fails on every conforming run, and is therefore permanently waived.",
     "An artifact absent from the plan's ## Outputs and Verification is one nothing will check and cannot be claimed as verified. Do not verify an output that section never declared.",
     "The deck is built by dispatched agents. Main chat writes no .typ file, by any tool.",
-    "Rules: ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md defines all eleven checks and which are computed; ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md defines the plan grammar the probe parses; the vendored Typst constraints under ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/constraints/ govern the source; the deck templates are ${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/theme.typ and ${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/custom-outline.typ.",
+    "Standing workshop doer authority — every deck or notes task loads ${CLAUDE_PLUGIN_ROOT}/skills/workshop-constraints/SKILL.md and follows all fifteen Typst modules: bullet spacing, label bullet spacing, sub-bullets, tables, images, CeTZ diagrams, Fletcher diagrams, formatting, slide format, section hierarchy, notes structure, teleprompter notes, computed values, common elements, no-subtitle-echo. It carries the fifteen vendored modules verbatim in one file, so a doer given one path cannot read four of fifteen and stop; ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md stays a separate load.",
+    "Rules: ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md defines all eleven checks and which are computed; ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md defines the plan grammar the probe parses; the vendored Typst constraints under ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/constraints/ govern the source and are the checker's authority, with the same fifteen modules preloadable verbatim as the workshop-constraints skill; the deck templates are ${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/theme.typ and ${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/custom-outline.typ.",
   ].join("\n"),
 
   verifierAgentType: "Explore",
 }
 ```
 
-`verifierAgentType` and every lens `agentType` pin `Explore` because it has no Edit and no Write: a
-judge that structurally cannot modify the tree beats a prompt asking it not to.
+`verifierAgentType` and the five FID/CONV/VIS-and-generic lenses pin `Explore` because it has no Edit
+and no Write: a judge that structurally cannot modify the tree beats a prompt asking it not to. The
+`deck-constraints` lens buys the same property a different way — `workflows:workshop-reviewer` is
+read-only by tools allowlist — because Explore's prompt is predefined and no preloaded skill or
+CLAUDE.md reaches it.
 
 ## Phase 5 — HUMAN REVIEW
 
@@ -251,5 +266,7 @@ notes. A clean deck gate is evidence for that conversation, not human acceptance
 | `FID`/`CONV`/`VIS` | report them as `PASS` | that presents a judgement as a computation — `MODEL-EVALUATED` with the evidence read |
 | A computed check reported clean with no tool installed | accept it | that is the defect this port exists to remove — a missing `typst` or `pypdf` is a FAIL, never a clean line |
 | Widows or overflow | add back upstream's `typst-widow-detection.py` or `typst-overflow.py` | both fail open; the probe owns `WID` and `OVR` natively, so 15 modules are vendored, not 17 |
+| A judgement that depends on the Typst modules | dispatch a built-in agent (`Explore`, `Plan`, `general-purpose`) | their prompts are predefined, no preloaded skill reaches them and they skip the CLAUDE.md hierarchy, so fifteen modules are graded from whatever got read — dispatch a custom agent whose body you control, like `workflows:workshop-reviewer` |
+| Handing a doer the Typst conventions | name the fifteen constraint paths in the task prompt | naming a path is discretionary and a skipped read fails silently — the doer is `workflows:workshop`, which preloads `workshop-constraints` deterministically |
 | Section tasks and the assembler | rely on their order in `tasks[]` | the assembler reads what they write — give it `dependsOn` naming every section row |
 | Something craft does not obviously do | write a `workshop/workflow.js` | ask which craft parameter is missing — `mechanicalChecks` is what makes the deck probe the gate |

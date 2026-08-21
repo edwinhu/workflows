@@ -133,7 +133,7 @@ def test_span_ids_are_stable_and_in_document_order():
 
 # ── C3: the coverage gap de_ai_audit.py left ─────────────────────────────────
 # Every one of these was MISSED by de_ai_audit.py on this fixture, and de_ai_audit.py is the only
-# scorer agents/writing-prose-reviewer.md ever pointed at. Four of the seven are hard.
+# scorer agents/writing-reviewer.md ever pointed at. Four of the seven are hard.
 _ARTIFACTS = [
     ("As an AI language model", "hard"),
     ("I hope this helps", "hard"),

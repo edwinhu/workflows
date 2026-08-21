@@ -223,6 +223,17 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan
       agentType: "Explore",
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/references/verification-patterns.md"],
       prompt: "Judge only the method and the evidence behind it, against the patterns in the refs. Read them in full first. Findings: a statistic computed at a grain other than the one the plan declared, a universe predicate applied where scope was not meant to be decided, a claim whose evidence is read from code rather than observed from a run, and an output the plan promised that nothing checks. Severity: each of these four is `major` at minimum, and `critical` where the defect invalidates the output's stated grain, universe or inference — never `minor`, which would leave the gate passing over a real methodology defect." },
+
+    // This lens does NOT pin Explore. Explore is a built-in agent with a PREDEFINED prompt that no
+    // preloaded skill reaches, and it skips the CLAUDE.md hierarchy — so a constraint-indexed
+    // judgement dispatched there is graded from memory of constraint ids it was never given. That
+    // is the cost the four lenses above pay for Explore's structural read-only guarantee.
+    // ds-reviewer preloads ds-constraints and is read-only by tools allowlist AND by
+    // tests/agent-contract.test.mjs — the same structural property, in an agent that knows the rules.
+    { key: "ds-constraints",
+      agentType: "workflows:ds-reviewer",
+      refs: [],
+      prompt: "Grade the implemented code and outputs against the indexed constraints in the preloaded ds-constraints skill — C1-C6, V1-V9, A1-A6, E1-E6 — and against the two no regex reaches: every reported rate states its denominator, and the row-count chain traces input → transform → output. Grade only the constraints the task actually touches; an engineering constraint applied to a pure analysis task is a wrong finding that costs a round. Report every finding with the file, the line and the quoted code, naming the constraint id, and list every id you considered including those you judged satisfied. NEVER report a constraint judgement as a computation — it is MODEL-EVALUATED, with the evidence you actually read. Severity: `major` at minimum, `critical` where the defect invalidates the output's stated grain, universe or inference, never `minor`." },
   ],
 
   authorityExtra: [
@@ -232,7 +243,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan
     "DQ4 and DQ6 are `always N/A` from the runner, and `always N/A` is not a third kind of pass — the runner emits a line for them only because ENUM requires one, and an N/A never sets its non-zero exit. Both are dispositioned against task-local evidence, exactly like the MODEL-EVALUATED rows: the input → transform → output count chain for DQ4, the before/after shape for DQ6. Never read their N/A as `the runner checked this`.",
     "An artifact absent from the plan's ## Data Outputs table is one nothing will check and cannot be claimed as verified. Do not verify an output the table never declared.",
     "The analysis is done by dispatched agents. Main chat writes no .py, .ipynb, .R, .sas, .sql or .qmd file, by any tool.",
-    "Standing DS doer authority — every implementation task loads all four aggregates and follows their indexed constraints: ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-common-constraints.md; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-common-conventions.md (V1-V9: assumption-over-evidence, deferred verification, statistical validity, P-hacking prevention, sample-selection documentation); ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-analysis-constraints.md (A1-A6: robustness checks, standard-error specification, visualization integrity, table-figure pairing, chart typography, chart colour); ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-engineering-constraints.md (E1-E5: determinism and seeds, schema contracts, join audits with row counts and match rates, idempotency, loud error handling).",
+    "Standing DS doer authority — every implementation task loads ${CLAUDE_PLUGIN_ROOT}/skills/ds-constraints/SKILL.md and follows its indexed constraints: C1-C6 (common constraints), V1-V9 (assumption-over-evidence, deferred verification, statistical validity, P-hacking prevention, sample-selection documentation), A1-A6 (robustness checks, standard-error specification, visualization integrity, table-figure pairing, chart typography, chart colour) and E1-E6 (determinism and seeds, schema contracts, join audits with row counts and match rates, idempotency, loud error handling, native document input). It is one file carrying all four aggregates verbatim, so a doer given one path cannot read three of four and stop; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md stays a separate load.",
     "Rules: ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md defines all thirteen checks; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/etl-enforcement.md governs pipelines; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/sql-patterns.md governs data pulls; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/verification-patterns.md governs evidence; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/competing-hypothesis.md governs debugging.",
   ].join("\n"),
 
@@ -240,8 +251,10 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan
 }
 ```
 
-`verifierAgentType` and every lens `agentType` pin `Explore` because it has no Edit and no Write: a
-judge that structurally cannot modify the tree beats a prompt asking it not to.
+`verifierAgentType` and the four generic lenses pin `Explore` because it has no Edit and no Write: a
+judge that structurally cannot modify the tree beats a prompt asking it not to. The `ds-constraints`
+lens buys the same property a different way — `workflows:ds-reviewer` is read-only by tools
+allowlist — because Explore's prompt is predefined and no preloaded skill or CLAUDE.md reaches it.
 
 Add `${CLAUDE_PLUGIN_ROOT}/skills/ds/references/competing-hypothesis.md` to a task's `refs` when
 that task is a diagnosis rather than a build. `authorityExtra` names it; `refs` is what makes an
@@ -266,5 +279,7 @@ evidence for that conversation, not human acceptance.
 | The DQ result | let the implementer report it | the doer cannot see the assumption it made in both places — the runner is a `mechanicalCheck` and the JS reads its exit code |
 | `M1`/`UNI`/`DEN`/`DEL`/`R1` | report them as `PASS` | that presents a judgement as a computation — `MODEL-EVALUATED` with the evidence read |
 | `DQ4`/`DQ6` reported `N/A` | read the `N/A` as the runner having checked them | `always N/A` is not a third kind of pass — the runner computes neither and an `N/A` never sets its non-zero exit; disposition both against task-local evidence, exactly like the MODEL-EVALUATED rows |
+| A judgement that depends on the constraint index | dispatch a built-in agent (`Explore`, `Plan`, `general-purpose`) | their prompts are predefined, no preloaded skill reaches them and they skip the CLAUDE.md hierarchy, so the constraints are graded from memory — dispatch a custom agent whose body you control, like `workflows:ds-reviewer` |
+| Handing a doer the constraint aggregates | name the four reference paths in the task prompt | naming a path is discretionary and a skipped read fails silently — the doer is `workflows:ds`, which preloads `ds-constraints` deterministically |
 | Project state | write a `SPEC.md`, `STATE.md` or `LEARNINGS.md` | competing state makes progress ambiguous — the approved plan is the authority and craft hashes it |
 | Something craft does not obviously do | write a `ds/workflow.js` | ask which craft parameter is missing — `mechanicalChecks` is what makes the DQ runner the gate |

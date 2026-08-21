@@ -30,7 +30,7 @@ human corpus) and the **numbered reference prose** `00-…12-…` (model-mediate
 
 | Loader | Loads | Reached by |
 |---|---|---|
-| `skills/de-ai-revise/scripts/de_ai_audit.py` | **A + E + stylometrics** | `writing-prose-reviewer` agent (as a *suggested* Bash line), `de-ai-revise` SKILL |
+| `skills/de-ai-revise/scripts/de_ai_audit.py` | **A + E + stylometrics** | `writing-reviewer` agent (as a *suggested* Bash line), `de-ai-revise` SKILL |
 | `scripts/prose-lint.py` | **B + D** | `hooks/writing-prose-check.ts` |
 | `references/constraints/check-all.py` | **B + C + D** (auto-discovery) | `writing-prose-check.ts`, `writing-mechanical-gate.ts`, `mechanical-floor-gate.ts`, `workflows/workshop-verify.js` |
 | `skills/ai-anti-patterns/scripts/screen.py` | **A + B** | nothing but `tests/test_prose_lint_hook.py` |
@@ -71,9 +71,9 @@ Beyond the loaders: `hooks/hooks.json:117` (PostToolUse Edit|Write → `writing-
 only for `drafts/*.md` or non-deck `*.typ` under an **authenticated approved writing plan** — it
 exits silently otherwise); `hooks/writing-mechanical-gate.ts` and `hooks/mechanical-floor-gate.ts`
 (PreToolUse blocking gates over check-all); `workflows/writing-verify.js:380` (dispatches
-`writing-prose-reviewer` with "Read the domain skill, ai-anti-patterns, and prose constraints
+`writing-reviewer` with "Read the domain skill, ai-anti-patterns, and prose constraints
 first"); `workflows/writing-verify.js:513` (third-party opt-in parsed out of the plan text);
-`agents/writing-prose-reviewer.md:82` (the de_ai_audit Bash line, as prose in a markdown file);
+`agents/writing-reviewer.md:82` (the de_ai_audit Bash line, as prose in a markdown file);
 `skills/writing-verify/SKILL.md:37` and `skills/writing-revise/SKILL.md:39,65` (load-the-skill
 instructions). **Nothing anywhere gates on a `de_ai_audit` result** — grep for `de_ai` across
 `hooks/` and `workflows/` returns nothing.
@@ -92,7 +92,7 @@ overlapping tables and no single answer to "what did this draft score?"** Three 
 2. **Overlap is invisible and un-deduplicated**, which is why the same puffery gets reported two or
    three times with three different labels and three different severities (`soft` in
    `wikipedia-puffery`, `soft` in `writing-ai-smell-puffery`, `sev4` in scored-tics).
-3. **Every path to a reviewer is an instruction, not an injection.** `writing-prose-reviewer.md`
+3. **Every path to a reviewer is an instruction, not an injection.** `writing-reviewer.md`
    *suggests* a Bash line. `prose.ts` *asks* for a Skill load. Both are suggestions, in a plugin
    whose doctrine is hooks-over-prompt.
 
@@ -168,7 +168,7 @@ Every reviewer receives the **same audit output in its prompt**:
 
 | Reviewer | Today | Proposed |
 |---|---|---|
-| `writing-prose-reviewer` | markdown *suggests* a Bash line | `writing-verify.js` runs `prose-audit.py`, injects spans into the agent prompt |
+| `writing-reviewer` | markdown *suggests* a Bash line | `writing-verify.js` runs `prose-audit.py`, injects spans into the agent prompt |
 | `prose-codex` | prompt says "FIRST, load these skills" | `prose.ts` runs `prose-audit.py` and injects spans + inlined decay rules |
 | `prose-gemini` | same | same |
 
@@ -212,7 +212,7 @@ Three surfaces, one rule for telling them apart.
    `screen.py`; retarget `tests/test_prose_lint_hook.py`.
 3. Rewire `writing-prose-check.ts` to the one entry point; delete `PROSE_LINT_SUPERSEDES`.
    Golden-file update in `tests/golden/writing-prose-check.json`.
-4. Inject spans in `workflows/writing-verify.js` and `agents/writing-prose-reviewer.md`.
+4. Inject spans in `workflows/writing-verify.js` and `agents/writing-reviewer.md`.
 5. Rewrite the `prose.ts` prompt (evidence in, skill-loading instruction out); keep `raw` on
    success; add `spanIds` to the schema and the unreliable-reviewer rule.
 6. `scripts/bump-version.sh <minor>` + contract test + annotated `workflows--vX.Y.Z` tag.

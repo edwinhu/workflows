@@ -221,9 +221,10 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh "$PLAN"
 
   // ONE ROW PER SECTION, drawn from the plan's ## Section Outputs, in that table's order — this is
   // the per-section fan-out, expressed as task rows. Outline and draft are the SAME row's work.
-  // Every task carries refs. The style guide is selected by the plan's Domain: field — legal ->
-  // volokh-distilled.md + formatting.md; econ -> economical-writing-full.md; general ->
-  // elements-of-style.md — alongside writing-checks.md, which is unconditional on every row.
+  // Every task carries refs. Drafting rows load skills/writing-register/SKILL.md — the drafter
+  // grades against the section the plan's Domain: field names — alongside writing-checks.md, which
+  // is unconditional on every row. The raw style guides are NOT loaded for drafting: the register
+  // supersedes them and overrides three of their rules.
   tasks: [
     { id: "T1",
       name: "Section: <Section>",
@@ -234,8 +235,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh "$PLAN"
              "${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-outline-sync.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/writing/references/claim-id-traceability.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-topic-sentences.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/references/volokh-distilled.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/references/formatting.md"] },
+             "${CLAUDE_PLUGIN_ROOT}/skills/writing-register/SKILL.md"] },
     // ... one T-row per remaining row of ## Section Outputs. No second row for the draft.
   ],
 
@@ -281,6 +281,16 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh "$PLAN"
              "${CLAUDE_PLUGIN_ROOT}/skills/writing/references/cite-fidelity-section-gate.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-citation-tense.md"],
       prompt: "Judge only the sourcing, against the rules in the refs. Read them in full first. Findings: a bibliography entry that corresponds to no artifact under the project's references/ — a citation recalled from training data is a claim about a document nobody opened; a quotation or pin cite that the referenced artifact does not contain; a source cited in a section its outline never pinned; a citation whose tense misstates the authority's current standing. Severity: MAJOR at minimum, CRITICAL where an unsourced or misattributed citation carries a claim the thesis rests on." },
+
+    // This lens does NOT pin Explore. Explore is a built-in agent with a predefined prompt no
+    // preloaded skill reaches, so a register-dependent judgement dispatched there is graded from
+    // memory. writing-reviewer preloads writing-register and is read-only by tools allowlist
+    // AND by tests/agent-contract.test.mjs — the same structural property Explore is
+    // pinned for, in an agent that actually knows the rules.
+    { key: "prose-register",
+      agentType: "workflows:writing-reviewer",
+      refs: [],
+      prompt: "Grade the drafted prose against the section of the preloaded writing-register skill matching the plan's Domain: the Ship table (diction), the prohibited-construction tic table, the VINDICATED phrases — which are standard scholarship and are NEVER findings — and the formatting rules (no bold-lead, no bold bare numbers, no emojis, no ALL-CAPS emphasis). A rule the register marks dropped is not a finding, and an advisory hit is a finding only where that specific sentence is worse for it. Report every finding with the quoted evidence and the span id prose-audit.py emitted for it, and list every span id you considered. NEVER report a register judgement as a computation — it is MODEL-EVALUATED, with the text you actually read." },
   ],
 
   authorityExtra: [
@@ -293,7 +303,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh "$PLAN"
     "Every command naming a draft QUOTES that path. Section names carry spaces and parentheses, and an unquoted path dies in bash before python runs — and a probe's cmd is run verbatim, with no corrected re-run.",
     "A section absent from the plan's ## Section Outputs is one nothing will check and cannot be claimed as drafted.",
     "The document is written by dispatched agents. Main chat writes nothing under the project's drafts/, outlines/ or references/, by any tool including Bash heredocs.",
-    "Standing writing doer authority — every drafting task loads ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md plus the style guide the plan's Domain: field selects: legal -> volokh-distilled.md and formatting.md; econ -> economical-writing-full.md; general -> elements-of-style.md, all under ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/.",
+    "Standing writing doer authority — every drafting task loads ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md plus the section of ${CLAUDE_PLUGIN_ROOT}/skills/writing-register/SKILL.md matching the plan's Domain: field (general | legal | econ) and that file's shared base. It loads the raw style guides — volokh-distilled.md, formatting.md, economical-writing-full.md, elements-of-style.md — NOT AT ALL for drafting, because the register is those guides already filtered through 14.29M sentences and it overrides three of their rules as register mistakes, so loading both puts the drafter under contradictory instructions.",
     "Rules: writing-checks.md defines all eight checks; writing-anchored-numbers.md, writing-citation-tense.md, writing-no-bold-lead.md, writing-outline-sync.md, writing-topic-sentences.md, writing-shortjournal.md and writing-stop-triggers.md are the prose constraints; claim-id-traceability.md and the six cite-fidelity-*.md files govern claim ids and sourcing. All under ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/.",
   ].join("\n"),
 
@@ -322,6 +332,7 @@ evidence for that conversation, not human acceptance.
 | Wiring the prose gate | `prose-audit.py` straight into `mechanicalChecks` | it ends in `sys.exit(worst)` and would block on advisory puffery — `writing_prose_gate.py` is the only sanctioned path |
 | Running the prose gate | add `--with lxml --with pyyaml` to the gate's own command | the wrapper already runs the engine under them; the gate's command line is the one quoted in `references/writing-checks.md`, byte for byte |
 | `COVER`/`FIDELITY`/`TRANSITION`/`COUNTER` | report them as `PASS` | that presents a judgement as a computation — `MODEL-EVALUATED` with the evidence read |
+| A judgement that depends on the register | dispatch a built-in agent (`Explore`, `Plan`, `general-purpose`) | their prompts are predefined and no preloaded skill reaches them, so the register is graded from memory — dispatch a custom agent whose body you control, like `workflows:writing-reviewer` |
 | Sections that could be drafted in parallel | fan out drafters | IMPLEMENT is sequential by design — one row per section, one shared tree, one gate |
 | Project state | write a `SPEC.md`, `STATE.md` or `NOTES.md` | competing state makes progress ambiguous — the approved plan is the authority and craft hashes it |
 | Something craft does not obviously do | write a `writing/workflow.js` | ask which craft parameter is missing — `tasks[]` + `mechanicalChecks` is what turned the per-section fan-out into rows and the runners into the gate |
