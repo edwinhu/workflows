@@ -550,6 +550,15 @@ def test_deck_detection_matches_the_hooks_rules(tmp_path):
     ("fire",  "the reform should bite hardest there"),
     ("fire",  "The sharpest version of the objection names an actor"),
     ("fire",  "the rule bites in exactly these cases"),
+    # The participle walked through a finite-verb-only pattern in a live draft ("a case where the
+    # rule could have bitten but did not"). Subject-anchored, 0/14,294,148 --exact. The unanchored
+    # auxiliary form stays out: `(would|could|...) (have) bit(e|ten)` is 1.80/M in law -- cited
+    # titles ("Bitcoin Will Bite the Dust") and one literal snake -- which the last two negatives
+    # below pin down.
+    ("fire",  "a case where the rule could have bitten but did not"),
+    ("fire",  "the statute has been biting hardest at the margin"),
+    ("clean", "If it had been a snake, it would have bitten us"),
+    ("clean", "See Bitcoin Will Bite the Dust, 35 Cato J 357, 359 (2015)"),
     ("clean", "the restriction has more bite in periods of high uncertainty"),
     ("clean", "Reputational sanctions always have more bite, however"),
     ("clean", "the strongest version of the ECMH is hard to defend"),
