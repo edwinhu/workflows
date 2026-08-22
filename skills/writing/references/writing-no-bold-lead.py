@@ -10,8 +10,10 @@ failure docs/DESIGN-prose-constraint-architecture.md was written about, and the 
 absorbed into System B in v5.127.0.
 
 What this file still owns, and why it is not simply deleted: the `CONSTRAINT`/`APPLIES_TO`/
-`SEVERITY` contract and the `drafts/<file>:<line>: …` violation shape that
-hooks/writing-mechanical-gate.ts names as part of the deterministic mechanical floor.
+`SEVERITY` contract and the `drafts/<file>:<line>: …` violation shape that the deterministic
+mechanical floor is defined in terms of. The hook gate that once consumed it was retired with the
+beat spine (docs/DESIGN-prose-constraint-architecture.md); the contract outlived it because
+check-all.py auto-discovers on it.
 
 COST: one `prose-audit.py` subprocess per draft, inside check-all.py. That is the price of having
 the rule live in exactly one place; a project with many drafts pays it linearly.

@@ -91,7 +91,7 @@ export function allow(): never {
  * tool call proceeds. So an unhandled throw in a PreToolUse gate is a silent ALLOW, which is the
  * exact opposite of what a gate whose header promises "it fails CLOSED" is for. Measured: a receipt
  * carrying `workflow: "constructor"` made `builtInOrchestratorDirectories` return `undefined`,
- * `permitted.some` threw, `implementer-identity-gate` exited 1, and the approving conversation's
+ * `permitted.some` threw, the identity gate then in place exited 1, and the approving conversation's
  * `Write` to arbitrary project code landed ungated under an APPROVED receipt.
  *
  * THE HANDLER MUST NOT ITSELF THROW. It formats one fixed-shape deny with `pyJson` over a string it
@@ -105,8 +105,9 @@ export function allow(): never {
  * the paragraph above it: Claude Code treats a non-zero exit as NON-BLOCKING, so dying loudly IS
  * the silent allow. Calling this function is the signal — every PreToolUse gate calls it, and no
  * PostToolUse hook does, so `requireObject` denies here and keeps its exit-1 parity semantics
- * everywhere else (`writing-suggest-verify`, `overflow-check`, and `ds-post-subagent-guard` are
- * PostToolUse and pin that exit code, where a non-zero exit is not a silent allow).
+ * everywhere else (`lint-check`, `atomic-constraint-guard`, `writing-prose-check`,
+ * `cite-fidelity-lint` and `pr-url-logger` are PostToolUse and reach `requireObject` through
+ * `readPayload`/`parsePayload`, where a non-zero exit is not a silent allow).
  */
 let preToolUseGate = false;
 export function denyOnCrash(gate: string): void {

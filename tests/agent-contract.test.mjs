@@ -1,6 +1,6 @@
 // Agent contract: the plumbing between skills/*/SKILL.md, agents/*.md and skills/*/ — skill
-// preloading, agentType resolution, the read-only writer exclusion, the one output style, the
-// settings merge. (Was writing-register-contract.test.mjs; it is the general agent suite now, and
+// preloading, agentType resolution, the read-only writer exclusion, and the retirement of the
+// output-style path. (Was writing-register-contract.test.mjs; it is the general agent suite now, and
 // ds/workshop ride the same wiring facts writing does.)
 //
 // WHY THIS FILE EXISTS. The wiring facts this feature depends on fail SILENTLY when violated, so
@@ -35,7 +35,6 @@ const PLUGIN_AGENTS = join(ROOT, 'agents')
 const SCOPED_AGENTS = join(ROOT, 'user-agents')
 const USER_AGENTS = join(homedir(), '.claude', 'agents')
 const SKILLS = join(ROOT, 'skills')
-const STYLES = join(ROOT, 'output-styles')
 
 // THE DIRECTORY STATES THE SCOPE — that is the whole point of the split, and it is why nothing
 // below carries a hardcoded roster or a named exception.
@@ -713,28 +712,28 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   }
 }
 
-// ── One output style, and it is structural ───────────────────────────────────
+// ── THE OUTPUT-STYLE PATH IS RETIRED, AND NOTHING STILL POINTS AT IT ──────────
+//
+// An output style cannot do the job it was kept for: setting one drops Claude Code's `# Doing
+// tasks` section but NEVER `# Tone and style`, so it competes with the surviving half of the
+// framing instead of replacing it. A subagent's body IS its whole system prompt and has neither.
+// Every writing surface now routes through an agent, so the style was a second, weaker mechanism
+// for a job something else does properly. See README.md's `## Why subagents`.
 {
-  ok('output-styles/ exists', existsSync(STYLES))
-  const files = readdirSync(STYLES).filter(f => f.endsWith('.md') && f !== 'README.md')
-  ok('exactly one output style ships', files.length === 1, files.join(','))
-  ok('the one that ships is general-prose.md', files[0] === 'general-prose.md', files.join(','))
-  for (const gone of ['law-review.md', 'econ-journal.md']) {
-    ok(`output-styles/${gone} is deleted`, !existsSync(join(STYLES, gone)))
-  }
-  const p = join(STYLES, 'general-prose.md')
-  const fm = frontmatter(p)
-  ok('general-prose has name "General prose"', fm?.scalars.name === 'General prose', fm?.scalars.name)
-  ok('general-prose has a description', !!fm?.scalars.description)
-  ok('general-prose does not set keep-coding-instructions',
-     !('keep-coding-instructions' in (fm?.scalars ?? {})))
-  const lines = readFileSync(p, 'utf8').split('\n').length
-  ok('general-prose stays short (<= 50 lines)', lines <= 50, `${lines} lines`)
-  const body = readFileSync(p, 'utf8')
-  ok('general-prose keeps the prose-shape rule',
-     body.includes('write\nprose without bullets') || body.includes('prose without bullets'))
-  ok('general-prose points at the base register skill', body.includes('writing-general'))
-  ok('general-prose carries no corpus table', !/\d\.\d\d%/.test(body) && !/\/M/.test(body))
+  ok('output-styles/ no longer exists', !existsSync(join(ROOT, 'output-styles')))
+  ok('scripts/set-output-style.ts no longer exists',
+     !existsSync(join(ROOT, 'scripts', 'set-output-style.ts')))
+  const r = spawnSync('git', ['grep', '-l', '-e', 'set-output-style', '-e', 'output-styles'],
+                      { cwd: ROOT, encoding: 'utf8' })
+  const hits = (r.stdout || '').split('\n').map(s => s.trim()).filter(Boolean)
+    // This file names both paths in its own assertions, so it always self-matches once tracked.
+    .filter(f => f !== 'CHANGELOG.md' && !f.startsWith('scratch/') && !f.startsWith('.planning/')
+                 && f !== 'tests/agent-contract.test.mjs' && !f.startsWith('docs/investigations/'))
+  ok('no tracked file outside CHANGELOG.md references the retired output-style path',
+     hits.length === 0, hits.join(', '))
+  // The README keeps the ARGUMENT — deleting the mechanism without the reasoning invites its return.
+  ok('README.md still explains why subagents replace output styles',
+     readFileSync(join(ROOT, 'README.md'), 'utf8').includes('## Why subagents'))
 }
 
 // ── THE TIC DICTIONARY HAS EXACTLY ONE OWNER ───────────────────────────────────────────────────
@@ -854,69 +853,21 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   ok('no tracked file outside CHANGELOG.md references references/registers', hits.length === 0, hits.join(', '))
 }
 
-// ── set-output-style: one constant style, merge one key, refuse rather than clobber ──
+// ── The domain axis survives the output-style retirement ────────────────────
+//
+// `set-output-style.ts` is gone (see the retirement block above); the DOMAIN register axis it
+// read is not, and still reaches prose through the audit script and the PostToolUse hook.
 {
-  const mod = await import('../scripts/set-output-style.ts')
-  const { mergeOutputStyle } = mod
-  ok('set-output-style no longer exports styleMap', !('styleMap' in mod))
-  const src = readFileSync(join(ROOT, 'scripts', 'set-output-style.ts'), 'utf8')
-  ok('set-output-style reads no style map file', !src.includes('output-style-map'))
-  ok('set-output-style hardcodes the single style name', src.includes('"General prose"'))
-  ok('set-output-style keeps the approved-plan gate', src.includes('authenticatedWritingPlan'))
-
-  const d = mkdtempSync(join(tmpdir(), 'set-style-'))
-  const at = n => join(d, n)
-
-  // The whole point: sibling keys survive.
-  writeFileSync(at('a.json'), JSON.stringify({ permissions: { allow: ['Bash(ls:*)'] }, model: 'opus' }, null, 2))
-  let r = mergeOutputStyle(at('a.json'), 'General prose')
-  const a = JSON.parse(readFileSync(at('a.json'), 'utf8'))
-  ok('merge writes outputStyle', r.ok && r.changed && a.outputStyle === 'General prose')
-  ok('merge preserves permissions', JSON.stringify(a.permissions) === JSON.stringify({ allow: ['Bash(ls:*)'] }))
-  ok('merge preserves other keys', a.model === 'opus')
-
-  r = mergeOutputStyle(at('a.json'), 'General prose')
-  ok('merge is idempotent', r.ok && r.changed === false)
-
-  r = mergeOutputStyle(at('new.json'), 'General prose')
-  ok('merge creates a missing settings file',
-     r.ok && JSON.parse(readFileSync(at('new.json'), 'utf8')).outputStyle === 'General prose')
-  writeFileSync(at('empty.json'), '   \n')
-  r = mergeOutputStyle(at('empty.json'), 'General prose')
-  ok('an empty settings file is not corruption',
-     r.ok && JSON.parse(readFileSync(at('empty.json'), 'utf8')).outputStyle === 'General prose')
-
-  // REFUSAL, NOT OVERWRITE. Unparseable settings are far more likely mid-edit than garbage.
-  const broken = '{ "permissions": { "allow": ["Bash(ls:*)"] },\n'
-  writeFileSync(at('broken.json'), broken)
-  r = mergeOutputStyle(at('broken.json'), 'General prose')
-  ok('unparseable settings are refused', r.ok === false)
-  ok('unparseable settings are left byte-identical', readFileSync(at('broken.json'), 'utf8') === broken)
-  writeFileSync(at('array.json'), '[1, 2, 3]')
-  r = mergeOutputStyle(at('array.json'), 'General prose')
-  ok('a non-object settings file is refused', r.ok === false)
-  ok('a non-object settings file is left byte-identical', readFileSync(at('array.json'), 'utf8') === '[1, 2, 3]')
-
-  writeFileSync(at('dry.json'), '{}\n')
-  r = mergeOutputStyle(at('dry.json'), 'General prose', true)
-  ok('dry-run reports a change', r.ok && r.changed)
-  ok('dry-run writes nothing', readFileSync(at('dry.json'), 'utf8') === '{}\n')
-
-  // NO APPROVED PLAN MEANS NO WRITE — the gate that survived the consolidation.
-  const { setOutputStyle } = mod
-  const project = mkdtempSync(join(tmpdir(), 'reg-noplan-'))
-  const out = setOutputStyle(project)
-  ok('an unapproved project is refused', out.ok === false, out.ok ? '' : out.reason)
-  ok('an unapproved project gets no settings file',
-     !existsSync(join(project, '.claude', 'settings.local.json')))
-  ok('the refusal names the missing approved plan',
-     out.ok === false && /APPROVED/.test(out.reason), out.ok ? '' : out.reason)
-
-  // The domain axis is untouched where it is load-bearing.
   ok('prose-audit.py keeps its own --style choices',
      /legal.*econ.*general|"legal"|'legal'/.test(readFileSync(join(ROOT, 'scripts', 'prose-audit.py'), 'utf8')))
   ok('writing-prose-check.ts still derives a domain style',
      readFileSync(join(ROOT, 'hooks', 'writing-prose-check.ts'), 'utf8').includes('--style'))
+  // The shared plan-context module MUST survive the script deletion — two live hooks import it.
+  ok('hooks/lib/writing-plan-context.ts survives', existsSync(join(ROOT, 'hooks', 'lib', 'writing-plan-context.ts')))
+  for (const h of ['writing-prose-check.ts', 'cite-fidelity-lint.ts']) {
+    ok(`hooks/${h} still imports authenticatedWritingPlan`,
+       readFileSync(join(ROOT, 'hooks', h), 'utf8').includes('authenticatedWritingPlan'))
+  }
 }
 
 // ── SessionStart install DETECTION: enumerates agents/, silent when clean ──────────────────────
@@ -1426,6 +1377,90 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
     ok('the agentType resolver accepts a documented built-in', typeResolves('Explore'))
   }
 }
+
+// ── EVERY NAMED HOOK RESOLVES TO A FILE ────────────────────────────────────────────────────────
+//
+// One shape of bug keeps recurring: a NAME STATED AS FACT that resolves to nothing. A `skills:`
+// entry for a deleted skill; three skill names in a register's prose; two hook names in the
+// design comment at hooks/_gate_common.ts, reasoned about as if both were live. Nothing breaks at
+// runtime — hooks.json's own entries all resolve — so only a reader is misled, which is why it
+// survives. The suite already asserts skills and agents resolve; this asserts hooks do.
+//
+// SCOPE IS DELIBERATE, because a lint that fires on prose gets disabled. Two reference shapes
+// count and nothing else:
+//   1. a `hooks/<x>.ts` or `hooks/<x>.sh` PATH — but not one under `.claude/`, which is the
+//      user-level hooks directory this plugin does not own;
+//   2. a BACKTICKED bare name that is unmistakably a hook noun: `<x>-guard`, and `<x>-guard.ts`
+//      / `-check.ts` / `-lint.ts` with the extension spelled. Bare `-check`/`-lint` are NOT
+//      counted — they collide with CLI flags (`--check`), skills (`cite-check`) and plan-lint
+//      finding codes (`acceptance-is-the-mechanical-check`).
+// Inside `hooks/` itself the vocabulary is controlled, so ANY backticked kebab-case name there is
+// checked — that is what catches a `writing-suggest-verify` whose suffix is not a hook noun.
+//
+// Exclusions are historical surfaces: CHANGELOG.md, scratch/, .planning/, docs/ (design records
+// that state retirements), and tests/ + scripts/ (synthetic fixture paths like `hooks/x.ts`).
+{
+  const tracked = (spawnSync('git', ['ls-files'], { cwd: ROOT, encoding: 'utf8' }).stdout || '')
+    .split('\n').map(s => s.trim()).filter(Boolean)
+  const IN_SCOPE = f =>
+    f !== 'CHANGELOG.md' &&
+    !/^(scratch|\.planning|docs|tests|scripts)\//.test(f) &&
+    (/^(hooks|skills|agents|user-agents|references)\//.test(f) || (!f.includes('/') && f.endsWith('.md')))
+  const trackedBasenames = new Set(tracked.map(f => f.split('/').pop().split('.')[0]))
+  const hookExists = n => existsSync(join(ROOT, 'hooks', `${n}.ts`)) || existsSync(join(ROOT, 'hooks', `${n}.sh`))
+
+  const PATH_RE = /(?<![\w./-])hooks\/((?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_-]+\.(?:ts|sh))/g
+  const EXT_RE = /`([A-Za-z0-9][A-Za-z0-9_-]*(?:-guard|-check|-lint))\.(?:ts|sh)`/g
+  const GUARD_RE = /`([A-Za-z0-9][A-Za-z0-9_-]*-guard)`/g
+  const KEBAB_RE = /`([a-z0-9]+(?:-[a-z0-9]+){1,4})`/g
+
+  /** Every hook name a file states as fact that resolves to no file. Exported shape: [file, ref]. */
+  const danglingHookRefs = (text, file) => {
+    const out = []
+    for (const [, rel] of text.matchAll(PATH_RE)) {
+      if (!existsSync(join(ROOT, 'hooks', rel))) out.push(`hooks/${rel}`)
+    }
+    const names = new Set()
+    for (const re of [EXT_RE, GUARD_RE]) for (const [, n] of text.matchAll(re)) names.add(n)
+    if (file.startsWith('hooks/')) for (const [, n] of text.matchAll(KEBAB_RE)) names.add(n)
+    for (const n of names) {
+      if (hookExists(n)) continue
+      if (text.includes(`.claude/hooks/${n}`)) continue   // user-level hook, not this plugin's
+      if (trackedBasenames.has(n)) continue               // resolves as a skill/script/agent
+      out.push(`\`${n}\``)
+    }
+    return out
+  }
+
+  const scanned = tracked.filter(IN_SCOPE)
+  ok('the hook-reference scan actually has files to scan', scanned.length > 100, `${scanned.length}`)
+  const dangling = []
+  for (const f of scanned) {
+    let text
+    // git tracks symlinks and submodule gitlinks too; only regular files have text to scan.
+    try { text = statSync(join(ROOT, f)).isFile() ? readFileSync(join(ROOT, f), 'utf8') : null }
+    catch { text = null }
+    if (text === null) continue
+    for (const ref of danglingHookRefs(text, f)) dangling.push(`${f}: ${ref}`)
+  }
+  ok('no tracked source file names a hook that does not exist', dangling.length === 0, dangling.join('; '))
+
+  // NON-VACUITY, computed rather than asserted: the scanner must FAIL on a fabricated name, in
+  // each of the three reference shapes it claims to cover.
+  ok('the scanner catches a fabricated hooks/<x>.ts path',
+     danglingHookRefs('see hooks/zz-ghost-hook.ts for details', 'README.md').length === 1)
+  ok('the scanner catches a fabricated backticked `<x>-guard`',
+     danglingHookRefs('the `zz-ghost-guard` denies it', 'skills/x/SKILL.md').length === 1)
+  ok('the scanner catches a fabricated bare hook name inside hooks/',
+     danglingHookRefs('as `zz-ghost-verify` does', 'hooks/_gate_common.ts').length === 1)
+  // ...and must NOT fire on the shapes it deliberately excludes.
+  ok('the scanner ignores a real hook', danglingHookRefs('bun hooks/session-start.ts', 'README.md').length === 0)
+  ok('the scanner ignores a user-level .claude/hooks path',
+     danglingHookRefs('~/.claude/hooks/main-thread-guard.sh and `main-thread-guard`', 'skills/x/SKILL.md').length === 0)
+  ok('the scanner ignores a bare --check flag and a -check skill name',
+     danglingHookRefs('pass `--check`, see `cite-check`', 'skills/x/SKILL.md').length === 0)
+}
+
 
 console.log(`\n${PASS} passed, ${FAIL} failed`)
 process.exit(FAIL ? 1 : 0)

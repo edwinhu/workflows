@@ -149,9 +149,11 @@ If unset, ask via AskUserQuestion whether to set it at the user tier, and to wha
 - **`./.planning`** — what the domain workflows describe
 - **Leave unset** — the fallback already works
 
-Only on an explicit choice, merge exactly that one key with the parse-or-refuse,
-preserve-siblings, atomic-rename discipline of `scripts/set-output-style.ts`
-(`mergeOutputStyle`):
+Only on an explicit choice, merge exactly that one key, and merge it the safe way: **parse or
+refuse** — a settings file that fails to parse is far more likely mid-edit than garbage, so leave
+it byte-identical and stop rather than overwrite it — and **write atomically**, to a temp file in
+the same directory then `renameSync` over the target, so every sibling key survives and no
+interrupted write can truncate the user's settings.
 
 ```bash
 PLANS=./.claude/plans bun -e '   # PLANS = the value the user chose
