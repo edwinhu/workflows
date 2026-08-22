@@ -219,7 +219,7 @@ resolves them against no particular directory; `writablePaths` and every `mechan
     // read-only by tools allowlist AND by tests/agent-contract.test.mjs — the same structural
     // property Explore is pinned for, in an agent that already holds the rules.
     { key: "deck-constraints",
-      agentType: "workflows:workshop-reviewer",
+      agentType: "workshop-reviewer",
       refs: [],
       prompt: "Grade the built slides.typ and notes.typ against the fifteen Typst modules in the preloaded workshop-constraints skill, and ONLY on the judgement half no checker reaches: a takeaway that names a topic instead of asserting a claim, a bullet restating its own slide title, notes duplicating the slide instead of carrying the spoken words, outline fragments where speakable sentences belong, a section hierarchy the argument does not have, a table whose numbers are not traceable to the paper or whose synthesis is undocumented, and diagram legibility judged on the Typst SOURCE — clipped or overlapping labels, arrows through nodes, illegible sizing, a diagram contradicting its caption. Do NOT re-derive what run-constraints.py already computed. Report every finding with the quoted text and a file:line, naming the module, and list every module you considered including those you judged satisfied. NEVER report a module judgement as a computation and never as N/A — it is MODEL-EVALUATED, with the evidence you actually read. MAJOR min; CRITICAL where the deck asserts something its source does not support." },
   ],
@@ -244,7 +244,7 @@ resolves them against no particular directory; `writablePaths` and every `mechan
 
 `verifierAgentType` and the five FID/CONV/VIS-and-generic lenses pin `Explore` because it has no Edit
 and no Write: a judge that structurally cannot modify the tree beats a prompt asking it not to. The
-`deck-constraints` lens buys the same property a different way — `workflows:workshop-reviewer` is
+`deck-constraints` lens buys the same property a different way — `workshop-reviewer` is
 read-only by tools allowlist — because Explore's prompt is predefined and no preloaded skill or
 CLAUDE.md reaches it.
 
@@ -266,7 +266,7 @@ notes. A clean deck gate is evidence for that conversation, not human acceptance
 | `FID`/`CONV`/`VIS` | report them as `PASS` | that presents a judgement as a computation — `MODEL-EVALUATED` with the evidence read |
 | A computed check reported clean with no tool installed | accept it | that is the defect this port exists to remove — a missing `typst` or `pypdf` is a FAIL, never a clean line |
 | Widows or overflow | add back upstream's `typst-widow-detection.py` or `typst-overflow.py` | both fail open; the probe owns `WID` and `OVR` natively, so 15 modules are vendored, not 17 |
-| A judgement that depends on the Typst modules | dispatch a built-in agent (`Explore`, `Plan`, `general-purpose`) | their prompts are predefined, no preloaded skill reaches them and they skip the CLAUDE.md hierarchy, so fifteen modules are graded from whatever got read — dispatch a custom agent whose body you control, like `workflows:workshop-reviewer` |
-| Handing a doer the Typst conventions | name the fifteen constraint paths in the task prompt | naming a path is discretionary and a skipped read fails silently — the doer is `workflows:workshop`, which preloads `workshop-constraints` deterministically |
+| A judgement that depends on the Typst modules | dispatch a built-in agent (`Explore`, `Plan`, `general-purpose`) | their prompts are predefined, no preloaded skill reaches them and they skip the CLAUDE.md hierarchy, so fifteen modules are graded from whatever got read — dispatch a custom agent whose body you control, like `workshop-reviewer` |
+| Handing a doer the Typst conventions | name the fifteen constraint paths in the task prompt | naming a path is discretionary and a skipped read fails silently — the doer is `workshop`, which preloads `workshop-constraints` deterministically |
 | Section tasks and the assembler | rely on their order in `tasks[]` | the assembler reads what they write — give it `dependsOn` naming every section row |
 | Something craft does not obviously do | write a `workshop/workflow.js` | ask which craft parameter is missing — `mechanicalChecks` is what makes the deck probe the gate |

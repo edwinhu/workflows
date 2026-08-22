@@ -13,22 +13,50 @@
 //   2. A missing/disabled skill in `skills:` is likewise skipped with only a debug-log warning.
 //      This is how a dangling `writing-register` preload survived a major version: 87739f29
 //      deleted the skill, the generator and this test together.
-//   3. `hooks`, `mcpServers` and `permissionMode` are IGNORED for plugin-shipped agents. Dead
-//      config that reads like the mechanism is worse than no config.
+//   3. `hooks`, `mcpServers` and `permissionMode` are IGNORED for plugin-shipped agents but
+//      HONOURED for user-level ones. Dead config that reads like the mechanism is worse than no
+//      config — which is why the six doers/reviewers live under `~/.claude/agents/` and only
+//      `librarian` is still plugin-scoped. A user-level agent also answers to its BARE name.
 //
 // Assertion 1 is the load-bearing one.
 //
 // Run: bun tests/agent-contract.test.mjs
 import { readdirSync, readFileSync, existsSync, statSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
-import { tmpdir } from 'node:os'
+import { tmpdir, homedir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 const AGENTS = join(ROOT, 'agents')
+const USER_AGENTS = join(homedir(), '.claude', 'agents')
 const SKILLS = join(ROOT, 'skills')
 const STYLES = join(ROOT, 'output-styles')
+
+// TWO TIERS. `hooks:`, `mcpServers:` and `permissionMode:` are IGNORED for plugin-shipped agents
+// but honoured for user-level ones, and a user-level agent answers to its BARE name (`@agent-ds`)
+// where a plugin one needs the namespaced `@agent-workflows:<name>`. The six doers/reviewers moved to
+// `~/.claude/agents/` for both properties; `librarian` stays plugin-scoped.
+//
+// The user tier is NOT enumerated: it is shared with agents this repo did not ship (and cannot
+// make assertions about), so the roster below names the ones this repo owns. The plugin tier still
+// enumerates — nothing else knows what is in it.
+const USER_TIER = ['ds', 'ds-reviewer', 'workshop', 'workshop-reviewer', 'writing', 'writing-reviewer']
+
+/** Every agent this repo owns, at whichever tier it lives on. */
+function roster() {
+  const out = []
+  for (const f of readdirSync(AGENTS).filter(f => f.endsWith('.md'))) {
+    out.push({ name: f.replace(/\.md$/, ''), file: f, path: join(AGENTS, f), tier: 'plugin' })
+  }
+  for (const n of USER_TIER) {
+    out.push({ name: n, file: `${n}.md`, path: join(USER_AGENTS, `${n}.md`), tier: 'user' })
+  }
+  return out
+}
+const ROSTER = roster()
+/** Path of an owned agent by bare name, whichever tier it is on. */
+const agentPath = name => ROSTER.find(a => a.name === name)?.path ?? join(AGENTS, `${name}.md`)
 
 let PASS = 0, FAIL = 0
 const ok = (name, condition, extra = '') => {
@@ -93,36 +121,39 @@ function values(fm, key) {
 
 // ── THE LOAD-BEARING ONE: every preloaded skill resolves AND is preloadable ──
 {
-  const agents = readdirSync(AGENTS).filter(f => f.endsWith('.md'))
-  ok('agents/ is not empty', agents.length > 0)
+  ok('the plugin agents/ dir is not empty',
+     readdirSync(AGENTS).filter(f => f.endsWith('.md')).length > 0)
+  ok('the user tier is populated', USER_TIER.every(n => existsSync(join(USER_AGENTS, `${n}.md`))),
+     USER_TIER.filter(n => !existsSync(join(USER_AGENTS, `${n}.md`))).join(','))
   let preloadsSeen = 0
-  for (const a of agents) {
-    const fm = frontmatter(join(AGENTS, a))
-    ok(`agents/${a} has parseable frontmatter`, fm !== null)
+  for (const { file, path, tier } of ROSTER) {
+    const fm = existsSync(path) ? frontmatter(path) : null
+    ok(`${tier}:${file} has parseable frontmatter`, fm !== null, path)
     if (!fm) continue
     for (const skill of values(fm, 'skills')) {
       preloadsSeen++
       const dir = join(SKILLS, skill)
       const md = join(dir, 'SKILL.md')
       const resolves = existsSync(dir) && statSync(dir).isDirectory() && existsSync(md)
-      ok(`agents/${a}: skills: ${skill} resolves to a real skill`, resolves, dir)
+      ok(`${tier}:${file}: skills: ${skill} resolves to a real skill`, resolves, dir)
       if (!resolves) continue
       const sfm = frontmatter(md)
       // `!== 'true'` is not enough: `disable-model-invocation: true  # why` is valid YAML and
       // parses as boolean true, but the raw string is not `'true'`. Compare the YAML VALUE.
-      ok(`agents/${a}: skills: ${skill} is not disable-model-invocation`,
+      ok(`${tier}:${file}: skills: ${skill} is not disable-model-invocation`,
          sfm !== null && !isYamlTrue(sfm.scalars['disable-model-invocation']),
          'a disable-model-invocation skill is silently skipped when preloaded')
     }
   }
   ok('at least one agent preloads a skill', preloadsSeen > 0)
 
-  // Fields that are ignored for plugin-shipped agents. Declaring one is dead config that lies.
-  for (const a of agents) {
-    const fm = frontmatter(join(AGENTS, a))
+  // Fields ignored for PLUGIN-shipped agents only. Declaring one there is dead config that lies —
+  // which is why the six that need `hooks:` moved to the user tier, where it is honoured.
+  for (const { file, path } of ROSTER.filter(a => a.tier === 'plugin')) {
+    const fm = frontmatter(path)
     if (!fm) continue
     for (const field of ['hooks', 'mcpServers', 'permissionMode']) {
-      ok(`agents/${a} does not declare ${field} (ignored for plugin agents)`,
+      ok(`agents/${file} does not declare ${field} (ignored for plugin agents)`,
          !(field in fm.scalars) && !(field in fm.lists) && !new RegExp(`^${field}:`, 'm').test(fm.raw))
     }
   }
@@ -130,7 +161,7 @@ function values(fm, key) {
 
 // ── The reviewer is wired to the consolidated register skill ─────────────────
 {
-  const p = join(AGENTS, 'writing-reviewer.md')
+  const p = agentPath('writing-reviewer')
   ok('agents/writing-reviewer.md exists', existsSync(p))
   const fm = existsSync(p) ? frontmatter(p) : null
   ok('writing-reviewer preloads writing-register', values(fm, 'skills').includes('writing-register'))
@@ -157,7 +188,7 @@ function values(fm, key) {
 
 // ── The drafting agent: writes, so it must NOT carry the read-only iron law ──────
 {
-  const p = join(AGENTS, 'writing.md')
+  const p = agentPath('writing')
   ok('agents/writing.md exists', existsSync(p))
   const fm = existsSync(p) ? frontmatter(p) : null
   const wskills = values(fm, 'skills')
@@ -178,8 +209,8 @@ function values(fm, key) {
 {
   const p = join(SKILLS, 'writing', 'SKILL.md')
   ok('skills/writing/SKILL.md exists', existsSync(p))
-  ok('skills/writing/SKILL.md dispatches workflows:writing-reviewer',
-     existsSync(p) && readFileSync(p, 'utf8').includes('workflows:writing-reviewer'))
+  ok('skills/writing/SKILL.md dispatches writing-reviewer',
+     existsSync(p) && readFileSync(p, 'utf8').includes('writing-reviewer'))
 }
 
 // ── ds: the constraint skill, the doer, the reviewer, and the lens that dispatches it ──────────
@@ -215,7 +246,7 @@ function values(fm, key) {
        existsSync(join(SKILLS, 'ds', 'references', `${f}.md`)))
   }
 
-  const doer = join(AGENTS, 'ds.md')
+  const doer = agentPath('ds')
   ok('agents/ds.md exists', existsSync(doer))
   const dfm = existsSync(doer) ? frontmatter(doer) : null
   ok('ds preloads ds-constraints', values(dfm, 'skills').includes('ds-constraints'))
@@ -230,7 +261,7 @@ function values(fm, key) {
   ok('agents/ds.md does not contain "YOU DO NOT EDIT"',
      existsSync(doer) && !readFileSync(doer, 'utf8').includes('YOU DO NOT EDIT'))
 
-  const rev = join(AGENTS, 'ds-reviewer.md')
+  const rev = agentPath('ds-reviewer')
   ok('agents/ds-reviewer.md exists', existsSync(rev))
   const rfm = existsSync(rev) ? frontmatter(rev) : null
   ok('ds-reviewer preloads ds-constraints', values(rfm, 'skills').includes('ds-constraints'))
@@ -244,8 +275,8 @@ function values(fm, key) {
 
   const sk = join(SKILLS, 'ds', 'SKILL.md')
   const sbody = existsSync(sk) ? readFileSync(sk, 'utf8') : ''
-  ok('skills/ds/SKILL.md dispatches workflows:ds-reviewer',
-     sbody.includes('workflows:ds-reviewer'))
+  ok('skills/ds/SKILL.md dispatches ds-reviewer',
+     sbody.includes('ds-reviewer'))
   ok('skills/ds/SKILL.md keys the new lens "ds-constraints"',
      /key:\s*"ds-constraints"/.test(sbody))
   ok('skills/ds/SKILL.md still keeps its four Explore lenses',
@@ -284,7 +315,7 @@ function values(fm, key) {
     }
   }
 
-  const doer = join(AGENTS, 'workshop.md')
+  const doer = agentPath('workshop')
   ok('agents/workshop.md exists', existsSync(doer))
   const dfm = existsSync(doer) ? frontmatter(doer) : null
   ok('workshop preloads workshop-constraints', values(dfm, 'skills').includes('workshop-constraints'))
@@ -294,7 +325,7 @@ function values(fm, key) {
   ok('agents/workshop.md does not contain "YOU DO NOT EDIT"',
      existsSync(doer) && !readFileSync(doer, 'utf8').includes('YOU DO NOT EDIT'))
 
-  const rev = join(AGENTS, 'workshop-reviewer.md')
+  const rev = agentPath('workshop-reviewer')
   ok('agents/workshop-reviewer.md exists', existsSync(rev))
   const rfm = existsSync(rev) ? frontmatter(rev) : null
   ok('workshop-reviewer preloads workshop-constraints',
@@ -308,8 +339,8 @@ function values(fm, key) {
 
   const sk = join(SKILLS, 'workshop', 'SKILL.md')
   const sbody = existsSync(sk) ? readFileSync(sk, 'utf8') : ''
-  ok('skills/workshop/SKILL.md dispatches workflows:workshop-reviewer',
-     sbody.includes('workflows:workshop-reviewer'))
+  ok('skills/workshop/SKILL.md dispatches workshop-reviewer',
+     sbody.includes('workshop-reviewer'))
   ok('skills/workshop/SKILL.md keys the new lens "deck-constraints"',
      /key:\s*"deck-constraints"/.test(sbody))
   ok('skills/workshop/SKILL.md still keeps its five Explore lenses',
@@ -339,10 +370,14 @@ function values(fm, key) {
       if (/[…<]/.test(t)) continue
       seen++
       if (BUILTINS.has(t)) { ok(`skills/${s}: agentType ${t} is a documented built-in`, true); continue }
-      const bare = t.startsWith('workflows:') ? t.slice('workflows:'.length) : t
-      const p = join(AGENTS, `${bare}.md`)
+      // A `workflows:` prefix means PLUGIN scope and only resolves against agents/. A bare name
+      // resolves at whichever tier owns it — and for the six that moved, the bare form is now the
+      // only correct one (`@agent-ds`, never the namespaced form).
+      const namespaced = t.startsWith('workflows:')
+      const bare = namespaced ? t.slice('workflows:'.length) : t
+      const p = namespaced ? join(AGENTS, `${bare}.md`) : agentPath(bare)
       const resolves = existsSync(p) && frontmatter(p)?.scalars.name === bare
-      ok(`skills/${s}: agentType ${t} resolves to agents/${bare}.md with a matching name:`,
+      ok(`skills/${s}: agentType ${t} resolves to ${p} with a matching name:`,
          resolves, p)
     }
   }
@@ -353,13 +388,14 @@ function values(fm, key) {
 {
   const WRITERS = ['Edit', 'Write', 'NotebookEdit', 'mcp__ide__openDiff']
   let seen = 0
-  for (const a of readdirSync(AGENTS).filter(f => f.endsWith('.md'))) {
-    const p = join(AGENTS, a)
-    if (!readFileSync(p, 'utf8').includes('YOU DO NOT EDIT')) continue
+  // BOTH TIERS. The rule follows the agent, not the directory it happens to live in.
+  for (const { file, path, tier } of ROSTER) {
+    if (!existsSync(path)) continue
+    if (!readFileSync(path, 'utf8').includes('YOU DO NOT EDIT')) continue
     seen++
-    const t = values(frontmatter(p), 'tools')
+    const t = values(frontmatter(path), 'tools')
     for (const w of WRITERS) {
-      ok(`agents/${a} says "YOU DO NOT EDIT" and must not list ${w}`, !t.includes(w), t.join(','))
+      ok(`${tier}:${file} says "YOU DO NOT EDIT" and must not list ${w}`, !t.includes(w), t.join(','))
     }
   }
   ok('at least one agent declares "YOU DO NOT EDIT"', seen > 0)
@@ -368,12 +404,12 @@ function values(fm, key) {
   // exits the loop above silently and keeps whatever tools it likes. Name every reviewer that must
   // be inside it. ds-reviewer and workshop-reviewer join writing-reviewer here.
   for (const r of ['writing-reviewer', 'ds-reviewer', 'workshop-reviewer']) {
-    const p = join(AGENTS, `${r}.md`)
-    ok(`agents/${r}.md is covered by the writer-exclusion rule`,
-       existsSync(p) && readFileSync(p, 'utf8').includes('YOU DO NOT EDIT'))
+    const p = agentPath(r)
+    ok(`${r} is covered by the writer-exclusion rule`,
+       existsSync(p) && readFileSync(p, 'utf8').includes('YOU DO NOT EDIT'), p)
     const t = existsSync(p) ? values(frontmatter(p), 'tools') : []
     for (const w of WRITERS) {
-      ok(`agents/${r}.md must not list ${w}`, !t.includes(w), t.join(','))
+      ok(`${r} must not list ${w}`, !t.includes(w), t.join(','))
     }
   }
 }
@@ -535,9 +571,13 @@ function values(fm, key) {
   ok('hooks/session-start.ts exports buildSetupSection', /export function buildSetupSection/.test(src))
   ok('the detector enumerates agents/ at runtime', /readdirSync\(/.test(detector))
   ok('the detector reads the agents directory, not a list', /join\([^)]*"agents"\)/.test(detector))
+  // BOTH TIERS: the six that carry agent-scoped hooks live under ~/.claude/agents now, and a
+  // detector that only reads the plugin's own agents/ would stop seeing them entirely.
+  ok('the detector also reads the user-level agents directory',
+     /homedir\(\)[^)]*"\.claude"/.test(detector))
 
   // NO HARDCODED ROSTER. Every real agent basename, checked as a quoted/backticked literal.
-  for (const a of readdirSync(AGENTS).filter(f => f.endsWith('.md')).map(f => f.replace(/\.md$/, ''))) {
+  for (const a of ROSTER.map(x => x.name)) {
     const literal = new RegExp(`["'\`]${a.replace(/[-]/g, '\\-')}(\\.md)?["'\`]`)
     ok(`the detector does not name agent "${a}" literally`, !literal.test(detector))
   }
@@ -604,7 +644,7 @@ function values(fm, key) {
   const setup = readFileSync(join(SKILLS, 'setup', 'SKILL.md'), 'utf8')
   ok('the setup skill enumerates agents at runtime rather than naming them',
      /readdirSync\(/.test(setup))
-  for (const a of readdirSync(AGENTS).filter(f => f.endsWith('.md')).map(f => f.replace(/\.md$/, ''))) {
+  for (const a of ROSTER.map(x => x.name)) {
     ok(`the setup skill does not name agent "${a}" literally`,
        !new RegExp(`["'\`]${a.replace(/[-]/g, '\\-')}(\\.md)?["'\`]`).test(setup))
   }

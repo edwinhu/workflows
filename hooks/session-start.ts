@@ -325,32 +325,79 @@ function frontmatterValues(fm: Record<string, string | string[]>, key: string): 
 type DanglingPreload = { agent: string; skill: string };
 
 /**
- * Every `skills:` preload under `agents/` that does not resolve to a real `skills/<name>/SKILL.md`.
- * The roster is ENUMERATED, never listed: a hardcoded set silently stops covering agents added
- * later, which is the same silent-drift bug this detector exists to catch.
+ * Every `skills:` preload that does not resolve to a real `skills/<name>/SKILL.md`, across BOTH
+ * agent tiers: the plugin's own `agents/` and the user-level `~/.claude/agents/`, where the agents
+ * that need agent-scoped `hooks:` frontmatter now live (that field is ignored for plugin-shipped
+ * agents). The roster is ENUMERATED at both tiers, never listed: a hardcoded set silently stops
+ * covering agents added later, which is the same silent-drift bug this detector exists to catch.
+ *
+ * The user tier is shared with agents this plugin did not ship, so a user-level agent is only
+ * reported when it is DERIVABLY ours — some preload of its own resolves here, or this plugin's
+ * skills dispatch it by name. Nagging about a stranger's agent is the same failure as nagging
+ * about a working default.
  */
 function danglingPreloads(pluginRoot: string): DanglingPreload[] {
-  const agentsDir = join(pluginRoot, "agents");
-  if (!isDir(agentsDir)) return [];
-  const out: DanglingPreload[] = [];
-  let names: string[];
-  try {
-    names = readdirSync(agentsDir).filter((f) => f.endsWith(".md")).sort();
-  } catch {
-    return [];
-  }
-  for (const name of names) {
-    let fm: Record<string, string | string[]>;
+  const skillsDir = join(pluginRoot, "skills");
+  const resolves = (skill: string) =>
+    isDir(join(skillsDir, skill)) && existsSync(join(skillsDir, skill, "SKILL.md"));
+
+  const found: { label: string; name: string; preloads: string[]; plugin: boolean }[] = [];
+  for (const dir of [join(pluginRoot, "agents"), join(homedir(), ".claude", "agents")]) {
+    if (!isDir(dir)) continue;
+    let names: string[];
     try {
-      fm = parseYamlSimple(readFileSync(join(agentsDir, name), "utf8"));
+      names = readdirSync(dir).filter((f) => f.endsWith(".md")).sort();
     } catch {
       continue;
     }
-    for (const skill of frontmatterValues(fm, "skills")) {
-      const dir = join(pluginRoot, "skills", skill);
-      if (isDir(dir) && existsSync(join(dir, "SKILL.md"))) continue;
-      out.push({ agent: name, skill });
+    const plugin = dir.startsWith(pluginRoot);
+    for (const file of names) {
+      let fm: Record<string, string | string[]>;
+      try {
+        fm = parseYamlSimple(readFileSync(join(dir, file), "utf8"));
+      } catch {
+        continue;
+      }
+      const preloads = frontmatterValues(fm, "skills");
+      if (!preloads.length) continue;
+      found.push({
+        label: plugin ? `agents/${file}` : join(dir, file),
+        name: file.replace(/\.md$/, ""),
+        preloads,
+        plugin,
+      });
     }
+  }
+
+  const suspect = found.filter((a) => a.preloads.some((s) => !resolves(s)));
+  if (!suspect.length) return [];
+
+  // Only paid for when something already looks wrong.
+  let dispatched: Set<string> | null = null;
+  const dispatchedNames = (): Set<string> => {
+    if (dispatched) return dispatched;
+    dispatched = new Set<string>();
+    try {
+      for (const s of readdirSync(skillsDir)) {
+        const md = join(skillsDir, s, "SKILL.md");
+        if (!existsSync(md)) continue;
+        for (const m of readFileSync(md, "utf8").matchAll(
+          /[Aa]gent[Tt]ype:\s*"([^"]+)"|subagent_type="([^"]+)"/g,
+        )) {
+          dispatched.add((m[1] ?? m[2]).replace(/^workflows:/, ""));
+        }
+      }
+    } catch {
+      /* an unreadable skills dir just means no ownership evidence */
+    }
+    return dispatched;
+  };
+
+  const out: DanglingPreload[] = [];
+  for (const a of suspect) {
+    const ours = a.plugin || a.preloads.some(resolves) || dispatchedNames().has(a.name);
+    if (!ours) continue;
+    for (const skill of a.preloads) if (!resolves(skill)) out.push({ agent: a.label, skill });
   }
   return out;
 }
@@ -384,7 +431,7 @@ export function buildSetupSection(
 
   for (const { agent, skill } of danglingPreloads(pluginRoot)) {
     problems.push(
-      "- `agents/" +
+      "- `" +
         agent +
         "` preloads `" +
         skill +

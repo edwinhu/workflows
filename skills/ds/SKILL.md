@@ -231,7 +231,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan
     // ds-reviewer preloads ds-constraints and is read-only by tools allowlist AND by
     // tests/agent-contract.test.mjs — the same structural property, in an agent that knows the rules.
     { key: "ds-constraints",
-      agentType: "workflows:ds-reviewer",
+      agentType: "ds-reviewer",
       refs: [],
       prompt: "Grade the implemented code and outputs against the indexed constraints in the preloaded ds-constraints skill — C1-C6, V1-V9, A1-A6, E1-E6 — and against the two no regex reaches: every reported rate states its denominator, and the row-count chain traces input → transform → output. Grade only the constraints the task actually touches; an engineering constraint applied to a pure analysis task is a wrong finding that costs a round. Report every finding with the file, the line and the quoted code, naming the constraint id, and list every id you considered including those you judged satisfied. NEVER report a constraint judgement as a computation — it is MODEL-EVALUATED, with the evidence you actually read. Severity: `major` at minimum, `critical` where the defect invalidates the output's stated grain, universe or inference, never `minor`." },
   ],
@@ -253,7 +253,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan
 
 `verifierAgentType` and the four generic lenses pin `Explore` because it has no Edit and no Write: a
 judge that structurally cannot modify the tree beats a prompt asking it not to. The `ds-constraints`
-lens buys the same property a different way — `workflows:ds-reviewer` is read-only by tools
+lens buys the same property a different way — `ds-reviewer` is read-only by tools
 allowlist — because Explore's prompt is predefined and no preloaded skill or CLAUDE.md reaches it.
 
 Add `${CLAUDE_PLUGIN_ROOT}/skills/ds/references/competing-hypothesis.md` to a task's `refs` when
@@ -279,7 +279,7 @@ evidence for that conversation, not human acceptance.
 | The DQ result | let the implementer report it | the doer cannot see the assumption it made in both places — the runner is a `mechanicalCheck` and the JS reads its exit code |
 | `M1`/`UNI`/`DEN`/`DEL`/`R1` | report them as `PASS` | that presents a judgement as a computation — `MODEL-EVALUATED` with the evidence read |
 | `DQ4`/`DQ6` reported `N/A` | read the `N/A` as the runner having checked them | `always N/A` is not a third kind of pass — the runner computes neither and an `N/A` never sets its non-zero exit; disposition both against task-local evidence, exactly like the MODEL-EVALUATED rows |
-| A judgement that depends on the constraint index | dispatch a built-in agent (`Explore`, `Plan`, `general-purpose`) | their prompts are predefined, no preloaded skill reaches them and they skip the CLAUDE.md hierarchy, so the constraints are graded from memory — dispatch a custom agent whose body you control, like `workflows:ds-reviewer` |
-| Handing a doer the constraint aggregates | name the four reference paths in the task prompt | naming a path is discretionary and a skipped read fails silently — the doer is `workflows:ds`, which preloads `ds-constraints` deterministically |
+| A judgement that depends on the constraint index | dispatch a built-in agent (`Explore`, `Plan`, `general-purpose`) | their prompts are predefined, no preloaded skill reaches them and they skip the CLAUDE.md hierarchy, so the constraints are graded from memory — dispatch a custom agent whose body you control, like `ds-reviewer` |
+| Handing a doer the constraint aggregates | name the four reference paths in the task prompt | naming a path is discretionary and a skipped read fails silently — the doer is `ds`, which preloads `ds-constraints` deterministically |
 | Project state | write a `SPEC.md`, `STATE.md` or `LEARNINGS.md` | competing state makes progress ambiguous — the approved plan is the authority and craft hashes it |
 | Something craft does not obviously do | write a `ds/workflow.js` | ask which craft parameter is missing — `mechanicalChecks` is what makes the DQ runner the gate |

@@ -290,7 +290,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh "$PLAN"
     // AND by tests/agent-contract.test.mjs — the same structural property Explore is
     // pinned for, in an agent that actually knows the rules.
     { key: "prose-register",
-      agentType: "workflows:writing-reviewer",
+      agentType: "writing-reviewer",
       refs: [],
       prompt: "Grade the drafted prose against the section of the preloaded writing-register skill matching the plan's Domain: the Ship table (diction), the prohibited-construction tic table, the VINDICATED phrases — which are standard scholarship and are NEVER findings — and the formatting rules (no bold-lead, no bold bare numbers, no emojis, no ALL-CAPS emphasis). A rule the register marks dropped is not a finding, and an advisory hit is a finding only where that specific sentence is worse for it. Report every finding with the quoted evidence and the span id prose-audit.py emitted for it, and list every span id you considered. NEVER report a register judgement as a computation — it is MODEL-EVALUATED, with the text you actually read." },
   ],
@@ -334,7 +334,7 @@ evidence for that conversation, not human acceptance.
 | Wiring the prose gate | `prose-audit.py` straight into `mechanicalChecks` | it ends in `sys.exit(worst)` and would block on advisory puffery — `writing_prose_gate.py` is the only sanctioned path |
 | Running the prose gate | add `--with lxml --with pyyaml` to the gate's own command | the wrapper already runs the engine under them; the gate's command line is the one quoted in `references/writing-checks.md`, byte for byte |
 | `COVER`/`FIDELITY`/`TRANSITION`/`COUNTER` | report them as `PASS` | that presents a judgement as a computation — `MODEL-EVALUATED` with the evidence read |
-| A judgement that depends on the register | dispatch a built-in agent (`Explore`, `Plan`, `general-purpose`) | their prompts are predefined and no preloaded skill reaches them, so the register is graded from memory — dispatch a custom agent whose body you control, like `workflows:writing-reviewer` |
+| A judgement that depends on the register | dispatch a built-in agent (`Explore`, `Plan`, `general-purpose`) | their prompts are predefined and no preloaded skill reaches them, so the register is graded from memory — dispatch a custom agent whose body you control, like `writing-reviewer` |
 | Sections that could be drafted in parallel | fan out drafters | IMPLEMENT is sequential by design — one row per section, one shared tree, one gate |
 | Project state | write a `SPEC.md`, `STATE.md` or `NOTES.md` | competing state makes progress ambiguous — the approved plan is the authority and craft hashes it |
 | Something craft does not obviously do | write a `writing/workflow.js` | ask which craft parameter is missing — `tasks[]` + `mechanicalChecks` is what turned the per-section fan-out into rows and the runners into the gate |
