@@ -312,11 +312,12 @@ Bash(
 
 **NO CREATING OR SUBSTANTIALLY EDITING SKILLS, PLUGINS, OR WORKFLOWS WITHOUT THE WORKFLOWS WRAPPER.**
 
-The workflows plugin provides wrapper skills that add two layers on top of built-in creator tools:
+The workflows plugin provides wrapper skills that add a layer on top of built-in creator tools:
 1. **Behavioral enforcement** — superpowers patterns (Iron Laws, rationalization tables, red flags, enforcement checklist audit)
-2. **Mechanical enforcement** — PostToolUse hooks (`plugin-validate.py`, `validate-skill-paths.py`) that fire on every Write/Edit
 
-Using built-in creators directly bypasses both layers. This applies globally — any project, not just the workflows plugin.
+There is **no mechanical enforcement layer.** `hooks/plugin-validate.ts` and `hooks/validate-skill-paths.ts` exist but are **not registered** in `hooks/hooks.json`, so nothing fires on Write/Edit; they were measured 2026-08-21 at 91 and 22 pre-existing findings and left unwired.
+
+Using built-in creators directly bypasses the behavioral layer. This applies globally — any project, not just the workflows plugin.
 
 "Substantial" means: adding/removing sections, changing enforcement patterns, altering process flow, adding/modifying hooks. Typo fixes, version bumps, and single-line clarifications are exempt.
 

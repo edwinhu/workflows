@@ -1,19 +1,13 @@
 ---
 name: skill-creator
 description: "This skill should be used when the user asks to 'create a skill', 'improve a skill', 'edit a skill', 'add a skill to a plugin', 'add enforcement patterns', 'add Iron Laws or fact rows', 'fix a skill description', 'audit skill enforcement', or needs to substantially create or edit any SKILL.md file — including a single skill inside a plugin. Use plugin-creator only for plugin-level work (manifest, hooks wiring, multi-component scaffolding)."
-hooks:
-  PostToolUse:
-    - matcher: "Edit|Write"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/plugin-validate.ts"
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.ts"
 ---
 
 # Skill Creator (with Superpowers Enforcement)
 
 This skill wraps the built-in `skill-creator:skill-creator` with enforcement pattern awareness from the superpowers framework. It adds an enforcement audit layer to the skill-creator's draft-test-iterate loop.
+
+**No path-validation hook runs on your edits.** `hooks/validate-skill-paths.ts` and `hooks/plugin-validate.ts` exist in this repo but are **not registered** in `hooks/hooks.json` — measured 2026-08-21, they report 22 and 91 pre-existing findings respectively against the current tree, too noisy to wire. Check `${CLAUDE_SKILL_DIR}` / `${CLAUDE_PLUGIN_ROOT}` references by hand.
 
 ## When This Skill Applies
 

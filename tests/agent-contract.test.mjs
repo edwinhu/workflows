@@ -24,7 +24,7 @@
 // Assertion 1 is the load-bearing one.
 //
 // Run: bun tests/agent-contract.test.mjs
-import { readdirSync, readFileSync, existsSync, realpathSync, statSync, mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
+import { readdirSync, readFileSync, existsSync, realpathSync, statSync, mkdtempSync, mkdirSync, writeFileSync, unlinkSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { tmpdir, homedir } from 'node:os'
 import { fileURLToPath } from 'node:url'
@@ -1459,6 +1459,103 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
      danglingHookRefs('~/.claude/hooks/main-thread-guard.sh and `main-thread-guard`', 'skills/x/SKILL.md').length === 0)
   ok('the scanner ignores a bare --check flag and a -check skill name',
      danglingHookRefs('pass `--check`, see `cite-check`', 'skills/x/SKILL.md').length === 0)
+}
+
+
+// ── EVERY HOOK THAT EXISTS IS REGISTERED, A LIBRARY, OR EXPLICITLY QUARANTINED ─────────────────
+//
+// The converse of the scan above. That one asserts every NAME resolves to a FILE; this asserts
+// every FILE resolves to a REGISTRATION. The failure it catches is the one this repo actually
+// shipped: three hook files, cited by four skills as though live, registered in no settings file
+// and no hooks.json. Nothing errors — the guard simply never runs, and every reader who saw the
+// citation believed it did. Silence is the whole bug, which is why only a test finds it.
+//
+// A file is legitimate if ANY of:
+//   1. hooks/hooks.json names it in a `command`;
+//   2. it is a LIBRARY — leading underscore, or under hooks/lib/, or its header declares no hook
+//      event (nothing imports it as a gate, so nothing should register it);
+//   3. it is on UNREGISTERED_BY_DECISION below — a hook deliberately left unwired.
+//
+// Case 3 is an ALLOWLIST, not an escape hatch, and it carries its own upkeep: each entry must
+// still exist, must still be absent from hooks.json, and must be described as unregistered in the
+// skills that cite it. An entry that gets wired, deleted, or quietly re-described as live fails
+// here. Adding a name is a deliberate act with a reason recorded next to it; forgetting to wire a
+// new hook is not, and lands as a failure.
+{
+  const HOOK_EVENTS = /\b(PreToolUse|PostToolUse|SessionStart|SessionEnd|Stop|SubagentStop|UserPromptSubmit|PreCompact|Notification|TeammateIdle)\b/
+
+  // name -> why it is not wired. Measured 2026-08-21 against the tree at that commit.
+  const UNREGISTERED_BY_DECISION = {
+    'plugin-validate.ts':
+      'fires on all 89 SKILL.md + agents + manifests and emits the same symlink warning every time (91 firing files); registering it spams every skill edit',
+    'validate-skill-paths.ts':
+      '22 pre-existing broken refs across 13 files, 13 of them trailing-punctuation or doc-placeholder false positives; too noisy to wire until the FPs are fixed',
+  }
+
+  const hooksJson = readFileSync(join(ROOT, 'hooks', 'hooks.json'), 'utf8')
+
+  /** Hook files that exist but nothing invokes. Exported shape: [name, reason]. */
+  const unwiredHooks = (dir, registryText, allow) => {
+    const out = []
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const n = entry.name
+      if (!entry.isFile() || !/\.(ts|sh)$/.test(n)) continue
+      if (n.startsWith('_')) continue                                  // library by convention
+      if (registryText.includes(n)) continue                           // registered
+      let header
+      try { header = readFileSync(join(dir, n), 'utf8').slice(0, 2000) } catch { continue }
+      if (!HOOK_EVENTS.test(header)) continue                          // declares no event: a library
+      if (Object.hasOwn(allow, n)) continue                            // quarantined on purpose
+      out.push(n)
+    }
+    return out.sort()
+  }
+
+  const HOOK_DIR = join(ROOT, 'hooks')
+  const unwired = unwiredHooks(HOOK_DIR, hooksJson, UNREGISTERED_BY_DECISION)
+  ok('every hook file is registered in hooks.json, a library, or explicitly quarantined',
+     unwired.length === 0,
+     `unwired: ${unwired.join(', ')}`)
+
+  // hooks/lib/ is a library directory by construction — assert it is, so a gate dropped in there
+  // cannot hide from the scan above.
+  if (existsSync(join(HOOK_DIR, 'lib'))) {
+    for (const f of readdirSync(join(HOOK_DIR, 'lib'))) {
+      ok(`hooks/lib/${f} is a library, not a registered gate`, !hooksJson.includes(`lib/${f}`))
+    }
+  }
+
+  // The allowlist must not go stale in either direction.
+  for (const [n, reason] of Object.entries(UNREGISTERED_BY_DECISION)) {
+    ok(`quarantined hook ${n} still exists`, existsSync(join(HOOK_DIR, n)))
+    ok(`quarantined hook ${n} is genuinely absent from hooks.json`, !hooksJson.includes(n))
+    ok(`quarantined hook ${n} records why it is unwired`, reason.length > 40)
+    // ...and no skill may describe it as live. Every citing skill must say it is not registered.
+    const citing = spawnSync('git', ['grep', '-l', n, '--', 'skills/'], { cwd: ROOT, encoding: 'utf8' })
+      .stdout.split('\n').map(s => s.trim()).filter(Boolean)
+    for (const f of citing) {
+      ok(`${f} cites ${n} and states plainly that it is not registered`,
+         /not\s+\*\*?registered|\*\*not\*\*\s+registered|not registered/i.test(readFileSync(join(ROOT, f), 'utf8')),
+         f)
+    }
+  }
+
+  // NON-VACUITY, computed rather than asserted: a hook file that is neither registered, a library,
+  // nor quarantined must be REPORTED. Exercised against the real detector, not a restatement.
+  const ghost = 'zz-ghost-unwired.ts'
+  const ghostPath = join(HOOK_DIR, ghost)
+  writeFileSync(ghostPath, '#!/usr/bin/env bun\n/** PostToolUse hook: a guard nothing invokes. */\n')
+  try {
+    ok('the detector catches an unregistered hook with an event header (not vacuous)',
+       unwiredHooks(HOOK_DIR, hooksJson, UNREGISTERED_BY_DECISION).includes(ghost))
+    ok('the detector clears that same file once hooks.json registers it',
+       !unwiredHooks(HOOK_DIR, `${hooksJson}\n"bun x/hooks/${ghost}"`, UNREGISTERED_BY_DECISION).includes(ghost))
+    ok('the detector clears that same file once it is quarantined',
+       !unwiredHooks(HOOK_DIR, hooksJson, { ...UNREGISTERED_BY_DECISION, [ghost]: 'x' }).includes(ghost))
+  } finally {
+    unlinkSync(ghostPath)
+  }
+  ok('the non-vacuity fixture was removed', !existsSync(ghostPath))
 }
 
 

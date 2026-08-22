@@ -1,19 +1,13 @@
 ---
 name: plugin-creator
 description: "This skill should be used when the user asks to 'create a plugin', 'scaffold a plugin', 'set up plugin structure', 'new plugin', 'edit the plugin manifest', 'wire plugin hooks', 'validate plugin structure', or needs plugin-level work spanning multiple components. For creating or editing a single skill (even inside a plugin), use skill-creator instead."
-hooks:
-  PostToolUse:
-    - matcher: "Edit|Write"
-      hooks:
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/plugin-validate.ts"
-        - type: command
-          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.ts"
 ---
 
 # Plugin Creator (with Superpowers Enforcement)
 
-This skill wraps the built-in `plugin-dev:create-plugin` with enforcement pattern awareness from the superpowers framework. It adds an enforcement audit layer and PostToolUse validation hooks that the built-in version lacks.
+This skill wraps the built-in `plugin-dev:create-plugin` with enforcement pattern awareness from the superpowers framework. It adds an enforcement audit layer that the built-in version lacks.
+
+**No validation hook runs on your edits.** `hooks/plugin-validate.ts` and `hooks/validate-skill-paths.ts` exist in this repo but are **not registered** in `hooks/hooks.json` — measured 2026-08-21, they report 91 and 22 pre-existing findings respectively against the current tree, too noisy to wire. Validate by hand: `claude plugin validate <plugin-dir>`.
 
 ## Process
 
