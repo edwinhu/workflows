@@ -116,7 +116,7 @@ Fixes, in order of preference:
 ## Word in a Windows guest (`word-remote`) — the Linux path
 
 `--renderer word` is macOS-only. `word-remote` runs the same Word engine in a
-QEMU Win11 guest and drives it over SSH, so Linux gets gold-standard fidelity:
+Win11 guest and drives it over SSH, so Linux gets gold-standard fidelity:
 
 ```bash
 python3 scripts/doc_render.py IN.docx OUT.pdf --renderer word-remote
@@ -126,6 +126,24 @@ Provisioned by the `programs.wordRender` nix module — `word-render` and
 `word-render-install-fonts` on PATH, transport at
 `~/.local/share/word-render/word_render_remote.sh` (override with
 `$WORD_RENDER_REMOTE`). Full setup: `~/nix/modules/shared/word-render/README.md`.
+
+**On Linux the guest is a docker container, not QEMU/qcow2.** `vm/start-winvm.sh`
+and `~/.local/share/winvm/*.qcow2` are the **macOS** path. Linux uses
+dockur/windows — the image Omarchy's `omarchy-windows-vm` drives — as container
+`omarchy-windows`, disk at `~/.windows/data.img`, compose at
+`~/.config/windows/docker-compose.yml`. There is no qcow2 to find here.
+
+```bash
+docker start omarchy-windows        # or: omarchy-windows-vm launch -k
+until ssh -o ConnectTimeout=5 -o BatchMode=yes word@winvm exit; do sleep 15; done
+```
+
+**A cold boot takes several minutes before sshd answers**, and the error changes
+as it comes up: `Connection refused` (container down) → `Connection reset by
+peer` / `timed out during banner exchange` (Windows still booting) → success.
+Only the first means something is wrong. Wait on the `until` loop rather than
+concluding the guest is broken; `docker logs --tail 20 omarchy-windows` shows
+boot progress.
 
 Selection rules:
 
