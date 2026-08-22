@@ -200,13 +200,34 @@ When presenting paper information to the user, follow this workflow:
 }
 ```
 
-## Domain Knowledge Integration
+## Journal filtering
 
-When searching Google Scholar, ALWAYS consult the domain knowledge file first:
+`scholar lookup --journal "<exact name>"` restricts results server-side (repeat
+the flag for more than one; they OR together). It is the **only** way to reach
+the student-edited business law reviews — Chicago BLR, Penn JBL, Harvard BLR,
+Columbia BLR, NYU JLB, Virginia L&B, Berkeley BLJ, Journal of Corporation Law,
+Delaware JCL — none of which Consensus indexes.
 
-**File:** `domain-knowledge.local.md` (relative to this skill's base directory)
+```bash
+scholar lookup "shareholder voting" --journal "Virginia Law & Business Review"
+```
 
-This file contains the user's curated list of trusted journals, authors, and research groups. Use it to:
+**Division of labor with consensus:** consensus filters peer-reviewed venues via
+`--journals-file` and covers the T14 general-interest flagships; scholar covers
+the business specialties via `--journal`. Same trusted-journal list feeds both.
+
+**`--journal` is lookup-only.** `scholar search` (Labs) rewrites the query and
+silently ignores the filter, so it errors out instead. Journal names go inside
+`q`, which Scholar truncates past ~256 chars — a few journals per search, not
+the whole list.
+
+## Trusted Journals (shared resource)
+
+When searching Google Scholar, ALWAYS consult the shared trusted-journal list first:
+
+**File:** `${CLAUDE_PLUGIN_ROOT}/references/trusted-journals.local.md`
+
+Shared with the `consensus` and `research` skills and the `librarian` agent — it lives at the plugin root, not under this skill. It is the user's curated list of trusted journals: one exact journal name per line, `#` comments. That format is load-bearing (`consensus search --journals-file` reads the same file), so **every non-comment line must be a journal name** — do not add authors or notes as bare lines. Use it to:
 
 1. **Prioritize results** from known-good journals and authors
 2. **Flag unfamiliar sources** - if a result is from an unknown journal, note it
@@ -218,7 +239,7 @@ This file contains the user's curated list of trusted journals, authors, and res
 ```
 User asks: "find papers on corporate disclosure"
     ↓
-1. Read domain-knowledge.local.md
+1. Read `${CLAUDE_PLUGIN_ROOT}/references/trusted-journals.local.md`
 2. Run scholar search/lookup
 3. Cross-reference results against trusted journals/authors
 4. Present results with quality signals:
@@ -232,6 +253,6 @@ User asks: "find papers on corporate disclosure"
 2. **Scholar is for discovery** — Use it to find new papers, not to read them
 3. **Always use `--json`** when results will be processed programmatically
 4. **Use `--bibtex` when presenting papers** — It provides verified author, journal, year, and abstract fields
-5. **Cross-reference domain knowledge** — Always check trusted journals/authors
+5. **Cross-reference the trusted-journal list** — Always check results against `references/trusted-journals.local.md`
 6. **Auth required** — If search fails with auth errors, re-run `scholar auth`
 7. **Rate limits** — Google Scholar may rate-limit; space out rapid queries

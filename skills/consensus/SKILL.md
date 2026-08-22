@@ -1,7 +1,7 @@
 ---
 name: consensus
-description: This skill should be used when the user asks to "search Consensus", "consensus search", "find RCT papers", "find clinical papers", "search medical literature via consensus", "find papers on consensus.app", or needs to search Consensus.app for academic/medical literature via the consensus CLI tool.
-version: 0.1.0
+description: ALWAYS use before running the `consensus` CLI or hitting consensus.app - "search Consensus", "consensus search", "find RCT papers", "randomized trials on X", "systematic reviews / meta-analyses of X", "clinical papers on X", "empirical papers in top journals only", "papers in these specific journals", "filter by journal quartile", "most-cited papers on X since 2018". Use even when the user names a filter (study type, journal, year range, citations) without saying "Consensus". NOT for a broad multi-source literature sweep - use the research skill, which calls this one.
+version: 0.2.0
 user-invocable: false
 ---
 
@@ -11,7 +11,7 @@ Search Consensus.app for academic papers via the `consensus` CLI tool.
 
 **Binary:** `~/projects/consensus-cli/consensus`
 
-**Requires:** Dia browser running with CDP enabled on port 9222.
+**Requires:** a Chrome/Chromium signed in to consensus.app with CDP on port 9250 (override with `CONSENSUS_CDP_PORT`, or `CDP_PORT` for the whole CLI family).
 
 **Check:** `ls ~/projects/consensus-cli/consensus || echo "MISSING: consensus binary not built"`
 
@@ -19,6 +19,8 @@ Search Consensus.app for academic papers via the `consensus` CLI tool.
 
 ```bash
 consensus search "<query>" [options]
+consensus journals [<query>]      # exact journal names accepted by --journal
+consensus publishers              # values accepted by --publisher
 ```
 
 ### Flags
@@ -35,6 +37,9 @@ consensus search "<query>" [options]
 | `--open-access` | Open access papers only |
 | `--domain <csv>` | Fields of study (e.g. `Medicine,Chemistry`) |
 | `--country <csv>` | Country filter (e.g. `USA,UK`) |
+| `--journal <name>` | Restrict to one journal; **repeat** the flag for more. Names must match the index exactly |
+| `--journals-file <path>` | Read journal names from a file, one per line (`#` comments and blanks skipped) |
+| `--publisher <name>` | Restrict to one publisher; repeat for more |
 | `--page <int>` | Page number (default 0) |
 | `--sort <field>` | Client-side sort: `citations` (descending) |
 
@@ -55,24 +60,71 @@ consensus search "<query>" [options]
 }
 ```
 
-## Domain Knowledge Integration
+## Journal Filtering — the primary quality gate
 
-**ALWAYS read the domain knowledge file before presenting results.**
+**File:** `${CLAUDE_PLUGIN_ROOT}/references/trusted-journals.local.md`
 
-**File:** `${CLAUDE_SKILL_DIR}/../google-scholar/domain-knowledge.local.md`
+A **shared resource** — the `google-scholar` and `research` skills and the
+`librarian` agent read the same file. It is the user's curated list of trusted
+journals, one exact name per line, with `#` comments. It is the argument to `--journals-file` — pass the path
+directly, do not re-type the names:
 
-This file contains the user's curated list of trusted journals and authors. Use it to:
+```bash
+consensus search "<topic>" --n 50 --sort citations \
+  --journals-file ~/projects/workflows/references/trusted-journals.local.md
+```
 
-1. **Mark trusted sources** — ★ before papers whose `journal` matches a trusted journal
-2. **Resolve SSRN labels via DOI** — when `journal` looks like an SSRN label, use the `doi` field to look up the real journal (see DOI Resolution below)
-3. **Filter on request** — when user asks for "relevant journals only", return only ★ papers
-4. **Suggest refinements** — use known trusted authors to suggest follow-up searches
+**When the user asks for "journals I like", "relevant journals only", "top
+journals", or a field they clearly work in, filter SERVER-SIDE with
+`--journals-file` (or `--journal` for a narrower subset).** Server-side
+filtering means all N results are from trusted venues, instead of filtering a
+mixed result set down to two or three afterwards.
+
+For a narrower cut, pass the subset explicitly — one flag per journal, since
+journal names contain commas:
+
+```bash
+consensus search "insider trading enforcement" --n 20 \
+  --journal "Journal of Finance" \
+  --journal "Journal of Financial Economics" \
+  --journal "Review of Financial Studies"
+```
+
+### Adding a journal to the list
+
+A journal name that is not in Consensus's index silently matches nothing — it
+does not error. **Verify before adding:**
+
+```bash
+consensus journals "review of financial"
+```
+
+Then append the exact `name` string to `trusted-journals.local.md`, under the
+right `#` section.
+
+### Publishers
+
+`--publisher` is a coarser cut over a fixed vocabulary (`consensus publishers`
+lists it: Elsevier, Wiley, Springer Nature, OUP, CUP, JAMA, NEJM, ...). Use it
+when the user wants a house rather than a venue; journal filtering is otherwise
+strictly better.
+
+### Still mark, still resolve
+
+`--journals-file` also makes the ★ pass trivial: every returned paper is from a
+trusted venue, so mark them all ★ and note the filter in the preamble. Without
+a journal filter, mark ★ per-paper against the same file, and run the SSRN DOI
+resolution below.
 
 ## SSRN Label Detection & DOI Resolution
 
 **SSRN label patterns** (journal field is NOT the real venue):
 - Contains "eJournal", "Topic)", "SSRN Electronic Journal"
 - Starts with a subject code: `PSN:`, `ERN:`, `ERPN:`, `SRPN:`, `POL:`, `LSN:`
+
+Note that SSRN labels **cannot** appear when `--journal`/`--journals-file` is in
+play — the filter matches on the indexed journal name, so working-paper labels
+are excluded by construction. This section applies to unfiltered searches.
 
 **When a paper has an SSRN-label journal AND a non-null `doi`:**
 
@@ -109,17 +161,20 @@ Trusted papers first (confirmed then resolved), then unresolved, then non-truste
 
 **NEVER use `mcp__consensus__search`. ALWAYS use the `~/projects/consensus-cli/consensus` binary. This is not negotiable.**
 
-The MCP tool is rate-limited to 3 results per search and requires a free account. The CLI binary uses the enterprise account session in Dia and returns up to 100 results with no rate limit.
+The MCP tool is rate-limited to 3 results per search and requires a free account. The CLI binary drives the signed-in enterprise session in the CDP browser and returns up to 100 results.
 
 ## Red Flags
 
 | Action | Why Wrong | Do Instead |
 |--------|-----------|------------|
 | **Using `mcp__consensus__search` instead of the CLI** | MCP is rate-limited to 3 results; CLI has no limit | Always use `~/projects/consensus-cli/consensus` |
-| **Presenting results without reading domain-knowledge.local.md** | User expects journal quality signals on every search | Read domain knowledge first, always |
+| **Presenting results without reading trusted-journals.local.md** | User expects journal quality signals on every search | Read the shared trusted-journal list first, always |
+| **Filtering trusted journals client-side after an unfiltered search** | Wastes most of the result set — 50 results collapse to 3 | Pass `--journals-file` and get 50 trusted results |
+| **Passing a journal name you did not verify** | An unindexed name matches nothing, silently — you get zero papers and blame the query | `consensus journals "<partial>"` first |
+| **Comma-separating journals in one `--journal`** | Journal names contain commas; the whole string is treated as one name | Repeat the flag, or use `--journals-file` |
 | **Treating SSRN topic labels as real journals without checking DOI** | The paper may be in JF or JAE — you'd miss a trusted hit | Run CrossRef DOI lookup first |
 | **Skipping DOI resolution because there are many SSRN-labeled papers** | High-citation SSRN-labeled papers are often published in top venues | Resolve all of them — it's one curl per paper |
-| **Using `--rank q1` as a journal quality filter** | The API maps SSRN working papers under Q1 labels — it is not reliable | Use domain-knowledge.local.md + DOI resolution instead |
+| **Using `--rank q1` as a journal quality filter** | The API maps SSRN working papers under Q1 labels — it is not reliable | Use `--journals-file` — it is now an explicit server-side filter |
 | **Passing `--n` > 100** | CLI validates and rejects — exits non-zero | Max is 100 |
 
 ## Decision Tree
@@ -127,20 +182,23 @@ The MCP tool is rate-limited to 3 results per search and requires a free account
 ```
 User wants papers on a topic
     ↓
-Read domain-knowledge.local.md
+Read trusted-journals.local.md
     ↓
-Run: consensus search "<topic>" --n 50 --sort citations [filters]
+Does the user want only their journals / "relevant" / "top" journals,
+or is the topic squarely in a field the file covers?
     ↓
-For each paper:
-  journal matches trusted list? → ★
-  journal is SSRN label + doi present? → curl CrossRef → re-check → ★ if match
-  else → unresolved / non-trusted
+YES → consensus search "<topic>" --n 50 --sort citations \
+        --journals-file <path to trusted-journals.local.md> [other filters]
+      → every result is trusted: mark all ★, say which filter was applied
+      → zero results? The filter may be too narrow for the topic —
+        rerun unfiltered and mark ★ per-paper instead of widening silently
     ↓
-Present: ★ confirmed, ★ resolved, then rest
-    ↓
-User wants "only relevant journals"?
-  YES → Return only ★ papers
-  NO  → Return all, stars indicate quality
+NO  → consensus search "<topic>" --n 50 --sort citations [other filters]
+      → per paper:
+          journal matches the file? → ★
+          SSRN label + doi present? → curl CrossRef → re-check → ★ if match
+          else → unresolved / non-trusted
+      → present ★ confirmed, ★ resolved, then rest
 ```
 
 ## Common Patterns
@@ -158,15 +216,29 @@ consensus search "ESG disclosure" --years 5 --min-citations 50
 # Systematic reviews only
 consensus search "minimum wage employment" --type systematic
 
-# Combine server-side quartile hint with domain-knowledge filtering
-consensus search "corporate governance" --rank q1 --n 30
-# (then filter ★ from output using domain-knowledge.local.md)
+# Only the user's journals — the default for their own fields
+consensus search "corporate governance" --n 30 --sort citations \
+  --journals-file ~/projects/workflows/references/trusted-journals.local.md
+
+# A narrower cut: the finance top three
+consensus search "payout policy" --n 20 \
+  --journal "Journal of Finance" \
+  --journal "Journal of Financial Economics" \
+  --journal "Review of Financial Studies"
+
+# Check a name before adding it to the trusted list
+consensus journals "review of financial"
+
+# By publisher house rather than venue
+consensus search "machine learning in radiology" --n 20 --publisher Elsevier --publisher Wiley
 ```
 
 ## Operational Notes
 
-1. Dia browser must be running — if CDP fails, the CLI exits 1 with "Dia browser not running (CDP port 9222 unreachable)"
-2. Consensus.app uses guest-mode rate limiting — avoid rapid back-to-back searches
-3. `--rank q1` is imprecise (SSRN papers slip through) — domain-knowledge.local.md is the reliable quality gate
-4. `study_type` comes from Consensus badges and may be `null` for many papers
-5. `open_access_pdf_url` is `null` when no PDF is available (not `undefined`)
+1. Chrome must be running with CDP and signed in. Exit codes follow sysexits: 69 = browser unreachable, 77 = not signed in, 75 = CAPTCHA/rate limit — branch on the code, do not parse stderr
+2. `consensus journals` is rate-limited hard (429 → exit 75) after ~30 rapid calls. Verifying a batch of names needs ~1.5s between calls and a cool-off after a 429
+3. `--rank q1` is imprecise (SSRN papers slip through) — `--journals-file` is the reliable quality gate
+4. Journal filters are exact-match on the indexed name and fail silently, not loudly — an empty result set usually means a wrong name, not a dry topic
+5. Law reviews ARE indexed — all fourteen T14 flagships resolve. The student-edited business specialties (Journal of Corporation Law, Delaware JCL, Harvard/Columbia BLR, Penn JBL, NYU JLB, Virginia L&B, Berkeley BLJ) are NOT; reach those with `scholar lookup --journal "<name>"`
+6. `study_type` comes from Consensus badges and may be `null` for many papers
+7. `open_access_pdf_url` is `null` when no PDF is available (not `undefined`)

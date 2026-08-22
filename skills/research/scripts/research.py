@@ -30,6 +30,9 @@ from urllib.error import URLError
 
 BIB_PATH = Path.home() / "Library/CloudStorage/GoogleDrive-eddyhu@gmail.com/My Drive/resources/My Library.bib"
 CONSENSUS_BIN = Path.home() / "projects/consensus-cli/consensus"
+# Shared across the research / consensus / google-scholar skills. Doubles as
+# consensus's --journals-file input: one exact journal name per line, '#' comments.
+TRUSTED_JOURNALS = Path(__file__).resolve().parents[2].parent / "references/trusted-journals.local.md"
 
 SSRN_PATTERNS = re.compile(
     r"eJournal|Topic\)|SSRN Electronic Journal|^PSN:|^ERN:|^ERPN:|^SRPN:|^POL:|^LSN:",
@@ -136,15 +139,25 @@ def _map_consensus_paper(item: dict) -> dict:
     }
 
 
-def run_consensus(query: str, n: int = 50, min_citations: int = 0, stream_cb=None) -> list[dict]:
+def run_consensus(query: str, n: int = 50, min_citations: int = 0, stream_cb=None,
+                  journals_only: bool = False) -> list[dict]:
     """Run consensus CLI and return parsed results.
 
     If stream_cb is provided, it's called with each intermediate paper batch
     as they arrive (requires --stream flag on the CLI).
+
+    journals_only restricts the search server-side to the trusted journal list,
+    so all n results come back from those venues instead of being filtered down
+    to a handful afterwards.
     """
     cmd = [str(CONSENSUS_BIN), "search", query, "--n", str(n), "--sort", "citations"]
     if min_citations:
         cmd += ["--min-citations", str(min_citations)]
+    if journals_only:
+        if not TRUSTED_JOURNALS.exists():
+            print(f"[warn] --journals-only ignored: {TRUSTED_JOURNALS} not found", file=sys.stderr)
+        else:
+            cmd += ["--journals-file", str(TRUSTED_JOURNALS)]
     if stream_cb is not None:
         cmd += ["--stream"]
 
@@ -423,6 +436,7 @@ def main():
     parser.add_argument("--min-citations", type=int, default=0, help="Minimum citation count")
     parser.add_argument("--no-stream", action="store_true", help="Wait for all sources before outputting (default: stream NDJSON as each source completes)")
     parser.add_argument("--scholar-search", action="store_true", help="Also run scholar search (semantic, opt-in — rate-limited)")
+    parser.add_argument("--journals-only", action="store_true", help="Restrict the consensus source to the trusted journals in references/trusted-journals.local.md (server-side filter)")
     args = parser.parse_args()
 
     query = args.query
@@ -460,7 +474,8 @@ def main():
         # Consensus runs in its own thread with streaming callback
         consensus_future = executor.submit(
             run_consensus, query, args.n, args.min_citations,
-            consensus_poll_cb if streaming else None
+            consensus_poll_cb if streaming else None,
+            args.journals_only,
         )
         futures[consensus_future] = "consensus"
 

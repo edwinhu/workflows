@@ -1,6 +1,6 @@
 ---
 name: research
-description: This skill should be used when the user asks to "find papers", "search academic literature", "find citations", "literature search", "find research on", "what does the literature say about", or any request to search for academic papers across multiple sources.
+description: ALWAYS use for ANY request to find academic papers - "find papers on X", "what does the literature say about X", "is there research on this", "who has written about X", "find me cites for this claim", "literature search", "any papers in the journals I like", "top journals only", "recent work on X", "has anyone studied this". Use proactively before answering an empirical or doctrinal question from memory, and never run scholar/consensus/paperpile by hand in sequence - this skill parallelizes them. NOT for open-web report writing (deep-research).
 version: 0.2.0
 user-invocable: false
 ---
@@ -9,7 +9,7 @@ user-invocable: false
 
 Multi-source academic search with deduplication, DOI resolution, and journal filtering.
 
-**Always read `${CLAUDE_SKILL_DIR}/../google-scholar/domain-knowledge.local.md` before presenting results.**
+**Always read `${CLAUDE_PLUGIN_ROOT}/references/trusted-journals.local.md` before presenting results.**
 
 ## IRON LAW: Always Use the Script
 
@@ -26,11 +26,25 @@ The script parallelizes all sources and DOI resolution automatically. Doing it m
 | Source | Tool | Strength | Default |
 |--------|------|----------|---------|
 | `scholar lookup` | Keyword/citation-ranked | Finance classics, foundational papers | ✅ |
-| `consensus` CLI | Empirical corpus, sorted by citations | Accounting/finance empirical literature | ✅ |
+| `consensus` CLI | Empirical corpus, sorted by citations | Accounting/finance empirical literature; law reviews (T14 flagships are indexed) | ✅ |
 | Paperpile bib | Personal library (`My Library.bib`) | Papers already in your collection | ✅ |
-| `scholar search` | NL semantic | Law reviews, conceptual literature | opt-in (`--scholar-search`) |
+| `scholar search` | NL semantic | Conceptual literature, unindexed specialty reviews | opt-in (`--scholar-search`) |
 
 `scholar search` is opt-in because it shares rate limits with `scholar lookup` and 429s when run in parallel. Add `--scholar-search` when you specifically want semantic/NL results.
+
+## Trusted-journal filtering
+
+`--journals-only` restricts the **consensus** source server-side to the journals
+listed in `${CLAUDE_PLUGIN_ROOT}/references/trusted-journals.local.md`
+(one exact name per line, `#` comments). Use it whenever the user asks for
+"journals I like", "relevant journals only", or "top journals" — it returns `--n`
+trusted papers instead of an unfiltered set that collapses to a handful once
+you mark ★.
+
+The other sources are unaffected: scholar and the Paperpile bib still run
+unfiltered, so the union stays broad. To add a journal, verify the exact indexed
+name with `~/projects/consensus-cli/consensus journals "<partial>"` before
+appending it — an unindexed name matches nothing, silently.
 
 ## Output Schema
 
@@ -53,7 +67,7 @@ The script outputs a JSON array. Each paper has:
 
 ## LLM Review Step (After Script)
 
-After running the script, read `${CLAUDE_SKILL_DIR}/../google-scholar/domain-knowledge.local.md` and cross-reference each paper's effective journal (use `journal_resolved` if present, else `journal`) against the trusted list:
+After running the script, read `${CLAUDE_PLUGIN_ROOT}/references/trusted-journals.local.md` and cross-reference each paper's effective journal (use `journal_resolved` if present, else `journal`) against the trusted list:
 
 - ★ = journal matches trusted list
 - Papers in `sources: ["lookup", "consensus"]` (multiple sources) = higher confidence
@@ -75,7 +89,9 @@ Trusted papers first (sorted by citations desc), then non-trusted in a collapsed
 
 - About to run the sources manually in sequence → STOP. That serializes the work and triples wall time; run `uv run python3 research.py "<query>"`.
 - About to call `mcp__consensus__search` → STOP. It is rate-limited to 3 results; the script uses the CLI binary automatically.
-- About to present results before reading domain-knowledge.local.md → STOP. The ★ trusted-journal signals come from that file; read it first, always.
+- About to present results before reading trusted-journals.local.md → STOP. The ★ trusted-journal signals come from that file; read it first, always.
+- User asked for their journals only, and you ran unfiltered then dropped most results → STOP. Pass `--journals-only`; it filters server-side so all `--n` results count.
+- About to append a journal to trusted-journals.local.md without verifying it → STOP. `consensus journals "<partial>"` first; a wrong name fails silently.
 - About to use the `journal` field when `journal_resolved` is present → STOP. The SSRN label hides the real venue; always prefer `journal_resolved`.
 
 ## Common Patterns
@@ -86,6 +102,9 @@ uv run python3 "${CLAUDE_SKILL_DIR}/scripts/research.py" "mandatory disclosure"
 
 # With citation floor
 uv run python3 "${CLAUDE_SKILL_DIR}/scripts/research.py" "poison pill" --min-citations 50
+
+# Trusted journals only (server-side filter on the consensus source)
+uv run python3 "${CLAUDE_SKILL_DIR}/scripts/research.py" "board independence" --journals-only
 
 # More results from Consensus
 uv run python3 "${CLAUDE_SKILL_DIR}/scripts/research.py" "corporate governance" --n 100
