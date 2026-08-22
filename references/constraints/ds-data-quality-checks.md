@@ -16,7 +16,7 @@ All skills that evaluate data quality MUST Read() the canonical checks file at `
 
 ### Correct
 ```
-Read `${CLAUDE_SKILL_DIR}/../../skills/ds-verify/references/ds-checks.md`
+Read `${CLAUDE_SKILL_DIR}/../../skills/ds/references/ds-checks.md`
 # Now DQ1-DQ6, M1, R1 are loaded from canonical source
 ```
 

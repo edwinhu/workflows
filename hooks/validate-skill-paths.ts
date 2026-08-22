@@ -61,6 +61,12 @@ const TEMPLATE_MARKERS = [
   "constraints.md",
   "scripts/script.py",
   "references/file.md",
+  // Illustrative placeholders in worked examples — no such file exists, by design.
+  "scripts/my_script.py",
+  "hooks/guard.py",
+  "hooks/lint.py",
+  // Verbatim transcript of an out-of-tree probe skill (workflow-creator/references/hook-reach.md).
+  "scripts/log-rel.sh",
 ];
 
 // ---------------------------------------------------------------------------
@@ -173,7 +179,7 @@ function pyRstrip(s: string, chars: string): string {
 
 // ---------------------------------------------------------------------------
 
-function findPluginRoot(filePath: string): string | null {
+export function findPluginRoot(filePath: string): string | null {
   let current = pathIsFile(filePath) ? pathParent(filePath) : pathStr(filePath);
   for (let i = 0; i < 15; i++) {
     if (pathExists(pathJoin(pathJoin(current, ".claude-plugin"), "plugin.json"))) {
@@ -232,7 +238,7 @@ const BANG_CAT_RE = /!`cat\s+([^`]+)`/g;
 const ENVVAR_RE = /(\$\{CLAUDE_(?:SKILL_DIR|PLUGIN_ROOT)\}\/[^\s"`'\)>]+)/g;
 
 /** Return list of [line_num, raw_ref, resolved_path] for broken refs. */
-function extractAndCheck(
+export function extractAndCheck(
   filepath: string,
   content: string,
   pluginRoot: string,
@@ -253,7 +259,9 @@ function extractAndCheck(
 
     // Any ${CLAUDE_SKILL_DIR} or ${CLAUDE_PLUGIN_ROOT} path
     for (const m of line.matchAll(ENVVAR_RE)) {
-      const pathStrRef = pyRstrip(m[1], ")");
+      // Strip trailing sentence punctuation: ENVVAR_RE stops only at whitespace/quotes/parens, so a
+      // path written mid-prose ("…/ds-checks.md, and…") would otherwise be checked with the comma.
+      const pathStrRef = pyRstrip(m[1], ").,;:");
       if (!refsToCheck.includes(pathStrRef)) refsToCheck.push(pathStrRef);
     }
 
@@ -351,4 +359,6 @@ async function main(): Promise<void> {
   context("PostToolUse", out.join("\n"));
 }
 
-await main();
+// Run only as the hook entry point. Importers (tests/agent-contract.test.mjs) get the checker
+// functions without stdin, so the CI assertion and the edit-time hook share one implementation.
+if (import.meta.main) await main();

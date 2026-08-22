@@ -314,8 +314,7 @@ Bash(
 
 The workflows plugin provides wrapper skills that add a layer on top of built-in creator tools:
 1. **Behavioral enforcement** — superpowers patterns (Iron Laws, rationalization tables, red flags, enforcement checklist audit)
-
-There is **no mechanical enforcement layer.** `hooks/plugin-validate.ts` and `hooks/validate-skill-paths.ts` exist but are **not registered** in `hooks/hooks.json`, so nothing fires on Write/Edit; they were measured 2026-08-21 at 91 and 22 pre-existing findings and left unwired.
+2. **Mechanical enforcement** — `hooks/validate-skill-paths.ts` is registered on `PostToolUse Edit|Write` in `hooks/hooks.json` and reports broken `${CLAUDE_SKILL_DIR}` / `${CLAUDE_PLUGIN_ROOT}` references on every skill edit. `hooks/plugin-validate.ts` is **not registered** — its only finding on this repo is a constant symlink warning.
 
 Using built-in creators directly bypasses the behavioral layer. This applies globally — any project, not just the workflows plugin.
 

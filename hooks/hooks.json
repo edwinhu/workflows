@@ -67,6 +67,15 @@
         ]
       },
       {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.ts"
+          }
+        ]
+      },
+      {
         "matcher": "Bash",
         "hooks": [
           {

@@ -210,7 +210,7 @@ For each task that produces intermediates (per PLAN.md Data Flow):
 
 **Enforces:** PLAN.md `### Scale-Up Testing Plan` table.
 
-See the Scale-Up Testing Protocol at `${CLAUDE_PLUGIN_ROOT}/skills/ds-implement/references/scale-up-testing.md` for the Iron Law and staged protocol. This section covers enforcement routing.
+**Iron Law: NO FULL BATCH WITHOUT A SUCCESSFUL TEST BATCH.** Stage 1 is ~10 items, always required, every output read; Stage 2 is ~100 items when the total exceeds 500; only then the full run. A stage gate is a success rate of at least 90% with outputs that parse and survive review. This section covers enforcement routing.
 
 ### Domain-Specific Enforcement
 
@@ -219,7 +219,7 @@ Load the appropriate scale-up reference based on the batch operation type:
 | Operation Type | Enforcement Reference |
 |---------------|----------------------|
 | Gemini / Vertex AI batch | `${CLAUDE_PLUGIN_ROOT}/skills/gemini-batch/references/scale-up-testing.md` |
-| Generic API batch | Follow `${CLAUDE_PLUGIN_ROOT}/skills/ds-implement/references/scale-up-testing.md` directly |
+| Generic API batch | Follow the staged protocol above directly; validate responses per `${CLAUDE_PLUGIN_ROOT}/skills/ds/references/verification-patterns.md` |
 | Database bulk operations | Validate on dev/staging table first, then production |
 
 ### Self-Check

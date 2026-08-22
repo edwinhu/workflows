@@ -1488,8 +1488,6 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   const UNREGISTERED_BY_DECISION = {
     'plugin-validate.ts':
       'fires on all 89 SKILL.md + agents + manifests and emits the same symlink warning every time (91 firing files); registering it spams every skill edit',
-    'validate-skill-paths.ts':
-      '22 pre-existing broken refs across 13 files, 13 of them trailing-punctuation or doc-placeholder false positives; too noisy to wire until the FPs are fixed',
   }
 
   const hooksJson = readFileSync(join(ROOT, 'hooks', 'hooks.json'), 'utf8')
@@ -1556,6 +1554,63 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
     unlinkSync(ghostPath)
   }
   ok('the non-vacuity fixture was removed', !existsSync(ghostPath))
+}
+
+
+// ── NO TRACKED .md POINTS A ${CLAUDE_*} REFERENCE AT A FILE THAT DOES NOT EXIST ────────────────
+//
+// hooks/validate-skill-paths.ts reports these at edit time, but only for the ONE file being
+// edited — rot introduced by a rename, a deleted skill, or an untouched neighbour is invisible
+// until someone happens to edit that file. This is the tree-wide converse, so the same finding
+// lands as a CI failure.
+//
+// It imports the hook's OWN checker rather than restating the resolution rules. A second
+// implementation could disagree with the hook about what "broken" means, and the disagreement
+// would be the bug. `import.meta.main` in the hook keeps main() from running on import.
+{
+  const { extractAndCheck, findPluginRoot } =
+    await import(join(ROOT, 'hooks', 'validate-skill-paths.ts'))
+
+  /** Broken ${CLAUDE_SKILL_DIR}/${CLAUDE_PLUGIN_ROOT} refs in one file. Shape: ['L<n>: <ref>']. */
+  const brokenPathRefs = (abs) => {
+    const root = findPluginRoot(abs)
+    if (root === null) return []
+    return extractAndCheck(abs, readFileSync(abs, 'utf8'), root)
+      .filter(([, , resolved]) => resolved !== 'FENCED_BANG_BACKTICK')
+      .map(([line, raw, resolved]) => `L${line}: ${raw} -> ${resolved}`)
+  }
+
+  const mdFiles = (spawnSync('git', ['ls-files', '*.md'], { cwd: ROOT, encoding: 'utf8' }).stdout || '')
+    .split('\n').map(s => s.trim()).filter(Boolean)
+  ok('the skill-path scan actually has files to scan', mdFiles.length > 300, `${mdFiles.length}`)
+
+  const brokenRefs = []
+  for (const f of mdFiles) {
+    const abs = join(ROOT, f)
+    // git tracks symlinks and gitlinks too; only regular files have text to scan.
+    let isFile
+    try { isFile = statSync(abs).isFile() } catch { isFile = false }
+    if (!isFile) continue
+    for (const ref of brokenPathRefs(abs)) brokenRefs.push(`${f}: ${ref}`)
+  }
+  ok('no tracked .md points a ${CLAUDE_SKILL_DIR}/${CLAUDE_PLUGIN_ROOT} reference at a missing file',
+     brokenRefs.length === 0, brokenRefs.join('; '))
+
+  // NON-VACUITY, computed against the real checker: a fixture inside the plugin whose reference
+  // names a file that does not exist must be REPORTED, and the same fixture pointing at a file
+  // that does exist must be CLEARED — so the scan discriminates rather than failing on everything.
+  const fixture = join(ROOT, 'references', 'zz-ghost-skill-path.md')
+  writeFileSync(fixture, 'See `${CLAUDE_PLUGIN_ROOT}/skills/zz-ghost/references/nope.md` for details.\n')
+  try {
+    ok('the scan catches a reference to a file that does not exist (not vacuous)',
+       brokenPathRefs(fixture).length === 1, brokenPathRefs(fixture).join('; '))
+    writeFileSync(fixture, 'See `${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.ts` for details.\n')
+    ok('the scan clears that same fixture once the reference resolves',
+       brokenPathRefs(fixture).length === 0)
+  } finally {
+    unlinkSync(fixture)
+  }
+  ok('the skill-path non-vacuity fixture was removed', !existsSync(fixture))
 }
 
 

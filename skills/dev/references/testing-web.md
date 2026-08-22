@@ -18,7 +18,8 @@ verifier can re-run. Reaching for the MCP tools because the browser is already o
 with no artifact behind it.
 
 Both MCP servers attach to their port at session start; a port revived mid-session does not
-retro-connect. See `${CLAUDE_PLUGIN_ROOT}/skills/browser-automation/SKILL.md`.
+retro-connect. See the user-level `browser-automation` skill (it lives outside this plugin, so invoke
+it by name rather than by path).
 
 ## Launch, then wait for readiness — never sleep
 

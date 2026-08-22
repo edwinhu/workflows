@@ -31,8 +31,8 @@
 
 | Context | Use | Example |
 |---------|-----|---------|
-| Skill content (top-level) | `${CLAUDE_SKILL_DIR}/../..` | `!`cat ${CLAUDE_SKILL_DIR}/../../references/X.md`` |
-| Hook command | `${CLAUDE_PLUGIN_ROOT}` | `python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lint-check.py` |
+| Skill content (top-level) | `${CLAUDE_SKILL_DIR}/../..` | `!`cat ${CLAUDE_SKILL_DIR}/../../references/file.md`` |
+| Hook command | `${CLAUDE_PLUGIN_ROOT}` | `bun ${CLAUDE_PLUGIN_ROOT}/hooks/lint-check.ts` |
 | Internal skill (Read-loaded) | `${CLAUDE_PLUGIN_ROOT}` convention | Claude infers from context |
 
 **`${CLAUDE_PLUGIN_ROOT}` does NOT work in skill content — use `${CLAUDE_SKILL_DIR}` instead.**

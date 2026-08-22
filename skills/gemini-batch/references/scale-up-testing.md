@@ -1,6 +1,6 @@
 # Scale-Up Testing for Gemini Batch Pipelines
 
-Gemini-specific patterns for the incremental scale-up testing protocol defined in `ds-implement`.
+Gemini-specific patterns for the incremental scale-up testing protocol defined in `skills/ds/references/etl-enforcement.md`.
 
 ## Stage 0 — Local Prototyping with LangExtract
 
