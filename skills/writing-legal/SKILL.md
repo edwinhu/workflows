@@ -1,6 +1,7 @@
 ---
 name: writing-legal
 description: "ALWAYS load BEFORE drafting, revising or grading LAW REVIEW prose — 'write the article', 'draft this Part', 'revise my note', 'polish the law review piece', 'does this sound like a law review article', 'edit my seminar paper', 'is this Part well written', 'should I write This Article or This paper', 'do I cross-reference by Part or Section', 'is pursuant to legalese'. Covers T14 flagship articles, student notes, seminar papers and any legal scholarship carrying footnotes and Bluebook short forms. This skill carries ONLY what is additional to the base register: load `writing-general` alongside it — the diction, tic, vindicated-phrase and formatting rules live there and are assumed here. Do NOT load this for a finance or accounting journal submission (use `writing-econ`) or for a comment letter, memo, brief or professional email (`writing-general` alone) — importing a law review rule into either of those makes the prose worse."
+user-invocable: false
 ---
 
 # Legal register (`legal`)

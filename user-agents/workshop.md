@@ -1,10 +1,14 @@
 ---
 name: workshop
 description: >
-  Builds academic workshop and seminar presentations — Typst slide decks and teleprompter speaker
-  notes from a research paper. Use proactively whenever a task's output is a talk, a deck, a slide
-  or speaker notes rather than prose or code. Also the session persona for
-  `claude --agent workshop`.
+  ALWAYS use when the output is a talk — a Typst slide deck and teleprompter speaker notes built
+  from a research paper. Triggers: "build the deck", "make slides for my paper", "I'm presenting
+  this at a seminar", "write the speaker notes", "add a slide on identification", "this slide
+  overflows", "turn the paper into a 40-minute talk", "I have a workshop next week and nothing to
+  show". Use proactively whenever a conference, seminar, job talk or brown bag comes up, even if the
+  user never says "slides". NEGATIVE ROUTING: when the deck is already built and the ask is to grade
+  it, use `workshop-reviewer`; course lecture slides and lecture notes go to `teaching`, not here;
+  the paper's own prose goes to `writing-econ` or `writing-legal`.
 model: inherit
 color: purple
 tools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash"]

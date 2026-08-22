@@ -1,10 +1,14 @@
 ---
 name: writing-legal
 description: >
-  Drafts and revises LAW REVIEW prose — flagship articles, student notes, seminar papers, any legal
-  scholarship carrying footnotes and Bluebook short forms. Use proactively whenever a task's output
-  is legal scholarship rather than code, and prefer it over `writing` for anything that will carry
-  `supra`, `Part II.B` or `This Article`. NEGATIVE ROUTING: a comment letter, memo, brief, white
+  ALWAYS use when the output is LAW REVIEW prose — a flagship article, a student note, a seminar
+  paper, any legal scholarship carrying footnotes and Bluebook short forms. Triggers: "draft Part
+  II of my article", "write the note section on this circuit split", "turn my seminar paper into an
+  article", "tighten this Part before I submit", "the footnotes need to carry the argument", "I'm
+  placing this in the spring cycle", "write up the doctrinal background", "make this sound like
+  scholarship". Use proactively whenever a task's output is legal scholarship rather than code, even
+  when the user names no genre, and prefer it over `writing` for anything that will carry `supra`,
+  `Part II.B` or `This Article`. NEGATIVE ROUTING: a comment letter, memo, brief, white
   paper or professional email goes to `writing`, not here; a finance or accounting journal
   submission, working paper or job-market paper goes to `writing-econ`, not here.
 model: inherit

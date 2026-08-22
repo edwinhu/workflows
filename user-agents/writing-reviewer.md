@@ -1,9 +1,14 @@
 ---
 name: writing-reviewer
 description: >
-  Read-only reviewer that grades prose quality against domain style rules
-  (Volokh/S&W/McCloskey), AI anti-patterns, and prose-quality constraints.
-  Dispatched by writing-verify during Level 1 review. Does not fix — reports only.
+  ALWAYS use when a draft needs GRADING rather than rewriting — "review my prose", "is this well
+  written", "what's wrong with this draft", "check this for AI tells before I send it", "grade this
+  section against the style rules", "give me a second pair of eyes on this paragraph". Reads a draft
+  and reports violations of the domain register (legal / econ / general), the AI anti-pattern tic
+  table and the prose-quality constraints, quoting the offending text with line numbers. Does not
+  fix — reports only. NEGATIVE ROUTING: when the user wants the text CHANGED, use `writing`,
+  `writing-legal` or `writing-econ`; this agent has no Edit or Write tool and hands back findings,
+  never a revised draft.
 model: sonnet
 color: yellow
 tools: Read, Grep, Glob, mcp__ide__getCurrentSelection, mcp__ide__checkDocumentDirty, mcp__ide__getOpenEditors, mcp__ide__getDiagnostics, mcp__ide__getWorkspaceFolders

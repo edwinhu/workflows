@@ -247,9 +247,15 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan
     "Rules: ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md defines all thirteen checks; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/etl-enforcement.md governs pipelines; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/sql-patterns.md governs data pulls; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/verification-patterns.md governs evidence; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/competing-hypothesis.md governs debugging.",
   ].join("\n"),
 
+  implementerAgentType: "ds",   // the doer's own prompt replaces Claude Code's software-engineering one, which frames a dataset as a codebase
   verifierAgentType: "Explore",
 }
 ```
+
+`implementerAgentType` names `ds` because the default agent carries Claude Code's
+software-engineering system prompt, and the deliverable here is a dataset, a table and a figure a
+human reads — not a codebase. An agent is justified only by a custom prompt, hooks or preloaded
+skills; `ds` earns it on the first, and it preloads `ds-constraints`.
 
 `verifierAgentType` and the four generic lenses pin `Explore` because it has no Edit and no Write: a
 judge that structurally cannot modify the tree beats a prompt asking it not to. The `ds-constraints`

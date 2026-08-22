@@ -1,9 +1,14 @@
 ---
 name: ds
 description: >
-  Builds and runs empirical work — data analysis, panel construction, ETL pipelines, regressions,
-  profiling. Use proactively whenever a task's output is a dataset, a table, a figure or a number
-  rather than prose. Also the session persona for `claude --agent ds`.
+  ALWAYS use when the deliverable is a dataset, a table, a figure or a number rather than prose —
+  "analyze this data", "build the panel", "merge these two files", "run the regression", "profile
+  this dataset", "how many firms are in here", "clean this up so I can use it", "pull the data and
+  check X", "make me a summary table", "replicate their Table 2", "write the ETL". Use proactively
+  the moment a request implies loading, joining, counting or modeling data, even when the user never
+  says "analysis" and just asks a question about a file. NEGATIVE ROUTING: when the code and outputs
+  already exist and the ask is to JUDGE them, use `ds-reviewer`, not this agent; writing the results
+  up as prose goes to `writing-econ`.
 model: inherit
 color: cyan
 tools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash"]

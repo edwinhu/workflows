@@ -197,6 +197,14 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan
 `verifierAgentType` and every lens `agentType` pin `Explore` because it has no Edit and no Write: a
 judge that structurally cannot modify the tree beats a prompt asking it not to.
 
+**`implementerAgentType` is deliberately unset here, and that is not the oversight it is in a prose
+workflow.** A custom agent is justified only by a custom prompt, hooks or preloaded skills, and its
+body REPLACES Claude Code's software-engineering system prompt. This workflow's output is code under
+TDD, so that prompt is the correct framing rather than a defect — replacing it would cost the
+implementer the tool discipline the tasks depend on and buy nothing back. The sibling prose
+workflows (`ds`, `writing`, `workshop`) override for the opposite reason: their deliverable is not
+code.
+
 Add `${CLAUDE_PLUGIN_ROOT}/skills/dev/references/testing-web.md` or
 `${CLAUDE_PLUGIN_ROOT}/skills/dev/references/testing-desktop.md` to a task's `refs` when that
 task's real test drives a browser or a native app. `authorityExtra` names them; `refs` is what makes

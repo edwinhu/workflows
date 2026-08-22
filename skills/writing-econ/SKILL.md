@@ -1,6 +1,7 @@
 ---
 name: writing-econ
 description: "ALWAYS load BEFORE drafting, revising or grading FINANCE or ACCOUNTING journal prose — 'write the paper', 'draft the introduction of my JF submission', 'revise Section 3', 'polish the job-market paper', 'does this read like a finance paper', 'tighten the abstract', 'is this well written for JFE/RFS/JAR/TAR', 'should I write we find or the paper shows', 'do I cross-reference by Section or Part', 'is agents jargon'. Covers Journal of Finance, JFE, RFS, Journal of Accounting Research, The Accounting Review, JAE, CAR, RAST, and the working and job-market papers aimed at them. This skill carries ONLY what is additional to the base register: load `writing-general` alongside it — the diction, tic, vindicated-phrase and formatting rules live there and are assumed here. Do NOT load this for a law review article or legal scholarship (use `writing-legal`) or for a comment letter, memo, brief or professional email (`writing-general` alone) — importing a finance rule into either of those makes the prose worse."
+user-invocable: false
 ---
 
 # Econ register (`econ`)

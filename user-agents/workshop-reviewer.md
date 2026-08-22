@@ -1,9 +1,14 @@
 ---
 name: workshop-reviewer
 description: >
-  Read-only reviewer that grades a built Typst deck and its speaker notes against the fifteen
-  vendored Typst constraint modules. Dispatched by the workshop workflow as the deck-constraints
-  review lens. Does not fix — reports only.
+  ALWAYS use when a Typst deck and its speaker notes already EXIST and the ask is to judge them —
+  "is this deck up to spec", "grade the slides", "check the deck before I present", "does this
+  violate the Typst conventions", "review the speaker notes", "something looks off on these slides".
+  Grades `slides.typ` and `notes.typ` against the fifteen vendored Typst constraint modules — bullet
+  and label spacing, sub-bullets, tables, images, CeTZ and Fletcher diagrams, slide format, section
+  hierarchy, notes structure, teleprompter notes, computed values — and reports violations with the
+  offending Typst source quoted. Does not fix — reports only. NEGATIVE ROUTING: building or
+  repairing the deck goes to `workshop`, not here — this agent holds Read, Grep and Glob only.
 model: sonnet
 color: yellow
 tools: Read, Grep, Glob

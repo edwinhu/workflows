@@ -1,6 +1,7 @@
 ---
 name: workshop-constraints
 description: "ALWAYS load before writing, editing or grading ANY Typst slide deck or speaker-notes file for a workshop, seminar or conference talk - 'build the deck', 'fix this slide', 'add a diagram to the talk', 'the slide overflows', 'write the speaker notes', 'is this deck up to spec', 'grade the slides', or any .typ edit under a talk. Covers bullet and label spacing, sub-bullets, tables, images, CeTZ and Fletcher diagrams, formatting, slide format, section hierarchy, notes structure, teleprompter notes and computed values."
+user-invocable: false
 ---
 
 # Workshop Typst constraints

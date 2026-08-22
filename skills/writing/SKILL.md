@@ -314,9 +314,26 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh "$PLAN"
     "Rules: writing-checks.md defines all eight checks; writing-anchored-numbers.md, writing-citation-tense.md, writing-no-bold-lead.md, writing-outline-sync.md, writing-topic-sentences.md, writing-shortjournal.md and writing-stop-triggers.md are the prose constraints; claim-id-traceability.md and the six cite-fidelity-*.md files govern claim ids and sourcing. All under ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/.",
   ].join("\n"),
 
+  // The plan's Domain: selects the register, so it selects the doer too — each of these three agents
+  // preloads exactly the register skill that Domain names. SUBSTITUTE ONE literal name when the plan
+  // is armed, exactly as `--style <domain>` above is substituted; craft takes a single string and
+  // never branches at runtime.
+  //   Domain: general -> "writing"   Domain: legal -> "writing-legal"   Domain: econ -> "writing-econ"
+  implementerAgentType: "<writing|writing-legal|writing-econ>",   // the doer's own prompt replaces Claude Code's software-engineering one, which frames an article as a codebase
   verifierAgentType: "Explore",
 }
 ```
+
+`implementerAgentType` is a placeholder because craft takes a single string: the value is written
+into the block when the plan is armed, from the plan's `Domain:` field, and no runtime branch exists
+to write it later. The default agent carries Claude Code's software-engineering system prompt and
+the deliverable here is prose a human reads, so the implementer must be an agent whose body replaces
+that prompt — and *which* agent is not a free choice, because `writing`, `writing-legal` and
+`writing-econ` preload `writing-general`, `writing-general`+`writing-legal` and
+`writing-general`+`writing-econ` respectively. A `legal` run drafted by `writing` is drafted without
+the register the same plan hands the prose-register lens, so the gate grades against rules the
+drafter never saw. `Domain:` already selects the drafting refs, the `--style` of the prose gate and
+the lens's register; the doer is the fourth thing it selects, not a fourth decision.
 
 `verifierAgentType` and every lens `agentType` pin `Explore` because it has no Edit and no Write: a
 judge that structurally cannot modify the tree beats a prompt asking it not to.

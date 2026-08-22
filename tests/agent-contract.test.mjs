@@ -24,7 +24,7 @@
 // Assertion 1 is the load-bearing one.
 //
 // Run: bun tests/agent-contract.test.mjs
-import { readdirSync, readFileSync, existsSync, realpathSync, statSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { readdirSync, readFileSync, existsSync, realpathSync, statSync, mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { tmpdir, homedir } from 'node:os'
 import { fileURLToPath } from 'node:url'
@@ -124,6 +124,29 @@ function isYamlTrue(value) {
   if (value === undefined) return false
   const bare = value.replace(/\s+#.*$/, '').trim().toLowerCase()
   return ['true', 'yes', 'on', 'y'].includes(bare)
+}
+
+/** YAML falsity, the mirror of isYamlTrue. `user-invocable:` absent is NOT false — it is unset,
+ *  which still ships a slash command. */
+function isYamlFalse(value) {
+  if (value === undefined) return false
+  const bare = value.replace(/\s+#.*$/, '').trim().toLowerCase()
+  return ['false', 'no', 'off', 'n'].includes(bare)
+}
+
+/** The WHOLE `description:`, including the continuation lines of a `>` or `|` block scalar.
+ *
+ *  READING `scalars.description` WOULD BE VACUOUS. The flat reader above matches keys only at
+ *  column 0, so for `description: >` it stores the literal `>` and DROPS every indented line —
+ *  which is where the text under test actually lives. Most agents in this repo use a block scalar,
+ *  so a check against the scalar would pass for them without reading a word of the description. */
+function descriptionText(fm) {
+  const lines = fm.raw.split('\n')
+  const start = lines.findIndex(l => /^description:/.test(l))
+  if (start === -1) return ''
+  let end = start + 1
+  while (end < lines.length && !/^[A-Za-z0-9_-]+:/.test(lines[end])) end++
+  return lines.slice(start, end).join('\n')
 }
 
 /** A frontmatter field's values however it was written — scalar, block list, or inline array.
@@ -714,6 +737,112 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   ok('general-prose carries no corpus table', !/\d\.\d\d%/.test(body) && !/\/M/.test(body))
 }
 
+// ── THE TIC DICTIONARY HAS EXACTLY ONE OWNER ───────────────────────────────────────────────────
+//
+// `~/.claude/skills/ai-tic/linter/tics.yaml` is the dictionary; `skills/ai-anti-patterns/` is the
+// only skill that carries it, and `scripts/tic-add.py` regenerates
+// `skills/ai-anti-patterns/references/scored-tics-patterns.py` from it. A SECOND hand-maintained
+// copy in a register skill cannot be regenerated, so it drifts silently: a phrase validated through
+// `/ai-tic` reaches ai-anti-patterns and never reaches the register. That is not hypothetical — the
+// register's copy and the dictionary had already diverged when this check was written.
+//
+// The rule, therefore: no `skills/writing-*` skill may contain a phrase matching any ACCEPTED tic
+// pattern. Accepted means the `tics:` block; the `rejected:` list is deliberately excluded, because
+// those ARE things human scholars write and a register is free to discuss them.
+{
+  const TICS_CANDIDATES = [
+    join(homedir(), '.claude', 'skills', 'ai-tic', 'linter', 'tics.yaml'),
+    join(homedir(), 'dotfiles', '.claude', 'skills', 'ai-tic', 'linter', 'tics.yaml'),
+  ]
+  const ticsPath = TICS_CANDIDATES.find(p => existsSync(p)) ?? null
+
+  /** Accepted tic patterns, read out of the `tics:` block. Text-level on purpose: the file carries
+   *  load-bearing comments and this repo has no YAML dependency. `(?m)` is a Python inline flag
+   *  JavaScript does not accept, so it is lifted onto the RegExp flags instead. */
+  const acceptedPatterns = text => {
+    const pats = []
+    let id = null
+    for (const line of text.split(/^rejected:/m)[0].split('\n')) {
+      const mi = line.match(/^\s*-\s*id:\s*(\S+)\s*$/)
+      if (mi) { id = mi[1]; continue }
+      const mp = line.match(/^\s*pattern:\s*(.*)$/)
+      if (!mp) continue
+      const raw = mp[1].trim()
+      let src
+      if (raw.startsWith("'")) src = raw.slice(1, raw.lastIndexOf("'")).replace(/''/g, "'")
+      else if (raw.startsWith('"')) {
+        src = raw.slice(1, raw.lastIndexOf('"'))
+          .replace(/\\(.)/g, (_, c) => (c === '\\' ? '\\' : c === '"' ? '"' : '\\' + c))
+      } else src = raw
+      let flags = 'i'
+      if (src.startsWith('(?m)')) { src = src.slice(4); flags += 'm' }
+      try { pats.push({ id, re: new RegExp(src, flags) }) } catch { pats.push({ id, re: null }) }
+    }
+    return pats
+  }
+
+  /** Every `skills/writing-*` SKILL.md under `dir` that quotes an accepted tic. */
+  const offenders = (dir, pats) => {
+    const out = []
+    for (const s of readdirSync(dir).filter(d => /^writing-/.test(d))) {
+      const p = join(dir, s, 'SKILL.md')
+      if (!existsSync(p)) continue
+      const body = readFileSync(p, 'utf8')
+      for (const { id, re } of pats) {
+        if (!re) continue
+        const m = body.match(re)
+        if (m) out.push(`skills/${s}/SKILL.md: ${id} → ${JSON.stringify(m[0])}`)
+      }
+    }
+    return out
+  }
+
+  if (!ticsPath) {
+    // NOT a pass. tics.yaml lives outside this repo (dotfiles), so a machine without it must say so
+    // out loud rather than let the assertion evaporate into a vacuous true.
+    console.log(`SKIP  the tic dictionary is unreadable — looked in ${TICS_CANDIDATES.join(', ')}; ` +
+                'the "no duplicated tic table" assertion did NOT run')
+  } else {
+    const pats = acceptedPatterns(readFileSync(ticsPath, 'utf8'))
+    // Guard the parser itself: a parser that silently yields nothing would pass everything.
+    ok('the tic dictionary yields accepted patterns', pats.length >= 10, `${pats.length} from ${ticsPath}`)
+    ok('every accepted pattern compiled', pats.every(p => p.re !== null),
+       pats.filter(p => !p.re).map(p => p.id).join(', '))
+    for (const id of ['rich-tapestry', 'delve-into-intricacies', 'chatbot-opener']) {
+      ok(`the dictionary parse found the known tic \`${id}\``, pats.some(p => p.id === id))
+    }
+
+    const hits = offenders(SKILLS, pats)
+    ok('no skills/writing-* skill restates a phrase from the accepted tic dictionary',
+       hits.length === 0,
+       `${hits.join(' | ')} — the dictionary lives in ai-anti-patterns; a second copy cannot be ` +
+       'regenerated by tic-add.py and goes stale silently')
+
+    // NON-VACUITY. The assertion above is only worth its line if it can fail. Inject a known
+    // accepted tic into a TEMP COPY of a register skill and prove the same scanner catches it.
+    const tmp = mkdtempSync(join(tmpdir(), 'tic-nonvacuity-'))
+    mkdirSync(join(tmp, 'writing-fixture'), { recursive: true })
+    writeFileSync(join(tmp, 'writing-fixture', 'SKILL.md'),
+                  '# fixture\n\nNever write `rich tapestry` — describe what it contains.\n')
+    const injected = offenders(tmp, pats)
+    ok('the scanner catches an injected tic phrase (the check is not vacuous)',
+       injected.some(h => /writing-fixture.*rich-tapestry/.test(h)), JSON.stringify(injected))
+    // And it does not fire on a register file with no tic in it.
+    mkdirSync(join(tmp, 'writing-clean'), { recursive: true })
+    writeFileSync(join(tmp, 'writing-clean', 'SKILL.md'),
+                  '# fixture\n\nThe tic dictionary lives in ai-anti-patterns; /ai-tic adds to it.\n')
+    ok('the scanner does not fire on a clean register file',
+       !offenders(tmp, pats).some(h => /writing-clean/.test(h)))
+  }
+
+  // The pointer that replaced the deleted table must actually point somewhere.
+  const wg = readFileSync(join(SKILLS, 'writing-general', 'SKILL.md'), 'utf8')
+  ok('writing-general names ai-anti-patterns as the dictionary owner', wg.includes('ai-anti-patterns'))
+  ok('writing-general points at /ai-tic as the way in', wg.includes('/ai-tic'))
+  ok('writing-general no longer ships a tic table',
+     !/corpus-gated tic table/.test(wg) && !/rich tapestry/i.test(wg))
+}
+
 // ── references/registers/ is gone, and nothing still points at it ────────────
 {
   ok('references/registers/ no longer exists', !existsSync(join(ROOT, 'references', 'registers')))
@@ -955,6 +1084,347 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   }
   walk(ROOT)
   ok('nothing references the deleted /start command', stale.length === 0, stale.join(', '))
+}
+
+// ── AGENTS ARE THE FRONT DOOR: the knowledge registers are agent-internal ───────────────────────
+//
+// The registers are dispatched-to, not slash-invoked. Loading one into the MAIN chat lands its
+// rules on top of Claude Code's own `# Doing tasks` / `# Tone and style` sections and competes with
+// them; a custom agent's body IS its whole system prompt, so that framing was never there.
+//
+//   `user-invocable: false`         removes the slash command. The model and preload paths survive.
+//   `disable-model-invocation: true` is the TRAP and is forbidden here. A preloaded skill that sets
+//                                   it is skipped with a warning to the DEBUG LOG ONLY — the agent
+//                                   launches and the guidance never arrives. It also kills the
+//                                   persona path: `claude --agent writing` picks the register up
+//                                   through the Skill TOOL, because preloads do not reach a persona
+//                                   session. Setting it disables both delivery routes at once.
+//
+// ENUMERATED, never listed: a hardcoded roster stops covering a register added later.
+{
+  const REGISTERS = readdirSync(SKILLS)
+    .filter(n => /^writing-/.test(n) || n === 'ds-constraints' || n === 'workshop-constraints')
+    .filter(n => existsSync(join(SKILLS, n, 'SKILL.md')))
+    .sort()
+  ok('the agent-internal register set is not empty', REGISTERS.length > 0,
+     'nothing was checked — the glob matched no skill')
+
+  for (const name of REGISTERS) {
+    const md = join(SKILLS, name, 'SKILL.md')
+    const fm = frontmatter(md)
+    ok(`skills/${name} has parseable frontmatter`, fm !== null, md)
+    if (!fm) continue
+    // `user-invocable: false` — the value is YAML false, so assert on the false-ness, not on the
+    // key's presence: `user-invocable: true` is present and would pass a presence check.
+    ok(`skills/${name} sets user-invocable: false (no slash command; it is agent-internal)`,
+       isYamlFalse(fm.scalars['user-invocable']),
+       `user-invocable is ${JSON.stringify(fm.scalars['user-invocable'] ?? null)}`)
+    ok(`skills/${name} does NOT set disable-model-invocation (it would kill preload AND persona)`,
+       !isYamlTrue(fm.scalars['disable-model-invocation']),
+       'a preloaded skill that disables model invocation is skipped to the debug log only')
+  }
+}
+
+// ── DESCRIPTIONS ARE THE ROUTING SURFACE, so they carry no wiring notes ─────────────────────────
+//
+// With the registers no longer user-invocable, an agent's `description` is the ONLY thing that
+// routes work to it. `Also the session persona for \`claude --agent X\`` is wiring: it belongs in
+// the body, it does nothing for triggering, and it spends the description's budget.
+{
+  ok('there are agent descriptions to check', ROSTER.length > 0)
+  for (const { name, path, tier } of ROSTER) {
+    const fm = existsSync(path) ? frontmatter(path) : null
+    if (!fm) continue
+    ok(`${tier}:${name} description carries no "session persona for" wiring note`,
+       !/session persona for/i.test(descriptionText(fm)),
+       'mechanism belongs in the body, not the routing surface')
+  }
+}
+
+// ── A PROSE IRON LAW MAY NOT STAND UNENFORCED ──────────────────────────────────────────────────
+//
+// An agent's body is its whole system prompt, so an absolute law written there reads exactly like a
+// mechanism. It is not one. The two absolute laws this repo's agents actually declare have DIFFERENT
+// enforcement surfaces, and the difference is the rule:
+//
+//   NEVER-SEND  happens only through `Bash` — no writer tool is involved and none can be removed to
+//               stop it, so a `hooks:` PreToolUse guard is the ONLY enforcement available. An agent
+//               that declares the law, holds Bash, and declares no hook is running on prose alone.
+//               This is the case the rule exists for: `assistant` states "THIS AGENT NEVER SENDS"
+//               and routes through himalaya/morgen/gws/beeper with the same Bash tool `email` uses.
+//   NEVER-EDIT  is enforced by REMOVING the writer tools, which is strictly stronger than a hook and
+//               cannot be argued around. That is already asserted above, and it is why the three
+//               reviewers carry no hook and need none.
+//
+// PLUGIN-SCOPED AGENTS ARE OUT OF SCOPE BY CONSTRUCTION, not by exception: `hooks:` is IGNORED for
+// an `agents/` file (asserted above), so requiring one there would demand dead config. THE DIRECTORY
+// STATES THE SCOPE, so this loop enumerates the user-scoped tier and names nobody.
+//
+// The rosters are ENUMERATED across all three repos that ship user-scoped agents — this plugin,
+// the teaching plugin, and dotfiles — because ~/.claude/agents/ is one namespace and a law that
+// stands unenforced does not care which repo shipped it.
+{
+  /** An absolute never-send law, however the body words it. Both markers are ABSOLUTE forms: a
+   *  conditional rule ("never send unless this turn says to") is a different claim and this set
+   *  deliberately does not match it on the heading alone. */
+  const SEND_LAW = [
+    /\bNEVER SENDS?\b/,
+    /\bno outbound authority\b/i,
+    /(^|[^\w])[Nn]ever[^\n]{0,60}\b(send|sends|reply|forward|RSVP)\b/m,
+  ]
+  const declaresSendLaw = body => SEND_LAW.some(re => re.test(body))
+
+  /** Every user-scoped agent file, from every repo that ships one, resolved through the ONE
+   *  directory Claude Code reads. Enumerated; no repo is named as a special case. */
+  const userScopedFiles = () =>
+    (existsSync(USER_AGENTS) ? readdirSync(USER_AGENTS) : [])
+      .filter(f => f.endsWith('.md'))
+      .map(f => { try { return { file: f, path: realpathSync(join(USER_AGENTS, f)) } } catch { return null } })
+      .filter(a => a && existsSync(a.path))
+
+  let lawful = 0
+  for (const { file, path } of userScopedFiles()) {
+    const text = readFileSync(path, 'utf8')
+    const fm = frontmatter(path)
+    if (!fm) continue
+    // The DESCRIPTION is a routing surface, not the agent's instructions; a law counts only when it
+    // is in the body, which is what the agent is actually running under.
+    const body = text.slice(text.indexOf('\n---\n', 3) + 5)
+    if (!declaresSendLaw(body)) continue
+    if (!values(fm, 'tools').includes('Bash')) continue
+    lawful++
+    ok(`${file} declares a never-send law and holds Bash, so it must declare hooks:`,
+       /^hooks:/m.test(fm.raw),
+       'sending happens only through Bash; with no PreToolUse guard the Iron Law is prose only')
+    // A hook that is declared but points at nothing is the same failure one layer down.
+    for (const m of fm.raw.matchAll(/^\s+command:\s*(\S+)/gm)) {
+      const script = m[1].replace(/^~/, homedir())
+      ok(`${file}: hook command ${m[1]} exists on disk`, existsSync(script), script)
+    }
+  }
+  ok('at least one agent declares a never-send law and holds Bash', lawful > 0,
+     'the marker set matched nothing — the rule would pass vacuously')
+
+  // NON-VACUITY. The assertion is worth its line only if it can fail. Run the SAME detector over
+  // three temp agent files: the law + Bash + no hook must be caught, and neither control may fire.
+  const tmp = mkdtempSync(join(tmpdir(), 'sendlaw-'))
+  const fixture = (name, fmText, body) => {
+    const p = join(tmp, name)
+    writeFileSync(p, `---\n${fmText}---\n\n${body}\n`)
+    return p
+  }
+  /** The detector, factored out so the fixtures exercise the identical predicate. */
+  const unenforced = p => {
+    const text = readFileSync(p, 'utf8')
+    const fm = frontmatter(p)
+    const body = text.slice(text.indexOf('\n---\n', 3) + 5)
+    return declaresSendLaw(body) && values(fm, 'tools').includes('Bash') && !/^hooks:/m.test(fm.raw)
+  }
+  const bad = fixture('zz-unenforced.md', 'name: zz-unenforced\ntools: Read, Bash\n',
+                      '## Iron Law: THIS AGENT NEVER SENDS\n\nNo outbound authority.')
+  const guarded = fixture('zz-guarded.md',
+                          'name: zz-guarded\ntools: Read, Bash\nhooks:\n  PreToolUse:\n    - matcher: Bash\n',
+                          '## Iron Law: THIS AGENT NEVER SENDS\n\nNo outbound authority.')
+  const nolaw = fixture('zz-nolaw.md', 'name: zz-nolaw\ntools: Read, Bash\n',
+                        'You draft prose. Send it when the user says to.')
+  const notbash = fixture('zz-notbash.md', 'name: zz-notbash\ntools: Read, Grep\n',
+                          '## Iron Law: THIS AGENT NEVER SENDS\n\nNo outbound authority.')
+  ok('the detector catches a never-send law with Bash and no hook (not vacuous)', unenforced(bad))
+  ok('the detector does not fire when the hook is declared', !unenforced(guarded))
+  ok('the detector does not fire on an agent with no such law', !unenforced(nolaw))
+  ok('the detector does not fire on an agent that cannot run Bash', !unenforced(notbash))
+}
+
+// ── EVERY `skills:` ENTRY IN ALL THREE REPOS RESOLVES ───────────────────────────────────────────
+//
+// The block far above walks ~/.claude/agents/, which reaches the other repos only through their
+// symlinks. That is the LIVE path, and it is the right one to assert — but it goes dark the moment
+// a link is missing, which is precisely when a broken preload is most likely. This walks the SHIPPED
+// directories of all three repos directly, so a dangling `skills:` entry is caught in the file the
+// author edits, whether or not the link that would surface it exists.
+{
+  const REPOS = [
+    join(ROOT, 'agents'),
+    join(ROOT, 'user-agents'),
+    join(homedir(), 'projects', 'teaching', 'user-agents'),
+    join(homedir(), 'dotfiles', '.claude', 'agents'),
+  ]
+  const USER_SKILLS = join(homedir(), '.claude', 'skills')
+  /** Every directory a `skills:` name can resolve against. ENUMERATED, never listed. */
+  const ROOTS = (() => {
+    const roots = [USER_SKILLS, SKILLS]
+    if (existsSync(USER_SKILLS)) {
+      for (const e of readdirSync(USER_SKILLS)) {
+        const nested = join(USER_SKILLS, e, 'skills')
+        try { if (statSync(nested).isDirectory()) roots.push(nested) } catch { /* dangling link */ }
+      }
+    }
+    return roots
+  })()
+  const resolvesIn = (rootSet, name) => rootSet.some(r => existsSync(join(r, name, 'SKILL.md')))
+
+  ok('the skill search path is not empty', ROOTS.length > 1, String(ROOTS.length))
+  let repos = 0, entries = 0
+  for (const dir of REPOS) {
+    if (!existsSync(dir)) { ok(`agent directory ${dir} exists`, false, dir); continue }
+    repos++
+    for (const f of readdirSync(dir).filter(x => x.endsWith('.md'))) {
+      const fm = frontmatter(join(dir, f))
+      if (!fm) continue
+      for (const skill of values(fm, 'skills')) {
+        entries++
+        ok(`${dir.replace(homedir(), '~')}/${f}: skills: ${skill} resolves`,
+           resolvesIn(ROOTS, skill), `searched ${ROOTS.length} roots`)
+        // A preloaded skill that disables model invocation is skipped with a DEBUG-LOG warning
+        // only — the agent launches and the guidance never arrives. Same trap, every repo.
+        const md = ROOTS.map(r => join(r, skill, 'SKILL.md')).find(existsSync)
+        if (!md) continue
+        ok(`${dir.replace(homedir(), '~')}/${f}: skills: ${skill} is preloadable`,
+           !isYamlTrue(frontmatter(md)?.scalars['disable-model-invocation']),
+           'a disable-model-invocation skill is silently skipped when preloaded')
+      }
+    }
+  }
+  ok('all three repos shipping agents were walked', repos === REPOS.length, String(repos))
+  ok('preload entries were actually checked', entries >= 10, String(entries))
+
+  // NON-VACUITY: the resolver must reject a name that is not there, and accept one that is.
+  ok('the resolver rejects a skill that does not exist',
+     !resolvesIn(ROOTS, 'zz-ghost-skill-that-does-not-exist'))
+  ok('the resolver accepts a skill that does exist', resolvesIn(ROOTS, 'writing-general'))
+  // And it must reach ACROSS repos: find-slide-page ships in the teaching plugin, not this one.
+  ok('the resolver reaches another plugin\'s skills (find-slide-page)',
+     resolvesIn(ROOTS, 'find-slide-page'),
+     'teaching agents preload it; a resolver confined to this repo would call it dangling')
+  ok('the resolver would NOT find find-slide-page in this repo alone',
+     !existsSync(join(SKILLS, 'find-slide-page', 'SKILL.md')),
+     'if it were also here, the cross-repo assertion above would prove nothing')
+}
+
+// ── THE WRITABLE DEFAULT: every lens declares an agentType, every prose implementer names one ────
+//
+// The silent failure this closes. Craft's `reviewAgentType(explicit)` returns the explicit type, or
+// `Explore` ONLY under `readOnly`, or NULL (skills/craft/workflow.js:264). Null contributes no
+// `agentType` key at all, so the dispatcher default applies — and the dispatcher default HOLDS EDIT
+// AND WRITE. A lens is a judge: it only READS. An unpinned lens in a writing mode therefore judges
+// the deliverable while able to rewrite it, and nothing in a run says so.
+//
+// The mirror-image rule for the implementer. It WRITES, and the default agent carries Claude Code's
+// software-engineering system prompt. Where the output is prose a human reads, that framing is
+// wrong and the implementer must be a custom agent whose body replaces it. Where the output is
+// CODE, it is right — so `dev` and `workflow-creator` are asserted to have NO override, which makes
+// the split a decision the suite defends rather than a list one side of which nobody checks.
+{
+  const BUILTINS = new Set(['Explore', 'Plan', 'general-purpose'])
+  const TEACHING = join(homedir(), 'projects', 'teaching', 'skills')
+
+  /** Resolve one agentType string. A bare name dispatches user-level, so ~/.claude/agents/ is the
+   *  live path and the only one that decides whether the dispatch lands. */
+  const typeResolves = t => BUILTINS.has(t) || userAgentTarget(t.replace(/^workflows:/, '')) !== null
+
+  /** A dispatch block is a fenced code block containing `reviewLenses:`. */
+  const blocksOf = body => {
+    const out = []
+    let inFence = false, start = 0, buf = []
+    body.split('\n').forEach((l, i) => {
+      if (/^```/.test(l)) {
+        if (!inFence) { inFence = true; start = i + 1; buf = [] }
+        else { inFence = false; if (buf.join('\n').includes('reviewLenses:')) out.push({ line: start + 1, text: buf.join('\n'), lines: buf }) }
+        return
+      }
+      if (inFence) buf.push(l)
+    })
+    return out
+  }
+
+  /** Every lens entry of a block as {key, agentType|null}. */
+  const lensesOf = b => {
+    const heads = b.lines.map((l, i) => ({ l, i })).filter(x => /^\s*\{\s*key:\s*"/.test(x.l))
+    return heads.map((x, n) => {
+      const seg = b.lines.slice(x.i, n + 1 < heads.length ? heads[n + 1].i : b.lines.length).join('\n')
+      const at = seg.match(/agentType:\s*"([^"]+)"/)
+      return { key: x.l.match(/key:\s*"([^"]+)"/)[1], agentType: at ? at[1] : null }
+    })
+  }
+
+  const SKILL_DIRS = [['workflows', SKILLS], ['teaching', TEACHING]]
+  let lensCount = 0
+  for (const [repo, dir] of SKILL_DIRS) {
+    ok(`${repo}: skills directory exists`, existsSync(dir), dir)
+    if (!existsSync(dir)) continue
+    for (const s of readdirSync(dir).filter(d => existsSync(join(dir, d, 'SKILL.md')))) {
+      for (const b of blocksOf(readFileSync(join(dir, s, 'SKILL.md'), 'utf8'))) {
+        for (const lens of lensesOf(b)) {
+          lensCount++
+          const at = `${repo}/skills/${s}:${b.line} lens ${lens.key}`
+          // (a) DECLARED. An absent key is the writable default, not a documented choice.
+          ok(`${at} declares an agentType`, lens.agentType !== null,
+             'absent => no agentType key reaches agent() => the dispatcher default, which holds Edit and Write')
+          if (lens.agentType === null) continue
+          // (b) RESOLVES. A typo is indistinguishable from an absent key at dispatch time.
+          ok(`${at} agentType "${lens.agentType}" resolves`, typeResolves(lens.agentType),
+             'not a documented built-in and not linked into ~/.claude/agents/')
+        }
+      }
+    }
+  }
+  ok('lens entries were actually walked', lensCount >= 70, String(lensCount))
+
+  // (c) PROSE IMPLEMENTERS. Every non-readOnly dispatch block of a prose workflow names one.
+  // A readOnly block dispatches no implementer at all (workflow.js:724), so it is exempt BY THE
+  // FLAG, never by a listed exception.
+  const PROSE = [
+    [SKILLS, 'ds'], [SKILLS, 'writing'], [SKILLS, 'workshop'],
+    [TEACHING, 'notes'], [TEACHING, 'slides'], [TEACHING, 'exams'],
+  ]
+  let implBlocks = 0
+  for (const [dir, s] of PROSE) {
+    const p = join(dir, s, 'SKILL.md')
+    ok(`prose workflow ${s} exists`, existsSync(p), p)
+    if (!existsSync(p)) continue
+    for (const b of blocksOf(readFileSync(p, 'utf8'))) {
+      if (/readOnly:\s*true/.test(b.text)) continue
+      implBlocks++
+      const m = b.text.match(/implementerAgentType:\s*"([^"]+)"/)
+      ok(`${s}:${b.line} (writing mode) sets implementerAgentType`, m !== null,
+         'its output is prose a human reads, so the implementer must not inherit the default software-engineering prompt')
+      if (!m) continue
+      // A `<a|b|c>` placeholder is the honest encoding of a value chosen when the plan is armed
+      // (writing's Domain: picks the register, so it picks the doer). Every ALTERNATIVE must
+      // resolve — a placeholder is not a licence to name an agent that does not exist.
+      const alts = /^<.*>$/.test(m[1]) ? m[1].slice(1, -1).split('|') : [m[1]]
+      ok(`${s}:${b.line} implementerAgentType "${m[1]}" is not an open-ended placeholder`,
+         alts.every(a => /^[\w:-]+$/.test(a)), m[1])
+      for (const a of alts) {
+        ok(`${s}:${b.line} implementerAgentType alternative "${a}" resolves`, typeResolves(a))
+      }
+    }
+  }
+  ok('writing-mode blocks were actually walked', implBlocks >= 8, String(implBlocks))
+
+  // THE OTHER SIDE OF THE SPLIT. Code output => Claude Code's software-engineering prompt is
+  // CORRECT, so the absence of an override here is a decision, not the oversight it is above.
+  // Asserting it means a future override has to argue with this test rather than slip in.
+  for (const s of ['dev', 'workflow-creator']) {
+    const body = readFileSync(join(SKILLS, s, 'SKILL.md'), 'utf8')
+    for (const b of blocksOf(body)) {
+      ok(`${s}:${b.line} sets NO implementerAgentType — its output is code`,
+         !/^\s*implementerAgentType:/m.test(b.text),
+         'if this workflow now emits prose, change the PROSE list above and say why here')
+    }
+  }
+
+  // NON-VACUITY, computed rather than asserted: the lens walker must FAIL on a lens whose
+  // agentType is removed, and the resolver must reject a name nobody ships.
+  {
+    const probe = { lines: ['    { key: "probe-lens",', '      refs: [],', '      prompt: "x" },'] }
+    ok('the lens walker reports a stripped agentType as absent', lensesOf(probe)[0].agentType === null)
+    const pinned = { lines: ['    { key: "probe-lens",', '      agentType: "Explore",', '      prompt: "x" },'] }
+    ok('the lens walker reads a present agentType', lensesOf(pinned)[0].agentType === 'Explore')
+    ok('the agentType resolver rejects a name nobody ships', !typeResolves('zz-ghost-agent'))
+    ok('the agentType resolver accepts a real user-level agent', typeResolves('lecture-impl'))
+    ok('the agentType resolver accepts a documented built-in', typeResolves('Explore'))
+  }
 }
 
 console.log(`\n${PASS} passed, ${FAIL} failed`)

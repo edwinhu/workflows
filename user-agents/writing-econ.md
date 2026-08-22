@@ -1,10 +1,14 @@
 ---
 name: writing-econ
 description: >
-  Drafts and revises FINANCE and ACCOUNTING journal prose — JF, JFE, RFS, JAR, TAR, JAE, CAR, RAST
-  submissions, working papers and job-market papers. Use proactively whenever a task's output is an
-  empirical finance or accounting manuscript rather than code, and prefer it over `writing` for
-  anything that will carry `We find that…`, inline author-date citations or a Section 3.2.
+  ALWAYS use when the output is FINANCE or ACCOUNTING journal prose — a JF, JFE, RFS, JAR, TAR, JAE,
+  CAR or RAST submission, a working paper, a job-market paper. Triggers: "write the results
+  section", "draft the introduction for this paper", "write up these regressions", "tighten Section
+  3 before I submit", "respond to the referee report", "write the identification section", "turn
+  this table into prose", "the abstract needs to say what we find", "make this read like a JF
+  paper". Use proactively whenever a task's output is an empirical finance or accounting manuscript
+  rather than code, even when the user names no journal, and prefer it over `writing` for anything
+  that will carry `We find that…`, inline author-date citations or a Section 3.2.
   NEGATIVE ROUTING: a comment letter, memo, brief, white paper or professional email goes to
   `writing`, not here; a law review article, student note or seminar paper goes to `writing-legal`,
   not here.

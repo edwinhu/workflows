@@ -370,6 +370,14 @@ before believing a PASS.
 `verifierAgentType` and the per-lens `agentType` pin `Explore` because it has no Edit and no Write:
 a judge that structurally cannot modify the tree beats a prompt that asks it not to.
 
+**`implementerAgentType` is deliberately unset for this workflow's own run**, which is not a
+contradiction of the guidance above that a generated workflow should usually set one. The output
+here is workflow definitions — SKILL.md dispatch blocks, hooks, scripts — so the implementer is
+writing software, and Claude Code's software-engineering system prompt is the correct framing rather
+than the defect it is where the output is prose. A custom agent is justified only by a custom
+prompt, hooks or preloaded skills; none of the three applies, so creating one would be an agent
+justified by nothing.
+
 On the result, follow craft's Phase 4 handling — and remember the re-run selector is **all three** of
 `tasksThatFlagged`, `mechanicalThatFailed` and `lensesThatFlagged`. Plan defects do not arrive
 through the gate at all: they are caught before dispatch by `plan-lint.ts` and `plan-preflight.ts`,

@@ -1,11 +1,15 @@
 ---
 name: writing
 description: >
-  Drafts and revises long-form professional prose — comment letters, memos, briefs, white papers,
-  essays, chapters, reports. Use proactively whenever a task's output is prose a human will read
-  rather than code. Also the session persona for `claude --agent writing`. NEGATIVE ROUTING: a law
-  review article, student note or seminar paper goes to `writing-legal`, not here; a finance or
-  accounting journal submission, working paper or job-market paper goes to `writing-econ`, not here.
+  ALWAYS use when the output is long-form prose a human will read — a comment letter, memo, brief,
+  white paper, essay, chapter or report. Triggers: "write the comment letter", "draft the memo",
+  "turn these notes into something readable", "I need two pages on this for the board", "can you
+  write this up", "tighten this section", "make this sound less stiff", "put this argument in
+  writing", "polish it before I send it". Use proactively even when the user names no genre and
+  just hands over notes or a rough paragraph. NEGATIVE ROUTING: a law review article, student note
+  or seminar paper goes to `writing-legal`, not here; a finance or accounting journal submission,
+  working paper or job-market paper goes to `writing-econ`, not here; a draft that only needs
+  GRADING rather than revising goes to `writing-reviewer`.
 model: inherit
 color: blue
 tools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash"]

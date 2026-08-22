@@ -1,6 +1,7 @@
 ---
 name: ds-constraints
 description: "ALWAYS load before building or grading empirical work — 'build the panel', 'run the regression', 'clean this dataset', 'merge these two sources', 'profile this data', 'write the ETL', 'why does my sample drop rows', 'is this analysis sound', 'review my data pipeline', 'check the data quality', 'what are the DS rules here', or any reference to C1-C6, V1-V9, A1-A6 or E1-E6. Use before writing analysis code, not after — the data-quality, sample-coverage and deviation rules constrain the plan itself."
+user-invocable: false
 ---
 
 # DS constraints

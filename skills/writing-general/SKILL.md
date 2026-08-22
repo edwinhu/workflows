@@ -1,6 +1,7 @@
 ---
 name: writing-general
 description: "ALWAYS load BEFORE writing or revising any serious prose a human will read — 'write the memo', 'draft the comment letter', 'draft this section', 'polish the brief', 'revise this email', 'tighten the introduction', 'is this well written', 'review my prose', 'fix the writing here', 'make this sound less like AI', 'should I say we or the paper'. This is the BASE register: the Strunk-derived diction rules, the prohibited-construction tic table, the vindicated phrases and the formatting rules that hold for every domain, plus the register for prose that is neither a law review article nor a journal submission (comment letters, memos, briefs, white papers, board memoranda, professional email). Load it before the first sentence is written, not after. For a T14 law review article or legal scholarship carrying footnotes, load `writing-legal` ALONGSIDE this one; for a finance or accounting journal submission or job-market paper, load `writing-econ` alongside this one — those two carry only what is ADDITIONAL to this base and are useless without it."
+user-invocable: false
 ---
 
 # Writing register — the base
@@ -137,32 +138,13 @@ here so nobody re-derives them from the source guides.
 | McCloskey: `hypothesize` → `suppose` | 683/M in finance. It names a specific move in an empirical paper. |
 | Volokh: avoid `pursuant to` | 837/M in the law corpus, 26× the finance rate. It is the legal register itself. |
 
-## Prohibited constructions — the corpus-gated tic table
+## Prohibited constructions — owned by `ai-anti-patterns`
 
-These cleared a ~0-human-rate gate against all 14,294,148 sentences of the combined corpora: they are
-AI defaults that human scholars do not write. `prose-audit.py` flags each with a span id, so cite the
-span rather than re-scanning by eye.
-
-| never write | instead |
-|---|---|
-| `rich tapestry` | describe what it actually contains |
-| `stands as a testament to` | `shows`, `demonstrates` |
-| `in today's fast-paced / digital / ever-changing …` | delete the clause; start with the subject |
-| `findings carry significant implications` | say what the implication is, and for whom |
-| `delve into the intricacies of` | `examines` |
-| `while X is impressive, Y remains…` | drop the false concession |
-| `this represents a broader shift` | say what shifted |
-| `a multifaceted issue` | name the facets |
-| `plays a pivotal role in shaping` | name the effect |
-| `navigate the complexities of` | say what is complex |
-| `from X to Y, and everything in between` | give the actual range |
-| **the rule / reform `bites`**, `bites hardest` | `binds`, `constrains`, or name the effect. *`the restriction has more bite` is fine — the noun is attested 46 times, the verb once.* |
-| **`the sharpest version of`** the objection | `the strongest version of` — that is what the corpus writes, 4 hits out of 4 |
-| **`bound` an abstraction** (`limits bound all of it`) | `limit`, `constrain`. *`the statute bound the agency` is fine — obligating a party is core legal vocabulary, 7 hits.* |
-
-Two more, both sev5: chain-of-thought scaffolding leaking into prose (`let's think step by step`,
-`breaking this down`, `here's my thought process`) and chatbot openers (`Certainly!`, `Great
-question`, `Let's dive in`).
+The tic dictionary lives in the `ai-anti-patterns` skill, which every prose agent loads alongside
+this one; `prose-audit.py` flags each entry with a span id, so cite the span rather than re-scanning
+by eye. `/ai-tic <phrase>` is how a candidate becomes a rule — it runs the FP-hunt against both
+corpus halves and refuses anything over the eligibility gate. Do not restate tics here: a second
+copy cannot be regenerated from the dictionary and goes stale silently.
 
 ## Phrases the corpus VINDICATED — use them freely
 

@@ -238,9 +238,15 @@ resolves them against no particular directory; `writablePaths` and every `mechan
     "Rules: ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md defines all eleven checks and which are computed; ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md defines the plan grammar the probe parses; the vendored Typst constraints under ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/constraints/ govern the source and are the checker's authority, with the same fifteen modules preloadable verbatim as the workshop-constraints skill; the deck templates are ${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/theme.typ and ${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/custom-outline.typ.",
   ].join("\n"),
 
+  implementerAgentType: "workshop",   // the doer's own prompt replaces Claude Code's software-engineering one, which frames a talk as a codebase
   verifierAgentType: "Explore",
 }
 ```
+
+`implementerAgentType` names `workshop` because the default agent carries Claude Code's
+software-engineering system prompt, and the deliverable here is a deck and speaker notes a room
+reads — prose, not code. An agent is justified only by a custom prompt, hooks or preloaded skills;
+`workshop` earns it on the first, and it preloads `workshop-constraints`.
 
 `verifierAgentType` and the five FID/CONV/VIS-and-generic lenses pin `Explore` because it has no Edit
 and no Write: a judge that structurally cannot modify the tree beats a prompt asking it not to. The
