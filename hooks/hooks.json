@@ -84,6 +84,16 @@
         ]
       }
     ],
+    "TeammateIdle": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/teammate-idle-report-check.sh"
+          }
+        ]
+      }
+    ],
     "SessionEnd": [
       {
         "matcher": "clear|logout|prompt_input_exit|other",
