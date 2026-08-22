@@ -1,6 +1,6 @@
 ---
 name: jupytext
-description: Use when working with jupytext — converting notebooks to/from text formats, syncing paired .ipynb/.py files, multi-kernel projects (Python/R/Stata/SAS), or executing notebooks via papermill.
+description: ALWAYS use before touching a notebook as text or running one headlessly - "convert this notebook to a .py", "turn this script into a notebook", "get this ipynb into git", "the notebook diffs are unreadable", "keep the .py and .ipynb in sync", "run this notebook end to end", "execute the notebook with these parameters", "papermill", "jupytext", "add an R/Stata/SAS kernel", "share data between kernels". Use even when the user only says "just run the notebook" - never claim a notebook ran without executing and inspecting it.
 user-invocable: false
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: audit-archive
-description: "Phase 6: Archive URLs via perma.cc"
+description: "Use when archiving footnote URLs to perma.cc during a Bluebook footnote audit - 'archive the links', 'perma the URLs', 'these links will rot', 'add perma.cc archives to the footnotes', 'the journal wants archived URLs', or reaching Phase 6 of a bluebook-audit run."
 user-invocable: false
 disable-model-invocation: true
 ---

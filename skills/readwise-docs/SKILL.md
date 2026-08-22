@@ -1,6 +1,6 @@
 ---
 name: readwise-docs
-description: Manage Readwise Reader documents. Use when the user wants to list, save, update, or delete documents in their Reader library. Triggers on "add to reader", "save article", "list my documents", "readwise list", "reader documents".
+description: "Use when the user says 'add to reader', 'save this article', 'read this later', 'put this in Readwise', 'list my documents', 'what's in my reading inbox', 'archive that article', 'tag this document', or 'delete that from Reader' - anything that lists, saves, updates or deletes documents in the Readwise Reader library. NOT for searching highlights (readwise-search) and NOT for bulk cleanup of stale documents (readwise-prune)."
 context: fork
 agent: librarian
 user-invocable: false

@@ -1,6 +1,6 @@
 ---
 name: readwise-chat
-description: Chat with Readwise highlights using GPT-5.1 RAG. Use when the user wants to ask questions about their reading library, get summaries across documents, or have a conversation about their highlights. Triggers on "ask readwise", "chat about my highlights", "what do my notes say about", "summarize my reading on".
+description: "Use when the user asks a QUESTION of their reading library rather than for a keyword lookup — 'ask readwise', 'chat about my highlights', 'what do my notes say about X', 'summarize my reading on X', 'what have I read about proxy advisors', 'compare what I've read about X vs Y', 'what's my take on X based on what I've read', 'pull together my highlights on X'. Use proactively for synthesis across many documents. NOT for finding a specific highlight by keyword — use readwise-search instead."
 context: fork
 agent: librarian
 user-invocable: false

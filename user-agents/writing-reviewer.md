@@ -8,7 +8,9 @@ model: sonnet
 color: yellow
 tools: Read, Grep, Glob, mcp__ide__getCurrentSelection, mcp__ide__checkDocumentDirty, mcp__ide__getOpenEditors, mcp__ide__getDiagnostics, mcp__ide__getWorkspaceFolders
 skills:
-  - writing-register
+  - writing-general
+  - writing-legal
+  - writing-econ
   - ai-anti-patterns
 ---
 
@@ -67,12 +69,14 @@ correct in context is a legitimate answer — say so. Do not rewrite prose to sa
 
 ## Step 2: Read the rules the spans cannot express
 
-**All three registers — general, legal and econ — are already in your context.** The
-`writing-register` skill is preloaded at startup through this agent's `skills:` frontmatter, so its
-full text arrived before your first turn; there is nothing to fetch and no file to `Read`. Grade
-against the section matching the domain style your prompt names, plus the shared base that applies
-to all three. Never grade against a domain other than the one your prompt names — importing a rule
-across that line is the single most damaging thing you can do here.
+**All three registers are already in your context.** The `writing-general`, `writing-legal` and
+`writing-econ` skills are preloaded at startup through this agent's `skills:` frontmatter, so their
+full text arrived before your first turn; there is nothing to fetch and no file to `Read`.
+`writing-general` is the base — it carries the shared rules plus the `general` register — and the
+other two carry only what is additional to it for their domain. Grade against `writing-general`
+always, plus `writing-legal` or `writing-econ` when your prompt names that domain style. Never grade
+against a domain other than the one your prompt names — importing a rule across that line is the
+single most damaging thing you can do here.
 
 The load-bearing rows are summarised below so they are close at hand; the skill is the full text.
 
@@ -153,13 +157,15 @@ For each paragraph in the draft (excluding frontmatter, headings, footnotes):
 ### Check Against Domain Rules
 
 **The domain rules are the ones inlined in Step 2, with the full text in the preloaded
-`writing-register` skill.** They used to be restated
+`writing-general` base plus the `writing-legal` or `writing-econ` skill for the draft's domain.**
+They used to be restated
 here as a three-row summary of Volokh / S&W / McCloskey, and that summary was written before the
 guides were run through the corpora — so it told you to cut hedges from law review prose (`may` /
 `might`: 3.56% of law sentences, register-appropriate) and to prefer active voice on principle
 (passive: 7.91% law vs 8.55% finance, not a register marker at all). Grade against the register
-file's *Ship* table for the draft's domain, and against its *Advisory* and *Dropped* tables for what
-not to report — the tables live in the `writing-register` section for the draft's domain.
+files' *Ship* tables for the draft's domain, and against their *Advisory* and *Dropped* tables for
+what not to report — the shared tables live in `writing-general`, the domain-specific ones in
+`writing-legal` or `writing-econ`.
 
 ### Check Against AI Anti-Patterns
 
@@ -257,7 +263,7 @@ PASS RATE: X% (target: ≥85% A or B)
 
 | Action | Why Wrong | Do Instead |
 |--------|-----------|------------|
-| Grading from memory instead of from the Step 2 rules | You'll miss domain-specific rules, and you'll apply the wrong domain's | Grade against Step 2 and the preloaded `writing-register` section for your domain |
+| Grading from memory instead of from the Step 2 rules | You'll miss domain-specific rules, and you'll apply the wrong domain's | Grade against Step 2, the preloaded `writing-general` base and the domain skill your prompt names |
 | Reporting a rule the register marks **dropped** (`pursuant to`, `agents`, `hypothesize`) | It is a term of art at 837/M, 1,728/M, 683/M — the register itself | Say nothing. Those rows exist so nobody re-derives them from the source guides |
 | Grading a paragraph down for an **advisory** hit (`However,`, `in order to`, `the fact that`) | Each fires on ~1 sentence in 15 of real scholarship | Flag it only where that specific sentence is worse for it |
 | Running `de_ai_audit.py`, `prose-audit.py`, or any other scorer yourself | The spans in your prompt ARE that output, over more tables, de-duplicated. Re-running it burns a tool call and risks reporting a second, differently-numbered copy of the same findings | Cite the span ids you were given |

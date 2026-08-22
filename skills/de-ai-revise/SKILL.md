@@ -1,6 +1,6 @@
 ---
 name: de-ai-revise
-description: "Revise prose to read less AI-generated using corpus-validated scorers. Use when the user asks to 'de-AI this', 'make it sound less like AI', 'remove AI-isms', 'de-tic this draft', 'humanize the prose', 'fix AI writing tells', or 'less AI-sounding'. Also the standard AI-prose pass inside /writing-verify and /writing-revise."
+description: "ALWAYS use when prose needs to stop sounding machine-written — 'de-AI this', 'make it sound less like AI', 'this reads like ChatGPT wrote it', 'remove the AI-isms', 'de-tic this draft', 'humanize the prose', 'fix the AI writing tells', 'less AI-sounding', 'make this sound like me', 'too many em-dashes and tricolons', 'it reads robotic'. Use as the standard AI-prose pass before any draft ships, even if the user only says 'clean up the writing'. NOT for judging whether text WAS AI-written — this revises, it renders no verdict on authorship."
 allowed-tools: Read, Edit, Write, Bash, Grep, Glob
 ---
 

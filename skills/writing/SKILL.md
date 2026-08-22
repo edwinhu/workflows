@@ -1,6 +1,6 @@
 ---
 name: writing
-description: Long-form writing — articles, essays, briefs and chapters — run through craft with a computed plan-grammar and citation gate. Use when the user says "write the article", "draft this section", "outline the paper", "turn these notes into prose", "/writing", or wants a document taken through clarification, an approved plan, delegated drafting, independent verification and human review.
+description: ALWAYS use for ANY substantial prose a human will read - "write the article", "draft this section", "outline the paper", "turn these notes into prose", "write up the memo", "draft the comment letter", "write the brief", "expand this into a chapter", "I need a few pages on X", "put this argument in writing", "/writing". Use proactively even when the user asks casually and never says "article" - do not start drafting paragraphs first. NOT for code, data work or course materials.
 argument-hint: 'the document, article or chapter to write'
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
 ---
@@ -223,10 +223,11 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh "$PLAN"
 
   // ONE ROW PER SECTION, drawn from the plan's ## Section Outputs, in that table's order — this is
   // the per-section fan-out, expressed as task rows. Outline and draft are the SAME row's work.
-  // Every task carries refs. Drafting rows load skills/writing-register/SKILL.md — the drafter
-  // grades against the section the plan's Domain: field names — alongside writing-checks.md, which
-  // is unconditional on every row. The raw style guides are NOT loaded for drafting: the register
-  // supersedes them and overrides three of their rules.
+  // Every task carries refs. Drafting rows load skills/writing-general/SKILL.md — the base register
+  // for every Domain — plus skills/writing-legal/SKILL.md or skills/writing-econ/SKILL.md when the
+  // plan's Domain: field names one of those, alongside writing-checks.md, which is unconditional on
+  // every row. The raw style guides are NOT loaded for drafting: the register supersedes them and
+  // overrides three of their rules.
   tasks: [
     { id: "T1",
       name: "Section: <Section>",
@@ -237,7 +238,11 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh "$PLAN"
              "${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-outline-sync.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/writing/references/claim-id-traceability.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-topic-sentences.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing-register/SKILL.md"] },
+             "${CLAUDE_PLUGIN_ROOT}/skills/writing-general/SKILL.md",
+             // plus ONE of these, only when the plan's Domain: says so:
+             // "${CLAUDE_PLUGIN_ROOT}/skills/writing-legal/SKILL.md"  (Domain: legal)
+             // "${CLAUDE_PLUGIN_ROOT}/skills/writing-econ/SKILL.md"   (Domain: econ)
+            ] },
     // ... one T-row per remaining row of ## Section Outputs. No second row for the draft.
   ],
 
@@ -286,13 +291,13 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh "$PLAN"
 
     // This lens does NOT pin Explore. Explore is a built-in agent with a predefined prompt no
     // preloaded skill reaches, so a register-dependent judgement dispatched there is graded from
-    // memory. writing-reviewer preloads writing-register and is read-only by tools allowlist
+    // memory. writing-reviewer preloads all three register skills and is read-only by tools allowlist
     // AND by tests/agent-contract.test.mjs — the same structural property Explore is
     // pinned for, in an agent that actually knows the rules.
     { key: "prose-register",
       agentType: "writing-reviewer",
       refs: [],
-      prompt: "Grade the drafted prose against the section of the preloaded writing-register skill matching the plan's Domain: the Ship table (diction), the prohibited-construction tic table, the VINDICATED phrases — which are standard scholarship and are NEVER findings — and the formatting rules (no bold-lead, no bold bare numbers, no emojis, no ALL-CAPS emphasis). A rule the register marks dropped is not a finding, and an advisory hit is a finding only where that specific sentence is worse for it. Report every finding with the quoted evidence and the span id prose-audit.py emitted for it, and list every span id you considered. NEVER report a register judgement as a computation — it is MODEL-EVALUATED, with the text you actually read." },
+      prompt: "Grade the drafted prose against the preloaded writing-general base register plus, when the plan's Domain: is legal or econ, the preloaded writing-legal or writing-econ skill for that domain: the Ship table (diction), the prohibited-construction tic table, the VINDICATED phrases — which are standard scholarship and are NEVER findings — and the formatting rules (no bold-lead, no bold bare numbers, no emojis, no ALL-CAPS emphasis). A rule the register marks dropped is not a finding, and an advisory hit is a finding only where that specific sentence is worse for it. Report every finding with the quoted evidence and the span id prose-audit.py emitted for it, and list every span id you considered. NEVER report a register judgement as a computation — it is MODEL-EVALUATED, with the text you actually read." },
   ],
 
   authorityExtra: [
@@ -305,7 +310,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh "$PLAN"
     "Every command naming a draft QUOTES that path. Section names carry spaces and parentheses, and an unquoted path dies in bash before python runs — and a probe's cmd is run verbatim, with no corrected re-run.",
     "A section absent from the plan's ## Section Outputs is one nothing will check and cannot be claimed as drafted.",
     "The document is written by dispatched agents. Main chat writes nothing under the project's drafts/, outlines/ or references/, by any tool including Bash heredocs.",
-    "Standing writing doer authority — every drafting task loads ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md plus the section of ${CLAUDE_PLUGIN_ROOT}/skills/writing-register/SKILL.md matching the plan's Domain: field (general | legal | econ) and that file's shared base. It loads the raw style guides — volokh-distilled.md, formatting.md, economical-writing-full.md, elements-of-style.md — NOT AT ALL for drafting, because the register is those guides already filtered through 14.29M sentences and it overrides three of their rules as register mistakes, so loading both puts the drafter under contradictory instructions.",
+    "Standing writing doer authority — every drafting task loads ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md plus ${CLAUDE_PLUGIN_ROOT}/skills/writing-general/SKILL.md, which is the base register for every Domain, and — when the plan's Domain: field is legal or econ — ${CLAUDE_PLUGIN_ROOT}/skills/writing-legal/SKILL.md or ${CLAUDE_PLUGIN_ROOT}/skills/writing-econ/SKILL.md alongside it. The domain files carry only what is additional to the base and are useless without it; Domain: general loads the base alone. It loads the raw style guides — volokh-distilled.md, formatting.md, economical-writing-full.md, elements-of-style.md — NOT AT ALL for drafting, because the register is those guides already filtered through 14.29M sentences and it overrides three of their rules as register mistakes, so loading both puts the drafter under contradictory instructions.",
     "Rules: writing-checks.md defines all eight checks; writing-anchored-numbers.md, writing-citation-tense.md, writing-no-bold-lead.md, writing-outline-sync.md, writing-topic-sentences.md, writing-shortjournal.md and writing-stop-triggers.md are the prose constraints; claim-id-traceability.md and the six cite-fidelity-*.md files govern claim ids and sourcing. All under ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/.",
   ].join("\n"),
 

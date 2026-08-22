@@ -1,6 +1,6 @@
 ---
 name: source-verify
-description: "This skill should be used when the user asks to 'verify sources', 'check citations', 'fact-check footnotes', 'verify quotes', 'source check', 'are my cites real', 'check for hallucinated citations', or needs to verify that citations in a legal/academic manuscript actually exist and are accurate. Also use when the user wants to check that quoted text actually appears in the cited source."
+description: "Use when the user says 'verify my sources', 'check the citations', 'fact-check the footnotes', 'are my cites real', 'did I make this cite up', 'does the source actually say that', 'check this quote against the source', or 'source check before I submit'. Use proactively whenever a draft's citations or quotations have not been checked against the actual sources. NOT for Bluebook formatting - use bluebook or bluebook-audit."
 user-invocable: false
 ---
 

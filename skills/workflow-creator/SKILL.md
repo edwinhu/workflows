@@ -1,6 +1,6 @@
 ---
 name: workflow-creator
-description: Design, repair, or audit a multi-phase workflow. Use when the user says "create a workflow", "design a workflow", "scaffold a new workflow", "add a phase to this workflow", "improve/repair/redesign this workflow", "migrate this workflow", "audit this workflow", "why doesn't my workflow's gate work", "check this workflow's gate", or "/workflow-creator". Covers all three: fresh creation, corrective improvement, and read-only audit.
+description: 'Design, repair, or audit a multi-phase workflow. Use when the user says "create a workflow", "design a workflow", "scaffold a new workflow", "add a phase to this workflow", "improve/repair/redesign this workflow", "migrate this workflow", "audit this workflow", "why doesn''t my workflow''s gate work", "check this workflow''s gate", or "/workflow-creator". Covers all three — fresh creation, corrective improvement, and read-only audit.'
 argument-hint: 'the workflow to create, improve, or audit'
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
 hooks:

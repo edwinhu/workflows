@@ -205,7 +205,10 @@ function values(fm, key) {
   const p = agentPath('writing-reviewer')
   ok('user-agents/writing-reviewer.md exists', existsSync(p))
   const fm = existsSync(p) ? frontmatter(p) : null
-  ok('writing-reviewer preloads writing-register', values(fm, 'skills').includes('writing-register'))
+  // It grades every domain, so it preloads the base AND both domain registers.
+  for (const s of ['writing-general', 'writing-legal', 'writing-econ']) {
+    ok(`writing-reviewer preloads ${s}`, values(fm, 'skills').includes(s))
+  }
   ok('writing-reviewer preloads ai-anti-patterns', values(fm, 'skills').includes('ai-anti-patterns'))
 
   // It has no Skill tool, so preloading is its ONLY channel.
@@ -227,23 +230,42 @@ function values(fm, key) {
      !/references\/registers/.test(body))
 }
 
-// ── The drafting agent: writes, so it must NOT carry the read-only iron law ──────
+// ── The three drafting agents: they write, so none may carry the read-only iron law ──────
+//
+// AGENTS HAVE NO INHERITANCE. `writing-legal inherits writing` is expressed the only way the
+// mechanism allows: both load the SAME base skill, and the domain agent loads its domain skill
+// ALONGSIDE it. Assert the exact expected preload set per agent — a domain agent that dropped the
+// base would draft against half a register and nothing else would say so.
 {
-  const p = agentPath('writing')
-  ok('user-agents/writing.md exists', existsSync(p))
-  const fm = existsSync(p) ? frontmatter(p) : null
-  const wskills = values(fm, 'skills')
-  ok('writing preloads writing-register', wskills.includes('writing-register'))
-  ok('writing preloads ai-anti-patterns', wskills.includes('ai-anti-patterns'))
-  for (const s of wskills) {
-    ok(`user-agents/writing.md: skills: ${s} resolves`, existsSync(join(SKILLS, s, 'SKILL.md')))
+  const EXPECTED = {
+    'writing':       ['writing-general', 'ai-anti-patterns'],
+    'writing-legal': ['writing-general', 'writing-legal', 'ai-anti-patterns'],
+    'writing-econ':  ['writing-general', 'writing-econ', 'ai-anti-patterns'],
   }
-  const wtools = values(fm, 'tools')
-  ok('writing can actually write', wtools.includes('Write') && wtools.includes('Edit'), wtools.join(','))
-  // The read-only iron law and a writer toolset cannot coexist: the block below would fail it,
-  // and an agent under contradictory instructions drafts nothing.
-  ok('writing does not contain "YOU DO NOT EDIT"',
-     existsSync(p) && !readFileSync(p, 'utf8').includes('YOU DO NOT EDIT'))
+  for (const [agent, want] of Object.entries(EXPECTED)) {
+    const p = agentPath(agent)
+    ok(`user-agents/${agent}.md exists`, existsSync(p))
+    const fm = existsSync(p) ? frontmatter(p) : null
+    const wskills = values(fm, 'skills')
+    for (const s of want) ok(`${agent} preloads ${s}`, wskills.includes(s), wskills.join(','))
+    ok(`${agent} preloads exactly the expected set`,
+       wskills.length === want.length, wskills.join(','))
+    for (const s of wskills) {
+      ok(`user-agents/${agent}.md: skills: ${s} resolves`, existsSync(join(SKILLS, s, 'SKILL.md')))
+    }
+    const wtools = values(fm, 'tools')
+    ok(`${agent} can actually write`,
+       wtools.includes('Write') && wtools.includes('Edit'), wtools.join(','))
+    // The read-only iron law and a writer toolset cannot coexist: the block below would fail it,
+    // and an agent under contradictory instructions drafts nothing.
+    ok(`${agent} does not contain "YOU DO NOT EDIT"`,
+       existsSync(p) && !readFileSync(p, 'utf8').includes('YOU DO NOT EDIT'))
+    // Trigger-led description, and the source-first guard: recall is not a source for a brief,
+    // a law review Part or a job-market paper alike.
+    ok(`${agent} description says "use proactively"`, /use proactively/i.test(fm?.raw ?? ''))
+    ok(`${agent} carries the source-first PreToolUse guard`,
+       (fm?.raw ?? '').includes('writing-source-first-guard.py'))
+  }
 }
 
 // ── The workflow dispatches the register-aware reviewer, not a built-in ──────────
@@ -466,30 +488,205 @@ function values(fm, key) {
   }
 }
 
-// ── The register skill itself ────────────────────────────────────────────────
+// ── The three register skills ────────────────────────────────────────────────
+//
+// THE SPLIT IS BASE + TWO DOMAIN SKILLS. `writing-general` carries the shared layer and the
+// `general` register; `writing-legal` and `writing-econ` carry ONLY what is additional and are
+// loaded alongside it. The retired `writing-register` must be gone, not merely unreferenced.
+const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 {
-  const md = join(SKILLS, 'writing-register', 'SKILL.md')
-  ok('skills/writing-register/SKILL.md exists', existsSync(md))
-  if (existsSync(md)) {
+  ok('skills/writing-register/ is retired', !existsSync(join(SKILLS, 'writing-register')))
+  for (const s of REGISTER_SKILLS) {
+    const md = join(SKILLS, s, 'SKILL.md')
+    ok(`skills/${s}/SKILL.md exists`, existsSync(md))
+    if (!existsSync(md)) continue
     const fm = frontmatter(md)
-    ok('writing-register has a name', fm?.scalars.name === 'writing-register', fm?.scalars.name)
-    ok('writing-register has a description', !!fm?.scalars.description)
-    ok('writing-register is preloadable (no disable-model-invocation)',
+    ok(`${s} has a name`, fm?.scalars.name === s, fm?.scalars.name)
+    ok(`${s} has a description`, !!fm?.scalars.description)
+    ok(`${s} is preloadable (no disable-model-invocation)`,
        !isYamlTrue(fm?.scalars['disable-model-invocation']))
     // Output-style-only frontmatter has no meaning in a skill.
     for (const dead of ['style', 'slug', 'keep-coding-instructions']) {
-      ok(`writing-register does not carry the output-style field \`${dead}\``, !(dead in (fm?.scalars ?? {})))
+      ok(`${s} does not carry the output-style field \`${dead}\``, !(dead in (fm?.scalars ?? {})))
     }
     const body = readFileSync(md, 'utf8')
-    for (const section of ['General register', 'Legal register', 'Econ register']) {
-      ok(`writing-register has a ${section} section`, new RegExp(`^#+ .*${section}`, 'm').test(body))
+    ok(`${s} carries no STYLE-ONLY region`, !body.includes('STYLE-ONLY'))
+    // Trigger-led, and NO mechanism claim: "preloaded into the writing subagents" describes wiring
+    // the reader cannot act on and does not help the model decide whether to load the skill.
+    const desc = fm?.scalars.description ?? ''
+    ok(`${s} description is trigger-led`, /ALWAYS load|Use before|BEFORE/i.test(desc), desc.slice(0, 60))
+    ok(`${s} description makes no preload-mechanism claim`,
+       !/preloaded into|subagent/i.test(desc), desc.slice(0, 80))
+  }
+
+  // NEGATIVE ROUTING between the three, so they do not misfire into each other.
+  const desc = s => frontmatter(join(SKILLS, s, 'SKILL.md'))?.scalars.description ?? ''
+  ok('writing-general points at writing-legal and writing-econ for the domains',
+     desc('writing-general').includes('writing-legal') && desc('writing-general').includes('writing-econ'))
+  ok('writing-legal routes finance work away to writing-econ', desc('writing-legal').includes('writing-econ'))
+  ok('writing-legal names writing-general as its base', desc('writing-legal').includes('writing-general'))
+  ok('writing-econ routes law review work away to writing-legal', desc('writing-econ').includes('writing-legal'))
+  ok('writing-econ names writing-general as its base', desc('writing-econ').includes('writing-general'))
+
+  // Each domain skill LINKS its source guide, and says the register's verdict controls.
+  for (const [s, guide] of [['writing-general', 'elements-of-style.md'],
+                            ['writing-legal', 'volokh-distilled.md'],
+                            ['writing-econ', 'economical-writing-full.md']]) {
+    const body = readFileSync(join(SKILLS, s, 'SKILL.md'), 'utf8')
+    ok(`${s} links its source guide ${guide}`,
+       body.includes(`skills/writing/references/${guide}`))
+    ok(`${s} says its own verdict controls where they disagree`,
+       /this file controls/i.test(body))
+    ok(`skills/writing/references/${guide} is actually there`,
+       existsSync(join(SKILLS, 'writing', 'references', guide)))
+  }
+}
+
+// ── ALL 61 CORPUS MEASUREMENTS SURVIVED THE SPLIT ──────────────────────────────────────────────
+//
+// The measurements are the asset — 14.29M sentences of corpora, not restatable from memory. The
+// split moved them between files, so a spot-check of eleven would not have caught a dropped table.
+// The baseline is the PRE-SPLIT register at the commit that still had it, read out of git, so this
+// check cannot be satisfied by editing a fixture.
+{
+  const MEASUREMENT = /[0-9][0-9,]*(?:\.[0-9]+)?%|[0-9][0-9,]*(?:\.[0-9]+)?\/M|[0-9]{1,3}(?:,[0-9]{3})+/g
+  const distinct = text => new Set(text.match(MEASUREMENT) ?? [])
+
+  // The last commit whose tree still carried the pre-split register.
+  const show = rev => spawnSync('git', ['show', `${rev}:skills/writing-register/SKILL.md`],
+                                { cwd: ROOT, encoding: 'utf8' })
+  let baseline = null
+  const log = spawnSync('git', ['log', '--format=%H', '--', 'skills/writing-register/SKILL.md'],
+                        { cwd: ROOT, encoding: 'utf8' })
+  for (const rev of ['HEAD', ...(log.stdout || '').split('\n').filter(Boolean)]) {
+    const r = show(rev)
+    if (r.status === 0 && r.stdout.length > 0) { baseline = r.stdout; break }
+  }
+  ok('the pre-split register is readable from git history', baseline !== null,
+     'no revision of skills/writing-register/SKILL.md could be read')
+
+  if (baseline) {
+    const want = distinct(baseline)
+    ok('the pre-split register carried 61 distinct measurements', want.size === 61, String(want.size))
+    const have = new Set()
+    for (const s of REGISTER_SKILLS) {
+      for (const m of distinct(readFileSync(join(SKILLS, s, 'SKILL.md'), 'utf8'))) have.add(m)
     }
-    // The corpus numbers are the asset. Spot-check the ones every table hangs off.
-    for (const n of ['5,560,816', '8,733,332', '14,294,148', '6,563', '11,198',
-                     '1,728/M', '837/M', '683/M', '523.7/M', '194.0/M', '72.3/M']) {
-      ok(`writing-register preserves the measurement ${n}`, body.includes(n))
+    const missing = [...want].filter(m => !have.has(m))
+    ok(`all ${want.size} pre-split measurements survive across the three new skills`,
+       missing.length === 0, `missing: ${missing.join(', ')}`)
+  }
+}
+
+// ── NO SKILL BODY MAY NAME A skills/<x> THAT DOES NOT EXIST ────────────────────────────────────
+//
+// The general form of the dangling-reference bug this split fixed: the retired register's body
+// referred to `writing-general`, `writing-legal` and `writing-econ` as skills when none existed.
+// A path in prose resolves for nobody and fails silently, exactly like a dangling `skills:` entry.
+// Two forms count as naming a skill OF THIS PLUGIN, and both are unambiguous:
+//   ${CLAUDE_PLUGIN_ROOT}/skills/<x>/…   ${CLAUDE_SKILL_DIR}/../<x>/…   skills/<x>/SKILL.md
+// A bare `skills/<x>/` with no such anchor is NOT counted: `~/.claude/skills/workflows/skills/…`
+// is the install path and `skills/learned/` is a directory the capture skills CREATE, so counting
+// those would make this check cry wolf and get switched off.
+{
+  let checked = 0
+  const dangling = []
+  const NAMED = [
+    /\$\{CLAUDE_PLUGIN_ROOT\}\/skills\/([a-z0-9][a-z0-9-]*)\//g,
+    /\$\{CLAUDE_SKILL_DIR\}\/\.\.\/([a-z0-9][a-z0-9-]*)\//g,
+    /(?:^|[^A-Za-z0-9_/-])skills\/([a-z0-9][a-z0-9-]*)\/SKILL\.md/g,
+  ]
+  for (const s of readdirSync(SKILLS).filter(d => existsSync(join(SKILLS, d, 'SKILL.md')))) {
+    const body = readFileSync(join(SKILLS, s, 'SKILL.md'), 'utf8')
+    for (const re of NAMED) {
+      for (const m of body.matchAll(re)) {
+        checked++
+        if (!existsSync(join(SKILLS, m[1], 'SKILL.md'))) dangling.push(`skills/${s} → skills/${m[1]}/`)
+      }
     }
-    ok('writing-register carries no STYLE-ONLY region', !body.includes('STYLE-ONLY'))
+  }
+  ok('at least one skills/<x> reference was checked', checked > 0, String(checked))
+  ok('no skill body names a skills/<x> that does not exist', dangling.length === 0,
+     [...new Set(dangling)].join(', '))
+
+  // The bug this split fixed, named directly: the retired register's body pointed at all three of
+  // these as skills when none of them existed. They exist now.
+  for (const s of REGISTER_SKILLS) {
+    ok(`the once-dangling name \`${s}\` is a real skill`, existsSync(join(SKILLS, s, 'SKILL.md')))
+  }
+}
+
+// ── EVERY user-scoped agent, whoever ships it: preloads resolve, and nobody COPIES the register ──
+//
+// `~/.claude/agents/` is the one directory Claude Code reads for user-scoped agents, so agents from
+// OTHER repos (dotfiles, teaching) land beside this plugin's. The same silent failure applies to
+// all of them — a dangling `skills:` entry is skipped with a debug-log warning only.
+//
+// The second half is the design this feature exists to hold: the register has exactly ONE copy on
+// disk, and agents reach it by LOADING it (a `skills:` preload, or the Skill tool in a persona
+// session), never by pasting it. Three copies of one text drift. Verbatim slabs are caught by
+// proxy — a phrase and a table row that appear nowhere but the register.
+{
+  const USER_SKILLS = join(homedir(), '.claude', 'skills')
+
+  /** Every directory a `skills:` name can resolve against: the user skill dir itself, the
+   *  `skills/` dir of each plugin linked into it, and this repo's. ENUMERATED, never listed. */
+  const skillRoots = () => {
+    const roots = [USER_SKILLS, SKILLS]
+    if (existsSync(USER_SKILLS)) {
+      for (const e of readdirSync(USER_SKILLS)) {
+        const nested = join(USER_SKILLS, e, 'skills')
+        try { if (statSync(nested).isDirectory()) roots.push(nested) } catch { /* dangling link */ }
+      }
+    }
+    return roots
+  }
+  const ROOTS = skillRoots()
+  const skillResolves = name => ROOTS.some(r => existsSync(join(r, name, 'SKILL.md')))
+
+  const userAgentFiles = (existsSync(USER_AGENTS) ? readdirSync(USER_AGENTS) : [])
+    .filter(f => f.endsWith('.md'))
+    .map(f => ({ file: f, path: (() => { try { return realpathSync(join(USER_AGENTS, f)) } catch { return null } })() }))
+    .filter(a => a.path !== null && existsSync(a.path))
+
+  ok('~/.claude/agents/ holds at least one agent', userAgentFiles.length > 0)
+  let userPreloads = 0
+  for (const { file, path } of userAgentFiles) {
+    const fm = frontmatter(path)
+    ok(`~/.claude/agents/${file} has parseable frontmatter`, fm !== null, path)
+    if (!fm) continue
+    for (const skill of values(fm, 'skills')) {
+      userPreloads++
+      ok(`~/.claude/agents/${file}: skills: ${skill} resolves to a real skill`,
+         skillResolves(skill), `searched ${ROOTS.join(', ')}`)
+    }
+  }
+  ok('at least one user-scoped agent preloads a skill', userPreloads > 0)
+
+  // LOAD IT, DO NOT COPY IT. Proxies for a verbatim slab: a sentence from the register's rate
+  // legend, and two rows of its Ship tables.
+  const REGISTER_SLABS = [
+    'hits per million sentences',
+    'Never open with `This article discusses',
+    'Synthesize precedents; do not summarize case by case',
+  ]
+  const bodies = new Map()
+  for (const { file, path } of userAgentFiles) bodies.set(`~/.claude/agents/${file}`, path)
+  for (const { file, path, dir } of ROSTER) if (existsSync(path)) bodies.set(`${dir}/${file}`, path)
+  ok('there are agent bodies to check for copied register text', bodies.size > 0)
+  for (const [label, path] of bodies) {
+    const body = readFileSync(path, 'utf8')
+    for (const slab of REGISTER_SLABS) {
+      ok(`${label} does not paste register text (${slab.slice(0, 32)}…)`, !body.includes(slab),
+         'the register has ONE copy on disk; agents load it, they do not copy it')
+    }
+  }
+  // The proxy is only a proxy if it still matches the source it stands for — now spread across
+  // the three register skills, so check the union.
+  const regBody = REGISTER_SKILLS.map(s => readFileSync(join(SKILLS, s, 'SKILL.md'), 'utf8')).join('\n')
+  for (const slab of REGISTER_SLABS) {
+    ok(`the copy-proxy "${slab.slice(0, 32)}…" is still present in the register skills`,
+       regBody.includes(slab), 'a proxy that no longer matches the register checks nothing')
   }
 }
 
@@ -513,7 +710,7 @@ function values(fm, key) {
   const body = readFileSync(p, 'utf8')
   ok('general-prose keeps the prose-shape rule',
      body.includes('write\nprose without bullets') || body.includes('prose without bullets'))
-  ok('general-prose points at the writing-register skill', body.includes('writing-register'))
+  ok('general-prose points at the base register skill', body.includes('writing-general'))
   ok('general-prose carries no corpus table', !/\d\.\d\d%/.test(body) && !/\/M/.test(body))
 }
 

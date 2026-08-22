@@ -1,6 +1,6 @@
 ---
 name: readwise
-description: This skill should be used when the user asks to "search Readwise", "find highlights", "get quotes from my reading", "add highlights to notebook", "search my annotations", "get full document text", "fetch article content", "add tagged documents to notebook", or needs to query their Readwise library.
+description: 'ALWAYS use for ANY query against the user''s own reading library — "search Readwise", "find highlights", "what did I highlight about X", "get quotes from my reading", "search my annotations", "find that thing I saved about Y", "pull the full text of that article", "what do my notes say on this", "add my highlights to a notebook", "add tagged documents to notebook". Use even when the user never says "Readwise" but is asking about something they read or saved. NOT for web or academic search — this searches only their curated library.'
 version: 1.0.0
 context: fork
 agent: librarian

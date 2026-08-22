@@ -1,6 +1,6 @@
 ---
 name: readwise-search
-description: Search Readwise highlights. Use when the user wants to find highlights, quotes, notes, or annotations from their reading library. Triggers on "search highlights", "find in readwise", "what did I highlight about", "my notes on".
+description: ALWAYS use when the user wants something out of their own reading library — "what did I highlight about X", "search my highlights", "find in readwise", "my notes on X", "did I save anything on Y", "what have I read about Z", "find that quote I saved", "pull quotes from my reading", "who was it that said X". Use proactively before answering from memory whenever the user refers to their own reading or annotations. NOT for conversational summarizing across highlights (readwise-chat), listing or saving Reader documents (readwise-docs), or cleanup (readwise-prune).
 context: fork
 agent: librarian
 user-invocable: false

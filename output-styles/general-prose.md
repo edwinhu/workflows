@@ -25,6 +25,6 @@ essential for clarity.
 
 ## Where the registers live
 
-The measured domain registers — general, legal, econ — are preloaded into the writing subagents
-through the `writing-register` skill, not carried here. This style shapes the main conversation
-only.
+The measured registers are preloaded into the writing subagents through the `writing-general` base
+skill, plus `writing-legal` or `writing-econ` for those domains, not carried here. This style shapes
+the main conversation only.

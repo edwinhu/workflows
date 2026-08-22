@@ -1,6 +1,6 @@
 ---
 name: audit-crossrefs
-description: "Phase 7: Convert hardcoded cross-references to auto-updating NOTEREF fields"
+description: "Use when a manuscript's supra/infra cross-references need to stop being hand-typed numbers — 'my supra notes point at the wrong footnote', 'the cross-references broke after I added a footnote', 'convert supra notes to fields', 'make cross-references auto-update', 'fix the infra cites', 'sync the crossrefs after editing footnotes', 'tie the supras to the bibliography'. Load as Phase 7 of a bluebook audit, or standalone after any Word session that added or reordered footnotes."
 user-invocable: false
 disable-model-invocation: true
 ---

@@ -1,6 +1,6 @@
 ---
 name: ds
-description: Data analysis, panel construction and empirical pipelines, run through craft with a computed data-quality gate. Use when the user says "analyze this data", "build the panel", "run the regression", "profile this dataset", "/ds", or wants a data project taken through clarification, an approved plan, delegated implementation, independent data-quality verification and human review.
+description: ALWAYS use for ANY substantive empirical task whose output is a dataset, table, figure or number - "analyze this data", "build the panel", "merge these datasets", "run the regression", "profile this dataset", "clean this file up for analysis", "how many firms are in here", "make me a summary table", "pull the data and check X", "replicate this paper's table 2", "build the ETL pipeline", "/ds". Use proactively even when the user asks casually and never says "analysis" - do not start writing pandas or SQL first.
 argument-hint: 'the dataset, analysis, or data pipeline to build'
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
 ---

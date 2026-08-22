@@ -1,6 +1,6 @@
 ---
 name: ai-anti-patterns
-description: This skill should be used when reviewing AI-generated text, checking for AI writing patterns, detecting undisclosed AI content, or before finalizing any written content.
+description: ALWAYS load before finalizing ANY written prose, and whenever text is suspected of being machine-written - "does this sound like AI", "make this sound human", "clean up the AI-isms", "did a bot write this", "check this draft before I send it", "review this for AI tells", "this reads like ChatGPT", "is this student paper AI-generated", or before handing back any draft, memo, email, or article you wrote. Use proactively even if the user never mentions AI writing.
 user-invocable: false
 ---
 

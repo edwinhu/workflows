@@ -1,6 +1,6 @@
 ---
 name: marimo-serve
-description: "Serve every marimo notebook in a project directory under one ASGI host with auto-discovery. Use when the user wants to browse multiple marimo apps at once (localhost, LAN, or tailnet) instead of running `marimo run` per file. Handles expose-on-tailnet via `tailscale serve`."
+description: "Use when several marimo notebooks should be reachable at once rather than one `marimo run` per file — 'serve my notebooks', 'host the marimo apps', 'run all the notebooks', 'give me a URL for these notebooks', 'share these dashboards', 'put this on the LAN', 'expose marimo on the tailnet', 'JupyterLab-but-for-marimo', 'let my coauthor click through these'. Also covers the editor-on-a-directory case. NOT for authoring or debugging one notebook (marimo) and NOT for pairing on a live kernel (marimo-pair)."
 user-invocable: true
 ---
 

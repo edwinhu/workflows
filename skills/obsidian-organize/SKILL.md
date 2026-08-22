@@ -1,10 +1,6 @@
 ---
 name: obsidian-organize
-description: >-
-  Organize Obsidian notes according to clawd's preferences. Use when user asks to
-  "organize notes", "move notes to right folder", "clean up vault", "tidy vault",
-  "file this note", or when creating new notes in the Obsidian vault. Also use when
-  moving, renaming, or categorizing notes, or when the vault root has stray files.
+description: "Use when the user says 'organize my notes', 'clean up the vault', 'tidy the vault', 'where should this note go', 'file this note', 'move these notes', 'rename this note', or 'the vault root is a mess' - and ALWAYS before creating a new note anywhere in the Obsidian vault, so it lands in the right PARA folder under the right name. NOT for searching notes or appending to the daily note - use the obsidian skill."
 user-invocable: false
 ---
 

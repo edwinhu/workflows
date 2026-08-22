@@ -1,6 +1,6 @@
 ---
 name: npx-ownership-panel
-description: Build the meeting-level proxy-voting × ownership panel on the WRDS SGE grid — ISS N-PX fund votes reduced to (item × block) direction cells, joined to institutional and mutual-fund ownership. Use when working with risk.voteanalysis_npx, N-PX fund-level votes, ISS→CRSP fund linking, index/passive/active voting blocks, or a proxy-voting panel that needs ownership attached.
+description: "ALWAYS use before building anything that joins proxy votes to ownership — 'build the N-PX panel', 'proxy voting panel', 'how did index funds vote on this item', 'passive vs active voting', 'fund-level votes with ownership attached', 'voting by block', 'link ISS funds to CRSP', 'risk.voteanalysis_npx', 'N-PX votes by meeting/agenda item', 'institutional ownership per proposal', '13F or S12 holdings joined to votes'. Use proactively instead of writing a local pipeline — the panel already exists end-to-end on the WRDS grid."
 ---
 
 # N-PX × Ownership Panel

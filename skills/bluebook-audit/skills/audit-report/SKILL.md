@@ -1,6 +1,6 @@
 ---
 name: audit-report
-description: "Phase 3: Generate and present audit report for user review"
+description: "Use when a Bluebook footnote audit's findings need to be turned into a report the user can review before any corrections are applied - 'show me the audit results', 'what did the audit find', 'write up the citation problems', 'give me the report', 'which footnotes are broken', 'summarize the Bluebook errors'. Produces scratch/AUDIT_REPORT.md. NOT for running the checks themselves or applying fixes."
 user-invocable: false
 disable-model-invocation: true
 ---

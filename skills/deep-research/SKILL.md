@@ -1,6 +1,6 @@
 ---
 name: deep-research
-description: This skill should be used when the user asks to "deep research", "comprehensive research on", "thorough investigation of", "research report on", "deep dive into", "literature review on", or needs Gemini Deep Research for web-grounded multi-source synthesis beyond what Google Scholar and Consensus provide.
+description: ALWAYS load before attempting a broad web-grounded research report - "deep research this", "do a deep dive on X", "comprehensive research on X", "thorough investigation of X", "write me a research report on X", "everything you can find about X", "I need background on this industry/market/regulation", "the academic sources came up empty, look wider". Use even when the user never says "deep research" but wants a synthesized multi-source report. NOT for finding academic papers or citations - use the research, consensus and google-scholar skills first; this is the paid last resort.
 version: 0.1.0
 user-invocable: false
 agent: librarian

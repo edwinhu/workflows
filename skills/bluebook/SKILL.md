@@ -1,6 +1,6 @@
 ---
 name: bluebook
-description: This skill should be used when the user asks to “cite a case”, “format a citation”, “check Bluebook format”, “cite a statute”, “use id. or supra”, “format footnotes”, “cite a law review article”, or needs Bluebook 21st Edition citation guidance.
+description: "ALWAYS use for ANY legal citation question, even if the user never says 'Bluebook' - 'cite this case', 'how do I cite a statute', 'is this footnote formatted right', 'id. or supra here', 'cite a law review article', 'what signal goes here', 'format these footnotes', 'short form for this cite', or writing or checking any citation in a legal manuscript. NOT for auditing a whole manuscript's footnotes (use bluebook-audit) and NOT for rendering these rules in Typst (use docx-typst)."
 user-invocable: false
 ---
 

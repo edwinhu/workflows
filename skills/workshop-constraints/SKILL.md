@@ -1,6 +1,6 @@
 ---
 name: workshop-constraints
-description: The fifteen vendored Typst deck and notes constraint modules in one preloadable file — bullet and label spacing, sub-bullets, tables, images, CeTZ and Fletcher diagrams, formatting, slide format, section hierarchy, notes structure, teleprompter notes, computed values, common elements, no-subtitle-echo. Preloaded into the workshop subagents; follow every module when writing or grading a .typ slide deck or notes file.
+description: "ALWAYS load before writing, editing or grading ANY Typst slide deck or speaker-notes file for a workshop, seminar or conference talk - 'build the deck', 'fix this slide', 'add a diagram to the talk', 'the slide overflows', 'write the speaker notes', 'is this deck up to spec', 'grade the slides', or any .typ edit under a talk. Covers bullet and label spacing, sub-bullets, tables, images, CeTZ and Fletcher diagrams, formatting, slide format, section hierarchy, notes structure, teleprompter notes and computed values."
 ---
 
 # Workshop Typst constraints

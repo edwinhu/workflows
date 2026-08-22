@@ -1,6 +1,6 @@
 ---
 name: cite-check
-description: "Verify academic citations against source PDFs using Gemini File Search API. Use when 'check citations', 'verify cites', 'cite-check', 'run citation review', 'are my citations grounded', 'does source X support claim Y', 'what does source X say about Y', or validating that pandoc citations in markdown drafts are supported by their source documents."
+description: "ALWAYS use when a draft's citations need checking against what the sources actually say — 'check citations', 'check my cites', 'verify cites', 'cite-check', 'run citation review', 'are my citations grounded', 'does this source actually support that claim', 'does source X support claim Y', 'what does source X say about Y', 'did I cite that right', 'make sure the cites hold up before I send this'. Use proactively before a draft goes out. NOT for Bluebook formatting (use bluebook / bluebook-audit) and NOT for detecting citations that do not exist at all (use source-verify)."
 user-invocable: true
 ---
 

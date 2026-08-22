@@ -1,6 +1,6 @@
 ---
 name: nlm
-description: This skill should be used when the user asks to "create a notebook", "add source to notebook", "generate audio overview", "create podcast", "manage NotebookLM", "nlm", "add PDF to notebook", "list notebooks", "summarize sources", "generate study guide", "create FAQ", "briefing document", "chat with notebook", "generate outline", "slide deck", "research a topic", "deep research", or needs to interact with Google NotebookLM via the nlm CLI tool.
+description: ALWAYS use for ANY NotebookLM work - "make me a notebook on X", "create a notebook", "add this PDF/source to the notebook", "what notebooks do I have", "make a podcast/audio overview of these", "generate a video overview", "study guide", "briefing doc", "FAQ from these sources", "outline from the notebook", "slide deck from these sources", "ask my notebook about X", "summarize the sources in there", or any mention of NotebookLM or `nlm`. Use even when the user says "make a podcast of these papers" without naming NotebookLM. NOT for open-web research reports - use deep-research instead.
 version: 0.3.0
 user-invocable: false
 ---

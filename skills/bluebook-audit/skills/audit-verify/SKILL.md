@@ -1,6 +1,6 @@
 ---
 name: audit-verify
-description: "Phase 5: Verify all corrections were applied correctly"
+description: "Use immediately after Bluebook corrections have been written into a DOCX, before archiving — 'verify the fixes', 'did the corrections apply', 're-scan the corrected docx', 'check the small caps got fixed', 'confirm the footnotes are clean now', 'run the verify phase'. ALWAYS run this rather than trusting that applied fixes landed; silent fix failures are common."
 user-invocable: false
 disable-model-invocation: true
 ---

@@ -6,8 +6,8 @@
  * IT TAKES NO STYLE ARGUMENT, AND THERE IS NOTHING TO MAP. One output style ships (`General
  * prose`); it is structural — prose shape and the suppression of Claude Code's software-engineering
  * framing — and carries no register. The measured registers are preloaded into the writing
- * subagents through the `writing-register` skill, which is the only channel that reaches a
- * subagent. The plan's `## Writing Intent` `Domain` is still read, through the same
+ * subagents through the `writing-general` base register skill, plus `writing-legal` or
+ * `writing-econ` for those domains, which is the only channel that reaches a subagent. The plan's `## Writing Intent` `Domain` is still read, through the same
  * `authenticatedWritingPlan()` that `hooks/writing-prose-check.ts` uses to pick `--style`, and is
  * reported so the caller can see which register the episode is under.
  *
@@ -26,7 +26,7 @@
  * fresh session before implementation, so the boundary the setting needs is one the workflow was
  * taking anyway. Compare the retired plans-directory restart gate, which had to become a GATE because a
  * mid-session `plansDirectory` left the episode unauthenticated. This is prose voice, not
- * authentication — the drafting subagent's preloaded `writing-register` and the plugin-wide prose
+ * authentication — the drafting subagent's preloaded register skills and the plugin-wide prose
  * audit both still apply — so a notice is proportionate where a gate would not be.
  *
  * Usage:
@@ -44,8 +44,9 @@ import { authenticatedWritingPlan } from "../hooks/lib/writing-plan-context.ts";
  * THE ONLY OUTPUT STYLE. `output-styles/general-prose.md` is structural — it suppresses Claude
  * Code's software-engineering framing and sets prose shape for the MAIN conversation. It carries no
  * register, so there is no domain -> style mapping left to look up and no map file to go stale.
- * The measured registers reach the writing subagents through the preloaded `writing-register`
- * skill, which is the only channel that reaches a subagent at all.
+ * The measured registers reach the writing subagents through the preloaded `writing-general` base
+ * skill, plus `writing-legal` or `writing-econ` for those domains, which is the only channel that
+ * reaches a subagent at all.
  */
 const STYLE_NAME = "General prose";
 
@@ -142,7 +143,8 @@ async function main(): Promise<void> {
       "reads once at session start — this session keeps whatever style it started with. Drafting\n" +
       "happens in a fresh session anyway, so the next one picks it up.\n" +
       "It shapes the MAIN conversation only; the drafting and reviewing subagents get the same\n" +
-      "register through the preloaded `writing-register` skill regardless.",
+      "register through the preloaded `writing-general` skill (plus the domain register skill)\n" +
+      "regardless.",
   );
 }
 

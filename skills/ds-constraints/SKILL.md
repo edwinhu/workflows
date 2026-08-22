@@ -1,6 +1,6 @@
 ---
 name: ds-constraints
-description: The four DS constraint aggregates in one preloadable file — common constraints (C1-C6), common conventions (V1-V9), analysis constraints (A1-A6) and engineering constraints (E1-E6). Preloaded into the ds subagents; follow the indexed constraints your task touches and load the individual files under references/constraints/ that it needs.
+description: "ALWAYS load before building or grading empirical work — 'build the panel', 'run the regression', 'clean this dataset', 'merge these two sources', 'profile this data', 'write the ETL', 'why does my sample drop rows', 'is this analysis sound', 'review my data pipeline', 'check the data quality', 'what are the DS rules here', or any reference to C1-C6, V1-V9, A1-A6 or E1-E6. Use before writing analysis code, not after — the data-quality, sample-coverage and deviation rules constrain the plan itself."
 ---
 
 # DS constraints

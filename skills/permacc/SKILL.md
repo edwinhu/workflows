@@ -1,6 +1,6 @@
 ---
 name: permacc
-description: Archive citation URLs to perma.cc so a law review footnote does not rot. Use when archiving links for a manuscript, cite-checking, adding perma links to footnotes, when a perma archive returns "usage limit" despite an institutional account, or when finding which perma folder an account may archive into.
+description: "ALWAYS use when URLs in a manuscript need permanent archived copies — 'perma these links', 'archive the URLs in my footnotes', 'add perma links', 'the journal wants perma.cc cites', 'make sure these links don't rot', 'archive this site before it changes', 'snapshot these URLs', 'perma.cc', or when cite-checking a draft with web sources. ALSO use when perma returns 'you've reached your usage limit' despite an institutional account, or when asking which perma folder an account may archive into."
 ---
 
 # perma.cc

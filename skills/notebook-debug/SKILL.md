@@ -1,6 +1,6 @@
 ---
 name: notebook-debug
-description: This skill should be used when the user asks to "debug notebook", "inspect notebook outputs", "find notebook error", "read traceback from ipynb", "why did notebook fail", or needs to understand runtime errors in executed Jupyter notebooks from any source (marimo, jupytext, papermill).
+description: ALWAYS use when an executed notebook has to be checked or has gone wrong - "debug this notebook", "why did the notebook fail", "which cell errored", "read the traceback from the ipynb", "the notebook ran but the output looks wrong", "did all the cells run", "papermill/jupytext/marimo execution failed", "inspect the notebook outputs". Use proactively before claiming any .ipynb executed successfully — never assert a notebook works without checking its outputs for tracebacks.
 user-invocable: false
 ---
 

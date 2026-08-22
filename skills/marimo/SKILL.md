@@ -1,6 +1,6 @@
 ---
 name: marimo
-description: Use when working with marimo notebooks — creating, editing, debugging, converting from Jupyter, or pairing with a running marimo server.
+description: "ALWAYS load before editing ANY .py file that contains @app.cell or marimo.App — 'edit this notebook', 'add a cell', 'fix the notebook', 'why is this cell not updating', 'my notebook won't run', 'convert this ipynb to marimo', 'turn my Jupyter notebook into marimo', 'start a notebook', 'export the notebook to HTML', 'run marimo', 'the cell says variable already defined', 'marimo edit'. Use even when the user just says 'the notebook' — hand-editing a marimo file breaks its cell signatures and DAG."
 user-invocable: false
 ---
 

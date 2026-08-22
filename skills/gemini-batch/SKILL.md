@@ -1,7 +1,7 @@
 ---
 name: gemini-batch
 version: 1.0
-description: This skill should be used when the user asks to "use Gemini Batch API", "process documents at scale", "submit a batch job", "upload files to Gemini", or needs large-scale LLM processing.
+description: "Use when the user says 'run this prompt over all the documents', 'process thousands of PDFs', 'extract fields from every filing', 'bulk LLM job', 'submit a batch job', 'use the Gemini Batch API', 'upload files to Gemini', or 'this is too many to do one at a time' - any large-scale LLM extraction or classification over many files. ALWAYS load before writing Gemini batch code, including the small test run."
 user-invocable: false
 ---
 
