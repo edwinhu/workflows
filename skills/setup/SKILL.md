@@ -42,29 +42,55 @@ skill with `disable-model-invocation: true` — is **skipped with a warning to t
 only**. The agent still launches, the guidance never arrives, and the run reads exactly as if
 it had. Nothing surfaces this but a check.
 
-The agents that carry agent-scoped `hooks:` live at the **user** tier — `~/.claude/agents/`,
-where that frontmatter is honoured and the agent answers to its bare name — which is the tier
-this machine-level check belongs at anyway. Enumerate them; never name them:
+**THE DIRECTORY STATES THE SCOPE.** Agents ship in two directories under
+`~/.claude/skills/workflows/`, and each has exactly one discovery path:
+
+- `agents/` — **auto-discovered** by Claude Code, registers plugin-scoped. It answers only to
+  `workflows:<name>`, and its `hooks:`, `mcpServers:` and `permissionMode:` frontmatter is
+  **ignored**. It is deliberately NOT symlinked anywhere.
+- `user-agents/` — **not** auto-discovered. It reaches Claude Code only through a symlink into
+  `~/.claude/agents/`, which registers it under its **bare** name with those fields honoured.
+  This plugin's skills dispatch those bare names, so an unlinked file here registers nowhere:
+  the dispatch falls back to a default agent and its guard never fires.
+
+Check both halves. Enumerate the shipped agents; never name them:
 
 ```bash
-ls -1 ~/.claude/agents/*.md 2>/dev/null || echo "NO AGENTS at ~/.claude/agents"
+ls -1 ~/.claude/skills/workflows/agents/*.md 2>/dev/null || echo "NO plugin-scoped agents shipped"
+ls -1 ~/.claude/skills/workflows/user-agents/*.md 2>/dev/null || echo "NO user-scoped agents shipped"
+ls -la ~/.claude/agents/ 2>/dev/null || echo "NO ~/.claude/agents directory"
 ```
 
-Then check every `skills:` entry of every enumerated agent, resolving each against the installed
-plugin's `skills/`:
+Then, for every enumerated agent, check its `skills:` entries against the installed plugin's
+`skills/` **and** whether it resolves at user scope:
 
 ```bash
 P=~/.claude/skills/workflows bun -e '
-import { readdirSync, readFileSync, existsSync, statSync } from "node:fs";
+import { readdirSync, readFileSync, existsSync, realpathSync } from "node:fs";
 import { join } from "node:path";
 import { homedir } from "node:os";
 const root = process.env.P.replace(/^~/, process.env.HOME);
-const agentsDir = join(homedir(), ".claude", "agents");
-if (!existsSync(agentsDir)) { console.log(`NO AGENTS: ${agentsDir} does not exist`); process.exit(1); }
-// ENUMERATED, never listed.
-const agents = readdirSync(agentsDir).filter(f => f.endsWith(".md")).sort();
-let bad = 0;
-for (const a of agents) {
+const userDir = join(homedir(), ".claude", "agents");
+// NO NAMED EXCEPTIONS: the directory an agent sits in states its scope.
+const dirs = [["agents", "plugin"], ["user-agents", "user"]].filter(([d]) => existsSync(join(root, d)));
+if (!dirs.length) { console.log(`NO AGENTS: neither agents/ nor user-agents/ exists under ${root}`); process.exit(1); }
+const real = p => { try { return realpathSync(p); } catch { return null; } };
+let bad = 0, agents = [];
+for (const [sub, tier] of dirs) {
+  const agentsDir = join(root, sub);
+  // ENUMERATED, never listed.
+  for (const a of readdirSync(agentsDir).filter(f => f.endsWith(".md")).sort()) {
+  agents.push(a);
+  const name = a.replace(/\.md$/, "");
+  if (tier === "user") {
+    const want = real(join(agentsDir, a));
+    const got = real(join(userDir, a));
+    if (got === null) { console.log(`  UNLINKED  ${name} (no resolving ${userDir}/${a}) — registers nowhere, hooks never fire`); bad++; }
+    else if (got !== want) { console.log(`  MISLINKED ${name} -> ${got}, expected ${want}`); bad++; }
+    else console.log(`  SCOPED    ${name} (user-level via symlink)`);
+  } else {
+    console.log(`  PLUGIN    ${name} (plugin-scoped on purpose; dispatch as workflows:${name})`);
+  }
   const body = readFileSync(join(agentsDir, a), "utf8");
   const fm = body.startsWith("---") ? body.slice(3, body.indexOf("\n---", 3)) : "";
   const m = fm.match(/^skills:[ \t]*(.*)$((?:\n[ \t]+-[ \t]*.*)*)/m);
@@ -81,11 +107,16 @@ for (const a of agents) {
     }
     console.log(`  OK        ${a} -> ${s}`);
   }
+  }
 }
-console.log(bad ? `\n${bad} unresolved preload(s) — the agent launches and the guidance never arrives.`
-                : `\nall preloads resolve across ${agents.length} agent(s).`);
+console.log(bad ? `\n${bad} problem(s) — an unresolved preload or an unlinked agent both fail silently.`
+                : `\nall preloads resolve and every agent is at its intended scope (${agents.length} agent(s)).`);
 '
 ```
+
+**If an agent is UNLINKED**, the fix is a symlink, never a copy — a copy goes stale on the next
+plugin update and nothing reports the drift. `~/dotfiles/scripts/setup-claude-symlinks.sh` links
+every `user-agents/*.md` a plugin ships (and nothing from `agents/`); run it and re-check.
 
 **Report every unresolved preload by name, and do not claim the install is healthy while one
 exists.** If the plugin source checkout is the current project, the authoritative check is
@@ -217,7 +248,7 @@ settings are read at session start, so any write here takes effect in a new sess
 
 | About to | Why wrong | Do instead |
 |---|---|---|
-| Type an agent name into a check | A literal roster stops covering agents added later — the drift this skill exists to catch | `readdirSync(agents/)` |
+| Type an agent name into a check | A literal roster stops covering agents added later — the drift this skill exists to catch | `readdirSync()` over both agent directories |
 | Write a settings file you have not parsed | An overwrite destroys keys you did not put there and cannot restore | Parse first; refuse on malformed JSON |
 | Edit `~/.claude/hooks/main-thread-guard.sh` | It is the user's dotfiles, with concurrent edits from other sessions | Show the one-line change; let the user apply it |
 | Configure `.claude-workflows.json`, a persona, or anything project-local | This is a machine setup; the opt-in's absence is the normal state | Leave the project alone |

@@ -142,7 +142,9 @@ dispatched as agents, so there is nothing to invoke by name and nothing to keep 
 
 ## Agents
 
-Specialized subagents auto-discovered by Claude Code from `agents/`:
+Specialized subagents. The directory states the scope: `agents/` is auto-discovered by Claude Code
+and registers plugin-scoped (`workflows:<name>`), while `user-agents/` is not auto-discovered and
+registers user-scoped (bare name, `hooks:` honoured) via a symlink into `~/.claude/agents/`:
 
 | Agent | Role |
 |-------|------|
@@ -205,7 +207,8 @@ workflows/
 ├── .claude-plugin/             # Plugin manifest
 │   ├── plugin.json             # Version and metadata
 │   └── marketplace.json        # Marketplace listing
-├── agents/                     # Specialized subagents
+├── agents/                     # Plugin-scoped subagents (auto-discovered)
+├── user-agents/                # User-scoped subagents (symlinked into ~/.claude/agents/)
 ├── skills/                     # User-facing and internal skills
 │   ├── craft/                  # The spine: workflow.js, plan-lint, dispatch, gate
 │   ├── dev/, ds/, writing/, workshop/, workflow-creator/  # Domain workflows
@@ -230,7 +233,9 @@ workflows/
 
 **Key Points:**
 - `skills/` contains both user-facing and internal phase skills (auto-discovered; internal skills use `user-invocable: false`)
-- `agents/` contains specialized subagents, auto-discovered by Claude Code
+- `agents/` contains plugin-scoped subagents, auto-discovered by Claude Code as `workflows:<name>`
+- `user-agents/` contains user-scoped subagents; they reach Claude Code only through the symlink
+  into `~/.claude/agents/` that `~/dotfiles/scripts/setup-claude-symlinks.sh` creates
 - `hooks/` contains TypeScript hook entry points called directly by `hooks.json`
 - `workflows/` contains the shared runner plus writing, workshop, and workflow-creator adapters
 - `scripts/` contains deterministic compilers, validation checks, renderers, and support tools

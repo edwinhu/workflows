@@ -13,50 +13,66 @@
 //   2. A missing/disabled skill in `skills:` is likewise skipped with only a debug-log warning.
 //      This is how a dangling `writing-register` preload survived a major version: 87739f29
 //      deleted the skill, the generator and this test together.
-//   3. `hooks`, `mcpServers` and `permissionMode` are IGNORED for plugin-shipped agents but
-//      HONOURED for user-level ones. Dead config that reads like the mechanism is worse than no
-//      config — which is why the six doers/reviewers live under `~/.claude/agents/` and only
-//      `librarian` is still plugin-scoped. A user-level agent also answers to its BARE name.
+//   3. `hooks`, `mcpServers` and `permissionMode` are IGNORED for a plugin-scoped agent but
+//      HONOURED for a user-level one, and a user-level agent answers to its BARE name. THE
+//      DIRECTORY STATES THE SCOPE: `agents/` is auto-discovered by Claude Code and registers
+//      plugin-scoped (`workflows:<name>`); `user-agents/` is NOT auto-discovered and reaches
+//      Claude Code only through the `~/.claude/agents/` symlink, which registers it user-level.
+//      A `user-agents/` file with no link is the silent failure: the bare dispatch falls back
+//      and its hooks never fire.
 //
 // Assertion 1 is the load-bearing one.
 //
 // Run: bun tests/agent-contract.test.mjs
-import { readdirSync, readFileSync, existsSync, statSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { readdirSync, readFileSync, existsSync, realpathSync, statSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { tmpdir, homedir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
-const AGENTS = join(ROOT, 'agents')
+const PLUGIN_AGENTS = join(ROOT, 'agents')
+const SCOPED_AGENTS = join(ROOT, 'user-agents')
 const USER_AGENTS = join(homedir(), '.claude', 'agents')
 const SKILLS = join(ROOT, 'skills')
 const STYLES = join(ROOT, 'output-styles')
 
-// TWO TIERS. `hooks:`, `mcpServers:` and `permissionMode:` are IGNORED for plugin-shipped agents
-// but honoured for user-level ones, and a user-level agent answers to its BARE name (`@agent-ds`)
-// where a plugin one needs the namespaced `@agent-workflows:<name>`. The six doers/reviewers moved to
-// `~/.claude/agents/` for both properties; `librarian` stays plugin-scoped.
+// THE DIRECTORY STATES THE SCOPE — that is the whole point of the split, and it is why nothing
+// below carries a hardcoded roster or a named exception.
 //
-// The user tier is NOT enumerated: it is shared with agents this repo did not ship (and cannot
-// make assertions about), so the roster below names the ones this repo owns. The plugin tier still
-// enumerates — nothing else knows what is in it.
-const USER_TIER = ['ds', 'ds-reviewer', 'workshop', 'workshop-reviewer', 'writing', 'writing-reviewer']
+//   `agents/`      auto-discovered by Claude Code, registers plugin-scoped (`workflows:<name>`).
+//                  `hooks:`, `mcpServers:` and `permissionMode:` are IGNORED there.
+//   `user-agents/` NOT auto-discovered. It reaches Claude Code only through the symlink into
+//                  `~/.claude/agents/`, which registers the file user-level: BARE name, those
+//                  fields honoured. One discovery path, and the directory name says which.
+//
+// Both rosters are ENUMERATED, never listed — a hardcoded set stops covering agents added later.
 
-/** Every agent this repo owns, at whichever tier it lives on. */
+/** Every agent this repo owns, from both directories. `userScoped` ones must ALSO resolve in
+ *  ~/.claude/agents/; the plugin-scoped ones must NOT. */
 function roster() {
-  const out = []
-  for (const f of readdirSync(AGENTS).filter(f => f.endsWith('.md'))) {
-    out.push({ name: f.replace(/\.md$/, ''), file: f, path: join(AGENTS, f), tier: 'plugin' })
-  }
-  for (const n of USER_TIER) {
-    out.push({ name: n, file: `${n}.md`, path: join(USER_AGENTS, `${n}.md`), tier: 'user' })
-  }
-  return out
+  const from = (dir, tier) =>
+    (existsSync(dir) ? readdirSync(dir) : []).filter(f => f.endsWith('.md')).map(f => ({
+      name: f.replace(/\.md$/, ''),
+      file: f,
+      path: join(dir, f),
+      dir: tier === 'user' ? 'user-agents' : 'agents',
+      userScoped: tier === 'user',
+      tier,
+    }))
+  return [...from(PLUGIN_AGENTS, 'plugin'), ...from(SCOPED_AGENTS, 'user')]
 }
 const ROSTER = roster()
-/** Path of an owned agent by bare name, whichever tier it is on. */
-const agentPath = name => ROSTER.find(a => a.name === name)?.path ?? join(AGENTS, `${name}.md`)
+/** Path of an owned agent by bare name, whichever directory owns it. */
+const agentPath = name => {
+  const hit = ROSTER.find(a => a.name === name)
+  return hit ? hit.path : join(SCOPED_AGENTS, `${name}.md`)
+}
+
+/** Real path of a user-level agent entry, or null when it is missing or dangling. */
+const userAgentTarget = name => {
+  try { return realpathSync(join(USER_AGENTS, `${name}.md`)) } catch { return null }
+}
 
 let PASS = 0, FAIL = 0
 const ok = (name, condition, extra = '') => {
@@ -122,9 +138,9 @@ function values(fm, key) {
 // ── THE LOAD-BEARING ONE: every preloaded skill resolves AND is preloadable ──
 {
   ok('the plugin agents/ dir is not empty',
-     readdirSync(AGENTS).filter(f => f.endsWith('.md')).length > 0)
-  ok('the user tier is populated', USER_TIER.every(n => existsSync(join(USER_AGENTS, `${n}.md`))),
-     USER_TIER.filter(n => !existsSync(join(USER_AGENTS, `${n}.md`))).join(','))
+     readdirSync(PLUGIN_AGENTS).filter(f => f.endsWith('.md')).length > 0)
+  ok('the user-agents/ dir is not empty',
+     existsSync(SCOPED_AGENTS) && readdirSync(SCOPED_AGENTS).filter(f => f.endsWith('.md')).length > 0)
   let preloadsSeen = 0
   for (const { file, path, tier } of ROSTER) {
     const fm = existsSync(path) ? frontmatter(path) : null
@@ -147,14 +163,39 @@ function values(fm, key) {
   }
   ok('at least one agent preloads a skill', preloadsSeen > 0)
 
-  // Fields ignored for PLUGIN-shipped agents only. Declaring one there is dead config that lies —
-  // which is why the six that need `hooks:` moved to the user tier, where it is honoured.
-  for (const { file, path } of ROSTER.filter(a => a.tier === 'plugin')) {
+  // These fields are honoured only at USER scope. An agent that is deliberately plugin-scoped-only
+  // must therefore not declare them: dead config that reads like the mechanism is worse than none.
+  // A symlinked agent MAY declare them — that is the whole reason for the link.
+  for (const { file, path, dir } of ROSTER.filter(a => !a.userScoped)) {
     const fm = frontmatter(path)
     if (!fm) continue
     for (const field of ['hooks', 'mcpServers', 'permissionMode']) {
-      ok(`agents/${file} does not declare ${field} (ignored for plugin agents)`,
+      ok(`${dir}/${file} does not declare ${field} (ignored for a plugin-scoped agent)`,
          !(field in fm.scalars) && !(field in fm.lists) && !new RegExp(`^${field}:`, 'm').test(fm.raw))
+    }
+  }
+}
+
+// ── SCOPE: every user-agents/ file resolves through ~/.claude/agents/ ───────────────────────────
+//
+// Shipping the file is half the job. Without the symlink a `user-agents/` file reaches Claude Code
+// through no path at all: the bare-name dispatches this repo's skills issue fall back to a default
+// agent, and `hooks:` never fire. The failure is silent at every layer, so it is asserted here.
+{
+  ok('at least one agent is expected at user scope', ROSTER.some(a => a.userScoped))
+  for (const { name, path, userScoped } of ROSTER) {
+    const shipped = existsSync(path) ? realpathSync(path) : null
+    const linked = userAgentTarget(name)
+    if (userScoped) {
+      ok(`${name} resolves in ~/.claude/agents/`, linked !== null,
+         `~/.claude/agents/${name}.md is missing or dangling — the agent is not user-scoped`)
+      ok(`~/.claude/agents/${name}.md points at the shipped file`,
+         linked !== null && linked === shipped, `${linked} != ${shipped}`)
+    } else {
+      // An `agents/` file stays plugin-scoped ON PURPOSE: it must keep answering only to
+      // workflows:<name>, and linking it would give one file two discovery paths.
+      ok(`${name} is NOT linked into ~/.claude/agents/ (stays plugin-scoped)`,
+         linked === null || linked !== shipped, String(linked))
     }
   }
 }
@@ -162,7 +203,7 @@ function values(fm, key) {
 // ── The reviewer is wired to the consolidated register skill ─────────────────
 {
   const p = agentPath('writing-reviewer')
-  ok('agents/writing-reviewer.md exists', existsSync(p))
+  ok('user-agents/writing-reviewer.md exists', existsSync(p))
   const fm = existsSync(p) ? frontmatter(p) : null
   ok('writing-reviewer preloads writing-register', values(fm, 'skills').includes('writing-register'))
   ok('writing-reviewer preloads ai-anti-patterns', values(fm, 'skills').includes('ai-anti-patterns'))
@@ -189,13 +230,13 @@ function values(fm, key) {
 // ── The drafting agent: writes, so it must NOT carry the read-only iron law ──────
 {
   const p = agentPath('writing')
-  ok('agents/writing.md exists', existsSync(p))
+  ok('user-agents/writing.md exists', existsSync(p))
   const fm = existsSync(p) ? frontmatter(p) : null
   const wskills = values(fm, 'skills')
   ok('writing preloads writing-register', wskills.includes('writing-register'))
   ok('writing preloads ai-anti-patterns', wskills.includes('ai-anti-patterns'))
   for (const s of wskills) {
-    ok(`agents/writing.md: skills: ${s} resolves`, existsSync(join(SKILLS, s, 'SKILL.md')))
+    ok(`user-agents/writing.md: skills: ${s} resolves`, existsSync(join(SKILLS, s, 'SKILL.md')))
   }
   const wtools = values(fm, 'tools')
   ok('writing can actually write', wtools.includes('Write') && wtools.includes('Edit'), wtools.join(','))
@@ -247,7 +288,7 @@ function values(fm, key) {
   }
 
   const doer = agentPath('ds')
-  ok('agents/ds.md exists', existsSync(doer))
+  ok('user-agents/ds.md exists', existsSync(doer))
   const dfm = existsSync(doer) ? frontmatter(doer) : null
   ok('ds preloads ds-constraints', values(dfm, 'skills').includes('ds-constraints'))
   const dtools = values(dfm, 'tools')
@@ -258,11 +299,11 @@ function values(fm, key) {
      /use proactively/i.test(dfm?.scalars.description ?? '') ||
      /use proactively/i.test((dfm?.raw ?? '')))
   // A writer cannot carry the read-only iron law; the block below would fail it.
-  ok('agents/ds.md does not contain "YOU DO NOT EDIT"',
+  ok('user-agents/ds.md does not contain "YOU DO NOT EDIT"',
      existsSync(doer) && !readFileSync(doer, 'utf8').includes('YOU DO NOT EDIT'))
 
   const rev = agentPath('ds-reviewer')
-  ok('agents/ds-reviewer.md exists', existsSync(rev))
+  ok('user-agents/ds-reviewer.md exists', existsSync(rev))
   const rfm = existsSync(rev) ? frontmatter(rev) : null
   ok('ds-reviewer preloads ds-constraints', values(rfm, 'skills').includes('ds-constraints'))
   const rtools = values(rfm, 'tools')
@@ -316,17 +357,17 @@ function values(fm, key) {
   }
 
   const doer = agentPath('workshop')
-  ok('agents/workshop.md exists', existsSync(doer))
+  ok('user-agents/workshop.md exists', existsSync(doer))
   const dfm = existsSync(doer) ? frontmatter(doer) : null
   ok('workshop preloads workshop-constraints', values(dfm, 'skills').includes('workshop-constraints'))
   const dtools = values(dfm, 'tools')
   ok('workshop can actually write', dtools.includes('Write') && dtools.includes('Edit'), dtools.join(','))
   ok('workshop description says "use proactively"', /use proactively/i.test(dfm?.raw ?? ''))
-  ok('agents/workshop.md does not contain "YOU DO NOT EDIT"',
+  ok('user-agents/workshop.md does not contain "YOU DO NOT EDIT"',
      existsSync(doer) && !readFileSync(doer, 'utf8').includes('YOU DO NOT EDIT'))
 
   const rev = agentPath('workshop-reviewer')
-  ok('agents/workshop-reviewer.md exists', existsSync(rev))
+  ok('user-agents/workshop-reviewer.md exists', existsSync(rev))
   const rfm = existsSync(rev) ? frontmatter(rev) : null
   ok('workshop-reviewer preloads workshop-constraints',
      values(rfm, 'skills').includes('workshop-constraints'))
@@ -370,15 +411,26 @@ function values(fm, key) {
       if (/[…<]/.test(t)) continue
       seen++
       if (BUILTINS.has(t)) { ok(`skills/${s}: agentType ${t} is a documented built-in`, true); continue }
-      // A `workflows:` prefix means PLUGIN scope and only resolves against agents/. A bare name
-      // resolves at whichever tier owns it — and for the six that moved, the bare form is now the
-      // only correct one (`@agent-ds`, never the namespaced form).
+      // The DIRECTORY the file sits in decides which dispatch form works: a bare name only
+      // dispatches for a `user-agents/` file that is symlinked to user scope, and a `workflows:`
+      // prefix only dispatches for an `agents/` file. Naming the wrong form fails silently — the
+      // dispatch falls back to a default agent.
       const namespaced = t.startsWith('workflows:')
       const bare = namespaced ? t.slice('workflows:'.length) : t
-      const p = namespaced ? join(AGENTS, `${bare}.md`) : agentPath(bare)
+      const owned = ROSTER.find(a => a.name === bare)
+      const p = agentPath(bare)
       const resolves = existsSync(p) && frontmatter(p)?.scalars.name === bare
-      ok(`skills/${s}: agentType ${t} resolves to ${p} with a matching name:`,
-         resolves, p)
+      ok(`skills/${s}: agentType ${t} resolves to ${p} with a matching name:`, resolves, p)
+      if (!resolves) continue
+      if (namespaced) {
+        ok(`skills/${s}: agentType ${t} is namespaced, so ${bare} must live in agents/`,
+           owned?.userScoped === false,
+           `${bare} is in user-agents/ and symlinked to user scope; dispatch it by the bare name`)
+      } else {
+        ok(`skills/${s}: agentType ${t} is bare, so it must resolve in ~/.claude/agents/`,
+           userAgentTarget(bare) === realpathSync(p),
+           `~/.claude/agents/${bare}.md does not point at ${p}`)
+      }
     }
   }
   ok('at least one agentType was checked', seen > 0)
@@ -567,20 +619,30 @@ function values(fm, key) {
     return src.slice(at)
   }
 
-  const detector = fnSource('buildSetupSection') + '\n' + fnSource('danglingPreloads')
+  const detector = fnSource('buildSetupSection') + '\n' + fnSource('danglingPreloads') +
+                   '\n' + fnSource('unlinkedAgents') + '\n' + fnSource('agentFiles')
   ok('hooks/session-start.ts exports buildSetupSection', /export function buildSetupSection/.test(src))
-  ok('the detector enumerates agents/ at runtime', /readdirSync\(/.test(detector))
-  ok('the detector reads the agents directory, not a list', /join\([^)]*"agents"\)/.test(detector))
-  // BOTH TIERS: the six that carry agent-scoped hooks live under ~/.claude/agents now, and a
-  // detector that only reads the plugin's own agents/ would stop seeing them entirely.
-  ok('the detector also reads the user-level agents directory',
+  ok('the detector enumerates the agent directories at runtime', /readdirSync\(/.test(detector))
+  ok('the detector reads the plugin-scoped agents directory, not a list',
+     /"agents"/.test(detector))
+  ok('the detector reads the user-scoped user-agents directory, not a list',
+     /"user-agents"/.test(detector))
+  // SCOPE is the second half: only `user-agents/` needs the ~/.claude/agents/ link, and a
+  // user-agents file without one reaches Claude Code through no path at all.
+  ok('the detector also checks the user-level agents directory',
      /homedir\(\)[^)]*"\.claude"/.test(detector))
+  ok('the detector resolves the link rather than just testing existence',
+     /realpathSync\(/.test(detector))
 
-  // NO HARDCODED ROSTER. Every real agent basename, checked as a quoted/backticked literal.
+  // NO HARDCODED ROSTER AND NO NAMED EXCEPTION — the DIRECTORY states the scope, so no agent
+  // basename, at either tier, may appear as a quoted/backticked literal anywhere in the hook.
   for (const a of ROSTER.map(x => x.name)) {
     const literal = new RegExp(`["'\`]${a.replace(/[-]/g, '\\-')}(\\.md)?["'\`]`)
     ok(`the detector does not name agent "${a}" literally`, !literal.test(detector))
+    ok(`the hook does not name agent "${a}" literally anywhere`, !literal.test(src))
   }
+  ok('the hook no longer carries a plugin-scoped exception list',
+     !/PLUGIN_SCOPED_ONLY/.test(src))
 
   // The hook must never write the files the setup skill owns.
   ok('the detector writes nothing', !/writeFileSync|appendFileSync|renameSync|mkdirSync/.test(detector))
@@ -621,19 +683,40 @@ function values(fm, key) {
   // the ONLY finding this detector still emits.
   const fakePlugin = mkdtempSync(join(tmpdir(), 'setup-plugin-'))
   spawnSync('mkdir', ['-p', join(fakePlugin, 'agents')])
+  spawnSync('mkdir', ['-p', join(fakePlugin, 'user-agents')])
   spawnSync('mkdir', ['-p', join(fakePlugin, 'skills', 'real-skill')])
   writeFileSync(join(fakePlugin, 'skills', 'real-skill', 'SKILL.md'), '---\nname: real-skill\n---\n')
-  writeFileSync(join(fakePlugin, 'agents', 'zz-fixture.md'),
+  writeFileSync(join(fakePlugin, 'user-agents', 'zz-fixture.md'),
     '---\nname: zz-fixture\nskills:\n  - real-skill\n  - ghost-skill\n---\nbody\n')
+  // A PLUGIN-SCOPED agent with a dangling preload: the preload is still a finding, but its
+  // ABSENCE from ~/.claude/agents/ is the intended state and must never be reported.
+  writeFileSync(join(fakePlugin, 'agents', 'zz-plugin-fixture.md'),
+    '---\nname: zz-plugin-fixture\nskills:\n  - phantom-skill\n---\nbody\n')
   const dangling = buildSetupSection(clean, fakePlugin)
   ok('a dangling preload is reported', /ghost-skill/.test(dangling), JSON.stringify(dangling))
   ok('a resolving preload is NOT reported', !/real-skill/.test(dangling), JSON.stringify(dangling))
   ok('the dangling report names the agent it came from', /zz-fixture\.md/.test(dangling))
+  ok('the dangling report names the directory that owns the agent',
+     /user-agents\/zz-fixture\.md/.test(dangling), JSON.stringify(dangling))
   ok('the dangling report points at the setup skill', /setup/.test(dangling), JSON.stringify(dangling))
+  ok('a dangling preload in the plugin-scoped agents/ is reported too',
+     /phantom-skill/.test(dangling) && /agents\/zz-plugin-fixture\.md/.test(dangling),
+     JSON.stringify(dangling))
 
-  // This repo's own agents all resolve — no dangling preload ships.
-  ok('no agent in this repo has a dangling preload',
-     !/does not resolve/.test(buildSetupSection(clean, ROOT)))
+  // AN UNLINKED user-agents/ FILE IS THE OTHER FINDING. zz-fixture ships in the fixture plugin's
+  // user-agents/ and has no ~/.claude/agents/ entry, so it reaches Claude Code by no path at all.
+  ok('a user-agents file with no user-scope symlink is reported',
+     /no resolving `~\/\.claude\/agents\/zz-fixture\.md`/.test(dangling), JSON.stringify(dangling))
+  ok('the unlinked report explains that hooks do not fire',
+     /hooks:` frontmatter is ignored/.test(dangling), JSON.stringify(dangling))
+  ok('a plugin-scoped agents/ file is NOT reported as unlinked',
+     !/zz-plugin-fixture\.md` ships/.test(dangling), JSON.stringify(dangling))
+
+  // This repo's own agents all resolve, and every user-agents/ file is linked.
+  const selfCheck = buildSetupSection(clean, ROOT)
+  ok('no agent in this repo has a dangling preload', !/does not resolve/.test(selfCheck))
+  ok('every agent in this repo that needs user scope has it',
+     !/no resolving/.test(selfCheck), JSON.stringify(selfCheck))
 }
 
 // ── /start is gone: no dangling reference to a command that no longer exists ────────────────────
@@ -644,10 +727,17 @@ function values(fm, key) {
   const setup = readFileSync(join(SKILLS, 'setup', 'SKILL.md'), 'utf8')
   ok('the setup skill enumerates agents at runtime rather than naming them',
      /readdirSync\(/.test(setup))
+  ok('the setup skill checks user scope, not just the shipped file',
+     /realpathSync\(/.test(setup) && /\.claude", "agents"/.test(setup))
+  ok('the setup skill enumerates the user-scoped directory by name',
+     /user-agents/.test(setup))
   for (const a of ROSTER.map(x => x.name)) {
     ok(`the setup skill does not name agent "${a}" literally`,
        !new RegExp(`["'\`]${a.replace(/[-]/g, '\\-')}(\\.md)?["'\`]`).test(setup))
   }
+  // No named exception survives the split: the directory an agent sits in states its scope.
+  ok('the setup skill no longer carries a plugin-scoped exception list',
+     !/PLUGIN_SCOPED_ONLY/.test(setup))
   ok('the setup skill refuses rather than overwrites a malformed settings file',
      /REFUSED/.test(setup) && /not valid JSON/.test(setup))
   ok('the setup skill only REPORTS the main-thread guard', /DO NOT EDIT THIS FILE/.test(setup))

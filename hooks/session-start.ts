@@ -12,7 +12,15 @@
  * Output goes through pyJson, never JSON.stringify: json.dumps' separators and ensure_ascii
  * change the bytes of the ⚠️ in the remote-session banner and of every em dash below.
  */
-import { existsSync, readFileSync, readdirSync, statSync, appendFileSync, unlinkSync } from "node:fs";
+import {
+  existsSync,
+  readFileSync,
+  readdirSync,
+  realpathSync,
+  statSync,
+  appendFileSync,
+  unlinkSync,
+} from "node:fs";
 import { join, resolve } from "node:path";
 import { homedir } from "node:os";
 import { parsePayload, pyJson } from "./_gate_common.ts";
@@ -324,80 +332,83 @@ function frontmatterValues(fm: Record<string, string | string[]>, key: string): 
 
 type DanglingPreload = { agent: string; skill: string };
 
+/** The `.md` basenames in one of the plugin's agent directories, sorted; `[]` when absent. */
+function agentFiles(dir: string): string[] {
+  if (!isDir(dir)) return [];
+  try {
+    return readdirSync(dir).filter((f) => f.endsWith(".md")).sort();
+  } catch {
+    return [];
+  }
+}
+
 /**
- * Every `skills:` preload that does not resolve to a real `skills/<name>/SKILL.md`, across BOTH
- * agent tiers: the plugin's own `agents/` and the user-level `~/.claude/agents/`, where the agents
- * that need agent-scoped `hooks:` frontmatter now live (that field is ignored for plugin-shipped
- * agents). The roster is ENUMERATED at both tiers, never listed: a hardcoded set silently stops
- * covering agents added later, which is the same silent-drift bug this detector exists to catch.
+ * Every `skills:` preload that does not resolve to a real `skills/<name>/SKILL.md`.
  *
- * The user tier is shared with agents this plugin did not ship, so a user-level agent is only
- * reported when it is DERIVABLY ours — some preload of its own resolves here, or this plugin's
- * skills dispatch it by name. Nagging about a stranger's agent is the same failure as nagging
- * about a working default.
+ * Enumerates BOTH of the plugin's agent directories, because a dangling preload is silent at
+ * either scope. THE DIRECTORY STATES THE SCOPE: `agents/` is auto-discovered by Claude Code and
+ * registers plugin-scoped (`workflows:<name>`); `user-agents/` is not auto-discovered and reaches
+ * Claude Code only through its `~/.claude/agents/` symlink. The roster is ENUMERATED, never
+ * listed: a hardcoded set silently stops covering agents added later, which is the same
+ * silent-drift bug this detector exists to catch.
  */
 function danglingPreloads(pluginRoot: string): DanglingPreload[] {
   const skillsDir = join(pluginRoot, "skills");
   const resolves = (skill: string) =>
     isDir(join(skillsDir, skill)) && existsSync(join(skillsDir, skill, "SKILL.md"));
 
-  const found: { label: string; name: string; preloads: string[]; plugin: boolean }[] = [];
-  for (const dir of [join(pluginRoot, "agents"), join(homedir(), ".claude", "agents")]) {
-    if (!isDir(dir)) continue;
-    let names: string[];
-    try {
-      names = readdirSync(dir).filter((f) => f.endsWith(".md")).sort();
-    } catch {
-      continue;
-    }
-    const plugin = dir.startsWith(pluginRoot);
-    for (const file of names) {
+  const out: DanglingPreload[] = [];
+  for (const sub of ["agents", "user-agents"]) {
+    const dir = join(pluginRoot, sub);
+    for (const file of agentFiles(dir)) {
       let fm: Record<string, string | string[]>;
       try {
         fm = parseYamlSimple(readFileSync(join(dir, file), "utf8"));
       } catch {
         continue;
       }
-      const preloads = frontmatterValues(fm, "skills");
-      if (!preloads.length) continue;
-      found.push({
-        label: plugin ? `agents/${file}` : join(dir, file),
-        name: file.replace(/\.md$/, ""),
-        preloads,
-        plugin,
-      });
+      for (const skill of frontmatterValues(fm, "skills")) {
+        if (!resolves(skill)) out.push({ agent: `${sub}/${file}`, skill });
+      }
     }
   }
+  return out;
+}
 
-  const suspect = found.filter((a) => a.preloads.some((s) => !resolves(s)));
-  if (!suspect.length) return [];
+/**
+ * `user-agents/` files that are NOT symlinked into `~/.claude/agents/`.
+ *
+ * Shipping the file is only half of it — and for `user-agents/` it is not even discovery, since
+ * Claude Code auto-discovers only `agents/`. A plugin-scoped agent is addressed as
+ * `workflows:<name>` and its `hooks:`, `mcpServers:` and `permissionMode:` frontmatter is
+ * IGNORED; the same file symlinked into the user directory registers under its BARE name with
+ * those fields honoured. This plugin's skills dispatch those bare names, so a missing link is not
+ * cosmetic — the dispatch falls back to a default agent and any agent-scoped guard silently does
+ * not fire.
+ *
+ * `agents/` is deliberately out of scope here: absence from the user directory is its intended
+ * state, which is why this needs no named exception.
+ */
+function unlinkedAgents(pluginRoot: string): string[] {
+  const dir = join(pluginRoot, "user-agents");
+  const names = agentFiles(dir);
 
-  // Only paid for when something already looks wrong.
-  let dispatched: Set<string> | null = null;
-  const dispatchedNames = (): Set<string> => {
-    if (dispatched) return dispatched;
-    dispatched = new Set<string>();
+  const out: string[] = [];
+  for (const file of names) {
+    const name = file.replace(/\.md$/, "");
+    let shipped: string;
     try {
-      for (const s of readdirSync(skillsDir)) {
-        const md = join(skillsDir, s, "SKILL.md");
-        if (!existsSync(md)) continue;
-        for (const m of readFileSync(md, "utf8").matchAll(
-          /[Aa]gent[Tt]ype:\s*"([^"]+)"|subagent_type="([^"]+)"/g,
-        )) {
-          dispatched.add((m[1] ?? m[2]).replace(/^workflows:/, ""));
-        }
-      }
+      shipped = realpathSync(join(dir, file));
     } catch {
-      /* an unreadable skills dir just means no ownership evidence */
+      continue;
     }
-    return dispatched;
-  };
-
-  const out: DanglingPreload[] = [];
-  for (const a of suspect) {
-    const ours = a.plugin || a.preloads.some(resolves) || dispatchedNames().has(a.name);
-    if (!ours) continue;
-    for (const skill of a.preloads) if (!resolves(skill)) out.push({ agent: a.label, skill });
+    let linked: string | null = null;
+    try {
+      linked = realpathSync(join(homedir(), ".claude", "agents", file));
+    } catch {
+      linked = null;
+    }
+    if (linked !== shipped) out.push(name);
   }
   return out;
 }
@@ -405,9 +416,12 @@ function danglingPreloads(pluginRoot: string): DanglingPreload[] {
 /**
  * Install problems reachable from this session — DETECTED and REPORTED, never fixed.
  *
- * ONE finding: a `skills:` preload that does not resolve. That failure is silent by construction
- * (the runtime skips it with a debug-log warning, the agent launches anyway), so nothing but a
- * check surfaces it. Configuration is NOT a finding: `plansDirectory` resolves at either tier and
+ * TWO findings, both silent by construction. A `skills:` preload that does not resolve is skipped
+ * with a debug-log warning while the agent launches anyway. A `user-agents/` file without a
+ * symlink into `~/.claude/agents/` is not user-scoped and is not auto-discovered either, so the
+ * bare-name dispatch falls back and its `hooks:` never fire. Nothing but a check surfaces either.
+ *
+ * Configuration is NOT a finding: `plansDirectory` resolves at either tier and
  * falls back to `.claude/plans`, and `.claude-workflows.json` is an opt-in whose absence is the
  * normal state — reporting either would be nagging about a working default. The `setup` skill
  * decides and writes; this hook writes nothing.
@@ -439,6 +453,20 @@ export function buildSetupSection(
         skill +
         "/SKILL.md` — a dangling preload is skipped with a debug-log warning only, so the agent " +
         "launches and the guidance never arrives. Run the `setup` skill.",
+    );
+  }
+
+  for (const name of unlinkedAgents(pluginRoot)) {
+    problems.push(
+      "- `user-agents/" +
+        name +
+        ".md` ships here but has no resolving `~/.claude/agents/" +
+        name +
+        ".md` symlink, and `user-agents/` is not auto-discovered, so it registers nowhere: " +
+        "dispatches of the bare name `" +
+        name +
+        "` fall back to a default agent, and its `hooks:` frontmatter is ignored. " +
+        "Run the `setup` skill.",
     );
   }
 

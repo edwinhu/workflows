@@ -73,7 +73,7 @@ exits silently otherwise); `hooks/writing-mechanical-gate.ts` and `hooks/mechani
 (PreToolUse blocking gates over check-all); `workflows/writing-verify.js:380` (dispatches
 `writing-reviewer` with "Read the domain skill, ai-anti-patterns, and prose constraints
 first"); `workflows/writing-verify.js:513` (third-party opt-in parsed out of the plan text);
-`agents/writing-reviewer.md:82` (the de_ai_audit Bash line, as prose in a markdown file);
+`user-agents/writing-reviewer.md:82` (the de_ai_audit Bash line, as prose in a markdown file);
 `skills/writing-verify/SKILL.md:37` and `skills/writing-revise/SKILL.md:39,65` (load-the-skill
 instructions). **Nothing anywhere gates on a `de_ai_audit` result** — grep for `de_ai` across
 `hooks/` and `workflows/` returns nothing.
@@ -212,7 +212,7 @@ Three surfaces, one rule for telling them apart.
    `screen.py`; retarget `tests/test_prose_lint_hook.py`.
 3. Rewire `writing-prose-check.ts` to the one entry point; delete `PROSE_LINT_SUPERSEDES`.
    Golden-file update in `tests/golden/writing-prose-check.json`.
-4. Inject spans in `workflows/writing-verify.js` and `agents/writing-reviewer.md`.
+4. Inject spans in `workflows/writing-verify.js` and `user-agents/writing-reviewer.md`.
 5. Rewrite the `prose.ts` prompt (evidence in, skill-loading instruction out); keep `raw` on
    success; add `spanIds` to the schema and the unreliable-reviewer rule.
 6. `scripts/bump-version.sh <minor>` + contract test + annotated `workflows--vX.Y.Z` tag.
