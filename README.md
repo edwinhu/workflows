@@ -146,14 +146,67 @@ Specialized subagents. The directory states the scope: `agents/` is auto-discove
 and registers plugin-scoped (`workflows:<name>`), while `user-agents/` is not auto-discovered and
 registers user-scoped (bare name, `hooks:` honoured) via a symlink into `~/.claude/agents/`:
 
-| Agent | Role |
-|-------|------|
-| `librarian` | Knowledge management orchestration (NLM, Readwise, Scholar) |
-| `writing-reviewer` | Read-only prose-quality grading against the preloaded register |
+| Agent | Role | Scope | Hooks |
+|-------|------|-------|-------|
+| `librarian` | Knowledge management orchestration (NLM, Readwise, Scholar, Workspace) | plugin | — |
+| `ds` | Empirical implementer — datasets, tables, figures, numbers; preloads `ds-constraints` | user | — |
+| `ds-reviewer` | Read-only grading of existing empirical work against C/V/A/E constraints | user | — |
+| `workshop` | Talk implementer — Typst deck and speaker notes from a paper; preloads `workshop-constraints` | user | — |
+| `workshop-reviewer` | Read-only grading of `slides.typ` and `notes.typ` against the vendored Typst modules | user | — |
+| `writing` | General long-form prose — memos, letters, briefs, reports | user | source-first `PreToolUse` guard |
+| `writing-legal` | Law review prose — footnotes, Bluebook short forms | user | source-first `PreToolUse` guard |
+| `writing-econ` | Finance and accounting journal prose | user | source-first `PreToolUse` guard |
+| `writing-reviewer` | Read-only prose grading against the preloaded register and the tic table | user | — |
 
-The craft spine's implementers, verifiers and reviewers are dispatched from
-`skills/craft/workflow.js` with the prompt the run needs; they are not named subagent types, so the
-per-role agent files the beat spine required are gone.
+The craft spine's per-beat verifiers are still dispatched from `skills/craft/workflow.js` with the
+prompt the run needs, so no agent file exists for them. Implementers are the exception: `/ds`,
+`/writing` and `/workshop` each set `implementerAgentType` to the matching agent above, and the
+teaching plugin sets it to its own `lecture-impl`. `/dev` and `/workflow-creator` deliberately leave
+it unset.
+
+## Why subagents
+
+Claude Code's system prompt tells the model what kind of work it is doing. Its `# Doing tasks`
+section opens with "The user will primarily request you to perform software engineering tasks", and
+instructs that an unclear instruction be read in that context. A separate `# Tone and style` section
+asks for short, concise responses and `file_path:line_number` references. Neither is wrong for code.
+Both are wrong for a law review article, a lecture, or a seminar deck, where the deliverable is long
+and the reader is a person rather than a terminal.
+
+An output style can remove the first of those and cannot remove the second. Setting a style drops
+`# Doing tasks` entirely unless the style's frontmatter sets `keep-coding-instructions: true`;
+`# Tone and style` is emitted unconditionally. So a custom style does not replace the framing — it
+competes with what survives, and the surviving half is precisely the half that shortens prose and
+formats references for an editor.
+
+A subagent replaces the prompt instead of arguing with it. A custom subagent's body *is* its entire
+system prompt: Anthropic's documentation says a subagent receives that prompt plus environment
+details, not the full Claude Code system prompt, and `claude --agent <name>` applies the same to a
+main session. Asking one confirms it — it reports neither the software-engineering sentence nor a
+`# Tone and style` section at all. That is the whole reason this plugin routes prose, decks,
+teaching material and empirical work through agents rather than tuning a style.
+
+The directory split follows from a second quirk. A `hooks:` block in agent frontmatter is ignored
+for plugin-shipped agents and honoured for user-scoped ones, so any agent that needs a blocking
+guard has to be user-scoped. `user-agents/` is not a discovery location, so a symlink into
+`~/.claude/agents/` registers each file user-scoped under its bare name with its hooks live, while
+`agents/` stays auto-discovered and plugin-scoped. It is one file either way, and the plugin still
+ships both.
+
+Judging is not writing, and the roster's shape follows from that. A review lens only reads, so the
+built-in `Explore` plus a good prompt and the right reference paths is sufficient and cheaper; an
+agent earns a file only when it needs a custom prompt, hooks, or preloaded skills. The three domain
+reviewers exist because they preload constraint sets too large to hand over in an instruction, and
+no exam reviewer exists because a prompt covers it. The same test explains the two workflows that
+set no implementer override: `/dev` and `/workflow-creator` produce code and workflow definitions,
+where the software-engineering framing is correct rather than a defect.
+
+The register skills — `writing-general`, `writing-legal`, `writing-econ`, `ds-constraints`,
+`workshop-constraints`, `ai-anti-patterns` — are `user-invocable: false` for the same reason.
+Loading a register into the main chat stacks it on top of the framing it is meant to displace;
+routing the work to an agent that preloads it replaces that prompt instead. They deliberately do not
+set `disable-model-invocation: true`, which would break both the `skills:` preload and the Skill
+tool path a persona session needs.
 
 ---
 
