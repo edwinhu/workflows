@@ -44,6 +44,12 @@ _X2T_OUTPUT_EXTS = {
     ".xlsx", ".ods", ".csv", ".pptx", ".odp",
 }
 
+# Sources the Word engines (local `word`, guest `word-remote`) open natively.
+# `.doc` belongs here: pre-converting it to .docx with soffice corrupts every
+# footnote (a literal `?` run beside the real footnoteRef) and shifts the page
+# count, so legacy binaries must reach Word unconverted.
+WORD_SRC_SUFFIXES = {".docx", ".doc"}
+
 _PARAMS_TEMPLATE = """<?xml version="1.0" encoding="utf-8"?>
 <TaskQueueDataConvert xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <m_sFileFrom>{src}</m_sFileFrom>
@@ -923,20 +929,29 @@ def find_word_remote() -> str | None:
 
 
 def _run_word_remote(script: str, src: Path, dst: Path, timeout: int) -> None:
-    """Render docx -> PDF through Word in the Windows guest.
+    """Render a Word-openable source -> PDF through Word in the Windows guest.
 
     The guest needs the Windows-compatible Latin Modern set installed
     (`word-render-install-fonts`) for any document using those fonts; without
     it Word silently substitutes Cambria/Calibri and still exits 0. See the
     nix module's README.
+
+    Legacy binary `.doc` goes STRAIGHT here, never through a soffice
+    `.doc -> .docx` hop first: that conversion rewrites each footnote as a real
+    `<w:footnoteRef/>` followed by a literal `<w:t>?</w:t>` run, so every
+    footnote renders with a stray superscript question mark and the page count
+    drifts. Word opens `.doc` natively and neither defect appears.
     """
-    if dst.suffix.lower() != ".pdf" or src.suffix.lower() != ".docx":
-        raise RuntimeError("word-remote renders .docx -> .pdf only")
+    if dst.suffix.lower() != ".pdf" or src.suffix.lower() not in WORD_SRC_SUFFIXES:
+        raise RuntimeError(
+            f"word-remote renders {'/'.join(sorted(WORD_SRC_SUFFIXES))} -> .pdf only")
     with tempfile.TemporaryDirectory(prefix="word-remote-") as td:
         # Stage under a stable basename: the transport derives the guest-side
         # job name from the input, and spaces/odd characters in a real
         # manuscript filename would have to survive ssh -> cmd -> powershell.
-        staged = Path(td) / "job.docx"
+        # The SUFFIX is preserved — Word dispatches on it, and a .doc staged as
+        # .docx makes Word bail with no PDF and no error.
+        staged = Path(td) / f"job{src.suffix.lower()}"
         shutil.copy2(src, staged)
         out = Path(td) / "job.pdf"
         proc = subprocess.run(
@@ -971,8 +986,9 @@ def _run_word_direct(src: Path, dst: Path, timeout: int,
     for `_run_word` to retry via a cmux pane. See docs/investigations/
     2026-06-22_word-render-cmux-dispatch.md.
     """
-    if dst.suffix.lower() != ".pdf" or src.suffix.lower() != ".docx":
-        raise RuntimeError("Word backend only renders docx -> PDF")
+    if dst.suffix.lower() != ".pdf" or src.suffix.lower() not in WORD_SRC_SUFFIXES:
+        raise RuntimeError(
+            f"Word backend only renders {'/'.join(sorted(WORD_SRC_SUFFIXES))} -> PDF")
     if not find_word():
         raise RuntimeError("Microsoft Word not installed")
     import uuid
@@ -1087,8 +1103,9 @@ def _run_word_via_cmux(src: Path, dst: Path, timeout: int,
     """
     import time
     import uuid
-    if dst.suffix.lower() != ".pdf" or src.suffix.lower() != ".docx":
-        raise RuntimeError("Word backend only renders docx -> PDF")
+    if dst.suffix.lower() != ".pdf" or src.suffix.lower() not in WORD_SRC_SUFFIXES:
+        raise RuntimeError(
+            f"Word backend only renders {'/'.join(sorted(WORD_SRC_SUFFIXES))} -> PDF")
     if not find_word():
         raise RuntimeError("Microsoft Word not installed")
     cli = _cmux_cli()
@@ -1322,9 +1339,13 @@ def convert(
     wremote = find_word_remote()
     is_docx_pdf = (dst.suffix.lower() == ".pdf"
                    and src.suffix.lower() == ".docx")
-    avail = {"word": bool(word and is_docx_pdf), "soffice": bool(sof),
+    # The Word engines also take legacy `.doc`; the x2t/soffice-specific
+    # branches below stay keyed on is_docx_pdf, which reads the OOXML zip.
+    is_word_pdf = (dst.suffix.lower() == ".pdf"
+                   and src.suffix.lower() in WORD_SRC_SUFFIXES)
+    avail = {"word": bool(word and is_word_pdf), "soffice": bool(sof),
              "x2t": bool(x2t),
-             "word-remote": bool(wremote and is_docx_pdf)}
+             "word-remote": bool(wremote and is_word_pdf)}
 
     # Primary engine choice.
     use = renderer

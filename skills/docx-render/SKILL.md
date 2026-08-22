@@ -29,11 +29,38 @@ the docs are pipeline-generated (x2t/soffice already grid-faithful there).
 
 **On Linux, `--renderer word` cannot work** — it drives `Word.app` through
 AppleEvents. Use **`--renderer word-remote`** instead: the same real Word engine
-in a QEMU Windows guest, driven over SSH. See "Word in a Windows guest" below.
+in a Windows guest, driven over SSH. See "Word in a Windows guest" below.
 
 **Always verify the engine actually used** via the PDF Producer before handing off
 (see table below) — `auto` can fall back, and `--renderer word` only *raises* if
 Word is truly unavailable.
+
+## A legacy `.doc` goes STRAIGHT to Word — never convert it first
+
+Both Word engines open `.doc` natively, and `WORD_SRC_SUFFIXES` admits it:
+
+```bash
+python3 scripts/doc_render.py IN.doc OUT.pdf --renderer word-remote
+```
+
+**Never `soffice --convert-to docx` a `.doc` and render the result.** That hop
+silently corrupts the document, and because the damage is in the intermediate it
+survives into a genuine Word render, so the Producer string still says Word and
+the output still looks authoritative. Measured on a 23-page expert report:
+
+- **every footnote gained a stray superscript `?`** — soffice writes the real
+  `<w:footnoteRef/>` and then a literal `<w:t>?</w:t>` run beside it, where the
+  legacy footnote mark used to be;
+- **the page count grew by one** (23 → 24), so pagination no longer matched what
+  the sender saw.
+
+Rendering the `.doc` itself reproduced the sender's 23 pages with clean footnote
+numbers. If a `?` opens every footnote, suspect the conversion, not the sender.
+
+**A wrong extension fails silently.** Word dispatches on the suffix, so a `.doc`
+staged under a `.docx` name makes it bail: the guest's scheduled task completes,
+writes no PDF, and the only symptom is `guest render did not complete`. The
+transport carries the real suffix through — keep it that way.
 
 ## Entry point
 
