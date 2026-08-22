@@ -841,6 +841,95 @@ def _em_dash_hits(text: str) -> list[dict]:
     return hits
 
 
+# ── hard-wrapped paragraphs ──────────────────────────────────────────────────
+# WHO READS THE TEXT, NOT WHAT THE EXTENSION IS. A soft-wrapping reader (an email body, an Obsidian
+# note, a web form, a chat message) reflows to its own pane, so a manual break at column 80 lands
+# mid-sentence at whatever width the reader happens to use, and a one-word edit forces a re-wrap of
+# the whole paragraph. A fixed-width reader (a commit message, a code comment, a SKILL.md, a `.typ`
+# or `.tex` source) is read AS SOURCE at a known width, where wrapping is correct — so this rule is
+# SKIPPED for those files entirely. The register files that carry this rule are themselves wrapped
+# at ~100 columns and correctly so; a rule that fires on them would train the reader to ignore it.
+#
+# NOT A DICTION TIER. `always_flag` / `cluster` / `density` are rate tiers over diction.yaml's
+# word list, and this is not a word signal at all — it is a line-shape signal, so it lives beside
+# the other structural rules (em-dash density, emphasis) and carries no tier.
+#
+# SEVERITY IS `soft`, DELIBERATELY. `hard` in this script means "no false positives, indefensible
+# in a shipped draft" and is reserved for the corpus-gated classes. This is a formatting tell whose
+# correctness depends on a destination the script cannot see: a `.md` file may be a mail body or a
+# design doc read in a terminal. Advisory is the honest severity, and only `hard` may block a gate.
+_HARD_WRAP_MIN_COL = 68
+_HARD_WRAP_MAX_COL = 100
+_HARD_WRAP_RUN = 3
+# A line ending a sentence or clause is a deliberate break, not a wrap point. Trailing quotes and
+# closers count either way: `…the rule."` and `…(see below)` both end something.
+_WRAP_TERMINAL = re.compile(r"""[.!?:;][)\]}"'’”»]*$|["'’”)\]}»]$""")
+# Not running prose: a list item, a table row, a heading or setext rule, an image, a link-reference
+# definition, or raw HTML. A WRAPPED LIST ITEM IS A DIFFERENT THING and is excluded on purpose,
+# together with every indented line (checked separately, since indentation marks a continuation).
+_WRAP_NOT_PROSE = re.compile(r"""^(?:[-*+]\s|\d+[.)]\s|\||#|=|!\[|\[[^\]]*\]:|<)""")
+_FIXED_WIDTH_SUFFIXES = {".typ", ".tex", ".latex"}
+_FIXED_WIDTH_NAMES = {"skill.md", "claude.md", "agents.md", "readme.md",
+                      "contributing.md", "changelog.md"}
+# Skill/agent bodies wrap correctly and are read as source. Detected by the frontmatter SHAPE
+# rather than by any `---` block, so an Obsidian note's `tags:`/`aliases:` frontmatter does not
+# buy an exemption the note has not earned.
+_SOURCE_FRONTMATTER = re.compile(r"\A---\s*\n(.*?\n)---\s*$", re.DOTALL | re.MULTILINE)
+_SOURCE_FM_KEYS = re.compile(
+    r"^\s*(?:name|tools|allowed-tools|user-invocable|model|disable-model-invocation):",
+    re.MULTILINE)
+
+
+def is_fixed_width_source(path: Path, text: str) -> bool:
+    """True when the file is read AS SOURCE at a fixed width, so wrapping it is correct."""
+    if path.suffix.lower() in _FIXED_WIDTH_SUFFIXES:
+        return True
+    if path.name.lower() in _FIXED_WIDTH_NAMES:
+        return True
+    fm = _SOURCE_FRONTMATTER.match(text)
+    return bool(fm and re.search(r"^\s*description:", fm.group(1), re.MULTILINE)
+                and _SOURCE_FM_KEYS.search(fm.group(1)))
+
+
+def _hard_wrap_hits(text: str) -> list[dict]:
+    """Runs of >=3 consecutive prose lines that each end in the wrap band without terminal
+    punctuation — the shape a hard-wrapped paragraph makes and one-paragraph-per-line never does.
+
+    Runs over `_prose_only`, so fenced code, YAML frontmatter, blockquotes, footnote definitions
+    and HTML comments are already blank — and a blank line ends a run, which is what keeps a code
+    fence or a table from being read as one long paragraph.
+    """
+    hits: list[dict] = []
+    run: list[tuple[int, str]] = []
+
+    def flush() -> None:
+        if len(run) >= _HARD_WRAP_RUN:
+            cols = [len(t) for _, t in run]
+            hits.append({
+                "line": run[0][0],
+                "label": f"formatting·hard-wrap: {len(run)} consecutive lines end at columns "
+                         f"{min(cols)}–{max(cols)} without terminal punctuation — the paragraph is "
+                         f"hard-wrapped. A soft-wrapping reader (email body, Obsidian note, web "
+                         f"form, chat) reflows to its own pane, so these breaks land mid-sentence "
+                         f"at the reader's width and a one-word edit re-wraps the whole paragraph. "
+                         f"One paragraph, one line.",
+                "quote": run[0][1][:120],
+            })
+        run.clear()
+
+    for i, line in enumerate(_prose_only(text).split("\n"), 1):
+        stripped = line.rstrip()
+        if (stripped and not line[:1].isspace()
+                and _HARD_WRAP_MIN_COL <= len(stripped) <= _HARD_WRAP_MAX_COL
+                and not _WRAP_NOT_PROSE.match(stripped)
+                and not _WRAP_TERMINAL.search(stripped)):
+            run.append((i, stripped))
+        else:
+            flush()
+    flush()
+    return hits
+
+
 # ── the audit ────────────────────────────────────────────────────────────────
 def _collapse(raw: list[dict]) -> list[dict]:
     """Collapse overlapping hits into one span per (line, overlapping column range).
@@ -984,6 +1073,11 @@ def audit_document(path: Path, style: str | None = None, mask: bool = True,
     if masked_text is not None:
         for hit in _em_dash_hits(masked_text):
             add(hit["line"], 0, 0, "em-dash", hit["label"], SOFT, hit["quote"], hit["quote"])
+
+    # --- hard-wrapped paragraphs (soft-wrapping readers only; see is_fixed_width_source) ---
+    if masked_text is not None and not is_fixed_width_source(path, masked_text):
+        for hit in _hard_wrap_hits(masked_text):
+            add(hit["line"], 0, 0, "formatting", hit["label"], SOFT, hit["quote"], hit["quote"])
 
     # --- emphasis (bold/italic markup) and emojis; text formats only ---
     for hit in _emphasis_hits(emphasis_spans, words):

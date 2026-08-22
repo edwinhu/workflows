@@ -176,6 +176,17 @@ out of them, and do not "fix" them in someone else's draft.
 - **No emojis.** Ever, in a draft. (A slide deck is not a draft.)
 - **No ALL-CAPS for emphasis** on ordinary words (`is NOT a separate cut`). Acronyms and table
   headers are fine.
+- **Do not hard-wrap prose for a soft-wrapping reader.** The test is who reads the text, not the
+  file extension.
+  - **Soft-wrapping reader** — an email body, an Obsidian note, a web form, a chat message,
+    anything *rendered* rather than read as source: **one paragraph, one line**, no manual breaks
+    at any column. Those readers reflow to the pane, so breaks at 80 (or any) columns land
+    mid-sentence at whatever width the reader uses, and a one-word edit turns into a re-wrap of
+    the whole paragraph. Let the editor wrap it.
+  - **Fixed-width reader** — a commit message (72 columns by convention), a code comment, a
+    `SKILL.md`, a `.typ` or `.tex` source file: wrapping is correct. Keep it. This file is wrapped
+    at ~100 columns for exactly that reason, and `prose-audit.py` exempts such sources by name,
+    suffix and frontmatter shape rather than flagging its own register.
 
 ## Before you call a draft done
 

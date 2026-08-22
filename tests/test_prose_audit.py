@@ -462,6 +462,96 @@ def test_docx_emphasis_is_deferred_not_silently_wrong(tmp_path):
     assert masked is None and spans == [] and lines
 
 
+# ── hard-wrapped paragraphs: the rule turns on the READER, not the extension ──
+# THE OBSERVED PROBLEM. Prose in the owner's Obsidian notes and emails was arriving wrapped at ~80
+# columns, because nearly every file an agent reads — SKILL.md, agent bodies, code comments — is
+# wrapped, so wrapped text is what prose looks like to it. Both readers soft-wrap, so the breaks
+# land mid-sentence at the reader's width and a one-word edit re-wraps the paragraph.
+_WRAPPED_EMAIL = (
+    "Thanks for sending the revised term sheet over the weekend. I read it on the plane and I\n"
+    "think the economics are close to where we left them in June, but the indemnity cap still\n"
+    "reads as though it survives the escrow release, which was not what we agreed to on the\n"
+    "call. I have marked the two clauses that matter and left the rest alone.\n"
+)
+
+
+def _wrap_spans(res: dict) -> list[dict]:
+    return [s for s in res["spans"] if any("hard-wrap" in lab for lab in s["labels"])]
+
+
+def test_hard_wrapped_paragraph_is_flagged(tmp_path):
+    draft = tmp_path / "reply.md"
+    draft.write_text(_WRAPPED_EMAIL)
+    spans = _wrap_spans(PA.audit_document(draft))
+    assert len(spans) == 1, spans
+    assert spans[0]["severity"] == "soft"          # a formatting tell, not a corpus-gated class
+    assert spans[0]["line"] == 1
+
+
+def test_one_line_paragraphs_are_silent(tmp_path):
+    """The shape a hard wrap makes is one prose written one-paragraph-per-line never makes."""
+    draft = tmp_path / "reply.md"
+    draft.write_text(_WRAPPED_EMAIL.replace("\n", " ").strip() + "\n\n"
+                     + "Let me know whether Sarah can join Thursday. If she cannot, I would rather "
+                       "push the whole conversation to the following week than run it without her, "
+                       "because she owns the escrow mechanics.\n")
+    assert _wrap_spans(PA.audit_document(draft)) == []
+
+
+def test_a_wrapped_bulleted_list_is_not_a_wrapped_paragraph(tmp_path):
+    """A wrapped list item is a different thing — its continuation lines are indented, and the
+    marker line is not running prose. Flagging these would fire on every well-formed list."""
+    draft = tmp_path / "list.md"
+    draft.write_text(
+        "- Thanks for sending the revised term sheet over the weekend, which I read on\n"
+        "  the plane and thought was close to where we left it in June before the call\n"
+        "- The indemnity cap still reads as though it survives the escrow release, and\n"
+        "  that was not what the parties agreed to on the call last Thursday afternoon\n"
+        "- I have marked the two clauses that matter here and have left the rest alone\n"
+    )
+    assert _wrap_spans(PA.audit_document(draft)) == []
+
+
+def test_a_fenced_code_block_is_not_a_wrapped_paragraph(tmp_path):
+    draft = tmp_path / "fence.md"
+    draft.write_text(
+        "Here is the command.\n\n"
+        "```\n"
+        "uv run --with lxml --with pyyaml python3 scripts/prose-audit.py --json --style\n"
+        "  general drafts/reply.md | jq '.spans[] | select(.severity == \"hard\") | .id'\n"
+        "cat scripts/prose-audit.py | rg 'formatting.hard-wrap' --line-number --color\n"
+        "```\n"
+    )
+    assert _wrap_spans(PA.audit_document(draft)) == []
+
+
+def test_wrapped_source_files_are_exempt_and_the_exemption_is_load_bearing():
+    """NON-VACUITY. `skills/writing-general/SKILL.md` is legitimately wrapped at ~100 columns and
+    MUST NOT be flagged when audited as source — a rule that fires on the register's own files is
+    worse than no rule. This pins that the exemption is what suppresses it, not the shape test:
+    the raw shape scanner finds runs in that file, and the audit still reports none."""
+    skill = REPO_ROOT / "skills" / "writing-general" / "SKILL.md"
+    text = skill.read_text(encoding="utf-8")
+    assert PA.is_fixed_width_source(skill, text)
+    assert PA._hard_wrap_hits(text), "shape scanner must find the wrap runs it is being spared for"
+    assert _wrap_spans(PA.audit_document(skill)) == []
+
+
+@pytest.mark.parametrize("name", ["draft.typ", "draft.tex", "SKILL.md", "CLAUDE.md"])
+def test_fixed_width_readers_are_exempt_by_name_and_suffix(tmp_path, name):
+    draft = tmp_path / name
+    draft.write_text(_WRAPPED_EMAIL)
+    assert _wrap_spans(PA.audit_document(draft)) == []
+
+
+def test_obsidian_frontmatter_does_not_buy_an_exemption(tmp_path):
+    """A note's `tags:`/`aliases:` frontmatter is not skill/agent frontmatter, and an Obsidian
+    note is exactly the soft-wrapping reader this rule exists for."""
+    draft = tmp_path / "note.md"
+    draft.write_text("---\ntags: [deals]\naliases: [term sheet]\n---\n\n" + _WRAPPED_EMAIL)
+    assert _wrap_spans(PA.audit_document(draft))
+
+
 # ── emojis: the one hard rule here ───────────────────────────────────────────
 def test_emoji_in_prose_is_hard(tmp_path):
     draft = tmp_path / "emoji.md"
