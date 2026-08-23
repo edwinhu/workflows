@@ -1,0 +1,8 @@
+[
+  {
+    "name": "farm-runs",
+    "command": "\"${CLAUDE_PLUGIN_ROOT}\"/skills/farm-out/scripts/farm-monitor.sh",
+    "description": "farm-out runs: milestones, and a farm that dies without a verdict",
+    "when": "on-skill-invoke:farm-out"
+  }
+]

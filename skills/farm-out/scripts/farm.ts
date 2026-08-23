@@ -2,8 +2,8 @@
 // SDK runner: delegate to a CLIProxyAPI wrapper in a separate process.
 // The wrapper's --settings-json both starts the proxy and yields the env block.
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, rmSync, statSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync } from "node:fs";
+import { dirname, isAbsolute, join, resolve } from "node:path";
 
 const WRAPPERS: Record<string, string> = {
   claude: "claude-code",
@@ -137,15 +137,43 @@ function expectsOf(t: Task): string[] {
 }
 
 // Rule 1: the model's own summary is not evidence. Check the artifact.
+//
+// Resolved against `cwd` — the directory the AGENT worked in — not this process's.
+// They are routinely different (`farm.ts` is launched from wherever the caller sat,
+// with `--cwd` pointing elsewhere), and a bare existsSync then checks a path that
+// never existed and reports every artifact missing however well the task went.
 function verify(paths: string[]): { ok: boolean; missing: string[] } {
-  const missing = paths.filter((p) => !existsSync(p) || statSync(p).size === 0);
+  const missing = paths.filter((p) => {
+    const abs = isAbsolute(p) ? p : resolve(cwd, p);
+    return !existsSync(abs) || statSync(abs).size === 0;
+  });
   return { ok: missing.length === 0, missing };
+}
+
+// One line per milestone on STDERR, so a caller watching the log sees progress,
+// AND appended to a conventional per-pid file the plugin monitor tails. stdout
+// stays pure JSON.
+//
+// TMPDIR, not the repo: session-scoped, high-frequency, nobody's working tree.
+const EVENT_DIR = join(process.env.TMPDIR ?? "/tmp", "farm-events");
+const EVENT_FILE = join(EVENT_DIR, `${process.pid}.ndjson`);
+function event(line: string): void {
+  const out = `farm: ${line}\n`;
+  process.stderr.write(out);
+  try {
+    mkdirSync(EVENT_DIR, { recursive: true });
+    appendFileSync(EVENT_FILE, out);
+  } catch {
+    // Observability must never take the run down.
+  }
 }
 
 async function run(task: Task, model?: string) {
   let text = "";
   const models = new Set<string>();
   let toolCalls = 0;
+  const label = task.label ?? "task";
+  event(`START ${label} cwd=${cwd} expect=${expectsOf(task).length}`);
   for await (const message of query({
     prompt: task.prompt + ANTI_SIM,
     options: {
@@ -159,13 +187,22 @@ async function run(task: Task, model?: string) {
     if (m.type === "assistant") {
       if (m.message?.model) models.add(m.message.model);
       for (const b of m.message?.content ?? []) {
-        if (b.type === "tool_use") toolCalls++;
+        if (b.type === "tool_use") {
+          toolCalls++;
+          // Sparse on purpose: enough to tell working from wedged, not a firehose.
+          if (toolCalls % 10 === 0) event(`PROGRESS ${label} toolCalls=${toolCalls}`);
+        }
         if (b.type === "text") text = b.text;
       }
     }
     if ("result" in m) text = m.result ?? text;
   }
   const v = verify(expectsOf(task));
+  event(
+    v.ok
+      ? `DONE ${label} ok toolCalls=${toolCalls}`
+      : `DONE ${label} UNVERIFIED toolCalls=${toolCalls} missing=${v.missing.join(",")}`
+  );
   return {
     label: task.label ?? "task",
     ok: v.ok,
