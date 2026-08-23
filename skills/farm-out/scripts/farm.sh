@@ -115,6 +115,26 @@ run_one() {
   log=$(mktemp -t farm-out.XXXXXX.jsonl)
   err=$(mktemp -t farm-out.XXXXXX.err)
 
+  # An expect path the child cannot see is a path it cannot write to. verify() then
+  # reports the artifact missing for work that actually succeeded, and the deliverable is
+  # left wherever the child guessed. Measured 2026-08-23: 5 dispatches, 4 reported missing,
+  # all four from this; the one that landed was the one whose prompt had the literal path
+  # pasted in by hand. So state the contract to the child, do not only check it afterwards.
+  #
+  # Filter empties first: the caller passes "${e[@]:-}", so an absent expect arrives as one
+  # empty string rather than an empty array (same reason the missing[] fixup below exists).
+  local -a real_expects=()
+  local _e
+  for _e in "${expects[@]:-}"; do [ -n "$_e" ] && real_expects+=("$_e"); done
+  if [ "${#real_expects[@]}" -gt 0 ]; then
+    prompt+="
+
+Write your deliverable to EXACTLY this path, literally as written, creating parent directories if needed. Do not choose a different location, and do not add a suffix, timestamp or extension:"
+    for _e in "${real_expects[@]}"; do prompt+="
+  ${_e}"
+    done
+  fi
+
   local -a cmd=("$WRAPPER" -p "${prompt}${ANTI_SIM}" --output-format stream-json --verbose)
   [ -n "$agent" ] && cmd+=(--agent "$agent")
   # Keep stderr: a provider that dies (proxy down, model rejected, auth stale) writes
