@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- **Human review left the goal spine.** `compose-goal.sh` put the review gate in clause one of EVERY goal, so a Stop hook only a human verdict, a round counter or the clock could clear existed the moment any run was dispatched — before anyone had seen the diff. A goal states what a session can close BY WORKING, and a human verdict is not that: it makes the run stoppable only by a person, who may have walked away. Measured 2026-08-22: a ~94-line provider bugfix, fully tested and reversible by one nix generation rollback, sat behind that clause for ~18 hours while the mail outage it repaired stayed live. A writing goal now closes on craft's own verdict — `craft-result.sh` exiting 0 or 1, never 2, so a gate that could not be adjudicated does not close it either — and a `readOnly` goal on `workflow.js`'s. Both machine escapes are unchanged.
+- **Review moved to the skill's Phase 5, after the goal clears**, with the two rules the episode actually taught: deliver first, because a PASS means the suite is green and not that the real claim holds; and never block delivery on the TUI. Work that cannot be undone — a one-way migration, a deletion — is still worth reviewing before shipping, but that is now a judgement the orchestrator makes out loud with the user, not a gate imposed on every run.
+- **The goal's wall-clock ceiling is denominated in minutes, default 10** (`CRAFT_GOAL_MAX_MINUTES`; `CRAFT_GOAL_MAX_HOURS` still honoured and converted). It bounds how long a session may WAIT, not how long it may work — the Stop hook gates stopping, never working — and an hours-scale default bought nothing but hours spent sitting on an absent human.
+
 ## [6.6.1] - 2026-08-20
 
 ### Changed

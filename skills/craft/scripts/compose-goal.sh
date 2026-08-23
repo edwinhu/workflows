@@ -3,6 +3,13 @@
 #
 #   compose-goal.sh <plan.md> <run-dir> <max-rounds> <readOnly:0|1>
 #
+# HUMAN REVIEW IS NOT IN HERE. A goal is what a session can close BY WORKING, and a human verdict
+# is not something it can work toward — so a human clause makes every run stoppable only by a person
+# who may have walked away. Measured 2026-08-22: a tested, reversible bugfix sat behind that clause
+# for ~18 hours while the outage it repaired stayed live. Review is real and still happens; it lives
+# in the skill's Phase 5, AFTER the goal clears, where it is a step the session performs rather than
+# a condition it waits on.
+#
 # Two things this deliberately does NOT say, each measured on an episode that could not close its
 # own goal:
 #
@@ -35,17 +42,25 @@ case "$READONLY" in 0|1) ;; *) die "readOnly must be 0 or 1, got: $READONLY" ;; 
 
 # The wall-clock ceiling the goal may not outlive. Overridable, never absent: a goal with no time
 # bound is one an unattended session cannot close by working.
-MAX_HOURS="${CRAFT_GOAL_MAX_HOURS:-8}"
-case "$MAX_HOURS" in
-  ''|*[!0-9]*) die "CRAFT_GOAL_MAX_HOURS must be a whole number of hours, got: $MAX_HOURS" ;;
+# Minutes, not hours: the ceiling bounds how long a session may WAIT on the human half, and a
+# session with work left keeps working regardless — the Stop hook gates stopping, not working.
+_hours_as_min="${CRAFT_GOAL_MAX_HOURS:+$(( CRAFT_GOAL_MAX_HOURS * 60 ))}"
+MAX_MINUTES="${CRAFT_GOAL_MAX_MINUTES:-${_hours_as_min:-10}}"
+case "$MAX_MINUTES" in
+  ''|*[!0-9]*) die "CRAFT_GOAL_MAX_MINUTES must be a whole number of minutes, got: $MAX_MINUTES" ;;
 esac
 SKILL_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 
-# An audit produces a diagnosis, not a pass: its gate legitimately FAILs and that is the outcome.
+# The two machine escapes, identical in every regime.
+ESCAPES=$(printf 'the rounds field in %s/args.json reads %s or more — `jq -r .rounds` it to check — or the run has been going %s minutes or more, which `bash %s/scripts/craft-elapsed.sh %s` prints and settles' \
+    "$RUN_DIR" "$ROUNDS" "$MAX_MINUTES" "$SKILL_DIR" "$RUN_DIR")
+
 if [ "$READONLY" = 1 ]; then
-    printf '/goal workflow.js has returned a verdict for %s and the craft human review gate has returned approved or rejected, or the rounds field in %s/args.json reads %s or more — `jq -r .rounds` it to check — or the run has been going %s hours or more, which `bash %s/scripts/craft-elapsed.sh %s` prints and settles\n' \
-        "$PLAN" "$RUN_DIR" "$ROUNDS" "$MAX_HOURS" "$SKILL_DIR" "$RUN_DIR"
+    # An audit produces a diagnosis, not a pass: its gate legitimately FAILs and that is the outcome.
+    printf '/goal workflow.js has returned a verdict for %s, or %s\n' "$PLAN" "$ESCAPES"
 else
-    printf '/goal the craft human review gate has returned approved or rejected for %s, or the rounds field in %s/args.json reads %s or more — `jq -r .rounds` it to check — or the run has been going %s hours or more, which `bash %s/scripts/craft-elapsed.sh %s` prints and settles\n' \
-        "$PLAN" "$RUN_DIR" "$ROUNDS" "$MAX_HOURS" "$SKILL_DIR" "$RUN_DIR"
+    # The run has produced a verdict craft-result.sh can read. That is the terminal MACHINE event;
+    # what to do about it — including opening review — is Phase 5's business, not the goal's.
+    printf '/goal craft has returned a verdict for %s — `bash %s/scripts/craft-result.sh %s/result.json` exits 0 or 1 rather than 2 — or %s\n' \
+        "$PLAN" "$SKILL_DIR" "$RUN_DIR" "$ESCAPES"
 fi

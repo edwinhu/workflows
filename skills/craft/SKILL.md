@@ -1,6 +1,6 @@
 ---
 name: craft
-description: Structured task loop with human review. Use when the user says "craft this", "run a craft loop", "do this properly", "clarify plan and verify this", "structured task with human review", "/craft", or wants a substantial change taken through clarification, an approved plan, delegated implementation with independent verification, and a tuicr human-review loop.
+description: "Use when the user says \"craft this\", \"run a craft loop\", \"do this properly\", \"take this through clarify plan and verify\", \"run it through the gate\", \"/craft\", or hands over a substantial change that has no domain workflow of its own and should be planned, approved and independently verified before it lands. NEGATIVE ROUTING: a code change or bug fix is /dev; a dataset, table, figure or number is /ds; long-form prose is /writing; a talk built from a research paper is /workshop; lecture notes or course slides are teaching:notes and teaching:slides; a skill, workflow or plugin in this repo is skill-creator, workflow-creator or plugin-creator. Each of those is this loop plus a domain gate, and craft is only the fallback when none of them fits."
 argument-hint: 'the task to run through the loop'
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
 ---
@@ -645,6 +645,21 @@ found, but they are the audit's report, not a work queue — fixing what they na
 **writing** run, with its own plan, its own hash, and its own gate. Route both verdicts to Phase 5.
 
 ## Phase 5 — HUMAN REVIEW
+
+**Phase 5 runs AFTER the goal clears, and is no part of it.** The goal's terminal clause is craft's
+own verdict; a human verdict is not something a session can work toward, so putting one in the goal
+makes every run stoppable only by a person who may have walked away — measured 2026-08-22, a tested
+and reversible bugfix sat behind that clause for ~18 hours while the outage it repaired stayed live.
+
+Two consequences, and they are the whole of the change:
+
+- **Deliver first.** A craft PASS means the suite is green, which is not the same as done. Where the
+  run has a real-world claim — the account ingests mail again, the endpoint answers — establish THAT
+  before opening review, so the reviewer sees something whose central assertion already holds.
+- **Never block delivery on the TUI.** Open review on work that is delivered, or offer it and move
+  on. The one case that still argues for reviewing before you ship is work that cannot be undone —
+  a one-way migration, a deletion — where there is no rollback to fall back on. That is a judgement
+  the orchestrator makes out loud with the user, not a gate this file imposes on every run.
 
 ```bash
 # 30-minute timeout; NEVER run_in_background; NEVER relaunch on timeout (the TUI is still open)

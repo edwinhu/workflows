@@ -28,7 +28,17 @@ const SCRIPT = `${import.meta.dir}/compose-goal.sh`
 const scratch: string[] = []
 afterAll(() => scratch.forEach(d => rmSync(d, { recursive: true, force: true })))
 
-function compose(args: { plan?: string; runDir?: string; rounds?: string; readOnly?: boolean } = {}) {
+function compose(
+  args: {
+    plan?: string
+    runDir?: string
+    rounds?: string
+    readOnly?: boolean
+    reversal?: string
+    delivery?: string
+    env?: Record<string, string>
+  } = {}
+) {
   const dir = mkdtempSync(join(tmpdir(), 'compose-goal-'))
   scratch.push(dir)
   const argv = [
@@ -37,9 +47,19 @@ function compose(args: { plan?: string; runDir?: string; rounds?: string; readOn
     args.runDir ?? join(dir, 'run'),
     args.rounds ?? '9',
     args.readOnly ? '1' : '0',
+    ...(args.extra ?? []),
   ]
+  // Positional and optional: a caller that declares neither field gets the pre-existing 4-arg form.
+  if (args.reversal !== undefined || args.delivery !== undefined)
+    argv.push(args.reversal ?? '', args.delivery ?? '')
   try {
-    return { code: 0, out: execFileSync('bash', argv, { encoding: 'utf8' }).trim() }
+    return {
+      code: 0,
+      out: execFileSync('bash', argv, {
+        encoding: 'utf8',
+        env: { ...process.env, ...(args.env ?? {}) },
+      }).trim(),
+    }
   } catch (e: any) {
     return { code: e.status ?? -1, out: (e.stdout ?? '') + (e.stderr ?? '') }
   }
@@ -69,7 +89,9 @@ describe('compose-goal.sh', () => {
   test('a writing run does not name "workflow.js has returned PASS" — unsatisfiable after success', () => {
     const out = compose({ readOnly: false }).out
     expect(out).not.toContain('returned PASS')
-    expect(out).toMatch(/review gate|human review/i)
+    // It names craft's own verdict. It used to name the human review gate; that clause moved to
+    // the skill's Phase 5, because a goal must state what a session can close by working.
+    expect(out).toMatch(/craft has returned a verdict/)
   })
 
   test('a readOnly run names a verdict rather than a pass', () => {
@@ -95,11 +117,18 @@ describe('compose-goal.sh', () => {
 describe('the goal carries a wall-clock escape, not only a round count', () => {
   // Measured 2026-08-19 (mail-bridge): rounds ran 3h+, so `rounds >= 4` put the guaranteed stop
   // twelve hours out. The session worked all night and could not close its own goal.
-  test('the emitted goal names craft-elapsed.sh and an hours ceiling', () => {
+  test('the emitted goal names craft-elapsed.sh and a minutes ceiling', () => {
     const r = compose({ rounds: '4' })
     expect(r.code).toBe(0)
     expect(r.out).toMatch(/craft-elapsed\.sh/)
-    expect(r.out).toMatch(/8 hours or more/)
+    expect(r.out).toMatch(/10 minutes or more/)
+  })
+
+  // The ceiling bounds WAITING. A session with work left keeps working whatever it says, so a
+  // short default costs nothing and buys back the hours a run used to spend on an absent human.
+  test('CRAFT_GOAL_MAX_HOURS still settles a goal composed before the switch', () => {
+    expect(compose({ rounds: '4', env: { CRAFT_GOAL_MAX_HOURS: '2' } }).out)
+      .toMatch(/120 minutes or more/)
   })
 
   test('a readOnly goal carries it too', () => {
@@ -109,5 +138,46 @@ describe('the goal carries a wall-clock escape, not only a round count', () => {
   test('the rounds escape survives alongside it', () => {
     const out = compose({ rounds: '4' }).out
     expect(out).toMatch(/reads 4 or more/)
+  })
+})
+
+/**
+ * HUMAN REVIEW IS NOT A GOAL CLAUSE.
+ *
+ * A goal states what a session can close BY WORKING. A human verdict is not that: it makes the run
+ * stoppable only by a person, who may have walked away. Measured 2026-08-22 — a tested, reversible
+ * bugfix sat behind that clause for ~18 hours while the mail outage it repaired stayed live, and the
+ * clause had been emitted at dispatch, before anyone had seen the diff.
+ *
+ * Review still happens. It moved to the skill's Phase 5, after the goal clears.
+ */
+describe('the goal closes on a machine verdict, never on a human', () => {
+  test('no composed goal mentions human review', () => {
+    expect(compose({ rounds: '4' }).out).not.toMatch(/human review/i)
+    expect(compose({ readOnly: true }).out).not.toMatch(/human review/i)
+  })
+
+  test('a writing run closes on craft-result.sh exiting 0 or 1 rather than 2', () => {
+    const out = compose({ rounds: '4' }).out
+    expect(out).toMatch(/craft has returned a verdict/)
+    expect(out).toMatch(/craft-result\.sh/)
+    // 2 is REFUSED — a gate that could not be adjudicated is not a verdict.
+    expect(out).toMatch(/exits 0 or 1 rather than 2/)
+  })
+
+  test('a readOnly run still closes on its own verdict', () => {
+    expect(compose({ readOnly: true }).out).toMatch(/workflow\.js has returned a verdict/)
+  })
+
+  test('both machine escapes survive in either mode', () => {
+    for (const out of [compose({ rounds: '4' }).out, compose({ rounds: '4', readOnly: true }).out]) {
+      expect(out).toMatch(/reads 4 or more/)
+      expect(out).toMatch(/craft-elapsed\.sh/)
+    }
+  })
+
+  test('the extra positional args the reversibility experiment added are gone', () => {
+    const r = compose({ rounds: '4', extra: ['some-reversal', 'some-check'] })
+    expect(r.code).not.toBe(0)
   })
 })
