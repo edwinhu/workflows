@@ -13,6 +13,7 @@ model: sonnet
 color: yellow
 tools: Read, Grep, Glob
 skills:
+  - typst:typst
   - workshop-constraints
 ---
 

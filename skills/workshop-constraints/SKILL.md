@@ -10,10 +10,12 @@ Fifteen modules in one file, because a deck doer needs all fifteen at once and n
 is discretionary: a task prompt that lists fifteen paths is a suggestion, and a skipped read fails
 silently. Preloaded, every module below arrives before the first turn.
 
-Each module is reproduced verbatim from
-`${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/constraints/`, where it also lives beside the
-`.py` checker `run-constraints.py` runs. The files remain the authority for the checker; this file
-is the authority for what you write.
+The canonical rules live in the **typst plugin**, not here. Preload `typst:typst` for the index of
+every rule with its absolute path, or read them directly under
+`~/.claude/skills/typst/references/constraints/`, beside the `.py` checkers
+`~/.claude/skills/typst/references/checkers/workshop/run-constraints.py` runs. Those files are the
+authority; each module below is reproduced verbatim from them so a preloaded doer has all fifteen
+in one read.
 
 
 ---

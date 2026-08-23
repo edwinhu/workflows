@@ -354,8 +354,16 @@ function agentFiles(dir: string): string[] {
  */
 function danglingPreloads(pluginRoot: string): DanglingPreload[] {
   const skillsDir = join(pluginRoot, "skills");
-  const resolves = (skill: string) =>
-    isDir(join(skillsDir, skill)) && existsSync(join(skillsDir, skill, "SKILL.md"));
+  // A `plugin:skill` preload names ANOTHER plugin's skill, which lives under that plugin's own
+  // skills/ dir. Resolving it against this plugin's skills/ reported a working cross-plugin
+  // preload as dangling and nagged every session about a link that was fine.
+  const resolves = (skill: string) => {
+    const [a, b] = skill.split(":");
+    const dir = b
+      ? join(homedir(), ".claude", "skills", a, "skills", b)
+      : join(skillsDir, skill);
+    return isDir(dir) && existsSync(join(dir, "SKILL.md"));
+  };
 
   const out: DanglingPreload[] = [];
   for (const sub of ["agents", "user-agents"]) {

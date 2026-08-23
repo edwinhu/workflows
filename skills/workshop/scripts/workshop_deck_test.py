@@ -317,7 +317,15 @@ class Report(dict):
 
 def probe(root: Path, *, runner: Path = RUNNER, env: dict | None = None,
           args: tuple[str, ...] = ()) -> Report:
-    """Run the probe as the gate runs it and parse the emitted check lines."""
+    """Run the probe as the gate runs it and parse the emitted check lines.
+
+    A scratch skill copy gets its own scratch constraint corpus: the real one belongs to the
+    typst plugin and no test may stub or delete it.
+    """
+    if runner != RUNNER:
+        env = dict(os.environ if env is None else env)
+        env["WORKSHOP_CONSTRAINT_RUNNER"] = str(
+            runner.parent.parent / "constraints" / "run-constraints.py")
     proc = subprocess.run(
         [sys.executable, str(runner), "--plan", str(root / "plan.md"),
          "--project-dir", str(root), *args],
@@ -350,13 +358,26 @@ def replace_section(text: str, heading: str, new_body: str) -> str:
 
 
 def scratch_skill(tmp_path: Path) -> Path:
-    """A writable copy of the skill, so a vendored part can be removed or stubbed."""
+    """A writable copy of the skill, so a part it reaches for can be removed or stubbed.
+
+    The constraint corpus lives in the typst plugin, not in this skill, so it is copied in
+    beside the scratch skill as `constraints/` and reached through
+    `WORKSHOP_CONSTRAINT_RUNNER` (see `probe`).
+    """
     dest = tmp_path / "skill"
     shutil.copytree(
         SKILL_ROOT, dest,
         ignore=shutil.ignore_patterns("fixtures", "__pycache__", "*.pyc", ".pytest_cache"),
     )
+    shutil.copytree(
+        CONSTRAINT_RUNNER.parent, dest / "constraints",
+        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+    )
     return dest
+
+
+def scratch_constraint_runner(skill: Path) -> Path:
+    return skill / "constraints" / "run-constraints.py"
 
 
 def scratch_runner(tmp_path: Path) -> Path:
@@ -414,7 +435,7 @@ def env_with_nonpdf_typst(tmp_path: Path) -> dict:
 
 def stub_constraint_runner(skill: Path, report: dict, *, exit_code: int = 1) -> None:
     """Replace the vendored constraint runner with one replaying a fixed JSON report."""
-    runner = skill / "references" / "constraints" / "run-constraints.py"
+    runner = scratch_constraint_runner(skill)
     runner.write_text(
         "import json, sys\n"
         f"print(json.dumps({report!r}))\n"
@@ -607,7 +628,7 @@ def test_con_fails_when_a_failed_module_is_reported_beside_a_zero_exit(tmp_path:
 
 def test_con_fails_on_unparseable_runner_output(tmp_path: Path):
     skill = scratch_skill(tmp_path)
-    (skill / "references" / "constraints" / "run-constraints.py").write_text(
+    scratch_constraint_runner(skill).write_text(
         "print('not json at all')\n", encoding="utf-8")
     report = probe(stage(tmp_path), runner=skill / "scripts" / "workshop-deck.py")
     assert report.status("CON") == "FAIL", report["CON"]
@@ -635,7 +656,7 @@ def test_con_fails_on_its_own_line_over_an_empty_presentation_dir(tmp_path: Path
 
 def test_con_fails_closed_when_the_vendored_runner_is_absent(tmp_path: Path):
     skill = scratch_skill(tmp_path)
-    (skill / "references" / "constraints" / "run-constraints.py").unlink()
+    scratch_constraint_runner(skill).unlink()
     report = probe(stage(tmp_path), runner=skill / "scripts" / "workshop-deck.py")
     assert report.status("CON") == "FAIL", report["CON"]
     assert "constraint runner is absent" in report["CON"]["detail"]
@@ -647,7 +668,8 @@ def test_con_fails_closed_when_the_vendored_runner_is_absent(tmp_path: Path):
 # ------------------------------------------------------------------------------------------------
 
 
-CONSTRAINT_RUNNER = SKILL_ROOT / "references" / "constraints" / "run-constraints.py"
+CONSTRAINT_RUNNER = (Path.home() / ".claude" / "skills" / "typst" / "references" / "checkers"
+                     / "workshop" / "run-constraints.py")
 
 
 def run_constraints(target: Path) -> tuple[int, dict]:

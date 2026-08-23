@@ -40,6 +40,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -50,7 +51,15 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 SKILL_ROOT = HERE.parent
-CONSTRAINT_RUNNER = SKILL_ROOT / "references" / "constraints" / "run-constraints.py"
+# The constraint corpus is owned by the typst plugin; this skill holds no copy. The env override
+# exists so the contract suite can point the probe at a scratch corpus without touching the real one.
+CONSTRAINT_RUNNER = Path(
+    os.environ.get(
+        "WORKSHOP_CONSTRAINT_RUNNER",
+        Path.home() / ".claude" / "skills" / "typst" / "references" / "checkers" / "workshop"
+        / "run-constraints.py",
+    )
+)
 OVERFLOW_DRIVER = HERE / "checks" / "check-overflow.sh"
 VALIDATION_TYP = HERE / "validation.typ"
 

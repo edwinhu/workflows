@@ -13,6 +13,7 @@ model: inherit
 color: purple
 tools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash"]
 skills:
+  - typst:typst
   - workshop-constraints
 ---
 

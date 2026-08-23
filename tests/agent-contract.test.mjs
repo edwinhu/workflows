@@ -170,7 +170,13 @@ function values(fm, key) {
     if (!fm) continue
     for (const skill of values(fm, 'skills')) {
       preloadsSeen++
-      const dir = join(SKILLS, skill)
+      // A `plugin:skill` preload names another plugin's skill, which lives under that plugin's
+      // own skills/ dir, not this one's. Resolving every entry against SKILLS reported a working
+      // cross-plugin preload as dangling.
+      const cross = skill.includes(':')
+      const dir = cross
+        ? join(homedir(), '.claude', 'skills', skill.split(':')[0], 'skills', skill.split(':')[1])
+        : join(SKILLS, skill)
       const md = join(dir, 'SKILL.md')
       const resolves = existsSync(dir) && statSync(dir).isDirectory() && existsSync(md)
       ok(`${tier}:${file}: skills: ${skill} resolves to a real skill`, resolves, dir)
@@ -392,8 +398,13 @@ function values(fm, key) {
        !isYamlTrue(fm?.scalars['disable-model-invocation']))
     const body = readFileSync(md, 'utf8')
     // Every vendored module, by name. The count is the check: 15 modules, none quietly dropped.
-    const vendored = readdirSync(join(SKILLS, 'workshop', 'references', 'constraints'))
-      .filter(f => f.endsWith('.md')).map(f => f.replace(/\.md$/, ''))
+    // Derived from the typst plugin's workshop checker corpus, which owns the rules now — this
+    // skill holds no constraint directory of its own to count.
+    const CHECKERS = join(homedir(), '.claude', 'skills', 'typst',
+                          'references', 'checkers', 'workshop')
+    ok('the typst workshop checker corpus resolves', existsSync(CHECKERS), CHECKERS)
+    const vendored = (existsSync(CHECKERS) ? readdirSync(CHECKERS) : [])
+      .filter(f => f.startsWith('typst-') && f.endsWith('.py')).map(f => f.replace(/\.py$/, ''))
     ok('15 Typst constraint modules are vendored', vendored.length === 15, String(vendored.length))
     for (const m of vendored) {
       ok(`workshop-constraints carries the ${m} module`, new RegExp(`^# ${m}$`, 'm').test(body))
@@ -664,7 +675,13 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
     return roots
   }
   const ROOTS = skillRoots()
-  const skillResolves = name => ROOTS.some(r => existsSync(join(r, name, 'SKILL.md')))
+  /** `plugin:skill` is a path, not a directory name: it resolves under THAT plugin's skills/. */
+  const skillResolves = name => {
+    const [a, b] = name.split(':')
+    const rel = b ? join(a, 'skills', b) : name
+    return ROOTS.some(r => existsSync(join(r, rel, 'SKILL.md'))) ||
+           (!!b && existsSync(join(USER_SKILLS, a, 'skills', b, 'SKILL.md')))
+  }
 
   const userAgentFiles = (existsSync(USER_AGENTS) ? readdirSync(USER_AGENTS) : [])
     .filter(f => f.endsWith('.md'))
@@ -1212,7 +1229,9 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
     }
     return roots
   })()
-  const resolvesIn = (rootSet, name) => rootSet.some(r => existsSync(join(r, name, 'SKILL.md')))
+  /** `plugin:skill` is a path, not a directory name: it resolves under THAT plugin's skills/. */
+  const skillRel = name => { const [a, b] = name.split(':'); return b ? join(a, 'skills', b) : name }
+  const resolvesIn = (rootSet, name) => rootSet.some(r => existsSync(join(r, skillRel(name), 'SKILL.md')))
 
   ok('the skill search path is not empty', ROOTS.length > 1, String(ROOTS.length))
   let repos = 0, entries = 0
@@ -1228,7 +1247,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
            resolvesIn(ROOTS, skill), `searched ${ROOTS.length} roots`)
         // A preloaded skill that disables model invocation is skipped with a DEBUG-LOG warning
         // only — the agent launches and the guidance never arrives. Same trap, every repo.
-        const md = ROOTS.map(r => join(r, skill, 'SKILL.md')).find(existsSync)
+        const md = ROOTS.map(r => join(r, skillRel(skill), 'SKILL.md')).find(existsSync)
         if (!md) continue
         ok(`${dir.replace(homedir(), '~')}/${f}: skills: ${skill} is preloadable`,
            !isYamlTrue(frontmatter(md)?.scalars['disable-model-invocation']),
