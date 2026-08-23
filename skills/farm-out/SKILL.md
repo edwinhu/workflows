@@ -17,8 +17,8 @@ family, or when cross-checking one family against another.
 
 | Instead of | Use |
 |---|---|
-| `Agent` tool / subagents | `scripts/farm.ts` (single or fan-out) |
-| `Workflow` tool | `scripts/farm.ts --workflow <abs script> --args <file> --out <file>` |
+| `Agent` tool / subagents | `scripts/farm.sh` (single or fan-out) |
+| `Workflow` tool | `scripts/farm.sh --workflow <abs script> --args <file> --out <file>` |
 | in-session agent team | `scripts/farm-team.sh` |
 | persistent / remote agents | the `agent-spawn` skill (it reaches other machines; this skill does not) |
 
@@ -51,25 +51,65 @@ missing. Never relay a delegated summary you did not verify.
 **2. Every delegated prompt carries the anti-simulation clause.** The runners
 append it automatically. Do not hand-roll a delegation that skips it.
 
+## Pick the shape first: sealed worker, or orchestrator
+
+`--agent <name>` runs the delegation AS one of your agents — its real system prompt,
+its preloaded constraints, its declared toolset. That last part is the whole decision,
+because every persona agent is deliberately sealed: `ds` is
+`Read/Grep/Glob/Edit/Write/Bash` with **no `Agent`, no `Skill`, no `Workflow`.**
+
+| Job | Shape |
+|---|---|
+| one well-scoped piece of work | a one-row `--tasks` file with `"agent": "ds"` — the persona's constraints are preloaded and its narrow toolset is the point |
+| needs to plan, fan out, dispatch subagents, or run a craft skill end-to-end | same, but **omit `"agent"`** — a sealed worker cannot do any of it |
+| several independent jobs at once | more rows; each carries its own `"agent"` |
+
+Row count is orthogonal to the persona question: a fan-out of five can be five `ds`
+workers. "More than one job" does not mean "generic".
+
+An orchestrating child is a full Claude Code session, so it has `Agent` and `Workflow`
+and can dispatch the persona itself — `Agent(subagent_type: "ds")` gives the subagent
+the same real persona plus the same deliberate restriction. That layering is the design
+the craft skills already use (`skills/ds/SKILL.md` sets `implementerAgentType: "ds"`),
+not a workaround.
+
+Agents live in `~/.claude/agents/`: `ds`, `writing`, `writing-econ`, `writing-legal`,
+`workshop`, `teaching` (workers); `ds-reviewer`, `workshop-reviewer`, `writing-reviewer`
+(read-only).
+
+**A `--workflow` run takes no `--agent`** — it picks agents PER LEG, which is the point:
+`agent(prompt, {agentType: "ds"})` inside the script, or `implementerAgentType` /
+`verifierAgentType` / `reviewLenses[].agentType` in a craft args file. One top-level
+persona could only apply to every leg, when what you want is `ds` implementing and
+`ds-reviewer` or `Explore` judging. Note `workflow.js` strips the `Agent` tool from every
+leg regardless of agentType, so legs cannot nest further delegation; fan-out is the
+workflow's own `parallel()` / `pipeline()`.
+
 ## Use
+
+**There is one task mode, `--tasks`, and it always takes a JSON array** — one row or
+fifty. There is no inline `--task`: the only caller is a model reading this file, so
+an inline prompt saved nobody anything, and a machine-written prompt passed as a shell
+argument has to survive quoting (backticks, nested quotes, `$`) that a JSON file
+sidesteps.
 
 ```bash
 S=~/.claude/skills/workflows/skills/farm-out/scripts
 
-# one task
-bun $S/farm.ts --task "…" --cwd /repo --expect /repo/out.md
+# Build the task file with jq, never by hand-quoting a heredoc.
+jq -n '[{prompt:"…", expect:"/repo/out.md", label:"count", agent:"ds"}]' > /tmp/t.json
+bash $S/farm.sh --tasks /tmp/t.json --cwd /repo
 
-# fan-out (tasks.json: [{"prompt":"…","expect":"…","model":"…"}, …])
-bun $S/farm.ts --tasks tasks.json --cwd /repo
+# Rows run in PARALLEL. Per row: prompt (required), expect (string or array),
+# label, agent, model. Omit "agent" when the row must orchestrate.
 
-# mixed model families in one fan-out: set "model" per task
 # workflow script — --out is REQUIRED (the structured return is the result, not the
 # summary), and paths resolve against OUR cwd, not --cwd, so pass them absolute.
-bun $S/farm.ts --workflow /abs/wf.js --args /abs/args.json --out /abs/result.json --cwd /repo
+bash $S/farm.sh --workflow /abs/wf.js --args /abs/args.json --out /abs/result.json --cwd /repo
 
 # Long runs: never foreground (a Bash-tool call caps out and kills the run mid-flight).
 # Detach, then wait on the artifact:
-setsid nohup bun $S/farm.ts --workflow /abs/wf.js --out /abs/result.json --cwd /repo \
+setsid nohup bash $S/farm.sh --workflow /abs/wf.js --out /abs/result.json --cwd /repo \
   > /abs/run.log 2>&1 < /dev/null &
 
 # team: named teammates that message each other, one result back
