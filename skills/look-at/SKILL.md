@@ -7,7 +7,7 @@ user-invocable: false
 
 # Look At - Multimodal File Analysis
 
-Multi-backend vision router for PDFs, images, diagrams, and other media files. Routes to `claude-code -p` (default), `agy -p`, `codex exec`, or GitHub Copilot (GPT-5.4) — all on subscription, none metered — and can run all four at once for independent looks at the same file.
+Multi-backend vision router for images, PDFs, video, diagrams and other media. Defaults to `agy -p` on `gemini-3.7-flash-high` — Gemini via Antigravity OAuth, unmetered — which reads images, PDFs and video natively. Audio auto-routes to the metered `api` backend, the only one that handles it. Three further unmetered CLI backends (`claude-code -p`, `codex exec`, Copilot on GPT-5.4) give independent second opinions.
 
 ## Tool Selection Enforcement
 
@@ -53,7 +53,7 @@ Multi-backend vision router for PDFs, images, diagrams, and other media files. R
 ## How It Works
 
 1. Provide a file path and a specific goal (what to extract)
-2. `look_at.sh` routes to the selected backend (`claude-code -p` by default)
+2. `look_at.sh` routes to the selected backend (`agy` / `gemini-3.7-flash-high` by default)
 3. The backend analyzes the file and extracts requested information
 4. Only the relevant extracted information is returned (saves context tokens)
 
@@ -66,7 +66,7 @@ description: "look-at: [goal text]"
 ```
 
 ```bash
-# Default (claude-code -p — pooled OAuth, reads images and PDFs natively)
+# Default (agy — gemini-3.7-flash-high via Antigravity OAuth, unmetered)
 "${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
     --file "/path/to/file.pdf" \
     --goal "Extract the title and date from this document"
@@ -83,11 +83,16 @@ description: "look-at: [goal text]"
     --goal "Score this diagram 0-10" \
     --consensus
 
-# METERED — spends GOOGLE_API_KEY. Only for agentic mode.
+# PDFs and video need no flags — agy reads both natively
+"${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
+    --file "/path/to/file.pdf" \
+    --goal "Extract the table data"
+
+# Agentic mode — adds code execution for harder visual reasoning (api backend only)
 "${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
     --file "/path/to/file.pdf" \
     --goal "Extract the table data" \
-    --backend api --agentic
+    --agentic
 ```
 
 `${CLAUDE_SKILL_DIR}` is substituted at skill load time, so the full path is already resolved — no per-call discovery needed.
@@ -100,11 +105,11 @@ description: "look-at: [goal text]"
 
 | Backend | CLI | Model | Cost | Best For |
 |---------|-----|-------|------|----------|
-| `claude` (default) | `claude-code -p` | `claude-opus-5[1m]` unless `--model` | Pooled OAuth via CLIProxyAPI | Everything. Reads images and PDFs natively — no rasterization |
-| `agy` | `agy -p` | Antigravity default | Subscription | Second opinion from a different family |
+| `claude` | `claude-code -p` | `claude-opus-5[1m]` unless `--model` | Pooled OAuth via CLIProxyAPI | Unmetered second opinion from a different family |
+| `agy` (default) | `agy -p` | `gemini-3.7-flash-high` unless `--model` | Antigravity OAuth — unmetered | Images, PDFs **and video**, all read natively. No audio |
 | `codex` | `codex exec` | Codex default | Subscription | Attaches the image with `-i`, so it needs no read tool at all |
 | `copilot` | `copilot -p` | GPT-5.4 | Copilot subscription | Fourth opinion. PDFs rasterized first |
-| `api` | `look_at.py` | Gemini API | **Metered — your `GOOGLE_API_KEY`** | Agentic mode only. Never a default, never in `--consensus` |
+| `api` | `look_at.py` | `gemini-3.7-flash`, `thinking_level=high` | **Metered — your `GOOGLE_API_KEY`** | **Audio auto-routes here** — no unmetered backend handles it. Not in `--consensus` |
 
 **`claude`, not `claude-code`, is the backend *name*; `claude-code` is the binary it runs.** Plain
 `claude` would bill this session's own account — `claude-code` routes through CLIProxyAPI to the
@@ -113,7 +118,7 @@ pooled OAuth accounts, which is the cost this backend exists to avoid.
 Only `claude` ingests PDFs directly. `agy` and `copilot` get page PNGs from `pdftoppm`; `codex`
 gets every page attached as a separate `-i`.
 
-The `gemini` backend is gone. It required `GEMINI_API_KEY`/`GOOGLE_API_KEY` and billed like `api` despite being documented as bundled quota, and the consumer `gemini` binary was sunset 2026-06-18.
+The old `gemini` backend is gone — it billed like `api` despite being documented as bundled quota, and the consumer `gemini` binary was sunset 2026-06-18. Unmetered Gemini now comes from `agy` (Antigravity OAuth), which is the default. `gemini-code` is NOT usable here: on Claude Code 2.1.238 it exits 0 having produced no output, rejecting its own default model as `unrecognized_model` even though the proxy serves it.
 
 ## Consensus Mode
 
@@ -154,12 +159,12 @@ These apply to `--backend api`, which is metered. The `claude` backend takes `--
 
 | Model | Use Case | Speed | Cost |
 |-------|----------|-------|------|
-| `gemini-3.1-flash-lite-preview` | Default - fast, cheap analysis | Fastest | Lowest |
-| `gemini-3-flash` | More complex extraction needs | Fast | Low |
-| `gemini-3-flash-preview` | Agentic vision with code execution | Fast | Low |
+| `gemini-3.7-flash` | Default - most capable stable Flash, `thinking_level=high` | Fast | $0.75/1M |
+| `gemini-3.5-flash-lite` | High-throughput / document parsing when cost matters | Fastest | $0.30/1M |
+| `gemini-3.1-pro-preview` | Maximum vision capability, hardest extractions | Slower | $2.00/1M |
 | `gemini-3-pro-preview` | Highest accuracy required | Medium | Medium |
 
-**Default is `gemini-3.1-flash-lite-preview`** (the value in `look_at.py`).
+**Default is `gemini-3.7-flash` at `thinking_level=high`** (the value in `look_at.py`).
 
 ## Agentic Vision Mode (`api` backend only)
 
@@ -183,7 +188,7 @@ For complex visual reasoning tasks, use the `--agentic` flag to enable code exec
     --agentic
 ```
 
-**Note:** Agentic mode automatically uses `gemini-3-flash-preview` regardless of the `--model` setting.
+**Note:** Agentic mode adds code execution to whichever model is selected; `gemini-3.7-flash` supports it, so it no longer forces a different model.
 
 ## Common Patterns
 

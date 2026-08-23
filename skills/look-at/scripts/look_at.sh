@@ -14,7 +14,7 @@ Required:
   --goal, -g       Vision prompt / goal text
 
 Options:
-  --backend, -b    Vision backend: claude (default), agy, codex, copilot, api
+  --backend, -b    Vision backend: agy (default), claude, codex, copilot, api
   --consensus [L]  Run several backends in parallel and label each result.
                    L is a comma-separated list; default is all four CLI backends.
   --model, -m      Override model (claude and api backends)
@@ -24,18 +24,22 @@ Options:
 
 Backends:
   claude   claude-code -p (CLIProxyAPI wrapper over the pooled Claude OAuth
-           accounts, NOT plain `claude`). Reads images and PDFs natively.
-  agy      agy -p (Antigravity CLI). PDFs are rasterized first.
+           accounts, NOT plain `claude`). Unmetered. Reads images and PDFs
+           natively — prefer it for PDFs, which agy must rasterize first.
+  agy      agy -p (Antigravity CLI). DEFAULT, on gemini-3.7-flash-high —
+           Gemini via Antigravity OAuth, unmetered. Reads images, PDFs and
+           video natively. No audio: those auto-route to api.
   codex    codex exec (attaches the image with -i, no read tool needed).
            PDFs are rasterized and every page attached.
   copilot  GitHub Copilot CLI (GPT-5.4). PDFs are rasterized first.
-  api      Python google-genai SDK. METERED — spends GOOGLE_API_KEY. Opt-in only,
-           for agentic mode. Never a default and never in --consensus.
+  api      Python google-genai SDK on gemini-3.7-flash at thinking_level=high.
+           METERED — spends GOOGLE_API_KEY. Audio routes here automatically
+           because no unmetered backend handles it; otherwise opt-in.
 EOF
   exit "${1:-0}"
 }
 
-FILE="" GOAL="" BACKEND="claude" CONSENSUS=false CONSENSUS_LIST="claude,agy,codex,copilot"
+FILE="" GOAL="" BACKEND="agy" CONSENSUS=false CONSENSUS_LIST="claude,agy,codex,copilot"
 MODEL="" AGENTIC=false VERBOSE=false
 
 while [[ $# -gt 0 ]]; do
@@ -55,11 +59,26 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# Audio is the one modality no unmetered backend handles: agy's Read tool
+# errors on .wav (verified 2026-08-23), and claude/codex/copilot have no audio
+# path at all. Route it to api rather than failing, but say so -- api spends
+# GOOGLE_API_KEY and the caller did not ask for that.
+route_audio_to_api() {
+  case "${FILE,,}" in
+    *.mp3|*.wav|*.aac|*.ogg|*.flac|*.m4a|*.opus)
+      if [[ "$BACKEND" != "api" ]]; then
+        echo "[look-at] audio: no unmetered backend supports it; using --backend api (METERED)." >&2
+        BACKEND="api"
+      fi ;;
+  esac
+}
+
 [[ -z "$FILE" ]] && { echo "Error: --file is required" >&2; usage 1; }
 [[ -z "$GOAL" ]] && { echo "Error: --goal is required" >&2; usage 1; }
 [[ -f "$FILE" ]] || { echo "Error: file not found: $FILE" >&2; exit 1; }
 
 FILE="$(cd "$(dirname "$FILE")" && pwd)/$(basename "$FILE")"
+route_audio_to_api
 IMAGE_DIR="$(dirname "$FILE")"
 FULL_PROMPT="Read the file at $FILE. $GOAL"
 
@@ -97,31 +116,24 @@ run_claude() {
 
 run_copilot() {
   if $VERBOSE; then echo "[look-at] backend=copilot model=gpt-5.4" >&2; fi
+  # agy reads PDFs and video natively through its Read tool -- verified
+  # 2026-08-23 on a 2-page PDF and a 3s mp4. No rasterization needed.
   local dir="$IMAGE_DIR" prompt="$FULL_PROMPT" tmpdir="" pages=()
-  if [[ "${FILE,,}" == *.pdf ]]; then
-    tmpdir="$(rasterize_pdf)" || return 1
-    # shellcheck disable=SC2064
-    trap "rm -rf '$tmpdir'" RETURN
-    pages=("$tmpdir"/page*.png)
-    dir="$tmpdir"
+  if false; then
+    :
     prompt="The document has been rendered to ${#pages[@]} page image(s): ${pages[*]}. Read them all. $GOAL"
   fi
   LOOK_AT_NESTED=1 copilot --model gpt-5.4 --allow-all-tools --add-dir "$dir" -p "$prompt"
 }
 
 run_agy() {
-  if $VERBOSE; then echo "[look-at] backend=agy${MODEL:+ model=$MODEL}" >&2; fi
-  local dir="$IMAGE_DIR" prompt="$FULL_PROMPT" tmpdir="" pages=()
-  if [[ "${FILE,,}" == *.pdf ]]; then
-    tmpdir="$(rasterize_pdf)" || return 1
-    # shellcheck disable=SC2064
-    trap "rm -rf '$tmpdir'" RETURN
-    pages=("$tmpdir"/page*.png)
-    dir="$tmpdir"
-    prompt="The document has been rendered to ${#pages[@]} page image(s): ${pages[*]}. Read them all. $GOAL"
-  fi
-  local args=(-p "$prompt" --add-dir "$dir" --dangerously-skip-permissions)
-  [[ -n "$MODEL" ]] && args+=(--model "$MODEL")
+  # Gemini 3.7 Flash at high reasoning, via Antigravity OAuth. Unmetered.
+  local model="${MODEL:-gemini-3.7-flash-high}"
+  if $VERBOSE; then echo "[look-at] backend=agy model=$model" >&2; fi
+  # agy reads PDFs and video natively through its Read tool -- verified
+  # 2026-08-23 on a 2-page PDF and a 3s mp4, both correct. No rasterization,
+  # which loses selectable text and costs a 200dpi render per page.
+  local args=(-p "$FULL_PROMPT" --add-dir "$IMAGE_DIR" --dangerously-skip-permissions --model "$model")
   LOOK_AT_NESTED=1 agy "${args[@]}"
 }
 

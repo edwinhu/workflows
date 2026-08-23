@@ -3,7 +3,7 @@
 # requires-python = ">=3.10"
 # dependencies = ["google-genai"]
 # ///
-"""Analyze media files using Gemini 2.5 Flash Lite for fast, cost-effective interpretation.
+"""Analyze media files using Gemini 3.7 Flash at high thinking level.
 
 This script uploads a local file to Google's Gemini API and extracts specific information
 based on the provided goal. It's designed to be used by Claude Code as a tool for analyzing
@@ -146,7 +146,7 @@ def _resolve_api_key() -> str | None:
 def analyze_file(
     file_path: str,
     goal: str,
-    model: str = "gemini-3.1-flash-lite-preview",
+    model: str = "gemini-3.7-flash",
     agentic: bool = False,
     verbose: bool = False
 ) -> str:
@@ -155,8 +155,8 @@ def analyze_file(
     Args:
         file_path: Path to the local file to analyze
         goal: Specific information to extract from the file
-        model: Gemini model to use (default: gemini-3.1-flash-lite-preview)
-        agentic: Enable code execution for better visual reasoning (requires gemini-3-flash-preview)
+        model: Gemini model to use (default: gemini-3.7-flash)
+        agentic: Enable code execution for better visual reasoning
         verbose: Whether to print debug information
 
     Returns:
@@ -178,9 +178,6 @@ def analyze_file(
     if not os.path.exists(file_path):
         raise ValueError(f"File not found: {file_path}")
 
-    # Agentic mode requires gemini-3-flash-preview
-    if agentic and model != "gemini-3-flash-preview":
-        model = "gemini-3-flash-preview"
 
     # Configure client
     client = genai.Client(api_key=api_key)
@@ -220,12 +217,12 @@ If the requested information is not found, clearly state what is missing."""
             print("Agentic mode enabled (code execution)", file=sys.stderr)
 
     try:
-        # Build config with optional code execution for agentic vision
-        config = None
-        if agentic:
-            config = types.GenerateContentConfig(
-                tools=[types.Tool(code_execution=types.ToolCodeExecution())]
-            )
+        # thinking_level lives on ThinkingConfig, not GenerateContentConfig.
+        # "high" is the top level gemini-3.7-flash accepts (low/medium/high).
+        config = types.GenerateContentConfig(
+            thinking_config=types.ThinkingConfig(thinking_level="high"),
+            tools=[types.Tool(code_execution=types.ToolCodeExecution())] if agentic else None,
+        )
 
         response = client.models.generate_content(
             model=model,
@@ -254,7 +251,7 @@ If the requested information is not found, clearly state what is missing."""
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="Analyze media files using Gemini 2.5 Flash Lite",
+        description="Analyze media files using Gemini 3.7 Flash",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -284,14 +281,14 @@ Environment (checked in order):
 
     parser.add_argument(
         "--model", "-m",
-        default="gemini-3.1-flash-lite-preview",
-        help="Gemini model to use (default: gemini-3.1-flash-lite-preview)"
+        default="gemini-3.7-flash",
+        help="Gemini model to use (default: gemini-3.7-flash)"
     )
 
     parser.add_argument(
         "--agentic", "-a",
         action="store_true",
-        help="Enable agentic vision with code execution for complex reasoning (uses gemini-3-flash-preview)"
+        help="Enable agentic vision with code execution for complex reasoning"
     )
 
     parser.add_argument(
