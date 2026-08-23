@@ -4,127 +4,103 @@ user-invocable: false
 description: "Use this skill when the user asks to add news headline cards, 'Last Week Tonight'-style cards, headline slides, news quote slides, or media quote cards to a Typst presentation. Also use when the user wants to modify existing headline cards (add/remove cards, change quotes, swap logos, fix layout issues). Trigger on: 'add a headline', 'news card', 'LWT card', 'headline slide', 'quote card', 'media quote', 'add a quote from [publication]'."
 ---
 
-# LWT-Style Headline Cards for Typst Presentations
+# Headline Cards for Typst Presentations
 
-Creates "Last Week Tonight"-style headline cards: dark cards with a red date badge, publication logo (SVG), bold headline, and an italic pull quote. Data-driven from JSON so cards stay decoupled from slide markup.
+An editorial recreation of a newspaper clipping: **light** paper stock, the real
+masthead logo, a top rule carrying a category kicker and dateline, a serif
+headline with a Last-Week-Tonight yellow highlighter swipe over one phrase, and a
+short standfirst.
+
+**Read `templates/theme.typ` before writing a card.** The implementation is the
+authority; if it disagrees with this file, believe it and fix this file.
 
 ## Architecture
 
 ```
 presentation/
-├── templates/theme.typ        ← headline-card() function lives here
-├── data/headlines.json        ← card data (venue, date, headline, quote, logo)
-├── assets/logos/*-white.svg   ← white-on-transparent SVG logos
-└── slides.typ                 ← loops over JSON to emit one slide per card
+├── templates/theme.typ        ← headline-card() lives here; read it first
+├── data/headlines-NN.json     ← card data, NN = the lecture number
+├── assets/logos/*.svg         ← DARK / full-colour logos (see below)
+└── slides/XX-topic/NN.typ     ← loops over the JSON, one slide per card
 ```
 
-The Typst function (`headline-card`) already exists in theme.typ. This skill is about **adding new cards correctly** — getting the JSON right, preparing logos, and avoiding the path/sizing pitfalls that cost hours of iteration.
-
-## Step 1: Prepare the JSON Entry
-
-Add an object to `data/headlines.json`:
+## Step 1: the JSON entry
 
 ```json
 {
-  "venue": "Publication Name",
-  "date": "Month Day, Year",
-  "headline": "The headline text exactly as published",
-  "quote": "A vivid, punchy pull quote — not a summary",
-  "logo": "../assets/logos/publication-white.svg"
+  "venue": "WSJ",
+  "date": "June 24, 2026",
+  "kicker": "Tech",
+  "headline": "The headline exactly as published",
+  "highlight": "phrase to swipe in yellow",
+  "quote": "The article's own standfirst/dek.",
+  "logo": "../assets/logos/wsj.svg"
 }
 ```
 
-### What makes a good quote
+`highlight` must be a **substring of `headline`, matching character for
+character** — the function splits on it, so a straight quote where the headline
+has a curly one silently produces no swipe. `kicker` and `quote` are optional.
 
-The quote should be **vivid and specific** — something that makes the audience react. Source quotes from the actual article, executive statements, or analyst commentary. Avoid generic descriptions like "discusses the impact of proxy advisors." Use Readwise, Consensus, or WebSearch to find the exact language.
+**Quote the article, do not summarise it.** The standfirst should be the
+publication's own dek or a vivid line from the piece. "Discusses the impact of
+proxy advisors" is not a card; "Anyone who gives them money — shame on you" is.
 
-**Good**: "Anyone who gives them money — shame on you. They should be gone and dead and done with."
-**Bad**: "JPMorgan CEO criticizes proxy advisory industry practices."
+**Nothing on the card may be composed.** Headline, dek, outlet and date are the
+article's own or they do not go on the slide — a card asserts that a publication
+printed this. Pull them from the record, and if a field cannot be sourced, omit
+it rather than inventing it. Note that Reader's
+`reader-get-document-details` returns null for `published_date`/`source_url`
+while `reader-list-documents --id <id>` returns them populated — check both
+before concluding a date is unavailable.
 
-### Widow check
+## Step 2: paper stock is per publication
 
-Headlines and quotes are displayed at large font sizes on a centered card — a single orphaned word on the last line is highly visible and looks sloppy. After writing the headline and quote text, check for widows:
+`headline-card` picks the stock from `venue`. FT is famously salmon and the
+broadsheets are white; one generic cream for everything reads as wrong to anyone
+who knows the paper.
 
-1. **Compile the presentation** and visually inspect each headline card
-2. **Run the widow detector** if available:
-   ```bash
-   DETECT_WIDOWS=$(command ls -d ~/.claude/plugins/cache/tinymist-plugin/tinymist/*/skills/typst-widow-orphan/scripts/detect_widows.py 2>/dev/null | sort -V | tail -1) && uv run python3 "$DETECT_WIDOWS" presentation.pdf
-   ```
-3. **Fix widows in the JSON text** (not in Typst source):
-   - **Tighten wording** — cut redundant words so the last line has 2+ words
-   - **Use `\u00a0`** (non-breaking space, JSON-safe) between the last 2-3 words: `"proxy\u00a0advisors."` keeps "proxy advisors." together
-   - **Shorten the quote** — trim from the beginning or end to shift the line break
-   - **Never pad with filler words** just to fix a widow
-
-| Before (widow) | After (fixed) |
+| venue | stock |
 |---|---|
-| `"...should be gone and dead and done\nwith."` | `"...should be gone and dead and done\u00a0with."` |
-| `"...the impact on shareholder\nvalue"` | `"...the impact on shareholder value"` (tightened) |
+| Financial Times, FT | `#FFF1E5` salmon |
+| WSJ, NY Times, Bloomberg, ABC News | `#FFFFFF` |
+| anything else | `#F7F4EC` cream fallback |
 
-### Path resolution rule
+Add a venue to the `stocks` dictionary in `theme.typ` rather than passing a
+one-off, so the next card for that outlet inherits it. `stock: rgb("…")`
+overrides per card when one genuinely differs.
 
-Logo paths in JSON are resolved **relative to `templates/theme.typ`**, not relative to `slides.typ` or the project root. Since theme.typ lives in `templates/`, use `../assets/logos/` to reach the assets directory.
+Legibility does not constrain this choice — ink, dek and dateline land within
+~1:1 of each other across every stock — so it is purely identity.
 
-| theme.typ location | Logo location | Correct JSON path |
-|---|---|---|
-| `templates/theme.typ` | `assets/logos/foo.svg` | `../assets/logos/foo.svg` |
+## Step 3: the logo
 
-This is because Typst's `image()` function resolves relative to the file containing the function definition, not the file that calls it.
+**Dark or full-colour, on a light card.** Not the `-white.svg` variant; those are
+for dark backgrounds and are invisible here. Use `wsj.svg`, `nyt-dark.svg`,
+`ft-dark.svg`, `abc-news-dark.svg`.
 
-## Step 2: Prepare the SVG Logo
+### IRON LAW: real vector logos only
 
-Headline cards have a dark background (`#12121e`). Logos need to be **white on transparent** to be visible.
-
-### IRON LAW: Real Vector Logos Only
-
-**Text-based SVG placeholders are NOT logos.** If you catch yourself creating an SVG with `<text>` elements spelling out the publication name — STOP. That is a fake placeholder, not a real logo.
-
-- Logos MUST contain real vector paths (`<path>`, `<polygon>`, `<rect>`, etc.) from the publication's actual branding
-- Logos must be DOWNLOADED from authoritative sources: Wikimedia Commons SVGs, official brand/press pages, or GitHub logo repos
-- **Never** generate a text-based SVG as a "temporary" logo — there is no temporary; it ships
-
-**Verification step** — after downloading, check that it's real:
-```bash
-# If this finds matches, it's a fake placeholder, not a real logo
-grep '<text' assets/logos/publication-white.svg && echo "FAKE — contains <text> elements, download a real logo"
-```
-
-### Logo Facts
-
-- Wikimedia Commons has SVGs for virtually every major publication — "I can't find an SVG" means search harder, not fall back to a placeholder.
-- A text-based SVG always has the wrong font, weight, and spacing — real logos are designed. Shipping one as "temporary" is shipping it; it looks unprofessional in the deliverable.
-
-### Creating a white variant
-
-1. Download the publication's SVG logo (Wikimedia Commons is a good source)
-2. Identify dark fill colors in the SVG (`#000000`, `#1F1D1A`, `#222222`, `#292526`, etc.)
-3. Replace them with white:
+If you catch yourself writing an SVG with `<text>` elements spelling out the
+publication name — stop. That is a placeholder, not a logo, and it ships with the
+wrong font, weight and spacing.
 
 ```bash
-# Replace all dark fills with white
-sed -i '' 's/fill="#000000"/fill="#ffffff"/g; s/fill="#1F1D1A"/fill="#ffffff"/g' assets/logos/publication-white.svg
+grep '<text' assets/logos/publication.svg && echo "FAKE — download a real logo"
 ```
 
-4. Verify the result by compiling the presentation — some SVGs have multiple fill values or use `style` attributes instead of `fill`.
+Download from Wikimedia Commons, the brand's press page, or a logo repo.
+Wikimedia has SVGs for essentially every major publication; "I can't find one"
+means search harder.
 
-**Common gotcha**: Some SVGs use CSS `style="fill:#000"` instead of `fill="#000"`. Check both:
-```bash
-grep -i 'fill' assets/logos/publication-white.svg
-```
+Sizing needs no per-logo tuning: the function normalises by aspect ratio, so a
+narrow mark and a wide wordmark carry similar visual weight.
 
-### Logo sizing
-
-The `headline-card` function constrains logos with `box(width: 60%, height: 4.5em, image(fit: "contain"))`. This handles both wide wordmarks (like Semafor) and square icons (like a seal) without overflow. You should not need to adjust sizing per-logo — the `contain` fit mode preserves aspect ratio within the bounding box.
-
-If a logo appears too small despite the 60% width, it's likely that the SVG has excessive whitespace/padding in its viewBox. Crop the viewBox or edit the SVG to remove padding.
-
-## Step 3: Render in slides.typ
-
-Cards are rendered by looping over the JSON. This pattern should already exist in slides.typ:
+## Step 4: render
 
 ```typst
 #{
-  let cards = json("data/headlines.json")
+  let cards = json("../../data/headlines-NN.json")
   for card in cards {
     slide[
       #headline-card(
@@ -133,37 +109,47 @@ Cards are rendered by looping over the JSON. This pattern should already exist i
         headline: card.headline,
         quote: card.at("quote", default: none),
         logo: card.at("logo", default: none),
+        phrase: card.at("highlight", default: none),
+        kicker: card.at("kicker", default: none),
+        stock: card.at("stock", default: auto),
       )
     ]
   }
 }
 ```
 
-**One card per slide.** Grid layouts (2x2, etc.) were tried and don't work — quotes and headlines get truncated, logos shrink too small to be recognizable, and the visual impact is lost. The LWT style depends on each card filling the screen.
+**One card per slide, and no `===` heading on it.** Grid layouts truncate quotes
+and shrink logos below recognition; a heading eats the vertical space the card
+fills. Put any section header on the preceding slide.
 
-**No `===` heading on headline slides.** The slide heading bar eats vertical space. Headline cards use `block(height: 1fr)` to fill the available space, but an `===` heading reduces that space significantly. If you need a section header, put it on the slide before the card loop.
+## Step 5: look at it
 
-## Red Flags — STOP If You See These
+Compile, get the page from `find-slide-page`, render it, and read it. What
+matters: the logo renders and is dark enough; the swipe covers the intended
+phrase; nothing is clipped; no single orphaned word ends the headline or
+standfirst.
+
+Fix widows in the **JSON text**, never in Typst — tighten the wording, or join
+the last two words with ` `. Never pad with filler to fix a widow.
+
+## Red flags — STOP
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| Logo doesn't appear (blank space) | Path in JSON is relative to slides.typ, not theme.typ | Change to `../assets/logos/...` |
-| Logo is invisible (dark on dark) | SVG has dark fills on dark card background | Create a `-white.svg` variant |
-| Logo clips over the date badge | SVG is very wide and `box` width is too large | The 60%/4.5em constraint should prevent this; check SVG viewBox for excessive width |
-| Card doesn't fill vertical space | Using `height: 100%` instead of `1fr`, or `===` heading is present | Use `block(height: 1fr)` and remove `===` from the slide |
-| Quote is generic/boring | Summarized instead of quoted | Find the actual vivid quote from the source |
-| Typst error: "file not found" | Logo SVG doesn't exist at the resolved path | Check that the file exists at `templates/../assets/logos/...` |
-| Logo SVG contains `<text>` elements | You created a text placeholder instead of downloading a real logo | `grep '<text' logo.svg` — if it matches, delete it and download the real SVG from Wikimedia Commons or the brand's press page |
-| Single word on last line of headline or quote | Widow — large centered text makes this very visible | Use `\u00a0` between last 2-3 words in JSON, or tighten wording |
+| Logo invisible | a `-white.svg` on the light card | use the dark/full-colour variant |
+| Logo missing entirely | JSON path taken as relative to `slides/` | paths resolve from **theme.typ**: `../assets/logos/…` |
+| No yellow swipe | `highlight` is not an exact substring of `headline` | match curly vs straight quotes character for character |
+| Card doesn't read as an object on white stock | border derived from the stock is near-white | the border is a fixed grey; do not re-derive it from `newsprint` |
+| An FT card looks like every other card | venue missing from the `stocks` dictionary | add it |
+| Dek is generic | summarised instead of quoted | use the publication's own standfirst |
+| A date is invented | it wasn't in the source | omit the field; never fabricate one |
+| `<text>` in the logo SVG | placeholder, not a logo | download the real one |
 
-## Modifying the headline-card Function
+## Facts
 
-The function lives in `presentation/templates/theme.typ` (search for `#let headline-card`). Key design decisions baked in:
-
-- **`place(top + left)`** for the date badge — floats it over the card without affecting content flow
-- **`align(center + horizon)`** — vertically and horizontally centers the logo/headline/quote stack
-- **`block(height: 1fr)`** — stretches to fill available slide space
-- **Curly quotes** via `\u{201c}` and `\u{201d}` — typographically correct
-- **Divider lines** at 50% width between logo, headline, and quote sections
-
-If you need to adjust text sizes, the current values are: headline 22pt bold, quote 18pt italic, date badge 14pt bold, fallback venue name 24pt bold.
+- **The dateline is the smallest text on the card**, so it carries its own darker
+  grey rather than the dek's `mute`, which lands ~5.3:1 on newsprint and washes
+  out under projector gamma.
+- **Black on the yellow swipe measures ~13.7:1** — the highlight helps
+  readability rather than hurting it, so spend it on the phrase that carries the
+  point, never decoratively.
