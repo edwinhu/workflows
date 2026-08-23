@@ -1,6 +1,6 @@
 {
   "name": "workflows",
-  "version": "6.11.0",
+  "version": "6.12.0",
   "description": "One loop — craft — for work worth doing properly: clarify, an approved plan that is the run's only authority, delegated implementation, independent verification against computed gates, and human review. Domain workflows for code (test-first), data, writing and workshop presentations.",
   "author": {
     "name": "edwinhu"
