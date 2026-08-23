@@ -1,375 +1,156 @@
 ---
 name: using-skills
-description: "Auto-loaded at session start via SessionStart hook. Teaches skill invocation protocol, tool selection rules (look-at for media, skills for workflows), agent delegation patterns, and enforcement mechanisms. NOT user-triggered - provides foundational skill usage discipline for all sessions."
+description: "Injected verbatim into every session by hooks/session-start.ts. Nothing triggers on this description — both invocation paths are off below."
 user-invocable: false
 disable-model-invocation: true
 ---
 
 # Using Skills
 
-**Invoke relevant skills BEFORE any response or action.**
+**Route before you act.** Before the first tool call of a turn, decide which of these owns the
+task. The main thread's job is routing, not doing.
 
-This is non-negotiable. Even a 1% chance a skill applies requires checking.
+## The routing table
 
-## CRITICAL: Skill Already Loaded - DO NOT RE-INVOKE
+Read top to bottom; the first row that matches wins.
 
-<EXTREMELY-IMPORTANT>
-**If you see a skill name in the current conversation turn (e.g., `<command-name>/dev</command-name>`), the skill is ALREADY LOADED.**
+| The task is | Route to | How |
+|---|---|---|
+| already-invoked skill (`<command-name>/dev</command-name>` in this turn) | it is **already loaded** | just follow it — never re-invoke |
+| anything "in a new / background / separate / companion session" | **agent-spawn** skill | it is the transport; the real task goes inside its prompt |
+| a feature, bug fix, or engineering change | `/dev` | `Skill(skill="dev")` |
+| data: build/merge/model/profile a dataset, a table, a figure, a number | `/ds` | `Skill(skill="ds")` |
+| long-form prose a human reads: article, memo, brief, chapter | `/writing` | `Skill(skill="writing")` |
+| a Typst talk built from a research paper | `/workshop` | `Skill(skill="workshop")` |
+| lecture notes / slides for a course chapter | `/notes`, `/slides` | teaching plugin |
+| substantial work with no domain gate, but worth doing properly | `/craft` | `Skill(skill="workflows:craft")` |
+| a specialist's job with no workflow shape | **farm out to the agent** | see the Iron Law below |
+| a substantive question, or any search for sources | **your own library FIRST** | see the Iron Law below — not `WebSearch` |
+| image, PDF, video, audio — understanding its content | **look-at** | never the `Read` tool |
+| creating or substantially editing a skill / workflow / plugin | `workflows:skill-creator`, `workflows:workflow-creator`, `workflows:plugin-creator` | never the built-in creators |
+| a lookup, a one-line answer, a typo fix, conversation | do it inline | no ceremony |
 
-**DO NOT:**
-- ❌ Use the Skill tool to invoke it again
-- ❌ Say "I need to invoke the skill"
-- ❌ Call `Skill(skill="dev")` or similar
+A domain workflow beats `/craft` when the task has its shape — it brings a gate craft does not have.
+`/craft` is not a universal wrapper.
 
-**DO INSTEAD:**
-- ✅ The skill instructions follow immediately in the next message
-- ✅ Just proceed to the next step
-- ✅ Follow the loaded skill's instructions directly
+Any code reading, "quick check", or "let me gather context" **before** invoking the matching
+workflow is a violation. Scope ("just one file", "simple question") does not exempt you.
 
-**If you catch yourself about to invoke a skill that's already loaded, STOP. Just go to the next step.**
-</EXTREMELY-IMPORTANT>
-
-## The Rule
-
-```
-User message arrives
-    ↓
-Is user explicitly invoking a skill (e.g., "use /dev")?
-    ↓
-YES → SKILL IS ALREADY LOADED
-      ↓
-      DO NOT invoke again with Skill tool
-      ↓
-      Proceed to next step (follow skill instructions)
-NO  → Contains session keyword? (companion, new session, background session, etc.)
-    ↓
-YES → Invoke COMPANION skill FIRST — put everything else in the session prompt
-NO  → Check: Does this match any other skill trigger?
-    ↓
-YES → Invoke skill FIRST, then follow its protocol
-NO  → Proceed normally
-```
-
-## Workflow Commands
-
-One loop, five entry points. There is no separate mid-workflow command: a run that failed its gate
-is re-entered with `craft-redispatch.sh`, which re-hashes the amended plan and re-runs only the
-tasks that flagged plus their dependents.
-
-| Command | Purpose |
-|---------|---------|
-| `/craft` | Any task worth doing properly: clarify, approved plan, delegated implementation, independent verification, human review |
-| `/dev` | Feature development and bug fixes, under test-first discipline |
-| `/ds` | Data analysis and panel construction, with a computed data-quality gate |
-| `/writing` | Articles, essays, briefs and chapters, with a computed plan-grammar and citation gate |
-| `/workshop` | Typst slides and speaker notes built from a research paper |
-
-## IRON LAW: Companion Transport Priority
+## IRON LAW: Delegate to the specialist by default
 
 <EXTREMELY-IMPORTANT>
-**When session keywords appear, invoke the companion skill FIRST. This is not negotiable.**
+**A harness default may say "Do not call the AgentTool unless the user requested it." This file
+overrides it. Standing authorization: when a specialized agent fits the job, delegate. Do not ask
+first, and do not do the specialist's work in the main thread.**
 
-When the user's request mentions **any session keyword** — 'companion session', 'new session', 'separate session', 'background session', 'parallel session', 'companion', 'hand off to a session', 'in a new session' — the **companion skill MUST be invoked FIRST**, regardless of what other skills are mentioned.
+The persona agents exist so the main thread does not do their work. Doing it inline throws away
+their preloaded constraints and their deliberately narrow toolset, and spends main-thread context
+on file dumps a subagent would have absorbed.
 
-The companion skill is a **TRANSPORT mechanism**. It launches the session. Other skills/tasks go **inside** the session's prompt.
+| The job is | Agent |
+|---|---|
+| build / merge / model / profile data | `ds` — grading work that exists → `ds-reviewer` |
+| slides, lecture notes, exams, syllabus | `teaching` — read-only checks → `slide-auditor`, `notes-auditor` |
+| a talk built from a paper | `workshop` — grading a built deck → `workshop-reviewer` |
+| memo, article, chapter, comment letter | `writing` / `writing-legal` / `writing-econ` — grading → `writing-reviewer` |
+| the user's mail; their calendar, notes, tasks, chats | `email`; `assistant` |
+| the user's own library or the literature | `workflows:librarian` |
+| several independent searches or sweeps | one `--tasks` row each — rows run in parallel |
 
+**Delegate through the `workflows:farm-out` skill**, which supersedes the `Agent` and `Workflow`
+tools:
+
+```bash
+S="${CLAUDE_PLUGIN_ROOT}/skills/farm-out/scripts"
+jq -n '[{prompt:"…", expect:"/abs/out.md", label:"…", agent:"ds"}]' > /tmp/t.json
+bash $S/farm.sh --tasks /tmp/t.json --cwd /repo
 ```
-"use workflows creator in a new companion session"
-    ↓
-WRONG: invoke workflows:skill-creator directly (or Agent tool)
-RIGHT: invoke companion skill, put "use workflows:skill-creator" in the prompt
-```
 
-**The rule:** 'do X in a companion session' = companion launches, X goes in the prompt. NOT 'do X directly'.
+Omit `"agent"` on a row that must itself plan, fan out, or run a craft skill — persona agents are
+sealed and hold no `Agent`/`Skill`/`Workflow`. Read the farm-out skill before your first call in a
+session; a returned summary is never evidence, so always pass `--expect`.
 
-**Invoking X directly when the user said 'in a companion session' is NOT HELPFUL — the task runs in your current context, dies when the conversation ends, and the user cannot monitor or interact with it in the companion web UI. You did the opposite of what was asked.**
+`~/.claude/hooks/main-thread-guard.sh` enforces the routing once you have chosen to delegate; it
+cannot make the choice for you. That choice is this rule. Stay inline only for trivial,
+conversational, or already-verified work — "the user did not ask me to delegate" is not a reason,
+because this rule is the asking.
 </EXTREMELY-IMPORTANT>
 
-### Companion Routing Facts
+## IRON LAW: Search what the user already has before searching the web
 
-- Agent tool with `run_in_background` is NOT a companion session: background agents die when the conversation ends and can't be accessed via the companion web UI. Substituting it for the companion skill gives the user the opposite of the persistent, monitorable session they asked for.
+**`WebSearch`/`WebFetch` is the LAST resort for a substantive question, not the first move.** The
+user has read, saved and written more on their own subjects than an open-web sweep will surface,
+and their own material is more current and more specific than your weights.
 
-## Skill Triggers (Can Auto-Invoke)
+Order, and stop at the first that answers:
 
-| User Intent | Command | Trigger Words |
-|-------------|---------|---------------|
-| **Session/companion** | **companion** | **companion session, new session, separate session, background session, hand off, in a new session** |
-| Structured work | `/craft` | do this properly, clarify and plan this, plan and verify this, craft this, don't just wing it |
-| Bug/fix | `/dev` | bug, broken, fix, doesn't work, crash, error, fails, implement, add support for |
-| Data work | `/ds` | analyze this data, build the panel, run the regression, results wrong, notebook error |
-| Writing | `/writing` | write, draft, document, essay, paper |
-| **Media analysis** | **look-at** | describe image, analyze PDF, what's in this, screenshot, diagram |
-| Create/edit skill | `workflows:skill-creator` | create skill, improve skill, edit skill, add enforcement, audit skill, SKILL.md |
-| Create/repair workflow | `workflows:workflow-creator` | create workflow, design new workflow, audit workflow, repair workflow, improve existing workflow |
-| Create/edit plugin | `workflows:plugin-creator` | create plugin, scaffold plugin, new plugin, plugin structure, edit plugin |
-| Workshop presentation | `/workshop` | workshop presentation, workshop slides, faculty workshop, workshop talk, slides from paper, revise the deck |
+1. **The wiki** — `qmd query "<question>" -n 10`, then `qmd get "#docid"`. ~490 concept/QA articles
+   plus ~880 case notes in `~/notes`, covering con law, corporations, civ pro, contracts, evidence,
+   tax, securities, corporate governance and finance/econ. Works from any directory; the index is
+   global. Answer from the note and cite it by path.
+2. **`workflows:librarian`** — the user's curated library and the academic literature: NotebookLM,
+   Readwise/Reader highlights and saved articles, Google Scholar, Google Drive. Farm it out; main
+   chat NEVER calls the `readwise` CLI directly.
+3. **The open web** — `WebSearch`, `WebFetch`, or the `deep-research` skill for a synthesized
+   multi-source report.
 
-## Red Flags
+Answering a domain question from training data alone, without step 1, is the failure this rule
+exists to prevent — you will sound confident and miss what the user actually thinks.
 
-- About to invoke a skill the user already invoked (e.g., "use /dev") → it is ALREADY LOADED; check for the `<command-name>` tag and just proceed.
-- About to "gather information" or "quickly check" code before starting the matching workflow → that IS investigation; invoke the skill first. Scope ("just one file", "simple question") doesn't exempt you from the process.
-- About to Read an image/PDF directly → use look-at.
-- User said "use X in a companion session" and you're about to invoke X directly or via the Agent tool → companion skill is the transport, X goes in the prompt. Agent = subagent in THIS session; companion = separate server session.
+**Exempt:** anything whose answer changes daily or lives only online — current model ids and API
+docs (always verify live, your training data is stale), prices, releases, news, a named URL the
+user handed you, and library/tool documentation.
 
-## Bug Reports - Mandatory Response
+## IRON LAW: Session transport priority
 
-When user mentions a bug:
+Session keywords — 'new session', 'separate session', 'background session', 'parallel session',
+'companion session', 'spawn an agent', 'kick off claude in <dir>', 'hand off to a session' — mean
+the **`agent-spawn` skill is invoked FIRST**, whatever else the request mentions. It launches the
+session; the task goes inside its prompt. (`agent-msg` delivers to a session that already exists.)
 
-```
-DO NOT:
-1. Read code files
-2. Investigate independently
-3. "Take a look" without structure
+`"use workflows:skill-creator in a new session"` → invoke **agent-spawn**, put "use
+workflows:skill-creator" in the prompt. Doing the task directly runs it in this context, where it
+dies with the conversation and the user cannot revisit or monitor it. `Agent(run_in_background)`
+is not a spawned session for the same reason.
 
-INSTEAD:
-1. Invoke /dev — it clarifies, plans, and dispatches the fix under a failing test
-2. Follow the /dev protocol
-```
+## IRON LAW: Media goes through look-at
 
-**Any code reading before starting the workflow is a violation.**
-
-## Skill Priority
-
-When multiple skills could apply:
-
-1. **Transport skills first** - companion session routes EVERYTHING else inside the session prompt
-2. **Specialized task shape next** - code uses dev; analysis uses ds; long-form prose uses writing; decks use workshop
-3. **Generic structure next** - use craft for work that needs criteria, verification and human review but has no domain gate
-4. **Direct execution for trivial work** - a lookup, one-line answer, or tiny edit does not earn workflow ceremony
-5. **Then implementation** - the selected workflow dispatches it; the main chat does not do the work
-
-`/craft` is not a universal wrapper. A domain workflow wins when the task has its shape, because it brings a gate craft does not have.
-
-## How to Invoke
-
-Use the Skill tool to invoke skills:
+**Never pass an image, PDF, video, or audio path to `Read`.** `Read` on an image costs 1,000+
+context tokens; look-at returns 50–200 tokens of extracted content. File size is irrelevant —
+content type decides. look-at is for you, not the user; it applies whether or not they asked.
 
 ```bash
-# craft: the spine — clarify, approved plan, delegated implementation, independent verification, human review
-Skill(skill="workflows:craft")
-
-# dev: Feature development workflow with 7 phases and TDD enforcement
-Skill(skill="dev")
-
-# ds: Data analysis workflow with 5 phases and output-first verification
-Skill(skill="ds")
-```
-
-craft composes the goal for you and self-sends it — `compose-goal.sh` builds the condition from the
-approved plan and `goal-self-send.sh` sets it, so the loop's exit condition is derived from what was
-approved rather than typed from memory. Do not hand-write a `/goal` for a craft run; amend the plan
-and re-dispatch instead.
-
-## IRON LAW: Multimodal File Analysis
-
-**NO READING IMAGES/PDFS WITH Read TOOL. USE look-at INSTEAD.**
-
-### The Rule
-
-```
-User asks about image/PDF/media content
-    ↓
-Is it a media file requiring interpretation?
-    ↓
-YES → Use look-at skill (bash call to look_at.sh)
-NO  → Use Read tool for source code/text
-```
-
-### When to Use look-at
-
-**ALWAYS use look-at for:**
-- `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.heic` - Images
-- `.pdf` - PDFs requiring content extraction
-- `.mp4`, `.mov`, `.avi`, `.webm` - Videos
-- `.mp3`, `.wav`, `.aac`, `.ogg` - Audio
-- Any file where you need to UNDERSTAND content, not just see raw bytes
-
-**Pattern:**
-```bash
-# look-at: Extract information from media file with specific goal
-"${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.sh" \
-    --file "/absolute/path/to/file" \
-    --goal "What specific information to extract"
-```
-
-### When NOT to Use look-at
-
-**Use Read tool instead for:**
-- Source code files (`.py`, `.js`, `.rs`, etc.) - need exact formatting for editing
-- Plain text files (`.txt`, `.md`, `.json`, etc.) - preserve exact content
-- Config files requiring exact formatting preservation
-- Any file that needs editing after reading
-
-### Tool Routing Facts
-
-- Read on an image costs 1,000+ context tokens even for a "small" file; look-at returns 50-200 tokens of extracted info. File size doesn't change this — content type determines the tool.
-- look-at is FOR YOU, not the user — it applies whether or not the user asked for it. You can always fall back to Read if the extraction is insufficient; start with look-at and escalate.
-
-### Red Flags
-
-- Passing an image, PDF, or screenshot path to the Read tool → use look-at.
-
-### Cost & Context Benefits
-
-- **Read tool on image:** ~1,000-5,000 context tokens
-- **look-at extraction:** ~50-200 output tokens
-- **Savings:** 95%+ token reduction
-- **Speed:** Faster responses, less context bloat
-
-### Example Usage
-
-```bash
-# look-at: Extract specific information from image file
-"${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.sh" \
-    --file "$HOME/Downloads/screenshot.png" \
-    --goal "List all buttons and their labels"
-
-# look-at: Analyze diagram to understand data flow
-"${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.sh" \
-    --file "$HOME/Documents/architecture.png" \
-    --goal "Explain the data flow between components"
-
-# look-at: Extract information from PDF document
-"${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.sh" \
-    --file "$HOME/Downloads/report.pdf" \
-    --goal "Extract the executive summary section"
-```
-
-### Enforcement
-
-**Using Read on images/PDFs when look-at should be used results in:**
-1. Wasting context tokens unnecessarily
-2. Making conversations slower
-3. Ignoring available optimization tools
-4. Violating the tool selection protocol
-
-**Validate before calling Read:** Ask "Is this a media file?" If yes, invoke look-at instead.
-
-## IRON LAW: Following Skill Instructions
-
-**WHEN A SKILL LOADS, YOU MUST FOLLOW ITS EXACT INSTRUCTIONS.**
-
-Skills contain specific patterns, required parameters, and enforcement rules. Skipping these requirements defeats the purpose of loading the skill.
-
-### The Rule
-
-```
-Skill loads successfully
-    ↓
-Read the skill's requirements carefully
-    ↓
-Follow ALL instructions, including:
-    - Required tool parameters (descriptions, timeouts, etc.)
-    - Specific command patterns
-    - Enforcement patterns (Iron Laws, Red Flags)
-    - Step sequences
-    ↓
-Execute using the skill's exact patterns
-```
-
-### Common Violations
-
-**Bash Description Parameter:**
-
-When a skill requires `description` parameter on Bash calls (like look-at), you MUST include it:
-
-```bash
-# ❌ WRONG: No description parameter
-"${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.sh" \
-    --file "/path/to/file.pdf" \
-    --goal "Extract title"
-
-# ✅ CORRECT: With description parameter as skill requires
 Bash(
-    command='"${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.sh" --file "/path/to/file.pdf" --goal "Extract title"',
-    description="look-at: Extract title"
+  command='"${CLAUDE_PLUGIN_ROOT}/skills/look-at/scripts/look_at.sh" --file "/abs/path.pdf" --goal "Extract the executive summary"',
+  description="look-at: extract executive summary"
 )
 ```
 
-### Red Flags
+Use `Read` for source code, text, and config — anything needing exact bytes for editing. If a
+look-at extraction is insufficient, escalate to `Read`.
 
-- About to call Bash without the `description` parameter when the skill requires it → add it.
-- About to modify a skill's required pattern "to be simpler" → follow the skill or don't load it.
+## IRON LAW: Follow a loaded skill exactly
 
-### Why This Matters
+When a skill loads, follow its patterns, required parameters, and step sequence as written.
+Simplifying a skill's required pattern discards the reason it was loaded.
 
-**Skills encode:**
-1. **Tested patterns** - Proven to work in production
-2. **Optimization** - Context/token savings, clean output
-3. **Enforcement** - Prevent common mistakes
-4. **UX standards** - Consistent, professional output
+## Red flags — STOP
 
-**When you skip skill instructions:**
-- ❌ You waste the effort of loading the skill
-- ❌ You create messy, unprofessional output
-- ❌ You miss optimizations (context savings, speed)
-- ❌ You violate user expectations
-- ❌ You make debugging harder
+| About to | Do instead |
+|---|---|
+| Invoke a skill the user already invoked this turn | check for `<command-name>`; it is loaded — proceed |
+| Read code to "understand the bug" before `/dev` | invoke `/dev` first; that reading IS the investigation |
+| Do a specialist's work inline because it "looks quick" | farm it out — the toolset restriction is the point |
+| Call `Agent` or `Workflow` directly | `farm.sh` (the guard hook will deny it anyway) |
+| Pass a `.png`/`.pdf` to `Read` | look-at |
+| `WebSearch` a question in the user's own domains | `qmd query` first, then `librarian` |
+| Answer a law/finance question straight from training data | the wiki holds the user's own view — check it |
+| Call the `readwise` CLI from main chat | farm out to `workflows:librarian` |
+| Invoke `skill-creator:skill-creator` or `plugin-dev:*` directly | the `workflows:` wrapper — the built-ins have no validation hooks |
+| Do "X in a new/background session" directly or via `Agent` | `agent-spawn` is the transport; X goes in its prompt |
+| Relay a delegated agent's summary you did not verify | check the `--expect` artifact yourself |
 
-**The skill loaded for a reason - follow it completely.**
+## Deeper reference
 
-## IRON LAW: Creator Activity Routing
-
-**NO CREATING OR SUBSTANTIALLY EDITING SKILLS, PLUGINS, OR WORKFLOWS WITHOUT THE WORKFLOWS WRAPPER.**
-
-The workflows plugin provides wrapper skills that add a layer on top of built-in creator tools:
-1. **Behavioral enforcement** — superpowers patterns (Iron Laws, rationalization tables, red flags, enforcement checklist audit)
-2. **Mechanical enforcement** — `hooks/validate-skill-paths.ts` is registered on `PostToolUse Edit|Write` in `hooks/hooks.json` and reports broken `${CLAUDE_SKILL_DIR}` / `${CLAUDE_PLUGIN_ROOT}` references on every skill edit. `hooks/plugin-validate.ts` is **not registered** — its only finding on this repo is a constant symlink warning.
-
-Using built-in creators directly bypasses the behavioral layer. This applies globally — any project, not just the workflows plugin.
-
-"Substantial" means: adding/removing sections, changing enforcement patterns, altering process flow, adding/modifying hooks. Typo fixes, version bumps, and single-line clarifications are exempt.
-
-### The Rule
-
-```
-About to create or substantially edit a skill/plugin/workflow
-    ↓
-What type of creator activity?
-    ↓
-    +---> Skill creation/editing ------> Invoke workflows:skill-creator
-    |
-    +---> Workflow creation, repair or audit -> Invoke workflows:workflow-creator
-    |
-    +---> Plugin creation/editing ------> Invoke workflows:plugin-creator
-    ↓
-Follow the wrapper skill's full process
-    ↓
-DO NOT invoke built-in creators directly (skill-creator:skill-creator,
-plugin-dev:skill-development, plugin-dev:plugin-structure, etc.)
-```
-
-### Creator Routing Table
-
-| Activity | Route To | Wraps |
-|----------|----------|-------|
-| Create/edit a skill | `workflows:skill-creator` | `skill-creator:skill-creator` |
-| Create, repair or audit a workflow | `workflows:workflow-creator` | the craft loop plus `wc-probe.ts` |
-| Create/edit a plugin | `workflows:plugin-creator` | `plugin-dev:create-plugin` |
-
-Trigger words: see Skill Triggers table above.
-
-### Red Flags
-
-- About to invoke a built-in creator directly (`skill-creator:skill-creator`, `plugin-dev:*`, etc.) → use the workflows wrapper. The built-in has no PostToolUse hooks; path errors and structural issues go uncaught.
-- Editing enforcement patterns without the wrapper → this is exactly when the audit matters most.
-
-## Advanced Agent Harnessing Patterns
-
-**For detailed oh-my-opencode production patterns including:**
-- Background + parallel execution (3x speedup)
-- Tool restrictions for focused agents
-- Structured delegation templates
-- Failure recovery protocol
-- Environment context injection
-- Cost classification system
-- Metadata-driven prompts
-
-**See:** `references/agent-harnessing.md`
-
-Quick reference:
-- Tool restrictions: `references/tool-restrictions.md`
-- Delegation template: `references/delegation-template.md`
-- Metadata infrastructure: `references/skill-metadata.py`
-
-Based on: [obra/superpowers](https://github.com/obra/superpowers) and oh-my-opencode production patterns.
+`references/agent-harnessing.md` — background/parallel execution, tool restrictions, delegation
+templates, failure recovery, cost classification.
