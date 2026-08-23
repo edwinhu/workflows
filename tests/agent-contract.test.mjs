@@ -1132,15 +1132,17 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 // the teaching plugin, and dotfiles — because ~/.claude/agents/ is one namespace and a law that
 // stands unenforced does not care which repo shipped it.
 {
-  /** An absolute never-send law, however the body words it. Both markers are ABSOLUTE forms: a
-   *  conditional rule ("never send unless this turn says to") is a different claim and this set
-   *  deliberately does not match it on the heading alone. */
-  const SEND_LAW = [
-    /\bNEVER SENDS?\b/,
-    /\bno outbound authority\b/i,
-    /(^|[^\w])[Nn]ever[^\n]{0,60}\b(send|sends|reply|forward|RSVP)\b/m,
-  ]
-  const declaresSendLaw = body => SEND_LAW.some(re => re.test(body))
+  /** The outbound guard, by the script it registers rather than by how its prose is worded.
+   *
+   *  Sending is a normal capability gated by confirmation, not a prohibition: the guard returns
+   *  `permissionDecision: ask`, so a send is confirmed against the exact command and a session with
+   *  nobody to ask resolves that to a denial. Enforcement therefore lives in the hook, and the hook
+   *  is what this asserts.
+   *
+   *  Prose is deliberately NOT the detector. Matching phrasing meant the test tracked a vocabulary
+   *  instead of a mechanism, and it broke the moment the wording changed while the guarantee held. */
+  const GUARD = /outbound-send-guard\.sh/
+  const registersGuard = fm => GUARD.test(fm.raw)
 
   /** Every user-scoped agent file, from every repo that ships one, resolved through the ONE
    *  directory Claude Code reads. Enumerated; no repo is named as a special case. */
@@ -1157,21 +1159,20 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
     if (!fm) continue
     // The DESCRIPTION is a routing surface, not the agent's instructions; a law counts only when it
     // is in the body, which is what the agent is actually running under.
-    const body = text.slice(text.indexOf('\n---\n', 3) + 5)
-    if (!declaresSendLaw(body)) continue
+    if (!registersGuard(fm)) continue
     if (!values(fm, 'tools').includes('Bash')) continue
     lawful++
-    ok(`${file} declares a never-send law and holds Bash, so it must declare hooks:`,
+    ok(`${file} registers the outbound guard and holds Bash, so it must declare hooks:`,
        /^hooks:/m.test(fm.raw),
-       'sending happens only through Bash; with no PreToolUse guard the Iron Law is prose only')
+       'sending happens only through Bash; named outside a hooks: block the guard never runs')
     // A hook that is declared but points at nothing is the same failure one layer down.
     for (const m of fm.raw.matchAll(/^\s+command:\s*(\S+)/gm)) {
       const script = m[1].replace(/^~/, homedir())
       ok(`${file}: hook command ${m[1]} exists on disk`, existsSync(script), script)
     }
   }
-  ok('at least one agent declares a never-send law and holds Bash', lawful > 0,
-     'the marker set matched nothing — the rule would pass vacuously')
+  ok('at least one agent registers the outbound guard and holds Bash', lawful > 0,
+     'no agent registers outbound-send-guard.sh — the rule would pass vacuously')
 
   // NON-VACUITY. The assertion is worth its line only if it can fail. Run the SAME detector over
   // three temp agent files: the law + Bash + no hook must be caught, and neither control may fire.
@@ -1183,23 +1184,24 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   }
   /** The detector, factored out so the fixtures exercise the identical predicate. */
   const unenforced = p => {
-    const text = readFileSync(p, 'utf8')
     const fm = frontmatter(p)
-    const body = text.slice(text.indexOf('\n---\n', 3) + 5)
-    return declaresSendLaw(body) && values(fm, 'tools').includes('Bash') && !/^hooks:/m.test(fm.raw)
+    return registersGuard(fm) && values(fm, 'tools').includes('Bash') && !/^hooks:/m.test(fm.raw)
   }
-  const bad = fixture('zz-unenforced.md', 'name: zz-unenforced\ntools: Read, Bash\n',
-                      '## Iron Law: THIS AGENT NEVER SENDS\n\nNo outbound authority.')
+  // The guard named in a comment or in prose, where nothing runs it -- the failure this catches.
+  const bad = fixture('zz-unenforced.md',
+                      'name: zz-unenforced\ntools: Read, Bash\n# see ~/.claude/hooks/outbound-send-guard.sh\n',
+                      'Drafts by default.')
   const guarded = fixture('zz-guarded.md',
-                          'name: zz-guarded\ntools: Read, Bash\nhooks:\n  PreToolUse:\n    - matcher: Bash\n',
-                          '## Iron Law: THIS AGENT NEVER SENDS\n\nNo outbound authority.')
-  const nolaw = fixture('zz-nolaw.md', 'name: zz-nolaw\ntools: Read, Bash\n',
-                        'You draft prose. Send it when the user says to.')
-  const notbash = fixture('zz-notbash.md', 'name: zz-notbash\ntools: Read, Grep\n',
-                          '## Iron Law: THIS AGENT NEVER SENDS\n\nNo outbound authority.')
-  ok('the detector catches a never-send law with Bash and no hook (not vacuous)', unenforced(bad))
+                          'name: zz-guarded\ntools: Read, Bash\nhooks:\n  PreToolUse:\n    - matcher: Bash\n      hooks:\n        - type: command\n          command: ~/.claude/hooks/outbound-send-guard.sh\n',
+                          'Drafts by default.')
+  const noguard = fixture('zz-noguard.md', 'name: zz-noguard\ntools: Read, Bash\n',
+                          'You draft prose. Send it when the user says to.')
+  const notbash = fixture('zz-notbash.md',
+                          'name: zz-notbash\ntools: Read, Grep\n# ~/.claude/hooks/outbound-send-guard.sh\n',
+                          'Drafts by default.')
+  ok('the detector catches the guard named with Bash and no hooks: block (not vacuous)', unenforced(bad))
   ok('the detector does not fire when the hook is declared', !unenforced(guarded))
-  ok('the detector does not fire on an agent with no such law', !unenforced(nolaw))
+  ok('the detector does not fire on an agent that never names the guard', !unenforced(noguard))
   ok('the detector does not fire on an agent that cannot run Bash', !unenforced(notbash))
 }
 
