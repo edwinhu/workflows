@@ -1,6 +1,6 @@
 ---
 name: workshop
-description: Academic workshop presentations — Typst slides and speaker notes built from a research paper, run through craft with a computed deck gate. Use when the user says "create workshop slides", "build the deck", "presentation from this paper", "speaker notes", "/workshop", or wants a talk taken through clarification, an approved plan, delegated slide generation, independent deck verification and human review.
+description: "ALWAYS use when the deliverable is a research talk - Typst slides and teleprompter speaker notes built from a paper. Use when the user says \"create workshop slides\", \"build the deck\", \"make slides for my paper\", \"presentation from this paper\", \"write the speaker notes\", \"I'm presenting this at a seminar\", \"turn the paper into a 40-minute talk\", \"I have a workshop next week and nothing to show\", or \"/workshop\". Use proactively whenever a conference, seminar, job talk or brown bag comes up, even if the user never says \"slides\". NEGATIVE ROUTING: course lecture slides and lecture notes are teaching:slides and teaching:notes; grading a deck that is already built is the workshop-reviewer agent; a one-slide tweak on a deck that already exists goes to the workshop agent, since this skill runs a full clarify/plan/dispatch/human-review lifecycle; the paper's own prose is writing-econ or writing-legal."
 argument-hint: 'the paper to turn into a workshop deck'
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
 ---

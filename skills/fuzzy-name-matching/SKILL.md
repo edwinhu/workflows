@@ -1,7 +1,7 @@
 ---
 name: fuzzy-name-matching
 version: 1.0
-description: "Use when linking or deduping datasets by entity name rather than a shared key — 'fuzzy match', 'fuzzy name matching', 'entity resolution', 'record linkage', 'match company/person names', 'dedupe entity names', 'name-based join', 'bridge identifiers' (CIK ↔ permno ↔ gvkey ↔ wficn ↔ EIN ↔ personid), or any use of char n-gram TF-IDF, cosine similarity on names, `sparse_dot_topn`, or RapidFuzz at scale."
+description: "Use when linking or deduping datasets by entity NAME because no shared key exists — 'fuzzy match', 'fuzzy name matching', 'entity resolution', 'record linkage', 'match company or person names', 'match these on the firm name', 'just merge these on company name', 'dedupe entity names', 'name-based join', 'these two files have no common id', or any use of char n-gram TF-IDF, cosine similarity on names, `sparse_dot_topn`, or RapidFuzz at scale. Use proactively whenever a join is about to be keyed on a name string, even if the user never says 'fuzzy'. NEGATIVE ROUTING: identifier bridging that a real link table already covers (gvkey ↔ permno via CCM, cik ↔ gvkey via wciklink) is the wrds skill — come here only for identifiers that genuinely do not cross vendors; the surrounding merge, sample-coverage and pipeline work is ds and ds-constraints, not this skill."
 user-invocable: true
 ---
 

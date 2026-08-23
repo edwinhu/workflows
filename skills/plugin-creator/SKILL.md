@@ -1,6 +1,6 @@
 ---
 name: plugin-creator
-description: "This skill should be used when the user asks to 'create a plugin', 'scaffold a plugin', 'set up plugin structure', 'new plugin', 'edit the plugin manifest', 'wire plugin hooks', 'validate plugin structure', or needs plugin-level work spanning multiple components. For creating or editing a single skill (even inside a plugin), use skill-creator instead."
+description: "This skill should be used when the user asks to 'create a plugin', 'scaffold a plugin', 'set up plugin structure', 'new plugin', 'edit the plugin manifest', 'wire plugin hooks', 'validate plugin structure', 'audit my plugin's enforcement', or needs plugin-level work spanning multiple components. Use proactively whenever plugin.json, marketplace.json or hooks/hooks.json is being edited, even if the user never says 'plugin'. NEGATIVE ROUTING: never invoke plugin-dev:create-plugin, plugin-dev:plugin-structure or plugin-dev:plugin-validator directly — this skill is the wrapper that adds the enforcement audit they lack. Creating or editing a single skill, even inside a plugin, goes to skill-creator; designing, repairing or auditing a multi-phase workflow goes to workflow-creator."
 ---
 
 # Plugin Creator (with Superpowers Enforcement)

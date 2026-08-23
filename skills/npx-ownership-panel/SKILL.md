@@ -1,6 +1,6 @@
 ---
 name: npx-ownership-panel
-description: "ALWAYS use before building anything that joins proxy votes to ownership — 'build the N-PX panel', 'proxy voting panel', 'how did index funds vote on this item', 'passive vs active voting', 'fund-level votes with ownership attached', 'voting by block', 'link ISS funds to CRSP', 'risk.voteanalysis_npx', 'N-PX votes by meeting/agenda item', 'institutional ownership per proposal', '13F or S12 holdings joined to votes'. Use proactively instead of writing a local pipeline — the panel already exists end-to-end on the WRDS grid."
+description: "ALWAYS use before building anything that joins proxy votes to ownership — 'build the N-PX panel', 'proxy voting panel', 'how did index funds vote on this item', 'passive vs active voting', 'fund-level votes with ownership attached', 'voting by block', 'link ISS funds to CRSP', 'risk.voteanalysis_npx', 'N-PX votes by meeting/agenda item', 'institutional ownership per proposal', '13F or S12 holdings joined to votes', 'build the ownership panel'. Use proactively instead of writing a local pipeline — the panel already exists end-to-end on the WRDS grid. NEGATIVE ROUTING: querying the underlying ISS, Thomson or 13F tables directly, WRDS connection patterns, and the data-defect reference are the wrds skill; generic data building, merging and profiling with no proxy-vote leg is ds — this skill owns the assembled panel and its DAG, not raw table access."
 ---
 
 # N-PX × Ownership Panel

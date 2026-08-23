@@ -1,6 +1,6 @@
 ---
 name: setup
-description: Use when the user says "set up workflows", "workflows setup", "install the plugin", "is workflows installed correctly", "verify my install", "check the workflows install", "/setup", or asks whether this plugin's agents and preloaded skills actually resolve on this machine.
+description: "Use when the user says \"set up workflows\", \"workflows setup\", \"is workflows installed correctly\", \"verify my install\", \"check the workflows install\", \"why isn't my agent's guidance loading\", \"my agent dispatch got denied\", \"/setup\", or asks whether this plugin's agents, their preloaded skills and the main-thread guard's allowlist actually resolve on this machine. Use proactively right after installing or updating the plugin — a preload that fails to resolve is logged to the debug log only, and the run reads exactly as if it had loaded. Machine-level and idempotent; offers one optional user-tier plansDirectory write, always behind a question. NEGATIVE ROUTING: setting up a course's teaching plugin is teaching:setup and checking the Codex CLI is codex:setup; actually upgrading to a newer plugin version is plugin-update — this skill only checks what is installed, it never installs."
 allowed-tools: [Bash, Read, Grep, Glob, AskUserQuestion]
 ---
 

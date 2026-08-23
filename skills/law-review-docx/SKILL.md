@@ -1,6 +1,6 @@
 ---
 name: law-review-docx
-description: "Use this skill to BUILD a formatted Word document from law review / legal MARKDOWN drafts via the law_review_template + pandoc (footnotes, TOC, styled tables) — NOT the generic 'docx' skill (edits docx content), NOT 'docx-render' (docx to PDF only). Triggers: 'generate a docx', 'create the Word file', 'export to docx', 'build the document', 'compile/finalize the draft', 'build the law review document', 'make a Word version', 'turn my markdown draft into Word', 'make the submission docx', 'apply the law review template'."
+description: "Use this skill to BUILD a formatted Word document from LAW REVIEW / legal MARKDOWN drafts — Bluebook footnotes, TOC, small caps, styled tables and vector figures. Triggers: 'build the law review document', 'make the Word version of my article', 'turn my markdown draft into Word', 'export the article to docx', 'compile/finalize the draft', 'make the submission docx for the law review', 'apply the law review template', 'the figure is blank in Word', 'fix the widows in the compiled PDF'. Use proactively once a legal markdown draft is finished and a Word file is implied but unnamed. NEGATIVE ROUTING: NOT 'law-econ-docx' (author-date citations plus a reference list, for JLE/JLS/JLEO/ALER — different citation model), NOT 'docx-typst' (source is Typst, not markdown), NOT the generic 'docx' skill (edits docx content), NOT 'docx-render' (renders an existing docx to PDF/PNG only), NOT 'docx-repair' (fixes a cloud-editor-damaged docx)."
 user-invocable: true
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: docx-render
-description: "Use when rendering/converting an EXISTING .docx (or .pptx/.xlsx) to PDF or PNG — 'convert docx to pdf', 'docx to pdf', 'render this Word doc', 'word to pdf', 'export docx as pdf', 'make a pdf of this docx', 'pdf from the docx', 'render the document to PDF'. The faithful path (Word's engine, incl. from background/headless jobs) lives in scripts/doc_render.py. NOT for editing docx content (use the generic 'docx' skill) and NOT for building a docx from markdown (use 'law-review-docx')."
+description: "Use when an EXISTING .docx, .doc, .pptx or .xlsx has to become a PDF or PNG — 'convert docx to pdf', 'docx to pdf', 'render this Word doc', 'word to pdf', 'export docx as pdf', 'make a pdf of this docx', 'pdf from the docx', 'render the document to PDF', 'the PDF has the wrong page count', 'why did the layout reflow'. Use proactively before handing any Word document to a human as a PDF, and INSTEAD OF hand-rolling soffice/libreoffice, even when no one says 'render'. NEGATIVE ROUTING: NOT for editing docx content (use the generic 'docx' skill), NOT for building a docx from markdown (use 'law-review-docx' for Bluebook footnotes or 'law-econ-docx' for author-date), NOT for building one from a Typst source (use 'docx-typst'), NOT for a damaged docx (use 'docx-repair'), NOT for inspecting or diffing individual slides (use 'pptx-render')."
 user-invocable: true
 ---
 

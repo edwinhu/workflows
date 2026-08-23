@@ -1,7 +1,7 @@
 ---
 name: crsp-lseg-splice
 version: 1.0
-description: Use when "CRSP is stale / out of date", "CRSP only goes through December", "extend CRSP to today", "fill forward CRSP with LSEG", "current stock prices for my CRSP panel", "up-to-date returns for permnos", "splice CRSP and LSEG", "CUSIP to RIC for a CRSP universe", "backfill the CRSP gap", or any request to carry a CRSP daily/monthly stock series past CRSP's last data date using LSEG/Refinitiv.
+description: 'Use when "CRSP is stale / out of date", "CRSP only goes through December", "my panel ends in December", "why do my returns stop", "extend CRSP to today", "fill forward CRSP with LSEG", "current stock prices for my CRSP panel", "up-to-date returns for permnos", "splice CRSP and LSEG", "CUSIP to RIC for a CRSP universe", "backfill the CRSP gap", or any request to carry a CRSP daily/monthly stock series past CRSP''s last data date using LSEG/Refinitiv. Use proactively whenever a CRSP panel has to reach a date after CRSP''s annual cutoff, even if the user never mentions LSEG — CRSP returns a short panel without erroring, and a naive concat fabricates the seam return. NEGATIVE ROUTING: a CRSP query that stays inside CRSP''s coverage, or CIZ table and column names, is crsp-v2; LSEG session, quota, entitlement or general symbology questions are lseg-data; raw WRDS PostgreSQL access and connection patterns are wrds — this skill covers only the join between CRSP and LSEG.'
 user-invocable: true
 ---
 

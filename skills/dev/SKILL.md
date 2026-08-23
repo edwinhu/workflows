@@ -1,6 +1,6 @@
 ---
 name: dev
-description: Feature development and engineering changes under test-first discipline. Use when the user says "build this feature", "implement X", "fix this bug properly", "add support for", "/dev", or wants a code change taken through clarification, an approved plan, TDD-gated implementation, independent verification and human review.
+description: "Use when the user says \"build this feature\", \"implement X\", \"add support for\", \"add a flag for\", \"fix this bug properly\", \"this is broken, fix it\", \"refactor X\", \"write the tests for this\", \"/dev\", or hands over any code change that should ship with a real failing-then-passing test rather than a quick edit. Use proactively the moment a request implies changing code — before reading the codebase to understand the bug, since that reading is part of the run. NEGATIVE ROUTING: a change whose acceptance cannot be one command that fails now and passes later is /craft; a dataset, table, figure or number is /ds even when code produces it; a skill, workflow, hook or plugin manifest in this repo is skill-creator, workflow-creator or plugin-creator; a typo or one-line fix is done inline."
 argument-hint: 'the feature, change, or bug to develop'
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
 ---
