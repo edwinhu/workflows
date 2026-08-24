@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# craft-result.sh — adjudicate the JSON that `farm.ts --out` wrote for a craft run, then print it.
+# craft-result.sh — adjudicate the JSON that `farm.sh --out` wrote for a craft run, then print it.
 #
 #   craft-result.sh <craft-result.json>
 #

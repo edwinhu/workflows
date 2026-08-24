@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # CLI runner: delegate to a CLIProxyAPI wrapper in a separate process.
 #
-# WHY THIS REPLACED farm.ts. That runner shelled the wrapper ONLY for
-# `--settings-json`, harvests its env, and then reimplements the client that
-# wrapper already is, via the Agent SDK. Two things follow, both measured
+# THIS IS THE ONLY RUNNER. It replaced an Agent-SDK runner that shelled the
+# wrapper ONLY for `--settings-json`, harvested its env, then reimplemented the
+# client that wrapper already is. That runner was deleted 2026-08-23; craft
+# dispatch and re-dispatch both come here. Two reasons it went, both measured
 # 2026-08-22:
 #
 #   * The SDK's `options.agent` applies an agent's tool restrictions and model
@@ -18,8 +19,8 @@
 #
 # Invoking the wrapper directly also deletes the env-harvesting layer: the
 # wrapper sets its own environment. What is kept, because it is the only
-# load-bearing logic in farm.ts, is the anti-simulation clause and artifact
-# verification.
+# load-bearing logic in the SDK runner, is the anti-simulation clause and
+# artifact verification.
 #
 #   farm.sh --tasks tasks.json --cwd /repo   # JSON array; one row or many, run in parallel
 #   farm.sh --workflow /abs/wf.js --args /abs/args.json --out /abs/result.json
@@ -101,14 +102,70 @@ export FARM_OUT_CHILD=1
 # Rule 1: the model's own summary is not evidence. Check the artifact.
 # Empty counts as missing -- a created-but-unwritten file is not a result.
 verify() {
-  local missing=()
-  for p in "$@"; do [ -s "$p" ] || missing+=("$p"); done
+  local missing=() abs
+  for p in "$@"; do
+    # Resolved against $CWD -- where the AGENT worked -- not ours. They are routinely different
+    # (we are launched from wherever the caller sat, with --cwd pointing elsewhere), and a bare
+    # test then checks a path that never existed and calls every artifact missing.
+    case "$p" in /*) abs=$p ;; *) abs="$CWD/$p" ;; esac
+    [ -s "$abs" ] || missing+=("$p")
+  done
   printf '%s\n' "${missing[@]:-}"
+}
+
+# ---------------------------------------------------------------- the event stream
+# Read by farm-alive.sh (craft's liveness check) and farm-monitor.sh. Keyed on $$ -- the shell
+# that lives for the whole dispatch -- because those readers take the pid from the FILENAME and
+# kill -0 it; a per-row subshell pid is dead the instant its row ends and every finished row
+# would report GONE.
+#
+# enc() must stay byte-identical to farm-alive.sh's copy: the two are one protocol. Encoding
+# space, tab, = and % is what stops a caller-supplied label spelling a second `out=` field
+# inside an otherwise well-formed line and steering a checker at somebody else's run.
+enc() {
+  local s=${1-}
+  s=${s//%/%25}; s=${s// /%20}; s=${s//$'\t'/%09}; s=${s//=/%3D}
+  printf '%s' "$s"
+}
+
+EVENT_DIR="${TMPDIR:-/tmp}/farm-events"
+mkdir -p "$EVENT_DIR" 2>/dev/null || true
+EVENTS="$EVENT_DIR/$$.ndjson"
+emit() { printf 'farm: %s\n' "$*" >>"$EVENTS" 2>/dev/null || true; }
+
+# Nothing else ever deletes these, and farm-alive.sh greps every file in the directory on each
+# poll -- so without eviction the cost of one liveness check grows with every dispatch ever run
+# on this machine. Drop only files whose pid is gone AND that are old enough to be no run anyone
+# is still waiting on.
+evict_stale_events() {
+  local f pid
+  shopt -s nullglob
+  for f in "$EVENT_DIR"/*.ndjson; do
+    [ "$f" = "$EVENTS" ] && continue
+    [ -n "$(find "$f" -mmin +60 -print -quit 2>/dev/null)" ] || continue
+    pid=$(basename "$f" .ndjson)
+    case "$pid" in ''|*[!0-9]*) rm -f -- "$f"; continue ;; esac
+    kill -0 "$pid" 2>/dev/null || rm -f -- "$f"
+  done
+}
+evict_stale_events
+
+# Both spellings, because the caller and we may name the same file differently and a checker
+# that normalises on one side only reports a live run dead.
+claim() {
+  local label=$1 p=$2 c abs
+  emit "CLAIM $(enc "$label") path=$(enc "$p") "
+  # Canonicalise against $CWD, the directory the AGENT worked in. realpath resolves a relative
+  # path against OURS, which is a different directory whenever --cwd points elsewhere -- so the
+  # claimed path would name a file that never existed and a checker would never match it.
+  case "$p" in /*) abs=$p ;; *) abs="$CWD/$p" ;; esac
+  c=$(realpath -m -- "$abs" 2>/dev/null) || c=$abs
+  [ "$c" = "$p" ] || emit "CLAIM $(enc "$label") path=$(enc "$c") "
 }
 
 # One delegated run. Emits a JSON object on stdout; the transcript goes to a
 # temp file so tool_use events can be counted -- 0 tool calls on a work task is
-# a fabrication smell, the same signal farm.ts reads off the SDK stream.
+# a fabrication smell, the same signal the old SDK runner read off its stream.
 run_one() {
   local label="$1" prompt="$2" agent="$3"; shift 3
   local expects=("$@") log err rc text calls models missing stderr_tail
@@ -135,6 +192,10 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
     done
   fi
 
+  emit "START $(enc "$label") cwd=$(enc "$CWD") out=$(enc "${OUT:-}") expect=${#real_expects[@]}"
+  for _e in "${real_expects[@]:-}"; do [ -n "$_e" ] && claim "$label" "$_e"; done
+  [ -n "${OUT:-}" ] && claim "$label" "$OUT"
+
   local -a cmd=("$WRAPPER" -p "${prompt}${ANTI_SIM}" --output-format stream-json --verbose)
   [ -n "$agent" ] && cmd+=(--agent "$agent")
   # Keep stderr: a provider that dies (proxy down, model rejected, auth stale) writes
@@ -151,6 +212,14 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
   # verify prints one blank line when nothing is missing; drop it.
   [ "${#missing[@]}" -eq 1 ] && [ -z "${missing[0]}" ] && missing=()
   rm -f "$log" "$err"
+
+  # The same verdict the caller gets: exit 0 AND every promised artifact present. A run that
+  # exits 0 having dropped its deliverable is a failure, and DONE-on-rc-alone would call it ok.
+  if [ "$rc" -eq 0 ] && [ "${#missing[@]}" -eq 0 ]; then
+    emit "DONE $(enc "$label") ok toolCalls=${calls:-0}"
+  else
+    emit "DONE $(enc "$label") fail rc=$rc missing=${#missing[@]} toolCalls=${calls:-0}"
+  fi
 
   jq -n --arg label "$label" --arg result "$text" --argjson toolCalls "${calls:-0}" \
         --argjson models "${models:-[]}" --argjson exit "$rc" \
@@ -171,6 +240,12 @@ if [ -n "$TASKS" ]; then
     [ "$p" != "null" ] || refuse "--tasks $TASKS: task $i has no string \"prompt\""
     l=$(jq -r ".[$i].label // \"task-$i\"" "$TASKS")
     a=$(jq -r ".[$i].agent // \"\"" "$TASKS"); [ "$a" = "null" ] && a=""
+    # enc() cannot save a newline: it would split the record, and a forged DONE line inside a
+    # label is indistinguishable from a real verdict to every reader of this stream.
+    case "$l$p$a" in
+      *[$'\n\r\t']*|*[$'\001'-$'\010']*)
+        refuse "task $i label contains a control character; not allowed in the event stream" ;;
+    esac
     mapfile -t e < <(jq -r ".[$i].expect // [] | if type==\"array\" then .[] else . end" "$TASKS")
     run_one "$l" "$p" "$a" "${e[@]:-}" > "$dir/$i.json" &
   done

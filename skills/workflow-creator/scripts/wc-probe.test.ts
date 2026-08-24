@@ -3187,9 +3187,9 @@ function repoFixture(files: Record<string, string>): string {
 }
 
 describe('D35 — P12: a craft-args fence dispatches through craft-dispatch.sh', () => {
-  test('(a) naming farm.ts and never craft-dispatch.sh is a CRITICAL', () => {
+  test('(a) naming a runner and never craft-dispatch.sh is a CRITICAL', () => {
     const dir = fixture({
-      'SKILL.md': `${skillMd('handrolled', 'Dispatch with `farm.ts` and the args file.')}\n${argsFence(1, ['gate'])}\n`,
+      'SKILL.md': `${skillMd('handrolled', 'Dispatch with `farm.sh` and the args file.')}\n${argsFence(1, ['gate'])}\n`,
     })
     const found = rulesOf(dir, 'P12')
     expect(found.length).toBe(1)
@@ -3197,17 +3197,47 @@ describe('D35 — P12: a craft-args fence dispatches through craft-dispatch.sh',
     expect(cli(['--target', dir]).code).toBe(1)
   })
 
-  test('(a) the finding points at the line that names farm.ts', () => {
-    const body = ['prose', '', 'Dispatch with `farm.ts`, absolute --args.'].join('\n')
+  // The rule is "hand-rolled instead of craft-dispatch.sh", not "the runner that happened to exist
+  // when it was written": keyed on a filename it retires itself silently at the next rename.
+  test('(a) fires whatever the hand-rolled runner is called', () => {
+    for (const runner of ['farm.sh', 'farm-legacy.ts', 'run-agents.mjs', 'dispatch-v2.js']) {
+      const dir = fixture({
+        'SKILL.md': `${skillMd('handrolled', `Dispatch with \`${runner}\` and the args file.`)}\n${argsFence(1, ['gate'])}\n`,
+      })
+      const found = rulesOf(dir, 'P12')
+      expect(found.length).toBe(1)
+      expect(found[0].severity).toBe('critical')
+      expect(found[0].detail).toContain(runner)
+    }
+  })
+
+  test('(a) the finding points at the line that names the runner', () => {
+    const body = ['prose', '', 'Dispatch with `farm.sh`, absolute --args.'].join('\n')
     const dir = fixture({ 'SKILL.md': `${skillMd('lineno', body)}\n${argsFence(1, ['gate'])}\n` })
     const found = rulesOf(dir, 'P12')
     expect(found.length).toBe(1)
     const text = read(join(dir, 'SKILL.md')).split('\n')
-    expect(text[found[0].line - 1]).toContain('farm.ts')
+    expect(text[found[0].line - 1]).toContain('farm.sh')
+  })
+
+  // A script named inside a fence is a mechanicalChecks command, not a claim about the dispatch.
+  test('(a) says nothing about a script named only inside a fence', () => {
+    const fence = argsFence(1, ['gate']).replace('cmd: "true"', 'cmd: "bash mech-all.sh"')
+    const dir = fixture({ 'SKILL.md': `${skillMd('mech', 'Craft owns the invocation.')}\n${fence}\n` })
+    expect(rulesOf(dir, 'P12')).toEqual([])
+  })
+
+  // CONTROL: naming a script is not routing through it — `workshop/SKILL.md` says it ships NO
+  // workflow.js, and a rule that read the filename alone called that a hand-rolled dispatch.
+  test('(a) says nothing about a script the file names without claiming as its dispatch', () => {
+    const body = 'It ships no `workflow.js` and restates none of craft\'s mechanics.'
+    const dir = fixture({ 'SKILL.md': `${skillMd('mentions', body)}\n${argsFence(1, ['gate'])}\n` })
+    expect(rulesOf(dir, 'P12')).toEqual([])
+    expect(cli(['--target', dir]).code).toBe(0)
   })
 
   test('(a) is clean when the file also names craft-dispatch.sh', () => {
-    const body = 'Dispatch through `craft-dispatch.sh`, never a hand-written `farm.ts` line.'
+    const body = 'Dispatch through `craft-dispatch.sh`, never a hand-written `farm.sh` line.'
     const dir = fixture({ 'SKILL.md': `${skillMd('routed', body)}\n${argsFence(1, ['gate'])}\n` })
     expect(rulesOf(dir, 'P12')).toEqual([])
     expect(cli(['--target', dir]).code).toBe(0)
@@ -3219,13 +3249,13 @@ describe('D35 — P12: a craft-args fence dispatches through craft-dispatch.sh',
     expect(rulesOf(dir, 'P12')).toEqual([])
   })
 
-  test('(a) a file naming farm.ts but emitting NO craft-args fence is not judged', () => {
-    const dir = fixture({ 'SKILL.md': skillMd('nofence', 'Dispatch with `farm.ts`.') })
+  test('(a) a file naming a runner but emitting NO craft-args fence is not judged', () => {
+    const dir = fixture({ 'SKILL.md': skillMd('nofence', 'Dispatch with `farm.sh`.') })
     expect(rulesOf(dir, 'P12')).toEqual([])
   })
 
   test('(a) an ignore-dispatch marker suppresses it', () => {
-    const body = ['<!-- wc-probe: ignore-dispatch -->', '', 'Dispatch with `farm.ts`.'].join('\n')
+    const body = ['<!-- wc-probe: ignore-dispatch -->', '', 'Dispatch with `farm.sh`.'].join('\n')
     const dir = fixture({ 'SKILL.md': `${skillMd('marked', body)}\n${argsFence(1, ['gate'])}\n` })
     expect(rulesOf(dir, 'P12')).toEqual([])
     expect(cli(['--target', dir]).code).toBe(0)
@@ -3233,7 +3263,7 @@ describe('D35 — P12: a craft-args fence dispatches through craft-dispatch.sh',
 
   test('the dispatch marker is honoured vocabulary, not a P9 finding', () => {
     expect(probe.KNOWN_EXEMPTION_RULES).toContain('dispatch')
-    const body = ['<!-- wc-probe: ignore-dispatch -->', '', 'Dispatch with `farm.ts`.'].join('\n')
+    const body = ['<!-- wc-probe: ignore-dispatch -->', '', 'Dispatch with `farm.sh`.'].join('\n')
     const dir = fixture({ 'SKILL.md': `${skillMd('vocab3', body)}\n${argsFence(1, ['gate'])}\n` })
     expect(rulesOf(dir, 'P9')).toEqual([])
   })

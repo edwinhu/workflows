@@ -48,13 +48,13 @@ set -euo pipefail
 # Self-locating: the skill root is this script's parent, so the copy runs wherever it is installed.
 SKILL=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 # farm-out ships alongside craft; a sibling copy wins, an installed one is the fallback, and
-# CRAFT_FARM overrides both. farm.ts installs its own SDK on first run.
+# CRAFT_FARM overrides both.
 FARM=${CRAFT_FARM:-}
 if [ -z "$FARM" ]; then
-  if [ -f "$SKILL/../farm-out/scripts/farm.ts" ]; then
-    FARM="$SKILL/../farm-out/scripts/farm.ts"
+  if [ -f "$SKILL/../farm-out/scripts/farm.sh" ]; then
+    FARM="$SKILL/../farm-out/scripts/farm.sh"
   else
-    FARM="$HOME/.claude/skills/farm-out/scripts/farm.ts"
+    FARM="$HOME/.claude/skills/farm-out/scripts/farm.sh"
   fi
 fi
 
@@ -443,7 +443,7 @@ fi
 [ -n "${CRAFT_REDISPATCH_DRYRUN:-}" ] && { echo "CRAFT_REDISPATCH_DRYRUN: nothing dispatched."; exit 0; }
 
 LOG="$RUN_DIR/run-$(date +%H%M%S).log"
-setsid nohup bun "$FARM" \
+setsid nohup bash "$FARM" \
     --workflow "$SKILL/workflow.js" \
     --args "$ARGS_ABS" --out "$RESULT" --cwd "$(pwd)" \
     > "$LOG" 2>&1 < /dev/null &

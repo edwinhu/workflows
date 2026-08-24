@@ -55,13 +55,20 @@ append it automatically. Do not hand-roll a delegation that skips it.
 
 `--agent <name>` runs the delegation AS one of your agents — its real system prompt,
 its preloaded constraints, its declared toolset. That last part is the whole decision,
-because every persona agent is deliberately sealed: `ds` is
-`Read/Grep/Glob/Edit/Write/Bash` with **no `Agent`, no `Skill`, no `Workflow`.**
+because every persona agent is sealed against DELEGATION: `ds` is
+`Read/Grep/Glob/Edit/Write/Bash/Skill` with **no `Agent` and no `Workflow`**, so it can
+do the work and load a domain skill, but it cannot fan out or dispatch a run.
+
+`Skill` is deliberately NOT withheld. Withholding `Agent`/`Workflow` prevents recursive
+fan-out; withholding `Skill` only blinded the persona to its own domain library — `ds`
+preloads `ds-constraints` and so knew the rules it would be graded against, while `wrds`,
+`crsp-v2`, `dewey`, `bmll`, `marimo` and ten more sat unreachable. `teaching` always
+carried `Skill`; the others not carrying it was drift, not policy.
 
 | Job | Shape |
 |---|---|
 | one well-scoped piece of work | a one-row `--tasks` file with `"agent": "ds"` — the persona's constraints are preloaded and its narrow toolset is the point |
-| needs to plan, fan out, dispatch subagents, or run a craft skill end-to-end | same, but **omit `"agent"`** — a sealed worker cannot do any of it |
+| needs to plan, fan out, dispatch subagents, or run a craft workflow end-to-end | same, but **omit `"agent"`** — a persona has `Skill` but no `Agent`/`Workflow`, so it cannot fan out or dispatch |
 | several independent jobs at once | more rows; each carries its own `"agent"` |
 
 Row count is orthogonal to the persona question: a fan-out of five can be five `ds`

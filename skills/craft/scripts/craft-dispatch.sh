@@ -24,7 +24,7 @@
 #   CRAFT_MECH_PROBE_TIMEOUT=300       per-check mechanical baseline timeout in seconds
 #
 # --run-dir exists for a readOnly run whose projectDir is a tree it must NOT write to. The run dir
-# defaulted to $PWD/.craft/, and $PWD is also passed as farm.ts --cwd, so the two were coupled: a
+# defaulted to $PWD/.craft/, and $PWD is also passed as the runner's --cwd, so the two were coupled: a
 # skill judging ~/areas/secreg had no way to dispatch from there without dropping args.json,
 # result.json and run.log into the tree it promises not to touch. --run-dir separates them; --cwd
 # stays $PWD so dispatched agents keep resolving relative paths the way they always have.
@@ -60,13 +60,13 @@ set -uo pipefail
 # Self-locating: the skill root is this script's parent, so the copy runs wherever it is installed.
 SKILL=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 # farm-out ships alongside craft; a sibling copy wins, an installed one is the fallback, and
-# CRAFT_FARM overrides both. farm.ts installs its own SDK on first run.
+# CRAFT_FARM overrides both.
 FARM=${CRAFT_FARM:-}
 if [ -z "$FARM" ]; then
-  if [ -f "$SKILL/../farm-out/scripts/farm.ts" ]; then
-    FARM="$SKILL/../farm-out/scripts/farm.ts"
+  if [ -f "$SKILL/../farm-out/scripts/farm.sh" ]; then
+    FARM="$SKILL/../farm-out/scripts/farm.sh"
   else
-    FARM="$HOME/.claude/skills/farm-out/scripts/farm.ts"
+    FARM="$HOME/.claude/skills/farm-out/scripts/farm.sh"
   fi
 fi
 
@@ -607,16 +607,16 @@ gs=$?
 
 # Phase 4. Detached, never foreground: a real gate runs 20-60 min and a foreground call is killed
 # mid-run. Harness-tracked background tasks were measured to die too; setsid was not.
-setsid nohup bun "$FARM" \
+setsid nohup bash "$FARM" \
   --workflow "$SKILL/workflow.js" \
   --args "$R/args.json" --out "$R/result.json" --cwd "$PWD" \
   > "$R/run.log" 2>&1 < /dev/null &
 
 sleep 2
-if pgrep -f "[f]arm\.ts .*$runid/result\.json" > /dev/null; then
+if bash "$SKILL/scripts/farm-alive.sh" "$R/result.json" > /dev/null; then
   echo "dispatched: $runid"
 else
-  echo "WARNING: no farm.ts process for $runid two seconds in — check $R/run.log" >&2
+  echo "WARNING: no live dispatch for $runid two seconds in — check $R/run.log" >&2
 fi
 
 cat <<EOF
@@ -625,7 +625,7 @@ Monitor it (persistent, no deadline) and call craft-result.sh when it fires:
 
   while :; do
     [ -s "$R/result.json" ] && break
-    pgrep -f "[f]arm\.ts .*$runid/result\.json" > /dev/null \\
+    bash $SKILL/scripts/farm-alive.sh "$R/result.json" > /dev/null \\
       || { echo "dispatch died with no verdict — see $R/run.log" >&2; exit 1; }
     sleep 30
   done

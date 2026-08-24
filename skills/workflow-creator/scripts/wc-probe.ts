@@ -738,7 +738,7 @@ export function isCodeFence(block: FenceBlock): boolean {
  * claimed exists — and `parseExemptions` deliberately ignores a marker inside a fence, so there was
  * no way to suppress it in place either.
  */
-/** @deprecated No production caller since P2 moved to `fencedLineSet` — demotion, not masking. */
+/** P2 moved to `fencedLineSet` (demotion, not masking); P12(a) reads this to judge PROSE only. */
 export function maskFences(md: string): string {
   const lines = md.split('\n')
   const drop = new Set<number>()
@@ -3120,10 +3120,12 @@ export function repoRootOf(from: string): string | null {
 /**
  * P12 dispatch routing — a file that emits a craft-args fence dispatches craft the way craft says.
  *
- * (a) CRITICAL. The file names `farm.ts` and never names `craft-dispatch.sh`. Hand-rolling the
- *     `farm.ts` line drops everything that script owns on the way in: TIER 1 `plan-lint`, TIER 2 the
- *     `redCommand` probe, TIER 2b `plan-preflight`. None of those failures is visible afterwards —
- *     the run simply proceeds ungated — so the omission has to be caught in the text.
+ * (a) CRITICAL. The file names some OTHER runner script and never names `craft-dispatch.sh`.
+ *     Hand-rolling that line drops everything craft-dispatch owns on the way in: TIER 1 `plan-lint`,
+ *     TIER 2 the `redCommand` probe, TIER 2b `plan-preflight`. None of those failures is visible
+ *     afterwards — the run simply proceeds ungated — so the omission has to be caught in the text.
+ *     Keyed on the SHAPE of a runner reference (any `<name>.sh|.ts|.mjs|.js`), never on one runner's
+ *     filename: a name-keyed rule retires itself silently the day the runner is renamed.
  *
  * (b) MAJOR. A fence whose `projectDir` literal lies OUTSIDE the repository containing this file,
  *     with no `--run-dir` anywhere in the file: craft then writes `args`/`result`/`log` into a
@@ -3133,14 +3135,56 @@ export function repoRootOf(from: string): string | null {
  * point is indistinguishable from documenting nothing, and inferring one produces confident findings
  * about a script nobody named.
  */
+/**
+ * A runner script named as the thing that starts the run. Deliberately shape-keyed, not name-keyed:
+ * matched on the extension a runner carries, so a rename cannot walk out from under the rule.
+ */
+export const RUNNER_REF = /[\w-]+\.(?:sh|ts|mjs|js)\b/
+
+/** The claim that makes a named script THIS workflow's dispatch rather than a script it mentions. */
+export const DISPATCH_CLAIM = /\b(?:dispatch(?:es|ed|ing)?|invoke[sd]?|invoking|fan(?:s|ned)?[ -]out)\b/i
+
+/**
+ * The runner a file names as its dispatch, or null. A line has to CLAIM the dispatch — naming a
+ * script while saying something else about it ("it ships no `workflow.js`") is not a routing choice.
+ */
+export function handRolledRunner(text: string): { name: string; line: number } | null {
+  const prose = maskFences(text).split('\n')
+  for (let i = 0; i < prose.length; i++) {
+    if (!DISPATCH_CLAIM.test(prose[i])) continue
+    const m = RUNNER_REF.exec(prose[i])
+    if (m) return { name: m[0], line: i + 1 }
+  }
+  return null
+}
+
+/**
+ * P12(a)'s view of "this file emits craft args", broader than `craftArgsFences` — which keys on the
+ * lens and mechanical declarations P10/P11 measure. A fence LABELLED `craft-args`, or one carrying a
+ * `tasks` array, arms a run this rule must judge even when it declares neither of those.
+ */
+const TASK_ROW_KEYS = ['acceptance', 'writablePaths', 'redCommand'] as const
+
+export function emitsCraftArgs(text: string): boolean {
+  if (craftArgsFences(text).length > 0) return true
+  for (const block of fencedBlocks(text)) {
+    const objs = findObjectLiterals(block.body)
+    // The info string is read as one word, so a ```json craft-args fence arrives labelled `json`:
+    // the task rows themselves are the signature, not the label.
+    if (!objs.some(o => o.keys.includes('tasks'))) continue
+    if (objs.some(o => TASK_ROW_KEYS.some(k => o.keys.includes(k)))) return true
+  }
+  return false
+}
+
 export function checkDispatchRouting(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
   const findings: Finding[] = []
   const fences = craftArgsFences(text)
-  if (fences.length === 0) return findings
+  if (!emitsCraftArgs(text)) return findings
 
-  const farmAt = text.indexOf('farm.ts')
-  if (farmAt !== -1 && !text.includes('craft-dispatch.sh')) {
-    const line = lineOf(text, farmAt)
+  const runner = !text.includes('craft-dispatch.sh') ? handRolledRunner(text) : null
+  if (runner) {
+    const line = runner.line
     if (!isExemptAt(exemptions, 'dispatch', line)) {
       findings.push({
         rule: 'P12 dispatch routing',
@@ -3148,9 +3192,9 @@ export function checkDispatchRouting(file: string, text: string, exemptions: rea
         file,
         line,
         detail:
-          'this file emits a craft-args fence and names farm.ts as the dispatch, never craft-dispatch.sh, so the run skips the TIER 1 plan-lint gate, the TIER 2 redCommand probe and TIER 2b plan-preflight',
+          `this file emits a craft-args fence and names ${runner.name} as the dispatch, never craft-dispatch.sh, so the run skips the TIER 1 plan-lint gate, the TIER 2 redCommand probe and TIER 2b plan-preflight`,
         remedy:
-          'dispatch through ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh and put the args in the plan\'s craft:dispatch arming block, or declare the exception with <!-- wc-probe: ignore-dispatch --> — a hand-written farm.ts line reports nothing about the gates it never ran',
+          'dispatch through ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh and put the args in the plan\'s craft:dispatch arming block, or declare the exception with <!-- wc-probe: ignore-dispatch --> — a hand-written runner line reports nothing about the gates it never ran',
       })
     }
   }
@@ -3584,7 +3628,7 @@ export function runProbe(
       // P10/P11 read RAW text: both are per-FENCE rules, and the code view keeps no fence boundary.
       findings.push(...checkSingleEntryPoint(file, text, fileExemptions))
       findings.push(...checkLensSetParity(file, text))
-      // P12 reads RAW text too: its fence half is per-fence, and its farm.ts half is a claim the
+      // P12 reads RAW text too: its fence half is per-fence, and its runner half is a claim the
       // file's PROSE makes, which the code view blanks.
       findings.push(...checkDispatchRouting(file, text, fileExemptions))
       findings.push(...checkTaskRowCoverage(file, text, fileExemptions))

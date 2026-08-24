@@ -298,7 +298,7 @@ no race, no ordering constraint.
 
 ## Phase 4 — workflow.js
 
-The args, annotated — write them to the args file as **plain JSON**, no comments, since `farm.ts`
+The args, annotated — write them to the args file as **plain JSON**, no comments, since the workflow
 `JSON.parse`s it:
 
 ```js
@@ -326,26 +326,27 @@ The args, annotated — write them to the args file as **plain JSON**, no commen
 
 **Dispatch through farm-out, never the built-in `Workflow` tool** — the guard at
 `~/.claude/hooks/main-thread-guard.sh` denies it unconditionally, so an in-session call is
-dead. `farm.ts` sets `FARM_OUT_CHILD=1`, which is what lets its child make the call.
+dead. `farm.sh` sets `FARM_OUT_CHILD=1`, which is what lets its child make the call.
 `craft-dispatch.sh` runs exactly this and prints the wait loop with the run's paths filled in; what
 follows is what it does, for when you are reading its output or a dispatch has gone wrong.
 
 ```bash
-R=.craft/<run-id>; mkdir -p "$R"          # farm.ts refuses if --out's directory does not exist
+R=.craft/<run-id>; mkdir -p "$R"          # the runner refuses if --out's directory does not exist
 # write the args object above to "$R/args.json" as JSON
 # DETACHED, never foreground: a real gate runs 20-60 min and a foreground tool call caps out
 # and kills it mid-run, as does a harness-tracked background task.
-setsid nohup bun ${CLAUDE_PLUGIN_ROOT}/skills/farm-out/scripts/farm.ts \
+setsid nohup bash ${CLAUDE_PLUGIN_ROOT}/skills/farm-out/scripts/farm.sh \
   --workflow ${CLAUDE_PLUGIN_ROOT}/skills/craft/workflow.js \
   --args "$PWD/$R/args.json" --out "$PWD/$R/result.json" --cwd "$PWD" \
   > "$R/run.log" 2>&1 < /dev/null &
 # Wait for it: craft-result.sh is one-shot and knows nothing about the dispatch. Watch BOTH the
 # artifact and the process — a watcher that only greps for success is silent through a crash — and
 # key liveness on THIS run's --out path, or a concurrent dispatch reads as proof ours is alive.
-# `[f]` stops pgrep matching its own command line.
+# farm-alive.sh keys on the RUN, not the runner's filename: the runner's event file carries
+# out=<this run's --out> and its filename is the pid, so a rename cannot break the check.
 while :; do
   [ -s "$PWD/$R/result.json" ] && break
-  pgrep -f "[f]arm\.ts .*$R/result\.json" > /dev/null \
+  bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/farm-alive.sh "$PWD/$R/result.json" > /dev/null \
     || { echo "dispatch died with no verdict — see $R/run.log" >&2; exit 1; }
   sleep 30
 done
@@ -359,7 +360,7 @@ it fires. Fall back to the loop across turns only where Monitor is unavailable �
 Foundry, or `DISABLE_TELEMETRY`/`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` set. A Monitor dies with
 the session; the detached run does not, so `/goal` remains the notifier that survives a restart.
 
-`farm.ts` exits 2 on a malformed call (`--workflow` without `--out`, an `--args` file that is not
+`farm.sh` exits 2 on a malformed call (`--workflow` without `--out`, an `--args` file that is not
 readable JSON) and non-zero when `--out` came back missing or not a JSON object. `craft-result.sh`
 then refuses (exit 2) unless the file is one object carrying `overallPass`, `verdict`, `scoreTable`,
 `findings`, `tasksThatFlagged`, `mechanicalThatFailed` and `lensesThatFlagged` with the right types,

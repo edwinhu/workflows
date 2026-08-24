@@ -199,7 +199,7 @@ because exit-code-only assertions let a check pass while exercising a different 
 ## Phase 4 — the craft call
 
 The args go in the plan's `<!-- craft:dispatch -->` arming block, and the dispatch is **craft's own
-`craft-dispatch.sh`** — never a hand-written `farm.ts` line. That script owns the TIER 1 plan-lint
+`craft-dispatch.sh`** — never a hand-written runner line. That script owns the TIER 1 plan-lint
 gate, which refuses to dispatch on a `major`/`critical` plan finding and fails CLOSED on a verdict it
 cannot count; hand-rolling the invocation silently drops it. Craft owns the `Monitor` wait, the
 result handling and the return shape too, and `craft-result.sh` reads the verdict. This run's

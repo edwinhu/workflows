@@ -40,8 +40,8 @@ EOF
 # bypassPermissions is required — teammate permission prompts bubble to a lead
 # that has no human attached, and would otherwise stall the run.
 # The lead runs in --cwd; the subshell keeps that move off the --expect checks below, which
-# resolve against the CALLER's cwd exactly as farm.ts's artifact check does. $TMP is absolute
-# (mktemp -d), so the redirections are unaffected by the cd.
+# resolve against the CALLER's cwd. $TMP is absolute (mktemp -d), so the redirections are
+# unaffected by the cd.
 (
   cd "$CWD" || exit 1
   CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 \

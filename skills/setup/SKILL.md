@@ -193,7 +193,7 @@ path look right — start a new session.
 ## Step (c) — Check the Main-Thread Guard's Allowlist (REPORT ONLY)
 
 **Why.** `~/.claude/hooks/main-thread-guard.sh` denies loose `Agent` dispatches and reroutes
-them to `farm.ts`, which never loads an agent body. A denied dispatch loses the agent's own
+them to `farm.sh`, which never loads an agent body. A denied dispatch loses the agent's own
 framing silently.
 
 **A user-tier agent dispatches by its BARE name, so the `workflows:*` glob does not cover it.**

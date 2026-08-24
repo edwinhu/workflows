@@ -350,7 +350,7 @@ const args = {
 
 **Dispatch through farm-out, never the built-in `Workflow` tool** — the guard at
 `~/.claude/hooks/main-thread-guard.sh` denies `Workflow` unconditionally, so an in-session call
-is dead on arrival. `farm.ts` sets `FARM_OUT_CHILD=1`, which is what lets its child make the call:
+is dead on arrival. `farm.sh` sets `FARM_OUT_CHILD=1`, which is what lets its child make the call:
 
 ```bash
 # Dispatch EXACTLY as craft's Phase 4 states it — detached via `setsid nohup`, absolute
@@ -358,7 +358,7 @@ is dead on arrival. `farm.ts` sets `FARM_OUT_CHILD=1`, which is what lets its ch
 # a foreground or relative-path copy contradicts craft's own rules and dies mid-run.
 ```
 
-`farm.ts` exits 2 on a malformed call and non-zero when `--out` came back missing or not a JSON
+`farm.sh` exits 2 on a malformed call and non-zero when `--out` came back missing or not a JSON
 object; `craft-result.sh` then refuses (exit 2) unless that object carries craft's **seven** required
 return keys — all three selectors included — at the right types, **and** re-runs every
 mechanical check the result claims, refusing when the shell's exit code disagrees with the claimed
@@ -436,7 +436,7 @@ labelling`; that rule was authored against a corpus that does not follow it. Of 
 call sites in the spine skills, most sit in a **bare** fence and several in a ```` ```text ```` one,
 so a label rule left the gate reading a small minority of the call sites it exists to judge and
 flagged the majority as defective for rendering the way everything else does. **P8 is gone**; label
-the fence however you like — but an args object dispatched through `farm.ts` carries no `Workflow(`
+the fence however you like — but an args object dispatched through `farm.sh` carries no `Workflow(`
 call to be recognised by content, so label **that** fence `js` or P7 never checks its `refs`.
 
 This strictness is workflow-creator's, not craft's: craft treats `refs` as optional so its existing
@@ -726,10 +726,13 @@ run. Inferring it instead would mean guessing, and a wrong guess **fails silent*
 P10 and P11 judge what a craft-args fence *declares*; P12 judges how the file **dispatches** it. Two
 clauses, over any file emitting at least one fence:
 
-- **(a) CRITICAL** — the file names `farm.ts` and never names `craft-dispatch.sh`. That script is
-  craft's entry point and owns the gates that run *before* the workflow does — TIER 1 `plan-lint`,
-  the TIER 2 `redCommand` probe, TIER 2b `plan-preflight`. A hand-written `farm.ts` line skips all
-  three, and the skip leaves no trace afterwards: the run simply proceeds ungated.
+- **(a) CRITICAL** — the file names some *other* runner script and never names `craft-dispatch.sh`.
+  That script is craft's entry point and owns the gates that run *before* the workflow does — TIER 1
+  `plan-lint`, the TIER 2 `redCommand` probe, TIER 2b `plan-preflight`. A hand-rolled runner line
+  skips all three, and the skip leaves no trace afterwards: the run simply proceeds ungated. Keyed
+  on the **shape** of a runner reference (any `<name>.sh|.ts|.mjs|.js` on a line claiming the
+  dispatch), never on one runner's filename — a name-keyed rule retires itself silently the day the
+  runner is renamed.
 - **(b) MAJOR** — a fence whose `projectDir` literal lies outside the repository containing the file,
   with no `--run-dir` anywhere in it. Craft then writes `args`, `result` and `log` into a `.craft/`
   inside a tree the run was only meant to read.
@@ -802,7 +805,7 @@ run, alongside `SKILL.md`'s `lens-set-differs scope-fidelity` declaration, which
 | Another deterministic check is needed | add a second `mechanicalChecks` entry beside the first | add a **leg to `check.sh`** — the entry point's exit code is the whole mechanical verdict, a check declared beside it is one nothing reports when it is dropped, and P10 refuses the second entry unless `<!-- wc-probe: ignore-entry-point -->` says why |
 | Generated workflow needs a lifecycle | write a second spine inside the skill | supply parameters to an existing spine; a skill that re-derives a lifecycle is the finding `spine-fidelity` looks for |
 | Referencing a domain workflow | by its `meta.name` | `{scriptPath: "<absolute path>"}` — a bare name resolves only through `.claude/workflows/` |
-| Dispatching craft (or any workflow script) | the built-in `Workflow` tool | the guard at `~/.claude/hooks/main-thread-guard.sh` denies `Workflow` unconditionally, so the call never runs — go through `farm.ts --workflow … --args … --out …` and validate the result file with `craft-result.sh`. Same guard denies `Agent` for non-allowlisted subagent types; `Explore` and `Plan` stay allowlisted |
+| Dispatching craft (or any workflow script) | the built-in `Workflow` tool | the guard at `~/.claude/hooks/main-thread-guard.sh` denies `Workflow` unconditionally, so the call never runs — go through `farm.sh --workflow … --args … --out …` and validate the result file with `craft-result.sh`. Same guard denies `Agent` for non-allowlisted subagent types; `Explore` and `Plan` stay allowlisted |
 | Write-time guard needed on an implementer | reach for a `hooks:` guard before asking whether a `tools:` allowlist states the same restriction; or declare it in the generated SKILL.md frontmatter, in an agent file under `<skill>/agents/`, or in a PLUGIN-shipped agent's frontmatter | the SKILL.md hook was observed not to reach dispatched agents; `<skill>/agents/` is not a discovery location so nothing registers there; and `hooks:` is IGNORED for plugin-shipped agents, which registers an agent whose guard never fires — put it in an agent's frontmatter under `.claude/agents/` or `~/.claude/agents/` and thread it via `implementerAgentType`, or, inside a plugin, in that plugin's `hooks/hooks.json`. An allowlist PREVENTS the write and a hook only reacts to it, so a restriction expressible as `tools:` should never be a hook — a hook needs reach to work, an allowlist needs none |
 | Guard is in the agent's frontmatter, so the implementer will read what it prints | assume it prints and is read | a **blocking** guard (`exit 2` + stderr) is measured to reach the implementer verbatim; advisory output while exiting 0 is not — make the guard block, or have a `mechanicalCheck` re-derive the finding at gate time |
 | Hook command needs the skill directory | `CLAUDE_SKILL_DIR` in `hooks:` | it does not substitute there — absolute path. **P1 now refuses it**, because the hook silently never fires |
@@ -810,7 +813,7 @@ run, alongside `SKILL.md`'s `lens-set-differs scope-fidelity` declaration, which
 | Task or lens has no domain rules | omit `refs` | `refs: []` — absent is refused, empty is a statement |
 | A documented return shape drifts from the script | assume P5 caught it because the suite is green | P5 compares a SKILL.md's shape against the **script its `scriptPath` names** — check the `crossFileTargets` note to see which file the verdict was actually about |
 | A check needs suppressing | invent a rule name for the marker | only `all`/`hooks`/`paths`/`returns`/`workflow-refs`/`refs`/`entry-point`/`dispatch`/`task-coverage` are honoured; anything else is a `P9` finding, not a suppression. P11 has no `ignore-` form at all — declare the intended difference with `lens-set-differs <key>` |
-| A skill dispatches craft with its own `farm.ts` line | copy the invocation into the SKILL.md | that skips the gates `craft-dispatch.sh` owns on the way in, and P12 refuses it |
+| A skill dispatches craft with its own hand-rolled runner line | copy the invocation into the SKILL.md | that skips the gates `craft-dispatch.sh` owns on the way in, and P12 refuses it |
 | Gate says PASS and the probe was skipped | read `mechanicalRun: 0` as clean | nothing was checked; re-run with the checks present |
 | FAIL with an empty `tasksThatFlagged` | conclude there is nothing to fix | read `mechanicalThatFailed` **and** `lensesThatFlagged` too — the selector has three channels and only one of them owns tasks. A surviving lens finding re-runs the LENS, not a task. Only when all three are empty does an empty selector on a failing run mean re-run everything |
 | A generated gate field is filled in by the agent that did the work | ship it | pair it with a deterministic JS check or a separate low-effort probe — self-report is not a gate |
