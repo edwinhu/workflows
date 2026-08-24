@@ -228,40 +228,59 @@ For detailed rules, consult:
 - **`references/audit-patterns.md`** - Citation audit patterns and validation
 - **`references/abbreviations.md`** - Bluebook abbreviation tables
 
-### NotebookLM Integration
+**Only `quotations.md` has been checked against the book.** It was verified page-by-page against
+the Pinpoint scan on 2026-08-24 — 25 confirmed, 6 contradicted, 4 verified absent — and the six
+errors are corrected in it. The other seven were written the same way on the same day: from
+law-review style guides rather than the rule text. Style guides carry Rule 5's substance
+faithfully and its numbering unreliably, and the one file anyone checked turned out to invert
+three instructions while citing the correct subsections for them.
 
-**Its coverage is narrow — check the rule is in it before believing an answer.** The notebook's
-one source is a 53-page scanned excerpt (`annas-arch-….pdf`). Verified 2026-08-23 by asking it:
-the only FULL rule text present is **Rule 1 and 1.1-1.4** (pp. 51, 53), plus the Quick Reference
-tables. Everything else is cover scans, copyright pages, and cropped strips of the printed book's
-**thumb tabs** — so "rule 10", "rule 12" appear as tab labels with no text behind them, and a
-model asked what the PDF contains will read those tabs and confidently name rules it cannot quote.
-It did exactly that here before retracting under stricter questioning.
+So treat the other seven as **plausible but unverified**. Before relying on a rule from them in an
+edit that ships, look it up in Pinpoint below — it takes one query. Verdicts and method for the
+verified file: `scratch/bluebook-verify/REPORT.md`.
 
-**It cannot answer on Rule 5 (quotations) at all**, which is why
-`references/quotations.md` is still unverified.
+### Looking a rule up in the actual book
 
-**Refuse the web-research offer.** On a rule it does not hold, the notebook replies "Would you
-like me to perform some web research?" — observed three times. Accepting turns a web search into
-something formatted as a source-grounded answer, which is how an unverified reference file gets
-written by an author who believes they consulted the book.
-
-For Rule 1, signals, or the Quick Reference tables, query the Bluebook 21e (2020) notebook:
+**Pinpoint holds the full 21st edition — use it.** A complete 394-page scan is in the `Bluebook`
+collection (`b7425c3f3368f9c9`), OCR'd by Google, searchable to the page. This is the authoritative
+lookup for any rule in this skill, and it is what `references/quotations.md` was finally verified
+against.
 
 ```bash
-# Notebook ID: f70a9976-b443-43d5-b5fd-43ff86b2b700
-# `nlm` is on PATH (nix-managed). Add --citations list to get the Bluebook text
-# behind the answer; an unsourced answer from a notebook is not a rule.
-
-# Query specific Bluebook rules
-nlm generate-chat f70a9976-b443-43d5-b5fd-43ff86b2b700 "How do I cite an unpublished opinion under Rule 10.8.1?"
-
-# Get rule clarification
-nlm generate-chat f70a9976-b443-43d5-b5fd-43ff86b2b700 "What are the typeface conventions for treaty citations?"
-
-# Verify abbreviation tables
-nlm generate-chat f70a9976-b443-43d5-b5fd-43ff86b2b700 "What is the correct abbreviation for 'Environmental' in journal names per Table T13?"
+pinpoint search Bluebook "<terms>" --pages --order density --limit 60
+pinpoint generate ask Bluebook "<question>"       # locates fast; do NOT quote its paraphrase
 ```
+
+Four things learned the hard way, all of which cost a pass:
+
+- **`--order density`, not the default.** Document order means a bounded run stops early — Rule 5
+  sits at scan pp. 103-108 and a default-ordered run never reached past p. 71.
+- **It OR-matches; a quoted phrase returns zero.** Cast wide and filter locally with `awk`.
+- **`--no-dedupe` when a page you know exists will not come back.** Rule 1.5(b) at p. 86 returned
+  nothing across four term sets at limits up to 120; `--no-dedupe --limit 200` returned it in full.
+- **Quote from `--pages`, never from `generate ask`.** It locates well and paraphrases
+  confidently — it produced a fluent synthesis of a capitalization test that no line in the book
+  supports.
+
+Auth expires within the hour (`API error 7 (PermissionDenied)`); `pinpoint auth` re-lifts the
+session from the CDP browser. Re-auth and retry — do not read an auth failure as "the rule is not
+in the book."
+
+### NotebookLM — narrow, and mostly superseded
+
+The notebook (`f70a9976-b443-43d5-b5fd-43ff86b2b700`) holds a **53-page excerpt**, not the book.
+Verified 2026-08-23: the only full rule text is **Rule 1 and 1.1-1.4** (pp. 51, 53) plus the Quick
+Reference tables. Everything else is cover scans and cropped strips of the printed book's **thumb
+tabs** — so "rule 10", "rule 12" appear as tab labels with nothing behind them, and a model asked
+what the PDF contains will read those tabs and name rules it cannot quote. It did exactly that
+before retracting under stricter questioning. It cannot answer on Rule 5 at all.
+
+**Refuse its web-research offer.** On a rule it does not hold it replies "Would you like me to
+perform some web research?" — observed three times. Accepting turns a web search into something
+formatted as a source-grounded answer, which is how an unverified reference file gets written by
+an author who believes they consulted the book.
+
+Prefer Pinpoint above. Reach for the notebook only for Rule 1 or the Quick Reference tables:
 
 **When to query the notebook:**
 - Rule wording is ambiguous in reference files

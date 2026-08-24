@@ -81,6 +81,18 @@ After "The Court stated that" the first word of the block is **not** capitalized
   quotation marks, however long it is.
 - Block format **does** apply to a 50+ word quotation in ordinary footnote text.
 
+### Paragraph Structure in Short Quotations — Rule 5.1(b)(iii)
+
+Do **not** reproduce the source's paragraph breaks in a quotation under fifty words — with one
+narrow exception, quoted from the rule (p. 104):
+
+> Do not indicate the original paragraph structure of quotations of forty-nine or fewer words
+> except when the material quoted would commonly be set off from the text, such as lines of poetry
+> or dialogue from a play. In this case, the quotation may appear as a block quote per rule
+> 5.1(a)(i), regardless of its length.
+
+So poetry and play dialogue may be blocked below the threshold. Nothing else may.
+
 ### Quotation Marks and Punctuation (Rule 5.1(b)(iv))
 
 Commas and periods go **inside** the closing quotation mark. Colons, semicolons, question marks,
@@ -207,6 +219,39 @@ When the quotation sits inside a parenthetical, its alteration parentheticals go
 Sorensen, Breaking Bluebook, 88 Va. L. Rev. 320, 322 (2009) ("I am totally crushing this
 edit." (emphasis added) (citation omitted)).
 ```
+
+### Quotations Within Quotations — Rule 5.2(e)
+
+> Whenever possible, a quotation within a quotation should be attributed to its original source.
+> Insert a parenthetical following any parenthetical required by rule 5.2(d).
+
+That ordering is the rule's own: the attribution parenthetical goes **after** the alteration /
+omission parentheticals, not before. The rule adds:
+
+> Note that sources included in parentheticals pursuant to this rule should be formatted as though
+> they appear in citation clauses (see rules 2.1 and 2.2(b)(iii)).
+
+### Internal Quotation Marks — Rule 5.2(f)
+
+All four subsections, because they cut in different directions (pp. 105-106):
+
+| | rule |
+|---|---|
+| (i) | Omit internal quotation marks if the opening mark is at the very beginning of an **in-line** quotation and the closing mark at the very end |
+| (ii) | Do **not** omit multiple levels of nested marks except as this rule allows; alternate double and single marks |
+| (iii) | Do **not** drop the `quoting` parenthetical because this rule required omitting the marks — omit `quoting` parentheticals only under Rule 10.6.3 |
+| (iv) | Do **not** omit internal quotation marks in **block** quotations |
+
+(i) is limited to in-line quotations and (iv) is its block-quote counterpart — the pair is easy to
+misapply in the wrong direction. Rule 5.2(f)(ii)'s final clause could not be retrieved in full from
+the scan; check a print copy before relying on the nesting detail.
+
+### Nesting Parentheticals — Rule 10.6.4
+
+Not a Rule 5 provision, but it governs what happens when the parentheticals above collide:
+
+> If an explanatory parenthetical contains text that itself requires a "quoting" or "citing"
+> parenthetical, the two parentheticals should be nested.
 
 ## Omissions (Rule 5.3)
 
