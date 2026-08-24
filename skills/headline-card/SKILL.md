@@ -64,7 +64,13 @@ who knows the paper.
 |---|---|
 | Financial Times, FT | `#FFF1E5` salmon |
 | WSJ, NY Times, Bloomberg, ABC News | `#FFFFFF` |
+| X, Twitter | `#FFFFFF` — light-mode surface; the mark is black |
 | anything else | `#F7F4EC` cream fallback |
+
+`X`/`Twitter` is a venue, not a second function. The card suppresses the
+newspaper-only chrome for it — top rule, kicker, serif headline face, highlighter
+swipe — and takes `handle:` (`"@elonmusk"`) beside the mark. Everything else, the
+stock table included, is shared.
 
 Add a venue to the `stocks` dictionary in `theme.typ` rather than passing a
 one-off, so the next card for that outlet inherits it. `stock: rgb("…")`
@@ -141,6 +147,7 @@ the last two words with ` `. Never pad with filler to fix a widow.
 | No yellow swipe | `highlight` is not an exact substring of `headline` | match curly vs straight quotes character for character |
 | Card doesn't read as an object on white stock | border derived from the stock is near-white | the border is a fixed grey; do not re-derive it from `newsprint` |
 | An FT card looks like every other card | venue missing from the `stocks` dictionary | add it |
+| An X post wears a serif headline, a top rule or a yellow swipe | venue not spelled `X`/`Twitter`, so it took the newspaper branch | fix the venue string — never add a second card function |
 | Dek is generic | summarised instead of quoted | use the publication's own standfirst |
 | A date is invented | it wasn't in the source | omit the field; never fabricate one |
 | `<text>` in the logo SVG | placeholder, not a logo | download the real one |
