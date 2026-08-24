@@ -430,7 +430,11 @@
               // Name over handle. With no display name the handle carries the
               // slot alone rather than leaving a bold gap.
               if name != none and name != "" {
-                stack(dir: ttb, spacing: 0.32em,
+                // 10pt, not an em: `em` here resolves against the surrounding
+                // context rather than the 17pt name, so em values moved the gap
+                // only slightly. Measured at 110dpi: 0.5em -> 8px, 0.7em -> 11px,
+                // 10pt -> 15px.
+                stack(dir: ttb, spacing: 10pt,
                   text(size: 17pt, weight: "bold", fill: ink, name),
                   text(size: 15pt, weight: "regular", fill: x-mute, handle))
               } else if handle != none and handle != "" {
