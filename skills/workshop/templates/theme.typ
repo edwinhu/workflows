@@ -309,9 +309,14 @@
   kicker: none,
   stock: auto,
   handle: none,
+  name: none,
+  avatar: none,
 ) = {
   let ink = rgb("#16161c")
   let mute = rgb("#6a6458")
+  // X light mode: #536471 secondary text, #cfd9de dividers and border.
+  let x-mute = rgb("#536471")
+  let x-rule = rgb("#cfd9de")
   let hl-yellow = rgb("#ffe000")
   let serif = "Libertinus Serif"
   let sans = "Noto Sans"
@@ -368,6 +373,61 @@
 
   // Auto-height card centered in the slide body so it never runs into the
   // footer / institutional logo (height: 1fr filled the whole slide before).
+  // A post is not a clipping, so it does not get the masthead layout. A real X
+  // embed reads: avatar + display name over @handle at the LEFT, the mark at the
+  // TOP RIGHT, the post text at reading size, and the timestamp BELOW the text
+  // over a hairline. The newspaper card puts the mark left and the date top
+  // right — which is what made this read as a clipping OF a tweet rather than a
+  // tweet.
+  if is-post {
+    block(width: 100%, height: 1fr, align(center + horizon,
+      block(width: 90%, fill: newsprint, radius: 1em, inset: 1.6em,
+        stroke: 0.5pt + x-rule, {
+        set text(fill: ink, font: sans)
+        align(left, block(width: 100%, {
+          grid(columns: (auto, 1fr, auto), align: (left + horizon, left + horizon, right + top),
+            {
+              if avatar != none {
+                box(clip: true, radius: 50%, height: 2.6em, width: 2.6em,
+                  image(avatar, height: 2.6em, width: 2.6em, fit: "cover"))
+                h(0.7em)
+              }
+            },
+            {
+              // Name over handle. With no display name the handle carries the
+              // slot alone rather than leaving a bold gap.
+              if name != none and name != "" {
+                stack(dir: ttb, spacing: 0.15em,
+                  text(size: 17pt, weight: "bold", fill: ink, name),
+                  text(size: 15pt, weight: "regular", fill: x-mute, handle))
+              } else if handle != none and handle != "" {
+                text(size: 17pt, weight: "bold", fill: ink, handle)
+              }
+            },
+            {
+              // The mark, top right. A supplied logo wins; otherwise set the X
+              // glyph heavy enough to read as the mark rather than as a letter.
+              if logo != none { box(baseline: 0pt, image(logo, height: 1.5em)) }
+              else { text(size: 22pt, weight: "bold", fill: ink, "X") }
+            })
+          v(1.0em)
+          set par(leading: 0.62em)
+          text(size: 21pt, weight: "regular", headline-content)
+          if quote != none {
+            v(0.7em)
+            set par(leading: 0.72em)
+            text(size: 15pt, fill: x-mute, quote)
+          }
+          if date != "" {
+            v(0.9em)
+            text(size: 14pt, fill: x-mute, date)
+            v(0.7em)
+            line(length: 100%, stroke: 0.5pt + x-rule)
+          }
+        }))
+      })
+    ))
+  } else {
   block(width: 100%, height: 1fr, align(center + horizon,
     block(width: 90%, fill: newsprint, radius: 0.3em, inset: 1.8em,
       stroke: 0.5pt + rgb("#ded7c7"), {
@@ -419,6 +479,7 @@
       }))
     })
   ))
+  }
 }
 
 // ── Callout box ─────────────────────────────────────────────────────────

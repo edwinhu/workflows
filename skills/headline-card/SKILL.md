@@ -67,6 +67,35 @@ who knows the paper.
 | X, Twitter | `#FFFFFF` — light-mode surface; the mark is black |
 | anything else | `#F7F4EC` cream fallback |
 
+### The X card is an embed, not a clipping
+
+A post takes the same function and the same stock table, but an **embed layout**,
+because the masthead layout is what made it read as a clipping *of* a tweet:
+
+```json
+{
+  "venue": "X",
+  "name": "Matt Levine",
+  "handle": "@mattlevine",
+  "avatar": "../assets/avatars/mattlevine.jpg",
+  "date": "3:42 PM · Aug 22, 2026",
+  "headline": "The post text, verbatim."
+}
+```
+
+| slot | embed | newspaper |
+|---|---|---|
+| mark | top **right** | left, as the masthead |
+| identity | avatar + **name over @handle**, left | venue wordmark |
+| date | **below** the text, over a hairline | top right, with the kicker |
+| text | sans regular 21pt | serif bold 28pt |
+| border | `#cfd9de` (X's own) | `#ded7c7`, radius 0.3em |
+
+`name` and `avatar` are optional — with no `name` the handle carries the slot
+alone rather than leaving a bold gap, and with no `avatar` the row simply starts
+at the name. Secondary text is `#536471`, X's own. Supply `logo` to use a real X
+mark; otherwise a bold sans `X` stands in.
+
 `X`/`Twitter` is a venue, not a second function. The card suppresses the
 newspaper-only chrome for it — top rule, kicker, serif headline face, highlighter
 swipe — and takes `handle:` (`"@elonmusk"`) beside the mark. Everything else, the
