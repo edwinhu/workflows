@@ -104,7 +104,25 @@ login already held by the CDP browser on 9222.
 
 ## Status of this skill
 
-Written against the **21st**. Only `references/quotations.md` has been verified against a rule text,
-and only Rule 5 has been compared across editions. Rules 1, 2, 4, 10, 12, 15-17 — where the other
-seven reference files live — have **not** been diffed, and the preface names changes in 10.8.3,
-12.4(f), 15.1(d), 15.8 and 18 that those files cannot know about.
+**Rebuilt against the 22nd.** All eight reference files now trace to the extracted 22e corpus
+(131 pages, ~454KB) rather than to law-review style guides, and `tests/bluebook-cites.test.ts`
+gates every rule citation in them against it. Six were rebuilt rule-by-rule and adversarially
+re-verified; `quotations.md` was verified against both editions; `abbreviations.md` and
+`audit-patterns.md` were rebuilt last, once T6, T10 and T13 were captured.
+
+**What that does and does not mean.** The gate proves every cited rule EXISTS in the 22e and that
+uncited claims are marked. It does not prove every statement is a faithful reading of its rule —
+that came from the verification passes, which found six substantive errors in `quotations.md` and
+four more across `cases.md`, `statutes.md` and `secondary-sources.md`, all corrected. Reports:
+`scratch/bluebook-verify/REPORT.md` (Rule 5) and `scratch/bb22/verify/` (the rest).
+
+**Still genuinely open:**
+
+- **Only Rule 5 has been diffed 21e-vs-22e.** The other rules were rebuilt FROM the 22e, which is
+  not the same as knowing what changed. The preface names edits to 10.8.3, 12.4(f), 15.1(d), 15.8
+  and 18; those files now reflect the 22e text but do not record the delta.
+- **Tables T1, T7, T11, T12 are not extracted**, and rules 6, 7, 8, 9, 11 and 19 are not either.
+  Claims resting on them are marked in place, not asserted.
+- **`abbreviations.md` does not yet USE T10 or T13.** They are in the corpus and it may state
+  their values; it has not been rewritten to do so. The gate passes because the file makes no
+  unbacked claim, not because the tables are worked in.
