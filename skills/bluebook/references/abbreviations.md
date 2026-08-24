@@ -469,11 +469,16 @@ empty. Nothing in this file states any T13 value. Note that T13 abbreviates *ins
 names appearing inside periodical titles* — it is not a list of finished journal abbreviations,
 and an earlier version of this file wrongly presented one as T13. Open T13.
 
+**T10 and T13 are now extracted** (22e pp. 340-42 for T10.1, 346-48 for T13) and this file may
+state their contents. T10 has three subtables — T10.1 U.S. states, cities and territories; T10.2
+Australian/Canadian/U.K.; T10.3 countries and regions — and the table's own instruction is that
+"any countries, territories, provinces, or cities omitted from tables T10.2 and T10.3 should not
+be abbreviated, except according to rules otherwise laid out in table T6."
+
 **Tables T1, T7, T11 and T12 — UNVERIFIED, and not characterised here.** None was extracted, so
-this file states nothing about their contents. Note that an earlier version of this paragraph
-described what each covers and said they are "cross-referenced by rules in the corpus" — that
-was not shown: T12's only appearance in the corpus is the site's own table-of-contents listing,
-not a rule cross-reference. Consult the tables directly.
+this file states nothing about their contents. An earlier version of this paragraph described what
+each covers and claimed they are "cross-referenced by rules in the corpus"; that was not shown —
+T12's only corpus appearance is the site's own table-of-contents listing. Consult them directly.
 
 ## Extraction caveat
 

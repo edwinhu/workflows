@@ -259,10 +259,10 @@ are real and are flagged inside the files rather than papered over:
 
 | gap | state of the capture | consequence |
 |---|---|---|
-| **Table T10** (geographical terms, p. 340) | captured **truncated** — the headnote plus the names of T10.1, T10.2 and T10.3, and nothing else | no state, city, province or country abbreviation is available; open the printed T10 |
-| **Table T13** (institutional names in periodical titles) | captured **empty** | no T13 value is stated anywhere; open the printed T13 |
-| Every table other than T6, T10, T13 | never fetched | cross-references to them are reported; their contents are not |
-| Rules 3, 5, 6, 7, 8, 9, 11, 19, 20, 21 | never fetched | checks resting on them are marked, not asserted |
+| **Table T10** (geographical terms) | **captured in full** — T10.1 (22e pp. 340-42), T10.2 and T10.3 as separate subtable pages | its values may be stated |
+| **Table T13** (institutional names in periodical titles, 22e pp. 346-48) | **captured in full** — the earlier empty capture used a wrong slug (`t13-institutional-names-...` rather than `t13-periodicals`) | its values may be stated |
+| Tables T1, T7, T11, T12 and the rest | never fetched | cross-references to them are reported; their contents are not |
+| Rules 6, 7, 8, 9, 11, 19 | never fetched | checks resting on them are marked, not asserted. Rules 3, 5, 20, 21 and 23 have since been extracted |
 
 Nothing from these gaps has been filled from training knowledge. A claim depending on one is
 either absent or carries a marker within a line of itself.

@@ -63,6 +63,28 @@ Checked against both editions' live text on 2026-08-24:
 - **Rules 22 and 23 are genuinely new.** `v22/rules/22-tribal-nations` returns rule text at p. 245;
   the same path under `v21` returns an empty body.
 
+## Slugs are not guessable — take them from the nav
+
+Two extractions came back empty or truncated because the URL slug was invented rather than read
+off the site, and both looked like "the content is not there":
+
+| guessed | actual |
+|---|---|
+| `2-typography-for-law-reviews` | `2-typefaces-for-law-reviews` |
+| `t13-institutional-names-in-periodical-titles` | `t13-periodicals` |
+
+A wrong slug returns the nav chrome with an empty body — indistinguishable from a page that has no
+content, which is how T13 was recorded as "renders empty" for a day. Pull hrefs from the page and
+filter, never construct them:
+
+```js
+[...document.querySelectorAll("a")].map(a => a.getAttribute("href")).filter(h => h && /t13-/.test(h))
+```
+
+Note also that some tables have **subtable pages**: T10's content lives at `t10-1-…`, `t10-2-…`,
+`t10-3-…`, and the parent page carries only the headnote. A short parent capture means look for
+children, not that the table is thin.
+
 ## A trap if you diff the editions yourself
 
 **The left-hand rule list is edition-independent chrome.** It renders Rules 1-23 on `v21` pages too.
