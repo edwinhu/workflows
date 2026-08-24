@@ -1,6 +1,6 @@
 ---
 name: bluebook
-description: "ALWAYS use for ANY legal citation question, even if the user never says 'Bluebook' - 'cite this case', 'how do I cite a statute', 'is this footnote formatted right', 'id. or supra here', 'cite a law review article', 'what signal goes here', 'format these footnotes', 'short form for this cite', or writing or checking any citation in a legal manuscript. NOT for auditing a whole manuscript's footnotes (use bluebook-audit) and NOT for rendering these rules in Typst (use docx-typst)."
+description: "ALWAYS use for ANY legal citation question, even if the user never says 'Bluebook' - 'cite this case', 'how do I cite a statute', 'is this footnote formatted right', 'id. or supra here', 'cite a law review article', 'what signal goes here', 'format these footnotes', 'short form for this cite', 'block quote this', 'where does the ellipsis go', 'is this quote altered right', or writing or checking any citation or quotation in a legal manuscript. NOT for auditing a whole manuscript's footnotes (use bluebook-audit) and NOT for rendering these rules in Typst (use docx-typst)."
 user-invocable: false
 ---
 
@@ -223,6 +223,7 @@ For detailed rules, consult:
 - **`references/statutes.md`** - Statutory and regulatory citations (R. 12-14)
 - **`references/secondary-sources.md`** - Books, articles, treatises (R. 15-17)
 - **`references/short-forms.md`** - Id., supra, hereinafter rules (R. 4)
+- **`references/quotations.md`** - Block quotes, alterations, ellipses (R. 5)
 - **`references/signals-parentheticals.md`** - Signals, parentheticals, order (R. 1)
 - **`references/audit-patterns.md`** - Citation audit patterns and validation
 - **`references/abbreviations.md`** - Bluebook abbreviation tables
