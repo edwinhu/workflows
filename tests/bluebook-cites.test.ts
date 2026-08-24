@@ -51,6 +51,11 @@ function unbackedCites(file: string) {
       // citation at all — a false positive in the checker, not a defect in the file.
       const before = line.slice(Math.max(0, m.index! - 4), m.index!)
       if (/[§¶]\s*$/.test(before)) continue
+      // Bluebook rules run 1-23. A "rule" numbered above that is definitionally not one,
+      // so it is a regulation or statute section the patterns above did not catch:
+      // "FAR 52.249-2(e)" yielded 52.24, as "§ 28.501" once yielded 28. Bounding by the
+      // real rule range retires that whole class instead of excluding each source by name.
+      if (Number(m[1].split('.')[0]) > 23) continue
       // Nor is a DOI or any other number living inside a URL: "https://doi.org/10.34190/..."
       // matched as rule "10.34". Reference files are full of example citations with links.
       const around = line.slice(Math.max(0, m.index! - 40), m.index! + 20)

@@ -2,9 +2,11 @@
 
 Guidance for citing statutes, regulations, and legislative materials per Bluebook **22nd Edition**.
 
-**Verification status:** Rule 12 below was checked line by line against the official 22e text of
-rules 12.1-12.10 (22e pp. 126-40). Rules 11, 13, 14, and 21 were **not** available for
-verification; every statement under those headings is flagged UNVERIFIED in place.
+**Verification status:** Checked line by line against the official 22e text of rules 12.1-12.10
+(22e pp. 126-40), 13.1-13.8 (22e pp. 140-46), 14.1-14.6 (22e pp. 147-53), 21.4 (22e pp. 215-19)
+and 6.2 (22e pp. 93-94). **Rule 11 (constitutions) was not available**; every statement under that
+heading is flagged UNVERIFIED in place. Table T1.3's state rows were also unavailable — see the
+State Code Abbreviations section.
 
 ## Federal Statutes (Rule 12)
 
@@ -223,8 +225,10 @@ state codes, and indicates whether a state uses title/chapter numbering or subje
 (rules 12.3.1(b)-(c)). *T1.3 changed in the 22e; consult the current table rather than any
 example cached here.*
 
-UNVERIFIED (the corpus contains no tables): the individual state rows below are from the prior
-edition of this file and were not checked against 22e T1.3.
+UNVERIFIED: only T1's index page ("T1.1 Federal Judicial and Legislative Materials … T1.3 States
+and the District of Columbia …", 22e p. 257) was available; the state rows themselves were not.
+The individual rows below are from the prior edition of this file and were not checked against
+22e T1.3.
 
 | State | Official Code | Example |
 |-------|---------------|---------|
@@ -308,11 +312,11 @@ U.S. Const. art. I, § 2, cl. 3, amended by U.S. Const. amend. XIV, § 2.
 
 ## Federal Regulations (Rule 14.2)
 
-**UNVERIFIED — Rule 14 is not in the 22e corpus consulted.** Rule 14 was revised for the 22e (rule
-14.4, state administrative materials, is NEW). Verify against the printed 22e before relying on
-this section.
-
 ### Code of Federal Regulations (C.F.R.)
+
+Rule 14.2(a) (22e pp. 147-50): "Whenever possible, cite federal rules and regulations to the Code
+of Federal Regulations (C.F.R.) by title, section or part, and year." Each title is revised at
+least once a year; **cite the most recent edition**.
 
 ```
 [Title] C.F.R. § [Section] ([Year]).
@@ -321,66 +325,135 @@ this section.
 **Example:**
 ```
 17 C.F.R. § 240.10b-5 (2020).
+47 C.F.R. § 73.609 (2024).
 ```
+
+**Name of the rule (rule 14.2(a)):** give it "only if the rule or regulation is commonly cited that
+way or the information would otherwise aid in identification." The abbreviated name of the issuing
+body may also be included if helpful:
+```
+FTC Credit Practices Rule, 16 C.F.R. § 444.1 (2024).
+```
+Title 26 (Treasury Regulations) has a unique citation form — see table T1.2. Title 48 may be cited
+as `FAR 52.249-2(e) (2019).`
 
 ### Federal Register
 
-For rules not yet in C.F.R.:
+Rule 14.2(a): the Federal Register publishes rules before they enter the C.F.R. Give any commonly
+used name, the volume and page where the rule (or any preceding discussion) begins, and the date.
+Citing part of a rule, give **both** the starting page and the page(s) where the cited material
+appears. Where the Federal Register indicates the future C.F.R. location, give it parenthetically:
 ```
-[Vol.] Fed. Reg. [Page] ([Date]) (to be codified at [C.F.R. cite]).
+[Name,] [Vol.] Fed. Reg. [First Page], [Pinpoint] ([Date]) (to be codified at [C.F.R. cite]).
 ```
 
 **Example:**
 ```
+Importation of Fruits and Vegetables, 60 Fed. Reg. 50379, 50381 (Sep. 29, 1995) (to be codified at 7 C.F.R. pts. 300, 319).
 85 Fed. Reg. 12345 (Mar. 2, 2020) (to be codified at 17 C.F.R. pt. 240).
 ```
+Prohibitively long titles may be shortened as long as the result is unambiguous.
 
 ### Proposed Rules
 
+Rule 14.2(b): follow the form for final rules, "but add the status to the date parenthetical":
 ```
+Control of Air Pollution from New Motor Vehicles and New Motor Vehicle Engines, 56 Fed. Reg. 9754 (proposed Mar. 7, 1991) (to be codified at 40 C.F.R. pt. 86).
 85 Fed. Reg. 12345 (proposed Mar. 2, 2020) (to be codified at 17 C.F.R. pt. 240).
 ```
+Notices pertaining to administrative adjudications go under rule 14.3; other administrative notices
+are cited by volume, page, and date — `Meeting Notice, 65 Fed. Reg. 3415 (Jan. 21, 2000).`
 
-## State Regulations (Rule 14.3)
+### Short Forms for Regulations (Rule 14.6)
 
-**UNVERIFIED — Rule 14 is not in the 22e corpus consulted.** Note also that the 22e adds a **new
-rule 14.4 governing state administrative materials**; its content could not be checked here, and it
-may displace or supplement what follows.
+Rule 14.6(c) (22e p. 153) uses the same availability window as statutes: a short citation is
+allowed only if the regulation is already cited (in full or short form, including "id.") "in either
+the same footnote or in a manner such that it can be readily found … in one of the preceding five
+footnotes or the same general textual discussion."
 
-Follow format in Table T1 for each state.
+| Source | Text | Short citation |
+|---|---|---|
+| C.F.R. | `16 C.F.R. § 444.1` | `16 C.F.R. § 444.1` or `§ 444.1` |
+| Fed. Reg. | `Importation of Fruits and Vegetables` | `Importation of Fruits and Vegetables, 60 Fed. Reg. at 50381` |
 
-**Example (California):**
+## State Regulations (Rule 14.4)
+
+State administrative materials are governed by **rule 14.4**, "State Materials" (22e pp. 152-53),
+which is new in the 22e. Rule 14.3 is *Administrative Adjudications and Arbitrations*, not
+regulations.
+
+**Rules and regulations (rule 14.4(a)):** "For both proposed and final rules and regulations cite
+according to **table T1.3**" — not the parent table T1.
 ```
+Cal. Code Regs. tit. 2, § 22999 (2024).
+XLIV 8 N.Y. Reg. 8 (Feb. 21, 2024).
 Cal. Code Regs. tit. 8, § 3203 (2020).
 ```
 
-## Legislative Materials (Rule 13)
+**Reports and other publications (rule 14.4(b)):** cite per rules 14.2(c) and 14.2(d):
+```
+2023 Ohio Dep't of Admin. Servs. Fiscal Year Ann. Rep. 7.
+Ill. State Bd. of Educ., Review of the Chicago Board of Education's Ability to Operate with the Financial Resources Available to It as an Independent Unit of Local Government (2023).
+```
 
-**UNVERIFIED — Rule 13 is not in the 22e corpus consulted.** Every form in this section is carried
-over from the prior edition of this file and has not been checked against the 22nd edition.
+**State administrative adjudications (rule 14.4(c)):** cite per rule 14.3 if there is an official
+reporter. Most are not reported; in that case give the name (rule 14.3.1), the case number, an
+electronic database citation, and a parenthetical with the state abbreviated per table T10, the
+agency per table T6, and the year:
+```
+Emily Burke, No. 12-0008 RI, 2012 WL 1061151 (Mo. Admin. Hearing Comm'n 2012).
+```
+Pincites are appended after the database citation with "at": `…, 2017 WL 8222649, at *3 (Wis. Div.
+of Hearings & Appeals 2017).` If the decision is not on a database, append a link to the slip
+opinion and omit the database citation.
+
+## Legislative Materials (Rule 13)
 
 ### Bills
 
-**Federal:**
+**Unenacted federal bills (rule 13.2(a), 22e pp. 141-42):** give the name of the bill (if
+relevant), the abbreviated name of the house, the bill number, the number of the Congress, the
+section (if any), and the year of publication:
 ```
 H.R. 1234, 116th Cong. § 2 (2020).
 S. 567, 116th Cong. (2019).
+Protection from Personal Intrusion Act, H.R. 2448, 105th Cong. § 2(a) (1997).
 ```
+A parenthetical giving the date and stage may be added to distinguish versions:
+`S. 593, 101st Cong. § 2 (as passed by Senate, May 31, 1989).`
 
-**Enacted bills:** Cite as session laws (Pub. L. No.) or codified statutes.
+**Enacted bills (rule 13.2(b)):** "Enacted bills and joint resolutions are statutes (rule 12). They
+are cited as statutes **except when used to document legislative history, in which case they are
+cited as unenacted bills**."
 
 ### Resolutions
 
+Cite unenacted resolutions analogously to bills (rule 13.2(a)) — `H.R. Res.`, `S. Res.`,
+`H.R. Con. Res.`, `S. Con. Res.`, `H.R.J. Res.`, `S.J. Res.`, `S. Exec. Res.`:
 ```
 H.R. Res. 123, 116th Cong. (2020).
 S. Res. 456, 116th Cong. (2019).
 ```
 
+**Enacted simple and concurrent resolutions (rule 13.2(b))** are "cited as unenacted bills," with
+the fact of enactment noted parenthetically unless clear in context:
+```
+S. Res. 141, 106th Cong. (1999) (enacted).
+H.R. Con. Res. 196, 106th Cong. (1999) (enacted).
+```
+A parenthetical noting enactment is unnecessary when a parallel Stat. citation is given:
+`S. Con. Res. 97, 94th Cong., 90 Stat. 3024 (1976).`
+
 ### Committee Reports
+
+Rule 13.4(a) (22e pp. 143-45): include the name of the house, the number of the Congress connected
+by a hyphen to the number of the report, the part and/or page number, and the year of publication.
+**Small capitals** for the house, the abbreviation of report, and the abbreviation of number.
 
 **House:**
 ```
 H.R. Rep. No. 116-123, at 5 (2019).
+H.R. Rep. No. 99-253, pt. 1, at 54 (1985).
 ```
 
 **Senate:**
@@ -388,33 +461,53 @@ H.R. Rep. No. 116-123, at 5 (2019).
 S. Rep. No. 116-45, at 10 (2020).
 ```
 
-**Conference:**
+**Conference — `(Conf. Rep.)` goes *last*, after the year parenthetical:**
 ```
-H.R. Rep. No. 116-789 (Conf. Rep.), at 15 (2020).
+H.R. Rep. No. 98-1037, at 3 (1984) (Conf. Rep.).
+S. Rep. No. 95-601, at 5 (1977) (Conf. Rep.).
 ```
+```
+Wrong:  H.R. Rep. No. 116-789 (Conf. Rep.), at 15 (2020).
+Right:  H.R. Rep. No. 116-789, at 15 (2020) (Conf. Rep.).
+```
+
+Documents follow analogously: `H.R. Doc. No.`, `S. Doc. No.`, `H.R. Misc. Doc. No.`
 
 ### Hearings
 
+Rule 13.3(a) (22e pp. 142-43): "always include the entire subject matter title as it appears on the
+cover, **the bill number (if any)**, the subcommittee name (if any), the committee name, the number
+of the Congress, **the page number of the particular material being cited (if any)**, and the year
+of publication."
+
 ```
-Hearing Title: Hearing on [Subject] Before the [Committee], [Cong.] ([Year]) (statement of [Witness]).
+[Subject Matter Title]: Hearing on [Bill No.] Before the [Subcommittee of the] [Committee], [Cong.] [Page] ([Year]) (statement of [Witness, Title]).
 ```
 
-**Example:**
+**Examples:**
 ```
+Protection from Personal Intrusion Act and Privacy Protection Act of 1998: Hearing on H.R. 2448 and H.R. 3224 Before the H. Comm. on the Judiciary, 105th Cong. 56–57 (1998) (statement of Richard Masur, President, Screen Actors Guild).
 Cybersecurity Threats: Hearing Before the S. Comm. on Homeland Sec., 116th Cong. 25 (2020) (statement of Christopher Krebs, Dir., Cybersecurity & Infrastructure Sec. Agency).
 ```
+Committee and subcommittee names are abbreviated per tables T6, T9, and T10; witness titles per
+T6, T9, and T11. **State committee hearings (rule 13.3(b))** take the same form plus the number of
+the legislative session.
 
 ### Congressional Debates
 
-**Congressional Record:**
+Rule 13.5 (22e p. 140): cite debates after 1873 to the Congressional Record; "use the daily edition
+only for matters not yet appearing in the permanent edition."
 ```
 [Vol.] Cong. Rec. [Page] ([Year]) (statement of [Member]).
 ```
 
 **Example:**
 ```
+123 Cong. Rec. 17147 (1977).
 165 Cong. Rec. S1234 (daily ed. Feb. 10, 2019) (statement of Sen. Smith).
 ```
+Debates through 1873: `Cong. Globe, 36th Cong., 1st Sess. 1672 (1860).` (1837–1873);
+`10 Reg. Deb. 3472 (1834).` (1824–1837); `38 Annals of Cong. 624 (1822).` (1789–1824).
 
 ## Special Citation Forms (Rule 12.9)
 
@@ -541,7 +634,7 @@ footnote 15 with nothing in between would illustrate a violation, not the rule.
 
 | Error | Correction |
 |-------|------------|
-| §1983 | § 1983 (space required) — UNVERIFIED, rule 6.2 not in corpus |
+| §1983 | § 1983 — rule 6.2(c) (22e pp. 93-94): "When the symbols are used, insert a space between '§' or '¶' and the numeral." |
 | Sec. 1983 | § 1983 (in citations) |
 | ss. 1983-1985 | §§ 1983–1985 |
 | "§ 1701 of the Delaware Code" in text | "section 1701" — spell out in text except for U.S.C. (rule 12.10(c)) |
@@ -563,53 +656,131 @@ footnote 15 with nothing in between would illustrate a violation, not the rule.
 | Securities Act of 1933, ch. 38, 48 Stat. 74 (1933) | drop the year — it is already in the statute's name (rule 12.4(e)) |
 | 42 U.S.C. § 1983 (2018) | not an error, but not required either — federal code citations "do not require a date" (rule 12.3.2) |
 
-## Administrative Agency Materials
-
-**UNVERIFIED — the governing rule (14) is not in the 22e corpus consulted, and rule 14 was revised
-for the 22e.** The forms below are carried over from the prior edition of this file.
+## Administrative Agency Materials (Rule 14.3)
 
 ### Agency Decisions
+
+Rule 14.3.1(a) (22e pp. 150-52): "Cite by the reported name of the first-listed private party
+(abbreviated according to rule 10.2) or by the official subject-matter title. **Omit all procedural
+phrases**."
 
 ```
 [Case Name], [Vol.] [Agency Reporter] [Page] ([Agency abbrev.] [Year]).
 ```
 
-**Example (SEC):**
+**Example:**
 ```
-In re XYZ Corp., 50 S.E.C. 123 (1989).
+Trojan Transp., Inc., 249 NLRB 642 (1980).
+Reichhold Chems., Inc., 91 F.T.C. 246 (1978).
 ```
+
+`In re` and `In the Matter of` are exactly the procedural phrases the rule strikes:
+```
+Wrong:  In re XYZ Corp., 50 S.E.C. 123 (1989).
+Wrong:  In the Matter of Trojan Transp., Inc., 249 NLRB 642 (1980).
+Right:  XYZ Corp., 50 S.E.C. 123 (1989).
+```
+
+Where an agency has multiple layers of internal adjudication, add a parenthetical naming the
+adjudicatory body (abbreviated per tables T6 and T11):
+`Tyson Farms, Inc., 72 Agric. Dec. 399 (U.S.D.A. A.L.J. 2013).`
+
+**Arbitrations (rule 14.3.1(b)):** cite as court cases if adversary parties are named, otherwise as
+administrative adjudications; give the arbitrator's name parenthetically —
+`Charles P. Ortmeyer, 23 Indus. Arb. 272 (1980) (Stern, Arb.).`
 
 ### Advisory Opinions and Guidance
 
+Rule 14.2(d): cite agency publications "as a work by an institutional author (rule 15.1(c)),
+including a serial number, if any (rule 15.7), unless issued as a congressional document (rule
+13.4)." The institutional author is spelled out and abbreviated per **table T6** — not reduced to
+an initialism the table does not supply (T6 gives `Securit[y, ies]` → `Sec.`, `Exchange` → `Exch.`,
+`Commission` → `Comm'n`).
+
 ```
-[Agency], [Title], [Citation or URL] ([Date]).
+[Institutional Author], [Serial No.,] [Title] ([Date]).
 ```
 
-**Example:**
+**Examples (from rule 14.2(d)):**
 ```
-SEC, Staff Accounting Bulletin No. 99, 64 Fed. Reg. 45150 (Aug. 19, 1999).
+U.S. Gov't Accountability Off., GAO-01-1163T, Commercial Aviation: A Framework for Considering Federal Financial Assistance (2001).
+Off. of Mgmt. & Budget, Exec. Off. of the President, OMB Bull. No. 99-04, Revised Statistical Definitions of Metropolitan Areas (MAs) and Guidance on Uses of MA Definitions (1999).
+U.S. Food & Drug Admin., Premarket Assessment of Pediatric Medical Devices: Guidance for Industry and Food and Drug Administration Staff (2014).
+```
+
+**Opinion letters (rule 14.2(d)):** cite as a work by an institutional author in **ordinary roman
+type**, with the date of publication and, if available, the subject matter:
+```
+U.S. Dep't of Lab., Wage & Hour Div., Opinion Letter (Sep. 14, 1992).
+```
+
+**Comments on proposed rules (rule 14.2(b)):** give the name of the commenter and the proposed rule
+commented on; citing to an agency website is appropriate:
+```
+Chamber of Com. of the U.S., Comment Letter on Proposed Rule to Require Registration of Certain Hedge Fund Advisors Under the Investment Advisors Act of 1940 (Sep. 15, 2004), http://www.sec.gov/rules/proposed/s73004/dhirschmann091504.pdf.
 ```
 
 ## Treaties and International Agreements (Rule 21.4)
 
-**UNVERIFIED — Rule 21 is not in the 22e corpus consulted.** Carried over from the prior edition of
-this file.
-
 ### Basic Form
 
+Rule 21.4 (22e pp. 215-19): a treaty citation "should include the agreement's name (rule 21.4.1);
+the state parties, **if applicable** (rule 21.4.2); the subdivision referred to, if applicable (rule
+21.4.3); the date of signing (rule 21.4.4); and the source(s) in which the treaty can be found
+(rule 21.4.5)."
+
 ```
-[Name], [Parties], [Date], [Treaty Source].
+[Name], [Parties, if applicable], [Subdivision], [Date of signing], [Treaty Source].
 ```
 
-**Example:**
+**Parties (rule 21.4.2):** listed only "when citing an agreement between two parties," abbreviated
+per table T10 (but never abbreviate a Tribal Nation party). "Parties' names should appear in
+**alphabetical order**":
 ```
-North American Free Trade Agreement, U.S.-Can.-Mex., Dec. 17, 1992, 32 I.L.M. 289.
+Agreement for Financing Certain Educational and Cultural Exchange Programs, Taiwan-U.S., Apr. 23, 1964, 15 U.S.T. 408.
+Treaty with the Apaches, Apache Nation-U.S., July 1, 1852, 10 Stat. 979.
 ```
+Multilateral agreements carry **no party string** — rule 21.1(a)'s own multilateral examples omit
+it:
+```
+North American Free Trade Agreement, Dec. 17, 1992, 32 I.L.M. 289.
+Geneva Convention Relative to the Treatment of Prisoners of War art. 3, Aug. 12, 1949, 6 U.S.T. 3316, 75 U.N.T.S. 135.
+```
+```
+Wrong:  North American Free Trade Agreement, U.S.-Can.-Mex., Dec. 17, 1992, 32 I.L.M. 289.
+```
+
+**Date (rule 21.4.4):** the exact date of signing. For an exchange of notes between two parties
+with multiple signing dates, give the first and last (`Colom.-U.S., Apr. 27–May 13, 1964`). If not
+signed on a single date, use the date opened for signature / approved / ratified / adopted, with
+the significance of the date *italicized* — `opened for signature July 1, 1968`.
 
 ### U.S. Treaties
 
+**Bilateral (rule 21.4.5(a)(i)):** cite one of these, in this order of preference — T.I.A.S. (or
+T.S., or E.A.S.); U.N.T.S.; Senate Treaty Documents or Senate Executive Documents; U.S.T. (or
+Stat.); the Department of State Dispatch; Department of State Press Releases.
 ```
-[Name], [Other Party], [Date], [U.S. Source], [I.L.M. or other source].
+[Name], [Other Party]-U.S., [Subdivision], [Date], [U.S. Source].
+```
+```
+Treaty on the Limitation of Anti-Ballistic Missile Systems, U.S.-U.S.S.R., May 26, 1972, 23 U.S.T. 3435.
+Tax Convention, Fin.-U.S., Sep. 21, 1989, S. Treaty Doc No. 101-11.
+```
+
+**Multilateral, U.S. a party (rule 21.4.5(a)(ii)):** cite a U.S. domestic source from
+21.4.5(a)(i); "Additionally, a parallel citation may be added from **one source published by an
+international organization** (e.g., U.N.T.S., L.N.T.S., O.A.S.T.S., Pan-Am. T.S., O.J., E.T.S., or
+C.E.T.S.), if therein" — a list that does not include I.L.M.:
+```
+North Atlantic Treaty art. 5, Apr. 4, 1949, 63 Stat. 2241, 34 U.N.T.S. 243.
+```
+
+**I.L.M. is a fallback, not a routine parallel source.** Rule 21.4.5(c): "**When a treaty does not
+appear in a required source listed in rule 21.4.5(a)(i) or rule 21.4.5(a)(ii)**, cite International
+Legal Materials (I.L.M.), if therein" — and if not in I.L.M., another unofficial source.
+```
+Olivos Protocol for the Settlement of Disputes in Mercosur art. 6, Feb. 18, 2002, 42 I.L.M. 2.
 ```
 
 ## Verification Checklist

@@ -102,8 +102,16 @@ T6's own headnote adds a set of directives that apply **to periodical titles onl
 
 Two things follow that are easy to get backwards. First, "University" abbreviates to "U." in a
 periodical title but to "Univ." everywhere else — both values are in the table below. Second,
-rule 16.3 governs the **title of the work**, not the name of the periodical, and it says to
-cite the title in full: "Do not abbreviate words or omit articles in the title."
+rule 16.3 (Title, 22e pp. 166–67) states its own subject as the periodical title and directs
+that it be given in full: "Cite the full periodical title as it appears on the title page but
+capitalize according to rule 8 (unless the title is not in English, as described in rule
+20.2.2(b)). Do not abbreviate words or omit articles in the title. Use italics." Do not read
+16.3 as licence to abbreviate; and do not read it as displacing 16.1 — 16.1, 16.4 and 16.5 are
+the rules that send periodical names to T6, T13 and T10, and 16.3's examples set the cited title
+in italics rather than the small caps 16.1 prescribes for the periodical's own name. The corpus
+carries both sentences and does not reconcile them, so where the two bear on the same string,
+follow 16.1 and its tables for the periodical name and 16.3 for the full unabbreviated title as
+printed.
 
 ## T6 headnote — the rules the table itself carries
 
@@ -123,10 +131,39 @@ And, for medical periodicals:
 > When citing a medical periodical whose title contains a word not found in this table, use the
 > National Library of Medicine (NLM) abbreviation for that word if available.
 
-**Spacing of abbreviations — UNVERIFIED.** T6 and rule 10.3.1 both defer the spacing question to
-rule 6.1(a), and rule 10.2.1(c) defers widely-known acronyms to rule 6.1(b). The text of rule 6
-was not extracted into the corpus, so this file states no spacing rule. Consult rule 6.1
-directly.
+## Spacing and periods — rule 6.1
+
+T6 and rule 10.3.2 ("For rules on spacing in reporter abbreviations, see rule 6.1(a)") both defer
+the spacing question to rule 6.1(a), and rule 10.2.1(c) defers widely-known acronyms to rule
+6.1(b). Rule 6.1 says:
+
+- **6.1(a) Spacing.** "In general, close up all adjacent single capitals": `N.W.`, `S.D.N.Y.`.
+  "But do not close up single capitals with longer abbreviations": `D. Mass.`, `S. Ct.`.
+  "In abbreviations of periodical names (see tables T6 and T13), close up all adjacent single
+  capitals except when one or more of the capitals refers to the name of an institutional entity,
+  in which case set the capital or capitals referring to the entity off from other adjacent single
+  capitals with a space": `Geo. L.J.`, `B.C. L. Rev.`, `N.Y.U. L. Rev.`, `S. Ill. U. L.J.`
+  "Individual numbers, including both numerals and ordinals, are treated as single capitals":
+  `F.3d`, `S.E.2d`, `A.L.R.4th`. "But, insert a space adjacent to any abbreviation containing two
+  or more letters": `So. 2d`, `Cal. App. 3d`, `F. Supp. 2d`. "Close up initials in personal
+  names": `W.C. Fields`.
+- **6.1(b) Periods.** "Generally, every abbreviation should be followed by a period, except those
+  in which the last letter of the original word is set off from the rest of the abbreviation by an
+  apostrophe" — `Ave.`, `Bldg.`, but `Ass'n`, `Dep't`. "Some entities with widely recognized
+  initials, e.g., AARP, CBS, CIA, EPA, FCC, FDA, FEC, NAACP, and NLRB, are commonly referred to in
+  spoken language by their initials rather than by their full names; such abbreviations may be
+  used without periods in text, in case names, and as institutional authors. Do not, however, omit
+  the periods when the abbreviations are used as reporter names, in names of codes, or as names of
+  courts of decision" — `City of Arlington v. FCC, 569 U.S. 290 (2013).` but `Arlington Radio
+  Serv., Inc., 6 F.C.C. 378 (1938).` "United States may be abbreviated to 'U.S.' only when used as
+  an adjective (do not omit the periods)" — `U.S. history`, but `history of the United States`.
+  "In addition to the abbreviation 'U.S.,' always retain periods in abbreviations not commonly
+  referred to in speech as initials (e.g., N.Y., S.D.)."
+
+Rule 6.1 also opens with the general permission: "Abbreviations not listed in this book should be
+avoided unless substantial space will be saved and the resulting abbreviation is unambiguous," and
+notes that "in legal writing the same word may be abbreviated differently for different uses"
+(`F.` and `Fed.`; `app.` and `App'x`).
 
 ## Table T6 — Case Names and Institutional Authors in Citations (22e, pp. 333–36)
 
@@ -444,12 +481,9 @@ word families (e.g. `Academ[ic, y]` covers "Academic" and "Academy"; `Adm'[r, x]
 | West[ern] | W. |
 | Yearbook (or Year Book) | Y.B. |
 
-## What this file cannot tell you
+## Table T10 — Geographical Terms (22e p. 340)
 
-**Table T10 (Geographical Terms, 22e p. 340) — UNVERIFIED.** The capture is truncated: the
-corpus carries T10's headnote and the names of its three subdivisions and nothing else. No
-state, city, province or country abbreviation from T10 is available here, and none has been
-supplied from memory. What the corpus *does* carry about T10:
+T10's headnote, verbatim:
 
 > The following list provides abbreviations for geographical locations for use in case
 > citations (rules 10.2.2 and 10.4), names of institutional authors (rule 15.1(c)), periodical
@@ -461,29 +495,422 @@ and:
 > Any countries, territories, provinces, or cities omitted from tables T10.2 and T10.3 should
 > not be abbreviated, except according to rules otherwise laid out in table T6.
 
-Its subdivisions are T10.1 (U.S. States, Cities, and Territories), T10.2 (Australian Cities and
-States; Canadian Cities, Provinces, and Territories; and U.K. Cities and Constituent Countries)
-and T10.3 (Countries and Regions). For any actual geographic abbreviation, open T10.
+T10 has three subtables: T10.1 U.S. States, Cities, and Territories (22e pp. 340–42); T10.2
+Australian Cities and States; Canadian Cities, Provinces, and Territories; and U.K. Cities and
+Constituent Countries (22e p. 342); T10.3 Countries and Regions (22e pp. 343–45). All three are
+reproduced below from the corpus capture.
 
-**Table T13 (Institutional Names in Periodical Titles) — UNVERIFIED.** The capture came back
-empty. Nothing in this file states any T13 value. Note that T13 abbreviates *institutional
-names appearing inside periodical titles* — it is not a list of finished journal abbreviations,
-and an earlier version of this file wrongly presented one as T13. Open T13.
+### T10.1 — U.S. States, Cities, and Territories (22e pp. 340–42)
 
-**T10 and T13 are now extracted** (22e pp. 340-42 for T10.1, 346-48 for T13) and this file may
-state their contents. T10 has three subtables — T10.1 U.S. states, cities and territories; T10.2
-Australian/Canadian/U.K.; T10.3 countries and regions — and the table's own instruction is that
-"any countries, territories, provinces, or cities omitted from tables T10.2 and T10.3 should not
-be abbreviated, except according to rules otherwise laid out in table T6."
+| Term | Abbreviation |
+|------|--------------|
+| **States** | |
+| Alabama | Ala. |
+| Alaska | Alaska |
+| Arizona | Ariz. |
+| Arkansas | Ark. |
+| California | Cal. |
+| Colorado | Colo. |
+| Connecticut | Conn. |
+| Delaware | Del. |
+| Florida | Fla. |
+| Georgia | Ga. |
+| Hawaii | Haw. |
+| Idaho | Idaho |
+| Illinois | Ill. |
+| Indiana | Ind. |
+| Iowa | Iowa |
+| Kansas | Kan. |
+| Kentucky | Ky. |
+| Louisiana | La. |
+| Maine | Me. |
+| Maryland | Md. |
+| Massachusetts | Mass. |
+| Michigan | Mich. |
+| Minnesota | Minn. |
+| Mississippi | Miss. |
+| Missouri | Mo. |
+| Montana | Mont. |
+| Nebraska | Neb. |
+| Nevada | Nev. |
+| New Hampshire | N.H. |
+| New Jersey | N.J. |
+| New Mexico | N.M. |
+| New York | N.Y. |
+| North Carolina | N.C. |
+| North Dakota | N.D. |
+| Ohio | Ohio |
+| Oklahoma | Okla. |
+| Oregon | Or. |
+| Pennsylvania | Pa. |
+| Rhode Island | R.I. |
+| South Carolina | S.C. |
+| South Dakota | S.D. |
+| Tennessee | Tenn. |
+| Texas | Tex. |
+| Utah | Utah |
+| Vermont | Vt. |
+| Virginia | Va. |
+| Washington | Wash. |
+| West Virginia | W. Va. |
+| Wisconsin | Wis. |
+| Wyoming | Wyo. |
+| **Cities** | |
+| Austin | Aus. |
+| Baltimore | Balt. |
+| Boston | Bos. |
+| Chicago | Chi. |
+| Dallas | Dall. |
+| Denver | Denv. |
+| Fort Worth | Ft. Wor. |
+| Houston | Hou. |
+| Jacksonville | Jack. |
+| Las Vegas | L.V. |
+| Los Angeles | L.A. |
+| Miami | Mia. |
+| Nashville | Nash. |
+| New York | N.Y.C. |
+| Philadelphia | Phila. |
+| Phoenix | Phx. |
+| San Antonio | S.A. |
+| San Diego | S.D. |
+| San Francisco | S.F. |
+| San Jose | S.J. |
+| **Territories** | |
+| American Samoa | Am. Sam. |
+| District of Columbia | D.C. |
+| Northern Mariana Islands | N. Mar. I. |
+| Puerto Rico | P.R. |
+| Virgin Islands | V.I. |
 
-**Tables T1, T7, T11 and T12 — UNVERIFIED, and not characterised here.** None was extracted, so
-this file states nothing about their contents. An earlier version of this paragraph described what
-each covers and claimed they are "cross-referenced by rules in the corpus"; that was not shown —
-T12's only corpus appearance is the site's own table-of-contents listing. Consult them directly.
+T10.1 adds, under the Cities heading: "Abbreviations for city names may also be composed from
+state name abbreviations above. For example, 'Oklahoma City' should be shortened to 'Okla.
+City.'"
+
+### T10.2 — Australian Cities and States; Canadian Cities, Provinces, and Territories; and U.K. Cities and Constituent Countries (22e p. 342)
+
+| Term | Abbreviation |
+|------|--------------|
+| **Australia** | |
+| Adelaide | Adel. |
+| Australian Capital Territory | Austl. Cap. Terr. |
+| Brisbane | Bris. |
+| Canberra | Canb. |
+| Melbourne | Melb. |
+| New South Wales | N.S.W. |
+| Northern Territory | N. Terr. |
+| Queensland | Queensl. |
+| South Australia | S. Austl. |
+| Sydney | Syd. |
+| Tasmania | Tas. |
+| Victoria | Vict. |
+| Western Australia | W. Austl. |
+| **Canada** | |
+| Alberta | Alta. |
+| British Columbia | B.C. |
+| Calgary | Calg. |
+| Edmonton | Edm. |
+| Manitoba | Man. |
+| Montreal | Montr. |
+| New Brunswick | N.B. |
+| Newfoundland & Labrador | Nfld. |
+| Northwest Territories | N.W.T. |
+| Nova Scotia | N.S. |
+| Nunavut | Nun. |
+| Ontario | Ont. |
+| Ottawa | Ott. |
+| Prince Edward Island | P.E.I. |
+| Québec | Que. |
+| Saskatchewan | Sask. |
+| Toronto | Toro. |
+| **United Kingdom** | |
+| Birmingham | Birm. |
+| England | Eng. |
+| Glasgow | Glas. |
+| Liverpool | Liver. |
+| London | Lond. |
+| Manchester | Manch. |
+| Northern Ireland | N. Ir. |
+| Scotland | Scot. |
+
+### T10.3 — Countries and Regions (22e pp. 343–45)
+
+| Term | Abbreviation |
+|------|--------------|
+| Afghanistan | Afg. |
+| Africa | Afr. |
+| Albania | Alb. |
+| Algeria | Alg. |
+| Angola | Angl. |
+| Antigua and Barbuda | Ant. & Barb. |
+| Argentina | Arg. |
+| Armenia | Arm. |
+| Australia | Austl. |
+| Azerbaijan | Azer. |
+| Bahamas | Bah. |
+| Bahrain | Bahr. |
+| Bangladesh | Bangl. |
+| Barbados | Barb. |
+| Belarus | Belr. |
+| Belgium | Belg. |
+| Bermuda | Berm. |
+| Bolivia | Bol. |
+| Bosnia and Herzegovina | Bosn. & Herz. |
+| Botswana | Bots. |
+| Brazil | Braz. |
+| Bulgaria | Bulg. |
+| Burkina Faso | Burk. Faso |
+| Canada | Can. |
+| Cayman Islands | Cayman Is. |
+| Central African Republic | Cent. Afr. Rep. |
+| China, People's Republic of | China |
+| Colombia | Colom. |
+| Congo, Democratic Republic of the | Dem. Rep. Congo |
+| Congo, Republic of the | Congo |
+| Croatia | Croat. |
+| Czechia | Czech. |
+| Denmark | Den. |
+| Djibouti | Djib. |
+| Dominican Republic | Dom. Rep. |
+| El Salvador | El Sal. |
+| Equatorial Guinea | Eq. Guinea |
+| Eritrea | Eri. |
+| Estonia | Est. |
+| Ethiopia | Eth. |
+| Europe | Eur. |
+| Falkland Islands | Falkland Is. |
+| Finland | Fin. |
+| France | Fr. |
+| Gambia | Gam. |
+| Georgia | Geor. |
+| Germany | Ger. |
+| Gibraltar | Gib. |
+| Great Britain | Gr. Brit. |
+| Greenland | Green. |
+| Grenada | Gren. |
+| Guadeloupe | Guad. |
+| Guatemala | Guat. |
+| Guyana | Guy. |
+| Honduras | Hond. |
+| Hong Kong | H.K. |
+| Hungary | Hung. |
+| Iceland | Ice. |
+| Indonesia | Indon. |
+| Ireland | Ir. |
+| Israel | Isr. |
+| Italy | It. |
+| Jamaica | Jam. |
+| Kazakhstan | Kaz. |
+| Korea, North | N. Kor. |
+| Korea, South | S. Kor. |
+| Kosovo | Kos. |
+| Kyrgyzstan | Kyrg. |
+| Latvia | Lat. |
+| Lebanon | Leb. |
+| Liberia | Liber. |
+| Liechtenstein | Liech. |
+| Lithuania | Lith. |
+| Luxembourg | Lux. |
+| Macau | Mac. |
+| Madagascar | Madag. |
+| Malaysia | Malay. |
+| Marshall Islands | Marsh. Is. |
+| Martinique | Mart. |
+| Mexico | Mex. |
+| Micronesia | Micr. |
+| Moldova | Mold. |
+| Mongolia | Mong. |
+| Mozambique | Mozam. |
+| Myanmar | Myan. |
+| Namibia | Namib. |
+| Netherlands | Neth. |
+| New Zealand | N.Z. |
+| Nicaragua | Nicar. |
+| North America | N. Am. |
+| North Macedonia | N. Maced. |
+| Norway | Nor. |
+| Pakistan | Pak. |
+| Palestine | Pal. |
+| Panama | Pan. |
+| Papua New Guinea | Papua N.G. |
+| Paraguay | Para. |
+| Philippines | Phil. |
+| Pitcairn Island | Pitcairn Is. |
+| Poland | Pol. |
+| Portugal | Port. |
+| Romania | Rom. |
+| Russia | Russ. |
+| Saint Helena | St. Helena |
+| Saint Kitts and Nevis | St. Kitts & Nevis |
+| Saint Lucia | St. Lucia |
+| Saint Vincent and the Grenadines | St. Vincent |
+| Samoa | Sam. |
+| São Tomé and Príncipe | São Tomé & Príncipe |
+| Senegal | Sen. |
+| Serbia | Serb. |
+| Seychelles | Sey. |
+| Singapore | Sing. |
+| Slovakia | Slovk. |
+| Slovenia | Slovn. |
+| Solomon Islands | Solom. Is. |
+| Somalia | Som. |
+| South Africa | S. Afr. |
+| South America | S. Am. |
+| South Sudan | S. Sudan |
+| Suriname | Surin. |
+| Sweden | Swed. |
+| Switzerland | Switz. |
+| Tajikistan | Taj. |
+| Tanzania | Tanz. |
+| Thailand | Thai. |
+| Timor-Leste, Democratic Republic of (East Timor) | Timor-Leste |
+| Trinidad and Tobago | Trin. & Tobago |
+| Tunisia | Tunis. |
+| Türkiye | Turk. |
+| Turkmenistan | Turkm. |
+| Turks and Caicos Islands | Turks & Caicos Is. |
+| Ukraine | Ukr. |
+| United Arab Emirates | U.A.E. |
+| United Kingdom | U.K. |
+| United States of America | U.S. |
+| Uruguay | Uru. |
+| Uzbekistan | Uzb. |
+| Vatican City | Vatican |
+| Venezuela | Venez. |
+| Vietnam | Viet. |
+| Virgin Islands, British | Brit. Virgin Is. |
+| Zambia | Zam. |
+| Zimbabwe | Zim. |
+
+## Table T13 — Institutional Names in Periodical Titles (22e pp. 346–48)
+
+T13 abbreviates *institutional names appearing inside periodical titles*; it is not a list of
+finished journal abbreviations. Its headnote, verbatim:
+
+> To abbreviate English language periodical titles, use tables T13, T6, and T10. Common
+> institutional names (e.g., law schools, professional organizations, and geographic units
+> commonly found in institutional names) are listed in table T13. If an institutional name is not
+> listed in table T13, individual words should be abbreviated using tables T6 and T10. If a word
+> in an institutional name is not listed in these tables, use the full word in the abbreviated
+> periodical title.
+
+Three further directives from the same headnote:
+
+> Always use the title of the periodical that appears on the title page of the issue you are
+> citing, even if the title of the periodical has changed over time.
+
+> Abbreviate "University" as "U." ("U. Chi. L. Rev.") Omit the words "a," "at," "in," "of," and
+> "the" (but retain the word "on"). Also, if the title consists of only one word after the words
+> "a," "at," "in," "of," and "the" have been omitted, do not abbreviate the remaining word. Rule
+> 6.1(a) explains the spacing of abbreviations.
+
+> If a periodical title itself contains an abbreviation, use that abbreviation in the abbreviated
+> title: `IMF Surv.` Not: `Int'l Monetary Fund Surv.`
+
+T13 also directs: "Omit commas from periodical title abbreviations but retain other punctuation,"
+and "For periodical titles containing colons, omit words following the colon from the
+abbreviation" (`91 Taxes 47`, not `91 Taxes: The Tax Magazine 47`). For online supplements to a
+print publication, "use the citation for the print publication, followed by the online supplement
+name" — `U. Chi. L. Rev. Online`, `Harv. L. Rev. F.` The headnote cautions that "preferred
+abbreviation conventions for individual journals may differ from those listed in this table."
+
+| Term | Abbreviation |
+|------|--------------|
+| Air Force | A.F. |
+| Albany | Alb. |
+| American Intellectual Property Law Association | AIPLA |
+| [Journal of the] American Medical Association | [J]AMA |
+| American Society of Composers, Authors & Publishers | ASCAP |
+| Boston College | B.C. |
+| Boston University | B.U. |
+| Brigham Young University | BYU |
+| Brooklyn | Brook. |
+| Buffalo | Buff. |
+| California (California Law Review only) | Calif. |
+| Capital | Cap. |
+| Chapman | Chap. |
+| Chartered Life Underwriters | C.L.U. |
+| Cincinnati | Cin. |
+| City University of New York | CUNY |
+| Cleveland | Clev. |
+| Columbia | Colum. |
+| Cumberland | Cumb. |
+| Detroit | Det. |
+| Dickinson | Dick. |
+| Duquesne | Duq. |
+| East[ern] | E. |
+| Florida International University | FIU |
+| George Mason | Geo. Mason |
+| George Washington | Geo. Wash. |
+| Georgetown | Geo. |
+| Gonzaga | Gonz. |
+| Harvard | Harv. |
+| Howard | How. |
+| John Marshall | J. Marshall |
+| Judge Advocate General['s] | JAG |
+| Lawyers Reports Annotated | L.R.A. |
+| Loyola | Loy. |
+| Marquette | Marq. |
+| Memphis | Mem. |
+| New England | New Eng. |
+| New England Journal of Medicine | NEJM |
+| New York University [School of Law] | N.Y.U. |
+| North[ern] | N. |
+| Northeast[ern] | Ne. |
+| Northwest[ern] | Nw. |
+| Penn State [Dickinson] | Penn. St. [Dick.] |
+| Pepperdine | Pepp. |
+| Pittsburgh | Pitt. |
+| Proceedings of the National Academy of Sciences of the United States of America | PNAS |
+| Richmond | Rich. |
+| Rocky Mountain Mineral Law Institute | Rocky Mtn. Min. L. Inst. |
+| Saint Louis | St. Louis |
+| South[ern] | S. |
+| Southeast[ern] | Se. |
+| Southern Methodist University | SMU |
+| Southwest[ern] | Sw. |
+| Stanford | Stan. |
+| State | St. |
+| Temple | Temp. |
+| Thomas Jefferson | T. Jefferson |
+| Thurgood Marshall | T. Marshall |
+| Toledo | Tol. |
+| Tulane | Tul. |
+| Universidad de Puerto Rico | U.P.R. |
+| University of California | U.C. |
+| University of California, Los Angeles | UCLA |
+| University of Missouri-Kansas City | UMKC |
+| University of the District of Columbia David A. Clarke School of Law | UDC/DCSL |
+| University of West Los Angeles | UWLA |
+| Vanderbilt | Vand. |
+| Villanova | Vill. |
+| Washington & Lee | Wash. & Lee |
+| West[ern] | W. |
+| William & Mary | Wm. & Mary |
+| William Mitchell | Wm. Mitchell |
+
+## The other tables this file does not reproduce
+
+These four are in the corpus with headnotes and rows, but their contents are not reproduced here;
+consult the table itself.
+
+- **T1, United States Jurisdictions (22e p. 257)** — reporters and citation conventions by
+  jurisdiction, in five subtables (T1.1 Federal Judicial and Legislative Materials; T1.2 Federal
+  Administrative and Executive Materials; T1.3 States and the District of Columbia; T1.4 Other
+  United States Jurisdictions; T1.5 Tribal Nations).
+- **T7, Court Names (22e pp. 337–39)** — "abbreviations for court names to be used in citing cases
+  according to rule 10.4. If the abbreviation for the full name of the court is not listed below, a
+  composite abbreviation may be assembled using the words listed in this table."
+- **T11, Judges and Officials (22e pp. 345–46)** — "Abbreviate titles of judges and other officials
+  according to the following table. See rule 9 for further guidance in using abbreviated titles."
+- **T12, Months (22e p. 346)** — "In citations, abbreviate the names of months as follows," running
+  `January → Jan.` through `December → Dec.` (May, June and July are unabbreviated; September is
+  `Sep.`).
 
 ## Extraction caveat
 
-The T6 rows above are reproduced exactly as captured from the 22e table — including entries
-that differ from the values circulated in 21e-era style guides. Where a row here disagrees with
-an abbreviation you remember, the corpus is the authority for this file; if you need to act on
-a surprising row, confirm it against the printed table before relying on it.
+The T6, T10.1, T10.2, T10.3 and T13 rows above are reproduced exactly as captured from the 22e
+tables — including entries that differ from the values circulated in 21e-era style guides. Where
+a row here disagrees with an abbreviation you remember, the corpus is the authority for this
+file; if you need to act on a surprising row, confirm it against the printed table before
+relying on it.

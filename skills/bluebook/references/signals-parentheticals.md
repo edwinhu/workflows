@@ -42,7 +42,7 @@ The source explicitly contains the proposition—no inference required.
 Use when the cited authority **clearly supports** the proposition but does not **directly state** it. Reader must make a small inferential step.
 
 ```
-The Due Process Clause protects certain unenumerated rights. See Griswold v. Connecticut, 381 U.S. 479 (1965).
+The Due Process Clause protects certain unenumerated rights. See Griswold v. Connecticut, 381 U.S. 479, 484 (1965).
 ```
 
 *Griswold* supports this proposition but doesn't state it in these exact terms.
@@ -65,7 +65,7 @@ followed by a **non-italicized comma**.
 Combines *see* and *e.g.*—the cited authority clearly supports but doesn't directly state the proposition, and there are other supporting authorities.
 
 ```
-Courts routinely dismiss claims for lack of standing. See, e.g., Lujan v. Defs. of Wildlife, 504 U.S. 555 (1992).
+Courts routinely dismiss claims for lack of standing. See, e.g., Lujan v. Defs. of Wildlife, 504 U.S. 555, 560–61 (1992).
 ```
 
 #### *Accord*
@@ -75,7 +75,7 @@ to only one; the others are introduced by *accord*. Also used to cite the law of
 being in accord with the law of another.
 
 ```
-Due process requires notice. Smith v. Jones, 500 U.S. 1 (1990); accord Doe v. Roe, 400 U.S. 50 (1985).
+Due process requires notice. Smith v. Jones, 500 U.S. 1, 8 (1990); accord Doe v. Roe, 400 U.S. 50, 57 (1985).
 ```
 
 #### *See also*
@@ -87,7 +87,7 @@ been cited or discussed.
 **A parenthetical explanation of the source's relevance (Rule 1.5) is REQUIRED with *see also*.**
 
 ```
-Libel claims require proof of falsity. See New York Times Co. v. Sullivan, 376 U.S. 254 (1964); see also Gertz v. Robert Welch, Inc., 418 U.S. 323 (1974) (extending the actual malice standard).
+Libel claims require proof of falsity. See N.Y. Times Co. v. Sullivan, 376 U.S. 254, 279–80 (1964); see also Gertz v. Robert Welch, Inc., 418 U.S. 323, 347 (1974) (extending the actual malice standard).
 ```
 
 #### *Cf.*
@@ -95,7 +95,7 @@ Libel claims require proof of falsity. See New York Times Co. v. Sullivan, 376 U
 Use when the cited authority supports a proposition **by analogy**. The source supports a similar but distinct proposition.
 
 ```
-Age discrimination claims require disparate treatment. Cf. Hazen Paper Co. v. Biggins, 507 U.S. 604 (1993) (holding that pension-status discrimination is not age discrimination).
+Age discrimination claims require disparate treatment. Cf. Hazen Paper Co. v. Biggins, 507 U.S. 604, 611 (1993) (holding that pension-status discrimination is not age discrimination).
 ```
 
 **Always use a parenthetical** with *cf.* to explain the analogy.
@@ -112,7 +112,7 @@ used. Parenthetical explanations (Rule 1.5) following **each** authority are req
 Compare McDonald v. City of Chicago, 561 U.S. 742, 791 (2010) (plurality opinion) (incorporating the Second Amendment through the Due Process Clause), with Timbs v. Indiana, 586 U.S. 146, 150 (2019) (incorporating the Excessive Fines Clause through the Due Process Clause).
 ```
 
-#### *Contrast ... [and] ... with ... [and] ...* — NEW in the 22nd edition
+#### *Contrast ... [and] ... with ... [and] ...*
 
 Use when the **contrast** between the authorities cited, rather than a comparison between them, will
 offer support for or illustrate the proposition. Like *compare*, *Contrast* must be used with
@@ -134,7 +134,7 @@ negative signals.
 Use when the cited authority **directly states** the opposite of the proposition.
 
 ```
-Some courts hold that X is required. Contra Brown v. White, 500 U.S. 1 (1990).
+Some courts hold that X is required. Contra Brown v. White, 500 U.S. 1, 9 (1990).
 ```
 
 *Brown* directly states that X is not required.
@@ -144,7 +144,7 @@ Some courts hold that X is required. Contra Brown v. White, 500 U.S. 1 (1990).
 Use when the cited authority **clearly supports** a contrary proposition but doesn't directly state it.
 
 ```
-The statute requires intent. But see Smith v. Jones, 500 F.3d 100 (9th Cir. 2007) (applying negligence standard).
+The statute requires intent. But see Smith v. Jones, 500 F.3d 100, 104 (9th Cir. 2007) (applying negligence standard).
 ```
 
 #### *But cf.*
@@ -255,7 +255,10 @@ Authorities supporting (or contradicting) **only part of a footnote sentence** a
 The authors point out that the use of affirmative defenses may relieve the state of its duty to prove a sufficient factual basis for punishment, id. at 1357, and argue that the reasonable doubt standard should not be limited to those facts formally identified as elements of the offense charged, id. at 1327.
 ```
 
-**Do not capitalize** signals in citation clauses.
+Rule 1.1(b)(ii) states no capitalization rule of its own; the "starts with a capital letter" sentence
+belongs to 1.1(b)(i) and governs citation *sentences*. A clause is not a sentence, so its citation is
+lowercase — as in Rule 1.1(c)'s own footnote 1 above, where `id. at 1357` and `id. at 1327` sit
+lowercase inside the clauses.
 
 ### Punctuation
 
@@ -290,8 +293,9 @@ be obvious.
 Explanatory information takes the form of **a present participial phrase, a quoted sentence, or a
 short statement appropriate in context**.
 
-**Present participial phrase (Rule 1.5(a)(i))** — begins with a present participle and **never
-begins with a capital letter**:
+**Present participial phrase (Rule 1.5(a)(i))** — a parenthetical phrase not directly quoting the
+authority **usually** begins with a present participle, and **should never begin with a capital
+letter**:
 ```
 (holding that separate is inherently unequal)
 (arguing that the author and the two-tier theory of federal jurisdiction are still viable)
@@ -344,7 +348,7 @@ Note the internal order of the weight-of-authority group: **(en banc), (Lastname
 (plurality opinion), (per curiam)** — judge-designation before plurality before per curiam.
 
 ```
-Smith v. Jones, 500 F.3d 100 (9th Cir. 2007) (en banc) (quoting Roe v. Doe, 400 F.3d 50, 60 (5th Cir. 2005)) (holding that strict liability applies).
+Smith v. Jones, 500 F.3d 100, 104 (9th Cir. 2007) (en banc) (quoting Roe v. Doe, 400 F.3d 50, 60 (5th Cir. 2005)) (holding that strict liability applies).
 ```
 
 **Explanatory parentheticals precede any citation of subsequent history or other related authority**
@@ -423,7 +427,7 @@ Reverse chronological order (most recent first).
 ### Example
 
 ```
-See U.S. Const. amend. XIV; 42 U.S.C. § 1983 (2018); Brown v. Board of Education, 347 U.S. 483 (1954); Smith v. Jones, 500 F.3d 100 (9th Cir. 2007); Doe v. Roe, 400 F.3d 50 (5th Cir. 2005).
+See U.S. Const. amend. XIV; 42 U.S.C. § 1983 (2018); Brown v. Bd. of Educ., 347 U.S. 483, 495 (1954); Smith v. Jones, 500 F.3d 100, 104 (9th Cir. 2007); Doe v. Roe, 400 F.3d 50, 55 (5th Cir. 2005).
 ```
 
 ## String Citations
@@ -453,7 +457,7 @@ Avoid string citations when:
 
 Separate authorities with semicolons:
 ```
-See Smith v. Jones, 500 F.3d 100 (9th Cir. 2007); Doe v. Roe, 400 F.3d 50 (5th Cir. 2005); Brown v. White, 300 F.3d 25 (2d Cir. 2003).
+See Smith v. Jones, 500 F.3d 100, 104 (9th Cir. 2007); Doe v. Roe, 400 F.3d 50, 55 (5th Cir. 2005); Brown v. White, 300 F.3d 25, 31 (2d Cir. 2003).
 ```
 
 ## Common Signal Errors
@@ -466,7 +470,7 @@ See Smith v. Jones, 500 F.3d 100 (9th Cir. 2007); Doe v. Roe, 400 F.3d 50 (5th C
 | *See* when source directly states | [no signal] | No inference needed |
 | *Cf.* without parenthetical | *Cf.* (...) | Always explain the analogy |
 | *See generally* for direct support | *See* or [no signal] | Reserve for background |
-| *Compare ... with ...* where the point is the difference | *Contrast ... with ...* | New in the 22e; *compare* is for comparison, *contrast* for contrast |
+| *Compare ... with ...* where the point is the difference | *Contrast ... with ...* | Rule 1.2(b): *compare* where the comparison carries the point, *contrast* where the contrast does |
 | *But see* immediately after *contra* | *see* | "But" drops after another negative signal |
 | Any pincite omitted | Supply the pincite | Required for every signal except *see generally* (Rule 1.2(f)) |
 
@@ -475,7 +479,7 @@ See Smith v. Jones, 500 F.3d 100 (9th Cir. 2007); Doe v. Roe, 400 F.3d 50 (5th C
 | Error | Correction |
 |-------|------------|
 | see Smith v. Jones | *See* Smith v. Jones (sentence start) |
-| See id. | *see* id. (after another signal) |
+| See id. | *see* id. (mid-sentence — after a semicolon, or inside a citation clause) |
 
 ### Missing Parentheticals
 
@@ -507,7 +511,7 @@ without parentheses.
 
 - [No signal] covers three uses in the 22e — the source directly states the proposition, identifies the source of a quotation, or identifies an authority referred to in the text. *See* implies an inferential step, so it is wrong for direct statements; neither choice is the "safe default", and asserting a signal without checking the source's words is an unverified claim about what the source says.
 - The 22e requires a parenthetical for **six** signals, not three: *see also*, *cf.*, *compare ... with ...*, *contrast ... with ...*, *but cf.*, and *see generally*. Treating *see also* or *see generally* as parenthetical-optional is the common error — Rule 1.2(a) and 1.2(d) both say "required."
-- The 22e adds *contrast ... with ...* as a comparative signal (Rule 1.2(b)). Reaching for *compare* when the point is that the authorities diverge now misstates the relationship; *contrast* sits between *compare* and *contra* in the signal order.
+- The 22e lists *contrast ... with ...* as a comparative signal (Rule 1.2(b)), for use when "[t]he contrast between the authorities cited will offer support for or illustrate the proposition." Reaching for *compare* when the point is that the authorities diverge misstates the relationship; *contrast* sits between *compare* and *contra* in the signal order.
 - Pincites are required for every citation except one introduced by *see generally* (Rule 1.2(f)).
 - Rule 1.3 splits by signal *type*, not by count: same-type signals string with semicolons in one citation sentence, different-type signals start a new citation sentence. Only a citation clause may mix types in one string.
 

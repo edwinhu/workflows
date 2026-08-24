@@ -148,8 +148,11 @@ the publisher's own terminology (see table T14).
 Fleming James, Jr. et al., Civil Procedure § 2.3 (4th ed. 1992).
 ```
 
-**Publisher.** The publisher is omitted when citing the original publisher's edition. It is
-**required** when the work was published by someone other than the original publisher (15.4(a)(iii)
+**Publisher.** 15.4 names the publisher as a required element in exactly two situations, and its
+15.4(a)(i)-(ii) examples (`Deborah L. Rhode, Justice and Gender 56 (1989).`) carry none — so the
+publisher is in practice omitted for the original publisher's edition, though no sentence of 15.4
+says so in terms. The publisher is **required** when the work was published by someone other than
+the original publisher (15.4(a)(iii)
 — give editor/translator, publisher, edition if not the first, and date, then a second parenthetical
 with the original edition's date unless the work is regularly updated), and for pre-1900 works
 (15.4(d)).
@@ -292,24 +295,36 @@ Die, 44 Am. U. L. Rev. 803, 812 (1995).
 
 ### Periodical Abbreviations (Tables T6, T10, T13)
 
-Periodical names are abbreviated using **three** tables together (16.1, 16.4, 16.5): **T6** (case
-names, institutional author names, and periodical titles), **T13** (institutional names in
-periodical titles), and **T10** (geographic abbreviations). T6 — not T13 — is the table that carries
-the periodical-title words themselves.
+Periodical names are abbreviated using **three** tables together. T13's own preamble states the
+order of resort: "To abbreviate English language periodical titles, use tables T13, T6, and T10.
+Common institutional names (e.g., law schools, professional organizations, and geographic units
+commonly found in institutional names) are listed in table T13. If an institutional name is not
+listed in table T13, individual words should be abbreviated using tables T6 and T10. If a word in an
+institutional name is not listed in these tables, use the full word in the abbreviated periodical
+title."
 
-| Full Name | Abbreviation |
-|-----------|--------------|
-| Harvard Law Review | Harv. L. Rev. |
-| Yale Law Journal | Yale L.J. |
-| Stanford Law Review | Stan. L. Rev. |
-| Columbia Law Review | Colum. L. Rev. |
-| University of Pennsylvania Law Review | U. Pa. L. Rev. |
+- **T13** — Institutional Names in Periodical Titles (22e pp. 346-48). Look here **first** for the
+  institution.
+- **T6** — Case Names and Institutional Authors in Citations (22e pp. 333-36). Carries the ordinary
+  periodical-title words themselves: "Abbreviate case names, institutional author names, and
+  periodical titles in citations by abbreviating any word listed below."
+- **T10** — Geographical Terms (22e p. 340; T10.1 U.S. states, cities and territories at pp. 340-42).
 
-> **UNVERIFIED (tables):** the 22e table contents are not in the corpus. **T6, T10 and T13 all
-> changed in the 22e** (T13, institutional names in periodical titles, is named in the publisher's
-> list of changes). The five abbreviations above are carried over from the 21e-era file and have
-> **not** been checked against the 22e tables. Check each against the printed T6/T10/T13 before
-> relying on it.
+Both T6 and T13 carry the same periodical-title conventions: abbreviate "University" as "U."; omit
+"a," "at," "in," "of," and "the" (but retain "on"); and if only one word remains after those
+omissions, do **not** abbreviate it.
+
+| Full Name | Abbreviation | Table basis |
+|-----------|--------------|-------------|
+| Harvard Law Review | Harv. L. Rev. | T13 `Harvard → Harv.`; T6 `Law[s] → L.`, `Review, Revista → Rev.` |
+| Yale Law Journal | Yale L.J. | "Yale" is not in T13, so it is not abbreviated; T6 `Journal[s] → J.` |
+| Stanford Law Review | Stan. L. Rev. | T13 `Stanford → Stan.` + T6 |
+| Columbia Law Review | Colum. L. Rev. | T13 `Columbia → Colum.` + T6 |
+| University of Pennsylvania Law Review | U. Pa. L. Rev. | T6/T13 "University" → "U." and omit "of"; T10.1 `Pennsylvania → Pa.` |
+
+For a **medical** periodical whose title contains a word not in T6, use the National Library of
+Medicine abbreviation for that word if one is available (T6 preamble) — and only for words that have
+no standard Bluebook abbreviation.
 
 ### Student-Written Pieces (Rule 16.7.1) (22e pp. 170-74)
 
@@ -475,24 +490,48 @@ Jeffrey Toobin, The Obama Brief, New Yorker, Oct. 27, 2014, at 24.
 ```
 Magazine names, like all periodical names, are in **SMALL CAPS** (rule 16.1).
 
-### Blogs and Online Sources (Rule 18.2 — The Internet)
+### Blogs and Online Sources (Rule 18.2 — The Internet) (22e pp. 185-90)
 
+Rule 18.2 has **only 18.2.1 and 18.2.2**; there is no 18.2.4. A blog is governed by 18.2.2(b), and
+which subpart applies turns on whether the blog is its own site or a subdivision of a larger one.
+
+**Blog that is its own site (18.2.2(b)(i), "main page titles").** "The citation should always include
+the homepage or domain name of which the particular citation is a part, referred to here as a 'main
+page title.' The website's main page title should be cited using **small capitals**. Capitalization
+should conform to the title as it appears on the site. Main page titles should be abbreviated in
+accordance with tables T6, T10, and T13":
 ```
-[Author], [Title], [Blog Name] ([Date]), [URL].
+SCOTUSblog, http://www.scotusblog.com/ (on file with the Columbia Law Review) (last visited Oct. 6, 2023).
 ```
 
-**Example:**
+**Blog inside a larger site (18.2.2(b)(ii)).** "If the cited source is published under the name of a
+blog or other subdivision that has its own content and presence within a larger web-based source,
+**both the name of the site and the name of the subdivision should be included. Titles for
+subdivisions should be preceded by a colon.**" Capitalize per rule 8 even where the title bar does
+not.
 ```
-Eugene Volokh, Free Speech and Criminal Solicitation, Volokh Conspiracy (Jan. 15, 2020), https://...
+[Author], [Title], [Site]: [Blog] ([Date], at [hh:mm TZ]), [URL] [[archive URL]].
 ```
+```
+Randy E. Barnett, What the Declaration of Independence Said and Meant, Reason: Volokh Conspiracy
+(July 4, 2024, at 10:13 ET), https://reason.com/volokh/2024/07/04/... [https://perma.cc/C32D-SH5C].
 
-> **UNVERIFIED — and the old cite was wrong.** This section previously cited "Rule 18.2.4". The
-> 22e Rule 18.2 has **only 18.2.1 and 18.2.2**; there is no 18.2.4, so that number came from the
-> 21e-era file and does not exist in this edition. Rule 18 was **substantially rewritten** in the
-> 22e — 18.3 is now **AI-Generated Content** (p. 191) and social media has its own rule at 18.10.
-> The blog citation form above and the italic-blog-name convention remain unchecked: 18.2's
-> lettered subparts (a)-(d) are in the corpus but do not settle which governs a blog. Consult
-> rule 18 directly before relying on this form.
+Ella Wiley, Unraveling the Many Costs of Discriminatory Redistricting, Legal Def. Fund: Blog
+(Oct. 30, 2023), https://www.naacpldf.org/the-cost-of-discriminatory-redistricting/ [https://perma.cc/SL7D-Y58H].
+```
+Rule 18.1(a)'s own row for "Dynamic websites, such as blogs, within larger websites" is in the same
+form: `Michael J. Coren, The World Needs a New Way to Talk About Heat, Wash. Post: Green Living
+(July 25, 2023, at 06:30 ET), ... [https://perma.cc/3QFZ-27RZ].`
+
+The bracketed archive URL is **required** by 18.2.1(d), which applies to all cited online content.
+The timestamp is **recommended** — 18.2.2(c): "It is recommended that citations for web-based sources
+include a timestamp whenever possible," in twenty-four-hour format with a time-zone designation.
+
+**Descriptive titles (18.2.2(b)(iii)):** where the page's own headings are not clear enough, supply a
+descriptive title — and **do not italicize** it (`Archive of Columns by Pete Wells, N.Y. Times, ...`).
+
+Rule 18 was substantially rewritten in the 22e: 18.3 is **AI-Generated Content** (22e p. 191) and
+social media has its own rule at **18.10** (22e pp. 198-201).
 
 ## Restatements, Model Codes, and Uniform Acts (Rule 12.9.4) (22e pp. 135-39)
 
@@ -571,8 +610,10 @@ except in extraordinary circumstances such as an extremely long name (rule 4.2, 
 
 ### Frequently Cited Works (15.8(a))
 
-A few frequently cited works take special forms — the dictionary entry comes **first**, in italics,
-and no page cite is given:
+"A few frequently cited works require special citation forms." In the dictionary examples the rule
+gives, the entry comes **first**, before the dictionary's name; the encyclopedia examples are cited
+by volume and section. 15.8(a) states no typeface rule and no pincite rule of its own — it is a bare
+list of forms:
 ```
 Good-Faith Bargaining, Black's Law Dictionary (9th ed. 2009).
 Noscitur a sociis, Ballentine's Law Dictionary (3d ed. 1969).
@@ -695,8 +736,8 @@ For a letter written to the author of the citing work, omit the addressee's name
 
 Analogize to unpublished letters. The date and timestamp may be needed for identification; archival
 information may be included parenthetically and is **recommended**. E-mail addresses of sender and
-recipient are not required. Listserv postings follow a similar format **but must include** the
-author's e-mail address and the listserv address.
+recipient are not required. "Postings to listservs should follow a similar format, but **should
+include** the author's e-mail address and the address of the listserv."
 ```
 E-mail from Mary Miles Prince, Assoc. Dir., Vand. L. Lib., to Edward C. Brewer, III, Assistant
 Professor of L., Salmon P. Chase Coll. of L. (Sep. 26, 1999, at 06:15 ET) (on file with author).
@@ -737,41 +778,97 @@ forthcoming publication in parentheses: `See Oetken, supra note 2 (manuscript at
 
 ## Electronic Sources (Rule 18)
 
-> **UNVERIFIED — ENTIRE SECTION.** Rule 18 is **not present in the 22e corpus**, and the publisher
-> lists rule 18 as **substantially rewritten** in the 22nd edition, including new treatment of
-> AI-generated content. Everything below is carried over from the 21e-era file and has **not** been
-> checked. The 22e subsections that rules 15-17 cross-reference are 18.2.1(a) (exact copies),
-> 18.2.1(b)(ii), 18.2.1(d) (archival tools, including DOIs), 18.2.2 (direct citation to online
-> sources), 18.4 (databases), 18.6.1 (microform) and 18.8 (audio recordings) — but their **content**
-> is not verified here.
+Rule 18 in the 22e runs 18.1 (basic citation forms, 22e pp. 182-84); 18.2 (The Internet, pp. 185-90);
+18.3 (AI-Generated Content, p. 191); 18.4 (Electronic Databases, p. 192); 18.5 (Electronic Storage
+Media, p. 192); 18.6 (Microform, pp. 192-93); 18.7 (Videographic Media, pp. 193-95); 18.8 (Audio
+Recordings and Streaming, pp. 195-97); 18.9 (Images, pp. 197-98); 18.10 (Social Media, pp. 198-201);
+18.11 (Hardware and Software, pp. 201-03); 18.12 (Short Citation Forms, pp. 203-04).
 
-### General Principles
+### General Principles (Rule 18.2, 18.2.1)
 
-**Prefer print sources** when identical content is available.
+**Prefer print.** "The Bluebook requires the use and citation of traditional printed sources when
+available, **unless there is a digital copy of the source available that is authenticated, official,
+or an exact copy of the printed source**, as described in rule 18.2.1."
 
-**When to cite online sources:**
-1. Source available only online
-2. Online version is official
-3. Online version is superior (e.g., hyperlinks to cited sources)
+**Cite as if to print, with no URL (18.2.1(a)):** where an authenticated, official, or exact copy is
+available online, cite it as the print source "without any URL information appended." The order of
+preference within that category is authenticated first (18.2.1(a)(i)), then official (a government
+site or an officially designated source, (a)(ii)), then an exact copy — an unaltered copy in a format
+preserving pagination, such as a PDF ((a)(iii)).
 
-### URL Format
+**Append the URL (18.2.1(b))** in two situations: (i) the traditional source is "so obscure as to be
+practically unavailable," or a parallel internet cite "will substantially improve access"; and (ii)
+the web source has print characteristics — permanent pages with permanent page numbers plus the
+elements of the print genre (volume number, publication date) — in which case cite it per the print
+rule and append the URL, "even if it is unknown whether the cited information is available in print."
 
-Include full URL. If URL is excessively long, use shortened version or archived version.
+**Cite directly per 18.2.2** only where the source can be cited under neither 18.2.1(a) nor
+18.2.1(b)(ii).
 
+**Order of parentheticals (18.2.1(c)):** the URL follows format-related parentheticals ("alteration in
+original," "emphasis added") and related-authority parentheticals ("citing," "quoting"), but
+**precedes** explanatory parentheticals — per rule 1.5(b).
+
+### Archival Is Mandatory (Rule 18.2.1(d))
+
+"The Bluebook requires that **all** online content cited or generated by authors be captured and
+stored in a permanent setting." Two acceptable methods:
+
+- **Archival tool** — "append the archive URL to the full citation in brackets":
+  `..., https://www.theatlantic.com/ideas/archive/2024/08/... [https://perma.cc/PT32-56LR].`
+- **Saved copy on file** (e.g. a PDF) — indicate where it can be found in a parenthetical *following*
+  the URL: `..., https://www.nytimes.com/2024/07/20/... (on file with the Columbia Law Review).`
+
+A DOI may serve as that bracketed archival tool (rule 16.8's example appends
+`[https://doi.org/10.34190/ejkm.21.2.2803]`).
+
+The archive URL is an **addition** to the source URL, never a replacement for it.
+
+### URL Format (Rule 18.2.2(d)-(f))
+
+The URL "should point readers directly to the source cited rather than to an intervening page of
+links." In order:
+
+1. If a **shortlink** clearly indicating the source of the site exists (e.g. `wapo.st`, `imdb.to` —
+   **but not** a generic shortener such as `bit.ly`), cite the shortlink.
+2. If no shortlink is available and the full URL is straightforward, cite the entire URL as it
+   appears in the browser's address bar.
+3. **Alternatively, use the site's root URL** if (1) the URL is "long, unwieldy, or full of nontextual
+   characters (such as question marks, percentage signs, or ampersands)," or (2) the source can be
+   obtained only by submitting a form or query. Where the root URL is used and the site's format is
+   not clear from the rest of the citation, add a **clarifying parenthetical** explaining how to reach
+   the specific information:
 ```
-https://perma.cc/XXXX-XXXX
+http://fjsrc.urban.org/noframe/wqs/q_data_1.htm#2001 (choose "2001" from dropdown; then choose
+"Defendants in Criminal Cases-Administrative Office of the U.S. Courts (AOUSC)"; then click "out"
+and "submit"; then follow "TTSECMO" hyperlink).
 ```
 
-Note that rules 15-17 in the 22e do show archival links in brackets **after** the URL (e.g.
-`http://... [https://perma.cc/4RUY-BBU4]`) and DOIs appended in brackets as archival tools per
-18.2.1(d).
+Some URLs are case sensitive — cite them as they appear in the browser. Where a site is served by
+several URLs, use the **primary** one, not an alternate server (18.2.2(e)). Where a document exists
+both in a paginated format (PDF) and one that is not, **always cite the paginated one** (18.2.2(f)),
+and give pinpoint cites to the numbers printed on the document itself, never "screen numbers"
+(18.2.2(g)).
 
-### Parenthetical for Last Visited
+### Date, Time, and "Last Visited" (Rule 18.2.2(c))
 
-For websites likely to change:
+Give the date **as it appears on the site**, after the main page title and any pinpoint. If the
+resource has been updated or corrected on a later date, use that date instead of the original
+publication date.
+
+"**When material is otherwise undated**, the date that the website was last visited should be placed
+in a parenthetical after the URL":
 ```
-[URL] (last visited [Date]).
+Yahoo!, http://www.yahoo.com [https://perma.cc/94S2-LKJW] (last visited Aug. 12, 2024).
 ```
+"Last visited" is the **undated-source** device — not a volatility flag. Volatility is handled by the
+mandatory archiving of 18.2.1(d). Where the archival tool records an archive date, put **that** date
+in the "last visited" parenthetical.
+
+Timestamps are recommended "whenever possible," in twenty-four-hour format with a time-zone
+designation taken from the source (or from the accessing device if the source gives none); where the
+zone is a daylight-savings subdivision, use the larger designation. They are "especially encouraged"
+for a comment to a posting.
 
 ## Short Forms for Secondary Sources (Rules 4, 15.10, 16.9)
 
@@ -799,8 +896,10 @@ authority, do not use "id." for a later citation to the entire authority — use
 Use the **full institutional name** for an institutional author; where no author is cited, use the
 title of the work; for unsigned student-written law review materials, use the designation (16.7.1(b)).
 Give the footnote of the full citation **unless the full citation is in the same footnote**, in which
-case use "supra" with no cross-reference. Always indicate the page cited except when citing the work
-in its entirety.
+case use "supra" with no cross-reference. Rule 4.2(a) itself adds only that "[v]olume, paragraph,
+section, page numbers, or timestamps may be added to refer to specific material"; the mandatory
+pincite comes from **16.9(b)** — "In using a 'supra' form, always indicate the page or pages cited
+except when citing the work in its entirety."
 
 ```
 15. Sunstein, supra note 1, at 2040.
@@ -888,7 +987,9 @@ pinpoint cite to the database where one is required for the primary document, an
 | Shorter work in collection: author roman, title italic, *in* italic, collection SMALL CAPS | mixed | 15.5.1(a) |
 | Restatements, model codes, uniform acts | SMALL CAPS | 12.9.4 |
 | Unpublished materials (rule 17) | Roman | 17.2 |
-| Blog names | *Italics* — **UNVERIFIED**, rule 18 not in corpus | 18 |
+| Website / blog main page titles | SMALL CAPS | 18.2.2(b)(i) |
+| Blog as a subdivision of a larger site | Site name, then colon, then subdivision name | 18.2.2(b)(ii) |
+| Descriptive title supplied by the author for a webpage | Roman — **not** italicized | 18.2.2(b)(iii) |
 
 ## Common Errors
 
@@ -907,7 +1008,7 @@ pinpoint cite to the database where one is required for the primary document, an
 
 | Error | Correction |
 |-------|------------|
-| Publisher included | Omit when citing the original publisher's edition; required under 15.4(a)(iii) and 15.4(d) |
+| Publisher included | 15.4 requires it only under 15.4(a)(iii) (edition not by the original publisher) and 15.4(d) (pre-1900); the 15.4(a)(i)-(ii) examples carry none |
 | First edition noted | Omit "1st ed." |
 | Missing year | Year always required |
 | "et al." for three authors | "et al." only above three; two or three authors are all listed (15.1(a)-(b)) |
@@ -938,10 +1039,12 @@ Before finalizing secondary source citations:
 
 - [ ] Author name(s) correctly formatted; honorifics dropped; "et al." used only above three authors
 - [ ] Title matches source exactly; subtitle only if particularly relevant
-- [ ] Periodical abbreviation checked against the **22e** T6, T10 and T13 (all three changed)
+- [ ] Periodical abbreviation checked against T13 first, then T6 and T10 for any word T13 omits
 - [ ] Volume and page numbers verified
 - [ ] Edition and year included; latest edition cited
 - [ ] Pinpoint provided for specific propositions
 - [ ] Typeface correct for source type (periodical names in small caps, not italics)
 - [ ] Short forms reference correct footnote number
-- [ ] Any rule 18 / online form re-checked against the printed 22e rule 18 (rewritten; unverified here)
+- [ ] Every online source archived and the archive URL appended in brackets (18.2.1(d)) — this is
+      mandatory, not optional
+- [ ] "Last visited" used only where the material is otherwise undated (18.2.2(c))

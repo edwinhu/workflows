@@ -12,12 +12,13 @@ kept — an unchecked heuristic is still useful — but is labelled so no one mi
 | *(rule N.N)* | The check restates a sentence present in the extracted 22e text for that rule. |
 | **UNVERIFIED** | Local practice, tooling advice, or a rule whose text is absent from the extraction. Do not cite it to a source-checker as Bluebook authority. |
 
-**What the extraction does not cover.** Rule pages 10, 12, 13, 14, 15, 16, 17, 18, 1, 2 and 4 and
-table T6 were captured. Rules 3, 5, 6, 8, 11, 19, 20 and 21 were **not extracted**, so where a
-captured rule cross-references them (rule 3.5, rule 5.3(b), rule 6.1(a), rule 6.2(c), rule 8) this
-file reports only the cross-reference itself, never the content of the referenced rule. Tables T10
-and T13 **could not be extracted** — T10 came back truncated and T13 empty — so this file states only
-that a rule points at them and never what they contain.
+**What the extraction does not cover.** Rules 1, 3, 4, 5, 6, 10, 12, 13, 14, 15, 16, 17, 18, 20, 21
+and 23 were captured, as were tables T1, T2, T6, T7, T8, T10 (with T10.1–T10.3), T11, T12, T13 and
+T14. Rules 7, 8, 9, 11, 19 and 22 were **not extracted**, so where a captured rule cross-references
+them this file reports only the cross-reference itself, never the content of the referenced rule.
+Rule 2's landing page was captured (*22e p. 72*) but the bodies of rules 2.1, 2.2 and 2.3 were **not extracted**, only their headings, and
+so per-source typeface calls remain unchecked here (see D12). Tables
+T3, T4, T5, T9, T15 and T16 were not captured.
 
 ---
 
@@ -34,7 +35,7 @@ that a rule points at them and never what they contain.
 | A7 | Signals appear in the order listed in rule 1.2; when "e.g.," is combined with another signal, the **other** signal's position governs *(rule 1.3)*. | 1.3 |
 | A8 | Signals of the **same** basic type (supportive / comparative / contradictory / background) are strung in one citation sentence separated by semicolons; signals of **different** types are split into separate citation sentences *(rule 1.3)*. Inside a citation **clause**, mixed types in one string are permitted *(rule 1.3, 1.1)*. | 1.3, 1.1 |
 | A9 | Authorities within a signal are separated by semicolons, and a markedly more helpful or authoritative source precedes the others; short-form cites are ordered as though cited in full *(rule 1.4)*. | 1.4 |
-| A10 | A parenthetical that does **not** quote begins with a present participle and **never** with a capital letter; one that quotes a full sentence begins with a capital and carries closing punctuation *(rule 1.5(a)(i)–(ii))*. Omissions inside such a quote are marked per rule 5.3(b) — **UNVERIFIED**, rule 5 was not extracted. | 1.5 |
+| A10 | A parenthetical that does **not** quote begins with a present participle and **never** with a capital letter; one that quotes a full sentence begins with a capital and carries closing punctuation *(rule 1.5(a)(i)–(ii))*. Omissions inside such a quote are marked per rule 5.3(b) *(22e pp. 90–91)*: a dropped beginning takes a capitalized (bracketed if necessary) first letter and **no** ellipsis; a dropped middle takes an ellipsis; a dropped end takes an ellipsis before the sentence's final punctuation; matter deleted after that final punctuation is not marked at all. | 1.5, 5.3 |
 | A11 | Multiple parentheticals follow the fixed 22e order: (date) [hereinafter] (en banc) (Lastname, J., concurring) (plurality opinion) (per curiam) (alteration in original) (emphasis added) (footnote omitted) (citations omitted) (quoting ...) (citing ...), URL (last visited) (explanatory), then prior or subsequent history *(rule 1.5(b))*. | 1.5 |
 | A12 | Explanatory parentheticals **precede** any subsequent-history or related-authority phrase *(rule 1.5(b), 1.6)*. | 1.5, 1.6 |
 | A13 | A quoting/citing parenthetical covering several sources uses "first ...; and then ..." for two and "first ...; then ...; and then ..." for three or more *(rule 1.5(b))*. | 1.5 |
@@ -49,7 +50,7 @@ that a rule points at them and never what they contain.
 | B1 | In law review footnotes, "id." is valid only for the immediately preceding authority **within the same footnote**, or in the immediately preceding footnote **when that footnote contains only one authority** *(rule 4.1)*. | 4.1 |
 | B2 | An "id." following a multi-source footnote is an error; replace with a short form naming the source *(rule 4.1, which gives the corrected example "See Chalfin, 233 A.2d at 570." in place of "See id. at 570.")*. | 4.1 |
 | B3 | **Counting authorities correctly is the whole game.** Sources appearing in explanatory parentheticals, explanatory phrases, or prior/subsequent history are **ignored** when deciding whether the preceding footnote "contains only one authority" *(rule 4.1)*. A naive source-counter that counts a `(quoting X)` or an `aff'd, Y` as a second authority will emit false positives on correct footnotes. | 4.1 |
-| B4 | "Id." is never used for an internal cross-reference; "See supra text accompanying note N" is repeated instead of "See supra id." *(rule 4.1, referring to rule 3.5 — rule 3 was not extracted)*. | 4.1 |
+| B4 | "Id." is never used for an internal cross-reference; "See supra text accompanying note N" is repeated instead of "See supra id." *(rule 4.1, referring to rule 3.5, 22e pp. 82–83, which supplies the "supra"/"infra" cross-reference forms — "See supra text accompanying notes 305–07", "See cases cited supra note 22")*. | 4.1, 3.5 |
 | B5 | The period in "id." is italicized *(rule 4.1)*. | 4.1 |
 | B6 | Where the first citation was to a shorter work inside a larger authority, a later citation to the **whole** authority takes "supra", not "id." *(rule 4.1, pointing to rule 4.2(a))*. | 4.1, 4.2 |
 | B7 | "Supra"/"hereinafter" are **not** used for cases, statutes, constitutions, legislative materials or debates (other than hearings), restatements, model codes, or regulations, except in extraordinary circumstances such as an extremely long name *(rule 4.2)*. Flag every `Case v. Case, supra note N`. | 4.2 |
@@ -70,7 +71,7 @@ that a rule points at them and never what they contain.
 | C2 | A one-party short form must be unambiguous and is italicized; do not shorten to a geographical or government unit, a government official, or another common litigant — "Patterson", not "NAACP" or "Alabama" *(rule 10.9(a)(i))*. | 10.9 |
 | C3 | A short cite to an entire decision (no pincite) keeps the shortened name, volume, reporter and first page, and **drops** the court/date parenthetical *(rule 10.9(a)(i))*. | 10.9 |
 | C4 | A statute short form is permitted when the statute was cited in the same footnote or can be readily found in one of the **preceding five footnotes** *(rule 12.10(b))*. | 12.10 |
-| C5 | Outside U.S. Code provisions, "section" is spelled out in law review text and footnote text; "§" is for citations *(rule 12.10(c), citing rule 6.2(c) — rule 6 was not extracted)*. | 12.10 |
+| C5 | "Section" and "paragraph" are spelled out in the text — main text or footnote text — of law review pieces, **except** when referring to a provision of the U.S. Code *(rule 12.10(c))* or a federal regulation *(rule 14.6)*; in citations the "§" and "¶" symbols are used, except when citing session laws amending prior acts *(rule 12.4(d))*. The first word of any sentence is spelled out regardless. A space follows the symbol *(rule 6.2(c), 22e pp. 93–94)*. | 12.10, 6.2 |
 | C6 | "Infra" is **never** used for books, reports and other nonperiodic materials *(rule 15.10)*. Forward references to those sources are an error, not a resolution problem. | 15.10 |
 | C7 | For a shorter work in a collection: "id." only if the shorter work was the immediately preceding authority in the same footnote or the sole authority in the preceding footnote, and never "id." to the collection as a whole while citing a different work in it; the collection takes a supra form built on its **title** *(rule 15.10.1)*. | 15.10 |
 | C8 | A periodical supra form always gives the page cited **except** when citing the work in its entirety *(rule 16.9(b))*. A bare `Author, supra note N` on a pincited proposition is a defect. | 16.9 |
@@ -83,19 +84,19 @@ that a rule points at them and never what they contain.
 | # | Check | Rule |
 |---|---|---|
 | D1 | In citations, abbreviate any word listed in **T6** even when it is the first word of a party's name — unless that word is part of a state, country or other geographical unit that is the **entire** name of the party ("South Dakota v. Dole", not "S. Dakota v. Dole") *(rule 10.2.2)*. | 10.2.2, T6 |
-| D2 | Geographical units in case names are abbreviated as indicated in **T10**, unless the geographical unit is the whole party name — including "United States" *(rule 10.2.2)*. The contents of T10 **could not be extracted**; verify individual abbreviations against the printed table. | 10.2.2, T10 |
+| D2 | Geographical units in case names are abbreviated as indicated in **T10**, unless the geographical unit is the whole party name — including "United States" *(rule 10.2.2)*. T10 covers U.S. states, cities and territories (T10.1, *22e pp. 340–42*), Australian, Canadian and U.K. units (T10.2) and countries and regions (T10.3); a country, territory, province or city **omitted** from T10.2 or T10.3 is **not** abbreviated, except as table T6 otherwise provides *(T10 introduction, 22e p. 340)*. | 10.2.2, T10 |
 | D3 | Other words of eight letters or more may be abbreviated where substantial space is saved and the result is unambiguous *(rule 10.2.2; T6's introduction states the same allowance)*. | 10.2.2, T6 |
 | D4 | Case names in **text** follow rule 10.2.1 only; the further abbreviation of rule 10.2.2 applies to citations. "Southern Pacific Co. v. Jensen" in text, "S. Pac. Co. v. Jensen" in a citation *(rule 10.2)*. An audit that abbreviates textual case names is introducing the error. | 10.2, 10.2.1 |
 | D5 | Where the textual sentence names the case in full, the case name may be omitted from the citation *(rule 10.2.2)*. | 10.2.2 |
 | D6 | Possessives abbreviate as "Emps.'" (plural) and "Emp.'s" (singular); plurals otherwise add "s" *(T6 introduction)*. | T6 |
 | D7 | For periodical titles only: "University" abbreviates to "U."; "a", "at", "in", "of" and "the" are omitted but "on" is retained; and if one word survives that omission it is **not** abbreviated *(T6 introduction)*. | T6 |
-| D8 | Periodical names are set in small capitals and abbreviated per **T6**, **T13** and **T10** *(rule 16.1)*. T13 and T10 **could not be extracted**; their contents are unchecked here. | 16.1, T6, T13, T10 |
+| D8 | Periodical names are set in small capitals and abbreviated per **T6**, **T13** and **T10** *(rule 16.1)*. The tables are consulted in order: common institutional names (law schools, professional organizations, geographic units in institutional names) come from T13; a name not listed there is abbreviated word by word from T6 and T10; a word in none of them is left in full *(T13 introduction, 22e pp. 346–48)*. Always use the title as it appears on the title page of the issue cited, even if the title has since changed; where the title itself contains an abbreviation, keep it ("IMF Surv.", not "Int'l Monetary Fund Surv.") *(T13)*. | 16.1, T6, T13, T10 |
 | D9 | An institutional author is abbreviated **only if the result is completely unambiguous**, using T6 and T10, dropping "Inc." / "Ltd." where a word like "Ass'n" or "Co." already marks it a firm *(rule 15.1(e))*. Note the tension an auditor must respect: T6 says abbreviate any listed word, 15.1(e) subordinates that to unambiguity. | 15.1, T6, T10 |
 | D10 | A book or report author's full name is given on first citation, in small capitals, keeping "Jr." or "III" and dropping "Dr.", "Prof.", "Judge", "Justice" *(rule 15.1)*. | 15.1 |
 | D11 | Website main page titles are in small capitals, abbreviated per T6, T10 and T13 *(rule 18.2.2(b)(i))*. | 18.2.2, T6 |
 | D12 | Law reviews run two typeface conventions — one for citations *(rule 2.1)* and one for textual material *(rule 2.2)*; Bluebook examples follow the law review **footnote** convention *(rule 2)*. The subsections' own text was **not extracted**, so per-source typeface calls (which sources take small caps versus italics) must be checked against the printed rule 2.1. | 2.1, 2.2 |
 | D13 | Procedural phrases in a case name are always italicized regardless of the rest of the name *(rule 10.2.1)*; the parentheses in a citation are never italicized *(rule 2.1(f), as stated in rule 10.2)*. | 10.2.1, 2.1 |
-| D14 | Spacing of abbreviations follows rule 6.1(a) *(so stated in the T6 introduction)*. Rule 6 was **not extracted** — spacing calls are unchecked here. | T6 |
+| D14 | Spacing of abbreviations follows rule 6.1(a) *(so stated in the T6 introduction)*: close up adjacent single capitals ("N.W.", "S.D.N.Y.") but not a single capital against a longer abbreviation ("D. Mass.", "S. Ct."). In periodical names, close up adjacent single capitals **except** where a capital refers to an institutional entity, which is set off by a space ("Geo. L.J.", but "B.C. L. Rev.", "N.Y.U. L. Rev.", "S. Ill. U. L.J."). Numerals and ordinals count as single capitals ("F.3d", "S.E.2d"), but a space precedes any abbreviation of two or more letters ("So. 2d", "F. Supp. 2d") *(rule 6.1(a))*. | T6, 6.1 |
 
 ---
 

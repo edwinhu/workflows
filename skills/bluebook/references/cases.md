@@ -108,7 +108,7 @@ from the citation.
 
 | Party | Citation Form |
 |-------|---------------|
-| United States, standing alone | `United States` — do **not** abbreviate; omit "of America" (10.2.1(f)) |
+| United States, standing alone | `United States` — omit "of America" (10.2.1(f)); do **not** abbreviate, because the geographical unit is the party's entire name (10.2.2) |
 | United States as part of a longer name | `U.S.` per T10 (`U.S. Dep't of Just.`) (10.2.2) |
 | State as party (10.2.1(f)) | Omit "State of," "Commonwealth of," "People of" — **except** when citing decisions of that state's own courts, where "State," "Commonwealth," or "People" alone is retained (`Blystone v. Pennsylvania` in the U.S. Reports; `Commonwealth v. Ferrone` in a Pa. court). Which of the three you use follows the reporter, not preference. |
 | Commissioner of Internal Revenue (10.2.1(j)) | "Commissioner" in text; "Comm'r" in citations |
@@ -212,8 +212,10 @@ themselves are never italicized (rule 2.1(f)).
 | District Courts | F. Supp., F. Supp. 2d, F. Supp. 3d | 100 F. Supp. 3d 456 |
 
 **Supreme Court preference:** use U.S. Reports; if unavailable, S. Ct., then L. Ed. —
-**UNVERIFIED.** The 22e corpus consulted here covers 10.1–10.9 but not Table T1.1, which is where
-the Supreme Court source hierarchy is set. Check T1.1 before relying on this ordering.
+**UNVERIFIED.** Table T1 is in the 22e corpus only as an index of its five subtables (T1.1 Federal
+Judicial and Legislative Materials through T1.5 Tribal Nations); **T1.1's own content, which is
+where the Supreme Court source hierarchy is set, was not captured.** Check T1.1 before relying on
+this ordering.
 
 ### Which Source to Cite (10.3.1)
 
@@ -247,7 +249,13 @@ For law reviews, do **not** default to an official-plus-regional pair; cite the 
 
 - **Public domain citation available** — it "must be provided, as well as a parallel citation to
   the regional reporter, if available" (10.3.3).
-- **Pagination differs between sources** — 10.3.2 requires parallel citations in that case.
+- **A jurisdiction-named reprint whose pagination differs from the original editor-named
+  reporter** — 10.3.2 requires parallel citations to the reprint and the original (`Wadsworth v.
+  Ruggles, 23 Mass. 62, 6 Pick. 63 (1828)`). This is narrow: it is about a reprint versus its
+  original, not about any two sources that happen to paginate differently. 10.3.2's other
+  parallel-cite instruction is equally narrow — very early Pennsylvania decisions reported in the
+  initial volumes of the U.S. Reports take the "U.S." cite plus a parallel cite to the appropriate
+  lower court reporter.
 - **State rules** — "Many state rules require that citations to state court decisions include a
   citation to the official state reporter, followed by a parallel citation to a regional
   reporter" (10.3.1(a)); that is a court-filing constraint, not a law-review one, but it governs
@@ -313,19 +321,24 @@ information is of particular relevance; where it is, give it as `(Sup. Ct. N.Y. 
 
 A more detailed court designation than the rule specifies may be given if necessary.
 
-### Court Abbreviations (Table T7)
+### Court Abbreviations (10.4(a)–(b); Table T7, 22e pp. 337-39)
 
-| Court | Abbreviation |
-|-------|--------------|
-| Numbered federal circuits (any year) | `2d Cir.` — not `C.C.A.2d`, not `CA2` |
-| D.C. Circuit and predecessors; Federal Circuit | `D.C. Cir.`, `Fed. Cir.` |
-| District Court | `D.` with the district: `D.N.J.`, `D.D.C.`, `S.D.N.Y.` |
-| Old circuit courts (abolished 1912) | `C.C.S.D.N.Y.`, `C.C.E.D. Mo.` |
-| Judicial Panel on Multidistrict Litigation | `J.P.M.L.` |
-| FISA Court / Court of Review | `F.I.S.C.`, `F.I.S.C.R.` |
-| Bankruptcy Court; bankruptcy appellate panel | `Bankr. E.D. Va.`; `B.A.P. 9th Cir.` |
-| State highest court | omitted entirely (see above) |
-| Circuit Justice sitting below | `(Thomas, Circuit Justice)` |
+The specific federal forms below are given in **rule 10.4(a)** itself, not in T7; the state
+highest-court omission is **10.4(b)**. T7 is an alphabetical word-to-abbreviation list of court
+names (`Bankruptcy [Court, Judge]` → `Bankr.`, `District Court (federal)` → `D.`, and so on), from
+which a composite abbreviation may be assembled when the full court name is not listed.
+
+| Court | Abbreviation | Source |
+|-------|--------------|--------|
+| Numbered federal circuits (any year) | `2d Cir.` — not `C.C.A.2d`, not `CA2` | 10.4(a) |
+| D.C. Circuit and predecessors; Federal Circuit | `D.C. Cir.`, `Fed. Cir.` | 10.4(a) |
+| District Court | `D.` with the district, **not the division**: `D.N.J.`, `D.D.C.`, `C.D. Cal.` | 10.4(a); T7 (`D.`) |
+| Old circuit courts (abolished 1912) | `C.C.S.D.N.Y.`, `C.C.E.D. Mo.` | 10.4(a); T7 (`C.C.`) |
+| Judicial Panel on Multidistrict Litigation | `J.P.M.L.` | 10.4(a); T7 |
+| FISA Court / Court of Review | `F.I.S.C.`, `F.I.S.C.R.` | 10.4(a); T7 |
+| Bankruptcy Court; bankruptcy appellate panel | `Bankr. E.D. Va.`; `B.A.P. 9th Cir.` | 10.4(a); T7 |
+| State highest court | omitted entirely (see above) | 10.4(b) |
+| Circuit Justice sitting below | `(Thomas, Circuit Justice)` | 10.4(a) |
 
 Note: "Sup. Ct." is **not** a general state-supreme-court abbreviation — in New York it denotes the
 trial court (`Schiffman v. Corsi, 50 N.Y.S.2d 897 (Sup. Ct. 1944)`), and a state's highest court
@@ -382,7 +395,9 @@ But if an exact date is required for either decision, give both dates.
 
 ## Pinpoint Citations (Rule 3.2)
 
-**UNVERIFIED — Rule 3 is not in the 22e corpus consulted for this file.** The forms below are
+**UNVERIFIED — rule 3.2 is not in the 22e corpus consulted for this file.** Rule 3's other
+subsections (3.1, 3.3, 3.4, 3.5) are present, but `3.2 Pages, Footnotes, Endnotes, and Graphical
+Materials` came back empty. The forms below are
 consistent with pinpoints as they appear throughout the 22e Rule 10 examples (e.g. `244 U.S. 205,
 225-26`; `at *18-19`; `at *6-8, *10`), but rule 3.2's own text was not checked. Verify against
 rule 3.2 before relying on the page-span and footnote conventions.
@@ -458,26 +473,31 @@ Cooper v. Dupnik, 924 F.2d 1520, 1530 & n.20 (9th Cir. 1991), rev'd en banc, 963
 - To show both, **give prior history first**: `Kubrick v. United States, 581 F.2d 1092 (3d Cir.
   1978), aff'g 435 F. Supp. 166 (E.D. Pa. 1977), rev'd, 444 U.S. 111 (1979).`
 - History follows any parenthetical information given for the primary citation (rule 1.5(b)).
-- Multiple dispositions by the same court are joined with an italicized "and": `United States v.
-  Baxter, 492 F.2d 150 (9th Cir.), cert. dismissed, 414 U.S. 801 (1973), and cert. denied, 416 U.S.
-  940 (1974).`
-- Give the reason for a disposition that lacks its normal substantive significance: `vacated as
-  moot,` `appeal dismissed per stipulation,`.
+- **(10.7.1(e))** Multiple dispositions by the same court are joined with an italicized "and":
+  `United States v. Baxter, 492 F.2d 150 (9th Cir.), cert. dismissed, 414 U.S. 801 (1973), and cert.
+  denied, 416 U.S. 940 (1974).`
+- **(10.7.1(b))** Give the reason for a disposition that lacks its normal substantive significance:
+  `vacated as moot,` `appeal dismissed per stipulation,`.
 
-### Common History Abbreviations (Table T8)
+### Common History Abbreviations (Table T8) (22e p. 339)
+
+T8 is "a partial list of explanatory phrases (as abbreviated)" (10.7.1). Phrases that take a direct
+object — typically those ending in a preposition or a verbal "-ing" — are **not** followed by
+commas; all other T8 phrases are followed by a comma, and the comma is not italicized.
 
 | Action | Abbreviation |
 |--------|--------------|
-| affirmed | *aff'd* |
+| affirmed | *aff'd,* |
 | affirming | *aff'g* |
-| reversed | *rev'd* |
-| certiorari denied | *cert. denied* |
-| certiorari granted | *cert. granted* |
-| vacated | *vacated* |
+| reversed | *rev'd,* |
+| certiorari denied | *cert. denied,* |
+| certiorari granted | *cert. granted,* |
+| vacated | *vacated,* |
 | overruled by | *overruled by* |
-| abrogated by | *abrogated by* |
-| superseded by statute | *superseded by statute* |
-| under a different name | *sub nom.* |
+
+Three phrases this file uses elsewhere are **not** T8 entries — they come from rule 10.7 itself, so
+check them there rather than in the table: *abrogated by* (10.7.1(c)(ii)), *superseded by statute*
+(10.7.1(c)(iii)), and *sub nom.* for a case under a different name on appeal (10.7.2(a)).
 
 ### Overruled, Abrogated, and Superseded Cases (10.7.1(c))
 
@@ -715,11 +735,26 @@ document does **not** count for the five-footnote rule of 10.9(a):
 Cite the official reporter if the order is there, and give the order's title if it has one: `Order
 Discharging the Advisory Comm., 352 U.S. 803 (1956).`
 
-### Foreign Cases
+### Foreign Cases (rule 20.3, 22e pp. 210-11)
 
-See **rule 20.3 and Table T2** (10.4). **UNVERIFIED** — neither rule 20.3 nor Table T2 is in the
-22e corpus consulted for this file, and the preface flags T2 as changed in the 22e. Do not rely on
-the form below without checking:
+Rule 10.4 sends foreign cases to **rule 20.3 and Table T2**. 20.3 opens: cite foreign cases
+according to rule 10 as modified by 20.3's instructions and table T2.
+
+**Common law cases (20.3.1).** Indicate the deciding court parenthetically — `R v. Lockwood (1782)
+99 Eng. Rep. 379 (KB).` **But if the court is the highest court in the jurisdiction, only the
+jurisdiction need be identified** — `Chase v. Campbell, [1962] S.C.R. 425 (Can.).`
+
+**Civil law and other non-common-law cases (20.3.2).** Cite per table T2, identifying the court per
+rule 20.1 with an English translation of the designation where the context does not make it clear;
+cite the sources and abbreviations listed in T2, giving the full form on first use with the
+subsequent abbreviation in brackets (20.2.3); always include the jurisdiction, abbreviated per table
+T10, in parentheses at the end (20.1); annotations are cited per rule 3.4.
+
+**UNVERIFIED — the T2 country entries.** T2 is in the 22e corpus only as an index of country
+headings T2.1–T2.47; the individual entries, including T2.46 (United Kingdom), were not captured, so
+the UK-specific form is unchecked. Note also that 20.3.1's own example for a highest court names the
+**jurisdiction** rather than the court, and its court-naming example is unpunctuated (`(KB)`) —
+check T2.46 before using the parenthetical below:
 ```
 Donoghue v. Stevenson, [1932] A.C. 562 (H.L.).
 ```
@@ -850,7 +885,7 @@ been fully resolved."
 | 347 US 483 | 347 U.S. 483 (spaces, periods) |
 | 500 F. 3d 100 | 500 F.3d 100 (no space before series) |
 | 100 F.Supp.3d 50 | 100 F. Supp. 3d 50 (spaces) |
-| Official + regional pair in a law review | Regional reporter alone (10.3.1(b)) — but parallel cites ARE required with a public domain cite (10.3.3) and where pagination differs (10.3.2) |
+| Official + regional pair in a law review | Regional reporter alone (10.3.1(b)) — but parallel cites ARE required with a public domain cite (10.3.3) and for an early jurisdiction-named reprint whose pagination differs from the original editor-named reporter (10.3.2) |
 
 ### Court/Date Errors
 

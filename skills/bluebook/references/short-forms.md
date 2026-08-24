@@ -252,7 +252,7 @@ For three or more authors, the short form keeps "et al.":
 ```
 22e examples: `Keeton et al., supra note 30, § 2, at 4` (from "W. Page Keeton et al."); `Fallon et al., supra note 38, at 343` (from "Richard H. Fallon, Jr. et al.").
 
-## Hereinafter (Rule 4.2(b)) (22e pp. 86-87)
+## Hereinafter (Rule 4.2(b)) (22e pp. 85-87)
 
 ### When to Use Hereinafter
 
@@ -462,32 +462,46 @@ The statute, § 1983, was enacted...
 5. Civil Rights Act § 703.      (within the five-footnote window)
 ```
 
-## Infra (Rule 3.5)
+## Infra (Rule 3.5) (22e pp. 82-83)
 
-**UNVERIFIED against the 22e corpus** — rule 3 is not among the 52 subsection pages extracted, so nothing in this section is confirmed against the 22nd edition text except as noted. What rules 4 and 15 do say: *id.* may **not** be used for internal cross-references (rule 4.1, "as described in rule 3.5"); *supra* and *hereinafter* **may** be used for internal cross-references (rule 4.2); and **"[n]ever use 'infra' to refer to"** books, reports, or other nonperiodic materials (rule 15.10, 22e pp. 163-64).
+Portions of text, footnotes, and groups of authorities within the piece may be cited using *supra* or *infra*. Related limits from elsewhere: *id.* may **not** be used for internal cross-references (rule 4.1, "as described in rule 3.5"); *supra* and *hereinafter* **may** be used for internal cross-references (rule 4.2); and **"[n]ever use 'infra' to refer to"** books, reports, or other nonperiodic materials (rule 15.10, 22e pp. 163-64).
 
 ### When to Use Infra
 
-Use infra to refer to material appearing **later** in the document.
+**Use *supra* to refer to material that has already appeared within the piece. Use *infra* to refer to material that appears later in the piece.**
 
 ```
-See infra Part II.A.
 See infra note 45 and accompanying text.
+See discussion infra Sections II.B.2, III.C.1.
 ```
 
 ### Infra vs. Supra
 
 | Direction | Citation |
 |-----------|----------|
-| Earlier in document | supra |
-| Later in document | infra |
+| Earlier in the piece | supra |
+| Later in the piece | infra |
+
+### Naming subdivisions
+
+Use a **consistent naming convention** for subdivisions that are numbered or otherwise designated in the piece. The Bluebook suggests "Part" for main subdivisions and "Section" for all smaller subdivisions; "note" for footnotes within the same piece; "p." and "pp." for other pages within the same piece; "Figure" and "Table" for figures and tables within the same piece. A variety of forms may be used.
+
+**In a span of numbers, always retain the last two digits, but drop other repetitious digits** (`notes 305-07`).
 
 ### Cross-References
 
+22e examples:
 ```
-See supra notes 10-15 and accompanying text.
-See infra Section III.
-See supra Part I.B.2.
+See supra text accompanying notes 305-07.
+See supra notes 12-15, 92-97 and accompanying text.
+See cases cited supra note 22.
+But see sources cited supra note 24.
+See discussion infra Sections II.B.2, III.C.1.
+See supra Part IV.
+See infra pp. 106-07.
+See infra p. 50 and note 100.
+See supra Figure 2.
+See infra Table 3.
 ```
 
 ## Source-Specific Short Form Rules
