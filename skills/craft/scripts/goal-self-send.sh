@@ -115,7 +115,24 @@ if command -v herdr >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
         fi
       done
 
-      echo "goal-self-send: text is sitting unsubmitted in the input box on $PANE — press Enter to set the goal" >&2
+      # Enter was genuinely swallowed. LEAVE THE BOX AS WE FOUND IT — the pre-flight above
+      # proved it was empty before we typed, so everything in it now is ours and clearing is
+      # safe. Skipping this is a deadlock, not an inconvenience: our own stale text makes the
+      # box non-empty, the collision guard then refuses every future send with exit 6, and craft
+      # cannot self-send again until a human clears the box by hand. Observed 2026-08-23.
+      #
+      # `ctrl+u` is the spelling herdr accepts; `ctrl-u` and `C-u` are rejected outright.
+      herdr pane send-keys "$PANE" ctrl+u >/dev/null 2>&1
+      sleep 0.3
+      if [[ -n "$(input_line)" ]]; then
+        herdr pane send-keys "$PANE" ctrl+u >/dev/null 2>&1
+        sleep 0.3
+      fi
+      if [[ -z "$(input_line)" ]]; then
+        echo "goal-self-send: Enter was swallowed; text withdrawn from the input box on $PANE — the goal is NOT set, submit it by hand: $CMD" >&2
+      else
+        echo "goal-self-send: text is sitting unsubmitted in the input box on $PANE and could not be withdrawn — press Enter to set the goal, or clear the box before the next send" >&2
+      fi
       exit 5
     fi
   fi
