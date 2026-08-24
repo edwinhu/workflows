@@ -65,7 +65,7 @@ who knows the paper.
 | Financial Times, FT | `#FFF1E5` salmon |
 | WSJ, NY Times, Bloomberg, ABC News | `#FFFFFF` |
 | X, Twitter | `#FFFFFF` — light-mode surface; the mark is black |
-| Bluesky, Mastodon, Threads | `#FFFFFF` — same embed layout; accents `#01A5FF` / `#563ACC` / black |
+| Bluesky, Mastodon, Threads, LinkedIn | `#FFFFFF` — same embed layout; accents `#01A5FF` / `#563ACC` / black / `#0A66C2` |
 | anything else | `#F7F4EC` cream fallback |
 
 ### Microblog cards are embeds, not clippings
@@ -100,10 +100,14 @@ mark; otherwise a bold sans `X` stands in.
 **Bluesky and Mastodon take the same layout.** All three microblog embeds have
 one shape — avatar + name over handle at the left, mark top right, timestamp
 below the text — so this is a venue LIST (`X`, `Twitter`, `Bluesky`,
-`Mastodon`, `Threads`), not a branch per platform. Only the mark and its accent differ, and the
+`Mastodon`, `Threads`, `LinkedIn`), not a branch per platform. Only the mark and its accent differ, and the
 handle format is data rather than code: `@user` (X, Threads),
-`@user.bsky.social`, `@user@instance.social`. Supply `logo` for a real mark; without one the card
-falls back to a coloured glyph, which is a stand-in and not the brand asset.
+`@user.bsky.social`, `@user@instance.social`. **Every microblog ships its real mark inline.** `post-mark-svg` in `theme.typ`
+carries the official path for X, Bluesky, Mastodon, Threads and LinkedIn, each
+filled with the platform's own colour, so no deck has to ship a logo asset. The
+non-X paths are the simple-icons set (MIT); X's is the official 300×271 mark.
+A caller-supplied `logo` still wins over all of them. The letter fallbacks
+(`b.`, `m`, `@`, `in`) now only fire for a venue with no path at all.
 
 `X`/`Twitter` is a venue, not a second function. The card suppresses the
 newspaper-only chrome for it — top rule, kicker, serif headline face, highlighter
