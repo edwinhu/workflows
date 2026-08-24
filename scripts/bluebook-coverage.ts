@@ -39,14 +39,22 @@ export function coverage() {
   }
 
   // Which files carry an adversarial verification report.
+  // A report that EXISTS is not a report that PASSED. The first version of this counted
+  // files on disk, so two reports whose own verdict line read FAIL satisfied "complete".
+  // A definition of done that a failing result satisfies is not a definition of done.
   const vDirs = [join(ROOT, 'scratch', 'bb22', 'verify'), join(ROOT, 'scratch', 'bluebook-verify')]
   const verified = new Set<string>()
+  const failing: string[] = []
   for (const d of vDirs) {
     if (!existsSync(d)) continue
     for (const f of readdirSync(d)) {
       if (!f.endsWith('.md')) continue
       // The Rule 5 pass predates the per-file naming and lives in REPORT.md.
-      verified.add(f === 'REPORT.md' ? 'quotations' : f.replace(/\.md$/, ''))
+      const name = f === 'REPORT.md' ? 'quotations' : f.replace(/\.md$/, '')
+      const body = readFileSync(join(d, f), 'utf8')
+      const verdict = body.match(/VERDICT[:\s*]*\**\s*(PASS|FAIL)/i)?.[1]?.toUpperCase()
+      if (verdict === 'FAIL') failing.push(name)
+      verified.add(name)
     }
   }
 
@@ -58,8 +66,9 @@ export function coverage() {
     corpusPages: (corpus.match(/^=== /gm) ?? []).length,
     rulesExtracted: [...rules].sort((a, b) => +a - +b),
     tablesExtracted: [...tables].sort(),
-    missingRules, missingTables, unverified,
-    complete: missingRules.length === 0 && missingTables.length === 0 && unverified.length === 0,
+    missingRules, missingTables, unverified, failing,
+    complete: missingRules.length === 0 && missingTables.length === 0
+              && unverified.length === 0 && failing.length === 0,
   }
 }
 
@@ -72,5 +81,6 @@ if (import.meta.main) {
   console.log(`cited, NOT in corpus — rules:  ${c.missingRules.join(' ') || 'none'}`)
   console.log(`cited, NOT in corpus — tables: ${c.missingTables.join(' ') || 'none'}`)
   console.log(`no verification report:        ${c.unverified.join(' ') || 'none'}`)
+  console.log(`report verdict is FAIL:        ${c.failing.join(' ') || 'none'}`)
   console.log(`\nCOMPLETE: ${c.complete}`)
 }

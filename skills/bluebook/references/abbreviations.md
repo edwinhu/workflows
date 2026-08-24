@@ -88,9 +88,10 @@ Rule 16.1, verbatim:
 > author names, and periodical titles), T13 (institutional names in periodical titles), and T10
 > (geographic abbreviations).
 
-Rules 16.4 (consecutively paginated journals), 16.5 (nonconsecutively paginated journals and
-magazines) and 16.6 (newspapers, via 16.5) each repeat the instruction to "Consult tables T6,
-T10, and T13 to abbreviate the names of periodicals."
+Rules 16.4 (consecutively paginated journals) and 16.5 (nonconsecutively paginated journals
+and magazines) each carry the instruction to "Consult tables T6, T10, and T13 to abbreviate
+the names of periodicals." That sentence appears exactly twice in the rule text — 16.6
+(newspapers) does NOT repeat it, and an earlier version of this file said it did.
 
 T6's own headnote adds a set of directives that apply **to periodical titles only**:
 
