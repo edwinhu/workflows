@@ -70,7 +70,7 @@ After "The Court stated that" the first word of the block is **not** capitalized
 | Situation | Signal |
 |-----------|--------|
 | Quote begins at the start of a source paragraph | Indent the first line further |
-| Quote begins mid-paragraph | Three-period ellipsis before the first word |
+| Quote begins mid-paragraph | **No ellipsis, and do not indent the first line** (p. 103) |
 | Second paragraph immediately follows the first in the original | Indent identically, no ellipsis |
 | Text existed between the two quoted paragraphs | Prefix the second paragraph with a three-period ellipsis |
 | An entire paragraph is omitted inside the quote | Four-period ellipsis **on its own indented line** |
@@ -104,6 +104,17 @@ Quoted:    Franklin reminds us to "[p]lough deep, while sluggards sleep."
 Original:  Remember, my name is Benjamin.
 Quoted:    As Franklin said, "[M]y name is Benjamin."
 ```
+
+### Omitted Letters — Rule 5.2(b)
+
+Letters dropped from a common root word take **empty brackets**:
+
+```
+"The court entered judgment[] for the plaintiff."   (source: "judgments")
+```
+
+Verified against the rule text: "Indicate the omission of letters from a common root word with
+empty brackets (`judgment[]`)" (5.2(b), p. 104).
 
 ### Changed or Added Words
 
@@ -145,9 +156,13 @@ Insert `[sic]` immediately after an error that appears in the original.
 The letter stated that the parties "recieved [sic] notice on Tuesday."
 ```
 
-Use it sparingly. The presumption is against `[sic]` where a bracket would simply fix the
-problem, and irregular spelling in historical materials is preserved with no notation unless
-the reader would otherwise be confused. Note the typography: *sic* is italicized; the brackets
+Use it sparingly — the book's trigger is a **significant** mistake. Where one applies, mark it
+and leave it: "Significant mistakes in the original should be followed by `[sic]` and otherwise
+left as they appear in the original" (5.2(c), p. 104). Do NOT silently repair the error in
+brackets instead; the book's own example leaves a grammatical error standing (`"This list of
+statutes are [sic] necessarily incomplete."`) rather than writing `statutes [is]`. Irregular
+spelling in historical materials is preserved with no notation unless the reader would otherwise
+be confused. Note the typography: *sic* is italicized; the brackets
 around it are not.
 
 ### Explanatory Parentheticals for Alterations
@@ -159,7 +174,7 @@ around it are not.
 | `(emphasis added and omitted)` | You did both |
 | `(alteration in original)` | Brackets or ellipses in the quote came from the source |
 | `(citation omitted)` / `(citations omitted)` | You dropped a citation from inside the quote |
-| `(footnote omitted)` / `(footnotes omitted)` | You dropped a footnote from inside the quote |
+| `(footnote omitted)` / `(footnotes omitted)` | You dropped a footnote from **inside** the quote — but NOT one whose call number follows the last word quoted (5.2(d)(ii)) |
 | `(internal quotation marks omitted)` | Only "internal" combines with quotation marks — never with citation or footnote |
 
 **`(emphasis in original)` DOES NOT EXIST.** Rule 5.2(d)(iii) directs you not to indicate that
@@ -278,6 +293,7 @@ A four-period ellipsis on its own indented line. See the Rule 5.1 paragraph-stru
 |-------------|----------------|-----|
 | A citation inside the quote | `(citation omitted)` after the cite | ellipsis |
 | A footnote inside the quote | `(footnote omitted)` after the cite | ellipsis |
+| A citation or footnote call number **following the last word quoted** | **nothing — do not indicate it** (5.2(d)(ii), p. 105) | any parenthetical |
 | Internal quotation marks | `(internal quotation marks omitted)` | ellipsis |
 | The start of the quoted sentence | bracketed capitalization | ellipsis |
 | Matter after the last quoted sentence's final punctuation | nothing at all | ellipsis |
@@ -302,7 +318,7 @@ Original source:
 | `"...less of a barrier to economic exchange now…"` | `"[L]ess of a barrier to economic exchange now . . . ."` | 5.3(b)(i), (iii) |
 | `"...at almost any other time . . ."` | `"...at almost any other time . . . ."` | 5.3(b)(iii) |
 | `"...in history . . . . As economic activity..."` | `"...in history. . . . [A]s economic activity..."` | 5.3(b)(v) |
-| `"...in history [footnote omitted] . . . ."` | `"...in history." ... (footnote omitted).` | 5.3, 5.2(d)(ii) |
+| `"...in history [footnote omitted] . . . ."` | `"...in history."` — **no parenthetical**: the call number follows the last word quoted | 5.2(d)(ii) |
 | `"National borders are [now] less of a barrier"` (source said "now") | `"National borders are now less of a barrier"` | 5.2 — no change, no bracket |
 | `... (emphasis in original).` | delete the parenthetical | 5.2(d)(iii) |
 | `... (citation omitted and emphasis added).` | `... (emphasis added) (citation omitted).` | 5.2(d), 1.5(b) |
@@ -363,15 +379,28 @@ Before finalizing any quotation:
 > `scratch/bluebook-verify/REPORT.md`.
 
 
-The Bluebook 21st edition is not open-access and the skill's NotebookLM notebook
-(`f70a9976-b443-43d5-b5fd-43ff86b2b700`) was unreachable when this file was written (expired
-Google auth). Every statement above was checked against law-review style guides and library
-guides keyed to Rule 5 — principally the Yale Law Journal Volume 131 Style Guide, the Virginia
-Law Review Slatebook 2023-24, the Temple Law Review Red Rules D.2-D.3 and C.1-C.2, and the
-Georgia State law library Bluebooking guide — rather than against the rule text itself. Two
-points to re-verify against a print copy before relying on them in an edit:
+The Bluebook 21st edition is not open-access, and this file was originally written from
+law-review style guides — the Yale Law Journal v131 Style Guide, the Virginia Law Review
+Slatebook 2023-24, the Temple Law Review Red Rules, the Georgia State library guide — rather than
+from the rule text.
 
-1. **The threshold's edge.** Sources split between "fifty or more words" (VLR, YLJ, Monmouth)
-   and "longer than 50 words" (GSU). This file follows "fifty or more."
-2. **Empty brackets for dropped letters** (`judgment[]`, Rule 5.2(b)) could not be confirmed in
-   any accessible source and is therefore omitted above.
+**It has since been checked against the book itself (2026-08-24).** Google's OCR of a full scan
+of the 21st edition was searched page by page; the verdicts and page cites are in
+`scratch/bluebook-verify/REPORT.md`: 23 confirmed, 5 contradicted, 7 unsupported. **All five
+contradictions are corrected above**, each against the quoted rule text.
+
+The result inverted the expected failure mode, which is worth recording. Every subsection number
+this file cites turned out to be CORRECT — 5.1(b)(iv), 5.2(d)(ii), 5.2(d)(iii), 5.3(b)(i)-(vi),
+1.5(b). What failed was substance: a leading ellipsis the book forbids, a `(footnote omitted)`
+parenthetical cited to the very rule that says not to indicate it, and an inverted `[sic]`
+presumption. A right number under a wrong instruction is the more dangerous defect, because a
+reader who checks the cite finds it valid and moves on.
+
+Both former open questions are resolved. The threshold is **"fifty or more words"** (5.1(a),
+p. 103). Empty brackets for dropped letters are **real** — 5.2(b), p. 104, at exactly the number
+and with exactly the example this file had guessed, so the rule is now stated above rather than
+omitted.
+
+Still unsupported: 7 claims the searched pages did not reach, marked in the report rather than
+inferred. The report also lists Rule 5 material this file still omits entirely — 5.1(b)(iii), the
+sub-fifty-word blocking exception, 5.2(e), 5.2(f)(iii).
