@@ -227,6 +227,7 @@ For detailed rules, consult:
 - **`references/signals-parentheticals.md`** - Signals, parentheticals, order (R. 1)
 - **`references/audit-patterns.md`** - Citation audit patterns and validation
 - **`references/abbreviations.md`** - Bluebook abbreviation tables
+- **`references/editions-21-to-22.md`** - What changed in the 22nd edition, from the publisher's preface plus rule-by-rule checks
 
 **Only `quotations.md` has been checked against the book.** It was verified page-by-page against
 the Pinpoint scan on 2026-08-24 — 25 confirmed, 6 contradicted, 4 verified absent — and the six
@@ -259,10 +260,16 @@ server is not connected this session, raw CDP over `http://127.0.0.1:9222/json/l
 
 **EDITION MATTERS, IN TWO WAYS.** The 22nd is now live and is the default.
 
-- **Rules 22 (Tribal Nations) and 23 (Archival Sources) are NEW in the 22nd.** The 21st stops at
-  Rule 21. Rules 1-21 keep their numbers, and Rule 5's structure (5.1/5.2/5.3) is unchanged.
-- **Pagination differs.** Rule 5 sits at 22e pp. 87-91 and 21e-scan pp. 103-108. A page cite is
-  only meaningful with its edition. Ask which edition the manuscript targets before citing a page.
+**`references/editions-21-to-22.md` is the guide** — the publisher's preface (which names changes
+in rules 1.2, 10.8.3, 12.4(f), 14.4, 15.1(d), 15.8, 18, 20.2.4, new 22 and 23, and tables T1.3,
+T1.5, T2, T6, T10) plus the rule-by-rule differences verified here. Read it before trusting
+anything in this skill against a 22e manuscript. Three things that bite immediately:
+
+- **Rules 22 and 23 are NEW**; the 21st stops at 21. Rules 1-21 keep their numbers.
+- **Pagination moved** — Rule 5 is 22e pp. 87-91 against 21e-scan pp. 103-108. A bare page cite is
+  ambiguous; name the edition.
+- **The preface's list is partial.** Rule 5.1(a)(i) gained "single spaced" in the 22nd and the
+  preface never mentions it. Absence from the preface is not evidence a rule is unchanged.
 
 ### Pinpoint — the 21st edition, full scan
 

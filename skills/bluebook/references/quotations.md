@@ -421,6 +421,21 @@ Before finalizing any quotation:
 - [ ] No `(emphasis in original)` anywhere
 - [ ] Alteration parentheticals are separate, and ordered per Rule 1.5(b)
 
+## Edition note — 22nd edition users
+
+This file documents **Rule 5** (Whitepages, law reviews) as it stands in both editions; the six
+corrections below hold in each. Two 22e-specific points:
+
+- **5.1(a)(i) gained "single spaced"** in the 22nd: "indented on the left and right, *single
+  spaced*, fully justified, without quotation marks." The 21st omits it.
+- **`(citation modified)` is a 22e Bluepages parenthetical (B5.3)**, not a Rule 5 one. It covers a
+  quotation stripped of internal quotation marks, brackets, ellipses, internal citations and
+  footnote reference numbers with capitalization changed without brackets — collapsing several
+  parentheticals into one. It is **not** available in law-review (Whitepages) citation, which is
+  what this file governs.
+
+Full differences: `references/editions-21-to-22.md`.
+
 ## Verification Status of This File
 
 > **Checked 2026-08-23: still unverified, and the notebook cannot settle it.** The wired-up
