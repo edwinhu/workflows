@@ -38,12 +38,20 @@ function unbackedCites(file: string) {
   return { missing, total }
 }
 
-test('the 22e corpus is present and non-trivial', () => {
+// The corpus is scraped from a licensed subscription and is gitignored, so it exists on
+// the machine that extracted it and nowhere else. A gate that hard-fails without it would
+// go red on every fresh clone and be disabled within a day — so absence SKIPS, and only
+// presence gates. Regenerate it with the recipe in references/editions-21-to-22.md.
+const haveCorpus = corpus.length > 200_000
+
+test('corpus present (skipped when not extracted locally)', () => {
+  if (!haveCorpus) { console.warn('bluebook: no local 22e corpus — cite gate skipped'); return }
   expect(corpus.length).toBeGreaterThan(200_000)
 })
 
 for (const f of REFS) {
   test(`${f}.md cites only rules the corpus backs (or marks them UNVERIFIED)`, () => {
+    if (!haveCorpus) return
     const { missing } = unbackedCites(f)
     expect(missing).toEqual([])
   })
