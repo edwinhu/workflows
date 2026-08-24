@@ -290,45 +290,135 @@
 
 // ── Headline card (LWT-style) ───────────────────────────────────────────
 
+// Editorial recreation: per-venue paper stock, real masthead logo, top rule +
+// category kicker, a serif headline with a Last-Week-Tonight yellow highlighter
+// swipe over a key phrase, and a short standfirst. X/Twitter is a VENUE here,
+// not a second function -- it takes the same card with the newspaper chrome off.
+//   phrase:  substring of `headline` to highlight (curly quotes must match)
+//   kicker:  small category tag, e.g. "MARKETS" (optional)
+//   logo:    DARK / full-colour logo for a light card (not the -white variant)
+//   stock:   per-card paper override; `auto` takes the venue's own stock
+//   handle:  account name for a social venue, e.g. "@elonmusk"
 #let headline-card(
   venue: "",
   date: "",
-  headline: [],
+  headline: "",
   quote: none,
   logo: none,
+  phrase: none,
+  kicker: none,
+  stock: auto,
+  handle: none,
 ) = {
-  let badge-red = rgb("#c81e1e")
-  let card-bg = rgb("#12121e")
-  let card-fg = white
-  let divider = rgb("#505064")
+  let ink = rgb("#16161c")
+  let mute = rgb("#6a6458")
+  let hl-yellow = rgb("#ffe000")
+  let serif = "Libertinus Serif"
+  let sans = "Noto Sans"
 
-  block(width: 100%, height: 1fr, fill: card-bg, radius: 0.4em, inset: 1.5em, {
-    set text(fill: card-fg)
-    if date != "" {
-      place(top + left,
-        rect(fill: badge-red, radius: 1em, inset: (x: 0.7em, y: 0.3em))[
-          #text(size: 14pt, weight: "bold", upper(date))
-        ]
-      )
-    }
-    align(center + horizon, {
-      if logo != none {
-        box(width: 60%, height: 4.5em, image(logo, fit: "contain", width: 100%, height: 100%))
-      } else {
-        text(size: 24pt, weight: "bold", tracking: 0.1em, fill: rgb("#c8c8d2"), upper(venue))
-      }
-      v(0.6em)
-      line(length: 50%, stroke: 0.5pt + divider)
-      v(0.6em)
-      text(size: 22pt, weight: "bold", headline)
-      if quote != none {
-        v(0.6em)
-        line(length: 50%, stroke: 0.5pt + divider)
-        v(0.6em)
-        text(size: 18pt, style: "italic", [\u{201c}] + quote + [\u{201d}])
-      }
+  // Paper stock is per publication. FT is famously salmon, the broadsheets are
+  // white, and X in light mode is a white surface with a black mark; one
+  // generic cream for everything reads as wrong to anyone who knows the outlet.
+  // Unlisted venues keep the neutral cream.
+  let stocks = (
+    "Financial Times":     rgb("#FFF1E5"),
+    "FT":                  rgb("#FFF1E5"),
+    "WSJ":                 rgb("#FFFFFF"),
+    "Wall Street Journal": rgb("#FFFFFF"),
+    "NY Times":            rgb("#FFFFFF"),
+    "New York Times":      rgb("#FFFFFF"),
+    "NYT":                 rgb("#FFFFFF"),
+    "Bloomberg":           rgb("#FFFFFF"),
+    "ABC News":            rgb("#FFFFFF"),
+    "X":                   rgb("#FFFFFF"),
+    "Twitter":             rgb("#FFFFFF"),
+  )
+  let newsprint = if stock != auto { stock } else { stocks.at(venue, default: rgb("#F7F4EC")) }
+
+  // A post is not a clipping. X keeps the card — same stock table, same mark
+  // normalization, same frame — but drops the chrome that only a newspaper
+  // has: the heavy top rule, the category kicker, the serif headline face and
+  // the highlighter swipe. What is left is the mark, the account, the post
+  // text and its date.
+  let is-post = venue in ("X", "Twitter")
+
+  // Headline content with the key phrase swiped in highlighter yellow. Using an
+  // inline highlight() means the swipe tracks the real glyphs and survives any
+  // line-wrap — no pixel coordinates to maintain.
+  let headline-content = [#headline]
+  // `.contains` is a string method: a content headline has no swipe to place.
+  if not is-post and phrase != none and phrase != "" and std.type(headline) == str and headline.contains(phrase) {
+    let parts = headline.split(phrase)
+    headline-content = [#parts.first()#highlight(
+        fill: hl-yellow.transparentize(32%), extent: 2pt,
+        top-edge: "bounds", bottom-edge: "bounds")[#phrase]#parts.slice(1).join(phrase)]
+  }
+
+  // Right-hand masthead meta (kicker over dateline), only what's present.
+  // A post carries no category kicker — it was never filed under a desk.
+  let meta = ()
+  if not is-post and kicker != none and kicker != "" {
+    meta.push(text(size: 12pt, weight: "bold", tracking: 1.5pt, fill: ink, upper(kicker)))
+  }
+  if date != "" {
+    meta.push(text(
+      font: if is-post { sans } else { serif },
+      size: 12pt, weight: "medium", fill: mute, date))
+  }
+
+  // Auto-height card centered in the slide body so it never runs into the
+  // footer / institutional logo (height: 1fr filled the whole slide before).
+  block(width: 100%, height: 1fr, align(center + horizon,
+    block(width: 90%, fill: newsprint, radius: 0.3em, inset: 1.8em,
+      stroke: 0.5pt + rgb("#ded7c7"), {
+      set text(fill: ink)
+      align(left, block(width: 100%, {
+        if not is-post {
+          line(length: 100%, stroke: 2pt + ink)
+          v(0.6em)
+        }
+        // Masthead row: real logo (or venue wordmark) left, kicker/dateline right.
+        // On a post the same slot carries the mark and the account handle.
+        grid(columns: (1fr, auto), align: (left + horizon, right + horizon),
+          {
+            if logo != none {
+              // Equal-area normalization: size each logo by its aspect ratio so a
+              // narrow mark (ABC, ~2.8:1) and a wide wordmark (FT, ~12:1) carry
+              // similar visual weight instead of one rendering tiny at fixed height.
+              context {
+                let nat = measure(image(logo))
+                let ratio = nat.width / nat.height
+                let mark-h = calc.max(1.1, calc.min(2.4, calc.sqrt(15.0 / ratio)))
+                box(baseline: 0pt, image(logo, height: mark-h * 1em))
+              }
+            } else {
+              text(font: serif, weight: "bold", size: 21pt, tracking: 0.3pt, upper(venue))
+            }
+            if handle != none and handle != "" {
+              h(0.55em)
+              text(font: sans, weight: "medium", size: 17pt, fill: mute, handle)
+            }
+          },
+          stack(dir: ttb, spacing: 0.4em, ..meta),
+        )
+        v(1.2em)
+        // Headline — the newspaper's serif, or a post's plain sans at reading
+        // weight; post text is not a headline and should not be set as one.
+        set par(leading: if is-post { 0.55em } else { 0.42em })
+        text(
+          font: if is-post { sans } else { serif },
+          weight: if is-post { "regular" } else { "bold" },
+          size: if is-post { 26pt } else { 28pt },
+          headline-content)
+        // Standfirst — lighter, looser, short
+        if quote != none {
+          v(0.9em)
+          set par(leading: 0.72em)
+          text(font: if is-post { sans } else { serif }, size: 16pt, fill: mute, quote)
+        }
+      }))
     })
-  })
+  ))
 }
 
 // ── Callout box ─────────────────────────────────────────────────────────
