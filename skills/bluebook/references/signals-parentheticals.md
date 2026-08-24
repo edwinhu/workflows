@@ -1,6 +1,8 @@
 # Introductory Signals and Parentheticals - Bluebook Rule 1
 
-Complete guidance for signals, parentheticals, and citation ordering per Bluebook 21st Edition.
+Guidance for signals, parentheticals, and citation ordering per Bluebook **22nd Edition**. Rule 1
+spans 22e pp. 65–72: 1.1 (22e pp. 65–66), 1.2 (22e pp. 66–68), 1.3 (22e p. 68), 1.4 (22e p. 69),
+1.5 (22e pp. 69–71), 1.6 (22e pp. 71–72).
 
 ## The Purpose of Signals
 
@@ -19,13 +21,15 @@ Before using ANY signal:
 **Using the wrong signal is misrepresentation. Verify every signal choice.**
 </EXTREMELY-IMPORTANT>
 
-## Signal Categories (Rule 1.2)
+## Signal Categories (Rule 1.2) (22e pp. 66–68)
 
-### Signals That Show Support
+### Signals That Show Support (Rule 1.2(a))
 
 #### [No Signal]
 
-Use when the cited authority **directly states** the proposition.
+Use when the cited authority (i) **directly states** the proposition, (ii) **identifies the source
+of a quotation**, or (iii) **identifies an authority referred to in the text**. Use no signal, for
+example, when directly quoting an authority or when restating numerical data from an authority.
 
 ```
 The Constitution requires due process. U.S. Const. amend. XIV, § 1.
@@ -45,11 +49,16 @@ The Due Process Clause protects certain unenumerated rights. See Griswold v. Con
 
 #### *E.g.,*
 
-Use when the cited authority is **one of multiple** authorities that directly state the proposition. Signals that you're not citing all supporting authorities.
+Use when the cited authority states the proposition and **other authorities also state it, but
+citation to them would not be helpful or is not necessary**.
 
 ```
 Federal courts have jurisdiction over diversity cases. E.g., 28 U.S.C. § 1332 (2018).
 ```
+
+*E.g.,* may be used **alone or attached to any other signal**, supportive or not (*see, e.g.,*;
+*but see, e.g.,*). When attached to another signal, it is preceded by an **italicized comma** and
+followed by a **non-italicized comma**.
 
 #### *See, e.g.,*
 
@@ -61,7 +70,9 @@ Courts routinely dismiss claims for lack of standing. See, e.g., Lujan v. Defs. 
 
 #### *Accord*
 
-Use after citing one authority, to add additional authorities that state or support the same proposition.
+Use when two or more sources state or clearly support the proposition but the text quotes or refers
+to only one; the others are introduced by *accord*. Also used to cite the law of one jurisdiction as
+being in accord with the law of another.
 
 ```
 Due process requires notice. Smith v. Jones, 500 U.S. 1 (1990); accord Doe v. Roe, 400 U.S. 50 (1985).
@@ -69,10 +80,14 @@ Due process requires notice. Smith v. Jones, 500 U.S. 1 (1990); accord Doe v. Ro
 
 #### *See also*
 
-Use when the cited authority constitutes **additional support** for the proposition. The additional material is helpful but not directly on point.
+Use when the cited authority constitutes **additional source material** that supports the
+proposition — commonly when authorities that state or directly support the proposition have already
+been cited or discussed.
+
+**A parenthetical explanation of the source's relevance (Rule 1.5) is REQUIRED with *see also*.**
 
 ```
-Libel claims require proof of falsity. See New York Times Co. v. Sullivan, 376 U.S. 254 (1964). See also Gertz v. Robert Welch, Inc., 418 U.S. 323 (1974) (extending actual malice standard).
+Libel claims require proof of falsity. See New York Times Co. v. Sullivan, 376 U.S. 254 (1964); see also Gertz v. Robert Welch, Inc., 418 U.S. 323 (1974) (extending the actual malice standard).
 ```
 
 #### *Cf.*
@@ -85,19 +100,34 @@ Age discrimination claims require disparate treatment. Cf. Hazen Paper Co. v. Bi
 
 **Always use a parenthetical** with *cf.* to explain the analogy.
 
-### Signals That Suggest a Comparison
+### Signals That Suggest a Useful Comparison or Contrast (Rule 1.2(b))
 
-#### *Compare ... with ...*
+#### *Compare ... [and] ... with ... [and] ...*
 
-Use to compare authorities that illustrate a proposition through their contrast.
+Use when the **comparison** of the authorities cited will offer support for or illustrate the
+proposition. *Compare* must be used with *with*; the *with* is preceded by a comma, as is *and* when
+used. Parenthetical explanations (Rule 1.5) following **each** authority are required.
 
 ```
-Compare Smith v. Jones, 500 F.3d 100 (9th Cir. 2007) (finding jurisdiction), with Doe v. Roe, 400 F.3d 50 (5th Cir. 2005) (finding no jurisdiction).
+Compare McDonald v. City of Chicago, 561 U.S. 742, 791 (2010) (plurality opinion) (incorporating the Second Amendment through the Due Process Clause), with Timbs v. Indiana, 586 U.S. 146, 150 (2019) (incorporating the Excessive Fines Clause through the Due Process Clause).
 ```
 
-Always include parentheticals explaining the comparison.
+#### *Contrast ... [and] ... with ... [and] ...* — NEW in the 22nd edition
 
-### Signals That Indicate Contradiction
+Use when the **contrast** between the authorities cited, rather than a comparison between them, will
+offer support for or illustrate the proposition. Like *compare*, *Contrast* must be used with
+*with*; the *with* is preceded by a comma, as is *and* when used. Parenthetical explanations
+(Rule 1.5) following each authority are required.
+
+```
+Contrast Timbs v. Indiana, 586 U.S. 146, 150 (2019) (incorporating the Excessive Fines Clause through the Due Process Clause), with id. at 157–58 (Thomas, J., concurring in the judgment) (reaching the same result through the Privileges or Immunities Clause).
+```
+
+*Contrast* is a comparative signal, not a contradictory one: it belongs to Rule 1.2(b) alongside
+*compare*, and takes 1.2(b)'s place in the signal order — **before** *contra*, not among the
+negative signals.
+
+### Signals That Indicate Contradiction (Rule 1.2(c))
 
 #### *Contra*
 
@@ -127,19 +157,42 @@ Strict liability does not apply to services. But cf. Restatement (Third) of Tort
 
 **Always use a parenthetical** with *but cf.*
 
-### Signal for Background
+#### Dropping "But"
+
+**"But" is omitted from *but see* and *but cf.* whenever one of these signals follows another
+negative signal.** So a string of contradictory signals reads `Contra ...; see ...; cf. ...`, not
+`Contra ...; but see ...`.
+
+### Signal for Background (Rule 1.2(d))
 
 #### *See generally*
 
-Use when the cited authority provides **helpful background** but does not directly support the proposition.
+Use when the cited authority presents **helpful background material** related to the proposition.
+
+**A parenthetical explanation of the source material's relevance (Rule 1.5) is REQUIRED following
+each authority introduced by *see generally*.**
 
 ```
-For an overview of Fourth Amendment doctrine, see generally Orin S. Kerr, An Equilibrium-Adjustment Theory of the Fourth Amendment, 125 Harv. L. Rev. 476 (2011).
+For an overview of Fourth Amendment doctrine, see generally Orin S. Kerr, An Equilibrium-Adjustment Theory of the Fourth Amendment, 125 Harv. L. Rev. 476 (2011) (proposing that courts adjust Fourth Amendment rules to preserve the pre-existing balance of law enforcement power).
 ```
 
-## Signal Order Within a Citation Sentence (Rule 1.3)
+### Signals as Verbs (Rule 1.2(e))
 
-When multiple signals appear in a single citation sentence, they must appear in this order:
+In footnotes, signals may serve as the verbs of textual sentences. Material that would otherwise sit
+in a parenthetical becomes part of the sentence. **Signals are not italicized when used as verbs**
+(Rule 2.1(d)). *Cf.* becomes "compare" and *e.g.* becomes "for example" in this use.
+
+```
+See Christina L. Anderson, Comment, Double Jeopardy: The Modern Dilemma for Juvenile Justice, 152 U. Pa. L. Rev. 1181, 1204–07 (2004), for a discussion of restorative justice as a reasonable replacement for retributive sanctions.
+```
+
+### Pincites (Rule 1.2(f))
+
+**Pincites are required for all citations except those introduced by *see generally*.**
+
+## Signal Order Within a Citation Sentence (Rule 1.3) (22e p. 68)
+
+Signals appear in the order in which they are listed in Rule 1.2:
 
 1. [no signal]
 2. *E.g.,*
@@ -147,35 +200,59 @@ When multiple signals appear in a single citation sentence, they must appear in 
 4. *See*
 5. *See also*
 6. *Cf.*
-7. *Compare ... with ...*
-8. *Contra*
-9. *But see*
-10. *But cf.*
-11. *See generally*
+7. *Compare ... [and] ... with ... [and] ...*
+8. *Contrast ... [and] ... with ... [and] ...*
+9. *Contra*
+10. *But see*
+11. *But cf.*
+12. *See generally*
 
-**Separate signal groups with semicolons:**
-```
-U.S. Const. art. I, § 8; see Brown v. Board of Education, 347 U.S. 483 (1954); cf. Plessy v. Ferguson, 163 U.S. 537 (1896).
-```
+When *e.g.,* is attached to another signal, **the other signal's** position in Rule 1.2 governs.
 
-## Citation Sentences vs. Citation Clauses (Rule 1.1)
+### Same type strings; different types split into separate sentences
 
-### Citation Sentences
-
-A citation sentence follows a textual sentence and cites authority for that sentence.
-
-```
-The Constitution requires due process. U.S. Const. amend. XIV, § 1.
-```
-
-**Capitalize** signals at the beginning of citation sentences.
-
-### Citation Clauses
-
-A citation clause is embedded within a textual sentence or refers to only part of it.
+Signals of the **same basic type** — supportive (1.2(a)), comparative (1.2(b)), contradictory
+(1.2(c)), or background (1.2(d)) — **must be strung together within a single citation sentence,
+separated by semicolons**. Signals of **different types must be grouped in different citation
+sentences**.
 
 ```
-The Supreme Court has held, see Brown v. Board of Education, 347 U.S. 483 (1954), that separate is inherently unequal.
+See Mass. Bd. of Ret. v. Murgia, 427 U.S. 307 (1976) (per curiam); cf. Palmer v. Ticcione, 433 F. Supp. 653 (E.D.N.Y. 1977) (upholding a mandatory retirement age for kindergarten teachers). But see, e.g., Gault v. Garrison, 569 F.2d 993 (7th Cir. 1977) (holding that a classification of public school teachers based on age violated equal protection absent a showing of justifiable and rational state purpose). See generally Comment, O'Neil v. Baine: Application of Middle-Level Scrutiny to Old-Age Classifications, 127 U. Pa. L. Rev. 798 (1979) (advocating a new constitutional approach to old-age classifications).
+```
+
+**Exception:** within a **citation clause** (Rule 1.1), a citation string may contain signals of more
+than one type, separated by semicolons.
+
+## Citation Sentences vs. Citation Clauses (Rule 1.1) (22e pp. 65–66)
+
+**In law review pieces, all citations appear in footnotes** appended to the portion of text they
+refer to. Citation sentences and clauses are therefore constructions *within a footnote*, not
+in-text citations. (For practitioners' documents, see Bluepages B1.)
+
+### Call numbers in the main text (Rule 1.1(a))
+
+A footnote call number goes at the **end of a textual sentence** if the authority supports (or
+contradicts) the entire sentence, and **within the sentence** next to the portion it supports if it
+supports only that part. The call number comes **after** any punctuation mark — comma, semicolon,
+period — **except a dash or a colon**, which it precedes.
+
+```
+This is sentence one.1 Sentence two contains two call numbers;2 however, only one of these — this one3 — is surprising. Recall one thing4: call numbers precede dashes and colons.
+```
+
+### Citation Sentences (Rule 1.1(b)(i))
+
+Authorities supporting (or contradicting) an **entire footnote sentence** are cited in a separate
+citation sentence immediately after it. The citation sentence **starts with a capital letter and
+ends with a period** — so **capitalize** the signal.
+
+### Citation Clauses (Rule 1.1(b)(ii))
+
+Authorities supporting (or contradicting) **only part of a footnote sentence** are cited in clauses
+**set off by commas**, immediately following the proposition they support.
+
+```
+The authors point out that the use of affirmative defenses may relieve the state of its duty to prove a sufficient factual basis for punishment, id. at 1357, and argue that the reasonable doubt standard should not be limited to those facts formally identified as elements of the offense charged, id. at 1327.
 ```
 
 **Do not capitalize** signals in citation clauses.
@@ -188,44 +265,58 @@ The Supreme Court has held, see Brown v. Board of Education, 347 U.S. 483 (1954)
 | Between citations in same sentence | Semicolon |
 | Citation clause (embedded) | Commas on both sides |
 
-## Parentheticals (Rule 1.5)
+## Parentheticals (Rule 1.5) (22e pp. 69–71)
+
+Use parentheticals **as needed** to explain the relevance of an authority to the proposition.
+Parenthetical information is **required when the relevance of a cited authority might not otherwise
+be clear to the reader** (see Rule 1.2).
 
 ### When Parentheticals Are Required
 
-**Always required with:**
-- *Cf.*
-- *But cf.*
-- *Compare ... with ...*
-- Any source that doesn't directly state the proposition
-
-**Strongly recommended with:**
-- *See*
+Rule 1.2 makes an explanatory parenthetical **required** with:
 - *See also*
-- *But see*
+- *Cf.*
+- *Compare ... with ...*
+- *Contrast ... with ...* (following each authority)
+- *But cf.*
+- *See generally* (following each authority)
 
-### Parenthetical Form
+Otherwise required whenever relevance would not be clear. *See* and *but see* carry no
+across-the-board requirement in Rule 1.2; supply a parenthetical when the inferential step would not
+be obvious.
 
-Begin with a present participle or quoted material:
+### Parenthetical Form (Rule 1.5(a))
 
-**Present participle:**
+Explanatory information takes the form of **a present participial phrase, a quoted sentence, or a
+short statement appropriate in context**.
+
+**Present participial phrase (Rule 1.5(a)(i))** — begins with a present participle and **never
+begins with a capital letter**:
 ```
 (holding that separate is inherently unequal)
-(finding no constitutional violation)
-(noting the difficulty of the issue)
+(arguing that the author and the two-tier theory of federal jurisdiction are still viable)
 (rejecting defendant's argument)
 ```
 
-**Quoted material:**
+**Short statement** — when a complete participial phrase is unnecessary in context. Extraneous words
+such as "the" may be omitted unless doing so would cause confusion:
 ```
-("Separate educational facilities are inherently unequal.")
+See, e.g., H.B. Jacobini, The New International Sanitary Regulations, 46 Am. J. Int'l L. 727, 727–28 (1952) (health-related water quality); Robert L. Meyer, Travaux Préparatoires for the UNESCO World Heritage Convention, 2 Earth L.J. 45, 45–81 (1976) (conservation of protected areas).
 ```
 
-### Parenthetical Content
-
-Explain **what the source says** or **how it supports** the proposition:
-
+**Quoted material (Rule 1.5(a)(ii))** — if the parenthetical quotes **one or more full sentences, or
+a portion that reads as a full sentence**, it **begins with a capital letter and includes closing
+punctuation**, with omissions marked per Rule 5.3(b). Do **not** wrap such a quotation in an
+introductory participle:
 ```
-Brown v. Board of Education, 347 U.S. 483 (1954) (holding that separate educational facilities are inherently unequal under the Equal Protection Clause).
+Mari J. Matsuda, Public Response to Racist Speech: Considering the Victim's Story, 87 Mich. L. Rev. 2320, 2381 (1989) ("We are a legalized culture. If law is where racism is, then law is where we must confront it . . . . [L]et us present a competing ideology . . . .").
+```
+Not: `... (explaining that "[w]e are a legalized culture. ...")`.
+
+When quoting **only a short phrase**, follow Rule 1.5(a)(i) instead — participle, lowercase, quote
+embedded:
+```
+But see Flanagan v. United States, 465 U.S. 259, 264 (1989) (explaining that the final judgment rule reduces the potential for parties to "clog the courts" with a succession of time-consuming appeals).
 ```
 
 ### Weight of Authority Parentheticals
@@ -241,19 +332,66 @@ Indicate procedural posture or authorship:
 (5-4 decision)
 ```
 
-### Order of Multiple Parentheticals
+### Order of Multiple Parentheticals (Rule 1.5(b))
 
-1. Weight of authority (en banc, per curiam)
-2. "Quoting" or "citing" information
-3. Explanatory parenthetical
+The full 22e sequence, in order:
+
+```
+(date) [hereinafter short name] (en banc) (Lastname, J., concurring) (plurality opinion) (per curiam) (alteration in original) (emphasis added) (footnote omitted) (citations omitted) (quoting another source) (citing another source), http://www.domainname.com (last visited) (explanatory parenthetical), prior or subsequent history.
+```
+
+Note the internal order of the weight-of-authority group: **(en banc), (Lastname, J., concurring),
+(plurality opinion), (per curiam)** — judge-designation before plurality before per curiam.
 
 ```
 Smith v. Jones, 500 F.3d 100 (9th Cir. 2007) (en banc) (quoting Roe v. Doe, 400 F.3d 50, 60 (5th Cir. 2005)) (holding that strict liability applies).
 ```
 
-## Order of Authorities Within a Signal (Rule 1.4)
+**Explanatory parentheticals precede any citation of subsequent history or other related authority**
+(Rule 1.6):
+```
+Atl. Richfield Co. v. Fed. Energy Admin., 429 F. Supp. 1052, 1061–62 (N.D. Cal. 1976) ("[N]ot every person aggrieved by administrative action is necessarily entitled to the protections of due process."), aff'd, 556 F.2d 542 (Temp. Emer. Ct. App. 1977).
+```
+
+**Online sources.** For an online source with the characteristics of a print source (citable under
+Rule 18.2.1(b)(ii)), the **URL immediately precedes the explanatory parenthetical**. Where an
+archival tool is used, the **archival link immediately follows the URL** (Rule 18.2.1(d)).
+
+### Nested Parentheticals
+
+When a parenthetical includes a quotation that itself requires a parenthetical, nest them:
+```
+Baze v. Rees, 553 U.S. 35, 48 (2008) (plurality opinion) ("This Court has never invalidated a State's chosen procedure for carrying out a sentence of death as the infliction of cruel and unusual punishment." (emphasis added)).
+```
+
+### Multiple Quoted or Cited Sources in One Parenthetical
+
+If the material cited quotes or cites two or more different sources, include **all** of them in the
+order cited, **within one** quoting or citing parenthetical. For two sources use
+`first . . .; and then . . .`; for three or more use `first . . .; then . . .; and then . . .`, so
+that "and then" always introduces the last source.
+
+```
+Duncan v. Louisiana, 391 U.S. 145, 148–49 (1968) (footnote omitted) (first quoting Powell v. Alabama, 287 U.S. 45, 67 (1932); then quoting In re Oliver, 333 U.S. 257, 273 (1948); and then quoting Gideon v. Wainwright, 372 U.S. 335, 343–44 (1963)).
+```
+
+## Order of Authorities Within a Signal (Rule 1.4) (22e p. 69)
+
+### What Rule 1.4 states
+
+- **Authorities within each signal are separated by semicolons.**
+- **Authorities should be ordered in a logical manner.** If one authority, or several together, are
+  **considerably more helpful or authoritative** than the others cited within the signal, they
+  **precede** the others. This overrides the mechanical hierarchy below.
+- **Authorities cited in short form are ordered as though cited in full.**
 
 ### General Order of Authority Types
+
+> **UNVERIFIED against the 22e.** The 22e Rule 1.4 page in the corpus states only the three rules
+> above; the authority-type hierarchy and the case-ordering rules that follow were not present in
+> the extracted rule text (the source page appears to omit a table). Treat the list below as
+> received law-review practice, not as verified 22e rule text, and check the printed 22e p. 69
+> before relying on it.
 
 When citing multiple authorities with the same signal:
 
@@ -288,7 +426,12 @@ Reverse chronological order (most recent first).
 See U.S. Const. amend. XIV; 42 U.S.C. § 1983 (2018); Brown v. Board of Education, 347 U.S. 483 (1954); Smith v. Jones, 500 F.3d 100 (9th Cir. 2007); Doe v. Roe, 400 F.3d 50 (5th Cir. 2005).
 ```
 
-## String Citations (Rule 1.4)
+## String Citations
+
+> **UNVERIFIED against the 22e.** Rule 1.4 (22e p. 69) says nothing about when a string citation is
+> warranted. The guidance below is editorial judgment, not a Bluebook rule. The one rule-level
+> constraint that does apply is Rule 1.3's: signals of the same basic type string together with
+> semicolons in one citation sentence; different types split into separate sentences.
 
 ### When to Use String Citations
 
@@ -323,6 +466,9 @@ See Smith v. Jones, 500 F.3d 100 (9th Cir. 2007); Doe v. Roe, 400 F.3d 50 (5th C
 | *See* when source directly states | [no signal] | No inference needed |
 | *Cf.* without parenthetical | *Cf.* (...) | Always explain the analogy |
 | *See generally* for direct support | *See* or [no signal] | Reserve for background |
+| *Compare ... with ...* where the point is the difference | *Contrast ... with ...* | New in the 22e; *compare* is for comparison, *contrast* for contrast |
+| *But see* immediately after *contra* | *see* | "But" drops after another negative signal |
+| Any pincite omitted | Supply the pincite | Required for every signal except *see generally* (Rule 1.2(f)) |
 
 ### Signal Capitalization Errors
 
@@ -336,13 +482,34 @@ See Smith v. Jones, 500 F.3d 100 (9th Cir. 2007); Doe v. Roe, 400 F.3d 50 (5th C
 | Error | Correction |
 |-------|------------|
 | Cf. Smith v. Jones... | Cf. Smith v. Jones... (explaining the analogy) |
-| Compare X with Y. | Compare X (point A) with Y (contrasting point). |
+| Compare X with Y. | Compare X (point A), with Y (contrasting point). |
+| See also Gertz... | See also Gertz... (extending the actual malice standard) — required |
+| See generally Kerr... | See generally Kerr... (proposing equilibrium adjustment) — required |
+
+## Related Authority (Rule 1.6) (22e pp. 71–72)
+
+Related authorities are appended to the primary citation with an **italicized explanatory phrase**,
+without parentheses.
+
+- **Access.** *in* introduces a collection containing a shorter work (Rule 15.5); *reprinted in*
+  introduces a convenient reprint (Rule 15.5.2), with *as reprinted in* for excerpts or partial
+  reprints. Other phrases by analogy — *microformed on* (Rule 18.6.1), *translated in* (Rule 20.2.5).
+- **Relevant history.** Prior or subsequent history of a case (Rule 10.7) or statute (Rule 12.7):
+  `Matthews v. Konieczny, 488 A.2d 5 (Pa. Super. Ct. 1985), rev'd, 527 A.2d 508 (Pa. 1987).`
+- **Commentary.** Works that discuss or quote the primary authority may be appended with italicized
+  phrases such as *noted in*, *construed in*, *quoted in*, *reviewed by*, *cited with approval in*,
+  *questioned in*. Works that the primary authority itself discusses or cites go in a
+  **parenthetical** instead:
+  `Filled Milk Act § 1, 21 U.S.C. § 61 (2006), construed in Milnot Co. v. Richardson, 350 F. Supp. 221 (S.D. Ill. 1972).`
+  But: `Milnot Co. v. Richardson, 350 F. Supp. 221 (S.D. Ill. 1972) (construing Filled Milk Act § 1, 21 U.S.C. § 61).`
 
 ## Signal Facts
 
-- [No signal] requires the source to state the proposition directly — check that it says exactly this. *See* implies an inferential step, so it is wrong for direct statements; neither choice is the "safe default", and asserting a signal without checking the source's words is an unverified claim about what the source says.
-- Parentheticals are required, not optional, for *cf.*, *but cf.*, and *compare ... with ...* — without them the relationship to the proposition is invisible to the reader.
-- Authority ordering follows Rule 1.4, and string citations are restraint, not strength — padding weakens credibility; cite the strongest authorities only.
+- [No signal] covers three uses in the 22e — the source directly states the proposition, identifies the source of a quotation, or identifies an authority referred to in the text. *See* implies an inferential step, so it is wrong for direct statements; neither choice is the "safe default", and asserting a signal without checking the source's words is an unverified claim about what the source says.
+- The 22e requires a parenthetical for **six** signals, not three: *see also*, *cf.*, *compare ... with ...*, *contrast ... with ...*, *but cf.*, and *see generally*. Treating *see also* or *see generally* as parenthetical-optional is the common error — Rule 1.2(a) and 1.2(d) both say "required."
+- The 22e adds *contrast ... with ...* as a comparative signal (Rule 1.2(b)). Reaching for *compare* when the point is that the authorities diverge now misstates the relationship; *contrast* sits between *compare* and *contra* in the signal order.
+- Pincites are required for every citation except one introduced by *see generally* (Rule 1.2(f)).
+- Rule 1.3 splits by signal *type*, not by count: same-type signals string with semicolons in one citation sentence, different-type signals start a new citation sentence. Only a citation clause may mix types in one string.
 
 ## Verification Checklist
 
@@ -351,10 +518,13 @@ Before finalizing signals and parentheticals:
 - [ ] Signal accurately reflects source's relationship to proposition
 - [ ] [No signal] used only when source directly states proposition
 - [ ] *See* used for clear support requiring inference
-- [ ] *Cf.* and *but cf.* have explanatory parentheticals
-- [ ] *Compare ... with ...* has parentheticals for both sources
-- [ ] Signal is capitalized correctly for position
-- [ ] Authorities within signal are in correct order
-- [ ] Parentheticals begin with present participle or quotation
-- [ ] Weight of authority parentheticals appear first
+- [ ] *See also*, *cf.*, *but cf.* and *see generally* have explanatory parentheticals (all required)
+- [ ] *Compare ... with ...* / *Contrast ... with ...* has a parenthetical after **each** authority
+- [ ] *Contrast* used where the contrast, not the comparison, carries the point
+- [ ] Signal is capitalized correctly for position; "but" dropped after another negative signal
+- [ ] Every citation has a pincite except those under *see generally*
+- [ ] Same-type signals share one citation sentence; different types are in separate sentences
+- [ ] Authorities within signal are in correct order; most helpful or authoritative first
+- [ ] Participial parentheticals are lowercase; full-sentence quotations are capitalized and punctuated
+- [ ] Multiple parentheticals follow the Rule 1.5(b) sequence, explanatory before subsequent history
 - [ ] String citations are warranted (not padding)

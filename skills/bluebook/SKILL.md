@@ -4,7 +4,7 @@ description: "ALWAYS use for ANY legal citation question, even if the user never
 user-invocable: false
 ---
 
-# Bluebook 21st Edition Citation
+# Bluebook Citation (22nd edition; 21st still reachable)
 
 Citation formatting for law reviews and legal scholarship per *The Bluebook: A Uniform System of Citation* (21st ed. 2020).
 
@@ -229,16 +229,23 @@ For detailed rules, consult:
 - **`references/abbreviations.md`** - Bluebook abbreviation tables
 - **`references/editions-21-to-22.md`** - What changed in the 22nd edition, from the publisher's preface plus rule-by-rule checks
 
-**Only `quotations.md` has been checked against the book.** It was verified page-by-page against
-the Pinpoint scan on 2026-08-24 — 25 confirmed, 6 contradicted, 4 verified absent — and the six
-errors are corrected in it. The other seven were written the same way on the same day: from
-law-review style guides rather than the rule text. Style guides carry Rule 5's substance
-faithfully and its numbering unreliably, and the one file anyone checked turned out to invert
-three instructions while citing the correct subsections for them.
+**Six of eight reference files are now checked against the rule text.**
 
-So treat the other seven as **plausible but unverified**. Before relying on a rule from them in an
-edit that ships, look it up in Pinpoint below — it takes one query. Verdicts and method for the
-verified file: `scratch/bluebook-verify/REPORT.md`.
+| file | rules | status |
+|---|---|---|
+| `quotations.md` | 5 | verified vs 21e scan AND 22e; 6 errors corrected |
+| `signals-parentheticals.md` | 1 | rebuilt from 22e; carries the new `contrast` signal |
+| `short-forms.md` | 4 | rebuilt from 22e |
+| `cases.md` | 10 | rebuilt from 22e |
+| `statutes.md` | 12 (13-14 NOT in corpus) | rebuilt from 22e; 13-14 flagged in place |
+| `secondary-sources.md` | 15, 16, 17 | rebuilt from 22e |
+| `abbreviations.md` | tables | **UNVERIFIED** — T6, T10, T13 all changed in the 22e |
+| `audit-patterns.md` | cross-cutting | **UNVERIFIED** |
+
+The six were checked against 52 subsection pages extracted verbatim from the official Bluebook
+Online 22nd edition; page cites in them are **22e** pages. Claims the corpus did not cover are
+marked UNVERIFIED in place rather than left looking checked — Rules 13, 14 and the tables are the
+main gaps. Per-file reports: `scratch/bb22/reports/`. Rule 5 verdicts: `scratch/bluebook-verify/REPORT.md`.
 
 ### Looking a rule up in the actual book
 
