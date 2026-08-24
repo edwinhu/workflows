@@ -269,7 +269,7 @@ report. For spacing, see rule 6.1(a).
 Early editor-named series that have been folded into jurisdiction-named series are cited by the
 official series name and number only, dropping the editor (`Cobb v. Davenport, 32 N.J.L. 369 (Sup.
 Ct. 1867)`, not `3 Vroom 369`). **But** for U.S. Supreme Court reporters through 90 U.S. (23 Wall.)
-and a few early state reporters (Table T1.3 — which changed in the 22e), give the editor's name and
+and a few early state reporters (see Table T1.3), give the editor's name and
 that series' volume:
 ```
 Green v. Biddle, 21 U.S. (8 Wheat.) 1 (1823).       Hall v. Bell, 47 Mass. (6 Met.) 431 (1843).
@@ -340,9 +340,13 @@ which a composite abbreviation may be assembled when the full court name is not 
 | State highest court | omitted entirely (see above) | 10.4(b) |
 | Circuit Justice sitting below | `(Thomas, Circuit Justice)` | 10.4(a) |
 
-Note: "Sup. Ct." is **not** a general state-supreme-court abbreviation — in New York it denotes the
-trial court (`Schiffman v. Corsi, 50 N.Y.S.2d 897 (Sup. Ct. 1944)`), and a state's highest court
-gets no court designation at all.
+Note: T7 does list `Sup. Ct.` — its entries are `Supreme Court (federal)` → `U.S.` and `Supreme
+Court (other)` → `Sup. Ct.` — so `Sup. Ct.` is the abbreviation for any non-federal court named
+"Supreme Court." What it is not is a designation you will normally see in a state high-court cite,
+because 10.4(b) directs that the court not be named at all where the court of decision is the
+highest court of the state (`People v. Armour, 590 N.W.2d 61 (Mich. 1999)`, not `(Mich. Sup. Ct.
+1999)`). Where a state calls its trial court the Supreme Court, as New York does, the abbreviation
+does appear: `Schiffman v. Corsi, 50 N.Y.S.2d 897 (Sup. Ct. 1944)`.
 
 **Examples:**
 ```
@@ -601,7 +605,7 @@ context.
   "explaining that."
 
 ```
-Brown v. Board of Education, 347 U.S. 483, 495 (1954) (holding that separate educational facilities are inherently unequal).
+Brown v. Bd. of Educ., 347 U.S. 483, 495 (1954) (holding that separate educational facilities are inherently unequal).
 ```
 
 ### Order of Parentheticals (10.6.4)
@@ -688,8 +692,6 @@ McCormick v. United States, 680 F.2d 345 (Former 5th Cir. 1982).
 ```
 
 ### Briefs, Court Filings, and Transcripts (10.8.3)
-
-*Clarified in the 22e, including for multi-district litigation.*
 
 All court filings take the same general form: the **full name of the document as it appears on the
 filing**, abbreviated per rule 10.2.1(c), then a pinpoint if any, then the full case citation and

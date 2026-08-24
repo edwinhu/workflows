@@ -37,16 +37,6 @@ The Constitution requires due process. U.S. Const. amend. XIV, § 1.
 
 The source explicitly contains the proposition—no inference required.
 
-#### *See*
-
-Use when the cited authority **clearly supports** the proposition but does not **directly state** it. Reader must make a small inferential step.
-
-```
-The Due Process Clause protects certain unenumerated rights. See Griswold v. Connecticut, 381 U.S. 479, 484 (1965).
-```
-
-*Griswold* supports this proposition but doesn't state it in these exact terms.
-
 #### *E.g.,*
 
 Use when the cited authority states the proposition and **other authorities also state it, but
@@ -77,6 +67,16 @@ being in accord with the law of another.
 ```
 Due process requires notice. Smith v. Jones, 500 U.S. 1, 8 (1990); accord Doe v. Roe, 400 U.S. 50, 57 (1985).
 ```
+
+#### *See*
+
+Use when the cited authority **clearly supports** the proposition but does not **directly state** it. Reader must make a small inferential step.
+
+```
+The Due Process Clause protects certain unenumerated rights. See Griswold v. Connecticut, 381 U.S. 479, 484 (1965).
+```
+
+*Griswold* supports this proposition but doesn't state it in these exact terms.
 
 #### *See also*
 
@@ -279,7 +279,7 @@ be clear to the reader** (see Rule 1.2).
 Rule 1.2 makes an explanatory parenthetical **required** with:
 - *See also*
 - *Cf.*
-- *Compare ... with ...*
+- *Compare ... with ...* (following each authority)
 - *Contrast ... with ...* (following each authority)
 - *But cf.*
 - *See generally* (following each authority)
@@ -427,7 +427,7 @@ Reverse chronological order (most recent first).
 ### Example
 
 ```
-See U.S. Const. amend. XIV; 42 U.S.C. § 1983 (2018); Brown v. Bd. of Educ., 347 U.S. 483, 495 (1954); Smith v. Jones, 500 F.3d 100, 104 (9th Cir. 2007); Doe v. Roe, 400 F.3d 50, 55 (5th Cir. 2005).
+See U.S. Const. amend. XIV; 42 U.S.C. § 1983 (2018); Brown v. Bd. of Educ., 347 U.S. 483, 495 (1954); Doe v. Roe, 400 F.3d 50, 55 (5th Cir. 2005); Smith v. Jones, 500 F.3d 100, 104 (9th Cir. 2007).
 ```
 
 ## String Citations
@@ -457,7 +457,7 @@ Avoid string citations when:
 
 Separate authorities with semicolons:
 ```
-See Smith v. Jones, 500 F.3d 100, 104 (9th Cir. 2007); Doe v. Roe, 400 F.3d 50, 55 (5th Cir. 2005); Brown v. White, 300 F.3d 25, 31 (2d Cir. 2003).
+See Brown v. White, 300 F.3d 25, 31 (2d Cir. 2003); Doe v. Roe, 400 F.3d 50, 55 (5th Cir. 2005); Smith v. Jones, 500 F.3d 100, 104 (9th Cir. 2007).
 ```
 
 ## Common Signal Errors

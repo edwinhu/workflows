@@ -3,7 +3,7 @@
 Guidance for citing statutes, regulations, and legislative materials per Bluebook **22nd Edition**.
 
 **Verification status:** Checked line by line against the official 22e text of rules 12.1-12.10
-(22e pp. 126-40), 13.1-13.8 (22e pp. 140-46), 14.1-14.6 (22e pp. 147-53), 21.4 (22e pp. 215-19)
+(22e pp. 126-40), 13.1-13.8 (22e pp. 140-47), 14.1-14.6 (22e pp. 147-53), 21.4 (22e pp. 215-19)
 and 6.2 (22e pp. 93-94). **Rule 11 (constitutions) was not available**; every statement under that
 heading is flagged UNVERIFIED in place. Table T1.3's state rows were also unavailable — see the
 State Code Abbreviations section.
@@ -163,11 +163,11 @@ the amended act's sections with the symbol `§`:
 Labor-Management Relations Act, ch. 120, sec. 101, § 8(a)(3), 61 Stat. 136, 140–41 (1947).
 ```
 
-**Codification information (rule 12.4(f)) — changed in the 22e.** Give the code location
-parenthetically only "if a statute has been or will ultimately be codified, the code location is
-known, **and the codification is relevant in the context of the citation**." The 22e adds: "Note
-that this rule is context dependent and permits codification information to be **omitted** if the
-statute is not being cited for its present application."
+**Codification information (rule 12.4(f)):** give the code location parenthetically only "if a
+statute has been or will ultimately be codified, the code location is known, **and the codification
+is relevant in the context of the citation**." The rule adds: "Note that this rule is context
+dependent and permits codification information to be **omitted** if the statute is not being cited
+for its present application."
 ```
 Act of July 12, 1985, ch. 223, § 3, 1985 Cal. Legis. Serv. 239, 241 (West) (to be codified at Cal. Ins. Code § 11589.5).
 ```
@@ -175,14 +175,18 @@ Act of July 12, 1985, ch. 223, § 3, 1985 Cal. Legis. Serv. 239, 241 (West) (to 
 ### Statutes at Large
 
 ```
-Act of July 2, 1890, ch. 647, 26 Stat. 209.
+National Environmental Policy Act of 1969, Pub. L. No. 91-190, 83 Stat. 852 (1970).
+Act of Jan. 24, 1923, ch. 42, 42 Stat. 1174, 1208.
 ```
 
 **Volume (rule 12.4(b)):** give the volume number (or, if none, the year), then the session-law
-name in **ordinary roman type**. State session laws begin with the state abbreviated per table T10
-even when the state name is not part of the official title; abbreviations are in tables T1.3 and
-T1.4:
+name in **ordinary roman type**. "The official federal session laws, Statutes at Large, are
+abbreviated 'Stat.'" State session laws begin with the state abbreviated per table T10 even when
+the state name is not part of the official title, omitting words in the official title not needed
+for identification; abbreviations are in tables T1.3 and T1.4:
 ```
+1978 Ark. Acts.
+1935–1936 Ill. Laws 4th Spec. Sess.
 1878 Minn. Laws.
 Not: 1878 Laws of Minn.
 ```
@@ -222,8 +226,7 @@ the first page of its subdivision — `Alaska Stat. § 28.01.010 (2002).`
 
 Each state has specific abbreviation requirements. **Table T1.3** lists official and unofficial
 state codes, and indicates whether a state uses title/chapter numbering or subject-matter naming
-(rules 12.3.1(b)-(c)). *T1.3 changed in the 22e; consult the current table rather than any
-example cached here.*
+(rules 12.3.1(b)-(c)). *Consult the current table rather than any example cached here.*
 
 UNVERIFIED: only T1's index page ("T1.1 Federal Judicial and Legislative Materials … T1.3 States
 and the District of Columbia …", 22e p. 257) was available; the state rows themselves were not.
@@ -366,10 +369,11 @@ are cited by volume, page, and date — `Meeting Notice, 65 Fed. Reg. 3415 (Jan.
 
 ### Short Forms for Regulations (Rule 14.6)
 
-Rule 14.6(c) (22e p. 153) uses the same availability window as statutes: a short citation is
-allowed only if the regulation is already cited (in full or short form, including "id.") "in either
-the same footnote or in a manner such that it can be readily found … in one of the preceding five
-footnotes or the same general textual discussion."
+Rule 14.6(c) (22e p. 153) sets a slightly *wider* availability window than statutes: a short
+citation is allowed only if the regulation is already cited (in full or short form, including
+"id.") "in either the same footnote or in a manner such that it can be readily found … in one of
+the preceding five footnotes **or the same general textual discussion**." That last clause has no
+counterpart in rule 12.10(b), which stops at the preceding five footnotes.
 
 | Source | Text | Short citation |
 |---|---|---|
@@ -378,9 +382,8 @@ footnotes or the same general textual discussion."
 
 ## State Regulations (Rule 14.4)
 
-State administrative materials are governed by **rule 14.4**, "State Materials" (22e pp. 152-53),
-which is new in the 22e. Rule 14.3 is *Administrative Adjudications and Arbitrations*, not
-regulations.
+State administrative materials are governed by **rule 14.4**, "State Materials" (22e pp. 152-53).
+Rule 14.3 is *Administrative Adjudications and Arbitrations*, not regulations.
 
 **Rules and regulations (rule 14.4(a)):** "For both proposed and final rules and regulations cite
 according to **table T1.3**" — not the parent table T1.
@@ -396,8 +399,9 @@ Cal. Code Regs. tit. 8, § 3203 (2020).
 Ill. State Bd. of Educ., Review of the Chicago Board of Education's Ability to Operate with the Financial Resources Available to It as an Independent Unit of Local Government (2023).
 ```
 
-**State administrative adjudications (rule 14.4(c)):** cite per rule 14.3 if there is an official
-reporter. Most are not reported; in that case give the name (rule 14.3.1), the case number, an
+**State administrative adjudications (rule 14.4(c)):** cite per rule 14.3 "if there is an official
+reporter **or if the decision will later be published in an official reporter**." Most are not
+reported; in that case give the name (rule 14.3.1), the case number, an
 electronic database citation, and a parenthetical with the state abbreviated per table T10, the
 agency per table T6, and the year:
 ```
@@ -528,8 +532,9 @@ Supp. 1991).` / `I.R.C. § 1247 (West).`
 ### Ordinances (Rule 12.9.2)
 
 Always give the political subdivision and abbreviated state name first; do not abbreviate the
-subdivision unless table T10 abbreviates it. Codified ordinances: subdivision, state, and code name
-in **small capitals**, with the year of the code per rule 12.3.2:
+subdivision unless table T10 abbreviates it. Codified ordinances: give the code name **abbreviated
+according to table T1**, the section or other subdivision, and the year of the code per rule
+12.3.2; print subdivision, state, and code name in **small capitals**:
 ```
 Montgomery, Ala., Code § 3A-11 (1971).
 S.F., Cal., Police Code art. 16, div. 1, § 1076(a) (2000).
@@ -600,12 +605,17 @@ Permitted short citation forms per the rule 12.10 table:
 | State code (named) | `Educ. § 48222` |
 | Session laws | `§ 102` or `National Environmental Policy Act § 102` or `§ 102, 83 Stat. at 853–54` |
 
-**In text, spell out "section" — except for U.S. Code provisions.** Rule 12.10(c): "except when
-referring to United States Code provisions, the word 'section' should be spelled out in law review
-text and footnote text, although the symbol '§' may be used in citations."
+**In text, spell out "section" — except for U.S. Code provisions and federal regulations.** The
+general rule is 6.2(c) (22e pp. 93-94): "spell out the words 'section' and 'paragraph' in the text
+(whether main text or footnote text) of law review pieces and other documents, **except when
+referring to a provision in the U.S. Code (see rule 12.10(c)) or a federal regulation (see rule
+14.6)**." Rule 12.10(c) states only the U.S. Code half of that exception: "except when referring to
+United States Code provisions, the word 'section' should be spelled out in law review text and
+footnote text, although the symbol '§' may be used in citations."
 
 ```
 Text (U.S.C.):        42 U.S.C. § 1983 or § 1983
+Text (C.F.R.):        16 C.F.R. § 444.1 or § 444.1
 Text (state code):    title 28, section 1701 of the Delaware Code, or section 1701
 Text (named act):     section 1 of the Administrative Procedure Act, or section 1
 ```
@@ -639,7 +649,7 @@ footnote 15 with nothing in between would illustrate a violation, not the rule.
 | §1983 | § 1983 — rule 6.2(c) (22e pp. 93-94): "When the symbols are used, insert a space between '§' or '¶' and the numeral." |
 | Sec. 1983 | § 1983 (in citations) |
 | ss. 1983-1985 | §§ 1983–1985 |
-| "§ 1701 of the Delaware Code" in text | "section 1701" — spell out in text except for U.S.C. (rule 12.10(c)) |
+| "§ 1701 of the Delaware Code" in text | "section 1701" — spell out in text except for U.S. Code provisions and federal regulations (rule 6.2(c)) |
 
 ### Code Errors
 
@@ -801,7 +811,7 @@ Before finalizing any statutory citation:
 - [ ] Codification parenthetical included only if relevant in context (rule 12.4(f))
 - [ ] Supplements cited if applicable (rule 12.3.1(e), rule 3.1(c))
 - [ ] Short form used only if the source appears in the same footnote or one of the preceding five (rule 12.10(b))
-- [ ] "section" spelled out in text except for U.S.C. provisions (rule 12.10(c))
+- [ ] "section" spelled out in text except for U.S. Code provisions and federal regulations (rule 6.2(c); rule 12.10(c) for the U.S. Code half)
 
 ## Special Situations
 

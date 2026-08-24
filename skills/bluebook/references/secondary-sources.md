@@ -326,7 +326,7 @@ For a **medical** periodical whose title contains a word not in T6, use the Nati
 Medicine abbreviation for that word if one is available (T6 preamble) — and only for words that have
 no standard Bluebook abbreviation.
 
-### Student-Written Pieces (Rule 16.7.1) (22e pp. 170-74)
+### Student-Written Pieces (Rule 16.7.1) (within 16.7 Special Citation Forms, 22e pp. 170-74)
 
 **Signed (16.7.1(a)):** cite as any other signed article, with the author's full name in ordinary
 roman, **except that the designation appears before the title**. A work is "signed" if a student is
@@ -523,7 +523,9 @@ Rule 18.1(a)'s own row for "Dynamic websites, such as blogs, within larger websi
 form: `Michael J. Coren, The World Needs a New Way to Talk About Heat, Wash. Post: Green Living
 (July 25, 2023, at 06:30 ET), ... [https://perma.cc/3QFZ-27RZ].`
 
-The bracketed archive URL is **required** by 18.2.1(d), which applies to all cited online content.
+**Archiving** is required by 18.2.1(d) for all cited online content, by either of two methods. Where
+an archival tool is used, its URL goes in brackets; where a copy is saved instead, an "(on file
+with ...)" parenthetical follows the URL and there is no bracketed URL at all.
 The timestamp is **recommended** — 18.2.2(c): "It is recommended that citations for web-based sources
 include a timestamp whenever possible," in twenty-four-hour format with a time-zone designation.
 
@@ -533,7 +535,7 @@ descriptive title — and **do not italicize** it (`Archive of Columns by Pete W
 Rule 18 was substantially rewritten in the 22e: 18.3 is **AI-Generated Content** (22e p. 191) and
 social media has its own rule at **18.10** (22e pp. 198-201).
 
-## Restatements, Model Codes, and Uniform Acts (Rule 12.9.4) (22e pp. 135-39)
+## Restatements, Model Codes, and Uniform Acts (Rule 12.9.4) (within 12.9 Special Citation Forms, 22e pp. 135-39)
 
 Model codes, principles, restatements, standards, sentencing guidelines, and uniform acts are cited
 **in small capitals**, by section, rule, or other subdivision. For restatements, give the year the
@@ -655,7 +657,11 @@ Encyclopedia Britannica (15th ed. 2010).
 Generally avoid citing Wikipedia in legal scholarship.
 
 > **UNVERIFIED:** neither the general-encyclopedia form nor the Wikipedia guidance appears anywhere
-> in the corpus for rules 15-17. Both are carried over from the 21e-era file.
+> in the corpus for rules 15-17. Both are carried over from the 21e-era file. ("Wikipedia" does not
+> appear in the 22e text at all. "Encyclopaedia Britannica" appears once, in the T6 preamble (22e
+> pp. 333-36), only as its illustration of the discretionary eight-letter abbreviation — "it would be
+> permissible to abbreviate 'Encyclopaedia Britannica' to 'Encyc. Britannica'" — not as a citation
+> form.)
 
 ## Electronic Databases and Online Sources for Books (Rule 15.9) (22e pp. 162-63)
 
@@ -791,10 +797,13 @@ available, **unless there is a digital copy of the source available that is auth
 or an exact copy of the printed source**, as described in rule 18.2.1."
 
 **Cite as if to print, with no URL (18.2.1(a)):** where an authenticated, official, or exact copy is
-available online, cite it as the print source "without any URL information appended." The order of
-preference within that category is authenticated first (18.2.1(a)(i)), then official (a government
-site or an officially designated source, (a)(ii)), then an exact copy — an unaltered copy in a format
-preserving pagination, such as a PDF ((a)(iii)).
+available online, cite it as the print source "without any URL information appended." Within that
+category the Bluebook "prefers citation to an authenticated source, or, if no authenticated source is
+available, to a source as proximate to the original as possible" (18.2.1(a)(ii)). Official versions —
+a government site or an officially designated source — are "considered, for citation purposes, to be
+proximate to the original," and an exact copy (an unaltered copy in a format preserving pagination,
+such as a PDF) "is treated **similarly to** an official version" (18.2.1(a)(iii)). Official versions
+and exact copies are therefore not ranked against each other.
 
 **Append the URL (18.2.1(b))** in two situations: (i) the traditional source is "so obscure as to be
 practically unavailable," or a parallel internet cite "will substantially improve access"; and (ii)
@@ -886,7 +895,7 @@ authority, do not use "id." for a later citation to the entire authority — use
 2. Id. at 2035.
 ```
 
-### Supra (Rule 4.2(a)) (22e pp. 85-87)
+### Supra (Rule 4.2(a)) (within 4.2 "Supra" and "Hereinafter", 22e pp. 85-87)
 
 **Form:**
 ```
@@ -937,7 +946,7 @@ the author's last name, or the title if there is no author.
 
 ## Special Source Types
 
-### Briefs, Court Filings, and Transcripts (Rule 10.8.3) (22e pp. 117-21)
+### Briefs, Court Filings, and Transcripts (Rule 10.8.3) (within 10.8 Special Citation Forms, 22e pp. 117-21)
 
 The full name of the document **as it appears on the filing** comes first, abbreviated per rule
 10.2.1(c), then a pinpoint cite if any, then the full case citation and the docket number. Where no
@@ -1045,6 +1054,6 @@ Before finalizing secondary source citations:
 - [ ] Pinpoint provided for specific propositions
 - [ ] Typeface correct for source type (periodical names in small caps, not italics)
 - [ ] Short forms reference correct footnote number
-- [ ] Every online source archived and the archive URL appended in brackets (18.2.1(d)) — this is
-      mandatory, not optional
+- [ ] Every online source archived (18.2.1(d)) — mandatory, not optional; bracketed archive URL if an
+      archival tool was used, `(on file with ...)` after the URL if a copy was saved
 - [ ] "Last visited" used only where the material is otherwise undated (18.2.2(c))
