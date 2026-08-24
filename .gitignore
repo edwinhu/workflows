@@ -42,3 +42,7 @@ docs/investigations/
 # WRDS SGE runtime staging
 .staging_proxy/
 .claude/worktrees/
+
+# craft run state: args, results, rotated rounds, logs. Session-scoped and
+# high-frequency — it belongs in a temp dir, and never in a commit.
+.craft/
