@@ -175,7 +175,7 @@ around it are not.
 | `(alteration in original)` | Brackets or ellipses in the quote came from the source |
 | `(citation omitted)` / `(citations omitted)` | You dropped a citation from inside the quote |
 | `(footnote omitted)` / `(footnotes omitted)` | You dropped a footnote from **inside** the quote — but NOT one whose call number follows the last word quoted (5.2(d)(ii)) |
-| `(internal quotation marks omitted)` | Only "internal" combines with quotation marks — never with citation or footnote |
+| `(internal quotation marks omitted)` | Only "internal" combines with quotation marks — never with citation or footnote. **Not prescribed by Rule 5** — see the note below |
 
 **`(emphasis in original)` DOES NOT EXIST.** Rule 5.2(d)(iii) directs you not to indicate that
 emphasis was in the original. If you see it, delete it.
@@ -187,6 +187,16 @@ RIGHT:  San Antonio Indep. Sch. Dist. v. Rodriguez, 411 U.S. 1, 24 (1973)
         (internal quotation marks omitted) (emphasis added).
 WRONG:  ... (internal quotation marks omitted and emphasis added).
 ```
+
+> **`(internal quotation marks omitted)` is practice, not Rule 5.** Checked against the book
+> (2026-08-24): 5.2(d)(i) enumerates what takes a parenthetical and does not list internal
+> quotation marks, and 5.2(f) requires *omitting* the marks with no parenthetical at all —
+> its only related commands are 5.2(f)(iii) "Do not fail to include a 'quoting' parenthetical
+> because this rule requires omission of internal quotation marks" (p. 106) and 5.2(f)(iv)
+> "Do not omit internal quotation marks in block quotations" (p. 106). The phrase is
+> near-universal in courts and law reviews, so it is kept here — but it rests on practice,
+> and this file previously presented it as a rule. Note also 5.2(f)(i) is expressly limited
+> to IN-LINE quotations.
 
 Order follows Rule 1.5(b): `(alteration in original) (emphasis added) (footnote omitted)
 (citations omitted) (quoting ...)` then the explanatory parenthetical.
@@ -386,8 +396,16 @@ from the rule text.
 
 **It has since been checked against the book itself (2026-08-24).** Google's OCR of a full scan
 of the 21st edition was searched page by page; the verdicts and page cites are in
-`scratch/bluebook-verify/REPORT.md`: 23 confirmed, 5 contradicted, 7 unsupported. **All five
-contradictions are corrected above**, each against the quoted rule text.
+`scratch/bluebook-verify/REPORT.md`. After a second pass that resolved the initial gaps:
+**25 confirmed, 6 contradicted, 4 unsupported**. All six contradictions are handled above —
+five corrected outright, and `(internal quotation marks omitted)` annotated rather than
+removed, since it rests on practice rather than Rule 5.
+
+The 4 that remain unsupported are **verified absent** from Rule 5, the Bluepages, the table of
+contents and Rule 8, with the searched ranges named in the report — not merely unreached:
+word-counting for the fifty-word threshold, the colon/introduction rules, and the "syntactic
+part" capitalization test. (The p. 29 "word limits" line turned out to be about abbreviations,
+`S. Ct.` → `S.Ct.`, not quotation length.)
 
 The result inverted the expected failure mode, which is worth recording. Every subsection number
 this file cites turned out to be CORRECT — 5.1(b)(iv), 5.2(d)(ii), 5.2(d)(iii), 5.3(b)(i)-(vi),
