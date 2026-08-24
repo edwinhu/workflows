@@ -70,7 +70,7 @@ After "The Court stated that" the first word of the block is **not** capitalized
 | Situation | Signal |
 |-----------|--------|
 | Quote begins at the start of a source paragraph | Indent the first line further |
-| Quote begins mid-paragraph | **No ellipsis, and do not indent the first line** (p. 103) |
+| Quote begins mid-paragraph | **No ellipsis, and do not indent the first line** (21e scan p. 103 = 22e p. 87) |
 | Second paragraph immediately follows the first in the original | Indent identically, no ellipsis |
 | Text existed between the two quoted paragraphs | Prefix the second paragraph with a three-period ellipsis |
 | An entire paragraph is omitted inside the quote | Four-period ellipsis **on its own indented line** |
@@ -84,7 +84,7 @@ After "The Court stated that" the first word of the block is **not** capitalized
 ### Paragraph Structure in Short Quotations — Rule 5.1(b)(iii)
 
 Do **not** reproduce the source's paragraph breaks in a quotation under fifty words — with one
-narrow exception, quoted from the rule (p. 104):
+narrow exception, quoted from the rule (21e scan p. 104 = 22e p. 88):
 
 > Do not indicate the original paragraph structure of quotations of forty-nine or fewer words
 > except when the material quoted would commonly be set off from the text, such as lines of poetry
@@ -126,7 +126,7 @@ Letters dropped from a common root word take **empty brackets**:
 ```
 
 Verified against the rule text: "Indicate the omission of letters from a common root word with
-empty brackets (`judgment[]`)" (5.2(b), p. 104).
+empty brackets (`judgment[]`)" (5.2(b); 21e scan p. 104 = 22e p. 88).
 
 ### Changed or Added Words
 
@@ -170,7 +170,7 @@ The letter stated that the parties "recieved [sic] notice on Tuesday."
 
 Use it sparingly — the book's trigger is a **significant** mistake. Where one applies, mark it
 and leave it: "Significant mistakes in the original should be followed by `[sic]` and otherwise
-left as they appear in the original" (5.2(c), p. 104). Do NOT silently repair the error in
+left as they appear in the original" (5.2(c); 21e scan p. 104 = 22e p. 88). Do NOT silently repair the error in
 brackets instead; the book's own example leaves a grammatical error standing (`"This list of
 statutes are [sic] necessarily incomplete."`) rather than writing `statutes [is]`. Irregular
 spelling in historical materials is preserved with no notation unless the reader would otherwise
@@ -204,8 +204,8 @@ WRONG:  ... (internal quotation marks omitted and emphasis added).
 > (2026-08-24): 5.2(d)(i) enumerates what takes a parenthetical and does not list internal
 > quotation marks, and 5.2(f) requires *omitting* the marks with no parenthetical at all —
 > its only related commands are 5.2(f)(iii) "Do not fail to include a 'quoting' parenthetical
-> because this rule requires omission of internal quotation marks" (p. 106) and 5.2(f)(iv)
-> "Do not omit internal quotation marks in block quotations" (p. 106). The phrase is
+> because this rule requires omission of internal quotation marks" (21e scan p. 106 = 22e p. 90) and 5.2(f)(iv)
+> "Do not omit internal quotation marks in block quotations" (21e scan p. 106 = 22e p. 90). The phrase is
 > near-universal in courts and law reviews, so it is kept here — but it rests on practice,
 > and this file previously presented it as a rule. Note also 5.2(f)(i) is expressly limited
 > to IN-LINE quotations.
@@ -348,7 +348,7 @@ A four-period ellipsis on its own indented line. See the Rule 5.1 paragraph-stru
 |-------------|----------------|-----|
 | A citation inside the quote | `(citation omitted)` after the cite | ellipsis |
 | A footnote inside the quote | `(footnote omitted)` after the cite | ellipsis |
-| A citation or footnote call number **following the last word quoted** | **nothing — do not indicate it** (5.2(d)(ii), p. 105) | any parenthetical |
+| A citation or footnote call number **following the last word quoted** | **nothing — do not indicate it** (5.2(d)(ii); 21e scan p. 105 = 22e p. 89) | any parenthetical |
 | Internal quotation marks | `(internal quotation marks omitted)` | ellipsis |
 | The start of the quoted sentence | bracketed capitalization | ellipsis |
 | Matter after the last quoted sentence's final punctuation | nothing at all | ellipsis |
@@ -438,6 +438,12 @@ The Bluebook 21st edition is not open-access, and this file was originally writt
 law-review style guides — the Yale Law Journal v131 Style Guide, the Virginia Law Review
 Slatebook 2023-24, the Temple Law Review Red Rules, the Georgia State library guide — rather than
 from the rule text.
+
+**Checked against BOTH editions (2026-08-24).** All six contradictions were first found in a
+full-text scan of the 21st edition, then re-confirmed word-for-word against the official Bluebook
+Online **22nd edition** — the corrections below hold in both, so a manuscript on either edition can
+rely on them. Rule 5's structure (5.1/5.2/5.3) is unchanged between editions; only pagination moved
+(21e scan pp. 103-108 = 22e pp. 87-91), which is why page cites here name their edition.
 
 **It has since been checked against the book itself (2026-08-24).** Google's OCR of a full scan
 of the 21st edition was searched page by page; the verdicts and page cites are in

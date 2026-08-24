@@ -241,6 +241,33 @@ verified file: `scratch/bluebook-verify/REPORT.md`.
 
 ### Looking a rule up in the actual book
 
+**Best source: the official Bluebook Online, 22nd edition.** UVA Law provides institutional
+access and the browser on CDP 9222 is already signed in. This is live publisher text — no OCR, no
+auth expiry, no retrieval tricks — and it is the source of record.
+
+```
+https://www.legalbluebook.com/bluebook/v22/rules/<n>-<slug>
+https://www.legalbluebook.com/bluebook/v22/rules/<n>-<slug>/<n>-<m>-<slug>
+
+e.g. /bluebook/v22/rules/5-quotations/5-2-alterations-and-quotations-within-quotations
+```
+
+Swap `v22` for `v21` to read the 21st edition; the site's own dropdown does the same. Drive it
+with the `browser-automation` skill (Linux → `mcp__chrome-devtools__*` on 9222). If that MCP
+server is not connected this session, raw CDP over `http://127.0.0.1:9222/json/list` works — and
+**open a new tab rather than navigating the user's**.
+
+**EDITION MATTERS, IN TWO WAYS.** The 22nd is now live and is the default.
+
+- **Rules 22 (Tribal Nations) and 23 (Archival Sources) are NEW in the 22nd.** The 21st stops at
+  Rule 21. Rules 1-21 keep their numbers, and Rule 5's structure (5.1/5.2/5.3) is unchanged.
+- **Pagination differs.** Rule 5 sits at 22e pp. 87-91 and 21e-scan pp. 103-108. A page cite is
+  only meaningful with its edition. Ask which edition the manuscript targets before citing a page.
+
+### Pinpoint — the 21st edition, full scan
+
+
+
 **Pinpoint holds the full 21st edition — use it.** A complete 394-page scan is in the `Bluebook`
 collection (`b7425c3f3368f9c9`), OCR'd by Google, searchable to the page. This is the authoritative
 lookup for any rule in this skill, and it is what `references/quotations.md` was finally verified
