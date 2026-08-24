@@ -229,7 +229,7 @@ For detailed rules, consult:
 - **`references/abbreviations.md`** - Bluebook abbreviation tables
 - **`references/editions-21-to-22.md`** - What changed in the 22nd edition, from the publisher's preface plus rule-by-rule checks
 
-**Six of eight reference files are now checked against the rule text.**
+**All eight reference files are now checked against the rule text.**
 
 | file | rules | status |
 |---|---|---|
@@ -239,8 +239,8 @@ For detailed rules, consult:
 | `cases.md` | 10 | rebuilt from 22e |
 | `statutes.md` | 12 (13-14 NOT in corpus) | rebuilt from 22e; 13-14 flagged in place |
 | `secondary-sources.md` | 15, 16, 17 | rebuilt from 22e |
-| `abbreviations.md` | tables | **UNVERIFIED** — T6, T10, T13 all changed in the 22e |
-| `audit-patterns.md` | cross-cutting | **UNVERIFIED** |
+| `abbreviations.md` | 10.2.2, 15.1(e), 16.1, T6 | rebuilt from 22e; T6 reproduced from the capture, table gaps flagged in place |
+| `audit-patterns.md` | cross-cutting (1, 4, 10, 12, 15-18, T6) | rebuilt from 22e; every check names its rule, untraceable checks marked in place |
 
 All six were then **adversarially re-verified** by separate agents against the same corpus, with
 instructions to find errors rather than agree: `signals-parentheticals.md` and `short-forms.md`
@@ -248,10 +248,24 @@ came back with **zero contradictions** (every imperative traced to a governing s
 `cases.md`, `statutes.md` and `secondary-sources.md` each had defects, all now corrected. Reports:
 `scratch/bb22/verify/`.
 
-The six were checked against 52 subsection pages extracted verbatim from the official Bluebook
+All eight were checked against subsection pages extracted verbatim from the official Bluebook
 Online 22nd edition; page cites in them are **22e** pages. Claims the corpus did not cover are
-marked UNVERIFIED in place rather than left looking checked — Rules 13, 14 and the tables are the
-main gaps. Per-file reports: `scratch/bb22/reports/`. Rule 5 verdicts: `scratch/bluebook-verify/REPORT.md`.
+marked UNVERIFIED in place rather than left looking checked. Per-file reports:
+`scratch/bb22/reports/`. Rule 5 verdicts: `scratch/bluebook-verify/REPORT.md`.
+
+**What is still unchecked, and why.** "Rebuilt from 22e" means every claim traces to the extracted
+corpus or is marked in place — it does not mean the whole rule surface was available. These gaps
+are real and are flagged inside the files rather than papered over:
+
+| gap | state of the capture | consequence |
+|---|---|---|
+| **Table T10** (geographical terms, p. 340) | captured **truncated** — the headnote plus the names of T10.1, T10.2 and T10.3, and nothing else | no state, city, province or country abbreviation is available; open the printed T10 |
+| **Table T13** (institutional names in periodical titles) | captured **empty** | no T13 value is stated anywhere; open the printed T13 |
+| Every table other than T6, T10, T13 | never fetched | cross-references to them are reported; their contents are not |
+| Rules 3, 5, 6, 7, 8, 9, 11, 19, 20, 21 | never fetched | checks resting on them are marked, not asserted |
+
+Nothing from these gaps has been filled from training knowledge. A claim depending on one is
+either absent or carries a marker within a line of itself.
 
 ### Looking a rule up in the actual book
 
