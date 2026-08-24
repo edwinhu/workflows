@@ -46,3 +46,7 @@ docs/investigations/
 # craft run state: args, results, rotated rounds, logs. Session-scoped and
 # high-frequency — it belongs in a temp dir, and never in a commit.
 .craft/
+
+# 22e rule-text corpus: ~300KB scraped from a licensed subscription. Regenerate with
+# the extraction recipe in skills/bluebook/references/editions-21-to-22.md.
+scratch/

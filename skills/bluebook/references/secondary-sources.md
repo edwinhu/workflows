@@ -475,7 +475,7 @@ Jeffrey Toobin, The Obama Brief, New Yorker, Oct. 27, 2014, at 24.
 ```
 Magazine names, like all periodical names, are in **SMALL CAPS** (rule 16.1).
 
-### Blogs and Online Sources (Rule 18.2.4)
+### Blogs and Online Sources (Rule 18.2 — The Internet)
 
 ```
 [Author], [Title], [Blog Name] ([Date]), [URL].
@@ -486,10 +486,13 @@ Magazine names, like all periodical names, are in **SMALL CAPS** (rule 16.1).
 Eugene Volokh, Free Speech and Criminal Solicitation, Volokh Conspiracy (Jan. 15, 2020), https://...
 ```
 
-> **UNVERIFIED:** rule 18 is **not in the corpus**, and rule 18 was **substantially rewritten** in
-> the 22e (including new treatment of AI-generated content). The blog form above, the subsection
-> number 18.2.4, and the italic-blog-name convention are carried over from the 21e-era file and are
-> unchecked against the 22e. Do not rely on them without consulting the printed rule 18.
+> **UNVERIFIED — and the old cite was wrong.** This section previously cited "Rule 18.2.4". The
+> 22e Rule 18.2 has **only 18.2.1 and 18.2.2**; there is no 18.2.4, so that number came from the
+> 21e-era file and does not exist in this edition. Rule 18 was **substantially rewritten** in the
+> 22e — 18.3 is now **AI-Generated Content** (p. 191) and social media has its own rule at 18.10.
+> The blog citation form above and the italic-blog-name convention remain unchecked: 18.2's
+> lettered subparts (a)-(d) are in the corpus but do not settle which governs a blog. Consult
+> rule 18 directly before relying on this form.
 
 ## Restatements, Model Codes, and Uniform Acts (Rule 12.9.4) (22e pp. 135-39)
 
