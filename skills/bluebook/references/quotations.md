@@ -352,6 +352,17 @@ Before finalizing any quotation:
 
 ## Verification Status of This File
 
+> **Checked 2026-08-23: still unverified, and the notebook cannot settle it.** The wired-up
+> NotebookLM was reached (its auth had expired; that is now fixed) and queried. Its single
+> 53-page source holds full text for **Rule 1 and 1.1-1.4 only** — Rule 5's pages are absent.
+> So the note below is too optimistic: reachability was never the obstacle. Verifying this file
+> needs a print copy or a licensed Bluebook Online session. 0 confirmed / 0 contradicted /
+> 35 unsupported. The exposure is concentrated in the cited subsection NUMBERS — 5.1(b)(iv),
+> 5.2(d)(iii), 1.5(b), 5.3(b)(i)-(vi) — since style guides paraphrase Rule 5's substance
+> faithfully but routinely do not reproduce its numbering. Report:
+> `scratch/bluebook-verify/REPORT.md`.
+
+
 The Bluebook 21st edition is not open-access and the skill's NotebookLM notebook
 (`f70a9976-b443-43d5-b5fd-43ff86b2b700`) was unreachable when this file was written (expired
 Google auth). Every statement above was checked against law-review style guides and library

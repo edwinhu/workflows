@@ -230,7 +230,23 @@ For detailed rules, consult:
 
 ### NotebookLM Integration
 
-For edge cases, ambiguous rules, or additional context beyond the reference files, query the Bluebook 21e (2020) notebook:
+**Its coverage is narrow — check the rule is in it before believing an answer.** The notebook's
+one source is a 53-page scanned excerpt (`annas-arch-….pdf`). Verified 2026-08-23 by asking it:
+the only FULL rule text present is **Rule 1 and 1.1-1.4** (pp. 51, 53), plus the Quick Reference
+tables. Everything else is cover scans, copyright pages, and cropped strips of the printed book's
+**thumb tabs** — so "rule 10", "rule 12" appear as tab labels with no text behind them, and a
+model asked what the PDF contains will read those tabs and confidently name rules it cannot quote.
+It did exactly that here before retracting under stricter questioning.
+
+**It cannot answer on Rule 5 (quotations) at all**, which is why
+`references/quotations.md` is still unverified.
+
+**Refuse the web-research offer.** On a rule it does not hold, the notebook replies "Would you
+like me to perform some web research?" — observed three times. Accepting turns a web search into
+something formatted as a source-grounded answer, which is how an unverified reference file gets
+written by an author who believes they consulted the book.
+
+For Rule 1, signals, or the Quick Reference tables, query the Bluebook 21e (2020) notebook:
 
 ```bash
 # Notebook ID: f70a9976-b443-43d5-b5fd-43ff86b2b700
