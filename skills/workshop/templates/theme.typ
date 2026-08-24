@@ -337,6 +337,8 @@
     "ABC News":            rgb("#FFFFFF"),
     "X":                   rgb("#FFFFFF"),
     "Twitter":             rgb("#FFFFFF"),
+    "Bluesky":             rgb("#FFFFFF"),
+    "Mastodon":            rgb("#FFFFFF"),
   )
   let newsprint = if stock != auto { stock } else { stocks.at(venue, default: rgb("#F7F4EC")) }
 
@@ -345,7 +347,19 @@
   // has: the heavy top rule, the category kicker, the serif headline face and
   // the highlighter swipe. What is left is the mark, the account, the post
   // text and its date.
-  let is-post = venue in ("X", "Twitter")
+  // Every microblog embed has the SAME shape — avatar + name over handle left,
+  // mark top right, timestamp under the text. Only the mark and the accent
+  // differ, and the handle format is data, not code (@user, @user.bsky.social,
+  // @user@instance). So this is a venue LIST, not three branches.
+  let is-post = venue in ("X", "Twitter", "Bluesky", "Mastodon")
+  // Fallback mark when no logo asset is supplied. Verified brand colours:
+  // Bluesky #01A5FF, Mastodon #563ACC. X's mark is black.
+  let post-mark = (
+    "X":        ("X",  rgb("#16161c")),
+    "Twitter":  ("X",  rgb("#16161c")),
+    "Bluesky":  ("b.", rgb("#01A5FF")),
+    "Mastodon": ("m",  rgb("#563ACC")),
+  )
 
   // Headline content with the key phrase swiped in highlighter yellow. Using an
   // inline highlight() means the swipe tracks the real glyphs and survives any
@@ -408,7 +422,10 @@
               // The mark, top right. A supplied logo wins; otherwise set the X
               // glyph heavy enough to read as the mark rather than as a letter.
               if logo != none { box(baseline: 0pt, image(logo, height: 1.5em)) }
-              else { text(size: 22pt, weight: "bold", fill: ink, "X") }
+              else {
+                let m = post-mark.at(venue, default: ("", ink))
+                text(size: 22pt, weight: "bold", fill: m.at(1), m.at(0))
+              }
             })
           v(1.0em)
           set par(leading: 0.62em)

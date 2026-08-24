@@ -65,9 +65,10 @@ who knows the paper.
 | Financial Times, FT | `#FFF1E5` salmon |
 | WSJ, NY Times, Bloomberg, ABC News | `#FFFFFF` |
 | X, Twitter | `#FFFFFF` — light-mode surface; the mark is black |
+| Bluesky, Mastodon | `#FFFFFF` — same embed layout; accents `#01A5FF` / `#563ACC` |
 | anything else | `#F7F4EC` cream fallback |
 
-### The X card is an embed, not a clipping
+### Microblog cards are embeds, not clippings
 
 A post takes the same function and the same stock table, but an **embed layout**,
 because the masthead layout is what made it read as a clipping *of* a tweet:
@@ -95,6 +96,14 @@ because the masthead layout is what made it read as a clipping *of* a tweet:
 alone rather than leaving a bold gap, and with no `avatar` the row simply starts
 at the name. Secondary text is `#536471`, X's own. Supply `logo` to use a real X
 mark; otherwise a bold sans `X` stands in.
+
+**Bluesky and Mastodon take the same layout.** All three microblog embeds have
+one shape — avatar + name over handle at the left, mark top right, timestamp
+below the text — so this is a venue LIST (`X`, `Twitter`, `Bluesky`,
+`Mastodon`), not three branches. Only the mark and its accent differ, and the
+handle format is data rather than code: `@user`, `@user.bsky.social`,
+`@user@instance.social`. Supply `logo` for a real mark; without one the card
+falls back to a coloured glyph, which is a stand-in and not the brand asset.
 
 `X`/`Twitter` is a venue, not a second function. The card suppresses the
 newspaper-only chrome for it — top rule, kicker, serif headline face, highlighter
