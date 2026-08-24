@@ -339,6 +339,7 @@
     "Twitter":             rgb("#FFFFFF"),
     "Bluesky":             rgb("#FFFFFF"),
     "Mastodon":            rgb("#FFFFFF"),
+    "Threads":             rgb("#FFFFFF"),
   )
   let newsprint = if stock != auto { stock } else { stocks.at(venue, default: rgb("#F7F4EC")) }
 
@@ -351,7 +352,7 @@
   // mark top right, timestamp under the text. Only the mark and the accent
   // differ, and the handle format is data, not code (@user, @user.bsky.social,
   // @user@instance). So this is a venue LIST, not three branches.
-  let is-post = venue in ("X", "Twitter", "Bluesky", "Mastodon")
+  let is-post = venue in ("X", "Twitter", "Bluesky", "Mastodon", "Threads")
   // Fallback mark when no logo asset is supplied. Verified brand colours:
   // Bluesky #01A5FF, Mastodon #563ACC. X's mark is black.
   let post-mark = (
@@ -359,6 +360,7 @@
     "Twitter":  ("X",  rgb("#16161c")),
     "Bluesky":  ("b.", rgb("#01A5FF")),
     "Mastodon": ("m",  rgb("#563ACC")),
+    "Threads":  ("@",  rgb("#16161c")),
   )
 
   // Headline content with the key phrase swiped in highlighter yellow. Using an
