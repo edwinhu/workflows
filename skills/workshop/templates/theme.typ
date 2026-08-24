@@ -413,7 +413,7 @@
               // Name over handle. With no display name the handle carries the
               // slot alone rather than leaving a bold gap.
               if name != none and name != "" {
-                stack(dir: ttb, spacing: 0.15em,
+                stack(dir: ttb, spacing: 0.32em,
                   text(size: 17pt, weight: "bold", fill: ink, name),
                   text(size: 15pt, weight: "regular", fill: x-mute, handle))
               } else if handle != none and handle != "" {
