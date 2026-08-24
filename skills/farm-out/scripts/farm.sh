@@ -242,9 +242,18 @@ if [ -n "$TASKS" ]; then
     a=$(jq -r ".[$i].agent // \"\"" "$TASKS"); [ "$a" = "null" ] && a=""
     # enc() cannot save a newline: it would split the record, and a forged DONE line inside a
     # label is indistinguishable from a real verdict to every reader of this stream.
-    case "$l$p$a" in
+    #
+    # Scoped to the fields that actually REACH the stream. Testing "$l$p$a" as one string
+    # refused every multi-line prompt -- which is nearly every real brief -- and blamed the
+    # label while doing it, sending the reader to inspect the wrong field. Measured
+    # 2026-08-23: two live dispatches refused, both labels clean.
+    case "$l" in
       *[$'\n\r\t']*|*[$'\001'-$'\010']*)
         refuse "task $i label contains a control character; not allowed in the event stream" ;;
+    esac
+    case "$a" in
+      *[$'\n\r\t']*|*[$'\001'-$'\010']*)
+        refuse "task $i agent contains a control character; not allowed in the event stream" ;;
     esac
     mapfile -t e < <(jq -r ".[$i].expect // [] | if type==\"array\" then .[] else . end" "$TASKS")
     run_one "$l" "$p" "$a" "${e[@]:-}" > "$dir/$i.json" &
