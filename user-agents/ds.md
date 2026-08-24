@@ -11,7 +11,7 @@ description: >
   up as prose goes to `writing-econ`.
 model: inherit
 color: cyan
-tools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash"]
+tools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash", "Skill"]
 skills:
   - ds-constraints
 ---

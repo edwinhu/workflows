@@ -13,7 +13,7 @@ description: >
   submission, working paper or job-market paper goes to `writing-econ`, not here.
 model: inherit
 color: blue
-tools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash"]
+tools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash", "Skill"]
 skills:
   - writing-general
   - writing-legal

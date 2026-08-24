@@ -11,7 +11,7 @@ description: >
   the paper's own prose goes to `writing-econ` or `writing-legal`.
 model: inherit
 color: purple
-tools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash"]
+tools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash", "Skill"]
 skills:
   - typst:typst
   - workshop-constraints

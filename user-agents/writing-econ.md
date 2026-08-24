@@ -14,7 +14,7 @@ description: >
   not here.
 model: inherit
 color: blue
-tools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash"]
+tools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash", "Skill"]
 skills:
   - writing-general
   - writing-econ
