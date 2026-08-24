@@ -28,14 +28,37 @@ export function coverage() {
   const citedTables = new Set<string>()
   for (const f of files) {
     const t = readFileSync(join(REFS, f), 'utf8')
-    for (const line of t.split('\n')) {
+    const lns = t.split('\n')
+    // Paragraph = maximal run of non-blank lines around li.
+    const paraOf = (li: number) => {
+      let a = li, b = li
+      while (a > 0 && lns[a - 1].trim() !== '') a--
+      while (b < lns.length - 1 && lns[b + 1].trim() !== '') b++
+      return lns.slice(a, b + 1).join(' ')
+    }
+    for (const [li, line] of lns.entries()) {
       // Statute sections and other bodies' rules are not Bluebook rule cites:
       // "Nev. Rev. Stat. § 28.501", "Manual for Complex Litigation (Third) § 33.2".
       // Without this the checker reported phantom rules 28 and 33 as uncovered.
       if (/§|Model Rules|Manual for|Restatement|https?:\/\/|doi\.org/.test(line)) continue
-      for (const m of line.matchAll(/(?<![\d.])(\d{1,2})\.\d{1,2}/g)) cited.add(m[1])
+      for (const m of line.matchAll(/(?<![\d.])(\d{1,2})\.\d{1,2}/g)) {
+        // Bluebook rules run 1-23; above that it is a regulation section ("FAR 52.249-2").
+        if (+m[1] > 23) continue
+        cited.add(m[1])
+      }
+      // Tables are collected PER LINE, not over the whole file, so that a line which says
+      // a table was NOT captured can exempt itself. Reading the file as one blob made
+      // "Tables T3, T4, T5, T9, T15 and T16 were not captured" register as six citations
+      // to missing tables — the checker flagging a sentence whose whole content is that
+      // they are missing. Same exemption vocabulary as tests/bluebook-cites.test.ts.
+      // Exemption is scoped to the PARAGRAPH, not a +/-1 line window. A caveat qualifies the
+      // prose block it sits in, and hard-wrapping puts arbitrary distance between a marker and
+      // the mention it governs: three mentions of T9 in one four-line paragraph each fell
+      // outside a +/-1 window of the marker, so the checker reported a table as unmarked in a
+      // paragraph whose first clause is that it was not extracted.
+      if (/UNVERIFIED|not in the corpus|not extracted|not captured|could not be/i.test(paraOf(li))) continue
+      for (const m of line.matchAll(/\bT(\d{1,2})\b/g)) citedTables.add('T' + m[1])
     }
-    for (const m of t.matchAll(/\bT(\d{1,2})\b/g)) citedTables.add('T' + m[1])
   }
 
   // Which files carry an adversarial verification report.

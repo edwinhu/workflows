@@ -489,8 +489,10 @@ of publication."
 Protection from Personal Intrusion Act and Privacy Protection Act of 1998: Hearing on H.R. 2448 and H.R. 3224 Before the H. Comm. on the Judiciary, 105th Cong. 56–57 (1998) (statement of Richard Masur, President, Screen Actors Guild).
 Cybersecurity Threats: Hearing Before the S. Comm. on Homeland Sec., 116th Cong. 25 (2020) (statement of Christopher Krebs, Dir., Cybersecurity & Infrastructure Sec. Agency).
 ```
-Committee and subcommittee names are abbreviated per tables T6, T9, and T10; witness titles per
-T6, T9, and T11. **State committee hearings (rule 13.3(b))** take the same form plus the number of
+T9's contents were **not extracted**, so every T9 abbreviation below is UNVERIFIED; T6, T10 and T11
+are in the corpus. The cross-reference itself is rule 13.3's own wording — "abbreviated according to
+tables T6, T9, and T10". Committee and subcommittee names are abbreviated per tables T6, T9 and T10;
+witness titles per T6, T9 and T11. **State committee hearings (rule 13.3(b))** take the same form plus the number of
 the legislative session.
 
 ### Congressional Debates
