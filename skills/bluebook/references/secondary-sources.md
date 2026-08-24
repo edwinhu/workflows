@@ -895,7 +895,7 @@ pinpoint cite to the database where one is required for the primary document, an
 |-------|------------|
 | Missing journal abbreviation periods | Harv. L. Rev. (not Harv L Rev) |
 | Wrong year placement | ...2021 (1996). (not ...2021, 1996.) |
-| Missing pinpoint | Always include specific page |
+| Missing pinpoint | Give the page or pages cited — **except** when citing the work in its entirety (4.2(a), 16.9(b)), and **not** after the journal or book title of a forthcoming work (17.3) |
 | Periodical name italicized | Periodical names — journal, magazine, newspaper — are SMALL CAPS (16.1) |
 | Student designation after the title | The designation precedes the title (16.7.1(a)) |
 | "Book Review" for a student review | Student reviews use "Book Note" regardless of the journal's label (16.7.1(c)) |

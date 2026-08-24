@@ -241,9 +241,17 @@ Required in **documents submitted to state courts**, where local rules govern an
 the official state reporter followed by a parallel regional citation. Those local rules, not Table
 T1, control state court filings. See Bluepages B10.1.3 and Bluepages table BT2.2.
 
-For law reviews, do **not** default to an official-plus-regional pair; cite the regional reporter.
-The one parallel citation law reviews do require is public domain citation + regional reporter
-(10.3.1(b)).
+For law reviews, do **not** default to an official-plus-regional pair; cite the regional reporter
+(10.3.1(b)). But a parallel citation is required in more than one situation, so do not read that as
+"law reviews never give parallel cites":
+
+- **Public domain citation available** — it "must be provided, as well as a parallel citation to
+  the regional reporter, if available" (10.3.3).
+- **Pagination differs between sources** — 10.3.2 requires parallel citations in that case.
+- **State rules** — "Many state rules require that citations to state court decisions include a
+  citation to the official state reporter, followed by a parallel citation to a regional
+  reporter" (10.3.1(a)); that is a court-filing constraint, not a law-review one, but it governs
+  the same case in a different document.
 
 ### Reporters (10.3.2)
 
@@ -842,7 +850,7 @@ been fully resolved."
 | 347 US 483 | 347 U.S. 483 (spaces, periods) |
 | 500 F. 3d 100 | 500 F.3d 100 (no space before series) |
 | 100 F.Supp.3d 50 | 100 F. Supp. 3d 50 (spaces) |
-| Official + regional pair in a law review | Regional reporter alone (10.3.1(b)) — parallel citation belongs in state court filings, or alongside a public domain cite |
+| Official + regional pair in a law review | Regional reporter alone (10.3.1(b)) — but parallel cites ARE required with a public domain cite (10.3.3) and where pagination differs (10.3.2) |
 
 ### Court/Date Errors
 

@@ -242,6 +242,12 @@ For detailed rules, consult:
 | `abbreviations.md` | tables | **UNVERIFIED** — T6, T10, T13 all changed in the 22e |
 | `audit-patterns.md` | cross-cutting | **UNVERIFIED** |
 
+All six were then **adversarially re-verified** by separate agents against the same corpus, with
+instructions to find errors rather than agree: `signals-parentheticals.md` and `short-forms.md`
+came back with **zero contradictions** (every imperative traced to a governing sentence);
+`cases.md`, `statutes.md` and `secondary-sources.md` each had defects, all now corrected. Reports:
+`scratch/bb22/verify/`.
+
 The six were checked against 52 subsection pages extracted verbatim from the official Bluebook
 Online 22nd edition; page cites in them are **22e** pages. Claims the corpus did not cover are
 marked UNVERIFIED in place rather than left looking checked — Rules 13, 14 and the tables are the

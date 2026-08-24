@@ -511,7 +511,7 @@ text and footnote text, although the symbol '§' may be used in citations."
 
 ```
 Text (U.S.C.):        42 U.S.C. § 1983 or § 1983
-Text (state code):    section 1701 of title 28 of the Delaware Code, or section 1701
+Text (state code):    title 28, section 1701 of the Delaware Code, or section 1701
 Text (named act):     section 1 of the Administrative Procedure Act, or section 1
 ```
 
@@ -528,8 +528,12 @@ Utah Code § 4-30-108 (2017), http://le.utah.gov/...              becomes:   § 
 ```
 1. Administrative Procedure Act § 1, 5 U.S.C. § 551.
 ...
-15. Administrative Procedure Act § 1.
+5. Administrative Procedure Act § 1.
 ```
+
+The short form at footnote 5 works because footnote 1 is inside the **preceding five footnotes**
+(12.10(b)). Past that window the full citation returns — an example showing the short form at
+footnote 15 with nothing in between would illustrate a violation, not the rule.
 
 ## Common Errors
 
