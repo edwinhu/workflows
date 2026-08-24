@@ -13,6 +13,15 @@ Manage Google NotebookLM notebooks, sources, notes, chat, and generated content 
 
 **Check:** `command -v nlm || echo "MISSING: nlm CLI not installed"`
 
+**IRON LAW: gate on `nlm source list` before believing an empty chat answer.** With expired auth
+the two chat paths fail differently and NEITHER says "auth": `nlm chat <id> "…"` prints nothing and
+**exits 0**, and `nlm generate-chat <id> "…"` prints `empty response from API; check 'nlm sources
+…' for source state`. Only the non-chat commands surface `exit-class=auth (exit 3)`. So an agent
+that runs only a chat command reads an auth failure as "the notebook has nothing on this topic" —
+measured 2026-08-23, and the likely cause of a 366-line Bluebook reference being written from style
+guides while its author believed the notebook had been consulted. Run `nlm source list <id>` and
+require exit 0 first; an empty chat answer is evidence of nothing until you have.
+
 > **Command structure:** the CLI uses **subcommand groups** — `nlm <group> <action>` (e.g. `nlm notebook list`, `nlm source add`, `nlm audio create`). The older flat aliases (`nlm list`, `nlm add`, `nlm audio-create`, …) were removed in upstream's parser migration. When unsure of exact syntax, run `nlm --help` or `nlm <group> --help` — it's authoritative. The `references/*.md` files predate the migration and may be stale.
 
 ## Authentication

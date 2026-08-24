@@ -17,6 +17,8 @@ from __future__ import annotations
 
 import argparse
 import subprocess
+import os
+import shutil
 import sys
 import time
 from pathlib import Path
@@ -24,9 +26,31 @@ from typing import Any, List, Optional
 
 import requests
 
-TOKEN_PATH = Path("/var/folders/01/wzs3mqmn3jx2b81f0dcq9w8h0000gq/T/agenix/readwise-token")
 READWISE_LIST_URL = "https://readwise.io/api/v3/list/"
-NLM_PATH = Path("/Users/vwh7mb/projects/nlm/nlm")
+
+
+def _token_path() -> Path:
+    """Where the readwise token lives. Both former constants were hardcoded to one
+    macOS machine -- a literal /var/folders/... temp dir and a /Users path -- so this
+    script could not run anywhere else."""
+    env = os.environ.get("READWISE_TOKEN_FILE")
+    if env:
+        return Path(env)
+    tmp = os.environ.get("TMPDIR") or "/tmp"
+    return Path(tmp) / "agenix" / "readwise-token"
+
+
+def _nlm_path() -> Path:
+    """nlm is installed per-machine (nix here), so resolve it from PATH."""
+    found = shutil.which("nlm")
+    if not found:
+        print("nlm not found on PATH; install it (cd ~/nix && nix run .#build-switch)", file=sys.stderr)
+        sys.exit(2)
+    return Path(found)
+
+
+TOKEN_PATH = _token_path()
+NLM_PATH = _nlm_path()
 
 
 def get_token() -> str:

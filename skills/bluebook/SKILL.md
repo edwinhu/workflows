@@ -8,7 +8,7 @@ user-invocable: false
 
 Citation formatting for law reviews and legal scholarship per *The Bluebook: A Uniform System of Citation* (21st ed. 2020).
 
-**Announce:** “I’m using the bluebook skill for citation formatting.”
+**Announce:** "I’m using the bluebook skill for citation formatting."
 
 ## When to Use
 
@@ -191,8 +191,8 @@ Within a single citation sentence, signals appear in this order:
 
 ### Case Citations
 
-- [ ] Party names shortened properly (omit “Inc.”, “Ltd.” unless only identifier)
-- [ ] “United States” abbreviated to “U.S.” (as party, not “United States of America”)
+- [ ] Party names shortened properly (omit "Inc.", "Ltd." unless only identifier)
+- [ ] "United States" abbreviated to "U.S." (as party, not "United States of America")
 - [ ] Reporter abbreviation matches T1
 - [ ] Court identifier included unless obvious from reporter
 - [ ] Year is decision year, not argument year
@@ -201,7 +201,7 @@ Within a single citation sentence, signals appear in this order:
 ### Statutory Citations
 
 - [ ] Current official code used (not session laws for current statutes)
-- [ ] Section symbol (§) used, not “Section”
+- [ ] Section symbol (§) used, not "Section"
 - [ ] Space between § and number
 - [ ] Year is code edition year, not enactment year
 - [ ] Supplements cited when applicable
@@ -234,15 +234,17 @@ For edge cases, ambiguous rules, or additional context beyond the reference file
 
 ```bash
 # Notebook ID: f70a9976-b443-43d5-b5fd-43ff86b2b700
+# `nlm` is on PATH (nix-managed). Add --citations list to get the Bluebook text
+# behind the answer; an unsourced answer from a notebook is not a rule.
 
 # Query specific Bluebook rules
-/Users/vwh7mb/projects/nlm/nlm generate-chat f70a9976-b443-43d5-b5fd-43ff86b2b700 “How do I cite an unpublished opinion under Rule 10.8.1?”
+nlm generate-chat f70a9976-b443-43d5-b5fd-43ff86b2b700 "How do I cite an unpublished opinion under Rule 10.8.1?"
 
 # Get rule clarification
-/Users/vwh7mb/projects/nlm/nlm generate-chat f70a9976-b443-43d5-b5fd-43ff86b2b700 “What are the typeface conventions for treaty citations?”
+nlm generate-chat f70a9976-b443-43d5-b5fd-43ff86b2b700 "What are the typeface conventions for treaty citations?"
 
 # Verify abbreviation tables
-/Users/vwh7mb/projects/nlm/nlm generate-chat f70a9976-b443-43d5-b5fd-43ff86b2b700 “What is the correct abbreviation for ‘Environmental’ in journal names per Table T13?”
+nlm generate-chat f70a9976-b443-43d5-b5fd-43ff86b2b700 "What is the correct abbreviation for 'Environmental' in journal names per Table T13?"
 ```
 
 **When to query the notebook:**
