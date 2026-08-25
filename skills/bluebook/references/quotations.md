@@ -23,8 +23,10 @@ RIGHT:   "[B]orders are less of a barrier to economic exchange."
 RIGHT:   The court found "borders" to be "less of a barrier to economic exchange."
 ```
 
-This is the Rule 5 error editors catch most often. A leading ellipsis marks you as someone who
-has not read Rule 5.3(b)(i).
+The prohibition is in rule 5.3's opening paragraph, not in 5.3(b)(i) — that subsection is the
+remedy (bracket the first letter's case), and citing it for the prohibition sends a reader to the
+wrong place. 5.3 states it flatly: "An ellipsis should never be used to begin a quotation, nor
+should it be used when individual words are merely altered (rules 5.1(a)(iii) and 5.2)."
 </EXTREMELY-IMPORTANT>
 
 ## Formatting of Quotations (Rule 5.1, 22e pp. 87–88)
