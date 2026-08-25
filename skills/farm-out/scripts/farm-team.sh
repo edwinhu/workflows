@@ -36,9 +36,10 @@ not observe. Report the exact error text and stop if a spawn is rejected.
 EOF
 } > "$TMP/prompt.txt"
 
-# Teams are off by default: without this the lead silently does not spawn anyone.
-# bypassPermissions is required — teammate permission prompts bubble to a lead
-# that has no human attached, and would otherwise stall the run.
+# Teams are off by default: without the env var the lead silently does not spawn anyone.
+# No --permission-mode: the lead inherits the user's default (auto), so hard_deny still applies
+# inside a team run. Watch for stalls -- a teammate permission prompt bubbles to a lead with no
+# human attached, which is what bypassPermissions used to paper over.
 # The lead runs in --cwd; the subshell keeps that move off the --expect checks below, which
 # resolve against the CALLER's cwd. $TMP is absolute (mktemp -d), so the redirections are
 # unaffected by the cd.
@@ -47,7 +48,6 @@ EOF
   CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 \
   FARM_OUT_CHILD=1 \
     timeout "$TIMEOUT" "$WRAPPER" -p \
-      --permission-mode bypassPermissions \
       --output-format stream-json --verbose \
       < "$TMP/prompt.txt" > "$TMP/stream.jsonl" 2>"$TMP/err"
 ) || true
