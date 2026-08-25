@@ -32,6 +32,11 @@
         "HUGGINGFACE_TOKEN": "",
         "GITHUB_TOKEN": "",
         "GH_TOKEN": ""
+      },
+      "tsExpected": {
+        "stdoutSha256": "579e3cba164f9cd1ae37dc59b1c1384a432c2650ceb59674480af59228c1e6c6",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -64,6 +69,11 @@
         "HUGGINGFACE_TOKEN": "",
         "GITHUB_TOKEN": "",
         "GH_TOKEN": ""
+      },
+      "tsExpected": {
+        "stdoutSha256": "9f4352dd98eb6880370e4b37f4b56995fe558a45e1c17b40e7bc00c882d982e7",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -97,6 +107,11 @@
       "fixture": {
         ".env": "# project secrets\nWRDS_USERNAME=\"parityuser\"\nLSEG_APP_KEY='abcdefghijklmnopqrst'\nNOT_A_KEY_VAR=ignored\nmalformed line without equals\n",
         ".pixi/envs/default/.gitignore": "*\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "03be885c9958f8f8dbd9e0a1d48118fd9522df1ce5ec9593c15555e6a5c06f28",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -131,6 +146,11 @@
       },
       "fixture": {
         ".claude/env": "# pre-existing\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "c90832e55a570221db5589ebaeea926636da0f6800715667f174145b034706cd",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -166,6 +186,11 @@
       "fixture": {
         ".planning/PLAN.md": "# Implementation Plan\n\n## Phase 1\n- [x] Write the spec\n- [X] Review the spec\n- [ ] Implement the parser\n- [ ] Add tests\n",
         ".planning/SPEC.md": "---\nstatus: approved\nowner: eh\n---\n\n# Spec: parity harness\n\nThe harness must compare stdout, exit code, and filesystem delta.\n\nThird summary line.\n\nFourth line, beyond max_lines=3, must be cut.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "579e3cba164f9cd1ae37dc59b1c1384a432c2650ceb59674480af59228c1e6c6",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -206,7 +231,7 @@
         ".planning/drafts/part-1.md": "draft text\n"
       },
       "tsExpected": {
-        "stdoutSha256": "6e18c9ca8e23e6c0ae91d148d53914a4a71159e3574e0b807ae386c5056c0dac",
+        "stdoutSha256": "579e3cba164f9cd1ae37dc59b1c1384a432c2650ceb59674480af59228c1e6c6",
         "exit": 0,
         "fs": {}
       }
@@ -248,7 +273,7 @@
         ".planning/REVIEW.md": "reviewed\n"
       },
       "tsExpected": {
-        "stdoutSha256": "6e18c9ca8e23e6c0ae91d148d53914a4a71159e3574e0b807ae386c5056c0dac",
+        "stdoutSha256": "579e3cba164f9cd1ae37dc59b1c1384a432c2650ceb59674480af59228c1e6c6",
         "exit": 0,
         "fs": {}
       }
@@ -285,6 +310,11 @@
       },
       "fixture": {
         ".claude/PLAN.md": "---\nstatus: legacy\n---\n\n# Legacy Plan\n\nProse plan with no checkbox tasks at all.\n\nAnother line.\n\nA fourth line that must be cut.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "579e3cba164f9cd1ae37dc59b1c1384a432c2650ceb59674480af59228c1e6c6",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -319,6 +349,11 @@
       },
       "fixture": {
         ".planning/scratch-notes.md": "not a recognized state file\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "579e3cba164f9cd1ae37dc59b1c1384a432c2650ceb59674480af59228c1e6c6",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -357,7 +392,7 @@
         ".planning/PHASE_SUMMARY.md": "summary\n"
       },
       "tsExpected": {
-        "stdoutSha256": "6e18c9ca8e23e6c0ae91d148d53914a4a71159e3574e0b807ae386c5056c0dac",
+        "stdoutSha256": "579e3cba164f9cd1ae37dc59b1c1384a432c2650ceb59674480af59228c1e6c6",
         "exit": 0,
         "fs": {}
       }

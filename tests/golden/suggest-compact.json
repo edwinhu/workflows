@@ -28,6 +28,13 @@
       },
       "fixture": {
         "claude-tool-count-golden-a": "49"
+      },
+      "tsExpected": {
+        "stdoutSha256": "73246aa4fc9362e543940ddf5e6e57593734a56620189bf77d6ef11977c6a0f5",
+        "exit": 0,
+        "fs": {
+          "claude-tool-count-golden-a": "1a6562590ef19d10"
+        }
       }
     },
     {
@@ -46,6 +53,13 @@
       },
       "fixture": {
         "claude-tool-count-golden-b": "9"
+      },
+      "tsExpected": {
+        "stdoutSha256": "c3e360762e7d3fe63c3d9e1d882d6bf2caedaa9fa498010f6444cce55b389110",
+        "exit": 0,
+        "fs": {
+          "claude-tool-count-golden-b": "4a44dc15364204a8"
+        }
       }
     },
     {
@@ -62,6 +76,13 @@
       },
       "fixture": {
         "claude-tool-count-golden-c": "2"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {
+          "claude-tool-count-golden-c": "4e07408562bedb8b"
+        }
       }
     },
     {
@@ -78,6 +99,11 @@
       },
       "fixture": {
         "claude-tool-count-golden-d": "49"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -89,6 +115,11 @@
       },
       "fixture": {
         "claude-tool-count-golden-e": "49"
+      },
+      "tsExpected": {
+        "stdoutSha256": "51d37ef05f9472dfa22e8200acf0c141422e045576f7ad450232dd61ff5ab2bb",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -104,7 +135,14 @@
         "COMPACT_THRESHOLD": "1",
         "COMPACT_INTERVAL": "1"
       },
-      "fixture": {}
+      "fixture": {},
+      "tsExpected": {
+        "stdoutSha256": "d32eb520ab51ce33d365c8070529b845bd2dae33a4fba2f7a909f5e350b3e7d1",
+        "exit": 0,
+        "fs": {
+          "claude-tool-count-golden-f": "6b86b273ff34fce1"
+        }
+      }
     },
     {
       "name": "corrupt-counter-file-resets-to-zero",
@@ -122,6 +160,13 @@
       },
       "fixture": {
         "claude-tool-count-golden-g": "nope"
+      },
+      "tsExpected": {
+        "stdoutSha256": "d32eb520ab51ce33d365c8070529b845bd2dae33a4fba2f7a909f5e350b3e7d1",
+        "exit": 0,
+        "fs": {
+          "claude-tool-count-golden-g": "6b86b273ff34fce1"
+        }
       }
     }
   ]

@@ -18,15 +18,27 @@
           "file_path": "slides.typ",
           "content": "#set page(width: 16cm)\n= typst compile slides.typ\n"
         },
-        "tool_response": { "success": true }
+        "tool_response": {
+          "success": true
+        }
       },
-      "fixture": {}
+      "fixture": {},
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "non-object-json-stdin-crashes-exit-1",
       "kind": "effect",
       "stdin": "this is not a hook payload object",
-      "fixture": {}
+      "fixture": {},
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 1,
+        "fs": {}
+      }
     },
     {
       "name": "typ-token-outside-trigger-segment",
@@ -37,9 +49,18 @@
         "tool_input": {
           "command": "typst compile --root . ; echo wrote slides.typ"
         },
-        "tool_response": { "stdout": "wrote slides.typ\n", "stderr": "", "interrupted": false }
+        "tool_response": {
+          "stdout": "wrote slides.typ\n",
+          "stderr": "",
+          "interrupted": false
+        }
       },
-      "fixture": {}
+      "fixture": {},
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "bash-command-without-typst-compile",
@@ -50,9 +71,18 @@
         "tool_input": {
           "command": "ls -la slides.typ && typst --version"
         },
-        "tool_response": { "stdout": "slides.typ\n", "stderr": "", "interrupted": false }
+        "tool_response": {
+          "stdout": "slides.typ\n",
+          "stderr": "",
+          "interrupted": false
+        }
       },
-      "fixture": {}
+      "fixture": {},
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "typst-compile-non-slides-target-filtered-out",
@@ -63,10 +93,19 @@
         "tool_input": {
           "command": "cd .planning && typst compile --root . notes.typ notes.pdf"
         },
-        "tool_response": { "stdout": "", "stderr": "", "interrupted": false }
+        "tool_response": {
+          "stdout": "",
+          "stderr": "",
+          "interrupted": false
+        }
       },
       "fixture": {
         ".planning/notes.typ": "#set page(paper: \"a4\")\n= Speaker notes\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -78,10 +117,19 @@
         "tool_input": {
           "command": "cd .planning && tinymist compile --root . --input handout=true slides.typ slides.pdf"
         },
-        "tool_response": { "stdout": "", "stderr": "", "interrupted": false }
+        "tool_response": {
+          "stdout": "",
+          "stderr": "",
+          "interrupted": false
+        }
       },
       "fixture": {
         ".planning/notes.typ": "#set page(paper: \"a4\")\n= Speaker notes\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     }
   ]

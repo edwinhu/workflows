@@ -9,6 +9,11 @@
         "tool_input": {
           "command": "ls"
         }
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -17,6 +22,11 @@
       "stdin": {
         "tool_name": "Read",
         "tool_input": {}
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -27,11 +37,21 @@
         "tool_input": {
           "file_path": "/x/notes.md"
         }
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "allow-unparseable-stdin",
-      "kind": "allow"
+      "kind": "allow",
+      "tsExpected": {
+        "stdoutSha256": "8ccddd10a1efffad4348431e65835fc0c78eec9ac32668aecbf1cbdc4e6e87f5",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "allow-read-png-when-look-at-nested",
@@ -44,6 +64,11 @@
       },
       "env": {
         "LOOK_AT_NESTED": "1"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -54,6 +79,11 @@
         "tool_input": {
           "file_path": "/x/chart.png"
         }
+      },
+      "tsExpected": {
+        "stdoutSha256": "5e33cee6d4d1cf28f13d9e54d4519e87a42294da6c433c4385c51a41164510d9",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -64,6 +94,11 @@
         "tool_input": {
           "file_path": "/x/Scan.PNG"
         }
+      },
+      "tsExpected": {
+        "stdoutSha256": "49f21e689e04303761b25d1a9a9ac3da574925d8ad8773b06c666a98a15ff924",
+        "exit": 0,
+        "fs": {}
       }
     }
   ]

@@ -25,19 +25,34 @@
       "kind": "allow",
       "stdin": {
         "tool_name": "Read",
-        "tool_input": { "file_path": "skills/demo/SKILL.md" }
+        "tool_input": {
+          "file_path": "skills/demo/SKILL.md"
+        }
       },
       "fixture": {
         ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
         "skills/demo/SKILL.md": "Read !`cat ${CLAUDE_SKILL_DIR}/references/missing.md` here.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "missing-file-path-ignored",
       "kind": "allow",
-      "stdin": { "tool_name": "Write", "tool_input": {} },
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {}
+      },
       "fixture": {
         ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -45,11 +60,18 @@
       "kind": "allow",
       "stdin": {
         "tool_name": "Write",
-        "tool_input": { "file_path": "skills/demo/scripts/run.py" }
+        "tool_input": {
+          "file_path": "skills/demo/scripts/run.py"
+        }
       },
       "fixture": {
         ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
         "skills/demo/scripts/run.py": "# ${CLAUDE_PLUGIN_ROOT}/scripts/nope.py\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -57,10 +79,17 @@
       "kind": "allow",
       "stdin": {
         "tool_name": "Edit",
-        "tool_input": { "file_path": "notes/loose.md" }
+        "tool_input": {
+          "file_path": "notes/loose.md"
+        }
       },
       "fixture": {
         "notes/loose.md": "Broken but unplugged: ${CLAUDE_PLUGIN_ROOT}/references/nope.md\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -68,11 +97,18 @@
       "kind": "allow",
       "stdin": {
         "tool_name": "Write",
-        "tool_input": { "file_path": "skills/demo/DELETED.md" }
+        "tool_input": {
+          "file_path": "skills/demo/DELETED.md"
+        }
       },
       "fixture": {
         ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
         "skills/demo/SKILL.md": "unrelated\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -80,13 +116,20 @@
       "kind": "allow",
       "stdin": {
         "tool_name": "Edit",
-        "tool_input": { "file_path": "skills/demo/SKILL.md" }
+        "tool_input": {
+          "file_path": "skills/demo/SKILL.md"
+        }
       },
       "fixture": {
         ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
         "skills/demo/SKILL.md": "Load !`cat ${CLAUDE_SKILL_DIR}/references/real.md` first.\nThen ${CLAUDE_PLUGIN_ROOT}/scripts/real.py runs.\nUser project file: ${CLAUDE_SKILL_DIR}/.planning/SPEC.md is skipped.\nTemplate: ${CLAUDE_PLUGIN_ROOT}/skills/other-skill/SKILL.md is skipped.\nPlaceholder: ${CLAUDE_SKILL_DIR}/{SECTION}/notes.md is skipped.\nBare backtick command !`cat plain.md` has no env var.\n",
         "skills/demo/references/real.md": "real reference\n",
         "scripts/real.py": "print('real')\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -94,12 +137,19 @@
       "kind": "context",
       "stdin": {
         "tool_name": "Write",
-        "tool_input": { "file_path": "skills/demo/SKILL.md" }
+        "tool_input": {
+          "file_path": "skills/demo/SKILL.md"
+        }
       },
       "fixture": {
         ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
         "skills/demo/SKILL.md": "Intro line.\nLoad !`cat ${CLAUDE_SKILL_DIR}/references/missing.md` before starting.\nAnd see ${CLAUDE_SKILL_DIR}/references/real.md too.\n",
         "skills/demo/references/real.md": "real reference\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "9fa76dea41962f3327df4e3ae492cf0921bbf9d806f06f1f07ab8cc413940543",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -107,11 +157,18 @@
       "kind": "context",
       "stdin": {
         "tool_name": "Edit",
-        "tool_input": { "file_path": "skills/demo/SKILL.md" }
+        "tool_input": {
+          "file_path": "skills/demo/SKILL.md"
+        }
       },
       "fixture": {
         ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
         "skills/demo/SKILL.md": "Run ${CLAUDE_PLUGIN_ROOT}/scripts/gone.py to check.\nQuoted: \"${CLAUDE_PLUGIN_ROOT}/references/gone.md\" is also broken.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "13b97fe3407459d31efb759eff491bd53032d8ece8d4210f8678acef07f0a373",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -119,12 +176,19 @@
       "kind": "context",
       "stdin": {
         "tool_name": "Edit",
-        "tool_input": { "file_path": "skills/demo/phases/plan.md" }
+        "tool_input": {
+          "file_path": "skills/demo/phases/plan.md"
+        }
       },
       "fixture": {
         ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
         "skills/demo/SKILL.md": "parent skill\n",
         "skills/demo/phases/plan.md": "Phase file referencing ${CLAUDE_SKILL_DIR}/references/absent.md here.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "32c1507faeffb8456a069e6f8127c432244cca3feb01545f53083137e304369a",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -132,11 +196,18 @@
       "kind": "context",
       "stdin": {
         "tool_name": "Write",
-        "tool_input": { "file_path": "skills/demo/SKILL.md" }
+        "tool_input": {
+          "file_path": "skills/demo/SKILL.md"
+        }
       },
       "fixture": {
         ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
         "skills/demo/SKILL.md": "!`cat ${CLAUDE_PLUGIN_ROOT}/a.md ${CLAUDE_PLUGIN_ROOT}/b.md`\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "a48a38b755dad2fe67f95e2b54f76597e176f2d7e2bef75aac4a7985ed8b1619",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -144,12 +215,19 @@
       "kind": "context",
       "stdin": {
         "tool_name": "Write",
-        "tool_input": { "file_path": "skills/demo/SKILL.md" }
+        "tool_input": {
+          "file_path": "skills/demo/SKILL.md"
+        }
       },
       "fixture": {
         ".claude-plugin/plugin.json": "{\"name\": \"demo-plugin\", \"version\": \"1.0.0\"}\n",
         "skills/demo/SKILL.md": "Example usage:\n\n```markdown\n!`cat ${CLAUDE_SKILL_DIR}/references/real.md`\n```\n\nDone.\n",
         "skills/demo/references/real.md": "real reference\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "c4a948253647b06bbd349008fc886fee6acf1976391228318436cd9d6ddaf016",
+        "exit": 0,
+        "fs": {}
       }
     }
   ]

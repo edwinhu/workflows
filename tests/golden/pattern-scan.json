@@ -14,16 +14,28 @@
     {
       "name": "no-transcript-path-is-a-noop",
       "kind": "allow",
-      "env": { "HOME": "." },
-      "stdin": { "cwd": "/proj/foo", "hook_event_name": "SessionEnd" },
+      "env": {
+        "HOME": "."
+      },
+      "stdin": {
+        "cwd": "/proj/foo",
+        "hook_event_name": "SessionEnd"
+      },
       "fixture": {
         ".claude/projects/-proj-foo/pending-patterns.json": "{\"correction_count\": 9}\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "unreadable-transcript-is-a-noop",
       "kind": "allow",
-      "env": { "HOME": "." },
+      "env": {
+        "HOME": "."
+      },
       "stdin": {
         "transcript_path": "does-not-exist.jsonl",
         "cwd": "/proj/foo",
@@ -31,12 +43,19 @@
       },
       "fixture": {
         "decoy.txt": "the transcript is missing; scan_transcript swallows the IOError\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "one-correction-below-threshold-no-write",
       "kind": "effect",
-      "env": { "HOME": "." },
+      "env": {
+        "HOME": "."
+      },
       "stdin": {
         "transcript_path": "transcript.jsonl",
         "cwd": "/proj/foo",
@@ -44,12 +63,19 @@
       },
       "fixture": {
         "transcript.jsonl": "{\"type\": \"human\", \"content\": \"no, don't do that\"}\n{\"type\": \"human\", \"content\": \"sounds good, please continue\"}\n{\"type\": \"assistant\", \"content\": \"that is wrong and you keep asking\"}\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "below-threshold-deletes-stale-pending-file",
       "kind": "effect",
-      "env": { "HOME": "." },
+      "env": {
+        "HOME": "."
+      },
       "stdin": {
         "transcript_path": "transcript.jsonl",
         "cwd": "/proj/foo",
@@ -58,12 +84,21 @@
       "fixture": {
         "transcript.jsonl": "{\"type\": \"human\", \"content\": \"you keep doing that\"}\n{\"type\": \"human\", \"content\": \"ok thanks\"}\n",
         ".claude/projects/-proj-foo/pending-patterns.json": "{\n  \"session_transcript\": \"old.jsonl\",\n  \"correction_count\": 7,\n  \"samples\": [],\n  \"cwd\": \"/proj/foo\"\n}"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {
+          ".claude/projects/-proj-foo/pending-patterns.json": "<deleted>"
+        }
       }
     },
     {
       "name": "two-corrections-writes-project-scoped-pending-file",
       "kind": "effect",
-      "env": { "HOME": "." },
+      "env": {
+        "HOME": "."
+      },
       "stdin": {
         "transcript_path": "transcript.jsonl",
         "cwd": "/proj/foo",
@@ -71,12 +106,21 @@
       },
       "fixture": {
         "transcript.jsonl": "{\"type\": \"human\", \"content\": \"no, don't do that\"}\n{\"type\": \"human\", \"content\": \"you keep ignoring me\"}\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {
+          ".claude/projects/-proj-foo/pending-patterns.json": "74f2c64c41a2b62a"
+        }
       }
     },
     {
       "name": "content-blocks-and-malformed-lines-and-non-human-turns",
       "kind": "effect",
-      "env": { "HOME": "." },
+      "env": {
+        "HOME": "."
+      },
       "stdin": {
         "transcript_path": "t.jsonl",
         "cwd": "",
@@ -84,12 +128,21 @@
       },
       "fixture": {
         "t.jsonl": "{\"type\": \"human\", \"content\": [{\"type\": \"text\", \"text\": \"I already told you to stop editing that file\"}, {\"type\": \"tool_result\", \"text\": \"ignored\"}]}\ngarbage-not-json\n{\"type\": \"assistant\", \"content\": \"that is wrong\"}\n{\"type\": \"human\", \"content\": \"   \"}\n{\"type\": \"human\", \"content\": 12345}\n{\"type\": \"human\", \"content\": \"how many times do I have to ask\"}\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {
+          ".claude/pending-patterns.json": "bbe2d12b495128e8"
+        }
       }
     },
     {
       "name": "non-ascii-text-is-escaped-ensure-ascii",
       "kind": "effect",
-      "env": { "HOME": "." },
+      "env": {
+        "HOME": "."
+      },
       "stdin": {
         "transcript_path": "transcript.jsonl",
         "cwd": "/proj/foo",
@@ -97,12 +150,21 @@
       },
       "fixture": {
         "transcript.jsonl": "{\"type\": \"human\", \"content\": \"no, dont do that \\u2014 caf\\u00e9 \\ud83d\\ude21\"}\n{\"type\": \"human\", \"content\": \"you keep \\u9020\\u6210\\u554f\\u984c\"}\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {
+          ".claude/projects/-proj-foo/pending-patterns.json": "8f629160e8c99aaf"
+        }
       }
     },
     {
       "name": "samples-capped-at-five-and-text-truncated-to-200",
       "kind": "effect",
-      "env": { "HOME": "." },
+      "env": {
+        "HOME": "."
+      },
       "stdin": {
         "transcript_path": "transcript.jsonl",
         "cwd": "/proj/deep/nest",
@@ -110,6 +172,13 @@
       },
       "fixture": {
         "transcript.jsonl": "{\"type\": \"human\", \"content\": \"  wrong. AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA  \"}\n{\"type\": \"human\", \"content\": \"i keep telling you the same thing\"}\n{\"type\": \"human\", \"content\": \"how many times\"}\n{\"type\": \"human\", \"content\": \"again, please stop\"}\n{\"type\": \"human\", \"content\": \"that's not what i meant\"}\n{\"type\": \"human\", \"content\": \"i just said no, stop\"}\n{\"type\": \"human\", \"content\": \"you keep going\"}\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {
+          ".claude/projects/-proj-deep-nest/pending-patterns.json": "6caf74b14e669cb3"
+        }
       }
     }
   ]

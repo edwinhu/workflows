@@ -135,8 +135,14 @@ describe('one resolver, not two conventions', () => {
   }
 
   // The resolver is the one place that spells the default. Anything else naming `.claude/plans`
-  // — in code OR in a message that tells a reader where to look — is a second convention.
+  // in CODE is a second convention.
+  //
+  // Comments are exempt, because the next test in this file says so: it permits session-start.ts to
+  // mention the default "only in prose, never as a joined path". Forbidding prose here contradicted
+  // that, and the one line it caught was a doc comment explaining why `plansDirectory` is not a
+  // finding — documentation of the resolver, not a rival to it.
   const ALLOWED = new Set([join(ROOT, 'hooks/lib/plans-dir.ts')])
+  const isComment = (line: string) => /^\s*(\/\/|\/?\*|#)/.test(line)
 
   test('no file under hooks/ or scripts/ hardcodes the plans path outside the resolver', () => {
     const offenders: string[] = []
@@ -145,6 +151,7 @@ describe('one resolver, not two conventions', () => {
       const text = readFileSync(path, 'utf8')
       const lines = text.split('\n')
       lines.forEach((line, i) => {
+        if (isComment(line)) return
         if (/\.claude\/plans|["']\.claude["']\s*,\s*["']plans["']/.test(line)) {
           offenders.push(`${path}:${i + 1}: ${line.trim()}`)
         }

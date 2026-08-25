@@ -21,6 +21,11 @@
       },
       "fixture": {
         ".claude/PLAN.md": "# Plan\n\n- [x] ship it\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -36,6 +41,13 @@
       "fixture": {
         ".claude/LEARNINGS.md": "# Learnings\n\n- hooks are enforcement, not decoration\n- trailing blank lines are stripped before the footer\n\n\n",
         ".claude/PLAN.md": "# Plan\n\n- [x] ship it\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {
+          ".claude/LEARNINGS.md": "3b49390d55967946"
+        }
       }
     },
     {
@@ -48,6 +60,13 @@
       },
       "fixture": {
         ".claude/LEARNINGS.md": "# Learnings\n\n- hooks are enforcement, not decoration\n\n---\nLast updated: 2020-01-01 00:00\n---\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {
+          ".claude/LEARNINGS.md": "41da3bfa23cbe31a"
+        }
       }
     },
     {
@@ -60,6 +79,13 @@
       },
       "fixture": {
         ".claude/LEARNINGS.md": "# Learnings\n\n---\nLast updated: 2019-05-05 09:00\n---\n\n- a later entry landed after that old footer\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {
+          ".claude/LEARNINGS.md": "b1ba9ebb3d0d7125"
+        }
       }
     },
     {
@@ -67,6 +93,13 @@
       "kind": "effect",
       "fixture": {
         ".claude/LEARNINGS.md": "# Learnings\n\n- json decode failure must not stop the update\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {
+          ".claude/LEARNINGS.md": "cb2a61615ba85e7a"
+        }
       }
     }
   ]

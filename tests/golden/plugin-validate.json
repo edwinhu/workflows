@@ -24,6 +24,11 @@
         "tool_input": {
           "file_path": "/nonexistent-parity/.claude-plugin/plugin.json"
         }
+      },
+      "tsExpected": {
+        "stdoutSha256": "789c4a01ba7fdb3eb01204cc3959214958bdcca7f921f32d6769848f69ba1e87",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -36,6 +41,11 @@
         "tool_input": {
           "file_path": "/nonexistent-parity/.claude-plugin/marketplace.json"
         }
+      },
+      "tsExpected": {
+        "stdoutSha256": "56544182b8e5cac9fe4b2b1101854bf2842b5febef581a435f19d677a0d102d3",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -48,6 +58,11 @@
         "tool_input": {
           "file_path": "/home/eh/.claude/plugins/marketplaces/claude-plugins-official/external_plugins/asana/skills/demo/SKILL.md"
         }
+      },
+      "tsExpected": {
+        "stdoutSha256": "d5ef2f3e74bc6ade52d6e28b90d7854405f7dabe8ba725aff7e3524a86d3bc58",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -60,6 +75,11 @@
         "tool_input": {
           "file_path": "/home/eh/.claude/plugins/marketplaces/claude-plugins-official/external_plugins/asana/hooks/hooks.json"
         }
+      },
+      "tsExpected": {
+        "stdoutSha256": "98106eeb262f55737d0ec1f9c1137313e5a7f08592616493b7d1afcd026bf37f",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -72,6 +92,11 @@
         "tool_input": {
           "file_path": "/home/eh/.claude/plugins/marketplaces/claude-plugins-official/external_plugins/asana/agents/demo.md"
         }
+      },
+      "tsExpected": {
+        "stdoutSha256": "838e63d1bd7a70fac4a5a736aeda195616e5fb58910a9a362bc67782d10fb32b",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -84,6 +109,11 @@
         "tool_input": {
           "file_path": "/home/eh/.claude/plugins/marketplaces/claude-plugins-official/external_plugins/asana/commands/demo.md"
         }
+      },
+      "tsExpected": {
+        "stdoutSha256": "4f3d15915db0033fc86da4686adbb4dec588575aa17948082084afdb219271d1",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -96,6 +126,11 @@
         "tool_input": {
           "file_path": "/home/eh/projects/workflows/.claude-plugin/plugin.json"
         }
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b8cad3994978fcdafc423870a13d843623c739d2e97361fc7d9b8f5c822acd",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -112,6 +147,11 @@
       "fixture": {
         ".claude-plugin/plugin.json": "{\n  \"name\": \"sandboxplug\",\n  \"version\": \"1.0.0\",\n  \"description\": \"clean sandbox plugin\",\n  \"author\": { \"name\": \"parity\" }\n}\n",
         "skills/demo/SKILL.md": "---\nname: demo\ndescription: A demo skill used only as a parity fixture.\n---\n\n# Demo\n\nBody.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -127,6 +167,11 @@
       },
       "fixture": {
         "skills/demo/SKILL.md": "---\nname: demo\ndescription: no .claude-plugin/plugin.json anywhere above this file.\n---\n\nBody.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -143,6 +188,11 @@
       "fixture": {
         ".claude-plugin/plugin.json": "{\n  \"name\": \"sandboxplug\",\n  \"version\": \"1.0.0\",\n  \"description\": \"clean sandbox plugin\",\n  \"author\": { \"name\": \"parity\" }\n}\n",
         "docs/notes.md": "# notes\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -155,6 +205,11 @@
         "tool_input": {
           "file_path": "/nonexistent-parity/.claude-plugin/plugin.json"
         }
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -165,6 +220,11 @@
         "hook_event_name": "PostToolUse",
         "tool_name": "Edit",
         "tool_input": {}
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     }
   ]

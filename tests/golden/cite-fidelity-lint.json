@@ -6,6 +6,11 @@
       "kind": "allow",
       "fixture": {
         "drafts/a.md": "Some claim.[^1]\n\n[^1]: Smith v. Jones, 123 U.S. 456 (1999).\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -15,11 +20,20 @@
         "session_id": "s-parity-1",
         "hook_event_name": "PostToolUse",
         "tool_name": "Bash",
-        "tool_input": { "command": "ls drafts" },
-        "tool_response": { "stdout": "a.md" }
+        "tool_input": {
+          "command": "ls drafts"
+        },
+        "tool_response": {
+          "stdout": "a.md"
+        }
       },
       "fixture": {
         "drafts/a.md": "Some claim.[^1]\n\n[^1]: Smith v. Jones, 123 U.S. 456 (1999).\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -29,10 +43,17 @@
         "session_id": "s-parity-2",
         "hook_event_name": "PostToolUse",
         "tool_name": "Write",
-        "tool_input": { "content": "no path key at all" }
+        "tool_input": {
+          "content": "no path key at all"
+        }
       },
       "fixture": {
         "drafts/a.md": "Some claim.[^1]\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -49,6 +70,11 @@
       },
       "fixture": {
         "drafts/a.txt": "plain text, not a draft\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -65,6 +91,11 @@
       },
       "fixture": {
         "drafts/a.MD": "suffix compare is case-sensitive in the original\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -83,6 +114,11 @@
       "fixture": {
         "notes/draftsy/a.md": "not under a drafts/ path component\n",
         ".planning/ACTIVE_WORKFLOW.md": "# writing\ncite-fidelity: on\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -100,6 +136,11 @@
       },
       "fixture": {
         "drafts/section-1.md": "Claim without a bibkey.[^1]\n\n[^1]: Smith v. Jones, 123 U.S. 456 (1999).\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -111,11 +152,21 @@
         "tool_name": "MultiEdit",
         "tool_input": {
           "file_path": "paper/drafts/section-2.md",
-          "edits": [{ "old_string": "a", "new_string": "b" }]
+          "edits": [
+            {
+              "old_string": "a",
+              "new_string": "b"
+            }
+          ]
         }
       },
       "fixture": {
         "paper/drafts/section-2.md": "Bundled cite.[^2]\n\n[^2]: See [@smith2020]; [@jones2021].\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     }
   ]

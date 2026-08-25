@@ -7,6 +7,11 @@
       "_branch": "json.load(sys.stdin) raises -> sys.exit(0). stdin omitted so the harness attaches /dev/null; the reader sees EOF.",
       "fixture": {
         "slides.typ": "#import \"@preview/touying:0.5.3\": *\n\n= Intro\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "7975103a99c4d7cbefc253eeaa7786b0e6e2311dbdf900fa5d6d5fcbb22dc203",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -25,6 +30,11 @@
       },
       "fixture": {
         "slides.typ": "#import \"@preview/touying:0.5.3\": *\n\n= Intro\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -44,6 +54,11 @@
       },
       "fixture": {
         "slides.typ": "#import \"@preview/touying:0.5.3\": *\n\n= Intro\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -63,6 +78,11 @@
       },
       "fixture": {
         "slides.typ": "#import \"@preview/touying:0.5.3\": *\n\n= Intro\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -82,6 +102,11 @@
       },
       "fixture": {
         "slides.typ": "#import \"@preview/touying:0.5.3\": *\n\n= Intro\n\n== First slide\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -101,6 +126,11 @@
       },
       "fixture": {
         "presentation/slides.typ": "#import \"@preview/touying:0.5.3\": *\n\n= Nested deck\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     }
   ]

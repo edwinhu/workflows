@@ -4,103 +4,305 @@
     {
       "name": "non-edit-tool-ignored",
       "kind": "allow",
-      "stdin": { "tool_name": "Read", "tool_input": { "file_path": "deck.typ" } },
-      "fixture": { "deck.typ": "- a\n- b\n" }
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": "deck.typ"
+        }
+      },
+      "fixture": {
+        "deck.typ": "- a\n- b\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "non-typ-file-ignored",
       "kind": "allow",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "notes.md" } },
-      "fixture": { "notes.md": "- a\n- b\n" }
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "notes.md"
+        }
+      },
+      "fixture": {
+        "notes.md": "- a\n- b\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "missing-typ-file-silent",
       "kind": "allow",
-      "stdin": { "tool_name": "Edit", "tool_input": { "file_path": "absent.typ" } }
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "absent.typ"
+        }
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "clean-typ-file-no-violations",
       "kind": "allow",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "clean.typ" } },
-      "fixture": { "clean.typ": "= Heading\n\n- first bullet\n\n- second bullet\n\nPlain prose line.\n" }
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "clean.typ"
+        }
+      },
+      "fixture": {
+        "clean.typ": "= Heading\n\n- first bullet\n\n- second bullet\n\nPlain prose line.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "consecutive-top-level-bullets",
       "kind": "context",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "bullets.typ" } },
-      "fixture": { "bullets.typ": "= Heading\n\n- first bullet\n- second bullet\n" }
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "bullets.typ"
+        }
+      },
+      "fixture": {
+        "bullets.typ": "= Heading\n\n- first bullet\n- second bullet\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "13187bbdddefb53a1e110761e8a183164482d4f12c27130d10ec09eac438717d",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "fake-sub-bullet-double-dash",
       "kind": "context",
-      "stdin": { "tool_name": "Edit", "tool_input": { "file_path": "sub.typ" } },
-      "fixture": { "sub.typ": "- parent bullet\n\n  -- fake child\n" }
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "sub.typ"
+        }
+      },
+      "fixture": {
+        "sub.typ": "- parent bullet\n\n  -- fake child\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "fcc8fbda73bf6ddf6afb4f9aa1776a8cedcff0fd740349dfbac2e5d7e228719d",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "cetz-plot-import-banned",
       "kind": "context",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "chart.typ" } },
-      "fixture": { "chart.typ": "#import \"@preview/cetz-plot:0.1.0\": plot\n" }
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "chart.typ"
+        }
+      },
+      "fixture": {
+        "chart.typ": "#import \"@preview/cetz-plot:0.1.0\": plot\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "ffb40c94999906e416bdb8681d5f6e27233998032997ab24bf848a58bddbf374",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "slides-config-info-missing-qr",
       "kind": "context",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "slides.typ" } },
-      "fixture": { "slides.typ": "#show: config-info.with(title: [Talk])\n\nSome body text.\n" }
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "slides.typ"
+        }
+      },
+      "fixture": {
+        "slides.typ": "#show: config-info.with(title: [Talk])\n\nSome body text.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "4c188ce522137957f6d5e6bc759986f13a0b211aa22b033cb706ec174023e72a",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "non-slides-stem-skips-qr-check",
       "kind": "allow",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "notes-doc.typ" } },
-      "fixture": { "notes-doc.typ": "#show: config-info.with(title: [Talk])\n\nSome body text.\n" }
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "notes-doc.typ"
+        }
+      },
+      "fixture": {
+        "notes-doc.typ": "#show: config-info.with(title: [Talk])\n\nSome body text.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "uncentered-image",
       "kind": "context",
-      "stdin": { "tool_name": "Edit", "tool_input": { "file_path": "fig.typ" } },
-      "fixture": { "fig.typ": "#image(\"figure.png\", width: 80%)\n" }
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "fig.typ"
+        }
+      },
+      "fixture": {
+        "fig.typ": "#image(\"figure.png\", width: 80%)\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "8c2d4ab964a6d7e8759272ba1f2128bd293eb30d75c2ad5ee591cb36bb64e108",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "centered-image-passes",
       "kind": "allow",
-      "stdin": { "tool_name": "Edit", "tool_input": { "file_path": "fig2.typ" } },
-      "fixture": { "fig2.typ": "#align(center)[\n#image(\"figure.png\", width: 80%)\n]\n" }
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "fig2.typ"
+        }
+      },
+      "fixture": {
+        "fig2.typ": "#align(center)[\n#image(\"figure.png\", width: 80%)\n]\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "smart-apostrophe-after-paren",
       "kind": "context",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "apos.typ" } },
-      "fixture": { "apos.typ": "The firm (Acme)'s board voted.\n" }
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "apos.typ"
+        }
+      },
+      "fixture": {
+        "apos.typ": "The firm (Acme)'s board voted.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "60a9e41cb2c4c280a2eff445b3e58bebc7a05181a65e66c7ec65971600bf61f3",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "unescaped-dollar-before-number",
       "kind": "context",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "money.typ" } },
-      "fixture": { "money.typ": "Damages of $5 million were awarded.\n" }
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "money.typ"
+        }
+      },
+      "fixture": {
+        "money.typ": "Damages of $5 million were awarded.\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "09729f146967206505f6e70361760bc04b2b761ca8c7c4fcb7f3d298cdf3c9ae",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "table-inset-too-small",
       "kind": "context",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "tbl.typ" } },
-      "fixture": { "tbl.typ": "#table(columns: 2, inset: 4pt)[a][b]\n" }
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "tbl.typ"
+        }
+      },
+      "fixture": {
+        "tbl.typ": "#table(columns: 2, inset: 4pt)[a][b]\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "04e8adeaad3eb3e463277b16444a84cb101f160dc5c741b9768cc93d38353c94",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "cetz-canvas-length-in-cm",
       "kind": "context",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "canvas.typ" } },
-      "fixture": { "canvas.typ": "#import \"@preview/cetz:0.3.1\"\n\n#cetz.canvas(length: 1.5cm, {})\n" }
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "canvas.typ"
+        }
+      },
+      "fixture": {
+        "canvas.typ": "#import \"@preview/cetz:0.3.1\"\n\n#cetz.canvas(length: 1.5cm, {})\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "c7e38f3b6ed3da8075dd9f16f169c2f296fd888d037ecedd45b4fd7525a98e75",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "cetz-canvas-length-em-too-small",
       "kind": "context",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "canvas2.typ" } },
-      "fixture": { "canvas2.typ": "#import \"@preview/cetz:0.3.1\"\n\n#cetz.canvas(length: 1em, {})\n" }
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "canvas2.typ"
+        }
+      },
+      "fixture": {
+        "canvas2.typ": "#import \"@preview/cetz:0.3.1\"\n\n#cetz.canvas(length: 1em, {})\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "05b1766287d6ec327237b9f95bea162859a0b2044bc4fcb5fa7f1543ef847e87",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "violations-capped-at-five",
       "kind": "context",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "many.typ" } },
-      "fixture": { "many.typ": "- one\n- two\n- three\n- four\n- five\n- six\n- seven\n- eight\n" }
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "many.typ"
+        }
+      },
+      "fixture": {
+        "many.typ": "- one\n- two\n- three\n- four\n- five\n- six\n- seven\n- eight\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "abb306ae2d089366cd17aeffd35c193ba86ebbba7954816b4ee9a1ee17f69a27",
+        "exit": 0,
+        "fs": {}
+      }
     }
   ]
 }

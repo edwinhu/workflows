@@ -7,10 +7,17 @@
       "stdin": {
         "hook_event_name": "PostToolUse",
         "tool_name": "Edit",
-        "tool_input": { "file_path": "bad.py" }
+        "tool_input": {
+          "file_path": "bad.py"
+        }
       },
       "fixture": {
         "bad.py": "import os\n\n\nx = 1\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "9d268891ebc48bd7f8f50b3f1ad493456663ad570618bd43622152b02b7303a6",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -19,10 +26,17 @@
       "stdin": {
         "hook_event_name": "PostToolUse",
         "tool_name": "Write",
-        "tool_input": { "file_path": "gone.py" }
+        "tool_input": {
+          "file_path": "gone.py"
+        }
       },
       "fixture": {
         "placeholder.txt": "the .py named in tool_input is deliberately absent; ruff exits nonzero with E902\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "5e65da5b41f2cf7f2cf465722cb608550cefe1b4354e3939749e28e3236559aa",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -31,10 +45,17 @@
       "stdin": {
         "hook_event_name": "PostToolUse",
         "tool_name": "Write",
-        "tool_input": { "file_path": "clean.py" }
+        "tool_input": {
+          "file_path": "clean.py"
+        }
       },
       "fixture": {
         "clean.py": "x = 1\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -43,10 +64,17 @@
       "stdin": {
         "hook_event_name": "PostToolUse",
         "tool_name": "Edit",
-        "tool_input": { "file_path": "notebook.py" }
+        "tool_input": {
+          "file_path": "notebook.py"
+        }
       },
       "fixture": {
         "notebook.py": "import marimo\n\napp = marimo.App()\n\nimport os\nimport sys\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -55,10 +83,17 @@
       "stdin": {
         "hook_event_name": "PostToolUse",
         "tool_name": "Read",
-        "tool_input": { "file_path": "bad.py" }
+        "tool_input": {
+          "file_path": "bad.py"
+        }
       },
       "fixture": {
         "bad.py": "import os\n\n\nx = 1\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -71,6 +106,11 @@
       },
       "fixture": {
         "bad.py": "import os\n\n\nx = 1\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -79,10 +119,17 @@
       "stdin": {
         "hook_event_name": "PostToolUse",
         "tool_name": "Write",
-        "tool_input": { "file_path": "notes.md" }
+        "tool_input": {
+          "file_path": "notes.md"
+        }
       },
       "fixture": {
         "notes.md": "# notes\n\nimport os\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
@@ -91,10 +138,17 @@
       "stdin": {
         "hook_event_name": "PostToolUse",
         "tool_name": "Edit",
-        "tool_input": { "file_path": "app.js" }
+        "tool_input": {
+          "file_path": "app.js"
+        }
       },
       "fixture": {
         "app.js": "var x = 1\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     }
   ]

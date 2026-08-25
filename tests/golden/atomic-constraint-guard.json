@@ -4,97 +4,220 @@
     {
       "name": "non-write-tool-ignored",
       "kind": "allow",
-      "stdin": { "tool_name": "Read", "tool_input": { "file_path": "references/foo-constraints.md" } },
+      "stdin": {
+        "tool_name": "Read",
+        "tool_input": {
+          "file_path": "references/foo-constraints.md"
+        }
+      },
       "fixture": {
         "references/foo-constraints.md": "### One\ntext\n### Two\ntext\n### Three\ntext\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "missing-file-path-ignored",
       "kind": "allow",
-      "stdin": { "tool_name": "Write", "tool_input": {} }
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {}
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "non-md-suffix-ignored",
       "kind": "allow",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "references/foo-constraints.py" } },
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "references/foo-constraints.py"
+        }
+      },
       "fixture": {
         "references/foo-constraints.py": "### One\n### Two\n### Three\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "md-outside-references-ignored",
       "kind": "allow",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "docs/foo-constraints.md" } },
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "docs/foo-constraints.md"
+        }
+      },
       "fixture": {
         "docs/foo-constraints.md": "### One\ntext\n### Two\ntext\n### Three\ntext\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "unreadable-missing-file-ignored",
       "kind": "allow",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "references/gone-constraints.md" } }
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "references/gone-constraints.md"
+        }
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
     },
     {
       "name": "references-stem-not-constraintlike-ignored",
       "kind": "allow",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "references/edgar.md" } },
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "references/edgar.md"
+        }
+      },
       "fixture": {
         "references/edgar.md": "### One\ntext\n### Two\ntext\n### Three\ntext\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "references-constraints-stem-but-only-two-h3-ignored",
       "kind": "allow",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "references/style-constraints.md" } },
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "references/style-constraints.md"
+        }
+      },
       "fixture": {
         "references/style-constraints.md": "### One\ntext\n### Two\ntext\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "monolith-detected-constraints-stem-in-references",
       "kind": "context",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "references/style-constraints.md" } },
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "references/style-constraints.md"
+        }
+      },
       "fixture": {
         "references/style-constraints.md": "# Style\n\n### Rule one\ntext\n\n### Rule two\ntext\n\n### Rule three\ntext\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "199691918191cc320973ce9966883158601bf85640fe7fa6f5728fc32ede8d48",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "monolith-detected-conventions-stem-nested-references",
       "kind": "context",
-      "stdin": { "tool_name": "Edit", "tool_input": { "file_path": "skills/writing/references/prose-conventions.md" } },
+      "stdin": {
+        "tool_name": "Edit",
+        "tool_input": {
+          "file_path": "skills/writing/references/prose-conventions.md"
+        }
+      },
       "fixture": {
         "skills/writing/references/prose-conventions.md": "### A\nx\n### B\nx\n### C\nx\n### D\nx\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "006d3b9ced19b361e37c854afaa05eac8c80782352b459359ed26c3c031f3415",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "potential-monolith-in-constraints-dir",
       "kind": "context",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "references/constraints/no-emoji.md" } },
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "references/constraints/no-emoji.md"
+        }
+      },
       "fixture": {
         "references/constraints/no-emoji.md": "### Rule\ntext\n### Rationale\ntext\n### Examples\ntext\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "93fa7a146f9075487f107d0e7c8ae4f5c15ac6046454b0c3d5b05f9bcb5470ce",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "constraints-dir-two-h3-ignored",
       "kind": "allow",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "references/constraints/no-emoji.md" } },
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "references/constraints/no-emoji.md"
+        }
+      },
       "fixture": {
         "references/constraints/no-emoji.md": "### Rule\ntext\n### Rationale\ntext\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "atomic-constraints-meta-file-exempt",
       "kind": "allow",
-      "stdin": { "tool_name": "Write", "tool_input": { "file_path": "references/constraints/atomic-constraints.md" } },
+      "stdin": {
+        "tool_name": "Write",
+        "tool_input": {
+          "file_path": "references/constraints/atomic-constraints.md"
+        }
+      },
       "fixture": {
         "references/constraints/atomic-constraints.md": "### Rule\ntext\n### Rationale\ntext\n### Examples\ntext\n"
+      },
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
       }
     },
     {
       "name": "empty-payload-ignored",
       "kind": "allow",
-      "stdin": {}
+      "stdin": {},
+      "tsExpected": {
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0,
+        "fs": {}
+      }
     }
   ]
 }
