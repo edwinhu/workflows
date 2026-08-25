@@ -115,45 +115,6 @@
       }
     },
     {
-      "name": "persist-env-vars-to-claude-env-file",
-      "kind": "effect",
-      "stdin": {
-        "session_id": "sess-persist-1",
-        "sessionId": "sess-persist-1",
-        "hook_event_name": "SessionStart",
-        "source": "startup"
-      },
-      "env": {
-        "SSH_CLIENT": "",
-        "SSH_TTY": "",
-        "SSH_CONNECTION": "",
-        "DIRENV_DIR": "",
-        "PIXI_PROJECT_MANIFEST": "",
-        "CLAUDE_ENV_FILE": ".claude/env",
-        "GEMINI_API_KEY": "AIzaSyPARITYTESTKEY0001",
-        "GOOGLE_API_KEY": "",
-        "GOOGLE_APPLICATION_CREDENTIALS": "",
-        "OPENAI_API_KEY": "",
-        "ANTHROPIC_API_KEY": "",
-        "WRDS_USERNAME": "",
-        "WRDS_PASSWORD": "",
-        "LSEG_APP_KEY": "",
-        "REFINITIV_APP_KEY": "",
-        "HF_TOKEN": "",
-        "HUGGINGFACE_TOKEN": "",
-        "GITHUB_TOKEN": "short'quote",
-        "GH_TOKEN": ""
-      },
-      "fixture": {
-        ".claude/env": "# pre-existing\n"
-      },
-      "tsExpected": {
-        "stdoutSha256": "c90832e55a570221db5589ebaeea926636da0f6800715667f174145b034706cd",
-        "exit": 0,
-        "fs": {}
-      }
-    },
-    {
       "name": "planning-plan-progress-with-next-task",
       "kind": "context",
       "stdin": {

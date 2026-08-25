@@ -18,7 +18,6 @@ import {
   readdirSync,
   realpathSync,
   statSync,
-  appendFileSync,
   unlinkSync,
 } from "node:fs";
 import { join, resolve } from "node:path";
@@ -122,32 +121,7 @@ function loadUsingSkillsContent(): string {
   }
 }
 
-function persistEnvVarsForBash(): string[] {
-  const claudeEnvFile = env["CLAUDE_ENV_FILE"];
-  if (!claudeEnvFile) return [];
-
-  const persisted: string[] = [];
-  try {
-    let buf = "";
-    for (const v of KEY_VARS) {
-      const val = env[v];
-      if (val) {
-        const escaped = val.replaceAll("'", "'\\''");
-        buf += `export ${v}='${escaped}'\n`;
-        persisted.push(v);
-      }
-    }
-    // Python opens the file in append mode unconditionally, creating it even when nothing
-    // is written; appendFileSync("") does the same.
-    appendFileSync(claudeEnvFile, buf);
-    return persisted;
-  } catch (e) {
-    console.error(`Warning: Failed to persist env vars to ${claudeEnvFile}: ${e}`);
-    return [];
-  }
-}
-
-function buildEnvSection(ctx: EnvContext, persistedVars: string[]): string {
+function buildEnvSection(ctx: EnvContext): string {
   const isRemote = (ctx.session_type ?? "local") === "remote (SSH)";
   const lines = ["# Session Environment (USE THIS - DO NOT RUN COMMANDS TO CHECK)", ""];
 
@@ -173,7 +147,6 @@ function buildEnvSection(ctx: EnvContext, persistedVars: string[]): string {
   }
   if (ctx.direnv_active) lines.push("- **direnv**: active");
   if (ctx.pixi_project) lines.push("- **pixi**: detected");
-  if (persistedVars.length) lines.push(`- **Persisted for bash**: ${persistedVars.join(", ")}`);
 
   lines.push("");
   return lines.join("\n");
@@ -571,10 +544,9 @@ async function main(): Promise<void> {
   loadCentralSecrets();
   loadDotenvIfExists();
 
-  const persistedVars = persistEnvVarsForBash();
   const envContext = getEnvironmentContext();
 
-  const envSection = buildEnvSection(envContext, persistedVars);
+  const envSection = buildEnvSection(envContext);
   const usingSkills = loadUsingSkillsContent();
   const inProgressSection = buildInProgressSection();
   const patternSection = checkPendingPatterns();
