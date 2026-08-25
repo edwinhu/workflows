@@ -161,7 +161,11 @@ Strict liability does not apply to services. But cf. Restatement (Third) of Tort
 
 **"But" is omitted from *but see* and *but cf.* whenever one of these signals follows another
 negative signal.** So a string of contradictory signals reads `Contra ...; see ...; cf. ...`, not
-`Contra ...; but see ...`.
+`Contra ...; but see ...`. The 22e's own illustration:
+
+```
+Contra Blake v. Kline, 612 F.2d 718, 723–24 (3d Cir. 1979); see Charles Alan Wright, Law of Federal Courts (Students Edition) § 48 (4th ed. 1983).
+```
 
 ### Signal for Background (Rule 1.2(d))
 
@@ -180,7 +184,9 @@ For an overview of Fourth Amendment doctrine, see generally Orin S. Kerr, An Equ
 
 In footnotes, signals may serve as the verbs of textual sentences. Material that would otherwise sit
 in a parenthetical becomes part of the sentence. **Signals are not italicized when used as verbs**
-(Rule 2.1(d)). *Cf.* becomes "compare" and *e.g.* becomes "for example" in this use.
+(Rule 2.1(d), 22e pp. 73–74, which states the same rule from the typeface side: italicize all
+introductory signals in citation sentences and clauses, but not a signal word serving as the verb of
+an ordinary sentence). *Cf.* becomes "compare" and *e.g.* becomes "for example" in this use.
 
 ```
 See Christina L. Anderson, Comment, Double Jeopardy: The Modern Dilemma for Juvenile Justice, 152 U. Pa. L. Rev. 1181, 1204–07 (2004), for a discussion of restorative justice as a reasonable replacement for retributive sanctions.
@@ -391,11 +397,15 @@ Duncan v. Louisiana, 391 U.S. 145, 148–49 (1968) (footnote omitted) (first quo
 
 ### General Order of Authority Types
 
-> **UNVERIFIED against the 22e.** The 22e Rule 1.4 page in the corpus states only the three rules
-> above; the authority-type hierarchy and the case-ordering rules that follow were not present in
-> the extracted rule text (the source page appears to omit a table). Treat the list below as
-> received law-review practice, not as verified 22e rule text, and check the printed 22e p. 69
-> before relying on it.
+> **UNVERIFIED against the 22e — and the absence is now confirmed, not an extraction gap.** Rule 1.4
+> (22e p. 69) consists of exactly the three sentences quoted above; it prescribes no authority-type
+> hierarchy and no case-ordering rules. A sweep of the complete 22e rule-and-table text finds no such
+> hierarchy anywhere: the ordered list of authority types below appears nowhere, and neither
+> "reverse chronological," "court hierarchy," nor "alphabetically by state" occurs at all. What the
+> 22e actually commands is the open standard — order "in a logical manner," most helpful or
+> authoritative first. Treat the list and the case-ordering rules below as received law-review
+> practice that operationalizes that standard, not as 22e rule text, and never cite Rule 1.4 for
+> them.
 
 When citing multiple authorities with the same signal:
 
@@ -432,10 +442,13 @@ See U.S. Const. amend. XIV; 42 U.S.C. § 1983 (2018); Brown v. Bd. of Educ., 347
 
 ## String Citations
 
-> **UNVERIFIED against the 22e.** Rule 1.4 (22e p. 69) says nothing about when a string citation is
-> warranted. The guidance below is editorial judgment, not a Bluebook rule. The one rule-level
-> constraint that does apply is Rule 1.3's: signals of the same basic type string together with
-> semicolons in one citation sentence; different types split into separate sentences.
+> **UNVERIFIED against the 22e — and the absence is now confirmed, not an extraction gap.** The term
+> "string citation" does not appear anywhere in the complete 22e rule-and-table text, and Rule 1.4
+> (22e p. 69) says nothing about when stringing authorities is warranted. The guidance below is
+> editorial judgment, not a Bluebook rule. Two rule-level constraints do apply: Rule 1.3's — signals
+> of the same basic type string together with semicolons in one citation sentence, different types
+> split into separate sentences — and Rule 1.4's — authorities within a signal are separated by
+> semicolons, with the considerably more helpful or authoritative ones first.
 
 ### When to Use String Citations
 

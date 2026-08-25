@@ -14,8 +14,9 @@ Online 22nd edition.
 
 **Example:**
 ```
-Richard A. Posner, Economic Analysis of Law 45 (9th ed. 2014).
+Deborah L. Rhode, Justice and Gender 56 (1989).
 ```
+(The Bluebook's own example, from rule 15.4(a)(i).)
 
 ### Author Names (Rule 15.1) (22e pp. 154-56)
 
@@ -66,7 +67,7 @@ overall body:
 Statistical Analysis Ctr., State Crime Comm'n, Crime in Georgia 41 (1980).
 ```
 
-**Pen names (15.1(d)) — NEW in the 22e.** Where an author of an article, newspaper publication,
+**Pen names (15.1(d)).** Where an author of an article, newspaper publication,
 correspondence, pamphlet, or book uses an obvious alias, put the alias in quotation marks; if the
 real author is verifiably known, give that name in parentheses after the alias. This does not alter
 rule 15.8(c)(i) (The Federalist).
@@ -98,12 +99,16 @@ Ned Blackhawk (Western Shoshone), The Rediscovery of America 15 (2023).
 
 ### Titles (Rule 15.3) (22e p. 157)
 
-Cite the full main title as it appears on the title page, capitalized per rule 8 (or rule 20.2.2(b)
-if not in English). **Give a subtitle only if it is particularly relevant.** Do not abbreviate words
+Cite the full main title as it appears on the title page, capitalized per rule 8 (22e pp. 96-99) (or
+rule 20.2.2(b) if not in English). Rule 8(a): "Capitalize words in a heading or title, including the
+initial word and any word that immediately follows a colon. Do not capitalize articles,
+conjunctions, or prepositions when they are four or fewer letters, unless they begin the heading or
+title, or immediately follow a colon." **Give a subtitle only if it is particularly relevant.** Do not abbreviate words
 or omit articles. Use small capitals.
 
+Rule 15.3's own example (a work with editors rather than an author):
 ```
-Richard A. Posner, ECONOMIC ANALYSIS OF LAW 45 (9th ed. 2014).
+CAPITAL FLOWS IN THE APEC REGION (Mohsin S. Khan & Carmen M. Reinhart eds., 1995).
 ```
 
 If the title ends with a numeral, or distinguishing title from page number would otherwise confuse,
@@ -180,7 +185,7 @@ Cite pocket parts and bound supplements per rule 3.1(c):
 5 Samuel Williston & Richard A. Lord, A Treatise on the Law of Contracts § 11:8 (4th ed. 1993 & Supp. 1999).
 ```
 
-### Multi-Volume Works and Star Pagination (Rule 15.8(b))
+### Special Pagination (Rule 15.8(b))
 
 Where a well-known work has standardized pagination across editions (usually shown in the margin),
 the date and edition **may be omitted** and the citation made to the standardized page — unless the
@@ -223,16 +228,30 @@ John Hart Ely, Democracy and Distrust, at vii (1980).
 
 ### Serial Number (Rule 15.7)
 
-For a publication in a series issued by someone other than the author, indicate the series and
-number parenthetically, abbreviating institutional entities per 15.1(e):
+**Series issued by the author (15.7(a)):** the corpus page's two examples for this subpart place the
+serial number after the institutional author and **before** the title (the subpart's own heading line
+is truncated in the corpus — see the marker below):
+```
+Bureau of Intel. & Rsch., U.S. Dep't of State, Pub. No. 8732, World Strength of the Communist
+Party Organizations 65 (1973).
+Women's Bureau, U.S. Dep't of Lab., Leaflet No. 55, A Working Woman's Guide to Her Job Rights 4 (1978).
+```
+Rule 14.2(d) ("Other publications") points back here: cite such a publication "as a work by an
+institutional author (rule 15.1(c)), including a serial number, if any (rule 15.7), unless issued as
+a congressional document (rule 13.4)."
+
+**Series issued by someone other than the author (15.7(b)):** indicate the series and number
+parenthetically, abbreviating institutional entities per 15.1(e):
 ```
 Anne C. Vladeck, Counseling a Plaintiff During Litigation, in Employment Litigation 1990, at 77,
 80-82 (PLI Litig. & Admin. Prac., Course Handbook Ser. No. 386, 1990).
 ```
 
-> **UNVERIFIED (page cite):** the 22e page range for rule 15.7 is missing from the corpus page —
-> its heading line was truncated in extraction. Rule 15.6 is 22e p. 160 and 15.8 is 22e pp. 161-62,
-> so 15.7 falls between them, but the exact range is not confirmed.
+> **UNVERIFIED (page cite only):** the corpus now carries rule 15.7's body — both subparts and all
+> three examples above — but its page opens mid-line at the colon introducing the 15.7(a) examples.
+> What is missing is exactly two things: the heading line bearing the 22e page range, and 15.7(a)'s
+> introductory sentence. Rule 15.6 is 22e p. 160 and 15.8 is 22e pp. 161-62, so 15.7 falls between
+> them; the exact range remains unconfirmed. Cite rule 15.7 by rule number, not by page.
 
 ## Periodical Materials (Rule 16)
 
@@ -282,12 +301,16 @@ Charles E. Mueller, ..., 34 Antitrust L. & Econ. Rev., no. 1, 2008, at 1, 7.
 Rule 16.1: "The name of the periodical should appear in small capitals **whether it is a journal,
 magazine, or newspaper**."
 
+Rule 2.1(c)'s own periodical typeface examples:
 ```
-Cass R. Sunstein, *On the Expressive Function of Law*, 144 U. PA. L. REV. 2021, 2030 (1996).
+Katharine K. Baker, *Once a Rapist? Motivational Evidence and Relevancy in Rape Law*, 110 HARV. L. REV. 563 (1997).
+Cass R. Sunstein, *Lochner's Legacy*, 87 COLUM. L. REV. 873 (1987).
 ```
 
 When an article title contains material that would be italicized in main text under rule 2.2(a)
-(e.g. a case name or a book title), that material appears in **ordinary roman**:
+(22e pp. 74-76) — 2.2(a) italicizes case names (including "v." and procedural phrases such as "In re"
+and "ex rel."), titles of publications, speeches, or articles, and words emphasized for style — that
+material appears in **ordinary roman**:
 ```
 Seth F. Kreimer, Does Pro-Choice Mean Pro-Kevorkian? An Essay on Roe, Casey, and the Right to
 Die, 44 Am. U. L. Rev. 803, 812 (1995).
@@ -334,8 +357,8 @@ credited anywhere in the issue — first page, end of the piece, or table of con
 only with initials is treated as unsigned.**
 ```
 Ellen London, Comment, A Critique of the Strict Liability Standard ..., 152 U. Pa. L. Rev. 1957, 1959-63 (2004).
-B. George Ballman, Jr., Note, Amended Rule 6.1: Another Move Towards Mandatory Pro Bono?, 7 Geo.
-J. Legal Ethics 1139, 1162 n.155 (1994).
+B. George Ballman, Jr., Note, Amended Rule 6.1: Another Move Towards Mandatory Pro Bono? Is That What We
+Want?, 7 Geo. J. Legal Ethics 1139, 1162 n.155 (1994).
 ```
 
 Signed, shorter student commentary under a designation such as "Recent Case," "Recent Statute,"
@@ -485,8 +508,11 @@ http://www.nytimes.com/2009/01/27/science/earth/27coal.html (on file with author
 
 ### Magazines (Rule 16.5)
 
+Rule 16.5's own magazine examples:
 ```
-Jeffrey Toobin, The Obama Brief, New Yorker, Oct. 27, 2014, at 24.
+Barbara Ehrenreich, Iranscam: The Real Meaning of Oliver North, Ms., May 1987, at 24, 24.
+Damages for a Deadly Cloud: The Bhopal Tragedy Will Cost Union Carbide $470 Million, Time,
+Feb. 27, 1989, at 53.
 ```
 Magazine names, like all periodical names, are in **SMALL CAPS** (rule 16.1).
 
@@ -507,8 +533,11 @@ SCOTUSblog, http://www.scotusblog.com/ (on file with the Columbia Law Review) (l
 **Blog inside a larger site (18.2.2(b)(ii)).** "If the cited source is published under the name of a
 blog or other subdivision that has its own content and presence within a larger web-based source,
 **both the name of the site and the name of the subdivision should be included. Titles for
-subdivisions should be preceded by a colon.**" Capitalize per rule 8 even where the title bar does
-not.
+subdivisions should be preceded by a colon.**" Capitalize per rule 8 (22e pp. 96-99) even where the
+title bar does not. Note the split within rule 8 itself: 8(a) governs headings and titles generally,
+while **8(b)** governs internet material — "In both text and footnotes, capitalize URLs and words in
+an internet main page title in accordance with the actual capitalization of the source" — which is
+the source of 18.2.2(b)(i)'s conform-to-the-site instruction above.
 ```
 [Author], [Title], [Site]: [Blog] ([Date], at [hh:mm TZ]), [URL] [[archive URL]].
 ```
@@ -532,8 +561,8 @@ include a timestamp whenever possible," in twenty-four-hour format with a time-z
 **Descriptive titles (18.2.2(b)(iii)):** where the page's own headings are not clear enough, supply a
 descriptive title — and **do not italicize** it (`Archive of Columns by Pete Wells, N.Y. Times, ...`).
 
-Rule 18 was substantially rewritten in the 22e: 18.3 is **AI-Generated Content** (22e p. 191) and
-social media has its own rule at **18.10** (22e pp. 198-201).
+In the 22e, 18.3 is **AI-Generated Content** (22e p. 191) and social media has its own rule at
+**18.10** (22e pp. 198-201).
 
 ## Restatements, Model Codes, and Uniform Acts (Rule 12.9.4) (within 12.9 Special Citation Forms, 22e pp. 135-39)
 
@@ -546,7 +575,6 @@ per rule 15.1(c).
 
 ```
 Restatement (Third) of Unfair Competition § 3 (A.L.I. 1995).
-Restatement (Second) of Conts. § 90 (A.L.I. 1981).
 Principles of the L. of Fam. Dissolution: Analysis and Recommendations § 2.07 (A.L.I. 2002).
 U.S. Sent'g Guidelines Manual § 2D1.1(c) (U.S. Sent'g Comm'n 2021).
 ```
@@ -623,9 +651,13 @@ Noscitur a sociis, Ballentine's Law Dictionary (3d ed. 1969).
 17 Am. Jur. 2d Contracts § 74 (1964).
 ```
 
-> **UNVERIFIED:** the corpus gives only the entry-first form for legal dictionaries. A citation to a
-> dictionary as a whole with a page pincite (`Black's Law Dictionary 1000 (11th ed. 2019)`) is not
-> illustrated in the 22e text available here.
+> **UNVERIFIED (the dictionary-as-a-whole form only — the four 15.8(a) forms above are quoted from
+> the 22e):** the 22e nowhere illustrates a citation to a dictionary as a whole with a page pincite.
+> `Black's Law Dictionary` and
+> `Ballentine's Law Dictionary` each appear exactly once across all 280 corpus pages — in the two
+> 15.8(a) examples above, both entry-first and both without a page pincite. A form such as
+> `Black's Law Dictionary 1000 (11th ed. 2019)` therefore has no 22e warrant — use the entry-first
+> form.
 
 ### Other Named Works (15.8(c))
 
@@ -651,17 +683,18 @@ eds., 22d ed. 2025).
 
 ### General Encyclopedias
 
-```
-Encyclopedia Britannica (15th ed. 2010).
-```
-Generally avoid citing Wikipedia in legal scholarship.
+The 22e supplies **no citation form** for a general (non-legal) encyclopedia, so none is reproduced
+here. Generally avoid citing Wikipedia in legal scholarship.
 
-> **UNVERIFIED:** neither the general-encyclopedia form nor the Wikipedia guidance appears anywhere
-> in the corpus for rules 15-17. Both are carried over from the 21e-era file. ("Wikipedia" does not
-> appear in the 22e text at all. "Encyclopaedia Britannica" appears once, in the T6 preamble (22e
-> pp. 333-36), only as its illustration of the discretionary eight-letter abbreviation — "it would be
-> permissible to abbreviate 'Encyclopaedia Britannica' to 'Encyc. Britannica'" — not as a citation
-> form.)
+> **UNVERIFIED:** still absent from the full 22e corpus — all 23 rules and all 16 tables. Neither the
+> general-encyclopedia form nor the Wikipedia guidance appears anywhere; the invented
+> `Encyclopedia Britannica (15th ed. 2010).` block the 21e-era file printed here has been removed,
+> and the Wikipedia sentence is retained as editorial advice only. "Wikipedia" does not occur in the 22e text at all. "Encyclopaedia Britannica"
+> occurs exactly once, in the T6 preamble (22e pp. 333-36), only as that table's illustration of the
+> discretionary eight-letter abbreviation — "it would be permissible to abbreviate 'Encyclopaedia
+> Britannica' to 'Encyc. Britannica'" — not as a citation form. Legal encyclopedias, by contrast,
+> **are** covered: 15.8(a) gives `88 C.J.S. Trial § 192 (1955).` and `17 Am. Jur. 2d Contracts § 74
+> (1964).`
 
 ## Electronic Databases and Online Sources for Books (Rule 15.9) (22e pp. 162-63)
 
@@ -694,7 +727,8 @@ cite per rule 23.
 
 ### Manuscripts (Rule 17.2.1)
 
-Author's full name (per 16.2), title as it appears on the title page (capitalized per rule 8(a)),
+Author's full name (per 16.2), title as it appears on the title page (capitalized per rule 8(a), 22e
+pp. 96-99),
 subtitle only if particularly relevant, full date in parentheses after the title or pincite, then
 parentheticals stating that the work is unpublished and where it can be found.
 ```
@@ -833,7 +867,7 @@ A DOI may serve as that bracketed archival tool (rule 16.8's example appends
 
 The archive URL is an **addition** to the source URL, never a replacement for it.
 
-### URL Format (Rule 18.2.2(d)-(f))
+### URL Format (Rule 18.2.2(d)-(g))
 
 The URL "should point readers directly to the source cited rather than to an intervening page of
 links." In order:
@@ -890,9 +924,17 @@ authority only when that citation contains a single authority. **The period at t
 always italicized.** If the first citation refers only to a shorter work contained within an
 authority, do not use "id." for a later citation to the entire authority — use "supra."
 
+Rule 4.1's own examples (footnote numbers as the Bluebook prints them):
 ```
-1. Cass R. Sunstein, On the Expressive Function of Law, 144 U. Pa. L. Rev. 2021, 2030 (1996).
-2. Id. at 2035.
+8 Fleming James, Jr. & Geoffrey C. Hazard, Jr., Civil Procedure §§ 1.3-.5 (3d ed. 1985).
+9 See id. § 1.7.
+```
+And its counterexample, where the preceding footnote cites more than one source:
+```
+16 See Robert B. Reich, Toward a New Consumer Protection, 128 U. Pa. L. Rev. 1 (1979); Note,
+   Direct Loan Financing of Consumer Purchases, 85 Harv. L. Rev. 1409, 1415-17 (1972); see also
+   Chalfin v. Specter, 233 A.2d 562 (Pa. 1967).
+17 See Chalfin, 233 A.2d at 570.        [Not: 17 See id. at 570.]
 ```
 
 ### Supra (Rule 4.2(a)) (within 4.2 "Supra" and "Hereinafter", 22e pp. 85-87)
@@ -910,9 +952,20 @@ section, page numbers, or timestamps may be added to refer to specific material"
 pincite comes from **16.9(b)** — "In using a 'supra' form, always indicate the page or pages cited
 except when citing the work in its entirety."
 
+Rule 4.2(a)'s own examples:
 ```
-15. Sunstein, supra note 1, at 2040.
-31. Keeton et al., supra note 30, § 2, at 4; Note, supra note 16, at 1416.
+27 Reich, supra note 16, at 6.
+29 2 Holdsworth, supra note 10, at 6.
+31 Keeton et al., supra note 30, § 2, at 4; Note, supra note 16, at 1416.
+```
+
+Capitalize the last name in a "supra" form per **rule 8(c)** (22e pp. 96-99): "Capitalize authors'
+last names as they are given in either the table of contents of a periodical or on the title page of
+a work, whichever more clearly indicates the proper capitalization of the author's name." The rule
+gives both forms, joined by "or," and the source decides between them:
+```
+14 van Dorn, supra note 12, at 151.
+14 Van Dorn, supra note 12, at 151.
 ```
 
 **Never use "infra"** to refer to books, reports, or other nonperiodic materials (rule 15.10, 22e
@@ -964,7 +1017,7 @@ essential to finding the document: `..., Dkt. No. 14.`
 **Amicus briefs** follow the same rules, with the sole exception that "et al." may be used where
 there are more than two signatories.
 
-Rule 10.8.3 was **clarified in the 22e**, including for multi-district litigation:
+Rule 10.8.3 gives a multi-district-litigation example:
 ```
 Plaintiff's Motion for Summary Judgment at 2, In re 3M Combat Arms Earplug Prods. Liab. Litig.,
 No. 20-CV-47213 (N.D. Fla. July 7, 2022).
@@ -1007,8 +1060,8 @@ pinpoint cite to the database where one is required for the primary document, an
 | Error | Correction |
 |-------|------------|
 | Missing journal abbreviation periods | Harv. L. Rev. (not Harv L Rev) |
-| Wrong year placement | ...2021 (1996). (not ...2021, 1996.) |
-| Missing pinpoint | Give the page or pages cited — **except** when citing the work in its entirety (4.2(a), 16.9(b)), and **not** after the journal or book title of a forthcoming work (17.3) |
+| Wrong year placement | ...873 (1987). (not ...873, 1987.) |
+| Missing pinpoint | Give the page or pages cited — **except** when citing the work in its entirety (16.9(b)), and **not** after the journal or book title of a forthcoming work (17.3) |
 | Periodical name italicized | Periodical names — journal, magazine, newspaper — are SMALL CAPS (16.1) |
 | Student designation after the title | The designation precedes the title (16.7.1(a)) |
 | "Book Review" for a student review | Student reviews use "Book Note" regardless of the journal's label (16.7.1(c)) |
@@ -1019,7 +1072,7 @@ pinpoint cite to the database where one is required for the primary document, an
 |-------|------------|
 | Publisher included | 15.4 requires it only under 15.4(a)(iii) (edition not by the original publisher) and 15.4(d) (pre-1900); the 15.4(a)(i)-(ii) examples carry none |
 | First edition noted | Omit "1st ed." |
-| Missing year | Year always required |
+| Missing year | Year required except where 15.8(b) permits omitting the date and edition (standardized pagination, e.g. `2 William Blackstone, Commentaries *152, *155-56.`), where 15.8(c)(i) governs (an entire Federalist paper: `The Federalist No. 23 (Alexander Hamilton).`), or where 15.4(d) applies and no date is available ("n.d.") |
 | "et al." for three authors | "et al." only above three; two or three authors are all listed (15.1(a)-(b)) |
 | "Dr." / "Prof." / "Judge" / "Justice" retained | Omit the honorific even if on the title page (15.1) |
 | Subtitle always included | Include only if particularly relevant (15.3) |
@@ -1036,7 +1089,7 @@ pinpoint cite to the database where one is required for the primary document, an
 
 | Error | Correction |
 |-------|------------|
-| Supra without note number | Sunstein, supra note 1 |
+| Supra without note number | Reich, supra note 16, at 6 (4.2(a)) |
 | Id. after intervening cite | Use supra form instead |
 | Wrong author name | Last name only for supra; **full** name for an institutional author (4.2(a)) |
 | "id." to the whole collection after citing a shorter work in it | Use supra with the collection's title (15.10.1) |
@@ -1056,4 +1109,5 @@ Before finalizing secondary source citations:
 - [ ] Short forms reference correct footnote number
 - [ ] Every online source archived (18.2.1(d)) — mandatory, not optional; bracketed archive URL if an
       archival tool was used, `(on file with ...)` after the URL if a copy was saved
-- [ ] "Last visited" used only where the material is otherwise undated (18.2.2(c))
+- [ ] "Last visited" parenthetical used where the material is otherwise undated — and carrying the
+      archival date instead where an archival tool records one (18.2.2(c))

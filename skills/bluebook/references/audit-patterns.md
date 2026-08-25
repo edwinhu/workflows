@@ -10,15 +10,38 @@ kept — an unchecked heuristic is still useful — but is labelled so no one mi
 | Marker | Meaning |
 |---|---|
 | *(rule N.N)* | The check restates a sentence present in the extracted 22e text for that rule. |
-| **UNVERIFIED** | Local practice, tooling advice, or a rule whose text is absent from the extraction. Do not cite it to a source-checker as Bluebook authority. |
+| **UNVERIFIED** | Local practice or tooling advice with no Bluebook authority behind it. Do not cite it to a source-checker as Bluebook authority. |
 
-**What the extraction does not cover.** Rules 1, 3, 4, 5, 6, 10, 12, 13, 14, 15, 16, 17, 18, 20, 21
-and 23 were captured, as were tables T1, T2, T6, T7, T8, T10 (with T10.1–T10.3), T11, T12, T13 and
-T14. Rules 7, 8, 9, 11, 19 and 22 were **not extracted**, so where a captured rule cross-references
-them this file reports only the cross-reference itself, never the content of the referenced rule.
-Rule 2's landing page was captured (*22e p. 72*) but the bodies of rules 2.1, 2.2 and 2.3 were **not extracted**, only their headings, and
-so per-source typeface calls remain unchecked here (see D12). Tables
-T3, T4, T5, T9, T15 and T16 were not captured.
+**What the extraction covers.** All twenty-three rules and all sixteen tables. Rule 2's body is
+present in full — 2.1 (*22e pp. 73–74*), 2.2 (*22e pp. 74–76*) and 2.3 (*22e p. 76*) — so the
+per-source typeface calls are checkable here (D12, D15, D16). T1 carries its five subtables: T1.1
+federal judicial and legislative (*22e pp. 257–60*), T1.2 federal administrative (*22e p. 260*),
+T1.3 as fifty-one individual jurisdiction pages each with its own page range (Alabama at
+*22e pp. 272–73*), T1.4 other U.S. jurisdictions (*22e p. 325*), T1.5 tribal nations
+(*22e p. 328*). T2 carries forty-seven foreign-jurisdiction entries (*22e p. 328*). Rules 7, 8, 9,
+11, 19 and 22 and tables T3 (*22e p. 329*), T4 (*22e p. 332*), T5 (*22e p. 333*), T9
+(*22e pp. 339–40*), T15 (*22e pp. 349–53*) and T16 (*22e pp. 353–54*) are all present, so where a
+rule cross-references them this file now states the referenced content rather than the bare
+cross-reference.
+
+**The residual gaps.** Ten of the corpus's 280 captured pages open without their heading, and they
+divide into two kinds rather than one.
+
+*Four are empty.* The capture recorded the literal marker `[EMPTY]` and no body at all: rule 3.2
+(Pages, Footnotes, Endnotes, and Graphical Materials), rule 21.2 (Non-English-Language Documents),
+and the first captures of T12 and T13. T12 and T13 were each captured a second time in full, and that
+second T13 capture (slug `t13-periodicals`) supplies the *22e pp. 346–48* cite in D8. Rules 3.2 and
+21.2 have **no** second capture, so the "all twenty-three rules" claim above holds at the rule level
+only — those two subsections are wholly absent from the corpus, not merely headerless. No check in
+this file cites either.
+
+*Six are genuine mid-text truncations*, having lost the heading, the page number, and whatever
+sentence ran into the first surviving character: rules 3.4, 6.1, 11, 15.7 and 22.2, and table T2.9.
+Two of the six bear on this file. Rule 11's page begins with a bare `:` running straight into
+`U.S. Const. art. I, § 9, cl. 2.`, and rule 6.1's begins `). ` — so C10 (rule 11) and D14
+(rule 6.1) carry no `22e p.` cite, and the omission is an extraction failure rather than an
+oversight. Both bodies are otherwise substantive and quotable, but the corpus cannot establish that
+only the heading was lost.
 
 ---
 
@@ -71,11 +94,14 @@ T3, T4, T5, T9, T15 and T16 were not captured.
 | C2 | A one-party short form must be unambiguous and is italicized; do not shorten to a geographical or government unit, a government official, or another common litigant — "Patterson", not "NAACP" or "Alabama" *(rule 10.9(a)(i))*. | 10.9 |
 | C3 | A short cite to an entire decision (no pincite) keeps the shortened name, volume, reporter and first page, and **drops** the court/date parenthetical *(rule 10.9(a)(i))*. | 10.9 |
 | C4 | A statute short form is permitted when the statute was cited in the same footnote or can be readily found in one of the **preceding five footnotes** *(rule 12.10(b))*. | 12.10 |
-| C5 | "Section" and "paragraph" are spelled out in the text — main text or footnote text — of law review pieces, **except** when referring to a provision of the U.S. Code *(rule 12.10(c))* or a federal regulation *(rule 14.6)*; in citations the "§" and "¶" symbols are used, except when citing session laws amending prior acts *(rule 12.4(d))*. The first word of any sentence is spelled out regardless. A space follows the symbol *(rule 6.2(c), 22e pp. 93–94)*. | 12.10, 6.2 |
+| C5 | "Section" and "paragraph" are spelled out in the text — main text or footnote text — of law review pieces, **except** when referring to a provision of the U.S. Code *(rule 12.10(c))* or a federal regulation *(rule 14.6)*; in citations the "§" and "¶" symbols are used, except when citing session laws amending prior acts *(rule 12.4(d))*. The first word of any sentence is spelled out regardless. A space follows the symbol *(rule 6.2(c), 22e pp. 93–94)*. **T16** supplies the same split from the table side: "sec., secs." in an amending act and "§, §§" in all other contexts; "¶, ¶¶" where the symbol appears in the source and "para., paras." where it does not; and a space between the abbreviation and the number or letter in every subdivision abbreviation **except** "n." *(T16, 22e pp. 353–54)*. | 12.10, 6.2, T16 |
 | C6 | "Infra" is **never** used for books, reports and other nonperiodic materials *(rule 15.10)*. Forward references to those sources are an error, not a resolution problem. | 15.10 |
 | C7 | For a shorter work in a collection: "id." only if the shorter work was the immediately preceding authority in the same footnote or the sole authority in the preceding footnote, and never "id." to the collection as a whole while citing a different work in it; the collection takes a supra form built on its **title** *(rule 15.10.1)*. | 15.10 |
 | C8 | A periodical supra form always gives the page cited **except** when citing the work in its entirety *(rule 16.9(b))*. A bare `Author, supra note N` on a pincited proposition is a defect. | 16.9 |
-| C9 | For online-only materials the ordinary short form applies and the URL is **not** repeated after the full citation *(rules 12.10(d), 15.10, 16.9(b))*. | 12.10, 15.10, 16.9 |
+| C9 | For materials available only online, use the normal short form appropriate for the source; a URL **need not** be repeated after a full citation *(rules 12.10(d), 15.10, 16.9(b), which carry that sentence identically)*. The permission runs one way only — omitting the URL from the short form is correct, and **repeating it is not an error**. Do not flag a short form that carries the URL. The 22e's own worked example under 12.10(d): "Utah Code § 4-30-108 (2017), http://le.utah.gov/xcode/Title4/Chapter30/4-30-S108.html [https://perma.cc/7UHX-R44Z]." becomes "§ 4-30-108." | 12.10, 15.10, 16.9 |
+| C10 | Constitutions take **no** short citation form other than "id." *(rule 11)*. Where the reference is to several amendments, to sections within one article, or to clauses within one section, a single citation clause may carry them ("U.S. Const. amends. V, XIV"); otherwise the second citation uses "id." rather than repeating the constitution's name ("U.S. Const. art. I, § 8; id. art. II, § 2") *(rule 11)*. A `U.S. Const., supra note N` is therefore an error, not a style choice. | 11 |
+| C11 | A service short form for a case follows rule 10.9, keeps the **complete** volume designation for the service binder, and substitutes paragraph or section numbers for page numbers where appropriate; to cite the entire case in short form, give the paragraph or section number, or the first page, **without** "at" — "See [1987–1989 Transfer Binder] Bankr. L. Rep. (CCH) ¶ 72,447." *(rule 19.2(a), 22e pp. 206–07)*. Statutes, regulations, articles and commentaries found in a service follow their own source rule instead *(rule 19.2(b))*. | 19.2 |
+| C12 | Tribal short forms follow the short form for the source's type: rule 10.9 for Tribal cases, rule 11 for Tribal constitutions, rule 12.10 for Tribal codes, orders, ordinances and resolutions, and rule 21.17(a) for Tribal treaties *(rule 22.3, 22e p. 249)*. There is no separate Tribal short-form grammar to audit against. | 22.3 |
 
 ---
 
@@ -94,9 +120,14 @@ T3, T4, T5, T9, T15 and T16 were not captured.
 | D9 | An institutional author is abbreviated **only if the result is completely unambiguous**, using T6 and T10, dropping "Inc." / "Ltd." where a word like "Ass'n" or "Co." already marks it a firm *(rule 15.1(e))*. Note the tension an auditor must respect: T6 says abbreviate any listed word, 15.1(e) subordinates that to unambiguity. | 15.1, T6, T10 |
 | D10 | A book or report author's full name is given on first citation, in small capitals, keeping "Jr." or "III" and dropping "Dr.", "Prof.", "Judge", "Justice" *(rule 15.1)*. | 15.1 |
 | D11 | Website main page titles are in small capitals, abbreviated per T6, T10 and T13 *(rule 18.2.2(b)(i))*. | 18.2.2, T6 |
-| D12 | Law reviews run two typeface conventions — one for citations *(rule 2.1)* and one for textual material *(rule 2.2)*; Bluebook examples follow the law review **footnote** convention *(rule 2)*. The subsections' own text was **not extracted**, so per-source typeface calls (which sources take small caps versus italics) must be checked against the printed rule 2.1. | 2.1, 2.2 |
+| D12 | Law reviews run two typeface conventions — one for citations *(rule 2.1, 22e pp. 73–74)* and one for textual material *(rule 2.2, 22e pp. 74–76)*; unless otherwise noted, the examples throughout the Bluebook follow the law review **footnote** convention *(rule 2, 22e p. 72)*. The per-source calls in a citation: case names in a **full** citation are ordinary roman, except procedural phrases, which are always italicized, while the **short** form of a case citation is italicized ("Lochner, 198 U.S. at 50") *(rule 2.1(a))*; books take small capitals for **both** author and title *(rule 2.1(b))*; periodicals take an italicized article title, a small-capital periodical name, and an author's name in ordinary **roman** *(rule 2.1(c))*; introductory signals are italicized inside citation sentences and clauses *(rule 2.1(d))*; explanatory phrases are italicized, but the phrases inside related-authority parentheticals — "(quoting . . .)", "(citing . . .)", "(translating . . .)" — are **not** *(rule 2.1(e))*. | 2.1, 2.2 |
 | D13 | Procedural phrases in a case name are always italicized regardless of the rest of the name *(rule 10.2.1)*; the parentheses in a citation are never italicized *(rule 2.1(f), as stated in rule 10.2)*. | 10.2.1, 2.1 |
 | D14 | Spacing of abbreviations follows rule 6.1(a) *(so stated in the T6 introduction)*: close up adjacent single capitals ("N.W.", "S.D.N.Y.") but not a single capital against a longer abbreviation ("D. Mass.", "S. Ct."). In periodical names, close up adjacent single capitals **except** where a capital refers to an institutional entity, which is set off by a space ("Geo. L.J.", but "B.C. L. Rev.", "N.Y.U. L. Rev.", "S. Ill. U. L.J."). Numerals and ordinals count as single capitals ("F.3d", "S.E.2d"), but a space precedes any abbreviation of two or more letters ("So. 2d", "F. Supp. 2d") *(rule 6.1(a))*. | T6, 6.1 |
+| D15 | A case name in **footnote text** is italicized when it is grammatically part of the sentence ("In Loving v. Virginia, the Court invalidated . . .") but takes the citation convention of rule 2.1(a) when it sits in a citation clause embedded in that sentence ("The Court has upheld race-specific statutes . . . , e.g., Korematsu v. United States, 323 U.S. 214 (1944), but . . .") *(rule 2.2(b)(i))*. For any **other** authority, the citation typeface applies whenever full or short-form citation information is given ("Learned Hand, The Bill of Rights (1958), and Holmes, supra note 2"), and the main-text convention applies where the reference appears without it ("Judge Hand explained his philosophy of judicial review in The Bill of Rights.") *(rule 2.2(b)(ii))*. In an explanatory parenthetical, use the case-name convention for citation text when a full citation clause is included *(rule 2.2(b)(iii))*. | 2.2, 2.1 |
+| D16 | Commas, semicolons and other punctuation are italicized **only** when they are part of the italicized material, never when they merely belong to the surrounding sentence or citation *(rules 2.1(f), 2.2(c))*. Ellipses and brackets marking an alteration are always romanized, even where the quoted matter is italic, underlined or bold *(rules 2.1(g), 2.2(d))*. One space follows punctuation in a proportional font; double-space only after a monospaced font such as Courier, Menlo or Consolas *(rule 2.3, 22e p. 76)*. | 2.1, 2.2, 2.3 |
+| D17 | "Id." is **always** italicized, and procedural phrases in case names ("In re", "ex rel.") are always italicized *(rule 7(b), citing rules 2.1(d) and 10.2.1(b))*. Non-English words are italicized unless absorbed into common English usage: Latin common in legal writing is **not** italicized — "res judicata", "amicus curiae", "prima facie", "en banc", "certiorari", "e.g.", "i.e." — while very long, obsolete or uncommon Latin stays italic ("expressio unius est exclusio alterius"). Text in a non-Roman alphabet is never italicized *(rule 7(b), 22e pp. 95–96)*. Also italicized: the lowercase "l" used as a subdivision ("§ 23 (l)", "cmt. l") *(rule 7(d))*. | 7 |
+| D18 | Capitalization: in a heading or title, capitalize the initial word, any word immediately after a colon, and every word except articles, conjunctions and prepositions of four or fewer letters *(rule 8(a), 22e pp. 96–99)*. Internet main page titles and URLs keep the source's own capitalization, in text and footnotes alike *(rule 8(b))*. An author's last name is capitalized as the periodical's table of contents or the work's title page gives it — "van Dorn, supra note 12" or "Van Dorn, supra note 12", whichever the source shows *(rule 8(c))*; an auditor normalizing this is introducing the error. "Court" is capitalized when a court is named in full or the U.S. Supreme Court is meant, "Act" when a specific act is meant, and parts of a constitution are capitalized in **textual** sentences but not in citations *(rule 8(d)(ii))*. | 8 |
+| D19 | Judges and officials: "Justice Gorsuch", "Chief Justice Roberts", "Judge Readler", "Chief Judge Smith"; parenthetical references are "Kagan, J." and "Breyer & Kagan, JJ.", abbreviated as **T11** indicates. First names are omitted unless the court has two individuals with the same last name, in which case the first name appears on first reference *(rule 9(a), 22e p. 99)*. A Supreme Court Term is designated by the year in which it **began**, not the year it ended *(rule 9(c))*. | 9, T11 |
 
 ---
 
@@ -125,6 +156,10 @@ T3, T4, T5, T9, T15 and T16 were not captured.
 | F4 | "Compare ... with ..." carrying a parenthetical on every authority | Required, not redundant *(rule 1.2(b))*. |
 | F5 | A print-form citation to an online PDF with no URL | Correct for an authenticated, official, or exact copy *(rule 18.2.1(a))*. |
 | F6 | A signal-as-verb set in roman | Signals are not italicized when used as verbs *(rule 1.2(e))*. |
+| F7 | An author's name in ordinary roman beside a small-capital periodical name | Correct: periodical citations take roman authors, italic article titles and small-capital periodical names *(rule 2.1(c))*; small caps for the author are the **book** convention *(rule 2.1(b))*. |
+| F8 | An italicized case name inside an article title left un-italicized | Correct — a case name within an article title is not italicized, even where it is the whole title, as in "Owen M. Fiss, Dombrowski, 86 Yale L.J. 1103 (1977)" *(rule 2.1(a))*. |
+| F9 | A lowercase author surname such as "van Dorn, supra note 12" | Correct where the source's own table of contents or title page capitalizes it that way *(rule 8(c))*. |
+| F10 | "res judicata", "en banc" or "prima facie" set in roman | Correct: Latin in common legal usage is not italicized *(rule 7(b))*. Only long, obsolete or uncommon Latin stays italic. |
 
 ---
 
@@ -144,7 +179,7 @@ information the model cannot tell an italicized case name from roman text, small
 an italicized signal from the same word used in a sentence. Convert runs to inline markup first:
 `*text*` italic, `[SC]text[/SC]` small caps, `**text**` bold, `***text***` bold italic. Pandoc is not
 a substitute — Markdown has no small-caps representation, and the typeface distinction is exactly
-what checks A6, D8, D10, D11 and D12 depend on.
+what checks A6, D8, D10, D11, D12 and D15–D17 depend on.
 
 **Per-footnote prompt.** Send the formatted footnote, its number, and the preceding footnote's
 formatted text (B1 and C1 cannot be judged without it), and request structured JSON —

@@ -211,11 +211,34 @@ themselves are never italicized (rule 2.1(f)).
 | Circuit Courts | F., F.2d, F.3d, F.4th | 500 F.3d 123 |
 | District Courts | F. Supp., F. Supp. 2d, F. Supp. 3d | 100 F. Supp. 3d 456 |
 
-**Supreme Court preference:** use U.S. Reports; if unavailable, S. Ct., then L. Ed. —
-**UNVERIFIED.** Table T1 is in the 22e corpus only as an index of its five subtables (T1.1 Federal
-Judicial and Legislative Materials through T1.5 Tribal Nations); **T1.1's own content, which is
-where the Supreme Court source hierarchy is set, was not captured.** Check T1.1 before relying on
-this ordering.
+**Supreme Court source hierarchy (T1.1, 22e pp. 257-60):** "Cite to U.S., if therein; otherwise,
+cite to S. Ct., L. Ed., or U.S.L.W., in that order of preference." U.S.L.W. is the fourth rung, not
+a stopping point after L. Ed. Within the U.S. Reports, the editor-named volumes are Dallas
+(1790-1800), Cranch (1801-1815), Wheaton (1816-1827), Peters (1828-1842), Howard (1843-1860), Black
+(1861-1862), and Wallace (1863-1874); 91 U.S. to date carries no editor name.
+
+**Circuit Justices in chambers (T1.1):** "Cite to U.S., if therein; otherwise, cite to S. Ct., Rapp,
+L. Ed., or U.S.L.W., if therein, in that order of preference." Rapp appears in this hierarchy and
+nowhere in the Court's own; it covers 1925-date. Some Circuit Justice decisions sit in other
+reporters and are cited there with the `Circuit Justice` parenthetical: `Halperin v. Kissinger, 807
+F.2d 180 (D.C. Cir. 1986) (Scalia, Circuit Justice).`
+
+**Other federal courts (T1.1), where the reporter choice is not obvious:**
+
+- **Courts of appeals** — F., F.2d, F.3d, or F.4th, if therein. The Federal Appendix (`F. App'x`,
+  2001-date) is listed under the same court.
+- **Circuit courts, abolished 1912** — F. (1880-1912) or F. Cas. (1789-1880). **Citations to F. Cas.
+  give the case number parenthetically:** `Oelrich v. Pittsburgh, 18 F. Cas. 598 (C.C.W.D. Pa. 1859)
+  (No. 10,444).`
+- **District courts** — for cases after 1932, F. Supp., F. Supp. 2d, F. Supp. 3d, F.R.D., or B.R., if
+  therein; otherwise Fed. R. Serv., Fed. R. Serv. 2d, or Fed. R. Serv. 3d. For prior cases, F., F.2d,
+  or F. Cas. (again with the case number parenthetically: `Ex parte McKean, 16 F. Cas. 186 (E.D. Va.
+  1878) (No. 8,848).`).
+- **Bankruptcy courts and bankruptcy appellate panels** — B.R., if therein; otherwise a service
+  (rule 19).
+- **J.P.M.L.** — F. Supp., F. Supp. 2d, or F. Supp. 3d.
+- **Tax Court** — T.C. or B.T.A., if therein; otherwise T.C.M. (CCH), T.C.M. (P-H), T.C.M. (RIA), or
+  B.T.A.M. (P-H).
 
 ### Which Source to Cite (10.3.1)
 
@@ -399,9 +422,11 @@ But if an exact date is required for either decision, give both dates.
 
 ## Pinpoint Citations (Rule 3.2)
 
-**UNVERIFIED — rule 3.2 is not in the 22e corpus consulted for this file.** Rule 3's other
-subsections (3.1, 3.3, 3.4, 3.5) are present, but `3.2 Pages, Footnotes, Endnotes, and Graphical
-Materials` came back empty. The forms below are
+**UNVERIFIED — rule 3.2 has no text in the 22e corpus.** This is not a coverage gap that the
+expanded corpus closed: the page `rules/3-subdivisions/3-2-pages-footnotes-endnotes-and-graphical-
+materials` is present in the corpus but its body is empty, while every neighbor (3.1, 3.3, 3.4, 3.5)
+carries full text. So rule 3.2's page-span, footnote, and graphical-material conventions — including
+the `n.` / `nn.` forms and the rule on inclusive page numbers — remain unchecked. The forms below are
 consistent with pinpoints as they appear throughout the 22e Rule 10 examples (e.g. `244 U.S. 205,
 225-26`; `at *18-19`; `at *6-8, *10`), but rule 3.2's own text was not checked. Verify against
 rule 3.2 before relying on the page-span and footnote conventions.
@@ -752,14 +777,44 @@ cite the sources and abbreviations listed in T2, giving the full form on first u
 subsequent abbreviation in brackets (20.2.3); always include the jurisdiction, abbreviated per table
 T10, in parentheses at the end (20.1); annotations are cited per rule 3.4.
 
-**UNVERIFIED — the T2 country entries.** T2 is in the 22e corpus only as an index of country
-headings T2.1–T2.47; the individual entries, including T2.46 (United Kingdom), were not captured, so
-the UK-specific form is unchecked. Note also that 20.3.1's own example for a highest court names the
-**jurisdiction** rather than the court, and its court-naming example is unpunctuated (`(KB)`) —
-check T2.46 before using the parenthetical below:
+**United Kingdom (T2.46, 22e p. 328).** The UK entry confirms what 20.3.1's `(KB)` example
+suggested: **UK court and reporter abbreviations carry no internal periods, and no comma follows the
+case name.** The familiar `Donoghue v. Stevenson, [1932] A.C. 562 (H.L.)` is wrong on all three
+counts. T2.46's own form is:
 ```
-Donoghue v. Stevenson, [1932] A.C. 562 (H.L.).
+Donoghue v. Stevenson [1932] AC 562 (HL) 564 (appeal taken from Scot.).
 ```
+Note the pinpoint: it follows the court parenthetical, with no "at" and no comma.
+
+- **Jurisdiction abbreviations:** `UK`, `Gr. Brit.`, `Eng.`, `Wales`, `Scot.`, `N. Ir.` Per rule
+  20.1, give one parenthetically only if the jurisdiction is not clear from context or citation.
+- **House of Lords (HL):** cite to the Law Reports, to Eng. Rep., or — in Scottish civil cases — to
+  the House of Lords section of Session Cases (T2.46.3), in that order of preference. The Supreme
+  Court of the United Kingdom (UKSC) took over the HL's appellate jurisdiction and the Privy
+  Council's jurisdiction on **October 1, 2009**.
+- **Privy Council (PC):** cite to the Law Reports or to Eng. Rep. — `B.C. Elec. Ry. v. Loach [1916] 1
+  AC 719 (PC) (appeal taken from B.C.).`
+- **Appeal-taken-from parenthetical:** required whenever the deciding court hears appeals from more
+  than one jurisdiction, as the HL and PC do.
+- **Neutral citations.** Every judgment after 2001 has one. Cite the neutral citation first, then the
+  official reporter: `R v. Pyrah [2002] UKHL 47, [2003] 1 AC 903 (appeal taken from Eng.).`;
+  `Archbold v. Royal Coll. of Veterinary Surgeons [2004] UKPC 1, [2]-[3] (appeal taken from Eng.).`
+  Court abbreviations: `UKPC`, `UKHL`, `UKSC`; England and Wales adds `EWCA (Civ)`, `EWCA (Crim)`,
+  `EWHC (Ch)`, `EWHC (QB)`, `EWHC (Admin)`, and the rest of the T2.46.1 list. **Paragraph pinpoints
+  go in square brackets**, not after a ¶.
+- **England and Wales after 1865 (T2.46.1):** cite the official Law Reports if therein; only if the
+  case is not there, prefer in order WLR, All ER, then other reporters. Here the pinpoint does take
+  "at": `R v. Kelly [1999] QB 621 at 625 (Eng.).` With a neutral citation the pinpoint is bracketed:
+  `Quinland v. Governor of Swaleside Prison [2002] EWCA (Civ) 174 [178], [2003] QB 306 [317] (Eng.).`
+- **England and Wales before 1865 (T2.46.1):** there was no official series. Cite the English Reports
+  reprint if the case is there, **with a parallel citation to the original nominate reporter**; the
+  court name is optional. `Semayne's Case (1604) 77 Eng. Rep. 194, 195; 5 Co. Rep. 91 a, 93 b.` For
+  Year Books, give regnal year, folio, term, and plea number, with a parallel cite to a modern
+  reprint if possible: `Y.B. 17 Edw. 4, fol. 2a, Pasch, pl. 3 (1477) (Eng.).`
+- **Attributing to a judge:** the judge's name goes in its own parenthetical after the pinpoint and
+  before "appeal taken from" — `R v. Martin [1998] AC 917 (HL) 948 (Lord Hope of Craighead) (appeal
+  taken from HM Court-Martial App. Ct.) (UK).` A Law Lord's territorial qualification is used on
+  first mention and dropped thereafter ("Lord Hope of Craighead," then "Lord Hope").
 
 ## Short Forms for Cases (Rule 10.9) (22e pp. 121-24)
 
@@ -855,9 +910,10 @@ Not: Id. at 465.       Not: Id. at 465, 563.
   legislative materials other than hearings, restatements, model codes, and regulations, except in
   extraordinary circumstances such as an extremely long case name. (A court *document* citing a
   case may take a *supra* form; the case may not. See 10.8.3.)
-- "Op. cit." / "loc. cit." — **UNVERIFIED**: no prohibition on these appears in the 22e text
-  consulted (rules 10.1-10.9, 1.5, 4.1, 4.2). They are not among the short forms the 22e sanctions,
-  but the corpus does not name them.
+- "Op. cit." / "loc. cit." — **UNVERIFIED**: neither string appears anywhere in the full 22e corpus
+  (all 23 rules, all 16 tables). They are not among the short forms the 22e sanctions — the sanctioned
+  set is *id.*, *supra*, *hereinafter*, and the case-specific forms of 10.9 — but the 22e nowhere
+  states a prohibition, so this entry rests on their absence rather than on a rule.
 - A case name alone with no reporter, where the reader could doubt which case is meant (10.9(a)(i)).
 
 ### Text (10.9(c))

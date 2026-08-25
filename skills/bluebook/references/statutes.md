@@ -3,10 +3,10 @@
 Guidance for citing statutes, regulations, and legislative materials per Bluebook **22nd Edition**.
 
 **Verification status:** Checked line by line against the official 22e text of rules 12.1-12.10
-(22e pp. 126-40), 13.1-13.8 (22e pp. 140-47), 14.1-14.6 (22e pp. 147-53), 21.4 (22e pp. 215-19)
-and 6.2 (22e pp. 93-94). **Rule 11 (constitutions) was not available**; every statement under that
-heading is flagged UNVERIFIED in place. Table T1.3's state rows were also unavailable — see the
-State Code Abbreviations section.
+(22e pp. 126-40), 13.1-13.8 (22e pp. 140-47), 14.1-14.6 (22e pp. 147-53), 21.4 (22e pp. 215-19),
+6.2 (22e pp. 93-94), rule 11 (constitutions), and tables T1.3 (22e pp. 272-325 — index at p. 272,
+last state page Wyoming at pp. 324-25) and T9 (22e pp. 339-40). Rule 11's own page carries no page number in the 22e text, so claims under that
+heading are cited to the rule rather than to a page.
 
 ## Federal Statutes (Rule 12)
 
@@ -53,27 +53,27 @@ govinfo.gov "may be cited as if they were the print code."
 Correct:   Neb. Rev. Stat. § 33-114 (1998).    ← year on spine/title page
 Wrong:     Neb. Rev. Stat. § 33-114 (1871).    ← enactment year
 ```
+The `(1998)` line is 12.3.2's own example. The `(1871)` line is *illustrative, constructed here by
+substituting an enactment year; the Bluebook prints no negative example under 12.3.2.*
 
 ### Multiple Sections
 
-**Consecutive sections:**
+Rule 12's own worked example carries both a consecutive span and an additional non-consecutive
+section in one cite (rule 12.2.2(a)):
 ```
-15 U.S.C. §§ 13–13b.
+Robinson-Patman Act, 15 U.S.C. §§ 13–13b, 21a.
 ```
-
-**Non-consecutive sections:**
-```
-42 U.S.C. §§ 1983, 1985, 1988.
-```
-
-Note the 22e prints spans with an en dash (`§§ 2421–2424`, `83 Stat. 852, 853–54`), not a hyphen.
+`§§` marks the plural; the span `13–13b` is consecutive, and `21a` is appended after a comma. Note
+the 22e prints spans with an en dash (`§§ 2421–2424`, `83 Stat. 852, 853–54`), not a hyphen.
 
 ### Subsections
 
+Subsection designations follow the section number with no intervening space, as in rule 12's own
+examples:
 ```
-42 U.S.C. § 1983(a).
-42 U.S.C. § 1983(a)(1).
-42 U.S.C. § 1983(a)(1)(A).
+Labor Management Relations (Taft-Hartley) Act § 301(a), 29 U.S.C. § 185(a).
+18 U.S.C. § 510(b) (Supp. I 1983).
+5 U.S.C. § 553(b).
 ```
 
 ### Supplements
@@ -224,20 +224,62 @@ the first page of its subdivision — `Alaska Stat. § 28.01.010 (2002).`
 
 ### State Code Abbreviations (Table T1.3)
 
-Each state has specific abbreviation requirements. **Table T1.3** lists official and unofficial
-state codes, and indicates whether a state uses title/chapter numbering or subject-matter naming
-(rules 12.3.1(b)-(c)). *Consult the current table rather than any example cached here.*
+Each state has specific abbreviation requirements. **Table T1.3, "States and the District of
+Columbia" (index at 22e p. 272; state pages run from Alabama at 22e pp. 272-73 to Wyoming at 22e
+pp. 324-25)**, gives each state's preferred
+statutory compilation, the publisher parenthetical it takes, and — for subject-matter states — the
+list of subject abbreviations. Rule 12.3.1(c) points at it directly: "Table T1.3 indicates which
+state codes require this treatment." *Consult the table itself rather than any example cached
+here; the rows below are illustrations of the table's forms, not a substitute for it.*
 
-UNVERIFIED: only T1's index page ("T1.1 Federal Judicial and Legislative Materials … T1.3 States
-and the District of Columbia …", 22e p. 257) was available; the state rows themselves were not.
-The individual rows below are from the prior edition of this file and were not checked against
-22e T1.3.
+T1.3 covers 51 jurisdictions — the fifty states plus the District of Columbia — across 22e pp.
+272-325 (Alabama opens at pp. 272-73, Wyoming closes at pp. 324-25), so a jurisdiction averages
+about one printed page but the count of jurisdictions and the count of pages are not the same
+number. A state page opens with the
+state name, its page number, and the state's court and legislature URLs; then, **court by court**, a
+`Cite to …, if therein.` line followed by that court's reporter table. The statutory material sits
+*mid-page*, in a `Statutory compilations:` block (South Carolina and South Dakota use the singular
+`Statutory compilation`, so match the stem rather than the exact label when scripting against T1.3) listing each publication against its citation
+template, and is followed by `Session laws:` and then administrative-compilation and
+administrative-register blocks. Read past the reporter tables: the first `Cite to X, if therein.`
+line on a state page is a **reporter** preference, not a statutory one.
 
-| State | Official Code | Example |
-|-------|---------------|---------|
-| California | Cal. [Subject] Code | Cal. Civ. Code § 1542 |
-| New York | N.Y. [Subject] Law | N.Y. C.P.L.R. § 3211 |
-| Texas | Tex. [Subject] Code Ann. | Tex. Fam. Code Ann. § 6.001 |
+The wording of the statutory line varies. Most states read `Cite to X, if therein.`, but several
+read "Cite to one of the following codes/sources" — and Texas's is a three-sentence paragraph about
+its recodification.
+
+| State | T1.3 instruction | Template as printed in T1.3 |
+|-------|------------------|------------------------------|
+| California (22e pp. 275-77) | "Cite to either the West or the Deering subject-matter code, if therein." | `Cal. <Subject> Code § x (West <year>)`; `Cal. <Subject> Code § x (Deering <year>)` |
+| New York (22e pp. 301-06) | "Cite to one of the following sources, if therein." | `N.Y. <subject> Law § x (McKinney <year>)`; `N.Y. <subject> Law § x (Consol. <year>)`; `N.Y. <subject> Law § x (LexisNexis <year>)` |
+| Texas (22e pp. 316-19) | "Cite to the new subject-matter Tex. Code Ann., if therein; otherwise, cite to Tex. Rev. Civ. Stat. Ann. or to one of the independent codes…" | six templates; the first two are `Tex. <Subject> Code Ann. § x (West <year>)` and `Tex. Rev. Civ. Stat. Ann. art. x, § x (West <year>)`, followed by the four independent codes (Bus. Corp. Act, Code Crim. Proc., Ins. Code, Prob. Code) |
+| Delaware (22e pp. 279-80) | "Cite to Del. Code Ann., if therein." | `Del. Code Ann. tit. x, § x (<year>)`; `Del. Code Ann. tit. x, § x (West <year>)` |
+| Georgia (22e pp. 282-83) | "Cite to Ga. Code Ann. (published by LexisNexis), if therein." | `Ga. Code Ann. § x-x-x (<year>)`; `Ga. Code Ann. § x-x-x (West <year>)` |
+| Indiana (22e p. 286) | "Cite to Ind. Code, if therein." | `Ind. Code § x-x-x-x (<year>)`; `Ind. Code Ann. § x-x-x-x (West <year>)`; `Ind. Code Ann. § x-x-x-x (LexisNexis <year>)` |
+| Maryland (22e pp. 291-92) | "Cite by subject to either Michie's Md. Code Ann. or West's Md. Code Ann., if therein." | `Md. Code Ann., <subject> § x-x (LexisNexis <year>)`; `Md. Code Ann., <subject> § x-x (West <year>)` — note the **comma** before the subject |
+| Nebraska (22e p. 298) | "Cite to Neb. Rev. Stat., if therein." | `Neb. Rev. Stat. § x-x (<year>)`; `Neb. Rev. Stat. Ann. § x-x (LexisNexis <year>)`; `Neb. Rev. Stat. Ann. § x-x (West <year>)` |
+| Vermont (22e pp. 320-21) | "Cite to Vt. Stat. Ann. (published by LexisNexis), if therein." | `Vt. Stat. Ann. tit. x, § x (<year>)`; `Vt. Stat. Ann. tit. x, § x (West <year>)` |
+| Wisconsin (22e pp. 323-24) | "Cite to Wis. Stat., if therein." | `Wis. Stat. § x.x (<year>)`; `Wis. Stat. Ann. § x.x (West <year>)` |
+
+**New York's C.P.L.R. has its own row inside the subject list**, not a `§`-plus-subject form:
+`N.Y. C.P.L.R. <rule no.> (McKinney <year>)` or `N.Y. C.P.L.R. <rule no.> (Consol. <year>)` (22e
+T1.3, New York). California's subject abbreviations run `Agric.`, `Bus. & Prof.`, `Civ.`,
+`Civ. Proc.`, `Com.`, `Corp.`, `Educ.`, `Elec.`, `Evid.`, `Fam.`, `Fin.`, `Fish & Game`, `Food &
+Agric.`, `Gov't`, `Harb. & Nav.`, `Health & Safety`, `Ins.`, `Lab.`, `Mil. & Vet.`, `Penal`,
+`Prob.`, `Pub. Cont.`, `Pub. Res.`, `Pub. Util.`, `Rev. & Tax.`, `Sts. & High.`, `Unemp. Ins.`,
+`Veh.`, `Water`, `Welf. & Inst.` (30 subject rows). The abbreviation alone is not a citation: both
+California templates carry a publisher parenthetical, so a subject code is cited as
+`Cal. <Subject> Code § x (West <year>)` or `Cal. <Subject> Code § x (Deering <year>)`. Rule
+12.3.1(c)'s own example is `Cal. Veh. Code § 11506 (West 2000).`; a bare `Cal. Civ. Code § 1542`
+matches neither template, because T1.3 lists no officially published California compilation and
+rule 12.3.1(d) therefore makes the publisher mandatory.
+
+Texas's subject abbreviations include `Bus. & Com.`, `Bus. Orgs.`, `Civ. Prac. & Rem.`,
+`Fam.`, `Gov't`, `Health & Safety`, `Loc. Gov't`, `Nat. Res.`, `Penal`, `Prop.`.
+
+**A discrepancy worth knowing:** rule 12.3.1(c)'s own example prints `Tex. Fam. Code Ann. § 5.01
+(Vernon 2002 & Supp. 2004-2005)`, while T1.3's Texas page gives the publisher as **West**
+(`Tex. <Subject> Code Ann. § x (West <year>)`). Vernon's is West's imprint; follow the table.
 
 ### Publisher
 
@@ -286,32 +328,83 @@ Alabama Corporate Income Tax Reform Act, No. 85-515 (May 8, 1985).
 
 ## Constitutional Provisions (Rule 11)
 
-**UNVERIFIED — Rule 11 is not in the 22e corpus consulted.** Everything in this section is carried
-over from the prior edition of this file and has not been checked against the 22nd edition.
+Checked against the 22e text of rule 11. That page carries no printed page number, so the claims
+below cite the rule alone.
 
-### Federal Constitution
+### Basic Forms
 
+Rule 11's own examples cover federal, state, and nongovernmental-organization constitutions:
 ```
-U.S. Const. art. I, § 8, cl. 3.
-U.S. Const. amend. XIV, § 1.
+U.S. Const. art. I, § 9, cl. 2.
+U.S. Const. amend. XIV, § 2.
 U.S. Const. pmbl.
+U.S. Const. art. III, §§ 1–2.
+W. Va. Const. art. I, § I.
+World Health Org. Const. ch. 2, art. II.
 ```
 
-**No date for currently effective provisions.** (UNVERIFIED.)
+**Follow the numbering convention of each individual constitution** (rule 11's own instruction) —
+so `Iowa Const. art. I, § 1.` but also `La. Const. art. X, pt. IV.`
 
-### State Constitutions
+### No Date for Provisions in Force
 
-```
-Cal. Const. art. I, § 1.
-N.Y. Const. art. VI, § 1.
-```
+Rule 11: "Cite constitutional provisions currently in force without a date."
 
-### Amended or Repealed Provisions
+### Amended, Repealed, and Superseded Provisions
 
+For a repealed provision, "either indicate parenthetically the fact and year of repeal or cite the
+repealing provision in full":
 ```
 U.S. Const. amend. XVIII (repealed 1933).
-U.S. Const. art. I, § 2, cl. 3, amended by U.S. Const. amend. XIV, § 2.
+U.S. Const. amend. XVIII, repealed by, U.S. Const. amend. XXI.
 ```
+
+For a subsequently amended provision, the same two options:
+```
+U.S. Const. art. I, § 3, cl. 1 (amended 1913).
+U.S. Const. art. I, § 3, cl. 1, amended by, U.S. Const. amend. XVII.
+```
+
+Constitutions "totally superseded or … otherwise no longer in effect" are cited **by year of
+adoption**; if the provision was adopted in a different year than the constitution, give that year
+parenthetically:
+```
+Articles of Confederation of 1781, art. IX, para. 1.
+Ark. Const. of 1868, art. III, § 2 (1873).
+```
+
+### Electronic Databases
+
+Give the publisher, editor, or compiler parenthetically "unless the constitution is published,
+edited, or compiled by or under the supervision of, federal or state officials," plus the database
+name and its own currency information:
+```
+Wash. Const. art. I, § 2 (West, Westlaw through Nov. 2024 amendments).
+P.R. Const. art. II, § 1 (LexisNexis, LEXIS through June 2024).
+```
+
+### Multiple Provisions and Short Forms
+
+Multiple amendments, sections within one article, or clauses within one section may share a single
+citation clause; otherwise the second citation uses `id.` rather than repeating the constitution's
+name:
+```
+U.S. Const. amends. V, XIV.
+U.S. Const. art. I, § 8; id. art. II, § 2.
+```
+
+**"Do not use a short citation form (other than 'id.') for constitutions."** Rule 11's table gives
+the citation-versus-text pairs:
+
+| | Citation | Text |
+|---|---|---|
+| U.S. Constitution | `U.S. Const. art. IV, § 1` | Article IV, Section 1, or the Full Faith and Credit Clause |
+| State constitution | `S.C. Const. art. I, § 12` | article I, section 12, or the double jeopardy clause |
+| NGO constitution | `World Health Org. Const. ch. 2, art II, § (a)` | chapter 2, article II, section (a), or coordination clause |
+
+**Foreign and tribal constitutions are governed elsewhere.** Rule 11: "Special rules for foreign
+and tribal constitutions supersede this rule. For foreign constitutions, see rule 20.4. For tribal
+constitutions, see rule 22.2.1."
 
 ## Federal Regulations (Rule 14.2)
 
@@ -325,10 +418,10 @@ least once a year; **cite the most recent edition**.
 [Title] C.F.R. § [Section] ([Year]).
 ```
 
-**Example:**
+**Examples (rule 14.2(a)):**
 ```
-17 C.F.R. § 240.10b-5 (2020).
 47 C.F.R. § 73.609 (2024).
+14 C.F.R. § 43 app. B(a)(3) (2024).
 ```
 
 **Name of the rule (rule 14.2(a)):** give it "only if the rule or regulation is commonly cited that
@@ -350,11 +443,13 @@ appears. Where the Federal Register indicates the future C.F.R. location, give i
 [Name,] [Vol.] Fed. Reg. [First Page], [Pinpoint] ([Date]) (to be codified at [C.F.R. cite]).
 ```
 
-**Example:**
+**Examples (rule 14.2(a)):**
 ```
 Importation of Fruits and Vegetables, 60 Fed. Reg. 50379, 50381 (Sep. 29, 1995) (to be codified at 7 C.F.R. pts. 300, 319).
-85 Fed. Reg. 12345 (Mar. 2, 2020) (to be codified at 17 C.F.R. pt. 240).
+Federal Acquisition Regulations for National Aeronautics and Space Administration, 55 Fed. Reg. 52782 (Dec. 21, 1990) (to be codified at 48 C.F.R. pt. 1).
 ```
+The first cites part of a rule, so it gives both the starting page and the pinpoint; the second
+cites the rule as a whole, so it gives the starting page only.
 Prohibitively long titles may be shortened as long as the result is unambiguous.
 
 ### Proposed Rules
@@ -362,8 +457,8 @@ Prohibitively long titles may be shortened as long as the result is unambiguous.
 Rule 14.2(b): follow the form for final rules, "but add the status to the date parenthetical":
 ```
 Control of Air Pollution from New Motor Vehicles and New Motor Vehicle Engines, 56 Fed. Reg. 9754 (proposed Mar. 7, 1991) (to be codified at 40 C.F.R. pt. 86).
-85 Fed. Reg. 12345 (proposed Mar. 2, 2020) (to be codified at 17 C.F.R. pt. 240).
 ```
+`proposed` sits inside the date parenthetical — the only difference from the final-rule form.
 Notices pertaining to administrative adjudications go under rule 14.3; other administrative notices
 are cited by volume, page, and date — `Meeting Notice, 65 Fed. Reg. 3415 (Jan. 21, 2000).`
 
@@ -390,8 +485,9 @@ according to **table T1.3**" — not the parent table T1.
 ```
 Cal. Code Regs. tit. 2, § 22999 (2024).
 XLIV 8 N.Y. Reg. 8 (Feb. 21, 2024).
-Cal. Code Regs. tit. 8, § 3203 (2020).
 ```
+Those two are the whole of 14.4(a)'s example set — an administrative compilation cite and an
+administrative register cite. For any other state, take the template from that state's T1.3 page.
 
 **Reports and other publications (rule 14.4(b)):** cite per rules 14.2(c) and 14.2(d):
 ```
@@ -419,8 +515,9 @@ opinion and omit the database citation.
 relevant), the abbreviated name of the house, the bill number, the number of the Congress, the
 section (if any), and the year of publication:
 ```
-H.R. 1234, 116th Cong. § 2 (2020).
-S. 567, 116th Cong. (2019).
+S. 516, 105th Cong. § 2 (1997).
+H.R. 422, 106th Cong. (1999).
+Clear Skies Act, S. 485, 108th Cong. (2003).
 Protection from Personal Intrusion Act, H.R. 2448, 105th Cong. § 2(a) (1997).
 ```
 A parenthetical giving the date and stage may be added to distinguish versions:
@@ -433,10 +530,10 @@ cited as unenacted bills**."
 ### Resolutions
 
 Cite unenacted resolutions analogously to bills (rule 13.2(a)) — `H.R. Res.`, `S. Res.`,
-`H.R. Con. Res.`, `S. Con. Res.`, `H.R.J. Res.`, `S.J. Res.`, `S. Exec. Res.`:
+`H.R. Con. Res.`, `S. Con. Res.`, `H.R.J. Res.`, `S.J. Res.`, `S. Exec. Res.`. Rule 13.2(a)'s
+worked example is:
 ```
-H.R. Res. 123, 116th Cong. (2020).
-S. Res. 456, 116th Cong. (2019).
+H.R.J. Res. 124, 105th Cong. (1998).
 ```
 
 **Enacted simple and concurrent resolutions (rule 13.2(b))** are "cited as unenacted bills," with
@@ -444,6 +541,7 @@ the fact of enactment noted parenthetically unless clear in context:
 ```
 S. Res. 141, 106th Cong. (1999) (enacted).
 H.R. Con. Res. 196, 106th Cong. (1999) (enacted).
+H.R. Res. 811, 108th Cong. (2004) (enacted).
 ```
 A parenthetical noting enactment is unnecessary when a parallel Stat. citation is given:
 `S. Con. Res. 97, 94th Cong., 90 Stat. 3024 (1976).`
@@ -456,13 +554,18 @@ by a hyphen to the number of the report, the part and/or page number, and the ye
 
 **House:**
 ```
-H.R. Rep. No. 116-123, at 5 (2019).
 H.R. Rep. No. 99-253, pt. 1, at 54 (1985).
 ```
 
 **Senate:**
 ```
-S. Rep. No. 116-45, at 10 (2020).
+S. Rep. No. 84-2, at 7 (1955).
+```
+
+Where possible, and particularly for documents published after 1974, add a parallel citation to the
+permanent U.S.C.C.A.N. edition (rule 12.6):
+```
+S. Rep. No. 95-797, at 4 (1978), as reprinted in 1978 U.S.C.C.A.N. 9260, 9263.
 ```
 
 **Conference — `(Conf. Rep.)` goes *last*, after the year parenthetical:**
@@ -470,9 +573,12 @@ S. Rep. No. 116-45, at 10 (2020).
 H.R. Rep. No. 98-1037, at 3 (1984) (Conf. Rep.).
 S. Rep. No. 95-601, at 5 (1977) (Conf. Rep.).
 ```
+Both of those are 13.4(a)'s own conference-report examples. The failure they guard against —
+*illustrative, constructed here by moving the parenthetical in the first of them; the Bluebook
+prints no negative example under 13.4(a)*:
 ```
-Wrong:  H.R. Rep. No. 116-789 (Conf. Rep.), at 15 (2020).
-Right:  H.R. Rep. No. 116-789, at 15 (2020) (Conf. Rep.).
+Wrong:  H.R. Rep. No. 98-1037 (Conf. Rep.), at 3 (1984).
+Right:  H.R. Rep. No. 98-1037, at 3 (1984) (Conf. Rep.).
 ```
 
 Documents follow analogously: `H.R. Doc. No.`, `S. Doc. No.`, `H.R. Misc. Doc. No.`
@@ -491,13 +597,54 @@ of publication."
 **Examples:**
 ```
 Protection from Personal Intrusion Act and Privacy Protection Act of 1998: Hearing on H.R. 2448 and H.R. 3224 Before the H. Comm. on the Judiciary, 105th Cong. 56–57 (1998) (statement of Richard Masur, President, Screen Actors Guild).
-Cybersecurity Threats: Hearing Before the S. Comm. on Homeland Sec., 116th Cong. 25 (2020) (statement of Christopher Krebs, Dir., Cybersecurity & Infrastructure Sec. Agency).
+Copyright Protection for Semiconductor Chips: Hearing on H.R. 1028 Before the Subcomm. on Cts., C.L. & the Admin. of Just. of the H. Comm. on the Judiciary, 98th Cong. 14 (1983) (statement of Jon A. Baumgarten, Copyright Counsel, Ass'n of Am. Publishers).
+Transforming the Federal Government to Protect America from Terrorism: Hearing Before the H. Select Comm. on Homeland Sec., 107th Cong. 23–25 (2002) (statement of John Ashcroft, Att'y Gen. of the U.S.).
 ```
-T9's contents were **not extracted**, so every T9 abbreviation below is UNVERIFIED; T6, T10 and T11
-are in the corpus. The cross-reference itself is rule 13.3's own wording — "abbreviated according to
-tables T6, T9, and T10". Committee and subcommittee names are abbreviated per tables T6, T9 and T10;
-witness titles per T6, T9 and T11. **State committee hearings (rule 13.3(b))** take the same form plus the number of
-the legislative session.
+The third has no bill number because there was none; when a hearing is held on a bill, the bill
+number is not optional.
+Rule 13.3(a): "Subcommittee and committee names **may be** abbreviated according to tables T6, T9,
+and T10," and "Titles of the individuals providing statements may be abbreviated according to
+tables T6, T9, and T11." Note the permissive "may be," not a command.
+
+**Table T9, "Legislative Documents" (22e pp. 339-40)** supplies the abbreviations most relevant to
+these hearing and report cites. The table is 34 rows, reproduced in full below:
+
+| Word | T9 abbreviation | | Word | T9 abbreviation |
+|---|---|---|---|---|
+| Annals | Annals (not abbreviated) | | Number | No. |
+| Annual | Ann. | | Order | Order (not abbreviated) |
+| Assembly[man, woman, member] | Assemb. | | Record | Rec. |
+| Bill | B. | | Register | Reg. |
+| Committee | Comm. | | Regular | Reg. |
+| Concurrent | Con. | | Report | Rep. |
+| Conference | Conf. | | Representative | Rep. |
+| Congress[ional] | Cong. | | Resolution | Res. |
+| Debate | Deb. | | Senate | S. |
+| Delegate | Del. | | Senator | Sen. |
+| Document[s] | Doc. | | Service | Serv. |
+| Executive | Exec. | | Session | Sess. |
+| Federal | Fed. | | Special | Spec. |
+| House | H. | | Subcommittee | Subcomm. |
+| House of Delegates | H.D. | | | |
+| House of Representatives | H.R. | | Legislat[ion, ive] | Legis. |
+| Joint | J. | | Legislature | Leg. |
+| Miscellaneous | Misc. | | | |
+
+T9's headnote: "This table gives suggested abbreviations for citation of the words most commonly
+found in legislative documents. In some cases, it indicates that a word should not be abbreviated.
+Words of more than six letters not appearing on the list may also be abbreviated if the abbreviation
+selected is unambiguous. Omit all articles and prepositions from any abbreviated title if the
+document can be identified unambiguously without them."
+
+The table forbids an abbreviation by printing the word unchanged in the abbreviation column — that
+is the whole of what marks `Annals` and `Order` above. "Hearing" has no row at all: it is seven
+letters and absent from the list, so the headnote is the provision that **permits** abbreviating it
+where the abbreviation is unambiguous. Every hearing citation the 22e prints under rule 13.3(a)
+nevertheless spells "Hearing" (or "Hearings") out in full, so spelling it out is the safe default —
+but that is observed practice, not a rule against abbreviating.
+
+**State committee hearings (rule 13.3(b))** take the same form plus the number of the legislative
+session.
 
 ### Congressional Debates
 
@@ -510,8 +657,10 @@ only for matters not yet appearing in the permanent edition."
 **Example:**
 ```
 123 Cong. Rec. 17147 (1977).
-165 Cong. Rec. S1234 (daily ed. Feb. 10, 2019) (statement of Sen. Smith).
+131 Cong. Rec. S11465–66 (daily ed. Sep. 13, 1985) (statement of Sen. Malcolm Wallop).
 ```
+The daily edition keeps the `H`, `S`, and `E` page prefixes that the permanent edition drops, so
+an `S`-prefixed page is itself the signal that `(daily ed. …)` belongs in the cite.
 Debates through 1873: `Cong. Globe, 36th Cong., 1st Sess. 1672 (1860).` (1837–1873);
 `10 Reg. Deb. 3472 (1834).` (1824–1837); `38 Annals of Cong. 624 (1822).` (1789–1824).
 
@@ -615,10 +764,15 @@ footnote text, although the symbol '§' may be used in citations."
 
 ```
 Text (U.S.C.):        42 U.S.C. § 1983 or § 1983
-Text (C.F.R.):        16 C.F.R. § 444.1 or § 444.1
+Text (C.F.R.):        16 C.F.R. § 444.1
 Text (state code):    title 28, section 1701 of the Delaware Code, or section 1701
 Text (named act):     section 1 of the Administrative Procedure Act, or section 1
 ```
+
+The two exceptions are not symmetrical. Rule 12.10's Text column prints "42 U.S.C. § 1983 **or**
+§ 1983", so the bare `§ 1983` is available in text; rule 14.6's Text column prints only
+`16 C.F.R. § 444.1`, and the bare `§ 444.1` appears in 14.6's **Short citation** column instead.
+Do not carry the U.S. Code's bare form across to regulations in text.
 
 ### Electronic Sources (Rule 12.10(d))
 
@@ -664,7 +818,7 @@ footnote 15 with nothing in between would illustrate a violation, not the rule.
 
 | Error | Correction |
 |-------|------------|
-| Neb. Rev. Stat. § 33-114 (1871) | Neb. Rev. Stat. § 33-114 (1998) ← code year, not enactment |
+| Neb. Rev. Stat. § 33-114 (1871) *(constructed error — see above)* | Neb. Rev. Stat. § 33-114 (1998) ← code year, not enactment |
 | Securities Act of 1933, ch. 38, 48 Stat. 74 (1933) | drop the year — it is already in the statute's name (rule 12.4(e)) |
 | 42 U.S.C. § 1983 (2018) | not an error, but not required either — federal code citations "do not require a date" (rule 12.3.2) |
 
@@ -680,17 +834,26 @@ phrases**."
 [Case Name], [Vol.] [Agency Reporter] [Page] ([Agency abbrev.] [Year]).
 ```
 
-**Example:**
+**Examples (rule 14.3.1(a)):**
 ```
 Trojan Transp., Inc., 249 NLRB 642 (1980).
-Reichhold Chems., Inc., 91 F.T.C. 246 (1978).
+Steve Lane, 77 Agric. Dec. 246 (U.S.D.A. Jud. Officer 2018).
 ```
+Rule 14.1's basic-citation-forms table (22e p. 147) gives the same shape as its one worked
+"Administrative adjudication" entry: `Reichhold Chems., Inc., 91 F.T.C. 246 (1978).`
 
-`In re` and `In the Matter of` are exactly the procedural phrases the rule strikes:
+`In re` and `In the Matter of` are exactly the procedural phrases the rule strikes — 14.3.1(a)
+prints its own Not-pair against the Trojan Transportation cite:
 ```
-Wrong:  In re XYZ Corp., 50 S.E.C. 123 (1989).
-Wrong:  In the Matter of Trojan Transp., Inc., 249 NLRB 642 (1980).
-Right:  XYZ Corp., 50 S.E.C. 123 (1989).
+Right:  Trojan Transp., Inc., 249 NLRB 642 (1980).
+Not:    In the Matter of Trojan Transp., Inc., 249 NLRB 642 (1980).
+Not:    In re Trojan Transp., Inc., 249 NLRB 642 (1980).
+```
+The rule strikes stage-and-nature language from subject-matter titles the same way, moving it to a
+trailing parenthetical:
+```
+Right:  Bottled Green Olives from Spain, 50 Fed. Reg. 28237 (Dep't of Com. July 11, 1985) (final admin. rev.).
+Not:    Bottled Green Olives from Spain, Final Results of Admin. Rev. of Countervailing Duty Order, 50 Fed. Reg. 28237 (Dep't of Com. July 11, 1985).
 ```
 
 Where an agency has multiple layers of internal adjudication, add a parenthetical naming the
@@ -757,7 +920,10 @@ it:
 ```
 North American Free Trade Agreement, Dec. 17, 1992, 32 I.L.M. 289.
 Geneva Convention Relative to the Treatment of Prisoners of War art. 3, Aug. 12, 1949, 6 U.S.T. 3316, 75 U.N.T.S. 135.
+Inter-American Police Convention, Feb. 29, 1920, 127 L.N.T.S. 433.
 ```
+The error to avoid — *illustrative, constructed here by adding a party string to 21.1(a)'s NAFTA
+example; the Bluebook prints no negative example under 21.4.2*:
 ```
 Wrong:  North American Free Trade Agreement, U.S.-Can.-Mex., Dec. 17, 1992, 32 I.L.M. 289.
 ```
@@ -807,7 +973,8 @@ Before finalizing any statutory citation:
 - [ ] State code year taken from spine, title page, or latest copyright — in that order (rule 12.3.2)
 - [ ] Session-law year omitted if already in the statute's or session laws' name (rule 12.4(e))
 - [ ] Publisher given for codes not produced by federal or state officials (rule 12.3.1(d))
-- [ ] Statute name given only if commonly cited that way or it aids identification; "The" dropped (rules 12.3.1(a), 12.4(a))
+- [ ] **Code cite:** statute name given only if commonly cited that way or it aids identification; "The" dropped (rule 12.3.1(a))
+- [ ] **Session-law cite:** the name is **always** given, along with the public law or chapter number; where the act has none, supply "Act of \<date of enactment>" (rule 12.4(a))
 - [ ] Codification parenthetical included only if relevant in context (rule 12.4(f))
 - [ ] Supplements cited if applicable (rule 12.3.1(e), rule 3.1(c))
 - [ ] Short form used only if the source appears in the same footnote or one of the preceding five (rule 12.10(b))
