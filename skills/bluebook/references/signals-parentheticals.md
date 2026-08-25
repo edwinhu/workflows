@@ -152,7 +152,7 @@ The statute requires intent. But see Smith v. Jones, 500 F.3d 100, 104 (9th Cir.
 Use when the cited authority supports a contrary proposition **by analogy**.
 
 ```
-Strict liability does not apply to services. But cf. Restatement (Third) of Torts: Products Liability § 19 (Am. L. Inst. 1998) (applying strict liability to product-related services).
+Strict liability does not apply to services. But cf. Restatement (Third) of Torts: Products Liability § 19 (A.L.I. 1998) (applying strict liability to product-related services).
 ```
 
 **Always use a parenthetical** with *but cf.*
