@@ -50,13 +50,6 @@ function pathParent(p: string): string {
 }
 
 /** Python's PurePath.stem. */
-function pathStem(p: string): string {
-  const s = pathStr(p);
-  const name = s.slice(s.lastIndexOf("/") + 1);
-  const idx = name.lastIndexOf(".");
-  if (idx > 0 && idx < name.length - 1) return name.slice(0, idx);
-  return name;
-}
 
 /** Find the workflows plugin root. */
 function findPluginRoot(): string | null {
@@ -66,6 +59,8 @@ function findPluginRoot(): string | null {
   if (existsSync(pathJoin(pathJoin(candidate, ".claude-plugin"), "plugin.json"))) return candidate;
   return null;
 }
+
+import { isTypDeck } from "./writing-prose-check.ts";
 
 const TRIGGER_RE = /\b(?:typst|tinymist)\s+compile\b/;
 
@@ -86,6 +81,38 @@ export function resolveTypTarget(command: string): string | null {
   return null;
 }
 
+/**
+ * True when this .typ compile target is a slide deck the overflow gate applies to.
+ *
+ * Delegates to `isTypDeck` — a `slides`/`presentation*` path component, or a deck marker
+ * (touying / polylux / `#slide(`) in the file. The predecessor tested
+ * `pathStem(typFile).includes("slides")`: the FILENAME with its extension stripped, which matches
+ * only a file literally named `slides.typ`. Every deck stored as `slides/<name>.typ` — the whole
+ * teaching convention — took the silent `exit 0` and was never checked.
+ */
+export function isOverflowTarget(slidesPath: string): boolean {
+  return isTypDeck(slidesPath);
+}
+
+/** Path to the typst plugin's canonical check-overflow.sh. */
+export function typstPluginCheckScript(): string {
+  return pathJoin(expandUser("~/.claude/skills/typst"), pathJoin("scripts", pathJoin("checks", "check-overflow.sh")));
+}
+
+/**
+ * The check script to run: the typst plugin's copy first, this plugin's vendored copy as fallback.
+ *
+ * The typst plugin is the single source for Typst tooling, and its copy carries fixes the vendored
+ * one lacks — notably project-root discovery, without which a deck importing
+ * `../../templates/theme.typ` makes `typst query` fail and the whole gate go silent. The fallback
+ * keeps the hook working where the typst plugin is not installed.
+ */
+export function resolveCheckScript(pluginRoot: string, typstScript: string): string | null {
+  if (existsSync(typstScript)) return typstScript;
+  const vendored = pathJoin(pathJoin(pluginRoot, "scripts"), pathJoin("checks", "check-overflow.sh"));
+  return existsSync(vendored) ? vendored : null;
+}
+
 function main(hookInput: Record<string, unknown>): never {
   // Mirrors Python's AttributeError on a non-dict payload: crash, exit 1, empty stdout.
   if (hookInput === null || typeof hookInput !== "object" || Array.isArray(hookInput)) {
@@ -104,15 +131,12 @@ function main(hookInput: Record<string, unknown>): never {
   const typFile = resolveTypTarget(command);
   if (!typFile) process.exit(0);
 
-  // Only check slides files (not notes.typ or other .typ files)
-  if (!pathStem(typFile).includes("slides")) process.exit(0);
-
   // Find the check script
   const pluginRoot = findPluginRoot();
   if (!pluginRoot) process.exit(0);
 
-  const checkScript = pathJoin(pathJoin(pluginRoot, "scripts"), pathJoin("checks", "check-overflow.sh"));
-  if (!existsSync(checkScript)) process.exit(0);
+  const checkScript = resolveCheckScript(pluginRoot, typstPluginCheckScript());
+  if (!checkScript) process.exit(0);
 
   // Determine the working directory from the command — look for a cd before typst compile
   const cwdMatch = command.match(/cd\s+([^\s;&]+)/);
@@ -125,6 +149,10 @@ function main(hookInput: Record<string, unknown>): never {
     slidesPath = pathStr(expandUser(typFile));
     if (!existsSync(slidesPath)) process.exit(0);
   }
+
+  // Only decks (not notes.typ, letters, or other .typ files). Tested on the resolved path,
+  // because the predicate reads the file when the path alone is not decisive.
+  if (!isOverflowTarget(slidesPath)) process.exit(0);
 
   let rc: number;
   let stdout: string;

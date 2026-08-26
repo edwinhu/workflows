@@ -15,6 +15,7 @@
  */
 import { existsSync, readFileSync } from "node:fs";
 import { pyJson } from "./_gate_common.ts";
+import { isTypDeck } from "./writing-prose-check.ts";
 
 /** Python's Path(...) normalization, enough for suffix/stem: strip trailing slashes, take the name. */
 function pathName(p: string): string {
@@ -32,11 +33,6 @@ function pathSuffix(p: string): string {
 }
 
 /** Python's PurePath.stem. */
-function pathStem(p: string): string {
-  const name = pathName(p);
-  const i = name.lastIndexOf(".");
-  return i > 0 && i < name.length - 1 ? name.slice(0, i) : name;
-}
 
 /** Python's str.splitlines (the boundaries that matter for text files). */
 function splitLines(s: string): string[] {
@@ -98,8 +94,11 @@ function checkFile(filepath: string): string[] {
     }
   }
 
-  // Check 4: Missing qr: none in config-info (slides only)
-  if (pathStem(filepath).includes("slides")) {
+  // Check 4: Missing qr: none in config-info (decks only).
+  // NOT `pathStem(filepath).includes("slides")` — the filename with its extension stripped, which
+  // matched only a file literally named `slides.typ` and skipped every deck stored as
+  // `slides/<name>.typ`. Same defect as overflow-check.ts had; `isTypDeck` is the shared predicate.
+  if (isTypDeck(filepath)) {
     if (content.includes("config-info") && !content.includes("qr:")) {
       violations.push("Missing 'qr: none' in config-info block");
     }

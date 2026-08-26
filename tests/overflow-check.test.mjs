@@ -7,7 +7,12 @@
 // coverage silently: the hook kept shipping, and nothing checked it for as long as the entry stood.
 //
 // Run: bun tests/overflow-check.test.mjs
-import { resolveTypTarget } from '../hooks/overflow-check.ts'
+import { resolveTypTarget, isOverflowTarget, resolveCheckScript } from '../hooks/overflow-check.ts'
+const PLUGIN_ROOT = new URL('..', import.meta.url).pathname.replace(/\/$/, '')
+const TYPST_PLUGIN_SCRIPT = `${process.env.HOME}/.claude/skills/typst/scripts/checks/check-overflow.sh`
+import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join, dirname } from 'node:path'
 
 let PASS = 0, FAIL = 0
 const ok = (name, condition, extra = '') => {
@@ -25,6 +30,40 @@ ok('typst compile --root form', resolveTypTarget('typst compile --root . slides/
 ok('cd prefix + typst compile', resolveTypTarget('cd foo && typst compile slides.typ') === 'slides.typ')
 ok('non-compile command: no trigger', resolveTypTarget('typst watch slides.typ') === null)
 ok('unrelated command: no trigger', resolveTypTarget('ls -la') === null)
+
+// (c) APPLICABILITY. The gate used to test `pathStem(typFile).includes("slides")` — the FILENAME
+// with its extension stripped — so it fired only on a file literally named `slides.typ` and was
+// dead for every deck stored as `slides/<name>.typ`, which is the teaching convention. The
+// predicate is `isTypDeck` (hooks/writing-prose-check.ts): a `slides`/`presentation*` path
+// component, or a deck marker in the content.
+const DECK = '#import "@preview/touying:0.5.0": *\n#slide[\n=== x\n]\n'
+const PROSE = '#set page(margin: 1in)\nDear Professor,\nSincerely.\n'
+const fixture = (rel, body) => {
+  const root = mkdtempSync(join(tmpdir(), 'ovf-'))
+  const abs = join(root, rel)
+  mkdirSync(dirname(abs), { recursive: true })
+  writeFileSync(abs, body)
+  return abs
+}
+
+ok('deck under slides/ is a target', isOverflowTarget(fixture('slides/01-intro.typ', DECK)) === true)
+ok('deck in a slides/ subdirectory is a target',
+   isOverflowTarget(fixture('slides/_current-events/2026-08-25.typ', DECK)) === true)
+ok('a file literally named slides.typ is still a target', isOverflowTarget(fixture('slides.typ', DECK)) === true)
+ok('deck outside slides/ is a target by content marker', isOverflowTarget(fixture('decks/talk.typ', DECK)) === true)
+ok('prose notes are not a target', isOverflowTarget(fixture('notes/09-disclosure.typ', PROSE)) === false)
+
+// (d) SCRIPT RESOLUTION. The typst plugin is the single source for Typst tooling and its
+// check-overflow.sh carries fixes the workflows copy lacks (project-root discovery for a deck that
+// imports ../../templates/theme.typ). Prefer it; fall back to the vendored copy so the hook still
+// works where the typst plugin is not installed.
+ok('prefers the typst plugin script when present',
+   resolveCheckScript('/nonexistent-plugin-root', TYPST_PLUGIN_SCRIPT) === TYPST_PLUGIN_SCRIPT)
+ok('falls back to the vendored copy when the typst plugin is absent',
+   resolveCheckScript(PLUGIN_ROOT, '/nonexistent/typst/check-overflow.sh')
+     === `${PLUGIN_ROOT}/scripts/checks/check-overflow.sh`)
+ok('returns null when neither exists',
+   resolveCheckScript('/nonexistent-plugin-root', '/nonexistent/typst/check-overflow.sh') === null)
 
 // Fail-open on malformed / non-Bash / non-triggering stdin. A PreToolUse hook that dies on junk
 // input is a hook that blocks real work, so every one of these must exit 0.

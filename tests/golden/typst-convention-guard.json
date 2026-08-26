@@ -125,16 +125,16 @@
       }
     },
     {
-      "name": "slides-config-info-missing-qr",
+      "name": "deck-under-slides-dir-config-info-missing-qr",
       "kind": "context",
       "stdin": {
         "tool_name": "Write",
         "tool_input": {
-          "file_path": "slides.typ"
+          "file_path": "slides/01-intro.typ"
         }
       },
       "fixture": {
-        "slides.typ": "#show: config-info.with(title: [Talk])\n\nSome body text.\n"
+        "slides/01-intro.typ": "#show: config-info.with(title: [Talk])\n\nSome body text.\n"
       },
       "tsExpected": {
         "stdoutSha256": "4c188ce522137957f6d5e6bc759986f13a0b211aa22b033cb706ec174023e72a",
@@ -143,7 +143,7 @@
       }
     },
     {
-      "name": "non-slides-stem-skips-qr-check",
+      "name": "non-deck-skips-qr-check",
       "kind": "allow",
       "stdin": {
         "tool_name": "Write",
@@ -304,5 +304,8 @@
         "fs": {}
       }
     }
+  ],
+  "notes": [
+    "2026-08-25: check 4's gate moved from `pathStem(filepath).includes(\"slides\")` to `isTypDeck` (a slides/presentation* PATH COMPONENT, or a touying/polylux/#slide( marker). The old stem test matched only a file literally named slides.typ, so every deck stored as slides/<name>.typ — the teaching convention — skipped the check silently. The qr case's fixture moved to slides/01-intro.typ accordingly; a bare slides.typ carrying no deck marker is no longer a deck."
   ]
 }
