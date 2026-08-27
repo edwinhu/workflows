@@ -179,7 +179,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan
       agentType: "Explore",
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/dev/references/lens-tests.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/dev/references/tdd.md"],
-      prompt: "Judge only the tests covering this change, against the finding classes in the refs. Read them in full first. Read the tests before claiming a gap. Findings: behaviour that ships unverified, an assertion that would not fail when the behaviour it names breaks, a test that exercises a path production does not use, and evidence that reads source or logs where the task required runtime behaviour." },
+      prompt: "Judge only the tests covering this change, against the finding classes in the refs. Read them in full first. Read the tests before claiming a gap. Findings: behaviour that ships unverified, an assertion that would not fail when the behaviour it names breaks, a test that exercises a path production does not use, a fixture whose precondition no production writer can produce, and evidence that reads source or logs where the task required runtime behaviour." },
   ],
 
   authorityExtra: [

@@ -22,7 +22,11 @@ afterAll(() => {
   for (const d of scratch) rmSync(d, { recursive: true, force: true })
 })
 
-type Round = { blocking: number; generated?: number; titles?: string[]; files?: string[] }
+type Round = {
+  blocking: number; generated?: number; titles?: string[]; files?: string[]
+  /** The three re-run selectors, as craft writes them — what the failure signature is built from. */
+  tasksThatFlagged?: string[]; red?: { id: string; verdict: string }[]; mechFailed?: string[]
+}
 
 /** A run dir: one result-round<N>.json per entry, plus the args.json the rounds ran under. */
 function mkRun(rounds: Round[], tasks: unknown[] = [{ id: 'T1', name: 'n', work: 'w', acceptance: 'a', writablePaths: ['src/'] }]) {
@@ -40,6 +44,9 @@ function mkRun(rounds: Round[], tasks: unknown[] = [{ id: 'T1', name: 'n', work:
       verdict: r.blocking === 0 ? 'PASS' : 'FAIL',
       scoreTable: { survivingBlocking: r.blocking, lensFindings: r.generated ?? titles.length },
       findings,
+      ...(r.tasksThatFlagged ? { tasksThatFlagged: r.tasksThatFlagged } : {}),
+      ...(r.red ? { red: r.red } : {}),
+      ...(r.mechFailed ? { mechanicalThatFailed: r.mechFailed.map(name => ({ name, exitCode: 1 })) } : {}),
     }, null, 2))
   })
   return dir
@@ -102,6 +109,51 @@ test('a flat non-zero sequence is NOT CONVERGING — no net decrease', () => {
   const r = run(mkRun([{ blocking: 3 }, { blocking: 3 }, { blocking: 3 }]))
   expect(r.code).toBe(1)
   expect(r.stdout).toContain('no net decrease')
+})
+
+// ---------------------------------------------------------------- the repeated failure
+
+test('two rounds failing in exactly the same place point at the brief, not the implementer', () => {
+  const r = run(mkRun([
+    { blocking: 0, titles: [], tasksThatFlagged: ['T2'], red: [{ id: 'T2', verdict: 'green-not-green' }] },
+    { blocking: 0, titles: [], tasksThatFlagged: ['T2'], red: [{ id: 'T2', verdict: 'green-not-green' }] },
+  ]))
+  expect(r.code).toBe(1)
+  expect(r.stdout).toContain('NOT CONVERGING')
+  expect(r.stdout).toContain('round 2 repeated round 1')
+  expect(r.stdout).toContain('red:T2:green-not-green')
+  expect(r.stdout).toContain('suspect the BRIEF')
+})
+
+test('a run failing in a DIFFERENT place each round raises no repeat reason', () => {
+  const r = json(mkRun([
+    { blocking: 0, titles: [], tasksThatFlagged: ['T1'] },
+    { blocking: 0, titles: [], tasksThatFlagged: ['T2'] },
+  ]))
+  expect(r.repeatedFailure).toEqual([])
+})
+
+test('a clean round repeating a clean round is not a repeated failure', () => {
+  const r = json(mkRun([{ blocking: 0, titles: [] }, { blocking: 0, titles: [] }]))
+  expect(r.repeatedFailure).toEqual([])
+  expect(r.verdict).toBe('CONVERGING')
+})
+
+test('a failing mechanical check repeating across rounds is a repeated failure', () => {
+  const r = json(mkRun([
+    { blocking: 0, titles: [], mechFailed: ['tests'] },
+    { blocking: 0, titles: [], mechFailed: ['tests'] },
+  ]))
+  expect(r.repeatedFailure.map((x: { round: number }) => x.round)).toEqual([2])
+  expect(r.reasons.join(' ')).toContain('mech:tests')
+})
+
+test('an all-zero blocking sequence does not claim "no net decrease" — the failure is elsewhere', () => {
+  const r = run(mkRun([
+    { blocking: 0, titles: [], tasksThatFlagged: ['T1'] },
+    { blocking: 0, titles: [], tasksThatFlagged: ['T2'] },
+  ]))
+  expect(r.stdout).not.toContain('no net decrease')
 })
 
 // ---------------------------------------------------------------- accretion (self-contained, tier 1's rule)

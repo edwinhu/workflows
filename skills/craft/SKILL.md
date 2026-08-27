@@ -228,8 +228,17 @@ block, injects `planPath`/`specHash`, writes `args.json`, self-sends the goal be
 does and why, and what to check when it reports something odd:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan; or pass one
+bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh                    # armed plan; or pass one
+bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh --provider codex   # "run craft through codex"
 ```
+
+**`--provider claude|codex|gemini` (default `claude`) runs the WHOLE spine on that provider** — it
+reaches `farm.sh --provider`, whose wrapper remaps the tier names, so every `model: 'sonnet'` in
+`workflow.js` follows with no arg change. Same flag on `craft-redispatch.sh`, which is where it earns
+its keep: when a round repeats its predecessor's failure exactly, a different provider is the lever
+for framing lock-in (`references/convergence.md`). Whole-run granularity is structural — the provider
+is chosen before `workflow.js` runs, so implementers and lenses cannot differ. It is deliberately not
+written to `args.json`: differing between rounds is the point.
 
 It needs nothing from the session's context, which is the point: a run whose context was cleared at
 plan approval is recovered by this one command, with no re-exploration.

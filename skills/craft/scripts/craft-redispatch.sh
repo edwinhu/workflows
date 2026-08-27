@@ -17,6 +17,7 @@
 #   craft-redispatch.sh … --dispatch --full                # re-run every task, not just the flagged
 #   craft-redispatch.sh … --dispatch --no-lint             # skip BOTH gates below
 #   craft-redispatch.sh … --dispatch --no-red-probe        # skip only the red probe; keep plan-lint
+#   craft-redispatch.sh … --dispatch --provider codex      # run this round's whole spine on GPT-5.6
 #   CRAFT_REDISPATCH_DRYRUN=1                              # everything but the farm-out
 #
 # SELECTIVE RE-RUN, with --dispatch and derived here rather than remembered: `onlyTasks` is the
@@ -63,9 +64,15 @@ die() { printf 'craft-redispatch: %s\n' "$1" >&2; exit 1; }
 [ $# -ge 2 ] || die "usage: craft-redispatch.sh <plan.md> <args.json> [--dispatch] [--no-lint]"
 PLAN=$1; ARGS=$2; shift 2
 DISPATCH=""; LINT=1; REDPROBE=1; FULL=0
+# See craft-dispatch.sh for what this actually swaps. Per-invocation, never sticky: switching
+# provider between rounds is the whole point, so a round inherits nothing from its predecessor.
+PROVIDER=claude
 while [ $# -gt 0 ]; do
   case "$1" in
     --dispatch) DISPATCH=--dispatch ;;
+    --provider) shift; PROVIDER="${1:-}"
+                case "$PROVIDER" in claude|codex|gemini) ;;
+                  *) die "--provider must be claude|codex|gemini, got: ${PROVIDER:-(empty)}" ;; esac ;;
     --no-lint)  LINT=0; REDPROBE=0 ;;
     --no-red-probe) REDPROBE=0 ;;
     --full)     FULL=1 ;;
@@ -234,6 +241,8 @@ printf '%s\n' "$SYNCED"
 # ADVISORY, and before the cap so a capped run carries the diagnosis in the same output. Triggered by
 # round count or by elapsed time since the run dir's oldest archive — both derived from files that
 # already exist. A NOT CONVERGING verdict gates nothing; the cap below is what stops a run.
+# Round 3 is the earliest trigger because two results is the earliest a round can be seen to REPEAT
+# its predecessor's failure — the signal that says the brief is wrong rather than the implementer.
 if [ "$DISPATCH" = "--dispatch" ]; then
   AGE=$(python3 -c '
 import glob, os, sys, time
@@ -443,10 +452,10 @@ fi
 [ -n "${CRAFT_REDISPATCH_DRYRUN:-}" ] && { echo "CRAFT_REDISPATCH_DRYRUN: nothing dispatched."; exit 0; }
 
 LOG="$RUN_DIR/run-$(date +%H%M%S).log"
-setsid nohup bash "$FARM" \
+setsid nohup bash "$FARM" --provider "$PROVIDER" \
     --workflow "$SKILL/workflow.js" \
     --args "$ARGS_ABS" --out "$RESULT" --cwd "$(pwd)" \
     > "$LOG" 2>&1 < /dev/null &
 
-printf 'dispatched, log: %s\n' "$LOG"
+printf 'dispatched, log: %s (provider: %s)\n' "$LOG" "$PROVIDER"
 printf 'wait with a Monitor on %s, then run craft-result.sh on it\n' "$RESULT"

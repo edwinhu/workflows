@@ -20,12 +20,22 @@
  * measured and printed because they say which failure this is — they are not extra verdicts.
  * Accretion is its own reason: it needs no history, and in the corpus it is what the two runs that
  * never converged had and no other run did.
+ *
+ * A REPEATED FAILURE is its own reason too, and the earliest one available: when round N fails in
+ * exactly the places round N-1 failed, two independent implementers hit one wall, which is evidence
+ * about the BRIEF rather than about either of them.
  */
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { coveredBy, lint, parseArgs, parseMarkdown, type Plan } from './plan-lint.ts'
 
-type Result = { scoreTable?: Record<string, unknown>; findings?: { title?: string; severity?: string; file?: string }[] }
+type Result = {
+  scoreTable?: Record<string, unknown>
+  findings?: { title?: string; severity?: string; file?: string }[]
+  tasksThatFlagged?: string[]
+  red?: { id?: string; verdict?: string }[]
+  mechanicalThatFailed?: { name?: string }[]
+}
 
 const die = (msg: string): never => {
   console.error(`converge-check: ${msg}`)
@@ -79,6 +89,17 @@ const slopeOf = (ys: number[]) => {
   let num = 0, den = 0
   ys.forEach((y, x) => { num += (x - mx) * (y - my); den += (x - mx) ** 2 })
   return den ? Math.round((num / den) * 100) / 100 : 0
+}
+
+/** WHERE a round failed, as a comparable set — the three re-run selectors, not the lens findings.
+ *  Lens findings are drawn from a constant-rate generator and never repeat (see convergence.md);
+ *  these channels name tasks and commands, so a repeat here is a repeat of the same wall. */
+const failureSignature = (r: Result): string[] => {
+  const sig = new Set<string>()
+  for (const id of r.tasksThatFlagged ?? []) sig.add(`task:${id}`)
+  for (const rec of r.red ?? []) if (rec?.verdict && rec.verdict !== 'red-green') sig.add(`red:${rec.id}:${rec.verdict}`)
+  for (const m of r.mechanicalThatFailed ?? []) sig.add(`mech:${m?.name ?? '(unnamed)'}`)
+  return [...sig].sort()
 }
 
 function main() {
@@ -147,6 +168,21 @@ function main() {
         'the implementer is being handed superseded instructions beside the live ones',
     )
 
+  // The repeated failure. Checked before the blocking sequence because it is the more specific
+  // statement: a run can repeat its failure exactly while the blocking count holds flat at zero.
+  const sigs = results.map(failureSignature)
+  const repeated: { round: number; signature: string[] }[] = []
+  sigs.forEach((sig, i) => {
+    if (i > 0 && sig.length && sig.join('\u0000') === sigs[i - 1].join('\u0000'))
+      repeated.push({ round: i + 1, signature: sig })
+  })
+  for (const rep of repeated)
+    reasons.push(
+      `round ${rep.round} repeated round ${rep.round - 1}'s failure exactly (${rep.signature.join(', ')}) — ` +
+        'two independent implementers hit one wall, so suspect the BRIEF, not the implementer: ' +
+        'is the signal the acceptance demands reachable from inside the task\'s writablePaths?',
+    )
+
   const judgeable = blocking.length >= 2
   if (judgeable) {
     const rose = blocking.findIndex((b, i) => i > 0 && b > blocking[i - 1])
@@ -155,7 +191,9 @@ function main() {
         `the surviving-blocking sequence rose at round ${rose + 1} (${blocking[rose - 1]} → ${blocking[rose]}) — ` +
           'a round that raises more than it closes is generating findings, not depleting them',
       )
-    else if (blocking[blocking.length - 1] >= blocking[0])
+    // Only when there was something to deplete: an all-zero sequence means the run is failing in the
+    // task or mechanical channel, and "0 -> 0, no net decrease" would point the reader at the lenses.
+    else if (blocking[0] > 0 && blocking[blocking.length - 1] >= blocking[0])
       reasons.push(
         `no net decrease in surviving blocking findings over ${blocking.length} rounds (${blocking[0]} → ${blocking[blocking.length - 1]})`,
       )
@@ -169,7 +207,7 @@ function main() {
   if (asJson) {
     console.log(JSON.stringify({
       dir, verdict, rounds: blocking.length, blocking, generated: { per: generated, ...gen },
-      repeats, split, accretion: accretion.map(f => f.where), reasons,
+      repeats, split, accretion: accretion.map(f => f.where), repeatedFailure: repeated, reasons,
     }, null, 2))
     process.exit(code)
   }
@@ -180,6 +218,7 @@ function main() {
   console.log(`  repeats after round 1: ${exact}/${post} exact, ${jac}/${post} jaccard≥0.5 — nothing re-litigated is the constant-rate signature`)
   console.log(`  findings by file: ${split.deliverable} inside a task writablePath, ${split.gate} outside it, ${split.unattributed} naming no file`)
   console.log(`  work accretion: ${accretion.length} task(s) with more than one round marker`)
+  console.log(`  failed where: ${sigs.map(g => g.length ? g.join('+') : '(nothing)').join('  |  ')}`)
   if (!judgeable) {
     console.log('\ntoo short to judge — a convergence verdict needs at least two rounds of results')
     if (accretion.length) console.log(`  but note: ${reasons[0]}`)

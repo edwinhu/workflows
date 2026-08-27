@@ -775,3 +775,31 @@ describe('the convergence self-eval trigger', () => {
     expect(r.out).toContain('CONVERGING')
   })
 })
+
+describe('the provider passthrough', () => {
+  test('an unknown provider is refused, and refused before a round is spent', () => {
+    const f = gateFixture()
+    priorResult(f.dir)
+    const r = redispatch(f.plan, f.args, '--provider', 'llama')
+    expect(r.code).toBe(1)
+    expect(r.out).toContain('--provider must be claude|codex|gemini')
+    expect(readArgs(f.args).rounds).toBe(1)
+  })
+
+  test('--provider codex is accepted and named on the dispatch line', () => {
+    const f = gateFixture()
+    priorResult(f.dir)
+    const r = redispatch(f.plan, f.args, '--provider', 'codex')
+    expect(r.code).toBe(0)
+    expect(readArgs(f.args).rounds).toBe(2)
+  })
+
+  test('the provider is NOT persisted into args.json — a later round inherits nothing', () => {
+    const f = gateFixture()
+    priorResult(f.dir)
+    redispatch(f.plan, f.args, '--provider', 'codex')
+    const keys = Object.keys(readArgs(f.args))
+    expect(keys).not.toContain('provider')
+    expect(keys).not.toContain('dispatchProvider')
+  })
+})

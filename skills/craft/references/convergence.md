@@ -115,3 +115,60 @@ repeat — a defect restated across a run boundary because it was still unfixed.
 **Do not freeze the plan outright.** Some amendments are obligatory (a `redCommand` wrong as written
 cannot stand, and the hash makes it unignorable). Freezing the finding set and refusing accretion
 stop the exit condition from moving and stop the plan from growing, without forbidding a correction.
+
+## When a round repeats — which lever actually moves a stuck run
+
+`converge-check.ts` compares each round's **failure signature**: the ids in `tasksThatFlagged`, the
+non-`red-green` red verdicts, and the names in `mechanicalThatFailed`. Lens findings are excluded —
+they never repeat (0 of 158 above), so a repeat there says nothing. Two consecutive rounds with the
+same non-empty signature is the run's most informative event: **two independent implementers, working
+from the same brief, hit the same wall in the same place.** That is evidence about the brief.
+
+Measured case (`mail-bridge`, 2026-08-26): rounds 1 and 2 failed identically — same benchmark
+regression, same red cases, two implementations converging on the same rejected design. Cause: the
+task's `writablePaths` named one file, while the only signal that could satisfy the acceptance
+required cooperation from writers in other files. The task was infeasible inside its own boundary, so
+every implementer had to fake it the same way. A read-only analysis found this in one pass.
+
+The levers, ranked by yield per token:
+
+1. **Re-derive the constraint by measurement.** A read-only agent that goes and measures the thing the
+   round assumed. Cheapest, and the only one that can change the *question*. Five hypotheses were
+   refuted this way in one day; every one had been confidently held.
+2. **Check feasibility inside the declared scope** — is the signal the acceptance demands reachable
+   from inside this task's `writablePaths`? This is the specific form (1) takes after a repeat, and it
+   is what the repeat reason prints.
+3. **Model diversity.** Addresses FRAMING lock-in, not execution quality. Worth pulling only once (1)
+   and (2) have shown the brief is sound — and craft already carries two thirds of it:
+   - **Judge side, cross-provider: `thirdParty: ["codex"|"gemini"]`.** Already shipped, and advisory
+     by construction. This is the diversity lever that exists; a second reader that does not share
+     the first's framing is exactly what a repeated failure calls for, and it cannot corrupt the gate.
+   - **Whole spine, cross-provider: `craft-dispatch.sh --provider codex|gemini`** (same flag on
+     `craft-redispatch.sh`, so a stuck round can switch and re-run). It reaches farm.sh's
+     `--provider`, which swaps the CLIProxyAPI wrapper. The wrapper remaps the **tier names** —
+     `codex-code` exports `ANTHROPIC_DEFAULT_SONNET_MODEL=gpt-5.6-terra`, opus→`gpt-5.6-sol` — so
+     every `model: 'sonnet'` already in `workflow.js` follows with no arg change. Implementers,
+     verifiers, lenses, refuters and probes all move together.
+   - **Granularity is the whole run, and that is structural.** There is no way to put implementers on
+     one provider and lenses on another: the provider is chosen when the spine is launched, before
+     `workflow.js` runs. Not a gap to fill — a split run would be two gates.
+   - **The provider is never written to `args.json`.** It is a property of the dispatch, not the plan,
+     and the point of the lever is to DIFFER between rounds; a sticky value would silently pin round 4
+     to whatever broke round 3.
+   - **Per-leg tier tuning inside one provider: `implementerModel` / `lensModel`.** Plan keys, so
+     changing them means amending the plan and re-hashing.
+4. **A parallel horse race across approaches — do not build one into craft.** Two independent
+   blockers, and the first is the same one that already keeps worktrees out (SKILL.md, *Red flags*):
+   `workflow.js` has no filesystem, so it can neither isolate N competing implementations nor merge
+   the winner, and a merge agent's silent slip reads as an implementer's omission. Second, a race
+   needs a decidable selector. Craft's per-task signals are `redCommand`'s exit code, the verifier and
+   the mechanical checks — if every horse goes green they do not discriminate, and picking a winner
+   collapses into a fuzzy prose judgement, which is the loop that does not terminate. If one horse
+   goes green it was not a race, it was retry-until-green, and the round already does that. Race
+   outside craft, at the CLARIFY architecture step, where the deliverable is a *choice* and a human
+   makes it.
+
+**Neither (3) nor (4) would have helped the measured case, and running them is how a spec defect gets
+paid for N times instead of once.** A specification failure is infeasible for every model equally; N
+agents in parallel hit one wall N times and return N confident wrong answers. Diversity and racing
+buy capability, and capability was never what was short.

@@ -438,8 +438,18 @@ lint=1
 redprobe=1
 mechprobe=1
 rundir=""
+# The whole spine's provider. farm.sh maps it to a CLIProxyAPI wrapper, and that wrapper remaps the
+# TIER NAMES (ANTHROPIC_DEFAULT_SONNET_MODEL=gpt-5.6-terra under codex), so every `model: 'sonnet'`
+# in workflow.js follows without a single arg changing. Whole-run granularity by construction: there
+# is no way to put implementers on one provider and lenses on another, and mixing them would mean two
+# gates. Deliberately NOT recorded in args.json — it is a property of this dispatch, not of the plan,
+# and the point of the lever is to differ between rounds.
+provider=claude
 while :; do
   case "${1:-}" in
+    --provider) provider="${2:-}"; shift 2 || { echo "--provider needs claude|codex|gemini" >&2; exit 2; }
+               case "$provider" in claude|codex|gemini) ;;
+                 *) echo "--provider must be claude|codex|gemini, got: $provider" >&2; exit 2 ;; esac ;;
     --abandon) mode=abandon; shift ;;
     --print)   mode=print;   shift ;;
     --no-lint) lint=0; redprobe=0; mechprobe=0; shift ;;
@@ -607,14 +617,14 @@ gs=$?
 
 # Phase 4. Detached, never foreground: a real gate runs 20-60 min and a foreground call is killed
 # mid-run. Harness-tracked background tasks were measured to die too; setsid was not.
-setsid nohup bash "$FARM" \
+setsid nohup bash "$FARM" --provider "$provider" \
   --workflow "$SKILL/workflow.js" \
   --args "$R/args.json" --out "$R/result.json" --cwd "$PWD" \
   > "$R/run.log" 2>&1 < /dev/null &
 
 sleep 2
 if bash "$SKILL/scripts/farm-alive.sh" "$R/result.json" > /dev/null; then
-  echo "dispatched: $runid"
+  echo "dispatched: $runid (provider: $provider)"
 else
   echo "WARNING: no live dispatch for $runid two seconds in — check $R/run.log" >&2
 fi

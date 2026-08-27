@@ -43,6 +43,14 @@ For processes and GUI/E2E systems: build, launch with output captured to a file,
 readiness, confirm the process is alive, read the whole log, confirm it holds no startup failure —
 and only then run the user-facing assertion or capture evidence.
 
+## The arrange has to be reachable too
+
+Exercising the production path is half the test. When a test builds its **precondition** by writing
+state the code under test owns rather than by calling a production writer, ask which production code
+path produces that state. If no writer in the codebase can, the test pins fiction — it will pass
+whatever the code does, and the real defect stays untested. Direct fixture construction is otherwise
+fine; the smell is hand-made state carrying an assertion that something is undetectable.
+
 ## `redCommand` — the gate that executes
 
 Each task declares `redCommand`: the exact command that fails before the task is implemented and

@@ -30,6 +30,18 @@ untested code) and the specific behaviour left unpinned. Read the tests before c
 - the required real/integration path replaced by a unit test against a mocked transport — for a task
   whose declared production protocol is HTTP/CLI/UI, a mocked-transport test does not substitute
 
+**Fixtures no production path can produce**
+
+Building a fixture directly is normal and not a finding — seeding a corpus, a temp directory, a canned
+provider response, a hand-built request. The smell is narrower, and all three parts must hold: the test
+writes state the code under test OWNS (raw SQL into its tables, a hand-edited on-disk record, a field
+poked past its setter), it does so instead of calling a production writer that exists, and it asserts a
+NEGATIVE CAPABILITY from it — "no watermark can see this", "the cache never invalidates", "this is
+undetectable". Then ask: **which production code path produces this state?** Check the real writers. If
+every one of them makes it unreachable — they all restamp the timestamp, bump the counter, move the row,
+delete rather than mutate — the test pins fiction. It passes forever, it shapes the design, and the
+defect it was groping toward ships untested. MAJOR: name the writers you read and what each does instead.
+
 **Missing paths for the change**
 
 - the error path of a function whose error handling this change added or altered
