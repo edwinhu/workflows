@@ -8,14 +8,14 @@
   ],
   "metadata": {
     "description": "The craft workflow loop for Claude Code — code, data, writing and presentations, each gated by computed checks rather than self-report",
-    "version": "6.16.0"
+    "version": "6.16.1"
   },
   "plugins": [
     {
       "name": "workflows",
       "source": "./",
       "description": "One loop — craft — for code, data, writing and workshop presentations: an approved plan as the run's only authority, delegated implementation, independent verification against computed gates, and human review",
-      "version": "6.16.0",
+      "version": "6.16.1",
       "category": "development",
       "tags": [
         "development",

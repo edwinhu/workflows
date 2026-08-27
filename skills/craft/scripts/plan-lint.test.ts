@@ -205,6 +205,11 @@ test('a review lens stating a severity is clean', () => {
   expect(rules(p)).not.toContain('lens-missing-severity')
 })
 
+test('a review lens stating its severity in the schema\'s own lowercase is clean', () => {
+  const p = base({ tasks: [task()], reviewLenses: [{ key: 'k', text: 'judge it. `major` at minimum, `critical` where X' }] })
+  expect(rules(p)).not.toContain('lens-missing-severity')
+})
+
 // ---------------------------------------------------------------- document-level
 
 test('a success criterion naming an artifact no task touches is flagged', () => {

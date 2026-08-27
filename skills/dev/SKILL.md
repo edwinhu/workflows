@@ -158,28 +158,28 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan
     { key: "criteria-vs-artifacts",
       agentType: "Explore",
       refs: [],
-      prompt: "Judge the deliverable strictly against the success criteria in the plan and goal: for each criterion, is there an artifact in the working tree that satisfies it? Missing or partial satisfaction is a finding." },
+      prompt: "Judge the deliverable strictly against the success criteria in the plan and goal: for each criterion, is there an artifact in the working tree that satisfies it? Missing or partial satisfaction is a finding. Severity: MAJOR at minimum, CRITICAL where the unsatisfied criterion is one the deliverable cannot stand without." },
 
     { key: "scope-fidelity",
       agentType: "Explore",
       refs: [],
-      prompt: "Judge scope fidelity: did the changes stay inside the plan's task table and writable paths? Out-of-scope edits, unrequested features, and silently skipped plan items are findings." },
+      prompt: "Judge scope fidelity: did the changes stay inside the plan's task table and writable paths? Out-of-scope edits, unrequested features, and silently skipped plan items are findings. Severity: MAJOR at minimum, CRITICAL where an edit landed outside every declared writable path." },
 
     { key: "security",
       agentType: "Explore",
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/dev/references/lens-security.md"],
-      prompt: "Judge only the security of the changed code, against the finding classes in the refs. Read them in full first. A finding names a file and line and states the concrete attack vector: the input an attacker controls, the path it travels, and what it reaches. Pre-existing defects this change did not introduce are out of scope." },
+      prompt: "Judge only the security of the changed code, against the finding classes in the refs. Read them in full first. A finding names a file and line and states the concrete attack vector: the input an attacker controls, the path it travels, and what it reaches. Pre-existing defects this change did not introduce are out of scope. Severity: CRITICAL where the vector reaches attacker-controlled input on a production path; MAJOR otherwise." },
 
     { key: "performance",
       agentType: "Explore",
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/dev/references/lens-performance.md"],
-      prompt: "Judge only the runtime cost of the changed code, against the finding classes in the refs. Read them in full first. A finding names a file and line, sits on a path that runs often enough to matter, and states the cost as Big-O over the input that actually grows or as concrete latency/memory. Speculation without a growing input is not a finding." },
+      prompt: "Judge only the runtime cost of the changed code, against the finding classes in the refs. Read them in full first. A finding names a file and line, sits on a path that runs often enough to matter, and states the cost as Big-O over the input that actually grows or as concrete latency/memory. Speculation without a growing input is not a finding. Severity: MAJOR at minimum, CRITICAL where the growth makes a production path unusable at realistic input size." },
 
     { key: "tests",
       agentType: "Explore",
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/dev/references/lens-tests.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/dev/references/tdd.md"],
-      prompt: "Judge only the tests covering this change, against the finding classes in the refs. Read them in full first. Read the tests before claiming a gap. Findings: behaviour that ships unverified, an assertion that would not fail when the behaviour it names breaks, a test that exercises a path production does not use, a fixture whose precondition no production writer can produce, and evidence that reads source or logs where the task required runtime behaviour." },
+      prompt: "Judge only the tests covering this change, against the finding classes in the refs. Read them in full first. Read the tests before claiming a gap. Findings: behaviour that ships unverified, an assertion that would not fail when the behaviour it names breaks, a test that exercises a path production does not use, a fixture whose precondition no production writer can produce, and evidence that reads source or logs where the task required runtime behaviour. Severity: MAJOR at minimum, CRITICAL where a passing test certifies behaviour it never exercised." },
   ],
 
   authorityExtra: [

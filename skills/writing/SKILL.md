@@ -269,12 +269,12 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh "$PLAN"
     { key: "criteria-vs-artifacts",
       agentType: "Explore",
       refs: [],
-      prompt: "Judge the deliverable strictly against the success criteria in the plan and goal: for each criterion, is there an artifact in the working tree that satisfies it? Missing or partial satisfaction is a finding." },
+      prompt: "Judge the deliverable strictly against the success criteria in the plan and goal: for each criterion, is there an artifact in the working tree that satisfies it? Missing or partial satisfaction is a finding. Severity: MAJOR at minimum, CRITICAL where the unsatisfied criterion is one the deliverable cannot stand without." },
 
     { key: "scope-fidelity",
       agentType: "Explore",
       refs: [],
-      prompt: "Judge scope fidelity: did the changes stay inside the plan's task table and writable paths? Out-of-scope edits, unrequested features, and silently skipped plan items are findings." },
+      prompt: "Judge scope fidelity: did the changes stay inside the plan's task table and writable paths? Out-of-scope edits, unrequested features, and silently skipped plan items are findings. Severity: MAJOR at minimum, CRITICAL where an edit landed outside every declared writable path." },
 
     { key: "writing-judgement",
       agentType: "Explore",
@@ -297,7 +297,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh "$PLAN"
     { key: "prose-register",
       agentType: "writing-reviewer",
       refs: [],
-      prompt: "Grade the drafted prose against the preloaded writing-general base register plus, when the plan's Domain: is legal or econ, the preloaded writing-legal or writing-econ skill for that domain: the Ship table (diction), the prohibited-construction tic table, the VINDICATED phrases — which are standard scholarship and are NEVER findings — and the formatting rules (no bold-lead, no bold bare numbers, no emojis, no ALL-CAPS emphasis). A rule the register marks dropped is not a finding, and an advisory hit is a finding only where that specific sentence is worse for it. Report every finding with the quoted evidence and the span id prose-audit.py emitted for it, and list every span id you considered. NEVER report a register judgement as a computation — it is MODEL-EVALUATED, with the text you actually read." },
+      prompt: "Grade the drafted prose against the preloaded writing-general base register plus, when the plan's Domain: is legal or econ, the preloaded writing-legal or writing-econ skill for that domain: the Ship table (diction), the prohibited-construction tic table, the VINDICATED phrases — which are standard scholarship and are NEVER findings — and the formatting rules (no bold-lead, no bold bare numbers, no emojis, no ALL-CAPS emphasis). A rule the register marks dropped is not a finding, and an advisory hit is a finding only where that specific sentence is worse for it. Report every finding with the quoted evidence and the span id prose-audit.py emitted for it, and list every span id you considered. NEVER report a register judgement as a computation — it is MODEL-EVALUATED, with the text you actually read. Severity: MAJOR at minimum, CRITICAL where the register defect misstates the authority or the claim it carries." },
   ],
 
   authorityExtra: [

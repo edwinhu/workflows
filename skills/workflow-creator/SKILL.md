@@ -166,7 +166,7 @@ const args = {
     { key: "spine-fidelity",
       agentType: "Explore",
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/craft/SKILL.md"],
-      prompt: "Judge whether the generated skill supplies parameters to craft's spine rather than re-deriving one. Findings: a second lifecycle re-implemented inside the skill instead of parameterizing the spine in the refs; a domain .js that duplicates what craft's workflow.js already does; an orchestrator doing work a dispatched agent should do; a phase named in the plan that no task, lens or mechanical check actually covers; a phase that runs but whose result reaches no gate; any of craft's five phases silently dropped." },
+      prompt: "Judge whether the generated skill supplies parameters to craft's spine rather than re-deriving one. Findings: a second lifecycle re-implemented inside the skill instead of parameterizing the spine in the refs; a domain .js that duplicates what craft's workflow.js already does; an orchestrator doing work a dispatched agent should do; a phase named in the plan that no task, lens or mechanical check actually covers; a phase that runs but whose result reaches no gate; any of craft's five phases silently dropped. Severity: MAJOR at minimum, CRITICAL where a dropped phase leaves a gated dimension certified by nothing." },
   ],
 
   authorityExtra: "<the Phase 4 block, verbatim>",
@@ -326,12 +326,12 @@ const args = {
     { key: "spine-fidelity",
       agentType: "Explore",
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/craft/SKILL.md"],
-      prompt: "Judge whether the generated skill supplies parameters to craft's spine rather than re-deriving one. Findings: a second lifecycle re-implemented inside the skill instead of parameterizing the spine in the refs; a domain .js that duplicates what craft's workflow.js already does; an orchestrator doing work a dispatched agent should do; a phase named in the plan that no task, lens or mechanical check actually covers; a phase that runs but whose result reaches no gate; any of craft's five phases silently dropped." },
+      prompt: "Judge whether the generated skill supplies parameters to craft's spine rather than re-deriving one. Findings: a second lifecycle re-implemented inside the skill instead of parameterizing the spine in the refs; a domain .js that duplicates what craft's workflow.js already does; an orchestrator doing work a dispatched agent should do; a phase named in the plan that no task, lens or mechanical check actually covers; a phase that runs but whose result reaches no gate; any of craft's five phases silently dropped. Severity: MAJOR at minimum, CRITICAL where a dropped phase leaves a gated dimension certified by nothing." },
 
     { key: "scope-fidelity",
       agentType: "Explore",
       refs: [],
-      prompt: "Judge scope fidelity: did the changes stay inside the plan's task table and writable paths? Out-of-scope edits, unrequested features, and silently skipped plan items are findings." },
+      prompt: "Judge scope fidelity: did the changes stay inside the plan's task table and writable paths? Out-of-scope edits, unrequested features, and silently skipped plan items are findings. Severity: MAJOR at minimum, CRITICAL where an edit landed outside every declared writable path." },
   ],
 
   authorityExtra: [

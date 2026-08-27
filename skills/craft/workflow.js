@@ -131,8 +131,8 @@ const thirdParty = Array.isArray(args.thirdParty) ? args.thirdParty.filter(m => 
 const reviewLenses = Array.isArray(args.reviewLenses) && args.reviewLenses.length
   ? args.reviewLenses
   : [
-      { key: 'criteria-vs-artifacts', prompt: 'Judge the deliverable strictly against the success criteria in the plan and goal: for each criterion, is there an artifact in the working tree that satisfies it? Missing or partial satisfaction is a finding.' },
-      { key: 'scope-fidelity', prompt: 'Judge scope fidelity: did the changes stay inside the plan\'s task table and writable paths? Out-of-scope edits, unrequested features, and silently skipped plan items are findings.' },
+      { key: 'criteria-vs-artifacts', prompt: 'Judge the deliverable strictly against the success criteria in the plan and goal: for each criterion, is there an artifact in the working tree that satisfies it? Missing or partial satisfaction is a finding. Severity: MAJOR at minimum, CRITICAL where the unsatisfied criterion is one the deliverable cannot stand without.' },
+      { key: 'scope-fidelity', prompt: 'Judge scope fidelity: did the changes stay inside the plan\'s task table and writable paths? Out-of-scope edits, unrequested features, and silently skipped plan items are findings. Severity: MAJOR at minimum, CRITICAL where an edit landed outside every declared writable path.' },
     ]
 // Whole-deliverable mechanical checks: [{name, cmd}]. Optional; absent/empty skips the phase entirely.
 const mechanicalChecks = Array.isArray(args.mechanicalChecks) ? args.mechanicalChecks : []

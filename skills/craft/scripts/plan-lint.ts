@@ -389,7 +389,9 @@ const formatGraph = (g: TaskGraph): string | null => {
   )
 }
 
-const SEVERITY = /\b(CRITICAL|MAJOR|MINOR)\b/
+/** Case-insensitive: LENS_SCHEMA's enum is lowercase, so a lens instructing ``major`` is naming
+ *  the exact string the gate compares — the most correct form, not a near miss. */
+const SEVERITY = /\b(CRITICAL|MAJOR|MINOR)\b/i
 /** The two forms a round amendment is written in. The mixed-case one needs its dash: `round 3` in
  *  ordinary prose is not a marker. */
 const ROUND_MARKER = /\bROUND \d+\b|\bRound \d+\s*[—–-]/g
