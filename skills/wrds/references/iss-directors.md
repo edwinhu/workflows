@@ -75,6 +75,76 @@ Gender (`female`) is completely NULL for all observations in 1996. Backfill stra
 2. Match via `first_name` using 1997+ gender distribution (>=5 obs, >=95% agreement)
 3. Conservative default: assign male (91% base rate)
 
+## Independence: `classification`, and the 2019 recode trap
+
+`classification` is **ISS's own judgment under its voting policy**, not the company's
+Section 303A.02 / Rule 5605(a)(2) determination. ISS is stricter than the exchanges in places
+(long tenure, designated directors, co-investments). Never report it as "the board determined".
+
+**The codes changed in 2019.** Legacy `I`/`E`/`L` map 1:1 onto `I-NED`/`Exec`/`NI-NED`.
+Counts, `risk.rmdirectors`, `meetingdate >= 2015-01-01`, n = 157,593 after
+`drop_duplicates(["company_id","meetingdate","fullname"])` (verified 2026-08-26):
+
+| code | meaning | n | years |
+|---|---|---:|---|
+| `I-NED` | independent non-executive | 82,912 | 2019+ (17 strays 2017-18) |
+| `I` | independent (legacy) | 46,358 | 2015-2018 (+~14 strays to 2024) |
+| `Exec` | executive/insider | 13,004 | 2019+ |
+| `E` | employee/insider (legacy) | 8,029 | 2015-2019 |
+| `NI-NED` | **affiliated** non-executive | 4,611 | 2019+ |
+| `L` | linked (legacy) | 2,623 | 2015-2019 |
+| NULL | | 56 | |
+
+```python
+indep = df.classification.isin(["I-NED", "I"])   # NOT just "I-NED"
+exec_ = df.classification.isin(["Exec", "E"])
+affil = df.classification.isin(["NI-NED", "L"])
+```
+Filtering on `I-NED` alone silently zeroes 2015-2018 and drives mean independent share to ~0.51.
+
+BoardEx `ned` cannot express this construct: it is only an executive/non-executive split, with
+**no category for an affiliated non-executive**.
+
+## Component relationship flags
+
+Value domain is `'Yes'` or NULL (`designated` also has 3 `'Y'`; `charity` and
+`attend_less75_pct` carry a `'NUL'` literal). `Yes` counts over the same 157,593 director-rows:
+
+| column | label | Yes | % |
+|---|---|---:|---:|
+| `relative_yn` | Relative? | 2,964 | 1.88% |
+| `former_employee_yn` | Former Employee? | 2,844 | 1.80% |
+| `business_transaction` | Business Transaction? | 2,433 | 1.54% |
+| `charity` | Charity Relationship? | 1,768 | 1.12% |
+| `prof_services_yn` | Prof Services? | 1,616 | 1.03% |
+| `otherlink` | Other Affiliation | 804 | 0.51% |
+| `interlocking` | Interlocking Directorship? | 236 | 0.15% |
+| `designated` | Designated Director? | 177 | 0.11% |
+
+Also carried: `dirsince`, `year_of_termination`, `nominee`, `pcnt_ctrl_votingpower`,
+`primary_employer`, `prititle`, `financial_expert`, `employment_ceo/chairman/president/cfo/...`.
+`employment_*` is the director's title at **their own employer**, not at this company — 3,889
+`I-NED` rows carry `employment_ceo='Yes'`.
+
+**Flag defects, by year (`Yes` counts):** `business_transaction` spikes to 859 (2016) and 514
+(2017) against ~110-150 in every other year. `interlocking` is effectively discontinued after
+2019 (37 in 2019 → 1 in 2024 → 0 in 2025). `year_of_termination` is documented "Mostly
+incomplete" and coverage collapses from ~750/yr to ~140/yr in 2020; it is present on only 61%
+of `former_employee_yn='Yes'` rows, so "former employee within 3 years" is not generally
+derivable.
+
+1,541 of 4,618 `NI-NED` director-years (2019+) carry **no** flag at all — ISS's affiliation
+judgment often rests on factors the flags do not record.
+
+## `exchange_type`
+
+Separate column labelled only "Exchange Type"; values `I`/`E`/`L`/`ND`/`Exec`/`Management`.
+Not a copy of `classification`: `NI-NED` splits into `L` 1,894 / `I` 1,269 / `ND` 1,205 /
+`Management` 243 (2015+). The 1,269 `NI-NED` × `exchange_type='I'` rows are directors ISS
+deems non-independent under its own policy but independent under whatever standard this field
+encodes. Semantics are undocumented by WRDS — treat as a candidate exchange-standard measure
+and label it as unverified.
+
 ## S&P 1500 Filter
 
 The `indexname` column identifies index membership. To restrict to S&P 1500:

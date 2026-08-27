@@ -54,6 +54,7 @@ format before writing the first `SELECT`.
 - **Add a delisting return to `dlyret`/`mthret`** → STOP. CIZ already embeds it. You are double-counting.
 - **Assume `mthret` reproduces legacy `ret`** → STOP. Different methodology (compounded daily). See `references/known-differences.md`.
 - **Guess what a flag value means** → STOP. `references/flags.md` has all 774 values; `crsp.metaflaginfo` is live.
+- **Substitute `comp.secd` (or any Compustat price table) because CIZ ran out at 2025-12-31** → STOP. Use the `crsp-lseg-splice` skill. `secd` carries no delisting returns, null `trfd` on ~48% of firm-days, and `ajexdi` that goes stale through corporate actions (one gvkey prints +17,700% on an unadjusted reverse split). It also applies none of CIZ's universe screens, so its cross-section is not comparable: measured on one event-study design, swapping CRSP for `secd` left Delaware flat at ~2,075 firms while doubling non-Delaware from 968 to 1,923.
 
 ### Format Facts
 
