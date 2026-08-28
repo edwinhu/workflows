@@ -115,16 +115,25 @@ func (b *issRowBuf) complete() bool {
 // holds only the no-activity sentence contributes nothing, which is the correct
 // outcome rather than an error.
 func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
+	// The header declares a <SERIES-ID>/<SERIES-NAME> pair per series and the body
+	// prints a fund heading, so the name is the bridge between a vote and its
+	// series id. A heading that names no declared series, or one two series answer
+	// to, resolves to "" and the row is emitted with an empty series_id: the
+	// chassis still stamps single-series filings, and nothing here guesses.
+	seriesIdx := seriesByName(meta.SeriesDecls)
+
 	var (
-		rows     []VoteRow
-		fund     string
-		issuer   string
-		ticker   string
-		cusip    string
-		mtgDate  string
-		mtgType  string
-		recDate  string
-		lastLine string
+		rows        []VoteRow
+		fund        string
+		fundSeries  string
+		fundClasses string
+		issuer      string
+		ticker      string
+		cusip       string
+		mtgDate     string
+		mtgType     string
+		recDate     string
+		lastLine    string
 
 		inTable bool
 		cur     *issRowBuf
@@ -136,6 +145,8 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 		if cur.item != "" {
 			rows = append(rows, VoteRow{
+				SeriesID:                 fundSeries,
+				ClassIDs:                 fundClasses,
 				FundName:                 fund,
 				IssuerName:               issuer,
 				CUSIP:                    cusip,
@@ -161,6 +172,11 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			inTable = false
 			if name != "" {
 				fund = name
+				fundSeries, fundClasses = "", ""
+				if d := lookupSeriesByName(seriesIdx, fund); d != nil {
+					fundSeries = d.SeriesID
+					fundClasses = strings.Join(d.ClassIDs, MultiValueSep)
+				}
 			}
 			issuer, ticker, cusip = "", "", ""
 			mtgDate, mtgType, recDate = "", "", ""

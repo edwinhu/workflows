@@ -351,12 +351,34 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 	mode := detectMode(head)
 	meta.ParseMode = mode
 
+	// A row's class contracts are the ones the header declares under the series
+	// THAT ROW names, never the chassis series'. series_id and class_ids are both
+	// link keys, so handing a row another series' classes makes two columns
+	// contradict each other on one row. A series declaring no class contract
+	// legitimately yields the empty string, and that is the answer — not a reason
+	// to fall back to some other series' classes.
+	//
+	// Cached per series id so the scan over the header triples happens once per
+	// distinct series rather than once per row; a filing reaches millions of rows.
+	classBySeries := map[string]string{}
+	if seriesRow != "" {
+		classBySeries[seriesRow] = classRow
+	}
+	classesOf := func(seriesID string) string {
+		if joined, ok := classBySeries[seriesID]; ok {
+			return joined
+		}
+		joined := strings.Join(classIDsFor(sc, seriesID), MultiValueSep)
+		classBySeries[seriesID] = joined
+		return joined
+	}
+
 	stamp := func(r VoteRow) error {
 		if r.SeriesID == "" {
 			r.SeriesID = seriesRow
 		}
-		if r.ClassIDs == "" {
-			r.ClassIDs = classRow
+		if r.ClassIDs == "" && r.SeriesID != "" {
+			r.ClassIDs = classesOf(r.SeriesID)
 		}
 		return sink.emit(r)
 	}
