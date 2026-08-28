@@ -148,12 +148,26 @@ _DOMAIN_TABLES = [
 _DECK_OFF_SYSTEMS = frozenset({"diction", "em-dash"})
 _DECK_OFF_PREFIXES = ("writing-",)
 
+# THE SPLIT IS BY CLAIM, NOT BY SYSTEM, because one system makes both kinds of claim. `style` keeps
+# metronomic-run and nominalization — stylometric facts that hold on a slide — but its `em_dash`
+# rule is the same PROSE RHYTHM claim as the `em-dash` density budget, just per-instance. Gating
+# only the system left `style·em_dash` firing on decks, which is what the deck profile exists to
+# stop; the label is the finer grain the split actually needs.
+_DECK_OFF_LABELS = ("style·em_dash",)
+
 
 def system_enabled(system: str, profile: str = "full") -> bool:
     """Does `system` run under `profile`? `full` runs everything (frozen behaviour)."""
     if profile != "deck":
         return True
     return system not in _DECK_OFF_SYSTEMS and not system.startswith(_DECK_OFF_PREFIXES)
+
+
+def label_enabled(label: str, profile: str = "full") -> bool:
+    """Does this individual finding run under `profile`? Same funnel, finer grain."""
+    if profile != "deck":
+        return True
+    return not label.startswith(_DECK_OFF_LABELS)
 
 
 _MODULE_CACHE: dict[str, object] = {}
@@ -1036,7 +1050,7 @@ def audit_document(path: Path, style: str | None = None, mask: bool = True,
     raw: list[dict] = []
 
     def add(line, col, end, system, label, severity, quote, context, replace_with=""):
-        if not system_enabled(system, profile):
+        if not system_enabled(system, profile) or not label_enabled(label, profile):
             return
         raw.append({"line": line, "col": col, "end": end, "system": system, "label": label,
                     "severity": severity, "quote": quote, "context": context,

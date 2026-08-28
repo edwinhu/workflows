@@ -13,14 +13,14 @@ argue with a specific row.
 | rule id | raw findings | false positives | true positives |
 |---|---|---|---|
 | positive-match-failure-vocabulary | 24 | 23 | 1 |
-| single-distinct-literal | 185 | 185 | 0 |
+| single-distinct-literal | 186 | 186 | 0 |
 | existence-only-artifact | 0 | 0 | 0 |
 | injected-key-never-varied | 39 | 39 | 0 |
 
-Unparseable files: 0 of 216 linted. Every file the walker reached was extracted; nothing was dropped
+Unparseable files: 0 of 218 linted. Every file the walker reached was extracted; nothing was dropped
 silently, and no count above is understated by a skipped file.
 
-One finding in 248 survives inspection.
+One finding in 249 survives inspection.
 
 ## Method
 
