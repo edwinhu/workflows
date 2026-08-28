@@ -1,0 +1,24 @@
+# WHY `bun test` STOPPED EARLY, and reported success while doing it.
+#
+# A file that calls `process.exit()` at module scope KILLS THE WHOLE RUNNER when bun loads it as a
+# test file — not just that file. It exits with the harness's own code, so a clean harness ends the
+# run at "success" with most of the suite never loaded. Which files got in first depended on bun's
+# scheduling, which is why failures appeared and vanished between runs.
+#
+# Measured 2026-08-27: bare `bun test` reported 1-5 files out of 52 and exited 0 while
+# tests/hook-golden.test.ts was genuinely failing.
+#
+# TWO SOURCES, and the second is the bigger one:
+#   1. tests/*.test.mjs — four standalone harnesses that print their own tally and exit. They are
+#      still enforced: tests/self-reporting-harnesses.test.ts spawns each and asserts its exit code.
+#   2. scratch/ — three stale snapshots of this repo, holding 41 test files of which 21 call
+#      process.exit. They are old copies, were never meant to be run, and any one of them scheduled
+#      early ends the run.
+[test]
+pathIgnorePatterns = [
+  "**/scratch/**",
+  "**/tests/agent-contract.test.mjs",
+  "**/tests/overflow-check.test.mjs",
+  "**/tests/typst-convention-guard.test.mjs",
+  "**/tests/writing-prose-check.test.mjs",
+]
