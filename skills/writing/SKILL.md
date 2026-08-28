@@ -214,7 +214,13 @@ found. Naming the path still beats relying on that resolution when you already k
 ```bash
 PLAN=<proj>/.planning/<slug>.md
 bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh "$PLAN"
+bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh --provider codex "$PLAN"   # "run this through codex"
 ```
+
+**Forward the provider.** A provider named in this skill's `$ARGUMENTS`, however it is spelled —
+`--provider codex`, `--dispatch codex`, "run this on gpt" — is `--provider codex` on the line
+above. `--provider` is the only spelling the scripts take, and both reject the others by name.
+Omitting it silently runs the user's codex request on claude.
 
 ```js
 {

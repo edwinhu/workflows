@@ -82,6 +82,7 @@ const PRESERVED_BINARIES: ReadonlyArray<{ path: string; digest: string }> = [
   { path: "skills/workshop/fixtures/clean/presentation/notes.pdf", digest: "a75cde5738b43c406c2df69436bc37efbbe573e83fbdde0c3b92597410220016" },
   { path: "skills/workshop/fixtures/clean/presentation/slides.pdf", digest: "4df2355eaa9d1e8495130f32833199f92617bd5ab986c1b96c0c551a63ded609" },
   { path: "skills/wrds/scripts/parse_13f/parse_13f_go/parse_13f_go", digest: "b445eb303ff6395c40a54af52f30c464e42a65dec074f3edd9621fc4d2c98ad2" },
+  { path: "skills/wrds/scripts/parse_npx/parse_npx_go/parse_npx_go", digest: "3b8f4edae61a4f099e65a612d6fc187d0a043bb07db3eb47b3a75917b466b048" },
   { path: "references/templates/law_econ_template.docx", digest: "368ce014d5c452672fa1c70aa093a5a5dae264207284b91cbe581e61b7f8e57e" },
   { path: "references/templates/law_review_template.docx", digest: "f53eca12fa5b3e575cbfcb589b5f2d190e3b375bc89a8f378227dfe61c40c7f6" },
 ];

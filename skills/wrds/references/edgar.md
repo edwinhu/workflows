@@ -887,11 +887,16 @@ def fetch_filing_from_sec(url: str) -> str:
 For large-scale extraction from SEC filings (100K+ documents), Go parsers running
 on WRDS compute nodes via SGE are dramatically faster than Python. Pattern:
 
-1. **Build filing index** (Python, local): query `wrdssec_all.forms` for filing paths
-2. **Go parser** (compiled binary): reads TSV from stdin, opens each filing on WRDS
-   NFS, extracts target field via regex, emits TSV to stdout
-3. **SGE array job**: shards the filing list across N workers for parallelism
-4. **Build panel** (Python, local): deduplicates and writes parquet
+1. **Build filing index** (Python or SAS, on the grid): query `wrdssec_all.wrds_forms`
+   for filing paths, and write them one per line into a filelist
+2. **Go parser** (compiled binary): takes the filelist with `-files-from` — every
+   binary here is filelist-driven and none of them reads stdin — opens each filing on
+   WRDS NFS, extracts its fields, and writes gzipped TSV with **no header row**
+3. **SGE array job**: shards the filelist by *bytes* across N workers for parallelism
+4. **Convert to parquet** (Python, local): `scripts/edgar_parquet/` types the columns,
+   partitions Hive-style by year and writes ZSTD parquet. See
+   [The record-table output contract](#the-record-table-output-contract) below.
+5. **Build panel** (Python, local): read the parquet dataset with polars and aggregate
 
 ### Path Convention for `wrds_clean_filings`
 
@@ -937,14 +942,104 @@ qsub -t 1-20 \
 | `blockholders_13dg` (profile) | `scan_covers/profiles_blockholders_13dg.go` | Item 12 + max ownership % | SC 13D/G | — |
 | `proxy_advisors` (profile) | `scan_covers/profiles_proxy_advisors.go` | ISS/GL/EJ mentions | 485BPOS/APOS | — |
 | `tender_sc_to` (profile) | `scan_covers/profiles_tender_sc_to.go` | Tender offer cover fields | SC TO-* | — |
+| `parse_13f` (**standalone, sanctioned**) | `scripts/parse_13f/parse_13f_go/` | One row per holding from the 13F `infoTable`, plus a manifest row per filing | 13F-HR, 13F-HR/A | 89,072,489 rows over 248,500 filings |
+| `parse_npx` (**standalone, sanctioned**) | `scripts/parse_npx/parse_npx_go/` | One row per `voteRecord` (XML era) or proposal line (legacy text era), plus a manifest row per filing | N-PX, N-PX/A | — |
 
-**Everything is a profile now.** Two rows here previously pointed into
-`~/projects/mirror` — `bylaw_quorum/parse_quorum_go/` and `state_incorp_go/` — and
-the second was already dead (that directory does not exist). The quorum parser has
-been ported to `-profile quorum`, verified identical to the standalone on fixtures
-covering every confidence tier; see `profiles/quorum/README.md`.
+**Every cover-page extraction is a profile; exactly two record-table parsers are
+not.** Two rows here previously pointed into `~/projects/mirror` —
+`bylaw_quorum/parse_quorum_go/` and `state_incorp_go/` — and the second was already
+dead (that directory does not exist). The quorum parser has been ported to
+`-profile quorum`, verified identical to the standalone on fixtures covering every
+confidence tier; see `profiles/quorum/README.md`.
 
-Reaching for a standalone binary is the documented Red Flag: `scan_covers` handles
-SGE sharding, path construction and concurrency generically, so a new extraction is
-a `profiles_*.go` file plus a `profiles/<name>/` directory for staging and panel
-building.
+Reaching for a standalone binary is still the documented Red Flag: `scan_covers`
+handles SGE sharding, path construction and concurrency generically, so a new
+extraction is a `profiles_*.go` file plus a `profiles/<name>/` directory for staging
+and panel building.
+
+**The exception, and why it is mechanical rather than a matter of taste.**
+`scan_covers` `FullBody` mode reads the entire file into one buffer per worker, and
+its `Field` model is a regex reduced to **one value per column** for the filing. A
+*record table* is neither of those things: the 13F `infoTable` fans a single filing
+out into thousands of holding rows, and one 23.8 MB N-PX filing carries 28,067
+nested `voteRecord`s (`scripts/parse_npx/README.md`). Buffering that file and
+collapsing it to one value per column loses the table. `parse_13f` and `parse_npx`
+therefore stream instead — `parse_13f` with a hand-rolled information-table scanner,
+`parse_npx` with `xml.Decoder` at constant memory — and they are the only two
+sanctioned exceptions. Anything cover-page or SGML-header shaped is still a profile,
+with no exception.
+
+### The record-table output contract
+
+Both record-table binaries emit headerless gzipped TSV, which is a transport format,
+not a storage format. The converter that turns it into parquet lives at
+[`scripts/edgar_parquet/`](../scripts/edgar_parquet/) and serves both parsers from
+one typing table (`parsers.py`).
+
+**Layout, as verified on rjds:**
+
+```
+~/projects/mirror/data/processed/
+  holdings_13f/year=YYYY/QN.parquet     Hive-partitioned, 38 partitions, 3.3 GB, ZSTD
+  parse_13f_manifest_full.parquet       the manifest, converted to its own parquet
+  holdings_clean.tsv.gz                 4,110 MB, the concatenated Go output
+```
+
+The partition key is the year of `period_of_report`. 13F sub-splits by quarter into
+`QN.parquet`; N-PX is an annual report, so there is no quarter to sub-split on and
+its parts are numbered instead. A `period_of_report` that does not yield a plausible
+year is quarantined and counted, never partitioned — the existing `holdings_13f/` on
+rjds carries a `year=3006` directory because nothing validated the key.
+
+**Schema is a 1:1 passthrough of the Go column order** — same names, same order, no
+renaming — and the typing is deliberately minimal:
+
+| parser | typed | everything else |
+|---|---|---|
+| 13F | `value`, `shares`, `voting_sole`, `voting_shared`, `voting_none` → int64; `cusip_valid`, `is_amendment` → bool | string |
+| N-PX | `shares_voted_total`, `shares_on_loan`, `shares_voted` → float64 | string |
+
+N-PX share counts are float64 rather than int64 because real filings carry
+`66301.000000` and `eis_NPX_PROXY_VOTING_RECORD.xsd` declares them decimal; int64
+would reject the whole column. **Dates stay strings** (`YYYYMMDD`), matching the
+existing dataset. The manifest is converted separately into its own parquet rather
+than being folded in, because it is one row per *filing* and the dataset is one row
+per *record*. Read side is polars.
+
+**The measured sizes, which are not the reason to do this.** 13F: 4,110 MB of
+`tsv.gz` becomes 3.3 GB of parquet, **1.25×**. N-PX: 3,119 KB becomes 1,807 KB,
+**1.7×**, on 112,771 rows. Storage is roughly a wash. The case for parquet is typed
+columns, predicate pushdown on the `year=` partition, and not re-parsing 100M strings
+on every panel build.
+
+**Why this is a script and not a recipe in this file.** The producer of
+`holdings_13f/` was never in version control — only its readers survived — so a
+load-bearing dataset had three consumers and no tracked writer. And because the
+binaries write no header row, every consumer re-declares the schema by hand:
+`~/projects/mirror/scripts/build_blockholders_panel.py:27` hard-codes a `GO_COLUMNS`
+list. That is two representations of one fact, and a prose recipe is what produced
+both failures. `edgar_parquet` reads the column order out of the Go source at run
+time instead, so there is nothing to drift.
+
+**Known stale:** `build_blockholders_panel.py:27` `GO_COLUMNS` is a hand-copied
+`scan_covers` blockholders column list in a different repo, not edited by this
+skill — migrate it to a call into `edgar_parquet`'s Go-source column reader rather
+than re-copying the list when that panel is next touched.
+
+**Invocation** (the flags are pinned by `test_edgar_parquet.py::test_cli_contract`,
+which is the authority on their spelling):
+
+```bash
+skills/wrds/scripts/edgar_parquet/cli.py \
+  --parser 13f \
+  --in 'out/*.tsv.gz' \
+  --out data/processed/holdings_13f \
+  --manifest-in 'out/*.manifest.tsv.gz' \
+  --manifest-out data/processed/parse_13f_manifest_full.parquet \
+  --quarantine data/processed/quarantine
+```
+
+`--parser` takes `13f` or `npx`; an unknown value exits non-zero. `cli.py` carries a
+`uv run` shebang and declares pyarrow as a PEP 723 inline dependency, because pyarrow
+is not in system Python locally or on rjds. Verify the converter with
+`bash skills/wrds/scripts/edgar_parquet/check.sh`.

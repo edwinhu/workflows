@@ -67,17 +67,85 @@ bsdtar -tvf pkg.7z | head                                    # verify listing
 
 Round-trip a file with a known mtime and confirm it survives before shipping.
 
-**3. MANIFEST.csv, one row per file**: relative path, bytes, sha256. Recompute every hash
-against the EXTRACTED copy, not the staging tree.
+**3. MANIFEST.csv, one row per file**: relative path, bytes, sha256, modified (UTC, ISO 8601).
+Recompute every hash against the EXTRACTED copy, not the staging tree.
+
+The manifest is the only durable record of the dates, and it is a record, not a proof — it is
+the producing party asserting dates about its own files. No archive format restores a file's
+creation date — Linux has no syscall to set one, so an extracted file's birth time is the moment
+the recipient unpacked it — and modification time survives only if it was never destroyed in the
+first place. **Stage verbatim copies with `cp -p`.** A plain `cp` stamps every staged file with
+the second the build ran, so the archive then asserts that the whole analysis was written in one
+instant; the dates that mean something are when the pipeline wrote each file. Trimmed or
+rewritten files are the exception — those really were modified at staging and should say so.
 
 **4. A provenance table in the README.** One row per figure and per headline number: the
 number -> the script or function that computes it -> the input file -> that file's row
 count. Read the numbers off the data; never copy them out of prose.
 
-**5. Scan before you archive.** Grep the staged tree for API keys, tokens, `.env`, absolute
-home paths, and personal names of RAs and staff. Report every hit with file and line and let
-the user decide — do not silently rewrite. Never ship internal working notes (agent reports,
-scratch investigations) without the user naming them.
+**5. Scan before you archive — the tree AND the compiled deliverables.** Grep the staged tree
+for API keys, tokens, `.env`, absolute home paths, and personal names of RAs and staff. Report
+every hit with file and line and let the user decide — do not silently rewrite. Never ship
+internal working notes (agent reports, scratch investigations) without the user naming them.
+
+Grep does not reach inside a built artifact, so check each one on its own terms. Every surface
+below has shipped somebody's username in a production:
+
+- **PDF**: `pdfinfo` for the Info dict and the XMP packet — Author, Title, Producer, Keywords.
+  Then `pdftotext` the whole thing and grep the text layer for `/home/`, `/Users/`,
+  `C:\Users`, the username, the hostname, any `@` address, `localhost`. A transcript pasted
+  from a real run is the usual carrier.
+- **XLSX / DOCX / PPTX**: `unzip -p f docProps/core.xml` (`dc:creator`, `cp:lastModifiedBy`,
+  `dc:title`) and `docProps/app.xml` (`Application`, `Company`, `Manager`). Also grep the whole
+  zip for absolute paths — external links and print areas store them.
+- **Images**: PNG `tEXt`/`iTXt`/`zTXt`/`eXIf` chunks, JPEG EXIF. Screenshot tools write the
+  capturing app, and phone photos write GPS.
+- **What the screenshot SHOWS**, which no tool reports: a URL bar, a profile avatar, a tab
+  strip, a signed-in account name, a home directory in a title bar. Shoot the vendor's own
+  documentation page rather than your signed-in console, and crop to the element that is the
+  instruction.
+
+**Strip every field except the creation and modification dates.** Keep those two because
+changing them creates a discrepancy the other side can ask about, not because they prove
+anything: any party can set any date with `touch -d` or an XML edit, so a self-asserted
+timestamp is worth nothing as evidence of when work was done. Do not let a manifest or a
+metadata field be described as proof the files were not back-dated — see **Timestamps are not
+proof** below. Everything else goes. Generator strings (`openpyxl`, `python-docx`, `Typst 0.15.0`, an
+`Application` naming the OS) are not needed by the recipient and are not worth arguing about;
+drop them with the rest. Report a date that is obviously not real rather than preserving it:
+`python-docx` stamps every file it writes 2013-12-23, so a docx built today carries a
+creation date from before the analysis existed, and the fix belongs in the build (stamp the
+real date when the file is written), not in the scrub. `scripts/scrub_metadata.py` does the
+strip and the reporting for PDF, OOXML and PNG; run it with `--dry-run` first and show the user
+what it found.
+
+**Scrub inside the build, not after it.** Any generator step — `typst compile`, a docx writer,
+a plot export — re-stamps its output every run, so a scrub done by hand is undone by the next
+build. Put it after the last generation step and before the manifest, so the hashes cover the
+scrubbed bytes.
+
+**Timestamps are not proof.** Every date discussed above — file mtime, the manifest column,
+`dcterms:created`, the PDF `CreationDate` — is set by the party producing the files and can be
+set to anything. They establish internal consistency, which is worth having: a package whose
+dates contradict each other invites a question, and one that agrees does not. They do not
+establish when the work was done, and should never be characterised that way to the client or in
+a declaration.
+
+When temporal provenance actually matters, it has to come from a party with no stake:
+
+- **What is already in the record.** A DKIM-signed email cryptographically binds its content and
+  its date, and copies sit on the sender's, the recipient's and the relay's servers. It anchors
+  only what actually ARRIVED, so confirm receipt before relying on it — archive attachments are
+  routinely stripped downstream, and the sent copy does not show it. A hash
+  stated in a filed document is dated by the filing. These are usually the strongest anchors
+  available and they cost nothing — identify them rather than building something new.
+- **An RFC 3161 timestamp** over the archive's sha256, from a public TSA. `openssl ts -query` on
+  the hash, submit, keep the `.tsr` token beside the archive; `openssl ts -verify` checks it
+  against the TSA's certificate. It proves the hash existed by that instant, which is the exact
+  claim a metadata field cannot make. The hash goes to a third party — get the user's approval
+  first, and never send the file itself.
+- **Not git history.** Commit dates are environment variables and rewrite freely. A push receipt
+  or a CI run on a host the user does not control is different, and is worth naming.
 
 **6. Redact by destroying pixels, never by covering them.** A box drawn over an image in the
 document leaves the original embedded — `pdfimages -png out.pdf /tmp/x` extracts it intact, and a
@@ -141,16 +209,24 @@ Write it for a competent computer user who does not program:
 - **Every manual step is a screenshot.** Downloading from a government site, typing an
   identifier into a lookup, creating an API key and attaching billing. Prose describing a web
   page ages worse than a picture of it and is harder to follow while doing it.
-- **Every automated step is one command plus its expected output.** Row counts, file counts,
-  the last log line. A step whose success the reader cannot check is a step they cannot report
-  failing.
-- **Expected output is counts and names, not a transcript.** Byte sizes, timings, DPI and paths
-  move between correct runs — a different font resolves, a library version bumps — so publishing
-  them as "what correct looks like" manufactures failures the reader then reports. State the
-  invariants: how many rows, how many files, the last line. If a transcript is genuinely worth
-  showing, set it as text rather than a screenshot (a picture of text cannot be copied or searched)
-  and strike the volatile columns. Screenshots earn their place only where the LAYOUT is the
-  instruction — finding one link among fifty on a web page.
+- **Every automated step is one command and the output it printed**, set as a terminal block:
+  the command on a `>` prompt line, its real output below. A reader who has never used a terminal
+  cannot tell from prose whether a file was created *for* them or *by* them — five of the thirteen
+  comments on the first ADV runbook were some form of that question, and a pasted transcript
+  answers all of them at once. Set it as text, never a screenshot: a picture of a terminal cannot
+  be copied or searched, and it ships your prompt, hostname and theme.
+- **Name the invariants under the transcript.** Byte sizes, timings, DPI and paths move between
+  correct runs — a different font resolves, a library version bumps — so a transcript published
+  bare manufactures failures the reader then reports. Say which counts are the ones to read and
+  tell them to ignore the rest.
+- **Transcripts are trimmed, and the trimming is disclosed.** Cut the timestamp and module prefix,
+  shorten long lines, elide a repetitive stretch as `...`, and say in the document that you did.
+  Wrap every line to the block's width by hand — a soft-wrapped log line breaks mid-column and
+  reads as corruption. Where the only complete transcript is from an older vintage, label it as
+  such and give the count a run today would print; where no clean one exists (a paid API call,
+  a step that only ever ran broken), leave the command bare rather than inventing output.
+- **Screenshots earn their place only where the LAYOUT is the instruction** — finding one link
+  among fifty on a web page.
 - **Front-load the short path.** Most readers only want to know the shipped data reproduces the
   figures — that is two commands. Say so on page one and put the multi-day rebuild behind it.
 - **Disclose every dependency that costs money or gates access**, with what it costs, why the
@@ -161,7 +237,9 @@ Write it for a competent computer user who does not program:
   source file, advisers deregistering) versus the ones that mean something broke.
 
 Typst → PDF. It paginates for a Bates stamp, needs no toolchain beyond `typst`, and the `.typ`
-source ships in the archive as readable plain text. Not an executable-runbook app: the steps
+source ships in the archive as readable plain text. `assets/term.typ` is the terminal block,
+with the show-rule guard that keeps a document-level `raw` rule from drawing a second box inside
+it. Not an executable-runbook app: the steps
 that need explaining are the manual ones no block can run, and the deliverable cannot depend on
 software the recipient must install.
 
@@ -170,7 +248,7 @@ software the recipient must install.
 | Excuse | Reality | Do instead |
 |---|---|---|
 | "parquet is the analysis format, they can convert it" | They cannot, and asking them to is the production's problem, not theirs | CSV + XLSX |
-| "zip is universal" | It degrades every timestamp in a document production | `bsdtar --format 7zip` |
+| "zip is universal" | Its DOS timestamps round to two seconds and carry no timezone; 7zip keeps mtime to sub-second. Neither restores a creation date — nothing on Linux can set one — so the created date that matters is the one INSIDE the document, not the file's | `bsdtar --format 7zip` |
 | "the hashes matched when I built it" | You verified the staging tree, not the archive anyone will open | recompute from the extracted copy |
 | "the README says the figure comes from the pipeline" | A claim is not a provenance record | figure -> script -> input file -> row count |
 | "the numbers are in the report already" | Copying prose into a manifest propagates whatever was wrong | read them off the data |
@@ -178,8 +256,12 @@ software the recipient must install.
 | "the code is in the package, that IS the method" | Code they cannot feed inputs to documents nothing | runbook with the acquisition steps |
 | "I'll write the collection steps as prose, screenshots are fussy" | Prose about a web page rots and cannot be followed one-handed | one screenshot per manual step |
 | "an executable runbook app would be slicker" | It adds an install the recipient must trust, for steps that are manual anyway | Typst → PDF, source in the archive |
+| "I grepped the staged tree and it was clean" | grep does not reach into a PDF's XMP, a docx's `docProps`, or a PNG's text chunks — and reads nothing at all off what a screenshot depicts | check every built artifact on its own terms |
+| "the sent folder shows it attached, so they have it" | Mail filters on either end strip archive attachments silently, and the sender's copy looks identical whether or not it landed — a 7z can leave twice and arrive never | confirm receipt explicitly; transmit productions through counsel's file-transfer service, whose receipt is also a better anchor than email |
+| "rebuild it on Windows so the archive carries a creation date" | 7-Zip does store one, but it would be the date the VM's filesystem stamped the copy, and it is still the producing party setting a field on its own machine | a third-party anchor: an RFC 3161 token over the hash, or the production channel's receipt |
 | "I drew a black box over it, it's redacted" | The original image and text are still in the PDF | repaint the raster before it is embedded, then extract and check |
-| "a screenshot of the terminal proves it ran" | It ships your prompt, hostname and theme, cannot be copied from, and pins byte sizes that legitimately vary | state the invariant counts instead |
+| "a screenshot of the terminal proves it ran" | It ships your prompt, hostname and theme, and cannot be copied from | set the transcript as text, name the invariant counts |
+| "describing the output in prose is cleaner than a wall of log" | A reader who cannot see the screen cannot tell what the command did, and asks whether each file is created for them or by them | real transcript in a terminal block, invariants named beneath |
 | "ship the whole repo, more is safer" | More is more surface, more questions, and more work you were never asked to produce | the import closure from the deliverable's entry points |
 | "the README should explain what we left out" | Explaining an omission names the thing you removed | say nothing about work outside the deliverable |
 | "the alternate figure is harmless, it's just rendered" | Re-running the pipeline then produces a file the production cannot account for | delete the code that builds it too |

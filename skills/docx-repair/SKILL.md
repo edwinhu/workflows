@@ -12,6 +12,7 @@ Cloud editors damage a `.docx` in **independent ways**. This skill is the front 
 |---|---|---|
 | **A. Package / OOXML wiring** | Word pops "recover unreadable content?" or refuses to open; LibreOffice won't load; phantom blank page | `scripts/docx_repair.py` (plugin root) — [references/package-repair.md](${CLAUDE_PLUGIN_ROOT}/skills/docx-repair/references/package-repair.md) |
 | **B. Footnote & cross-reference markup** | Bios show `1,2,3` not `*,†,‡`; numbering starts wrong; "supra note N" points to the wrong footnote; missing separator line | the footnote scripts — [references/footnote-procedure.md](${CLAUDE_PLUGIN_ROOT}/skills/docx-repair/references/footnote-procedure.md) |
+| **B1. Cross-references aimed at the wrong source** | `Lin, supra note 130` where note 130 is a different work; `Expert Report, supra note 22` where 22 defines the deposition; a short form surviving a renumber that moved its target | `check_crossrefs.py <file.docx>` — read-only, exit 1 on any problem |
 | **C. Document content (boxes + headings + cruft)** | Visible **boxes** around freshly-edited text; heading-looking lines not styled as headings; same-style headings rendering differently; blank heading lines; bloated XML full of all-zero rsids, no-op shading, explicit `b=0`/`i=0`/`u=none`, redundant black color & default fonts | `fix_footnotes.py`'s document.xml passes — [references/content-cleanup.md](${CLAUDE_PLUGIN_ROOT}/skills/docx-repair/references/content-cleanup.md) |
 | **D. Presentation hygiene** | A footnote renders blue/underlined in the PDF but looks normal in Word; a URL prints one address and navigates to another; heading gaps uneven page to page; tracking params (`?utm_source=…`) behind a clean-looking link | `docx_links.py`, `docx_spacers.py` — [references/presentation-hygiene.md](${CLAUDE_PLUGIN_ROOT}/skills/docx-repair/references/presentation-hygiene.md) |
 
@@ -88,6 +89,15 @@ by a cloud editor. Adjacent stages:
   chains this skill's footnote repair + NOTEREF conversion after the pandoc build).
 - **Render** to PDF/PNG → `docx-render` / `scripts/doc_render.py` (Word path composes
   Track A's `docx_repair.py` as a preflight automatically).
+- **Check cross-references before believing them.** `check_crossrefs.py` is the only
+  pass that READS the target note: it verifies the short form names a source the
+  target actually contains, on top of existence and direction. `create_crossrefs.py
+  --dry-run` proves only that note N exists and will report "25 targets, 25 valid"
+  over a document whose cites point at the wrong documents — it is a conversion
+  preflight, not an audit. Run `check_crossrefs.py` on any draft returned by a
+  coauthor, and after every renumber. It name-matches loosely (any capitalised word
+  in the short form appearing in the target), so it catches a cite aimed at the wrong
+  source, never a wrong pincite.
 - **Footnote repair lives only here.** `fix_footnotes.py` is the single canonical
   Google-Docs / Word-Online footnote fixer; there is no second copy. (Bluebook's
   `create_crossrefs.py` + `audit_crossref_targets.py` remain a deliberate,

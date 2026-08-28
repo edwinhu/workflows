@@ -29,4 +29,5 @@ _TIC_PATTERNS = [
     ('\\bsharpest cut\\b|\\b(?:sharpest|starkest|cleanest|clearest)\\s+(?:cut|contrast|divide)\\s+in\\s+the\\s+(?:table|data|sample|panel|exhibit|figure)\\b', 'ai-tic·sev2·sharpest-cut'),
     ('\\b(that|this|which)\\s+(closeness|proximity|distinction|difference|point|fact|detail)\\s+is\\s+the\\s+point\\b', 'ai-tic·sev2·announce-is-the-point'),
     ('\\bthe reason (should sit|sits) in plain view\\b|\\bworth (stating|saying) plainly\\b', 'ai-tic·sev2·announce-candour'),
+    ('\\b(is|was) the (argument|payoff|teachable point|whole question|larger rule|aggressive part)\\s*[.:]', 'ai-tic·sev2·announce-is-the-argument'),
 ]

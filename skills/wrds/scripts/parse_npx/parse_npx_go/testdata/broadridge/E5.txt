@@ -1,0 +1,30 @@
+                           INVESTMENT COMPANY REPORT
+                     July 1, 2011 through November 30, 2011
+
+--------------------------------------------------------------------------------
+HOUSING DEVELOPMENT FINANCE CORP LTD
+--------------------------------------------------------------------------------
+SECURITY       Y37246207         MEETING TYPE    Annual General Meeting
+TICKER SYMBOL                    MEETING DATE    08-Jul-2011
+ISIN           INE001A01036      AGENDA          703162444 - Management
+--------------------------------------------------------------------------------
+<TABLE>
+<CAPTION>
+<S>      <C>                                                        <C>              <C>        <C>                <C>
+                                                                                                FOR/AGAINST      PREFERRED PROVIDER
+ITEM     PROPOSAL                                                   TYPE             VOTE       MANAGEMENT         RECOMMENDATION
+
+1        To receive, consider and adopt the audited profit          Management       For         For                  None
+         and loss account for the financial year ended March
+         31, 2011, the balance sheet as at that date and the
+         reports of the directors and the auditors thereon
+2        To declare dividend on equity shares                       Management       For         For                  None
+3        To appoint a director in place of Mr. D. N. Ghosh          Management       For         For                  None
+         who retires by rotation and being eligible, offers
+         himself for re-appointment
+4        To appoint a director in place of Dr. Ram S.               Management       For         For                  None
+         Tarneja who retires by rotation and being eligible,
+         offers himself for re-appointment
+5        To appoint a director in place of Dr. Bimal Jalan          Management       For         For                  None
+         who retires by rotation and being eligible, offers
+         himself for re-appointment

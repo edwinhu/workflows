@@ -37,7 +37,7 @@ The WRDS login node is shared infrastructure. Running parsers, bulk file reads, 
 
 The login node is for: `qsub`, `qstat`, `qdel`, `scp`, `ls`, `head`, short `psql` queries.
 
-Submission patterns and working array jobs: `references/edgar.md` (§ SGE index build), `scripts/sec_index/submit_array.sh`, `scripts/parse_13f/sge/submit_array.sh`, and `../npx-ownership-panel/scripts/run_pipeline.sh`.
+Submission patterns and working array jobs: `references/edgar.md` (§ SGE index build), `scripts/sec_index/submit_array.sh`, `scripts/parse_13f/sge/submit_shards.sh`, and `../npx-ownership-panel/scripts/run_pipeline.sh`.
 </EXTREMELY-IMPORTANT>
 
 **Running compute on the login node is NOT HELPFUL — it gets the user's account flagged, the job killed, and the work lost.** You run on the login node because qsub feels like overhead. The overhead is 5 minutes of script writing. The downside is account suspension and a rerun from scratch.
@@ -70,6 +70,8 @@ Before writing ANY new EDGAR filing extractor:
 **Building a standalone parser when `scan_covers` exists is NOT HELPFUL — it reinvents infrastructure that already handles SGE sharding, NFS concurrency, path construction, form-type filtering, and error handling.** You built a 300-line standalone Go binary, ran it on the login node, got the path convention wrong, and spent 5 iterations fixing it. Adding a 60-line profile to `scan_covers` would have worked on the first try.
 
 Every standalone EDGAR parser is technical debt. The `scan_covers` framework exists to eliminate this class of mistake.
+
+**Exactly two sanctioned exceptions: `scripts/parse_13f/` and `scripts/parse_npx/`.** `scan_covers` `FullBody` reads the whole file into one buffer per worker and its `Field` model reduces a regex to one value per column, so a record table — the 13F `infoTable`, the N-PX `proxyTable` whose nested `voteRecord`s run to tens of thousands in a single filing — is neither; those two stream the record table instead, emitting one row per record: `parse_13f` with a hand-rolled information-table scanner, `parse_npx` with `xml.Decoder`. Cover-page or header extraction is still a profile, with no exception. Their TSV-to-parquet output contract is `scripts/edgar_parquet/` (see `references/edgar.md`).
 </EXTREMELY-IMPORTANT>
 
 # WRDS Data Access

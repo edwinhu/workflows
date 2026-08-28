@@ -1,0 +1,41 @@
+<PAGE>
+
+
+============== TIAA-CREF INSTITUTIONAL INTERNATIONAL EQUITY FUND ===============
+
+
+ABB AG
+
+Ticker:                      Security ID:  CH0012221716
+Meeting Date: MAY 18, 2004   Meeting Type: AGM
+Record Date:  MAY 3, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Receive Financial Statements and                    None       Management
+      Statutory Reports
+2     Accept Financial Statements and Statutory For       For        Management
+      Reports
+3     Approve Discharge of Board and Senior     For       For        Management
+      Management
+4     Approve Allocation of Income and Omission For       For        Management
+      of Dividends
+5     Reelect Roger Agnelli, Juergen Dormann,   For       For        Management
+      Louis Hughes, Hans Maerki, Michel de
+      Rosen, Michael Treschow, Bernd Voss, and
+      Jacob Wallenberg as Directors
+6     Ratify Ernst & Young AG as Auditors       For       For        Management
+
+
+- --------------------------------------------------------------------------------
+<PAGE>
+
+ABN AMRO HOLDINGS NV
+
+Ticker:                      Security ID:  NL0000301109
+Meeting Date: APR 29, 2004   Meeting Type: AGM
+Record Date:  APR 22, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Receive Report of Management Board                  None       Management
+2     Discussion about Company's Corporate                None       Management
+      Governance Report

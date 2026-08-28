@@ -154,7 +154,13 @@ There is no built-in `Workflow` call — the guard at
 
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan; or pass one
+bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh --provider codex   # "run this through codex"
 ```
+
+**Forward the provider.** A provider named in this skill's `$ARGUMENTS`, however it is spelled —
+`--provider codex`, `--dispatch codex`, "run this on gpt" — is `--provider codex` on the line
+above. `--provider` is the only spelling the scripts take, and both reject the others by name.
+Omitting it silently runs the user's codex request on claude.
 
 ```js
 {

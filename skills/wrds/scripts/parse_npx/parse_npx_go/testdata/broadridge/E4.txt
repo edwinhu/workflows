@@ -1,0 +1,46 @@
+<PAGE>
+- -------------------------------------------------------------------------------
+                         CENTURY SMALL CAP SELECT FUND
+- -------------------------------------------------------------------------------
+<TABLE>
+<S>      <C>             <C>             <C>                     <C>             <C>                     <C>
+                                  Vote Summary
+                             01-Jul-04 To 30-Jun-05
+ADVENT SOFTWARE, INC.
+         Security        007974108                               Meeting Type           Annual
+         Ticker          ADVS                                    Meeting Date           18-May-05
+         ISIN                                                    Agenda                 932323974 - Management
+         City                                                    Holdings Recon Date    30-Mar-05
+         Country         UNITED STATES
+         SEDOL(s)
+- -----------------------------------------------------------------------------------------------------------------------
+                                                                                                         FOR/AGAINST
+ITEM                     PROPOSAL                                TYPE            VOTE                    MANAGEMENT
+- -----------------------------------------------------------------------------------------------------------------------
+01       DIRECTOR                                                Mgmt
+
+1        JOHN H. SCULLY                                                          For                     For
+
+2        STEPHANIE G. DIMARCO                                                    For                     For
+
+3        TERRY H. CARLITZ                                                        For                     For
+
+4        JAMES P. ROEMER                                                         For                     For
+
+5        WENDELL G. VAN AUKEN                                                    For                     For
+
+6        WILLIAM F. ZUENDT                                                       For                     For
+
+02       PROPOSAL TO APPROVE THE 2005 EMPLOYEE STOCK             Mgmt            Against                 Against
+         PURCHASE PLAN AND RESERVE 2,000,000 SHARES
+         THEREUNDER.
+
+03       PROPOSAL TO APPROVE THE AMENDED AND RESTATED            Mgmt            Against                 Against
+         2002 STOCK PLAN AND RESERVE 1,500,000 SHARES
+         THEREUNDER.
+
+04       PROPOSAL TO RATIFY THE APPOINTMENT OF                   Mgmt            For                     For
+         PRICEWATERHOUSECOOPERS LLP AS THE INDEPENDENT
+         REGISTERED PUBLIC ACCOUNTING FIRM OF THE
+         COMPANY FOR THE YEAR ENDING DECEMBER 31, 2005.
+</TABLE>
