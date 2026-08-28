@@ -232,6 +232,14 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh               
 bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh --provider codex   # "run craft through codex"
 ```
 
+**The provider comes from the invocation, and every skill that wraps craft forwards it.** A provider
+named in `$ARGUMENTS`, however it is spelled — `--provider codex`, `--dispatch codex`, "run this on
+gpt" — is `--provider codex` on the dispatch line, whether craft was invoked directly or through `/dev`,
+`/ds`, `/writing`, `/notes`, `/slides` or `/exams`. Those skills print their own dispatch recipe, so
+each carries the flag too; dropping it silently runs the user's codex request on claude.
+`--provider` is the ONE spelling: `craft-dispatch.sh --dispatch` and `craft-redispatch.sh --dispatch
+codex` each exit 2 naming it, rather than dying on "unknown flag" or accepting a synonym.
+
 **`--provider claude|codex|gemini` (default `claude`) runs the WHOLE spine on that provider** — it
 reaches `farm.sh --provider`, whose wrapper remaps the tier names, so every `model: 'sonnet'` in
 `workflow.js` follows with no arg change. Same flag on `craft-redispatch.sh`, which is where it earns
@@ -361,6 +369,18 @@ while :; do
 done
 bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-result.sh "$PWD/$R/result.json"
 ```
+
+**`--loops N` executes that wait instead of printing it.** After dispatch `craft-dispatch.sh --loops
+N` hands the run to `craft-loop.sh`, which polls with the liveness leg above, reads the verdict,
+consults `converge-check.ts` every round, and redispatches to a cap of N rounds. N defaults to the
+args `maxRounds` value, or 3 when absent; a non-numeric value is refused with exit 2 naming the flag.
+`--loops 0` is the printed path unchanged — the wait loop above prints and the script exits 0.
+
+The driver's exit codes: **0** PASS; **exit 1** the dispatch died with no verdict (see the run log it
+names); **exit 2** `craft-result.sh` refused the verdict; **exit 5** `converge-check.ts` reported NOT
+CONVERGING, which is evidence about the BRIEF — re-plan rather than spend the remaining rounds;
+**exit 6** the round cap was reached; **exit 7** a plan defect needs a scope decision, which is a
+human's to make.
 
 **Run that wait as a `Monitor`, not a foreground Bash call** — Bash caps at 10 minutes and a gate
 runs 20-60. Pass the loop body as Monitor's `command` with `persistent: true` (no deadline), keeping

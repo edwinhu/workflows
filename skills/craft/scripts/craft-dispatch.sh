@@ -8,10 +8,15 @@
 #   craft-dispatch.sh [plan.md]        dispatch (plan defaults to the armed one)
 #   craft-dispatch.sh --abandon [plan] record the plan as not-to-be-run; releases the guard
 #   craft-dispatch.sh --print [plan]   write args.preview.json and stop; the run stays armed
-#   craft-dispatch.sh --no-lint [plan] skip BOTH dispatch gates below
+#   craft-dispatch.sh --no-lint [plan] skip EVERY dispatch tier below
 #   craft-dispatch.sh --no-red-probe   skip only the red-gate probe; keep plan-lint
 #   craft-dispatch.sh --no-mech-probe  skip only the mechanical baseline probe; keep plan-lint
+#   craft-dispatch.sh --no-suite-lint  skip only the suite-lint report; keep every gate
 #   craft-dispatch.sh --run-dir DIR    put args/result/log under DIR/<run-id> instead of $PWD/.craft/
+#   craft-dispatch.sh --provider claude|codex|gemini  the whole spine's provider (default claude)
+#   craft-dispatch.sh --loops N        after dispatching, RUN the continuation loop (craft-loop.sh)
+#                                      instead of printing it. Defaults to the args maxRounds value,
+#                                      or 3. 0 keeps the printed wait loop and exits 0.
 #   craft-dispatch.sh --red-probe ARGS run the red-gate probe on an args.json and exit 0/3 (reused
 #                                      by craft-redispatch.sh so there is one implementation)
 #   craft-dispatch.sh --archive-plan SRC DIR HASH  archive a plan into a run dir (same reuse)
@@ -20,8 +25,14 @@
 #   craft-dispatch.sh --covers PLAN PATH  is PATH inside some task's writablePaths? 0 yes, 1 no,
 #                                      2 undecidable (read by main-thread-guard.sh, which fails closed)
 #   CRAFT_DISPATCH_DRYRUN=1            build + lint + probe + size, stop before dispatching
+#   CRAFT_GOAL_PRINT=1                 print the /goal line craft would self-send, then stop:
+#                                      writes no args.json, runs no probe, dispatches nothing
+#   CRAFT_NO_SCOPE=1                   force the plain setsid dispatch, skipping the transient scope
+#   CRAFT_SYSTEMD_RUN=PATH             the systemd-run binary the scope probe uses (default systemd-run)
 #   CRAFT_RED_PROBE_TIMEOUT=300        per-command probe timeout in seconds
 #   CRAFT_MECH_PROBE_TIMEOUT=300       per-check mechanical baseline timeout in seconds
+#   CRAFT_SUITE_LINT_TIMEOUT=300       suite-lint report timeout in seconds; expiring REPORTS, never refuses
+#   CRAFT_SUITE_LINT_BUN=bun           the runtime the suite-lint report is executed with
 #
 # --run-dir exists for a readOnly run whose projectDir is a tree it must NOT write to. The run dir
 # defaulted to $PWD/.craft/, and $PWD is also passed as the runner's --cwd, so the two were coupled: a
@@ -41,6 +52,12 @@
 # TIER 2 covers redCommands only and returns early on readOnly — where the mechanical checks ARE the
 # whole gate — so a leg exiting 127 was previously discovered only after a full round had been paid
 # for. Only `critical` (127, cannot-run) refuses; a mixed red/green baseline is normal and reports.
+#
+# TIER 3, WHICH REPORTS AND NEVER REFUSES: suite-lint.ts runs its four decidable test-quality rules
+# over the tree's own suites and PRINTS what it finds. The exit code is untouched and no finding can
+# stop a dispatch: the false-positive rate against real suites is still unmeasured, and a refusing
+# gate that is wrong once costs a whole dispatch. Whether it ever gates is a later decision, made on
+# that measurement rather than here.
 #
 # THE SPEC IS THE AUTHORITY. The hash is over the CANONICAL JSON of the `craft:dispatch` block
 # (sorted keys, no whitespace), never the plan's bytes: the block is what was authored and executed,
@@ -325,7 +342,10 @@ PY
 # `baseline-split` and `gate-timeout` report and proceed.
 mech_probe_gate() {
   local args="$1" js rc
-  js="$(mktemp)"
+  # An unwritable TMPDIR is not a plan defect, and refusing the dispatch over one would blame the
+  # plan for the environment. The run dir is already ours and already writable, so fall back to it.
+  js="$(mktemp 2>/dev/null)" || js=""
+  [ -n "$js" ] || js="$(dirname "$args")/.mech-probe.$$.json"
   bun "$SKILL/scripts/plan-preflight.ts" "$args" --cwd "$PWD" --json --only mechanical \
       --timeout "${CRAFT_MECH_PROBE_TIMEOUT:-300}" > "$js" 2>"$js.err"
   rc=$?
@@ -371,6 +391,71 @@ verifiers and lenses. Fix the command in the plan and re-hash.
 Override (probes nothing, gates nothing): --no-mech-probe, or --no-lint to drop every gate." >&2
     return 3
   fi
+  return 0
+}
+
+# ------------------------------------------------- TIER 3: the suite lint, REPORTED and never gated
+# Runs suite-lint.ts's OWN corpus walk over the run's projectDir and prints its findings. It always
+# returns 0 — including when the walk itself dies — because the tier's whole contract is that it
+# cannot refuse a dispatch. A file it cannot parse is COUNTED rather than dropped, so an unlinted
+# file never reads as a clean one; that guarantee lives in `lintCorpus`, which is why this tier calls
+# it rather than carrying a second walker the corpus suite cannot see.
+#
+# Its runner is a DIRECTORY created by mktemp -d with a fixed filename inside, never an mktemp file
+# renamed to `$ts.ts`: the renamed name is outside mktemp's O_EXCL guarantee, so on a shared /tmp a
+# local user could pre-create it as a symlink and have every dispatch write through it. Every step is
+# checked, and a temp path that cannot be created REPORTS and skips the tier rather than being walked
+# past. It is also bounded, like TIER 2 and TIER 2b — expiring prints and still returns 0.
+suite_lint_report() {
+  local args="$1" ts td root rc bun_bin timeout_s
+  root=$(python3 -c 'import json,sys; a=json.load(open(sys.argv[1])); print(a.get("projectDir") or "")' \
+    "$args" 2>/dev/null)
+  [ -n "$root" ] && [ -d "$root" ] || root="$PWD"
+  bun_bin="${CRAFT_SUITE_LINT_BUN:-bun}"
+  timeout_s="${CRAFT_SUITE_LINT_TIMEOUT:-300}"
+  case "$timeout_s" in ''|*[!0-9]*) timeout_s=300 ;; esac
+  td="$(mktemp -d 2>/dev/null)" || {
+    echo "  suite-lint: no temp directory could be created — tier skipped, reporting nothing, gating nothing"
+    return 0
+  }
+  ts="$td/suite-lint-corpus.ts"
+  if ! cat > "$ts" <<'SUITE_LINT_TS'
+// Calls the lint's own corpus walk. A second walk here would mean every guarantee
+// suite-lint-corpus.test.ts establishes — unparseable counted by name, nothing dropped silently,
+// deterministic root-relative output — held only for a function this path never runs. No
+// `artifactPaths` context is passed: at dispatch every produced artifact is still unwritten, so the
+// honest scope for R3 is every path-like existence assertion.
+const [modPath, root] = process.argv.slice(2)
+const { lintCorpus } = await import(modPath)
+
+const s = lintCorpus(root)
+
+console.log(`  suite-lint: ${s.filesLinted} suite(s) linted, ${s.findings.length} finding(s), ${s.unparseable} unparseable`)
+for (const f of s.findings) {
+  console.log(`    ${f.rule} [${f.where}]\n      ${f.message}\n      > ${f.evidence}`)
+}
+for (const rel of s.unparseableFiles) console.log(`    unparseable: ${rel} — counted, not linted`)
+if (s.findings.length > 0) {
+  console.log('  suite-lint REPORTS ONLY: nothing above stops this dispatch. Skip it with --no-suite-lint.')
+}
+SUITE_LINT_TS
+  then
+    echo "  suite-lint: the report could not be written to $ts — tier skipped, gating nothing"
+    rm -rf -- "$td"
+    return 0
+  fi
+  if command -v timeout > /dev/null 2>&1; then
+    timeout "$timeout_s" "$bun_bin" "$ts" "$SKILL/scripts/suite-lint.ts" "$root"
+  else
+    "$bun_bin" "$ts" "$SKILL/scripts/suite-lint.ts" "$root"
+  fi
+  rc=$?
+  if [ "$rc" -eq 124 ]; then
+    echo "  suite-lint: timed out after ${timeout_s}s — reporting nothing, gating nothing"
+  elif [ "$rc" -ne 0 ]; then
+    echo "  suite-lint: the report could not run (exit $rc) — reporting nothing, gating nothing"
+  fi
+  rm -rf -- "$td"
   return 0
 }
 
@@ -437,7 +522,10 @@ mode=dispatch
 lint=1
 redprobe=1
 mechprobe=1
+suitelint=1
 rundir=""
+# Empty means "not stated": resolved from the args' maxRounds (or 3) once args.json exists.
+loops=""
 # The whole spine's provider. farm.sh maps it to a CLIProxyAPI wrapper, and that wrapper remaps the
 # TIER NAMES (ANTHROPIC_DEFAULT_SONNET_MODEL=gpt-5.6-terra under codex), so every `model: 'sonnet'`
 # in workflow.js follows without a single arg changing. Whole-run granularity by construction: there
@@ -452,12 +540,21 @@ while :; do
                  *) echo "--provider must be claude|codex|gemini, got: $provider" >&2; exit 2 ;; esac ;;
     --abandon) mode=abandon; shift ;;
     --print)   mode=print;   shift ;;
-    --no-lint) lint=0; redprobe=0; mechprobe=0; shift ;;
+    --no-lint) lint=0; redprobe=0; mechprobe=0; suitelint=0; shift ;;
     --no-red-probe) redprobe=0; shift ;;
     --no-mech-probe) mechprobe=0; shift ;;
+    --no-suite-lint) suitelint=0; shift ;;
     --run-dir) rundir="${2:-}"; shift 2 || { echo "--run-dir needs a directory" >&2; exit 2; }
                [ -n "$rundir" ] || { echo "--run-dir needs a directory" >&2; exit 2; }
                case "$rundir" in /*) ;; *) echo "--run-dir must be absolute: $rundir" >&2; exit 2 ;; esac ;;
+    --loops) loops="${2:-}"; shift 2 || { echo "--loops needs a whole number" >&2; exit 2; }
+               # Digits only, the idiom compose-goal.sh uses at :38-40: an unvalidated count reaches
+               # craft-loop.sh's arithmetic, and a typo there is an unbounded loop.
+               case "$loops" in ''|*[!0-9]*)
+                 echo "--loops must be a whole number, got: $loops" >&2; exit 2 ;; esac ;;
+    # A provider has ONE spelling. craft-redispatch.sh takes a boolean --dispatch, so the two get
+    # conflated; name the right flag rather than "unknown flag".
+    --dispatch) echo "craft-dispatch.sh has no --dispatch flag. The provider is: --provider claude|codex|gemini" >&2; exit 2 ;;
     --*) echo "unknown flag: $1" >&2; exit 2 ;;
     *) break ;;
   esac
@@ -503,14 +600,33 @@ args["planPath"], args["specHash"] = plan, hash_
 # Where craft is installed, so the prompts workflow.js builds name paths that exist here.
 args["skillRoot"] = skill_root
 args.setdefault("projectDir", block.get("projectDir") or __import__("os").getcwd())
-print(json.dumps({"runId": run_id, "turns": block.get("goalTurns", 12), "args": args}))
+print(json.dumps({"runId": run_id, "turns": block.get("goalTurns", 12),
+                  "maxRounds": args.get("maxRounds", 3), "args": args}))
 PY
 ) || exit 1
 
 runid=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["runId"])' "$run")
 turns=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["turns"])' "$run")
+# The GOAL's round clause reads args.rounds, which craft-redispatch increments and hard-stops at
+# maxRounds. Composed against goalTurns it named a number the counter can never reach — observed
+# 2026-08-27, "reads 24 or more" against a maxRounds of 3 — leaving the wall clock as the only live
+# escape. goalTurns still governs the turn budget; it is not a round budget.
+maxrounds=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["maxRounds"])' "$run")
 R="${rundir:-$PWD/.craft}/$runid"
 mkdir -p "$R" || exit 1
+
+# The goal is a pure function of the plan path, the run dir and the round budget, so it is composed
+# HERE — before anything is written or probed — and merely SENT at the end. That makes it readable:
+# CRAFT_GOAL_PRINT shows the exact line craft would self-send and then stops, writing no args.json
+# and dispatching nothing. Emitted only at the send, as it used to be, no test can observe it, which
+# is how it named an unreachable round budget for weeks.
+if python3 -c 'import json,sys; sys.exit(0 if json.loads(sys.argv[1])["args"].get("readOnly") else 1)' "$run"; then
+  goal=$("$SKILL/scripts/compose-goal.sh" "$plan" "$R" "$maxrounds" 1)
+else
+  goal=$("$SKILL/scripts/compose-goal.sh" "$plan" "$R" "$maxrounds" 0)
+fi
+[ -n "${CRAFT_GOAL_PRINT:-}" ] && { printf '%s\n' "$goal"; exit 0; }
+
 # args.json is what disarms the guard, so a preview must NOT write it — otherwise --print would
 # release the hold having dispatched nothing.
 out="$R/args.json"; [ "$mode" = print ] && out="$R/args.preview.json"
@@ -570,6 +686,12 @@ if [ "$mechprobe" = 1 ] && [ "$mode" != print ]; then
   mp=$?
   if [ "$mp" -ne 0 ]; then rm -f "$tmp"; exit "$mp"; fi
 fi
+
+# TIER 3, last of the three because it is the only one that cannot refuse: a dispatch already
+# refused above has nothing to report on. Skipped under --print, which promises to build and stop.
+if [ "$suitelint" = 1 ] && [ "$mode" != print ]; then
+  suite_lint_report "$tmp"
+fi
 mv "$tmp" "$out" || exit 1
 
 # With args.json, never before it: a plan that was refused never ran, so it is not a run artifact.
@@ -606,27 +728,81 @@ echo "args:  $out"
 # Phase 3. The goal is what runs the outer loop (gate FAIL -> fix -> re-run, tuicr findings ->
 # fix -> re-review) without the user prompting each step. Named by PATH: the FAIL loop is
 # expected to amend and re-hash the plan, so a pinned digest self-invalidates.
-if python3 -c 'import json,sys; sys.exit(0 if json.load(open(sys.argv[1])).get("readOnly") else 1)' "$out"; then
-  goal=$("$SKILL/scripts/compose-goal.sh" "$plan" "$R" "$turns" 1)
-else
-  goal=$("$SKILL/scripts/compose-goal.sh" "$plan" "$R" "$turns" 0)
-fi
 bash "$SKILL/scripts/goal-self-send.sh" "$goal"
 gs=$?
 [ $gs -eq 0 ] || echo "goal self-send exited $gs — not fatal; submit the line above by hand if it never queued." >&2
 
 # Phase 4. Detached, never foreground: a real gate runs 20-60 min and a foreground call is killed
 # mid-run. Harness-tracked background tasks were measured to die too; setsid was not.
-setsid nohup bash "$FARM" --provider "$provider" \
-  --workflow "$SKILL/workflow.js" \
-  --args "$R/args.json" --out "$R/result.json" --cwd "$PWD" \
-  > "$R/run.log" 2>&1 < /dev/null &
+#
+# setsid detaches the SESSION, not the resource domain: the run stays in the terminal's cgroup, which
+# is what the measured systemd-oomd kill exploited — the whole cgroup went, verdict and all. A
+# transient scope under the user manager is a cgroup of its own, so the run is no longer collateral.
+# The capability is PROBED, never assumed: a container, a non-systemd host or a shell with no user
+# manager must still DISPATCH. Losing the scope is a warning; refusing to run would be the regression.
+SYSTEMD_RUN=${CRAFT_SYSTEMD_RUN:-systemd-run}
+scope=none
+scope_why=""
+scope_unit=""
+if [ "${CRAFT_NO_SCOPE:-}" = "1" ]; then
+  scope_why="CRAFT_NO_SCOPE=1"
+elif ! command -v "$SYSTEMD_RUN" > /dev/null 2>&1; then
+  scope_why="$SYSTEMD_RUN not found"
+elif ! "$SYSTEMD_RUN" --user --scope --quiet --collect -- true > /dev/null 2>&1; then
+  scope_why="no reachable systemd user manager"
+else
+  scope=transient
+  # A unit name is a restricted charset; the run id is author-supplied, so map anything else out
+  # rather than handing systemd a name it will reject. The pid keeps a re-dispatch of the same run
+  # from colliding with one still live.
+  scope_unit="craft-$(printf '%s' "$runid" | tr -c '[:alnum:]_.\-' '_')-$$.scope"
+fi
+
+# One argument vector, so the two dispatch paths cannot drift apart.
+farm_cmd=(bash "$FARM" --provider "$provider"
+  --workflow "$SKILL/workflow.js"
+  --args "$R/args.json" --out "$R/result.json" --cwd "$PWD")
+
+if [ "$scope" = transient ]; then
+  setsid nohup "$SYSTEMD_RUN" --user --scope --collect --quiet --unit "$scope_unit" \
+    -- "${farm_cmd[@]}" > "$R/run.log" 2>&1 < /dev/null &
+else
+  [ -n "$scope_why" ] && echo "WARNING: dispatching without a transient scope ($scope_why) — the run
+shares this terminal's cgroup and dies with it, or with an oomd kill against it." >&2
+  setsid nohup "${farm_cmd[@]}" > "$R/run.log" 2>&1 < /dev/null &
+fi
+
+# Which path was taken, on stdout and unconditionally: a run that quietly lost its scope is exactly
+# the run that later dies without a verdict, so the fact has to be in the dispatch output either way.
+echo "scope: $scope${scope_unit:+ ($scope_unit)}${scope_why:+ — $scope_why}"
 
 sleep 2
 if bash "$SKILL/scripts/farm-alive.sh" "$R/result.json" > /dev/null; then
   echo "dispatched: $runid (provider: $provider)"
 else
   echo "WARNING: no live dispatch for $runid two seconds in — check $R/run.log" >&2
+fi
+
+# The count, resolved only now: --print and CRAFT_DISPATCH_DRYRUN both returned above, so neither
+# path can be changed by it. An unstated --loops takes the plan's own maxRounds, and 3 when the plan
+# states none.
+if [ -z "$loops" ]; then
+  loops=$(python3 - "$out" <<'PY'
+import json, sys
+try:
+    v = json.load(open(sys.argv[1])).get("maxRounds")
+except Exception:
+    v = None
+print(v if isinstance(v, int) and not isinstance(v, bool) and v >= 0 else 3)
+PY
+)
+  case "$loops" in ''|*[!0-9]*) loops=3 ;; esac
+fi
+
+# Above zero the loop is EXECUTED rather than printed; zero is the printed wait loop, unchanged.
+if [ "$loops" -gt 0 ]; then
+  exec bash "$SKILL/scripts/craft-loop.sh" \
+    --run-dir "$R" --plan "$plan" --loops "$loops" --provider "$provider"
 fi
 
 cat <<EOF

@@ -66,6 +66,51 @@ function dispatch(f: { dir: string; plan: string }, ...extra: string[]) {
   }
 }
 
+describe('the goal names the round budget craft actually enforces', () => {
+  /**
+   * The clause reads `args.rounds` — the per-round counter craft-redispatch increments and hard-stops
+   * at `maxRounds` (exit 4 beyond it). Composed against `goalTurns` instead, it names a number the
+   * counter can never reach: observed 2026-08-27, a goal saying "reads 24 or more" against a
+   * maxRounds of 3. The round escape was dead, which is how a 10-minute wall clock became the only
+   * escape that ever fired.
+   *
+   * CRAFT_GOAL_PRINT composes the goal and stops, running no commands and writing no args.json —
+   * the goal is otherwise sent as the last act of a real dispatch, where a test cannot observe it.
+   */
+  function goalOf(f: { dir: string; plan: string }, env: Record<string, string> = {}) {
+    return execFileSync('bash', [SCRIPT, f.plan], {
+      // BOTH seams, deliberately. CRAFT_GOAL_PRINT is what this test exercises; CRAFT_DISPATCH_DRYRUN
+      // is the backstop. Observed 2026-08-27: while CRAFT_GOAL_PRINT was still RED, these three
+      // tests fell through to a FULL dispatch — a real farm-out against a /tmp fixture, agents paid
+      // for, and a `/goal` naming that fixture self-sent into the developer's own session. A test
+      // that invokes this script must never be one broken branch away from dispatching.
+      encoding: 'utf8', cwd: f.dir,
+      env: { ...process.env, CRAFT_GOAL_PRINT: '1', CRAFT_DISPATCH_DRYRUN: '1', ...env },
+    })
+  }
+
+  test('the rounds clause names maxRounds, not goalTurns', () => {
+    const f = fixture({ redCommand: 'bash scripts/check.sh', extraArgs: { maxRounds: 5 } })
+    script(f.dir, 'check.sh', 'echo "1 failed, 0 passed"\nexit 1')
+    const goal = goalOf(f)
+    expect(goal).toMatch(/reads 5 or more/)
+    expect(goal).not.toMatch(/reads 12 or more/)   // goalTurns' default, the value it used to name
+  })
+
+  test('the default round budget is craft\'s own, so an unstated maxRounds is still reachable', () => {
+    const f = fixture({ redCommand: 'bash scripts/check.sh' })
+    script(f.dir, 'check.sh', 'echo "1 failed, 0 passed"\nexit 1')
+    expect(goalOf(f)).toMatch(/reads 3 or more/)
+  })
+
+  test('composing the goal writes nothing and dispatches nothing', () => {
+    const f = fixture({ redCommand: 'bash scripts/check.sh', extraArgs: { maxRounds: 5 } })
+    script(f.dir, 'check.sh', 'echo "1 failed, 0 passed"\nexit 1')
+    goalOf(f)
+    expect(existsSync(f.argsPath)).toBe(false)
+  })
+})
+
 describe('the redCommand probe runs at dispatch, not a round later', () => {
   test('a redCommand that genuinely fails a test PROCEEDS — non-zero with a real test result is the RED craft wants', () => {
     const f = fixture({ redCommand: 'bash scripts/check.sh' })

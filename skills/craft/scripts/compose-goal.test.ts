@@ -10,11 +10,12 @@
  *     — a condition that releases on runaway but not on a clean finish. The escape now names a
  *     ROUND COUNTER FILE, so the check is a `cat` whose output lands in the transcript as evidence.
  *
- *  2. `workflow.js has returned PASS ... at its current hash` is unsatisfiable after success. Craft
- *     fails any task whose redCommand is green at baseline (red-not-red), so a completed plan's
- *     gates are all green by construction and a re-run flags every task. The episode ended at
- *     redNotRed: 5. The goal now names the terminal HUMAN event — the review gate's verdict — which
- *     stays reachable once the work is done.
+ *  2. `workflow.js has returned PASS ... AT ITS CURRENT HASH` was unsatisfiable after success — the
+ *     hash clause, not the PASS clause, was the defect: the FAIL loop is expected to amend and
+ *     re-hash the plan, so a pinned digest self-invalidates. The reading that PASS itself is
+ *     unreachable (red-not-red on a completed plan) was already stale when it was written:
+ *     `redDisposition` shipped 2026-08-17 and is what a completed task declares instead of a red
+ *     gate. The goal names PASS by PATH, and the round cap stops a run that cannot get there.
  *
  * Run: bun test ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/compose-goal.test.ts
  */
@@ -86,12 +87,13 @@ describe('compose-goal.sh', () => {
     expect(compose().out.toLowerCase()).toMatch(/\bjq\b|\bread\b/)
   })
 
-  test('a writing run does not name "workflow.js has returned PASS" — unsatisfiable after success', () => {
+  test('a writing run names PASS by PATH and never by a pinned hash', () => {
     const out = compose({ readOnly: false }).out
-    expect(out).not.toContain('returned PASS')
-    // It names craft's own verdict. It used to name the human review gate; that clause moved to
-    // the skill's Phase 5, because a goal must state what a session can close by working.
-    expect(out).toMatch(/craft has returned a verdict/)
+    expect(out).toMatch(/craft has returned PASS/)
+    // The hash clause is what self-invalidated: the FAIL loop amends the plan and re-hashes, so a
+    // run would PASS against a digest the condition no longer names. The path is stable.
+    expect(out).not.toMatch(/at its current hash/)
+    expect(out).not.toMatch(/[0-9a-f]{16}/)
   })
 
   test('a readOnly run names a verdict rather than a pass', () => {
@@ -117,18 +119,47 @@ describe('compose-goal.sh', () => {
 describe('the goal carries a wall-clock escape, not only a round count', () => {
   // Measured 2026-08-19 (mail-bridge): rounds ran 3h+, so `rounds >= 4` put the guaranteed stop
   // twelve hours out. The session worked all night and could not close its own goal.
+  test('the default ceiling outlasts a round, so a walked-away run does not stop empty', () => {
+    // 8h is the pre-2026-08-23 default, restored: maxRounds x ~1h of round still fits under it.
+    const r = compose({ rounds: '4' })
+    expect(r.code).toBe(0)
+    expect(Number(/(\d+) minutes or more/.exec(r.out)![1])).toBeGreaterThanOrEqual(240)
+  })
+
   test('the emitted goal names craft-elapsed.sh and a minutes ceiling', () => {
     const r = compose({ rounds: '4' })
     expect(r.code).toBe(0)
     expect(r.out).toMatch(/craft-elapsed\.sh/)
-    expect(r.out).toMatch(/10 minutes or more/)
+    expect(r.out).toMatch(/480 minutes or more/)
   })
 
-  // The ceiling bounds WAITING. A session with work left keeps working whatever it says, so a
-  // short default costs nothing and buys back the hours a run used to spend on an absent human.
+  // The ceiling must outlast a ROUND, not just a human's attention span. Measured 2026-08-27 in
+  // the workflows repo: round 1 of a six-task run took 54 minutes (dispatch 17:29, result.json
+  // 18:23) against a 10-minute default, so `craft-elapsed.sh` printed CEILING REACHED with zero
+  // rounds on disk and no verdict — the escape written to stop a session waiting on a sleeping
+  // human fired five times over before the first round returned anything.
   test('CRAFT_GOAL_MAX_HOURS still settles a goal composed before the switch', () => {
     expect(compose({ rounds: '4', env: { CRAFT_GOAL_MAX_HOURS: '2' } }).out)
       .toMatch(/120 minutes or more/)
+  })
+
+  test('the settling command CARRIES the ceiling, so the clause and the script cannot disagree', () => {
+    // The number lived in two places: this script's default and craft-elapsed.sh's. They drifted to
+    // 480 and 10 — 48x apart — so a goal saying "480 minutes or more" named a script that reports
+    // CEILING REACHED at ten. craft-elapsed.sh already takes the ceiling as $2; passing it makes the
+    // clause self-describing and the second default a fallback for hand invocation only.
+    const out = compose({ rounds: '4' }).out
+    const stated = /(\d+) minutes or more/.exec(out)
+    expect(stated).not.toBeNull()
+    const invocation = /craft-elapsed\.sh (\S+) (\d+)/.exec(out)
+    expect(invocation).not.toBeNull()
+    expect(`elapsed arg ${invocation![2]}`).toBe(`elapsed arg ${stated![1]}`)
+  })
+
+  test('an overridden ceiling reaches the settling command too', () => {
+    const out = compose({ rounds: '4', env: { CRAFT_GOAL_MAX_MINUTES: '90' } }).out
+    expect(out).toMatch(/90 minutes or more/)
+    expect(out).toMatch(/craft-elapsed\.sh \S+ 90/)
   })
 
   test('a readOnly goal carries it too', () => {
@@ -157,12 +188,24 @@ describe('the goal closes on a machine verdict, never on a human', () => {
     expect(compose({ readOnly: true }).out).not.toMatch(/human review/i)
   })
 
-  test('a writing run closes on craft-result.sh exiting 0 or 1 rather than 2', () => {
+  test('a writing run closes on PASS, NOT on any verdict — a FAIL keeps the loop turning', () => {
+    // Measured 2026-08-27: with `exits 0 or 1`, round 1 FAILING with 8 surviving blocking findings
+    // SATISFIED the goal. craft's own diagram is gate FAIL -> fix -> re-run; accepting exit 1 means
+    // nothing carries that loop, and the run ends holding a list of defects instead of a fix.
     const out = compose({ rounds: '4' }).out
-    expect(out).toMatch(/craft has returned a verdict/)
     expect(out).toMatch(/craft-result\.sh/)
-    // 2 is REFUSED — a gate that could not be adjudicated is not a verdict.
-    expect(out).toMatch(/exits 0 or 1 rather than 2/)
+    expect(out).toMatch(/exits 0\b/)
+    expect(out).not.toMatch(/exits 0 or 1/)
+    // 2 is REFUSED and 1 is FAIL; neither is done. The round cap is what stops a losing run.
+    expect(out).not.toMatch(/or 1 rather than 2/)
+  })
+
+  test('the round escape names the round budget craft actually enforces', () => {
+    // The counter this clause reads is `args.rounds`, incremented per round and hard-stopped at
+    // `maxRounds` (craft-redispatch exits 4 beyond it). Composing against anything larger — craft
+    // dispatched with goalTurns, 24 against a maxRounds of 3 — makes the clause UNREACHABLE, which
+    // is how the 10-minute ceiling became the only escape that ever fired.
+    expect(compose({ rounds: '3' }).out).toMatch(/reads 3 or more/)
   })
 
   test('a readOnly run still closes on its own verdict', () => {

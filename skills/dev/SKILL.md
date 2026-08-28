@@ -124,7 +124,13 @@ There is no built-in `Workflow` call — the guard at
 
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan; or pass one
+bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh --provider codex   # "run this through codex"
 ```
+
+**Forward the provider.** A provider named in this skill's `$ARGUMENTS`, however it is spelled —
+`--provider codex`, `--dispatch codex`, "run this on gpt" — is `--provider codex` on the line
+above. `--provider` is the only spelling the scripts take, and both reject the others by name.
+Omitting it silently runs the user's codex request on claude.
 
 ```js
 {
@@ -139,7 +145,8 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan
       writablePaths: ["<narrow — see Phase 2>"],
       acceptance: "<the criterion the verifier checks>",
       redCommand: "<the exact command from CLARIFY axis 3, scoped to the first failing test>",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/dev/references/tdd.md"] },
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/dev/references/tdd.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/dev/references/writing-good-tests.md"] },
   ],
 
   // The TARGET project's own commands, collected at CLARIFY. Nothing generic — a check that does
@@ -174,12 +181,6 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan
       agentType: "Explore",
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/dev/references/lens-performance.md"],
       prompt: "Judge only the runtime cost of the changed code, against the finding classes in the refs. Read them in full first. A finding names a file and line, sits on a path that runs often enough to matter, and states the cost as Big-O over the input that actually grows or as concrete latency/memory. Speculation without a growing input is not a finding. Severity: MAJOR at minimum, CRITICAL where the growth makes a production path unusable at realistic input size." },
-
-    { key: "tests",
-      agentType: "Explore",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/dev/references/lens-tests.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/dev/references/tdd.md"],
-      prompt: "Judge only the tests covering this change, against the finding classes in the refs. Read them in full first. Read the tests before claiming a gap. Findings: behaviour that ships unverified, an assertion that would not fail when the behaviour it names breaks, a test that exercises a path production does not use, a fixture whose precondition no production writer can produce, and evidence that reads source or logs where the task required runtime behaviour. Severity: MAJOR at minimum, CRITICAL where a passing test certifies behaviour it never exercised." },
   ],
 
   authorityExtra: [
@@ -187,7 +188,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan
     "Write the smallest real test that exercises the production path this task names, run it, and read the output. Accept RED only when it fails for the intended MISSING BEHAVIOUR — never a syntax error, an import error, a broken fixture, an unavailable dependency, or an unrelated failure elsewhere in the suite. If you implemented before observing RED, delete the implementation and restart the task; a test written beside its fix passes whether or not it ever exercised the defect.",
     "A test must do what the user does. Exercising an alternate protocol or transport, or inspecting source and logs instead of runtime behaviour, is not evidence for a task whose acceptance names a user-visible result.",
     "Your task's redCommand is executed by probes outside your control, before and after you work. A self-reported RED is not evidence and never was.",
-    "Rules: ${CLAUDE_PLUGIN_ROOT}/skills/dev/references/tdd.md governs every task. Browser and web work also follows ${CLAUDE_PLUGIN_ROOT}/skills/dev/references/testing-web.md; desktop and native work also follows ${CLAUDE_PLUGIN_ROOT}/skills/dev/references/testing-desktop.md.",
+    "Rules: ${CLAUDE_PLUGIN_ROOT}/skills/dev/references/tdd.md and ${CLAUDE_PLUGIN_ROOT}/skills/dev/references/writing-good-tests.md govern every task — read the latter IN FULL before writing a test. Browser and web work also follows ${CLAUDE_PLUGIN_ROOT}/skills/dev/references/testing-web.md; desktop and native work also follows ${CLAUDE_PLUGIN_ROOT}/skills/dev/references/testing-desktop.md.",
   ].join("\n"),
 
   verifierAgentType: "Explore",

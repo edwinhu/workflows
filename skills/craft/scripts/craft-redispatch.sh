@@ -19,6 +19,8 @@
 #   craft-redispatch.sh … --dispatch --no-red-probe        # skip only the red probe; keep plan-lint
 #   craft-redispatch.sh … --dispatch --provider codex      # run this round's whole spine on GPT-5.6
 #   CRAFT_REDISPATCH_DRYRUN=1                              # everything but the farm-out
+#   CRAFT_NO_SCOPE=1                                       # force the plain setsid dispatch
+#   CRAFT_SYSTEMD_RUN=PATH                                 # the binary the scope probe uses
 #
 # SELECTIVE RE-RUN, with --dispatch and derived here rather than remembered: `onlyTasks` is the
 # previous verdict's `tasksThatFlagged` CLOSED UNDER TRANSITIVE DEPENDENTS, and `priorResults` (with
@@ -69,7 +71,11 @@ DISPATCH=""; LINT=1; REDPROBE=1; FULL=0
 PROVIDER=claude
 while [ $# -gt 0 ]; do
   case "$1" in
-    --dispatch) DISPATCH=--dispatch ;;
+    # Boolean. A provider after it is the --provider flag misspelled; say so rather than dying on
+    # "unknown argument: codex" two iterations later.
+    --dispatch) DISPATCH=--dispatch
+                case "${2:-}" in claude|codex|gemini)
+                  die "--dispatch is a boolean; the provider is a separate flag: --dispatch --provider $2" ;; esac ;;
     --provider) shift; PROVIDER="${1:-}"
                 case "$PROVIDER" in claude|codex|gemini) ;;
                   *) die "--provider must be claude|codex|gemini, got: ${PROVIDER:-(empty)}" ;; esac ;;
@@ -452,10 +458,52 @@ fi
 [ -n "${CRAFT_REDISPATCH_DRYRUN:-}" ] && { echo "CRAFT_REDISPATCH_DRYRUN: nothing dispatched."; exit 0; }
 
 LOG="$RUN_DIR/run-$(date +%H%M%S).log"
-setsid nohup bash "$FARM" --provider "$PROVIDER" \
-    --workflow "$SKILL/workflow.js" \
-    --args "$ARGS_ABS" --out "$RESULT" --cwd "$(pwd)" \
-    > "$LOG" 2>&1 < /dev/null &
+
+# setsid detaches the SESSION, not the resource domain: rounds 2..N would otherwise stay in the
+# terminal's cgroup, which is what the measured systemd-oomd kill exploited. Round 1 is scoped in
+# craft-dispatch.sh; the continuation is the long unattended part, so it needs the same treatment.
+# PROBED, never assumed — a container or a non-systemd host must still dispatch. Losing the scope is
+# a warning; refusing to run would be the regression.
+SYSTEMD_RUN=${CRAFT_SYSTEMD_RUN:-systemd-run}
+RUN_ID=$(basename "$RUN_DIR")
+scope=none
+scope_why=""
+scope_unit=""
+if [ "${CRAFT_NO_SCOPE:-}" = "1" ]; then
+  scope_why="CRAFT_NO_SCOPE=1"
+elif ! command -v "$SYSTEMD_RUN" > /dev/null 2>&1; then
+  scope_why="$SYSTEMD_RUN not found"
+elif ! "$SYSTEMD_RUN" --user --scope --quiet --collect -- true > /dev/null 2>&1; then
+  scope_why="no reachable systemd user manager"
+else
+  scope=transient
+  # A unit name is a restricted charset; the run id is author-supplied, so map anything else out
+  # rather than handing systemd a name it will reject. The pid keeps this round from colliding with
+  # a previous one still live.
+  scope_unit="craft-$(printf '%s' "$RUN_ID" | tr -c '[:alnum:]_.\-' '_')-$$.scope"
+fi
+
+# One argument vector, so the two dispatch paths cannot drift apart.
+farm_cmd=(bash "$FARM" --provider "$PROVIDER"
+    --workflow "$SKILL/workflow.js"
+    --args "$ARGS_ABS" --out "$RESULT" --cwd "$(pwd)")
+
+if [ "$scope" = transient ]; then
+  setsid nohup "$SYSTEMD_RUN" --user --scope --collect --quiet --unit "$scope_unit" \
+      -- "${farm_cmd[@]}" > "$LOG" 2>&1 < /dev/null &
+else
+  # `set -e` is on here, so this is an if rather than a && short-circuit that would exit the script
+  # on an empty reason.
+  if [ -n "$scope_why" ]; then
+    echo "WARNING: redispatching without a transient scope ($scope_why) — the round
+shares this terminal's cgroup and dies with it, or with an oomd kill against it." >&2
+  fi
+  setsid nohup "${farm_cmd[@]}" > "$LOG" 2>&1 < /dev/null &
+fi
+
+# Which path was taken, on stdout and unconditionally: a round that quietly lost its scope is exactly
+# the round that later dies without a verdict, so the fact has to be in the output either way.
+echo "scope: $scope${scope_unit:+ ($scope_unit)}${scope_why:+ — $scope_why}"
 
 printf 'dispatched, log: %s (provider: %s)\n' "$LOG" "$PROVIDER"
 printf 'wait with a Monitor on %s, then run craft-result.sh on it\n' "$RESULT"

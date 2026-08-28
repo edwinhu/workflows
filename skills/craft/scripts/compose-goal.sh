@@ -24,10 +24,16 @@
 #   still unreachable in any useful time. Rounds count work, not elapsed, so the clause below adds
 #   an hours bound that a `date`-free `find` can settle, and either one closes the goal.
 #
-#   "workflow.js has returned PASS" — unsatisfiable once the plan succeeds. Craft fails any task
-#   whose redCommand is green at baseline (red-not-red), so a completed plan's gates are all green
-#   by construction and a re-run flags every task; one episode ended at redNotRed: 5. The goal names
-#   the terminal HUMAN event instead, which stays reachable after the work is done.
+# WHAT CLOSES THE GOAL IS PASS, NOT "a verdict". `craft-result.sh` exits 1 on overallPass=false, so
+# a clause reading "exits 0 or 1" is satisfied by a FAIL. Measured 2026-08-27: round 1 of the
+# suite-lint run FAILED with 8 surviving blocking findings and closed the goal — craft's own loop is
+# gate FAIL -> fix -> re-run, and nothing was carrying it. A losing run is stopped by the round cap
+# below, which is bounded and decidable; it is not stopped by calling a FAIL "done".
+#
+#   This reverses an earlier removal whose stated reason — "PASS is unsatisfiable, because craft
+#   fails any task whose redCommand is green at baseline (red-not-red)" — was already stale when it
+#   was written. `redDisposition` shipped 2026-08-17 and is exactly the field a completed task
+#   declares instead of a red gate; the removal is dated 2026-08-23.
 set -euo pipefail
 
 die() { printf 'compose-goal: %s\n' "$1" >&2; exit 2; }
@@ -42,18 +48,29 @@ case "$READONLY" in 0|1) ;; *) die "readOnly must be 0 or 1, got: $READONLY" ;; 
 
 # The wall-clock ceiling the goal may not outlive. Overridable, never absent: a goal with no time
 # bound is one an unattended session cannot close by working.
-# Minutes, not hours: the ceiling bounds how long a session may WAIT on the human half, and a
-# session with work left keeps working regardless — the Stop hook gates stopping, not working.
+# It must outlast a ROUND, not a human's attention span. Measured 2026-08-27 in this repo: round 1
+# of a six-task run took 54 minutes against a 10-minute default, so the ceiling was satisfiable 44
+# minutes before any work product existed and craft-elapsed.sh printed CEILING REACHED with zero
+# rounds on disk. 480 is the pre-2026-08-23 default of 8 hours, restored. Bounding how long a
+# session waits on an ABSENT HUMAN is Phase 5's business, which is where review already lives.
 _hours_as_min="${CRAFT_GOAL_MAX_HOURS:+$(( CRAFT_GOAL_MAX_HOURS * 60 ))}"
-MAX_MINUTES="${CRAFT_GOAL_MAX_MINUTES:-${_hours_as_min:-10}}"
+MAX_MINUTES="${CRAFT_GOAL_MAX_MINUTES:-${_hours_as_min:-480}}"
 case "$MAX_MINUTES" in
   ''|*[!0-9]*) die "CRAFT_GOAL_MAX_MINUTES must be a whole number of minutes, got: $MAX_MINUTES" ;;
 esac
 SKILL_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 
-# The two machine escapes, identical in every regime.
-ESCAPES=$(printf 'the rounds field in %s/args.json reads %s or more — `jq -r .rounds` it to check — or the run has been going %s minutes or more, which `bash %s/scripts/craft-elapsed.sh %s` prints and settles' \
-    "$RUN_DIR" "$ROUNDS" "$MAX_MINUTES" "$SKILL_DIR" "$RUN_DIR")
+# THE CEILING TRAVELS WITH THE CLAUSE. craft-elapsed.sh carries its own default too, and the two
+# drifted to 480 and 10 — 48x apart — so a goal stating one number named a script that would settle
+# it at the other. It already accepts the ceiling as $2, so passing it makes the clause
+# self-describing and leaves that default as a fallback for hand invocation only.
+#
+# The two machine escapes, identical in every regime. `rounds` is the per-round counter craft-
+# redispatch increments and hard-stops at `maxRounds` (exit 4 beyond it), so this clause MUST be
+# composed against maxRounds. Composed against anything larger it is unreachable, and the run is
+# left with the wall clock as its only working escape.
+ESCAPES=$(printf 'the rounds field in %s/args.json reads %s or more — `jq -r .rounds` it to check — or the run has been going %s minutes or more, which `bash %s/scripts/craft-elapsed.sh %s %s` prints and settles' \
+    "$RUN_DIR" "$ROUNDS" "$MAX_MINUTES" "$SKILL_DIR" "$RUN_DIR" "$MAX_MINUTES")
 
 if [ "$READONLY" = 1 ]; then
     # An audit produces a diagnosis, not a pass: its gate legitimately FAILs and that is the outcome.
@@ -61,6 +78,6 @@ if [ "$READONLY" = 1 ]; then
 else
     # The run has produced a verdict craft-result.sh can read. That is the terminal MACHINE event;
     # what to do about it — including opening review — is Phase 5's business, not the goal's.
-    printf '/goal craft has returned a verdict for %s — `bash %s/scripts/craft-result.sh %s/result.json` exits 0 or 1 rather than 2 — or %s\n' \
+    printf '/goal craft has returned PASS for %s — `bash %s/scripts/craft-result.sh %s/result.json` exits 0 — or %s\n' \
         "$PLAN" "$SKILL_DIR" "$RUN_DIR" "$ESCAPES"
 fi
