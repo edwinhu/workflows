@@ -125,6 +125,19 @@ document, it is a second *reader* — and nothing records which one the gate rea
 | Save `REVIEW-<topic>-<date>.md` next to `REVIEW.md` | Two readers, no record of which one the gate read | Overwrite the one file; git holds the history |
 | Count only `.planning/.state/` when auditing | That is the half that already held | `ls .planning/ .planning/.state/`, count both |
 
+## Worktrees
+
+**Work in a worktree, not the main checkout.** `~/.claude/skills/workflows` is a SYMLINK to this
+repo, so every uncommitted edit here is live for every Claude session on the machine — a half-written
+script is what the next session executes, and a test suite run from here exercises the tree other
+sessions are using. `EnterWorktree` at the start of any session that will edit skills, scripts or
+hooks; `/ship` merges it back and sweeps it.
+
+The isolation is partial, and where it stops is load-bearing: paths the harness resolves —
+`${CLAUDE_PLUGIN_ROOT}`, a skill `refs` entry, `~/.claude/skills/workflows/...` — still point at the
+MAIN checkout. A worktree isolates the files you edit, not the ones a dispatched agent loads, so a
+SKILL.md change is not in effect for agents until it lands on main.
+
 ## Required Skills
 
 **Always use these wrapper skills (they invoke the built-ins internally):**
