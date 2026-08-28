@@ -130,8 +130,7 @@ func hasISSColumnHeader(head string) bool {
 // column header or by a FUND: line followed by ISSUER: records.
 func matchVanguard(head string) bool {
 	up := strings.ToUpper(head)
-	if strings.Contains(up, "PROPOSAL:") &&
-		strings.Contains(up, "PROPOSED BY") && strings.Contains(up, "VOTE CAST") {
+	if hasVanguardColumnHeader(up) {
 		return true
 	}
 	fund := strings.Index(up, "FUND:")
@@ -139,6 +138,41 @@ func matchVanguard(head string) bool {
 		return false
 	}
 	return strings.Contains(up[fund:], "ISSUER:")
+}
+
+// hasVanguardColumnHeader looks for the one physical line that carries
+// PROPOSAL:, PROPOSED BY and VOTE CAST together — the column header the grammar
+// actually prints, and the same line parseVanguard reads its column arity off:
+//
+//	PROPOSAL:              PROPOSED BY      VOTED?      VOTE CAST           MGMT
+//
+// Anchoring to a line is what makes this a signature. The three tokens searched
+// for separately over the whole 128 KB window claimed 288 filings in an
+// unrelated HTML <table> grammar, where "Proposed By" and "Vote Cast" are <th>
+// cells alone on their own lines and "PROPOSAL:" is the tail of the phrase
+// "SHAREHOLDER PROPOSAL:" inside a proposal description; that grammar orders its
+// columns differently, so the 60,719 rows it yielded were shredded across the
+// wrong ones. A layout must not claim what it cannot parse — the registry lands
+// an unclaimed family in parse_status=skip with a body-derived signature, which
+// keeps it countable instead of silently wrong.
+//
+// head must already be uppercased. The scan walks the window once, without
+// materialising a slice of its lines.
+func hasVanguardColumnHeader(head string) bool {
+	for len(head) > 0 {
+		line := head
+		if i := strings.IndexByte(head, '\n'); i >= 0 {
+			line, head = head[:i], head[i+1:]
+		} else {
+			head = ""
+		}
+		if strings.Contains(line, "PROPOSAL:") &&
+			strings.Contains(line, "PROPOSED BY") &&
+			strings.Contains(line, "VOTE CAST") {
+			return true
+		}
+	}
+	return false
 }
 
 // parseText normalizes a legacy filing body, dispatches it through
