@@ -51,6 +51,11 @@ type FilingMeta struct {
 	Layout         string
 	ParseStatus    string // ok | error | skip
 	ErrorMsg       string
+
+	// SeriesDecls carries the header's series declarations to the layout
+	// parsers, which are the only layer that knows which series a given vote
+	// belongs to. It is not a manifest column and is not serialized.
+	SeriesDecls []SeriesDecl
 }
 
 // ParseResult bundles the output of parsing a single filing.
@@ -65,6 +70,20 @@ type SeriesClass struct {
 	SeriesID string
 	ClassID  string
 	Ticker   string
+}
+
+// SeriesDecl is one series as the SGML header DECLARES it: the id, the name the
+// header spells for it, and the class contracts listed under it. Unlike the
+// triples above there is exactly one per <SERIES-ID>, so a series declaring no
+// class contract still appears.
+//
+// The name is what lets a legacy layout attribute a vote: the body prints a fund
+// heading and the header declares the same fund by name, so the name is the only
+// bridge between a vote and its series id.
+type SeriesDecl struct {
+	SeriesID string
+	Name     string
+	ClassIDs []string
 }
 
 // MultiValueSep joins repeated child values into one TSV cell.
