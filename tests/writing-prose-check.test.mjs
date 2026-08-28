@@ -17,7 +17,7 @@
 import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
-import { auditStyle, isTypDeck, editRanges, inRanges, runProseAudit, runCheckAll } from '../hooks/writing-prose-check.ts'
+import { auditStyle, isTypDeck, editRanges, inRanges, runProseAudit, runCheckAll, profileFor } from '../hooks/writing-prose-check.ts'
 
 let PASS = 0, FAIL = 0
 const ok = (name, condition, extra = '') => {
@@ -132,5 +132,94 @@ const write = (dir, name, body) => { const p = join(dir, name); writeFileSync(p,
     JSON.stringify(tsOut) === JSON.stringify([true, true, true, true, false, false]), JSON.stringify(tsOut))
 }
 
-console.log(`\n${PASS}/${PASS + FAIL} passed`)
-if (FAIL) process.exit(1)
+// ── A deck is AUDITED under a restricted profile, not skipped ────────────────
+// The old contract was "a slide deck is not prose, and must not be linted as prose", implemented
+// as an outright `process.exit(0)`. That exempted decks from the corpus-gated tic table too, and a
+// real sev3 tic shipped in a lecture deck because of it. The predicate now selects a PROFILE.
+{
+  const d = tmp()
+  const deck = write(d, 'slides-talk.typ', '#import "@preview/touying:0.5.0": *\n= Slide\n')
+  const prose = write(d, 'memo.typ', 'The board met on Tuesday and resolved the matter.\n')
+
+  ok('a deck still detects as a deck', isTypDeck(deck) === true)
+  ok('profileFor names the deck profile for a deck', profileFor(deck) === 'deck')
+  ok('profileFor leaves non-deck .typ on the full profile', profileFor(prose) === 'full')
+}
+
+// ── END TO END, through the hook the way a tool call reaches it ──────────────
+// profileFor() agreeing with itself proves nothing about what the hook DOES. These drive the hook
+// as a subprocess over a real JSON payload — the production entry point — and read the
+// additionalContext a model would actually receive.
+const HOOK = join(import.meta.dir, '..', 'hooks', 'writing-prose-check.ts')
+function runHook(payload, cwd) {
+  const p = Bun.spawnSync(['bun', HOOK], {
+    cwd,
+    stdin: new TextEncoder().encode(JSON.stringify(payload)),
+    stdout: 'pipe',
+    stderr: 'pipe',
+  })
+  const out = new TextDecoder().decode(p.stdout).trim()
+  if (!out) return ''
+  try { return JSON.parse(out).hookSpecificOutput.additionalContext } catch { return out }
+}
+
+// One body, two registers. `organisation` is a US-register SPELLING error and "The selection is
+// the argument." a corpus-gated tic — claims about correctness and provenance, which hold on a
+// slide. The `---` em dashes and the passive "were reviewed" are claims about PROSE RHYTHM, which
+// a bulleted deck legitimately breaks; the deck profile must not report them.
+const DECK_BODY =
+  '#import "@preview/touying:0.5.0": *\n' +
+  '\n' +
+  '= A slide title\n' +
+  '\n' +
+  '- The selection is the argument.\n' +
+  '\n' +
+  '- The organisation of the statute --- its structure, its defaults --- is what the court reads.\n' +
+  '\n' +
+  '- Records were reviewed by the committee before the vote was taken.\n'
+
+{
+  const d = tmp()
+  const deck = write(d, 'lecture.typ', DECK_BODY)
+  const ctx = runHook({ tool_name: 'Write', tool_input: { file_path: deck } }, d)
+  ok('the hook AUDITS a deck instead of exiting silently', ctx !== '', JSON.stringify(ctx))
+  ok('and the deck keeps the provenance/correctness systems',
+    ctx.includes('spelling') || ctx.includes('scored-tic'), JSON.stringify(ctx))
+  ok('and the deck drops the em-dash system', !ctx.includes('em_dash') && !ctx.includes('em-dash'),
+    JSON.stringify(ctx))
+  ok('and the deck drops the writing-* systems', !ctx.includes('writing-'), JSON.stringify(ctx))
+}
+
+{
+  // THE LEAK. A deck reached the audit through the Bash branch and was scored under the FULL
+  // ruleset — `style·em_dash` and `writing-general` on a slide. bashTouchedProseFile() used the
+  // deck predicate to decide CANDIDACY (`!isTypDeck(abs)`) rather than to select a profile, so a
+  // deck it did recognise was dropped and one it did not was handed to `full`.
+  const d = tmp()
+  const p = Bun.spawnSync(['git', 'init', '-q', '.'], { cwd: d, stdout: 'pipe', stderr: 'pipe' })
+  ok('git init for the Bash-branch fixture succeeded', p.exitCode === 0)
+  mkdirSync(join(d, 'slides'), { recursive: true })
+  write(join(d, 'slides'), 'lecture.typ', DECK_BODY)
+  const ctx = runHook({ tool_name: 'Bash', cwd: d, tool_input: { command: 'true' } }, d)
+  ok('a deck dirtied by Bash reaches the audit at all', ctx !== '', JSON.stringify(ctx))
+  ok('and it is scored under the deck profile, not the full ruleset',
+    ctx !== '' && !ctx.includes('em_dash') && !ctx.includes('writing-'), JSON.stringify(ctx))
+}
+
+{
+  // THE DEFAULT IS FROZEN. The same body in a non-deck .typ must still be scored under `full`,
+  // or the profile was not added — the ruleset was narrowed for everyone.
+  const d = tmp()
+  const letter = write(d, 'memo.typ',
+    '#set page(margin: 1in)\n' +
+    '\n' +
+    'The organisation of the statute --- its structure, its defaults --- is what the court reads.\n' +
+    '\n' +
+    'Records were reviewed by the committee before the vote was taken.\n')
+  const ctx = runHook({ tool_name: 'Write', tool_input: { file_path: letter } }, d)
+  ok('a non-deck .typ still reports the em-dash system', ctx.includes('em_dash'), JSON.stringify(ctx))
+  ok('a non-deck .typ still reports the writing-* systems', ctx.includes('writing-'), JSON.stringify(ctx))
+}
+
+console.log(`${PASS} passed, ${FAIL} failed`)
+if (FAIL > 0) process.exit(1)

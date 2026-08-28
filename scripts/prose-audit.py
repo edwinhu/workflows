@@ -42,6 +42,7 @@ Usage:
   prose-audit.py --json draft.md                       # the span list
   prose-audit.py --json --style legal drafts/*.md      # + Volokh
   prose-audit.py --profile de-ai --json draft.md       # the de-ai-revise rewrite view
+  prose-audit.py --profile deck --json lecture.typ     # a slide deck: rhythm systems off
   prose-audit.py draft.docx                            # human-readable report
 
 Exit: 1 if any `hard` span was found, else 0. (2 on a usage error.)
@@ -129,6 +130,31 @@ _DOMAIN_TABLES = [
     ("writing-legal",   "writing",   "volokh-distilled.py",             "_DOUBLETS"),
     ("writing-legal",   "writing",   "volokh-distilled.py",             "_INTRO_CLAUSES"),
 ]
+
+# ── profiles ─────────────────────────────────────────────────────────────────
+# A profile selects WHICH systems run. `full` is the default and runs every system; `deck` is the
+# restricted ruleset for a Typst slide deck, which used to be skipped outright.
+#
+# THE SPLIT IS NOT ARBITRARY. The systems that stay on are claims about PROVENANCE and
+# CORRECTNESS — A `scored-tic` (corpus-gated AI tics), B `wikipedia-*` (provenance leaks), `style`
+# (stylometrics), `spelling` (US register). A sentence that leaks a chatbot's fingerprint or
+# misspells a word is just as wrong on a slide as in a paragraph.
+#
+# The systems that go off are claims about PROSE RHYTHM — D `writing-*` (domain style guides),
+# E `diction` (tiered substitution), and the `em-dash` density budgets. A deck is bullets, not
+# paragraphs: it legitimately breaks sentence rhythm, so those budgets would fire on register, not
+# on a defect. Note `style` KEEPS its metronomic-run and nominalization detection; only the
+# separate `em-dash` density system is dropped.
+_DECK_OFF_SYSTEMS = frozenset({"diction", "em-dash"})
+_DECK_OFF_PREFIXES = ("writing-",)
+
+
+def system_enabled(system: str, profile: str = "full") -> bool:
+    """Does `system` run under `profile`? `full` runs everything (frozen behaviour)."""
+    if profile != "deck":
+        return True
+    return system not in _DECK_OFF_SYSTEMS and not system.startswith(_DECK_OFF_PREFIXES)
+
 
 _MODULE_CACHE: dict[str, object] = {}
 
@@ -997,14 +1023,21 @@ def _merge(group: list[dict]) -> dict:
 
 
 def audit_document(path: Path, style: str | None = None, mask: bool = True,
-                   tiers_on=("always_flag", "cluster", "density")) -> dict:
-    """The unified deterministic audit. Returns {file, style, spans, signals, z, counts}."""
+                   tiers_on=("always_flag", "cluster", "density"),
+                   profile: str = "full") -> dict:
+    """The unified deterministic audit. Returns {file, style, spans, signals, z, counts}.
+
+    `profile` selects which systems contribute (see `system_enabled`). It gates at the single
+    `add()` funnel rather than at each call site, so a system added later is covered by
+    construction and `full` — which enables everything — keeps its exact behaviour."""
     lines, masked_text, emphasis_spans = extract_lines(path, mask=mask)
     patterns = load_pattern_systems(style)
     diction = load_diction()
     raw: list[dict] = []
 
     def add(line, col, end, system, label, severity, quote, context, replace_with=""):
+        if not system_enabled(system, profile):
+            return
         raw.append({"line": line, "col": col, "end": end, "system": system, "label": label,
                     "severity": severity, "quote": quote, "context": context,
                     "replace_with": replace_with})
@@ -1370,9 +1403,11 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("files", nargs="+")
     ap.add_argument("--json", action="store_true")
-    ap.add_argument("--profile", default="full", choices=("full", "de-ai"),
+    ap.add_argument("--profile", default="full", choices=("full", "de-ai", "deck"),
                     help="full (default) = the unified span list; de-ai = the de-ai-revise "
-                         "rewrite view (the legacy de_ai_audit.py JSON shape)")
+                         "rewrite view (the legacy de_ai_audit.py JSON shape); deck = the "
+                         "restricted ruleset for a Typst slide deck (provenance and correctness "
+                         "on, prose-rhythm budgets off)")
     ap.add_argument("--style", default=None, choices=("legal", "econ", "general"),
                     help="domain style guide to load on top of the always-on tables")
     ap.add_argument("--tier", default="always_flag,cluster,density",
@@ -1396,7 +1431,7 @@ def main() -> None:
                 de_ai_report(res)
         else:
             res = audit_document(path, style=a.style, mask=not a.keep_footnotes,
-                                 tiers_on=tiers_on)
+                                 tiers_on=tiers_on, profile=a.profile)
             worst = max(worst, 1 if res["n_hard"] else 0)
             if not a.json:
                 _report(res)

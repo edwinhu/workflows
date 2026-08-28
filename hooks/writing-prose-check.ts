@@ -127,6 +127,18 @@ export function auditStyle(style: string | null): string {
   return s === "legal" || s === "econ" ? s : "general";
 }
 
+/** Which prose-audit profile governs this path.
+ *
+ * THE DECK PREDICATE SELECTS A PROFILE; IT NEVER DECIDES WHETHER TO RUN. It used to gate two
+ * decisions — `process.exit(0)` on the `.typ` branch and candidacy inside bashTouchedProseFile —
+ * and got both wrong in opposite directions: a deck it recognised was never audited at all, and a
+ * deck it did not recognise (a `#slide[` body outside a slides/ directory) was handed to `full`
+ * and scored for em-dash density and domain style. One predicate, one use.
+ */
+export function profileFor(path: string): "full" | "deck" {
+  return isTypDeck(path) ? "deck" : "full";
+}
+
 export function isTypDeck(path: string): boolean {
   // ONLY A `.typ` CAN BE A DECK. The call site below already guarantees the suffix, so this is
   // not a behaviour change there — it makes the predicate TOTAL, so it means the same thing as
@@ -182,7 +194,12 @@ export function inRanges(lineNo: number, ranges: Range[]): boolean {
 /** THE prose engine. One span per violation, already collapsed across every pattern system, so
  *  what reaches the model is one line per finding rather than the same phrase under three labels. */
 export function runProseAudit(path: string, style: string | null, ranges: Range[]): string[] {
-  const { stdout, ok } = runPy([PROSE_AUDIT, "--json", "--style", auditStyle(style), path]);
+  // The profile is derived from the path here rather than passed in, so every caller of the audit
+  // — the Edit/Write branch and the Bash branch — necessarily agrees on it. Which systems a
+  // profile admits is prose-audit.py's business and is not restated on this side.
+  const { stdout, ok } = runPy([
+    PROSE_AUDIT, "--json", "--style", auditStyle(style), "--profile", profileFor(path), path,
+  ]);
   if (!ok) return [];
   let result: Record<string, unknown>;
   try {
@@ -291,7 +308,11 @@ function bashTouchedProseFile(cwd: string): string {
       if (!rel) continue;
       const abs = join(base, rel);
       const isDraftMd = rel.endsWith(".md") && pyName(pyParent(abs)) === "drafts";
-      const isTyp = rel.endsWith(".typ") && !isTypDeck(abs);
+      // EVERY `.typ` IS A CANDIDATE. This read `&& !isTypDeck(abs)`, which is the leak: it spent
+      // the predicate on candidacy, so a recognised deck was dropped before the audit and an
+      // unrecognised one was audited under `full`. Candidacy is the suffix; the profile is chosen
+      // downstream, once, in runProseAudit.
+      const isTyp = rel.endsWith(".typ");
       if (!isDraftMd && !isTyp) continue;
       try { cands.push({ path: abs, mtime: statSync(abs).mtimeMs }); } catch { /* deleted */ }
     }
@@ -333,7 +354,7 @@ async function main(): Promise<void> {
     projectRoot = pyParent(pyParent(path));
     runCheckAllFlag = true;
   } else if (suffix === ".typ") {
-    if (isTypDeck(path)) process.exit(0);
+    // A deck is NOT skipped. runProseAudit selects the restricted `deck` profile for it.
     projectRoot = pyParent(path);
     runCheckAllFlag = false; // check-all only scans drafts/*.md
   } else {

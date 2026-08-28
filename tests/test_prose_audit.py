@@ -891,3 +891,37 @@ def test_start_with_abstraction_leaves_the_concrete_opener_alone(tmp_path, verdi
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-q"]))
+
+
+# ── ai-tic·sev2·announce-is-the-argument ─────────────────────────────────────
+# The tic is announcing that something IS the argument/payoff/point in place of stating it.
+# Corpus result behind the rule: 0 hits / 14,294,148 sentences of law + finance prose.
+#
+# THE NEGATIVE IS THE POINT OF THIS CASE. The broad frame `is the problem` measured 35.61/M —
+# 509 human hits — so the rule is deliberately narrowed to the META-DISCOURSE nouns. A rule that
+# fires on "the benefits principle is the problem." is a linter that fires on real scholarship.
+# Do not widen the pattern without re-running scripts/fp-check.sh --exact against both corpus halves.
+
+def _labels_for(text: str) -> str:
+    with tempfile.TemporaryDirectory() as d:
+        p = Path(d) / "t.md"
+        p.write_text(text, encoding="utf-8")
+        r = subprocess.run(
+            ["uv", "run", "--with", "lxml", "--with", "pyyaml", "python3",
+             str(AUDIT_PATH), "--json", str(p)],
+            capture_output=True, text=True,
+        )
+        assert r.returncode in (0, 1), f"audit failed ({r.returncode}): {r.stderr[:400]}"
+        spans = json.loads(r.stdout).get("spans", [])
+    return " ".join(str(s.get("labels") or s.get("label", "")) for s in spans)
+
+
+def test_announce_is_the_argument_fires():
+    assert "announce-is-the-argument" in _labels_for("The selection is the argument.")
+
+
+def test_announce_is_the_argument_spares_the_human_near_miss():
+    """`is the problem` is human at 35.61/M — 509 hits. The rule must not reach it."""
+    assert "announce-is-the-argument" not in _labels_for(
+        "the benefits principle is the problem."
+    )
