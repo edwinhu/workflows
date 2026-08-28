@@ -552,19 +552,57 @@ func (rec *proxyRecord) emitRows(meta *FilingMeta, classes map[string][]string, 
 // Payload parsers
 // ---------------------------------------------------------------------------
 
-// parsePrimaryDoc reads periodOfReport and the seriesId-to-classId registry.
-// The elements are matched wherever they sit, because filers nest seriesClass
-// under headerData in some schema revisions and flat in others.
-func parsePrimaryDoc(r io.Reader, meta *FilingMeta, classes map[string][]string) error {
+// noticeReportTypes are the two reportType declarations that mark a filing as a
+// notice report: the filer states it has no votes of its own to report, so the
+// filing carries primary_doc.xml and no vote table by design. The set is closed
+// and matched exactly. Over the 90,661-filing corpus the only other spellings
+// seen on vote-table-less filings are FUND VOTING REPORT and INSTITUTIONAL
+// MANAGER COMBINATION REPORT, both of which promise a vote table and so remain
+// errors when one is absent.
+var noticeReportTypes = map[string]bool{
+	"FUND NOTICE REPORT":                  true,
+	"INSTITUTIONAL MANAGER NOTICE REPORT": true,
+}
+
+// maxReportTypeLen bounds the raw reportType value this parser will normalise.
+// The longest declaration that really occurs is "INSTITUTIONAL MANAGER
+// COMBINATION REPORT", 40 bytes; the headroom covers the surrounding and
+// internal whitespace filers wrap the element with. The bound is semantic, not
+// merely defensive: a reportType orders of magnitude longer than any real one is
+// not a report type, and must not be read as one.
+const maxReportTypeLen = 128
+
+// isNoticeReportType decides whether a raw reportType value is one of the two
+// notice declarations, tolerating the case and internal whitespace filers vary.
+//
+// The length is checked FIRST, on the raw string, because normalisation is the
+// cost being guarded: strings.Fields allocates a slice, Join a copy and ToUpper
+// another, several times the size of a value a filer controls end to end. An
+// oversized value is rejected on sight, so nothing proportional to it is ever
+// allocated -- including one whose prefix happens to be a valid spelling.
+func isNoticeReportType(v string) bool {
+	if len(v) > maxReportTypeLen {
+		return false
+	}
+	return noticeReportTypes[strings.ToUpper(strings.Join(strings.Fields(v), " "))]
+}
+
+// parsePrimaryDoc reads periodOfReport, the seriesId-to-classId registry, and
+// reportType, reporting whether the filing declares itself a notice report. The
+// elements are matched wherever they sit, because filers nest seriesClass under
+// headerData in some schema revisions and flat in others; the SEC schema places
+// reportType at formData/coverPage/reportInfo/reportType.
+func parsePrimaryDoc(r io.Reader, meta *FilingMeta, classes map[string][]string) (bool, error) {
 	d := newXMLDecoder(r)
 	series := ""
+	isNotice := false
 	for {
 		tok, err := d.Token()
 		if err != nil {
 			if err == io.EOF {
-				return nil
+				return isNotice, nil
 			}
-			return err
+			return isNotice, err
 		}
 		se, ok := tok.(xml.StartElement)
 		if !ok {
@@ -574,15 +612,23 @@ func parsePrimaryDoc(r io.Reader, meta *FilingMeta, classes map[string][]string)
 		case "periodOfReport":
 			v, err := elemText(d, se)
 			if err != nil {
-				return err
+				return isNotice, err
 			}
 			if v != "" {
 				meta.PeriodOfReport = xmlDate(v)
 			}
+		case "reportType":
+			v, err := elemText(d, se)
+			if err != nil {
+				return isNotice, err
+			}
+			if isNoticeReportType(v) {
+				isNotice = true
+			}
 		case "seriesId":
 			v, err := elemText(d, se)
 			if err != nil {
-				return err
+				return isNotice, err
 			}
 			if v != "" {
 				series = v
@@ -593,7 +639,7 @@ func parsePrimaryDoc(r io.Reader, meta *FilingMeta, classes map[string][]string)
 		case "classId":
 			v, err := elemText(d, se)
 			if err != nil {
-				return err
+				return isNotice, err
 			}
 			if series != "" && v != "" {
 				classes[series] = append(classes[series], v)
@@ -646,16 +692,21 @@ const (
 // parseNPXXML streams the modern XML era off r, calling emit once per
 // <voteRecord>, and fills meta from primary_doc.xml. It returns the row count.
 //
-// A filing carrying no PROXY VOTING RECORD document is an error, not zero rows.
-// Zero-rows-and-nil is the manifest's encoding for a fund that genuinely had
-// nothing to vote; a modern filing whose vote table is absent, misnamed or
-// unreachable is a parser or feed failure, and collapsing the two would destroy
-// the one distinction the manifest exists to preserve.
+// A filing carrying no PROXY VOTING RECORD document is an error, not zero rows,
+// UNLESS its primary_doc.xml positively declares a notice report. Notice reports
+// carry no vote table by design — the N-PX analogue of 13F-NT — so they are the
+// one case where zero-rows-and-nil is correct. Zero-rows-and-nil is otherwise
+// the manifest's encoding for a fund that genuinely had nothing to vote; a
+// modern filing whose vote table is absent, misnamed or unreachable and which
+// declares no notice is a parser or feed failure, and collapsing the two would
+// destroy the one distinction the manifest exists to preserve. Detection is
+// positive only: the absence of a vote table never on its own means ok.
 func parseNPXXML(r io.Reader, meta *FilingMeta, emit func(VoteRow) error) (int, error) {
 	src := newLineSrc(r)
 	classes := map[string][]string{}
 	total := 0
 	sawVoteTable := false
+	isNotice := false
 
 	for {
 		docType, ok := nextDocument(src)
@@ -673,7 +724,9 @@ func parseNPXXML(r io.Reader, meta *FilingMeta, emit func(VoteRow) error) (int, 
 			n, err = parseVoteTable(sec, meta, classes, emit)
 			total += n
 		case strings.HasPrefix(up, docTypePrimary):
-			err = parsePrimaryDoc(sec, meta, classes)
+			var notice bool
+			notice, err = parsePrimaryDoc(sec, meta, classes)
+			isNotice = isNotice || notice
 		}
 
 		sec.drain()
@@ -685,7 +738,7 @@ func parseNPXXML(r io.Reader, meta *FilingMeta, emit func(VoteRow) error) (int, 
 	if meta.ParseMode == "" || meta.ParseMode == "none" {
 		meta.ParseMode = "xml"
 	}
-	if !sawVoteTable {
+	if !sawVoteTable && !isNotice {
 		return total, fmt.Errorf("no <DOCUMENT> with <TYPE>%s found", docTypeVoteTable)
 	}
 	return total, nil

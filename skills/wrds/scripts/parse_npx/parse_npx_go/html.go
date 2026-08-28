@@ -50,16 +50,42 @@ func stripHTML(src []byte) []byte {
 	return []byte(collapseSpaces(decoded))
 }
 
+// EDGAR hard-wraps a dissemination file at a fixed width, blind to what it cuts:
+// a single "&#160;" or "<font ...>" routinely straddles the cut, and so does a
+// row's own text. A break at exactly that column is the wrapper's artefact rather
+// than the document's line structure, so removeMarkup drops it and leaves every
+// other break intact — the legacy layouts are line-oriented grammars.
+const edgarWrapWidth = 1023
+
+// maxTagNameLen caps the element name tagName will read, rejoin included. A real
+// SGML or HTML name is a handful of bytes, so the wrap can cut one at most once
+// and no genuine name can span more than the two lines that cut produces. Past
+// that the byte run is not a name, and tagName rejects instead of accumulating —
+// otherwise a filing whose every line is name bytes ending on the wrap column
+// grows the rejoin buffer to the length of the filing, and these are untrusted
+// third-party bytes read at up to 200 MB a file.
+const maxTagNameLen = 2 * edgarWrapWidth
+
 // removeMarkup walks the byte stream once, emitting text and turning tags into
 // either a newline (block), nothing (inline), or a skip past the closing tag
-// (script/style).
+// (script/style). Line breaks at the EDGAR wrap column are dropped as it goes.
 func removeMarkup(src []byte) string {
 	var b strings.Builder
 	b.Grow(len(src))
+	col := 0
 	for i := 0; i < len(src); {
 		c := src[i]
+		if n := breakLen(src, i); n > 0 {
+			if col != edgarWrapWidth {
+				b.Write(src[i : i+n])
+			}
+			i += n
+			col = 0
+			continue
+		}
 		if c != '<' {
 			b.WriteByte(c)
+			col += columnWidth(c)
 			i++
 			continue
 		}
@@ -68,6 +94,7 @@ func removeMarkup(src []byte) string {
 			if end < 0 {
 				return b.String()
 			}
+			col = advanceColumn(src, i, end+3, col)
 			i = end + 3
 			continue
 		}
@@ -76,13 +103,15 @@ func removeMarkup(src []byte) string {
 			if end < 0 {
 				return b.String()
 			}
+			col = advanceColumn(src, i, end+1, col)
 			i = end + 1
 			continue
 		}
-		name, after, ok := tagName(src, i)
+		name, after, ok := tagName(src, i, col)
 		if !ok {
 			// A bare '<' that opens no tag is literal text.
 			b.WriteByte(c)
+			col += columnWidth(c)
 			i++
 			continue
 		}
@@ -96,6 +125,7 @@ func removeMarkup(src []byte) string {
 				return b.String()
 			}
 			b.WriteByte('\n')
+			col = advanceColumn(src, i, end+1, col)
 			i = end + 1
 			continue
 		}
@@ -106,33 +136,111 @@ func removeMarkup(src []byte) string {
 		if end < 0 {
 			return b.String()
 		}
+		col = advanceColumn(src, i, end+1, col)
 		i = end + 1
 	}
 	return b.String()
 }
 
+// breakLen reports the byte length of the line break at src[i] — 2 for "\r\n",
+// 1 for a lone "\r" or "\n", 0 when src[i] is not a break.
+func breakLen(src []byte, i int) int {
+	switch src[i] {
+	case '\n':
+		return 1
+	case '\r':
+		if i+1 < len(src) && src[i+1] == '\n' {
+			return 2
+		}
+		return 1
+	}
+	return 0
+}
+
+// columnWidth is 1 for the first byte of a character and 0 for a UTF-8
+// continuation byte, so the column count is in characters. normalizeCharset
+// transcodes cp1252/latin-1 bodies to UTF-8 before stripHTML sees them, which
+// lengthens a wrapped line in bytes but never in characters.
+func columnWidth(c byte) int {
+	if c&0xc0 == 0x80 {
+		return 0
+	}
+	return 1
+}
+
+// advanceColumn returns the column after consuming src[from:to], which markup
+// removal skips over in one jump but which may still carry the wrap.
+func advanceColumn(src []byte, from, to, col int) int {
+	for j := from; j < to; j++ {
+		c := src[j]
+		if c == '\n' || c == '\r' {
+			col = 0
+			continue
+		}
+		col += columnWidth(c)
+	}
+	return col
+}
+
 // tagName reads the element name of the tag starting at src[i] ('<'), lowercased
-// and with any leading '/' consumed. ok is false when this is not a tag start.
-func tagName(src []byte, i int) (name string, after int, ok bool) {
+// and with any leading '/' consumed. col is the column of that '<'. ok is false
+// when this is not a tag start.
+//
+// A break at the EDGAR wrap column can fall inside the name itself ("<t\nr>"),
+// which would otherwise read as an unknown element and cost the row its line
+// break; such a name is rejoined. Any other break still ends the name, so a
+// legitimate "<tr\nclass=x>" can never merge into "trclass".
+//
+// The rejoin is bounded by maxTagNameLen and REJECTS past it rather than
+// accumulating: the input is untrusted filing bytes, and a run of name bytes
+// that keeps going across wrap after wrap is not an element name.
+func tagName(src []byte, i, col int) (name string, after int, ok bool) {
 	j := i + 1
+	col++
 	if j < len(src) && src[j] == '/' {
 		j++
+		col++
 	}
 	start := j
+	var joined []byte // allocated only when the wrap cut this name in half
 	for j < len(src) {
 		c := src[j]
-		if c == '>' || c == '/' || c == ' ' || c == '\t' || c == '\r' || c == '\n' {
+		if n := breakLen(src, j); n > 0 {
+			if col != edgarWrapWidth {
+				break
+			}
+			if len(joined)+(j-start) > maxTagNameLen {
+				return "", i, false
+			}
+			joined = append(joined, src[start:j]...)
+			j += n
+			col = 0
+			start = j
+			continue
+		}
+		if c == '>' || c == '/' || c == ' ' || c == '\t' {
 			break
 		}
 		if !isNameByte(c) {
 			return "", i, false
 		}
+		if len(joined)+(j-start) >= maxTagNameLen {
+			return "", i, false
+		}
 		j++
+		col += columnWidth(c)
 	}
-	if j == start {
+	if joined == nil {
+		if j == start {
+			return "", i, false
+		}
+		return strings.ToLower(string(src[start:j])), j, true
+	}
+	joined = append(joined, src[start:j]...)
+	if len(joined) == 0 {
 		return "", i, false
 	}
-	return strings.ToLower(string(src[start:j])), j, true
+	return strings.ToLower(string(joined)), j, true
 }
 
 func isNameByte(c byte) bool {
@@ -280,34 +388,42 @@ func resolveEntity(body string) (string, bool) {
 	return "", false
 }
 
-// collapseSpaces squeezes runs of horizontal whitespace to a single space and
-// drops spaces adjacent to a newline, while keeping the line structure itself.
-// Runs of more than two newlines shrink to two so that page furniture does not
-// bury the grammar; newlines are never collapsed away entirely.
+// collapseSpaces squeezes runs of horizontal whitespace and drops spaces
+// adjacent to a newline, while keeping the line structure itself. Runs of more
+// than two newlines shrink to two so that page furniture does not bury the
+// grammar; newlines are never collapsed away entirely.
+//
+// A run is squeezed to at most columnGapWidth spaces rather than to one. The
+// legacy layouts are fixed-width column grammars whose only remaining record of
+// where one cell ends and the next begins is the width of the run between them,
+// and squeezing every run to a single space erases that boundary rather than
+// merely blurring it: "VOTE CAST" and "MGMT" cells that are both multi-word and
+// off-vocabulary become one indistinguishable token run. Two is the minimum that
+// keeps column padding tellable from word spacing, and a run that was ONE space
+// still emits one, so prose never acquires a gap it did not have.
 func collapseSpaces(s string) string {
 	s = strings.ReplaceAll(s, "\r\n", "\n")
 	var b strings.Builder
 	b.Grow(len(s))
-	pendingSpace := false
+	pendingSpaces := 0
 	newlines := 0
 	atLineStart := true
 	for _, r := range s {
 		switch {
 		case isLineBreak(r):
-			pendingSpace = false
+			pendingSpaces = 0
 			if newlines < 2 {
 				b.WriteByte('\n')
 				newlines++
 			}
 			atLineStart = true
 		case isHorizontalSpace(r):
-			if !atLineStart {
-				pendingSpace = true
+			if !atLineStart && pendingSpaces < columnGapWidth {
+				pendingSpaces++
 			}
 		default:
-			if pendingSpace {
+			for ; pendingSpaces > 0; pendingSpaces-- {
 				b.WriteByte(' ')
-				pendingSpace = false
 			}
 			b.WriteRune(r)
 			newlines = 0
@@ -316,6 +432,11 @@ func collapseSpaces(s string) string {
 	}
 	return b.String()
 }
+
+// columnGapWidth is the width a horizontal run is squeezed to when it was wider
+// than one character: the narrowest run the layouts can still recognise as a
+// column separator.
+const columnGapWidth = 2
 
 func isLineBreak(r rune) bool {
 	switch r {
