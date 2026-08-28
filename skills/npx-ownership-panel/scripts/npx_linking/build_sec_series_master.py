@@ -264,6 +264,66 @@ def build_names_long(long: pd.DataFrame) -> pd.DataFrame:
     )
 
 
+def build_name_variants(long: pd.DataFrame,
+                        header_names: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Long-form match vocabulary: one row per (series_id, name, name_source, file_year).
+
+    The fuzzy tier matches an ISS `fundname` against series names, and two
+    measured defects live in the vocabulary rather than in the matcher:
+
+    `sec_entity_series` -- the SEC report frequently carries a BARE strategy
+        name (S000000042 is 'Equity Income Portfolio'), which dozens of families
+        share and no matcher can resolve. The registrant sits in the same row,
+        so the qualified variant is free. It is a separate ROW, not a
+        replacement: ISS sometimes carries the bare name too.
+
+    `header` -- names observed in 40-Act SGML headers. ISS holds the name a fund
+        carried WHEN IT VOTED, and a rename (Dreyfus -> BNY Mellon) or
+        sub-adviser branding (a Northwestern Mutual portfolio sold as 'T. Rowe
+        Price Equity Income Portfolio') is recoverable from no current field.
+        Measured 2026-08-28 over the untagged fundids: +4,580 name strings for
+        series the SEC report already has, coverage 72.9% -> 75.5% of vote rows,
+        and the UNAMBIGUOUS count rose 13,249 -> 14,195 -- more matches without
+        more collisions. Optional: absent a header scan the vocabulary still
+        builds, one source lighter.
+
+    Every row keeps `file_year` so a match can prefer the name that was current
+    in the year the fund actually voted.
+    """
+    frames = []
+
+    base = long[["series_id", "series_name", "file_year"]].copy()
+    base = base.rename(columns={"series_name": "name"})
+    base["name_source"] = "sec_series"
+    frames.append(base)
+
+    if "entity_name" in long.columns:
+        qual = long[["series_id", "entity_name", "series_name", "file_year"]].copy()
+        qual = qual[qual["entity_name"].notna() & qual["series_name"].notna()]
+        qual["name"] = (qual["entity_name"].astype(str).str.strip() + " "
+                        + qual["series_name"].astype(str).str.strip())
+        qual["name_source"] = "sec_entity_series"
+        frames.append(qual[["series_id", "name", "file_year", "name_source"]])
+
+    if header_names is not None and len(header_names):
+        hdr = header_names[["series_id", "series_name", "file_year"]].copy()
+        hdr = hdr.rename(columns={"series_name": "name"})
+        hdr["name_source"] = "header"
+        frames.append(hdr)
+
+    out = pd.concat(frames, ignore_index=True)
+    out["name"] = (out["name"].astype(str)
+                   .str.replace(r"\s+", " ", regex=True).str.strip())
+    out = out[out["name"].ne("") & out["name"].ne("nan")]
+    return (
+        out[["series_id", "name", "name_source", "file_year"]]
+        .drop_duplicates()
+        .sort_values(["series_id", "name_source", "file_year", "name"],
+                     na_position="last")
+        .reset_index(drop=True)
+    )
+
+
 def build_series_master(long: pd.DataFrame, class_master: pd.DataFrame) -> pd.DataFrame:
     canon = most_recent(long, ["series_id"], ["cik", "entity_name", "series_name"])
     span = long.groupby("series_id", as_index=False, sort=True).agg(
