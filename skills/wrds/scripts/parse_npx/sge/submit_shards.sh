@@ -7,9 +7,24 @@
 #
 # submit_shards.sh — SGE array wrapper for scan_shard.sh.
 #
-# One slot per task. The XML path streams off a buffered reader rather than
-# slurping the filing, so peak RSS tracks the worker count and the decoder
-# buffer, not the 200 MB filing.
+# One slot per task. The two eras have DIFFERENT memory profiles and the default
+# below only covers one of them:
+#
+#   XML era (filings from mid-2024) streams off a buffered reader, so peak RSS
+#   tracks the worker count and the decoder buffer, not the 200 MB filing. 2G is
+#   enough.
+#
+#   TEXT era (before that) does NOT stream. parseText takes the whole document
+#   and stripHTML builds a second full-size copy, so peak RSS tracks the LARGEST
+#   FILE IN FLIGHT x CONCURRENCY. Measured 2026-08-28: 16-way over the 2006-2011
+#   tier-B set died with "out of memory: cannot allocate 75497472-byte block
+#   (2741731328 in use)" in removeMarkup. For a text-era run override both:
+#
+#     qsub -l m_mem_free=8G -v CONCURRENCY=4 ... < sge/submit_shards.sh
+#
+# WRDS qsub will NOT accept a script PATH under /scratch ("Unable to run job: No
+# such file", even with -cwd and the file present and readable). Feed the script
+# on STDIN, as above.
 #
 # Submit ALL shards:
 #   cd /scratch/nyu/$USER/parse_npx

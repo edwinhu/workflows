@@ -13,10 +13,14 @@
 #   ARCHIVE_ROOT   default: /wrds/sec/archives
 #   CONCURRENCY    default: NSLOTS*8 (floor 8)
 #
-# N-PX filings are 10-200 MB and the XML path streams, so per-worker memory is
-# bounded by the decoder buffer rather than by filing size. Concurrency is set
-# above the slot grant because /wrds/sec/archives is NFS and open latency, not
-# CPU, is what a worker waits on.
+# N-PX filings are 10-200 MB. The XML path streams, so per-worker memory is
+# bounded by the decoder buffer rather than by filing size, and concurrency is
+# set above the slot grant because /wrds/sec/archives is NFS and open latency,
+# not CPU, is what a worker waits on.
+#
+# The TEXT path does not stream: it holds the whole document plus its stripped
+# copy. On a text-era shard the default concurrency will OOM (measured
+# 2026-08-28) -- pass CONCURRENCY=4 and m_mem_free=8G. See submit_shards.sh.
 #
 # GOMAXPROCS and CONCURRENCY are different knobs. GOMAXPROCS is pinned to
 # $NSLOTS so the Go runtime sizes its thread pool from the slot grant instead of
