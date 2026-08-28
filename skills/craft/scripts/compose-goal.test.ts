@@ -120,7 +120,7 @@ describe('the goal carries a wall-clock escape, not only a round count', () => {
   // Measured 2026-08-19 (mail-bridge): rounds ran 3h+, so `rounds >= 4` put the guaranteed stop
   // twelve hours out. The session worked all night and could not close its own goal.
   test('the default ceiling outlasts a round, so a walked-away run does not stop empty', () => {
-    // 8h is the pre-2026-08-23 default, restored: maxRounds x ~1h of round still fits under it.
+    // 12h, raised 2026-08-28 with maxRounds 3 -> 6: maxRounds x a measured round still fits under it.
     const r = compose({ rounds: '4' })
     expect(r.code).toBe(0)
     expect(Number(/(\d+) minutes or more/.exec(r.out)![1])).toBeGreaterThanOrEqual(240)
@@ -130,7 +130,7 @@ describe('the goal carries a wall-clock escape, not only a round count', () => {
     const r = compose({ rounds: '4' })
     expect(r.code).toBe(0)
     expect(r.out).toMatch(/craft-elapsed\.sh/)
-    expect(r.out).toMatch(/480 minutes or more/)
+    expect(r.out).toMatch(/720 minutes or more/)
   })
 
   // The ceiling must outlast a ROUND, not just a human's attention span. Measured 2026-08-27 in

@@ -51,10 +51,17 @@ case "$READONLY" in 0|1) ;; *) die "readOnly must be 0 or 1, got: $READONLY" ;; 
 # It must outlast a ROUND, not a human's attention span. Measured 2026-08-27 in this repo: round 1
 # of a six-task run took 54 minutes against a 10-minute default, so the ceiling was satisfiable 44
 # minutes before any work product existed and craft-elapsed.sh printed CEILING REACHED with zero
-# rounds on disk. 480 is the pre-2026-08-23 default of 8 hours, restored. Bounding how long a
-# session waits on an ABSENT HUMAN is Phase 5's business, which is where review already lives.
+# rounds on disk. Bounding how long a session waits on an ABSENT HUMAN is Phase 5's business,
+# which is where review already lives.
+#
+# 720 (12h), raised from 480 on 2026-08-28 alongside maxRounds 3 -> 6. The ceiling has to outlast
+# maxRounds x a round, and rounds have been measured at 30-60 min here and 3h+ in mail-bridge on
+# 2026-08-19; six rounds against the old 8h left the wall clock binding before the round cap in the
+# ordinary case, which inverts which escape is doing the work. 12h also spans a real overnight —
+# the three stalls of 2026-08-27/28 cost 14h43m between them, every hour of it inside a window a
+# ceiling this size covers.
 _hours_as_min="${CRAFT_GOAL_MAX_HOURS:+$(( CRAFT_GOAL_MAX_HOURS * 60 ))}"
-MAX_MINUTES="${CRAFT_GOAL_MAX_MINUTES:-${_hours_as_min:-480}}"
+MAX_MINUTES="${CRAFT_GOAL_MAX_MINUTES:-${_hours_as_min:-720}}"
 case "$MAX_MINUTES" in
   ''|*[!0-9]*) die "CRAFT_GOAL_MAX_MINUTES must be a whole number of minutes, got: $MAX_MINUTES" ;;
 esac

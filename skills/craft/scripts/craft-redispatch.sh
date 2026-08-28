@@ -38,7 +38,7 @@
 # verdict's surviving blocking findings are carried into `priorFindings` and `freezeFindingSet` is
 # set, ONCE: from there the loop asks whether that carried set is closed (each entry is adversarially
 # refuted every round) rather than whether this round's lenses raised anything. Fresh blocking lens
-# findings are reported as `residue` and do not gate. `maxRounds` (default 3) is a hard stop: the
+# findings are reported as `residue` and do not gate. `maxRounds` (default 6) is a hard stop: the
 # dispatch that would exceed it is refused with exit 4, prints what is still open as a paste-ready
 # priorFindings block for a fresh run, and hands the run to human review.
 #
@@ -135,7 +135,7 @@ if not isinstance(prev, int) or isinstance(prev, bool) or prev < 0:
 args["rounds"] = prev + 1
 
 # The cap the round budget is spent against. Same treatment as the counter: refused, never reset.
-cap = args.get("maxRounds", 3)
+cap = args.get("maxRounds", 6)
 if not isinstance(cap, int) or isinstance(cap, bool) or cap < 1:
     sys.exit(f"maxRounds in {args_path} is not a positive whole number: {cap!r}")
 
@@ -225,7 +225,7 @@ with open(stage_path, "w") as fh:
 print(old)
 print(args["rounds"])
 print(prev_result or "")   # the verdict the selective re-run below scopes from — found once, here
-print(args.get("maxRounds", 3))
+print(args.get("maxRounds", 6))
 print(freeze_note)
 print("synced from plan: " + (", ".join(synced) if synced else "(already in sync)"))
 PY

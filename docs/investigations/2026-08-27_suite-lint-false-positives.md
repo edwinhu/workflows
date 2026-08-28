@@ -90,15 +90,15 @@ standard-library callee, which is definitionally not the input under test.
 
 Raw 24, false positives 23, one true positive.
 
-The one that survives is `skills/craft/scripts/craft-redispatch.test.ts:775`:
+The one that survives is `skills/craft/scripts/craft-redispatch.test.ts:776`:
 
 ```
 expect(r.out).toContain('CONVERGING')
 ```
 
-Its fixture at line 769 is `rounds(f.dir, [2, 5])`, a rising sequence that the same file annotates at
-line 751 as `// rises => NOT CONVERGING`. `'NOT CONVERGING'.includes('CONVERGING')` is true, so the
-assertion passes on either verdict, and the sibling test at line 764 shows the author knew the
+Its fixture at line 770 is `rounds(f.dir, [2, 5])`, a rising sequence that the same file annotates at
+line 752 as `// rises => NOT CONVERGING`. `'NOT CONVERGING'.includes('CONVERGING')` is true, so the
+assertion passes on either verdict, and the sibling test at line 765 shows the author knew the
 pairing was needed — it writes `expect(r.out).not.toContain('CONVERGING')` where the distinction
 matters. This is the exact run-2 defect shape and the rule earns its keep on it.
 

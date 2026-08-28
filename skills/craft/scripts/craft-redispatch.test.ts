@@ -689,10 +689,11 @@ describe('the frozen finding set and the round cap', () => {
     expect('priorFindings' in a).toBe(false)
   })
 
-  test('a fourth dispatch is refused, spends nothing, and hands back a paste-ready priorFindings block', () => {
+  test('the dispatch past the default cap is refused, spends nothing, and hands back a paste-ready priorFindings block', () => {
     const f = gateFixture()
-    const a0 = readArgs(f.args); a0.rounds = 3; writeFileSync(f.args, JSON.stringify(a0, null, 2))
-    withFindings(f.dir, [major('still open after three rounds')])
+    // 6 is the default maxRounds; the seventh dispatch is the one that must be refused.
+    const a0 = readArgs(f.args); a0.rounds = 6; writeFileSync(f.args, JSON.stringify(a0, null, 2))
+    withFindings(f.dir, [major('still open after six rounds')])
     const argsBefore = readFileSync(f.args, 'utf8')
     const resultBefore = readFileSync(f.result, 'utf8')
 
@@ -700,10 +701,10 @@ describe('the frozen finding set and the round cap', () => {
     expect(r.code).not.toBe(0)
     expect(r.out).toMatch(/human review/i)
     expect(r.out).toContain('"priorFindings"')
-    expect(r.out).toContain('still open after three rounds')
+    expect(r.out).toContain('still open after six rounds')
     // Nothing spent: the run is left exactly as it was.
     expect(readFileSync(f.args, 'utf8')).toBe(argsBefore)
-    expect(readArgs(f.args).rounds).toBe(3)
+    expect(readArgs(f.args).rounds).toBe(6)
     expect(readFileSync(f.result, 'utf8')).toBe(resultBefore)
     expect(existsSync(join(f.dir, 'result-round1.json'))).toBe(false)
     expect(readdirSync(f.dir).filter(x => /^plan-[0-9a-f]{12}\.md$/.test(x))).toHaveLength(0)

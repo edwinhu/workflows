@@ -7,7 +7,14 @@
 # Neither is guaranteed; a non-zero exit is informational, not fatal — craft's caller falls back to
 # the plan hash as the standing gate text.
 #
-# Usage: goal-self-send.sh "/goal <text>"   |   goal-self-send.sh "/goal clear"
+# Usage: goal-self-send.sh "/goal <text>" [--no-lint]   |   goal-self-send.sh "/goal clear"
+#
+# THE GOAL IS LINTED BEFORE IT IS SENT. This is the one chokepoint every goal passes through, so it
+# is where `skills/goal-writing` is enforced rather than merely available: a CRITICAL finding —
+# a milestone verb, a clause only a human can close, turn counting, "done or blocked" — refuses the
+# send with exit 8 and names the skill to read. Majors and minors warn and go through. Measured
+# 2026-08-27/28: three sessions idled 14h43m overnight on goals with exactly these defects.
+# `compose-goal.sh` output passes clean, so craft dispatches are untouched. `--no-lint` overrides.
 #
 # Exit codes (all verified by execution against a stubbed herdr/agent-msg):
 #   0  submitted (input box cleared after Enter), or agent-msg accepted it as user input
@@ -21,14 +28,41 @@
 #   7  the only reachable transport cannot produce a slash command: agent-msg without
 #      --as-user routes a PEER message, which the recipient enqueues with slash commands
 #      disabled, so the goal would never be set                         — nothing sent
+#   8  the goal carries a CRITICAL goal-lint finding                    — nothing sent
 set -uo pipefail
 
 CMD="${1-}"
+NOLINT=0
+for a in "$@"; do [ "$a" = "--no-lint" ] && NOLINT=1; done
 case "$CMD" in
   "/goal clear") ;;
   "/goal "*) [[ -n "${CMD:6}" && "${CMD:6}" =~ [^[:space:]] ]] || { echo "goal-self-send: empty /goal body" >&2; exit 2; } ;;
   *) echo "goal-self-send: argument must be '/goal <text>' or '/goal clear'" >&2; exit 2 ;;
 esac
+
+# ---- the goal-writing gate ------------------------------------------------------------------
+# Nothing here reaches the network or the session; it reads the string. A missing bun or a missing
+# lint is not a reason to block a send, so absence passes.
+GW_LINT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../goal-writing/scripts" 2>/dev/null && pwd)/goal-lint.ts"
+if [ "$NOLINT" = 0 ] && [ "$CMD" != "/goal clear" ] && [ -f "$GW_LINT" ] && command -v bun >/dev/null 2>&1; then
+  GW_OUT=$(bun "$GW_LINT" "${CMD:6}" 2>/dev/null); GW_CODE=$?
+  if [ "$GW_CODE" = 1 ]; then
+    if printf '%s' "$GW_OUT" | grep -q '^\[CRITICAL\]'; then
+      printf '%s\n' "$GW_OUT" >&2
+      cat >&2 <<EOF
+
+goal-self-send: REFUSED — this goal carries a critical defect and nothing was sent.
+
+A goal is the only thing between an unattended session and an idle terminal. Read
+  $(cd "$(dirname "${BASH_SOURCE[0]}")/../../goal-writing" && pwd)/SKILL.md
+rewrite the goal, and send it again. Override with --no-lint if you have a reason.
+EOF
+      exit 8
+    fi
+    printf '%s\n' "$GW_OUT" >&2
+    echo "goal-self-send: sending anyway (no critical findings) — see skills/goal-writing/SKILL.md" >&2
+  fi
+fi
 
 SID="${CLAUDE_CODE_SESSION_ID-}"
 [[ -n "$SID" ]] || { echo "goal-self-send: CLAUDE_CODE_SESSION_ID unset — cannot identify this session" >&2; exit 4; }

@@ -601,7 +601,7 @@ args["planPath"], args["specHash"] = plan, hash_
 args["skillRoot"] = skill_root
 args.setdefault("projectDir", block.get("projectDir") or __import__("os").getcwd())
 print(json.dumps({"runId": run_id, "turns": block.get("goalTurns", 12),
-                  "maxRounds": args.get("maxRounds", 3), "args": args}))
+                  "maxRounds": args.get("maxRounds", 6), "args": args}))
 PY
 ) || exit 1
 
@@ -784,7 +784,7 @@ else
 fi
 
 # The count, resolved only now: --print and CRAFT_DISPATCH_DRYRUN both returned above, so neither
-# path can be changed by it. An unstated --loops takes the plan's own maxRounds, and 3 when the plan
+# path can be changed by it. An unstated --loops takes the plan's own maxRounds, and 6 when the plan
 # states none.
 if [ -z "$loops" ]; then
   loops=$(python3 - "$out" <<'PY'
@@ -793,10 +793,10 @@ try:
     v = json.load(open(sys.argv[1])).get("maxRounds")
 except Exception:
     v = None
-print(v if isinstance(v, int) and not isinstance(v, bool) and v >= 0 else 3)
+print(v if isinstance(v, int) and not isinstance(v, bool) and v >= 0 else 6)
 PY
 )
-  case "$loops" in ''|*[!0-9]*) loops=3 ;; esac
+  case "$loops" in ''|*[!0-9]*) loops=6 ;; esac
 fi
 
 # Above zero the loop is EXECUTED rather than printed; zero is the printed wait loop, unchanged.

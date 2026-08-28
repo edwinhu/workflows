@@ -28,6 +28,7 @@ Read top to bottom; the first row that matches wins.
 | a substantive question, or any search for sources | **your own library FIRST** | see the Iron Law below — not `WebSearch` |
 | image, PDF, video, audio — understanding its content | **look-at** | never the `Read` tool |
 | creating or substantially editing a skill / workflow / plugin | `workflows:skill-creator`, `workflows:workflow-creator`, `workflows:plugin-creator` | never the built-in creators |
+| setting a `/goal`, or briefing a session that will outlive your attention | `goal-writing` | `Skill(skill="workflows:goal-writing")` |
 | a lookup, a one-line answer, a typo fix, conversation | do it inline | no ceremony |
 
 A domain workflow beats `/craft` when the task has its shape — it brings a gate craft does not have.

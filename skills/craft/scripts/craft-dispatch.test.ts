@@ -100,7 +100,7 @@ describe('the goal names the round budget craft actually enforces', () => {
   test('the default round budget is craft\'s own, so an unstated maxRounds is still reachable', () => {
     const f = fixture({ redCommand: 'bash scripts/check.sh' })
     script(f.dir, 'check.sh', 'echo "1 failed, 0 passed"\nexit 1')
-    expect(goalOf(f)).toMatch(/reads 3 or more/)
+    expect(goalOf(f)).toMatch(/reads 6 or more/)
   })
 
   test('composing the goal writes nothing and dispatches nothing', () => {
