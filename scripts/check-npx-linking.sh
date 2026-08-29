@@ -14,6 +14,7 @@ SUITES=(
   tests/npx_linking_name_vocab_test.py     # build_name_variants: the match vocabulary
   tests/npx_linking_normalize_test.py      # the two opt-in ISS normalisation rules
   tests/npx_linking_claim_check_test.py    # one fundid per crsp_portno per period
+  tests/npx_linking_l3e_consistency_test.py # L3e must not publish a self-contradicting row
 )
 
 present=()
