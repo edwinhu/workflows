@@ -177,6 +177,51 @@ L2_LEGAL_SUFFIX_RE = (
 # ("PF Small-Cap Growth Fund (formerly named PF Developing Growth Fund)").
 # Both the pre- and post-rename forms are emitted as separate corpus entries.
 L2_FORMERLY_RE = r"\((FORMERLY|FORMALLY|F/K/A|FKA|PREVIOUSLY|NEE)[^)]*\)"
+
+# --- two ISS-side noise patterns, measured 2026-08-28 -----------------------
+# OPT-IN: `normalize_name` applies neither by default. Every variant there
+# reproduces a shipped builder verbatim and the chain asserts byte-identity
+# fingerprints over their outputs (npx_crsp_link 4fdf9818...), so enabling
+# either changes the corpus and invalidates the frozen hash. Turn them on in a
+# stage of their own and re-freeze deliberately.
+#
+# NO LOOK-AROUND IN EITHER PATTERN. polars `str.replace_all` runs the Rust
+# `regex` crate, which does not support (?=...). A lookahead version compiles
+# and then silently never matches -- it cost a full test cycle to notice.
+
+# ISS prefixes an internal id on some families: "3364 JHVIT International Small
+# Company Trust", "6721 500 Index B", "2Y61 JHF Hedged Equity & Income Fund",
+# "ZW4X GEI Total Return Blackrock", "2DCN JHF II Emerging Makets Fund" (the
+# typo is ISS's own). The code never appears in the SEC name and on char
+# n-grams it drags the vector toward the wrong fund.
+#
+# A PURE-DIGIT code needs 4+ digits so "3364 JHVIT" strips while "500 Index
+# Fund" keeps its 500. A MIXED code needs a digit and a letter, spelled out as
+# alternatives because the requirement cannot be asserted without lookahead.
+L2_CODE_PREFIX_RE = (
+    r"^\s*(?:"
+    r"[0-9]{4,6}"
+    r"|[0-9]{1,4}[A-Za-z]{1,4}[0-9A-Za-z]{0,3}"
+    r"|[A-Za-z]{1,4}[0-9]{1,4}[0-9A-Za-z]{0,3}"
+    r")\s+"
+)
+
+# The sub-adviser appended after a dash, which the SEC series name never
+# carries. Worth +0.28 points of coverage on its own, the largest single
+# normalisation rule measured.
+#
+# Two shapes, because the manager is often named WITHOUT the word "adviser":
+#   " - SUB-ADVISER: JENNISON"         the label is present
+#   " - Segall Bryant and Hamill LLC"  only a corporate suffix marks it
+# The second alternative REQUIRES that suffix, so a real name like
+# "Templeton Growth Fund - Series II" is not truncated.
+L2_SUBADVISER_TAIL_RE = (
+    r"\s[-\u2013]\s*(?:"
+    r"(?:SUB[- ]?)?ADVIS\w*\b.*"
+    r"|[A-Za-z][\w&.,' ]*\b(?:LLC|L\.L\.C|INC|LP|L\.P|LTD|MANAGEMENT|MANAGERS"
+    r"|CAPITAL|ASSOCIATES|PARTNERS|ADVISORS|ADVISERS)\b\.?"
+    r")\s*$"
+)
 L2_PAREN_RE = r"\(([^)]*)\)"
 
 # (P) A share-class label ("Class A", "Institutional Shares") identifies a share

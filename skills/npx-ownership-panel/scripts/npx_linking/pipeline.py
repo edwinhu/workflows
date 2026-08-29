@@ -54,6 +54,23 @@ class Stage:
 
 STAGES = (
     Stage(
+        key="header_series_master",
+        script="build_header_series_master.py",
+        title="L2a-headers — the pre-2010 series vocabulary (OPTIONAL)",
+        inputs=("data/raw/forty_act_series.tsv",),
+        outputs=("header_series_names.parquet",),
+        approx_seconds=30,
+        notes=("The SEC Series/Class report is a snapshot of THEN-ACTIVE "
+               "registrants from 2010, so a fund that died before it is in no "
+               "vintage. Series IDs were mandatory from 2006-02-06 and every "
+               "40-Act filing carries the block in its SGML header. Measured "
+               "2026-08-28 over 224,103 filings 2006-2009: 2,889 series absent "
+               "from every SEC vintage, 2,754 of them open-end. OPTIONAL — its "
+               "input comes from skills/wrds/scripts/scan_headers over "
+               "/wrds/sec/archives, so it needs the grid; absent the TSV the "
+               "chain builds as before, one vocabulary source lighter."),
+    ),
+    Stage(
         key="sec_master",
         script="build_sec_series_master.py",
         title="L2a — consolidate the SEC Series/Class annual masters",

@@ -69,6 +69,7 @@ YEAR_RE = re.compile(r"(20\d{2})")
 
 MASTER_CLASS_PATH = OUT / "sec_series_master.parquet"
 NAMES_LONG_PATH = OUT / "sec_series_names_long.parquet"
+NAME_VARIANTS_PATH = OUT / "sec_name_variants.parquet"
 MASTER_SERIES_PATH = OUT / "sec_series_master_series.parquet"
 
 # Values the SEC uses for "no value" across vintages (2012-13 "NULL", 2017+ "[NULL]").
@@ -416,10 +417,25 @@ def main() -> None:
 
     class_master = build_class_master(long)
     names_long = build_names_long(long)
+
+    # The pre-2010 vocabulary, when L2a-headers has produced it. OPTIONAL by
+    # design: its input is a scan of /wrds/sec/archives, so a run without grid
+    # access builds exactly as before, one source lighter. Without this call
+    # `build_name_variants` was dead code -- defined, tested, and reachable
+    # from nothing, which is the defect the 0828 audit found in six other
+    # modules and which is worth not repeating.
+    header_names = None
+    hdr_path = OUT / "header_series_names.parquet"
+    if hdr_path.exists():
+        header_names = pd.read_parquet(hdr_path)
+        print(f"header vocabulary: {len(header_names):,} (series, name, year) "
+              f"rows from {hdr_path.name}")
+    name_variants = build_name_variants(long, header_names)
     series_master = build_series_master(long, class_master)
 
     class_master.to_parquet(MASTER_CLASS_PATH, index=False)
     names_long.to_parquet(NAMES_LONG_PATH, index=False)
+    name_variants.to_parquet(NAME_VARIANTS_PATH, index=False)
     series_master.to_parquet(MASTER_SERIES_PATH, index=False)
 
     # ---------------- verification ----------------

@@ -93,7 +93,8 @@ NORM_VARIANTS = ("l2", "l3", "l3b")
 # ---------------------------------------------------------------------------
 # name normalisation — one function per builder variant, verbatim
 # ---------------------------------------------------------------------------
-def normalize_name(col, variant="l3b", drop_formerly=True):
+def normalize_name(col, variant="l3b", drop_formerly=True,
+                   strip_code_prefix=False, strip_subadviser=False):
     """Normalise a fund/entity name column to the matcher's token space.
 
     `variant` selects the builder whose behaviour is reproduced exactly:
@@ -105,9 +106,27 @@ def normalize_name(col, variant="l3b", drop_formerly=True):
     that exposes it — the corpus builder needs the un-stripped form so the
     pre-rename name buried in "(formerly named X)" can be emitted as its own
     corpus entry.
+
+    `strip_code_prefix` and `strip_subadviser` are OFF by default and must stay
+    that way for existing callers. Every variant above reproduces a shipped
+    builder verbatim, and the chain asserts byte-identity fingerprints over
+    their outputs (npx_crsp_link 4fdf9818...), so enabling either changes the
+    corpus and invalidates the frozen hash. Measured 2026-08-28 on the untagged
+    ISS population, the sub-adviser tail alone was worth +0.28 points of
+    coverage — turn them on in a stage of their own and re-freeze deliberately.
     """
+    def _pre(e):
+        # ISS-side noise, stripped before the variant's own recipe: both
+        # patterns are anchored on the raw string's shape (a leading code, a
+        # trailing dash-clause) which punctuation removal would destroy.
+        if strip_code_prefix:
+            e = e.str.replace_all(cfg.L2_CODE_PREFIX_RE, "")
+        if strip_subadviser:
+            e = e.str.replace_all(cfg.L2_SUBADVISER_TAIL_RE, " ")
+        return e
+
     if variant == "l2":
-        e = pl.col(col).str.to_uppercase()
+        e = _pre(pl.col(col).str.to_uppercase())
         if drop_formerly:
             e = e.str.replace_all(cfg.L2_FORMERLY_RE, " ")
         e = e.str.replace_all(cfg.L2_PAREN_RE, " ")
@@ -121,7 +140,7 @@ def normalize_name(col, variant="l3b", drop_formerly=True):
     if variant not in ("l3", "l3b"):
         raise ValueError(f"unknown norm variant {variant!r}; expected one of {NORM_VARIANTS}")
 
-    e = pl.col(col).str.to_uppercase()
+    e = _pre(pl.col(col).str.to_uppercase())
     e = e.str.replace_all(cfg.L2_FORMERLY_RE, " ")
     if variant == "l3b":
         # "U.S." -> "US" BEFORE the punctuation strip, which would otherwise

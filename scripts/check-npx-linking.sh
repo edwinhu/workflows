@@ -10,13 +10,10 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 
 SUITES=(
-  tests/npx_linking_exclusions_test.py     # T1 Step 0
-  tests/npx_linking_tier1_test.py          # T2 exact seriesid pass
-  tests/npx_linking_cik_tier_test.py       # T3 CIK single-portfolio
-  tests/npx_linking_name_vocab_test.py     # T4 match vocabulary
-  tests/npx_linking_claim_check_test.py    # T5 one fundid per portno
-  tests/npx_linking_coverage_report_test.py  # T6 exact reported apart from fuzzy
-  tests/npx_linking_matcher_test.py        # normalisation variants + accept bar
+  tests/npx_linking_header_master_test.py  # L2a-headers: pre-2010 vocabulary
+  tests/npx_linking_name_vocab_test.py     # build_name_variants: the match vocabulary
+  tests/npx_linking_normalize_test.py      # the two opt-in ISS normalisation rules
+  tests/npx_linking_claim_check_test.py    # one fundid per crsp_portno per period
 )
 
 present=()
@@ -33,8 +30,10 @@ printf 'suites present: %d/%d\n' "${#present[@]}" "${#SUITES[@]}"
 if [ ${#present[@]} -gt 0 ]; then
   # sparse_dot_topn is built against numpy 1.x on conda-forge and PyPI alike,
   # so the pin is not optional: without it the matcher suite cannot import.
-  uv run --with pandas --with pytest --with scikit-learn \
-         --with sparse_dot_topn --with "numpy<2" \
+  # numpy<2 is not optional: sparse_dot_topn, which matching.py imports, is
+  # built against numpy 1.x on conda-forge and PyPI alike.
+  uv run --with pandas --with polars --with pyarrow --with pytest \
+         --with scikit-learn --with sparse_dot_topn --with "numpy<2" \
          python3 -m pytest "${present[@]}" -q || exit 1
 fi
 
