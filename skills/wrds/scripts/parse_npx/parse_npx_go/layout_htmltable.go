@@ -173,6 +173,74 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 	return out, nil
 }
 
+// htmlPrintsNoVoteTable reports whether an HTML document prints table markup but
+// nothing large enough to be a vote table. It is HALF of the nil-report test in
+// parseText; the other half is the absence of vote vocabulary, and neither half
+// decides alone.
+//
+// WHY BOTH HALVES. A grid scan of the 5,529 HTML documents still declining splits
+// them: 2,792 carry no vote vocabulary and no substantial table -- cover pages,
+// registrant and address and signature, the fund had nothing to vote. But ~300
+// carry no vocabulary and HUNDREDS of real vote rows, because their table has no
+// header row at all: the columns are positional and unlabelled, so there is no
+// "Vote Cast" or "CUSIP" anywhere to match. Classifying on vocabulary alone
+// declares those filings empty, which is the same silent loss as parsing a
+// mis-mapped column, only reported as success. The table's size is what
+// separates them.
+//
+// "Substantial" is deliberately the smallest shape the header test could ever
+// accept: htmlHeaderConfirm rows carrying htmlHeaderMinCells non-empty cells
+// each. A document that cannot even offer that has no table a vote could be
+// hiding in. Anything larger stays parse_status=skip, which is the honest status
+// for a table we cannot yet read.
+//
+// A document with NO table markup is not this function's population: reporting
+// false keeps every non-HTML skipped filing out of the rule entirely.
+//
+// The scan stops at the first row that carries the count over the threshold, so a
+// real vote filing costs a handful of rows rather than a pass over the body.
+func htmlPrintsNoVoteTable(raw []byte) bool {
+	body := htmlTableBody(raw)
+	if indexFrom(body, 0, "</tr>") < 0 {
+		return false
+	}
+	feed := &htmlRowFeed{src: body}
+	wide := 0
+	for {
+		row, ok := feed.next()
+		if !ok {
+			return true
+		}
+		// A row this splitter could not cut is not evidence of no table. An
+		// oversized cell drops the row whole, so an unusually long proposal
+		// description would otherwise turn its table invisible and record the
+		// filing ok/n_rows=0 -- votes gone, manifest claiming success. A
+		// document we cannot cut stays skip, which at least stays countable.
+		if row.uncut {
+			return false
+		}
+		if htmlNonEmptyCells(row.cells) < htmlHeaderMinCells {
+			continue
+		}
+		if wide++; wide >= htmlHeaderConfirm {
+			return false
+		}
+	}
+}
+
+// htmlNonEmptyCells counts the cells carrying text. Emptiness is judged AFTER
+// entity decoding: a signature block's spacer columns are &nbsp; runs, and
+// counting those as content makes a three-line cover page look like a table.
+func htmlNonEmptyCells(cells []string) int {
+	n := 0
+	for _, c := range cells {
+		if strings.TrimSpace(c) != "" {
+			n++
+		}
+	}
+	return n
+}
+
 // htmlTableBody cuts the SGML envelope off the front so the header block cannot
 // masquerade as a table. A file with no <TEXT> is scanned whole.
 func htmlTableBody(raw []byte) []byte {
@@ -208,10 +276,17 @@ type htmlRowFeed struct {
 // votes. Dropping that text attaches the PREVIOUS block's meeting to this block's
 // votes, which on funds ISS Voting Analytics does not cover nothing downstream
 // can contradict.
+//
+// uncut says the splitter could not cut this row at all, because one of its
+// cells is larger than htmlMaxCellBytes. It is reported rather than folded into
+// "zero cells" because the two mean opposite things to the nil-report test: a
+// row with no cells is evidence of no table, and a row we could not cut is
+// evidence of a table we cannot read.
 type htmlFeedRow struct {
 	cells    []string
 	pre      string
 	newTable bool
+	uncut    bool
 }
 
 // htmlMaxPreBytes caps the inter-row markup read for block headings. A block
@@ -290,55 +365,133 @@ func (f *htmlRowFeed) scan() (htmlFeedRow, bool) {
 			f.pending = true
 		}
 	}
+	cells, cuttable := htmlRowCells(seg[start:])
 	return htmlFeedRow{
-		cells:    htmlRowCells(seg[start:]),
+		cells:    cells,
 		pre:      htmlPreText(seg[:start]),
 		newTable: newTable,
+		uncut:    !cuttable,
 	}, true
 }
 
-// htmlRowCells splits one row's markup on </td> and </th> and decodes each cell.
-// Both terminators are five bytes, which is what lets the scan advance uniformly.
+// htmlRowCells splits one row's markup into cells and decodes each. cuttable is
+// false when the row could not be cut at all -- an oversized cell disqualifies
+// the row, because truncating it would corrupt a value silently. That verdict
+// travels with the row: "this splitter produced nothing" must never be read as
+// "this document has no table", which is how a filing's votes vanish into
+// ok/n_rows=0 instead of staying countable in skip.
 //
-// Each terminator is located ONCE and re-sought only after the cursor passes it.
-// Probing for </th> per cell instead costs a full scan to end-of-segment on every
-// cell of every row, because <th> is rare in EDGAR markup and a miss returns -1
-// only at the end: O(cells x rowlen), which on a 155 MB body is a ~512x
-// amplification of the one pass the row is worth. The </td> search is likewise
-// bounded by the largest cell that could still be kept, so an unterminated cell
-// costs the cap rather than the remainder of the document.
-func htmlRowCells(seg []byte) []string {
-	const termLen = len("</td>")
-	var cells []string
+// A cell ends at its own </td> or </th> -- OR at the <td>/<th> that opens the
+// next one. That second rule is not a nicety: legacy EDGAR HTML routinely omits
+// the closing tag, so
+//
+//	<TR><TD>Election of Directors<TD>MGMT<TD>YES<TD>AGNST<TD>FOR</TR>
+//
+// yields ZERO cells from a terminator-only splitter, and a filing of hundreds of
+// such rows counts zero wide rows and looks tableless. HTML5's own parsing rule
+// is that an opening cell tag implicitly closes the cell before it, so that is
+// the rule here. The row's own </tr> already ended the segment, which is what
+// lets the last unterminated cell be flushed at the end.
+func htmlRowCells(seg []byte) (cells []string, cuttable bool) {
+	var f htmlBoundaryFinder
 	pos := 0
-	th := indexFrom(seg, 0, "</th>")
-	for pos < len(seg) && len(cells) < htmlMaxCells {
-		if th >= 0 && th < pos {
-			th = indexFrom(seg, pos, "</th>")
-		}
-		limit, truncated := len(seg), false
-		if limit-pos > htmlMaxCellBytes+termLen {
-			limit, truncated = pos+htmlMaxCellBytes+termLen, true
-		}
-		end := indexFrom(seg[:limit], pos, "</td>")
-		if th >= 0 && th < limit && (end < 0 || th < end) {
-			end = th
-		}
-		if end < 0 {
-			if truncated {
-				// Truncating a cell would corrupt a value silently, so an
-				// oversized one disqualifies its row whole.
-				return nil
-			}
+	open := -1 // where the cell now open begins; -1 when none is
+	for len(cells) < htmlMaxCells {
+		at, after, isClose, ok := f.next(seg, pos)
+		if !ok {
 			break
 		}
-		if end-pos > htmlMaxCellBytes {
-			return nil
+		start := open
+		if isClose && start < 0 {
+			// A terminator with no opening tag before it: keep the old reading
+			// and take everything since the cursor, tags and all.
+			start = pos
 		}
-		cells = append(cells, htmlCellText(seg[pos:end]))
-		pos = end + termLen
+		if start >= 0 {
+			if at-start > htmlMaxCellBytes {
+				return nil, false
+			}
+			cells = append(cells, htmlCellText(seg[start:at]))
+		}
+		if isClose {
+			open, pos = -1, after
+		} else {
+			open, pos = after, after
+		}
 	}
-	return cells
+	if open >= 0 && open < len(seg) && len(cells) < htmlMaxCells {
+		if len(seg)-open > htmlMaxCellBytes {
+			return nil, false
+		}
+		if t := htmlCellText(seg[open:]); t != "" {
+			cells = append(cells, t)
+		}
+	}
+	return cells, true
+}
+
+// htmlBoundaryNeedles are the four markers that bound a cell, closing tags
+// first so the index in htmlBoundaryFinder can be read as "is this a close".
+var htmlBoundaryNeedles = [4]string{"</td>", "</th>", "<td", "<th"}
+
+// htmlBoundaryFinder walks a row's cell boundaries left to right. Each needle is
+// located ONCE and re-sought only after the cursor passes it, so a row costs one
+// pass per needle rather than one pass per cell. Probing all four per cell is
+// O(cells x rowlen) -- <th> is rare in EDGAR markup and a miss returns -1 only at
+// end-of-segment, so on a 155 MB body that is a ~512x amplification of the single
+// pass the row is worth.
+type htmlBoundaryFinder struct {
+	idx   [len(htmlBoundaryNeedles)]int
+	begun bool
+}
+
+// next returns the first boundary at or after pos: at is where its markup
+// starts, after is where the following cell's text begins.
+func (f *htmlBoundaryFinder) next(seg []byte, pos int) (at, after int, isClose, ok bool) {
+	best, bestK := -1, -1
+	for k := range htmlBoundaryNeedles {
+		if !f.begun || f.idx[k] < pos {
+			f.idx[k] = htmlFindBoundary(seg, pos, k)
+		}
+		if f.idx[k] >= 0 && (best < 0 || f.idx[k] < best) {
+			best, bestK = f.idx[k], k
+		}
+	}
+	f.begun = true
+	if best < 0 {
+		return 0, 0, false, false
+	}
+	if bestK < 2 {
+		return best, best + len("</td>"), true, true
+	}
+	// The opening tag's attributes are markup, not cell text, so the next cell
+	// begins past its '>'. A tag left unterminated by the end of the row ends
+	// the scan rather than becoming content.
+	end := indexByteFrom(seg, best, '>')
+	if end < 0 {
+		return best, len(seg), false, true
+	}
+	return best, end + 1, false, true
+}
+
+// htmlFindBoundary locates needle k at or after from. For the opening tags the
+// element name must END at the match: "<thead" is a section, not a cell, and
+// treating it as one would cut every header row in two.
+func htmlFindBoundary(seg []byte, from, k int) int {
+	needle := htmlBoundaryNeedles[k]
+	if k < 2 {
+		return indexFrom(seg, from, needle)
+	}
+	for i := from; ; {
+		j := indexFrom(seg, i, needle)
+		if j < 0 {
+			return -1
+		}
+		if n := j + len(needle); n >= len(seg) || !isNameByte(seg[n]) {
+			return j
+		}
+		i = j + 1
+	}
 }
 
 // htmlCellText renders one cell's markup as text: tags removed, named and

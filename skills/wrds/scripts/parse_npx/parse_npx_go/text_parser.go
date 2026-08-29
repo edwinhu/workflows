@@ -283,11 +283,29 @@ func parseText(body []byte, meta FilingMeta) *ParseResult {
 	// votes carries both, and calling that "nothing to report" records the loss of
 	// every vote in it as a success. A body we could not parse is a skip; that is
 	// the honest answer and the one the manifest exists to give.
-	if hasNoActivitySentinel(text) && !hasVoteTableVocabulary(text) {
-		res.Meta.Layout = "no-activity"
-		res.Meta.ParseStatus = "ok"
-		res.Meta.NRows = 0
-		return res
+	if !hasVoteTableVocabulary(text) {
+		if hasNoActivitySentinel(text) {
+			res.Meta.Layout = "no-activity"
+			res.Meta.ParseStatus = "ok"
+			res.Meta.NRows = 0
+			return res
+		}
+		// A cover page says nothing at all rather than saying it has nothing:
+		// registrant, address, signature, and a proxy voting record that is simply
+		// absent. 2,792 of the 5,529 HTML documents still declining are this shape.
+		// `skip` on one of them asserts we failed to read a filing that holds
+		// nothing to read, and buries the filings we genuinely cannot parse under
+		// five times their number in noise.
+		//
+		// The table test is not decoration. ~300 of the same 5,529 also carry no
+		// vocabulary and hundreds of real votes, in a table whose columns are
+		// positional and unlabelled; vocabulary alone would declare those empty.
+		if htmlPrintsNoVoteTable(decoded) {
+			res.Meta.Layout = "cover-page"
+			res.Meta.ParseStatus = "ok"
+			res.Meta.NRows = 0
+			return res
+		}
 	}
 
 	res.Meta.Layout = unmatchedSignature(signatureBody(decoded, text))
