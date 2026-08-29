@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -281,6 +282,225 @@ func brDashRule(up string) bool {
 	return true
 }
 
+// ---------------------------------------------------------------------------
+// The fund heading, and why it is STATE
+// ---------------------------------------------------------------------------
+//
+// A report body is a sequence of FUND SECTIONS. The fund's name is printed ONCE,
+// on its own line immediately above the dashed rule that opens the section's
+// first meeting block, and it governs every block after it until the next
+// heading: one heading in the Jackson National corpus governs 156,005 lines and
+// 23 blocks in the fixture cut from it. So the heading is carried across page
+// breaks, repeated column headers and footers exactly as the meeting context is,
+// and a rule that attributed only the block its heading physically touches would
+// pass a one-block test while stamping almost nothing.
+//
+// Measured over all 5,412 broadridge filings: the layout stamps nothing today
+// and the 6.26% that carries a series_id is entirely the chassis single-series
+// fallback. Reading the heading raises that to 66.12% of the rows a filing's own
+// header makes attributable.
+//
+// The heading is matched by EXACT normalised equality against a <SERIES-NAME>
+// the filing itself declares, and a heading that resolves to nothing CLEARS the
+// state rather than leaving the previous fund standing — inheriting is precisely
+// how one fund's votes end up filed under another.
+//
+// One difference from the raw bytes matters here. The report's own grammar keys
+// the heading slot on INDENT: the heading sits at column 0 and the issuer line
+// one column in. Normalization strips indentation before any layout sees the
+// body, so what survives is ADJACENCY — the slot is the line two above the
+// block's `Agenda Number` line, with the opening rule between them — plus the
+// furniture rejector below.
+//
+// The report says to walk upward over SGML-ONLY lines to reach that slot. By the
+// time this layout runs there are no SGML lines left: removeMarkup turns a block
+// tag such as <PAGE> or </TABLE> into a NEWLINE, so an SGML line standing between
+// a heading and its rule arrives here as a BLANK one. The walk is therefore a
+// walk over blanks — and blanks are ambiguous, because the slot is also blank in
+// 95.5% of blocks, meaning "this block continues the section already open", where
+// the line above it is the previous block's last proposal row.
+//
+// So the two paths are not treated alike. A slot reached DIRECTLY is a heading
+// and sets the state, to the series it resolves to or to nothing. A slot reached
+// ACROSS a blank acts only when the filing's own header DECLARES that name: being
+// declared is the evidence that the line is a fund heading rather than a proposal
+// row, and without it the state is left exactly as it was. Clearing on every
+// blank-crossed slot would clear the fund at almost every block; stamping on one
+// would file a proposal row's text as a fund name.
+//
+// Declared is deliberately weaker than resolved. A name the header spells for TWO
+// distinct series resolves to nothing, but it is still a fund heading — the filing
+// has said this section belongs to a fund and declined to say which. It therefore
+// clears the state like any other unresolved heading. Requiring resolution here
+// would let the section above stand and file this section's votes under it, which
+// is the same transfer between funds this whole column must never make.
+
+// brAgendaNeedles are the two spellings of the block opener, lowercase for the
+// in-place case-insensitive scan.
+var brAgendaNeedles = []string{"agenda number", "agenda #"}
+
+// brSilentNeedles are the ways a fund section says it had nothing to vote. Such
+// a section carries a heading and a sentence instead of a block, so no
+// `Agenda Number` line ever reaches its heading — and ignoring it is what
+// carried one PowerShares fund across two silent sections and onto 398 blocks
+// belonging to neither. 6,668 of these resets occur in the corpus.
+var brSilentNeedles = []string{
+	"held no voting securities",
+	"held no securities which required",
+	"did not vote any securities",
+	"did not vote any proxies",
+	"no securities which required a proxy vote",
+	"no proxies were voted",
+	"held no proxy voting securities",
+	"held no proxy voting",
+	"report contains no data for selected criteria",
+	"has not yet commenced operations",
+	"did not receive any proxies",
+}
+
+// brSilentNeedleBytes is brSilentNeedles ready for a byte-wise scan of the
+// already-lowercased window, built once rather than per block.
+var brSilentNeedleBytes = func() [][]byte {
+	out := make([][]byte, len(brSilentNeedles))
+	for i, s := range brSilentNeedles {
+		out[i] = []byte(s)
+	}
+	return out
+}()
+
+// brSilentLookahead is how many lines after the rule the no-activity sentence
+// may span. The sentence wraps onto a second and occasionally a third line.
+const brSilentLookahead = 3
+
+// brSilentLineCap bounds how many bytes of each lookahead line the silent test
+// reads. The longest needle is 44 characters and the sentence is printed at the
+// head of its line in every observed spelling, while the lines themselves are
+// untrusted third-party bytes from filings that reach 200 MB — so the window is
+// capped rather than copied whole.
+const brSilentLineCap = 512
+
+// §2.2's furniture rejector — the item-token pattern, the column-header
+// vocabulary and the `date of reporting period` line — is deliberately absent.
+// Its only possible action on a slot that does not resolve was to leave the
+// PREVIOUS fund standing, and that is a wrong series_id rather than a blank one.
+// See brResolveHeading.
+
+// brAgendaOpener reports whether a line carries the token that opens a meeting
+// block. The scan is case-insensitive in place: this runs on every line of a
+// corpus whose largest single filing is 94 MB, and uppercasing a copy of each
+// line to find a two-word needle is a per-line allocation for nothing.
+func brAgendaOpener(line string) bool {
+	return containsAnyFolded(line, brAgendaNeedles)
+}
+
+// brHeadingBlankWalk is how many blank lines the upward walk may cross. One is
+// the whole reachable range: collapseSpaces (html.go) collapses every run of
+// newlines to at most two, so however many block tags and source newlines stand
+// between a heading and its rule, they arrive here as exactly one blank line.
+// Bounding it at one also keeps the walk from reaching back into the previous
+// block on a body that a future normalization change leaves more sparsely spaced.
+const brHeadingBlankWalk = 1
+
+// brHeadingSlot returns the line the fund heading would occupy for the block
+// opened at lines[i], or "" when that slot holds no candidate. crossedBlank
+// reports that the walk stepped over a blank line to reach it, which is the shape
+// an SGML line between the heading and the rule leaves behind — and which the
+// caller must treat as evidence-only, since it is also the shape of an ordinary
+// block continuing the section already open.
+func brHeadingSlot(lines []string, i int) (slot string, crossedBlank bool) {
+	if i < 2 {
+		return "", false
+	}
+	if !brDashRule(lines[i-1]) {
+		return "", false
+	}
+	j := i - 2
+	for steps := 0; j >= 0 && steps < brHeadingBlankWalk && strings.TrimSpace(lines[j]) == ""; steps++ {
+		j--
+		crossedBlank = true
+	}
+	if j < 0 {
+		return "", false
+	}
+	slot = strings.TrimSpace(lines[j])
+	if slot == "" || brDashRule(slot) {
+		return "", false
+	}
+	return slot, crossedBlank
+}
+
+// brResolveHeading returns the series a directly-reached slot puts on the state:
+// the id it resolves to, or "" when it resolves to nothing at all.
+//
+// The resolution is tried BEFORE §2.2's furniture rejection on purpose: a slot
+// the filing's own header declares under that name is evidence, and the rejector
+// is only a heuristic. That override is what recovers 'T. Rowe Price Small Cap
+// Growth Portfolio', whose leading 'T.' reads as an item token, and 3,169 blocks
+// besides, at a measured cost of nothing.
+//
+// What the rejector does NOT do is protect the fund above. A slot rejected as
+// table furniture is still a heading slot, and leaving the previous fund standing
+// there stamps the next section's votes with the previous section's series_id —
+// the exact silent transfer between funds this column must never make. So an
+// unresolved slot clears the state whether the rejector claims it or not, which
+// is §2.2's "a heading that resolves to nothing clears the state" applied to the
+// rejector too, and is why the rejector no longer has a branch of its own. Its
+// measured cost is the residual's smallest line: 6,572 rows, 0.03%.
+func brResolveHeading(idx map[string]*SeriesDecl, slot string) string {
+	if d := lookupSeriesTolerant(idx, slot); d != nil {
+		return d.SeriesID
+	}
+	return ""
+}
+
+// brSilentSection reports whether lines[i] opens a fund section that states it
+// held nothing to vote: a heading, the rule under it, and the sentence instead
+// of a meeting block.
+//
+// buf is the caller's scratch, reused across the whole filing: this runs once per
+// meeting block and the corpus carries 2,949,449 of them, so a fresh window per
+// block is 2.9 million short-lived allocations for one boolean.
+func brSilentSection(lines []string, i int, buf *[]byte) bool {
+	j := i + 1
+	// The report skips SGML-only lines here; markup removal has already turned
+	// those into blanks, so blanks are what is skipped. Skipping too eagerly can
+	// only CLEAR the carried fund, never misattribute it.
+	for j < len(lines) && j <= i+brSilentLookahead && strings.TrimSpace(lines[j]) == "" {
+		j++
+	}
+	if j >= len(lines) || !brDashRule(lines[j]) {
+		return false
+	}
+	end := j + 1 + brSilentLookahead
+	if end > len(lines) {
+		end = len(lines)
+	}
+	// The window is lowercased as it is copied, so the needles match with a plain
+	// byte search and no second pass folds the case.
+	w := (*buf)[:0]
+	for k := j + 1; k < end; k++ {
+		l := lines[k]
+		if len(l) > brSilentLineCap {
+			l = l[:brSilentLineCap]
+		}
+		for x := 0; x < len(l); x++ {
+			c := l[x]
+			if c >= 'A' && c <= 'Z' {
+				c += 'a' - 'A'
+			}
+			w = append(w, c)
+		}
+		w = append(w, ' ')
+	}
+	*buf = w
+	for _, needle := range brSilentNeedleBytes {
+		if bytes.Contains(w, needle) {
+			return true
+		}
+	}
+	return false
+}
+
 // brRowBuf accumulates one proposal across its physical lines.
 type brRowBuf struct {
 	item     string
@@ -298,8 +518,16 @@ type brRowBuf struct {
 // for a filing that plainly carries a vote table is the silent loss this parser
 // is being repaired for.
 func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
+	// Built ONCE per filing: a filing reaches 2.9 million blocks, and rebuilding
+	// the name index per block would make the grid job a function of the square
+	// of the body. A name two distinct series answer to maps to nothing, which is
+	// what keeps an ambiguous heading from stamping either of them.
+	seriesIdx := seriesByName(meta.SeriesDecls)
+
 	var (
-		rows    []VoteRow
+		rows      []VoteRow
+		curSeries string
+
 		issuer  string
 		ticker  string
 		cusip   string
@@ -318,6 +546,9 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		inTable  bool
 		sawTable bool
 		cur      *brRowBuf
+
+		// Scratch for the silent-section window, allocated once per filing.
+		silentBuf = make([]byte, 0, brSilentLookahead*(brSilentLineCap+1))
 	)
 
 	// flush emits the open row. A row is emitted whenever it has an item token,
@@ -330,6 +561,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 		if cur.item != "" {
 			rows = append(rows, VoteRow{
+				SeriesID:                 curSeries,
 				IssuerName:               issuer,
 				Ticker:                   ticker,
 				CUSIP:                    cusip,
@@ -367,11 +599,48 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		mtgDate, mtgType, recDate = "", "", ""
 	}
 
-	for _, raw := range strings.Split(text, "\n") {
+	lines := strings.Split(text, "\n")
+	for i, raw := range lines {
 		line := strings.TrimSpace(raw)
 		if line == "" {
 			flush()
 			continue
+		}
+
+		// The fund heading, before anything else this line does. Whichever way
+		// the state moves, the row still open belongs to the block ABOVE this
+		// one, so it is emitted under the fund that was current when it was read.
+		if !brDashRule(line) {
+			if brAgendaOpener(line) {
+				if slot, crossedBlank := brHeadingSlot(lines, i); slot != "" {
+					if crossedBlank {
+						// Evidence-only: act solely on a name this filing's own
+						// header declares, because this slot is also what an
+						// ordinary continuing block looks like.
+						//
+						// DECLARED is the evidence, not resolved. A name the
+						// header spells for two distinct series is still proof
+						// that this line is a fund heading; what the filing
+						// withholds is only WHICH fund. So it clears the state
+						// like any other heading that resolves to nothing.
+						// Falling through would leave the section above standing
+						// and file this fund's votes under it.
+						if d, declared := lookupSeriesTolerantEntry(seriesIdx, slot); declared {
+							flush()
+							curSeries = ""
+							if d != nil {
+								curSeries = d.SeriesID
+							}
+						}
+					} else {
+						flush()
+						curSeries = brResolveHeading(seriesIdx, slot)
+					}
+				}
+			} else if brSilentSection(lines, i, &silentBuf) {
+				flush()
+				curSeries = ""
+			}
 		}
 
 		if brColumnHeader(line) {

@@ -1,0 +1,216 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ WPvPuggFwYdilp1PyhjSWVYfOAyFnn+KoyUH3AH8WZmEIwQsaO/MtgCwKObOMkGe
+ aCj/+3eXHxuqqWoZsv15mQ==
+
+<SEC-DOCUMENT>0000880195-07-000221.txt : 20070830
+<SEC-HEADER>0000880195-07-000221.hdr.sgml : 20070830
+<ACCEPTANCE-DATETIME>20070830100445
+ACCESSION NUMBER:		0000880195-07-000221
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20070630
+FILED AS OF DATE:		20070830
+DATE AS OF CHANGE:		20070830
+EFFECTIVENESS DATE:		20070830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			FIDELITY ABERDEEN STREET TRUST
+		CENTRAL INDEX KEY:			0000880195
+		IRS NUMBER:				000000000
+		FISCAL YEAR END:			1130
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-06440
+		FILM NUMBER:		071089531
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1201 N MARKET ST P O BOX 1347
+		STREET 2:		C/O SIOBIAN PERKINS MORRIS NICHOLS ARSHT
+		CITY:			WILMINGTON
+		STATE:			DE
+		ZIP:			19899
+		BUSINESS PHONE:		617-570-7000
+
+	MAIL ADDRESS:	
+		STREET 1:		82 DEVONSIRE STREET
+		STREET 2:		MAILZONE ZH1
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02109
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	FIDELITY INSTITUTIONAL INVESTORS TRUST
+		DATE OF NAME CHANGE:	19920811
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000880195
+<SERIES-ID>S000004883
+<SERIES-NAME>Fidelity Advisor Freedom 2040 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013229
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FAFFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013230
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FBFFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013231
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FCFFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013232
+<CLASS-CONTRACT-NAME>Class T
+<CLASS-CONTRACT-TICKER-SYMBOL>FTFFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013233
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>FIFFX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fafreedom2040.htm
+<TEXT>
+<html>
+   <body><FONT size="2" face="arial">
+         <p align="center" style="font-weight: bold">FORM N-PX
+
+         </p>
+         <p align="center" style="font-weight: bold">ANNUAL REPORT OF PROXY VOTING RECORD OF						REGISTERED MANAGEMENT INVESTMENT COMPANY</p><br><br><p>INVESTMENT COMPANY ACT FILE NUMBER:							811-06440</p>
+         <p>EXACT NAME OF REGISTRANT AS SPECIFIED IN							CHARTER:							Fidelity Aberdeen Street Trust</p>
+         <p>Fund Name:							Fidelity Advisor Freedom 2040 Fund</p>
+         <p>82 DEVONSHIRE STREET, BOSTON, MA 02109							<br>							(ADDRESS OF PRINCIPAL EXECUTIVE OFFICES)							(ZIP CODE)
+         </p>
+         <p>ERIC D. ROITER, SECRETARY, 82 DEVONSHIRE							STREET, BOSTON, MA 02109							<br>							(NAME AND ADDRESS OF AGENT FOR SERVICE)
+         </p>
+         <p>REGISTRANT'S TELEPHONE NUMBER, INCLUDING							AREA CODE: 617-563-7000</p>
+         <p>DATE OF FISCAL YEAR END:							MARCH 31</p>
+         <p>DATE OF REPORTING PERIOD:							06/30/2007</p>
+         <p align="center" style="font-weight: bold">SIGNATURES</p>
+         <p>PURSUANT TO THE REQUIREMENTS OF THE							INVESTMENT COMPANY ACT OF 1940, THE							REGISTRANT HAS DULY CAUSED THIS REPORT
+            TO BE							SIGNED ON ITS BEHALF BY THE UNDERSIGNED,							THERE UNTO DULY AUTHORIZED.
+         </p>
+         <p><br>Fidelity Aberdeen Street Trust
+         </p>
+         <p><u>
+               								BY:&nbsp;&nbsp;/s/ KIMBERLEY MONASTERIO*
+               							</u><br>
+            							KIMBERLEY MONASTERIO, TREASURER
+            							<br>
+            							DATE:
+            							08/10/2007 04:25:31 PM
+         </p>
+         <p><u>*BY:&nbsp;&nbsp;/s/ CLAIRE S. WALPOLE</u><br>
+            							CLAIRE S. WALPOLE, VICE PRESIDENT, FIDELITY
+            							MANAGEMENT &amp; RESEARCH COMPANY, PURSUANT
+            							TO A POWER OF ATTORNEY DATED JULY 10, 2007
+            							AND FILED HEREWITH.
+
+         </p>
+         <p align="center">VOTE SUMMARY REPORT						<br>Fidelity Advisor Freedom 2040 Fund<br>07/01/2006-						06/30/2007<br></p>
+         <p align="left" style="font-style:italic;">Note: The Security ID will be the CUSIP								(Committee on Uniform Securities								Identification Procedures) when								available.
+            When CUSIP is not available,								an alternate identifier, e.g., CINS,								will be provided.
+         </p>
+         <table cellSpacing="0" width="100%" border="1" cellPadding="2">
+            <tr style="font-size:10pt;border:none;">
+               <th style="font-size:10pt;border:none;" width="10%">&nbsp;</th>
+               <th style="font-size:10pt;border:none;" width="55%">&nbsp;</th>
+               <th style="font-size:10pt;border:none;" width="15%">&nbsp;</th>
+               <th style="font-size:10pt;border:none;" width="10%">&nbsp;</th>
+               <th style="font-size:10pt;border:none;" width="10%">&nbsp;</th>
+            </tr>
+            <tr>
+               <td style="font-size:10pt;font-weight:bold;" colSpan="5">ISSUER NAME:							FIDELITY ADVISOR DIVERSIFIED INTERNATIONAL FUND<br>MEETING DATE:							09/20/2006
+               </td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt" align="left" colSpan="5">
+                  								TICKER:								FDVIX
+                  																&nbsp;&nbsp;&nbsp;&nbsp;SECURITY ID:								315920686<br></td>
+            </tr>
+            <tr>
+               <th style="font-size:10pt" width="10%">Proposal No</th>
+               <th style="font-size:10pt" width="55%">Proposal</th>
+               <th style="font-size:10pt" width="15%">Proposed By</th>
+               <th style="font-size:10pt" width="10%">Management Recommendation</th>
+               <th style="font-size:10pt" width="10%">Vote Cast</th>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					1</td>
+               <td style="font-size:10pt">ELECT						DENNIS J. DIRKS						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					2</td>
+               <td style="font-size:10pt">ELECT						ALBERT R. GAMPER, JR.						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					3</td>
+               <td style="font-size:10pt">ELECT						ROBERT M. GATES						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					4</td>
+               <td style="font-size:10pt">ELECT						GEORGE H. HEILMEIER						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					5</td>
+               <td style="font-size:10pt">ELECT						EDWARD C. JOHNSON 3D						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					6</td>
+               <td style="font-size:10pt">ELECT						STEPHEN P. JONAS						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					7</td>
+               <td style="font-size:10pt">ELECT						JAMES H. KEYES*						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					8</td>
+               <td style="font-size:10pt">ELECT						MARIE L. KNOWLES						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+</TABLE>
+</TEXT>
+</DOCUMENT>

@@ -84,6 +84,22 @@ var issVoteValues = map[string]bool{
 // issMaxCellWords bounds how many tokens one peeled cell may span.
 const issMaxCellWords = 3
 
+// issStripRegistrantPrefix enables the registrant-prefix strip described on
+// lookupSeriesStrippingRegistrant. It is set from the -issnpx-registrant-prefix-strip
+// flag and defaults to ENABLED.
+//
+// It is a run-time switch rather than a constant because the rule ships without a
+// measured false-positive rate: the held-out apparatus that scored every other
+// candidate rule is structurally incapable of scoring this one -- the headings it
+// fires on are exactly the headings that never exact-match anywhere, so they never
+// enter the ground-truth index, and the test returns 0/0 usable observations. The
+// required audit therefore has to re-parse the corpus with the strip OFF to
+// snapshot the repaired headings, then again with it ON to confirm the strip only
+// ever fills blanks. Removing the switch would make that audit unrunnable.
+//
+// Written once from main before any worker starts and only read afterwards.
+var issStripRegistrantPrefix = true
+
 // issMonths maps the three-letter month abbreviations the report prints
 // ("FEB 28, 2017") onto their numbers.
 var issMonths = map[string]int{
@@ -121,6 +137,12 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	// to, resolves to "" and the row is emitted with an empty series_id: the
 	// chassis still stamps single-series filings, and nothing here guesses.
 	seriesIdx := seriesByName(meta.SeriesDecls)
+
+	// The registrant name is a per-filing constant, so it is folded once here
+	// rather than once per banner: normalising it inside the lookup made the strip
+	// cost O(banners x len(COMPANY CONFORMED NAME)), and both of those grow with
+	// the same untrusted file.
+	registrantKey := normalizeSeriesName(meta.CompanyName)
 
 	var (
 		rows        []VoteRow
@@ -164,24 +186,54 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		cur = nil
 	}
 
-	for _, raw := range strings.Split(text, "\n") {
-		line := strings.TrimSpace(raw)
+	// A fund name that wrapped is spread over consecutive rule lines, so the name
+	// is accumulated here and only becomes the fund once the wrap has ended.
+	// Bounded by issMaxBannerLines.
+	var bannerBuf []string
+
+	commitBanner := func() {
+		if len(bannerBuf) == 0 {
+			return
+		}
+		name, d := issResolveFund(seriesIdx, strings.Join(bannerBuf, " "), registrantKey)
+		bannerBuf = bannerBuf[:0]
+		fund = name
+		fundSeries, fundClasses = "", ""
+		if d != nil {
+			fundSeries = d.SeriesID
+			fundClasses = strings.Join(d.ClassIDs, MultiValueSep)
+		}
+	}
+
+	lines := strings.Split(text, "\n")
+	for i := 0; i < len(lines); i++ {
+		line := strings.TrimSpace(lines[i])
 
 		if name, ok := issFundSeparator(line); ok {
 			flush()
 			inTable = false
-			if name != "" {
-				fund = name
-				fundSeries, fundClasses = "", ""
-				if d := lookupSeriesByName(seriesIdx, fund); d != nil {
-					fundSeries = d.SeriesID
-					fundClasses = strings.Join(d.ClassIDs, MultiValueSep)
+			if name == "" {
+				// A bare rule closes any banner still accumulating above it, so a
+				// name never joins across a divider.
+				commitBanner()
+			} else {
+				if len(bannerBuf) >= issMaxBannerLines {
+					commitBanner()
+				}
+				bannerBuf = append(bannerBuf, name)
+				if !issBannerContinues(lines, i+1) {
+					commitBanner()
 				}
 			}
 			issuer, ticker, cusip = "", "", ""
 			mtgDate, mtgType, recDate = "", "", ""
 			lastLine = ""
 			continue
+		}
+		// A banner cannot span anything but rule lines. Any other line ends it,
+		// including one the loop below goes on to ignore.
+		if len(bannerBuf) > 0 {
+			commitBanner()
 		}
 
 		if line == "" {
@@ -258,13 +310,160 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	return rows, nil
 }
 
+// issResolveFund turns one banner, already reassembled across any lines it
+// wrapped onto, into the fund name to store and the series it names. A nil decl
+// means stamp nothing, which is the answer whenever the filing's own header does
+// not spell this name for exactly one series.
+//
+// Three readings of the banner are tried, in this order, and each demands the
+// same exact normalised equality:
+//
+//  1. the banner as printed;
+//  2. the banner with a leading single-letter index token dropped, when it
+//     carries one -- BOTH forms are tried, and two forms resolving to DIFFERENT
+//     series stamp nothing, because the filing has then given two answers and
+//     picking one would be a guess. The alternative is read only when the banner
+//     AS PRINTED names no declared series at all: a printed name two series
+//     answer to is a refusal, and dropping its first letter is a typographic
+//     repair, not evidence about which of the two the filing meant;
+//  3. the banner with its own registrant's name deleted off the front, only when
+//     nothing above resolved and only when the strip is enabled.
+//
+// The name STORED is the reading that resolved, so fund_name records the heading
+// the pipeline actually matched on; step 3 is a lookup key rather than a reading
+// and leaves the printed name alone. When nothing resolves, the banner as printed
+// is stored and the series is left blank: an unresolved heading is still evidence
+// of which fund the section belongs to, and losing it would file these votes
+// under the fund above.
+//
+// A heading the header declares AMBIGUOUSLY -- two distinct series answering to
+// one normalised name -- is a refusal to choose, not a failed lookup, and is
+// never retried under the strip. A series_id is the link key into the ISS panel,
+// so a wrong one silently moves one fund's votes onto another; every branch here
+// either matches a declared name exactly or stamps nothing.
+// registrantKey is the filing's COMPANY CONFORMED NAME already normalised, since
+// it is constant across every banner in the filing.
+func issResolveFund(idx map[string]*SeriesDecl, banner, registrantKey string) (string, *SeriesDecl) {
+	d, declared := lookupSeriesEntry(idx, banner)
+
+	if stripped, ok := issLeadingIndexToken(banner); ok {
+		alt, altDeclared := lookupSeriesEntry(idx, stripped)
+		switch {
+		case d != nil && alt != nil:
+			if d.SeriesID != alt.SeriesID {
+				// The banner reads as two different funds depending on whether the
+				// leading letter is an index or a word. Nothing here can tell which.
+				return banner, nil
+			}
+		case alt != nil && !declared:
+			// Only a banner the header does not spell AT ALL may be re-read. When
+			// the printed name is declared ambiguously, d is nil and declared is
+			// true, and that is a refusal to choose between two series -- returning
+			// the alternative here would convert it into a stamp.
+			return stripped, alt
+		}
+		declared = declared || altDeclared
+	}
+
+	if d != nil || declared {
+		return banner, d
+	}
+	if !issStripRegistrantPrefix {
+		return banner, nil
+	}
+	return banner, lookupSeriesStrippingRegistrant(idx, banner, registrantKey)
+}
+
 // issFundSeparator recognises the '===== FUND NAME =====' rule that opens a fund
-// section and returns the name padded inside it.
+// section and returns the name padded inside it, verbatim.
+//
+// ONE '=' is enough on each side. The rule is padded to a fixed 80 columns, so a
+// long fund name shrinks the left pad rather than widening the line, and a name
+// long enough to leave a single '=' there ("=Invesco European Small Company
+// Fund====...") was invisible to the two-'=' prefix this replaced -- taking not
+// just that banner but the fund heading of the WHOLE filing with it, since fund
+// is carried as state and never got set.
+//
+// What keeps the widening from swallowing prose is the TOTAL count of '=' on the
+// line: every real banner spends the rest of its 80 columns on padding, so
+// requiring issBannerMinEquals of them rejects an ordinary sentence that merely
+// opens and closes on the character. The text between the rules is still taken
+// exactly as printed.
 func issFundSeparator(line string) (string, bool) {
-	if !strings.HasPrefix(line, "==") || !strings.HasSuffix(line, "==") {
+	n := len(line)
+	if n == 0 || line[0] != '=' || line[n-1] != '=' {
 		return "", false
 	}
-	return strings.TrimSpace(strings.Trim(line, "=")), true
+	lead := 0
+	for lead < n && line[lead] == '=' {
+		lead++
+	}
+	if lead == n {
+		// A bare rule with no text in it. It is still a section boundary -- it is
+		// how the report closes a fund -- so it is recognised, with no name.
+		return "", n >= issBannerMinEquals
+	}
+	trail := 0
+	for trail < n-lead && line[n-1-trail] == '=' {
+		trail++
+	}
+	total := lead + trail
+	for i := lead; i < n-trail; i++ {
+		if line[i] == '=' {
+			total++
+		}
+	}
+	if total < issBannerMinEquals {
+		return "", false
+	}
+	return strings.TrimSpace(line[lead : n-trail]), true
+}
+
+// issBannerMinEquals is how many '=' a line must spend before it is read as a
+// banner rule rather than as prose that happens to start and end on one.
+const issBannerMinEquals = 8
+
+// issMaxBannerLines bounds how many consecutive rule lines are joined into one
+// fund name. Real banners wrap onto a second line and no further; the cap is what
+// keeps a file that is nothing but rule lines from accumulating an unbounded
+// name, since the input is untrusted third-party filing bytes.
+const issMaxBannerLines = 4
+
+// issBannerContinues reports whether lines[i] is another banner rule carrying
+// text, which is how a fund name that wrapped is recognised: the report pads its
+// rule to 80 columns and puts the tail of a long name on the very next line,
+//
+//	========= MORGAN STANLEY INSTITUTIONAL FUND INC. ACTIVE INTERNATIONAL ==========
+//	=========                    ALLOCATION PORTFOLIO                     ==========
+//
+// which is one banner and one fund, not two.
+func issBannerContinues(lines []string, i int) bool {
+	if i < 0 || i >= len(lines) {
+		return false
+	}
+	name, ok := issFundSeparator(strings.TrimSpace(lines[i]))
+	return ok && name != ""
+}
+
+// issLeadingIndexToken splits off a leading single-letter index token, which some
+// registrants print INSIDE the banner to enumerate the funds of the report
+// ("A     DWS LARGE COMPANY GROWTH FUND"). It is not part of the fund's name and
+// the header never spells it.
+//
+// Only a single ASCII letter with at least one further token qualifies, and the
+// caller must try the heading WITH the token as well -- a real fund name can
+// begin with a one-letter word, and dropping it unconditionally would be a
+// tolerance rather than a reading of what the filing printed.
+func issLeadingIndexToken(name string) (rest string, ok bool) {
+	fields := strings.Fields(name)
+	if len(fields) < 2 || len(fields[0]) != 1 {
+		return "", false
+	}
+	switch c := fields[0][0]; {
+	case c >= 'A' && c <= 'Z', c >= 'a' && c <= 'z':
+		return strings.Join(fields[1:], " "), true
+	}
+	return "", false
 }
 
 // issTickerLine parses 'Ticker: <t>   Security ID: <id>'. CUSIP: appears as an

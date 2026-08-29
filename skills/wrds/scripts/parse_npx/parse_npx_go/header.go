@@ -167,9 +167,22 @@ func seriesIDs(sc []SeriesClass) []string {
 // non-alphanumeric rune as a separator. Letters and DIGITS are kept: dropping
 // either would collapse "Growth Fund II" onto "Growth Fund" and silently move one
 // fund's votes onto another. Nothing is stemmed, abbreviated or truncated.
+//
+// Three punctuation-only widenings sit on top of that, and only three. The body
+// heading spells an ampersand where the header spells the word ("MML Growth &
+// Income Fund"); a '/' in a registered name reaches this corpus mojibaked to '?'
+// ("Claymore?Sabrient Stealth Portfolio"); and a leading article is dropped by
+// one side or the other. Each is a difference in how the SAME name was printed,
+// never a difference between names, which is why they are folded here and why
+// nothing else is: measured across all 106,719 declared series, the three
+// together merge ZERO pairs of distinct series that the folding above separates.
+// Anything that stems, drops a stopword, strips a suffix noun or measures an edit
+// distance does merge such pairs — "PIMCO Low Duration Fund" and "PIMCO Low
+// Duration Portfolio" are different registered series — and must not be added.
 func normalizeSeriesName(s string) string {
 	s = strings.ToLower(s)
 	s = seriesMarkReplacer.Replace(s)
+	s = seriesPunctReplacer.Replace(s)
 
 	var b strings.Builder
 	b.Grow(len(s))
@@ -185,6 +198,13 @@ func normalizeSeriesName(s string) string {
 		}
 		space = true
 	}
+	// A leading article is dropped after folding, not before, so it is only ever
+	// removed as a whole token: "The Growth Fund" folds onto "growth fund" while
+	// "Theta Fund" is untouched. Never applied to a heading that is nothing but
+	// the article, which would key an empty string.
+	if rest, ok := strings.CutPrefix(b.String(), "the "); ok {
+		return rest
+	}
 	return b.String()
 }
 
@@ -194,6 +214,16 @@ func normalizeSeriesName(s string) string {
 var seriesMarkReplacer = strings.NewReplacer(
 	"(r)", "", "(tm)", "", "(sm)", "", "(c)", "",
 	"®", "", "™", "", "℠", "", "©", "",
+)
+
+// seriesPunctReplacer runs after the marks and before punctuation folding, which
+// is the only point at which these two characters are still distinguishable from
+// the separators everything else becomes. '&' must expand to the WORD, since
+// folding alone would delete it and glue "s" to "p"; '?' must become a separator
+// rather than expand to anything, because the character it stands in for is '/'.
+var seriesPunctReplacer = strings.NewReplacer(
+	"&", " and ",
+	"?", " ",
 )
 
 // seriesByName maps each declared series name, normalised, onto its series id.
@@ -230,11 +260,137 @@ func seriesByName(decls []SeriesDecl) map[string]*SeriesDecl {
 // under that name, or to nil when the heading names no declared series or an
 // ambiguous one. A nil result means stamp nothing.
 func lookupSeriesByName(idx map[string]*SeriesDecl, heading string) *SeriesDecl {
+	d, _ := lookupSeriesEntry(idx, heading)
+	return d
+}
+
+// lookupSeriesEntry is lookupSeriesByName plus the one distinction the collision
+// rule needs: declared reports whether the header spells this normalised name AT
+// ALL. A name two distinct series answer to is present in the index mapped to
+// nil, so d==nil,declared==true is the deliberate refusal to guess between them,
+// while d==nil,declared==false is simply a name the filing never declared.
+//
+// Only the second may be retried under a tolerance. Retrying an AMBIGUOUS name
+// converts a refusal into a stamp, which is exactly what seriesByName's collision
+// rule exists to prevent.
+func lookupSeriesEntry(idx map[string]*SeriesDecl, heading string) (d *SeriesDecl, declared bool) {
 	key := normalizeSeriesName(heading)
 	if key == "" {
+		return nil, false
+	}
+	d, declared = idx[key]
+	return d, declared
+}
+
+// lookupSeriesStrippingRegistrant resolves a heading whose leading tokens are
+// exactly the filing's OWN registrant name -- the COMPANY CONFORMED NAME its own
+// SGML header declares -- by deleting that prefix and requiring the remainder to
+// equal a declared <SERIES-NAME> under the same exact normalised equality
+// everything else demands.
+//
+// It is a deletion of one string the filing itself spells, not a tolerance: the
+// prefix removed is character-exact against the registrant name after folding,
+// the boundary is a whole token so a registrant name cannot eat into the fund's,
+// and the remainder must match exactly and unambiguously. It exists because the
+// banner of a wrapped fund heading prints the complex before the fund
+// ("MORGAN STANLEY INSTITUTIONAL FUND INC. ACTIVE INTERNATIONAL ALLOCATION
+// PORTFOLIO" for a series declared "ACTIVE INTERNATIONAL ALLOCATION PORTFOLIO"),
+// so reassembling the banner is necessary but not sufficient.
+//
+// The caller must have tried the heading AS PRINTED first and failed. A heading
+// the header declares AMBIGUOUSLY has not failed -- it is a refusal to choose
+// between two series -- and retrying it here would convert that refusal into a
+// stamp, so the caller passes only genuinely unresolved headings.
+//
+// Returns nil, which means stamp nothing, whenever any of that does not hold.
+//
+// prefix is the registrant name ALREADY normalised. The registrant is a
+// per-filing constant while this runs once per unresolved banner, so folding it
+// here would make the strip cost O(banners x len(registrant name)) on input the
+// filer controls end to end; the caller folds it once per filing instead.
+func lookupSeriesStrippingRegistrant(idx map[string]*SeriesDecl, heading, prefix string) *SeriesDecl {
+	if prefix == "" {
 		return nil
 	}
-	return idx[key]
+	rest, ok := strings.CutPrefix(normalizeSeriesName(heading), prefix)
+	if !ok {
+		return nil
+	}
+	// Normalised keys are single-space separated, so a leading space is exactly
+	// the token boundary: without it "Growth Trust" would strip out of
+	// "Growth Trustee Fund".
+	rest, ok = strings.CutPrefix(rest, " ")
+	if !ok || rest == "" {
+		return nil
+	}
+	return lookupSeriesByName(idx, rest)
+}
+
+// lookupSeriesTolerant resolves a body heading to a declared series, allowing
+// the ONE tolerance a full-corpus recon could justify: several registrants print
+// the heading with a leading internal fund code ("2A14 Mid Cap Core Trust",
+// "2CZ5 High Yield Fund") that the header never spells. That token is dropped and
+// the remainder retried, and ONLY after the heading as printed has failed —
+// hand-verified at 0 errors in 25 accepts, 883 distinct headings.
+//
+// Nothing else is tolerated. Suffix stripping (dropping a trailing "fund",
+// "trust", "portfolio") was measured at 1 WRONG accept in 25: it collapses the
+// REGISTRANT name "The Tocqueville Trust" onto its own series "The Tocqueville
+// Fund" and moves 309 blocks of votes onto a fund that did not cast them. A
+// series_id is a link key, so a wrong one silently transfers votes between funds
+// and is far worse than a blank; no fuzzy, prefix, substring or edit-distance
+// rule may be added here.
+func lookupSeriesTolerant(idx map[string]*SeriesDecl, heading string) *SeriesDecl {
+	d, _ := lookupSeriesTolerantEntry(idx, heading)
+	return d
+}
+
+// lookupSeriesTolerantEntry is lookupSeriesTolerant plus the declared bit, under
+// the same tolerance: declared reports that the filing's own header spells this
+// normalised name — as printed, or with the leading internal fund code dropped —
+// whether or not it spells it for exactly one series.
+//
+// The distinction is what a caller needs to tell a name the filing DECLARES
+// TWICE from a line the filing does not name at all. Both stamp nothing, but only
+// the first is evidence that the line is a fund heading: the filing has said this
+// section belongs to some fund and refused to say which. A caller carrying a fund
+// as state must CLEAR on it, because leaving the previous fund standing there
+// files this section's votes under the section above — the silent transfer
+// between funds the collision rule exists to prevent, one step along.
+func lookupSeriesTolerantEntry(idx map[string]*SeriesDecl, heading string) (d *SeriesDecl, declared bool) {
+	d, declared = lookupSeriesEntry(idx, heading)
+	if d != nil || declared {
+		// declared with d==nil is the header naming two distinct series. That is
+		// a refusal to stamp, not a failed lookup, so the code strip must not
+		// reopen it.
+		return d, declared
+	}
+	fields := strings.Fields(heading)
+	if len(fields) < 2 || !internalFundCode(fields[0]) {
+		return nil, false
+	}
+	return lookupSeriesEntry(idx, strings.Join(fields[1:], " "))
+}
+
+// internalFundCode reports whether tok is a registrant's internal fund code:
+// EXACTLY four alphanumeric characters carrying at least one digit. The digit is
+// what keeps a real leading word of a fund name — "Core", "Gold", "High" — from
+// ever being stripped, and the exact length is what keeps a longer word from it.
+func internalFundCode(tok string) bool {
+	if len(tok) != 4 {
+		return false
+	}
+	digit := false
+	for i := 0; i < len(tok); i++ {
+		switch c := tok[i]; {
+		case c >= '0' && c <= '9':
+			digit = true
+		case c >= 'a' && c <= 'z', c >= 'A' && c <= 'Z':
+		default:
+			return false
+		}
+	}
+	return digit
 }
 
 // classIDsFor returns the class-contract ids belonging to one series id.
