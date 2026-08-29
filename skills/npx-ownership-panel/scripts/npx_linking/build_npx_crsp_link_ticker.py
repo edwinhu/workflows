@@ -301,8 +301,12 @@ for tk, iss in [("SSPSX", "BLACKROCK MASTER SMALL CAP GROWTH PORTFOLIO"),
     n = tk_census.filter(pl.col("tk") == tk)["n_crsp_fundno"]
     n = int(n[0]) if len(n) else 0
     nm = row["fund_name"][0] if row.height else "(absent from CRSP)"
+    # A backslash inside an f-string expression is Python >= 3.12 only, so this
+    # module did not PARSE on 3.11 -- the stage could never run there. Bind the
+    # quoted literal outside the f-string instead.
+    _verdict = '"unique"' if n == 1 else "collides"
     print(f"    {tk}  ISS {iss}\n          CRSP {nm}\n          n_crsp_fundno = {n}"
-          f"  -> {'\"unique\"' if n == 1 else 'collides'}")
+          f"  -> {_verdict}")
     _demo.append(n)
 assert _demo[0] == 1 and _demo[1] == 1, \
     "VERIFY C: the reused tickers are no longer unique — re-derive the finding"

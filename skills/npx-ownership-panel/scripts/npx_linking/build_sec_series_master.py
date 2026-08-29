@@ -352,7 +352,18 @@ def build_series_master(long: pd.DataFrame, class_master: pd.DataFrame) -> pd.Da
     )
     # Series whose every class is ticker-less (variable-annuity portfolios,
     # institutional-only share classes) merge to NA; give them an empty list.
-    out["tickers"] = out["tickers"].apply(lambda v: [] if v is None or v is pd.NA else list(v))
+    # `v is None or v is pd.NA` does not catch a float NaN, which is what a
+    # missing aggregate actually is after a left join -- pandas fills with
+    # np.nan, not with NA. A series whose classes all lack a ticker therefore
+    # reached list(nan) and raised. Guard on the value, not on its identity.
+    def _as_list(v):
+        if v is None or v is pd.NA:
+            return []
+        if isinstance(v, float) and pd.isna(v):
+            return []
+        return list(v)
+
+    out["tickers"] = out["tickers"].apply(_as_list)
     cols = [
         "series_id",
         "cik",

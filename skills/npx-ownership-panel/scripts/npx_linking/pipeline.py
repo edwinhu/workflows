@@ -46,6 +46,12 @@ class Stage:
     outputs: tuple = ()
     approx_seconds: int = 60
     notes: str = ""
+    #: A stage `run_all` must NOT invoke bare. L3e proposes matches, an LLM
+    #: judge drops the ~11% that are wrong, and only then may it write; running
+    #: it unattended would either fail on missing arguments or, worse, write
+    #: unadjudicated links. Skipped LOUDLY rather than silently -- a stage that
+    #: quietly does nothing reads as a stage that ran.
+    manual: bool = False
 
     @property
     def path(self):
@@ -152,6 +158,29 @@ STAGES = (
                "over the committed master aborts here by design — a sandboxed "
                "`verify` rebuilds the master from L3 and passes the guard."),
     ),
+    Stage(
+        key="npx_crsp_link_headers",
+        script="build_npx_crsp_link_headers.py",
+        manual=True,
+        title="L3e — the header-vocabulary tier (UPDATES npx_crsp_link in place)",
+        inputs=("npx_crsp_link.parquet", "crsp_cik_map.parquet",
+                "fund_summary2.parquet"),
+        outputs=("npx_crsp_link.parquet",),
+        approx_seconds=240,
+        notes=("The 2006-2009 40-Act SGML headers carry SERIES-ID four years "
+               "before the SEC Series/Class Report starts, recovering 2,889 "
+               "series that appear in NO vintage; matching is unscoped with "
+               "family agreement admitting a weak score, rather than scoped "
+               "generation (which reaches only 64.3% because a failed family "
+               "bridge removes the true series from the pool). 1,333 fundids / "
+               "3.75M vote rows, +1.63pp of CRSP reach (92.81% -> 94.44%). "
+               "NOT RUNNABLE FROM THIS "
+               "ORCHESTRATOR END-TO-END: it proposes to --accepted-csv, an LLM "
+               "judge drops the 11.1% that are wrong, and only then does "
+               "--kept perform the in-place update. Two external inputs "
+               "(--sec-names, --header-names TSVs) are scan artifacts, not "
+               "chain masters, so they are not listed in `inputs`."),
+    ),
 )
 
 STAGE_BY_KEY = {s.key: s for s in STAGES}
@@ -218,6 +247,13 @@ def run_all(stages=None, root=None, python=None, capture=False, env=None):
         stage(k)  # validate before running anything
     t0 = time.time()
     for k in keys:
+        st = stage(k)
+        if st.manual and stages is None:
+            print(f"\n{'#' * 78}\n# SKIPPING {st.key}: {st.title}\n"
+                  f"#   manual stage -- proposes matches, needs LLM adjudication,\n"
+                  f"#   then applies with --kept. Run it by hand; see its notes.\n"
+                  f"{'#' * 78}", flush=True)
+            continue
         run_stage(k, root=root, python=python, capture=capture, env=env)
     print(f"\nchain complete: {len(keys)} stage(s) in {time.time() - t0:,.0f}s")
     return fingerprints(root=root)
