@@ -92,14 +92,21 @@ const signatureHeadBytes = 128 << 10
 // the same fact a dozen ways and the negation is what carries the meaning, so
 // "held no voting securities" and "did not hold any voting securities" are one
 // family and missing either loses a whole cohort of filings to the skip bucket.
-// Every entry must be lowercase ASCII — hasNoActivitySentinel folds the body
-// against it in place rather than lowercasing a copy.
+// Every entry must be lowercase ASCII with single spaces between words —
+// hasNoActivitySentinel folds the body against it in place rather than
+// lowercasing a copy, and each of those spaces matches a whole run of
+// whitespace, the line break included.
+//
+// Each phrase is the SHORTEST form that still carries the negation. A longer
+// spelling that merely prefixes a subject ("the fund did not vote any proxies")
+// is not a separate entry: the scan is a substring search run over the whole
+// body of every filing no layout claimed, so a redundant needle is a full extra
+// pass over the corpus that can never match anything the short form missed.
 var noActivitySentinels = []string{
-	"there is no proxy voting activity for the fund",
-	"there is no proxy voting activity for this fund",
 	"no proxy voting activity",
-	"the fund did not vote any proxies",
-	"the registrant did not vote any proxies",
+	"did not vote any proxies",
+	"no matters were voted",
+	"there were no proxy votes",
 	"did not hold any voting securities",
 	"did not hold any equity securities",
 	"held no voting securities",
@@ -405,7 +412,19 @@ func hasVoteTableVocabulary(text string) bool {
 }
 
 // containsAnyFolded reports whether text carries any of the lowercase ASCII
-// needles, comparing case-insensitively in place.
+// needles, comparing case-insensitively in place and letting ONE space in a
+// needle match a whole run of whitespace in the text.
+//
+// The whitespace run is what makes this work on HTML bodies. A filer's editor
+// hard-wraps prose mid-sentence and stripHTML preserves the break, so
+// "There is no\nproxy voting activity for the Fund" carries the sentinel with a
+// newline inside it; an exact-space needle misses it and the filing lands in
+// parse_status=skip, claiming we failed to read a document that says in plain
+// English it has nothing in it to read. Block tags contribute breaks the same
+// way, so the wrap column is not the only place this happens.
+//
+// text is already whitespace-collapsed by stripHTML, so the run a space consumes
+// is short; the scan stays O(len(text)) per needle with no allocation.
 func containsAnyFolded(text string, needles []string) bool {
 	for _, s := range needles {
 		if s == "" || len(s) > len(text) {
@@ -416,25 +435,55 @@ func containsAnyFolded(text string, needles []string) bool {
 		if lo >= 'a' && lo <= 'z' {
 			up = lo - 'a' + 'A'
 		}
+		// A match is at least len(s) bytes long -- a space may consume more than
+		// one byte, never fewer -- so this bound cannot cut a real match short.
 		for i := 0; i+len(s) <= len(text); i++ {
 			if c := text[i]; c != lo && c != up {
 				continue
 			}
-			match := true
-			for j := 1; j < len(s); j++ {
-				d := text[i+j]
-				if d >= 'A' && d <= 'Z' {
-					d += 'a' - 'A'
-				}
-				if d != s[j] {
-					match = false
-					break
-				}
-			}
-			if match {
+			if matchFoldedAt(text, i, s) {
 				return true
 			}
 		}
+	}
+	return false
+}
+
+// matchFoldedAt matches needle s against text starting at i, folding ASCII case
+// and expanding each space in s to one or more whitespace bytes.
+func matchFoldedAt(text string, i int, s string) bool {
+	t := i
+	for j := 0; j < len(s); j++ {
+		if s[j] == ' ' {
+			n := 0
+			for t < len(text) && isASCIISpace(text[t]) {
+				t++
+				n++
+			}
+			if n == 0 {
+				return false
+			}
+			continue
+		}
+		if t >= len(text) {
+			return false
+		}
+		d := text[t]
+		if d >= 'A' && d <= 'Z' {
+			d += 'a' - 'A'
+		}
+		if d != s[j] {
+			return false
+		}
+		t++
+	}
+	return true
+}
+
+func isASCIISpace(c byte) bool {
+	switch c {
+	case ' ', '\t', '\n', '\r', '\v', '\f':
+		return true
 	}
 	return false
 }

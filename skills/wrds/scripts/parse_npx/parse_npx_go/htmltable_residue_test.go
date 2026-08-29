@@ -109,3 +109,42 @@ func TestHTMLTableMappingIsDeterministic(t *testing.T) {
 		}
 	}
 }
+
+// TestHTMLTableMappingDoesNotFloatIntoTheNextTable is the cost of the repeat
+// witness, and it lands on the exact failure the strict header test exists to
+// prevent.
+//
+// Accepting a candidate header because the same tuple RECURS is sound only if the
+// header actually governs rows. A tuple that repeats with nothing beneath it is
+// not a header -- it is a repeated label, a page banner, a column legend. If such
+// a mapping is accepted AND the table-boundary reset is relaxed, it survives
+// </table> and the next table's rows are read through a header belonging to a
+// different table entirely.
+//
+// The document below is constructed: a first table whose header tuple appears
+// twice with NO data rows under either, then a SECOND table whose rows share the
+// arity but whose own header is not recognisable. Nothing here should be parsed.
+// Emitting rows means the first table's mapping floated.
+func TestHTMLTableMappingDoesNotFloatIntoTheNextTable(t *testing.T) {
+	doc := "<SEC-DOCUMENT>0000000000-08-000002.txt : 20080630\n" +
+		"<SEC-HEADER>0000000000-08-000002.hdr.sgml : 20080630\n" +
+		"ACCESSION NUMBER:\t\t0000000000-08-000002\n" +
+		"CONFORMED SUBMISSION TYPE:\tN-PX\n" +
+		"CONFORMED PERIOD OF REPORT:\t20080630\n" +
+		"\tCOMPANY DATA:\n\t\tCENTRAL INDEX KEY:\t\t\t0000823535\n" +
+		"</SEC-HEADER>\n<DOCUMENT>\n<TYPE>N-PX\n<SEQUENCE>1\n<FILENAME>r.txt\n<TEXT>\n" +
+		"<TABLE>\n" +
+		htmlRow("Proposal No", "Proposal", "Proposed By", "Management Recommendation", "Vote Cast") +
+		htmlRow("Proposal No", "Proposal", "Proposed By", "Management Recommendation", "Vote Cast") +
+		"</TABLE>\n<TABLE>\n" +
+		htmlRow("Acme Industries", "037833100", "05/14/2008", "Annual", "17,500") +
+		htmlRow("Beta Holdings", "594918104", "06/02/2008", "Special", "9,250") +
+		"</TABLE>\n</TEXT>\n</DOCUMENT>\n"
+
+	rows := runISSNPXDoc(t, doc)
+	if len(rows) != 0 {
+		t.Fatalf("produced %d rows from a document whose only recognised header governs NO"+
+			" rows: the mapping floated past </table> and the second table's cells were read"+
+			" through it", len(rows))
+	}
+}

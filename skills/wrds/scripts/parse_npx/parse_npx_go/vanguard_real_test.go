@@ -229,6 +229,15 @@ var howVotedVocabulary = map[string]bool{
 	// not a parse defect -- 7,270 rows carry it in the revalidation run, each
 	// with a coherent description and management recommendation beside it.
 	"PROPORTIONAL": true, "NON-VOTING": true,
+	// "Voted - <choice>" is one registrant family's spelling of the vote cell:
+	// the prefix records THAT a ballot was cast and the suffix records how. It is
+	// the value the filing prints, and how_voted is verbatim by contract, so the
+	// vocabulary recognises the spelling rather than the parser rewriting it.
+	// Seen in testdata/htmltable/H5_unlabelled_item_col.txt and 129 corpus filings
+	// sharing that header shape.
+	"VOTED - FOR": true, "VOTED - AGAINST": true, "VOTED - ABSTAIN": true,
+	"VOTED - WITHHOLD": true, "VOTED - WITHHELD": true, "VOTED - NONE": true,
+	"VOTED": true, "NOT VOTED": true,
 }
 
 func isVoteValue(s string) bool {
