@@ -73,6 +73,7 @@ from config_obs import (
     FUND_SUMMARY2,
     L2_FAMILY_STOPWORDS,
     L3B_STRATEGY_STOPWORDS,
+    MFLINK1,
     NPX_CRSP_LINK,
     PARQUET_COMPRESSION,
 )
@@ -295,11 +296,20 @@ def update_in_place(kept_csv: Path) -> None:
           .select(new_fundno="crsp_fundno", new_flag="index_fund_flag",
                   new_tna="tna_latest")
           .unique(subset=["new_fundno"]))
+    # A fundno filled here must carry its wficn too -- wficn is how S12 holdings
+    # reach a fund, so a link without one is invisible downstream. Same declared
+    # tie-break as the main builder: 341 fundnos map to >1 wficn, and sorting
+    # before `unique` states the pick (lowest wficn) instead of inheriting row order.
+    mf = (pl.read_parquet(MFLINK1)
+          .sort(["crsp_fundno", "wficn"])
+          .unique(subset=["crsp_fundno"], keep="first", maintain_order=True)
+          .select(new_fundno="crsp_fundno", new_wficn="wficn"))
     add = (kept.join(sid2fno, on="series_ids", how="inner")
                .join(fs, on="new_fundno", how="left")
+               .join(mf, on="new_fundno", how="left")
                .unique(subset=["fundid"])
                .select("fundid", "series_ids", "new_fundno", "new_flag",
-                       "new_tna", new_tier=pl.col("match_tier")))
+                       "new_tna", "new_wficn", new_tier=pl.col("match_tier")))
     print(f"judged-correct links      : {kept.height:,}")
     print(f"of which reach a CRSP fund: {add.height:,}")
 
@@ -329,8 +339,17 @@ def update_in_place(kept_csv: Path) -> None:
         .then(pl.col("new_flag")).otherwise(pl.col("index_fund_flag")),
         tna_latest=pl.when(pl.col("eligible") & pl.col("tna_latest").is_null())
         .then(pl.col("new_tna")).otherwise(pl.col("tna_latest")),
+        # coalesce, never assign: a stored wficn from a sibling class of the same
+        # seriesid unit is the modal working as designed and must survive.
+        wficn=pl.coalesce(
+            pl.col("wficn"),
+            pl.when(pl.col("eligible")).then(pl.col("new_wficn")),
+        ),
     )
     n_new = int(out["eligible"].sum())
+    n_wficn = int(out.filter(pl.col("eligible") & pl.col("wficn").is_not_null()
+                             & pl.col("new_wficn").is_not_null()).height)
+    print(f"wficn filled on new links : {n_wficn:,}")
     gained = int(out.filter(pl.col("eligible"))["n_vote_rows"].sum())
     out = out.select(BASE_COLS).sort("fundid")
 
