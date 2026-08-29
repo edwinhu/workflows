@@ -78,6 +78,18 @@ proc sql;
     create index rdate_fundno on tfn_s12_subset(rdate, fundno);
 quit;
 
+/* --- wficn in this leg: S12-only, three jobs ---
+ * wficn appears here solely because the holdings source is S12. It (a) bridges
+ * S12 fundno to crsp_fundno so crsp.portnomap can supply index_fund_flag/et_flag,
+ * (b) forms the (wficn, rqdate, cusip8) dedup key, (c) supplies
+ * count(distinct wficn) as num_mf_owners. All three are available from
+ * crsp_portno if the source were crsp.holdings: that moves coverage from 87.33%
+ * to 93.54% of the 229,787,146 mutual-fund-universe N-PX vote rows and removes
+ * the 2017Q4-2020Q2 MFLINKS soft spot. Gating that switch: crsp.holdings' start
+ * date vs the 2003-07-01 panel start, plus a shares reconciliation between the
+ * two sources.
+ */
+
 /* --- Step 2: MFLINK portno mapping for this year range --- */
 proc sql;
     create table mflink_portno as
