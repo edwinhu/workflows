@@ -16,6 +16,7 @@ SUITES=(
   tests/npx_linking_name_vocab_test.py     # T4 match vocabulary
   tests/npx_linking_claim_check_test.py    # T5 one fundid per portno
   tests/npx_linking_coverage_report_test.py  # T6 exact reported apart from fuzzy
+  tests/npx_linking_matcher_test.py        # normalisation variants + accept bar
 )
 
 present=()
@@ -30,7 +31,11 @@ fi
 printf 'suites present: %d/%d\n' "${#present[@]}" "${#SUITES[@]}"
 
 if [ ${#present[@]} -gt 0 ]; then
-  uv run --with pandas --with pytest python3 -m pytest "${present[@]}" -q || exit 1
+  # sparse_dot_topn is built against numpy 1.x on conda-forge and PyPI alike,
+  # so the pin is not optional: without it the matcher suite cannot import.
+  uv run --with pandas --with pytest --with scikit-learn \
+         --with sparse_dot_topn --with "numpy<2" \
+         python3 -m pytest "${present[@]}" -q || exit 1
 fi
 
 # The gate is ALL SIX green. A subset passing is progress, not done -- otherwise
