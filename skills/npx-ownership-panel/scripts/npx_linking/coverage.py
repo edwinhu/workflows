@@ -58,11 +58,18 @@ _UNLINKED_STRS = sorted(x for x in UNLINKED_LABELS if x is not None)
 # alarm, not the rule — `_assert_tiers_classified` raises on any tier absent
 # from this vocabulary, so a new tier stops the run instead of being quietly
 # misclassified in either direction.
+# L3e's two tiers appear in BOTH lists on purpose: that stage resolves
+# fundid->seriesId (a match_tier event) and attaches the crsp_fundno in the same
+# pass (a crsp_match_tier event), so one row carries the same label in both
+# columns. They were added here after L3e shipped without them — the alarm below
+# would have fired on the very table the stage produced.
+_L3E_TIERS = ("header_name", "header_name_confirmed")
 LINKED_SERIESID_TIERS = ("iss_seriesid", "propagated", "cik_scoped_name",
-                         "inst_scoped_name", "crsp_name", "global_name")
+                         "inst_scoped_name", "crsp_name", "global_name",
+                         *_L3E_TIERS)
 LINKED_CRSP_TIERS = ("via_seriesid", "via_ticker", "via_l2_crsp_name",
                      "crsp_name_scoped", "crsp_name_global", "feeder_master_name",
-                     "digit_split_name", "via_sec_ticker")
+                     "digit_split_name", "via_sec_ticker", *_L3E_TIERS)
 KNOWN_TIERS = {"match_tier": frozenset(LINKED_SERIESID_TIERS) | UNLINKED_LABELS,
                "crsp_match_tier": frozenset(LINKED_CRSP_TIERS) | UNLINKED_LABELS}
 

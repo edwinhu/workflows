@@ -316,6 +316,14 @@ def update_in_place(kept_csv: Path) -> None:
         .otherwise(pl.col("crsp_fundno")),
         crsp_match_tier=pl.when(pl.col("eligible")).then(pl.col("new_tier"))
         .otherwise(pl.col("crsp_match_tier")),
+        # `match_tier` is the fundid->seriesId resolution and L3e PERFORMS one,
+        # so leaving it at `unresolved` while writing a seriesid publishes a row
+        # that contradicts itself. A downstream build asserted on exactly that
+        # pair ("a row labelled unresolved carries a seriesid") and refused the
+        # table; any consumer that did not assert would have silently counted
+        # 1,333 resolved funds as unresolved.
+        match_tier=pl.when(pl.col("eligible") & (pl.col("match_tier") == "unresolved"))
+        .then(pl.col("new_tier")).otherwise(pl.col("match_tier")),
         index_fund_flag=pl.when(pl.col("eligible")
                                 & pl.col("index_fund_flag").is_null())
         .then(pl.col("new_flag")).otherwise(pl.col("index_fund_flag")),
