@@ -46,6 +46,8 @@ Submission patterns and working array jobs: `references/edgar.md` (§ SGE index 
 
 - Tests go through the scheduler too: `qsub -t 1-1 submit.sh`. The login-node "quick test" is the run that flags the account — one file becomes 100K when the command changes, and 173K filings over NFS is not 30 seconds.
 - The quorum parser does not run on the login node and never did — it runs via `submit_quorum.sh`. Citing it as login-node precedent is an unverified claim presented as fact.
+- A `qsub` job is not automatically a parallel job. Measured 2026-08-29: six diagnostic scans over the 26,749-filing N-PX skip pile (63.5 GB) each ran as a single serial task, minutes apiece, because the submit script omitted `-t`. The same scans shard 50 ways with no other change.
+- A filing list staged in the login node's `/tmp` is invisible to grid nodes. Stage under `/scratch`; a job that opens it will fail with FileNotFoundError inside the task, not at submit time.
 - The `wrds_clean_filings` path convention is `cik_int.zfill(10)[:6]/{cik_int}/{accession}.txt` (see `references/edgar.md`). Hand-rolled path logic gets this wrong.
 - `scan_covers` profiles handle header extraction, body parsing, and custom extractors (`Custom` field type) — "this parser is different enough to need its own binary" has not yet been true once.
 
@@ -54,6 +56,7 @@ Submission patterns and working array jobs: `references/edgar.md` (§ SGE index 
 - **Write `ssh wrds '... | ./binary > output'`** → STOP. That's login-node compute. Write a submit script.
 - **Write `ssh wrds 'nohup ... &'`** → STOP. nohup doesn't change the node. Use qsub.
 - **Write `ssh wrds 'python3 ...'` for anything that reads >10 files** → STOP. Use qsub.
+- **Submit ONE qsub job that loops over the whole corpus** → STOP. Legal by the Iron Law and still wrong: a serial task over 26,749 filings is minutes of wall clock the grid would do in seconds. Shard it — `qsub -t 1-N` with each task striding the list. `scripts/array_scan.sh` wraps the pattern (stage the .py under /scratch, submit `-t 1-N -sync y`, cat the per-shard output in order).
 - **Skip reading `references/edgar.md` before building a new WRDS file parser** → STOP. The path conventions, SGE patterns, and existing parsers are already documented. Read them first.
 - **Create a new standalone Go binary for EDGAR extraction** → STOP. `scripts/scan_covers/` is a generic profile-based framework. Add a `profiles_*.go` file, not a new binary. The framework handles SGE sharding, path construction, concurrency, and form-type filtering.
 - **Build a new Go/Python parser without checking `scripts/scan_covers/`** → STOP. This framework exists precisely so you don't reinvent extraction infrastructure. Every standalone parser is technical debt that should have been a profile.
