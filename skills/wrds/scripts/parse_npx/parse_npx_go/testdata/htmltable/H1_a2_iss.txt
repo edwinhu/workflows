@@ -1,0 +1,216 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ MBrp7tFeA3wSnpf1AR6J1xWf9yCR5fuKef+NOhlZUDL46t/8/TDLQiAyUr4h9hby
+ GoDYDt/hfpCxZ0lBekWEwg==
+
+<SEC-DOCUMENT>0000035402-08-000190.txt : 20080826
+<SEC-HEADER>0000035402-08-000190.hdr.sgml : 20080826
+<ACCEPTANCE-DATETIME>20080826145656
+ACCESSION NUMBER:		0000035402-08-000190
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20080630
+FILED AS OF DATE:		20080826
+DATE AS OF CHANGE:		20080826
+EFFECTIVENESS DATE:		20080826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Variable Insurance Products Fund V
+		CENTRAL INDEX KEY:			0000823535
+		IRS NUMBER:				000000000
+		FISCAL YEAR END:			0731
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-05361
+		FILM NUMBER:		081039136
+
+	BUSINESS ADDRESS:	
+		STREET 1:		82 DEVONSHIRE ST
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02109
+		BUSINESS PHONE:		2142816361
+
+	MAIL ADDRESS:	
+		STREET 1:		82 DEVONSHIRE ST
+		STREET 2:		MAILZONE F7A
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02109
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	FIDELITY BOSTON STREET TRUST
+		DATE OF NAME CHANGE:	19951101
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	SPARTAN U S TREASURY MONEY MARKET FUND
+		DATE OF NAME CHANGE:	19920703
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	FIDELITY U S TREASURY MONEY MARKET FUND L P
+		DATE OF NAME CHANGE:	19900828
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000823535
+<SERIES-ID>S000017663
+<SERIES-NAME>Investor Freedom 2025 Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000048806
+<CLASS-CONTRACT-NAME>Investor Class
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>vipinvfr2025.htm
+<TEXT>
+<html>
+   <body><FONT size="2" face="arial">
+         <p align="center" style="font-weight: bold">FORM N-PX
+
+         </p>
+         <p align="center" style="font-weight: bold">ANNUAL REPORT OF PROXY VOTING RECORD OF						REGISTERED MANAGEMENT INVESTMENT COMPANY</p><br><br><p>INVESTMENT COMPANY ACT FILE NUMBER:							811-05361</p>
+         <p>EXACT NAME OF REGISTRANT AS SPECIFIED IN							CHARTER:							Variable Insurance Products Fund V</p>
+         <p>Fund Name:							VIP Investor Freedom 2025 Portfolio</p>
+         <p>82 DEVONSHIRE STREET, BOSTON, MA 02109							<br>							(ADDRESS OF PRINCIPAL EXECUTIVE OFFICES)							(ZIP CODE)
+         </p>
+         <p>SCOTT C.GOEBEL, SECRETARY, 82 DEVONSHIRE							STREET, BOSTON, MA 02109							<br>							(NAME AND ADDRESS OF AGENT FOR SERVICE)
+         </p>
+         <p>REGISTRANT'S TELEPHONE NUMBER, INCLUDING							AREA CODE: 617-563-7000</p>
+         <p>DATE OF FISCAL YEAR END:							DECEMBER 31</p>
+         <p>DATE OF REPORTING PERIOD:							06/30/2008</p>
+         <p align="center" style="font-weight: bold">SIGNATURES</p>
+         <p>PURSUANT TO THE REQUIREMENTS OF THE							INVESTMENT COMPANY ACT OF 1940, THE							REGISTRANT HAS DULY CAUSED THIS REPORT
+            TO BE							SIGNED ON ITS BEHALF BY THE UNDERSIGNED,							THERE UNTO DULY AUTHORIZED.
+         </p>
+         <p><br>Variable Insurance Products Fund V
+         </p>
+         <p><u>
+               								BY:&nbsp;&nbsp;/s/ JOHN R. HEBBLE*
+               							</u><br>
+            							JOHN R. HEBBLE, TREASURER
+            							<br>
+            							DATE:
+            							08/11/2008 02:42:28 PM
+         </p>
+         <p><u>*BY:&nbsp;&nbsp;/s/ CLAIRE S. WALPOLE</u><br>
+            							CLAIRE S. WALPOLE, VICE PRESIDENT, FIDELITY
+            							MANAGEMENT &amp; RESEARCH COMPANY, PURSUANT
+            							TO A POWER OF ATTORNEY DATED JUNE 11, 2008
+            							AND FILED HEREWITH.
+
+         </p>
+         <p align="center">VOTE SUMMARY REPORT						<br>VIP Investor Freedom 2025 Portfolio<br>07/01/2007-						06/30/2008<br></p>
+         <p align="left" style="font-style:italic;">Note: The Security ID will be the CUSIP								(Committee on Uniform Securities								Identification Procedures) when								available.
+            When CUSIP is not available,								an alternate identifier, e.g., CINS,								will be provided.
+         </p>
+         <table cellSpacing="0" width="100%" border="1" cellPadding="2">
+            <tr style="font-size:10pt;border:none;">
+               <th style="font-size:10pt;border:none;" width="10%">&nbsp;</th>
+               <th style="font-size:10pt;border:none;" width="55%">&nbsp;</th>
+               <th style="font-size:10pt;border:none;" width="15%">&nbsp;</th>
+               <th style="font-size:10pt;border:none;" width="10%">&nbsp;</th>
+               <th style="font-size:10pt;border:none;" width="10%">&nbsp;</th>
+            </tr>
+            <tr>
+               <td style="font-size:10pt;font-weight:bold;" colSpan="5">ISSUER NAME:							VIP CONTRAFUND PORTFOLIO<br>MEETING DATE:							05/14/2008
+               </td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt" align="left" colSpan="5">
+                  								TICKER:																		--
+                  																&nbsp;&nbsp;&nbsp;&nbsp;SECURITY ID:								922175773<br></td>
+            </tr>
+            <tr>
+               <th style="font-size:10pt" width="10%">Proposal No</th>
+               <th style="font-size:10pt" width="55%">Proposal</th>
+               <th style="font-size:10pt" width="15%">Proposed By</th>
+               <th style="font-size:10pt" width="10%">Management Recommendation</th>
+               <th style="font-size:10pt" width="10%">Vote Cast</th>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					1</td>
+               <td style="font-size:10pt">ELECT						JAMES C. CURVEY						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					2</td>
+               <td style="font-size:10pt">ELECT						DENNIS J. DIRKS						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					3</td>
+               <td style="font-size:10pt">ELECT						EDWARD C. JOHNSON 3D						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					4</td>
+               <td style="font-size:10pt">ELECT						ALAN J. LACY						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					5</td>
+               <td style="font-size:10pt">ELECT						NED C. LAUTENBACH						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					6</td>
+               <td style="font-size:10pt">ELECT						JOSEPH MAURIELLO						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					7</td>
+               <td style="font-size:10pt">ELECT						CORNELIA M. SMALL						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					8</td>
+               <td style="font-size:10pt">ELECT						WILLIAM S. STAVROPOULOS						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					9</td>
+               <td style="font-size:10pt">ELECT						DAVID M. THOMAS						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.					10</td>
+               <td style="font-size:10pt">ELECT						MICHAEL E. WILEY						AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Proportional</td>
+            </tr>
+</TABLE>
+</TEXT>
+</DOCUMENT>

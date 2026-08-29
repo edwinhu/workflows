@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"hash/fnv"
 	"sort"
@@ -17,11 +18,29 @@ import (
 
 // layoutEntry pairs a layout name with a cheap signature predicate over the head
 // of the normalized text and the parser that handles that grammar.
+//
+// ParseRaw is the alternative to Parse for a grammar whose structure normalization
+// destroys. stripHTML preserves WHERE the lines were, which is all a line-oriented
+// layout needs, but a <table> grammar's only record of which cell belongs to which
+// column is the markup itself. A layout setting ParseRaw receives the
+// charset-decoded bytes and is preferred over Parse; the two are never both used.
 type layoutEntry struct {
-	Name  string
-	Match func(head string) bool
-	Parse func(text string, meta FilingMeta) ([]VoteRow, error)
+	Name     string
+	Match    func(head string) bool
+	Parse    func(text string, meta FilingMeta) ([]VoteRow, error)
+	ParseRaw func(raw []byte, text string, meta FilingMeta) ([]VoteRow, error)
 }
+
+// errLayoutDeclined is returned by a layout that matched on its cheap signature
+// but, having read the body, cannot parse it. The registry then treats the entry
+// as no match and carries on, so the filing lands in parse_status=skip with a
+// body-derived signature rather than being parsed against a guess.
+//
+// This exists for htmltable, whose match test IS the header search: whether a
+// document prints an identifiable column header cannot be decided from the
+// stripped head, and a mis-mapped column on this population cannot be caught
+// downstream, so declining is the only safe answer.
+var errLayoutDeclined = errors.New("layout declined the body")
 
 // layoutRegistry is matched in order; the first hit wins.
 var layoutRegistry = []layoutEntry{
@@ -40,7 +59,24 @@ var layoutRegistry = []layoutEntry{
 		Match: matchBroadridge,
 		Parse: parseBroadridge,
 	},
+	// htmltable is LAST and must stay last: it is the generic fallback for the
+	// unclaimed HTML-table residue, and it offers itself to every body the named
+	// layouts declined. Ahead of any of them it would steal filings whose vendor
+	// grammar a specific parser reads better.
+	{
+		Name:     "htmltable",
+		Match:    matchHTMLTable,
+		ParseRaw: parseHTMLTableRaw,
+	},
 }
+
+// matchHTMLTable admits every body the named layouts declined. There is nothing
+// cheaper it could honestly test: the head it is handed has already had its
+// markup stripped, so the table this layout keys on is not visible here. The
+// real gate is parseHTMLTableRaw, which declines a body with no identifiable
+// header; the cheap bail for a document with no table markup at all lives there,
+// where the raw bytes are.
+func matchHTMLTable(string) bool { return true }
 
 // signatureHeadBytes bounds how much normalized text a signature predicate sees.
 // Signatures are banners and column headers, which live in the head; scanning a
@@ -215,7 +251,14 @@ func parseText(body []byte, meta FilingMeta) *ParseResult {
 			continue
 		}
 		res.Meta.Layout = entry.Name
-		rows, perr := runLayoutParser(entry, text, res.Meta)
+		rows, perr := runLayoutParser(entry, decoded, text, res.Meta)
+		if errors.Is(perr, errLayoutDeclined) {
+			// Not a parse failure: the layout read the body and found nothing it
+			// can key on. Unset the name so the filing keeps its body-derived
+			// skip signature and stays countable in the manifest.
+			res.Meta.Layout = ""
+			continue
+		}
 		if perr != nil {
 			res.Meta.ParseStatus = "error"
 			res.Meta.ErrorMsg = perr.Error()
@@ -300,13 +343,16 @@ func signatureBody(decoded []byte, normalized string) string {
 // runLayoutParser calls one registry entry's parser with a panic recovered into
 // an error, so a nil dereference deep in a layout is one bad manifest row rather
 // than a dead worker.
-func runLayoutParser(entry layoutEntry, text string, meta FilingMeta) (rows []VoteRow, err error) {
+func runLayoutParser(entry layoutEntry, raw []byte, text string, meta FilingMeta) (rows []VoteRow, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			rows = nil
 			err = fmt.Errorf("panic in layout %s: %v", entry.Name, r)
 		}
 	}()
+	if entry.ParseRaw != nil {
+		return entry.ParseRaw(raw, text, meta)
+	}
 	if entry.Parse == nil {
 		return nil, fmt.Errorf("layout %s has no parser", entry.Name)
 	}

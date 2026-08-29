@@ -455,6 +455,10 @@ func main() {
 	flag.StringVar(&outFile, "out", "", "votes output TSV, gzipped iff the path ends in .gz (required)")
 	flag.StringVar(&manifestFile, "manifest", "", "manifest output TSV, gzipped iff the path ends in .gz (required)")
 	flag.IntVar(&concurrency, "concurrency", runtime.NumCPU()*4, "worker goroutines")
+	flag.BoolVar(&issStripRegistrantPrefix, "issnpx-registrant-prefix-strip", true,
+		"issnpx: when a fund banner begins with the filing's own COMPANY CONFORMED NAME,"+
+			" retry the lookup with that prefix removed; -issnpx-registrant-prefix-strip=false"+
+			" disables it, which is the first step of the audit this rule requires")
 	flag.BoolVar(&showVersion, "version", false, "print version and exit")
 	flag.Parse()
 
