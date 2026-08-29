@@ -21,7 +21,15 @@ WRDS PostgreSQL reference for 13-F institutional holdings (S34) and mutual fund 
 |-------|-------------|-------|
 | `tfn.s12` (SAS) / `tr_mutualfunds.s12` (PG) | Fund-level stock holdings | fundno-rdate-cusip |
 
-**s12 fields:** `rdate`, `fdate`, `fundno`, `cusip`, `shares`, `fundname`
+**s12 fields:** `rdate`, `fdate`, `fundno`, `cusip`, `shares`, `fundname` — **no manager id**
+
+**`tfn.s12type5`** carries `fundno -> mgrcocd`, and `mgrcocd` IS the same identifier space as
+`s34names.mgrno` (all 1,667 distinct `mgrcocd` are in the `mgrno` set; of the 625 with a manager
+name, 625/625 agree with `s34names.mgrname` at a 15-char prefix, zero disagreeing). **This is the
+only wficn -> 13F path**, and it is the wall, not MFLINK — measured on a 229,787,146-row N-PX vote
+universe: the hop to `wficn` reaches 87.33%, but only **43.99%** survive `s12type5`. Reading the
+S12 field list above and concluding "wficn cannot reach 13F" is wrong; reading it and then
+investing in MFLINK coverage to reach 13F is also wrong.
 
 ### MFLINKS
 
@@ -29,10 +37,22 @@ WRDS PostgreSQL reference for 13-F institutional holdings (S34) and mutual fund 
 |-------|-------------|
 | `mfl.mflink1` | TFN fundno -> wficn -> CRSP crsp_fundno |
 | `mfl.mflink2` | TFN fundno -> wficn (with rdate alignment) |
+| `mfl.mflink3` | `ownercode`, `crsp_fundno`, `wficn` |
 
 **mflink1 fields:** `wficn`, `crsp_fundno`, `fundno`
 
 **mflink2 fields:** `wficn`, `fundno`, `rdate` (use this for date-aligned joins)
+
+**`wficn` exists in exactly nine tables** — `mfl.mflink1/2/3`, `mflinks_all.mflink1/2/3`,
+`mflinks_all_old.mflink1/2/3`. **`crsp.portnomap` does NOT carry `wficn`** (26 columns, verified
+against `information_schema`); a query selecting `portnomap.wficn` fails. There is **no
+`crsp_portno` -> `wficn` table anywhere** — that route must be synthesised through
+`fund_summary2`/`portnomap` on `crsp_fundno`, and doing so recovers only 0.052% of vote rows.
+
+**MFLINK stopped ingesting new funds ~2025Q1.** Max `first_offer_dt` among funds present is
+2025-02-21; by `first_offer_dt` year the in-MFLINK share runs 78.5% (2020), 48.5% (2022), 19.6%
+(2023), 9.6% (2024), **0.28% (2025), 0% (2026)**. Only 65.79% of `fund_summary2`'s 75,913 fundnos
+are in it at all. Any series built on `wficn` degrades annually from here.
 
 ### CRSP Mutual Fund Tables
 

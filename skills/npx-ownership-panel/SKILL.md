@@ -50,6 +50,21 @@ Legs 1, 2, 4 start together. **Leg 4 hard-gates leg 3** — the array hash-merge
 the crosswalk; without it every task opens a missing dataset and exits 0 having
 written nothing.
 
+**Which leg needs a fund link, and which does not.** Leg 2 (13F) answers *institutional ownership
+of a STOCK* and aggregates to `permno × quarter` — **no fund-level link is needed for it**, so
+work spent linking N-PX filers to 13F filers does not serve it. Leg 1 (S12) is what estimates
+*shares voted by index funds*, and that is the leg `wficn` serves. Route link work to leg 1.
+
+**`wficn` is in leg 1 only because the holdings come from S12.** Its three jobs are: bridge S12
+`fundno` → `crsp_fundno` for `crsp.portnomap`'s `index_fund_flag`/`et_flag`; act as the
+`(wficn, rqdate, cusip8)` dedup key; and supply `count(distinct wficn)` as `num_mf_owners`.
+`crsp_portno` can do all three — `portnomap` already carries both flags, dedup on `crsp_portno` is
+already the house rule, and `crsp.holdings` is keyed on it. Sourcing leg 1 from `crsp.holdings`
+drops `wficn`, `mflink1/2`, `mfl2` and `mfl3` from the chain and moves coverage from **87.33% to
+93.54%** of the 229,787,146-row vote universe. Before switching, check `crsp.holdings`' start date
+against the panel start (S12 reaches 1980; votes start 2003-07-01) and reconcile shares between the
+two sources — coverage parity with a shares disagreement is worse than the status quo.
+
 **Leg 2 has two sources for one quantity, and they are NOT interchangeable.**
 Thomson S34 decayed after 2013 and undercounts; the EDGAR scrape exists for that
 reason. EDGAR wins where present, S34 is fallback-only, **never blended**.
