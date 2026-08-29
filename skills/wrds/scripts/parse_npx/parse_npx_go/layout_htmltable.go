@@ -46,6 +46,15 @@ const (
 	htmlHeaderConfirm   = 3
 )
 
+// htmlMaxRepeatKeys bounds how many distinct header tuples the repeat scan will
+// track. Twenty column labels of up to htmlLabelMaxLen bytes is the widest key a
+// candidate can produce, so the map is bounded at roughly 1.6 MB on a document
+// engineered to defeat it -- and a real filing prints a handful of distinct
+// header shapes, not a thousand. Past the cap the scan stops learning NEW keys
+// and keeps counting the ones it has, which degrades toward the follow-row rule
+// rather than toward accepting anything.
+const htmlMaxRepeatKeys = 1024
+
 // htmlArityTolerance is how far a data row's cell count may drift from its
 // header's and still be that table's row. Filers merge and pad cells; two is
 // wide enough for that and narrow enough to exclude the one-cell block headings
@@ -75,10 +84,13 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 	}
 
 	feed := &htmlRowFeed{src: body}
+	repeats := &htmlHeaderRepeats{body: body}
 	var (
 		out         []VoteRow
 		mapping     map[string]int
 		headerArity int
+		carry       bool
+		sawData     bool
 		ctx         htmlContext
 		ctxSealed   bool
 	)
@@ -94,12 +106,39 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 		// table; letting a mapping outlive its table means the next table's rows
 		// are read through the previous table's columns, and its own header row --
 		// which this layout would otherwise never recognise -- is emitted as a vote.
+		//
+		// The ONE exception is a header htmlHasTableBelow confirmed by rows on the
+		// far side of this very boundary: a family of this grammar prints the
+		// column labels in a table of their own and the votes in the table
+		// beneath it. That licence is carried on the mapping itself (carry), is
+		// spent on the first boundary, and is void once the mapping has read a
+		// row. "The mapping has emitted nothing yet" is NOT a licence: a label
+		// that repeats with nothing under it emits nothing either, and letting it
+		// cross means the next table's cells are read through a header belonging
+		// to a different table -- an issuer in the description, a CUSIP in the
+		// proposer, a share count in how_voted, on funds no vendor covers.
 		if row.newTable {
-			mapping, headerArity = nil, 0
+			if carry && !sawData {
+				carry = false
+			} else {
+				mapping, headerArity, carry = nil, 0, false
+			}
 		}
 
-		if m, ok := htmlHeaderMapping(cells, feed, mapping != nil); ok {
-			mapping, headerArity = m, len(cells)
+		// The block heading printed between the two tables carries this block's
+		// meeting, and it belongs to no row's cells at all.
+		if row.pre != "" {
+			if next, labelled := htmlReadContext([]string{row.pre}); labelled {
+				if ctxSealed {
+					ctx = htmlContext{}
+					ctxSealed = false
+				}
+				ctx.merge(next)
+			}
+		}
+
+		if m, mayCarry, ok := htmlHeaderMapping(cells, feed, mapping != nil, repeats); ok {
+			mapping, headerArity, carry, sawData = m, len(cells), mayCarry, false
 			ctxSealed = true
 			continue
 		}
@@ -123,6 +162,7 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 		if mapping != nil && htmlComparableArity(len(cells), headerArity) {
 			if r, ok := htmlDataRow(cells, mapping, ctx); ok {
 				out = append(out, r)
+				sawData = true
 			}
 		}
 	}
@@ -160,9 +200,34 @@ type htmlRowFeed struct {
 // htmlFeedRow is one table row's decoded cells, plus whether a </table> closed a
 // table between the previous row and this one. Column identity does not survive
 // that boundary, so the reader has to see it.
+//
+// pre is the text of the markup BETWEEN the previous row and this row's own <tr>.
+// It is not furniture: one family of this grammar prints the block's issuer,
+// Security ID, ticker and meeting date in <div>s that sit outside every table,
+// between the table that carries the column labels and the table that carries the
+// votes. Dropping that text attaches the PREVIOUS block's meeting to this block's
+// votes, which on funds ISS Voting Analytics does not cover nothing downstream
+// can contradict.
 type htmlFeedRow struct {
 	cells    []string
+	pre      string
 	newTable bool
+}
+
+// htmlMaxPreBytes caps the inter-row markup read for block headings. A block
+// heading sits immediately above its table; a megabyte earlier is a cover page.
+// The tail is taken rather than the head, and cut at a line break so a tag split
+// down the middle cannot become text.
+const htmlMaxPreBytes = 1 << 16
+
+func htmlPreText(seg []byte) string {
+	if len(seg) > htmlMaxPreBytes {
+		seg = seg[len(seg)-htmlMaxPreBytes:]
+		if j := indexByteFrom(seg, 0, '\n'); j >= 0 {
+			seg = seg[j+1:]
+		}
+	}
+	return htmlCellText(seg)
 }
 
 func (f *htmlRowFeed) fill(n int) {
@@ -225,7 +290,11 @@ func (f *htmlRowFeed) scan() (htmlFeedRow, bool) {
 			f.pending = true
 		}
 	}
-	return htmlFeedRow{cells: htmlRowCells(seg[start:]), newTable: newTable}, true
+	return htmlFeedRow{
+		cells:    htmlRowCells(seg[start:]),
+		pre:      htmlPreText(seg[:start]),
+		newTable: newTable,
+	}, true
 }
 
 // htmlRowCells splits one row's markup on </td> and </th> and decodes each cell.
@@ -294,15 +363,153 @@ func htmlFlat(s string) string {
 // htmlHeaderMapping decides whether a row is a column header and, if so, which
 // schema field each column carries. Every condition is a rejection: a row is a
 // header only if it is label-shaped, carries no value, maps at least three
-// distinct fields including both the vote and the description, and has a table
-// under it.
+// distinct fields including both the vote and the description, and is CONFIRMED
+// by one of the three witnesses below.
 //
 // inTable says a header has already been confirmed for the table now open. The
-// arity confirmation is what proves a label-shaped row is not a caption, and it
-// is only needed to OPEN a table: inside one already proven, a row that passes
-// every other condition is this grammar's repeated header, and reading it as a
-// header is what stops it being emitted as a vote.
-func htmlHeaderMapping(cells []string, feed *htmlRowFeed, inTable bool) (map[string]int, bool) {
+// confirmation is what proves a label-shaped row is not a caption, and it is only
+// needed to OPEN a table: inside one already proven, a row that passes every
+// other condition is this grammar's repeated header, and reading it as a header
+// is what stops it being emitted as a vote.
+//
+// THE SECOND WITNESS, and why the first is not enough. Requiring three following
+// rows of comparable arity rejects a genuine header that has only ONE proposal
+// under it -- a written consent with a single item, which is an ordinary filing
+// shape and not a degenerate one. Dropping the follow-row rule to reach those
+// filings is not the fix: that rule is the only thing standing between a data row
+// and the header slot, and losing it reopens the mis-mapped-column failure this
+// whole layout is built around. A repeated tuple is STRICTER evidence, not
+// looser: a data row does not print itself verbatim twice, because its item
+// number, its description and its vote all change from row to row, while a per-
+// meeting grammar reprints its column labels character for character. So a
+// candidate is confirmed when the identical normalised header tuple occurs at
+// least twice in the document AND at least one of those occurrences has a
+// governed row under it in its own table, and every occurrence opens its own
+// block with its own meeting context. The governed-row half is what keeps the
+// witness honest: without it a tuple that recurs with nothing beneath it -- a
+// banner, a legend -- is accepted as a header for a document that prints no
+// rows it could possibly head.
+//
+// The witnesses are tried cheapest-first: the lookahead is bounded by
+// htmlHeaderLookahead rows, while the repeat scan costs one extra pass over the
+// body and is therefore asked last and only once per filing.
+//
+// carry reports that this header may outlive its own </table>. ONLY the
+// follow-row witness can grant it, and only when the rows that confirmed the
+// header were themselves found beyond that boundary. Repetition says a row is a
+// label rather than data; it says nothing about which table's rows that label
+// governs, so a repeat-confirmed header dies with its table like any other.
+func htmlHeaderMapping(cells []string, feed *htmlRowFeed, inTable bool, repeats *htmlHeaderRepeats) (mapping map[string]int, carry, ok bool) {
+	mapping, key, ok := htmlHeaderShape(cells)
+	if !ok {
+		return nil, false, false
+	}
+	var below, crossed bool
+	if !inTable {
+		below, crossed = htmlHasTableBelow(len(cells), feed)
+	}
+	if inTable || below || repeats.has(key) {
+		htmlAdoptUnlabelledItem(cells, mapping, feed)
+		return mapping, below && crossed, true
+	}
+	return nil, false, false
+}
+
+// htmlAdoptUnlabelledItem gives the item field to a header column that prints NO
+// label, when the rows beneath prove that column holds item numbers. 129 filings
+// print `<blank> | Proposal | Proposed by | Mgt. Position | Registrant Voted`,
+// where the item column is a narrow unlabelled gutter.
+//
+// The proof is required of the BLOCK, not of one row: every comparable row the
+// lookahead reaches must carry an item number there, and at least
+// htmlHeaderConfirm of them must exist. One stray row cannot hand the field away.
+// Nothing here moves another column -- the mapping stays positional and every
+// field already claimed keeps its index -- so the worst case of declining is a
+// blank item_seq, while the worst case of a shifted mapping is a filing of
+// plausible wrong rows on funds no vendor covers.
+func htmlAdoptUnlabelledItem(cells []string, mapping map[string]int, feed *htmlRowFeed) {
+	if _, taken := mapping[htmlFieldItem]; taken {
+		return
+	}
+	claimed := make(map[int]bool, len(mapping))
+	for _, i := range mapping {
+		claimed[i] = true
+	}
+	idx := -1
+	for i, c := range cells {
+		if claimed[i] || htmlFlat(c) != "" {
+			continue
+		}
+		if idx >= 0 {
+			// Two blank columns: which one is the item is a guess.
+			return
+		}
+		idx = i
+	}
+	if idx < 0 || !htmlItemColumnConfirmed(idx, len(cells), feed) {
+		return
+	}
+	mapping[htmlFieldItem] = idx
+}
+
+// htmlItemColumnConfirmed reports whether every comparable row under the header
+// prints an item number at idx, over at least htmlHeaderConfirm rows.
+func htmlItemColumnConfirmed(idx, arity int, feed *htmlRowFeed) bool {
+	seen, crossed := 0, false
+	for i := 0; i < htmlHeaderLookahead; i++ {
+		row, ok := feed.peek(i)
+		if !ok {
+			break
+		}
+		if row.newTable {
+			if seen > 0 || crossed {
+				break
+			}
+			crossed = true
+		}
+		if !htmlComparableArity(len(row.cells), arity) {
+			continue
+		}
+		if idx >= len(row.cells) || !htmlIsItemNumber(htmlFlat(row.cells[idx])) {
+			return false
+		}
+		seen++
+		if seen >= htmlHeaderConfirm {
+			return true
+		}
+	}
+	return false
+}
+
+// htmlIsItemNumber recognises the printed forms of a ballot item number -- "1",
+// "1.1", "10.12", "2a". It opens with a digit and carries nothing but digits,
+// dots and letters, which excludes a description, a proposer and a vote alike.
+func htmlIsItemNumber(s string) bool {
+	if s == "" || len(s) > htmlItemMaxLen || s[0] < '0' || s[0] > '9' {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		switch {
+		case c >= '0' && c <= '9', c == '.':
+		case c >= 'a' && c <= 'z', c >= 'A' && c <= 'Z':
+		default:
+			return false
+		}
+	}
+	return true
+}
+
+// htmlItemMaxLen bounds a printed item number. "10.12" is five bytes; a cell
+// longer than this is prose.
+const htmlItemMaxLen = 8
+
+// htmlHeaderShape applies every test that reads the candidate row ALONE, and
+// returns the field mapping together with the row's normalised tuple key. It is
+// deliberately separate from confirmation, because the repeat scan has to apply
+// exactly these tests to every row of the document and must not be able to drift
+// from what the main pass accepts.
+func htmlHeaderShape(cells []string) (map[string]int, string, bool) {
 	labels := 0
 	for _, c := range cells {
 		flat := htmlFlat(c)
@@ -311,38 +518,141 @@ func htmlHeaderMapping(cells []string, feed *htmlRowFeed, inTable bool) (map[str
 		}
 		if htmlIsNumeric(flat) {
 			// A bare number in a header row is a value, not a label.
-			return nil, false
+			return nil, "", false
 		}
 		if htmlLooksLikeValue(flat) {
-			return nil, false
+			return nil, "", false
 		}
 		labels++
 	}
 	if labels < htmlHeaderMinCells || labels > htmlHeaderMaxCells {
-		return nil, false
+		return nil, "", false
 	}
 
 	mapping := htmlMapFields(cells)
 	if len(mapping) < 3 {
-		return nil, false
+		return nil, "", false
 	}
 	if _, ok := mapping[htmlFieldVote]; !ok {
-		return nil, false
+		return nil, "", false
 	}
 	if _, ok := mapping[htmlFieldDesc]; !ok {
-		return nil, false
+		return nil, "", false
 	}
+	return mapping, htmlHeaderKey(cells), true
+}
 
-	if !inTable && !htmlHasTableBelow(len(cells), feed) {
-		return nil, false
+// htmlHeaderKey renders a candidate row as the tuple two occurrences must agree
+// on. It is built from htmlCanonLabel rather than the raw cells so that the same
+// header printed with different entity spellings, casing or camelCase is one
+// tuple -- the same folding that collapsed 3,073 raw header tuples to 95 field
+// sets. Empty cells are kept as empty positions: column COUNT and position are
+// part of the tuple's identity, and a row with a cell more is a different row.
+func htmlHeaderKey(cells []string) string {
+	labs := make([]string, len(cells))
+	for i, c := range cells {
+		labs[i] = htmlCanonLabel(c)
 	}
-	return mapping, true
+	return strings.Join(labs, "\x1f")
+}
+
+// htmlHeaderRepeats answers "does this header tuple occur more than once in this
+// document", computing the answer at most once per filing and only when a
+// candidate has already failed the follow-row test. Most filings never ask: they
+// either have a header with a real table under it, or no candidate at all. That
+// laziness is what keeps the cost of this witness off the 155 MB documents that
+// have nothing for it to find.
+type htmlHeaderRepeats struct {
+	body []byte
+	done bool
+	keys map[string]bool
+}
+
+func (r *htmlHeaderRepeats) has(key string) bool {
+	if !r.done {
+		r.done = true
+		r.keys = htmlScanRepeatedHeaders(r.body)
+	}
+	return r.keys[key]
+}
+
+// htmlScanRepeatedHeaders walks the body once more with a FRESH feed -- the main
+// pass's cursor has already moved and its lookahead buffer is live -- and returns
+// the set of shape-passing tuples that are printed at least twice AND govern a
+// row under at least one of those occurrences.
+//
+// Repetition alone is not enough. It proves a row is a LABEL rather than data,
+// which is what a one-proposal-per-meeting filing needs; it does not prove the
+// label heads a table. A tuple that recurs with nothing beneath any occurrence is
+// a page banner or a column legend, and accepting it hands a mapping to a
+// document that never printed a governed row -- the exact "confidently wrong
+// rows" outcome this layout declines filings to avoid.
+func htmlScanRepeatedHeaders(body []byte) map[string]bool {
+	feed := &htmlRowFeed{src: body}
+	counts := make(map[string]int)
+	governs := make(map[string]bool)
+	for {
+		row, ok := feed.next()
+		if !ok {
+			break
+		}
+		_, key, ok := htmlHeaderShape(row.cells)
+		if !ok {
+			continue
+		}
+		if _, known := counts[key]; !known && len(counts) >= htmlMaxRepeatKeys {
+			continue
+		}
+		counts[key]++
+		if !governs[key] && htmlGovernsARow(len(row.cells), feed) {
+			governs[key] = true
+		}
+	}
+	repeated := make(map[string]bool, len(counts))
+	for key, n := range counts {
+		if n >= 2 && governs[key] {
+			repeated[key] = true
+		}
+	}
+	return repeated
+}
+
+// htmlGovernsARow reports whether a governed row follows this occurrence inside
+// its OWN table: comparable arity, and not itself header-shaped.
+//
+// Both exclusions are load-bearing. Stopping at the boundary is what keeps the
+// witness from reaching into the next table for its evidence -- that is the same
+// leak read the other way round. Skipping header-shaped rows is what keeps the
+// second printing of a repeated banner from counting as the first's data: the
+// two have identical arity by construction, so without this a banner printed
+// twice in a row would witness itself.
+func htmlGovernsARow(arity int, feed *htmlRowFeed) bool {
+	for i := 0; i < htmlHeaderLookahead; i++ {
+		row, ok := feed.peek(i)
+		if !ok || row.newTable {
+			return false
+		}
+		if !htmlComparableArity(len(row.cells), arity) {
+			continue
+		}
+		if _, _, isHeader := htmlHeaderShape(row.cells); isHeader {
+			continue
+		}
+		return true
+	}
+	return false
 }
 
 // htmlHasTableBelow requires real rows under a candidate header. A label-like
 // row with nothing beneath it is a caption or a legend, and parsing the prose
 // after it as votes is exactly the failure this layout exists to avoid.
-func htmlHasTableBelow(arity int, feed *htmlRowFeed) bool {
+//
+// crossed reports that the confirming rows were found on the FAR side of a
+// </table>, which is the only circumstance in which a mapping may outlive the
+// table that declared it. Because the scan stops at a boundary once it has
+// counted a row, crossed=true means EVERY counted row sits beyond that one
+// boundary: the header's own table printed nothing.
+func htmlHasTableBelow(arity int, feed *htmlRowFeed) (found, crossed bool) {
 	seen := 0
 	for i := 0; i < htmlHeaderLookahead; i++ {
 		row, ok := feed.peek(i)
@@ -350,17 +660,24 @@ func htmlHasTableBelow(arity int, feed *htmlRowFeed) bool {
 			break
 		}
 		if row.newTable {
-			// Rows of the NEXT table are not this header's table.
-			break
+			// Rows of the NEXT table are not this header's table -- unless this
+			// header's table closed without printing one, which is how a family of
+			// this grammar lays out a vote record: the column labels in a table of
+			// their own, the votes in the table below the block heading. Exactly one
+			// such boundary is crossed, and only before any row has been counted.
+			if seen > 0 || crossed {
+				break
+			}
+			crossed = true
 		}
 		if htmlComparableArity(len(row.cells), arity) {
 			seen++
 			if seen >= htmlHeaderConfirm {
-				return true
+				return true, crossed
 			}
 		}
 	}
-	return false
+	return false, false
 }
 
 func htmlComparableArity(n, arity int) bool {
@@ -591,14 +908,24 @@ var htmlSynonyms = map[string][]string{
 		"PROPOSAL", "PROPOSALS", "DESCRIPTION", "MATTER", "MATTERS",
 		"BALLOT ISSUE", "AGENDA", "ITEM DESC", "ITEM DESCRIPTION",
 		"PROPOSAL DESCRIPTION", "MEETING AGENDA",
+		// "PROPOSAL TYPE" is the description column of the 81-filing
+		// `Proposal Type | Voted? | Vote | For/Agnst Mgmt` shape, which prints
+		// no other column naming what was voted on. Reading it as the PROPOSER
+		// left that shape one field short of the header test and skipped all 81.
+		"PROPOSAL TYPE",
 	},
 	htmlFieldBy: {
 		"PROPOSED BY", "PROPONENT", "PRPNENT", "SPONSOR", "AUTHOR",
-		"PROPOSAL TYPE",
 	},
 	htmlFieldMgmtRec: {
 		"MGT REC", "MGMT REC", "MANAGEMENT REC", "MANAGEMENT RECOMMENDATION",
 		"MGMT RECOMMENDATION", "REC", "RECOMMENDATION", "POSITION", "DEFAULT",
+		// MRV is this family's abbreviation for the management recommendation
+		// (423 filings print `Proposal # | Proposal | Vote | Author | MRV* | vs.
+		// Mgmt`). The trailing asterisk is a footnote marker: htmlCanonLabel
+		// folds it to a space, so "MRV*" arrives here as "MRV" and no separate
+		// starred entry is reachable.
+		"MRV",
 	},
 	htmlFieldVote: {
 		"VOTE CAST", "VOTES CAST", "REGISTRANT VOTED", "FUND VOTE", "HOW VOTED",
@@ -670,6 +997,11 @@ func htmlMapFields(cells []string) map[string]int {
 	canon := make([]string, len(cells))
 
 	for i, c := range cells {
+		if htmlIsGateLabel(c) {
+			// An empty canon label is skipped by the exact pass and by the
+			// word-sequence pass alike, so a gate column reaches no field at all.
+			continue
+		}
 		canon[i] = htmlCanonLabel(c)
 	}
 
@@ -713,6 +1045,26 @@ func htmlMapFields(cells []string) map[string]int {
 		}
 	}
 	return mapping
+}
+
+// htmlIsGateLabel reports whether a header cell asks a yes/no QUESTION about the
+// row rather than naming a value the row carries. `Voted?` is the case that
+// matters: 81 filings print `Proposal Type | Voted? | Vote | For/Agnst Mgmt`,
+// where that column answers WHETHER the fund cast a ballot -- its values are Yes
+// and No -- and the fund's actual vote sits in the NEXT column. The vanguard
+// layout already reads the same column as VoteOtherInfo rather than a vote.
+//
+// htmlCanonLabel folds punctuation away, so "Voted?" and "Voted" are one label by
+// the time the synonym table sees them; the question mark has to be read here,
+// before that. A gate column is mapped to NOTHING: if it claimed the vote field
+// every row of those filings would report how_voted = "Yes", a value the filing
+// never recorded, on funds ISS Voting Analytics does not cover -- so nothing
+// downstream could contradict it.
+//
+// Trailing footnote markers are stripped first: "Voted?*" is the same question.
+func htmlIsGateLabel(cell string) bool {
+	s := strings.TrimRight(htmlFlat(cell), "*†‡§ ")
+	return strings.HasSuffix(s, "?")
 }
 
 func htmlExactSynonym(lab string, syns []string) bool {
@@ -827,6 +1179,11 @@ var htmlContextLabels = []string{
 // reports whether the row carried any of the labels at all, which is what tells
 // a new meeting block apart from decorative furniture.
 func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
+	var (
+		above    string // the last unlabelled line seen
+		lead     string // the unlabelled line directly above the FIRST label
+		leadSeen bool
+	)
 	for _, cell := range cells {
 		for _, line := range strings.Split(cell, "\n") {
 			// The fold is hoisted out of the six-label loop: done inside it, every
@@ -839,7 +1196,13 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 			// while the meeting identity is corrupted. Labels FOLLOWING the first on
 			// the same line are still read: filers print two per line.
 			if !htmlHasLabelPrefix(up) {
+				if line != "" {
+					above = line
+				}
 				continue
+			}
+			if !leadSeen {
+				lead, leadSeen = above, true
 			}
 			for _, label := range htmlContextLabels {
 				v, ok := htmlLabelValue(line, up, label)
@@ -868,7 +1231,25 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 			}
 		}
 	}
+	// The issuer is the one field of a block heading this grammar often prints
+	// with no label of its own: `ABBOTT LABORATORIES` on the line above
+	// `Security ID: ... Ticker: ...`. It is read only when the block carried a
+	// label but no ISSUER NAME:, and only from the line DIRECTLY above the first
+	// label, so a paragraph elsewhere in the same chunk cannot supply it.
+	if labelled && ctx.Issuer == "" && htmlIsIssuerLine(lead) {
+		ctx.Issuer = htmlFlat(lead)
+	}
 	return ctx, labelled
+}
+
+// htmlIsIssuerLine reports whether an unlabelled line can be read as a block's
+// issuer. Anything value-shaped -- a date, a vote, a CUSIP, a signature
+// paragraph, anything longer than a column label -- is refused, leaving the
+// issuer blank. A blank issuer is a gap; a wrong one is a vote booked against a
+// company that never held the meeting.
+func htmlIsIssuerLine(s string) bool {
+	flat := htmlFlat(s)
+	return flat != "" && !htmlLooksLikeValue(flat)
 }
 
 // htmlHasLabelPrefix reports whether an already-folded line opens with one of
