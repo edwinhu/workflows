@@ -16,6 +16,9 @@ const (
 	// Blank lines tolerated between the header's physical lines. Bounded so a
 	// generic first line cannot pair with a distant continuation.
 	pvTextHeaderGapMax = 3
+	// How far past blanks and page furniture to look for the line that proves an
+	// unnumbered fragment is a continuation rather than the end of the table.
+	pvTextContinuationLookahead = 4
 )
 
 type pvTextMeeting struct {
@@ -273,8 +276,21 @@ func pvTextDescriptionContinuationAt(lines []string, i int) bool {
 	if i+1 >= len(lines) {
 		return false
 	}
-	next := strings.TrimSpace(lines[i+1])
-	if next == "" || pvTextPageFurniture(next) {
+	// Look PAST blanks and page furniture for the next real line. The last echo of a
+	// meeting is followed by a blank before the next meeting line, and stopping at
+	// that blank rejected the echo as a continuation -- which closed the table. The
+	// cost was severe and invisible: only the FIRST meeting of each section survived,
+	// so one filing yielded 8 issuers out of 2,681 meetings.
+	next := ""
+	for k := i + 1; k < len(lines) && k <= i+pvTextContinuationLookahead; k++ {
+		t := strings.TrimSpace(lines[k])
+		if t == "" || pvTextPageFurniture(t) {
+			continue
+		}
+		next = t
+		break
+	}
+	if next == "" {
 		return false
 	}
 	if _, ok := pvTextMeetingLine(next); ok {
