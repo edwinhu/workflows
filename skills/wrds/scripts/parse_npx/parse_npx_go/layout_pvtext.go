@@ -341,7 +341,10 @@ func pvTextDescriptionContinuationAt(lines []string, i int) bool {
 // the split; a line without both is not a meeting in this grammar.
 func pvTextMeetingLine(line string) (pvTextMeeting, bool) {
 	fields := strings.Fields(line)
-	if len(fields) < 5 {
+	// Three fields is the floor, not five: a single-word issuer with no ticker and no
+	// CUSIP prints `Accor  4/26/04  Special`. Requiring five declined it, which closed
+	// the table. The strict CUSIP/ticker path below does its own bounds checking.
+	if len(fields) < 3 {
 		return pvTextMeeting{}, false
 	}
 
@@ -363,7 +366,7 @@ func pvTextMeetingLine(line string) (pvTextMeeting, bool) {
 	}
 
 	cusip, tickerAt := "", n-4
-	if pvTextCUSIP(fields[n-3]) {
+	if n >= 4 && pvTextCUSIP(fields[n-3]) {
 		cusip = fields[n-3]
 	} else {
 		// No CUSIP column: the ticker sits directly before the date.
