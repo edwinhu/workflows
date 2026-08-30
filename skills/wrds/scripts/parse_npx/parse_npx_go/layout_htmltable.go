@@ -1304,6 +1304,7 @@ var htmlSynonyms = map[string][]string{
 	},
 	htmlFieldBy: {
 		"PROPOSED BY", "PROPONENT", "PRPNENT", "SPONSOR", "AUTHOR",
+		"PROPOSAL TYPE MGMT OR SHLDR",
 	},
 	htmlFieldMgmtRec: {
 		"MGT REC", "MGMT REC", "MGMT RECO", "MANAGEMENT REC", "MANAGEMENT RECOMMENDATION",
@@ -1320,7 +1321,7 @@ var htmlSynonyms = map[string][]string{
 		"VOTE", "CAST", "VOTED", "VOTE CASTS",
 	},
 	htmlFieldVsMgmt: {
-		"FOR/AGAINST MANAGEMENT", "FOR/AGNST MGMT", "WITH MGMT",
+		"FOR/AGAINST MANAGEMENT", "FOR/AGNST MGMT", "FOR/ AGNST MGMT", "WITH MGMT",
 		"FOR AGAINST MANAGEMENT", "WITH MANAGEMENT",
 	},
 	htmlFieldTicker: {"TICKER", "SYMBOL", "TICKER SYMBOL"},
@@ -1462,7 +1463,7 @@ func htmlMapFields(cells []string) map[string]int {
 // Trailing footnote markers are stripped first: "Voted?*" is the same question.
 func htmlIsGateLabel(cell string) bool {
 	s := strings.TrimRight(htmlFlat(cell), "*†‡§ ")
-	if strings.HasSuffix(s, "?") {
+	if strings.HasSuffix(s, "?") || htmlCanonLabel(s) == "VOTED YES OR NO" {
 		return true
 	}
 	label, letter, ok := htmlLetteredLabel(s)
