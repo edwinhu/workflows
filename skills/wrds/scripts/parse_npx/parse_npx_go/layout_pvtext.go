@@ -19,6 +19,8 @@ const (
 	// How far past blanks and page furniture to look for the line that proves an
 	// unnumbered fragment is a continuation rather than the end of the table.
 	pvTextContinuationLookahead = 8
+	// How many following lines a wrapped description may span before its columns.
+	pvTextWrapLookahead = 4
 )
 
 type pvTextMeeting struct {
@@ -161,15 +163,37 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 			// carry no complete vote of its own, and the next must carry the columns
 			// while beginning with no item number -- otherwise two adjacent ordinary
 			// items in the compact rendering would merge into one row.
-			if f := strings.Fields(line); len(f) > 0 && pvTextItem(f[0]) && i+1 < len(lines) {
-				next := strings.TrimSpace(lines[i+1])
-				if nf := strings.Fields(next); len(nf) > 0 && !pvTextItem(nf[0]) {
-					if row, ok := pvTextVoteLine(line+" "+next, meeting); ok {
+			if f := strings.Fields(line); len(f) > 0 && pvTextItem(f[0]) {
+				// The description may wrap over SEVERAL lines before the columns
+				// arrive, so join a bounded run rather than a single line:
+				//
+				//	1.00   Elect Dong Kil Cho, Marlene Davidge, William
+				//	       Davis, Richard Drouin, Lise Lachapelle, Gary
+				//	       Lukassen,                    MGMT   YES   AGNST
+				//
+				// Joining one line left this row unparsed, which closed the table and
+				// cost the rest of the document. The run stops at the first line that
+				// begins with an item number, so the next vote can never be absorbed.
+				joined, wrapped := line, false
+				for k := i + 1; k < len(lines) && k <= i+pvTextWrapLookahead; k++ {
+					nf := strings.Fields(strings.TrimSpace(lines[k]))
+					if len(nf) == 0 {
+						break
+					}
+					if pvTextItem(nf[0]) {
+						break
+					}
+					joined += " " + strings.TrimSpace(lines[k])
+					if row, ok := pvTextVoteLine(joined, meeting); ok {
 						rows = append(rows, row)
 						continuationRow = len(rows) - 1
-						i++ // the column line belongs to this row, never a row of its own
-						continue
+						i = k // every joined line belongs to this row
+						wrapped = true
+						break
 					}
+				}
+				if wrapped {
+					continue
 				}
 			}
 
@@ -346,7 +370,28 @@ func pvTextMeetingLine(line string) (pvTextMeeting, bool) {
 		tickerAt = n - 3
 	}
 	if tickerAt < 1 || !pvTextTicker(fields[tickerAt]) {
-		return pvTextMeeting{}, false
+		// Neither CUSIP nor ticker. Foreign issuers print only a name, a date and a
+		// meeting type: `3I Group PLC (formerly Investors In Industry)  7/9/03  Annual`.
+		// One filing of 16,259 vote lines yielded 70 rows because every one of its
+		// meetings looks like this and none was recognised.
+		//
+		// This is the loosest form the grammar takes, so it is anchored on a CLOSED
+		// meeting-type vocabulary rather than on shape alone. Surveyed over 30 filings,
+		// the word after the date is one of: Annual, AGM, Special, MIX, OGM, EGM,
+		// Specific, or a single letter A/S/B/C. The caller has already rejected
+		// item-numbered lines before this is reached.
+		if !pvTextMeetingType(fields[n-1]) {
+			return pvTextMeeting{}, false
+		}
+		issuer := strings.Join(fields[:n-2], " ")
+		if issuer == "" {
+			return pvTextMeeting{}, false
+		}
+		return pvTextMeeting{
+			issuer:      issuer,
+			meetingDate: date,
+			meetingType: fields[n-1],
+		}, true
 	}
 	issuer := strings.Join(fields[:tickerAt], " ")
 	if issuer == "" {
@@ -374,7 +419,14 @@ func pvTextVoteLine(line string, meeting pvTextMeeting) (VoteRow, bool) {
 	}
 
 	cast := strings.Join(rest, " ")
-	if !pvTextVote(strings.ToUpper(cast)) {
+	if cast == "" {
+		// Verbatim means verbatim: the filing printed no vote value here, so
+		// how_voted stays EMPTY rather than being filled with an inferred `NOT VOTED`.
+		// The row still records the proposal, its proponent and that it was reported.
+		if p+1 >= len(fields) || strings.ToUpper(fields[p+1]) != "NO" {
+			return VoteRow{}, false
+		}
+	} else if !pvTextVote(strings.ToUpper(cast)) {
 		return VoteRow{}, false
 	}
 
@@ -438,8 +490,17 @@ func pvTextVoteParts(fields []string) (int, []string, bool) {
 			}
 		}
 	}
-	if p < 1 || voteAt >= len(fields) {
+	// A row where the fund did NOT vote prints no vote value at all:
+	//	1.00   Receive Report of Management Board        MGMT   NO
+	// The proposal was reported and the fund declined to vote, so there is nothing in
+	// the vote column. Declining the line closed the table and cost the rest of the
+	// document; one filing of 16,259 vote lines returned 70 rows because most of its
+	// meetings are foreign proposals reported this way.
+	if p < 1 {
 		return 0, nil, false
+	}
+	if voteAt >= len(fields) {
+		return p, nil, true
 	}
 
 	rest := fields[voteAt:]
@@ -576,6 +637,18 @@ func pvTextPageFurniture(line string) bool {
 				return false
 			}
 		}
+		return true
+	}
+	return false
+}
+
+// pvTextMeetingType is the closed set of words this corpus prints after a meeting
+// date. It exists so the CUSIP-less, ticker-less form of a meeting line is anchored
+// on a vocabulary rather than on shape, which would otherwise admit prose.
+func pvTextMeetingType(s string) bool {
+	switch strings.ToUpper(strings.Trim(s, ".,")) {
+	case "ANNUAL", "SPECIAL", "AGM", "EGM", "OGM", "MIX", "SPECIFIC",
+		"COURT", "A", "S", "B", "C":
 		return true
 	}
 	return false
