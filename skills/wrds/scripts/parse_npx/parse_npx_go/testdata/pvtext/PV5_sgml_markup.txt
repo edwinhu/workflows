@@ -1,0 +1,119 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ To+6mxJG23MermsV2FysBlswlbvP9ZDiKRscTH7GeOdIagwNaf+GbvykCNXgvHaZ
+ gaEmmdRKiMXlo299X6MnPg==
+
+<SEC-DOCUMENT>0000928816-04-000799.txt : 20040830
+<SEC-HEADER>0000928816-04-000799.hdr.sgml : 20040830
+<ACCEPTANCE-DATETIME>20040830123524
+ACCESSION NUMBER:		0000928816-04-000799
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040830
+DATE AS OF CHANGE:		20040830
+EFFECTIVENESS DATE:		20040830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			GEORGE PUTNAM FUND OF BOSTON
+		CENTRAL INDEX KEY:			0000081259
+		IRS NUMBER:				046013677
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0731
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-00058
+		FILM NUMBER:		041004563
+
+	BUSINESS ADDRESS:	
+		STREET 1:		ONE POST OFFICE SQ
+		STREET 2:		MAILSTOP A 14
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02109
+		BUSINESS PHONE:		8002252581
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PUTNAM EQUITY INCOME FUND/NEW
+		DATE OF NAME CHANGE:	19940302
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PUTNAM GEORGE FUND OF BOSTON
+		DATE OF NAME CHANGE:	19920703
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>gpf1.txt
+<DESCRIPTION>THE GEORGE PUTNAM FUND OF BOSTON
+<TEXT>
+ISSUER NAME                                                TICKER    CUSIP     MTG DATE       MTG TYPE
+                                                                               Proposal Type  Voted?      Vote    For/Agnst Mgmt
+- --------------------------------------------------------------------------------------------------------------------------------
+<S>     <C>                                               <C>       <C>       <C>            <C>         <C>     <C>
+
+Abbott Laboratories                                        ABT       002824100 4/23/04        Annual
+1.10     Elect Director Roxanne S. Austin                                      MGMT           YES         FOR     FOR
+         Elect Director Roy S. Roberts
+1.11     Elect Director William D. Smithburg                                   MGMT           YES         FOR     FOR
+1.12     Elect Director John R. Walter                                         MGMT           YES         FOR     FOR
+1.13     Elect Director Miles D. White                                         MGMT           YES         FOR     FOR
+1.20     Elect Director H.Laurance Fuller                                      MGMT           YES         FOR     FOR
+1.30     Elect Director Richard A. Gonzalez                                    MGMT           YES         FOR     FOR
+1.40     Elect Director Jack M. Greenberg                                      MGMT           YES         FOR     FOR
+1.50     Elect Director Jeffrey M. Leiden                                      MGMT           YES         FOR     FOR
+1.60     Elect Director David A. Lord Owen                                     MGMT           YES         FOR     FOR
+1.70     Elect Director Boone Powell Jr.                                       MGMT           YES         FOR     FOR
+1.80     Elect Director Addison Barry Rand                                     MGMT           YES         FOR     FOR
+1.90     Elect Director W.Ann Reynolds                                         MGMT           YES         FOR     FOR
+2.00     Ratify Auditors                                                       MGMT           YES         FOR     FOR
+3.00     Drug Pricing                                                          SHLDR          YES         AGNST   FOR
+4.00     Report on Political Contributions/Activities                          SHLDR          YES         AGNST   FOR
+5.00     Prohibit Awards to Executives                                         SHLDR          YES         AGNST   FOR
+6.00     Report on Operational Imact of HIV/AIDS, TB,
+         and Malaria Pandemic                                                  SHLDR          YES         AGNST   FOR
+
+Abitibi Consolidated Inc.                                  A.                  4/29/04        Annual
+1.00     Elect Dong Kil Cho, Marlene Davidge, William Davis,
+         Richard Drouin, Lise Lachapelle, Gary Lukassen,                       MGMT           YES         AGNST   AGNST
+2.00     Appoint PricewaterhouseCoopers LLP as Auditors                        MGMT           YES         FOR     FOR
+
+Ace Ltd.                                                   ACE                 5/27/04        Annual
+1.10     Elect Director Brian Duperreault                                      MGMT           YES         FOR     FOR
+1.20     Elect Director Robert M. Hernandez                                    MGMT           YES         FOR     FOR
+1.30     Elect Director Peter Menikoff                                         MGMT           YES         FOR     FOR
+1.40     Elect Director Robert Ripp                                            MGMT           YES         FOR     FOR
+1.50     Elect Director Dermot F. Smurfit                                      MGMT           YES         FOR     FOR
+2.00     PROPOSAL TO APPROVE THE ACE LIMITED 2004
+         LONG-TERM INCENTIVE PLAN.                                             MGMT           YES         AGNST   AGNST
+3.00     PROPOSAL TO RATIFY THE APPOINTMENT OF PRICEWATERHOUSECOOPERS
+         LLP AS THE INDEPENDENT ACCOUNTANTS OF                                 MGMT           YES         FOR     FOR
+
+Alcoa Inc.                                                 AA        013817101 4/30/04        Annual
+1.10     Elect Director Alain J.P. Belda                                       MGMT           YES         FOR     FOR
+1.20     Elect Director Carlos Ghosn                                           MGMT           YES         FOR     FOR
+1.30     Elect Director Henry B. Schacht                                       MGMT           YES         FOR     FOR
+1.40     Elect Director Franklin A. Thomas                                     MGMT           YES         FOR     FOR
+2.00     Approve Omnibus Stock Plan                                            MGMT           YES         AGNST   AGNST
+3.00     Report on Pay Disparity                                               SHLDR          YES         AGNST   FOR
+4.00     Submit Severance Agreement (Change-in-Control) to Shareholder Vote    SHLDR          YES         FOR     AGNST
+
+Altria Group, Inc.                                         MO        02209S103 4/29/04        Annual
+1.10     Elect Director Elizabeth E. Bailey                                    MGMT           YES         FOR     FOR
+         Elect Director Stephen M. Wolf
+1.20     Elect Director Mathis Cabiallavetta                                   MGMT           YES         FOR     FOR
+1.30     Elect Director Louis C. Camilleri                                     MGMT           YES         FOR     FOR
+1.40     Elect Director J. Dudley Fishburn                                     MGMT           YES         FOR     FOR
+1.50     Elect Director Robert E. R. Huntley                                   MGMT           YES         FOR     FOR
+1.60     Elect Director Thomas W. Jones                                        MGMT           YES         FOR     FOR
+</TEXT>
+</DOCUMENT>
