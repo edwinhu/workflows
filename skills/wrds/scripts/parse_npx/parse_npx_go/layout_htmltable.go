@@ -68,31 +68,27 @@ const (
 	htmlHeaderMaxCells = 20
 )
 
-// htmlNilMaxCellTags and htmlNilMaxFilledCells are the two markup-density
-// ceilings a document must sit under before it may be called a nil report. Both
-// are counted on the RAW bytes by htmlRawCellCounts, so neither can be lowered by
-// this layout failing to cut a row.
-//
-// htmlNilMaxCellTags is the audit's own number: of the filings the previous rule
-// classified nil, 298 carried 60 or more cell tags, and every one of them was a
-// vote record. Sixty opening cell tags is far more markup than a registrant, an
-// address and a signature block need.
-//
-// htmlNilMaxFilledCells is derived, not chosen: the smallest table the header
-// test could ever accept is a header row plus htmlHeaderConfirm rows beneath it,
-// each carrying htmlHeaderMinCells cells of text. A document printing that many
-// filled cells anywhere has at least one table's worth of content in it, however
-// those cells are distributed across rows -- which is the point, because the
-// padded vertical record hides a real vote record in rows too narrow to count.
-const (
-	htmlNilMaxCellTags    = 60
-	htmlNilMaxFilledCells = (htmlHeaderConfirm + 1) * htmlHeaderMinCells
-)
+// htmlTableNilSentinels are affirmative no-vote statements seen in the SEC's
+// lettered Item 1 table. They are checked only in a short governed row and only
+// when no content-bearing row follows it, so a no-vote block cannot erase a real
+// vote table later in the same multi-fund filing.
+var htmlTableNilSentinels = []string{
+	"no proxies to report",
+	"no proxy votes to report",
+	"did not receive any proxies",
+	"no votes to report",
+	"did not vote any",
+	"no matters were voted",
+}
 
-// htmlLabelMaxLen caps how long a header cell may be. Real column labels are a
-// few words; the signature and agent-for-service paragraphs that fooled a loose
-// test are sentences.
-const htmlLabelMaxLen = 80
+// htmlLabelMaxLen caps how long an ordinary header cell may be. The SEC's own
+// lettered (h) wording is a full parenthetical instruction, so a cell carrying a
+// valid (a)-(i) prefix gets a separate bounded ceiling rather than weakening the
+// prose guard for every other table.
+const (
+	htmlLabelMaxLen         = 80
+	htmlLetteredLabelMaxLen = 256
+)
 
 // parseHTMLTableRaw walks the document's table rows over the charset-decoded
 // bytes. It returns errLayoutDeclined when no row qualifies as a header, which
@@ -114,6 +110,7 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 		sawData     bool
 		ctx         htmlContext
 		ctxSealed   bool
+		nilRow      bool
 	)
 
 	for {
@@ -122,6 +119,14 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 			break
 		}
 		cells := row.cells
+
+		// Once the filing has stated that this block held no votes, any later row
+		// carrying two values is enough to withdraw that conclusion. It may be a
+		// second fund's compact table; returning skip is safer than recording those
+		// votes as a successful zero-row filing.
+		if nilRow && htmlNonEmptyCells(cells) >= 2 {
+			nilRow = false
+		}
 
 		// A </table> ends the mapping with it. Column identity belongs to ONE
 		// table; letting a mapping outlive its table means the next table's rows
@@ -158,9 +163,19 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 			}
 		}
 
-		if m, mayCarry, ok := htmlHeaderMapping(cells, feed, mapping != nil, repeats); ok {
+		if m, mayCarry, ok := htmlHeaderMapping(cells, feed, repeats); ok {
 			mapping, headerArity, carry, sawData = m, len(cells), mayCarry, false
 			ctxSealed = true
+			continue
+		}
+		// A label-shaped row that lacks the required table beneath it is not data.
+		// Ignoring it is safer than emitting "Vote Cast" as a fund's actual vote.
+		if _, _, headerLike := htmlHeaderShape(cells); headerLike {
+			continue
+		}
+
+		if mapping != nil && htmlIsTableNilRow(cells) {
+			nilRow = true
 			continue
 		}
 
@@ -181,7 +196,7 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 		}
 
 		if mapping != nil && htmlComparableArity(len(cells), headerArity) {
-			if r, ok := htmlDataRow(cells, mapping, ctx); ok {
+			if r, ok := htmlDataRow(cells, mapping, headerArity, ctx); ok {
 				out = append(out, r)
 				sawData = true
 			}
@@ -189,120 +204,26 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 	}
 
 	if len(out) == 0 {
+		if nilRow {
+			return nil, errLayoutNoActivity
+		}
 		return nil, errLayoutDeclined
 	}
 	return out, nil
 }
 
-// htmlPrintsNoVoteTable reports whether an HTML document prints table markup but
-// nothing large enough to be a vote table. It is HALF of the nil-report test in
-// parseText; the other half is the absence of vote vocabulary, and neither half
-// decides alone.
+// htmlPrintsNoVoteTable recognises only the safest raw-markup form of a tableless
+// HTML body: it prints a <table> wrapper but no opening cell tag at all. Any cell
+// markup, even one short row, is evidence that the document may carry a compact or
+// unfamiliar vote record and therefore stays skip unless the filing itself states
+// that there were no votes.
 //
-// WHY BOTH HALVES. A grid scan of the 5,529 HTML documents still declining splits
-// them: 2,792 carry no vote vocabulary and no substantial table -- cover pages,
-// registrant and address and signature, the fund had nothing to vote. But ~300
-// carry no vocabulary and HUNDREDS of real vote rows, because their table has no
-// header row at all: the columns are positional and unlabelled, so there is no
-// "Vote Cast" or "CUSIP" anywhere to match. Classifying on vocabulary alone
-// declares those filings empty, which is the same silent loss as parsing a
-// mis-mapped column, only reported as success. The table's size is what
-// separates them.
-//
-// "Substantial" is deliberately the smallest shape the header test could ever
-// accept: htmlHeaderConfirm rows carrying htmlHeaderMinCells non-empty cells
-// each. A document that cannot even offer that has no table a vote could be
-// hiding in. Anything larger stays parse_status=skip, which is the honest status
-// for a table we cannot yet read.
-//
-// A document with NO table markup is not this function's population: reporting
-// false keeps every non-HTML skipped filing out of the rule entirely.
-//
-// The scan stops at the first row that carries the count over the threshold, so a
-// real vote filing costs a handful of rows rather than a pass over the body.
-//
-// THE ROW SCAN IS NOT ENOUGH ON ITS OWN, and the reason is the error this whole
-// function keeps making: every count below is a count of what THIS LAYOUT CAN
-// CUT, and a low count was read as a fact about the DOCUMENT. An audit of the
-// filings this rule classified nil found 298 carrying 60 or more cell tags --
-// substantial vote records called empty, and roughly 64,000 vote rows recorded as
-// ok/n_rows=0. They are vertical Roman-numeral records (`II. Exchange Ticker`,
-// `V. Brief Descriptions of Issues Proposed by the Management`) whose rows are
-// padded with empty cells, so no row is ever wide and the row scan sees nothing.
-// htmlRawCellCounts is the independent measurement: it counts cell tags on the
-// raw bytes, one cell at a time, and never asks whether a ROW can be cut.
+// This deliberately asks nothing of htmlRowFeed or htmlCellText. Three successive
+// defects came from treating a low parse yield as a fact about the document: first
+// unclosed cells, then padded narrow rows, then a genuinely short vote table.
 func htmlPrintsNoVoteTable(raw []byte) bool {
-	// A document dense in cell markup is not a cover page whatever this layout can
-	// make of it. Either ceiling alone would miss half the population: a filing can
-	// print thousands of cell tags of which few carry text (the padded vertical
-	// record), and a filing can print a whole table's worth of text in few tags.
-	tags, filled := htmlRawCellCounts(raw, htmlNilMaxCellTags, htmlNilMaxFilledCells)
-	if tags >= htmlNilMaxCellTags || filled >= htmlNilMaxFilledCells {
-		return false
-	}
-
 	body := htmlTableBody(raw)
-	if indexFrom(body, 0, "</tr>") < 0 {
-		return false
-	}
-	feed := &htmlRowFeed{src: body}
-	wide := 0
-	for {
-		row, ok := feed.next()
-		if !ok {
-			return true
-		}
-		// A row this splitter could not cut is not evidence of no table. An
-		// oversized cell drops the row whole, so an unusually long proposal
-		// description would otherwise turn its table invisible and record the
-		// filing ok/n_rows=0 -- votes gone, manifest claiming success. A
-		// document we cannot cut stays skip, which at least stays countable.
-		if row.uncut {
-			return false
-		}
-		if htmlNonEmptyCells(row.cells) < htmlHeaderMinCells {
-			continue
-		}
-		if wide++; wide >= htmlHeaderConfirm {
-			return false
-		}
-	}
-}
-
-// htmlRawCellCounts measures how much cell markup a document PRINTS: tags is the
-// number of <td>/<th> OPENING tags, filled the number of those whose content
-// decodes to something other than whitespace.
-//
-// It deliberately shares nothing with the row feed. The row feed answers "what
-// can this layout cut into columns", and every previous version of the nil rule
-// read a low answer to that question as "this document holds nothing" -- first on
-// cells the splitter could not cut, then on rows too narrow to be wide. This walks
-// cell boundaries alone: it never looks for a <tr>, so a record laid out one cell
-// per row, or padded with empty cells, counts exactly as much as a column table.
-//
-// Both counts stop at the caller's limits, so a substantial document costs a
-// bounded prefix of the body rather than a full pass. Cell contents are disjoint
-// slices of the body, so the decode work over a whole document is linear in it.
-func htmlRawCellCounts(raw []byte, tagStop, filledStop int) (tags, filled int) {
-	body := htmlTableBody(raw)
-	open := -1 // start of the open cell's content; -1 when no cell is open
-	closeCell := func(end int) {
-		if open < 0 || open > end {
-			open = -1
-			return
-		}
-		seg := body[open:end]
-		if len(seg) > htmlMaxCellBytes {
-			// An oversized cell is not truncated into a value anywhere else in this
-			// layout, but here the only question asked of it is "is it blank", and a
-			// megabyte of leading content answers that.
-			seg = seg[:htmlMaxCellBytes]
-		}
-		if htmlCellText(seg) != "" {
-			filled++
-		}
-		open = -1
-	}
+	sawTable := false
 	for i := 0; i < len(body); {
 		j := indexByteFrom(body, i, '<')
 		if j < 0 {
@@ -310,8 +231,6 @@ func htmlRawCellCounts(raw []byte, tagStop, filledStop int) (tags, filled int) {
 		}
 		name, after, ok := tagName(body, j, 0)
 		if !ok {
-			// A bare '<' that opens no tag is literal text, and belongs to whatever
-			// cell is open around it.
 			i = j + 1
 			continue
 		}
@@ -319,27 +238,18 @@ func htmlRawCellCounts(raw []byte, tagStop, filledStop int) (tags, filled int) {
 		if end < 0 {
 			break
 		}
-		closing := body[j+1] == '/'
-		cell := name == "td" || name == "th"
-		// A cell's content ends at the next cell tag either way -- HTML5's own rule
-		// is that an opening cell tag implicitly closes the one before it, and
-		// legacy EDGAR markup routinely omits the terminator. It also ends at the
-		// row or table that closes around it, so inter-row prose cannot be read as
-		// the content of a cell nobody closed.
-		if cell || (closing && (name == "tr" || name == "table")) {
-			closeCell(j)
-		}
-		if cell && !closing {
-			tags++
-			open = end + 1
-		}
-		if tags >= tagStop || filled >= filledStop {
-			return tags, filled
+		closing := j+1 < len(body) && body[j+1] == '/'
+		if !closing {
+			switch name {
+			case "table":
+				sawTable = true
+			case "td", "th":
+				return false
+			}
 		}
 		i = end + 1
 	}
-	closeCell(len(body))
-	return tags, filled
+	return sawTable
 }
 
 // htmlNonEmptyCells counts the cells carrying text. Emptiness is judged AFTER
@@ -353,6 +263,16 @@ func htmlNonEmptyCells(cells []string) int {
 		}
 	}
 	return n
+}
+
+// htmlIsTableNilRow recognises an explicit no-vote statement only when it is the
+// substance of a short governed row. A phrase buried in a wide row may describe
+// one security among real votes and cannot decide the filing.
+func htmlIsTableNilRow(cells []string) bool {
+	if htmlNonEmptyCells(cells) > 2 {
+		return false
+	}
+	return containsAnyFolded(strings.Join(cells, " "), htmlTableNilSentinels)
 }
 
 // htmlTableBody cuts the SGML envelope off the front so the header block cannot
@@ -627,59 +547,24 @@ func htmlFlat(s string) string {
 // Header identification
 // ---------------------------------------------------------------------------
 
-// htmlHeaderMapping decides whether a row is a column header and, if so, which
-// schema field each column carries. Every condition is a rejection: a row is a
-// header only if it is label-shaped, carries no value, maps at least three
-// distinct fields including both the vote and the description, and is CONFIRMED
-// by one of the three witnesses below.
+// htmlHeaderMapping accepts a row only when its shape passes every value and
+// field guard and the document supplies three confirming rows: either directly
+// beneath this occurrence or collectively beneath repeated identical headers.
+// An already-open table is not a witness by itself.
 //
-// inTable says a header has already been confirmed for the table now open. The
-// confirmation is what proves a label-shaped row is not a caption, and it is only
-// needed to OPEN a table: inside one already proven, a row that passes every
-// other condition is this grammar's repeated header, and reading it as a header
-// is what stops it being emitted as a vote.
-//
-// THE SECOND WITNESS, and why the first is not enough. Requiring three following
-// rows of comparable arity rejects a genuine header that has only ONE proposal
-// under it -- a written consent with a single item, which is an ordinary filing
-// shape and not a degenerate one. Dropping the follow-row rule to reach those
-// filings is not the fix: that rule is the only thing standing between a data row
-// and the header slot, and losing it reopens the mis-mapped-column failure this
-// whole layout is built around. A repeated tuple is STRICTER evidence, not
-// looser: a data row does not print itself verbatim twice, because its item
-// number, its description and its vote all change from row to row, while a per-
-// meeting grammar reprints its column labels character for character. So a
-// candidate is confirmed when the identical normalised header tuple occurs at
-// least twice in the document AND at least one of those occurrences has a
-// governed row under it in its own table, and every occurrence opens its own
-// block with its own meeting context. The governed-row half is what keeps the
-// witness honest: without it a tuple that recurs with nothing beneath it -- a
-// banner, a legend -- is accepted as a header for a document that prints no
-// rows it could possibly head.
-//
-// The witnesses are tried cheapest-first: the lookahead is bounded by
-// htmlHeaderLookahead rows, while the repeat scan costs one extra pass over the
-// body and is therefore asked last and only once per filing.
-//
-// carry reports that this header may outlive its own </table>. ONLY the
-// follow-row witness can grant it, and only when the rows that confirmed the
-// header were themselves found beyond that boundary. Repetition says a row is a
-// label rather than data; it says nothing about which table's rows that label
-// governs, so a repeat-confirmed header dies with its table like any other.
-func htmlHeaderMapping(cells []string, feed *htmlRowFeed, inTable bool, repeats *htmlHeaderRepeats) (mapping map[string]int, carry, ok bool) {
+// carry reports that all direct confirming rows were found across the one table
+// boundary the supported split-table grammar permits. Repetition never grants it.
+func htmlHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHeaderRepeats) (mapping map[string]int, carry, ok bool) {
 	mapping, key, ok := htmlHeaderShape(cells)
 	if !ok {
 		return nil, false, false
 	}
-	var below, crossed bool
-	if !inTable {
-		below, crossed = htmlHasTableBelow(len(cells), feed)
+	below, crossed := htmlHasTableBelow(len(cells), feed)
+	if !below && !repeats.has(key) {
+		return nil, false, false
 	}
-	if inTable || below || repeats.has(key) {
-		htmlAdoptUnlabelledItem(cells, mapping, feed)
-		return mapping, below && crossed, true
-	}
-	return nil, false, false
+	htmlAdoptUnlabelledItem(cells, mapping, feed)
+	return mapping, below && crossed, true
 }
 
 // htmlAdoptUnlabelledItem gives the item field to a header column that prints NO
@@ -787,7 +672,11 @@ func htmlHeaderShape(cells []string) (map[string]int, string, bool) {
 			// A bare number in a header row is a value, not a label.
 			return nil, "", false
 		}
-		if htmlLooksLikeValue(flat) {
+		valueText, maxLen := flat, htmlLabelMaxLen
+		if label, _, lettered := htmlLetteredLabel(flat); lettered {
+			valueText, maxLen = label, htmlLetteredLabelMaxLen
+		}
+		if htmlLooksLikeValueLimit(valueText, maxLen) {
 			return nil, "", false
 		}
 		labels++
@@ -843,21 +732,14 @@ func (r *htmlHeaderRepeats) has(key string) bool {
 	return r.keys[key]
 }
 
-// htmlScanRepeatedHeaders walks the body once more with a FRESH feed -- the main
-// pass's cursor has already moved and its lookahead buffer is live -- and returns
-// the set of shape-passing tuples that are printed at least twice AND govern a
-// row under at least one of those occurrences.
-//
-// Repetition alone is not enough. It proves a row is a LABEL rather than data,
-// which is what a one-proposal-per-meeting filing needs; it does not prove the
-// label heads a table. A tuple that recurs with nothing beneath any occurrence is
-// a page banner or a column legend, and accepting it hands a mapping to a
-// document that never printed a governed row -- the exact "confidently wrong
-// rows" outcome this layout declines filings to avoid.
+// htmlScanRepeatedHeaders walks the body once more with a fresh feed and returns
+// shape-passing tuples printed at least twice with at least htmlHeaderConfirm
+// governed rows across their occurrences. Repetition alone is not evidence: a
+// repeated banner contributes zero governed rows and is rejected.
 func htmlScanRepeatedHeaders(body []byte) map[string]bool {
 	feed := &htmlRowFeed{src: body}
 	counts := make(map[string]int)
-	governs := make(map[string]bool)
+	governed := make(map[string]int)
 	for {
 		row, ok := feed.next()
 		if !ok {
@@ -871,43 +753,40 @@ func htmlScanRepeatedHeaders(body []byte) map[string]bool {
 			continue
 		}
 		counts[key]++
-		if !governs[key] && htmlGovernsARow(len(row.cells), feed) {
-			governs[key] = true
+		if governed[key] < htmlHeaderConfirm {
+			governed[key] += htmlGovernedRowCount(len(row.cells), feed,
+				htmlHeaderConfirm-governed[key])
 		}
 	}
 	repeated := make(map[string]bool, len(counts))
 	for key, n := range counts {
-		if n >= 2 && governs[key] {
+		if n >= 2 && governed[key] >= htmlHeaderConfirm {
 			repeated[key] = true
 		}
 	}
 	return repeated
 }
 
-// htmlGovernsARow reports whether a governed row follows this occurrence inside
-// its OWN table: comparable arity, and not itself header-shaped.
-//
-// Both exclusions are load-bearing. Stopping at the boundary is what keeps the
-// witness from reaching into the next table for its evidence -- that is the same
-// leak read the other way round. Skipping header-shaped rows is what keeps the
-// second printing of a repeated banner from counting as the first's data: the
-// two have identical arity by construction, so without this a banner printed
-// twice in a row would witness itself.
-func htmlGovernsARow(arity int, feed *htmlRowFeed) bool {
-	for i := 0; i < htmlHeaderLookahead; i++ {
+// htmlGovernedRowCount counts comparable non-header rows following one repeated
+// header occurrence inside its own table, up to need. Counts accumulate across
+// occurrences, so three one-proposal meetings supply the same amount of evidence
+// as three rows beneath one header; a repeated banner with no data supplies none.
+func htmlGovernedRowCount(arity int, feed *htmlRowFeed, need int) int {
+	seen := 0
+	for i := 0; i < htmlHeaderLookahead && seen < need; i++ {
 		row, ok := feed.peek(i)
 		if !ok || row.newTable {
-			return false
+			break
 		}
 		if !htmlComparableArity(len(row.cells), arity) {
 			continue
 		}
 		if _, _, isHeader := htmlHeaderShape(row.cells); isHeader {
-			continue
+			break
 		}
-		return true
+		seen++
 	}
-	return false
+	return seen
 }
 
 // htmlHasTableBelow requires real rows under a candidate header. A label-like
@@ -936,6 +815,9 @@ func htmlHasTableBelow(arity int, feed *htmlRowFeed) (found, crossed bool) {
 				break
 			}
 			crossed = true
+		}
+		if _, _, isHeader := htmlHeaderShape(row.cells); isHeader {
+			break
 		}
 		if htmlComparableArity(len(row.cells), arity) {
 			seen++
@@ -1054,7 +936,11 @@ func htmlValueCanon(s string) string {
 
 // htmlLooksLikeValue reports whether a cell carries a datum rather than a label.
 func htmlLooksLikeValue(flat string) bool {
-	if len(flat) > htmlLabelMaxLen {
+	return htmlLooksLikeValueLimit(flat, htmlLabelMaxLen)
+}
+
+func htmlLooksLikeValueLimit(flat string, maxLen int) bool {
+	if len(flat) > maxLen {
 		return true
 	}
 	if htmlIsVoteValue(flat) {
@@ -1075,25 +961,29 @@ func htmlLooksLikeValue(flat string) bool {
 	return htmlHasMonthNameDate(fields)
 }
 
-// htmlIsCUSIP reports whether a token has the shape of a security identifier:
-// nine alphanumerics carrying at least one digit. That is the token that turned
-// `TMB | CUSIP 87974D100 | Voted` into a false header.
+// htmlIsCUSIP recognises both the nine-character identifier and the printed
+// 6-2-1 form (002824-10-0). Either is a value and disqualifies a header cell.
 func htmlIsCUSIP(tok string) bool {
-	if len(tok) != 9 {
-		return false
-	}
-	digits := 0
+	digits, chars := 0, 0
 	for i := 0; i < len(tok); i++ {
 		c := tok[i]
+		if c == '-' {
+			if len(tok) != 11 || (i != 6 && i != 9) {
+				return false
+			}
+			continue
+		}
 		switch {
 		case c >= '0' && c <= '9':
 			digits++
+			chars++
 		case c >= 'A' && c <= 'Z', c >= 'a' && c <= 'z':
+			chars++
 		default:
 			return false
 		}
 	}
-	return digits > 0
+	return chars == 9 && digits > 0 && (len(tok) == 9 || len(tok) == 11)
 }
 
 // htmlIsNumericDate recognises 5/14/08, 05-14-2008 and 2008.05.14.
@@ -1270,10 +1160,20 @@ func htmlMapFields(cells []string) map[string]int {
 			continue
 		}
 		canon[i] = htmlCanonLabel(c)
+
+		// In the SEC's lettered Item 1 wording, column (f) is named "Proposal
+		// Type" but carries MGMT/SHOLDER -- the source of the proposal. Outside
+		// that fixed wording, "Proposal Type" remains the description synonym
+		// needed by the unlettered four-column family.
+		if label, letter, ok := htmlLetteredLabel(c); ok && letter == 'f' &&
+			htmlContainsWords(htmlCanonLabel(label), "PROPOSAL TYPE") {
+			mapping[htmlFieldBy] = i
+			claimed[i] = true
+		}
 	}
 
 	for i, lab := range canon {
-		if lab == "" {
+		if lab == "" || claimed[i] {
 			continue
 		}
 		for _, field := range htmlFieldOrder {
@@ -1331,7 +1231,11 @@ func htmlMapFields(cells []string) map[string]int {
 // Trailing footnote markers are stripped first: "Voted?*" is the same question.
 func htmlIsGateLabel(cell string) bool {
 	s := strings.TrimRight(htmlFlat(cell), "*†‡§ ")
-	return strings.HasSuffix(s, "?")
+	if strings.HasSuffix(s, "?") {
+		return true
+	}
+	label, letter, ok := htmlLetteredLabel(s)
+	return ok && letter == 'g' && htmlCanonLabel(label) == "VOTED"
 }
 
 func htmlExactSynonym(lab string, syns []string) bool {
@@ -1364,11 +1268,30 @@ func htmlContainsWords(lab, sub string) bool {
 	return false
 }
 
-// htmlCanonLabel renders a header cell as a comparable label: camelCase split so
-// "VoteCast" reads as "Vote Cast", uppercased, and punctuation other than '/'
-// and '#' folded to a space. '/' survives because "For/Against Management" is a
-// real column and '#' because it is the item column of a whole format family.
+// htmlLetteredLabel removes the SEC Item 1 prefix from a printed label and
+// returns its letter. The prefix is evidence about the label -- notably (g)
+// Voted is a gate -- but is not itself part of any synonym.
+func htmlLetteredLabel(s string) (label string, letter byte, ok bool) {
+	s = htmlFlat(s)
+	if len(s) < 3 || s[0] != '(' || s[2] != ')' {
+		return s, 0, false
+	}
+	letter = lowerASCII(s[1])
+	if letter < 'a' || letter > 'i' {
+		return s, 0, false
+	}
+	return strings.TrimSpace(s[3:]), letter, true
+}
+
+// htmlCanonLabel renders a header cell as a comparable label: the SEC's
+// lettered prefix removed, camelCase split so "VoteCast" reads as "Vote Cast",
+// uppercased, and punctuation other than '/' and '#' folded to a space. '/'
+// survives because "For/Against Management" is a real column and '#' because it
+// is the item column of a whole format family.
 func htmlCanonLabel(s string) string {
+	if label, _, ok := htmlLetteredLabel(s); ok {
+		s = label
+	}
 	s = htmlSplitCamel(htmlFlat(s))
 	var b strings.Builder
 	b.Grow(len(s))
@@ -1603,7 +1526,18 @@ func htmlDate(s string) string {
 	if d := brDate(s); d != "" {
 		return d
 	}
-	return issDate(s)
+	if d := issDate(s); d != "" {
+		return d
+	}
+	// The SEC lettered table prefixes the date with the meeting type, e.g.
+	// "Annual; 07/10/2012". Only a suffix that independently parses as a date
+	// is accepted; the prefix is never guessed through.
+	if i := strings.LastIndexByte(s, ';'); i >= 0 {
+		if d := brDate(strings.TrimSpace(s[i+1:])); d != "" {
+			return d
+		}
+	}
+	return ""
 }
 
 // htmlDataRow renders one table row through the header's column mapping. Cells
@@ -1611,10 +1545,25 @@ func htmlDate(s string) string {
 // reading the raw markup. A row carrying no vote is table furniture -- a spacer
 // or a subtotal -- and emitting it as a vote record would put a non-vote into
 // the how_voted column.
-func htmlDataRow(cells []string, mapping map[string]int, ctx htmlContext) (VoteRow, bool) {
+func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx htmlContext) (VoteRow, bool) {
+	// Some lettered tables prepend an unlabelled item number to only the first
+	// row. The shift is decided per row: applying one block-wide offset would fix
+	// that row by corrupting every later row whose arity matches the header.
+	offset := 0
+	leadingItem := ""
+	if len(cells) == headerArity+1 {
+		if v := htmlFlat(cells[0]); htmlIsItemNumber(v) {
+			offset, leadingItem = 1, v
+		}
+	}
+
 	at := func(field string) string {
 		i, ok := mapping[field]
-		if !ok || i >= len(cells) {
+		if !ok {
+			return ""
+		}
+		i += offset
+		if i >= len(cells) {
 			return ""
 		}
 		return htmlFlat(cells[i])
@@ -1625,6 +1574,9 @@ func htmlDataRow(cells []string, mapping map[string]int, ctx htmlContext) (VoteR
 		return VoteRow{}, false
 	}
 	item, desc := at(htmlFieldItem), at(htmlFieldDesc)
+	if item == "" {
+		item = leadingItem
+	}
 	if item == "" && desc == "" {
 		return VoteRow{}, false
 	}

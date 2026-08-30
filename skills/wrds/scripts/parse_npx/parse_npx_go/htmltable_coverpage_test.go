@@ -140,3 +140,27 @@ func TestHTMLDenseMarkupIsNotNil(t *testing.T) {
 			" about this layout, not about the document; a filing we cannot read must stay skip.")
 	}
 }
+
+// TestHTMLSparseVoteTableIsNotNil is the THIRD instance of one error, found by
+// codex review after two rounds already fixed the other two. The nil predicate
+// requires fewer than three wide rows and fewer than twelve filled cells; a small
+// fund with a genuinely short vote record -- one meeting, a couple of proposals --
+// satisfies both and is recorded ok/n_rows=0.
+//
+// The first instance counted cells the splitter could cut, the second counted
+// non-empty wide rows, this one counts total filled cells. All three read "this
+// layout extracted little" as "the document holds little", and a small fund with
+// few votes is exactly the filing this parser exists to recover: ISS Voting
+// Analytics does not cover it, so nothing downstream will notice it went missing.
+func TestHTMLSparseVoteTableIsNotNil(t *testing.T) {
+	doc := htmlDoc(
+		htmlRow("Elect Directors", "MGMT", "For", "For") +
+			htmlRow("Ratify Auditors", "MGMT", "For", "For"))
+
+	rows, status := runISSNPXDocStatus(t, doc)
+	if status == "ok" && len(rows) == 0 {
+		t.Fatalf("declared a nil report on a filing carrying two real vote rows. A short vote" +
+			" record is not an absent one, and a small fund with few votes is precisely the" +
+			" filing this layout exists to recover.")
+	}
+}

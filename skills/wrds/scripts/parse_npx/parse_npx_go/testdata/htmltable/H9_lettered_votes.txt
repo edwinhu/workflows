@@ -1,0 +1,365 @@
+<SEC-DOCUMENT>0000910472-13-003293.txt : 20130822
+<SEC-HEADER>0000910472-13-003293.hdr.sgml : 20130822
+<ACCEPTANCE-DATETIME>20130822120823
+ACCESSION NUMBER:		0000910472-13-003293
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20130630
+FILED AS OF DATE:		20130822
+DATE AS OF CHANGE:		20130822
+EFFECTIVENESS DATE:		20130822
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Dunham Funds
+		CENTRAL INDEX KEY:			0001420040
+		IRS NUMBER:				000000000
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22153
+		FILM NUMBER:		131054552
+
+	BUSINESS ADDRESS:	
+		STREET 1:		10251 VISTA SORRENTO PARKWAY
+		STREET 2:		SUITE 200
+		CITY:			SAN DIEGO
+		STATE:			CA
+		ZIP:			92121
+		BUSINESS PHONE:		858-964-0500
+
+	MAIL ADDRESS:	
+		STREET 1:		10251 VISTA SORRENTO PARKWAY
+		STREET 2:		SUITE 200
+		CITY:			SAN DIEGO
+		STATE:			CA
+		ZIP:			92121
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001420040
+<SERIES-ID>S000020971
+<SERIES-NAME>Dunham Real Estate Stock Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059508
+<CLASS-CONTRACT-NAME>Dunham Real Estate Stock Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>DAREX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059509
+<CLASS-CONTRACT-NAME>Dunham Real Estate Stock Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>DCREX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059510
+<CLASS-CONTRACT-NAME>Dunham Real Estate Stock Fund Class N
+<CLASS-CONTRACT-TICKER-SYMBOL>DNREX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001420040
+<SERIES-ID>S000020972
+<SERIES-NAME>Dunham Large Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059511
+<CLASS-CONTRACT-NAME>Dunham Large Cap Value Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>DALVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059512
+<CLASS-CONTRACT-NAME>Dunham Large Cap Value Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>DCLVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059513
+<CLASS-CONTRACT-NAME>Dunham Large Cap Value Fund Class N
+<CLASS-CONTRACT-TICKER-SYMBOL>DNLVX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001420040
+<SERIES-ID>S000020973
+<SERIES-NAME>Dunham Small Cap Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059514
+<CLASS-CONTRACT-NAME>Dunham Small Cap Growth Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>DADGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059515
+<CLASS-CONTRACT-NAME>Dunham Small Cap Growth Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>DCDGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059516
+<CLASS-CONTRACT-NAME>Dunham Small Cap Growth Fund Class N
+<CLASS-CONTRACT-TICKER-SYMBOL>DNDGX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001420040
+<SERIES-ID>S000020975
+<SERIES-NAME>Dunham Appreciation & Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059520
+<CLASS-CONTRACT-NAME>Dunham Appreciation & Income Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>DAAIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059521
+<CLASS-CONTRACT-NAME>Dunham Appreciation & Income Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>DCAIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059522
+<CLASS-CONTRACT-NAME>Dunham Appreciation & Income Fund Class N
+<CLASS-CONTRACT-TICKER-SYMBOL>DNAIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001420040
+<SERIES-ID>S000020976
+<SERIES-NAME>Dunham Corporate/Government Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059523
+<CLASS-CONTRACT-NAME>Dunham Corporate/Government Bond Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>DACGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059524
+<CLASS-CONTRACT-NAME>Dunham Corporate/Government Bond Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>DCCGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059525
+<CLASS-CONTRACT-NAME>Dunham Corporate/Government Bond Fund Class N
+<CLASS-CONTRACT-TICKER-SYMBOL>DNCGX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>dunhamnpx2.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<!doctype html public "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>GemCom, LLC</TITLE>
+<META NAME="author" CONTENT="NDeMarco">
+<META NAME="date" CONTENT="06/28/2012">
+</HEAD>
+<BODY style="margin-top:0;font-family:Times New Roman; font-size:10pt; color:#000000">
+<P style="line-height:12.05pt; margin:0px; padding-right:-48px; text-indent:486px; font-family:Swis721 BT,Times New Roman; font-size:9pt" align="right"><B>OMB Number: 3235-0582</B></P>
+<P style="line-height:12.05pt; margin:0px; padding-right:-48px; text-indent:486px; font-family:Swis721 BT,Times New Roman; font-size:9pt" align="right"><B>Expires: January 31, 2015</B></P>
+<P style="line-height:12.05pt; margin:0px; padding-right:-48px; text-indent:486px; font-family:Swis721 BT,Times New Roman; font-size:9pt" align="right"><B>Estimated average burden</B></P>
+<P style="margin:0px; padding-right:-48px; text-indent:486px; font-size:9pt" align="right"><B>hours per response&#133;7.2</B></P>
+<P style="margin:0px"><BR></P>
+<P style="margin:0px"><BR></P>
+<P style="margin:0px; font-size:12pt" align=center>UNITED STATES</P>
+<P style="margin:0px; font-size:12pt" align=center>SECURITIES AND EXCHANGE COMMISSION</P>
+<P style="margin:0px; font-size:12pt" align=center>Washington, DC 20549</P>
+<P style="margin:0px"><BR></P>
+<P style="margin:0px; font-size:12pt" align=center>FORM N-PX</P>
+<P style="margin:0px"><BR></P>
+<P style="margin:0px"><BR></P>
+<P style="margin:0px; padding-left:-72px; padding-right:-96px; font-size:12pt" align=center>ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT COMPANY</P>
+<P style="margin:0px"><BR></P>
+<P style="margin:0px; padding-left:-56px; font-size:12pt">Investment Company Act file number: &nbsp;811-22153</P>
+<P style="margin:0px"><BR></P>
+<P style="margin:0px; clear:left" align=center>&nbsp;</P>
+<P style="margin:0px; font-size:12pt"><BR></P>
+<div style="border-bottom-style: solid; border-bottom-width: 1px; padding-bottom: 1px">
+<P style="margin:0px; font-size:12pt" align=center>DUNHAM FUNDS</P>
+</div>
+<P style="margin:0px; font-size:12pt" align=center>(Exact name of registrant as specified in charter)</P>
+<P style="margin:0px; font-size:12pt" align=center>&nbsp;</P>
+<P style="margin:0px; padding-left:-56px; padding-bottom:4px; font-size:12pt; border-bottom:1px solid #000000" align=center>10251 Vista Sorrento Parkway, Suite 200, San Diego, CA 92121</P>
+<P style="margin:0px; font-size:12pt" align=center>(Address of principal
+executive offices)&nbsp;&nbsp; (Zip code)</P>
+<P style="margin:0px; clear:left" align=center>&nbsp;</P>
+<P style="margin:0px; clear:left" align=center>&nbsp;</P>
+<P style="margin:0px; clear:left" align=center><BR></P>
+<P style="margin:0px; padding-left:-56px; font-size:12pt" align=center>James Ash, Esq.</P>
+<P style="margin:0px; padding-left:-56px; font-size:12pt" align=center>Gemini Fund Services, LLC</P>
+<P style="margin:0px; padding-left:-56px; font-size:12pt" align=center><U>80 Arkay Drive, Suite 110, Hauppauge, NY 11788</U></P>
+<P style="margin:0px; padding-left:-56px; font-size:12pt" align=center>(Name and address of agent for service)</P>
+<P style="margin:0px" align=center><BR></P>
+<P style="margin:0px; padding-left:-56px; font-size:12pt">Registrant's telephone number, including area code: &nbsp;1-800-442-4358</P>
+<P style="margin:0px"><BR></P>
+<P style="margin:0px; padding-left:-56px; font-size:12pt">Date of fiscal year end: &nbsp;October 31</P>
+<P style="margin:0px"><BR></P>
+<P style="margin:0px; padding-left:-56px; font-size:12pt">Date of reporting period: &nbsp;July 1, 2012 &#150; June 30, 2013 <BR>
+<BR>
+<BR></P>
+<TABLE style="margin-top:0px; font-size:10pt" cellpadding=0 cellspacing=0><TR height=0 style="font-size:0">
+	<TD width=26 /><TD width=316 /><TD width=54 /><TD width=69 />
+	<TD width=129 /><TD width=942 /><TD width=82 /><TD width=60 />
+	<TD width=127 /><TD width=72 /></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=1536 colspan=6><P style="margin:0px; font-size:8pt"><B><U>Registrant: Dunham Funds - Dunham Small Cap Growth Fund &nbsp;</U></B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=60><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=127><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=72><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=594 colspan=5><P style="margin:0px; font-size:8pt"><B>Investment Company Act file number: &nbsp;811-22153</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=942><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=60><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=127><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=72><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=594 colspan=5><P style="margin:0px; font-size:8pt"><B>Reporting Period: July 1, 2012 through June 30, 2013</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=942><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=60><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=127><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=72><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=26><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=316><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=54><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=69><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=129><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=942><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=60><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=127><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=72><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px; border:1px solid #000000" valign=bottom width=2113 colspan=10><P style="margin:0px; font-size:8pt" align=center><B><U>ITEM 1- PROXY VOTING RECORD </U></B></P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" width=24 height="62"><P style="margin:0px; font-size:8pt" align=center>&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" width=315 height="62"><P style="margin:0px; font-size:8pt" align=center><B>(a) Issuer's Name</B></P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" width=53 height="62"><P style="margin:0px; font-size:8pt" align=center><B>(b) Exchange Ticker Symbol</B></P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" width=68 height="62"><P style="margin:0px; font-size:8pt"><B>(c)&quot;CUSIP&quot; #</B></P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" width=128 height="62"><P style="margin:0px; font-size:8pt" align=center><B>(d) Shareholder Meeting Date</B></P>
+</TD>
+	<TD style="margin-top:0px; border-bottom:1px solid #000000" width=942 height="62"><P style="margin:0px; font-size:8pt" align=center><B>(e) Matter Identification</B></P>
+</TD>
+	<TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" width=80 height="62"><P style="margin:0px; font-size:8pt" align=center><B>(f) Proposal Type (by issuer or shareholder)</B></P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" width=59 height="62"><P style="margin:0px; font-size:8pt" align=center><B>(g) Voted</B></P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" width=126 height="62"><P style="margin:0px; font-size:8pt" align=center><B>(h) How was vote cast (for or against proposal, or abstain; for or withhold regarding election of directors)</B></P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" width=71 height="62"><P style="margin:0px; font-size:8pt" align=center><B>(i) Was Vote For or Against Management</B></P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=24><P style="margin:0px; font-size:8pt" align=right>1</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=315><P style="margin:0px; font-size:8pt">
+	FRANCESCA'S HOLDINGS CORPORATION </P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=53><P style="margin:0px; font-size:8pt" align=center>FRAN
+	&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=68><P style="margin:0px; font-size:8pt">351793104</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=128><P style="margin:0px; font-size:8pt" align=center>Annual; 07/10/2012</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=941><P style="margin:0px; font-size:8pt">1. &nbsp;&nbsp;DIRECTOR &nbsp;PATRICIA BENDER </P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=81><P style="margin:0px; font-size:8pt" align=center>MGMT</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=59><P style="margin:0px; font-size:8pt" align=center>Y</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=126><P style="margin:0px; font-size:8pt" align=center>For</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=71><P style="margin:0px; font-size:8pt" align=center>For</P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=24><P style="margin:0px; font-size:8pt">&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=top width=315><P style="margin:0px; font-size:8pt">
+	FRANCESCA'S HOLDINGS CORPORATION </P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=top width=53><P style="margin:0px; font-size:8pt" align=center>FRAN
+	&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=top width=68><P style="margin:0px; font-size:8pt">351793104</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=top width=128><P style="margin:0px; font-size:8pt" align=center>Annual; 07/10/2012</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=top width=941><P style="margin:0px; font-size:8pt">2. &nbsp;&nbsp;&nbsp;&nbsp;THE RATIFICATION OF THE APPOINTMENT OF ERNST &amp; YOUNG LLP (E&amp;Y) AS THE COMPANY'S INDEPENDENT REGISTERED PUBLIC ACCOUNTING FIRM FOR THE FISCAL YEAR ENDING FEBRUARY 2, 2013. </P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=top width=81><P style="margin:0px; font-size:8pt" align=center>MGMT</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=top width=59><P style="margin:0px; font-size:8pt" align=center>Y</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=top width=126><P style="margin:0px; font-size:8pt" align=center>For</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=top width=71><P style="margin:0px; font-size:8pt" align=center>For</P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=24><P style="margin:0px; font-size:8pt">&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=315><P style="margin:0px; font-size:8pt">
+	FRANCESCA'S HOLDINGS CORPORATION </P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=53><P style="margin:0px; font-size:8pt" align=center>FRAN
+	&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=68><P style="margin:0px; font-size:8pt">351793104</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=128><P style="margin:0px; font-size:8pt" align=center>Annual; 07/10/2012</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=941><P style="margin:0px; font-size:8pt">3. &nbsp;&nbsp;&nbsp;&nbsp;ADVISORY VOTE TO APPROVE THE COMPANY'S EXECUTIVE COMPENSATION. </P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=81><P style="margin:0px; font-size:8pt" align=center>MGMT</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=59><P style="margin:0px; font-size:8pt" align=center>Y</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=126><P style="margin:0px; font-size:8pt" align=center>For</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=71><P style="margin:0px; font-size:8pt" align=center>For</P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=24><P style="margin:0px; font-size:8pt">&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=315><P style="margin:0px; font-size:8pt">
+	FRANCESCA'S HOLDINGS CORPORATION </P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=53><P style="margin:0px; font-size:8pt" align=center>FRAN
+	&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=68><P style="margin:0px; font-size:8pt">351793104</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=128><P style="margin:0px; font-size:8pt" align=center>Annual; 07/10/2012</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=941><P style="margin:0px; font-size:8pt">4. &nbsp;&nbsp;&nbsp;&nbsp;ADVISORY VOTE ON THE FREQUENCY OF FUTURE ADVISORY VOTES TO APPROVE EXECUTIVE COMPENSATION. </P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=81><P style="margin:0px; font-size:8pt" align=center>MGMT</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=59><P style="margin:0px; font-size:8pt" align=center>Y</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=126><P style="margin:0px; font-size:8pt" align=center>1 Year</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=71><P style="margin:0px; font-size:8pt" align=center>Against</P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=24><P style="margin:0px; font-size:8pt" align=right>2</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=315><P style="margin:0px; font-size:8pt">ULTRATECH,
+	INC. </P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=53><P style="margin:0px; font-size:8pt" align=center>UTEK
+	&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=68><P style="margin:0px; font-size:8pt">904034105</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=128><P style="margin:0px; font-size:8pt" align=center>Annual; 07/17/2012</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=941><P style="margin:0px; font-size:8pt">1. &nbsp;&nbsp;DIRECTOR &nbsp;ARTHUR W. ZAFIROPOULO </P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=81><P style="margin:0px; font-size:8pt" align=center>MGMT</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=59><P style="margin:0px; font-size:8pt" align=center>Y</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=126><P style="margin:0px; font-size:8pt" align=center>For</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=71><P style="margin:0px; font-size:8pt" align=center>For</P>
+</TD></TR>
+</TABLE>
+</TEXT>
+</DOCUMENT>
