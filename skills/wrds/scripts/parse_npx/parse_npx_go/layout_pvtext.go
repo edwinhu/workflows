@@ -475,7 +475,7 @@ func pvTextVoteLine(line string, meeting pvTextMeeting) (VoteRow, bool) {
 // the right. Multi-word vote values and an optional trailing vs-management field
 // make fixed offsets ambiguous. The latter is not a manifest column.
 func pvTextVoteParts(fields []string) (int, []string, bool) {
-	if len(fields) < 5 || !pvTextItem(fields[0]) {
+	if len(fields) < 5 || !pvTextItemLoose(fields[0]) {
 		return 0, nil, false
 	}
 
@@ -675,4 +675,38 @@ func pvTextMeetingType(s string) bool {
 		return true
 	}
 	return false
+}
+
+// pvTextItemLoose accepts the item-number forms pvTextItem rejects. Surveyed over 30
+// filings, the corpus prints N.NN 116,005 times but also bare integers 22,738 times,
+// plus N.N (565) and N.NNN (73). A bare `1  Approve name change MGMT YES FOR FOR` was
+// declined, and a declined line closes the table, so one such item cost the rest of
+// its document.
+//
+// It is used ONLY by pvTextVoteParts, where the rest of the line must independently
+// parse as a proponent, a voted flag and a vote value. Widening pvTextItem itself was
+// tried and REVERTED: the strict form also gates the continuation guard and the wrap
+// boundaries, and loosening it there sent one real slice from 1,370 rows to 214 while
+// pushing another to 981 rows against 691 item lines -- inventing rows. The fixtures
+// passed throughout; only the real slices showed it.
+func pvTextItemLoose(s string) bool {
+	if s == "" || len(s) > 8 {
+		return false
+	}
+	dot := strings.IndexByte(s, '.')
+	if dot == 0 || dot == len(s)-1 {
+		return false
+	}
+	if dot > 0 && len(s)-dot-1 > 3 {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		if i == dot {
+			continue
+		}
+		if s[i] < '0' || s[i] > '9' {
+			return false
+		}
+	}
+	return true
 }
