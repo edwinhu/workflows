@@ -1,0 +1,547 @@
+<SEC-DOCUMENT>0001162044-13-000880.txt : 20130805
+<SEC-HEADER>0001162044-13-000880.hdr.sgml : 20130805
+<ACCEPTANCE-DATETIME>20130805120640
+ACCESSION NUMBER:		0001162044-13-000880
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20130630
+FILED AS OF DATE:		20130805
+DATE AS OF CHANGE:		20130805
+EFFECTIVENESS DATE:		20130805
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			STAAR INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0001011996
+		IRS NUMBER:				256537257
+		STATE OF INCORPORATION:			PA
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-09152
+		FILM NUMBER:		131009329
+
+	BUSINESS ADDRESS:	
+		STREET 1:		604 MCKNIGHT PARK DR
+		CITY:			PITTSBURGH
+		STATE:			PA
+		ZIP:			15237
+		BUSINESS PHONE:		4123679076
+
+	MAIL ADDRESS:	
+		STREET 1:		604 MCKNIGHT PARK DR
+		CITY:			PITTSBURGH
+		STATE:			PA
+		ZIP:			15237
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	STAAR SYSTEM TRUST
+		DATE OF NAME CHANGE:	19960411
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001011996
+<SERIES-ID>S000009344
+<SERIES-NAME>STAAR Investment Trust - Alternative Categories Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025624
+<CLASS-CONTRACT-NAME>STAAR Investment Trust - Alternative Categories Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>SITAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001011996
+<SERIES-ID>S000009345
+<SERIES-NAME>STAAR Investment Trust - International Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025625
+<CLASS-CONTRACT-NAME>STAAR Investment Trust - International Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>SITIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001011996
+<SERIES-ID>S000009346
+<SERIES-NAME>STAAR Investment Trust - Smaller Company Stock Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025626
+<CLASS-CONTRACT-NAME>STAAR Investment Trust - Smaller Company Stock Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>SITSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001011996
+<SERIES-ID>S000009347
+<SERIES-NAME>STAAR Investment Trust - Larger Company Stock Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025627
+<CLASS-CONTRACT-NAME>STAAR Investment Trust - Larger Company Stock Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>SITLX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001011996
+<SERIES-ID>S000009348
+<SERIES-NAME>STAAR Investment Trust - Short Term Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025628
+<CLASS-CONTRACT-NAME>STAAR Investment Trust - Short Term Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>SITBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001011996
+<SERIES-ID>S000009349
+<SERIES-NAME>STAAR Investment Trust - General Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025629
+<CLASS-CONTRACT-NAME>STAAR Investment Trust - General Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>SITGX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>staarnpx201308.htm
+<TEXT>
+<TABLE borderColor=#97313e cellSpacing=1 width="95%" bgColor=#97313e border=0>
+  <TR><BR>
+    <TD width="2%"></TD>
+    <TD width="123%"><FONT face=verdana,sans-serif color=white
+      size=2>Staar General Bond Fund</FONT></TD></TR></BODY></TABLE>
+
+  <BR><BR><FONT face=verdana,sans-serif size=2>* Management Recommended Vote</FONT>
+
+
+
+
+<TABLE borderColor=#97313e cellSpacing=1 width="95%" bgColor=#97313e border=0>
+  <TR><BR>
+    <TD width="2%"></TD>
+    <TD width="123%"><FONT face=verdana,sans-serif color=white
+      size=2>Staar Short-Term Bond Fund</FONT></TD></TR></BODY></TABLE>
+
+  <BR><BR><FONT face=verdana,sans-serif size=2>* Management Recommended Vote</FONT>
+
+
+
+<TABLE borderColor=#97313e cellSpacing=1 width="95%" bgColor=#97313e border=0>
+  <TR><BR>
+    <TD width="2%"></TD>
+    <TD width="123%"><FONT face=verdana,sans-serif color=white
+      size=2>Staar Larger Company Stock Fund</FONT></TD></TR></BODY></TABLE>
+
+
+     <TABLE cellSpacing=1 width="95%" bgColor=#c0c0c0 border=0>
+     <TR><BR>
+     <TD width="2%"></TD>
+     <TD width="100%"><FONT face=verdana,sans-serif size=2><B>ANADARKO PETROLEUM CORPORATION</B></FONT></TD></TR></BODY></TABLE><BR>
+   <TABLE cellSpacing=1 width="50%" border=0>
+     <TR>
+       <TD width="2%"></TD>
+       <TD width="50%"><FONT face=verdana,sans-serif size=2>Ticker Symbol:<B>APC</B></FONT></TD>
+       <TD width="50%"><FONT face=verdana,sans-serif size=2>Cusip Number:<B>032511107</B></FONT></TD>
+     </TR>
+     <TR>
+       <TD width="2%"></TD>
+       <TD width="50%"><FONT face=verdana,sans-serif size=2>Record Date: <B>3/19/2013</B></FONT></TD>
+       <TD width="50%"><FONT face=verdana,sans-serif size=2>Meeting Date: <B>5/11/2013</B></FONT></TD>
+    </TR>
+    </TABLE>
+
+
+        <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2><B><U>Proposal #</U></B></FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2><B><U>Proposal</U></B></FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2><B><U>Vote</U></B></FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2><B><U>Author</U></B></FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2><B><U>MRV*</U></B></FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2><B><U>vs. Mgmt</U></B></FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2><B><U></U></B></FONT></TD>
+
+         </TR>
+       </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>02</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Ratification of appointment of KPMG LLP as independent auditors.</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>03</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Advisory vote to approve named executive officer compensation.</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>04</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Stockholder proposal - report on political contributions.</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Stockholder</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>Against</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>Against</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>1 (A-K)</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Election of director:
+A)Kevin P. Chilton, B)Luke R. Corbett, C)H. Paulett Eberhart, D)Peter J. Fluor, E)Richard L. George, F)Preston M. Geren III, G)Charles W. Goodyear, H)John R. Gordon, I)Eric D. Mullins, J)Paula Rosput Reynolds, K)R.A. Walker</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+     <TABLE cellSpacing=1 width="95%" bgColor=#c0c0c0 border=0>
+     <TR><BR>
+     <TD width="2%"></TD>
+     <TD width="100%"><FONT face=verdana,sans-serif size=2><B>APACHE CORPORATION</B></FONT></TD></TR></BODY></TABLE><BR>
+   <TABLE cellSpacing=1 width="50%" border=0>
+     <TR>
+       <TD width="2%"></TD>
+       <TD width="50%"><FONT face=verdana,sans-serif size=2>Ticker Symbol:<B>APA</B></FONT></TD>
+       <TD width="50%"><FONT face=verdana,sans-serif size=2>Cusip Number:<B>037411105</B></FONT></TD>
+     </TR>
+     <TR>
+       <TD width="2%"></TD>
+       <TD width="50%"><FONT face=verdana,sans-serif size=2>Record Date: <B>3/18/2013</B></FONT></TD>
+       <TD width="50%"><FONT face=verdana,sans-serif size=2>Meeting Date: <B>5/16/2013</B></FONT></TD>
+    </TR>
+    </TABLE>
+
+
+        <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2><B><U>Proposal #</U></B></FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2><B><U>Proposal</U></B></FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2><B><U>Vote</U></B></FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2><B><U>Author</U></B></FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2><B><U>MRV*</U></B></FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2><B><U>vs. Mgmt</U></B></FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2><B><U></U></B></FONT></TD>
+
+         </TR>
+       </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>1</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Election of Director: Eugene C. Fiedorek</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>2</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Election of Director: Chansoo Joung</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>3</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Election of Director: William C. Montgomery</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>4</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Ratification of Ernst & Young LLP as Apache's independent auditors</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>5</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Advisory vote to approve the compensation of Apache's named executive officers</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>6</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Approval of amendment to Apache's 2011 omnibus equity compensation plan to increase the number of shares issuable under the plan</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>7</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Approval of amendment to Apache's restated certificate of incorporation to eliminate Apache's classified board of directors</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+     <TABLE cellSpacing=1 width="95%" bgColor=#c0c0c0 border=0>
+     <TR><BR>
+     <TD width="2%"></TD>
+     <TD width="100%"><FONT face=verdana,sans-serif size=2><B>FEDEX CORPORATION</B></FONT></TD></TR></BODY></TABLE><BR>
+   <TABLE cellSpacing=1 width="50%" border=0>
+     <TR>
+       <TD width="2%"></TD>
+       <TD width="50%"><FONT face=verdana,sans-serif size=2>Ticker Symbol:<B>FDX</B></FONT></TD>
+       <TD width="50%"><FONT face=verdana,sans-serif size=2>Cusip Number:<B>31428X106</B></FONT></TD>
+     </TR>
+     <TR>
+       <TD width="2%"></TD>
+       <TD width="50%"><FONT face=verdana,sans-serif size=2>Record Date: <B>7/30/2012</B></FONT></TD>
+       <TD width="50%"><FONT face=verdana,sans-serif size=2>Meeting Date: <B>9/24/2012</B></FONT></TD>
+    </TR>
+    </TABLE>
+
+
+        <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2><B><U>Proposal #</U></B></FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2><B><U>Proposal</U></B></FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2><B><U>Vote</U></B></FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2><B><U>Author</U></B></FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2><B><U>MRV*</U></B></FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2><B><U>vs. Mgmt</U></B></FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2><B><U></U></B></FONT></TD>
+
+         </TR>
+       </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>1 (A-L)</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Election of director: A)James L. Barksdale B)John A. Edwardson C)Shirley Ann Jackson D)Steven R. Loranger E)Gary W. Loveman F)R. Brad Martin G)Joshua Cooper Ramo H)Susan C. Schwab I)Frederick W. Smith J)Joshua I. Smith K)David P. Steiner L)Paul S. Walsh</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>2</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Ratification of independent registered public accounting firm.</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>3</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Advisory vote to approve named executive officer compensation.</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>4</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Stockholder proposal regarding independent board chairman.</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>Against</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>Against</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>5</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Stockholder proposal regarding political contributions report.</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>Against</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>Against</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+     <TABLE cellSpacing=1 width="95%" bgColor=#c0c0c0 border=0>
+     <TR><BR>
+     <TD width="2%"></TD>
+     <TD width="100%"><FONT face=verdana,sans-serif size=2><B>INTERNATIONAL BUSINESS MACHINES CORP.</B></FONT></TD></TR></BODY></TABLE><BR>
+   <TABLE cellSpacing=1 width="50%" border=0>
+     <TR>
+       <TD width="2%"></TD>
+       <TD width="50%"><FONT face=verdana,sans-serif size=2>Ticker Symbol:<B>IBM</B></FONT></TD>
+       <TD width="50%"><FONT face=verdana,sans-serif size=2>Cusip Number:<B>459200101</B></FONT></TD>
+     </TR>
+     <TR>
+       <TD width="2%"></TD>
+       <TD width="50%"><FONT face=verdana,sans-serif size=2>Record Date: <B>3/1/2013</B></FONT></TD>
+       <TD width="50%"><FONT face=verdana,sans-serif size=2>Meeting Date: <B>4/30/2013</B></FONT></TD>
+    </TR>
+    </TABLE>
+
+
+        <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2><B><U>Proposal #</U></B></FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2><B><U>Proposal</U></B></FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2><B><U>Vote</U></B></FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2><B><U>Author</U></B></FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2><B><U>MRV*</U></B></FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2><B><U>vs. Mgmt</U></B></FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2><B><U></U></B></FONT></TD>
+
+         </TR>
+       </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>02</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Ratification of appointment of independent public accounting firm (PAGE 71)</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>03</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Advisory vote on executive compensation (PAGE 72)</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Issuer</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>For</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>04</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Stockholder proposal for disclosure of lobbying public policies and practices (PAGE 73)</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>Against</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Stockholder</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>Against</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>05</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Stockholder proposal on the right to act by written consent (PAGE 74)</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>Against</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Stockholder</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>Against</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         <TR><TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>06</FONT></TD>
+         <TD width="43%"><FONT face=verdana,sans-serif size=2>Stockholder proposal on independent board chair (PAGE 75)</FONT></TD>
+         <TD width="2%"></TD>
+         <TD width="10%"><FONT face=verdana,sans-serif size=2>Against</FONT></TD>
+         <TD width="13%"><FONT face=verdana,sans-serif size=2>Stockholder</FONT></TD>
+<TD width="10%"><FONT face=verdana,sans-serif size=2>Against</FONT></TD>
+         <TD width="12%"><FONT face=verdana,sans-serif size=2>With</FONT></TD>
+         <TD width="30%"><FONT face=verdana,sans-serif size=2></FONT></TD>
+         </TR>
+         </TABLE>
+
+         <TABLE cellSpacing=1 width="95%" border=0>
+         
+</table>
+</TEXT>
+</DOCUMENT>

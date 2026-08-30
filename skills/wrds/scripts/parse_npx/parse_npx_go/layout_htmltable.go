@@ -107,8 +107,10 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 		mapping     map[string]int
 		headerArity int
 		carry       bool
+		partitioned bool
 		sawData     bool
 		ctx         htmlContext
+		ctxLead     string
 		ctxSealed   bool
 		nilRow      bool
 	)
@@ -128,22 +130,13 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 			nilRow = false
 		}
 
-		// A </table> ends the mapping with it. Column identity belongs to ONE
-		// table; letting a mapping outlive its table means the next table's rows
-		// are read through the previous table's columns, and its own header row --
-		// which this layout would otherwise never recognise -- is emitted as a vote.
-		//
-		// The ONE exception is a header htmlHasTableBelow confirmed by rows on the
-		// far side of this very boundary: a family of this grammar prints the
-		// column labels in a table of their own and the votes in the table
-		// beneath it. That licence is carried on the mapping itself (carry), is
-		// spent on the first boundary, and is void once the mapping has read a
-		// row. "The mapping has emitted nothing yet" is NOT a licence: a label
-		// that repeats with nothing under it emits nothing either, and letting it
-		// cross means the next table's cells are read through a header belonging
-		// to a different table -- an issuer in the description, a CUSIP in the
-		// proposer, a share count in how_voted, on funds no vendor covers.
-		if row.newTable {
+		// A </table> normally ends the mapping with it. The two licensed exceptions
+		// are proved by their headers: carry crosses one empty header-table boundary;
+		// partitioned crosses repeated one-row tables only while each new row is a
+		// mapped vote, a context row or the repeated header itself. An unrelated new
+		// table therefore still closes the mapping rather than inheriting columns.
+		deferredBoundary := row.newTable && partitioned
+		if row.newTable && !partitioned {
 			if carry && !sawData {
 				carry = false
 			} else {
@@ -163,9 +156,18 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 			}
 		}
 
-		if m, mayCarry, ok := htmlHeaderMapping(cells, feed, repeats); ok {
-			mapping, headerArity, carry, sawData = m, len(cells), mayCarry, false
-			ctxSealed = true
+		if m, mayCarry, mayPartition, consumed, ok := htmlSplitHeaderMapping(cells, feed, repeats); consumed {
+			if ok {
+				mapping, headerArity = m, len(cells)
+				carry, partitioned, sawData = mayCarry, mayPartition, false
+				ctxLead, ctxSealed = "", true
+			}
+			continue
+		}
+		if m, mayCarry, mayPartition, ok := htmlHeaderMapping(cells, feed, repeats); ok {
+			mapping, headerArity = m, len(cells)
+			carry, partitioned, sawData = mayCarry, mayPartition, false
+			ctxLead, ctxSealed = "", true
 			continue
 		}
 		// A label-shaped row that lacks the required table beneath it is not data.
@@ -176,6 +178,14 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 
 		if mapping != nil && htmlIsTableNilRow(cells) {
 			nilRow = true
+			continue
+		}
+
+		// One-cell issuer headings are tentative until a following labelled context
+		// row proves what they are. This is the split used by the partitioned export:
+		// issuer, then Ticker Symbol/Cusip Number, then Record Date/Meeting Date.
+		if lead, candidate := htmlContextLead(cells); candidate {
+			ctxLead = lead
 			continue
 		}
 
@@ -191,15 +201,24 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 				ctx = htmlContext{}
 				ctxSealed = false
 			}
+			if next.Issuer == "" && ctxLead != "" {
+				next.Issuer = ctxLead
+			}
+			ctxLead = ""
 			ctx.merge(next)
 			continue
 		}
 
-		if mapping != nil && htmlComparableArity(len(cells), headerArity) {
+		emitted := false
+		if mapping != nil && htmlComparableArity(len(cells), headerArity) &&
+			(!partitioned || htmlMappedVoteValue(cells, mapping, headerArity)) {
 			if r, ok := htmlDataRow(cells, mapping, headerArity, ctx); ok {
 				out = append(out, r)
-				sawData = true
+				sawData, emitted = true, true
 			}
+		}
+		if deferredBoundary && !emitted {
+			mapping, headerArity, carry, partitioned = nil, 0, false, false
 		}
 	}
 
@@ -372,21 +391,60 @@ func (f *htmlRowFeed) next() (htmlFeedRow, bool) {
 // <tr> belongs to the markup between rows and is dropped -- but a </table> in
 // that gap is not furniture: it closes the table the previous rows belonged to,
 // and is reported so the reader can drop the column mapping with it.
+// htmlFindOpenRow finds an opening <tr> before limit. The name boundary keeps
+// <track> and other longer elements from becoming row delimiters.
+func htmlFindOpenRow(src []byte, from, limit int) int {
+	if limit > len(src) {
+		limit = len(src)
+	}
+	for from < limit {
+		i := indexFrom(src[:limit], from, "<tr")
+		if i < 0 {
+			return -1
+		}
+		after := i + len("<tr")
+		if after >= limit || !isNameByte(src[after]) {
+			return i
+		}
+		from = i + 1
+	}
+	return -1
+}
+
 func (f *htmlRowFeed) scan() (htmlFeedRow, bool) {
 	if f.pos >= len(f.src) {
 		return htmlFeedRow{}, false
 	}
-	i := indexFrom(f.src, f.pos, "</tr>")
-	if i < 0 {
+	close := indexFrom(f.src, f.pos, "</tr>")
+	if close < 0 {
 		f.pos = len(f.src)
 		return htmlFeedRow{}, false
 	}
-	seg := f.src[f.pos:i]
-	f.pos = i + len("</tr>")
+
+	// HTML implicitly closes an open <tr> when the next <tr> begins. Legacy
+	// exports rely on that rule for sizing rows: a row of empty width cells opens,
+	// the real header starts without a </tr>, and the one eventual terminator
+	// belongs to the header. Delimiting only on </tr> fuses both rows and doubles
+	// the header arity. Search only as far as the known terminator, so each row is
+	// still scanned a bounded number of times rather than rescanning the document.
+	start := htmlFindOpenRow(f.src, f.pos, close)
+	end := close
+	implicit := false
+	if start >= 0 {
+		if next := htmlFindOpenRow(f.src, start+len("<tr"), close); next >= 0 {
+			end, implicit = next, true
+		}
+	}
+	seg := f.src[f.pos:end]
+	if implicit {
+		f.pos = end
+	} else {
+		f.pos = close + len("</tr>")
+	}
 
 	newTable := f.pending
 	f.pending = false
-	start := indexFrom(seg, 0, "<tr")
+	start = indexFrom(seg, 0, "<tr")
 	if start < 0 {
 		start = 0
 	}
@@ -430,27 +488,36 @@ func htmlRowCells(seg []byte) (cells []string, cuttable bool) {
 	var f htmlBoundaryFinder
 	pos := 0
 	open := -1 // where the cell now open begins; -1 when none is
+	openSpan := 1
 	for len(cells) < htmlMaxCells {
 		at, after, isClose, ok := f.next(seg, pos)
 		if !ok {
 			break
 		}
-		start := open
+		start, span := open, openSpan
 		if isClose && start < 0 {
 			// A terminator with no opening tag before it: keep the old reading
 			// and take everything since the cursor, tags and all.
-			start = pos
+			start, span = pos, 1
 		}
 		if start >= 0 {
 			if at-start > htmlMaxCellBytes {
 				return nil, false
 			}
-			cells = append(cells, htmlCellText(seg[start:at]))
+			var appended bool
+			cells, appended = htmlAppendSpannedCell(cells, htmlCellText(seg[start:at]), span)
+			if !appended {
+				return nil, false
+			}
 		}
 		if isClose {
-			open, pos = -1, after
+			open, openSpan, pos = -1, 1, after
 		} else {
-			open, pos = after, after
+			span, valid := htmlCellColspan(seg[at:after])
+			if !valid {
+				return nil, false
+			}
+			open, openSpan, pos = after, span, after
 		}
 	}
 	if open >= 0 && open < len(seg) && len(cells) < htmlMaxCells {
@@ -458,10 +525,88 @@ func htmlRowCells(seg []byte) (cells []string, cuttable bool) {
 			return nil, false
 		}
 		if t := htmlCellText(seg[open:]); t != "" {
-			cells = append(cells, t)
+			var appended bool
+			cells, appended = htmlAppendSpannedCell(cells, t, openSpan)
+			if !appended {
+				return nil, false
+			}
 		}
 	}
 	return cells, true
+}
+
+// htmlAppendSpannedCell expands a colspan onto the logical grid and places the
+// cell's text in the final covered column. Legacy vote reports use colspan to
+// cover an item gutter, its spacer and the description column; the label and
+// the data it governs therefore align at the right edge of that span.
+func htmlAppendSpannedCell(cells []string, text string, span int) ([]string, bool) {
+	if span < 1 || span > htmlMaxCells-len(cells) {
+		return nil, false
+	}
+	for i := 1; i < span; i++ {
+		cells = append(cells, "")
+	}
+	return append(cells, text), true
+}
+
+// htmlCellColspan reads one bounded positive colspan from an opening cell tag.
+// The attribute is filing-controlled: malformed, zero, negative and oversized
+// values disqualify the row rather than allocating from the claimed width.
+func htmlCellColspan(tag []byte) (int, bool) {
+	const attr = "colspan"
+	for from := 0; from < len(tag); {
+		i := indexFrom(tag, from, attr)
+		if i < 0 {
+			return 1, true
+		}
+		beforeOK := i == 0 || !isNameByte(tag[i-1])
+		after := i + len(attr)
+		afterOK := after >= len(tag) || !isNameByte(tag[after])
+		if !beforeOK || !afterOK {
+			from = i + 1
+			continue
+		}
+		for after < len(tag) && htmlIsSpace(tag[after]) {
+			after++
+		}
+		if after >= len(tag) || tag[after] != '=' {
+			return 0, false
+		}
+		after++
+		for after < len(tag) && htmlIsSpace(tag[after]) {
+			after++
+		}
+		quote := byte(0)
+		if after < len(tag) && (tag[after] == '\'' || tag[after] == '"') {
+			quote = tag[after]
+			after++
+		}
+		start := after
+		span := 0
+		for after < len(tag) && tag[after] >= '0' && tag[after] <= '9' {
+			span = span*10 + int(tag[after]-'0')
+			if span > htmlMaxCells {
+				return 0, false
+			}
+			after++
+		}
+		if after == start || span < 1 {
+			return 0, false
+		}
+		if quote != 0 {
+			if after >= len(tag) || tag[after] != quote {
+				return 0, false
+			}
+		} else if after < len(tag) && !htmlIsSpace(tag[after]) && tag[after] != '>' {
+			return 0, false
+		}
+		return span, true
+	}
+	return 1, true
+}
+
+func htmlIsSpace(c byte) bool {
+	return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f'
 }
 
 // htmlBoundaryNeedles are the four markers that bound a cell, closing tags
@@ -547,6 +692,46 @@ func htmlFlat(s string) string {
 // Header identification
 // ---------------------------------------------------------------------------
 
+// htmlSplitHeaderMapping joins two consecutive label fragments on their logical
+// column grid. htmlRowCells has already expanded colspan, so unequal physical
+// arities become equal logical widths without positional guessing. consumed is
+// true when the second fragment belongs to the header even if the block lacks
+// enough rows to open a new mapping (as at a repeated page-break header).
+func htmlSplitHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHeaderRepeats) (mapping map[string]int, carry, partitioned, consumed, ok bool) {
+	if !htmlHeaderFragment(cells) {
+		return nil, false, false, false, false
+	}
+	next, exists := feed.peek(0)
+	if !exists || next.newTable || len(next.cells) != len(cells) || !htmlHeaderFragment(next.cells) {
+		return nil, false, false, false, false
+	}
+	joined := make([]string, len(cells))
+	for i := range cells {
+		joined[i] = htmlFlat(cells[i] + " " + next.cells[i])
+	}
+	if _, _, headerLike := htmlHeaderShape(joined); !headerLike {
+		return nil, false, false, false, false
+	}
+	_, _ = feed.next()
+	mapping, carry, partitioned, ok = htmlHeaderMapping(joined, feed, repeats)
+	return mapping, carry, partitioned, true, ok
+}
+
+func htmlHeaderFragment(cells []string) bool {
+	labels := 0
+	for _, c := range cells {
+		flat := htmlFlat(c)
+		if flat == "" {
+			continue
+		}
+		if htmlIsNumeric(flat) || htmlLooksLikeValueLimit(flat, htmlLabelMaxLen) {
+			return false
+		}
+		labels++
+	}
+	return labels >= 2 && labels <= htmlHeaderMaxCells
+}
+
 // htmlHeaderMapping accepts a row only when its shape passes every value and
 // field guard and the document supplies three confirming rows: either directly
 // beneath this occurrence or collectively beneath repeated identical headers.
@@ -554,17 +739,63 @@ func htmlFlat(s string) string {
 //
 // carry reports that all direct confirming rows were found across the one table
 // boundary the supported split-table grammar permits. Repetition never grants it.
-func htmlHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHeaderRepeats) (mapping map[string]int, carry, ok bool) {
+// partitioned reports the narrower grammar where each vote row is printed in its
+// own table; that mode is granted only by three mapped rows with recognised vote
+// values, not by arity alone.
+func htmlHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHeaderRepeats) (mapping map[string]int, carry, partitioned, ok bool) {
 	mapping, key, ok := htmlHeaderShape(cells)
 	if !ok {
-		return nil, false, false
+		return nil, false, false, false
 	}
 	below, crossed := htmlHasTableBelow(len(cells), feed)
 	if !below && !repeats.has(key) {
-		return nil, false, false
+		if !htmlHasPartitionedVotes(mapping, len(cells), feed) {
+			return nil, false, false, false
+		}
+		partitioned = true
 	}
 	htmlAdoptUnlabelledItem(cells, mapping, feed)
-	return mapping, below && crossed, true
+	return mapping, below && crossed, partitioned, true
+}
+
+// htmlHasPartitionedVotes recognises exports that close the table after every
+// row. Crossing boundaries is safe only with stronger evidence than the normal
+// arity witness: three rows must print a known vote in the mapped vote column
+// and carry an item or description through the same mapping.
+func htmlHasPartitionedVotes(mapping map[string]int, arity int, feed *htmlRowFeed) bool {
+	seen := 0
+	for i := 0; i < htmlHeaderLookahead; i++ {
+		row, ok := feed.peek(i)
+		if !ok {
+			break
+		}
+		if _, _, isHeader := htmlHeaderShape(row.cells); isHeader {
+			break
+		}
+		if !htmlComparableArity(len(row.cells), arity) ||
+			!htmlMappedVoteValue(row.cells, mapping, arity) {
+			continue
+		}
+		if _, ok := htmlDataRow(row.cells, mapping, arity, htmlContext{}); !ok {
+			continue
+		}
+		seen++
+		if seen >= htmlHeaderConfirm {
+			return true
+		}
+	}
+	return false
+}
+
+func htmlMappedVoteValue(cells []string, mapping map[string]int, headerArity int) bool {
+	i, ok := mapping[htmlFieldVote]
+	if !ok {
+		return false
+	}
+	if len(cells) == headerArity+1 && htmlIsItemNumber(htmlFlat(cells[0])) {
+		i++
+	}
+	return i >= 0 && i < len(cells) && htmlIsVoteValue(htmlFlat(cells[i]))
 }
 
 // htmlAdoptUnlabelledItem gives the item field to a header column that prints NO
@@ -1063,7 +1294,7 @@ var htmlSynonyms = map[string][]string{
 	},
 	htmlFieldDesc: {
 		"PROPOSAL", "PROPOSALS", "DESCRIPTION", "MATTER", "MATTERS",
-		"BALLOT ISSUE", "AGENDA", "ITEM DESC", "ITEM DESCRIPTION",
+		"BALLOT ISSUE", "BALLOT ISSUES", "AGENDA", "ITEM DESC", "ITEM DESCRIPTION",
 		"PROPOSAL DESCRIPTION", "MEETING AGENDA",
 		// "PROPOSAL TYPE" is the description column of the 81-filing
 		// `Proposal Type | Voted? | Vote | For/Agnst Mgmt` shape, which prints
@@ -1075,7 +1306,7 @@ var htmlSynonyms = map[string][]string{
 		"PROPOSED BY", "PROPONENT", "PRPNENT", "SPONSOR", "AUTHOR",
 	},
 	htmlFieldMgmtRec: {
-		"MGT REC", "MGMT REC", "MANAGEMENT REC", "MANAGEMENT RECOMMENDATION",
+		"MGT REC", "MGMT REC", "MGMT RECO", "MANAGEMENT REC", "MANAGEMENT RECOMMENDATION",
 		"MGMT RECOMMENDATION", "REC", "RECOMMENDATION", "POSITION", "DEFAULT",
 		// MRV is this family's abbreviation for the management recommendation
 		// (423 filings print `Proposal # | Proposal | Vote | Author | MRV* | vs.
@@ -1361,8 +1592,8 @@ func (c *htmlContext) merge(n htmlContext) {
 // cut list: a value runs to the end of its line or to the next label, whichever
 // comes first, because filers put two labels on one line.
 var htmlContextLabels = []string{
-	"ISSUER NAME:", "ISSUER:", "MEETING DATE:", "TICKER:",
-	"SECURITY ID:", "CUSIP:",
+	"ISSUER NAME:", "ISSUER:", "MEETING DATE:", "RECORD DATE:",
+	"TICKER SYMBOL:", "TICKER:", "SECURITY ID:", "CUSIP NUMBER:", "CUSIP:",
 }
 
 // htmlReadContext pulls the meeting identity out of a block row. labelled
@@ -1409,11 +1640,11 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 					if ctx.MeetingDate == "" {
 						ctx.MeetingDate = htmlDate(v)
 					}
-				case "TICKER:":
+				case "TICKER SYMBOL:", "TICKER:":
 					if ctx.Ticker == "" {
 						ctx.Ticker = htmlValueOrEmpty(v)
 					}
-				case "SECURITY ID:", "CUSIP:":
+				case "SECURITY ID:", "CUSIP NUMBER:", "CUSIP:":
 					if ctx.CUSIP == "" {
 						ctx.CUSIP = htmlValueOrEmpty(v)
 					}
@@ -1430,6 +1661,23 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 		ctx.Issuer = htmlFlat(lead)
 	}
 	return ctx, labelled
+}
+
+// htmlContextLead retains a one-value issuer row only as a candidate. It becomes
+// context only when the following row supplies an explicit context label.
+func htmlContextLead(cells []string) (string, bool) {
+	lead := ""
+	for _, cell := range cells {
+		flat := htmlFlat(cell)
+		if flat == "" {
+			continue
+		}
+		if lead != "" {
+			return "", false
+		}
+		lead = flat
+	}
+	return lead, htmlIsIssuerLine(lead)
 }
 
 // htmlIsIssuerLine reports whether an unlabelled line can be read as a block's
