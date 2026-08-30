@@ -75,6 +75,7 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 		meeting         pvTextMeeting
 		inTable         bool
 		haveMtg         bool
+		pendingIssuer   bool
 		continuationRow = -1
 	)
 
@@ -121,7 +122,30 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 			meeting = next
 			haveMtg = true
 			continuationRow = -1
+			pendingIssuer = true // the issuer's name may wrap onto the next line
 			continue
+		}
+
+		// A WRAPPED ISSUER NAME. The line after a meeting can be the rest of the
+		// issuer, and a meeting clears continuationRow, so that tail had nothing to
+		// attach to and closed the table:
+		//
+		//	Alexandria Real   ARE  015271109  5/12/2004  Annual
+		//	Estate Equities                                      <- closed the table
+		//	1.01  Elect Jerry M. Sudarsky   MGMT  YES  AGNST
+		//
+		// Instrumented output was `CLOSE line="Estate Equities" contRow=-1 cont=true`:
+		// the continuation guard already judged it a continuation. Only the line
+		// IMMEDIATELY after the meeting is eligible, and only when it is neither a
+		// vote nor a meeting itself, so this cannot swallow a block of text.
+		if pendingIssuer {
+			pendingIssuer = false
+			if _, isVote := pvTextVoteLine(line, meeting); !isVote {
+				if f := strings.Fields(line); len(f) > 0 && !pvTextItemLoose(f[0]) {
+					meeting.issuer = strings.TrimSpace(meeting.issuer + " " + line)
+					continue
+				}
+			}
 		}
 		if haveMtg {
 			if row, ok := pvTextVoteLine(line, meeting); ok {
@@ -351,7 +375,7 @@ func pvTextHeaderWords(line string) bool {
 	for _, f := range fields {
 		switch strings.Trim(f, ".,:") {
 		case "ISSUER", "NAME", "TICKER", "CUSIP", "MTG", "DATE", "TYPE",
-			"PROPOSAL", "VOTED?", "VOTED", "VOTE", "CAST", "FOR/AGNST", "FOR/", "AGNST",
+			"PROPOSAL", "VOTED?", "VOTED", "VOTE", "CAST", "MATTER", "FOR/AGNST", "FOR/", "AGNST",
 			"MGMT", "FOR", "AGAINST", "<S>", "<C>", "<F>", "<FN>":
 		default:
 			return false
