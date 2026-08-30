@@ -102,7 +102,20 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 				tail := strings.TrimSpace(lines[i+1])
 				tailFields := strings.Fields(tail)
 				if len(tailFields) > 0 && !pvTextItem(tailFields[0]) {
-					if row, ok := pvTextVoteLine(line+" "+tail, meeting); ok {
+					// Insert the tail BEFORE a trailing vs-management indicator rather
+					// than after it. `... MGMT YES DID NOT FOR` + `VOTE` appended
+					// naively becomes `DID NOT FOR VOTE`, which no longer parses: the
+					// indicator is no longer trailing, the row is dropped and the table
+					// then closes, costing the following item too. This shape occurs
+					// zero times in 80 sampled filings, so it is a silent row-loss path
+					// rather than a live defect -- closed cheaply, not designed around.
+					joined := line + " " + tail
+					if f := strings.Fields(line); len(f) > 0 {
+						if last := strings.ToUpper(f[len(f)-1]); last == "FOR" || last == "AGNST" {
+							joined = strings.Join(f[:len(f)-1], " ") + " " + tail + " " + f[len(f)-1]
+						}
+					}
+					if row, ok := pvTextVoteLine(joined, meeting); ok {
 						rows = append(rows, row)
 						continuationRow = len(rows) - 1
 						i++ // the vote tail is part of this row, never a row of its own
@@ -111,6 +124,21 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 				}
 			}
 
+			// DESCRIPTION CONTINUATION -- a decision, recorded rather than implied.
+			// A fragment on a line carrying no item number and no vote columns is
+			// appended to the preceding row's description, but ONLY when the next line
+			// is a proper meeting or item row, so a fragment must be the last line of
+			// its block.
+			//
+			// Whether `Amend Board/Supervisory Board Size` is a second topic under item
+			// 7.00's single vote or a separate agenda line is NOT decidable from these
+			// bytes; European AGMs bundle both ways. The join is kept because it cannot
+			// cost a ROW -- the fragment carries no vote columns and so could never be
+			// one -- while dropping it would discard report text outright. What it can
+			// affect is description completeness, and carrying the filing's own words
+			// is the lesser risk. Review flagged the join as unconditional; it is not,
+			// but the previous round did make this choice silently, which was the
+			// actual defect.
 			if continuationRow >= 0 && pvTextDescriptionContinuationAt(lines, i) {
 				rows[continuationRow].VoteDescription += " " + line
 				continuationRow = -1
