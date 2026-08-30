@@ -177,6 +177,29 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 			}
 		}
 
+		// A line that IS structurally a vote row -- item number, then a proponent
+		// followed by a voted flag -- but whose vote value this layout does not
+		// recognise must not close the table. Closing on one unknown spelling cost the
+		// entire remainder of a document: a single `WHOLD` line in one filing's
+		// Ameritrade block lost 26,157 of its 26,384 rows. The row is SKIPPED rather
+		// than emitted, because how_voted is verbatim by contract and an unrecognised
+		// token is not yet known to be a vote -- but the document keeps being read, so
+		// one unfamiliar spelling costs one row instead of every row after it.
+		if f := strings.Fields(line); len(f) >= 4 && pvTextItem(f[0]) {
+			structural := false
+			for k := 1; k+1 < len(f); k++ {
+				pk := strings.ToUpper(f[k])
+				vk := strings.ToUpper(f[k+1])
+				if (pk == "MGMT" || pk == "SHLDR") && (vk == "YES" || vk == "NO") {
+					structural = true
+					break
+				}
+			}
+			if structural {
+				continue
+			}
+		}
+
 		// A line that is neither a meeting, vote, nor an immediate unnumbered
 		// description continuation closes this table until another full header opens it.
 		inTable = false
@@ -467,6 +490,13 @@ func pvTextVote(s string) bool {
 	// Multi-word values this corpus prints. `TAKE NO ACTION` appears on foreign
 	// ballots the fund held but did not vote, and is what the filing said.
 	case "TAKE NO ACTION", "DID NOT VOTE", "NOT VOTED", "NONE", "NON-VOTING":
+		return true
+	// Surveyed across 40 filings of this family: WHOLD is this corpus's spelling of
+	// Withhold and occurs 12,936 times, more than any value except FOR and AGNST.
+	// Its absence did not merely lose those rows -- an unrecognised vote CLOSED THE
+	// TABLE, so one WHOLD line cost the entire rest of the document. In the worst
+	// filing that was 26,157 of its 26,384 rows.
+	case "WHOLD", "AGAINST", "WITHHOLD", "REFER", "SPLIT", "UNVOTED":
 		return true
 	}
 	return false
