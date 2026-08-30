@@ -567,8 +567,13 @@ func pvTextVoteParts(fields []string) (int, []string, bool) {
 
 	rest := fields[voteAt:]
 	if len(rest) > 1 {
-		last := strings.ToUpper(rest[len(rest)-1])
-		if last == "FOR" || last == "AGNST" {
+		// The vs-management indicator is spelled four ways in this corpus -- FOR,
+		// AGNST, AGAINST and N/A. Stripping only the first two left `Withhold Against`
+		// glued into one cast value, which matched no vocabulary, so the line was
+		// declined and the table closed. Surveyed pairs include `WHOLD AGNST`,
+		// `NOT VOTED AGAINST`, `AGNST N/A` and `FOR N/A`.
+		switch strings.ToUpper(rest[len(rest)-1]) {
+		case "FOR", "AGNST", "AGAINST", "N/A":
 			rest = rest[:len(rest)-1]
 		}
 	}
