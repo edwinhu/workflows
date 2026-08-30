@@ -15,7 +15,7 @@ const (
 	pvTextHeaderThirdWrapped  = "Type Mgmt"
 	// Blank lines tolerated between the header's physical lines. Bounded so a
 	// generic first line cannot pair with a distant continuation.
-	pvTextHeaderGapMax = 3
+	pvTextHeaderGapMax = 6
 	// How far past blanks, page furniture and further unnumbered lines to look for
 	// the row that proves a fragment is a continuation rather than the end of the
 	// table. Measured on a filing that echoes every director name beneath its vote:
@@ -273,6 +273,23 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 //
 // A two-line rule reads that third line as data and declines the whole block, which
 // is why one 4,321-vote-line filing returned nothing.
+// pvTextHeaderLinesAt returns how many physical lines the header occupies at i, or 0
+// if there is no header there.
+//
+// The first line is exact. What FOLLOWS it is not: four wrapping permutations of the
+// same header appear in this corpus, because the column block is wider than the page
+// and filers broke it wherever it happened to land --
+//
+//	Proposal Type Voted? Vote For/Agnst Mgmt          (one line)
+//	Proposal Voted? Vote For/Agnst  /  Type Mgmt      (split, tail second)
+//	FOR/AGNST  /  PROPOSAL TYPE VOTED? VOTE MGMT      (split, tail FIRST)
+//	... Vote For/  /  <tail lands on the meeting line>
+//
+// Enumerating them was losing a variant each time, so this consumes following lines
+// while they carry ONLY header vocabulary, stopping at the first meeting or item row.
+// A dashed rule and the SGML <S>/<C> markers count as furniture in that run. At least
+// one consumed line must mention VOTE or VOTED, so a bare first line cannot open a
+// table on its own.
 func pvTextHeaderLinesAt(lines []string, i int) int {
 	if i < 0 || i+1 >= len(lines) {
 		return 0
@@ -280,30 +297,52 @@ func pvTextHeaderLinesAt(lines []string, i int) int {
 	if pvTextCanonical(lines[i]) != strings.ToUpper(pvTextHeaderFirst) {
 		return 0
 	}
-	// The continuation is usually the next physical line, but one rendering separates
-	// the header's halves with a blank. The gap is BOUNDED on purpose: the first line
-	// is generic enough that an unbounded search could pair it with a continuation
-	// belonging to a different section, and these documents carry unrelated tabular
-	// sections under other sub-advisors.
-	j := i + 1
-	for j < len(lines) && j <= i+pvTextHeaderGapMax && strings.TrimSpace(lines[j]) == "" {
-		j++
+	sawVote, last := false, i
+	for k := i + 1; k < len(lines) && k <= i+pvTextHeaderGapMax; k++ {
+		t := strings.TrimSpace(lines[k])
+		if t == "" || pvTextPageFurniture(t) {
+			last = k
+			continue
+		}
+		if _, ok := pvTextMeetingLine(t); ok {
+			break
+		}
+		if f := strings.Fields(t); len(f) > 0 && pvTextItem(f[0]) {
+			break
+		}
+		if !pvTextHeaderWords(t) {
+			break
+		}
+		up := pvTextCanonical(t)
+		if strings.Contains(up, "VOTE") {
+			sawVote = true
+		}
+		last = k
 	}
-	if j >= len(lines) {
+	if !sawVote {
 		return 0
 	}
-	second := pvTextCanonical(lines[j])
-	if second == strings.ToUpper(pvTextHeaderSecond) {
-		return j - i + 1
+	return last - i + 1
+}
+
+// pvTextHeaderWords reports whether every token on a line belongs to this header's
+// vocabulary. It is what distinguishes a wrapped header fragment from the first row
+// of data, without depending on WHERE the filer chose to break the line.
+func pvTextHeaderWords(line string) bool {
+	fields := strings.Fields(strings.ToUpper(line))
+	if len(fields) == 0 {
+		return false
 	}
-	// Column-aligned: the second line drops the words that wrapped, and the third
-	// carries exactly those. Require BOTH halves so a data row cannot pose as one.
-	if j+1 < len(lines) &&
-		second == strings.ToUpper(pvTextHeaderSecondWrapped) &&
-		pvTextCanonical(lines[j+1]) == strings.ToUpper(pvTextHeaderThirdWrapped) {
-		return j - i + 2
+	for _, f := range fields {
+		switch strings.Trim(f, ".,:") {
+		case "ISSUER", "NAME", "TICKER", "CUSIP", "MTG", "DATE", "TYPE",
+			"PROPOSAL", "VOTED?", "VOTED", "VOTE", "FOR/AGNST", "FOR/", "AGNST",
+			"MGMT", "FOR", "AGAINST", "<S>", "<C>", "<F>", "<FN>":
+		default:
+			return false
+		}
 	}
-	return 0
+	return true
 }
 
 func pvTextHeaderAt(lines []string, i int) bool {
