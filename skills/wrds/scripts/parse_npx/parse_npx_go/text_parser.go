@@ -29,6 +29,14 @@ type layoutEntry struct {
 	Match    func(head string) bool
 	Parse    func(text string, meta FilingMeta) ([]VoteRow, error)
 	ParseRaw func(raw []byte, text string, meta FilingMeta) ([]VoteRow, error)
+	// HeadBytes overrides how much text this layout's matcher sees. Zero means the
+	// default. THE WINDOW IS PER-LAYOUT AND NOT GLOBAL, because widening it globally
+	// changes WHICH layout wins in a first-hit-wins registry: raising it to 16 MB for
+	// everyone let issnpx match filings deep in documents it had never seen, and it
+	// reads them far worse than the layout that had been handling them --
+	// 13,784 rows (pvtext) -> 2,860 (issnpx) on one filing, 7,120 (htmltable) -> 369
+	// on another, for a net loss of 5,673 rows against a gain of four filings.
+	HeadBytes int
 }
 
 // errLayoutDeclined is returned by a layout that matched on its cheap signature
@@ -105,11 +113,10 @@ func matchHTMLTable(string) bool { return true }
 // beyond 128 KB. One 5.5 MB filing carries its first vote table at line 28,340; its
 // fixture passed while the filing itself returned zero rows.
 //
-// Every matcher is a linear line or substring scan, so the cost of a larger window is
-// linear in the bytes examined and is paid once per filing. The whole 13,229-filing
-// skip pile parses in 140 s at concurrency 4; the runtime is re-measured after this
-// change rather than assumed.
-const signatureHeadBytes = 16 << 20
+// This is the DEFAULT. A layout that needs more opts in with layoutEntry.HeadBytes;
+// raising it for everyone was measured and cost 5,673 rows, because it changed which
+// layout wins rather than only how much each one can see.
+const signatureHeadBytes = 128 << 10
 
 // noActivitySentinels mark a fund that had nothing to vote. A filing whose funds
 // all report one of these is a real and common outcome, not a parser failure, so
@@ -265,10 +272,6 @@ func parseText(body []byte, meta FilingMeta) *ParseResult {
 	}
 
 	text := string(stripHTML(decoded))
-	head := text
-	if len(head) > signatureHeadBytes {
-		head = head[:signatureHeadBytes]
-	}
 
 	// A matcher that blew up is not a match, but it is also not silence: the
 	// message is carried to the skip row below so a broken signature predicate is
@@ -276,6 +279,14 @@ func parseText(body []byte, meta FilingMeta) *ParseResult {
 	matchErr := ""
 
 	for _, entry := range layoutRegistry {
+		limit := entry.HeadBytes
+		if limit <= 0 {
+			limit = signatureHeadBytes
+		}
+		head := text
+		if len(head) > limit {
+			head = head[:limit]
+		}
 		matched, merr := runLayoutMatcher(entry, head)
 		if merr != nil {
 			if matchErr == "" {

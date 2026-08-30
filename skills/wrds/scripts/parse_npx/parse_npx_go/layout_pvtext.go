@@ -41,7 +41,12 @@ type pvTextMeeting struct {
 // named layouts still get first refusal, while pvtext's exact two-line signature
 // prevents it from claiming the other table shapes in a mixed filing.
 func init() {
-	entry := layoutEntry{Name: "pvtext", Match: matchPVText, Parse: parsePVText}
+	entry := layoutEntry{Name: "pvtext", Match: matchPVText, Parse: parsePVText,
+		// This format's header can sit megabytes into a filing: measured over 40
+		// filings that yielded nothing, the offset has median 2,784 but p90
+		// 2,260,260 and max 10,972,887, and one 5.5 MB filing carries its first
+		// vote table at line 28,340. The default 128 KB made those invisible.
+		HeadBytes: 16 << 20}
 	for i, candidate := range layoutRegistry {
 		if candidate.Name == "htmltable" {
 			layoutRegistry = append(layoutRegistry, layoutEntry{})
