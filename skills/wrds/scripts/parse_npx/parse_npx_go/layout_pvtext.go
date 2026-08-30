@@ -52,16 +52,18 @@ func matchPVText(head string) bool {
 func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 	lines := strings.Split(text, "\n")
 	var (
-		rows    []VoteRow
-		meeting pvTextMeeting
-		inTable bool
-		haveMtg bool
+		rows            []VoteRow
+		meeting         pvTextMeeting
+		inTable         bool
+		haveMtg         bool
+		continuationRow = -1
 	)
 
 	for i := 0; i < len(lines); i++ {
 		if n := pvTextHeaderLinesAt(lines, i); n != 0 {
 			inTable = true
 			haveMtg = false
+			continuationRow = -1
 			i += n - 1 // header continuations are never rows
 			continue
 		}
@@ -77,25 +79,50 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 		// Blank lines are furniture for the same reason: they surround every break, so
 		// resetting the open meeting on one loses the rows that continue it.
 		if line == "" || pvTextPageFurniture(line) {
+			continuationRow = -1
 			continue
 		}
 		if next, ok := pvTextMeetingLine(line); ok {
 			meeting = next
 			haveMtg = true
+			continuationRow = -1
 			continue
 		}
 		if haveMtg {
 			if row, ok := pvTextVoteLine(line, meeting); ok {
 				rows = append(rows, row)
+				continuationRow = len(rows) - 1
+				continue
+			}
+
+			// Look ahead only when the current line ends in a proper prefix of a
+			// multi-word vote. This completes wrapped values without merging the next
+			// compact-rendering item into the current row.
+			if pvTextIncompleteVoteLine(line) && i+1 < len(lines) {
+				tail := strings.TrimSpace(lines[i+1])
+				tailFields := strings.Fields(tail)
+				if len(tailFields) > 0 && !pvTextItem(tailFields[0]) {
+					if row, ok := pvTextVoteLine(line+" "+tail, meeting); ok {
+						rows = append(rows, row)
+						continuationRow = len(rows) - 1
+						i++ // the vote tail is part of this row, never a row of its own
+						continue
+					}
+				}
+			}
+
+			if continuationRow >= 0 && pvTextDescriptionContinuationAt(lines, i) {
+				rows[continuationRow].VoteDescription += " " + line
+				continuationRow = -1
 				continue
 			}
 		}
 
-		// This report has no continuation or furniture lines inside a block. Once a
-		// line is neither its meeting nor its vote shape, later text belongs to a
-		// different section unless another complete pvtext header opens it again.
+		// A line that is neither a meeting, vote, nor an immediate unnumbered
+		// description continuation closes this table until another full header opens it.
 		inTable = false
 		haveMtg = false
+		continuationRow = -1
 	}
 
 	if len(rows) == 0 {
@@ -144,6 +171,25 @@ func pvTextCanonical(line string) string {
 	return strings.ToUpper(strings.Join(strings.Fields(line), " "))
 }
 
+// pvTextDescriptionContinuationAt accepts one unnumbered agenda fragment only
+// when the next physical line resumes the grammar with a meeting or item. Upstream
+// whitespace normalization removes indentation, so the following structural line
+// is the available boundary between a continuation and foreign text.
+func pvTextDescriptionContinuationAt(lines []string, i int) bool {
+	if i+1 >= len(lines) {
+		return false
+	}
+	next := strings.TrimSpace(lines[i+1])
+	if next == "" || pvTextPageFurniture(next) {
+		return false
+	}
+	if _, ok := pvTextMeetingLine(next); ok {
+		return true
+	}
+	fields := strings.Fields(next)
+	return len(fields) > 0 && pvTextItem(fields[0])
+}
+
 // pvTextMeetingLine reads the identity fields from the right because the issuer
 // is free text. The exact nine-character CUSIP and parseable numeric date anchor
 // the split; a line without both is not a meeting in this grammar.
@@ -182,50 +228,17 @@ func pvTextMeetingLine(line string) (pvTextMeeting, bool) {
 // filing prints no recommendation column.
 func pvTextVoteLine(line string, meeting pvTextMeeting) (VoteRow, bool) {
 	fields := strings.Fields(line)
-	if len(fields) < 5 || !pvTextItem(fields[0]) {
+	p, rest, ok := pvTextVoteParts(fields)
+	if !ok {
 		return VoteRow{}, false
 	}
 
-	// Anchor on the proponent/voted PAIR rather than counting from the right. Two
-	// shapes in this corpus break a fixed-offset split: the vote value can be
-	// MULTI-WORD (`TAKE NO ACTION`), and the trailing vs-management column is
-	// sometimes absent. Counting back four fields shears both. Scanning from the
-	// right for `MGMT|SHLDR` followed by `YES|NO` also survives a description that
-	// happens to contain one of those words.
-	p := -1
-	for k := len(fields) - 2; k >= 1; k-- {
-		pk := strings.ToUpper(fields[k])
-		vk := strings.ToUpper(fields[k+1])
-		if (pk == "MGMT" || pk == "SHLDR") && (vk == "YES" || vk == "NO") {
-			p = k
-			break
-		}
-	}
-	if p < 1 || p+2 >= len(fields) {
-		return VoteRow{}, false
-	}
-
-	proponent := fields[p]
-	rest := fields[p+2:]
-
-	// The last field is the vs-management indicator only when something remains to
-	// be the vote itself; otherwise it IS the vote.
-	vsManagement := ""
-	if len(rest) > 1 {
-		last := strings.ToUpper(rest[len(rest)-1])
-		if last == "FOR" || last == "AGNST" {
-			vsManagement = rest[len(rest)-1]
-			rest = rest[:len(rest)-1]
-		}
-	}
 	cast := strings.Join(rest, " ")
 	if !pvTextVote(strings.ToUpper(cast)) {
 		return VoteRow{}, false
 	}
-	_ = vsManagement // vs-management is not a manifest column; see the header note.
 
-	n := p
-	description := strings.Join(fields[1:n], " ")
+	description := strings.Join(fields[1:p], " ")
 	if description == "" {
 		return VoteRow{}, false
 	}
@@ -238,9 +251,54 @@ func pvTextVoteLine(line string, meeting pvTextMeeting) (VoteRow, bool) {
 		MeetingType:     meeting.meetingType,
 		ItemSeq:         fields[0],
 		VoteDescription: description,
-		VoteSource:      proponent,
+		VoteSource:      fields[p],
 		HowVoted:        cast,
 	}, true
+}
+
+// pvTextVoteParts anchors on the proponent/voted pair rather than counting from
+// the right. Multi-word vote values and an optional trailing vs-management field
+// make fixed offsets ambiguous. The latter is not a manifest column.
+func pvTextVoteParts(fields []string) (int, []string, bool) {
+	if len(fields) < 5 || !pvTextItem(fields[0]) {
+		return 0, nil, false
+	}
+
+	p := -1
+	for k := len(fields) - 2; k >= 1; k-- {
+		pk := strings.ToUpper(fields[k])
+		vk := strings.ToUpper(fields[k+1])
+		if (pk == "MGMT" || pk == "SHLDR") && (vk == "YES" || vk == "NO") {
+			p = k
+			break
+		}
+	}
+	if p < 1 || p+2 >= len(fields) {
+		return 0, nil, false
+	}
+
+	rest := fields[p+2:]
+	if len(rest) > 1 {
+		last := strings.ToUpper(rest[len(rest)-1])
+		if last == "FOR" || last == "AGNST" {
+			rest = rest[:len(rest)-1]
+		}
+	}
+	return p, rest, true
+}
+
+func pvTextIncompleteVoteLine(line string) bool {
+	_, rest, ok := pvTextVoteParts(strings.Fields(line))
+	if !ok {
+		return false
+	}
+	prefix := strings.ToUpper(strings.Join(rest, " "))
+	for _, vote := range []string{"TAKE NO ACTION", "DID NOT VOTE", "NOT VOTED"} {
+		if strings.HasPrefix(vote, prefix+" ") {
+			return true
+		}
+	}
+	return false
 }
 
 func pvTextItem(s string) bool {
