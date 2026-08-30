@@ -16,9 +16,13 @@ const (
 	// Blank lines tolerated between the header's physical lines. Bounded so a
 	// generic first line cannot pair with a distant continuation.
 	pvTextHeaderGapMax = 3
-	// How far past blanks and page furniture to look for the line that proves an
-	// unnumbered fragment is a continuation rather than the end of the table.
-	pvTextContinuationLookahead = 8
+	// How far past blanks, page furniture and further unnumbered lines to look for
+	// the row that proves a fragment is a continuation rather than the end of the
+	// table. Measured on a filing that echoes every director name beneath its vote:
+	// in-table runs reach 25 lines, so a bound of 8 closed the table mid-slate. The
+	// bound is generous but finite; what actually does the work is the requirement
+	// that a real meeting or item row FOLLOW the run.
+	pvTextContinuationLookahead = 64
 	// How many following lines a wrapped description may span before its columns.
 	pvTextWrapLookahead = 4
 )
