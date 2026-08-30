@@ -91,7 +91,23 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 		// Blank lines are furniture for the same reason: they surround every break, so
 		// resetting the open meeting on one loses the rows that continue it.
 		if line == "" || pvTextPageFurniture(line) {
-			continuationRow = -1
+			// Furniture does not break the continuation anchor either. An echo's own
+			// tail can be separated from it by blank lines:
+			//
+			//	2.00   Confirm First Interim Dividend of USD 0.255 Per
+			//	       Ordinary Share and Confirm as the Final Dividend
+			//	       the                              MGMT  YES  FOR
+			//	       Confirm First Interim Dividend of USD 0.255 Per
+			//	       Ordinary Share and Confirm as the Final Dividend
+			//	       <blank>
+			//	       <blank>
+			//	       the
+			//	3.00   Reappoint KPMG Audit Plc as Auditors of the
+			//
+			// Clearing the anchor here left that trailing `the` with nothing to attach
+			// to, so it closed the table -- the guard had already judged it a genuine
+			// continuation. What bounds the anchor is that a meeting line clears it and
+			// the lookahead requires a real row to follow, not the presence of a blank.
 			continue
 		}
 		if next, ok := pvTextMeetingLine(line); ok {
