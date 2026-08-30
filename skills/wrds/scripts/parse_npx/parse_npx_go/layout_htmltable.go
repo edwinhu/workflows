@@ -68,6 +68,27 @@ const (
 	htmlHeaderMaxCells = 20
 )
 
+// htmlNilMaxCellTags and htmlNilMaxFilledCells are the two markup-density
+// ceilings a document must sit under before it may be called a nil report. Both
+// are counted on the RAW bytes by htmlRawCellCounts, so neither can be lowered by
+// this layout failing to cut a row.
+//
+// htmlNilMaxCellTags is the audit's own number: of the filings the previous rule
+// classified nil, 298 carried 60 or more cell tags, and every one of them was a
+// vote record. Sixty opening cell tags is far more markup than a registrant, an
+// address and a signature block need.
+//
+// htmlNilMaxFilledCells is derived, not chosen: the smallest table the header
+// test could ever accept is a header row plus htmlHeaderConfirm rows beneath it,
+// each carrying htmlHeaderMinCells cells of text. A document printing that many
+// filled cells anywhere has at least one table's worth of content in it, however
+// those cells are distributed across rows -- which is the point, because the
+// padded vertical record hides a real vote record in rows too narrow to count.
+const (
+	htmlNilMaxCellTags    = 60
+	htmlNilMaxFilledCells = (htmlHeaderConfirm + 1) * htmlHeaderMinCells
+)
+
 // htmlLabelMaxLen caps how long a header cell may be. Real column labels are a
 // few words; the signature and agent-for-service paragraphs that fooled a loose
 // test are sentences.
@@ -199,7 +220,27 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 //
 // The scan stops at the first row that carries the count over the threshold, so a
 // real vote filing costs a handful of rows rather than a pass over the body.
+//
+// THE ROW SCAN IS NOT ENOUGH ON ITS OWN, and the reason is the error this whole
+// function keeps making: every count below is a count of what THIS LAYOUT CAN
+// CUT, and a low count was read as a fact about the DOCUMENT. An audit of the
+// filings this rule classified nil found 298 carrying 60 or more cell tags --
+// substantial vote records called empty, and roughly 64,000 vote rows recorded as
+// ok/n_rows=0. They are vertical Roman-numeral records (`II. Exchange Ticker`,
+// `V. Brief Descriptions of Issues Proposed by the Management`) whose rows are
+// padded with empty cells, so no row is ever wide and the row scan sees nothing.
+// htmlRawCellCounts is the independent measurement: it counts cell tags on the
+// raw bytes, one cell at a time, and never asks whether a ROW can be cut.
 func htmlPrintsNoVoteTable(raw []byte) bool {
+	// A document dense in cell markup is not a cover page whatever this layout can
+	// make of it. Either ceiling alone would miss half the population: a filing can
+	// print thousands of cell tags of which few carry text (the padded vertical
+	// record), and a filing can print a whole table's worth of text in few tags.
+	tags, filled := htmlRawCellCounts(raw, htmlNilMaxCellTags, htmlNilMaxFilledCells)
+	if tags >= htmlNilMaxCellTags || filled >= htmlNilMaxFilledCells {
+		return false
+	}
+
 	body := htmlTableBody(raw)
 	if indexFrom(body, 0, "</tr>") < 0 {
 		return false
@@ -226,6 +267,79 @@ func htmlPrintsNoVoteTable(raw []byte) bool {
 			return false
 		}
 	}
+}
+
+// htmlRawCellCounts measures how much cell markup a document PRINTS: tags is the
+// number of <td>/<th> OPENING tags, filled the number of those whose content
+// decodes to something other than whitespace.
+//
+// It deliberately shares nothing with the row feed. The row feed answers "what
+// can this layout cut into columns", and every previous version of the nil rule
+// read a low answer to that question as "this document holds nothing" -- first on
+// cells the splitter could not cut, then on rows too narrow to be wide. This walks
+// cell boundaries alone: it never looks for a <tr>, so a record laid out one cell
+// per row, or padded with empty cells, counts exactly as much as a column table.
+//
+// Both counts stop at the caller's limits, so a substantial document costs a
+// bounded prefix of the body rather than a full pass. Cell contents are disjoint
+// slices of the body, so the decode work over a whole document is linear in it.
+func htmlRawCellCounts(raw []byte, tagStop, filledStop int) (tags, filled int) {
+	body := htmlTableBody(raw)
+	open := -1 // start of the open cell's content; -1 when no cell is open
+	closeCell := func(end int) {
+		if open < 0 || open > end {
+			open = -1
+			return
+		}
+		seg := body[open:end]
+		if len(seg) > htmlMaxCellBytes {
+			// An oversized cell is not truncated into a value anywhere else in this
+			// layout, but here the only question asked of it is "is it blank", and a
+			// megabyte of leading content answers that.
+			seg = seg[:htmlMaxCellBytes]
+		}
+		if htmlCellText(seg) != "" {
+			filled++
+		}
+		open = -1
+	}
+	for i := 0; i < len(body); {
+		j := indexByteFrom(body, i, '<')
+		if j < 0 {
+			break
+		}
+		name, after, ok := tagName(body, j, 0)
+		if !ok {
+			// A bare '<' that opens no tag is literal text, and belongs to whatever
+			// cell is open around it.
+			i = j + 1
+			continue
+		}
+		end := indexByteFrom(body, after, '>')
+		if end < 0 {
+			break
+		}
+		closing := body[j+1] == '/'
+		cell := name == "td" || name == "th"
+		// A cell's content ends at the next cell tag either way -- HTML5's own rule
+		// is that an opening cell tag implicitly closes the one before it, and
+		// legacy EDGAR markup routinely omits the terminator. It also ends at the
+		// row or table that closes around it, so inter-row prose cannot be read as
+		// the content of a cell nobody closed.
+		if cell || (closing && (name == "tr" || name == "table")) {
+			closeCell(j)
+		}
+		if cell && !closing {
+			tags++
+			open = end + 1
+		}
+		if tags >= tagStop || filled >= filledStop {
+			return tags, filled
+		}
+		i = end + 1
+	}
+	closeCell(len(body))
+	return tags, filled
 }
 
 // htmlNonEmptyCells counts the cells carrying text. Emptiness is judged AFTER

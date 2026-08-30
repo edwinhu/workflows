@@ -109,3 +109,34 @@ func TestHTMLUnclosedCellsAreNotNil(t *testing.T) {
 			" than \"markup this splitter cannot cut\". A filing we cannot cut must stay skip.")
 	}
 }
+
+// TestHTMLDenseMarkupIsNotNil closes the third instance of one error: measuring
+// what the parser can extract and reading a low count as a fact about the
+// DOCUMENT.
+//
+// H8 is a verbatim excerpt of a filing carrying 2,640 cell tags and 1.1 MB of a
+// real vote record, laid out VERTICALLY with Roman-numeral labels rather than as
+// a column table:
+//
+//	II.   Exchange Ticker: 2317
+//	III.  Date of Shareholding Meeting: 4/16/2009
+//	V.    Brief Descriptions of Issues Proposed by the Management:
+//	1.    To report the audited annual financial report
+//
+// Its rows are padded with empty cells, so the count of NON-EMPTY wide rows is
+// low and the nil rule called it empty -- 298 filings went that way, taking
+// roughly 64,000 vote rows with them, and the manifest recorded every one as
+// successfully read with nothing in it.
+//
+// This layout cannot read a vertical record, and that is fine. `skip` says "we
+// could not read this" and stays countable; ok/n_rows=0 says "there was nothing
+// to read" and is a claim about the filing. A document dense with cell tags is
+// not a cover page whatever the parser can make of it.
+func TestHTMLDenseMarkupIsNotNil(t *testing.T) {
+	rows, status := runISSNPXDocStatus(t, loadNil(t, "H8_vertical_roman.txt"))
+	if status == "ok" && len(rows) == 0 {
+		t.Fatalf("declared a nil report on a filing carrying hundreds of cell tags and a real" +
+			" vote record in a vertical Roman-numeral layout. Low PARSEABLE row count is a fact" +
+			" about this layout, not about the document; a filing we cannot read must stay skip.")
+	}
+}
