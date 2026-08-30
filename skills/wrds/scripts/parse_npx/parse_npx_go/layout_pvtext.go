@@ -13,6 +13,9 @@ const (
 	// The column-aligned rendering wraps `Type` and `Mgmt` onto a third line.
 	pvTextHeaderSecondWrapped = "Proposal Voted? Vote For/Agnst"
 	pvTextHeaderThirdWrapped  = "Type Mgmt"
+	// Blank lines tolerated between the header's physical lines. Bounded so a
+	// generic first line cannot pair with a distant continuation.
+	pvTextHeaderGapMax = 3
 )
 
 type pvTextMeeting struct {
@@ -139,6 +142,34 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 			// is the lesser risk. Review flagged the join as unconditional; it is not,
 			// but the previous round did make this choice silently, which was the
 			// actual defect.
+			// INVERTED WRAP -- the mirror of the block above. There the vote value
+			// spilled FORWARD onto the next line; here the item number and the start of
+			// the description sit alone and the columns arrive on the line after:
+			//
+			//	2.00     PROPOSAL TO APPROVE THE ACE LIMITED 2004
+			//	         LONG-TERM INCENTIVE PLAN.        MGMT   YES   FOR   FOR
+			//
+			// Without this the layout sees an item line carrying no vote, closes the
+			// table and loses the REST OF THE DOCUMENT. In the PV5 fixture that cost
+			// every meeting after the first: 23 of 40 rows, and corpus-wide it is the
+			// difference between claiming 120 of 277 filings and claiming them all.
+			//
+			// Guarded from both sides: this line must begin with an item number and
+			// carry no complete vote of its own, and the next must carry the columns
+			// while beginning with no item number -- otherwise two adjacent ordinary
+			// items in the compact rendering would merge into one row.
+			if f := strings.Fields(line); len(f) > 0 && pvTextItem(f[0]) && i+1 < len(lines) {
+				next := strings.TrimSpace(lines[i+1])
+				if nf := strings.Fields(next); len(nf) > 0 && !pvTextItem(nf[0]) {
+					if row, ok := pvTextVoteLine(line+" "+next, meeting); ok {
+						rows = append(rows, row)
+						continuationRow = len(rows) - 1
+						i++ // the column line belongs to this row, never a row of its own
+						continue
+					}
+				}
+			}
+
 			if continuationRow >= 0 && pvTextDescriptionContinuationAt(lines, i) {
 				rows[continuationRow].VoteDescription += " " + line
 				continuationRow = -1
@@ -177,16 +208,28 @@ func pvTextHeaderLinesAt(lines []string, i int) int {
 	if pvTextCanonical(lines[i]) != strings.ToUpper(pvTextHeaderFirst) {
 		return 0
 	}
-	second := pvTextCanonical(lines[i+1])
+	// The continuation is usually the next physical line, but one rendering separates
+	// the header's halves with a blank. The gap is BOUNDED on purpose: the first line
+	// is generic enough that an unbounded search could pair it with a continuation
+	// belonging to a different section, and these documents carry unrelated tabular
+	// sections under other sub-advisors.
+	j := i + 1
+	for j < len(lines) && j <= i+pvTextHeaderGapMax && strings.TrimSpace(lines[j]) == "" {
+		j++
+	}
+	if j >= len(lines) {
+		return 0
+	}
+	second := pvTextCanonical(lines[j])
 	if second == strings.ToUpper(pvTextHeaderSecond) {
-		return 2
+		return j - i + 1
 	}
 	// Column-aligned: the second line drops the words that wrapped, and the third
 	// carries exactly those. Require BOTH halves so a data row cannot pose as one.
-	if i+2 < len(lines) &&
+	if j+1 < len(lines) &&
 		second == strings.ToUpper(pvTextHeaderSecondWrapped) &&
-		pvTextCanonical(lines[i+2]) == strings.ToUpper(pvTextHeaderThirdWrapped) {
-		return 3
+		pvTextCanonical(lines[j+1]) == strings.ToUpper(pvTextHeaderThirdWrapped) {
+		return j - i + 2
 	}
 	return 0
 }
@@ -227,23 +270,41 @@ func pvTextMeetingLine(line string) (pvTextMeeting, bool) {
 		return pvTextMeeting{}, false
 	}
 
+	// The CUSIP is the strongest anchor but it is NOT always printed: foreign
+	// issuers appear as `Abitibi Consolidated Inc.  A.  4/29/04  Annual` and
+	// `Ace Ltd.  ACE  5/27/04  Annual`, with a ticker and no CUSIP. Requiring one
+	// meant those meetings were not recognised, the table closed on them, and the
+	// REST OF THE DOCUMENT was lost -- in the PV5 fixture every meeting after the
+	// first, 23 of 40 rows.
+	//
+	// Without a CUSIP the remaining anchor is a parseable date immediately before a
+	// meeting type, preceded by a ticker-shaped token. That is a narrower net than it
+	// looks: an item or vote line begins with an item number, which is checked by the
+	// caller before this is reached, and prose rarely ends in `<TICKER> <date> <type>`.
 	n := len(fields)
-	cusip := fields[n-3]
-	if !pvTextCUSIP(cusip) {
-		return pvTextMeeting{}, false
-	}
 	date := htmlDate(fields[n-2])
-	if date == "" || !pvTextTicker(fields[n-4]) {
+	if date == "" {
 		return pvTextMeeting{}, false
 	}
-	issuer := strings.Join(fields[:n-4], " ")
+
+	cusip, tickerAt := "", n-4
+	if pvTextCUSIP(fields[n-3]) {
+		cusip = fields[n-3]
+	} else {
+		// No CUSIP column: the ticker sits directly before the date.
+		tickerAt = n - 3
+	}
+	if tickerAt < 1 || !pvTextTicker(fields[tickerAt]) {
+		return pvTextMeeting{}, false
+	}
+	issuer := strings.Join(fields[:tickerAt], " ")
 	if issuer == "" {
 		return pvTextMeeting{}, false
 	}
 
 	return pvTextMeeting{
 		issuer:      issuer,
-		ticker:      fields[n-4],
+		ticker:      fields[tickerAt],
 		cusip:       cusip,
 		meetingDate: date,
 		meetingType: fields[n-1],
@@ -292,20 +353,45 @@ func pvTextVoteParts(fields []string) (int, []string, bool) {
 		return 0, nil, false
 	}
 
-	p := -1
+	// Anchor on the proponent, preferring the proponent/voted PAIR. Some renderings
+	// omit the `Voted?` column entirely and print the vote straight after the
+	// proponent -- `1.00 Elect Michael T. Dugan<TAB>MGMT NOT VOTED` -- so demanding
+	// YES/NO there declines every line of those filings. The pair is tried first
+	// because it is what stops a description word being read as the proponent; the
+	// fallback compensates by requiring everything after the proponent to form a
+	// COMPLETE known vote value, which is the stricter test of the two.
+	p, voteAt := -1, -1
 	for k := len(fields) - 2; k >= 1; k-- {
 		pk := strings.ToUpper(fields[k])
 		vk := strings.ToUpper(fields[k+1])
 		if (pk == "MGMT" || pk == "SHLDR") && (vk == "YES" || vk == "NO") {
-			p = k
+			p, voteAt = k, k+2
 			break
 		}
 	}
-	if p < 1 || p+2 >= len(fields) {
+	if p < 0 {
+		for k := len(fields) - 2; k >= 1; k-- {
+			pk := strings.ToUpper(fields[k])
+			if pk != "MGMT" && pk != "SHLDR" {
+				continue
+			}
+			tail := fields[k+1:]
+			if len(tail) > 1 {
+				if last := strings.ToUpper(tail[len(tail)-1]); last == "FOR" || last == "AGNST" {
+					tail = tail[:len(tail)-1]
+				}
+			}
+			if pvTextVote(strings.ToUpper(strings.Join(tail, " "))) {
+				p, voteAt = k, k+1
+				break
+			}
+		}
+	}
+	if p < 1 || voteAt >= len(fields) {
 		return 0, nil, false
 	}
 
-	rest := fields[p+2:]
+	rest := fields[voteAt:]
 	if len(rest) > 1 {
 		last := strings.ToUpper(rest[len(rest)-1])
 		if last == "FOR" || last == "AGNST" {
@@ -401,6 +487,26 @@ func pvTextPageFurniture(line string) bool {
 	if t == "" || t == "<PAGE>" {
 		return true
 	}
+	// EDGAR table furniture printed between the header and the first meeting: a
+	// dashed rule, and the <S>/<C> column-width markers SGML uses to size columns.
+	// The layout used to close the table on the first of these, so filings carrying
+	// them yielded nothing at all rather than a partial read.
+	if strings.Trim(t, "- ") == "" && strings.Contains(t, "--") {
+		return true
+	}
+	if fs := strings.Fields(strings.ToUpper(t)); len(fs) > 0 {
+		allMarkers := true
+		for _, f := range fs {
+			if f != "<S>" && f != "<C>" && f != "<F>" && f != "<FN>" {
+				allMarkers = false
+				break
+			}
+		}
+		if allMarkers {
+			return true
+		}
+	}
+
 	up := strings.ToUpper(t)
 	if strings.HasPrefix(up, "PAGE ") {
 		rest := strings.TrimSpace(up[len("PAGE "):])

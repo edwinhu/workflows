@@ -1,0 +1,94 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ UUSh+LCO5cUpGdfq13hewIa0hoBL2hZBKHVRd94lYuZFOYPGMbHSC20dN7Tp+XC5
+ gzmg4PTtc79OMmt0Y7fnXA==
+
+<SEC-DOCUMENT>0000276461-04-000049.txt : 20040830
+<SEC-HEADER>0000276461-04-000049.hdr.sgml : 20040830
+<ACCEPTANCE-DATETIME>20040830093311
+ACCESSION NUMBER:		0000276461-04-000049
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040830
+DATE AS OF CHANGE:		20040830
+EFFECTIVENESS DATE:		20040830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			FIRST INVESTORS SPECIAL BOND FUND INC
+		CENTRAL INDEX KEY:			0000314480
+		IRS NUMBER:				133045137
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-02981
+		FILM NUMBER:		041003859
+
+	BUSINESS ADDRESS:	
+		STREET 1:		95 WALL ST
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10005
+		BUSINESS PHONE:		1-212-858-8000
+
+	MAIL ADDRESS:	
+		STREET 1:		581 MAIN STREET
+		CITY:			WOODBRIDGE
+		STATE:			NJ
+		ZIP:			07095
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>spbond.txt
+<DESCRIPTION>FIRST INVESTORS SPECIAL BOND FUND, INC.
+<TEXT>
+ISSUER NAME    TICKER    CUSIP    MTG    DATE    MTG    TYPE
+
+           Proposal Type Voted? Vote For/Agnst Mgmt
+
+   Echostar Communications Corp. DISH 278762109 5/6/04 A
+   1.00 Elect Michael T. Dugan				MGMT NOT VOTED
+   2.00 Elect James DeFranco				MGMT NOT VOTED
+   3.00 Elect Cantey Ergen				MGMT NOT VOTED
+   4.00 Elect Charles W. Ergen				MGMT NOT VOTED
+   5.00 Elect Raymond L. Friedlob			MGMT NOT VOTED
+   6.00 Elect Steven R. Goodbarn			MGMT NOT VOTED
+   7.00 Elect David K.
+ISSUER NAME    TICKER    CUSIP    MTG    DATE    MTG    TYPE
+
+           Proposal Type Voted? Vote For/Agnst Mgmt
+
+   Echostar Communications Corp. DISH 278762109 5/6/04 A
+   1.00 Elect Michael T. Dugan				MGMT NOT VOTED
+   2.00 Elect James DeFranco				MGMT NOT VOTED
+   3.00 Elect Cantey Ergen				MGMT NOT VOTED
+   4.00 Elect Charles W. Ergen				MGMT NOT VOTED
+   5.00 Elect Raymond L. Friedlob			MGMT NOT VOTED
+   6.00 Elect Steven R. Goodbarn			MGMT NOT VOTED
+   7.00 Elect David K. Moskowitz			MGMT NOT VOTED
+   8.00 Elect C. Michael Schroeder			MGMT NOT VOTED
+   9.00 Ratify the Appointment of KPMG LLP as
+	  Independent Auditors				MGMT NOT VOTED
+
+   NTL, Inc. NTLI 62940M104 5/6/04 A
+   1.00 ELECT Jeffrey D. Benjamin			MGMT NOT VOTED
+   2.00 ELECT David Elstein				MGMT NOT VOTED
+   3.00 Ratify the Appointment of Ernst & Young LLP
+	  as the Independent Auditors			MGMT NOT VOTED
+   4.00 Approval of the Amendment and Restatement of
+	  the NTL 2003 Stock Option Plan		MGMT NOT VOTED
+   5.00 Adoption of Share Issuance Feature of the
+	  NTL Group 2004 Bonus Scheme			MGMT NOT VOTED
+   6.00 Adoption of NTL, Inc. ShareSave Plan		MGMT NOT VOTED
+</TEXT>
+</DOCUMENT>
