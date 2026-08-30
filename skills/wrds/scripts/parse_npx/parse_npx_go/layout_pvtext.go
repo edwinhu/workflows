@@ -8,8 +8,10 @@ import "strings"
 // the complete header and closes on any line outside this grammar.
 
 const (
-	pvTextHeaderFirst  = "ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE"
-	pvTextHeaderSecond = "Proposal Type Voted? Vote For/Agnst Mgmt"
+	pvTextHeaderFirst = "ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE"
+	// The same header with MTG TYPE wrapped onto a continuation line.
+	pvTextHeaderFirstMin = "ISSUER NAME TICKER CUSIP MTG DATE"
+	pvTextHeaderSecond   = "Proposal Type Voted? Vote For/Agnst Mgmt"
 	// The column-aligned rendering wraps `Type` and `Mgmt` onto a third line.
 	pvTextHeaderSecondWrapped = "Proposal Voted? Vote For/Agnst"
 	pvTextHeaderThirdWrapped  = "Type Mgmt"
@@ -294,7 +296,15 @@ func pvTextHeaderLinesAt(lines []string, i int) int {
 	if i < 0 || i+1 >= len(lines) {
 		return 0
 	}
-	if pvTextCanonical(lines[i]) != strings.ToUpper(pvTextHeaderFirst) {
+	// The first line is a PREFIX match, not an exact one. `MTG TYPE` is the last
+	// column and sometimes wraps into the continuation, leaving the first line as
+	// `ISSUER NAME TICKER CUSIP MTG DATE`. Requiring the full form declined those
+	// filings outright.
+	first := pvTextCanonical(lines[i])
+	if !strings.HasPrefix(first, pvTextHeaderFirstMin) {
+		return 0
+	}
+	if first != pvTextHeaderFirstMin && first != strings.ToUpper(pvTextHeaderFirst) {
 		return 0
 	}
 	sawVote, last := false, i
@@ -336,7 +346,7 @@ func pvTextHeaderWords(line string) bool {
 	for _, f := range fields {
 		switch strings.Trim(f, ".,:") {
 		case "ISSUER", "NAME", "TICKER", "CUSIP", "MTG", "DATE", "TYPE",
-			"PROPOSAL", "VOTED?", "VOTED", "VOTE", "FOR/AGNST", "FOR/", "AGNST",
+			"PROPOSAL", "VOTED?", "VOTED", "VOTE", "CAST", "FOR/AGNST", "FOR/", "AGNST",
 			"MGMT", "FOR", "AGAINST", "<S>", "<C>", "<F>", "<FN>":
 		default:
 			return false
