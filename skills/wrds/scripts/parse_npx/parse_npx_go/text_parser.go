@@ -66,7 +66,7 @@ var layoutRegistry = []layoutEntry{
 		Match: matchBroadridge,
 		Parse: parseBroadridge,
 	},
-	// htmltable is LAST and must stay last: it is the generic fallback for the
+	// htmltable follows every named layout: it is the generic fallback for the
 	// unclaimed HTML-table residue, and it offers itself to every body the named
 	// layouts declined. Ahead of any of them it would steal filings whose vendor
 	// grammar a specific parser reads better.
@@ -74,6 +74,14 @@ var layoutRegistry = []layoutEntry{
 		Name:     "htmltable",
 		Match:    matchHTMLTable,
 		ParseRaw: parseHTMLTableRaw,
+	},
+	// fixedwidth is LAST and must stay last. It recognises one strict Glass Lewis
+	// text-table shape after htmltable has had the first chance to read real cell
+	// markup, so it cannot steal a filing from any structured layout above it.
+	{
+		Name:  "fixedwidth",
+		Match: matchFixedWidth,
+		Parse: parseFixedWidth,
 	},
 }
 
