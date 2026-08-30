@@ -18,7 +18,7 @@ const (
 	pvTextHeaderGapMax = 3
 	// How far past blanks and page furniture to look for the line that proves an
 	// unnumbered fragment is a continuation rather than the end of the table.
-	pvTextContinuationLookahead = 4
+	pvTextContinuationLookahead = 8
 )
 
 type pvTextMeeting struct {
@@ -175,7 +175,9 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 
 			if continuationRow >= 0 && pvTextDescriptionContinuationAt(lines, i) {
 				rows[continuationRow].VoteDescription += " " + line
-				continuationRow = -1
+				// continuationRow is NOT cleared: a run of echo lines all belong to
+				// the row above them, and clearing after the first left the second
+				// with nothing to attach to, which closed the table.
 				continue
 			}
 		}
@@ -281,23 +283,33 @@ func pvTextDescriptionContinuationAt(lines []string, i int) bool {
 	// that blank rejected the echo as a continuation -- which closed the table. The
 	// cost was severe and invisible: only the FIRST meeting of each section survived,
 	// so one filing yielded 8 issuers out of 2,681 meetings.
-	next := ""
+	// Look past blanks, page furniture AND further unnumbered lines for the next real
+	// row. A vote can be followed by a RUN of echo lines -- one filing prints three,
+	// including a duplicate:
+	//
+	//	1.10   Elect Director Samuel Zell        MGMT  YES  FOR  FOR
+	//	       Elect Director Lord James Blyth
+	//	       Elect Director Lord James Blyth
+	//	       Elect Director Samuel Zell
+	//	1.20   Elect Director Robert L. Crandall MGMT  YES  FOR  FOR
+	//
+	// Stopping at the first of those found a line that was neither meeting nor item
+	// and closed the table. The run is BOUNDED: what proves these are continuations
+	// rather than the end of the report is that a real row follows within a few lines.
 	for k := i + 1; k < len(lines) && k <= i+pvTextContinuationLookahead; k++ {
 		t := strings.TrimSpace(lines[k])
 		if t == "" || pvTextPageFurniture(t) {
 			continue
 		}
-		next = t
-		break
+		if _, ok := pvTextMeetingLine(t); ok {
+			return true
+		}
+		if f := strings.Fields(t); len(f) > 0 && pvTextItem(f[0]) {
+			return true
+		}
+		// another unnumbered line: keep looking within the bound
 	}
-	if next == "" {
-		return false
-	}
-	if _, ok := pvTextMeetingLine(next); ok {
-		return true
-	}
-	fields := strings.Fields(next)
-	return len(fields) > 0 && pvTextItem(fields[0])
+	return false
 }
 
 // pvTextMeetingLine reads the identity fields from the right because the issuer
