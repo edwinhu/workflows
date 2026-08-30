@@ -238,6 +238,16 @@ var howVotedVocabulary = map[string]bool{
 	"VOTED - FOR": true, "VOTED - AGAINST": true, "VOTED - ABSTAIN": true,
 	"VOTED - WITHHOLD": true, "VOTED - WITHHELD": true, "VOTED - NONE": true,
 	"VOTED": true, "NOT VOTED": true,
+
+	// Read off 000000/2230/0000002230-06-000041.txt and its family (1,223 filings
+	// carrying the `Description | Proposal Type | Voted | Vote | For/ Agnst Mgmt`
+	// header). `AGNST` is that filer's spelling of Against and `FOR ALL-DIRS` its
+	// spelling of a for-all-directors slate vote. Both are what the filing PRINTED,
+	// and how_voted is verbatim by contract, so they belong in the validity
+	// vocabulary rather than being normalised away or dropped. Admitting a real
+	// spelling is not the same as relaxing this invariant: junk like `31,` or
+	// `#160;`, which is what this test was built to catch, is still rejected.
+	"AGNST": true, "FOR ALL-DIRS": true,
 }
 
 func isVoteValue(s string) bool {
