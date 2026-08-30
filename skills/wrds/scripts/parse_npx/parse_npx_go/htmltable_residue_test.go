@@ -148,3 +148,34 @@ func TestHTMLTableMappingDoesNotFloatIntoTheNextTable(t *testing.T) {
 			" through it", len(rows))
 	}
 }
+
+// TestHTMLHyphenatedCUSIPDisqualifiesAHeader closes a gap codex review found and
+// that my own H7 fixture demonstrates: htmlIsCUSIP recognises exactly nine
+// unpunctuated alphanumerics, so the printed form `002824-10-0` is not seen as a
+// value. A context row carrying it can therefore pass the label-only header test,
+// map three fields, and be adopted as a header -- putting an issuer name, a
+// hyphenated CUSIP and a date into the description, proposer and vote columns.
+//
+// EDGAR prints CUSIPs both ways. A value test that only knows one spelling is a
+// header test with a hole in it, on the population where a wrong column mapping
+// cannot be caught downstream.
+func TestHTMLHyphenatedCUSIPDisqualifiesAHeader(t *testing.T) {
+	doc := htmlDoc(
+		// A context row in the printed style: it is DATA, not a header.
+		htmlRow("Issuer: Abbott Laboratories", "Ticker: ABT", "CUSIP: 002824-10-0", "Meeting Date: 04/28/2006") +
+			htmlRow("Elect Directors", "MGMT", "For", "For") +
+			htmlRow("Ratify Auditors", "MGMT", "For", "For") +
+			htmlRow("Approve Compensation", "MGMT", "For", "Against"))
+
+	for i, r := range runISSNPXDoc(t, doc) {
+		if d := r[colVoteDescription]; d == "Issuer: Abbott Laboratories" || d == "Elect Directors" && r[colHowVoted] == "For" {
+			continue // the second is a legitimate parse if a real header were found
+		}
+		if r[colHowVoted] == "Meeting Date: 04/28/2006" || r[colVoteSource] == "CUSIP: 002824-10-0" {
+			t.Fatalf("row %d mapped a context row as a header: vote_source=%q how_voted=%q."+
+				" `CUSIP: 002824-10-0` is a printed CUSIP and must disqualify a header candidate;"+
+				" htmlIsCUSIP only recognises the nine-character unpunctuated spelling.",
+				i, r[colVoteSource], r[colHowVoted])
+		}
+	}
+}

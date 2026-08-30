@@ -1,0 +1,357 @@
+<SEC-DOCUMENT>0001580642-19-003739.txt : 20190819
+<SEC-HEADER>0001580642-19-003739.hdr.sgml : 20190819
+<ACCEPTANCE-DATETIME>20190819140755
+ACCESSION NUMBER:		0001580642-19-003739
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20190630
+FILED AS OF DATE:		20190819
+DATE AS OF CHANGE:		20190819
+EFFECTIVENESS DATE:		20190819
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Equinox Funds Trust
+		CENTRAL INDEX KEY:			0001498272
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22447
+		FILM NUMBER:		191035957
+
+	BUSINESS ADDRESS:	
+		STREET 1:		450 WIRELESS BOULEVARD
+		CITY:			HAUPPAUGE
+		STATE:			NY
+		ZIP:			11788
+		BUSINESS PHONE:		631-470-2600
+
+	MAIL ADDRESS:	
+		STREET 1:		450 WIRELESS BOULEVARD
+		CITY:			HAUPPAUGE
+		STATE:			NY
+		ZIP:			11788
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001498272
+<SERIES-ID>S000033104
+<SERIES-NAME>Equinox Chesapeake Strategy Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000101993
+<CLASS-CONTRACT-NAME>Equinox Chesapeake Strategy Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>EQCHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161623
+<CLASS-CONTRACT-NAME>Equinox Chesapeake Strategy Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>ECHAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161624
+<CLASS-CONTRACT-NAME>Equinox Chesapeake Strategy Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>ECHCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001498272
+<SERIES-ID>S000033128
+<SERIES-NAME>Equinox Ampersand Strategy Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102021
+<CLASS-CONTRACT-NAME>Equinox Ampersand Strategy Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>EEHAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102022
+<CLASS-CONTRACT-NAME>Equinox Ampersand Strategy Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>EEHCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102023
+<CLASS-CONTRACT-NAME>Equinox Ampersand Strategy Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>EEHIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001498272
+<SERIES-ID>S000039100
+<SERIES-NAME>Equinox Campbell Strategy Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000120205
+<CLASS-CONTRACT-NAME>Equinox Campbell Strategy Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>EBSAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000120206
+<CLASS-CONTRACT-NAME>Equinox Campbell Strategy Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>EBSIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000120207
+<CLASS-CONTRACT-NAME>Equinox Campbell Strategy Fund Class P
+<CLASS-CONTRACT-TICKER-SYMBOL>EBSPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000132320
+<CLASS-CONTRACT-NAME>Equinox Campbell Strategy Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>EBSCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000198554
+<CLASS-CONTRACT-NAME>Equinox Campbell Strategy Fund Class SI
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001498272
+<SERIES-ID>S000047271
+<SERIES-NAME>Equinox Aspect Core Diversified Strategy Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000148182
+<CLASS-CONTRACT-NAME>Equinox Aspect Core Diversified Strategy Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>EQAIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161625
+<CLASS-CONTRACT-NAME>Equinox Aspect Core Diversified Strategy Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>EQAAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161626
+<CLASS-CONTRACT-NAME>Equinox Aspect Core Diversified Strategy Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>EQACX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001498272
+<SERIES-ID>S000050003
+<SERIES-NAME>Equinox IPM Systematic Macro Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000157904
+<CLASS-CONTRACT-NAME>Equinox IPM Systematic Macro Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>EQIPX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>equinoxfundsnpx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-indent: 1.5in">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center">UNITED STATES</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center">SECURITIES AND EXCHANGE COMMISSION</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center">Washington, DC 20549</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center">FORM N-PX</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center">ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED
+MANAGEMENT INVESTMENT COMPANY</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">Investment Company Act file number: 811- 22447</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-indent: 1in">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0; border-bottom: black 1px solid; margin-bottom: 0; text-align: center"><B>Equinox Funds Trust</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center">(Exact
+name of registrant as specified in charter)</P>
+
+<P STYLE="font: 10pt Garamond, Times, Serif; margin-top: 0; text-align: center; margin-bottom: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Garamond, Times, Serif; margin-top: 0; text-align: center; margin-bottom: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0; border-bottom: Black 0.5pt solid; margin-bottom: 0; text-align: center">17645 Wright
+Street, Omaha NE 68130</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0; text-align: center; margin-bottom: 0">(Address of principal executive offices) &#9; (Zip code)</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center">The Corporation Trust Company</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center">Corporation Trust Center</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center">251 Little Falls Drive</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0; border-bottom: black 1px solid; margin-bottom: 0; text-align: center">Wilmington, DE 19801</P>
+
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center">(Name and address of agent for service)</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">Registrant's telephone number, including area code: (302) 791-1851</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">Date of fiscal year end: September 30 and June 30</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">Date of reporting period: July 1, 2018 - June 30, 2019</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: justify">ITEM 1. PROXY VOTING RECORD:</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: justify; color: #221E1F">Form N-PX is to be used by
+a registered management investment company, other than a small business investment company registered on Form N-5 (&sect;&sect;
+239.24 and 274.5 of this chapter), to file reports with the Commission, not later than August 31 of each year, containing the registrant&#8217;s
+proxy voting record for the most recent twelve-month period ended June 30, pursuant to section 30 of the Investment Company Act
+of 1940 and rule 30b1-4 thereunder (17 CFR 270.30b1-4). The Commission may use the information provided on Form N-PX in its regulatory,
+disclosure review, inspection, and policymaking roles.</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: justify; color: #221E1F">A registrant is required to
+disclose the information specified by Form N-PX, and the Commission will make this information public. A registrant is not required
+to respond to the collection of information contained in Form N-PX unless the Form displays a currently valid Office of Management
+and Budget (&#8220;OMB&#8221;) control number. Please direct comments concerning the accuracy of the information collection burden
+estimate and any suggestions for reducing the burden to the Secretary, Securities and Exchange Commission, 450 Fifth Street, NW,
+Washington, DC 20549-0609. The OMB has reviewed this collection of information under the clearance requirements of 44 U.S.C. &sect;
+3507.</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: justify; text-indent: 0.5in">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: justify">Appended hereto is the following information
+indicating for each matter relating to a portfolio security owned by the Registrant considered at any shareholder meeting held
+during the twelve month period ended June 30, 2019 with respect to which the Registrant was entitled to vote:</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font-size: 10pt; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="5" STYLE="white-space: nowrap; font: 10pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Registrant:<U>&nbsp;&nbsp;&nbsp;&nbsp;Equinox Funds Trust&nbsp;&nbsp;- Equinox Ampersand Strategy Fund</U></B></FONT></TD>
+    <TD COLSPAN="2" STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="white-space: nowrap; font: 10pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Investment Company Act file number: 811-2247 </B></FONT></TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="white-space: nowrap; font: 10pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Reporting Period: </B>July 1, 2018 through June 30, 2019</FONT></TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="white-space: nowrap; border-top: Black 1pt solid; border-left: Black 1pt solid; font: 10pt Calibri, Helvetica, Sans-Serif; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B><U>FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</U></B></FONT></TD></TR>
+<TR>
+    <TD STYLE="border: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Calibri, Helvetica, Sans-Serif; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(a) Issuer's Name</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Calibri, Helvetica, Sans-Serif; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(b) Exchange Ticker Symbol</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Calibri, Helvetica, Sans-Serif; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(c)&quot;CUSIP&quot; #</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Calibri, Helvetica, Sans-Serif; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(d) Shareholder Meeting Date</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="border-top: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Calibri, Helvetica, Sans-Serif; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(e) Matter Identification</B></FONT></TD>
+    <TD STYLE="border: Black 1pt solid; font: 10pt Calibri, Helvetica, Sans-Serif; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(f) Proposal Type</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Calibri, Helvetica, Sans-Serif; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(g) Voted</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Calibri, Helvetica, Sans-Serif; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(h) Vote Cast</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Calibri, Helvetica, Sans-Serif; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(i) For/Against Management</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; border-left: Black 1pt solid; font: 10pt Calibri, Helvetica, Sans-Serif; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">1</FONT></TD>
+    <TD COLSPAN="2" STYLE="font: 10pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; color: #1F497D">There were no proxy votes to report during the Reporting Period.&nbsp; The Fund did not receive any proxies during the Reporting Period.</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; width: 1%; border-left: Black 1pt solid; font: 10pt Calibri, Helvetica, Sans-Serif; border-right: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">2</FONT></TD>
+    <TD STYLE="white-space: nowrap; width: 11%; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 10%; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 9%; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 10%; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 8%; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 8%; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 8%; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 6%; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 11%; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 18%; border-right: Black 1pt solid">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; border-left: Black 1pt solid; font: 10pt Calibri, Helvetica, Sans-Serif; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">3</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; border-left: Black 1pt solid; font: 10pt Calibri, Helvetica, Sans-Serif; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">4</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid">&nbsp;</TD></TR>
+</TABLE>
+</TEXT>
+</DOCUMENT>

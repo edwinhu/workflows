@@ -42,6 +42,13 @@ type layoutEntry struct {
 // downstream, so declining is the only safe answer.
 var errLayoutDeclined = errors.New("layout declined the body")
 
+// errLayoutNoActivity is a successful zero-row parse proved by a layout from the
+// document's own structured body. It differs from a parser merely returning no
+// rows: the latter is withdrawn when the filing still prints vote-table
+// vocabulary, while the former is affirmative evidence that the table says it
+// holds no votes.
+var errLayoutNoActivity = errors.New("layout identified a no-activity report")
+
 // layoutRegistry is matched in order; the first hit wins.
 var layoutRegistry = []layoutEntry{
 	{
@@ -117,6 +124,7 @@ var noActivitySentinels = []string{
 	"no proxies voted",
 	"no securities were voted",
 	"not required to vote any proxies",
+	"no companies in which the registrant held voting securities",
 }
 
 // voteTableVocabulary is the column and label vocabulary a legacy vote table
@@ -259,6 +267,11 @@ func parseText(body []byte, meta FilingMeta) *ParseResult {
 		}
 		res.Meta.Layout = entry.Name
 		rows, perr := runLayoutParser(entry, decoded, text, res.Meta)
+		if errors.Is(perr, errLayoutNoActivity) {
+			res.Meta.ParseStatus = "ok"
+			res.Meta.NRows = 0
+			return res
+		}
 		if errors.Is(perr, errLayoutDeclined) {
 			// Not a parse failure: the layout read the body and found nothing it
 			// can key on. Unset the name so the filing keeps its body-derived
@@ -305,16 +318,9 @@ func parseText(body []byte, meta FilingMeta) *ParseResult {
 			res.Meta.NRows = 0
 			return res
 		}
-		// A cover page says nothing at all rather than saying it has nothing:
-		// registrant, address, signature, and a proxy voting record that is simply
-		// absent. 2,792 of the 5,529 HTML documents still declining are this shape.
-		// `skip` on one of them asserts we failed to read a filing that holds
-		// nothing to read, and buries the filings we genuinely cannot parse under
-		// five times their number in noise.
-		//
-		// The table test is not decoration. ~300 of the same 5,529 also carry no
-		// vocabulary and hundreds of real votes, in a table whose columns are
-		// positional and unlabelled; vocabulary alone would declare those empty.
+		// Raw markup may also prove the table is empty, but only in the narrow case
+		// htmlPrintsNoVoteTable recognises. A low parse yield proves nothing: compact,
+		// unclosed and vertically padded vote records must remain skip.
 		if htmlPrintsNoVoteTable(decoded) {
 			res.Meta.Layout = "cover-page"
 			res.Meta.ParseStatus = "ok"
