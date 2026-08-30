@@ -250,8 +250,21 @@ var howVotedVocabulary = map[string]bool{
 	"AGNST": true, "FOR ALL-DIRS": true,
 }
 
+// isVoteValue consults the PARSERS' OWN validators before falling back to the static
+// list. Three times in one session a layout learned a real spelling -- SPLIT, WHOLD --
+// and this hand-maintained map did not, so a clean parser failed its own invariant and
+// each drift cost a diagnosis. A vocabulary duplicated between the code under test and
+// the test is two sources of truth for one fact.
+//
+// The static map still carries the spellings no single layout owns (the XML era, the
+// ISS enumeration, vanguard's `VOTED - FOR` family), so it cannot simply be deleted.
 func isVoteValue(s string) bool {
-	return howVotedVocabulary[strings.ToUpper(strings.Join(strings.Fields(s), " "))]
+	v := strings.ToUpper(strings.Join(strings.Fields(s), " "))
+	if howVotedVocabulary[v] {
+		return true
+	}
+	// A value either layout accepts is a value the corpus really prints.
+	return pvTextVote(v) || htmlIsVoteValue(v)
 }
 
 // TestHowVotedVocabularyInvariant is the check that would have caught the

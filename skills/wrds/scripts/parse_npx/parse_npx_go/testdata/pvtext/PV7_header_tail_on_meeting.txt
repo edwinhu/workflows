@@ -1,0 +1,191 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ PIf6fiUA3o/O81NYZyofO43azYBIHBPLIqe4/AOr+3rRXbMolGwkHaWotPmMrAVT
+ dqXTI8marKQJXA/tEvvsKw==
+
+<SEC-DOCUMENT>0000935069-04-001304.txt : 20040830
+<SEC-HEADER>0000935069-04-001304.hdr.sgml : 20040830
+<ACCEPTANCE-DATETIME>20040830165707
+ACCESSION NUMBER:		0000935069-04-001304
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040830
+DATE AS OF CHANGE:		20040830
+EFFECTIVENESS DATE:		20040830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			WILSHIRE MUTUAL FUNDS INC
+		CENTRAL INDEX KEY:			0000890453
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07076
+		FILM NUMBER:		041005912
+
+	BUSINESS ADDRESS:	
+		STREET 1:		760 MOORE RD
+		STREET 2:		C/O PFPC INC.
+		CITY:			KING OF PRUSSIA
+		STATE:			PA
+		ZIP:			19406
+		BUSINESS PHONE:		6103828662
+
+	MAIL ADDRESS:	
+		STREET 1:		760 MOORE ROAD
+		STREET 2:		C/O PFPC INC
+		CITY:			KING OF PRUSSIA
+		STATE:			PA
+		ZIP:			19406
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	WILSHIRE TARGET FUNDS INC
+		DATE OF NAME CHANGE:	19960603
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	DREYFUS WILSHIRE TARGET FUNDS INC
+		DATE OF NAME CHANGE:	19921014
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	DREYFUS WILSHIRE SERIES FUND INC/
+		DATE OF NAME CHANGE:	19921014
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>wilshirenpx.txt
+<DESCRIPTION>WILSHIRE N-PX
+<TEXT>
+ISSUER NAME                                          TICKER        CUSIP           MTG DATE           MTG TYPE
+                                                                                   Proposal Type      Voted?    Vote   For/
+1-800 Contacts                                       CTAC          681977104       5/21/04            Annual           Agnst Mgmt
+               <S>    <C>                            <C>           <C>             <C>                <C>       <C>    <C>
+               1.01   Elect Johnathan C. Coon                                      MGMT               YES       FOR    FOR
+               1.02   Elect Bradley T. Knight                                      MGMT               YES       FOR    FOR
+               1.03   Elect Jason S. Subotky                                       MGMT               YES       FOR    FOR
+                  2   Amend Stock Option Plan                                      MGMT               YES       FOR    FOR
+                      Add Shares to Stock Option Plan
+                  3   Ratify Selection of Auditors                                 MGMT               YES       FOR    FOR
+
+1st Source                                           SRCE          336901103       4/28/04            Annual
+               1.01   Elect David C. Bowers                                        MGMT               YES       FOR    FOR
+               1.02   Elect Daniel B. Fitzpatrick                                  MGMT               YES       FOR    FOR
+               1.03   Elect Terry L. Gerber                                        MGMT               YES       FOR    FOR
+               1.04   Elect Wellington D. Jones III                                MGMT               YES       FOR    FOR
+               1.05   Elect Craig A. Kapson                                        MGMT               YES       FOR    FOR
+               1.06   Elect Dane A. Miller                                         MGMT               YES       FOR    FOR
+               1.07   Elect John T. Phair                                          MGMT               YES       FOR    FOR
+               1.08   Elect Mark D. Schwabero                                      MGMT               YES       FOR    FOR
+               1.09   Elect Toby S. Wilt                                           MGMT               YES       FOR    FOR
+                  2   Reapprove Option/Bonus Plan for OBRA                         MGMT               YES       FOR    FOR
+
+21st Century Insurance Group                         TW            90130N103       5/26/04            Annual
+               1.01   Elect John B. De Nault III                                   MGMT               YES       FOR    FOR
+               1.02   Elect Carlene M. Ellis                                       MGMT               YES       FOR    FOR
+               1.03   Elect R. Scott Foster                                        MGMT               YES       FOR    FOR
+               1.04   Elect Roxani M. Gillespie                                    MGMT               YES       FOR    FOR
+               1.05   Elect Jeffery L. Hayman                                      MGMT               YES       FOR    FOR
+               1.06   Elect Phillip I. Isenberg                                    MGMT               YES       FOR    FOR
+               1.07   Elect Bruce W. Marlow                                        MGMT               YES       FOR    FOR
+               1.08   Elect James P. Miscoll                                       MGMT               YES       FOR    FOR
+               1.09   Elect Keith W. Renken                                        MGMT               YES       FOR    FOR
+                1.1   Elect Robert M. Sandler                                      MGMT               YES       FOR    FOR
+               1.11   Elect Howard I. Smith                                        MGMT               YES       FOR    FOR
+                  2   Ratify Selection of Auditors                                 MGMT               YES       FOR    FOR
+                  3   Approve Annual Bonus Plan                                    MGMT               YES       FOR    FOR
+                  4   Adopt Stock Option Plan                                      MGMT               YES       AGNST  AGNST
+
+3D Systems                                           TDSC          88554D205       5/19/04            Annual
+               1.01   Elect Miriam V. Gold                                         MGMT               YES       FOR    FOR
+               1.02   Elect Abraham N. Reichental                                  MGMT               YES       FOR    FOR
+                  2   Restore Special Meeting                                      MGMT               YES       FOR    FOR
+                  3   Repeal Classified Board                                      MGMT               YES       FOR    FOR
+                  4   Restore Written Consent                                      MGMT               YES       FOR    FOR
+                  5   Approve Non-Technical Charter Amendments                     MGMT               YES       FOR    FOR
+                  6   Eliminate Supermajority Lock-in                              MGMT               YES       FOR    FOR
+                  7   Adopt Stock Option Plan                                      MGMT               YES       AGNST  AGNST
+                  8   Adopt Director Stock Award Plan                              MGMT               YES       AGNST  AGNST
+                  9   Ratify Selection of Auditors                                 MGMT               YES       FOR    FOR
+
+3M Co                                                MMM           88579Y101       5/11/04            Annual
+               1.01   Elect Edward A. Brennan                                      MGMT               YES       FOR    FOR
+               1.02   Elect Michael L. Eskew                                       MGMT               YES       FOR    FOR
+               1.03   Elect W. James McNerney Jr.                                  MGMT               YES       FOR    FOR
+               1.04   Elect Kevin W. Sharer                                        MGMT               YES       FOR    FOR
+                  2   Ratify Selection of Auditors                                 MGMT               YES       FOR    FOR
+                  3   Increase Authorized Common Stock                             MGMT               YES       FOR    FOR
+                  4   Independent Board Chairman                                   SHLDR              YES       FOR    AGNST
+
+
+
+7-Eleven                                             SE            817826209       4/21/04            Annual
+               1.01   Elect Toshifumi Suzuki                                       MGMT               YES       FOR    FOR
+               1.02   Elect Yoshitami Arai                                         MGMT               YES       FOR    FOR
+               1.03   Elect Masaaki Asakura                                        MGMT               YES       FOR    FOR
+               1.04   Elect Jay W. Chai                                            MGMT               YES       FOR    FOR
+               1.05   Elect R. Randolph Devening                                   MGMT               YES       FOR    FOR
+               1.06   Elect Gary J. Fernandes                                      MGMT               YES       FOR    FOR
+               1.07   Elect Masaaki Kamata                                         MGMT               YES       FOR    FOR
+               1.08   Elect James W. Keyes                                         MGMT               YES       FOR    FOR
+               1.09   Elect Kazuo Otsuka                                           MGMT               YES       FOR    FOR
+                1.1   Elect Lewis E. Platt                                         MGMT               YES       FOR    FOR
+                  2   Ratify Selection of Auditors                                 MGMT               YES       FOR    FOR
+                  3   Approve Annual Bonus Plan                                    MGMT               YES       FOR    FOR
+                  4   Approve Other Business                                       MGMT               YES       FOR    FOR
+
+ABC Bancorp                                          ABCB          000400101       5/18/04            Annual
+               1.01   Elect Johnny W. Floyd                                        MGMT               YES       FOR    FOR
+               1.02   Elect Eswin W. Hortman Jr.                                   MGMT               YES       FOR    FOR
+               1.03   Elect Daniel B. Jeter                                        MGMT               YES       FOR    FOR
+                  2   Ratify Selection of Auditors                                 MGMT               YES       FOR    FOR
+                  3   Approve Other Business                                       MGMT               YES       FOR    FOR
+
+Abercrombie & Fitch                                  ANF           002896207       5/20/04            Annual
+               1.01   Elect John A. Golden                                         MGMT               YES       FOR    FOR
+               1.02   Elect Seth R. Johnson                                        MGMT               YES       FOR    FOR
+               1.03   Elect Edward F. Limato                                       MGMT               YES       FOR    FOR
+
+ABM Industries                                       ABM           000957100       3/9/04             Annual
+               1.01   Elect Luke S. Helms                                          MGMT               YES       WHOLD  AGNST
+               1.02   Elect Henry L. Kotkins Jr.                                   MGMT               YES       FOR    FOR
+               1.03   Elect William W. Steele                                      MGMT               YES       WHOLD  AGNST
+                  2   Adopt Employee Stock Purchase Plan                           MGMT               YES       FOR    FOR
+
+ABX Air                                              AB                            5/6/04             Annual
+                  1   Elect Director Nominee                                       MGMT               YES       FOR    FOR
+                  2   Ratify Selection of Auditors                                 MGMT               YES       FOR    FOR
+
+Action Performance                                   ATN           004933107       3/5/04             Annual
+               1.01   Elect Fred W. Wagenhals                                      MGMT               YES       FOR    FOR
+               1.02   Elect R. David Martin                                        MGMT               YES       FOR    FOR
+               1.03   Elect Melodee L. Volosin                                     MGMT               YES       FOR    FOR
+               1.04   Elect John S. Bickford Sr.                                   MGMT               YES       FOR    FOR
+               1.05   Elect Herbert M. Baum                                        MGMT               YES       WHOLD  AGNST
+               1.06   Elect Edward J. Bauman                                       MGMT               YES       FOR    FOR
+               1.07   Elect Roy A. Herberger Jr.                                   MGMT               YES       FOR    FOR
+               1.08   Elect Robert L. Matthews                                     MGMT               YES       FOR    FOR
+               1.09   Elect Lowell L. Robertson                                    MGMT               YES       FOR    FOR
+                  2   Ratify Selection of Auditors                                 MGMT               YES       FOR    FOR
+
+Acusphere Inc                                        ACUS          00511R870       6/10/04            Annual
+               1.01   Elect Sherri C. Oberg                                        MGMT               YES       FOR    FOR
+
+Adams Resources and Energy                                         006351          5/14/04            Annual
+                  1   Elect Director Nominee                                       MGMT               YES       FOR    FOR
+                      Ratify Selection of Auditors
+
+Administaff                                          ASF           007094105       5/6/04             Annual
+               1.01   Elect Jack M. Fields, Jr.                                    MGMT               YES       FOR    FOR
+               1.02   Elect Paul S. Lattanzio                                      MGMT               YES       FOR    FOR
+</TEXT>
+</DOCUMENT>

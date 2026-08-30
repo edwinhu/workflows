@@ -405,11 +405,24 @@ func pvTextDescriptionContinuationAt(lines []string, i int) bool {
 	return false
 }
 
-// pvTextMeetingLine reads the identity fields from the right because the issuer
-// is free text. The exact nine-character CUSIP and parseable numeric date anchor
-// the split; a line without both is not a meeting in this grammar.
+// pvTextMeetingLine locates the date/type pair rather than counting from the
+// right: a wrapped header can leave trailing words on the same physical line as
+// the meeting. The closed meeting-type vocabulary keeps this search out of prose.
 func pvTextMeetingLine(line string) (pvTextMeeting, bool) {
 	fields := strings.Fields(line)
+	// AN ITEM-NUMBERED LINE IS NEVER A MEETING. The caller tries meetings before
+	// votes, and searching for the date rather than indexing from the end made a vote
+	// row whose DESCRIPTION contains a date and a meeting-type word match here:
+	//
+	//	1.01 Approve 5/4/04 Annual Meeting MGMT YES FOR FOR
+	//	  -> matched as a meeting, issuer "1.01"
+	//
+	// That is worse than the shape the search was added for: the vote is lost AND the
+	// meeting context is corrupted for every row after it. Descriptions are free text,
+	// so this will occur; the item number is what distinguishes the two grammars.
+	if len(fields) > 0 && pvTextItemLoose(fields[0]) {
+		return pvTextMeeting{}, false
+	}
 	// Three fields is the floor, not five: a single-word issuer with no ticker and no
 	// CUSIP prints `Accor  4/26/04  Special`. Requiring five declined it, which closed
 	// the table. The strict CUSIP/ticker path below does its own bounds checking.
@@ -417,52 +430,47 @@ func pvTextMeetingLine(line string) (pvTextMeeting, bool) {
 		return pvTextMeeting{}, false
 	}
 
-	// The CUSIP is the strongest anchor but it is NOT always printed: foreign
-	// issuers appear as `Abitibi Consolidated Inc.  A.  4/29/04  Annual` and
-	// `Ace Ltd.  ACE  5/27/04  Annual`, with a ticker and no CUSIP. Requiring one
-	// meant those meetings were not recognised, the table closed on them, and the
-	// REST OF THE DOCUMENT was lost -- in the PV5 fixture every meeting after the
-	// first, 23 of 40 rows.
-	//
-	// Without a CUSIP the remaining anchor is a parseable date immediately before a
-	// meeting type, preceded by a ticker-shaped token. That is a narrower net than it
-	// looks: an item or vote line begins with an item number, which is checked by the
-	// caller before this is reached, and prose rarely ends in `<TICKER> <date> <type>`.
-	n := len(fields)
-	date := htmlDate(fields[n-2])
-	if date == "" {
+	// Search from the right for a parseable date immediately followed by a CLOSED
+	// meeting type. Words after that pair are wrapped header text, not identity fields.
+	dateAt, date := -1, ""
+	for i := len(fields) - 2; i >= 1; i-- {
+		if parsed := htmlDate(fields[i]); parsed != "" && pvTextMeetingType(fields[i+1]) {
+			dateAt, date = i, parsed
+			break
+		}
+	}
+	if dateAt < 0 {
 		return pvTextMeeting{}, false
 	}
+	meetingType := fields[dateAt+1]
 
-	cusip, tickerAt := "", n-4
-	if n >= 4 && pvTextCUSIP(fields[n-3]) {
-		cusip = fields[n-3]
+	// The CUSIP is the strongest identity anchor but it is NOT always printed:
+	// foreign issuers can carry a ticker only, or neither ticker nor CUSIP.
+	cusip, tickerAt := "", dateAt-2
+	if dateAt >= 2 && pvTextCUSIP(fields[dateAt-1]) {
+		cusip = fields[dateAt-1]
 	} else {
 		// No CUSIP column: the ticker sits directly before the date.
-		tickerAt = n - 3
+		tickerAt = dateAt - 1
 	}
 	if tickerAt < 1 || !pvTextTicker(fields[tickerAt]) {
 		// Neither CUSIP nor ticker. Foreign issuers print only a name, a date and a
 		// meeting type: `3I Group PLC (formerly Investors In Industry)  7/9/03  Annual`.
 		// One filing of 16,259 vote lines yielded 70 rows because every one of its
 		// meetings looks like this and none was recognised.
-		//
-		// This is the loosest form the grammar takes, so it is anchored on a CLOSED
-		// meeting-type vocabulary rather than on shape alone. Surveyed over 30 filings,
-		// the word after the date is one of: Annual, AGM, Special, MIX, OGM, EGM,
-		// Specific, or a single letter A/S/B/C. The caller has already rejected
-		// item-numbered lines before this is reached.
-		if !pvTextMeetingType(fields[n-1]) {
-			return pvTextMeeting{}, false
+		issuerEnd := dateAt
+		if cusip != "" {
+			issuerEnd--
 		}
-		issuer := strings.Join(fields[:n-2], " ")
+		issuer := strings.Join(fields[:issuerEnd], " ")
 		if issuer == "" {
 			return pvTextMeeting{}, false
 		}
 		return pvTextMeeting{
 			issuer:      issuer,
+			cusip:       cusip,
 			meetingDate: date,
-			meetingType: fields[n-1],
+			meetingType: meetingType,
 		}, true
 	}
 	issuer := strings.Join(fields[:tickerAt], " ")
@@ -475,7 +483,7 @@ func pvTextMeetingLine(line string) (pvTextMeeting, bool) {
 		ticker:      fields[tickerAt],
 		cusip:       cusip,
 		meetingDate: date,
-		meetingType: fields[n-1],
+		meetingType: meetingType,
 	}, true
 }
 
