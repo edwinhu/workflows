@@ -96,7 +96,20 @@ func matchHTMLTable(string) bool { return true }
 // signatureHeadBytes bounds how much normalized text a signature predicate sees.
 // Signatures are banners and column headers, which live in the head; scanning a
 // 200 MB body for one per registry entry would be a per-filing waste.
-const signatureHeadBytes = 128 << 10
+// signatureHeadBytes bounds how much normalized text a signature predicate sees.
+//
+// 128 KB was too small and the failure was invisible: a layout simply never claimed
+// the filing, which showed up as `skip` with an `unknown:` signature rather than as an
+// error. Measured over 40 filings that yielded nothing, the byte offset of the pvtext
+// header has median 2,784 but p90 2,260,260 and max 10,972,887 -- 12 of the 40 sit
+// beyond 128 KB. One 5.5 MB filing carries its first vote table at line 28,340; its
+// fixture passed while the filing itself returned zero rows.
+//
+// Every matcher is a linear line or substring scan, so the cost of a larger window is
+// linear in the bytes examined and is paid once per filing. The whole 13,229-filing
+// skip pile parses in 140 s at concurrency 4; the runtime is re-measured after this
+// change rather than assumed.
+const signatureHeadBytes = 16 << 20
 
 // noActivitySentinels mark a fund that had nothing to vote. A filing whose funds
 // all report one of these is a real and common outcome, not a parser failure, so
