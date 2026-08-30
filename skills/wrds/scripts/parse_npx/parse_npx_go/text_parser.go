@@ -272,6 +272,21 @@ func parseText(body []byte, meta FilingMeta) *ParseResult {
 			res.Meta.NRows = 0
 			return res
 		}
+		// A layout that claimed the filing and read NOTHING out of it reaches the
+		// same ok/n_rows=0 the nil-report branch below reaches -- but by a path that
+		// never consults the vocabulary check, because it never gets there. An audit
+		// of every filing classified nil found 6 carrying vote-table vocabulary,
+		// which the stated rule forbids outright, and this is how: a signature
+		// matched, the walk produced no row, and the manifest recorded "we read this
+		// filing and it held no votes" about a body printing `Vote Cast`. Zero rows
+		// out of a body that reads like a vote table is a failure to read it, so the
+		// claim is withdrawn the same way errLayoutDeclined withdraws one: the name
+		// is unset and the filing carries on to the layouts behind this one, and to
+		// skip if none of them can read it either.
+		if len(rows) == 0 && hasVoteTableVocabulary(text) {
+			res.Meta.Layout = ""
+			continue
+		}
 		res.Rows = stampRows(rows, res.Meta)
 		res.Meta.ParseStatus = "ok"
 		res.Meta.NRows = len(res.Rows)
