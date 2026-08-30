@@ -410,18 +410,23 @@ func pvTextDescriptionContinuationAt(lines []string, i int) bool {
 // the meeting. The closed meeting-type vocabulary keeps this search out of prose.
 func pvTextMeetingLine(line string) (pvTextMeeting, bool) {
 	fields := strings.Fields(line)
-	// AN ITEM-NUMBERED LINE IS NEVER A MEETING. The caller tries meetings before
+	// A line that is a VOTE ROW is never a meeting. The caller tries meetings before
 	// votes, and searching for the date rather than indexing from the end made a vote
 	// row whose DESCRIPTION contains a date and a meeting-type word match here:
 	//
 	//	1.01 Approve 5/4/04 Annual Meeting MGMT YES FOR FOR
 	//	  -> matched as a meeting, issuer "1.01"
 	//
-	// That is worse than the shape the search was added for: the vote is lost AND the
-	// meeting context is corrupted for every row after it. Descriptions are free text,
-	// so this will occur; the item number is what distinguishes the two grammars.
+	// That loses the vote AND corrupts the meeting context for every row after it.
+	//
+	// The test is BOTH an item-shaped first token AND a parseable vote, not the item
+	// token alone. Rejecting on the token alone cost 10,267 rows in one filing, because
+	// issuers begin with numbers: `77 Bank 8341 J71348106 6/29/05 Annual` reads "77" as
+	// an item and the meeting was declined, closing the table.
 	if len(fields) > 0 && pvTextItemLoose(fields[0]) {
-		return pvTextMeeting{}, false
+		if _, _, isVote := pvTextVoteParts(fields); isVote {
+			return pvTextMeeting{}, false
+		}
 	}
 	// Three fields is the floor, not five: a single-word issuer with no ticker and no
 	// CUSIP prints `Accor  4/26/04  Special`. Requiring five declined it, which closed
