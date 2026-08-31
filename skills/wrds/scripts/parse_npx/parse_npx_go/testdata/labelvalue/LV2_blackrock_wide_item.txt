@@ -1,0 +1,21 @@
+
+Ticker:                      Security ID:  09248U841
+Meeting Date: NOV 21, 2018   Meeting Type: Special
+Record Date:  SEP 24, 2018
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a.1  Elect Director Bruce R. Bond            For       For          Management
+1a.2  Elect Director Susan J. Carter          For       For          Management
+1a.3  Elect Director Collette Chilton         For       For          Management
+1a.4  Elect Director Neil A. Cotty            For       For          Management
+1a.5  Elect Director Robert Fairbairn         For       For          Management
+1a.6  Elect Director Lena G. Goldberg         For       For          Management
+1a.7  Elect Director Robert M. Hernandez      For       For          Management
+1a.8  Elect Director Henry R. Keizer          For       For          Management
+1a.9  Elect Director Cynthia A. Montgomery    For       For          Management
+1a.10 Elect Director Donald C. Opatrny        For       For          Management
+1a.11 Elect Director John M. Perlowski        For       For          Management
+1a.12 Elect Director Joseph P. Platt          For       For          Management
+1a.13 Elect Director Mark Stalnecker          For       For          Management
+1a.14 Elect Director Kenneth L. Urish         For       For          Management
+1a.15 Elect Director Claire A. Walton         For       For          Management

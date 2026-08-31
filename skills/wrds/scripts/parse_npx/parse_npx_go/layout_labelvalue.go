@@ -228,8 +228,28 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 // lvVoteRow reads one row. Columns are counted from the RIGHT after the
 // proponent is peeled, because the description is the only field that wraps.
 func lvVoteRow(cells []string, issuer, ticker, cusip, mtgDate, mtgType, fund, series string) (VoteRow, bool) {
-	if len(cells) < 3 || !icrItem(cells[0]) {
+	if len(cells) < 3 {
 		return VoteRow{}, false
+	}
+	// THE ITEM COLUMN IS PADDED TO A FIXED WIDTH, so a wide item leaves only ONE
+	// space before the description and the two-space cell split merges them:
+	//
+	//	1a.9  Elect Director Cynthia A. Montgomery   For  For  Management
+	//	1a.10 Elect Director Donald C. Opatrny       For  For  Management
+	//
+	// `1a.9` is padded to two trailing spaces and splits; `1a.10` fills the column
+	// and does not. Requiring cells[0] to BE the item therefore dropped every row
+	// from the tenth sub-item on, silently and without touching the row count of
+	// anything else -- measured 2026-08-31, ZERO of 208,284 labelvalue rows had an
+	// item of five characters or more, in a corpus full of director slates longer
+	// than nine. A Gemini pilot on one filing read 45 rows where this layout read
+	// 27, and the fifteen it found were real.
+	if !icrItem(cells[0]) {
+		head, rest, ok := strings.Cut(cells[0], " ")
+		if !ok || !icrItem(head) {
+			return VoteRow{}, false
+		}
+		cells = append([]string{head, strings.TrimSpace(rest)}, cells[1:]...)
 	}
 	tail, proponent := lvPeelProponent(cells[len(cells)-1])
 	trimmed := append([]string(nil), cells...)
