@@ -76,6 +76,13 @@ func init() {
 	layoutRegistry = append(layoutRegistry, entry)
 }
 
+// icrFundNameLabel is the labelled line that names the fund a run of blocks
+// belongs to. Measured 2026-08-31 over all 862 icr filings: 681 print it and
+// 731 declare series in their SGML header, 575 doing both. It is a LABELLED
+// field at column 0, not a heading inferred from position, which is why it can
+// be trusted as evidence that a new fund section has begun.
+const icrFundNameLabel = "FUND NAME"
+
 type icrMeeting struct {
 	issuer      string
 	ticker      string
@@ -238,7 +245,7 @@ func icrIssuerAbove(lines []string, header int) string {
 // icrVoteRow reads one row. Every column comes from the cell the filing printed
 // it in, so how_voted is verbatim by construction rather than by a vocabulary
 // check that would have to be widened for every new spelling.
-func icrVoteRow(cells []string, m icrMeeting) (VoteRow, bool) {
+func icrVoteRow(cells []string, m icrMeeting, series string) (VoteRow, bool) {
 	if len(cells) < icrColumns || !icrItem(cells[0]) {
 		return VoteRow{}, false
 	}
@@ -250,6 +257,7 @@ func icrVoteRow(cells []string, m icrMeeting) (VoteRow, bool) {
 		Ticker:                   m.ticker,
 		MeetingDate:              m.meetingDate,
 		MeetingType:              m.meetingType,
+		SeriesID:                 series,
 		ItemSeq:                  cells[0],
 		VoteDescription:          description,
 		VoteSource:               cells[n-4],
@@ -272,12 +280,19 @@ func icrCUSIP(cell string) string {
 	return ""
 }
 
-func parseICR(text string, _ FilingMeta) ([]VoteRow, error) {
+func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 	lines := strings.Split(text, "\n")
+	// Built ONCE per filing: these filings reach 171,705 vote-like lines, and a
+	// per-section rebuild would make the job quadratic in the body.
+	seriesIdx := seriesByName(meta.SeriesDecls)
 	var (
 		rows    []VoteRow
 		meeting icrMeeting
 		haveMtg bool
+		// curSeries is the fund the following blocks belong to. It is STATE: one
+		// `Fund Name :` line governs every block until the next one, exactly as
+		// the fund heading does in the broadridge layout.
+		curSeries string
 		// lastRow indexes the row a continuation may extend, and lastLine the
 		// line it was read from. A continuation must sit IMMEDIATELY under the
 		// row or under a previous continuation of it: between blocks these
@@ -291,6 +306,26 @@ func parseICR(text string, _ FilingMeta) ([]VoteRow, error) {
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
 		cells := icrCells(line)
+
+		// THE FUND SECTION MARKER. Resolution is by EXACT normalised equality
+		// against a <SERIES-NAME> the filing itself declares -- never the
+		// tolerant lookup, whose leading-code strip errs about 1 in 25, which is
+		// the wrong trade for a link key: a blank series_id costs coverage, a
+		// WRONG one silently files this fund's votes under another fund.
+		//
+		// An unresolved marker CLEARS rather than leaving the previous fund
+		// standing. Both nil cases clear and for the same reason: the filing has
+		// said a new section began, so whatever governed the section above cannot
+		// govern this one. Carrying it forward is precisely the silent transfer
+		// between funds this rule exists to prevent.
+		if name, ok := icrFundName(line); ok {
+			if d, _ := lookupSeriesEntry(seriesIdx, name); d != nil {
+				curSeries = d.SeriesID
+			} else {
+				curSeries = ""
+			}
+			continue
+		}
 
 		if icrBlockHeader(cells) {
 			for k := i + 1; k < len(lines) && k <= i+3; k++ {
@@ -324,7 +359,7 @@ func parseICR(text string, _ FilingMeta) ([]VoteRow, error) {
 			continue
 		}
 
-		if row, ok := icrVoteRow(cells, meeting); ok {
+		if row, ok := icrVoteRow(cells, meeting, curSeries); ok {
 			rows = append(rows, row)
 			lastRow, lastLine = len(rows)-1, i
 			continue
@@ -352,7 +387,7 @@ func parseICR(text string, _ FilingMeta) ([]VoteRow, error) {
 				if len(next) < icrColumns-2 {
 					continue // this line carried no value columns
 				}
-				if row, ok := icrVoteRow(joined, meeting); ok {
+				if row, ok := icrVoteRow(joined, meeting, curSeries); ok {
 					rows = append(rows, row)
 					lastRow, lastLine = len(rows)-1, k
 					i, wrapped = k, true
@@ -378,4 +413,20 @@ func parseICR(text string, _ FilingMeta) ([]VoteRow, error) {
 		return nil, errLayoutDeclined
 	}
 	return rows, nil
+}
+
+// icrFundName reads the labelled fund-section marker, returning the name it
+// prints. The label is matched on the normalised line so the spacing around the
+// colon -- `Fund Name : X`, `Fund Name:X` -- cannot decide whether a section is
+// seen. An EMPTY value still reports ok: the filing has opened a section it
+// declines to name, which must clear the carried fund rather than be ignored.
+func icrFundName(line string) (string, bool) {
+	colon := strings.IndexByte(line, ':')
+	if colon < 0 {
+		return "", false
+	}
+	if !strings.EqualFold(strings.TrimSpace(line[:colon]), icrFundNameLabel) {
+		return "", false
+	}
+	return strings.TrimSpace(line[colon+1:]), true
 }
