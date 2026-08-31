@@ -88,14 +88,35 @@ const issMaxCellWords = 3
 // lookupSeriesStrippingRegistrant. It is set from the -issnpx-registrant-prefix-strip
 // flag and defaults to ENABLED.
 //
-// It is a run-time switch rather than a constant because the rule ships without a
-// measured false-positive rate: the held-out apparatus that scored every other
-// candidate rule is structurally incapable of scoring this one -- the headings it
-// fires on are exactly the headings that never exact-match anywhere, so they never
-// enter the ground-truth index, and the test returns 0/0 usable observations. The
-// required audit therefore has to re-parse the corpus with the strip OFF to
-// snapshot the repaired headings, then again with it ON to confirm the strip only
-// ever fills blanks. Removing the switch would make that audit unrunnable.
+// It is a run-time switch rather than a constant because the held-out apparatus
+// that scored every other candidate rule is structurally incapable of scoring
+// this one -- the headings it fires on are exactly the headings that never
+// exact-match anywhere, so they never enter the ground-truth index and the test
+// returns 0/0 usable observations. The audit therefore has to re-parse the corpus
+// with the strip OFF and again with it ON. KEEP THE SWITCH: removing it makes
+// that audit unrunnable, and it is what made the run below possible.
+//
+// AUDITED 2026-08-31 over the full 19,015-filing, 166,281,006-row issnpx corpus.
+// Comparing the (filepath, fund_name) -> series_id map between the two runs --
+// an ORDER-INDEPENDENT key, because the two runs emit rows in different orders
+// under concurrency and a naive positional diff reported 1,492,794 spurious
+// mismatches in the first 3M rows alone:
+//
+//	pairs  both_blank=25084  FILLED=2193  lost=0  same=53609  CHANGED=0
+//
+// The strip ONLY EVER FILLS BLANKS. It never overrode a series resolved without
+// it and never dropped one, which is exactly the property this comment used to
+// ask someone to confirm. Fill effect: 73.43% -> 75.63% of rows, +3,660,322.
+//
+// Hand-checked fills against the filings own declarations, e.g.
+// `Morgan Stanley Institutional Fund, Inc. - U.S. Real Estate Portfolio` ->
+// S000002821 `U.S. REAL ESTATE PORTFOLIO`, which is the discriminating case:
+// that filing ALSO declares `INTERNATIONAL REAL ESTATE PORTFOLIO` and
+// `Global Real Estate Portfolio`, and the strip picked neither.
+//
+// What this audit does NOT establish is that a filled value is always correct --
+// only that filling never displaces a value obtained without the strip. The
+// residual risk is bounded by those 2,193 pairs.
 //
 // Written once from main before any worker starts and only read afterwards.
 var issStripRegistrantPrefix = true
