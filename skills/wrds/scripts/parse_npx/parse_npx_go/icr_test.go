@@ -41,6 +41,18 @@ var icrCases = []icrCase{
 			" three consecutive <TABLE> blocks in the `Issue No.` spelling",
 	},
 	{
+		file: "ICR4_split_status.txt",
+		blocks: map[string]int{
+			"Anheuser-Busch Companies Inc": 14,
+			"Archstone Smith Trust":        2,
+		},
+		rows: 16,
+		note: "0000898432-08-000883, one of the 75 filings (1,014,379 vote-like lines)" +
+			" whose `MEETING STATUS` prints with a wide gap inside it and so arrives as" +
+			" TWO header cells; it also prints four INVERTED WRAPS, where the item number" +
+			" and description sit alone and the value columns arrive up to four lines later",
+	},
+	{
 		file: "ICR2_russell_wrapped.txt",
 		blocks: map[string]int{
 			"3M Company":                17,
