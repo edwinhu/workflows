@@ -174,6 +174,15 @@ var noActivitySentinels = []string{
 	"no votes have been cast",
 	"held no securities",
 	"no proxy voting record is listed",
+	// A third pass, over the 7,568 unread after the guard split. This is the
+	// long tail: the largest phrasing left is 61 filings where the first pass
+	// found 651, so these are the last ones worth naming individually and what
+	// remains after them is per-grammar extraction work, not vocabulary.
+	"has not voted any proxies",             // 61
+	"no voting records to report",           // 83, over two spellings
+	"did not purchase portfolio securities", // 31, "... for which it was entitled to vote"
+	"no securities required voting",         // 26
+	"did not solicit any vote",              // 37, a master fund reporting for its feeders
 }
 
 // Sentences the same sweep surfaced that are NOT nil reports, recorded because
