@@ -473,7 +473,52 @@ func icrResolveFund(idx map[string]*SeriesDecl, printed string) string {
 			return "" // the filing names this section and refuses to say which fund
 		}
 	}
-	return icrResolveDeclaredSuffix(idx, printed, len(fields))
+	if id := icrResolveDeclaredSuffix(idx, printed, len(fields)); id != "" {
+		return id
+	}
+	return icrResolveQualified(idx, printed)
+}
+
+// icrQualifierDelim introduces a trailing ANNOTATION rather than part of the
+// fund's name:
+//
+//	FIDELITY EMERGING MARKETS INDEX FUND - SUB-ADVISER: GEODE
+//	declared `Fidelity Emerging Markets Index Fund`
+//
+// Measured 2026-08-31 on 0000035315-23-000529, which prints 85 fund headings
+// against 85 declared series: 49 resolved without this, 35 more resolve with it,
+// and the one remainder was an artefact of reading raw bytes rather than the
+// decoded text the layout actually sees.
+const icrQualifierDelim = " - "
+
+// icrResolveQualified drops a dash-delimited trailing annotation and resolves
+// what is left. It is deliberately NOT the mirror of the leading-token walk:
+// leading words in this corpus are marketing prefixes, but TRAILING words are
+// what DISTINGUISH funds -- `Fund II`, `Class A`, `2020 Strategy Fund` -- so
+// stripping bare trailing tokens would collapse genuinely different series onto
+// each other. Requiring the ` - ` delimiter is what keeps this to annotations,
+// and `SMALL-MID CAP` is untouched because its hyphen carries no spaces.
+//
+// Candidate heads are tried LONGEST first, and each is resolved through the full
+// rule above, so a head still has to match exactly or by a unique suffix.
+func icrResolveQualified(idx map[string]*SeriesDecl, printed string) string {
+	for cut := strings.LastIndex(printed, icrQualifierDelim); cut > 0; {
+		head := strings.TrimSpace(printed[:cut])
+		if fields := strings.Fields(head); len(fields) >= icrMinSuffixWords {
+			if d, _ := lookupSeriesEntry(idx, head); d != nil {
+				return d.SeriesID
+			}
+			if id := icrResolveDeclaredSuffix(idx, head, len(fields)); id != "" {
+				return id
+			}
+		}
+		next := strings.LastIndex(printed[:cut], icrQualifierDelim)
+		if next <= 0 {
+			break
+		}
+		cut = next
+	}
+	return ""
 }
 
 // icrResolveDeclaredSuffix is the MIRROR of the walk above, for the filings that

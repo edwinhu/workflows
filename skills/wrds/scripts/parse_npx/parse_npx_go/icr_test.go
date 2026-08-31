@@ -334,3 +334,44 @@ func TestICRResolveFundName(t *testing.T) {
 		}
 	}
 }
+
+// The dash-qualifier cases, verbatim from 0000035315-23-000529 (Fidelity), which
+// prints 85 fund headings against 85 declared series. Measured 2026-08-31: 49
+// resolved without this rule and 35 more with it.
+//
+// The negative cases are the point. A trailing token is what DISTINGUISHES funds
+// in this corpus, so this rule must fire only on a ` - ` delimited annotation and
+// never on a bare trailing word.
+func TestICRResolveQualifiedFundName(t *testing.T) {
+	decls := []SeriesDecl{
+		{SeriesID: "S000033635", Name: "Fidelity Emerging Markets Index Fund"},
+		{SeriesID: "S000050321", Name: "Fidelity SAI Small-Mid Cap 500 Index Fund"},
+		// Two funds distinguished ONLY by a trailing token, and neither heading
+		// is dash-delimited, so the rule must leave both alone.
+		{SeriesID: "S000000111", Name: "Acme Growth Fund"},
+		{SeriesID: "S000000222", Name: "Acme Growth Fund II"},
+	}
+	idx := seriesByName(decls)
+
+	for _, c := range []struct {
+		printed, want, why string
+	}{
+		{"FIDELITY EMERGING MARKETS INDEX FUND - SUB-ADVISER: GEODE", "S000033635",
+			"the dash-delimited tail is an annotation, not part of the name"},
+		{"FIDELITY SAI SMALL-MID CAP 500 INDEX FUND - SUB-ADVISER: GEODE", "S000050321",
+			"the hyphen in SMALL-MID carries no spaces, so it is not a delimiter"},
+		{"Acme Growth Fund II", "S000000222",
+			"exact match wins; the trailing II must never be stripped"},
+		{"Acme Growth Fund", "S000000111", "exact match on the shorter name"},
+		{"Acme Growth Fund - Sub-Adviser: Nobody", "S000000111",
+			"a dash-delimited annotation strips to the exact declared name"},
+		{"Acme Growth Fund II - Sub-Adviser: Nobody", "S000000222",
+			"stripping the annotation must land on Fund II, NOT collapse onto Fund"},
+		{"Some Fund - With A Tail", "",
+			"REFUSES: neither the whole nor the head is declared"},
+	} {
+		if got := icrResolveFund(idx, c.printed); got != c.want {
+			t.Errorf("icrResolveFund(%q) = %q, want %q\n  %s", c.printed, got, c.want, c.why)
+		}
+	}
+}
