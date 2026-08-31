@@ -54,3 +54,37 @@ func TestChassisOwnsTheNoActivityDecision(t *testing.T) {
 			" are discarded as 'nothing to report'")
 	}
 }
+
+// The two phrasings added on 2026-08-31, quoted verbatim from the filings they
+// were measured in. Both are guarded by hasVoteTableVocabulary like every other
+// sentinel, so the second case below is the one that matters: the same words
+// beside a real vote table must NOT be read as "nothing to report".
+func TestNoActivitySentinelsAddedFromTheResidue(t *testing.T) {
+	secWording := "Item 1. Proxy Voting Record\nThere were no matters relating to a portfolio" +
+		" security considered at any shareholder meetings held during the reporting period" +
+		" and with respect to which the registrant was entitled to vote.\n"
+	terse := "ITEM 1. PROXY VOTING RECORD\n\nNO RECORDS TO REPORT\n"
+
+	for _, c := range []struct{ name, doc string }{
+		{"the SEC's own Item 1 nil wording, 563 filings", secWording},
+		{"the terse form, 93 filings", terse},
+	} {
+		t.Run(c.name, func(t *testing.T) {
+			if !hasNoActivitySentinel(c.doc) {
+				t.Errorf("not recognised as an affirmative nil report")
+			}
+			if hasVoteTableVocabulary(c.doc) {
+				t.Errorf("a nil statement must not read as a vote table")
+			}
+		})
+	}
+
+	t.Run("the same words beside a real table must not erase it", func(t *testing.T) {
+		mixed := secWording + "\nFund B\nIssue No.  Description  Proponent  Mgt Rec  Vote Cast\n" +
+			"1  Elect a Director  Mgmt  For  For\n"
+		if !hasVoteTableVocabulary(mixed) {
+			t.Errorf("the guard failed to see the vote table, so this filing's votes" +
+				" would be recorded as 'nothing to report'")
+		}
+	})
+}
