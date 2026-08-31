@@ -153,6 +153,15 @@ var noActivitySentinels = []string{
 	"no securities were voted",
 	"not required to vote any proxies",
 	"no companies in which the registrant held voting securities",
+	// Added 2026-08-31 from the 13,515 filings still unread after the issnpx
+	// zero-row fix. The first is the SEC's own Item 1 wording and the single
+	// largest nil phrasing left in that residue at 563 filings; the second is 93
+	// more. Both are quoted at their shortest negating form, as this list
+	// requires -- the filings spell them "There were no matters relating to a
+	// portfolio security considered at any shareholder meeting[s] held during
+	// the reporting period" and "NO RECORDS TO REPORT".
+	"no matters relating to a portfolio security",
+	"no records to report",
 }
 
 // voteTableVocabulary is the column and label vocabulary a legacy vote table
