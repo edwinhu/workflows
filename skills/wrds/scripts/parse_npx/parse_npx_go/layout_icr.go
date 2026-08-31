@@ -51,6 +51,11 @@ const icrColumns = 6
 // ENGINEERING` / `CORPORATION`).
 const icrIssuerLookback = 3
 
+// icrWrapLookahead bounds how many lines a description may span before its value
+// columns arrive. Measured on 0000898432-08-000883, whose longest such run is
+// four lines.
+const icrWrapLookahead = 8
+
 func init() {
 	entry := layoutEntry{Name: "icr", Match: matchICR, Parse: parseICR,
 		// This grammar's first block sits arbitrarily deep: measured offsets run
@@ -92,39 +97,38 @@ func icrCells(line string) []string {
 	return out
 }
 
-// icrHeaderCells is the exact width of the block header: Ticker, Security ID,
-// Meeting Date, Meeting Status. The bound is load-bearing rather than tidy.
-// Requiring the three labels merely to be PRESENT claimed a different grammar
-// whose own header is nine cells wide --
+// icrBlockHeader recognises the identity header that opens every block. The
+// three labels must be its FIRST THREE COLUMNS, which is what distinguishes this
+// grammar's header from another that merely names the same things.
+//
+// Requiring the labels only to be PRESENT claimed a nine-cell header from an
+// unrelated report --
 //
 //	INSTITUTIONAL ACCOUNT NAME  TICKER  COUNTRY  SECURITY ID  MEETING ID
 //	  MEETING TYPE  MEETING DATE  RECORD DATE  STATUS
 //
 // -- and every row read out of it was wrong: measured 2026-08-30, that shape
 // carried 1,882 rows whose how_voted held description text such as
-// `Elect Director Orlando D. Ashford` or an identifier run
-// `US0152711091 015271109 2009210 USA`. A wrong how_voted is worse than a
-// missing one, so the header this layout opens on is its OWN header and no
-// other: four cells, and the three labels in the order it prints them.
-const icrHeaderCells = 4
-
-// icrBlockHeader recognises the identity header that opens every block.
+// `Elect Director Orlando D. Ashford`. A wrong how_voted is worse than a missing
+// one.
+//
+// Bounding the header's WIDTH instead would have excluded it too, and did for
+// one run -- but it also declined 75 filings of this very grammar, whose own
+// `MEETING STATUS` prints with a wide gap inside it and so arrives as two cells:
+//
+//	TICKER  SECURITY ID:  MEETING DATE  MEETING  STATUS
+//
+// Those 75 hold 1,014,379 vote-like lines. Anchoring on the first three columns
+// admits them and still refuses the nine-cell header, because there TICKER is
+// the second column and SECURITY ID the fourth.
 func icrBlockHeader(cells []string) bool {
-	if len(cells) > icrHeaderCells {
+	if len(cells) < 3 {
 		return false
 	}
-	ticker, security, date := -1, -1, -1
-	for i, c := range cells {
-		switch strings.ToUpper(strings.TrimRight(strings.TrimSpace(c), ":")) {
-		case "TICKER":
-			ticker = i
-		case "SECURITY ID":
-			security = i
-		case "MEETING DATE":
-			date = i
-		}
+	label := func(i int) string {
+		return strings.ToUpper(strings.TrimRight(strings.TrimSpace(cells[i]), ":"))
 	}
-	return ticker >= 0 && ticker < security && security < date
+	return label(0) == "TICKER" && label(1) == "SECURITY ID" && label(2) == "MEETING DATE"
 }
 
 // icrIdentity reads the values line under a block header. It anchors on the
@@ -324,6 +328,40 @@ func parseICR(text string, _ FilingMeta) ([]VoteRow, error) {
 			rows = append(rows, row)
 			lastRow, lastLine = len(rows)-1, i
 			continue
+		}
+
+		// AN INVERTED WRAP -- the item number and the start of its description
+		// sit alone and the value columns arrive on a later line:
+		//
+		//	3   APPROVAL OF INDEPENDENT REGISTERED PUBLIC ACCOUNTING
+		//	    FIRM.                                Mgmt   For   For   For
+		//
+		// The columns are read from the accumulated cells exactly as on a
+		// single-line row, so nothing about how a value is chosen changes here.
+		// Bounded on both sides: the run stops at the next item number, so a
+		// following row can never be absorbed into this one, and a row is taken
+		// only after a line that carries the value columns itself.
+		if len(cells) > 0 && icrItem(cells[0]) {
+			joined, wrapped := cells, false
+			for k := i + 1; k < len(lines) && k <= i+icrWrapLookahead; k++ {
+				next := icrCells(strings.TrimSpace(lines[k]))
+				if len(next) == 0 || icrItem(next[0]) || icrBlockHeader(next) {
+					break
+				}
+				joined = append(joined, next...)
+				if len(next) < icrColumns-2 {
+					continue // this line carried no value columns
+				}
+				if row, ok := icrVoteRow(joined, meeting); ok {
+					rows = append(rows, row)
+					lastRow, lastLine = len(rows)-1, k
+					i, wrapped = k, true
+					break
+				}
+			}
+			if wrapped {
+				continue
+			}
 		}
 
 		// A DESCRIPTION CONTINUATION: an unnumbered fragment on the line directly
