@@ -328,6 +328,26 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	}
 	flush()
 
+	// A ZERO-ROW CLAIM IS NOT A RESULT. Measured 2026-08-31, this layout claimed
+	// 3,722 filings and read nothing out of any of them, and each was recorded as
+	// `ok` with n_rows=0 -- indistinguishable in the manifest from a fund that
+	// genuinely cast no votes. Reading them showed the claim was almost always
+	// right and the CLASSIFICATION wrong: 2,650 carry an affirmative no-vote
+	// statement and no vote-table vocabulary anywhere ("This fund had no proxy
+	// voting activity during the reporting period"), and exactly one is a real
+	// extraction failure.
+	//
+	// Declining hands the body back to the registry and, once every layout has
+	// passed on it, to the chassis sentinel at the end of parseTextFiling. That
+	// sentinel already owns this decision, already spells "no proxy voting
+	// activity" in noActivitySentinels, and already guards it with
+	// hasVoteTableVocabulary so a multi-fund filing cannot have its real table
+	// erased by another fund's nil statement. Re-implementing that test here
+	// would be a SECOND vocabulary for one fact, and every duplicated vocabulary
+	// in this parser has drifted from the one it copied.
+	if len(rows) == 0 {
+		return nil, errLayoutDeclined
+	}
 	return rows, nil
 }
 
