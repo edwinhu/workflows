@@ -88,3 +88,36 @@ func TestNoActivitySentinelsAddedFromTheResidue(t *testing.T) {
 		}
 	})
 }
+
+// TestNonNilSentencesAreNotSentinels is the negative half of the sentinel work.
+// Each sentence below was surfaced by the same residue sweep that produced the
+// additions, looks like a nil report, and appears on filings that DO carry
+// votes. Promoting any of them would silently record real vote tables as
+// "nothing to report" -- the exact loss hasVoteTableVocabulary exists to stop.
+func TestNonNilSentencesAreNotSentinels(t *testing.T) {
+	table := "\nIssue No.  Description  Proponent  Mgt Rec  Vote Cast\n1  Elect a Director  Mgmt  For  For\n"
+	for _, c := range []struct{ name, text string }{
+		{"a table's own legend explaining N/A",
+			"Where management made no recommendation on a ballot item, 'N/A' is used to" +
+				" indicate that there is no management recommendation."},
+		{"a regulatory disclaimer",
+			"The votes reported do not reflect any votes cast pursuant to a regulatory requirement."},
+		{"a methodology note",
+			"In determining votes against management, any ballot that management did not support is counted."},
+		{"a per-vote footnote explaining ONE uncast vote",
+			"The registrant did not cast a vote since the securities in question were preferred shares."},
+		{"an ADJOURNMENT PROPOSAL -- the text of a ballot item",
+			"To permit further solicitation of proxies if there are not sufficient votes."},
+	} {
+		t.Run(c.name, func(t *testing.T) {
+			doc := c.text + table
+			if !hasVoteTableVocabulary(doc) {
+				t.Fatalf("guard failed to see the vote table; this filing's votes would be lost")
+			}
+			if hasNoActivitySentinel(c.text) {
+				t.Errorf("this sentence is being read as an affirmative nil report, but it" +
+					" appears on filings that carry votes")
+			}
+		})
+	}
+}
