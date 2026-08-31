@@ -121,3 +121,44 @@ func TestNonNilSentencesAreNotSentinels(t *testing.T) {
 		})
 	}
 }
+
+// TestWeakVocabularyNeedsRepetition pins the split that recovered 606 filings on
+// 2026-08-31. The ISS "VOTE SUMMARY REPORT" header prints a note explaining what
+// a CUSIP is, above every fund's section whether or not that fund voted, and the
+// guard read it as a vote table -- so a filing saying "There is no proxy voting
+// activity for the fund" was withheld from the sentinel and recorded as `skip`.
+func TestWeakVocabularyNeedsRepetition(t *testing.T) {
+	note := "VOTE SUMMARY REPORT\nFIDELITY CORPORATE BOND FUND\n07/01/2022 - 06/30/2023\n" +
+		"Note: The Security ID will be the CUSIP (Committee on Uniform Securities" +
+		" Identification Procedures) when available. When CUSIP is not available, an" +
+		" alternate identifier, e.g., CINS, will be provided.\n" +
+		"There is no proxy voting activity for the fund, as the fund did not hold any" +
+		" votable positions during the reporting period.\n"
+
+	if hasVoteTableVocabulary(note) {
+		t.Errorf("a sentence EXPLAINING what a CUSIP is still reads as a vote table")
+	}
+	if !hasNoActivitySentinel(note) {
+		t.Errorf("the filing's own nil statement is not being recognised")
+	}
+
+	t.Run("one strong label is decisive on its own", func(t *testing.T) {
+		small := "Issuer Corp\nMeeting Date: 05/10/2011  CUSIP 88579Y101\n" +
+			"Issue No.  Description  Proponent  Mgt Rec  Vote Cast\n" +
+			"1  Elect a Director  Mgmt  For  For\n"
+		if !hasVoteTableVocabulary(small) {
+			t.Errorf("a small but real table must still be seen as one; its votes" +
+				" would otherwise be recorded as 'nothing to report'")
+		}
+	})
+
+	t.Run("weak labels repeated ARE a table, with no strong label present", func(t *testing.T) {
+		var b []byte
+		for i := 0; i < voteTableWeakMin+5; i++ {
+			b = append(b, "Meeting Date: 05/10/2011\n"...)
+		}
+		if !hasVoteTableVocabulary(string(b)) {
+			t.Errorf("a weak label repeated %d times is a table by any reading", voteTableWeakMin+5)
+		}
+	})
+}

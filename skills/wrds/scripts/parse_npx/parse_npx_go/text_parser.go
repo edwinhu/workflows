@@ -201,8 +201,36 @@ var noActivitySentinels = []string{
 // meeting dates was shipping as parse_status=ok with n_rows=0 because one of its
 // funds reported no activity. Entries must be lowercase ASCII, and must be
 // phrases a nothing-to-report sentence would never contain.
+// voteTableVocabulary is split by how much a term PROVES, which is not the same
+// as how often it appears.
+//
+// The strong terms name a vote COLUMN and occur nowhere else, so one is enough.
+// The weak ones also occur in explanatory prose, and on 2026-08-31 that cost 606
+// filings: the ISS "VOTE SUMMARY REPORT" header carries a note --
+//
+//	Note: The Security ID will be the CUSIP (Committee on Uniform Securities
+//	Identification Procedures) when available. When CUSIP is not available, an
+//	alternate identifier, e.g., CINS, will be provided.
+//
+// -- which is printed above the fund's section whether or not the fund voted.
+// Each of those 606 then says "There is no proxy voting activity for the fund",
+// and the guard withheld the sentinel on the strength of a sentence explaining
+// what a CUSIP is. The filings were recorded as `skip`.
+//
+// Counting separates the two cases by orders of magnitude rather than by a
+// judgement call. Measured on 0000028540-23-000018, a nil report carrying the
+// note, against 0001144204-11-049903, a real table:
+//
+//	                 nil report    real table
+//	cusip                     6         2,916
+//	security id               3         5,487
+//	meeting date              0         5,491
+//	vote cast                 0         5,486   <- strong, and decisive alone
+//
+// So a weak term must appear voteTableWeakMin times to count. A genuinely small
+// table is not at risk: it prints a strong column label like every other, and
+// one occurrence of that is enough.
 var voteTableVocabulary = []string{
-	"meeting date",
 	"vote cast",
 	"votes cast",
 	"how voted",
@@ -210,9 +238,22 @@ var voteTableVocabulary = []string{
 	"management recommendation",
 	"mgt rec",
 	"mgmt rec",
+}
+
+// voteTableWeakVocabulary are labels a vote table prints once per meeting and
+// prose prints once in a sentence.
+var voteTableWeakVocabulary = []string{
+	"meeting date",
 	"security id",
 	"cusip",
 }
+
+// voteTableWeakMin is how many times a weak term must appear before it is read
+// as a table. The boilerplate note above mentions CUSIP twice and Security ID
+// once; a report with even a handful of meetings clears this many times over,
+// and the separation measured above is three orders of magnitude, so the exact
+// value is not delicate.
+const voteTableWeakMin = 25
 
 // matchISSNPX recognises the ISS-generated report, the highest-volume legacy
 // layout. The banner is the obvious signal but it is not a reliable one: 23.5%
@@ -518,7 +559,15 @@ func hasNoActivitySentinel(text string) bool {
 // the guard on the sentinel: a body carrying this vocabulary is one we failed to
 // parse, never one with nothing to report.
 func hasVoteTableVocabulary(text string) bool {
-	return containsAnyFolded(text, voteTableVocabulary)
+	if containsAnyFolded(text, voteTableVocabulary) {
+		return true
+	}
+	for _, w := range voteTableWeakVocabulary {
+		if countFolded(text, w) >= voteTableWeakMin {
+			return true
+		}
+	}
+	return false
 }
 
 // containsAnyFolded reports whether text carries any of the lowercase ASCII
@@ -557,6 +606,35 @@ func containsAnyFolded(text string, needles []string) bool {
 		}
 	}
 	return false
+}
+
+// countFolded counts non-overlapping matches of one needle under the same
+// case-folding and whitespace-run rules containsAnyFolded uses. It stops at the
+// caller's threshold: the bodies here reach 200 MB and the answer is a
+// comparison, never the total.
+func countFolded(text, s string) int {
+	if s == "" || len(s) > len(text) {
+		return 0
+	}
+	lo := s[0]
+	up := lo
+	if lo >= 'a' && lo <= 'z' {
+		up = lo - 'a' + 'A'
+	}
+	n := 0
+	for i := 0; i+len(s) <= len(text); i++ {
+		if c := text[i]; c != lo && c != up {
+			continue
+		}
+		if matchFoldedAt(text, i, s) {
+			n++
+			if n >= voteTableWeakMin {
+				return n
+			}
+			i += len(s) - 1
+		}
+	}
+	return n
 }
 
 // matchFoldedAt matches needle s against text starting at i, folding ASCII case
