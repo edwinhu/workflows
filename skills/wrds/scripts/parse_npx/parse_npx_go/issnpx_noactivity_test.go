@@ -162,3 +162,25 @@ func TestWeakVocabularyNeedsRepetition(t *testing.T) {
 		}
 	})
 }
+
+// The long-tail phrasings, verbatim from the filings they were measured in. Each
+// is guarded by hasVoteTableVocabulary like every other sentinel; the negative
+// case below is the one that keeps them safe.
+func TestLongTailNoActivityPhrasings(t *testing.T) {
+	for _, c := range []struct{ name, text string }{
+		{"has not voted any proxies", "The Fund has not voted any proxies during the period covered by this report."},
+		{"no voting records to report", "There were no voting records to report with respect to the Trust."},
+		{"did not purchase portfolio securities", "The registrant did not purchase portfolio securities for which it was entitled to vote."},
+		{"no securities required voting", "No securities required voting during the reporting period."},
+		{"a master fund reporting for its feeders", "The Master Fund did not solicit any vote, proxy, or consent."},
+	} {
+		t.Run(c.name, func(t *testing.T) {
+			if !hasNoActivitySentinel(c.text) {
+				t.Errorf("not recognised as an affirmative nil report")
+			}
+			if hasVoteTableVocabulary(c.text) {
+				t.Errorf("a nil statement must not read as a vote table")
+			}
+		})
+	}
+}
