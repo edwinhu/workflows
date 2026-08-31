@@ -695,6 +695,42 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		// line that is exactly "MEETING DATE", the wrapped tail of "STOCKHOLDER
 		// PROPOSAL - ANNUAL MEETING DATE" -- so the label test must not see it.
 		if inTable && cur != nil && item == "" {
+			// A DIRECTOR SLATE'S NOMINEES CARRY THEIR OWN VOTES AND ARE NOT
+			// CONTINUATIONS. One proposal number covers the whole slate and each
+			// nominee is its own line, un-numbered, with its own cells:
+			//
+			//	1.     DIRECTOR
+			//	       Alan S. Armstrong      Mgmt   Withheld   Against
+			//	       C. Fred Ball, Jr.      Mgmt   For        For
+			//	       Steven Bangert         Mgmt   Withheld   Against
+			//
+			// brAbsorb fills only columns that are still EMPTY -- which is what
+			// makes the tab-delimited export work, where the vote arrives on the
+			// LAST line of a wrapped proposal -- so every nominee after the first
+			// had their vote silently discarded and the slate collapsed into one
+			// row. Measured 2026-08-31 against ISS: BOK Financial read 3 items
+			// where ISS counts 24, and the one row it did emit reported
+			// `Withheld`, which is Armstrong's vote, for a slate on which Ball
+			// voted For. That is a WRONG vote, not merely a missing one, and
+			// broadridge carries 84% of all detected partial parsing --
+			// 1,169,008 items lost across 2,128 filings at an 8.0% loss rate.
+			//
+			// The discriminator is that the line brings a vote of its own while
+			// the row already has one. A genuine continuation carries no vote
+			// cells: they sit on the first physical line 96.7% of the time, and
+			// the tab-delimited case is unaffected because there cur.vote is
+			// still empty when the vote line arrives.
+			if _, _, vote, _ := brPeelColumns(rest, hasType, maxVote); vote != "" && cur.vote != "" {
+				parent := cur.item
+				parentText := brSlateHead(cur)
+				flush()
+				cur = &brRowBuf{item: parent}
+				brAbsorb(cur, rest, hasType, maxVote)
+				if parentText != "" {
+					cur.text = append([]string{parentText}, cur.text...)
+				}
+				continue
+			}
 			brAbsorb(cur, rest, hasType, maxVote)
 			continue
 		}
@@ -1126,4 +1162,15 @@ func brPad4(v int) string {
 		s = "0" + s
 	}
 	return s
+}
+
+// brSlateHead returns the proposal text a slate's nominees hang under -- the
+// `DIRECTOR` line -- so each nominee row records what it was an election to,
+// rather than a bare name. Only the FIRST line of the open row is taken: the
+// rest is the previous nominee.
+func brSlateHead(cur *brRowBuf) string {
+	if len(cur.text) == 0 {
+		return ""
+	}
+	return cur.text[0]
 }

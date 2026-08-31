@@ -141,3 +141,60 @@ func TestBroadridgeUnread(t *testing.T) {
 		}
 	}
 }
+
+// B5 is a verbatim contiguous meeting block from 0001438934-21-000421, cut rule
+// to rule: BOK Financial's 2021 annual meeting, whose DIRECTOR slate runs to 22
+// un-numbered nominees, each carrying its own vote.
+//
+//  1. DIRECTOR
+//     Alan S. Armstrong      Mgmt   Withheld   Against
+//     C. Fred Ball, Jr.      Mgmt   For        For
+//
+// The layout previously read 3 rows here against ISS's 24, and the single row it
+// emitted for the slate reported `Withheld` -- Armstrong's vote -- for a slate on
+// which Ball voted For. A WRONG vote, not a missing one.
+//
+// broadridge carries 84% of all partial parsing detected against ISS: 1,169,008
+// items lost across 2,128 filings, an 8.0% loss rate on the largest text layout.
+func TestBroadridgeDirectorSlateIsOneRowPerNominee(t *testing.T) {
+	b, err := os.ReadFile(filepath.Join("testdata", "broadridge", "B5_bok_unnumbered_slate.txt"))
+	if err != nil {
+		t.Fatalf("read fixture: %v", err)
+	}
+	rows := runISSNPXDoc(t, string(b))
+	if len(rows) != 24 {
+		t.Fatalf("got %d rows, want 24 -- the count ISS records for this meeting", len(rows))
+	}
+
+	// The votes DIFFER across the slate, which is why collapsing it loses data
+	// rather than merely repeating it.
+	want := map[string]string{
+		"DIRECTOR Alan S. Armstrong":    "Withheld",
+		"DIRECTOR C. Fred Ball, Jr.":    "For",
+		"DIRECTOR Steven Bangert":       "Withheld",
+		"DIRECTOR Peter C. Boylan, III": "For",
+	}
+	got := map[string]string{}
+	for _, r := range rows {
+		got[r[colVoteDescription]] = r[colHowVoted]
+	}
+	for desc, vote := range want {
+		if got[desc] != vote {
+			t.Errorf("%q: how_voted = %q, want %q", desc, got[desc], vote)
+		}
+	}
+	var withheld, forVote int
+	for _, r := range rows {
+		switch r[colHowVoted] {
+		case "Withheld":
+			withheld++
+		case "For":
+			forVote++
+		}
+	}
+	if withheld == 0 || forVote == 0 {
+		t.Errorf("slate votes are uniform (%d Withheld, %d For); the filing prints both,"+
+			" so a uniform result means one nominee's vote was applied to the rest",
+			withheld, forVote)
+	}
+}
