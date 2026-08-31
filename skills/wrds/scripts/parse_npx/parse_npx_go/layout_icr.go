@@ -319,11 +319,7 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		// govern this one. Carrying it forward is precisely the silent transfer
 		// between funds this rule exists to prevent.
 		if name, ok := icrFundName(line); ok {
-			if d, _ := lookupSeriesEntry(seriesIdx, name); d != nil {
-				curSeries = d.SeriesID
-			} else {
-				curSeries = ""
-			}
+			curSeries = icrResolveFund(seriesIdx, name)
 			continue
 		}
 
@@ -429,4 +425,91 @@ func icrFundName(line string) (string, bool) {
 		return "", false
 	}
 	return strings.TrimSpace(line[colon+1:]), true
+}
+
+// icrMinSuffixWords is the shortest declared name a printed fund name may be
+// resolved to by suffix. Two, because a one-word declared name -- `Fund`,
+// `Trust` -- is the last word of almost every fund name in the corpus, and
+// matching on it would attribute a whole section to whichever series happened to
+// be spelled that way.
+const icrMinSuffixWords = 2
+
+// icrResolveFund maps a printed `Fund Name :` value onto a series the filing
+// declares, returning "" when it cannot do so honestly.
+//
+// EXACT FIRST. 575 of the 862 icr filings print this line and declare series,
+// and for most the printed name IS the declared name.
+//
+// THEN LONGEST SUFFIX, because a large minority print a marketing prefix the
+// header does not carry. Measured on 0001193125-16-697187, which declares 41
+// series and prints 41 fund names, none of them equal:
+//
+//	printed  `RIC LifePoints Funds 2020 Strategy Fund`
+//	declared `2020 Strategy Fund`
+//
+// The prefix is several words, so the chassis tolerance -- which drops ONE
+// leading internal code -- does not reach it, and that filing alone leaves
+// 147,136 rows unattributed.
+//
+// Leading tokens are dropped one at a time and the FIRST hit wins, so the match
+// is always the LONGEST declared name that ends the printed one. That ordering
+// is what keeps `Moderate Growth Strategy Fund` from resolving to a declared
+// `Growth Strategy Fund` while both are declared.
+//
+// AMBIGUITY REFUSES RATHER THAN GUESSES. seriesByName maps a normalised name
+// that two distinct series answer to onto nil-but-declared, and this stops there
+// instead of stripping further: continuing would convert the collision rule's
+// deliberate refusal into a stamp, which is the silent transfer between funds
+// that rule exists to prevent. An unresolved name returns "" and the caller
+// CLEARS, so the section above never governs the section below.
+func icrResolveFund(idx map[string]*SeriesDecl, printed string) string {
+	fields := strings.Fields(printed)
+	for k := 0; k+icrMinSuffixWords <= len(fields); k++ {
+		d, declared := lookupSeriesEntry(idx, strings.Join(fields[k:], " "))
+		if d != nil {
+			return d.SeriesID
+		}
+		if declared {
+			return "" // the filing names this section and refuses to say which fund
+		}
+	}
+	return icrResolveDeclaredSuffix(idx, printed, len(fields))
+}
+
+// icrResolveDeclaredSuffix is the MIRROR of the walk above, for the filings that
+// carry the prefix on the DECLARED side instead of the printed one. Measured on
+// 0001135428-23-000250, which declares 28 series and prints 27 fund names, none
+// of them equal and none reachable by stripping the printed name:
+//
+//	printed  `LONG DURATION FUND`
+//	declared `SIIT LONG DURATION FUND`
+//
+// That filing alone leaves 156,184 rows unattributed under the printed-side rule.
+//
+// The safety argument cannot be borrowed from above, because there the exact-key
+// lookup did the work and seriesByName's collision rule guarded ambiguity for
+// free. Here the candidate set is scanned, so uniqueness is enforced HERE: a
+// printed name that ends more than one declared name resolves to nothing rather
+// than to whichever was seen first. Matching is on a WORD boundary, so `Bond
+// Fund` cannot match `Municipal Bond Fund` by accident of spelling, and the
+// two-word floor still applies.
+func icrResolveDeclaredSuffix(idx map[string]*SeriesDecl, printed string, words int) string {
+	if words < icrMinSuffixWords {
+		return ""
+	}
+	key := normalizeSeriesName(printed)
+	if key == "" {
+		return ""
+	}
+	found := ""
+	for declaredName, d := range idx {
+		if d == nil || !strings.HasSuffix(declaredName, " "+key) {
+			continue
+		}
+		if found != "" && found != d.SeriesID {
+			return "" // more than one declared fund ends this way; refuse to pick
+		}
+		found = d.SeriesID
+	}
+	return found
 }
