@@ -207,3 +207,69 @@ func TestICRDeclinesAForeignBlockHeader(t *testing.T) {
 		t.Errorf("icr claimed a nine-column header from a grammar it cannot read")
 	}
 }
+
+// ICR5 is 0000891804-11-003797 in full, verbatim: a two-series filing, so the
+// chassis single-series fallback cannot supply the answer and the layout must
+// attribute from the filing's own `Fund Name :` lines. Measured 2026-08-31, the
+// icr layout stamped series_id on 2.28% of its 21,534,849 rows, and a row with
+// no series_id is dropped before ISS matching even begins -- 42.68% of the whole
+// corpus is discarded at that prefilter -- so attribution is a precondition for
+// coverage rather than a refinement of it.
+const (
+	icr5Voting = "S000031884" // Destra Focused Equity Fund -- governs every row
+	icr5Silent = "S000031885" // Destra Preferred and Income Securities Fund
+)
+
+// TestICRStampsSeriesFromTheFundNameLine is the coverage assertion.
+func TestICRStampsSeriesFromTheFundNameLine(t *testing.T) {
+	rows := runISSNPXDoc(t, loadICRFixture(t, "ICR5_destra_two_series.txt"))
+	if len(rows) == 0 {
+		t.Fatalf("ICR5 produced no rows; it carries three meeting blocks")
+	}
+	seen := map[string]int{}
+	for _, r := range rows {
+		seen[r[colSeriesID]]++
+	}
+	if got := seen[icr5Voting]; got != len(rows) {
+		t.Errorf("%d of %d rows carry series_id %q; the fund heading above every"+
+			" block in this filing names that series\n  stamped: %v",
+			got, len(rows), icr5Voting, seen)
+	}
+}
+
+// TestICRNeverStampsASilentSection is the safety assertion, and the one that must
+// never be relaxed to raise the coverage number. ICR5's FIRST section reports
+// "The registrant held no voting securities during the period covered by this
+// report" and contributes no rows. The only way its series can be stamped is if
+// its heading were left standing over the NEXT fund's blocks -- which is not a
+// blank series_id but a WRONG one, silently filing one fund's votes under
+// another.
+func TestICRNeverStampsASilentSection(t *testing.T) {
+	doc := loadICRFixture(t, "ICR5_destra_two_series.txt")
+	if !strings.Contains(doc, "held no voting securities") {
+		t.Fatalf("fixture no longer carries the silent section; the assertion proves nothing")
+	}
+	for _, r := range runISSNPXDoc(t, doc) {
+		if r[colSeriesID] == icr5Silent {
+			t.Errorf("row (item %q) carries series_id %q, whose section reports no"+
+				" voting securities at all", r[colItemSeq], icr5Silent)
+		}
+	}
+}
+
+// TestICRNeverStampsAnUndeclaredSeries bounds the rule from the other side: a
+// stamped series must be one the filing's own header declares. Resolution is by
+// exact normalised equality for that reason -- the tolerant lookup's
+// leading-code strip errs about 1 in 25, which is the wrong trade for a link key.
+func TestICRNeverStampsAnUndeclaredSeries(t *testing.T) {
+	doc := loadICRFixture(t, "ICR5_destra_two_series.txt")
+	declared := declaredSeriesIDs(doc)
+	if len(declared) == 0 {
+		t.Fatalf("ICR5 declares no series; the fixture is wrong, not the parser")
+	}
+	for i, r := range runISSNPXDoc(t, doc) {
+		if id := r[colSeriesID]; id != "" && !declared[id] {
+			t.Fatalf("row %d stamped series_id %q, which this filing never declares", i, id)
+		}
+	}
+}
