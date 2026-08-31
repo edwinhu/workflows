@@ -273,3 +273,64 @@ func TestICRNeverStampsAnUndeclaredSeries(t *testing.T) {
 		}
 	}
 }
+
+// The fund-name resolution table. Every printed/declared pair below is VERBATIM
+// from the filing named beside it, and every expected answer was hand-verified
+// on 2026-08-31 by reading the two filings' own <SERIES-NAME> declarations
+// against the `Fund Name :` lines they print: 41 of 41 correct in
+// 0001193125-16-697187 and 24 of 24 in 0001135428-23-000250, with three
+// principled refusals. That is the same standard the broadridge rule was held
+// to, and it is required here because this is a TOLERANCE on a link key: a blank
+// series_id costs coverage, a wrong one silently files one fund's votes under
+// another.
+//
+// The two filings fail in OPPOSITE directions, which is why both walks exist:
+// Russell prints a marketing prefix its header does not carry, SEI declares one
+// its body does not print.
+func TestICRResolveFundName(t *testing.T) {
+	// Declared names, verbatim, from the two filings' SGML headers.
+	decls := []SeriesDecl{
+		// 0001193125-16-697187 (Russell): the header carries the bare name.
+		{SeriesID: "S000001582", Name: "2020 Strategy Fund"},
+		{SeriesID: "S000001575", Name: "Growth Strategy Fund"},
+		{SeriesID: "S000001580", Name: "Equity Growth Strategy Fund"},
+		{SeriesID: "S000045903", Name: "Select International Equity Fund"},
+		{SeriesID: "S000001569", Name: "Russell Emerging Markets Fund"},
+		// 0001135428-23-000250 (SEI): the header carries the SIIT prefix.
+		{SeriesID: "S000006762", Name: "SIIT LONG DURATION FUND"},
+		{SeriesID: "S000036875", Name: "SIIT Long Duration Credit Fund"},
+		{SeriesID: "S000006763", Name: "SIIT HIGH YIELD BOND FUND"},
+		// These two both END with `World Equity Ex-US Fund`, which is what makes
+		// the printed form of it genuinely ambiguous.
+		{SeriesID: "S000019596", Name: "SIIT WORLD EQUITY EX-US FUND"},
+		{SeriesID: "S000019597", Name: "SIIT Screened World Equity Ex-US Fund"},
+	}
+	idx := seriesByName(decls)
+
+	for _, c := range []struct {
+		printed, want, why string
+	}{
+		{"Russell Emerging Markets Fund", "S000001569", "exact: printed IS declared"},
+		{"RIC LifePoints Funds 2020 Strategy Fund", "S000001582",
+			"printed-side prefix: several words, so the chassis one-token strip cannot reach it"},
+		{"RIC LifePoints Funds Equity Growth Strategy Fund", "S000001580",
+			"LONGEST suffix wins: `Growth Strategy Fund` is also declared, and taking it would" +
+				" file this fund's votes under a different fund"},
+		{"RIC Russell Select International Equity Fund", "S000045903",
+			"the prefix runs past the manager's own name into `Russell`"},
+		{"LONG DURATION FUND", "S000006762",
+			"declared-side prefix: the mirror walk, matched on a word boundary"},
+		{"Long Duration Credit Fund", "S000036875",
+			"mirror walk must not settle for the shorter `SIIT LONG DURATION FUND`"},
+		{"WORLD EQUITY EX-US FUND", "",
+			"REFUSES: two declared funds end this way, so picking either is a guess"},
+		{"CORE FIXED INCOME FUND", "",
+			"REFUSES: the header spells `SIIT CORE FIXED INCOME`, with no trailing FUND"},
+		{"Fund", "", "REFUSES: below the two-word floor, which every fund name would match"},
+		{"Some Fund This Filing Never Declares", "", "REFUSES: not declared in any direction"},
+	} {
+		if got := icrResolveFund(idx, c.printed); got != c.want {
+			t.Errorf("icrResolveFund(%q) = %q, want %q\n  %s", c.printed, got, c.want, c.why)
+		}
+	}
+}
