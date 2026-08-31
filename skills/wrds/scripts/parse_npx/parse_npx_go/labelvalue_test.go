@@ -107,3 +107,38 @@ func loadLVFixture(t *testing.T, name string) string {
 	}
 	return string(b)
 }
+
+// LV2 is a verbatim contiguous excerpt of 0001193125-19-233285 (BlackRock
+// Liquidity Funds) covering one meeting block whose director slate runs to
+// fifteen sub-items.
+//
+// THE ITEM COLUMN IS PADDED TO A FIXED WIDTH, so `1a.9` leaves two trailing
+// spaces and splits into its own cell while `1a.10` fills the column and leaves
+// one -- merging item and description. Requiring cells[0] to BE the item
+// therefore dropped every row from the tenth sub-item on, silently: measured
+// 2026-08-31, ZERO of 208,284 labelvalue rows carried an item of five characters
+// or more, in a corpus full of slates longer than nine.
+//
+// A Gemini pilot on this filing read 45 rows where this layout read 27, and the
+// extra fifteen were real -- 1a.10 through 1a.15 are in the bytes. That is what
+// found this; no fixture had a slate long enough.
+func TestLabelValueReadsWideItemNumbers(t *testing.T) {
+	rows := runISSNPXDoc(t, loadLVFixture(t, "LV2_blackrock_wide_item.txt"))
+	got := map[string]string{}
+	for _, r := range rows {
+		got[r[colItemSeq]] = r[colVoteDescription]
+	}
+	for _, want := range []struct{ item, desc string }{
+		{"1a.9", "Elect Director Cynthia A. Montgomery"},
+		{"1a.10", "Elect Director Donald C. Opatrny"},
+		{"1a.15", "Elect Director Claire A. Walton"},
+	} {
+		if got[want.item] != want.desc {
+			t.Errorf("item %q: description = %q, want %q\n  items read: %d",
+				want.item, got[want.item], want.desc, len(got))
+		}
+	}
+	if len(rows) < 15 {
+		t.Errorf("got %d rows; the slate in these bytes runs to fifteen sub-items", len(rows))
+	}
+}
