@@ -1,0 +1,109 @@
+THE HARTFORD ADVISERS FUND
+Investment Company Report
+07/01/08 To 06/30/09
+
+ELECTRONIC ARTS INC.
+
+SECURITY        285512109         MEETING TYPE   Annual
+TICKER SYMBOL   ERTS              MEETING DATE   31-Jul-2008
+ISIN            US2855121099      AGENDA         932927594 - Management
+
+<TABLE>
+<CAPTION>
+                                                                                                        FOR/AGAINST
+ITEM        PROPOSAL                                          TYPE                      VOTE            MANAGEMENT
+- ----        --------                                          ----                      ----            -----------
+<S>         <C>                                               <C>                       <C>             <C>
+1A          Election of Directors (Majority Voting)           Management                For             For
+1B          Election of Directors (Majority Voting)           Management                For             For
+1C          Election of Directors (Majority Voting)           Management                For             For
+1D          Election of Directors (Majority Voting)           Management                For             For
+1E          Election of Directors (Majority Voting)           Management                For             For
+1F          Election of Directors (Majority Voting)           Management                For             For
+1G          Election of Directors (Majority Voting)           Management                For             For
+1H          Election of Directors (Majority Voting)           Management                For             For
+2           Amend Stock Compensation Plan                     Management                For             For
+3           Amend Employee Stock Purchase Plan                Management                For             For
+4           Ratify Appointment of Independent Auditors        Management                For             For
+</TABLE>
+
+<TABLE>
+<CAPTION>
+                                                                    UNAVAILABLE
+ACCOUNT NUMBER             CUSTODIAN            BALLOT SHARES       SHARES        VOTE DATE        DATE CONFIRMED
+- --------------             ---------            -------------       -----------   ---------        --------------
+<S>                        <C>                  <C>                 <C>           <C>              <C>
+997QR1U                    837                  204500              0             10-Jul-2008      10-Jul-2008
+</TABLE>
+
+YAHOO! INC.
+
+SECURITY        984332106         MEETING TYPE   Contested-Annual
+TICKER SYMBOL   YHOO              MEETING DATE   01-Aug-2008
+ISIN            US9843321061      AGENDA         932924992 - Management
+
+<TABLE>
+<CAPTION>
+                                                                                                        FOR/AGAINST
+ITEM        PROPOSAL                                          TYPE                      VOTE            MANAGEMENT
+- ----        --------                                          ----                      ----            -----------
+<S>         <C>                                               <C>                       <C>             <C>
+01          Election of Directors                             Management
+            1   ROY J. BOSTOCK                                                          For             For
+            2   RONALD W. BURKLE                                                        For             For
+            3   ERIC HIPPEAU                                                            For             For
+            4   VYOMESH JOSHI                                                           For             For
+            5   ARTHUR H. KERN                                                          For             For
+            6   ROBERT A. KOTICK                                                        For             For
+            7   MARY AGNES WILDEROTTER                                                  For             For
+            8   GARY L. WILSON                                                          For             For
+            9   JERRY YANG                                                              For             For
+02          Ratify Appointment of Independent Auditors        Management                For             For
+03          S/H Proposal - Executive Compensation             Shareholder               For             Against
+04          Miscellaneous Shareholder Proposal                Shareholder               Against         For
+05          S/H Proposal - Political/Government               Shareholder               Against         For
+</TABLE>
+
+<TABLE>
+<CAPTION>
+                                                                    UNAVAILABLE
+ACCOUNT NUMBER             CUSTODIAN            BALLOT SHARES       SHARES        VOTE DATE        DATE CONFIRMED
+- --------------             ---------            -------------       -----------   ---------        --------------
+<S>                        <C>                  <C>                 <C>           <C>              <C>
+997QR1U                    837                  160600              0             29-Jul-2008      11-Jul-2008
+997QR1U                    837                  160600              0             29-Jul-2008      30-Jul-2008
+</TABLE>
+
+<PAGE>
+
+MEDTRONIC, INC.
+
+SECURITY        585055106         MEETING TYPE   Annual
+TICKER SYMBOL   MDT               MEETING DATE   21-Aug-2008
+ISIN            US5850551061      AGENDA         932935488 - Management
+
+<TABLE>
+<CAPTION>
+                                                                                                        FOR/AGAINST
+ITEM        PROPOSAL                                          TYPE                      VOTE            MANAGEMENT
+- ----        --------                                          ----                      ----            -----------
+<S>         <C>                                               <C>                       <C>             <C>
+01          Election of Directors                             Management
+            1   VICTOR J. DZAU, M.D.                                                    For             For
+            2   WILLIAM A. HAWKINS                                                      For             For
+            3   SHIRLEY A. JACKSON, PHD                                                 For             For
+            4   DENISE M. O'LEARY                                                       For             For
+            5   JEAN-PIERRE ROSSO                                                       For             For
+            6   JACK W. SCHULER                                                         For             For
+02          Ratify Appointment of Independent Auditors        Management                For             For
+03          Approve Stock Compensation Plan                   Management                For             For
+</TABLE>
+
+<TABLE>
+<CAPTION>
+                                                                    UNAVAILABLE
+ACCOUNT NUMBER             CUSTODIAN            BALLOT SHARES       SHARES        VOTE DATE        DATE CONFIRMED
+- --------------             ---------            -------------       -----------   ---------        --------------
+<S>                        <C>                  <C>                 <C>           <C>              <C>
+997QR1U                    837                  233300              0             05-Aug-2008      05-Aug-2008
+</TABLE>

@@ -266,20 +266,39 @@ func brPageFurniture(line string) bool {
 
 // brDashRule reports whether a line is a horizontal rule. Both '-----' and
 // '- -----' occur; the leading '- ' is SGML dash escaping, not content.
+//
+// The rule is SEGMENTED in one whole vintage -- it underlines each column
+// separately rather than spanning the table:
+//
+//	ITEM   PROPOSAL   TYPE   VOTE   MANAGEMENT
+//	- ----   --------   ----   ----   -----------
+//
+// Requiring ONE unbroken run rejected that line, and a rejected line is not
+// furniture: it carries no item token and matches no label, so it fell through
+// to free-standing text, which CLOSES THE TABLE. Every proposal after it then
+// sat outside a table and was read as prose. The 197 filings broadridge claimed
+// and returned nothing from, 155.1 MB, are that one branch. So the rule is a
+// line built ONLY from rule characters and the spaces between them.
+//
+// The floor of three rule characters is what keeps the vote value '---' from
+// becoming furniture: a cell holding it is a row with an item token, and this
+// test never sees the token, only the line.
 func brDashRule(up string) bool {
 	s := strings.TrimSpace(up)
 	if strings.HasPrefix(s, "- ") {
 		s = strings.TrimSpace(s[2:])
 	}
-	if len(s) < 3 {
-		return false
-	}
+	n := 0
 	for i := 0; i < len(s); i++ {
-		if s[i] != '-' && s[i] != '=' && s[i] != '_' {
+		switch s[i] {
+		case '-', '=', '_':
+			n++
+		case ' ', '\t':
+		default:
 			return false
 		}
 	}
-	return true
+	return n >= 3
 }
 
 // ---------------------------------------------------------------------------
