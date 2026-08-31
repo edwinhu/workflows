@@ -94,8 +94,11 @@ const (
 // bytes. It returns errLayoutDeclined when no row qualifies as a header, which
 // leaves the filing parse_status=skip with a body-derived signature rather than
 // parsed against a guessed header.
-func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
+func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 	body := htmlTableBody(raw)
+	// Built ONCE per filing: these bodies reach 142 MB and 452,552 vote rows, so
+	// a per-row rebuild would make the job quadratic in the input.
+	seriesIdx := seriesByName(meta.SeriesDecls)
 	if indexFrom(body, 0, "</tr>") < 0 {
 		return nil, errLayoutDeclined
 	}
@@ -113,6 +116,13 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 		ctxLead     string
 		ctxSealed   bool
 		nilRow      bool
+		// curSeries is the fund the following blocks belong to. This layout
+		// stamped NO series of its own: measured 2026-08-31, 10.20% of its
+		// 55,195,672 rows carried one and every such row came from the chassis
+		// single-series fallback, so every multi-series filing contributed
+		// nothing to the ISS link. 7,385 of its 12,546 filings declare series and
+		// print a fund heading, and those filings hold 44,801,362 rows.
+		curSeries string
 	)
 
 	for {
@@ -146,6 +156,14 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 
 		// The block heading printed between the two tables carries this block's
 		// meeting, and it belongs to no row's cells at all.
+		// The fund heading sits BETWEEN tables, not in any row, which is why it
+		// is read from row.pre rather than from cells. An unresolved heading
+		// clears the carried fund rather than leaving the previous one standing:
+		// a blank series_id costs coverage, a wrong one files this fund's votes
+		// under the fund above it.
+		if name, ok := htmlFundHeading(row.pre); ok {
+			curSeries = icrResolveFund(seriesIdx, name)
+		}
 		if row.pre != "" {
 			if next, labelled := htmlReadContext([]string{row.pre}); labelled {
 				if ctxSealed {
@@ -213,6 +231,7 @@ func parseHTMLTableRaw(raw []byte, _ string, _ FilingMeta) ([]VoteRow, error) {
 		if mapping != nil && htmlComparableArity(len(cells), headerArity) &&
 			(!partitioned || htmlMappedVoteValue(cells, mapping, headerArity)) {
 			if r, ok := htmlDataRow(cells, mapping, headerArity, ctx); ok {
+				r.SeriesID = curSeries
 				out = append(out, r)
 				sawData, emitted = true, true
 			}
@@ -1861,4 +1880,43 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 	// declares exactly one series; guessing which fund a table belongs to would
 	// move one fund's votes onto another, which is far worse than a blank.
 	return r, true
+}
+
+// htmlVoteSummaryBanner is the heading this grammar prints above each fund's
+// section. The fund's name is the line UNDER it:
+//
+//	VOTE SUMMARY REPORT
+//	FIDELITY CORPORATE BOND FUND
+//	07/01/2022 - 06/30/2023
+//
+// Measured 2026-08-31, 7,385 of the 12,546 htmltable filings declare series and
+// print no `Fund Name :` line at all; this banner is what they print instead,
+// and those filings hold 44,801,362 rows.
+const htmlVoteSummaryBanner = "VOTE SUMMARY REPORT"
+
+// htmlFundHeading reads the fund a section belongs to out of the markup between
+// two tables. Both spellings are LABELLED -- a banner line or a `Fund Name :`
+// field -- so neither is a heading guessed from position, and a section this
+// layout cannot name returns ok with an empty string so the caller clears rather
+// than carrying the previous fund forward.
+func htmlFundHeading(pre string) (string, bool) {
+	if pre == "" {
+		return "", false
+	}
+	lines := strings.Split(pre, "\n")
+	for i, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.EqualFold(trimmed, htmlVoteSummaryBanner) {
+			for _, next := range lines[i+1:] {
+				if v := strings.TrimSpace(next); v != "" {
+					return v, true
+				}
+			}
+			return "", true
+		}
+		if name, ok := icrFundName(trimmed); ok {
+			return name, true
+		}
+	}
+	return "", false
 }
