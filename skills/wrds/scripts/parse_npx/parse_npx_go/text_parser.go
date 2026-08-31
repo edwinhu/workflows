@@ -162,7 +162,37 @@ var noActivitySentinels = []string{
 	// the reporting period" and "NO RECORDS TO REPORT".
 	"no matters relating to a portfolio security",
 	"no records to report",
+	// A second pass over the residue, 2026-08-31, sweeping whole documents for
+	// negation sentences rather than an Item 1 span. Counts are filings in the
+	// 11,235 then unread: 651, 153, ~300 and 86.
+	//
+	// "there were no proxy votes" was already here and does NOT match "there ARE
+	// no proxy votes to report", which is the commoner spelling -- the tense is
+	// the whole difference, which is why this list keeps the shortest negating
+	// form rather than a sentence.
+	"no proxy votes to report",
+	"no votes have been cast",
+	"held no securities",
+	"no proxy voting record is listed",
 }
+
+// Sentences the same sweep surfaced that are NOT nil reports, recorded because
+// each looks like one and each appears on filings that DO carry votes. They are
+// held out by hasVoteTableVocabulary, but the list exists so nobody mines this
+// residue again and promotes them:
+//
+//	"'n/a' is used to indicate that there is no ..."   a table's own LEGEND, 452
+//	"the votes reported do not reflect any votes cast pursuant to a regulatory
+//	 requirement"                                       a disclaimer, 267
+//	"in determining votes against management, any ballot that management did
+//	 not ..."                                           a methodology note, 192
+//	"the registrant did not cast a vote since the securities in question were
+//	 preferred ..."                                     a per-vote FOOTNOTE, 88
+//	"to permit further solicitation of proxies if there are not sufficient
+//	 votes"                                             an ADJOURNMENT PROPOSAL, 69
+//
+// The last is the sharpest warning: it is the text of a ballot item, so a filing
+// matching it necessarily has a vote table.
 
 // voteTableVocabulary is the column and label vocabulary a legacy vote table
 // cannot be written without. Its presence is what separates "this fund had
