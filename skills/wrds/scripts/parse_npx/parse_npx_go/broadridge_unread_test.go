@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -257,5 +258,58 @@ func TestBroadridgeNoVoteIsAVoteValue(t *testing.T) {
 	}
 	if got := single[colHowVoted]; got != "No vote" {
 		t.Errorf("single-line row how_voted = %q, want %q", got, "No vote")
+	}
+}
+
+// TestBroadridgeNumericWrapIsNotANewItem pins the wrapped line that begins with
+// a number.
+//
+// The proposal text wraps, and the wrap happens to start with a numeral:
+//
+//	2      TO CONSIDER AND APPROVE THE REPORT OF THE     Mgmt    For    For
+//	       SUPERVISORY COMMITTEE OF THE COMPANY (THE
+//	       "SUPERVISORY COMMITTEE") FOR THE YEAR ENDED
+//	       31 DECEMBER 2020
+//
+// brSplitItem reads `31` as an item token, so the line opens a NEW row instead
+// of continuing item 2. That costs twice: item 2's description is truncated at
+// "FOR THE YEAR ENDED", and a junk row appears carrying item `31`, no proponent
+// and no vote.
+//
+// The discriminator is the same one the slate rule uses in reverse: a real item
+// row inside a table brings cells of its own. A line with NO type cell and NO
+// vote cell, arriving while a row is open, is wrapped text. An agenda item the
+// fund reported but did not vote is unaffected -- those carry a proponent
+// (`Mgmt`, `Non-Voting`), which is a cell.
+//
+// Measured 2026-09-01 on 0001438934-21-000135.txt: 3,402 of its rows carry
+// neither proponent nor vote, led by 148 copies of `31 | DECEMBER 2020` and 100
+// of `2 | THANK YOU`.
+func TestBroadridgeNumericWrapIsNotANewItem(t *testing.T) {
+	b, err := os.ReadFile(filepath.Join("testdata", "broadridge", "B7_numeric_wrap.txt"))
+	if err != nil {
+		t.Fatalf("read fixture: %v", err)
+	}
+	rows := runISSNPXDoc(t, string(b))
+
+	for _, r := range rows {
+		if r[colItemSeq] == "31" {
+			t.Errorf("emitted a row for item %q (%q) -- that is the wrapped tail of item 2",
+				r[colItemSeq], r[colVoteDescription])
+		}
+	}
+
+	var item2 []string
+	for _, r := range rows {
+		if r[colItemSeq] == "2" {
+			item2 = r
+		}
+	}
+	if item2 == nil {
+		t.Fatalf("item 2 missing; got %d rows", len(rows))
+	}
+	if got := item2[colVoteDescription]; !strings.HasSuffix(got, "31 DECEMBER 2020") {
+		t.Errorf("item 2 description = %q, want it to end with the wrapped %q",
+			got, "31 DECEMBER 2020")
 	}
 }
