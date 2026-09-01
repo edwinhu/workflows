@@ -893,7 +893,7 @@ if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-q"]))
 
 
-# ── ai-tic·sev2·announce-is-the-argument ─────────────────────────────────────
+# ── ai-tic·sev2·the-x-is-the-y ─────────────────────────────────────
 # The tic is announcing that something IS the argument/payoff/point in place of stating it.
 # Corpus result behind the rule: 0 hits / 14,294,148 sentences of law + finance prose.
 #
@@ -917,11 +917,27 @@ def _labels_for(text: str) -> str:
 
 
 def test_announce_is_the_argument_fires():
-    assert "announce-is-the-argument" in _labels_for("The selection is the argument.")
+    assert "the-x-is-the-y" in _labels_for("The selection is the argument.")
 
 
 def test_announce_is_the_argument_spares_the_human_near_miss():
     """`is the problem` is human at 35.61/M — 509 hits. The rule must not reach it."""
-    assert "announce-is-the-argument" not in _labels_for(
+    assert "the-x-is-the-y" not in _labels_for(
         "the benefits principle is the problem."
+    )
+
+
+def test_abstract_noun_gate_fires():
+    assert "abstract-noun-gate" in _labels_for(
+        "The liability gate is what the statute actually moved."
+    )
+
+
+def test_abstract_noun_gate_spares_the_hedge_fund_term_of_art():
+    """`a gate on redemptions` is a live finance term; bare `gate` runs 90.74/M. Neither is reached."""
+    assert "abstract-noun-gate" not in _labels_for(
+        "The fund manager has the right to impose a gate on redemptions."
+    )
+    assert "abstract-noun-gate" not in _labels_for(
+        "The ratio gates whether the effect appears at all."
     )

@@ -36,6 +36,33 @@ Most editors using AI do not ask for summaries to be generated.
 
 — Edit summary from [this revision](https://en.wikipedia.org/wiki/Special:Diff/1279941059 "Special:Diff/1279941059") to [David Bitel](https://en.wikipedia.org/wiki/David_Bitel "David Bitel")
 
+## Announcing that evidence is load-bearing
+
+The writer marks their own work instead of letting it land: a sentence whose job
+is to tell the reader that what just appeared, or is about to, carries the
+argument. The evidence is usually fine. The announcement is the tell.
+
+> Two lines carry it: "beginning in 2007, Kirby simply allowed the executive
+> officers themselves to decide how they would be paid," and, from the 2016
+> complaint, "by 2008 Kirby relinquished his fiduciary duties altogether."
+
+Rewritten, the quotations do the work unaided, and the missing attribution the
+announcement had been covering becomes visible: "From the 2017 opinion: ... From
+the 2016 complaint: ..."
+
+The move takes too many surface forms to regex. The subject varies (two lines, one
+sentence, that clause, three words, a single footnote), the verb varies (carry,
+carries, does the work, bears, is doing), and the object varies (it, the work, the
+case, the argument, the weight). Widening a pattern far enough to catch them all
+starts matching the literal sense — "subsection (e) carries the underlying limit
+into declaratory actions" is correct English and must not fire. Judge it in review
+rather than shipping a rule that reports clean while missing most instances.
+
+The fixed-form corner of this family IS regexable and already ships as
+`ai-tic·sev2·the-x-is-the-y` in `scored-tics-patterns.py`: a copula plus one of a
+closed noun set ("is the argument", "is the payoff", "was the larger rule"). Treat
+that rule as the floor, not the whole family.
+
 ## False indicators
 
 False accusations of AI use can [drive away new editors](https://en.wikipedia.org/wiki/Wikipedia:BITE "Wikipedia:BITE") and foster an atmosphere of suspicion. Before claiming AI was used, consider if [Dunning–Kruger effect](https://en.wikipedia.org/wiki/Dunning%E2%80%93Kruger_effect "Dunning–Kruger effect") and [confirmation bias](https://en.wikipedia.org/wiki/Confirmation_bias "Confirmation bias") is clouding your judgement. In particular, there are several somewhat commonly used indicators which are ineffective (and may even indicate the opposite) in LLM detection.
