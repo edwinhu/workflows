@@ -246,6 +246,12 @@ var howVotedVocabulary = map[string]bool{
 	// PROPORTIONAL below records -- how_voted is verbatim by contract, so the
 	// vocabulary grows rather than the parser rewriting what the filing printed.
 	"SPLIT VOTE": true,
+	// `Sold shares` is the fund selling the position before the meeting and
+	// `DNV` abbreviates Did Not Vote -- both are outcomes the corpus prints in
+	// the Vote Cast column, on 5,794 and 6,937 rows of the two filings that use
+	// them. See the note on PROPORTIONAL below: the vocabulary records the
+	// spelling because how_voted is verbatim by contract.
+	"SOLD": true, "SOLD SHARES": true, "DNV": true,
 	// Proportional (or "echo") voting: the fund votes in proportion to the
 	// other shareholders rather than forming a view. It is a real vote value,
 	// not a parse defect -- 7,270 rows carry it in the revalidation run, each
@@ -283,6 +289,11 @@ var howVotedVocabulary = map[string]bool{
 func isVoteValue(s string) bool {
 	v := strings.ToUpper(strings.Join(strings.Fields(s), " "))
 	if howVotedVocabulary[v] {
+		return true
+	}
+	// A proportional vote is reported as a PERCENTAGE -- `F=85.71%` -- whose
+	// value is the number, so it cannot be a vocabulary entry.
+	if issPercentVote(strings.Fields(s)[len(strings.Fields(s))-1]) {
 		return true
 	}
 	// A value either layout accepts is a value the corpus really prints.
