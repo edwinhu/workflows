@@ -119,6 +119,12 @@ var issVoteValues = map[string]bool{
 	// filing printed is `DidNot Vote`. Leaving it out makes the peel fail there
 	// so issJoinWrappedVote reunites the halves, which is what verbatim means.
 	"didnot vote": true, "null": true,
+	// Echo (or proportional) voting: the fund votes in proportion to the other
+	// shareholders. `echo` is not admitted alone, for the reason `didnot` is
+	// not -- the cell the filing prints is `Echo Vote`, and half of it is not
+	// what it printed. `proportional` is the same outcome spelled out, and the
+	// shared howVotedVocabulary has carried PROPORTIONAL all along.
+	"echo vote": true, "proportional": true,
 	"refer": true, "unvoted": true, "n/a": true, "na": true, "tna": true,
 	"do not vote": true, "take no action": true, "no action": true,
 	"did not vote": true, "non voting": true, "non-voting": true,
@@ -482,7 +488,13 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 
 		if sponsor == "" && cur.cast == "" && len(cur.text) > 0 {
 			// The SPONSOR is the rightmost column, so it comes off before the
-			// vote's head is at the edge to be found.
+			// vote's head is at the edge to be found. That is also what puts the
+			// two halves of `Echo Vote` next to each other:
+			//
+			//	1.7  Elect Trustee Larry D. Thompson  For  Echo  Management
+			//	                                           Vote
+			//
+			// where the sponsor sits BETWEEN them on the row line.
 			prev := strings.Fields(cur.text[len(cur.text)-1])
 			sp, prev, haveSponsor := issPeelCell(prev, issSponsors)
 			if vote, prevKeep, contKeep, joined := issJoinWrappedVote(prev, strings.Fields(rest)); haveSponsor && joined {
