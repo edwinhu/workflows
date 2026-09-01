@@ -424,6 +424,26 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			}
 		}
 
+		// A CONTINUATION MAY BE NOTHING BUT CELLS. issPeelColumns needs three
+		// tokens; this line has two, and its proposal text is on the line above.
+		if sponsor == "" && cur.cast == "" {
+			if mg, ca, sp, ok := issPeelTrailingCells(rest); ok {
+				cur.cast, cur.sponsor = ca, sp
+				if mg != "" {
+					cur.mgmt = mg
+				} else if len(cur.text) > 0 {
+					// The Mgt Rec cell stayed on the row's own line, where it now
+					// sits at the end of the text.
+					prev := strings.Fields(cur.text[len(cur.text)-1])
+					if cell, remaining, found := issPeelCell(prev, issVoteValues); found {
+						cur.mgmt = cell
+						cur.text[len(cur.text)-1] = strings.Join(remaining, " ")
+					}
+				}
+				continue
+			}
+		}
+
 		if body != "" {
 			cur.text = append(cur.text, body)
 		}
@@ -806,6 +826,40 @@ func issPeelColumns(rest string) (body, mgmt, cast, sponsor string) {
 		}
 	}
 	return strings.Join(toks, " "), mgmt, cast, sponsor
+}
+
+// issPeelTrailingCells peels the Sponsor and vote cells off a line that carries
+// NOTHING ELSE. It exists because issPeelColumns refuses a line of fewer than
+// three tokens, which is right for a ROW and wrong for a CONTINUATION:
+//
+//	1.1  Elect Director R.J. Alpern  For
+//	For  Management
+//
+// EDGAR wraps this vintage's paragraphs, so the first line ends after Mgt Rec
+// and the second carries Vote Cast and Sponsor and nothing else. Refused, the
+// cells were appended to the proposal text and the vote went blank -- measured
+// 2026-09-01 one such filing emits 14,711 blank votes of 16,056 rows (91.6%),
+// and three of the six worst issnpx filings by blank votes are this shape.
+//
+// Only a line that is EXACTLY cells qualifies: a leftover token means this is
+// ordinary wrapped text and the caller must not treat it as the row's columns.
+func issPeelTrailingCells(rest string) (mgmt, cast, sponsor string, ok bool) {
+	toks := strings.Fields(rest)
+	if len(toks) == 0 {
+		return "", "", "", false
+	}
+	sponsor, toks, ok = issPeelCell(toks, issSponsors)
+	if !ok {
+		return "", "", "", false
+	}
+	cast, toks, ok = issPeelCell(toks, issVoteValues)
+	if !ok {
+		return "", "", "", false
+	}
+	if cell, remaining, found := issPeelCell(toks, issVoteValues); found {
+		mgmt, toks = cell, remaining
+	}
+	return mgmt, cast, sponsor, len(toks) == 0
 }
 
 // issPeelCell removes the longest run of trailing tokens that spells a value in
