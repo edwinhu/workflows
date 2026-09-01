@@ -178,3 +178,26 @@ func TestISSNPXNotVoted(t *testing.T) {
 		t.Errorf("sponsor = %q, want %q", got[colVoteSource], "Management")
 	}
 }
+
+// TestISSNPXDidNotVote pins `DidNot Vote` and the `Null` recommendation.
+//
+//	1.1  Receive Report on 2004 Business Operation  Null  DidNot  Management
+//	     Results                                          Vote
+//
+// The vote is `DidNot Vote` -- one value, spelled without the space and split
+// across the wrap -- and the Mgt Rec cell reads `Null`. Neither was in the
+// vocabulary, so the peel failed and every cell stayed in the proposal text.
+// One filing prints it on 2,670 rows.
+func TestISSNPXDidNotVote(t *testing.T) {
+	rows := loadSpellingFixture(t, "DL_didnot.txt")
+	got := findRow(rows, "Receive Report on 2004 Business Operation")
+	if got == nil {
+		t.Fatalf("row missing; got %d rows", len(rows))
+	}
+	if got[colHowVoted] != "DidNot Vote" {
+		t.Errorf("how_voted = %q, want %q", got[colHowVoted], "DidNot Vote")
+	}
+	if got[colMgmtRec] != "Null" {
+		t.Errorf("mgmt_rec = %q, want %q", got[colMgmtRec], "Null")
+	}
+}

@@ -109,6 +109,16 @@ var issVoteValues = map[string]bool{
 	// howVotedVocabulary has carried NO VOTE all along: the same drift between
 	// two lists of one fact that `no` itself was.
 	"not voted": true, "no vote": true,
+	// `DidNot Vote` is one value spelled without the space, and this vintage
+	// wraps it as `DidNot` / `Vote`; `Null` is what the same filing prints in
+	// the Mgt Rec cell when the report states no recommendation. One filing
+	// prints them on 2,670 rows.
+	//
+	// `didnot` is deliberately NOT admitted on its own: with it the peel
+	// succeeds on the row line and reports the FRAGMENT, where the cell the
+	// filing printed is `DidNot Vote`. Leaving it out makes the peel fail there
+	// so issJoinWrappedVote reunites the halves, which is what verbatim means.
+	"didnot vote": true, "null": true,
 	"refer": true, "unvoted": true, "n/a": true, "na": true, "tna": true,
 	"do not vote": true, "take no action": true, "no action": true,
 	"did not vote": true, "non voting": true, "non-voting": true,
