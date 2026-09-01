@@ -125,6 +125,10 @@ var issVoteValues = map[string]bool{
 	// what it printed. `proportional` is the same outcome spelled out, and the
 	// shared howVotedVocabulary has carried PROPORTIONAL all along.
 	"echo vote": true, "proportional": true,
+	// `Did Note Vote` is the filing's OWN typo for `Did Not Vote`. how_voted is
+	// verbatim, so the spelling is recorded as printed rather than corrected --
+	// 1,264 rows of 0000950137-05-010894.txt. `Not Cast` was simply missing.
+	"did note vote": true, "not cast": true,
 	"refer": true, "unvoted": true, "n/a": true, "na": true, "tna": true,
 	"do not vote": true, "take no action": true, "no action": true,
 	"did not vote": true, "non voting": true, "non-voting": true,
@@ -1148,8 +1152,11 @@ func issPeelVote(toks []string) (cell string, remaining []string, ok bool) {
 // issPercentVote recognises `F=85.71%`, `A=6.04%`, `W=7.68%` -- a choice letter,
 // an equals sign, a number and a percent sign, and nothing else.
 func issPercentVote(s string) bool {
+	if !strings.HasSuffix(s, "%") {
+		return false
+	}
 	i := strings.IndexByte(s, '=')
-	if i != 1 || !strings.HasSuffix(s, "%") {
+	if i != 1 {
 		return false
 	}
 	switch s[0] {
