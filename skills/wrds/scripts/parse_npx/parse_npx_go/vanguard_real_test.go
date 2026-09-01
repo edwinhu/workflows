@@ -239,6 +239,13 @@ var howVotedVocabulary = map[string]bool{
 	"TAKE NO ACTION": true, "TAKENOACTION": true, "NO ACTION": true, "TNA": true,
 	"NONE": true, "N/A": true, "UNKNOWN": true, "REFER": true,
 	"YES": true, "NO": true, "SPLIT": true,
+	// `Split Vote` is the same outcome spelled in full: the fund held the
+	// security across several accounts that voted differently. One filing prints
+	// it on 20,808 of its 21,480 rows, each beside a coherent description and
+	// management recommendation. Recognising the spelling is the same decision
+	// PROPORTIONAL below records -- how_voted is verbatim by contract, so the
+	// vocabulary grows rather than the parser rewriting what the filing printed.
+	"SPLIT VOTE": true,
 	// Proportional (or "echo") voting: the fund votes in proportion to the
 	// other shareholders rather than forming a view. It is a real vote value,
 	// not a parse defect -- 7,270 rows carry it in the revalidation run, each
