@@ -62,6 +62,20 @@ Company registration information.
 - **Row PK `wrdssec_all.forms`** (~26.9M rows): `fname` — VERIFIED SAMPLED 2023 fdate slice: 0 dupes over
   1,160,114 rows. **`forms` has NO `accession` column** (cols: gvkey, cik, fdate, findexdate, lindexdate,
   form, coname, fname, iname, source) — derive the accession from `fname` if needed.
+- **`fname` is the EDGAR path; `wrdsfname` is the on-disk path. Bulk pulls need `wrdsfname`.**
+  `fname` = `edgar/data/745467/0001145549-18-005124.txt`, `wrdsfname` =
+  `000074/745467/0001145549-18-005124.txt` (CIK zero-padded to 6, sharded). Under
+  `/wrds/sec/archives` only the second resolves; the first fails per-file with
+  `tar: ...: Cannot stat: No such file or directory` and still exits 0 with a valid empty
+  archive, so the pull looks like it worked. Feed `wrdsfname` to `tar -T -`.
+- **`N-CEN` is the fund-registrant → investment-adviser bridge, and it exists only as filings.**
+  No WRDS SQL table carries it (`information_schema` has no `%ncen%`); it is in `wrds_forms` as
+  `form LIKE 'N-CEN%'` — 26,358 `N-CEN` + 2,278 `N-CEN/A` over 3,443 CIKs, 2018-09 onward, ~3.2 GB,
+  median 20 KB. Pull the `.txt` and parse Item C.7: `<investmentAdviserName>`, `...FileNo` (801-),
+  `...CrdNo`, and `<subAdviserName>` separately. **Advisers are declared per SERIES, inside
+  `<managementInvestmentQuestion>` keyed by `<mgmtInvSeriesId>`** — take the union across a filing
+  and a 34-series trust hands you 34 advisers. This is what links a fund complex to its 13F manager
+  when the fund's brand name matches nothing on EDGAR.
 - **Business/event key:** one EDGAR submission = `accession` (equivalently the accession embedded in
   `fname`). Amendments (`10-K/A`, `SC 13D/A`, ...) are separate submissions with their own accessions —
   supersede by `(cik, form-family, period)` taking the latest `fdate`, as in `blockholders.md`.

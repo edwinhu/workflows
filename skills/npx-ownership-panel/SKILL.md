@@ -65,6 +65,18 @@ drops `wficn`, `mflink1/2`, `mfl2` and `mfl3` from the chain and moves coverage 
 against the panel start (S12 reaches 1980; votes start 2003-07-01) and reconcile shares between the
 two sources — coverage parity with a shares disagreement is worse than the status quo.
 
+**If you do need an ISS-institution → 13F-manager link, do not match on the ISS name.** The
+deterministic linker is `npx-reconcile/src/link13f/` (92.37% of the vote universe, gate-passing).
+The channel that carries it is **N-CEN Item C.7**, where a registrant declares its adviser's legal
+name per series per year — reached from the N-PX `filepath`, which encodes the registrant CIK.
+Brand strings do not resolve: `Fidelity` appears in **none** of the 25,073 EDGAR conames, while
+`FIDELITY SELECTCO, LLC` does. Name rules alone plateau near 60%, and the 13F `om` family graph
+adds **zero** institutions on its own. Attribute advisers **per series** (`<mgmtInvSeriesId>`), not
+per trust: a 34-series trust lists 34 advisers and only one advises the fund that voted. Validate
+with holdings overlap, which **rejects only** — the known-wrong `Russell → JPMorgan` pair scores
+0.932 against a random-pair p90 of 0.940. A further 4.13% of the universe has advisers that file
+no 13F at all, so it is unlinkable rather than unlinked.
+
 **Leg 2 has two sources for one quantity, and they are NOT interchangeable.**
 Thomson S34 decayed after 2013 and undercounts; the EDGAR scrape exists for that
 reason. EDGAR wins where present, S34 is fallback-only, **never blended**.
