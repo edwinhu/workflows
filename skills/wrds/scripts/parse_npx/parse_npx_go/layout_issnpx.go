@@ -268,7 +268,24 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 
 		if line == "" {
-			flush()
+			// A BLANK LINE DOES NOT CLOSE A ROW THAT IS STILL WAITING FOR ITS
+			// CELLS. The SGML-wrapped vintage prints each cell block as its own
+			// <p>, with a `&nbsp;` paragraph between, so the wrapped tail of a
+			// proposal -- and the tail of a Vote Cast value that wrapped with it
+			// -- arrives AFTER a blank line:
+			//
+			//	1  Accept 2005 Operating Results and  For  Did Not  Management
+			//
+			//	Financial Statements  Vote
+			//
+			// Closing on the blank stranded `Did Not` with no completion, so the
+			// row emitted a blank how_voted and kept every cell in its text.
+			// Measured 2026-09-01, 961 of 14,680 rows (6.55%) across two filings
+			// of this family. A complete row still closes here, which is what
+			// keeps a finished proposal's text from running on.
+			if cur == nil || cur.complete() {
+				flush()
+			}
 			continue
 		}
 
@@ -329,6 +346,29 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 
 		body, mgmt, cast, sponsor := issPeelColumns(rest)
+
+		// THE VOTE CELL WRAPS TOO. When the opening line's peel failed and this
+		// line completes the value, reunite the halves before either becomes
+		// proposal text -- see issJoinWrappedVote.
+		if sponsor == "" && cur.cast == "" && len(cur.text) > 0 {
+			// The SPONSOR is the rightmost column, so it comes off before the
+			// vote's head is at the edge to be found.
+			prev := strings.Fields(cur.text[len(cur.text)-1])
+			sp, prev, haveSponsor := issPeelCell(prev, issSponsors)
+			if vote, prevKeep, contKeep, joined := issJoinWrappedVote(prev, strings.Fields(rest)); haveSponsor && joined {
+				cur.sponsor = sp
+				if mg, remaining, found := issPeelCell(prevKeep, issVoteValues); found {
+					cur.mgmt, prevKeep = mg, remaining
+				}
+				cur.cast = vote
+				cur.text[len(cur.text)-1] = strings.Join(prevKeep, " ")
+				if tail := strings.Join(contKeep, " "); tail != "" {
+					cur.text = append(cur.text, tail)
+				}
+				continue
+			}
+		}
+
 		if body != "" {
 			cur.text = append(cur.text, body)
 		}
@@ -596,6 +636,38 @@ func issSplitItem(line string) (item, rest string) {
 		return parts[0], strings.TrimSpace(parts[1])
 	}
 	return "", line
+}
+
+// issJoinWrappedVote completes a Vote Cast cell that WRAPPED across two physical
+// lines. `Did Not Vote` is printed as `Did Not` above `Vote`:
+//
+//	1     Accept 2005 Operating Results and    For      Did Not    Management
+//	      Financial Statements                          Vote
+//
+// Read a line at a time the vote is `Did Not`, which is in no vocabulary, so
+// issPeelColumns abandons the whole line: the row emits a BLANK how_voted and
+// every trailing cell stays in the proposal text. Measured 2026-09-01, issnpx
+// carries 2,275,259 blank votes over 166,403,081 rows, and on two filings of
+// this family 961 of 14,680 rows (6.55%) are blank exactly this way.
+//
+// Admitting `did not` to the vocabulary would report a value the filing never
+// printed in that cell. The cell says `Did Not Vote`; the fix is to reunite it.
+//
+// prev is the opening line's surviving tokens, cont the continuation's. Both
+// halves are taken from the RIGHT, because that is the edge the vote column sits
+// on, and both are bounded by issMaxCellWords.
+func issJoinWrappedVote(prev, cont []string) (vote string, prevKeep, contKeep []string, ok bool) {
+	for k := 1; k <= issMaxCellWords && k <= len(prev); k++ {
+		head := strings.Join(prev[len(prev)-k:], " ")
+		for m := 1; m <= issMaxCellWords && m <= len(cont); m++ {
+			tail := strings.Join(cont[len(cont)-m:], " ")
+			candidate := head + " " + tail
+			if issVoteValues[strings.ToLower(strings.Trim(candidate, ".,;"))] {
+				return candidate, prev[:len(prev)-k], cont[:len(cont)-m], true
+			}
+		}
+	}
+	return "", prev, cont, false
 }
 
 // issPeelColumns takes the Mgt Rec / Vote Cast / Sponsor cells off the right of a
