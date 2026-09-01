@@ -425,6 +425,14 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			continue
 		}
 
+		// The proposal text can resume AFTER the sponsor on the same line, which
+		// puts the cells in the middle where no right-edge peel can reach them.
+		if _, _, _, sp := issPeelColumns(rest); sp == "" {
+			if rebuilt, ok := issSplitWrappedTail(rest); ok {
+				rest = rebuilt
+			}
+		}
+
 		body, mgmt, cast, sponsor := issPeelColumns(rest)
 
 		// THE VOTE CELL WRAPS TOO. When the opening line's peel failed and this
@@ -892,6 +900,42 @@ func issJoinWrappedVote(prev, cont []string) (vote string, prevKeep, contKeep []
 		}
 	}
 	return "", prev, cont, false
+}
+
+// issSplitWrappedTail recovers a proposal whose text resumes AFTER the sponsor,
+// on the same physical line:
+//
+//	1  Accept Financial Statements and  For  For  Management Statutory Reports
+//
+// The proposal is "Accept Financial Statements and Statutory Reports" and the
+// cells sit in the MIDDLE of it, so a peel from the right finds "Reports" in no
+// vocabulary and abandons the whole line.
+//
+// The column boundary survives normalisation and is what makes this recoverable
+// rather than a guess: cells are separated by TWO spaces, and the wrapped tail
+// is glued to its sponsor by ONE. So the last gap-delimited cell is the sponsor
+// followed by proposal text, and splitting it there is reading the layout the
+// filing printed -- the same fact icrPeelProponent and lvPeelProponent use.
+//
+// Returns the line rebuilt with the tail moved back onto the proposal text, so
+// the caller can peel it normally.
+func issSplitWrappedTail(rest string) (string, bool) {
+	cells := icrCells(rest)
+	if len(cells) < 2 {
+		return "", false
+	}
+	last := cells[len(cells)-1]
+	head, tail, cut := strings.Cut(last, " ")
+	if !cut || strings.TrimSpace(tail) == "" || !issSponsors[strings.ToLower(head)] {
+		return "", false
+	}
+	// The proposal text is the FIRST cell; the tail rejoins it, and the cells
+	// between them keep their two-space separation so the peel still sees them.
+	rebuilt := cells[0] + " " + strings.TrimSpace(tail)
+	for _, c := range cells[1 : len(cells)-1] {
+		rebuilt += "  " + c
+	}
+	return rebuilt + "  " + head, true
 }
 
 // issPeelColumns takes the Mgt Rec / Vote Cast / Sponsor cells off the right of a

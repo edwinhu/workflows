@@ -122,3 +122,33 @@ func TestISSNPXNoVoteCell(t *testing.T) {
 		t.Errorf("description %q still carries the cells", got[colVoteDescription])
 	}
 }
+
+// TestISSNPXWrapAfterSponsor pins the proposal text that resumes AFTER the
+// sponsor, on the same line.
+//
+//	1  Accept Financial Statements and  For  For  Management Statutory Reports
+//
+// The proposal is "Accept Financial Statements and Statutory Reports" and the
+// cells sit in the MIDDLE of it. issPeelColumns peels from the right, finds
+// "Reports" in no vocabulary, and abandons the line.
+//
+// The column boundary survives normalisation: cells are separated by TWO spaces
+// and the wrapped tail is glued to the sponsor by ONE. That is the same fact
+// icrPeelProponent and lvPeelProponent already use, and it is what makes this
+// recoverable rather than a guess.
+func TestISSNPXWrapAfterSponsor(t *testing.T) {
+	rows := loadSpellingFixture(t, "DH_wrap_after_sponsor.txt")
+	got := findRow(rows, "Accept Financial Statements")
+	if got == nil {
+		t.Fatalf("row missing; got %d rows", len(rows))
+	}
+	if got[colHowVoted] != "For" {
+		t.Errorf("how_voted = %q, want %q", got[colHowVoted], "For")
+	}
+	if got[colVoteSource] != "Management" {
+		t.Errorf("sponsor = %q, want %q", got[colVoteSource], "Management")
+	}
+	if want := "Accept Financial Statements and Statutory Reports"; got[colVoteDescription] != want {
+		t.Errorf("description = %q, want %q", got[colVoteDescription], want)
+	}
+}

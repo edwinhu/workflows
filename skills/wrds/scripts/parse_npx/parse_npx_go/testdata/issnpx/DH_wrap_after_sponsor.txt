@@ -1,0 +1,8 @@
+=========================== Praxis Impact Bond Fund ============================
+There is no proxy voting activity for the fund, as the fund did not hold any votable positions during the reporting period.
+======================= Praxis International Index Fund ========================                                                                            3I GROUP PLC
+Ticker:       III            Security ID:  G88473148 Meeting Date: JUN 29, 2023   Meeting Type: Annual Record Date:  JUN 27, 2023
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Accept Financial Statements and         For       For          Management Statutory Reports
+2     Approve Remuneration Report             For       For          Management
+3     Approve Remuneration Policy             For       For          Management
