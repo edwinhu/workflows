@@ -100,6 +100,10 @@ var issVoteValues = map[string]bool{
 	// is not admitted, because the vocabulary records what the corpus prints
 	// rather than what an alphabet suggests.
 	"f": true, "a": true, "n": true, "d": true,
+	// `No` in the Vote Cast column -- the fund did not vote the item. The shared
+	// howVotedVocabulary in the test suite already recognised NO, so the two
+	// lists had drifted apart; one filing prints it on 5,941 rows.
+	"no":    true,
 	"refer": true, "unvoted": true, "n/a": true, "na": true, "tna": true,
 	"do not vote": true, "take no action": true, "no action": true,
 	"did not vote": true, "non voting": true, "non-voting": true,

@@ -96,3 +96,29 @@ func TestISSNPXLetterVote(t *testing.T) {
 		t.Errorf("mgmt_rec = %q, want %q", got[colMgmtRec], "F")
 	}
 }
+
+// TestISSNPXNoVoteCell pins `No` in the Vote Cast column.
+//
+//		3   RATIFICATION OF THE APPOINTMENT OF   For   No   Management
+//	       ERNST & YOUNG LLP AS THE COMPANY'S ...
+//
+// The cells sit at the right edge and the description wraps below them, so this
+// is not a layout problem -- issVoteValues simply did not carry `no`, and
+// issPeelCell matches a whole cell, so the peel failed and the row's own line
+// became proposal text with the continuations appended after it.
+//
+// The shared howVotedVocabulary already recognised NO, so the two lists had
+// drifted: one filing prints it on 5,941 rows.
+func TestISSNPXNoVoteCell(t *testing.T) {
+	rows := loadSpellingFixture(t, "DG_no_vote_cell.txt")
+	got := findRow(rows, "RATIFICATION OF THE APPOINTMENT OF")
+	if got == nil {
+		t.Fatalf("row missing; got %d rows", len(rows))
+	}
+	if got[colHowVoted] != "No" {
+		t.Errorf("how_voted = %q, want %q", got[colHowVoted], "No")
+	}
+	if strings.Contains(got[colVoteDescription], "Management") {
+		t.Errorf("description %q still carries the cells", got[colVoteDescription])
+	}
+}
