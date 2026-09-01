@@ -1,0 +1,42 @@
+ZIMMER HOLDINGS INC
+
+Ticker:       ZMH            Security ID:  98956P102
+Meeting Date: MAY 2, 2005    Meeting Type: Annual
+Record Date:  MAR 15, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director J. Raymond Elliott         For       For        Management
+2     Amend Stock Option Plan                   For       For        Management
+3     Ratify Auditors                           For       For        Management
+4     Prohibit Auditor from Providing Non-Audit Against   Against    Shareholder
+      Services
+
+========== END NPX REPORT
+
+LARGE COMPANY VALUE PORTFOLIO
+<TABLE>
+<CAPTION>
+
+ISSUER NAME                                        TICKER              CUSIP         MTG DATE       MTG TYPE
+                                                                                     PROPOSAL TYPE  VOTED?    VOTE   FOR/AGNST MGMT
+<S>                                                 <C>                 <C>           <C>           <C>       <C>    <C>
+3M CO                                              MMM                 88579Y101     5/10/05        ANNUAL
+         1.01   Elect Vance D. Coffman                                               MGMT           YES       FOR    FOR
+         1.02   Elect Rozanne L. Ridgway                                             MGMT           YES       FOR    FOR
+         1.03   Elect Louis W. Sullivan                                              MGMT           YES       FOR    FOR
+            2   Ratify selection of auditors                                         MGMT           YES       FOR    FOR
+            3   Adopt Stock Incentive Plan                                           MGMT           YES       AGNST  AGNST
+            4   Review or promote animal welfare                                     SHLDR          YES       AGNST  FOR
+            5   China--adopt code of conduct                                         SHLDR          YES       AGNST  FOR
+
+ADOBE SYSTEMS INC                                  ADBE                00724F101     4/28/05        ANNUAL
+         1.01   Elect Carol Mills                                                    MGMT           YES       FOR    FOR
+         1.02   Elect Colleen M. Pouliot                                             MGMT           YES       FOR    FOR
+         1.03   Elect Robert Sedgewick                                               MGMT           YES       FOR    FOR
+         1.04   Elect John E. Warnock                                                MGMT           YES       FOR    FOR
+            2   Add Shares to Stock Incentive Plan                                   MGMT           YES       AGNST  AGNST
+            3   Add Shares to Director Stock Incentive Plan                          MGMT           YES       AGNST  AGNST
+            4   Expense stock options                                                SHLDR          YES       FOR    AGNST
+            5   Require option shares to be held                                     SHLDR          YES       AGNST  FOR
+            6   Ratify selection of auditors                                         MGMT           YES       FOR    FOR
+

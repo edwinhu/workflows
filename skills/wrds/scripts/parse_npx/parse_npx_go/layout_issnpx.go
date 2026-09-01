@@ -791,6 +791,22 @@ func issForeignTableHeader(line string) bool {
 		return true
 	}
 
+	// The pvtext grammar, whose proponent comes FIRST and is followed by a
+	// VOTED? column, so the sponsor is not at the right edge where
+	// issPeelColumns looks:
+	//
+	//	         PROPOSAL TYPE  VOTED?  VOTE  FOR/AGNST MGMT
+	//	1.01  Elect Vance D. Coffman   MGMT   YES   FOR   FOR
+	//
+	// The peel fails on every row and the whole line becomes proposal text with
+	// a blank vote. pvtext reads this correctly; 0000935069-05-002185 carries
+	// 121 ISS sections and 5 of these, and its later pvtext tables arrive with
+	// an ISS table still open -- 20,978 of its 22,753 rows are that.
+	if strings.Contains(up, "VOTED?") && (strings.Contains(up, "PROPOSAL TYPE") ||
+		strings.Contains(up, "FOR/AGNST")) {
+		return true
+	}
+
 	if !strings.Contains(up, "PROPONET") && !strings.Contains(up, "PROPONENT") {
 		return false
 	}
