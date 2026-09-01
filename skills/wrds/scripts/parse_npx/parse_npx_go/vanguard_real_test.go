@@ -263,6 +263,11 @@ var howVotedVocabulary = map[string]bool{
 	// its rows; how_voted is verbatim, so the spelling is recorded rather than
 	// corrected. `Not Cast` is a further spelling of the same outcome.
 	"DID NOTE VOTE": true, "NOT CAST": true,
+	// The residue's long tail, each a gap-delimited Vote Cast cell in the
+	// corpus: ECHO VOTED 712, OPPOSE 432, W'HOLD 106,
+	// NON-VOTE 78, UNAVAILABLE 74, AG 73. AGNST and UNKNOWN were already carried.
+	"ECHO VOTED": true, "OPPOSE": true,
+	"AG": true, "W'HOLD": true, "NON-VOTE": true, "UNAVAILABLE": true,
 	// Proportional (or "echo") voting: the fund votes in proportion to the
 	// other shareholders rather than forming a view. It is a real vote value,
 	// not a parse defect -- 7,270 rows carry it in the revalidation run, each
