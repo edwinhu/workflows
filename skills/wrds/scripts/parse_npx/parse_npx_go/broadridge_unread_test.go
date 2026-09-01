@@ -198,3 +198,64 @@ func TestBroadridgeDirectorSlateIsOneRowPerNominee(t *testing.T) {
 			withheld, forVote)
 	}
 }
+
+// TestBroadridgeNoVoteIsAVoteValue pins the spelling `No vote`.
+//
+// brPeelColumns peels the trailing cells by vocabulary from the RIGHT, and a
+// peel that fails on the first token stops without removing anything. The
+// vocabulary carried `do not vote`, `did not vote` and `take no action` but not
+// `no vote`, so on
+//
+//  2. To provide advisory approval of our      Mgmt     No vote
+//     executive compensation.
+//
+// both cells stayed in the proposal text, and the continuation line was then
+// appended AFTER them:
+//
+//	vote_description = "To provide advisory approval of our Mgmt No vote executive compensation."
+//	how_voted        = ""
+//
+// The description is text the filing never printed in that cell and the vote is
+// blank. Measured 2026-09-01 over a 52,170-filing re-parse, 949,089 broadridge
+// rows -- 3.433% of the layout -- carry vote cells spliced into the middle of a
+// wrapped description, against 198 for icr and 3 for issnpx. That count is a
+// FLOOR: it can only see the wrapped rows, because on a single-line row the
+// unpeeled cells land at the end of the description where nothing follows them
+// to make the splice visible.
+func TestBroadridgeNoVoteIsAVoteValue(t *testing.T) {
+	b, err := os.ReadFile(filepath.Join("testdata", "broadridge", "B6_no_vote_wraps.txt"))
+	if err != nil {
+		t.Fatalf("read fixture: %v", err)
+	}
+	rows := runISSNPXDoc(t, string(b))
+
+	var wrapped, single []string
+	for _, r := range rows {
+		switch r[colItemSeq] {
+		case "2":
+			wrapped = r
+		case "1A":
+			single = r
+		}
+	}
+	if wrapped == nil || single == nil {
+		t.Fatalf("got %d rows; want both item 1A and the wrapped item 2", len(rows))
+	}
+
+	if got, want := wrapped[colVoteDescription],
+		"To provide advisory approval of our executive compensation."; got != want {
+		t.Errorf("wrapped row description = %q, want %q", got, want)
+	}
+	if got := wrapped[colHowVoted]; got != "No vote" {
+		t.Errorf("wrapped row how_voted = %q, want %q", got, "No vote")
+	}
+
+	// The single-line row is the invisible half of the same defect.
+	if got, want := single[colVoteDescription],
+		"Election of Director: Reveta Bowers"; got != want {
+		t.Errorf("single-line row description = %q, want %q", got, want)
+	}
+	if got := single[colHowVoted]; got != "No vote" {
+		t.Errorf("single-line row how_voted = %q, want %q", got, "No vote")
+	}
+}
