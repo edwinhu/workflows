@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -54,4 +55,60 @@ func issAllDigits(s string) bool {
 		}
 	}
 	return len(s) > 0
+}
+
+// TestISSNPXDoesNotClaimTheHTMLSummaryTable is the same defect as
+// TestISSNPXDoesNotClaimTheSharesTable, reached through a different foreign
+// grammar.
+//
+// The document ends with an HTML <TABLE> whose header cells become one line
+// each -- `Issuer Name`, `Ticker`, `Meeting Date`, `Primary Security ID`,
+// `Meeting Type`, `Record Date`, `Proposal Number`, `Proposal Text`,
+// `Proponent`, `Mgmt Rec` -- and whose rows flatten to
+//
+//	3i Infrastructure plc 3IN 07/05/2018 G8873L178 Annual 07/03/2018 1
+//	Accept Financial Statements and Statutory Reports ...
+//
+// Nothing there starts with `#`, so issTableHeader does not close the ISS table
+// above it, and each flattened row is read as a proposal line: the issuer,
+// ticker, date and CUSIP all land in the proposal text, and the meeting stays
+// whatever the last ISS section set.
+//
+// issForeignTableHeader already existed for the shares grammar but keys on
+// PROPONET/PROPONENT together with another word on the SAME line; here each
+// header cell is alone on its own line, so it never fired. Measured 2026-09-01
+// this filing alone contributes 1,895 of issnpx's 2,412 spliced-cell rows.
+func TestISSNPXDoesNotClaimTheHTMLSummaryTable(t *testing.T) {
+	b, err := os.ReadFile(filepath.Join("testdata", "issnpx", "D7_html_summary_table.txt"))
+	if err != nil {
+		t.Fatalf("read fixture: %v", err)
+	}
+
+	rows := runISSNPXDoc(t, string(b))
+	for _, r := range rows {
+		if d := r[colVoteDescription]; len(d) > 0 &&
+			(containsAll(d, "3IN", "G8873L178") || containsAll(d, "Infrastructure plc", "Annual")) {
+			t.Errorf("emitted %q -- that is a row of the HTML summary table, not a proposal", d)
+		}
+	}
+
+	// The ISS section above it must still be read.
+	var seen bool
+	for _, r := range rows {
+		if r[colVoteDescription] == "Designate Two Shareholders to Sign Minutes of Meeting" {
+			seen = true
+		}
+	}
+	if !seen {
+		t.Errorf("the ISS section above the foreign table was lost; got %d rows", len(rows))
+	}
+}
+
+func containsAll(s string, subs ...string) bool {
+	for _, sub := range subs {
+		if !strings.Contains(s, sub) {
+			return false
+		}
+	}
+	return true
 }
