@@ -246,7 +246,36 @@ func icrIssuerAbove(lines []string, header int) string {
 // it in, so how_voted is verbatim by construction rather than by a vocabulary
 // check that would have to be widened for every new spelling.
 func icrVoteRow(cells []string, m icrMeeting, series string) (VoteRow, bool) {
-	if len(cells) < icrColumns || !icrItem(cells[0]) {
+	// The length guard comes FIRST: cells can be empty, and reading cells[0]
+	// before checking that panics the whole binary, which surfaces as a filing
+	// yielding zero rows rather than as a crash.
+	if len(cells) < icrColumns-1 || !icrItem(cells[0]) {
+		return VoteRow{}, false
+	}
+	// THE DESCRIPTION COLUMN IS PADDED, so a description that exactly FILLS it
+	// leaves one space before the proponent and the two-space cell split merges
+	// the two:
+	//
+	//	1   Elect Pierre R. Brondeau Mgmt   For   For   For    <- one space, merged
+	//	2   Elect Juergen W. Gromer  Mgmt   For   For   For    <- two, splits
+	//
+	// The merged row is one cell short and was rejected outright, so a filing lost
+	// exactly those rows whose description happened to reach the column width --
+	// scattered, never a run, which is why it reads as noise rather than a bug.
+	// Measured 2026-09-01 on 0001193125-15-307095: TE Connectivity read 31 items
+	// where ISS records 36, missing 1, 3, 10, 16 and 36, every one of them a
+	// column-filling description.
+	//
+	// Only a known proponent word is peeled, so a description can never be
+	// truncated by this: the proponent column's vocabulary is closed.
+	if len(cells) == icrColumns-1 {
+		if head, prop := icrPeelProponent(cells[len(cells)-4]); prop != "" {
+			merged := append([]string{}, cells[:len(cells)-4]...)
+			merged = append(merged, head, prop)
+			cells = append(merged, cells[len(cells)-3:]...)
+		}
+	}
+	if len(cells) < icrColumns {
 		return VoteRow{}, false
 	}
 	n := len(cells)
@@ -557,4 +586,21 @@ func icrResolveDeclaredSuffix(idx map[string]*SeriesDecl, printed string, words 
 		found = d.SeriesID
 	}
 	return found
+}
+
+// icrPeelProponent splits a trailing proponent word off a cell that merged the
+// description and proponent columns. Returns the description and the proponent,
+// or the cell unchanged and "" when the last word is not a proponent.
+func icrPeelProponent(cell string) (head, proponent string) {
+	fields := strings.Fields(cell)
+	if len(fields) < 2 {
+		return cell, ""
+	}
+	last := strings.ToLower(fields[len(fields)-1])
+	for _, p := range lvProponents {
+		if last == p {
+			return strings.Join(fields[:len(fields)-1], " "), fields[len(fields)-1]
+		}
+	}
+	return cell, ""
 }

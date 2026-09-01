@@ -1,0 +1,78 @@
+________________________________________________________________________________
+TE Connectivity Ltd.
+Ticker     Security ID:             Meeting Date          Meeting Status
+TEL        CUSIP H84989104          03/03/2015            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+1          Elect Pierre R. Brondeau Mgmt       For        For        For
+2          Elect Juergen W. Gromer  Mgmt       For        For        For
+3          Elect William A. Jeffrey Mgmt       For        For        For
+
+4          Elect Thomas J. Lynch    Mgmt       For        For        For
+5          Elect Yong Nam           Mgmt       For        For        For
+6          Elect Daniel J. Phelan   Mgmt       For        For        For
+7          Elect Lawrence S. Smith  Mgmt       For        For        For
+8          Elect Paula A. Sneed     Mgmt       For        For        For
+9          Elect David P. Steiner   Mgmt       For        For        For
+10         Elect John C. Van Scoter Mgmt       For        For        For
+11         Elect Laura H. Wright    Mgmt       For        For        For
+12         Elect Thomas J. Lynch    Mgmt       For        For        For
+            as
+            Chairman
+13         Elect Daniel J. Phelan   Mgmt       For        For        For
+14         Elect Paula A. Sneed     Mgmt       For        For        For
+15         Elect David P. Steiner   Mgmt       For        For        For
+16         Elect John C. Van Scoter Mgmt       For        For        For
+17         Appointment of the       Mgmt       For        For        For
+            Independent
+            Proxy
+18         Approval of Annual       Mgmt       For        For        For
+            Report
+19         Approval of Statutory    Mgmt       For        For        For
+            Financial
+            Statements
+20         Approval of              Mgmt       For        For        For
+            Consolidated Financial
+            Statements
+21         Release of Board of      Mgmt       For        For        For
+            Directors and
+            Executive
+            Officers
+22         Deloitte and Touche      Mgmt       For        For        For
+23         Deloitte AG, Zurich      Mgmt       For        For        For
+24         PricewaterhouseCoopers   Mgmt       For        For        For
+            AG,
+            Zurich
+25         Amendments to Articles   Mgmt       For        For        For
+            Relating to Swiss
+            Ordinance
+26         Amendments to Articles   Mgmt       For        For        For
+            Relating to Swiss
+            Ordinance
+27         Amendment to Majority    Mgmt       For        Against    Against
+            Vote Standard for
+            Shareholder
+            Resolutions
+28         Adoption of Plurality    Mgmt       For        For        For
+            Vote Standard in
+            Contested
+            Elections
+29         Advisory Vote on         Mgmt       For        For        For
+            Executive
+            Compensation
+30         Executive Compensation   Mgmt       For        For        For
+31         Board Compensation       Mgmt       For        For        For
+32         Appropriation of         Mgmt       For        For        For
+            Earnings
+
+33         Declaration of Dividend  Mgmt       For        For        For
+34         Renewal of Authorized    Mgmt       For        For        For
+            Capital
+35         Reduction of Share       Mgmt       For        For        For
+            Capital Under the
+            Share Repurchase
+            Program
+36         Right to Adjourn Meeting Mgmt       For        For        For
+
