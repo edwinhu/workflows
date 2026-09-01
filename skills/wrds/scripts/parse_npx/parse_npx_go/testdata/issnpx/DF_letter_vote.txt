@@ -1,0 +1,7 @@
+Ticker:                      Security ID:  G8875G102
+Meeting Date: JUN 28, 2016   Meeting Type: ExtraOrdinary General Meeting
+Record Date:  JUN 23, 2016
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+3     Management Proposal                     F         F            Management
+

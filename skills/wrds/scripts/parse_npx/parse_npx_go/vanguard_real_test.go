@@ -252,6 +252,10 @@ var howVotedVocabulary = map[string]bool{
 	// them. See the note on PROPORTIONAL below: the vocabulary records the
 	// spelling because how_voted is verbatim by contract.
 	"SOLD": true, "SOLD SHARES": true, "DNV": true,
+	// The single-letter abbreviation one vintage uses in both vote columns:
+	// F 5,637, A 59, N 9, D 7 in the filing that prints it. W is absent there
+	// and is deliberately not admitted.
+	"F": true, "A": true, "N": true, "D": true,
 	// Proportional (or "echo") voting: the fund votes in proportion to the
 	// other shareholders rather than forming a view. It is a real vote value,
 	// not a parse defect -- 7,270 rows carry it in the revalidation run, each

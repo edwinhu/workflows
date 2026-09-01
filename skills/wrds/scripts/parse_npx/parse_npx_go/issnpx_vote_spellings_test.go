@@ -71,3 +71,28 @@ func findRow(rows [][]string, descPrefix string) []string {
 	}
 	return nil
 }
+
+// TestISSNPXLetterVote pins the single-letter Vote Cast.
+//
+//	3   Management Proposal   F   F   Management
+//
+// One vintage abbreviates the choice to a letter in both the Mgt Rec and Vote
+// Cast columns. Counted in that filing's own bytes: F appears 5,637 times, A 59,
+// N 9 and D 7 in those two columns; W does not appear and is not admitted.
+//
+// It is the same choice-letter alphabet the percentage form uses (F=85.71%), and
+// without it the peel failed at the right edge, leaving 5,630 of the filing's
+// 22,297 rows with every cell inside the proposal text and a blank vote.
+func TestISSNPXLetterVote(t *testing.T) {
+	rows := loadSpellingFixture(t, "DF_letter_vote.txt")
+	got := findRow(rows, "Management Proposal")
+	if got == nil {
+		t.Fatalf("row missing; got %d rows", len(rows))
+	}
+	if got[colHowVoted] != "F" {
+		t.Errorf("how_voted = %q, want %q", got[colHowVoted], "F")
+	}
+	if got[colMgmtRec] != "F" {
+		t.Errorf("mgmt_rec = %q, want %q", got[colMgmtRec], "F")
+	}
+}
