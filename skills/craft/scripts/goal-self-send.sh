@@ -8,6 +8,7 @@
 # the plan hash as the standing gate text.
 #
 # Usage: goal-self-send.sh "/goal <text>" [--no-lint]   |   goal-self-send.sh "/goal clear"
+#        goal-self-send.sh "/loop 30m <tick prompt>"   — the heartbeat; never linted
 #
 # THE GOAL IS LINTED BEFORE IT IS SENT. This is the one chokepoint every goal passes through, so it
 # is where `skills/goal-and-loop` is enforced rather than merely available: a CRITICAL finding —
@@ -37,14 +38,19 @@ for a in "$@"; do [ "$a" = "--no-lint" ] && NOLINT=1; done
 case "$CMD" in
   "/goal clear") ;;
   "/goal "*) [[ -n "${CMD:6}" && "${CMD:6}" =~ [^[:space:]] ]] || { echo "goal-self-send: empty /goal body" >&2; exit 2; } ;;
-  *) echo "goal-self-send: argument must be '/goal <text>' or '/goal clear'" >&2; exit 2 ;;
+  # A goal decides whether to continue; a loop guarantees something asks. This is the only transport
+  # that can type into our own pane, so it is also the only way to raise the heartbeat. A /loop is
+  # NOT a goal and is deliberately not linted: goal-lint would flag a tick prompt for having no
+  # ceiling and no counter, which are properties of a stopping condition, not of a heartbeat.
+  "/loop "*) [[ -n "${CMD:6}" && "${CMD:6}" =~ [^[:space:]] ]] || { echo "goal-self-send: empty /loop body" >&2; exit 2; } ;;
+  *) echo "goal-self-send: argument must be '/goal <text>', '/goal clear' or '/loop <interval> <text>'" >&2; exit 2 ;;
 esac
 
 # ---- the goal-and-loop gate ------------------------------------------------------------------
 # Nothing here reaches the network or the session; it reads the string. A missing bun or a missing
 # lint is not a reason to block a send, so absence passes.
 GW_LINT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../goal-and-loop/scripts" 2>/dev/null && pwd)/goal-lint.ts"
-if [ "$NOLINT" = 0 ] && [ "$CMD" != "/goal clear" ] && [ -f "$GW_LINT" ] && command -v bun >/dev/null 2>&1; then
+if [ "$NOLINT" = 0 ] && [ "$CMD" != "/goal clear" ] && [ "${CMD#/goal }" != "$CMD" ] && [ -f "$GW_LINT" ] && command -v bun >/dev/null 2>&1; then
   GW_OUT=$(bun "$GW_LINT" "${CMD:6}" 2>/dev/null); GW_CODE=$?
   if [ "$GW_CODE" = 1 ]; then
     if printf '%s' "$GW_OUT" | grep -q '^\[CRITICAL\]'; then

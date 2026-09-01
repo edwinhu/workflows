@@ -29,6 +29,8 @@ A fixed-interval `/loop` compiles to a **recurring cron the model cannot cancel*
 
 The division of labor is exact. `/goal` decides whether to continue; `/loop` guarantees something asks. A loop with no goal ticks forever with no notion of done. A goal with no loop is every row in the table above.
 
+**A craft dispatch raises both for you.** `craft-dispatch.sh` self-sends the composed `/goal` and then a `/loop` (30m; override with `CRAFT_LOOP_INTERVAL`), so do not set a second one by hand — two crons means two ticks. The composed goal carries the teardown instruction itself, because no shell can cancel a cron: `CronDelete` is a model tool, there is no cron CLI, and a session-scoped cron lives in memory rather than in `.claude/scheduled_tasks.json`.
+
 **Cancel it when the run ends.** Because the cron ignores `stop:true`, a goal that closes does not stop the ticking — that is the `CronDelete` tool, not the model deciding it is finished.
 
 
