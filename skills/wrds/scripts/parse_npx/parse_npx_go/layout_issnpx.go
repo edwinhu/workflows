@@ -317,6 +317,15 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			inTable = true
 			continue
 		}
+		// A FOREIGN COLUMN HEADER CLOSES OUR TABLE. Everything below it belongs
+		// to a grammar this layout cannot read, and reading it anyway attributed
+		// one issuer's votes to another -- see issForeignTableHeader.
+		if issForeignTableHeader(line) {
+			flush()
+			inTable = false
+			continue
+		}
+
 		if issSkippableHeader(line) {
 			continue
 		}
@@ -633,6 +642,37 @@ func issRecordLine(line string) (string, bool) {
 
 // issTableHeader recognises the '#  Proposal  Mgt Rec  Vote Cast  Sponsor'
 // column header that opens a meeting's proposal table.
+// issForeignTableHeader recognises a column header belonging to ANOTHER
+// administrator's grammar, whose columns this layout would misread.
+//
+// One registrant files both in one document. Ours is `#  Proposal  Mgt Rec
+// Vote Cast  Sponsor`; the other prints its identity columns in a PARALLEL table
+// to the left and heads its vote table:
+//
+//	   Shares
+//	Available              Item                          Management     Vote
+//	  to Vote Proponet     Number Proposal               Recommendation Instruction
+//	     1965 Management   1.1    Elect Director M. Jay Allison    For     For
+//
+// issTableHeader only sees a line starting with `#`, so this one did not close
+// the table above it. Its rows were then read in issnpx's column order -- the
+// SHARE COUNT as the item number, the whole row as proposal text -- and carried
+// the PREVIOUS section's meeting, filing NRG Energy's votes under Wyeth's CUSIP.
+// A wrong issuer is worse than a missing one, which is why this closes the table
+// rather than attempting a reading: the identity columns are not in this table
+// at all, so nothing here could supply the right meeting.
+//
+// Measured 2026-09-01: 14,471 rows across 74 filings. `Proponet` is the filing's
+// own spelling and both are accepted.
+func issForeignTableHeader(line string) bool {
+	up := strings.ToUpper(line)
+	if !strings.Contains(up, "PROPONET") && !strings.Contains(up, "PROPONENT") {
+		return false
+	}
+	return strings.Contains(up, "ITEM") || strings.Contains(up, "NUMBER") ||
+		strings.Contains(up, "SHARES") || strings.Contains(up, "PROPOSAL")
+}
+
 func issTableHeader(line string) bool {
 	if !strings.HasPrefix(line, "#") {
 		return false
