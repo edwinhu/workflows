@@ -190,6 +190,11 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 
 		inTable bool
 		cur     *issRowBuf
+
+		// blankRun counts CONSECUTIVE blank lines, so an incomplete row may
+		// survive the single `&nbsp;` paragraph that separates it from its
+		// wrapped tail without surviving a real gap in the document.
+		blankRun int
 	)
 
 	flush := func() {
@@ -267,6 +272,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			commitBanner()
 		}
 
+		if line != "" {
+			blankRun = 0
+		}
 		if line == "" {
 			// A BLANK LINE DOES NOT CLOSE A ROW THAT IS STILL WAITING FOR ITS
 			// CELLS. The SGML-wrapped vintage prints each cell block as its own
@@ -283,8 +291,19 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			// Measured 2026-09-01, 961 of 14,680 rows (6.55%) across two filings
 			// of this family. A complete row still closes here, which is what
 			// keeps a finished proposal's text from running on.
-			if cur == nil || cur.complete() {
+			//
+			// ONE blank line, not a run of them. The `&nbsp;` paragraph between a
+			// row and its tail is a single line; a row that is still incomplete
+			// after two is not waiting for a wrap, it is an orphan, and letting
+			// it stay open lets it swallow whatever follows. Measured 2026-09-01
+			// the unbounded form took issnpx's spliced-cell rows from 3 to 2,412
+			// -- tiny against 166M rows, but a regression this change introduced
+			// and nothing in the format asked for.
+			if cur == nil || cur.complete() || blankRun > 0 {
 				flush()
+				blankRun = 0
+			} else {
+				blankRun++
 			}
 			continue
 		}
