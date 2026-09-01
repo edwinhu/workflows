@@ -878,8 +878,13 @@ func issForeignTableHeader(line string) bool {
 	if !strings.Contains(up, "PROPONET") && !strings.Contains(up, "PROPONENT") {
 		return false
 	}
+	// `Issue No. | Description | Proponent | Mgmt Rec | Vote Cast | For/Against
+	// Mgmt` names its columns too, but with none of the words above -- so
+	// DESCRIPTION and ISSUE NO. join them. Our own header says `Sponsor`, never
+	// `Proponent`, so it cannot reach this line.
 	return strings.Contains(up, "ITEM") || strings.Contains(up, "NUMBER") ||
-		strings.Contains(up, "SHARES") || strings.Contains(up, "PROPOSAL")
+		strings.Contains(up, "SHARES") || strings.Contains(up, "PROPOSAL") ||
+		strings.Contains(up, "DESCRIPTION") || strings.Contains(up, "ISSUE NO")
 }
 
 func issTableHeader(line string) bool {
