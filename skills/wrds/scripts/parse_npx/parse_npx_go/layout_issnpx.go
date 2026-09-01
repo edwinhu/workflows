@@ -129,7 +129,27 @@ var issVoteValues = map[string]bool{
 	// verbatim, so the spelling is recorded as printed rather than corrected --
 	// 1,264 rows of 0000950137-05-010894.txt. `Not Cast` was simply missing.
 	"did note vote": true, "not cast": true,
-	"refer": true, "unvoted": true, "n/a": true, "na": true, "tna": true,
+	// The residue's long tail, measured 2026-09-01 on the 27-commit build by
+	// splitting every blank-vote row on the column gap and ranking the trailing
+	// cells. Each count is rows where the gap ALREADY proves the value is its
+	// own Vote Cast cell, so the evidence is the corpus, not a guess:
+	//
+	//	echo voted    639 + 73    oppose        238 + 194
+	//	echo          466 + 100   unknown       321
+	//	agnst         137         w'hold        106
+	//	non-vote       78         unavailable    74
+	//	ag             73
+	//
+	// `echo` ALONE is still refused, and an attempt to admit it here failed the
+	// Echo Vote fixture immediately: with it the peel succeeds on the row line
+	// and reports `Echo` where the filing printed `Echo Vote` across a wrap.
+	// The harvest signature `For | Echo | Management` cannot distinguish the two
+	// cases, and a proven fixture outranks an unproven signature -- so the 466
+	// rows behind it stay blank.
+	"echo voted": true, "oppose": true, "unknown": true,
+	"agnst": true, "ag": true, "w'hold": true, "non-vote": true,
+	"unavailable": true,
+	"refer":       true, "unvoted": true, "n/a": true, "na": true, "tna": true,
 	"do not vote": true, "take no action": true, "no action": true,
 	"did not vote": true, "non voting": true, "non-voting": true,
 	"one year": true, "two years": true, "three years": true,
@@ -544,7 +564,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				prev := strings.Fields(cur.text[len(cur.text)-1])
 				for k := 1; k <= issMaxCellWords && k <= len(prev); k++ {
 					candidate := strings.Join(append(append([]string{}, prev[len(prev)-k:]...), contRest...), " ")
-					if !issVoteValues[strings.ToLower(strings.Trim(candidate, ".,;"))] {
+					if !issVoteValues[strings.ToLower(strings.Trim(candidate, ".,;*"))] {
 						continue
 					}
 					prevKeep := prev[:len(prev)-k]
@@ -959,7 +979,7 @@ func issJoinWrappedVote(prev, cont []string) (vote string, prevKeep, contKeep []
 		for m := 1; m <= issMaxCellWords && m <= len(cont); m++ {
 			tail := strings.Join(cont[len(cont)-m:], " ")
 			candidate := head + " " + tail
-			if issVoteValues[strings.ToLower(strings.Trim(candidate, ".,;"))] {
+			if issVoteValues[strings.ToLower(strings.Trim(candidate, ".,;*"))] {
 				return candidate, prev[:len(prev)-k], cont[:len(cont)-m], true
 			}
 		}
@@ -1123,7 +1143,7 @@ func issPeelCell(toks []string, vocab map[string]bool) (cell string, remaining [
 	}
 	for n := max; n >= 1; n-- {
 		candidate := strings.Join(toks[len(toks)-n:], " ")
-		if vocab[strings.ToLower(strings.Trim(candidate, ".,;"))] {
+		if vocab[strings.ToLower(strings.Trim(candidate, ".,;*"))] {
 			return candidate, toks[:len(toks)-n], true
 		}
 	}
