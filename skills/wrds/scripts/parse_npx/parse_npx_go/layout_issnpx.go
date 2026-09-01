@@ -232,7 +232,10 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		lastLine    string
 
 		inTable bool
-		cur     *issRowBuf
+		// sponsorFirst is set from the column header: one vintage names Sponsor
+		// before Proposal, which moves it off the right edge the peel works from.
+		sponsorFirst bool
+		cur          *issRowBuf
 
 		// blankRun counts CONSECUTIVE blank lines, so an incomplete row may
 		// survive the single `&nbsp;` paragraph that separates it from its
@@ -375,6 +378,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			continue
 		}
 		if issTableHeader(line) {
+			sponsorFirst = issSponsorLeadsHeader(line)
 			flush()
 			inTable = true
 			continue
@@ -444,6 +448,14 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				cur.text = append(cur.text, tail)
 			}
 			continue
+		}
+
+		if sponsorFirst && item != "" {
+			if b, mg, ca, sp, ok := issPeelSponsorFirst(rest); ok {
+				cur.text = append(cur.text, b)
+				cur.mgmt, cur.cast, cur.sponsor = mg, ca, sp
+				continue
+			}
 		}
 
 		// The proposal text can resume AFTER the sponsor on the same line, which
@@ -985,6 +997,49 @@ func issSplitWrappedTail(rest string) (string, bool) {
 		rebuilt += "  " + c
 	}
 	return rebuilt + "  " + head, true
+}
+
+// issSponsorLeadsHeader reports that this table names its Sponsor column BEFORE
+// its Proposal column:
+//
+//	#     Sponsor        Proposal                   Vote Cast  For/Against
+//	01.1  Management     DIRECTOR - ROBERT L. BAGBY  For        For
+//
+// The header still starts with `#` and still names `Proposal`, so it is this
+// layout's own grammar rather than a foreign one to decline -- and declining
+// would cost every row in the filing rather than recovering anything. Only the
+// column ORDER differs, and the header states it. Measured 2026-09-01,
+// 0000715165-07-000018.txt is 3,980 blank of 3,982 rows.
+func issSponsorLeadsHeader(line string) bool {
+	up := strings.ToUpper(line)
+	sp := strings.Index(up, "SPONSOR")
+	pr := strings.Index(up, "PROPOSAL")
+	return sp >= 0 && pr >= 0 && sp < pr
+}
+
+// issPeelSponsorFirst reads a row of that shape: the sponsor is the FIRST field
+// after the item token, the vote cells trail on the right, and the proposal text
+// is what lies between.
+func issPeelSponsorFirst(rest string) (body, mgmt, cast, sponsor string, ok bool) {
+	toks := strings.Fields(rest)
+	if len(toks) < 2 || !issSponsors[strings.ToLower(toks[0])] {
+		return "", "", "", "", false
+	}
+	sponsor, toks = toks[0], toks[1:]
+	cast, toks, ok = issPeelVote(toks)
+	if !ok {
+		return "", "", "", "", false
+	}
+	// A second vote cell to the LEFT is the For/Against-Management column this
+	// vintage prints; the Vote Cast cell is the one nearer the text, so the
+	// first peel is the trailing column and this one is the vote.
+	if cell, remaining, found := issPeelVote(toks); found {
+		mgmt, cast, toks = cast, cell, remaining
+	}
+	if len(toks) == 0 {
+		return "", "", "", "", false
+	}
+	return strings.Join(toks, " "), mgmt, cast, sponsor, true
 }
 
 // issPeelColumns takes the Mgt Rec / Vote Cast / Sponsor cells off the right of a
