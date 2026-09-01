@@ -47,9 +47,19 @@ import (
 // than being filled from the vote beside it, because inventing a value for a
 // column the filing left blank is a worse fault than the loss it replaces.
 
-// issItemRe matches the leading token of a proposal row: 1, 1.1, 2a, 6, 1).
+// issItemRe matches the leading token of a proposal row: 1, 1.1, 2a, 6, 1), and
+// the DOUBLE-DOT slate form 1..1 .. 1..14.
+//
+// The doubled dot is not a typo in one filing: it is how this grammar numbers a
+// director slate, one sub-number per nominee, and `(\.\d+)*` rejected every one
+// of them. A rejected leading token makes the line a CONTINUATION, so all
+// fourteen nominees folded into the row above and their votes were lost.
+// Measured 2026-09-01 on 0001144204-13-048821: White Mountains Insurance read 3
+// items where ISS records 39, and the three read were the plain proposals 10, 11
+// and 12 that follow the slate. issnpx is the largest remaining source of
+// partial parsing at 115,096 items across 1,814 filings.
 // Continuation lines never carry one, which is what separates them from a new row.
-var issItemRe = regexp.MustCompile(`^\d+(\.\d+)*[A-Za-z]?[.)]?$`)
+var issItemRe = regexp.MustCompile(`^\d+(\.+\d+)*[A-Za-z]?[.)]?$`)
 
 // issSponsors is the rightmost column's vocabulary. It anchors the peel: an
 // N-PX proposal is put forward either by management or by a shareholder.
