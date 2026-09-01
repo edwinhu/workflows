@@ -27,6 +27,13 @@ import "testing"
 func TestISSNPXForeignHeaderProponentFirst(t *testing.T) {
 	foreign := []string{
 		"Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against",
+		// A wide table with the identity columns INLINE -- 0001193125-07-191725
+		// carries 78 ISS sections and one of these, 956 rows blank.
+		"Meeting Date                    Company Name        Ticker Security ID            Description              Vote Cast Voted M or S",
+		// The Lazard "Proxy Voting Report" that follows an ISS section's
+		// `========== END NPX REPORT` in 0000813900-04-000016: no sponsor
+		// column, a paragraph of rationale under every row, 559 rows blank.
+		"Date Type Ballot Issues Ticker Rec Cast Date Shares",
 		"  to Vote Proponet     Number Proposal               Recommendation Instruction",
 		"ITEM   PROPOSAL                                         TYPE          VOTE",
 	}

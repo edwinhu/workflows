@@ -911,6 +911,29 @@ func issForeignTableHeader(line string) bool {
 		return true
 	}
 
+	// Two more, both found on the 29-commit build's ranking:
+	//
+	//	Meeting Date  Company Name  Ticker  Security ID  Description  Vote Cast  Voted  M or S
+	//
+	// a wide table with the identity columns INLINE, 956 rows blank in a filing
+	// that also carries 78 ISS sections; and
+	//
+	//	Date Type Ballot Issues Ticker Rec Cast Date Shares
+	//
+	// the Lazard "Proxy Voting Report" that follows an ISS section's
+	// `========== END NPX REPORT`, with no sponsor column and a paragraph of
+	// rationale under every row, 559 rows blank. Neither starts with `#`, and
+	// our own header names neither SECURITY ID nor BALLOT ISSUES.
+	if strings.HasPrefix(up, "#") {
+		return false
+	}
+	if strings.Contains(up, "SECURITY ID") && strings.Contains(up, "DESCRIPTION") {
+		return true
+	}
+	if strings.Contains(up, "BALLOT ISSUES") {
+		return true
+	}
+
 	if !strings.Contains(up, "PROPONET") && !strings.Contains(up, "PROPONENT") {
 		return false
 	}
