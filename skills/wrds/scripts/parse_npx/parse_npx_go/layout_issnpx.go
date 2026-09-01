@@ -836,6 +836,23 @@ func issForeignTableHeader(line string) bool {
 		return true
 	}
 
+	// The broadridge grammar, whose TYPE column carries the sponsor BEFORE the
+	// votes:
+	//
+	//	ITEM   PROPOSAL       TYPE          VOTE        MANAGEMENT
+	//	 01    DIRECTOR       Management
+	//	       1    LINDA G. ALVARADO      For         For
+	//
+	// A director slate puts the sponsor on the slate's own line and each nominee
+	// carries votes alone, so no nominee row has a sponsor at the right edge
+	// where issPeelColumns looks. 0000950152-06-007352.txt mixes 247 ISS
+	// sections with 366 of these and 4,061 of its 6,500 rows are blank for it.
+	// broadridge reads the grammar correctly.
+	if strings.Contains(up, "PROPOSAL") && strings.Contains(up, "TYPE") &&
+		!strings.HasPrefix(up, "#") {
+		return true
+	}
+
 	if !strings.Contains(up, "PROPONET") && !strings.Contains(up, "PROPONENT") {
 		return false
 	}
