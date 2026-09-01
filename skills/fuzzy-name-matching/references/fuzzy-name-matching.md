@@ -202,3 +202,56 @@ Each fuzzy stage bought roughly an order of magnitude of effort for
 what exact joins left behind. Notable: the scoped fuzzy pass converted
 70% of unmatched rows; the global pass (after scoped) added only 11 —
 confirming scoping is where the signal lives.
+
+## Validating a linkage: four lessons that cost a session each
+
+From an ISS→13F crosswalk built and measured over 2026-08-29..31
+(`npx-reconcile/docs/investigations/2026-08-31_linker_hillclimb.md`). Each was
+learned by measuring, and three of them corrected a claim already made out loud.
+
+### 1. A similarity score can only REJECT. It never confirms.
+
+Validate links against evidence that played no part in making them — here,
+holdings overlap against name-made links. Then compute the null before reading
+any result: **random institution/CIK pairs had p90 overlap 0.940**, and a
+known-wrong pair scored **0.932**. Low overlap refuted a link; high overlap
+meant nothing, because a large diversified counterparty holds nearly everything.
+
+Mid-run this was violated anyway. Two pairs scoring 0.96 and 0.35 looked like
+good matches a later step had degraded, and a rule was nearly built on them —
+they were rows from the **random-control group**. Checking the group column
+settled it in one query. *Always carry the control group's label into the
+result table so a stray high score cannot be misread as a hit.*
+
+### 2. Gate before you count, or coverage is gameable.
+
+Coverage alone is maximised by linking everything to the largest counterparty.
+Make the scorecard check the gate FIRST and refuse to report coverage when it
+fails (exit 2, not a warning). Also report **untested** links separately: a link
+with no measurement is neither passed nor failed, and silently counting it as
+coverage is the one way the scorecard flatters a change. Here 645 of 983 links
+had no measurement, and measuring them refuted **131**.
+
+Distinguish **untested** from **untestable**. A pair whose test has an empty
+denominator can never be scored, so a target below that floor is unachievable
+rather than ambitious. Compute the floor before setting the threshold — this one
+drifted 100 → 300 → 350 chasing a number that moved with the data, until the
+criterion was restated as *every measurable link measured*, which does not drift.
+
+### 3. Measure on the regulatory unit, not the vendor label.
+
+The same crosswalk scored **72.81%** on vendor entity labels, **92.45%** on
+registrant CIKs and **93.30%** on transaction rows. The label count was the
+outlier because labels are wildly unequal — the median unlinked one carried
+2,417 rows against 14,213 for the median linked one, so it weighted a dormant
+shell like a major filer. Report the regulatory identifier beside the row count;
+when those two agree and the label count disagrees, the label count is wrong.
+
+### 4. "Linked" is not "joinable", and the gap can be enormous.
+
+A link says *who* the counterparty is. It does not say the counterparty filed
+anything in the period you need. Here **93.38%** of rows had a link and only
+**59.45%** fell in a period where the linked filer actually reported — a 34-point
+gap, invisible until the terminal resolution states were counted. If the pipeline
+records why each row resolved the way it did, count those states; if it does not,
+add the flag before quoting a coverage number.

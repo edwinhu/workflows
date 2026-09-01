@@ -68,6 +68,17 @@ Company registration information.
   `/wrds/sec/archives` only the second resolves; the first fails per-file with
   `tar: ...: Cannot stat: No such file or directory` and still exits 0 with a valid empty
   archive, so the pull looks like it worked. Feed `wrdsfname` to `tar -T -`.
+- **Fund-level HOLDINGS are `N-PORT` / `N-Q`, and only one of them is joinable.** `NPORT-P`
+  (2019-10-22 on, 344,217 filings, 2,455 CIKs) is structured XML carrying `<seriesId>` — the
+  same series identifier the N-PX vote panel holds — with each position giving `cusip`, `lei`,
+  `title`, `balance` (SHARES), `valUSD`, `pctVal`. `NPORT-EX` covers 2019-04..2019-10.
+  **`N-Q` (2003-10-27 .. 2021-04-29, 95,003 filings, 4,206 CIKs) has NO series identifier** —
+  zero matches for `S0000…` in a sampled filing; it is unstructured HTML with the schedule as a
+  table, so pre-2019 holdings join at REGISTRANT level only and need parsing. Since `N-PX`,
+  `N-Q` and `N-PORT` are all '40 Act filings from one registrant, the registrant CIK is the
+  join key and **no name matching is needed**: 1,374 of 1,377 panel registrant CIKs (99.8%)
+  file one of them. A 13F position is the MANAGER's book and an `N-PORT` position is the
+  FUND's — different quantities, never blend them.
 - **`N-CEN` is the fund-registrant → investment-adviser bridge, and it exists only as filings.**
   No WRDS SQL table carries it (`information_schema` has no `%ncen%`); it is in `wrds_forms` as
   `form LIKE 'N-CEN%'` — 26,358 `N-CEN` + 2,278 `N-CEN/A` over 3,443 CIKs, 2018-09 onward, ~3.2 GB,

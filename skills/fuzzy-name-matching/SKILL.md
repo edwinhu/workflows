@@ -25,6 +25,21 @@ code; a runnable template is in **`examples/fuzzy_name_match_sample.py`**.
 
 ## Match Enforcement
 
+### IRON LAW: NO NAME MATCHING WHILE A SHARED IDENTIFIER EXISTS
+
+Before normalizing anything, ask what identifier both sides already carry.
+Filings from one regulatory regime usually share a filer key, and it is often
+sitting in a field nobody read — a path, an accession, an exhibit header.
+
+Measured 2026-08-31 (`npx-reconcile`): a full session built a name-based
+ISS→13F crosswalk reaching **59.45%** of the target universe, while the
+registrant CIK **already parsed from the filing path** reached **99.11%** with
+no name matching at all. Both filings were '40 Act filings from the same
+registrant. The linker was not badly built; it was the wrong instrument.
+
+Ask first: *are these the same filer under one regime?* If yes, find the key.
+Fuzzy matching is for identifiers that genuinely do not cross.
+
 ### IRON LAW: NO FUZZY MATCH WITHOUT NORMALIZATION FIRST
 
 Fuzzy matching is the *last* step of a linkage, never the first:
