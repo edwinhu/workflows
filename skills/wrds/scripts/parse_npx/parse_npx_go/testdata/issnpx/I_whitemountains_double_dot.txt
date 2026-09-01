@@ -1,0 +1,56 @@
+--------------------------------------------------------------------------------
+
+WHITE MOUNTAINS INSURANCE GROUP, LTD.
+
+Ticker:       WTM            Security ID:  G9618E107
+Meeting Date: MAY 23, 2013   Meeting Type: Annual
+Record Date:  APR 01, 2013
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1..1  DIRECTOR-M.W.DAVIS*                     For       For          Management
+1..2  DIRECTOR-HOLIDAY*                       For       For          Management
+1..3  DIRECTOR-SMITH*                         For       For          Management
+1..4  DIRECTOR-J. DAVIS+                      For       For          Management
+1..5  DIRECTOR-LARS EK+                       For       For          Management
+1..6  DIRECTOR-KENSIL+                        For       For          Management
+1..7  DIRECTOR-ONSELIUS+                      For       For          Management
+1..8  DIRECTOR-THORSTENSSON+                  For       For          Management
+1..9  DIRECTOR-WATERS+                        For       For          Management
+1..10 DIRECTOR-NICOLL@                        For       For          Management
+1..11 DIRECTOR-PEARSON@                       For       For          Management
+1..12 DIRECTOR-TRACE@                         For       For          Management
+1..13 DIRECTOR-WATERS@                        For       For          Management
+1..14 DIRECTOR-PITTS#                         For       For          Management
+1..15 DIRECTOR-REPASY#                        For       For          Management
+1..16 DIRECTOR-TRACE#                         For       For          Management
+1..17 DIRECTOR-WATERS#                        For       For          Management
+1..18 DIRECTOR-REPASY##                       For       For          Management
+1..19 DIRECTOR-TRACE##                        For       For          Management
+1..20 DIRECTOR-WATERS##                       For       For          Management
+1..21 DIRECTOR-REPASY&                        For       For          Management
+1..22 DIRECTOR-THORSTENSSON&                  For       For          Management
+1..23 DIRECTOR-TRACE&                         For       For          Management
+1..24 DIRECTOR-WATERS&                        For       For          Management
+1..25 DIRECTOR-DASHFIELD!                     For       For          Management
+1..26 DIRECTOR-LARS EK!                       For       For          Management
+1..27 DIRECTOR-THORSTENSSON!                  For       For          Management
+1..28 DIRECTOR-WATERS!                        For       For          Management
+1..29 DIRECTOR-BREHM$                         For       For          Management
+1..30 DIRECTOR-KOLAR$                         For       For          Management
+1..31 DIRECTOR-NICOLL$                        For       For          Management
+1..32 DIRECTOR-TREACY$                        For       For          Management
+1..33 DIRECTOR-BARRETTE$$                     For       For          Management
+1..34 DIRECTOR-FOY$$                          For       For          Management
+1..35 DIRECTOR-PITTS$$                        For       For          Management
+1..36 DIRECTOR-TRACE$$                        For       For          Management
+10.   APPROVAL OF THE ADVISORY RESOLUTION ON  For       For          Management
+      EXECUTIVE COMPENSATION.
+11.   APPROVAL OF SHARE INVENTORY FOR AND     For       For          Management
+      PERFORMANCE CRITERIA IN, THE COMPANY'S
+      LONG-TERM INCENTIVE PLAN ("LTIP").
+12.   APPROVAL OF THE APPOINTMENT OF          For       For          Management
+      PRICEWATERHOUSECOOPERS LLP ("PWC") AS
+      THE COMPANY'S INDEPENDENT REGISTERED
+      PUBLIC ACCOUNTING FIRM FOR 2013.
+
+
