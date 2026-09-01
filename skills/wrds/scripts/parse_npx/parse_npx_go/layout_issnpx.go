@@ -684,7 +684,25 @@ func issRecordLine(line string) (string, bool) {
 // Measured 2026-09-01: 14,471 rows across 74 filings. `Proponet` is the filing's
 // own spelling and both are accepted.
 func issForeignTableHeader(line string) bool {
-	up := strings.ToUpper(line)
+	up := strings.ToUpper(strings.TrimSpace(line))
+
+	// An HTML <TABLE> renders ONE HEADER CELL PER LINE, so the same foreign
+	// grammar arrives as a run of bare labels rather than one wide header:
+	//
+	//	Issuer Name / Ticker / Meeting Date / Primary Security ID /
+	//	Meeting Type / Record Date / Proposal Number / Proposal Text / Proponent
+	//
+	// and its rows flatten to `3i Infrastructure plc 3IN 07/05/2018 G8873L178
+	// Annual 07/03/2018 1 Accept Financial Statements ...`, which this layout
+	// then read as a proposal line -- issuer, ticker, date and CUSIP all inside
+	// the proposal text, under whatever meeting the last ISS section set.
+	// Measured 2026-09-01, one such filing contributed 1,895 of issnpx's 2,412
+	// spliced-cell rows. These labels name a COLUMN and are never a proposal.
+	switch up {
+	case "PROPOSAL NUMBER", "PROPOSAL TEXT", "PRIMARY SECURITY ID", "PROPONENT":
+		return true
+	}
+
 	if !strings.Contains(up, "PROPONET") && !strings.Contains(up, "PROPONENT") {
 		return false
 	}
