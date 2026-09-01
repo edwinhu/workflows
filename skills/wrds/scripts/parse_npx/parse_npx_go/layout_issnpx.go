@@ -432,6 +432,38 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 
 		// A CONTINUATION MAY BE NOTHING BUT CELLS. issPeelColumns needs three
 		// tokens; this line has two, and its proposal text is on the line above.
+		// THE VOTE VALUE ITSELF CAN STRADDLE THE WRAP, with the sponsor after it:
+		//
+		//	5  Advisory Vote on Say on Pay Frequency  One Year  One
+		//	Year  Management
+		//
+		// `One Year` is Vote Cast, split `One` / `Year`. The sponsor comes off
+		// the continuation first, and what remains is the vote's TAIL -- its head
+		// is at the end of the line above. issJoinWrappedVote looks at the
+		// continuation's own tail, which here is the sponsor, so it cannot see
+		// this; the halves meet only once the sponsor is out of the way.
+		if sponsor == "" && cur.cast == "" && cur.sponsor == "" && len(cur.text) > 0 {
+			if sp, contRest, found := issPeelCell(strings.Fields(rest), issSponsors); found && len(contRest) > 0 {
+				prev := strings.Fields(cur.text[len(cur.text)-1])
+				for k := 1; k <= issMaxCellWords && k <= len(prev); k++ {
+					candidate := strings.Join(append(append([]string{}, prev[len(prev)-k:]...), contRest...), " ")
+					if !issVoteValues[strings.ToLower(strings.Trim(candidate, ".,;"))] {
+						continue
+					}
+					prevKeep := prev[:len(prev)-k]
+					cur.sponsor, cur.cast = sp, candidate
+					if mg, remaining, ok := issPeelCell(prevKeep, issVoteValues); ok {
+						cur.mgmt, prevKeep = mg, remaining
+					}
+					cur.text[len(cur.text)-1] = strings.Join(prevKeep, " ")
+					break
+				}
+				if cur.cast != "" {
+					continue
+				}
+			}
+		}
+
 		if sponsor == "" && cur.cast == "" {
 			if mg, ca, sp, ok := issPeelTrailingCells(rest); ok {
 				cur.cast, cur.sponsor = ca, sp
