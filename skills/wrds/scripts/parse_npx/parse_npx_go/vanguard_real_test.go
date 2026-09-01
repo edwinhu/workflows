@@ -108,6 +108,21 @@ var vanguardGroundTruth = []vgCase{
 			{"", "ELECTION OF DIRECTOR: ROBERT Y.L. MAO", "ISSUER", "YES", "FOR", "FOR"},
 		},
 	},
+	{
+		file: "V5.txt", fund: "",
+		issuer: "JOHNSON & JOHNSON", ticker: "JNJ", cusip: "478160104",
+		meetingDate: "20110428",
+		note: "the filing's own markup carries a newline INSIDE the label, so `PROPOSAL #2:`" +
+			" arrives as `PROPOSAL` on one line and `#2: ELECT DIRECTOR ...` on the next." +
+			" In HTML that newline is whitespace, not a line break. Only item 1, whose label" +
+			" is not split, keeps its number today; the rest emit an EMPTY item_seq with the" +
+			" number stranded in the description as `#2: `",
+		rows: []vgRow{
+			{"1", "ELECT DIRECTOR MARY SUE COLEMAN", "ISSUER", "YES", "FOR", "FOR"},
+			{"2", "ELECT DIRECTOR JAMES G. CULLEN", "ISSUER", "YES", "FOR", "FOR"},
+			{"3", "ELECT DIRECTOR IAN E.L. DAVIS", "ISSUER", "YES", "FOR", "FOR"},
+		},
+	},
 }
 
 func loadVanguardFixture(t *testing.T, name string) []byte {

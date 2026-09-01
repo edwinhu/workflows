@@ -155,6 +155,36 @@ type vanguardRecord struct {
 	recordDate  string
 }
 
+// vanguardJoinSplitLabels rejoins a `PROPOSAL #n:` label the filing's own markup
+// broke in half:
+//
+//	PROPOSAL
+//	#2: ELECT DIRECTOR JAMES G. CULLEN      ISSUER    YES    FOR    FOR
+//
+// The newline is inside the paragraph's text content, where HTML treats it as
+// whitespace rather than a line break, so the two lines are one row. Left split,
+// the bare `PROPOSAL` matches no rule and is dropped, and the `#2:` line opens a
+// row on its trailing columns alone -- with an EMPTY item_seq and the number
+// stranded in the description as `#2: `. Measured 2026-09-01, that is 1,747,946
+// filing-items whose number this layout loses, the largest such block in the
+// corpus by a factor of three.
+//
+// Only an IMMEDIATELY following line is joined: a blank line between them means
+// two rows, not one.
+func vanguardJoinSplitLabels(lines []string) []string {
+	out := make([]string, 0, len(lines))
+	for i := 0; i < len(lines); i++ {
+		if strings.EqualFold(strings.TrimSpace(lines[i]), "PROPOSAL") && i+1 < len(lines) &&
+			strings.HasPrefix(strings.TrimSpace(lines[i+1]), "#") {
+			out = append(out, "PROPOSAL "+strings.TrimSpace(lines[i+1]))
+			i++
+			continue
+		}
+		out = append(out, lines[i])
+	}
+	return out
+}
+
 // parseVanguard parses the ISSUER/PROPOSAL block grammar into one row per
 // proposal.
 func parseVanguard(text string, meta FilingMeta) ([]VoteRow, error) {
@@ -187,7 +217,7 @@ func parseVanguard(text string, meta FilingMeta) ([]VoteRow, error) {
 		pending = pending[:0]
 	}
 
-	for _, raw := range strings.Split(text, "\n") {
+	for _, raw := range vanguardJoinSplitLabels(strings.Split(text, "\n")) {
 		line := strings.TrimRight(strings.ReplaceAll(raw, "\r", ""), " \t")
 		trimmed := strings.TrimSpace(line)
 
