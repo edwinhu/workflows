@@ -212,6 +212,7 @@ type issRowBuf struct {
 	mgmt    string
 	cast    string
 	sponsor string
+	voted   string // the VOTED column one vintage prints; see issPeelVotedColumn
 }
 
 // complete reports that the row's trailing columns have arrived. It does not
@@ -259,7 +260,11 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		// sponsorFirst is set from the column header: one vintage names Sponsor
 		// before Proposal, which moves it off the right edge the peel works from.
 		sponsorFirst bool
-		cur          *issRowBuf
+		// votedCol is set from the header too: `Proposal By | Voted | Vote Cast
+		// | Management Recommendation` is the vanguard column set under an
+		// issnpx `#` header, with a Yes/No VOTED cell between sponsor and vote.
+		votedCol bool
+		cur      *issRowBuf
 
 		// blankRun counts CONSECUTIVE blank lines, so an incomplete row may
 		// survive the single `&nbsp;` paragraph that separates it from its
@@ -287,6 +292,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				ManagementRecommendation: cur.mgmt,
 				HowVoted:                 cur.cast,
 				VoteSource:               cur.sponsor,
+				VoteOtherInfo:            cur.voted,
 			})
 		}
 		cur = nil
@@ -403,6 +409,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 		if issTableHeader(line) {
 			sponsorFirst = issSponsorLeadsHeader(line)
+			votedCol = issVotedColumnHeader(line)
 			flush()
 			inTable = true
 			continue
@@ -472,6 +479,14 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				cur.text = append(cur.text, tail)
 			}
 			continue
+		}
+
+		if votedCol && item != "" {
+			if b, mg, ca, vo, sp, ok := issPeelVotedColumn(rest); ok {
+				cur.text = append(cur.text, b)
+				cur.mgmt, cur.cast, cur.voted, cur.sponsor = mg, ca, vo, sp
+				continue
+			}
 		}
 
 		if sponsorFirst && item != "" {
@@ -1087,6 +1102,52 @@ func issPeelSponsorFirst(rest string) (body, mgmt, cast, sponsor string, ok bool
 		return "", "", "", "", false
 	}
 	return strings.Join(toks, " "), mgmt, cast, sponsor, true
+}
+
+// issVotedColumnHeader reports a header that declares a VOTED column between
+// the sponsor and the vote:
+//
+//	#   Proposal                Proposal By        Voted   Vote Cast   Management
+//	                         Issuer/Stockholder                        Recommendation
+//	1   Elect director Jeffrey P. Bezos   Issuer   Yes   For   For
+//
+// It starts with `#` and names `Proposal`, so issTableHeader claims it, and
+// correctly: nothing else in the registry reads this document, which has no
+// other table grammar at all, so declining would turn 247 blank rows into zero.
+// The columns are simply the vanguard set under an issnpx header -- sponsor
+// SECOND, then Yes/No, then the vote, then the recommendation -- and peeling a
+// sponsor off the right finds `For` and abandons every line. `VOTE CAST` does
+// not contain `VOTED`, so our own header cannot trip this. Measured
+// 2026-09-01: ~660 rows across one registrant's three filings.
+func issVotedColumnHeader(line string) bool {
+	up := strings.ToUpper(line)
+	return strings.Contains(up, "VOTED") && strings.Contains(up, "PROPOSAL BY")
+}
+
+// issPeelVotedColumn reads a row of that shape from the RIGHT: the
+// recommendation, the vote, the Yes/No Voted cell, then the sponsor. The
+// proposal text is what remains.
+func issPeelVotedColumn(rest string) (body, mgmt, cast, voted, sponsor string, ok bool) {
+	toks := strings.Fields(rest)
+	if mgmt, toks, ok = issPeelVote(toks); !ok {
+		return "", "", "", "", "", false
+	}
+	if cast, toks, ok = issPeelVote(toks); !ok {
+		return "", "", "", "", "", false
+	}
+	if len(toks) == 0 {
+		return "", "", "", "", "", false
+	}
+	switch strings.ToLower(toks[len(toks)-1]) {
+	case "yes", "no":
+		voted, toks = toks[len(toks)-1], toks[:len(toks)-1]
+	default:
+		return "", "", "", "", "", false
+	}
+	if sponsor, toks, ok = issPeelCell(toks, issSponsors); !ok || len(toks) == 0 {
+		return "", "", "", "", "", false
+	}
+	return strings.Join(toks, " "), mgmt, cast, voted, sponsor, true
 }
 
 // issPeelColumns takes the Mgt Rec / Vote Cast / Sponsor cells off the right of a

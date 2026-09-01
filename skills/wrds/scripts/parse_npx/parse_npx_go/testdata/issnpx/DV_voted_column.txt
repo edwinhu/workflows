@@ -1,0 +1,15 @@
+
+Item 1 - Proxy Voting Record
+
+<TABLE>
+Amazon.com Inc.
+Ticker Symbol          AMZN                                         CUSIP:                 23135106
+Meeting Date:          5/17/2005                                    Meeting Type:          AGM
+Record Date:           4/1/2005
+
+  #                     Proposal                    Proposal By        Voted       Vote Cast      Management
+                                                 Issuer/Stockholder                             Recommendation
+<S>                                              <C>                 <C>         <C>            <C>
+1      Elect director Jeffrey P. Bezos           Issuer              Yes         For            For
+1      Elect director Tom A. Alberg              Issuer              Yes         For            For
+1      Elect director John Seely Brown           Issuer              Yes         For            For
