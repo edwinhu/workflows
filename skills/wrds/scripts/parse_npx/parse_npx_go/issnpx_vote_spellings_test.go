@@ -201,3 +201,32 @@ func TestISSNPXDidNotVote(t *testing.T) {
 		t.Errorf("mgmt_rec = %q, want %q", got[colMgmtRec], "Null")
 	}
 }
+
+// TestISSNPXEchoVote pins `Echo Vote`, whose halves straddle the wrap with the
+// SPONSOR between them.
+//
+//	1.7  Elect Trustee Larry D. Thompson  For  Echo  Management
+//	                                           Vote
+//
+// Echo (or proportional) voting is the fund voting in proportion to the other
+// shareholders. `Echo` sits in the Vote Cast column and `Vote` wraps beneath it,
+// while the sponsor stays on the row line -- so the two halves are separated by
+// the sponsor, which neither existing join handles: issJoinWrappedVote compares
+// the row line's tail with the continuation's, and e5deb181 peels the sponsor
+// off the CONTINUATION. Here it has to come off the ROW LINE first.
+//
+// `echo` is not admitted alone, for the reason `didnot` is not: the cell the
+// filing printed is `Echo Vote`, and reporting half of it is not verbatim.
+func TestISSNPXEchoVote(t *testing.T) {
+	rows := loadSpellingFixture(t, "DM_echo_vote.txt")
+	got := findRow(rows, "Elect Trustee Larry D. Thompson")
+	if got == nil {
+		t.Fatalf("row missing; got %d rows", len(rows))
+	}
+	if got[colHowVoted] != "Echo Vote" {
+		t.Errorf("how_voted = %q, want %q", got[colHowVoted], "Echo Vote")
+	}
+	if got[colVoteSource] != "Management" {
+		t.Errorf("sponsor = %q, want %q", got[colVoteSource], "Management")
+	}
+}

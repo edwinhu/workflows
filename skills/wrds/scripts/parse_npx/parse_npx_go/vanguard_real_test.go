@@ -258,7 +258,7 @@ var howVotedVocabulary = map[string]bool{
 	"F": true, "A": true, "N": true, "D": true,
 	// `DidNot Vote` spelled without the space, and the `Null` recommendation
 	// that vintage prints beside it.
-	"DIDNOT VOTE": true, "NULL": true,
+	"DIDNOT VOTE": true, "NULL": true, "ECHO VOTE": true,
 	// Proportional (or "echo") voting: the fund votes in proportion to the
 	// other shareholders rather than forming a view. It is a real vote value,
 	// not a parse defect -- 7,270 rows carry it in the revalidation run, each
