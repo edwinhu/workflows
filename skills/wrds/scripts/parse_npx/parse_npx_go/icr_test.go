@@ -375,3 +375,42 @@ func TestICRResolveQualifiedFundName(t *testing.T) {
 		}
 	}
 }
+
+// ICR6 is a verbatim contiguous meeting block from 0001193125-15-307095, cut
+// rule to rule: TE Connectivity's 2015 annual meeting, 36 items -- the count ISS
+// records for it.
+//
+// This filing's description column is narrow, so a description that exactly
+// FILLS it leaves one space before the proponent and the two-space cell split
+// merges them:
+//
+//	1   Elect Pierre R. Brondeau Mgmt   For   For   For   <- one space, merged
+//	2   Elect Juergen W. Gromer  Mgmt   For   For   For   <- two, splits
+//
+// The merged row is one cell short and was rejected, so the filing lost exactly
+// those rows whose description happened to reach the column width: items 1, 3,
+// 10, 16 and 36 here. Scattered rather than a run, which is why it reads as
+// noise instead of a defect -- and why only a per-meeting count against ISS
+// surfaced it.
+func TestICRReadsAColumnFillingDescription(t *testing.T) {
+	rows := runISSNPXDoc(t, loadICRFixture(t, "ICR6_te_filled_description.txt"))
+	if len(rows) != 36 {
+		t.Fatalf("got %d rows, want 36 -- the count ISS records for this meeting", len(rows))
+	}
+	want := map[string][3]string{
+		"1":  {"Elect Pierre R. Brondeau", "Mgmt", "For"},
+		"3":  {"Elect William A. Jeffrey", "Mgmt", "For"},
+		"36": {"Right to Adjourn Meeting", "Mgmt", "For"},
+		// A row that already split, to prove the peel did not disturb it.
+		"2": {"Elect Juergen W. Gromer", "Mgmt", "For"},
+	}
+	got := map[string][3]string{}
+	for _, r := range rows {
+		got[r[colItemSeq]] = [3]string{r[colVoteDescription], r[colVoteSource], r[colHowVoted]}
+	}
+	for item, w := range want {
+		if got[item] != w {
+			t.Errorf("item %q:\n  got  %q\n  want %q", item, got[item], w)
+		}
+	}
+}
