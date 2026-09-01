@@ -361,6 +361,36 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 
 		item, rest := issSplitItem(line)
+
+		// A WRAPPED LINE THAT BEGINS WITH A NUMERAL IS NOT A NEW ITEM:
+		//
+		//	17  Authorize Board to Set Issue Price for  For  Split Vote  Management
+		//	10 Percent Per Year of Issued Capital
+		//
+		// Item 17's description continues "... for 10 Percent Per Year ...", but
+		// issSplitItem reads the leading `10` as an item token, so the
+		// continuation opens a row of its own -- truncating item 17 at "for" and
+		// emitting a junk row with no cells and a blank vote. This is the same
+		// defect c422f060 fixed in broadridge, and the same discriminator
+		// settles it: a real item row inside a table brings cells of its own. A
+		// row the filing reports without a vote still carries its Sponsor cell,
+		// so it is not swallowed here.
+		//
+		// The test is the RIGHT EDGE, not the row's state. In the wrapped-Sponsor
+		// vintage `1.2 Elect Director Colleen M. Pouliot  For  For` carries no
+		// sponsor -- it is on the line below -- but it does end in vote values,
+		// and that is what makes it a row. `10 Percent Per Year of Issued
+		// Capital` ends in neither, and is text. Gating on whether the open row
+		// is complete separates neither case and swallowed that whole vintage.
+		if item != "" && inTable && cur != nil {
+			toks := strings.Fields(rest)
+			if _, _, sponsored := issPeelCell(toks, issSponsors); !sponsored {
+				if _, _, voted := issPeelCell(toks, issVoteValues); !voted {
+					item, rest = "", line
+				}
+			}
+		}
+
 		if item != "" {
 			flush()
 			cur = &issRowBuf{item: strings.TrimRight(item, ".)")}
