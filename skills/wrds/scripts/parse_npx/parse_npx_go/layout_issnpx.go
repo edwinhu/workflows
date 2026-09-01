@@ -82,7 +82,13 @@ var issVoteValues = map[string]bool{
 	"---": true, "----": true, "--": true, "n/m": true,
 	"for": true, "against": true, "abstain": true, "abstained": true,
 	"withhold": true, "withheld": true, "split": true, "none": true,
-	"refer": true, "unvoted": true, "n/a": true, "na": true, "tna": true,
+	// `Split Vote` is what a fund reports when it held the security across
+	// several accounts that voted differently -- an outcome, not an absence.
+	// issPeelCell matches a WHOLE cell, never a prefix, so carrying `split`
+	// alone missed it at every length and the peel abandoned the line: measured
+	// 2026-09-01 one filing emitted 20,808 blank votes of 21,480 rows (96.9%).
+	"split vote": true,
+	"refer":      true, "unvoted": true, "n/a": true, "na": true, "tna": true,
 	"do not vote": true, "take no action": true, "no action": true,
 	"did not vote": true, "non voting": true, "non-voting": true,
 	"one year": true, "two years": true, "three years": true,
