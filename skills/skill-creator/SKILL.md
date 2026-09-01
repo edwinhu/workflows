@@ -188,6 +188,30 @@ The built-in skill-creator's writing advice and superpowers enforcement patterns
 
 When the built-in skill-creator suggests removing enforcement patterns because they're "not pulling their weight" or are "oppressively constrictive MUSTs," push back if the pattern addresses a real observed failure mode. The test: did an agent actually take the shortcut this pattern prevents? If yes, keep it.
 
+### Step 4b: Keep or cut? — the trim test
+
+Applies when editing an EXISTING skill and something reads like backstory. Ask in order; the first
+answer that fires decides.
+
+| # | Ask | Verdict |
+|---|---|---|
+| 1 | Is this fact already stated elsewhere in the file? | **Cut the second instance.** Provenance earns its tokens once, not once per section. |
+| 2 | Could a strong model with no project history derive it from the rule it sits under? | **Cut.** The rule statement carries it. |
+| 3 | Does it change an action — a number you would write, a command you would run, a rule you would decline to add? | **Keep.** |
+| 4 | Is it the observed evidence behind a live Iron Law, lint rule, or hook? | **Keep, even though it reads as history.** That evidence is what survives an agent's confident override; delete it and the rule becomes arguable. |
+
+<EXTREMELY-IMPORTANT>
+**Never trim on volume.** The budget is the 500-line threshold above — under it, move nothing to
+`references/`. "A third of this file is history" is a description, not a defect: the questions are
+duplication and derivability, and neither is measured in percentages. A share-of-file argument will
+happily delete rows 3 and 4, which are the rows carrying the enforcement.
+</EXTREMELY-IMPORTANT>
+
+- Measured 2026-09-01 on `goal-and-loop` (191 lines): a volume-based read proposed cutting
+  ~400 words because 31% of the file was retrospective. The trim test found one true duplicate
+  and one bloated row — **-126 words, every rule intact**. The rows the volume argument would
+  also have taken were the incidents behind lint rules G2 and G9.
+
 ### Step 5: Continue the Eval Loop
 
 Return to the built-in skill-creator's process for running test cases, grading, and iterating. After each iteration's skill revision, re-run the enforcement audit (Step 3) on the updated draft.

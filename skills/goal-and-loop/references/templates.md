@@ -24,7 +24,7 @@ a missing credential, a dead grid, or an action that would touch production.
 Verify before setting it:
 
 ```bash
-bun skills/goal-writing/scripts/goal-lint.ts "<that text>" --unattended
+bun skills/goal-and-loop/scripts/goal-lint.ts "<that text>" --unattended
 ```
 
 ## The unattended-brief template
