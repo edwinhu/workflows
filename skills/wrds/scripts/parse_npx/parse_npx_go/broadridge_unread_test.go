@@ -313,3 +313,45 @@ func TestBroadridgeNumericWrapIsNotANewItem(t *testing.T) {
 			got, "31 DECEMBER 2020")
 	}
 }
+
+// TestBroadridgeAsteriskIsAColumnValue pins the For/Against-Management column
+// printed as a bare asterisk.
+//
+//  7. Report on Environment Expenditures     Mgmt     Against     *
+//
+// The peel runs right to left and `*` is in neither vocabulary, so it fails on
+// the very first token and abandons the line: both real cells stay in the
+// proposal text and the vote is blank. It is the same failure as the missing
+// `No vote` spelling, reached by a different route -- brPeelCell trims `.,;:`
+// off a candidate but not `*`.
+//
+// The asterisk belongs with the placeholders the vocabulary already carries --
+// `---`, `--`, `n/a`, `n/m` -- which is what makes admitting it a spelling and
+// not a new rule. Exxon Mobil's 2021 ballot prints it on every row.
+func TestBroadridgeAsteriskIsAColumnValue(t *testing.T) {
+	b, err := os.ReadFile(filepath.Join("testdata", "broadridge", "B8_asterisk_column.txt"))
+	if err != nil {
+		t.Fatalf("read fixture: %v", err)
+	}
+	rows := runISSNPXDoc(t, string(b))
+
+	want := map[string]string{
+		"Report on Environment Expenditures": "Against",
+		"Report on Political Contributions":  "For",
+		"Independent Chairman":               "For",
+	}
+	got := map[string]string{}
+	for _, r := range rows {
+		got[r[colVoteDescription]] = r[colHowVoted]
+	}
+	for desc, vote := range want {
+		if got[desc] != vote {
+			t.Errorf("%q: how_voted = %q, want %q", desc, got[desc], vote)
+		}
+	}
+	for _, r := range rows {
+		if strings.Contains(r[colVoteDescription], "Mgmt") {
+			t.Errorf("description %q still carries the peeled cells", r[colVoteDescription])
+		}
+	}
+}
