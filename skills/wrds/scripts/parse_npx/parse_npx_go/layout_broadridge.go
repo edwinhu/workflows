@@ -61,6 +61,14 @@ var brVoteVocabulary = map[string]bool{
 	"withhold": true, "withheld": true, "split": true, "none": true,
 	"refer": true, "unvoted": true, "n/a": true, "na": true, "tna": true,
 	"n/m": true, "---": true, "----": true, "--": true,
+	// The For/Against-Management column is printed as a bare asterisk by the
+	// vintage Exxon Mobil files. It sits with the other placeholders rather than
+	// being a rule of its own -- brPeelCell trims `.,;:` off a candidate but not
+	// `*`, so without it the peel fails on the FIRST token from the right and
+	// abandons the whole line: both real cells stay in the proposal text, the
+	// vote is blank, and a director slate collapses into one row because no
+	// nominee line ever shows a vote of its own.
+	"*":           true,
 	"do not vote": true, "take no action": true, "no action": true,
 	"did not vote": true, "no vote": true,
 	"one year": true, "two years": true, "three years": true,
