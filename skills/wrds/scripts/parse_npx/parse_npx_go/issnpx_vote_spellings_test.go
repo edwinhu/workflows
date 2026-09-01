@@ -152,3 +152,29 @@ func TestISSNPXWrapAfterSponsor(t *testing.T) {
 		t.Errorf("description = %q, want %q", got[colVoteDescription], want)
 	}
 }
+
+// TestISSNPXNotVoted pins `Not voted`, and `No Vote` alongside it.
+//
+//	1  Accounts and Reports  For  Not voted  Management
+//
+// issVoteValues carried `unvoted`, `did not vote` and `do not vote` but not
+// `not voted`, so the peel failed and the row's cells stayed in the proposal
+// text. In the filing that prints it, `Not voted` is 1,713 of the 1,744 blank
+// votes remaining after every other fix today -- essentially all of them.
+//
+// `no vote` is added with it: the shared howVotedVocabulary has carried NO VOTE
+// all along, so this is the same drift between two lists of one fact that
+// 7838452e records.
+func TestISSNPXNotVoted(t *testing.T) {
+	rows := loadSpellingFixture(t, "DI_not_voted.txt")
+	got := findRow(rows, "Accounts and Reports")
+	if got == nil {
+		t.Fatalf("row missing; got %d rows", len(rows))
+	}
+	if got[colHowVoted] != "Not voted" {
+		t.Errorf("how_voted = %q, want %q", got[colHowVoted], "Not voted")
+	}
+	if got[colVoteSource] != "Management" {
+		t.Errorf("sponsor = %q, want %q", got[colVoteSource], "Management")
+	}
+}

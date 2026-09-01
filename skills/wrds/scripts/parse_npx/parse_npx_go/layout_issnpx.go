@@ -103,7 +103,12 @@ var issVoteValues = map[string]bool{
 	// `No` in the Vote Cast column -- the fund did not vote the item. The shared
 	// howVotedVocabulary in the test suite already recognised NO, so the two
 	// lists had drifted apart; one filing prints it on 5,941 rows.
-	"no":    true,
+	"no": true,
+	// `Not voted` -- 1,713 of the 1,744 blank votes left in one filing after
+	// every other fix today. `no vote` joins it because the shared
+	// howVotedVocabulary has carried NO VOTE all along: the same drift between
+	// two lists of one fact that `no` itself was.
+	"not voted": true, "no vote": true,
 	"refer": true, "unvoted": true, "n/a": true, "na": true, "tna": true,
 	"do not vote": true, "take no action": true, "no action": true,
 	"did not vote": true, "non voting": true, "non-voting": true,
