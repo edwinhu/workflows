@@ -143,7 +143,7 @@ here so nobody re-derives them from the source guides.
 The tic dictionary lives in the `ai-anti-patterns` skill, which every prose agent loads alongside
 this one; `prose-audit.py` flags each entry with a span id, so cite the span rather than re-scanning
 by eye. `/ai-tic <phrase>` is how a candidate becomes a rule — it runs the FP-hunt against both
-corpus halves and refuses anything over the eligibility gate. Do not restate tics here: a second
+corpus halves and refuses anything over that threshold. Do not restate tics here: a second
 copy cannot be regenerated from the dictionary and goes stale silently.
 
 ## Phrases the corpus VINDICATED — use them freely
