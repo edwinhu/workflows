@@ -350,6 +350,33 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		// THE VOTE CELL WRAPS TOO. When the opening line's peel failed and this
 		// line completes the value, reunite the halves before either becomes
 		// proposal text -- see issJoinWrappedVote.
+		// THE SPONSOR COLUMN CAN WRAP ENTIRELY. When the proposal column is wide
+		// the report prints Sponsor on the line BELOW its row -- and below the
+		// column header too:
+		//
+		//	#     Proposal                          Mgt Rec   Vote Cast
+		//	Sponsor
+		//	1.1   Elect  Director Carol Mills       For       For
+		//	Management
+		//
+		// Neither line carries both a sponsor and a vote, so issPeelColumns
+		// fails on each and every cell stays in the proposal text. Measured
+		// 2026-09-01 this is the corpus's worst filing by blank votes:
+		// 0000743773-05-000030.txt emits 44,696 rows, all 44,696 with no vote.
+		if sponsor == "" && cur.cast == "" && cur.sponsor == "" && len(cur.text) > 0 {
+			if sp, remaining, found := issPeelCell(strings.Fields(rest), issSponsors); found && len(remaining) == 0 {
+				prev := strings.Fields(cur.text[len(cur.text)-1])
+				if cast, rest2, ok := issPeelCell(prev, issVoteValues); ok {
+					cur.sponsor, cur.cast = sp, cast
+					if mg, rest3, found := issPeelCell(rest2, issVoteValues); found {
+						cur.mgmt, rest2 = mg, rest3
+					}
+					cur.text[len(cur.text)-1] = strings.Join(rest2, " ")
+					continue
+				}
+			}
+		}
+
 		if sponsor == "" && cur.cast == "" && len(cur.text) > 0 {
 			// The SPONSOR is the rightmost column, so it comes off before the
 			// vote's head is at the edge to be found.
