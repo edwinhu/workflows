@@ -216,6 +216,23 @@ func tagName(src []byte, i, col int) (name string, after int, ok bool) {
 			j += n
 			col = 0
 			start = j
+			// THE WRAP CAN FALL BETWEEN '<' AND '/'. The close-slash is consumed
+			// above, before this loop, so a break there leaves it to arrive here
+			// where '/' is a name TERMINATOR -- the tag is not recognised and its
+			// characters survive into the text:
+			//
+			//	line N   (1023 cols) ... Management </font><
+			//	line N+1             /p><p style="margin:0pt ...
+			//
+			// which put a literal `</p>` or `</font>` in the vote cell of 2,173
+			// issnpx rows measured 2026-09-01. Nothing has been read yet when
+			// this fires, so consuming the slash here is the same act as
+			// consuming it above.
+			if len(joined) == 0 && j < len(src) && src[j] == '/' {
+				j++
+				col++
+				start = j
+			}
 			continue
 		}
 		if c == '>' || c == '/' || c == ' ' || c == '\t' {
