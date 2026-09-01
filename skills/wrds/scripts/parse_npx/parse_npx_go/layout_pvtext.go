@@ -532,6 +532,20 @@ func pvTextVoteLine(line string, meeting pvTextMeeting) (VoteRow, bool) {
 		return VoteRow{}, false
 	}
 
+	// The VOTED? cell sits immediately right of the proponent. Recording it is
+	// what makes an empty how_voted AFFIRMATIVE: `NO` says the fund declined to
+	// vote, which is a fact the filing states, and without it such a row is
+	// indistinguishable from one this parser failed on. Measured 2026-09-01 the
+	// corpus carries 7,421 blank-vote pvtext rows and every one was classified
+	// as an unexplained gap for exactly that reason. vanguard already carries
+	// its own VOTED? column in this field.
+	var voted string
+	if p+1 < len(fields) {
+		if up := strings.ToUpper(fields[p+1]); up == "YES" || up == "NO" {
+			voted = fields[p+1]
+		}
+	}
+
 	cast := strings.Join(rest, " ")
 	if cast == "" {
 		// Verbatim means verbatim: the filing printed no vote value here, so
@@ -559,6 +573,7 @@ func pvTextVoteLine(line string, meeting pvTextMeeting) (VoteRow, bool) {
 		VoteDescription: description,
 		VoteSource:      fields[p],
 		HowVoted:        cast,
+		VoteOtherInfo:   voted,
 	}, true
 }
 
