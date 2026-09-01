@@ -94,6 +94,12 @@ var issVoteValues = map[string]bool{
 	// right edge and every cell stayed in the proposal text -- 5,794 blank of
 	// 22,297 rows and 6,937 of 67,741 on the two filings that print them.
 	"sold": true, "sold shares": true, "dnv": true,
+	// One vintage abbreviates the choice to a LETTER in both the Mgt Rec and
+	// Vote Cast columns -- `3  Management Proposal  F  F  Management`. Counted
+	// in that filing's own bytes: F 5,637, A 59, N 9, D 7. W does not appear and
+	// is not admitted, because the vocabulary records what the corpus prints
+	// rather than what an alphabet suggests.
+	"f": true, "a": true, "n": true, "d": true,
 	"refer": true, "unvoted": true, "n/a": true, "na": true, "tna": true,
 	"do not vote": true, "take no action": true, "no action": true,
 	"did not vote": true, "non voting": true, "non-voting": true,
