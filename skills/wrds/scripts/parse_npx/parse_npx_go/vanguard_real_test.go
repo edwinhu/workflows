@@ -259,6 +259,10 @@ var howVotedVocabulary = map[string]bool{
 	// `DidNot Vote` spelled without the space, and the `Null` recommendation
 	// that vintage prints beside it.
 	"DIDNOT VOTE": true, "NULL": true, "ECHO VOTE": true,
+	// `Did Note Vote` is one filing's own typo for `Did Not Vote`, on 1,264 of
+	// its rows; how_voted is verbatim, so the spelling is recorded rather than
+	// corrected. `Not Cast` is a further spelling of the same outcome.
+	"DID NOTE VOTE": true, "NOT CAST": true,
 	// Proportional (or "echo") voting: the fund votes in proportion to the
 	// other shareholders rather than forming a view. It is a real vote value,
 	// not a parse defect -- 7,270 rows carry it in the revalidation run, each
