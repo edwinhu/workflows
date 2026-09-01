@@ -72,9 +72,18 @@ Company registration information.
   (2019-10-22 on, 344,217 filings, 2,455 CIKs) is structured XML carrying `<seriesId>` — the
   same series identifier the N-PX vote panel holds — with each position giving `cusip`, `lei`,
   `title`, `balance` (SHARES), `valUSD`, `pctVal`. `NPORT-EX` covers 2019-04..2019-10.
-  **`N-Q` (2003-10-27 .. 2021-04-29, 95,003 filings, 4,206 CIKs) has NO series identifier** —
-  zero matches for `S0000…` in a sampled filing; it is unstructured HTML with the schedule as a
-  table, so pre-2019 holdings join at REGISTRANT level only and need parsing. Since `N-PX`,
+  **`N-Q` (2003-10-27 .. 2021-04-29, 95,003 filings, 4,206 CIKs) carries series IDs in its SGML
+  HEADER, not its body.** The `<SEC-HEADER>` block holds
+  `<SERIES-AND-CLASSES-CONTRACTS-DATA>` → `<SERIES>` → `<SERIES-ID>S000007420` +
+  `<SERIES-NAME>` + per-class `<CLASS-CONTRACT-ID>`/`<CLASS-CONTRACT-TICKER-SYMBOL>`. Measured
+  over N-Q filings from N-PX-filing registrants: **27 of 40 sampled carry the block, 8 of 20
+  sampled pre-2010** — absent for single-portfolio registrants, which have no series, and
+  thinner before series/class tagging phased in around 2006. The header gives the trust's
+  series ROSTER, not a per-holding attribution: the portfolio schedules are HTML tables in the
+  body and must still be parsed and mapped to a series, but that is a within-filing match of a
+  schedule heading against a short `<SERIES-NAME>` list, NOT a global fuzzy join. Do not
+  conclude "no series identifier" from one filing — a size-picked sample lands on a tiny
+  single-series filer. Since `N-PX`,
   `N-Q` and `N-PORT` are all '40 Act filings from one registrant, the registrant CIK is the
   join key and **no name matching is needed**: 1,374 of 1,377 panel registrant CIKs (99.8%)
   file one of them. A 13F position is the MANAGER's book and an `N-PORT` position is the
