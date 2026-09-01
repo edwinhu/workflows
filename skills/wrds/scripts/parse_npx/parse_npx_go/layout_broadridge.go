@@ -690,6 +690,29 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 
 		item, rest := brSplitItem(line)
 
+		// A WRAPPED LINE THAT HAPPENS TO START WITH A NUMERAL IS NOT A NEW ITEM:
+		//
+		//	2      TO CONSIDER AND APPROVE THE REPORT OF THE   Mgmt   For   For
+		//	       SUPERVISORY COMMITTEE OF THE COMPANY (THE
+		//	       "SUPERVISORY COMMITTEE") FOR THE YEAR ENDED
+		//	       31 DECEMBER 2020
+		//
+		// brSplitItem reads `31` as an item token, which costs twice: item 2's
+		// description is truncated at "FOR THE YEAR ENDED", and a junk row
+		// appears carrying item `31` with no proponent and no vote. Measured
+		// 2026-09-01 on 0001438934-21-000135.txt, 3,402 of its rows carry
+		// neither, led by 148 copies of `31 | DECEMBER 2020`.
+		//
+		// The discriminator is the slate rule in reverse: a real item row inside
+		// a table brings cells of its own. An agenda item the fund reported but
+		// did not vote still carries a proponent (`Mgmt`, `Non-Voting`), which
+		// is a cell, so it is not swallowed here.
+		if inTable && cur != nil && item != "" {
+			if _, typ, vote, forAgnst := brPeelColumns(rest, hasType, maxVote); typ == "" && vote == "" && forAgnst == "" {
+				item, rest = "", line
+			}
+		}
+
 		// Inside a table, a line with no item token continues the row above it.
 		// 1,866 continuation lines begin with a label word -- the worst being a
 		// line that is exactly "MEETING DATE", the wrapped tail of "STOCKHOLDER
