@@ -1,0 +1,10 @@
+Ticker:       ESRX           Security ID:  30219G108
+Meeting Date: MAY 04, 2016   Meeting Type: Annual
+Record Date:  MAR 11, 2016
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1A.   ELECTION OF DIRECTOR: MAURA C. BREEN    Sold      Sold shares  Management
+                                              shares    prior to
+                                              prior to  meet
+                                              meet
+1B.   ELECTION OF DIRECTOR: WILLIAM J.        Sold      Sold shares  Management

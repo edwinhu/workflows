@@ -88,7 +88,13 @@ var issVoteValues = map[string]bool{
 	// alone missed it at every length and the peel abandoned the line: measured
 	// 2026-09-01 one filing emitted 20,808 blank votes of 21,480 rows (96.9%).
 	"split vote": true,
-	"refer":      true, "unvoted": true, "n/a": true, "na": true, "tna": true,
+	// Three more outcomes the corpus prints. `Sold shares` is the fund selling
+	// the position before the meeting; `DNV` abbreviates Did Not Vote. Each was
+	// missing, and issPeelCell matches a WHOLE cell, so the peel failed at the
+	// right edge and every cell stayed in the proposal text -- 5,794 blank of
+	// 22,297 rows and 6,937 of 67,741 on the two filings that print them.
+	"sold": true, "sold shares": true, "dnv": true,
+	"refer": true, "unvoted": true, "n/a": true, "na": true, "tna": true,
 	"do not vote": true, "take no action": true, "no action": true,
 	"did not vote": true, "non voting": true, "non-voting": true,
 	"one year": true, "two years": true, "three years": true,
@@ -385,7 +391,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		if item != "" && inTable && cur != nil {
 			toks := strings.Fields(rest)
 			if _, _, sponsored := issPeelCell(toks, issSponsors); !sponsored {
-				if _, _, voted := issPeelCell(toks, issVoteValues); !voted {
+				if _, _, voted := issPeelVote(toks); !voted {
 					item, rest = "", line
 				}
 			}
@@ -430,9 +436,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		if sponsor == "" && cur.cast == "" && cur.sponsor == "" && len(cur.text) > 0 {
 			if sp, remaining, found := issPeelCell(strings.Fields(rest), issSponsors); found && len(remaining) == 0 {
 				prev := strings.Fields(cur.text[len(cur.text)-1])
-				if cast, rest2, ok := issPeelCell(prev, issVoteValues); ok {
+				if cast, rest2, ok := issPeelVote(prev); ok {
 					cur.sponsor, cur.cast = sp, cast
-					if mg, rest3, found := issPeelCell(rest2, issVoteValues); found {
+					if mg, rest3, found := issPeelVote(rest2); found {
 						cur.mgmt, rest2 = mg, rest3
 					}
 					cur.text[len(cur.text)-1] = strings.Join(rest2, " ")
@@ -448,7 +454,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			sp, prev, haveSponsor := issPeelCell(prev, issSponsors)
 			if vote, prevKeep, contKeep, joined := issJoinWrappedVote(prev, strings.Fields(rest)); haveSponsor && joined {
 				cur.sponsor = sp
-				if mg, remaining, found := issPeelCell(prevKeep, issVoteValues); found {
+				if mg, remaining, found := issPeelVote(prevKeep); found {
 					cur.mgmt, prevKeep = mg, remaining
 				}
 				cur.cast = vote
@@ -482,7 +488,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 					}
 					prevKeep := prev[:len(prev)-k]
 					cur.sponsor, cur.cast = sp, candidate
-					if mg, remaining, ok := issPeelCell(prevKeep, issVoteValues); ok {
+					if mg, remaining, ok := issPeelVote(prevKeep); ok {
 						cur.mgmt, prevKeep = mg, remaining
 					}
 					cur.text[len(cur.text)-1] = strings.Join(prevKeep, " ")
@@ -503,7 +509,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 					// The Mgt Rec cell stayed on the row's own line, where it now
 					// sits at the end of the text.
 					prev := strings.Fields(cur.text[len(cur.text)-1])
-					if cell, remaining, found := issPeelCell(prev, issVoteValues); found {
+					if cell, remaining, found := issPeelVote(prev); found {
 						cur.mgmt = cell
 						cur.text[len(cur.text)-1] = strings.Join(remaining, " ")
 					}
@@ -900,12 +906,12 @@ func issPeelColumns(rest string) (body, mgmt, cast, sponsor string) {
 
 	// Vote cells are peeled right to left, so the first one off the line is Vote
 	// Cast and a second, if the filing printed one, is Mgt Rec.
-	cast, toks, ok = issPeelCell(toks, issVoteValues)
+	cast, toks, ok = issPeelVote(toks)
 	if !ok {
 		return strings.TrimSpace(rest), "", "", ""
 	}
 	if len(toks) > 0 {
-		if cell, remaining, found := issPeelCell(toks, issVoteValues); found {
+		if cell, remaining, found := issPeelVote(toks); found {
 			mgmt, toks = cell, remaining
 		}
 	}
@@ -936,11 +942,11 @@ func issPeelTrailingCells(rest string) (mgmt, cast, sponsor string, ok bool) {
 	if !ok {
 		return "", "", "", false
 	}
-	cast, toks, ok = issPeelCell(toks, issVoteValues)
+	cast, toks, ok = issPeelVote(toks)
 	if !ok {
 		return "", "", "", false
 	}
-	if cell, remaining, found := issPeelCell(toks, issVoteValues); found {
+	if cell, remaining, found := issPeelVote(toks); found {
 		mgmt, toks = cell, remaining
 	}
 	return mgmt, cast, sponsor, len(toks) == 0
@@ -960,6 +966,57 @@ func issPeelCell(toks []string, vocab map[string]bool) (cell string, remaining [
 		}
 	}
 	return "", toks, false
+}
+
+// issPeelVote is issPeelCell against the vote vocabulary, plus the one vote form
+// that cannot be a vocabulary entry because its value is a NUMBER:
+//
+//	1  Approve Investment Advisory Agreement  For  F=85.71%  Management
+//
+// The letter names the choice -- F for, A against, W withheld -- and the
+// percentage is the share of the fund's holding that voted it. One filing prints
+// it on 5,966 of its 23,702 rows. Only votes admit the form; a sponsor is never
+// a percentage, which is why this wraps the vote peel and not issPeelCell.
+func issPeelVote(toks []string) (cell string, remaining []string, ok bool) {
+	if cell, rest, ok := issPeelCell(toks, issVoteValues); ok {
+		return cell, rest, true
+	}
+	if len(toks) > 0 && issPercentVote(toks[len(toks)-1]) {
+		return toks[len(toks)-1], toks[:len(toks)-1], true
+	}
+	return "", toks, false
+}
+
+// issPercentVote recognises `F=85.71%`, `A=6.04%`, `W=7.68%` -- a choice letter,
+// an equals sign, a number and a percent sign, and nothing else.
+func issPercentVote(s string) bool {
+	i := strings.IndexByte(s, '=')
+	if i != 1 || !strings.HasSuffix(s, "%") {
+		return false
+	}
+	switch s[0] {
+	case 'F', 'A', 'W', 'N', 'f', 'a', 'w', 'n':
+	default:
+		return false
+	}
+	body := s[2 : len(s)-1]
+	if body == "" {
+		return false
+	}
+	dots := 0
+	for j := 0; j < len(body); j++ {
+		switch {
+		case body[j] >= '0' && body[j] <= '9':
+		case body[j] == '.':
+			dots++
+			if dots > 1 {
+				return false
+			}
+		default:
+			return false
+		}
+	}
+	return true
 }
 
 // issDate normalizes the report's date spellings onto YYYYMMDD. The month-name
