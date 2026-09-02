@@ -245,7 +245,7 @@ func icrIssuerAbove(lines []string, header int) string {
 // icrVoteRow reads one row. Every column comes from the cell the filing printed
 // it in, so how_voted is verbatim by construction rather than by a vocabulary
 // check that would have to be widened for every new spelling.
-func icrVoteRow(cells []string, m icrMeeting, series string) (VoteRow, bool) {
+func icrVoteRow(cells []string, m icrMeeting, series, fund string) (VoteRow, bool) {
 	// The length guard comes FIRST: cells can be empty, and reading cells[0]
 	// before checking that panics the whole binary, which surfaces as a filing
 	// yielding zero rows rather than as a crash.
@@ -281,12 +281,12 @@ func icrVoteRow(cells []string, m icrMeeting, series string) (VoteRow, bool) {
 	n := len(cells)
 	description := strings.Join(cells[1:n-4], " ")
 	return VoteRow{
-		IssuerName:               m.issuer,
-		CUSIP:                    icrCUSIP(m.securityID),
-		Ticker:                   m.ticker,
-		MeetingDate:              m.meetingDate,
-		MeetingType:              m.meetingType,
-		SeriesID:                 series,
+		IssuerName:  m.issuer,
+		CUSIP:       icrCUSIP(m.securityID),
+		Ticker:      m.ticker,
+		MeetingDate: m.meetingDate,
+		MeetingType: m.meetingType,
+		SeriesID:    series, FundName: fund,
 		ItemSeq:                  cells[0],
 		VoteDescription:          description,
 		VoteSource:               cells[n-4],
@@ -322,6 +322,10 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		// `Fund Name :` line governs every block until the next one, exactly as
 		// the fund heading does in the broadridge layout.
 		curSeries string
+		// curFund is the fund name as the filing printed it, recorded on every
+		// row of the section so an unattributed section is still visible as
+		// unmatched rather than unnamed.
+		curFund string
 		// lastRow indexes the row a continuation may extend, and lastLine the
 		// line it was read from. A continuation must sit IMMEDIATELY under the
 		// row or under a previous continuation of it: between blocks these
@@ -348,7 +352,18 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		// govern this one. Carrying it forward is precisely the silent transfer
 		// between funds this rule exists to prevent.
 		if name, ok := icrFundName(line); ok {
+			curFund = name
 			curSeries = icrResolveFund(seriesIdx, name)
+		} else if name, ok := issFundSeparator(line); ok {
+			// The '=====' banner rule the ISS report opens a fund with, printed
+			// by one registrant in this grammar too (the College Retirement
+			// Equities Fund, 6.2M rows with no fund name read, 2026-09-02). A
+			// structural marker, resolved like the labelled line; a bare rule
+			// with no name clears the carried fund.
+			curFund, curSeries = name, ""
+			if name != "" {
+				curSeries = icrResolveFund(seriesIdx, name)
+			}
 			continue
 		}
 
@@ -384,7 +399,7 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 			continue
 		}
 
-		if row, ok := icrVoteRow(cells, meeting, curSeries); ok {
+		if row, ok := icrVoteRow(cells, meeting, curSeries, curFund); ok {
 			rows = append(rows, row)
 			lastRow, lastLine = len(rows)-1, i
 			continue
@@ -412,7 +427,7 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 				if len(next) < icrColumns-2 {
 					continue // this line carried no value columns
 				}
-				if row, ok := icrVoteRow(joined, meeting, curSeries); ok {
+				if row, ok := icrVoteRow(joined, meeting, curSeries, curFund); ok {
 					rows = append(rows, row)
 					lastRow, lastLine = len(rows)-1, k
 					i, wrapped = k, true
