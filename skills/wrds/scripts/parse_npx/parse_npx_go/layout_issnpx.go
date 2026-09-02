@@ -66,6 +66,12 @@ import (
 // all. Measured 2026-09-01, four of ten items in one excerpt.
 var issItemRe = regexp.MustCompile(`^\d+(\.+\d+)*([A-Za-z]\d*)?[.)]?$`)
 
+// issCellTrim is what matching strips from a cell before the vocabulary is
+// consulted: the punctuation a filer hangs on a value (`For.`, `For*`) and,
+// since 2026-09-02, the quotes one registrant wraps it in (`"N/A"`). The
+// value itself is recorded as printed.
+const issCellTrim = ".,;*\""
+
 // issSponsors is the rightmost column's vocabulary. It anchors the peel: an
 // N-PX proposal is put forward either by management or by a shareholder.
 // The banner-less vintage of the same report abbreviates the column, printing
@@ -567,7 +573,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			// description wrapping to a lone `Vote` under a bare `Echo` row is
 			// the one shape this cannot tell apart, and neither could a reader.
 			tail := strings.TrimSpace(rest)
-			if ext := cur.cast + " " + tail; tail != "" && issVoteValues[strings.ToLower(strings.Trim(ext, ".,;*"))] {
+			if ext := cur.cast + " " + tail; tail != "" && issVoteValues[strings.ToLower(strings.Trim(ext, issCellTrim))] {
 				cur.cast = ext
 				continue
 			}
@@ -747,7 +753,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				prev := strings.Fields(cur.text[len(cur.text)-1])
 				for k := 1; k <= issMaxCellWords && k <= len(prev); k++ {
 					candidate := strings.Join(append(append([]string{}, prev[len(prev)-k:]...), contRest...), " ")
-					if !issVoteValues[strings.ToLower(strings.Trim(candidate, ".,;*"))] {
+					if !issVoteValues[strings.ToLower(strings.Trim(candidate, issCellTrim))] {
 						continue
 					}
 					prevKeep := prev[:len(prev)-k]
@@ -1224,7 +1230,7 @@ func issJoinWrappedVote(prev, cont []string) (vote string, prevKeep, contKeep []
 		for m := 1; m <= issMaxCellWords && m <= len(cont); m++ {
 			tail := strings.Join(cont[len(cont)-m:], " ")
 			candidate := head + " " + tail
-			if issVoteValues[strings.ToLower(strings.Trim(candidate, ".,;*"))] {
+			if issVoteValues[strings.ToLower(strings.Trim(candidate, issCellTrim))] {
 				return candidate, prev[:len(prev)-k], cont[:len(cont)-m], true
 			}
 		}
@@ -1482,7 +1488,7 @@ func issPeelCell(toks []string, vocab map[string]bool) (cell string, remaining [
 	}
 	for n := max; n >= 1; n-- {
 		candidate := strings.Join(toks[len(toks)-n:], " ")
-		if vocab[strings.ToLower(strings.Trim(candidate, ".,;*"))] {
+		if vocab[strings.ToLower(strings.Trim(candidate, issCellTrim))] {
 			return candidate, toks[:len(toks)-n], true
 		}
 	}
