@@ -1,0 +1,16 @@
+<TABLE>
+<CAPTION>
+
+Issuer:     The AES Corporation
+Ticker:     AES     CUSIP:     00130H105
+Meeting Date:     4/28/05
+Vote Date:     4/18/05
+
+
+<S>  <C>                                                  <C>      <C>        <C>
+  #  Proposal                                             Mgt Rec  Vote Cast  Sponsor
+
+  1  Election of Directors                                For All  For All    Mgmt
+  2  Ratification of Appointment of Independent Auditors  For      For        Mgmt
+</TABLE>
+- --------------------------------------------------------------------------------
