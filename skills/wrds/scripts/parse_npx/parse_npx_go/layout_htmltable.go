@@ -1736,7 +1736,10 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 	// Bare labels are read only on a short identity row. A data row of a wide
 	// export carries the WORD `CUSIP` as a column value (Brighthouse Funds
 	// Trust II: 5,021 vote rows consumed as context on 2026-09-02).
-	bare := htmlFilledCells(cells) <= 4 && !htmlHasVoteCell(cells)
+	// ... and never on a repeated header row, whose every filled cell is a
+	// column label (`Company Name | Ticker | ...`, Buffalo Funds: every issuer
+	// read as "Company Name" on 2026-09-02).
+	bare := htmlFilledCells(cells) <= 4 && !htmlHasVoteCell(cells) && !htmlAllLabels(cells)
 	for ci, cell := range cells {
 		// A label wrapped at a source newline inside its cell (`Meeting
 		// Date:`, GMO Trust: 38,059 of 38,551 rows with no date on
@@ -2112,6 +2115,21 @@ func htmlIdentityRow(cells []string, mapping map[string]int) (ctx htmlContext, o
 		return htmlContext{}, false
 	}
 	return ctx, true
+}
+
+// htmlAllLabels reports a row whose every filled cell is a column label.
+func htmlAllLabels(cells []string) bool {
+	filled := 0
+	for _, c := range cells {
+		if htmlFlat(c) == "" {
+			continue
+		}
+		filled++
+		if !htmlIsHeaderWord(c) {
+			return false
+		}
+	}
+	return filled > 0
 }
 
 // htmlIsHeaderWord reports a cell whose text is one of the column labels this
