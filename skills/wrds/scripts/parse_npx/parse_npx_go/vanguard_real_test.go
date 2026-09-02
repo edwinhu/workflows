@@ -316,6 +316,10 @@ func isVoteValue(s string) bool {
 	if issPercentVote(strings.Fields(s)[len(strings.Fields(s))-1]) {
 		return true
 	}
+	// The say-on-pay frequency answer is a bare number of years.
+	if issFrequencyVote(s) {
+		return true
+	}
 	// A value either layout accepts is a value the corpus really prints.
 	return pvTextVote(v) || htmlIsVoteValue(v)
 }
