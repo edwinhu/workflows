@@ -259,6 +259,7 @@ type issRowBuf struct {
 	cast    string
 	sponsor string
 	voted   string // the VOTED column one vintage prints; see issPeelVotedColumn
+	colon   bool   // the vote was printed `<vote>: <qualifier>`; see issPeelColonVote
 }
 
 // complete reports that the row's trailing columns have arrived. It does not
@@ -570,6 +571,26 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				cur.cast = ext
 				continue
 			}
+			// A `<vote>: <qualifier>` cell wraps in its own column beside the
+			// proposal's own wrap: `BERNAUER  W. BERNAUER` is one gap-cell of
+			// text and one of qualifier, and a lone cell-sized line is the
+			// qualifier's tail. See issPeelColonVote.
+			if cur.colon && tail != "" {
+				cells := icrCells(rest)
+				short := len(cells) > 0
+				for _, c := range cells {
+					if len(strings.Fields(c)) > issMaxCellWords {
+						short = false
+					}
+				}
+				if short {
+					cur.voted = strings.TrimSpace(cur.voted + " " + cells[len(cells)-1])
+					if len(cells) > 1 {
+						cur.text = append(cur.text, strings.Join(cells[:len(cells)-1], " "))
+					}
+					continue
+				}
+			}
 			if tail != "" {
 				cur.text = append(cur.text, tail)
 			}
@@ -757,6 +778,16 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 						cur.text[len(cur.text)-1] = strings.Join(remaining, " ")
 					}
 				}
+				continue
+			}
+		}
+
+		if sponsor == "" && cur.cast == "" && item != "" {
+			if b, mg, ca, q, sp, ok := issPeelColonVote(rest); ok {
+				if b != "" {
+					cur.text = append(cur.text, b)
+				}
+				cur.mgmt, cur.cast, cur.sponsor, cur.voted, cur.colon = mg, ca, sp, q, true
 				continue
 			}
 		}
@@ -1199,6 +1230,37 @@ func issJoinWrappedVote(prev, cont []string) (vote string, prevKeep, contKeep []
 		}
 	}
 	return "", prev, cont, false
+}
+
+// issPeelColonVote reads a Vote Cast cell printed as the vote, a colon and a
+// qualifier -- one registrant restates the nominee there:
+//
+//  1. ELECTION OF DIRECTORS: RAUL ALVAREZ     FOR       FOR: RAUL    Management
+//     ALVAREZ
+//
+// The vote is the word before the colon. The qualifier is not proposal text
+// and not a vote; it is carried in vote_other_info, the field the VOTED
+// column already uses, and its wrapped tail is collected by the row loop
+// (see issRowBuf.colon). 227 rows in two filings, 2026-09-02.
+func issPeelColonVote(rest string) (body, mgmt, cast, qualifier, sponsor string, ok bool) {
+	toks := strings.Fields(rest)
+	sponsor, toks, found := issPeelCell(toks, issSponsors)
+	if !found {
+		return "", "", "", "", "", false
+	}
+	for i := len(toks) - 1; i >= 0 && i >= len(toks)-1-issMaxCellWords; i-- {
+		stem, hasColon := strings.CutSuffix(toks[i], ":")
+		if !hasColon || !issVoteValues[strings.ToLower(stem)] {
+			continue
+		}
+		qualifier = strings.Join(toks[i+1:], " ")
+		before := toks[:i]
+		if mg, remaining, f := issPeelVote(before); f {
+			mgmt, before = mg, remaining
+		}
+		return strings.Join(before, " "), mgmt, stem, qualifier, sponsor, true
+	}
+	return "", "", "", "", "", false
 }
 
 // issSplitWrappedTail recovers a proposal whose text resumes AFTER the sponsor,
