@@ -149,3 +149,53 @@ func TestSeriesRegistrantAcronymBrand(t *testing.T) {
 		t.Errorf("missing word: got %q, want blank", got)
 	}
 }
+
+func TestSeriesDashSleeve(t *testing.T) {
+	// A sleeve or sub-adviser after a dash, unlabelled; the head is declared.
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "State Street Total Return V.I.S. Fund"},
+		{SeriesID: "S2", Name: "State Street U.S. Equity V.I.S. Fund"},
+	}
+	for _, b := range []string{
+		"State Street Total Return V.I.S. Fund - ACWI xUS Index",
+		"State Street Total Return V.I.S. Fund - Small Cap Equity",
+	} {
+		if got := resolve(t, decls, "STATE STREET VARIABLE INSURANCE SERIES FUNDS INC", b); got != "S1" {
+			t.Errorf("%q -> %q, want S1", b, got)
+		}
+	}
+	decls = []SeriesDecl{
+		{SeriesID: "S1", Name: "International Equity Fund"},
+		{SeriesID: "S2", Name: "Small Cap Fund"},
+	}
+	if got := resolve(t, decls, "SOME TRUST", "International Equity Fund - AQR Capital Management, LLC"); got != "S1" {
+		t.Errorf("unlabelled sub-adviser: got %q, want S1", got)
+	}
+	// The tail is declared and the head is not: `Variable Trust - Amerigo Fund`.
+	decls = []SeriesDecl{
+		{SeriesID: "S1", Name: "Amerigo Fund"},
+		{SeriesID: "S2", Name: "Banking Fund"},
+	}
+	if got := resolve(t, decls, "RYDEX VARIABLE TRUST", "Variable Trust - Amerigo Fund"); got != "S1" {
+		t.Errorf("dash tail: got %q, want S1", got)
+	}
+	// Neither side declared: blank.
+	if got := resolve(t, decls, "RYDEX VARIABLE TRUST", "Variable Trust - Growth Fund"); got != "" {
+		t.Errorf("neither side: got %q, want blank", got)
+	}
+}
+
+func TestSeriesTrailingTokensAcronym(t *testing.T) {
+	// Rydex Variable Trust prints `VT BANKING FUND` for a declared `Banking
+	// Fund`: the initials of the registrant's trailing tokens.
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "Banking Fund"},
+		{SeriesID: "S2", Name: "Russell 2000(R) 1.5x Strategy Fund"},
+	}
+	if got := resolve(t, decls, "RYDEX VARIABLE TRUST", "VT BANKING FUND"); got != "S1" {
+		t.Errorf("got %q, want S1", got)
+	}
+	if got := resolve(t, decls, "RYDEX VARIABLE TRUST", "VT RUSSELL 2000 1.5X STRATEGY FUND"); got != "S2" {
+		t.Errorf("with a folded mark: got %q, want S2", got)
+	}
+}
