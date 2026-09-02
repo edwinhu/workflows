@@ -130,8 +130,9 @@ var issVoteValues = map[string]bool{
 	// `DNV (do not vote)` (68 rows, one filing). Placed 2026-09-02.
 	"no shares held on record": true, "dnv (do not vote)": true,
 	// A consent solicitation prints no recommendation and a Yes/No consent:
-	// `N/A  Yes  Management`, 419 rows in four filings of two registrants.
-	"yes": true, "n/a": true,
+	// `N/A  Yes  Management`, 419 rows in four filings of two registrants
+	// (`n/a` is already a value above).
+	"yes": true,
 	// `No` in the Vote Cast column -- the fund did not vote the item. The shared
 	// howVotedVocabulary in the test suite already recognised NO, so the two
 	// lists had drifted apart; one filing prints it on 5,941 rows.
