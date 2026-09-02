@@ -211,3 +211,16 @@ func TestSeriesParenthesisedInternalCode(t *testing.T) {
 		t.Errorf("got %q, want S1", got)
 	}
 }
+
+func TestSeriesCodeThenBrand(t *testing.T) {
+	// John Hancock Variable Insurance Trust heads each fund with an internal
+	// code, its own initials and the declared name: `6741 JHVIT Total Bond
+	// Market Trust`. The code comes off first, then the brand.
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "Total Bond Market Trust"},
+		{SeriesID: "S2", Name: "American Growth Trust"},
+	}
+	if got := resolve(t, decls, "JOHN HANCOCK VARIABLE INSURANCE TRUST", "6741 JHVIT Total Bond Market Trust"); got != "S1" {
+		t.Errorf("got %q, want S1", got)
+	}
+}
