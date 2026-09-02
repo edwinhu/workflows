@@ -8,6 +8,10 @@
 `<script>` prints and settles. <STANDING AUTHORITY>. <CONTINUATION>.
 ```
 
+**Single-quote it on the command line.** The template is backticked, so double quotes hand every
+`<CHECK>` to the shell to run before `goal-self-send.sh` sees the string — and the goal then
+carries that command's output where its text should be, undetectably.
+
 Filled in, for an unattended night:
 
 ```
@@ -24,7 +28,7 @@ a missing credential, a dead grid, or an action that would touch production.
 Verify before setting it:
 
 ```bash
-bun skills/goal-writing/scripts/goal-lint.ts "<that text>" --unattended
+bun skills/goal-and-loop/scripts/goal-lint.ts "<that text>" --unattended
 ```
 
 ## The unattended-brief template

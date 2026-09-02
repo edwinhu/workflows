@@ -79,12 +79,19 @@ SKILL_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 ESCAPES=$(printf 'the rounds field in %s/args.json reads %s or more — `jq -r .rounds` it to check — or the run has been going %s minutes or more, which `bash %s/scripts/craft-elapsed.sh %s %s` prints and settles' \
     "$RUN_DIR" "$ROUNDS" "$MAX_MINUTES" "$SKILL_DIR" "$RUN_DIR" "$MAX_MINUTES")
 
+# The dispatch raises a /loop beside this goal. A fixed-interval loop is a recurring cron that
+# ignores the model's own stop:true, and NOTHING in a shell can remove it — CronDelete is a model
+# tool, there is no cron CLI, and a session-scoped cron lives in memory rather than in
+# .claude/scheduled_tasks.json. So the teardown must be an instruction the session acts on, and the
+# goal is the one text it re-reads every turn. Without this the loop keeps ticking after PASS.
+TEARDOWN='When this goal closes, cancel the run loop with CronDelete — it is a cron and does not stop on its own.'
+
 if [ "$READONLY" = 1 ]; then
     # An audit produces a diagnosis, not a pass: its gate legitimately FAILs and that is the outcome.
     printf '/goal workflow.js has returned a verdict for %s, or %s\n' "$PLAN" "$ESCAPES"
 else
     # The run has produced a verdict craft-result.sh can read. That is the terminal MACHINE event;
     # what to do about it — including opening review — is Phase 5's business, not the goal's.
-    printf '/goal craft has returned PASS for %s — `bash %s/scripts/craft-result.sh %s/result.json` exits 0 — or %s\n' \
-        "$PLAN" "$SKILL_DIR" "$RUN_DIR" "$ESCAPES"
+    printf '/goal craft has returned PASS for %s — `bash %s/scripts/craft-result.sh %s/result.json` exits 0 — or %s. %s\n' \
+        "$PLAN" "$SKILL_DIR" "$RUN_DIR" "$ESCAPES" "$TEARDOWN"
 fi

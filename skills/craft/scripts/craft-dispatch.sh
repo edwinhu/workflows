@@ -732,6 +732,17 @@ bash "$SKILL/scripts/goal-self-send.sh" "$goal"
 gs=$?
 [ $gs -eq 0 ] || echo "goal self-send exited $gs — not fatal; submit the line above by hand if it never queued." >&2
 
+# The goal decides whether to continue; the loop guarantees something ASKS. A goal cannot restart a
+# session that has already gone quiet — nothing in it runs when no turn is running. Measured over
+# 12,654 transcripts: 558 of 592 stalls had no goal at all and were restarted by a human typing
+# `status` 44 times. This is that prompt, on a cron the model cannot cancel. Failure is
+# informational exactly as for the goal — a run without a heartbeat is the old status quo, not a
+# broken dispatch. The goal carries the CronDelete teardown, because no shell can cancel a cron.
+LOOP_LINE="/loop ${CRAFT_LOOP_INTERVAL:-30m} Check the goal. If it is not met, take the next action now rather than proposing it."
+bash "$SKILL/scripts/goal-self-send.sh" "$LOOP_LINE"
+ls_rc=$?
+[ $ls_rc -eq 0 ] || echo "loop self-send exited $ls_rc — not fatal; the run has a goal but no heartbeat." >&2
+
 # Phase 4. Detached, never foreground: a real gate runs 20-60 min and a foreground call is killed
 # mid-run. Harness-tracked background tasks were measured to die too; setsid was not.
 #

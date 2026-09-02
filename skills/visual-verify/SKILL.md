@@ -105,10 +105,10 @@ gate. Stop after 5 turns.
 **Getting it set** — you cannot `Skill(goal)` (it is a built-in UI command), and printing the line is a no-op (slash commands dispatch only on the user input path). Only the top-level session may run:
 
 ```bash
-bash ${CLAUDE_SKILL_DIR}/../craft/scripts/goal-self-send.sh "/goal <condition>"
+bash ${CLAUDE_SKILL_DIR}/../craft/scripts/goal-self-send.sh '/goal <condition>'
 ```
 
-Proceed only if the helper exits 0 (`goal-self-send: delivered via …`) or the user explicitly confirms activation. Otherwise hand the literal condition to the user and STOP. A spawned agent returns that literal command to its caller without running the helper. Once active, each subsequent turn fires automatically until zero BLOCKING defects remain (not until an aesthetic score crosses a bar). With no active goal there is no loop at all — one pass, no gate. After the terminal PASS, clear it with `bash ${CLAUDE_SKILL_DIR}/../craft/scripts/goal-self-send.sh "/goal clear"`. Proceed only after that command exits 0 or the user explicitly confirms the goal is cleared; otherwise print `/goal clear` and stop.
+Proceed only if the helper exits 0 (`goal-self-send: delivered via …`) or the user explicitly confirms activation. Otherwise hand the literal condition to the user and STOP. A spawned agent returns that literal command to its caller without running the helper. Once active, each subsequent turn fires automatically until zero BLOCKING defects remain (not until an aesthetic score crosses a bar). With no active goal there is no loop at all — one pass, no gate. After the terminal PASS, clear it with `bash ${CLAUDE_SKILL_DIR}/../craft/scripts/goal-self-send.sh '/goal clear'`. Proceed only after that command exits 0 or the user explicitly confirms the goal is cleared; otherwise print `/goal clear` and stop.
 
 ### Score Tracking
 

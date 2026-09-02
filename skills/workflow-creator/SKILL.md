@@ -102,6 +102,10 @@ whose domain has a toolchain (build, test, lint, render) ships one entry point o
 those legs behind it, and names *that* in its `mechanicalChecks`. The law binds the workflow being
 generated, not only its generator.
 
+**Constraint prose has ONE canonical home, and it is never a top-level skill.** A constraint module lives in a `references/constraints/*.md` directory with `applies-to:` frontmatter, and reaches an agent two ways: a bang line invoking the loader, for an interactive session, and a workflow leg's `refs`, which craft defines as paths the agent must read in full. Never a third way, and never a copy. A vendored `<domain>-constraints` skill looks like determinism — every module guaranteed in the agent's context, no partial read possible — and pays for it with a second source of truth that nothing diffs. The copy is what agents actually read, so the day it drifts the canonical file is the one that is wrong in practice, and the workflow grades against prose its authors think they deleted.
+
+- Measured 2026-09-01: `workshop-constraints` and `ds-constraints` carried byte-identical copies of 19 canonical modules — 15 typst, 4 DS — preloaded into four agents. No test in the repo could see them, because duplication across files is invisible to a per-file check. `tests/constraints-no-duplication.test.ts` now fails on any file under `skills/` reproducing a canonical body; it found 17 offenders the day it was written.
+
 ## Branch first
 
 | The user wants | Branch | What runs |

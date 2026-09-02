@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 /**
  * `goal-self-send.sh` is the single chokepoint every `/goal` passes through, which is what makes it
- * the place to enforce skills/goal-writing rather than merely publish it. These tests pin the gate:
+ * the place to enforce skills/goal-and-loop rather than merely publish it. These tests pin the gate:
  * a critical finding refuses BEFORE any transport is touched, everything else goes through.
  *
  * The session id is varied deliberately. Unset (exit 4) and set-but-unreachable (exit 3) are the
@@ -29,13 +29,13 @@ const send = (arg: string, opts: { sid?: string; flags?: string[] } = {}) => {
 /** Everything the gate lets through lands in one of the identification/transport exits. */
 const reachedTransport = (code: number | null) => code === 3 || code === 4
 
-describe('the goal-writing gate on self-send', () => {
+describe('the goal-and-loop gate on self-send', () => {
   test('a milestone goal is refused with 8, and the refusal names the skill to read', () => {
     // The exact goal that closed on a hard FAIL in npx-reconcile, 2026-08-27. Cost: 4h10m.
     const r = send('/goal craft has returned a verdict for .planning/npx-iss-reconciliation.md')
     expect(r.code).toBe(8)
     expect(r.err).toContain('[CRITICAL] G1')
-    expect(r.err).toContain('skills/goal-writing/SKILL.md')
+    expect(r.err).toContain('skills/goal-and-loop/SKILL.md')
     // Refused before any transport: no identification error was ever printed.
     expect(r.err).not.toContain('CLAUDE_CODE_SESSION_ID unset')
   })

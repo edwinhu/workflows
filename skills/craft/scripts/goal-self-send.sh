@@ -2,15 +2,18 @@
 # Self-send a "/goal ..." user-message into THIS Claude Code session.
 #
 # Delivery arrives as a user keypress in our own conversation, so the goal survives compaction.
-# Transport is whichever one can reach us: herdr `pane send-text` + `send-keys` into our own pane
-# (verified by reading the input line back), else `agent-msg` if the session is Remote-Control.
+# Transport is whichever one can reach us: `herdr agent prompt` into our own pane, whose
+# `agent_prompted` event IS the submission receipt, else `agent-msg` if the session is
+# Remote-Control. Submission is NOT verified by reading the input line back — that was tried and
+# it cannot work, see the note at the herdr branch.
 # Neither is guaranteed; a non-zero exit is informational, not fatal — craft's caller falls back to
 # the plan hash as the standing gate text.
 #
 # Usage: goal-self-send.sh "/goal <text>" [--no-lint]   |   goal-self-send.sh "/goal clear"
+#        goal-self-send.sh "/loop 30m <tick prompt>"   — the heartbeat; never linted
 #
 # THE GOAL IS LINTED BEFORE IT IS SENT. This is the one chokepoint every goal passes through, so it
-# is where `skills/goal-writing` is enforced rather than merely available: a CRITICAL finding —
+# is where `skills/goal-and-loop` is enforced rather than merely available: a CRITICAL finding —
 # a milestone verb, a clause only a human can close, turn counting, "done or blocked" — refuses the
 # send with exit 8 and names the skill to read. Majors and minors warn and go through. Measured
 # 2026-08-27/28: three sessions idled 14h43m overnight on goals with exactly these defects.
@@ -22,9 +25,11 @@
 #   3  no transport can reach this session                              — nothing sent
 #   4  cannot identify/trust the target: no session id, >1 pane claims it, the claiming record is
 #      not a claude id-session, or HERDR_PANE_ID disagrees with herdr  — nothing sent
-#   5  a send was attempted and failed: send-text failed, text never reached the box, the Enter was
-#      never taken after three presses over ~5s, or agent-msg send failed
-#   6  the pane's input box was already non-empty (user mid-type)       — nothing sent
+#   5  a send was attempted and did not confirm: `agent prompt` returned no `agent_prompted`
+#      event, the agent was `agent_blocked` (rejected BEFORE any input is sent), or agent-msg
+#      send failed
+#   6  (retired 2026-09-01 — was the input-box collision guard, which deadlocked on residue
+#      it could not interpret and refused a valid `/goal clear`)
 #   7  the only reachable transport cannot produce a slash command: agent-msg without
 #      --as-user routes a PEER message, which the recipient enqueues with slash commands
 #      disabled, so the goal would never be set                         — nothing sent
@@ -37,14 +42,19 @@ for a in "$@"; do [ "$a" = "--no-lint" ] && NOLINT=1; done
 case "$CMD" in
   "/goal clear") ;;
   "/goal "*) [[ -n "${CMD:6}" && "${CMD:6}" =~ [^[:space:]] ]] || { echo "goal-self-send: empty /goal body" >&2; exit 2; } ;;
-  *) echo "goal-self-send: argument must be '/goal <text>' or '/goal clear'" >&2; exit 2 ;;
+  # A goal decides whether to continue; a loop guarantees something asks. This is the only transport
+  # that can type into our own pane, so it is also the only way to raise the heartbeat. A /loop is
+  # NOT a goal and is deliberately not linted: goal-lint would flag a tick prompt for having no
+  # ceiling and no counter, which are properties of a stopping condition, not of a heartbeat.
+  "/loop "*) [[ -n "${CMD:6}" && "${CMD:6}" =~ [^[:space:]] ]] || { echo "goal-self-send: empty /loop body" >&2; exit 2; } ;;
+  *) echo "goal-self-send: argument must be '/goal <text>', '/goal clear' or '/loop <interval> <text>'" >&2; exit 2 ;;
 esac
 
-# ---- the goal-writing gate ------------------------------------------------------------------
+# ---- the goal-and-loop gate ------------------------------------------------------------------
 # Nothing here reaches the network or the session; it reads the string. A missing bun or a missing
 # lint is not a reason to block a send, so absence passes.
-GW_LINT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../goal-writing/scripts" 2>/dev/null && pwd)/goal-lint.ts"
-if [ "$NOLINT" = 0 ] && [ "$CMD" != "/goal clear" ] && [ -f "$GW_LINT" ] && command -v bun >/dev/null 2>&1; then
+GW_LINT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../goal-and-loop/scripts" 2>/dev/null && pwd)/goal-lint.ts"
+if [ "$NOLINT" = 0 ] && [ "$CMD" != "/goal clear" ] && [ "${CMD#/goal }" != "$CMD" ] && [ -f "$GW_LINT" ] && command -v bun >/dev/null 2>&1; then
   GW_OUT=$(bun "$GW_LINT" "${CMD:6}" 2>/dev/null); GW_CODE=$?
   if [ "$GW_CODE" = 1 ]; then
     if printf '%s' "$GW_OUT" | grep -q '^\[CRITICAL\]'; then
@@ -54,13 +64,13 @@ if [ "$NOLINT" = 0 ] && [ "$CMD" != "/goal clear" ] && [ -f "$GW_LINT" ] && comm
 goal-self-send: REFUSED — this goal carries a critical defect and nothing was sent.
 
 A goal is the only thing between an unattended session and an idle terminal. Read
-  $(cd "$(dirname "${BASH_SOURCE[0]}")/../../goal-writing" && pwd)/SKILL.md
+  $(cd "$(dirname "${BASH_SOURCE[0]}")/../../goal-and-loop" && pwd)/SKILL.md
 rewrite the goal, and send it again. Override with --no-lint if you have a reason.
 EOF
       exit 8
     fi
     printf '%s\n' "$GW_OUT" >&2
-    echo "goal-self-send: sending anyway (no critical findings) — see skills/goal-writing/SKILL.md" >&2
+    echo "goal-self-send: sending anyway (no critical findings) — see skills/goal-and-loop/SKILL.md" >&2
   fi
 fi
 
@@ -94,79 +104,37 @@ if command -v herdr >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
         echo "goal-self-send: herdr says $SID is on pane $PANE but we occupy ${HERDR_PANE_ID} — refusing to send" >&2
         exit 4
       fi
-      # `agent prompt` fuses paste-and-Enter, and that fusion is where the documented race lives:
-      # Claude Code collapses a bracketed paste and the trailing Enter gets swallowed, leaving the
-      # text in the input box. Its own `--wait` cannot catch that for a SELF-send — per `herdr agent
-      # prompt --help`, agent_prompt_stalled only fires when "submission starts from a non-working
-      # state" (a self-send never does), and --wait "does not track turns: if the agent is already
-      # working, that active turn's completion may match", so --until working is true on evaluation
-      # and --until idle blocks on the very turn making this call, indefinitely without --timeout.
+      # SUBMIT WITH `agent prompt`, and take its typed event as the answer.
       #
-      # So: decompose into send-text + send-keys and check the input box ourselves. "Was it
-      # PROCESSED" is unanswerable from here (it needs our turn to end), but "was it SUBMITTED" is
-      # answerable immediately — a submitted message leaves the input line and queues, a swallowed
-      # Enter leaves the text sitting there. Retrying just the Enter is idempotent.
+      # This replaced a hand-rolled `pane send-text` + `send-keys Enter` + input-line readback on
+      # 2026-09-01, because that readback answered the one question it could not answer. Measured
+      # from identical output, both directions: four self-send probes in this session printed
+      # "text is sitting unsubmitted" and REGISTERED anyway, while workflows/f31b7734 printed the
+      # same string and genuinely never submitted — the goal text never appeared as a user prompt
+      # and the user typed it by hand. A screen-scrape cannot separate those two cases, so the old
+      # exit 5 meant "unknown" while reading as "failed", and callers guessed in both directions:
+      # f31b7734's agent wrote "Goal set." on a send that had not landed.
       #
-      # Read the LAST `❯` line: `--source visible` includes the transcript, where echoed user
-      # messages also start with `❯`. The input box is the bottom-most one.
-      input_line() {
-        herdr pane read "$PANE" --source visible 2>/dev/null | grep '^❯' | tail -1 | sed 's/^❯[[:space:]]*//'
-      }
-
-      # Pre-flight: never type into an input box that already has something in it. This is the
-      # collision guard — if the user is mid-message, our paste would merge with their line and the
-      # Enter would submit their half-written text as ours.
-      if [[ -n "$(input_line)" ]]; then
-        echo "goal-self-send: input box on $PANE is not empty (user may be typing) — refusing to send" >&2
-        exit 6
+      # It also deadlocked itself. The collision guard refused a `/goal clear` with exit 6
+      # ("input box is not empty") on residue it could not interpret; `agent prompt` delivered the
+      # same line immediately afterwards.
+      #
+      # NO `--wait`. Per `herdr agent prompt --help` it "does not track turns: if the agent is
+      # already working, that active turn's completion may match" — and a self-send is always made
+      # from a working turn, so the wait would match our own turn and prove nothing.
+      OUT=$(herdr agent prompt "$PANE" "$CMD" 2>&1)
+      if printf '%s' "$OUT" | grep -q 'agent_prompted'; then
+        echo "goal-self-send: submitted via herdr agent prompt (pane $PANE)"
+        exit 0
       fi
-
-      herdr pane send-text "$PANE" "$CMD" >/dev/null 2>&1 || {
-        echo "goal-self-send: herdr pane send-text failed for $PANE" >&2; exit 5; }
-
-      # A landed paste makes the box non-empty — literally, or as a collapsed `[Pasted text #1]`.
-      sleep 0.15
-      if [[ -z "$(input_line)" ]]; then
-        echo "goal-self-send: text never reached the input box on $PANE" >&2
+      # A BLOCKED agent is rejected before any input is sent — a real failure the old path could
+      # not distinguish from success, because it typed into the box either way.
+      if printf '%s' "$OUT" | grep -q 'agent_blocked'; then
+        echo "goal-self-send: agent on $PANE is blocked; nothing was sent" >&2
         exit 5
       fi
-
-      # Poll generously and re-press RARELY. Measured: a ~230-char goal took longer than 1.15s for
-      # the box to clear, so a tight loop reports a false "unsubmitted" on a message that landed —
-      # and every iteration that re-pressed Enter risked submitting it twice. The box clearing is a
-      # render, not an ack: absence of clearing is weak evidence early and strong evidence late.
-      herdr pane send-keys "$PANE" Enter >/dev/null 2>&1
-      for i in $(seq 1 20); do
-        sleep 0.25
-        if [[ -z "$(input_line)" ]]; then
-          echo "goal-self-send: delivered via herdr (pane $PANE)"
-          exit 0
-        fi
-        # Re-press only at ~2s and ~4s: by then a still-full box means the Enter was genuinely
-        # swallowed rather than the TUI being slow.
-        if [[ "$i" == "8" || "$i" == "16" ]]; then
-          herdr pane send-keys "$PANE" Enter >/dev/null 2>&1
-        fi
-      done
-
-      # Enter was genuinely swallowed. LEAVE THE BOX AS WE FOUND IT — the pre-flight above
-      # proved it was empty before we typed, so everything in it now is ours and clearing is
-      # safe. Skipping this is a deadlock, not an inconvenience: our own stale text makes the
-      # box non-empty, the collision guard then refuses every future send with exit 6, and craft
-      # cannot self-send again until a human clears the box by hand. Observed 2026-08-23.
-      #
-      # `ctrl+u` is the spelling herdr accepts; `ctrl-u` and `C-u` are rejected outright.
-      herdr pane send-keys "$PANE" ctrl+u >/dev/null 2>&1
-      sleep 0.3
-      if [[ -n "$(input_line)" ]]; then
-        herdr pane send-keys "$PANE" ctrl+u >/dev/null 2>&1
-        sleep 0.3
-      fi
-      if [[ -z "$(input_line)" ]]; then
-        echo "goal-self-send: Enter was swallowed; text withdrawn from the input box on $PANE — the goal is NOT set, submit it by hand: $CMD" >&2
-      else
-        echo "goal-self-send: text is sitting unsubmitted in the input box on $PANE and could not be withdrawn — press Enter to set the goal, or clear the box before the next send" >&2
-      fi
+      echo "goal-self-send: herdr agent prompt did not confirm submission for $PANE" >&2
+      printf '%s\n' "$OUT" | head -3 >&2
       exit 5
     fi
   fi

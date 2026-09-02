@@ -149,10 +149,10 @@ registers user-scoped (bare name, `hooks:` honoured) via a symlink into `~/.clau
 | Agent | Role | Scope | Hooks |
 |-------|------|-------|-------|
 | `librarian` | Knowledge management orchestration (NLM, Readwise, Scholar, Workspace) | plugin | — |
-| `ds` | Empirical implementer — datasets, tables, figures, numbers; preloads `ds-constraints` | user | — |
+| `ds` | Empirical implementer — datasets, tables, figures, numbers; C/V/A/E constraints arrive as task `refs` | user | — |
 | `ds-reviewer` | Read-only grading of existing empirical work against C/V/A/E constraints | user | — |
-| `workshop` | Talk implementer — Typst deck and speaker notes from a paper; preloads `workshop-constraints` | user | — |
-| `workshop-reviewer` | Read-only grading of `slides.typ` and `notes.typ` against the vendored Typst modules | user | — |
+| `workshop` | Talk implementer — Typst deck and speaker notes from a paper; preloads `typst:typst` | user | — |
+| `workshop-reviewer` | Read-only grading of `slides.typ` and `notes.typ` against the canonical Typst modules | user | — |
 | `writing` | General long-form prose — memos, letters, briefs, reports | user | source-first `PreToolUse` guard |
 | `writing-legal` | Law review prose — footnotes, Bluebook short forms | user | source-first `PreToolUse` guard |
 | `writing-econ` | Finance and accounting journal prose | user | source-first `PreToolUse` guard |
@@ -196,14 +196,19 @@ ships both.
 Judging is not writing, and the roster's shape follows from that. A review lens only reads, so the
 built-in `Explore` plus a good prompt and the right reference paths is sufficient and cheaper; an
 agent earns a file only when it needs a custom prompt, hooks, or preloaded skills. The three domain
-reviewers exist because they preload constraint sets too large to hand over in an instruction, and
-no exam reviewer exists because a prompt covers it. The same test explains the two workflows that
-set no implementer override: `/dev` and `/workflow-creator` produce code and workflow definitions,
-where the software-engineering framing is correct rather than a defect.
+reviewers exist because grading against a constraint set needs a body this repo controls — a
+built-in judge's prompt is predefined, so the modules it grades against have to reach it as task
+`refs` rather than as anything the lens can skip — and no exam reviewer exists because a prompt
+covers it. Constraint prose itself is never a skill: it has one canonical home under
+`references/constraints/` (Typst modules under `~/.claude/skills/typst/references/constraints/`),
+reaches dispatched agents as `refs`, and reaches interactive ones through the `typst:typst` bang
+line. The same test explains the two workflows that set no implementer override: `/dev` and
+`/workflow-creator` produce code and workflow definitions, where the software-engineering framing is
+correct rather than a defect.
 
-The register skills — `writing-general`, `writing-legal`, `writing-econ`, `ds-constraints`,
-`workshop-constraints`, `ai-anti-patterns` — are `user-invocable: false` for the same reason.
-Loading a register into the main chat stacks it on top of the framing it is meant to displace;
+The register skills — `writing-general`, `writing-legal`, `writing-econ`, `ai-anti-patterns` — are
+`user-invocable: false` for the same reason. Loading a register into the main chat stacks it on top
+of the framing it is meant to displace;
 routing the work to an agent that preloads it replaces that prompt instead. They deliberately do not
 set `disable-model-invocation: true`, which would break both the `skills:` preload and the Skill
 tool path a persona session needs.

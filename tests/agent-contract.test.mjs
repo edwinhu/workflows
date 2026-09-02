@@ -306,30 +306,11 @@ function values(fm, key) {
 
 // ── ds: the constraint skill, the doer, the reviewer, and the lens that dispatches it ──────────
 {
+  // Constraint prose has ONE canonical home and is never a top-level skill: the vendored
+  // ds-constraints skill was removed 2026-09-01. Delivery is the leg's refs plus the bang-loader.
   const md = join(SKILLS, 'ds-constraints', 'SKILL.md')
-  ok('skills/ds-constraints/SKILL.md exists', existsSync(md))
-  if (existsSync(md)) {
-    const fm = frontmatter(md)
-    ok('ds-constraints has a name', fm?.scalars.name === 'ds-constraints', fm?.scalars.name)
-    ok('ds-constraints has a description', !!fm?.scalars.description)
-    // The load-bearing one for THIS skill: it is preloaded, and a disable-model-invocation skill
-    // listed in `skills:` is skipped with a debug-log warning only.
-    ok('ds-constraints is preloadable (no disable-model-invocation)',
-       !isYamlTrue(fm?.scalars['disable-model-invocation']))
-    const body = readFileSync(md, 'utf8')
-    // Every indexed constraint id from the four aggregates, preserved verbatim.
-    for (const id of ['C1', 'C2', 'C3', 'C4', 'C5', 'C6',
-                      'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9',
-                      'A1', 'A2', 'A3', 'A4', 'A5', 'A6',
-                      'E1', 'E2', 'E3', 'E4', 'E5', 'E6']) {
-      ok(`ds-constraints indexes ${id}`, new RegExp(`^\\| ${id} \\|`, 'm').test(body))
-    }
-    for (const section of ['Common Constraints', 'Common Conventions',
-                           'DS Analysis Constraints', 'DS Engineering Constraints']) {
-      ok(`ds-constraints carries the ${section} aggregate`,
-         new RegExp(`^#+ .*${section}`, 'm').test(body))
-    }
-  }
+  ok('skills/ds-constraints/ is gone (constraints are never a top-level skill)', !existsSync(md))
+
   // The four source aggregates stay put — other things read them.
   for (const f of ['ds-common-constraints', 'ds-common-conventions',
                    'ds-analysis-constraints', 'ds-engineering-constraints']) {
@@ -340,7 +321,7 @@ function values(fm, key) {
   const doer = agentPath('ds')
   ok('user-agents/ds.md exists', existsSync(doer))
   const dfm = existsSync(doer) ? frontmatter(doer) : null
-  ok('ds preloads ds-constraints', values(dfm, 'skills').includes('ds-constraints'))
+  ok('ds does NOT preload a vendored ds-constraints skill', !values(dfm, 'skills').includes('ds-constraints'))
   const dtools = values(dfm, 'tools')
   ok('ds can actually write', dtools.includes('Write') && dtools.includes('Edit'), dtools.join(','))
   ok('ds can run things', dtools.includes('Bash'), dtools.join(','))
@@ -355,7 +336,7 @@ function values(fm, key) {
   const rev = agentPath('ds-reviewer')
   ok('user-agents/ds-reviewer.md exists', existsSync(rev))
   const rfm = existsSync(rev) ? frontmatter(rev) : null
-  ok('ds-reviewer preloads ds-constraints', values(rfm, 'skills').includes('ds-constraints'))
+  ok('ds-reviewer does NOT preload a vendored ds-constraints skill', !values(rfm, 'skills').includes('ds-constraints'))
   const rtools = values(rfm, 'tools')
   ok('ds-reviewer declares a tools list at all', rtools.length > 0)
   // No Skill tool, so preloading is its ONLY channel.
@@ -376,8 +357,8 @@ function values(fm, key) {
   ok('skills/ds/SKILL.md still pins verifierAgentType: Explore',
      /verifierAgentType:\s*"Explore"/.test(sbody))
   // The doer authority names the preloadable skill, not the four discretionary paths.
-  ok('ds doer authority points at skills/ds-constraints/SKILL.md',
-     sbody.includes('skills/ds-constraints/SKILL.md'))
+  ok('ds doer authority does NOT point at the deleted ds-constraints skill',
+     !sbody.includes('skills/ds-constraints/SKILL.md'))
   for (const gone of ['references/ds-common-constraints.md', 'references/ds-common-conventions.md',
                       'references/ds-analysis-constraints.md', 'references/ds-engineering-constraints.md']) {
     ok(`ds authorityExtra no longer hands doers ${gone} by path`,
@@ -388,33 +369,15 @@ function values(fm, key) {
 
 // ── workshop: the constraint skill, the doer, the reviewer, and its lens ────────────────────────
 {
+  // Same rule as ds: the 15 typst modules have one canonical home under the typst plugin's
+  // references/constraints/, reached by refs and the bang-loader, never vendored into a skill.
   const md = join(SKILLS, 'workshop-constraints', 'SKILL.md')
-  ok('skills/workshop-constraints/SKILL.md exists', existsSync(md))
-  if (existsSync(md)) {
-    const fm = frontmatter(md)
-    ok('workshop-constraints has a name', fm?.scalars.name === 'workshop-constraints', fm?.scalars.name)
-    ok('workshop-constraints has a description', !!fm?.scalars.description)
-    ok('workshop-constraints is preloadable (no disable-model-invocation)',
-       !isYamlTrue(fm?.scalars['disable-model-invocation']))
-    const body = readFileSync(md, 'utf8')
-    // Every vendored module, by name. The count is the check: 15 modules, none quietly dropped.
-    // Derived from the typst plugin's workshop checker corpus, which owns the rules now — this
-    // skill holds no constraint directory of its own to count.
-    const CHECKERS = join(homedir(), '.claude', 'skills', 'typst',
-                          'references', 'checkers', 'workshop')
-    ok('the typst workshop checker corpus resolves', existsSync(CHECKERS), CHECKERS)
-    const vendored = (existsSync(CHECKERS) ? readdirSync(CHECKERS) : [])
-      .filter(f => f.startsWith('typst-') && f.endsWith('.py')).map(f => f.replace(/\.py$/, ''))
-    ok('15 Typst constraint modules are vendored', vendored.length === 15, String(vendored.length))
-    for (const m of vendored) {
-      ok(`workshop-constraints carries the ${m} module`, new RegExp(`^# ${m}$`, 'm').test(body))
-    }
-  }
+  ok('skills/workshop-constraints/ is gone (constraints are never a top-level skill)', !existsSync(md))
 
   const doer = agentPath('workshop')
   ok('user-agents/workshop.md exists', existsSync(doer))
   const dfm = existsSync(doer) ? frontmatter(doer) : null
-  ok('workshop preloads workshop-constraints', values(dfm, 'skills').includes('workshop-constraints'))
+  ok('workshop does NOT preload a vendored workshop-constraints skill', !values(dfm, 'skills').includes('workshop-constraints'))
   const dtools = values(dfm, 'tools')
   ok('workshop can actually write', dtools.includes('Write') && dtools.includes('Edit'), dtools.join(','))
   ok('workshop description says "use proactively"', /use proactively/i.test(dfm?.raw ?? ''))
@@ -424,8 +387,8 @@ function values(fm, key) {
   const rev = agentPath('workshop-reviewer')
   ok('user-agents/workshop-reviewer.md exists', existsSync(rev))
   const rfm = existsSync(rev) ? frontmatter(rev) : null
-  ok('workshop-reviewer preloads workshop-constraints',
-     values(rfm, 'skills').includes('workshop-constraints'))
+  ok('workshop-reviewer does NOT preload a vendored workshop-constraints skill',
+     !values(rfm, 'skills').includes('workshop-constraints'))
   const rtools = values(rfm, 'tools')
   ok('workshop-reviewer declares a tools list at all', rtools.length > 0)
   ok('workshop-reviewer has no Skill tool (preload is its only channel)',
@@ -444,8 +407,8 @@ function values(fm, key) {
      String((sbody.match(/agentType:\s*"Explore"/g) ?? []).length))
   ok('skills/workshop/SKILL.md still pins verifierAgentType: Explore',
      /verifierAgentType:\s*"Explore"/.test(sbody))
-  ok('workshop doer authority points at skills/workshop-constraints/SKILL.md',
-     sbody.includes('skills/workshop-constraints/SKILL.md'))
+  ok('workshop doer authority does NOT point at the deleted workshop-constraints skill',
+     !sbody.includes('skills/workshop-constraints/SKILL.md'))
 }
 
 // ── Every agentType any skill names must resolve ────────────────────────────────────────────────
@@ -1636,4 +1599,4 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 
 
 console.log(`\n${PASS} passed, ${FAIL} failed`)
-process.exit(FAIL ? 1 : 0)
+if (FAIL) process.exit(1)

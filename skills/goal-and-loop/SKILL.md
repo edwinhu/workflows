@@ -1,15 +1,38 @@
 ---
-name: goal-writing
+name: goal-and-loop
 description: "Use when a session's stopping condition is being written or repaired — \"set the goal\", \"write the /goal line\", \"what should the goal be\", \"give it a goal before I go to bed\", \"write the brief for the spawned agent\", \"it stopped overnight\", \"it idled while I was asleep\", \"it asked me a question instead of continuing\", \"why did it stop\", \"make it keep working\", \"run this unattended\", \"leave it running overnight\". Use proactively BEFORE handing work to any session that will outlive the user's attention — a spawned agent, a background job, a craft dispatch left running, or this session at night. NEGATIVE ROUTING: composing a craft run's own goal is craft-dispatch.sh, which calls compose-goal.sh and needs no help; spawning the session is agent-spawn; delegating a task to a subagent is farm-out. This skill owns the WORDING of the stopping condition and the standing authority that travels with it."
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob]
 ---
 
-# goal-writing — a stopping condition a session can reach by working
+# goal-and-loop — a stopping condition, and something that keeps asking
 
-A goal is not a description of the task. It is the **only thing standing between an unattended
-session and an idle terminal**. When it closes, the Stop hook releases and the session waits for a
-human. So the whole craft is: make it close at the end of the work, not in the middle, and make
-everything it does not cover pre-decided.
+Two mechanisms, and an unattended run needs both. **`/goal` decides whether to continue**: it is
+the only thing standing between a session and an idle terminal, and when it closes the Stop hook
+releases. **`/loop` guarantees something asks**: a cron tick the model cannot cancel, which reaches
+the case a goal cannot — a session that already went quiet, because nothing in a goal runs when no
+turn is running.
+
+A loop with no goal ticks forever with no notion of done. A goal with no loop is 401 hours of
+measured silence. Write the goal so it closes at the end of the work rather than the middle, make
+everything it does not cover pre-decided, and put a tick behind it.
+
+## The loop
+
+A goal is a stopping condition. It cannot restart a session that has already gone quiet — nothing in the goal runs when no turn is running. An unattended run gets both:
+
+```
+/goal <the stopping condition, linted>
+/loop 30m Check the goal. If it is not met, take the next action now rather than proposing it.
+```
+
+A fixed-interval `/loop` compiles to a **recurring cron the model cannot cancel** — the harness says so outright: "a recurring /loop cron is not cancelled by `stop:true`". That is the whole value. Every failure in this file is the session's own judgment that it was finished or waiting, and a cron tick does not consult that judgment. So the loop reaches what no goal lint can: the cases where the goal string is fine and the *turn* ended anyway — "That's next.", "Writing the plan now.", "I'll report when it lands."
+
+The division of labor is exact. `/goal` decides whether to continue; `/loop` guarantees something asks. A loop with no goal ticks forever with no notion of done. A goal with no loop is every row in the table above.
+
+**A craft dispatch raises both for you.** `craft-dispatch.sh` self-sends the composed `/goal` and then a `/loop` (30m; override with `CRAFT_LOOP_INTERVAL`), so do not set a second one by hand — two crons means two ticks. The composed goal carries the teardown instruction itself, because no shell can cancel a cron: `CronDelete` is a model tool, there is no cron CLI, and a session-scoped cron lives in memory rather than in `.claude/scheduled_tasks.json`.
+
+**Cancel it when the run ends.** Because the cron ignores `stop:true`, a goal that closes does not stop the ticking — that is the `CronDelete` tool, not the model deciding it is finished.
+
 
 ## The night this skill is made of
 
@@ -51,7 +74,7 @@ holds a green, tested commit because the human is asleep is not being careful; i
 human the bottleneck on work the human already authorized by starting it.
 </EXTREMELY-IMPORTANT>
 
-## The four parts
+## Writing the goal — the four parts
 
 Every goal has all four. Missing any one produced a stall above.
 
@@ -120,9 +143,7 @@ A menu offered at 02:00 is a five-hour pause with extra steps.
 
 ## Facts
 
-- Three stalls in one night cost **14h43m**, and the *longest* — 5h26m — followed the sentence
-  "Writing the plan now." The session had the plan's content in hand. Ending a turn on a stated
-  intention is not a handoff; it is a five-hour gap between the intention and the work.
+- A 21-day sweep of 12,654 transcripts found 592 stalls across 161 sessions; **558 had no goal set at all**, and **zero lint-clean goals stopped early**. The wording of the rules is not what fails — writing one at all is. Do not add lint rules on stall evidence until goals are routinely set.
 - `craft has returned a verdict` closed on `overallPass=false` with **0 of 5 tasks implemented and
   20 surviving blocking findings**. `craft-result.sh` exits 1 on FAIL, so a clause reading "a
   verdict" or "exits 0 or 1" is satisfied by losing. Craft's own loop is FAIL → fix → re-run;
@@ -151,6 +172,7 @@ A menu offered at 02:00 is a five-hour pause with extra steps.
 
 | About to | Why wrong | Do instead |
 |---|---|---|
+| Leave a session running overnight on a goal alone | Nothing in a goal runs once the session goes quiet, so a goal cannot restart it | Add `/loop 30m`, and `CronDelete` it when the goal closes |
 | Write "has returned a verdict" / "has been carried out" / "the report exists" | Milestone: true while the objective is unmet | Name PASS, or the number the work has to reach |
 | End a turn with a question mark under an open goal | At 02:00 that is a 5-hour pause | Answer it, state the answer in one line, act on it |
 | Offer the user a menu — "A, or B first?" | Both branches are usually your own work | Pick, say why in one clause, do it |
