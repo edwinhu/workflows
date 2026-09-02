@@ -8,6 +8,10 @@
 `<script>` prints and settles. <STANDING AUTHORITY>. <CONTINUATION>.
 ```
 
+**Single-quote it on the command line.** The template is backticked, so double quotes hand every
+`<CHECK>` to the shell to run before `goal-self-send.sh` sees the string — and the goal then
+carries that command's output where its text should be, undetectably.
+
 Filled in, for an unattended night:
 
 ```

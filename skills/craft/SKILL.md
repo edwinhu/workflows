@@ -269,7 +269,7 @@ beside the wave graph.
 
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/goal-self-send.sh \
-  "/goal workflow.js has returned PASS for .claude/plans/<slug>.md at its current hash, and the tuicr gate has returned approved, or stop after N turns"
+  '/goal workflow.js has returned PASS for .claude/plans/<slug>.md at its current hash, and the tuicr gate has returned approved, or stop after N turns'
 ```
 
 **Name the plan by PATH, never by a fixed sha256.** A pinned digest self-invalidates the first time
@@ -308,7 +308,7 @@ Refusals are fail-closed — every non-zero path exits **before** anything is se
 Whether the queued line is *acted on* is unknowable from here — that needs the turn to end. Exit
 non-zero (no transport, or the Enter never took) is **not fatal**: the loop is written down here,
 it just needs the user to prompt each step. Clear on final approval:
-`goal-self-send.sh "/goal clear"`.
+`goal-self-send.sh '/goal clear'`.
 
 If any of this is in the way, print the `/goal …` line and let the user submit it. One keystroke,
 no race, no ordering constraint.
