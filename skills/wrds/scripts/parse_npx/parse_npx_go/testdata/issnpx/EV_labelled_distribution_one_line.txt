@@ -1,0 +1,16 @@
+
+ADAMS EXPRESS COMPANY
+
+Ticker:       ADX            Security ID:  006212104
+Meeting Date: APR 10, 2014   Meeting Type: Annual
+Record Date:  FEB 14, 2014
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Election of Director: ENRIQUE R. ARZAC  For       F=82%,       Management
+                                                        AB=18%
+1.2   Election of Director: PHYLLIS O.        For       F=83%,       Management
+      BONANNO                                           AB=17%
+1.3   Election of Director: KENNETH J. DALE   For       F=90%,       Management
+                                                        AB=10%
+1.4   Election of Director: FREDERIC A.       For       F=91%, AB=9% Management
+      ESCHERICH

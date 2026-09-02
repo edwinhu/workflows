@@ -1,0 +1,10 @@
+
+ABERDEEN FUNDS
+
+Ticker:       IF             Security ID:  00305P106
+Meeting Date: MAR 27, 2014   Meeting Type: Annual
+Record Date:  FEB 07, 2014
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   ELECTION OF DIRECTOR: LAWRENCE J. FOX   For       F=35%,       Management
+                                                        AB=65%
