@@ -325,6 +325,10 @@ func isVoteValue(s string) bool {
 	if issDistributionVote(s) {
 		return true
 	}
+	// A comma-separated labelled distribution: `F=94%, AB=6%`.
+	if issLabelledDistribution(s) {
+		return true
+	}
 	// A value any layout accepts is a value the corpus really prints. The ISS
 	// vocabulary is consulted directly: it was mirrored by hand into the
 	// static map above for months, and the two lists of one fact drifted five

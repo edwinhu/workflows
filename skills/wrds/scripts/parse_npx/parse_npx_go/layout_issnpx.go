@@ -1276,6 +1276,29 @@ func issJoinWrappedVote(prev, cont []string) (vote string, prevKeep, contKeep []
 			if issVoteValues[strings.ToLower(strings.Trim(candidate, issCellTrim))] {
 				return candidate, prev[:len(prev)-k], cont[:len(cont)-m], true
 			}
+			// A labelled distribution wraps wherever the column falls: a head
+			// ending in `=` (`F=94%, AB=`) is glued to its tail (`6%`), a head
+			// ending in `,` (`F=35%,`) takes the tail after a space. The cell is
+			// the LONGEST head that still reads as a distribution, so `AB=` does
+			// not win over `F=94%, AB=`.
+			if strings.HasSuffix(head, "=") {
+				candidate = head + tail
+			}
+			if issLabelledDistribution(candidate) {
+				bestK := k
+				for kk := k + 1; kk <= issMaxCellWords && kk <= len(prev); kk++ {
+					h := strings.Join(prev[len(prev)-kk:], " ")
+					c := h + " " + tail
+					if strings.HasSuffix(h, "=") {
+						c = h + tail
+					}
+					if !issLabelledDistribution(c) {
+						break
+					}
+					candidate, bestK = c, kk
+				}
+				return candidate, prev[:len(prev)-bestK], cont[:len(cont)-m], true
+			}
 		}
 	}
 	return "", prev, cont, false
@@ -1657,7 +1680,51 @@ func issPeelVote(toks []string) (cell string, remaining []string, ok bool) {
 	if len(toks) > 0 && (issPercentVote(toks[len(toks)-1]) || issFrequencyVote(toks[len(toks)-1])) {
 		return toks[len(toks)-1], toks[:len(toks)-1], true
 	}
+	// A comma-separated labelled distribution, `F=94%, AB=6%`: the same fact
+	// as the one-token form, with several labels. The run is taken from the
+	// right; every token must be a labelled percentage.
+	n := 0
+	for n < len(toks) && issLabelledPercentToken(toks[len(toks)-1-n]) {
+		n++
+	}
+	// A trailing comma means the cell CONTINUES on the next line; the wrapped
+	// halves are reunited by issJoinWrappedVote, not here.
+	if n >= 2 && !strings.HasSuffix(toks[len(toks)-1], ",") {
+		return strings.Join(toks[len(toks)-n:], " "), toks[:len(toks)-n], true
+	}
 	return "", toks, false
+}
+
+// issLabelledPercentToken recognises one item of a labelled distribution:
+// `F=94%,` or `AB=6%` -- a short label, an equals sign, a percentage and an
+// optional trailing comma.
+func issLabelledPercentToken(s string) bool {
+	s = strings.TrimSuffix(s, ",")
+	label, pct, cut := strings.Cut(s, "=")
+	if !cut || label == "" || len(label) > 3 {
+		return false
+	}
+	for _, r := range label {
+		if r < 'A' || (r > 'Z' && r < 'a') || r > 'z' {
+			return false
+		}
+	}
+	return issPercentCell(pct)
+}
+
+// issLabelledDistribution recognises a whole cell in that form, however many
+// labels it carries: every space-separated token is a labelled percentage.
+func issLabelledDistribution(s string) bool {
+	parts := strings.Fields(s)
+	if len(parts) == 0 {
+		return false
+	}
+	for _, p := range parts {
+		if !issLabelledPercentToken(p) {
+			return false
+		}
+	}
+	return true
 }
 
 // issFrequencyVote recognises the say-on-pay frequency answer printed as a bare
