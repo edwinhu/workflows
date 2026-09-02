@@ -1278,6 +1278,9 @@ func issPeelColumns(rest string) (body, mgmt, cast, sponsor string) {
 			mgmt, toks = cell, remaining
 		}
 	}
+	if !issDigitCellsAgree(mgmt, cast) {
+		return strings.TrimSpace(rest), "", "", ""
+	}
 	return strings.Join(toks, " "), mgmt, cast, sponsor
 }
 
@@ -1312,6 +1315,9 @@ func issPeelTrailingCells(rest string) (mgmt, cast, sponsor string, ok bool) {
 	if cell, remaining, found := issPeelVote(toks); found {
 		mgmt, toks = cell, remaining
 	}
+	if !issDigitCellsAgree(mgmt, cast) {
+		return "", "", "", false
+	}
 	return mgmt, cast, sponsor, len(toks) == 0
 }
 
@@ -1344,10 +1350,36 @@ func issPeelVote(toks []string) (cell string, remaining []string, ok bool) {
 	if cell, rest, ok := issPeelCell(toks, issVoteValues); ok {
 		return cell, rest, true
 	}
-	if len(toks) > 0 && issPercentVote(toks[len(toks)-1]) {
+	if len(toks) > 0 && (issPercentVote(toks[len(toks)-1]) || issFrequencyVote(toks[len(toks)-1])) {
 		return toks[len(toks)-1], toks[:len(toks)-1], true
 	}
 	return "", toks, false
+}
+
+// issFrequencyVote recognises the say-on-pay frequency answer printed as a bare
+// number of years -- `3  3  Management`, `F  1  Management` -- 446 rows on one
+// registrant's filings and 38 in the second form, placed by the shape finder
+// 2026-09-01. Only 1, 2 and 3 are answers to that question.
+//
+// A digit is not admitted on its own: a proposal's text can end in one (`Amend
+// Article 3`) and a peel that stopped there would report the vote of a row that
+// printed none. issDigitCellsAgree is the guard, applied wherever two cells are
+// peeled: the digit is a vote only beside a Mgt Rec, and a Mgt Rec only beside
+// a digit vote.
+func issFrequencyVote(s string) bool {
+	return s == "1" || s == "2" || s == "3"
+}
+
+// issDigitCellsAgree reports whether a peeled (mgmt, cast) pair may stand when
+// one of them is a bare digit. See issFrequencyVote.
+func issDigitCellsAgree(mgmt, cast string) bool {
+	if issFrequencyVote(cast) && mgmt == "" {
+		return false
+	}
+	if issFrequencyVote(mgmt) && !issFrequencyVote(cast) {
+		return false
+	}
+	return true
 }
 
 // issPercentVote recognises `F=85.71%`, `A=6.04%`, `W=7.68%` -- a choice letter,
