@@ -321,7 +321,13 @@ func isVoteValue(s string) bool {
 	if issFrequencyVote(s) {
 		return true
 	}
-	// A value either layout accepts is a value the corpus really prints.
+	// A value any layout accepts is a value the corpus really prints. The ISS
+	// vocabulary is consulted directly: it was mirrored by hand into the
+	// static map above for months, and the two lists of one fact drifted five
+	// times before this line existed (No, NO VOTE, PROPORTIONAL, ...).
+	if issVoteValues[strings.ToLower(strings.Trim(v, ".,;*"))] {
+		return true
+	}
 	return pvTextVote(v) || htmlIsVoteValue(v)
 }
 
