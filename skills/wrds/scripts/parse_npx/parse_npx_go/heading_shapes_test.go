@@ -101,3 +101,21 @@ func TestHTMLBareFundLineRegistrantDashFund(t *testing.T) {
 		}
 	}
 }
+
+func TestHTMLLabelledCellsOneCell(t *testing.T) {
+	for _, tc := range []struct {
+		cells        []string
+		label, value string
+		ok           bool
+	}{
+		{[]string{"Fund Name : Putnam VT Capital Appreciation Fund", ""}, "Fund Name", "Putnam VT Capital Appreciation Fund", true},
+		{[]string{"NAME OF FUND: TFS MARKET NEUTRAL FUND (TFSMX)"}, "NAME OF FUND", "TFS MARKET NEUTRAL FUND (TFSMX)", true},
+		{[]string{"Meeting Date: 05/12/2010"}, "", "", false},
+		{[]string{"Fund Name :", "Putnam VT Vista Fund"}, "Fund Name :", "Putnam VT Vista Fund", true},
+	} {
+		l, v, ok := htmlLabelledCells(tc.cells)
+		if ok != tc.ok || l != tc.label || v != tc.value {
+			t.Errorf("%q -> %q %q %v, want %q %q %v", tc.cells, l, v, ok, tc.label, tc.value, tc.ok)
+		}
+	}
+}

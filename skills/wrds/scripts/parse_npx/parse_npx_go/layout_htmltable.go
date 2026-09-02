@@ -180,7 +180,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// One vintage prints the labelled heading as TWO CELLS of a table row,
 		// `Fund Name :` beside the name (Putnam, ~1M rows): the label is the
 		// evidence, exactly as it is on a line.
-		if label, value, ok := htmlLabelledCells(cells); ok && strings.EqualFold(strings.TrimSpace(strings.TrimSuffix(label, ":")), icrFundNameLabel) {
+		if label, value, ok := htmlLabelledCells(cells); ok && htmlFundLabelled(label+":") {
 			curFund = value
 			curSeries = icrResolveFundShared(seriesIx, value)
 			continue
@@ -1911,6 +1911,14 @@ func htmlLabelledCells(cells []string) (label, value string, ok bool) {
 	for _, c := range cells {
 		if v := strings.TrimSpace(c); v != "" {
 			vals = append(vals, v)
+		}
+	}
+	// Putnam prints label and value in ONE cell: `Fund Name : Putnam VT
+	// Capital Appreciation Fund` (36,599 of 36,599 rows with no fund in the
+	// 2010 filing on 2026-09-02).
+	if len(vals) == 1 && htmlFundLabelled(vals[0]) {
+		if colon := strings.IndexByte(vals[0], ':'); colon > 0 {
+			return strings.TrimSpace(vals[0][:colon]), strings.TrimSpace(vals[0][colon+1:]), true
 		}
 	}
 	if len(vals) != 2 {
