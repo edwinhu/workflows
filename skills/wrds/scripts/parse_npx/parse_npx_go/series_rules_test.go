@@ -256,3 +256,16 @@ func TestHTMLBareFundLine(t *testing.T) {
 		t.Error("a paragraph naming no fund must not set one")
 	}
 }
+
+func TestSeriesAcronymKeepsRomanNumerals(t *testing.T) {
+	// John Hancock Funds II heads each fund `3341 JHFII Multi-Asset Absolute
+	// Return Fund`: the registrant's initials with the numeral spelled whole.
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "Multi-Asset Absolute Return Fund"},
+		{SeriesID: "S2", Name: "Core Bond Fund"},
+	}
+	ix := newISSSeriesIndex(decls, normalizeSeriesName("John Hancock Funds II"))
+	if got := brResolveHeading(ix, "3341 JHFII Multi-Asset Absolute Return Fund"); got != "S1" {
+		t.Errorf("got %q, want S1", got)
+	}
+}

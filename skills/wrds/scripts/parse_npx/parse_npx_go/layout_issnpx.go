@@ -891,24 +891,18 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		}
 		// The registrant's initials are a brand too: SEI Institutional
 		// Investments Trust declares "SIIT Dynamic Asset Allocation Fund", the
-		// College Retirement Equities Fund prints "CREF Stock Account". Three
-		// letters at least, so a two-token name cannot manufacture one.
-		var acr strings.Builder
-		for _, t := range toks {
-			acr.WriteByte(t[0])
-		}
-		if acr.Len() >= 3 {
-			ix.brands = append(ix.brands, acr.String())
+		// College Retirement Equities Fund prints "CREF Stock Account", and
+		// John Hancock Funds II prints "JHFII" -- a Roman numeral is spelled
+		// whole. Three letters at least, so a two-token name cannot
+		// manufacture one.
+		if acr := issInitials(toks); len(acr) >= 3 {
+			ix.brands = append(ix.brands, acr)
 		}
 		// And the initials of the registrant's TRAILING tokens: Rydex Variable
 		// Trust prints "VT BANKING FUND". Two letters at least, and only the
 		// runs that leave a leading token out.
 		for k := 1; k <= len(toks)-2; k++ {
-			var tail strings.Builder
-			for _, t := range toks[k:] {
-				tail.WriteByte(t[0])
-			}
-			ix.brands = append(ix.brands, tail.String())
+			ix.brands = append(ix.brands, issInitials(toks[k:]))
 		}
 	}
 	put := func(m map[string]*SeriesDecl, key string, d *SeriesDecl) {
@@ -940,6 +934,31 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		}
 	}
 	return ix
+}
+
+// issInitials builds the acronym a registrant makes of its own name: the first
+// letter of each token, except that a Roman numeral token is kept whole
+// ("John Hancock Funds II" -> "jhfii"). Tokens are already normalised.
+func issInitials(toks []string) string {
+	var b strings.Builder
+	for _, t := range toks {
+		if issRomanNumeral(t) {
+			b.WriteString(t)
+			continue
+		}
+		b.WriteByte(t[0])
+	}
+	return b.String()
+}
+
+// issRomanNumeral reports a short lower-case Roman numeral token: i, ii, iii,
+// iv, v, vi, vii, viii, ix, x.
+func issRomanNumeral(t string) bool {
+	switch t {
+	case "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x":
+		return true
+	}
+	return false
 }
 
 // issCutTrailingParenthetical removes a parenthetical at the END of a fund
