@@ -176,6 +176,10 @@ var issVoteValues = map[string]bool{
 	"refer": true, "unvoted": true, "n/a": true, "na": true, "tna": true,
 	"do not vote": true, "take no action": true, "no action": true,
 	"did not vote": true, "non voting": true, "non-voting": true,
+	// `Non-Votin` is the generator's own truncation of Non-Voting at the
+	// column's width: one filing prints it on 457 cells and never the g, and a
+	// second family prints `None  Non-Votin  Management`. 405 rows, 2026-09-01.
+	"non-votin": true,
 	"one year": true, "two years": true, "three years": true,
 	"1 year": true, "2 years": true, "3 years": true,
 	"1 yr": true, "2 yrs": true, "3 yrs": true,

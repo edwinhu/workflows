@@ -276,7 +276,7 @@ var howVotedVocabulary = map[string]bool{
 	// other shareholders rather than forming a view. It is a real vote value,
 	// not a parse defect -- 7,270 rows carry it in the revalidation run, each
 	// with a coherent description and management recommendation beside it.
-	"PROPORTIONAL": true, "NON-VOTING": true,
+	"PROPORTIONAL": true, "NON-VOTING": true, "NON-VOTIN": true,
 	// "Voted - <choice>" is one registrant family's spelling of the vote cell:
 	// the prefix records THAT a ballot was cast and the suffix records how. It is
 	// the value the filing prints, and how_voted is verbatim by contract, so the
