@@ -8,8 +8,8 @@ import (
 
 // Two more whole-cell values from the residue's long tail, 2026-09-02:
 //
-//	1.    DIRECTOR                                          NV           Management
-//	3     Human right to water                For       Angst       Shareholder
+//  1. DIRECTOR                                          NV           Management
+//     3     Human right to water                For       Angst       Shareholder
 //
 // `NV` is a non-vote code printed with a blank Mgt Rec (14 rows, one
 // registrant); `Angst` is a filer's misspelling of Against (7 rows). Recorded

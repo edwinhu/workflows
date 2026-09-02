@@ -15,8 +15,8 @@ import (
 // any line that begins with a dash, so a wrapped line that opens with a dashed
 // rule arrives 1025 bytes long:
 //
-//	- -------------</font></p><p style="margin:0in ...   &#160;&#160;&
-//	#160;&#160; ...
+//   - -------------</font></p><p style="margin:0in ...   &#160;&#160;&
+//     #160;&#160; ...
 //
 // The break was counted at column 1025, not recognised as the wrap, and kept
 // -- leaving `&` on one line and `#160;` on the next, which the layouts then

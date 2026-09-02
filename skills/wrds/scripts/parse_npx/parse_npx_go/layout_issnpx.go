@@ -129,6 +129,9 @@ var issVoteValues = map[string]bool{
 	// column: `No shares held on record` (81 rows, two filings) and
 	// `DNV (do not vote)` (68 rows, one filing). Placed 2026-09-02.
 	"no shares held on record": true, "dnv (do not vote)": true,
+	// A consent solicitation prints no recommendation and a Yes/No consent:
+	// `N/A  Yes  Management`, 419 rows in four filings of two registrants.
+	"yes": true, "n/a": true,
 	// `No` in the Vote Cast column -- the fund did not vote the item. The shared
 	// howVotedVocabulary in the test suite already recognised NO, so the two
 	// lists had drifted apart; one filing prints it on 5,941 rows.
@@ -194,7 +197,7 @@ var issVoteValues = map[string]bool{
 	// column's width: one filing prints it on 457 cells and never the g, and a
 	// second family prints `None  Non-Votin  Management`. 405 rows, 2026-09-01.
 	"non-votin": true,
-	"one year": true, "two years": true, "three years": true,
+	"one year":  true, "two years": true, "three years": true,
 	"1 year": true, "2 years": true, "3 years": true,
 	"1 yr": true, "2 yrs": true, "3 yrs": true,
 	"for and against": true, "with management": true,
@@ -455,19 +458,22 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			recDate = d
 			continue
 		}
-		if issTableHeader(line) {
-			sponsorFirst = issSponsorLeadsHeader(line)
-			votedCol = issVotedColumnHeader(line)
-			flush()
-			inTable = true
-			continue
-		}
-		// A FOREIGN COLUMN HEADER CLOSES OUR TABLE. Everything below it belongs
+		// A FOREIGN COLUMN HEADER CLOSES OUR TABLE. It is tested BEFORE our own
+		// header: the Broadridge vote-summary header starts with `#` and names
+		// PROPOSAL and VOTE, so read second it OPENED a table -- 324 rows of
+		// `With Mgmt` in the vote position survived the decline that way. Everything below it belongs
 		// to a grammar this layout cannot read, and reading it anyway attributed
 		// one issuer's votes to another -- see issForeignTableHeader.
 		if issForeignTableHeader(line) {
 			flush()
 			inTable, tailRow = false, -1
+			continue
+		}
+		if issTableHeader(line) {
+			sponsorFirst = issSponsorLeadsHeader(line)
+			votedCol = issVotedColumnHeader(line)
+			flush()
+			inTable = true
 			continue
 		}
 

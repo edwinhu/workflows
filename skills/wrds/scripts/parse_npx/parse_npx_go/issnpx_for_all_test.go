@@ -9,8 +9,8 @@ import (
 // TestISSNPXForAll pins `For All` on a director slate in the SGML-table
 // vintage that abbreviates the sponsor to `Mgmt`:
 //
-//	  #  Proposal                                             Mgt Rec  Vote Cast  Sponsor
-//	  1  Election of Directors                                For All  For All    Mgmt
+//	#  Proposal                                             Mgt Rec  Vote Cast  Sponsor
+//	1  Election of Directors                                For All  For All    Mgmt
 //
 // A whole cell, 35 rows in one 2005 filing placed by the shape finder.
 func TestISSNPXForAll(t *testing.T) {
