@@ -199,3 +199,15 @@ func TestSeriesTrailingTokensAcronym(t *testing.T) {
 		t.Errorf("with a folded mark: got %q, want S2", got)
 	}
 }
+
+func TestSeriesParenthesisedInternalCode(t *testing.T) {
+	// The internal fund code one registrant prints before the name, here in
+	// parentheses: `(ZW4X) GEI Total Return Blackrock ACWI xUS Index`.
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "GEI Total Return Blackrock ACWI xUS Index"},
+		{SeriesID: "S2", Name: "GEI Small Cap Equity"},
+	}
+	if got := resolve(t, decls, "SOME FUNDS INC", "(ZW4X) GEI Total Return Blackrock ACWI xUS Index"); got != "S1" {
+		t.Errorf("got %q, want S1", got)
+	}
+}
