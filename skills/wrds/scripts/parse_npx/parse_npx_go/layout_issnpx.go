@@ -875,6 +875,12 @@ type issSeriesIndex struct {
 	lessBrand map[string]*SeriesDecl
 	lessParen map[string]*SeriesDecl // declared names with a trailing parenthetical removed
 	brands    []string
+	// lessSuffix keys the declared names with their common last word removed,
+	// built ONLY when every declared name (two at least) ends in the same word:
+	// the College Retirement Equities Fund declares `<name> Account` throughout
+	// and prints its banners without it. A fact of the filing's own header,
+	// not a tolerance; nil when the names do not all agree.
+	lessSuffix map[string]*SeriesDecl
 }
 
 func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex {
@@ -933,7 +939,45 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 			put(ix.lessParen, normalizeSeriesName(cut), d)
 		}
 	}
+	if suffix := issCommonLastWord(decls); suffix != "" {
+		ix.lessSuffix = make(map[string]*SeriesDecl)
+		for i := range decls {
+			d := &decls[i]
+			if d.SeriesID == "" || d.Name == "" {
+				continue
+			}
+			key := normalizeSeriesName(d.Name)
+			if rest, ok := strings.CutSuffix(key, " "+suffix); ok && rest != "" {
+				put(ix.lessSuffix, rest, d)
+			}
+		}
+	}
 	return ix
+}
+
+// issCommonLastWord returns the last word every declared name ends in, when
+// there are at least two names and they all agree; otherwise "".
+func issCommonLastWord(decls []SeriesDecl) string {
+	suffix, n := "", 0
+	for _, d := range decls {
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		toks := strings.Fields(normalizeSeriesName(d.Name))
+		if len(toks) < 2 {
+			return ""
+		}
+		last := toks[len(toks)-1]
+		if n > 0 && last != suffix {
+			return ""
+		}
+		suffix = last
+		n++
+	}
+	if n < 2 {
+		return ""
+	}
+	return suffix
 }
 
 // issInitials builds the acronym a registrant makes of its own name: the first
@@ -1131,6 +1175,20 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// The banner spaces a token the header runs together.
 	if d, seen := ix.byCompact[strings.ReplaceAll(key, " ", "")]; seen {
 		return banner, d
+	}
+
+	// The last word every declared name shares, missing from the banner.
+	if ix.lessSuffix != nil {
+		if d, seen := ix.lessSuffix[key]; seen {
+			return banner, d
+		}
+		for _, b := range ix.brands {
+			if rest, ok := strings.CutPrefix(key, b+" "); ok && rest != "" {
+				if d, seen := ix.lessSuffix[rest]; seen {
+					return banner, d
+				}
+			}
+		}
 	}
 
 	// The registrant's own leading tokens on one side only: on the declared

@@ -144,9 +144,11 @@ func TestSeriesRegistrantAcronymBrand(t *testing.T) {
 	if got := resolve(t, decls, "COLLEGE RETIREMENT EQUITIES FUND", "CREF STOCK ACCOUNT"); got != "S1" {
 		t.Errorf("banner-side acronym: got %q, want S1", got)
 	}
-	// A missing suffix word is still not tolerated.
-	if got := resolve(t, decls, "COLLEGE RETIREMENT EQUITIES FUND", "CREF Bond Market"); got != "" {
-		t.Errorf("missing word: got %q, want blank", got)
+	// A missing last word is supplied only by the common-suffix rule, which
+	// applies here because every declared name ends in "Account"; see
+	// TestSeriesCommonSuffixWord for the case where it must not.
+	if got := resolve(t, decls, "COLLEGE RETIREMENT EQUITIES FUND", "CREF Bond Market"); got != "S2" {
+		t.Errorf("missing word under a common suffix: got %q, want S2", got)
 	}
 }
 
@@ -267,5 +269,37 @@ func TestSeriesAcronymKeepsRomanNumerals(t *testing.T) {
 	ix := newISSSeriesIndex(decls, normalizeSeriesName("John Hancock Funds II"))
 	if got := brResolveHeading(ix, "3341 JHFII Multi-Asset Absolute Return Fund"); got != "S1" {
 		t.Errorf("got %q, want S1", got)
+	}
+}
+
+func TestSeriesCommonSuffixWord(t *testing.T) {
+	// The College Retirement Equities Fund declares every series as
+	// `<name> Account` and prints the banners without the word: `CREF Equity
+	// Index` for `Equity Index Account`. That every declared name ends in the
+	// same word is a fact of THIS filing's header, so the word may be supplied
+	// -- and only when all of them do.
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "Equity Index Account"},
+		{SeriesID: "S2", Name: "Bond Market Account"},
+		{SeriesID: "S3", Name: "Stock Account"},
+	}
+	for b, want := range map[string]string{
+		"CREF Equity Index":     "S1",
+		"CREF Bond Market":      "S2",
+		"CREF Stock":            "S3",
+		"CREF Bond Market Fund": "", // a different word is not a missing one
+		"CREF Global Equities":  "", // not declared at all
+	} {
+		if got := resolve(t, decls, "COLLEGE RETIREMENT EQUITIES FUND", b); got != want {
+			t.Errorf("%q -> %q, want %q", b, got, want)
+		}
+	}
+	// When the declared names do NOT all share a last word, nothing is supplied.
+	decls = []SeriesDecl{
+		{SeriesID: "S1", Name: "Equity Index Account"},
+		{SeriesID: "S2", Name: "Bond Market Fund"},
+	}
+	if got := resolve(t, decls, "COLLEGE RETIREMENT EQUITIES FUND", "CREF Equity Index"); got != "" {
+		t.Errorf("mixed suffixes: got %q, want blank", got)
 	}
 }
