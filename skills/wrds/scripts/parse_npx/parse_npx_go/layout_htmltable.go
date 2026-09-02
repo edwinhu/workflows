@@ -164,11 +164,25 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// clears the carried fund rather than leaving the previous one standing:
 		// a blank series_id costs coverage, a wrong one files this fund's votes
 		// under the fund above it.
-		if name, ok := htmlFundHeading(row.pre); ok {
+		// A line that RESOLVES to a declared series is the strongest evidence
+		// of the fund a section belongs to, and is read first; the labelled
+		// heading's positional reading (the line under the banner) comes
+		// second, because one vintage prints the reporting period there and
+		// the fund's name above the banner (Ivy Funds VIP, ~500k rows read as
+		// `Reporting Period: ...` on 2026-09-02).
+		if name, id, ok := htmlBareFundLine(seriesIx, row.pre); ok {
+			curFund, curSeries = name, id
+		} else if name, ok := htmlFundHeading(row.pre); ok {
 			curFund = name
 			curSeries = icrResolveFundShared(seriesIx, name)
-		} else if name, id, ok := htmlBareFundLine(seriesIx, row.pre); ok {
-			curFund, curSeries = name, id
+		}
+		// One vintage prints the labelled heading as TWO CELLS of a table row,
+		// `Fund Name :` beside the name (Putnam, ~1M rows): the label is the
+		// evidence, exactly as it is on a line.
+		if label, value, ok := htmlLabelledCells(cells); ok && strings.EqualFold(strings.TrimSpace(strings.TrimSuffix(label, ":")), icrFundNameLabel) {
+			curFund = value
+			curSeries = icrResolveFundShared(seriesIx, value)
+			continue
 		}
 		if row.pre != "" {
 			if next, labelled := htmlReadContext([]string{row.pre}); labelled {
@@ -1887,6 +1901,21 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 	// declares exactly one series; guessing which fund a table belongs to would
 	// move one fund's votes onto another, which is far worse than a blank.
 	return r, true
+}
+
+// htmlLabelledCells reads a row made of a label cell and a value cell, with
+// nothing else in it: `Fund Name :` | `Putnam Absolute Return 100 Fund`.
+func htmlLabelledCells(cells []string) (label, value string, ok bool) {
+	var vals []string
+	for _, c := range cells {
+		if v := strings.TrimSpace(c); v != "" {
+			vals = append(vals, v)
+		}
+	}
+	if len(vals) != 2 {
+		return "", "", false
+	}
+	return vals[0], vals[1], true
 }
 
 // htmlBareFundLine reads a fund name printed as a bare paragraph between two
