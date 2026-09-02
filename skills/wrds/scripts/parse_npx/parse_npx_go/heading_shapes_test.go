@@ -258,3 +258,22 @@ func TestHTMLTableSharedHeaderIdentityRow(t *testing.T) {
 		}
 	}
 }
+
+func TestHTMLReadContextNotADataRow(t *testing.T) {
+	// Buffalo Funds print 'Issuer' as the proponent: a four-cell vote row must
+	// never be read as an identity row (173,538 rows lost across 395 filings
+	// on run55).
+	for _, cells := range [][]string{
+		{"1", "Elect Director John Smith", "Issuer", "For"},
+		{"2", "Ratify Auditors", "For", "For", "Issuer"},
+		{"Ticker", "ABC", "Meeting Date", "For"},
+	} {
+		if _, labelled := htmlReadContext(cells); labelled {
+			t.Errorf("%q read as an identity row", cells)
+		}
+	}
+	// The Gabelli identity rows still read.
+	if ctx, labelled := htmlReadContext([]string{"", "", "Security", "G16612106", "", "Meeting Type", "Annual General Meeting"}); !labelled || ctx.CUSIP != "G16612106" {
+		t.Errorf("Gabelli security row: labelled %v cusip %q", labelled, ctx.CUSIP)
+	}
+}
