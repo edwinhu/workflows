@@ -1,0 +1,15 @@
+
+AGREE REALTY CORPORATION
+
+Ticker:       ADC            Security ID:  008492100
+Meeting Date: MAY 11, 2023   Meeting Type: Annual
+Record Date:  MAR 17, 2023
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.    Management                              F         F            Management
+1.    Management                              F         F            Management
+1.    Management                              F         F            Management
+2.    Management                              F         F            Management
+3.    Management                              F         F            Management
+4.    Management                              1         F            Management
+

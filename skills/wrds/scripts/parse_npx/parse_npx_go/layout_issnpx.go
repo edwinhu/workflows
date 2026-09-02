@@ -1466,7 +1466,10 @@ func issDigitCellsAgree(mgmt, cast string) bool {
 	if issFrequencyVote(cast) && mgmt == "" {
 		return false
 	}
-	if issFrequencyVote(mgmt) && !issFrequencyVote(cast) {
+	// A digit recommendation may also stand beside a ONE-LETTER vote code
+	// (`1  F  Management`, 57 rows): no proposal text ends in a bare digit
+	// followed by a lettered vote and a sponsor.
+	if issFrequencyVote(mgmt) && !issFrequencyVote(cast) && len(cast) != 1 {
 		return false
 	}
 	return true
