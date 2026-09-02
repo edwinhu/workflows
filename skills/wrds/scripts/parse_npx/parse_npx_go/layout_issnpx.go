@@ -1050,6 +1050,12 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			return banner, d
 		}
 	}
+	// The leading internal fund code (`2A14 Mid Cap Core Trust`, `(ZW4X) GEI
+	// Total Return ...`) that lookupSeriesTolerant already drops for the other
+	// layouts; this layout had never consulted it.
+	if d, _ := lookupSeriesTolerantEntry(idx, banner); d != nil {
+		return banner, d
+	}
 
 	// The three rules below were placed by the 2026-09-02 series-fill
 	// measurement (40.1M ISS rows carrying a fund name the header did not

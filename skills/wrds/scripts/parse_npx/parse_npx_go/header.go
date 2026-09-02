@@ -366,7 +366,8 @@ func lookupSeriesTolerantEntry(idx map[string]*SeriesDecl, heading string) (d *S
 		return d, declared
 	}
 	fields := strings.Fields(heading)
-	if len(fields) < 2 || !internalFundCode(fields[0]) {
+	// The code may be printed in parentheses: `(ZW4X) GEI Total Return ...`.
+	if len(fields) < 2 || !internalFundCode(strings.Trim(fields[0], "()")) {
 		return nil, false
 	}
 	return lookupSeriesEntry(idx, strings.Join(fields[1:], " "))
