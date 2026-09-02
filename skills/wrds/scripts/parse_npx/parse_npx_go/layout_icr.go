@@ -83,6 +83,9 @@ func init() {
 // be trusted as evidence that a new fund section has begun.
 const icrFundNameLabel = "FUND NAME"
 
+// icrReportLine is the line one vintage prints directly under the fund name.
+const icrReportLine = "Investment Company Report"
+
 type icrMeeting struct {
 	issuer      string
 	ticker      string
@@ -326,6 +329,9 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		// row of the section so an unattributed section is still visible as
 		// unmatched rather than unnamed.
 		curFund string
+		// prevText is the previous non-blank line, for the vintage that names
+		// the fund on the line above its Investment Company Report line.
+		prevText string
 		// lastRow indexes the row a continuation may extend, and lastLine the
 		// line it was read from. A continuation must sit IMMEDIATELY under the
 		// row or under a previous continuation of it: between blocks these
@@ -338,6 +344,11 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
+		// Read before this line is classified, so the heading test sees the line above it.
+		lineAbove := prevText
+		if line != "" {
+			prevText = line
+		}
 		cells := icrCells(line)
 
 		// THE FUND SECTION MARKER. Resolution is by EXACT normalised equality
@@ -354,6 +365,13 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		if name, ok := icrFundName(line); ok {
 			curFund = name
 			curSeries = icrResolveFundShared(seriesIx, name)
+		} else if strings.EqualFold(line, icrReportLine) && lineAbove != "" {
+			// One vintage names the fund on a bare line ABOVE its `Investment
+			// Company Report` line (Hartford Mutual Funds, ~180k rows with no
+			// fund read, 2026-09-02). The report line is the marker; the line
+			// above it is the name, resolved like any other heading.
+			curFund = lineAbove
+			curSeries = icrResolveFundShared(seriesIx, lineAbove)
 		} else if name, ok := issFundSeparator(line); ok {
 			// The '=====' banner rule the ISS report opens a fund with, printed
 			// by one registrant in this grammar too (the College Retirement

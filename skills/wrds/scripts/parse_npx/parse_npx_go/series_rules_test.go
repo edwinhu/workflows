@@ -317,3 +317,53 @@ func TestICRResolveFundShared(t *testing.T) {
 		t.Errorf("icr's own suffix reading first: got %q, want S1", got)
 	}
 }
+
+func TestSeriesLeadingTokensInitials(t *testing.T) {
+	// Variable Insurance Products Fund II prints `VIP CONTRAFUND PORTFOLIO`
+	// for a declared `Contrafund Portfolio`: the initials of the registrant's
+	// LEADING tokens.
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "Contrafund Portfolio"},
+		{SeriesID: "S2", Name: "Index 500 Portfolio"},
+	}
+	ix := newISSSeriesIndex(decls, normalizeSeriesName("VARIABLE INSURANCE PRODUCTS FUND II"))
+	if got := icrResolveFundShared(ix, "VIP CONTRAFUND PORTFOLIO"); got != "S1" {
+		t.Errorf("got %q, want S1", got)
+	}
+}
+
+func TestSeriesDominantSuffixWord(t *testing.T) {
+	// Advanced Series Trust 2012 declares 59 of 68 series as `... Portfolio`
+	// and the rest as target-date names; the shared word is still the
+	// filing's own convention, and the exact reading always comes first.
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "AST Parametric Emerging Markets Equity Portfolio"},
+		{SeriesID: "S2", Name: "AST Small-Cap Growth Portfolio"},
+		{SeriesID: "S3", Name: "AST Bond Portfolio 2021"},
+	}
+	if got := resolve(t, decls, "ADVANCED SERIES TRUST", "AST Parametric Emerging Markets Equity - Sub-Adviser: Parametric Portfolio Associates"); got != "S1" {
+		t.Errorf("got %q, want S1", got)
+	}
+	// Below the threshold nothing is supplied.
+	decls = []SeriesDecl{
+		{SeriesID: "S1", Name: "Alpha Portfolio"},
+		{SeriesID: "S2", Name: "Beta Fund"},
+		{SeriesID: "S3", Name: "Gamma Trust"},
+	}
+	if got := resolve(t, decls, "SOME TRUST", "Alpha"); got != "" {
+		t.Errorf("no dominant suffix: got %q, want blank", got)
+	}
+}
+
+func TestSeriesBrandSpelledAsSeveralTokens(t *testing.T) {
+	// John Hancock Funds II also prints its initials with a space before the
+	// numeral: `2CHK JHF II New Opportunities Fund`.
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "New Opportunities Fund"},
+		{SeriesID: "S2", Name: "Core Bond Fund"},
+	}
+	ix := newISSSeriesIndex(decls, normalizeSeriesName("John Hancock Funds II"))
+	if got := brResolveHeading(ix, "2CHK JHF II New Opportunities Fund"); got != "S1" {
+		t.Errorf("got %q, want S1", got)
+	}
+}
