@@ -299,13 +299,27 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		}
 
 		emitted := false
-		if mapping != nil && htmlComparableArity(len(cells), headerArity) &&
-			(!partitioned || htmlMappedVoteValue(cells, mapping, headerArity)) {
-			if r, ok := htmlDataRow(cells, mapping, headerArity, ctx); ok {
-				r.SeriesID = curSeries
-				r.FundName = curFund
-				out = append(out, r)
-				sawData, emitted = true, true
+		if mapping != nil && htmlComparableArity(len(cells), headerArity) {
+			if !partitioned || htmlMappedVoteValue(cells, mapping, headerArity) {
+				if r, ok := htmlDataRow(cells, mapping, headerArity, ctx); ok {
+					r.SeriesID = curSeries
+					r.FundName = curFund
+					out = append(out, r)
+					sawData, emitted = true, true
+				}
+			}
+			if !emitted {
+				// The identity row of an export that prints issuer, ticker,
+				// CUSIP and date under the SAME header as the proposals
+				// (Prudential Series Fund 2005: 36,441 rows with no issuer,
+				// id or date on 2026-09-02).
+				if next, ok := htmlIdentityRow(cells, mapping); ok {
+					if ctxSealed {
+						ctx = htmlContext{}
+						ctxSealed = false
+					}
+					ctx.merge(next)
+				}
 			}
 		}
 		if deferredBoundary && !emitted {
@@ -2050,6 +2064,72 @@ func htmlDate(s string) string {
 // reading the raw markup. A row carrying no vote is table furniture -- a spacer
 // or a subtotal -- and emitting it as a vote record would put a non-vote into
 // the how_voted column.
+// htmlIdentityRow reads a row that fills the identity columns of a shared
+// header and none of the vote columns.
+func htmlIdentityRow(cells []string, mapping map[string]int) (ctx htmlContext, ok bool) {
+	at := func(f string) string {
+		i, m := mapping[f]
+		if !m || i < 0 || i >= len(cells) {
+			return ""
+		}
+		return htmlFlat(cells[i])
+	}
+	// The description column may double as the meeting-type column under a
+	// two-row header (`MTG TYPE` over `Proposal Type`), so only the vote
+	// columns must be empty.
+	if at(htmlFieldVote) != "" || at(htmlFieldMgmtRec) != "" {
+		return ctx, false
+	}
+	ctx.Issuer = at(htmlFieldIssuer)
+	ctx.CUSIP = htmlValueOrEmpty(at(htmlFieldCUSIP))
+	ctx.Ticker = htmlValueOrEmpty(at(htmlFieldTicker))
+	ctx.MeetingDate = htmlDate(at(htmlFieldMtgDate))
+	if ctx.Issuer == "" && ctx.CUSIP == "" && ctx.MeetingDate == "" {
+		return htmlContext{}, false
+	}
+	if ctx.Issuer != "" && !htmlIsIssuerLine(ctx.Issuer) {
+		return htmlContext{}, false
+	}
+	return ctx, true
+}
+
+// htmlProponentWord reports a cell that names who proposed rather than what.
+func htmlProponentWord(s string) bool {
+	switch htmlUpperASCII(htmlFlat(s)) {
+	case "MGMT", "MANAGEMENT", "SHRHLDR", "SHRHOLDER", "SHAREHOLDER", "ISSUER", "SH", "MGT":
+		return true
+	}
+	return false
+}
+
+// htmlUnclaimedText returns the longest text in a cell no field claims, when
+// it is longer than minLen; "" otherwise.
+func htmlUnclaimedText(cells []string, mapping map[string]int, minLen int) string {
+	claimed := make(map[int]bool, len(mapping))
+	for f, i := range mapping {
+		// The identity columns belong to the identity row of a shared-header
+		// export; a proposal row prints its text across them.
+		switch f {
+		case htmlFieldIssuer, htmlFieldTicker, htmlFieldCUSIP, htmlFieldMtgDate:
+			continue
+		}
+		claimed[i] = true
+	}
+	best := ""
+	for i, c := range cells {
+		if claimed[i] {
+			continue
+		}
+		if t := htmlFlat(c); len(t) > len(best) {
+			best = t
+		}
+	}
+	if len(best) <= minLen {
+		return ""
+	}
+	return best
+}
+
 func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx htmlContext) (VoteRow, bool) {
 	// Some lettered tables prepend an unlabelled item number to only the first
 	// row. The shift is decided per row: applying one block-wide offset would fix
@@ -2079,6 +2159,21 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 		return VoteRow{}, false
 	}
 	item, desc := at(htmlFieldItem), at(htmlFieldDesc)
+	// `Proposal Type` maps to the description for the shape that prints no
+	// other proposal column; Prudential Series Fund 2005 prints MGMT under it
+	// and the text in an unlabelled spanning cell (36,441 rows read as
+	// "MGMT" on 2026-09-02). When the mapped description is a proponent word
+	// and an unclaimed cell carries longer text, the text is the description
+	// and the word is the source.
+	src := at(htmlFieldBy)
+	if htmlProponentWord(desc) {
+		if t := htmlUnclaimedText(cells, mapping, len(desc)); t != "" {
+			if src == "" {
+				src = desc
+			}
+			desc = t
+		}
+	}
 	if item == "" {
 		item = leadingItem
 	}
@@ -2094,7 +2189,7 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 		MeetingDate:              ctx.MeetingDate,
 		ItemSeq:                  item,
 		VoteDescription:          desc,
-		VoteSource:               at(htmlFieldBy),
+		VoteSource:               src,
 		HowVoted:                 vote,
 		ManagementRecommendation: at(htmlFieldMgmtRec),
 	}
