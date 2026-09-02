@@ -321,6 +321,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		// | Management Recommendation` is the vanguard column set under an
 		// issnpx `#` header, with a Yes/No VOTED cell between sponsor and vote.
 		votedCol bool
+		// distCols is set from a header that declares NO Vote Cast column but
+		// percentage columns named for the choices; see issDistributionHeader.
+		distCols []string
 		cur      *issRowBuf
 
 		// blankRun counts CONSECUTIVE blank lines, so an incomplete row may
@@ -480,6 +483,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		if issTableHeader(line) {
 			sponsorFirst = issSponsorLeadsHeader(line)
 			votedCol = issVotedColumnHeader(line)
+			distCols = issDistributionHeader(line)
 			flush()
 			inTable = true
 			continue
@@ -607,6 +611,14 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				cur.text = append(cur.text, tail)
 			}
 			continue
+		}
+
+		if distCols != nil && item != "" {
+			if b, mg, ca, sp, ok := issPeelDistribution(rest, distCols); ok {
+				cur.text = append(cur.text, b)
+				cur.mgmt, cur.cast, cur.sponsor = mg, ca, sp
+				continue
+			}
 		}
 
 		if votedCol && item != "" {
@@ -1334,6 +1346,97 @@ func issSplitWrappedTail(rest string) (string, bool) {
 		rebuilt += "  " + c
 	}
 	return rebuilt + "  " + head, true
+}
+
+// issDistributionHeader reads a header that declares NO Vote Cast column but
+// percentage columns named for the choices:
+//
+//	#     Proposal                  Rec    For       Withhold            Sponsor
+//	1.01  Elect Trustee James C.    For    97.581%   2.419%              Management
+//
+// The fund reports its vote as a DISTRIBUTION over the choices the header
+// names. It returns those names in column order, or nil for any other
+// header. About 4,300 rows in two registrants' filings, 2026-09-02; the
+// `F=85.71%` form another filer prints by hand is the same fact.
+func issDistributionHeader(line string) []string {
+	up := strings.ToUpper(line)
+	if strings.Contains(up, "VOTE CAST") {
+		return nil
+	}
+	var cols []string
+	for _, w := range strings.Fields(line) {
+		switch strings.ToUpper(w) {
+		case "FOR", "AGAINST", "WITHHOLD", "WITHHELD", "ABSTAIN":
+			cols = append(cols, w)
+		}
+	}
+	if len(cols) < 2 {
+		return nil
+	}
+	return cols
+}
+
+// issPeelDistribution reads a row under that header: the sponsor at the right
+// edge, then one percentage per declared column, then an optional
+// recommendation. how_voted is each verbatim percentage labelled with its
+// column: `For=97.581% Withhold=2.419%`.
+func issPeelDistribution(rest string, cols []string) (body, mgmt, cast, sponsor string, ok bool) {
+	toks := strings.Fields(rest)
+	sponsor, toks, ok = issPeelCell(toks, issSponsors)
+	if !ok || len(toks) < len(cols) {
+		return "", "", "", "", false
+	}
+	pcts := toks[len(toks)-len(cols):]
+	for _, p := range pcts {
+		if !issPercentCell(p) {
+			return "", "", "", "", false
+		}
+	}
+	toks = toks[:len(toks)-len(cols)]
+	if mg, remaining, found := issPeelVote(toks); found {
+		mgmt, toks = mg, remaining
+	}
+	parts := make([]string, len(cols))
+	for i, c := range cols {
+		parts[i] = c + "=" + pcts[i]
+	}
+	return strings.Join(toks, " "), mgmt, strings.Join(parts, " "), sponsor, true
+}
+
+// issPercentCell recognises a bare percentage cell: digits, an optional
+// decimal part, and the percent sign.
+func issPercentCell(s string) bool {
+	if !strings.HasSuffix(s, "%") || len(s) < 2 {
+		return false
+	}
+	n := s[:len(s)-1]
+	dot := false
+	for i, r := range n {
+		switch {
+		case r >= '0' && r <= '9':
+		case r == '.' && !dot && i > 0:
+			dot = true
+		default:
+			return false
+		}
+	}
+	return true
+}
+
+// issDistributionVote recognises how_voted in the labelled-distribution form
+// this reader emits: `For=97.581% Withhold=2.419%`.
+func issDistributionVote(s string) bool {
+	parts := strings.Fields(s)
+	if len(parts) == 0 {
+		return false
+	}
+	for _, p := range parts {
+		label, pct, cut := strings.Cut(p, "=")
+		if !cut || label == "" || !issPercentCell(pct) {
+			return false
+		}
+	}
+	return true
 }
 
 // issSponsorLeadsHeader reports that this table names its Sponsor column BEFORE

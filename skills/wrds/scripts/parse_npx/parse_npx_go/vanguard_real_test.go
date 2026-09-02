@@ -321,6 +321,10 @@ func isVoteValue(s string) bool {
 	if issFrequencyVote(s) {
 		return true
 	}
+	// A distribution over header-named columns: `For=97.581% Withhold=2.419%`.
+	if issDistributionVote(s) {
+		return true
+	}
 	// A value any layout accepts is a value the corpus really prints. The ISS
 	// vocabulary is consulted directly: it was mirrored by hand into the
 	// static map above for months, and the two lists of one fact drifted five
