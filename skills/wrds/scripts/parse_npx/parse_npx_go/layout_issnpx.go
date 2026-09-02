@@ -101,14 +101,20 @@ var issVoteValues = map[string]bool{
 	"sold": true, "sold shares": true, "dnv": true,
 	// One vintage abbreviates the choice to a LETTER in both the Mgt Rec and
 	// Vote Cast columns -- `3  Management Proposal  F  F  Management`. Counted
-	// in that filing's own bytes: F 5,637, A 59, N 9, D 7. W does not appear and
-	// is not admitted, because the vocabulary records what the corpus prints
-	// rather than what an alphabet suggests. `S` does: one 2020 filing prints
+	// in that filing's own bytes: F 5,637, A 59, N 9, D 7. W does not appear
+	// THERE, and the vocabulary records what the corpus prints rather than what
+	// an alphabet suggests -- it was admitted only when the shape finder placed
+	// it: `Election of Directors  N  W  Management` in four filings of two
+	// registrants, 69 rows (2026-09-01). `S` is printed too: one 2020 filing prints
 	// `F  S  Management` and `N  S  Shareholder` on 244 rows and the corpus
 	// harvest finds 289 of the first shape, every one between a lettered Mgt
 	// Rec and a sponsor. The filing defines no legend, and none is needed --
 	// how_voted is what the cell printed.
-	"f": true, "a": true, "n": true, "d": true, "s": true,
+	"f": true, "a": true, "n": true, "d": true, "s": true, "w": true,
+	// `WHOLD` is a 2004 abbreviation of Withhold beside the `w'hold` below (91
+	// rows); `1Year` and `3Years` are the say-on-pay frequency answers printed
+	// without the hyphen of `1-year` (124 rows). Both placed by the finder.
+	"whold": true, "1year": true, "3years": true,
 	// `No` in the Vote Cast column -- the fund did not vote the item. The shared
 	// howVotedVocabulary in the test suite already recognised NO, so the two
 	// lists had drifted apart; one filing prints it on 5,941 rows.
