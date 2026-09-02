@@ -224,3 +224,20 @@ func TestSeriesCodeThenBrand(t *testing.T) {
 		t.Errorf("got %q, want S1", got)
 	}
 }
+
+func TestBroadridgeHeadingUsesSharedRules(t *testing.T) {
+	decls := []SeriesDecl{
+		{SeriesID: "S000008214", Name: "Total Bond Market Trust"},
+		{SeriesID: "S000008215", Name: "American Growth Trust"},
+	}
+	ix := newISSSeriesIndex(decls, normalizeSeriesName("JOHN HANCOCK VARIABLE INSURANCE TRUST"))
+	if got := brResolveHeading(ix, "6741 JHVIT Total Bond Market Trust"); got != "S000008214" {
+		t.Errorf("got %q, want S000008214", got)
+	}
+	if got := brResolveHeading(ix, "Total Bond Market Trust"); got != "S000008214" {
+		t.Errorf("exact: got %q, want S000008214", got)
+	}
+	if got := brResolveHeading(ix, "6741 JHVIT Total Bond Market Fund"); got != "" {
+		t.Errorf("noun swap: got %q, want blank", got)
+	}
+}
