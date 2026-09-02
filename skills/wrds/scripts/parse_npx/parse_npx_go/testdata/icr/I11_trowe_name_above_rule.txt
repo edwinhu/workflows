@@ -1,0 +1,382 @@
+<SEC-DOCUMENT>0001206774-17-002695.txt : 20170831
+<SEC-HEADER>0001206774-17-002695.hdr.sgml : 20170831
+<ACCEPTANCE-DATETIME>20170831095927
+ACCESSION NUMBER:		0001206774-17-002695
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		2
+CONFORMED PERIOD OF REPORT:	20170630
+FILED AS OF DATE:		20170831
+DATE AS OF CHANGE:		20170831
+EFFECTIVENESS DATE:		20170831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			T. Rowe Price Index Trust, Inc.
+		CENTRAL INDEX KEY:			0000858581
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-05986
+		FILM NUMBER:		171062304
+
+	BUSINESS ADDRESS:	
+		STREET 1:		100 EAST PRATT STREET
+		CITY:			BALTIMORE
+		STATE:			MD
+		ZIP:			21202
+		BUSINESS PHONE:		410-345-2000
+
+	MAIL ADDRESS:	
+		STREET 1:		100 EAST PRATT STREET
+		CITY:			BALTIMORE
+		STATE:			MD
+		ZIP:			21202
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRICE T ROWE INDEX TRUST INC
+		DATE OF NAME CHANGE:	19920703
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRICE T ROWE INSTITUTIONAL EQUITY FUNDS INC
+		DATE OF NAME CHANGE:	19900227
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000858581
+<SERIES-ID>S000002089
+<SERIES-NAME>T. Rowe Price Equity Index 500 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000005457
+<CLASS-CONTRACT-NAME>T. Rowe Price Equity Index 500 Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>PREIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000159677
+<CLASS-CONTRACT-NAME>T. Rowe Price Equity Index 500 Fund-I Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PRUIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000858581
+<SERIES-ID>S000002090
+<SERIES-NAME>T. Rowe Price Extended Equity Market Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000005458
+<CLASS-CONTRACT-NAME>T. Rowe Price Extended Equity Market Index Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>PEXMX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000858581
+<SERIES-ID>S000002091
+<SERIES-NAME>T. Rowe Price Total Equity Market Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000005459
+<CLASS-CONTRACT-NAME>T. Rowe Price Total Equity Market Index Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>POMIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000858581
+<SERIES-ID>S000051326
+<SERIES-NAME>T. Rowe Price Mid-Cap Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161835
+<CLASS-CONTRACT-NAME>T. Rowe Price Mid-Cap Index Fund
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161836
+<CLASS-CONTRACT-NAME>T. Rowe Price Mid-Cap Index Fund-I Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000858581
+<SERIES-ID>S000051327
+<SERIES-NAME>T. Rowe Price Small-Cap Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161837
+<CLASS-CONTRACT-NAME>T. Rowe Price Small-Cap Index Fund
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161838
+<CLASS-CONTRACT-NAME>T. Rowe Price Small-Cap Index Fund-I Class
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>ind_811-05986.htm
+<DESCRIPTION>ANNUAL REPORT OF PROXY VOTING RECORD
+<TEXT>
+<HTML>
+<HEAD>
+   <TITLE></TITLE>
+</HEAD>
+
+<BODY bgcolor=#ffffff>
+<BR><BR><BR><BR>
+<table width="600" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td>
+					<div align="center">
+						<img src="titlebar_formnpx.gif" alt="T. Rowe Price N-PX" height="107" width="600" border="0"></div>
+				</td>
+			</tr>
+		</table>
+		<table width="600" border="0" cellspacing="0" cellpadding="0"  >
+			<tr>
+				<td width="378" height="26" style="BORDER-TOP: 1.25pt solid; BORDER-LEFT: 1.25pt solid; BORDER-BOTTOM: 1.25pt solid; border-color: #A1A1A1" >
+					<font color="black" size="4"><b>&nbsp;<font color="black" size="4" style="FONT-FAMILY: arial; FONT-WEIGHT: bold; ">Index Trust</font></b></font>
+				</td>
+				<TD STYLE="background-color: black; width: 222px; text-align: right; border-top: #A1A1A1 1.25pt solid; border-bottom: #A1A1A1 1.25pt solid; border-left: #A1A1A1 1.25pt solid; border-right: #A1A1A1 1.25pt solid; padding: 2pt; border-color: #A1A1A1">
+					<font color="white" size="3"><b><font color="white" size="3" style="FONT-FAMILY: arial; FONT-WEIGHT: bold; ">07/01/2016 to 06/30/2017</font>&nbsp;</b></font>
+				</td>
+		  </tr>
+		</table>
+<br><!-- end template masthead -->
+
+<TABLE border=0 width=576 cellspacing=1 cellpadding=0>
+<TR valign="bottom">
+  <TD nowrap align=left><FONT size=2>
+ICA File Number:&nbsp; 811-5986</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+  <TD nowrap align=left><FONT size=2>
+Registrant Name:&nbsp; T. Rowe Price Index Trust, Inc.</FONT></TD>
+</TR>
+<TR valign="bottom">
+  <TD nowrap align=left><FONT size=2>
+Reporting Period:&nbsp; 07/01/2016 - 06/30/2017</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+  <TD nowrap align=left>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+  <TD nowrap align=left>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+      <div align="center"><FONT size=2>FORM N-PX</FONT>&nbsp;
+    </div></TD>
+</TR>
+<TR valign="bottom">
+  <TD nowrap align=left><div align="center">&nbsp;</div></TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+      <div align="center"><FONT size=2>ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT</FONT>&nbsp;
+    </div></TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+      <div align="center"><FONT size=2>INVESTMENT COMPANY</FONT>&nbsp;
+    </div></TD>
+</TR>
+<TR valign="bottom">
+  <TD nowrap align=left><div align="center">&nbsp;</div></TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+      <div align="center"><FONT size=2>Investment Company Act file number 811-5986</FONT>&nbsp;
+    </div></TD>
+</TR>
+<TR>
+  <TD>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+      <div align="center"><FONT size=2>T. Rowe Price Index Trust, Inc.</FONT>
+    </div></TD>
+</TR>
+<TR valign="bottom">
+  <TD nowrap align=left><hr></TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+      <div align="center"><FONT size=2>(Exact name of registrant as specified in charter)</FONT>&nbsp;
+    </div></TD>
+</TR>
+<TR>
+        <TD>
+
+    <div align="center">&nbsp;</div></TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+      <div align="center"><FONT size=2>100 East Pratt Street</FONT> <FONT size=2>Baltimore, Maryland 21202</FONT>&nbsp;
+    </div></TD>
+</TR>
+
+<TR valign="bottom">
+  <TD nowrap align=left><hr></TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+      <div align="center"><FONT size=2>(Address of principal executive offices)</FONT>&nbsp;
+    </div></TD>
+</TR>
+<TR>
+        <TD>
+
+    <div align="center">&nbsp;</div></TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+      <div align="center"><FONT size=2>Ryan Nolan</FONT>&nbsp;
+    </div></TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+      <div align="center"><FONT size=2>100 East Pratt Street</FONT>&nbsp;
+    </div></TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+      <div align="center"><FONT size=2>Baltimore, Maryland 21202</FONT>&nbsp;
+    </div></TD>
+</TR>
+<TR valign="bottom">
+  <TD nowrap align=left><hr></TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+      <div align="center"><FONT size=2>(Name and address of agent for service)</FONT>&nbsp;
+    </div></TD>
+</TR>
+<TR>
+        <TD>&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+<FONT size=2>Registrant&#146;s telephone number, including area code: (410) 345-2000</FONT>&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+  <TD nowrap align=left>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+<FONT size=2>Date of fiscal year end: 12/31</FONT>&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+  <TD nowrap align=left>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+<FONT size=2>Date of reporting period: 07/01/2016 to 06/30/2017</FONT>&nbsp;
+        </TD>
+</TR>
+<TR>
+        <TD>&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+<FONT size=2>SIGNATURES</FONT>&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+  <TD nowrap align=left>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+<FONT size=2>Pursuant to the requirements of the Investment Company Act of 1940, the</FONT>&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+<FONT size=2>registrant has duly caused this report to be signed on its behalf by the</FONT>&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+<FONT size=2>undersigned, thereunto duly authorized.</FONT>&nbsp;
+        </TD>
+</TR>
+<TR>
+        <TD>&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+<FONT size=2>(Registrant) T. Rowe Price Index Trust, Inc.</FONT>&nbsp;
+        </TD>
+</TR>
+<TR>
+        <TD>&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+<FONT size=2>By (Signature and Title) /s/ <u>Edward C. Bernard</u></FONT>&nbsp;
+        </TD>
+</TR>
+
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+<FONT size=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Edward C. Bernard, Chairman of the Board - T. Rowe Price Funds</FONT>&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+  <TD nowrap align=left>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+        <TD width=100% nowrap align=left>
+<FONT size=2>Date August 31, 2017</FONT>&nbsp;
+        </TD>
+</TR>
+</TABLE>
+
+<PRE>
+
+Equity Index 500 Fund
+
+________________________________________________________________________
+3M Company
+Ticker     Security ID:             Meeting Date          Meeting Status
+MMM        CUSIP 88579Y101          05/09/2017            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Elect Sondra L. Barbour  Mgmt       For        For        For
+2          Elect Thomas K. Brown    Mgmt       For        For        For
+3          Elect Vance D. Coffman   Mgmt       For        For        For
+4          Elect David B. Dillon    Mgmt       For        For        For
+5          Elect Michael L. Eskew   Mgmt       For        For        For
+6          Elect Herbert L. Henkel  Mgmt       For        For        For
+7          Elect Muhtar Kent        Mgmt       For        For        For
+8          Elect Edward M. Liddy    Mgmt       For        For        For
+9          Elect Gregory R. Page    Mgmt       For        For        For
+10         Elect Inge G. Thulin     Mgmt       For        For        For
+11         Elect Patricia A.        Mgmt       For        For        For
+            Woertz
+
+12         Ratification of Auditor  Mgmt       For        For        For
+13         Advisory Vote on         Mgmt       For        For        For
+            Executive
+            Compensation
+
+14         Frequency of Advisory    Mgmt       1 Year     1 Year     For
+            Vote on Executive
+            Compensation
+
+15         Shareholder Proposal     ShrHoldr   Against    Against    For
+            Regarding Holy Land
+            Principles
+
