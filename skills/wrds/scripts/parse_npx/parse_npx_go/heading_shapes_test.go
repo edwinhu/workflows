@@ -119,3 +119,23 @@ func TestHTMLLabelledCellsOneCell(t *testing.T) {
 		}
 	}
 }
+
+func TestHTMLTableStackedLabels(t *testing.T) {
+	// Putnam Variable Trust 2010: a row of bare labels (`Ticker | Security ID:
+	// | Meeting Date | Meeting Status`) over a row of values, the issuer
+	// wrapped across two bold rows above. All 36,599 rows read the issuer as
+	// "Ticker" with no security id or meeting date on 2026-09-02.
+	b, err := os.ReadFile(filepath.Join("testdata", "htmltable", "H18_putnam_stacked_labels.txt"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows := runISSNPXDoc(t, string(b))
+	if len(rows) == 0 {
+		t.Fatal("no rows")
+	}
+	for _, r := range rows {
+		if r[colIssuerName] != "Putnam Money Market Liquidity Fund" || r[colCUSIP] != "746763168" || r[colMeetingDate] != htmlDate("11/19/2009") || r[colMeetingDate] == "" {
+			t.Errorf("issuer %q cusip %q date %q", r[colIssuerName], r[colCUSIP], r[colMeetingDate])
+		}
+	}
+}
