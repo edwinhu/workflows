@@ -1714,7 +1714,10 @@ var htmlContextLabels = []string{
 var htmlBareLabels = map[string]string{
 	"SECURITY": "SECURITY ID:", "SECURITY ID": "SECURITY ID:", "CUSIP": "CUSIP:",
 	"TICKER": "TICKER:", "TICKER SYMBOL": "TICKER SYMBOL:", "ISIN": "ISIN:",
-	"MEETING DATE": "MEETING DATE:", "ISSUER": "ISSUER:", "ISSUER NAME": "ISSUER NAME:",
+	"MEETING DATE": "MEETING DATE:", "ISSUER NAME": "ISSUER NAME:",
+	// Not "ISSUER": it is a proponent value ('Issuer' in Buffalo Funds' Proposed
+	// By column), and reading it as a label consumed 173,538 vote rows across
+	// 395 filings on run55.
 }
 
 // htmlReadContext pulls the meeting identity out of a block row. labelled
@@ -1733,7 +1736,7 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 	// Bare labels are read only on a short identity row. A data row of a wide
 	// export carries the WORD `CUSIP` as a column value (Brighthouse Funds
 	// Trust II: 5,021 vote rows consumed as context on 2026-09-02).
-	bare := htmlFilledCells(cells) <= 4
+	bare := htmlFilledCells(cells) <= 4 && !htmlHasVoteCell(cells)
 	for ci, cell := range cells {
 		// A label wrapped at a source newline inside its cell (`Meeting
 		// Date:`, GMO Trust: 38,059 of 38,551 rows with no date on
@@ -1922,6 +1925,17 @@ func htmlPreLead(pre, fund string) string {
 		return ""
 	}
 	return line
+}
+
+// htmlHasVoteCell reports a row with a vote value in any cell: a data row,
+// whatever labels its other cells happen to spell.
+func htmlHasVoteCell(cells []string) bool {
+	for _, c := range cells {
+		if htmlIsVoteValue(htmlFlat(c)) {
+			return true
+		}
+	}
+	return false
 }
 
 func htmlFilledCells(cells []string) int {
