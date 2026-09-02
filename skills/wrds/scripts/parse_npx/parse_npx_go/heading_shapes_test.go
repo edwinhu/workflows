@@ -288,3 +288,16 @@ func TestHTMLIdentityRowRefusesHeader(t *testing.T) {
 		t.Errorf("identity row: ok %v issuer %q", ok, ctx.Issuer)
 	}
 }
+
+func TestHTMLReadContextIssuerBeforeLabelsOnOneLine(t *testing.T) {
+	// Fidelity Investment Trust 2009 prints the issuer and all three labels on
+	// one line: 24,488 rows with no security id on 2026-09-02.
+	ctx, labelled := htmlReadContext([]string{"TELUS CORPORATION MEETING DATE: MAY 7, 2009    TICKER: T     SECURITY ID: 87971M996"})
+	if !labelled || ctx.Issuer != "TELUS CORPORATION" || ctx.CUSIP != "87971M996" || ctx.Ticker != "T" || ctx.MeetingDate != "20090507" {
+		t.Errorf("labelled %v issuer %q cusip %q ticker %q date %q", labelled, ctx.Issuer, ctx.CUSIP, ctx.Ticker, ctx.MeetingDate)
+	}
+	// A proposal that merely mentions one label mid-sentence is not context.
+	if _, labelled := htmlReadContext([]string{"Approve the change of the company's ticker: from ABC to XYZ on the exchange"}); labelled {
+		t.Error("a sentence mentioning a label read as context")
+	}
+}

@@ -1763,6 +1763,18 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 			// The fold is hoisted out of the six-label loop: done inside it, every
 			// line of every row of a 155 MB body is uppercased six times over.
 			up := htmlUpperASCII(line)
+			// The issuer may precede the labels on the SAME line: `TELUS
+			// CORPORATION MEETING DATE: MAY 7, 2009 TICKER: T SECURITY ID:
+			// 87971M996` (Fidelity Investment Trust 2009, 24,488 rows with no
+			// security id). Only a line carrying at least two labels after an
+			// issuer-shaped prefix is split; a sentence mentioning one label
+			// is not context.
+			if !htmlHasLabelPrefix(up) {
+				if cut, ok := htmlLeadingIssuerCut(line, up); ok {
+					above = strings.TrimSpace(line[:cut])
+					line, up = line[cut:], up[cut:]
+				}
+			}
 			// A line is context only if it BEGINS with one of the labels. Without
 			// that anchor a proposal description that merely mentions a ticker or a
 			// CUSIP is read as a meeting heading, and the vote it carries is lost
@@ -1965,6 +1977,12 @@ func htmlContextLead(cells []string) (string, bool) {
 		}
 		lead = flat
 	}
+	// A one-cell row that carries a context label (`TICKER: III SECURITY ID:
+	// ...` in one spanning cell; Fidelity Fixed Income Trust, 26,992 rows with
+	// no security id on 2026-09-02) is context, not an issuer candidate.
+	if htmlHasLabelPrefix(htmlUpperASCII(lead)) {
+		return "", false
+	}
 	return lead, htmlIsIssuerLine(lead)
 }
 
@@ -1976,6 +1994,28 @@ func htmlContextLead(cells []string) (string, bool) {
 func htmlIsIssuerLine(s string) bool {
 	flat := htmlFlat(s)
 	return flat != "" && !htmlLooksLikeValue(flat)
+}
+
+// htmlLeadingIssuerCut finds where the labels begin on a line that opens with
+// the issuer, when at least two labels follow and the prefix is issuer-shaped.
+func htmlLeadingIssuerCut(line, up string) (int, bool) {
+	first, n := -1, 0
+	for _, label := range htmlContextLabels {
+		if i := strings.Index(up, " "+label); i >= 0 {
+			n++
+			if first < 0 || i+1 < first {
+				first = i + 1
+			}
+		}
+	}
+	if n < 2 || first <= 0 {
+		return 0, false
+	}
+	prefix := strings.TrimSpace(line[:first])
+	if prefix == "" || !htmlIsIssuerLine(prefix) {
+		return 0, false
+	}
+	return first, true
 }
 
 // htmlHasLabelPrefix reports whether an already-folded line opens with one of
