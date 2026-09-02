@@ -313,7 +313,7 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 	lines := strings.Split(text, "\n")
 	// Built ONCE per filing: these filings reach 171,705 vote-like lines, and a
 	// per-section rebuild would make the job quadratic in the body.
-	seriesIdx := seriesByName(meta.SeriesDecls)
+	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
 	var (
 		rows    []VoteRow
 		meeting icrMeeting
@@ -353,7 +353,7 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		// between funds this rule exists to prevent.
 		if name, ok := icrFundName(line); ok {
 			curFund = name
-			curSeries = icrResolveFund(seriesIdx, name)
+			curSeries = icrResolveFundShared(seriesIx, name)
 		} else if name, ok := issFundSeparator(line); ok {
 			// The '=====' banner rule the ISS report opens a fund with, printed
 			// by one registrant in this grammar too (the College Retirement
@@ -362,7 +362,7 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 			// with no name clears the carried fund.
 			curFund, curSeries = name, ""
 			if name != "" {
-				curSeries = icrResolveFund(seriesIdx, name)
+				curSeries = icrResolveFundShared(seriesIx, name)
 			}
 			continue
 		}
@@ -469,6 +469,24 @@ func icrFundName(line string) (string, bool) {
 		return "", false
 	}
 	return strings.TrimSpace(line[colon+1:]), true
+}
+
+// icrResolveFundShared is icrResolveFund followed, when it resolves nothing,
+// by the rule chain the ISS layout gained on 2026-09-02 (the registrant's
+// tokens or initials as a brand, the last word every declared series shares,
+// a dash sleeve, a trailing parenthetical). The College Retirement Equities
+// Fund's icr-era reports print `CREF Equity Index` for a declared `Equity
+// Index Account`: 1.9M rows this layout could name but not resolve. The
+// chain fires only for a name the header does not declare, so icrResolveFund's
+// refusal of an ambiguous declared name stands.
+func icrResolveFundShared(ix *issSeriesIndex, name string) string {
+	if id := icrResolveFund(ix.byName, name); id != "" {
+		return id
+	}
+	if _, d := issResolveFund(ix, name); d != nil {
+		return d.SeriesID
+	}
+	return ""
 }
 
 // icrMinSuffixWords is the shortest declared name a printed fund name may be

@@ -303,3 +303,17 @@ func TestSeriesCommonSuffixWord(t *testing.T) {
 		t.Errorf("mixed suffixes: got %q, want blank", got)
 	}
 }
+
+func TestICRResolveFundShared(t *testing.T) {
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "Equity Index Account"},
+		{SeriesID: "S2", Name: "Stock Account"},
+	}
+	ix := newISSSeriesIndex(decls, normalizeSeriesName("COLLEGE RETIREMENT EQUITIES FUND"))
+	if got := icrResolveFundShared(ix, "CREF Equity Index"); got != "S1" {
+		t.Errorf("got %q, want S1", got)
+	}
+	if got := icrResolveFundShared(ix, "CREF Equity Index Account"); got != "S1" {
+		t.Errorf("icr's own suffix reading first: got %q, want S1", got)
+	}
+}
