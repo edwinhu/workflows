@@ -288,14 +288,12 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	// series id. A heading that names no declared series, or one two series answer
 	// to, resolves to "" and the row is emitted with an empty series_id: the
 	// chassis still stamps single-series filings, and nothing here guesses.
-	seriesIdx := seriesByName(meta.SeriesDecls)
+	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
 
 	// The registrant name is a per-filing constant, so it is folded once here
 	// rather than once per banner: normalising it inside the lookup made the strip
 	// cost O(banners x len(COMPANY CONFORMED NAME)), and both of those grow with
 	// the same untrusted file.
-	registrantKey := normalizeSeriesName(meta.CompanyName)
-
 	var (
 		rows        []VoteRow
 		fund        string
@@ -369,7 +367,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		if len(bannerBuf) == 0 {
 			return
 		}
-		name, d := issResolveFund(seriesIdx, strings.Join(bannerBuf, " "), registrantKey)
+		name, d := issResolveFund(seriesIx, strings.Join(bannerBuf, " "))
 		bannerBuf = bannerBuf[:0]
 		fund = name
 		fundSeries, fundClasses = "", ""
@@ -857,6 +855,90 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	return rows, nil
 }
 
+// issSeriesIndex is the per-filing bridge from a printed fund heading to a
+// declared series: the exact index seriesByName builds, and the registrant's
+// own name folded once, since it is constant across every banner in the
+// filing.
+type issSeriesIndex struct {
+	byName        map[string]*SeriesDecl
+	registrantKey string
+
+	// byCompact keys the same names with their spaces removed, for a banner
+	// that spaces a token the header runs together (`Russell 2000` against
+	// `Russell2000`). lessBrand keys each declared name with a leading run of
+	// the registrant's own tokens removed (`Penn Series Small Cap Index Fund`
+	// under `small cap index fund` for the registrant PENN SERIES FUNDS INC),
+	// and brands holds those runs, longest first, for the banner-side strip.
+	// Every map refuses on collision the way seriesByName does: a key two
+	// distinct series answer to maps to nil, and nil is never stamped.
+	byCompact map[string]*SeriesDecl
+	lessBrand map[string]*SeriesDecl
+	brands    []string
+}
+
+func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex {
+	ix := &issSeriesIndex{
+		byName:        seriesByName(decls),
+		registrantKey: registrantKey,
+		byCompact:     make(map[string]*SeriesDecl, len(decls)),
+		lessBrand:     make(map[string]*SeriesDecl),
+	}
+	if toks := strings.Fields(registrantKey); len(toks) > 1 {
+		for k := len(toks) - 1; k >= 1; k-- {
+			ix.brands = append(ix.brands, strings.Join(toks[:k], " "))
+		}
+	}
+	put := func(m map[string]*SeriesDecl, key string, d *SeriesDecl) {
+		if key == "" {
+			return
+		}
+		prev, seen := m[key]
+		switch {
+		case !seen:
+			m[key] = d
+		case prev != nil && prev.SeriesID != d.SeriesID:
+			m[key] = nil
+		}
+	}
+	for i := range decls {
+		d := &decls[i]
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		key := normalizeSeriesName(d.Name)
+		put(ix.byCompact, strings.ReplaceAll(key, " ", ""), d)
+		for _, b := range ix.brands {
+			if rest, ok := strings.CutPrefix(key, b+" "); ok {
+				put(ix.lessBrand, rest, d)
+			}
+		}
+	}
+	return ix
+}
+
+// issCutSubAdviser removes the labelled sub-adviser clause one registrant
+// appends to every fund heading -- `AST Goldman Sachs Multi Asset Portfolio -
+// Sub-Adviser: Goldman Sachs` for a series declared without it. The label is
+// what makes this a deletion rather than a tolerance: only text after the
+// literal `Sub-Adviser:` (or `Subadviser:`) is dropped, with the dash before
+// it. ~1.5M rows across five Advanced Series Trust filings, 2026-09-02.
+func issCutSubAdviser(banner string) (string, bool) {
+	low := strings.ToLower(banner)
+	for _, label := range []string{"sub-adviser:", "subadviser:", "sub adviser:", "sub-advisor:", "subadvisor:"} {
+		i := strings.Index(low, label)
+		if i <= 0 {
+			continue
+		}
+		head := strings.TrimSpace(banner[:i])
+		head = strings.TrimRight(head, "-\u2013\u2014 ")
+		if head == "" {
+			return "", false
+		}
+		return head, true
+	}
+	return "", false
+}
+
 // issResolveFund turns one banner, already reassembled across any lines it
 // wrapped onto, into the fund name to store and the series it names. A nil decl
 // means stamp nothing, which is the answer whenever the filing's own header does
@@ -890,7 +972,8 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 // either matches a declared name exactly or stamps nothing.
 // registrantKey is the filing's COMPANY CONFORMED NAME already normalised, since
 // it is constant across every banner in the filing.
-func issResolveFund(idx map[string]*SeriesDecl, banner, registrantKey string) (string, *SeriesDecl) {
+func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
+	idx, registrantKey := ix.byName, ix.registrantKey
 	d, declared := lookupSeriesEntry(idx, banner)
 
 	if stripped, ok := issLeadingIndexToken(banner); ok {
@@ -915,10 +998,50 @@ func issResolveFund(idx map[string]*SeriesDecl, banner, registrantKey string) (s
 	if d != nil || declared {
 		return banner, d
 	}
-	if !issStripRegistrantPrefix {
+	if issStripRegistrantPrefix {
+		if d := lookupSeriesStrippingRegistrant(idx, banner, registrantKey); d != nil {
+			return banner, d
+		}
+	}
+
+	// The three rules below were placed by the 2026-09-02 series-fill
+	// measurement (40.1M ISS rows carrying a fund name the header did not
+	// declare). Each fires only for a name the header does not spell at all,
+	// requires exact equality after one described edit, and refuses on any
+	// collision. The printed banner is kept as the fund name in every case.
+
+	// A labelled sub-adviser clause after the fund name.
+	if cut, ok := issCutSubAdviser(banner); ok {
+		if _, d := issResolveFund(ix, cut); d != nil {
+			return banner, d
+		}
+	}
+
+	key := normalizeSeriesName(banner)
+	if key == "" {
 		return banner, nil
 	}
-	return banner, lookupSeriesStrippingRegistrant(idx, banner, registrantKey)
+
+	// The banner spaces a token the header runs together.
+	if d, seen := ix.byCompact[strings.ReplaceAll(key, " ", "")]; seen {
+		return banner, d
+	}
+
+	// The registrant's own leading tokens on one side only: on the declared
+	// name (looked up with them removed), or on the banner (removed, then
+	// looked up exactly). A whole-token boundary either way, and the declared
+	// side is consulted first so that a collision recorded there is honoured.
+	if d, seen := ix.lessBrand[key]; seen {
+		return banner, d
+	}
+	for _, b := range ix.brands {
+		if rest, ok := strings.CutPrefix(key, b+" "); ok && rest != "" {
+			if d, seen := ix.byName[rest]; seen {
+				return banner, d
+			}
+		}
+	}
+	return banner, nil
 }
 
 // issFundSeparator recognises the '===== FUND NAME =====' rule that opens a fund
