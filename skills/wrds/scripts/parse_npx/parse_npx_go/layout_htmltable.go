@@ -123,6 +123,9 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// nothing to the ISS link. 7,385 of its 12,546 filings declare series and
 		// print a fund heading, and those filings hold 44,801,362 rows.
 		curSeries string
+		// curFund is the fund name as the filing printed it, recorded on every
+		// row so an unattributed section shows as unmatched, not unnamed.
+		curFund string
 	)
 
 	for {
@@ -162,9 +165,10 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// a blank series_id costs coverage, a wrong one files this fund's votes
 		// under the fund above it.
 		if name, ok := htmlFundHeading(row.pre); ok {
+			curFund = name
 			curSeries = icrResolveFundShared(seriesIx, name)
-		} else if id, ok := htmlBareFundLine(seriesIx, row.pre); ok {
-			curSeries = id
+		} else if name, id, ok := htmlBareFundLine(seriesIx, row.pre); ok {
+			curFund, curSeries = name, id
 		}
 		if row.pre != "" {
 			if next, labelled := htmlReadContext([]string{row.pre}); labelled {
@@ -234,6 +238,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			(!partitioned || htmlMappedVoteValue(cells, mapping, headerArity)) {
 			if r, ok := htmlDataRow(cells, mapping, headerArity, ctx); ok {
 				r.SeriesID = curSeries
+				r.FundName = curFund
 				out = append(out, r)
 				sawData, emitted = true, true
 			}
@@ -1897,21 +1902,20 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 // nothing positional is guessed. The text between two tables can hold several
 // such names when the funds between them reported no activity; the fund that
 // follows is the NEAREST name above the table, so the last match wins.
-func htmlBareFundLine(ix *issSeriesIndex, pre string) (string, bool) {
+func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool) {
 	if pre == "" {
-		return "", false
+		return "", "", false
 	}
-	id, found := "", false
 	for _, line := range strings.Split(pre, "\n") {
 		line = strings.TrimSpace(line)
 		if line == "" {
 			continue
 		}
 		if _, d := issResolveFund(ix, line); d != nil {
-			id, found = d.SeriesID, true
+			name, id, ok = line, d.SeriesID, true
 		}
 	}
-	return id, found
+	return name, id, ok
 }
 
 // htmlVoteSummaryBanner is the heading this grammar prints above each fund's
