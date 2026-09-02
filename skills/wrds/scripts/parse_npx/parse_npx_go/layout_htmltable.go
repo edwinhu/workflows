@@ -1947,6 +1947,20 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool)
 		// rows named `Reporting Period: ...` on 2026-09-02). The value is
 		// recorded as printed; the code is dropped only for the lookup.
 		candidate := line
+		// `Registrant: GLOBAL ATLANTIC PORTFOLIOS - Global Atlantic American
+		// Funds Managed Risk Portfolio` (the Ultimus vintage): only the part
+		// after the dash may name the fund. The registrant half never does,
+		// or a trust sharing its flagship's name would stamp every section.
+		if low := strings.ToLower(line); strings.HasPrefix(low, "registrant") && !htmlFundLabelled(line) {
+			if colon := strings.IndexByte(line, ':'); colon > 0 {
+				if i := strings.LastIndex(line, " - "); i > colon {
+					candidate = strings.TrimSpace(line[i+3:])
+					line = candidate
+				} else {
+					continue
+				}
+			}
+		}
 		if htmlFundLabelled(line) {
 			if colon := strings.IndexByte(line, ':'); colon > 0 {
 				candidate = strings.TrimSpace(line[colon+1:])
