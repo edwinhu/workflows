@@ -473,8 +473,17 @@ func brHeadingSlot(lines []string, i int) (slot string, crossedBlank bool) {
 // is §2.2's "a heading that resolves to nothing clears the state" applied to the
 // rejector too, and is why the rejector no longer has a branch of its own. Its
 // measured cost is the residual's smallest line: 6,572 rows, 0.03%.
-func brResolveHeading(idx map[string]*SeriesDecl, slot string) string {
-	if d := lookupSeriesTolerant(idx, slot); d != nil {
+func brResolveHeading(ix *issSeriesIndex, slot string) string {
+	if d := lookupSeriesTolerant(ix.byName, slot); d != nil {
+		return d.SeriesID
+	}
+	// The rules the ISS layout gained on 2026-09-02 -- an internal code before
+	// the name, the registrant's own tokens or initials as a brand, a sleeve
+	// after a dash, a trailing parenthetical -- read this grammar's headings
+	// too: John Hancock Variable Insurance Trust prints `6741 JHVIT Total Bond
+	// Market Trust` for a declared `Total Bond Market Trust`, 1.1M rows with
+	// no series. Same discipline: exact after one edit, refused on collision.
+	if _, d := issResolveFund(ix, slot); d != nil {
 		return d.SeriesID
 	}
 	return ""
@@ -549,7 +558,8 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 	// the name index per block would make the grid job a function of the square
 	// of the body. A name two distinct series answer to maps to nothing, which is
 	// what keeps an ambiguous heading from stamping either of them.
-	seriesIdx := seriesByName(meta.SeriesDecls)
+	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	seriesIdx := seriesIx.byName
 
 	var (
 		rows      []VoteRow
@@ -661,7 +671,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 						}
 					} else {
 						flush()
-						curSeries = brResolveHeading(seriesIdx, slot)
+						curSeries = brResolveHeading(seriesIx, slot)
 					}
 				}
 			} else if brSilentSection(lines, i, &silentBuf) {
