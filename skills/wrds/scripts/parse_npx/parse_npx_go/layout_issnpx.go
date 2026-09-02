@@ -1429,6 +1429,18 @@ func issPeelColumns(rest string) (body, mgmt, cast, sponsor string) {
 	// Cast and a second, if the filing printed one, is Mgt Rec.
 	cast, toks, ok = issPeelVote(toks)
 	if !ok {
+		// ONE FILER PRINTS THE SPONSOR'S NAME AS THE VOTE, to say it voted
+		// with that sponsor: `For  Management  Management`. The cell is
+		// verbatim, but a sponsor word is admitted as the vote only when the
+		// row carries all three cells -- a vocabulary Mgt Rec before it and
+		// the Sponsor after it -- because a two-cell `Management  Management`
+		// is exactly the bleed this layout once suffered. Decided under the
+		// standing goal 2026-09-02; one 2016 filing, about 1,000 rows.
+		if len(toks) >= 2 && issSponsors[strings.ToLower(strings.Trim(toks[len(toks)-1], issCellTrim))] {
+			if mg, remaining, found := issPeelVote(toks[:len(toks)-1]); found && !issFrequencyVote(mg) {
+				return strings.Join(remaining, " "), mg, toks[len(toks)-1], sponsor
+			}
+		}
 		return strings.TrimSpace(rest), "", "", ""
 	}
 	if len(toks) > 0 {

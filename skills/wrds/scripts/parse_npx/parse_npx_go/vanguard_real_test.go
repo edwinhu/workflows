@@ -366,7 +366,10 @@ func TestHowVotedVocabularyInvariant(t *testing.T) {
 			res := parseText(body, FilingMeta{FilePath: path})
 			for i, r := range res.Rows {
 				checked++
-				if !isVoteValue(r.HowVoted) {
+				// A sponsor word is a vote only on a row that separately carries its
+				// sponsor and its recommendation; see issPeelColumns.
+				sponsorAsVote := issSponsors[strings.ToLower(r.HowVoted)] && r.VoteSource != "" && r.ManagementRecommendation != ""
+				if !isVoteValue(r.HowVoted) && !sponsorAsVote {
 					t.Errorf("%s row %d: how_voted = %q is not a vote value\n  desc: %q",
 						path, i, r.HowVoted, truncate(r.VoteDescription, 90))
 				}
