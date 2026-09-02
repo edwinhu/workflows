@@ -125,6 +125,10 @@ var issVoteValues = map[string]bool{
 	// `NV`, a non-vote code printed with a blank Mgt Rec (14 rows, one
 	// registrant), and `Angst`, a misspelling of Against (7 rows).
 	"nv": true, "angst": true,
+	// Two cells that wrap onto the lines below their row, in their own
+	// column: `No shares held on record` (81 rows, two filings) and
+	// `DNV (do not vote)` (68 rows, one filing). Placed 2026-09-02.
+	"no shares held on record": true, "dnv (do not vote)": true,
 	// `No` in the Vote Cast column -- the fund did not vote the item. The shared
 	// howVotedVocabulary in the test suite already recognised NO, so the two
 	// lists had drifted apart; one filing prints it on 5,941 rows.
@@ -649,6 +653,33 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 					continue
 				}
 				vote, prevKeep, contKeep, ok := issJoinWrappedVote(prev, strings.Fields(rest))
+				// A CELL CAN WRAP OVER MORE THAN ONE LINE BELOW ITS ROW, in its own
+				// column with nothing else on them:
+				//
+				//	1  Election of Directors  For  No shares  Management
+				//	                                 held on
+				//	                                 record
+				//
+				// The lines between the row and this one are then the cell's
+				// middle. Only cell-sized lines qualify; a line of proposal text
+				// is longer than any cell and is never folded into a vote.
+				spanned := 0
+				if !ok && j < len(cur.text)-1 {
+					var between []string
+					short := true
+					for _, l := range cur.text[j+1:] {
+						f := strings.Fields(l)
+						if len(f) > issMaxCellWords {
+							short = false
+							break
+						}
+						between = append(between, f...)
+					}
+					if short {
+						vote, prevKeep, contKeep, ok = issJoinWrappedVote(prev, append(between, strings.Fields(rest)...))
+						spanned = len(cur.text) - 1 - j
+					}
+				}
 				if !ok {
 					break
 				}
@@ -658,6 +689,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				}
 				cur.cast = vote
 				cur.text[j] = strings.Join(prevKeep, " ")
+				if spanned > 0 {
+					cur.text = cur.text[:j+1]
+				}
 				if tail := strings.Join(contKeep, " "); tail != "" {
 					cur.text = append(cur.text, tail)
 				}
