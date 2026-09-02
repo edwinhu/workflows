@@ -2094,6 +2094,13 @@ func htmlIdentityRow(cells []string, mapping map[string]int) (ctx htmlContext, o
 	if at(htmlFieldVote) != "" || at(htmlFieldMgmtRec) != "" {
 		return ctx, false
 	}
+	// A repeated header row (`Company Name | Ticker | ...`) has empty vote
+	// columns too; its cells are labels, not an identity.
+	for _, f := range []string{htmlFieldIssuer, htmlFieldCUSIP, htmlFieldTicker, htmlFieldMtgDate} {
+		if v := at(f); v != "" && (htmlIsGateLabel(v) || htmlIsHeaderWord(v)) {
+			return htmlContext{}, false
+		}
+	}
 	ctx.Issuer = at(htmlFieldIssuer)
 	ctx.CUSIP = htmlValueOrEmpty(at(htmlFieldCUSIP))
 	ctx.Ticker = htmlValueOrEmpty(at(htmlFieldTicker))
@@ -2105,6 +2112,25 @@ func htmlIdentityRow(cells []string, mapping map[string]int) (ctx htmlContext, o
 		return htmlContext{}, false
 	}
 	return ctx, true
+}
+
+// htmlIsHeaderWord reports a cell whose text is one of the column labels this
+// grammar maps, in any field's vocabulary.
+func htmlIsHeaderWord(s string) bool {
+	key := htmlCanonLabel(s)
+	if key == "" {
+		return false
+	}
+	for _, syns := range htmlSynonyms {
+		for _, syn := range syns {
+			if key == syn {
+				return true
+			}
+		}
+	}
+	_, bare := htmlBareLabels[key]
+	_, stacked := htmlStackedLabelSet[key]
+	return bare || stacked || key == "COMPANY NAME" || key == "ISSUER NAME"
 }
 
 // htmlProponentWord reports a cell that names who proposed rather than what.
