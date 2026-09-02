@@ -50,3 +50,29 @@ func TestISSNPXNotCast(t *testing.T) {
 		t.Errorf("how_voted = %q, want %q", got[colHowVoted], "Not Cast")
 	}
 }
+
+// Frequency votes spelled with a hyphen -- from the ranking on the 31-commit
+// build, ~780 rows across two filings:
+//
+//	ADVISORY APPROVAL OF THE FREQUENCY OF   1 - Year   1 - Year   Management
+//	Say When on Pay - An advisory vote on   1-Year     1-Year     Management
+//
+// `one year`, `1 year` and `1 yr` were already carried; the hyphenated forms
+// were not. Counted in the two filings: `1 - Year` 394, `3 - Year` 16,
+// `1-Year` 422, `3-Years` 15. No 2-year form appears and none is admitted.
+func TestISSNPXHyphenatedFrequencyVote(t *testing.T) {
+	for _, c := range []struct{ fixture, prefix, want string }{
+		{"DW_spaced_hyphen_year.txt", "ADVISORY APPROVAL OF THE FREQUENCY", "1 - Year"},
+		{"DX_hyphen_year.txt", "Say When on Pay", "1-Year"},
+	} {
+		rows := loadSpellingFixture(t, c.fixture)
+		got := findRow(rows, c.prefix)
+		if got == nil {
+			t.Errorf("%s: row %q missing; got %d rows", c.fixture, c.prefix, len(rows))
+			continue
+		}
+		if got[colHowVoted] != c.want {
+			t.Errorf("%s: how_voted = %q, want %q", c.fixture, got[colHowVoted], c.want)
+		}
+	}
+}
