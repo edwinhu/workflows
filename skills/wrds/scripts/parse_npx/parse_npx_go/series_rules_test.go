@@ -422,3 +422,53 @@ func TestHTMLBareFundLineInstitutionAccount(t *testing.T) {
 		t.Errorf("fund name recorded as %q, want the field's value as printed", name)
 	}
 }
+
+func TestSeriesUnspacedDashSleeve(t *testing.T) {
+	// Natixis Funds Trust IV 2022 heads each sub-adviser sleeve with the dash
+	// glued to the fund name: `Natixis Sustainable Future 2015 Fund- AIA`.
+	// 74,006 of 74,666 rows carried no series on 2026-09-02.
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "Natixis Sustainable Future 2015 Fund"},
+		{SeriesID: "S2", Name: "Natixis Sustainable Future 2020 Fund"},
+		{SeriesID: "S3", Name: "AEW Global Focused Real Estate Fund"},
+	}
+	ix := newISSSeriesIndex(decls, normalizeSeriesName("NATIXIS FUNDS TRUST IV"))
+	for h, want := range map[string]string{
+		"Natixis Sustainable Future 2015 Fund- AIA":           "S1",
+		"Natixis Sustainable Future 2020 Fund- Loomis Sayles": "S2",
+		"AEW Global Focused Real Estate Fund":                 "S3",
+		"Natixis Sustainable Future 2030 Fund- Mirova":        "", // not declared
+	} {
+		if got := brResolveHeading(ix, h); got != want {
+			t.Errorf("%q -> %q, want %q", h, got, want)
+		}
+	}
+}
+
+func TestSeriesClassLetterPrefix(t *testing.T) {
+	// American Funds Insurance Series 2023 heads each fund with a class letter
+	// glued to the name: `a-Global Growth Fund`, `e-New World Fund`. All 45,253
+	// rows carried no series on 2026-09-02.
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "Global Growth Fund"},
+		{SeriesID: "S2", Name: "New World Fund"},
+		{SeriesID: "S3", Name: "Growth-Income Fund"},
+	}
+	ix := newISSSeriesIndex(decls, normalizeSeriesName("AMERICAN FUNDS INSURANCE SERIES"))
+	for h, want := range map[string]string{
+		"a-Global Growth Fund": "S1",
+		"e-New World Fund":     "S2",
+		"h-Growth-Income Fund": "S3",
+		"x-Balanced Fund":      "", // not declared
+		"T-Bill Fund":          "", // a leading letter that is part of the name
+	} {
+		_, d := issResolveFund(ix, h)
+		got := ""
+		if d != nil {
+			got = d.SeriesID
+		}
+		if got != want {
+			t.Errorf("%q -> %q, want %q", h, got, want)
+		}
+	}
+}

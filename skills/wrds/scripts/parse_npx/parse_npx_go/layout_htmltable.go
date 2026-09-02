@@ -99,6 +99,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 	// Built ONCE per filing: these bodies reach 142 MB and 452,552 vote rows, so
 	// a per-row rebuild would make the job quadratic in the input.
 	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	issFormerKeys(seriesIx, meta.FormerNames)
 	if indexFrom(body, 0, "</tr>") < 0 {
 		return nil, errLayoutDeclined
 	}
@@ -1946,7 +1947,7 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool)
 		// rows named `Reporting Period: ...` on 2026-09-02). The value is
 		// recorded as printed; the code is dropped only for the lookup.
 		candidate := line
-		if i := strings.Index(strings.ToLower(line), "institution account"); i == 0 {
+		if htmlFundLabelled(line) {
 			if colon := strings.IndexByte(line, ':'); colon > 0 {
 				candidate = strings.TrimSpace(line[colon+1:])
 				line = candidate
@@ -1960,6 +1961,19 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool)
 		}
 	}
 	return name, id, ok
+}
+
+// htmlFundLabelled reports a pre-text line that labels the fund: Putnam's
+// `Fund Name : Putnam VT Capital Appreciation Fund` (450k rows with no series
+// on 2026-09-02), TFS's `NAME OF FUND: TFS MARKET NEUTRAL FUND (TFSMX)`.
+func htmlFundLabelled(line string) bool {
+	low := strings.ToLower(line)
+	for _, l := range []string{"institution account", "fund name", "name of fund", "portfolio name", "series name"} {
+		if strings.HasPrefix(low, l) {
+			return true
+		}
+	}
+	return false
 }
 
 func isAllDigits(s string) bool {

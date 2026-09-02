@@ -289,6 +289,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	// to, resolves to "" and the row is emitted with an empty series_id: the
 	// chassis still stamps single-series filings, and nothing here guesses.
 	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	issFormerKeys(seriesIx, meta.FormerNames)
 
 	// The registrant name is a per-filing constant, so it is folded once here
 	// rather than once per banner: normalising it inside the lookup made the strip
@@ -862,6 +863,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 type issSeriesIndex struct {
 	byName        map[string]*SeriesDecl
 	registrantKey string
+	// formerKeys are the registrant's FORMER CONFORMED NAMEs, normalised; the
+	// registrant-prefix strip tries each of them after the current name.
+	formerKeys []string
 
 	// byCompact keys the same names with their spaces removed, for a banner
 	// that spaces a token the header runs together (`Russell 2000` against
@@ -886,6 +890,15 @@ type issSeriesIndex struct {
 	// index b" for JOHN HANCOCK VARIABLE INSURANCE TRUST), built only when
 	// two thirds of the declared names carry that token; nil otherwise.
 	lessTypeWord map[string]*SeriesDecl
+}
+
+// issFormerKeys normalises the header's former conformed names for the index.
+func issFormerKeys(ix *issSeriesIndex, former []string) {
+	for _, f := range former {
+		if k := normalizeSeriesName(f); k != "" && k != ix.registrantKey {
+			ix.formerKeys = append(ix.formerKeys, k)
+		}
+	}
 }
 
 func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex {
@@ -1187,9 +1200,25 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d != nil || declared {
 		return banner, d
 	}
+	// A class letter glued to the name: `a-Global Growth Fund`, `e-New World
+	// Fund` (American Funds Insurance Series, all 45,253 rows with no series
+	// on 2026-09-02). Exact after the two-character cut.
+	if rest, ok := issClassLetterPrefix(banner); ok {
+		if alt, _ := lookupSeriesEntry(idx, rest); alt != nil {
+			return rest, alt
+		}
+	}
 	if issStripRegistrantPrefix {
 		if d := lookupSeriesStrippingRegistrant(idx, banner, registrantKey); d != nil {
 			return banner, d
+		}
+		// The registrant's FORMER conformed names, which the SGML header also
+		// declares: John Hancock Variable Insurance Trust 2012 still heads
+		// funds `John Hancock Trust Balanced Trust`.
+		for _, fk := range ix.formerKeys {
+			if d := lookupSeriesStrippingRegistrant(idx, banner, fk); d != nil {
+				return banner, d
+			}
 		}
 	}
 	// The leading internal fund code (`2A14 Mid Cap Core Trust`, `(ZW4X) GEI
@@ -1232,12 +1261,18 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// Capital Management, LLC`. The HEAD must be a declared name exactly; when
 	// it is not, the TAIL may be (`Variable Trust - Amerigo Fund`). Either way
 	// one side of the dash equals a declared name and the other is dropped.
-	if head, tail, ok := strings.Cut(banner, " - "); ok && strings.TrimSpace(head) != "" && strings.TrimSpace(tail) != "" {
-		if d := lookupSeriesByName(idx, head); d != nil {
-			return banner, d
-		}
-		if d := lookupSeriesByName(idx, tail); d != nil {
-			return banner, d
+	// The dash may be glued to the head: `Natixis Sustainable Future 2015
+	// Fund- AIA` (Natixis Funds Trust IV, 74,006 of 74,666 rows with no
+	// series on 2026-09-02). A hyphenated word (`Growth-Income`) has no space
+	// after its dash and is never cut.
+	for _, sep := range []string{" - ", "- "} {
+		if head, tail, ok := strings.Cut(banner, sep); ok && strings.TrimSpace(head) != "" && strings.TrimSpace(tail) != "" {
+			if d := lookupSeriesByName(idx, head); d != nil {
+				return banner, d
+			}
+			if d := lookupSeriesByName(idx, tail); d != nil {
+				return banner, d
+			}
 		}
 	}
 
@@ -1396,6 +1431,20 @@ func issBannerContinues(lines []string, i int) bool {
 // caller must try the heading WITH the token as well -- a real fund name can
 // begin with a one-letter word, and dropping it unconditionally would be a
 // tolerance rather than a reading of what the filing printed.
+// issClassLetterPrefix cuts a single letter and a dash glued to the name:
+// `a-Global Growth Fund` -> `Global Growth Fund`. The character after the dash
+// must be a letter, so `T-Bill` is a word and `- ` a sleeve separator.
+func issClassLetterPrefix(name string) (rest string, ok bool) {
+	if len(name) < 4 || name[1] != '-' || !isASCIILetter(name[0]) || !isASCIILetter(name[2]) {
+		return "", false
+	}
+	return name[2:], true
+}
+
+func isASCIILetter(c byte) bool {
+	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
+}
+
 func issLeadingIndexToken(name string) (rest string, ok bool) {
 	fields := strings.Fields(name)
 	if len(fields) < 2 || len(fields[0]) != 1 {

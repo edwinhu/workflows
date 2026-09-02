@@ -29,6 +29,7 @@ var (
 	reFiledDate   = regexp.MustCompile(`FILED AS OF DATE:\s*(\d{8})`)
 	reSubType     = regexp.MustCompile(`CONFORMED SUBMISSION TYPE:\s*([^\r\n]+)`)
 	reCompanyName = regexp.MustCompile(`COMPANY CONFORMED NAME:\s*([^\r\n]+)`)
+	reFormerName  = regexp.MustCompile(`FORMER CONFORMED NAME:\s*([^\r\n]+)`)
 	reCIK         = regexp.MustCompile(`CENTRAL INDEX KEY:\s*(\d+)`)
 	reAccession   = regexp.MustCompile(`ACCESSION NUMBER:\s*([^\r\n]+)`)
 
@@ -76,6 +77,9 @@ func parseHeader(buf []byte) FilingMeta {
 	}
 	if m := reCIK.FindSubmatch(head); m != nil {
 		meta.CIK = string(m[1])
+	}
+	for _, m := range reFormerName.FindAllSubmatch(head, -1) {
+		meta.FormerNames = append(meta.FormerNames, strings.TrimSpace(string(m[1])))
 	}
 	// The series declarations travel with the manifest row so a layout parser can
 	// attribute a vote to the series its fund heading names. They are not a

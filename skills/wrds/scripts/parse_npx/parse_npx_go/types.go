@@ -46,6 +46,7 @@ type FilingMeta struct {
 	FiledDate      string
 	FormType       string
 	CompanyName    string
+	FormerNames    []string // FORMER CONFORMED NAME lines, in header order
 	NRows          int
 	ParseMode      string // xml | text | none
 	Layout         string
