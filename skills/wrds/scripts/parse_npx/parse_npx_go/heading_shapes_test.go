@@ -267,6 +267,7 @@ func TestHTMLReadContextNotADataRow(t *testing.T) {
 		{"1", "Elect Director John Smith", "Issuer", "For"},
 		{"2", "Ratify Auditors", "For", "For", "Issuer"},
 		{"Ticker", "ABC", "Meeting Date", "For"},
+		{"Company Name", "Ticker", "Cusip", "Meeting Date"},
 	} {
 		if _, labelled := htmlReadContext(cells); labelled {
 			t.Errorf("%q read as an identity row", cells)
