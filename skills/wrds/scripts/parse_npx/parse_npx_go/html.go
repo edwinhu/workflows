@@ -182,6 +182,14 @@ func advanceColumn(src []byte, from, to, col int) int {
 		c := src[j]
 		if c == '\n' || c == '\r' {
 			col = 0
+			// The same `- ` prefix EDGAR adds to a dash-led line (see
+			// removeMarkup) can follow a break that fell INSIDE a tag -- the
+			// wrap cut `font-size` into `font` and `-size`, and the prefix
+			// went on the second half. Uncounted here too, or that line's
+			// own break is kept and splits the entity it falls in.
+			if j+3 < len(src) && src[j+1] == '-' && src[j+2] == ' ' && src[j+3] == '-' {
+				col = -2
+			}
 			continue
 		}
 		col += columnWidth(c)
