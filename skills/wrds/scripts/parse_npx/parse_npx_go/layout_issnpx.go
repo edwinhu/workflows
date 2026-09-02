@@ -117,6 +117,11 @@ var issVoteValues = map[string]bool{
 	"whold": true, "1year": true, "3years": true,
 	// `For All` on a director slate, 35 rows in one 2005 SGML-table filing.
 	"for all": true,
+	// From the residue's long tail (filings with at most twenty blanks),
+	// 2026-09-02: `Withold` is a misspelling two filers print (21 rows),
+	// `DoNotVote` the value without its spaces (14), `Mixed` a split vote by
+	// another name (12). Recorded as printed.
+	"withold": true, "donotvote": true, "mixed": true,
 	// `No` in the Vote Cast column -- the fund did not vote the item. The shared
 	// howVotedVocabulary in the test suite already recognised NO, so the two
 	// lists had drifted apart; one filing prints it on 5,941 rows.

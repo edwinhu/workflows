@@ -1,0 +1,10 @@
+
+ASML HOLDING NV
+
+Ticker:                      Security ID:  N07059186
+Meeting Date: MAR 24, 2010   Meeting Type: Annual
+Record Date:  MAR 3, 2010
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Accept Fin Statmnts & Status Rpts       For       DoNotVote    Management
+2     Approve Discharge of Management Board   For       DoNotVote    Management
