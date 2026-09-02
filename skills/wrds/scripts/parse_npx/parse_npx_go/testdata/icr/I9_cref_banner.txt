@@ -1,0 +1,345 @@
+<SEC-DOCUMENT>0000930413-20-002029.txt : 20200814
+<SEC-HEADER>0000930413-20-002029.hdr.sgml : 20200814
+<ACCEPTANCE-DATETIME>20200814075703
+ACCESSION NUMBER:		0000930413-20-002029
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20200630
+FILED AS OF DATE:		20200814
+DATE AS OF CHANGE:		20200814
+EFFECTIVENESS DATE:		20200814
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			COLLEGE RETIREMENT EQUITIES FUND
+		CENTRAL INDEX KEY:			0000777535
+		IRS NUMBER:				136022042
+		STATE OF INCORPORATION:			NY
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-04415
+		FILM NUMBER:		201101406
+
+	BUSINESS ADDRESS:	
+		STREET 1:		730 THIRD AVE
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10017
+		BUSINESS PHONE:		2129164905
+
+	MAIL ADDRESS:	
+		STREET 1:		730 THIRD AVE
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10017
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000777535
+<SERIES-ID>S000005080
+<SERIES-NAME>Stock Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154473
+<CLASS-CONTRACT-NAME>Class R1
+<CLASS-CONTRACT-TICKER-SYMBOL>QCSTRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154474
+<CLASS-CONTRACT-NAME>Class R2
+<CLASS-CONTRACT-TICKER-SYMBOL>QCSTPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154475
+<CLASS-CONTRACT-NAME>Class R3
+<CLASS-CONTRACT-TICKER-SYMBOL>QCSTIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000777535
+<SERIES-ID>S000005081
+<SERIES-NAME>Global Equities Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154476
+<CLASS-CONTRACT-NAME>Class R1
+<CLASS-CONTRACT-TICKER-SYMBOL>QCGLRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154477
+<CLASS-CONTRACT-NAME>Class R2
+<CLASS-CONTRACT-TICKER-SYMBOL>QCGLPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154478
+<CLASS-CONTRACT-NAME>Class R3
+<CLASS-CONTRACT-TICKER-SYMBOL>QCGLIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000777535
+<SERIES-ID>S000005082
+<SERIES-NAME>Growth Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154479
+<CLASS-CONTRACT-NAME>Class R1
+<CLASS-CONTRACT-TICKER-SYMBOL>QCGRRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154480
+<CLASS-CONTRACT-NAME>Class R2
+<CLASS-CONTRACT-TICKER-SYMBOL>QCGRPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154481
+<CLASS-CONTRACT-NAME>Class R3
+<CLASS-CONTRACT-TICKER-SYMBOL>QCGRIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000777535
+<SERIES-ID>S000005083
+<SERIES-NAME>Equity Index Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154482
+<CLASS-CONTRACT-NAME>Class R1
+<CLASS-CONTRACT-TICKER-SYMBOL>QCEQRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154483
+<CLASS-CONTRACT-NAME>Class R2
+<CLASS-CONTRACT-TICKER-SYMBOL>QCEQPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154484
+<CLASS-CONTRACT-NAME>Class R3
+<CLASS-CONTRACT-TICKER-SYMBOL>QCEQIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000777535
+<SERIES-ID>S000005084
+<SERIES-NAME>Bond Market Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154485
+<CLASS-CONTRACT-NAME>Class R1
+<CLASS-CONTRACT-TICKER-SYMBOL>QCBMRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154486
+<CLASS-CONTRACT-NAME>Class R2
+<CLASS-CONTRACT-TICKER-SYMBOL>QCBMPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154487
+<CLASS-CONTRACT-NAME>Class R3
+<CLASS-CONTRACT-TICKER-SYMBOL>QCBMIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000777535
+<SERIES-ID>S000005085
+<SERIES-NAME>Inflation-Linked Bond Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154488
+<CLASS-CONTRACT-NAME>Class R1
+<CLASS-CONTRACT-TICKER-SYMBOL>QCILRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154489
+<CLASS-CONTRACT-NAME>Class R2
+<CLASS-CONTRACT-TICKER-SYMBOL>QCILPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154490
+<CLASS-CONTRACT-NAME>Class R3
+<CLASS-CONTRACT-TICKER-SYMBOL>QCILIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000777535
+<SERIES-ID>S000005086
+<SERIES-NAME>Social Choice Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154491
+<CLASS-CONTRACT-NAME>Class R1
+<CLASS-CONTRACT-TICKER-SYMBOL>QCSCRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154492
+<CLASS-CONTRACT-NAME>Class R2
+<CLASS-CONTRACT-TICKER-SYMBOL>QCSCPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154493
+<CLASS-CONTRACT-NAME>Class R3
+<CLASS-CONTRACT-TICKER-SYMBOL>QCSCIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000777535
+<SERIES-ID>S000005087
+<SERIES-NAME>Money Market Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154494
+<CLASS-CONTRACT-NAME>Class R1
+<CLASS-CONTRACT-TICKER-SYMBOL>QCMMRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154495
+<CLASS-CONTRACT-NAME>Class R2
+<CLASS-CONTRACT-TICKER-SYMBOL>QCMMPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154496
+<CLASS-CONTRACT-NAME>Class R3
+<CLASS-CONTRACT-TICKER-SYMBOL>QCMMIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>c100185_npx.txt
+<TEXT>
+
+
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              Washington, DC 20549
+
+                                    FORM N-PX
+
+               ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED
+                          MANAGEMENT INVESTMENT COMPANY
+
+Investment Company Act file number: 811-04415
+
+                        College Retirement Equities Fund
+- ------------------------------------------------------------------------------
+               (Exact name of registrant as specified in charter)
+
+                      730 Third Avenue, New York, NY 10017
+- ------------------------------------------------------------------------------
+               (Address of principal executive offices) (Zip code)
+
+                                 Rachael Zufall
+                                c/o Nuveen, LLC
+                           8625 Andrew Carnegie Blvd
+                              Charlotte, NC 28262
+- ------------------------------------------------------------------------------
+                     (Name and address of agent for service)
+
+Registrant's telephone number, including area code: (888) 842-7782
+
+Date of fiscal year end: 12/31
+
+Date of reporting period: 07/01/19 - 06/30/20
+
+      Form N-PX is to be used by a registered management investment company,
+other than a small business investment company registered on Form N-5 (ss.ss.
+239.24 and 274.5 of this chapter), to file reports with the Commission, not
+later than August 31 of each year, containing the registrant's proxy voting
+record for the most recent twelve-month period ended June 30, pursuant to
+section 30 of the Investment Company Act of 1940 and rule 30b1-4 thereunder
+(17CFR 270.30b1-4). The Commission may use the information provided on Form N-PX
+in its regulatory, disclosure review, inspection, and policymaking roles.
+
+      A registrant is required to disclose the information specified by Form
+N-PX, and the Commission will make this information public. A registrant is not
+required to respond to the collection of information contained in Form N-PX
+unless the Form displays a currently valid Office of Management and Budget
+("OMB") control number. Please direct comments concerning the accuracy of the
+information collection burden estimate and any suggestions for reducing the
+burden to the Secretary, Securities and Exchange Commission, 100 F Street,
+N.E., Washington, DC 20549-0609. The OMB has reviewed this collection of
+information under the clearance requirements of 44 U.S.C. ss.3507.
+
+<PAGE>
+
+ITEM 1. PROXY VOTING RECORD
+
+The information contained herein discloses the following information for each
+matter relating to a portfolio security considered at any shareholder meeting
+held during the period covered by the report and with respect to which the
+registrant was entitled to vote:
+
+(a)   The name of the issuer of the portfolio security;
+
+(b)   The exchange ticker symbol of the portfolio security;
+
+(c)   The Council on Uniform Securities Identification Procedures ("CUSIP")
+      number for the portfolio security;
+
+(d)   The shareholder meeting date;
+
+(e)   A brief identification of the matter voted on;
+
+(f)   Whether the matter was proposed by the issuer or by a security holder;
+
+(g)   Whether the registrant cast its vote on the matter;
+
+(h)   How the registrant cast its vote (e.g., for or against proposal, or
+      abstain; for or withhold regarding election of directors); and
+
+(i)   Whether the registrant cast its vote for or against management.
+
+
+
+<PAGE>
+
+******************************* FORM N-Px REPORT *******************************
+ICA File Number: 811-04415
+Reporting Period: 07/01/2019 - 06/30/2020
+College Retirement Equities Funds
+
+
+====================== CREF Inflation-Linked Bond Account ======================
+The fund did not vote proxies relating to portfolio securities
+ during the period covered by this
+ report.
+=========================== CREF Money Market Account ==========================
+The fund did not vote proxies relating to portfolio securities
+ during the period covered by this
+ report.
+
+
+========================== CREF Bond Market Account ===========================
+
+Oi S.A.
+Ticker     Security ID:             Meeting Date          Meeting Status
+OIBR3      CUSIP 670851500          04/30/2020            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Accounts and Reports     Mgmt       For        For        For
+2          Allocation of            Mgmt       For        For        For
+            Profits/Dividends
+
+3          Remuneration policy      Mgmt       For        Against    Against
+4          Election of              Mgmt       For        For        For
+            Supervisory
+            Council
+
+5          Co-Option of Directors   Mgmt       For        For        For
+6          Ratify Updated Global    Mgmt       For        For        For
+            Remuneration
+            Amount
+
+
+========================== CREF Equity Index Account ===========================
+
+1-800-FLOWERS.COM, Inc.
+Ticker     Security ID:             Meeting Date          Meeting Status
+FLWS       CUSIP 68243Q106          12/09/2019            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
