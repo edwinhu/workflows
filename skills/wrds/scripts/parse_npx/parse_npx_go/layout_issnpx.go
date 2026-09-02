@@ -1026,12 +1026,28 @@ func issSkippableHeader(line string) bool {
 
 // issSplitItem separates a leading item number from the rest of a table line.
 // No item number means the line continues the row above it.
+//
+// The token alone does not decide: `3M COMPANY`, `3I GROUP PLC`, `77 BANK LTD.`
+// and a wrapped `2010 Business Plan` all begin with something issItemRe accepts.
+// What marks a proposal row is the COLUMN GAP after the item -- `1a    Elect`
+// keeps two or more spaces through normalisation, a word keeps one -- or a
+// terminator (`1.`, `4)`), which no issuer name carries. One space is still a
+// row when the item FILLS its column (`1..10 DIRECTOR-NICOLL@  For  For
+// Management`), and that row can be told from a name because it carries its
+// trailing vote cells.
 func issSplitItem(line string) (item, rest string) {
 	parts := strings.SplitN(line, " ", 2)
-	if len(parts) == 2 && issItemRe.MatchString(parts[0]) {
-		return parts[0], strings.TrimSpace(parts[1])
+	if len(parts) != 2 || !issItemRe.MatchString(parts[0]) {
+		return "", line
 	}
-	return "", line
+	tok := parts[0]
+	terminated := strings.HasSuffix(tok, ".") || strings.HasSuffix(tok, ")")
+	if !terminated && !strings.HasPrefix(parts[1], " ") {
+		if _, _, cast, sponsor := issPeelColumns(parts[1]); cast == "" && sponsor == "" {
+			return "", line
+		}
+	}
+	return tok, strings.TrimSpace(parts[1])
 }
 
 // issJoinWrappedVote completes a Vote Cast cell that WRAPPED across two physical
