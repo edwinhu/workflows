@@ -194,6 +194,12 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 					ctxSealed = false
 				}
 				ctx.merge(next)
+			} else if lead := htmlPreLead(row.pre, curFund); lead != "" {
+				// The issuer as a paragraph BETWEEN tables, `<P>3M COMPANY</P>`
+				// above the identity table (FundVantage Trust, 101,061 of
+				// 108,913 rows with no issuer on 2026-09-02). A candidate only:
+				// it is adopted when the row that follows carries a label.
+				ctxLead = lead
 			}
 		}
 
@@ -1681,11 +1687,16 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 		lead     string // the unlabelled line directly above the FIRST label
 		leadSeen bool
 	)
+	var items []string
 	for _, cell := range cells {
 		for _, line := range strings.Split(cell, "\n") {
+			items = append(items, strings.TrimSpace(line))
+		}
+	}
+	for i, line := range items {
+		{
 			// The fold is hoisted out of the six-label loop: done inside it, every
 			// line of every row of a 155 MB body is uppercased six times over.
-			line = strings.TrimSpace(line)
 			up := htmlUpperASCII(line)
 			// A line is context only if it BEGINS with one of the labels. Without
 			// that anchor a proposal description that merely mentions a ticker or a
@@ -1707,6 +1718,20 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 					continue
 				}
 				labelled = true
+				// A cell that is ONLY the label has its value in the next cell:
+				// `Ticker: | MMM | Security ID: | 88579Y101` (FundVantage Trust,
+				// 101,061 of 108,913 rows with no issuer, id or date on 2026-09-02).
+				if strings.TrimSpace(v) == "" && strings.EqualFold(strings.TrimSpace(up), label) {
+					for j := i + 1; j < len(items); j++ {
+						if items[j] == "" {
+							continue
+						}
+						if !htmlHasLabelPrefix(htmlUpperASCII(items[j])) {
+							v = items[j]
+						}
+						break
+					}
+				}
 				switch label {
 				case "ISSUER NAME:", "ISSUER:":
 					if ctx.Issuer == "" {
@@ -1793,6 +1818,23 @@ func htmlStackedValues(cells []string, labels map[int]string) (ctx htmlContext) 
 		}
 	}
 	return ctx
+}
+
+// htmlPreLead returns the last non-empty line of the text before a row when
+// it is issuer-shaped and is not the fund heading just read from that text.
+func htmlPreLead(pre, fund string) string {
+	lines := strings.Split(pre, "\n")
+	for i := len(lines) - 1; i >= 0; i-- {
+		line := strings.TrimSpace(lines[i])
+		if line == "" {
+			continue
+		}
+		if line == fund || !htmlIsIssuerLine(line) {
+			return ""
+		}
+		return htmlFlat(line)
+	}
+	return ""
 }
 
 // htmlContextLead retains a one-value issuer row only as a candidate. It becomes

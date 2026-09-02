@@ -139,3 +139,49 @@ func TestHTMLTableStackedLabels(t *testing.T) {
 		}
 	}
 }
+
+func TestHTMLReadContextValueInNextCell(t *testing.T) {
+	ctx, labelled := htmlReadContext([]string{"Ticker:", "MMM", "Security ID:", "88579Y101"})
+	if !labelled || ctx.Ticker != "MMM" || ctx.CUSIP != "88579Y101" {
+		t.Errorf("ticker %q cusip %q labelled %v", ctx.Ticker, ctx.CUSIP, labelled)
+	}
+	ctx, _ = htmlReadContext([]string{"Meeting Date:", " MAY 12, 2020", "Meeting Type:", "Annual"})
+	if ctx.MeetingDate != "20200512" {
+		t.Errorf("date %q", ctx.MeetingDate)
+	}
+	// Two label cells in a row: the empty one stays empty.
+	ctx, _ = htmlReadContext([]string{"Ticker:", "Security ID:", "88579Y101"})
+	if ctx.Ticker != "" || ctx.CUSIP != "88579Y101" {
+		t.Errorf("ticker %q cusip %q", ctx.Ticker, ctx.CUSIP)
+	}
+	// The same-cell form is unchanged.
+	ctx, _ = htmlReadContext([]string{"Ticker: ARE   Security ID: 015271109"})
+	if ctx.Ticker != "ARE" || ctx.CUSIP != "015271109" {
+		t.Errorf("same cell: ticker %q cusip %q", ctx.Ticker, ctx.CUSIP)
+	}
+}
+
+func TestLVPairsValueInNextCell(t *testing.T) {
+	got := lvPairs(icrCells("Ticker:       ACGL           Security ID:  G0450A105"))
+	want := []lvPair{{"TICKER", "ACGL"}, {"SECURITY ID", "G0450A105"}}
+	if len(got) != 2 || got[0] != want[0] || got[1] != want[1] {
+		t.Errorf("got %v want %v", got, want)
+	}
+	got = lvPairs(icrCells("Ticker:                      Security ID:  H01531104"))
+	if len(got) != 2 || got[0].value != "" || got[1].value != "H01531104" {
+		t.Errorf("foreign issuer without a symbol: %v", got)
+	}
+}
+
+func TestHTMLPreLead(t *testing.T) {
+	for _, tc := range []struct{ pre, fund, want string }{
+		{"Gotham Absolute 500 Core Fund\n3M COMPANY", "Gotham Absolute 500 Core Fund", "3M COMPANY"},
+		{"Gotham Absolute 500 Core Fund", "Gotham Absolute 500 Core Fund", ""},
+		{"3M COMPANY\n\n", "", "3M COMPANY"},
+		{"The fund did not hold any votable positions during the reporting period and so has nothing to report here.", "", ""},
+	} {
+		if got := htmlPreLead(tc.pre, tc.fund); got != tc.want {
+			t.Errorf("%q -> %q, want %q", tc.pre, got, tc.want)
+		}
+	}
+}

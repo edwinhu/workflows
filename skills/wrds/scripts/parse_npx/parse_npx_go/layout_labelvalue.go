@@ -79,6 +79,31 @@ func matchLabelValue(head string) bool {
 
 // lvLabelled reads a `Label: value` pair out of a cell, returning the label
 // uppercased and the value verbatim.
+type lvPair struct{ label, value string }
+
+// lvPairs reads the LABEL: VALUE pairs of an identity line. The gap-based cell
+// split parts a wide label from its value -- `Ticker:       ACGL` arrives as
+// two cells -- so a label cell with nothing after its colon takes the next
+// cell as its value, unless that cell is itself a label (Vantagepoint Funds:
+// every one of 1.25M labelvalue rows had no security id on 2026-09-02).
+func lvPairs(cells []string) []lvPair {
+	var pairs []lvPair
+	for i := 0; i < len(cells); i++ {
+		label, value, ok := lvLabelled(cells[i])
+		if !ok {
+			continue
+		}
+		if value == "" && i+1 < len(cells) {
+			if _, _, next := lvLabelled(cells[i+1]); !next {
+				value = strings.TrimSpace(cells[i+1])
+				i++
+			}
+		}
+		pairs = append(pairs, lvPair{label, value})
+	}
+	return pairs
+}
+
 func lvLabelled(cell string) (string, string, bool) {
 	i := strings.IndexByte(cell, ':')
 	if i < 0 {
@@ -158,26 +183,19 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 		// Identity, as LABEL: VALUE pairs. A blank Ticker is normal -- foreign
 		// issuers file with a Security ID and no symbol -- so the label is what
 		// is required here, never a value in a position.
-		if label, value, ok := lvLabelled(cells[0]); ok {
-			matched := true
-			switch label {
-			case "TICKER":
-				ticker = value
-			case "MEETING DATE":
-				mtgDate = htmlDate(value)
-			case "RECORD DATE":
-			default:
-				matched = false
-			}
-			if matched {
-				for _, c := range cells[1:] {
-					if l2, v2, ok2 := lvLabelled(c); ok2 {
-						switch l2 {
-						case "SECURITY ID":
-							cusip = v2
-						case "MEETING TYPE":
-							mtgType = v2
-						}
+		if pairs := lvPairs(cells); len(pairs) > 0 {
+			switch pairs[0].label {
+			case "TICKER", "MEETING DATE", "RECORD DATE":
+				for _, p := range pairs {
+					switch p.label {
+					case "TICKER":
+						ticker = p.value
+					case "MEETING DATE":
+						mtgDate = htmlDate(p.value)
+					case "SECURITY ID":
+						cusip = p.value
+					case "MEETING TYPE":
+						mtgType = p.value
 					}
 				}
 				continue
