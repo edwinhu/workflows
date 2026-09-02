@@ -622,18 +622,40 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			//	                                           Vote
 			//
 			// where the sponsor sits BETWEEN them on the row line.
-			prev := strings.Fields(cur.text[len(cur.text)-1])
-			sp, prev, haveSponsor := issPeelCell(prev, issSponsors)
-			if vote, prevKeep, contKeep, joined := issJoinWrappedVote(prev, strings.Fields(rest)); haveSponsor && joined {
+			//
+			// The line carrying the sponsor is not always the one just above:
+			// the HTML vintage prints every cell in its own paragraph, and the
+			// page renders the vote's tail AFTER a line of wrapped text --
+			//
+			//	2  APPROVAL OF THE ACTIONS OF THE MEMBERS OF  For  Did Not  Management
+			//	   THE BOARD OF DIRECTORS AND OF THE
+			//	Vote
+			//
+			// so the anchor is the nearest earlier line whose tail is a sponsor,
+			// which is the row line itself. 766 rows in four filings, 2026-09-02.
+			joined := false
+			for j := len(cur.text) - 1; j >= 0 && !joined; j-- {
+				prev := strings.Fields(cur.text[j])
+				sp, prev, haveSponsor := issPeelCell(prev, issSponsors)
+				if !haveSponsor {
+					continue
+				}
+				vote, prevKeep, contKeep, ok := issJoinWrappedVote(prev, strings.Fields(rest))
+				if !ok {
+					break
+				}
 				cur.sponsor = sp
 				if mg, remaining, found := issPeelVote(prevKeep); found {
 					cur.mgmt, prevKeep = mg, remaining
 				}
 				cur.cast = vote
-				cur.text[len(cur.text)-1] = strings.Join(prevKeep, " ")
+				cur.text[j] = strings.Join(prevKeep, " ")
 				if tail := strings.Join(contKeep, " "); tail != "" {
 					cur.text = append(cur.text, tail)
 				}
+				joined = true
+			}
+			if joined {
 				continue
 			}
 		}
@@ -982,6 +1004,19 @@ func issForeignTableHeader(line string) bool {
 	// an ISS table still open -- 20,978 of its 22,753 rows are that.
 	if strings.Contains(up, "VOTED?") && (strings.Contains(up, "PROPOSAL TYPE") ||
 		strings.Contains(up, "FOR/AGNST")) {
+		return true
+	}
+
+	// The Broadridge VOTE SUMMARY grammar, whose NOTES column follows the vote
+	// and carries `With Mgmt`, so ISS column order puts a note where the vote
+	// is and the peel fails on every row:
+	//
+	//	#     PROPOSAL                                     VOTE          NOTES          COMMENTS
+	//	1     The election of directors of the corporation  For           With Mgmt
+	//
+	// Six filings of one agent embed it after their ISS sections; 324 rows,
+	// 2026-09-02.
+	if strings.HasPrefix(up, "#") && strings.Contains(up, "PROPOSAL") && strings.Contains(up, "NOTES") {
 		return true
 	}
 

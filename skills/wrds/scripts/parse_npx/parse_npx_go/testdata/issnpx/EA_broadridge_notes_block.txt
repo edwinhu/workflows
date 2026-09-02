@@ -1,0 +1,17 @@
+<PAGE>
+#D879 - SPECIAL MEETING - ALLSTREAM INC. (5/12/04)
+Control# 4872-0965-5080 (3,267 shares) Cusip: 02004C204
+
+<TABLE>
+<CAPTION>
+#     PROPOSAL                                                    VOTE          NOTES          COMMENTS
+<S>   <C>                                                         <C>           <C>            <C>
+1     The election of directors of the corporation: John          For           With Mgmt
+      McLennan, Gerald E. Beasley, Jane Mowat and Ian M.
+      Mckinnon as the representatives of the holders of
+      CLASS B Limited voting shares
+2     To approve the entering into of an arrangement under        For           With Mgmt
+      section 192 of the special canada Business
+      corporations act involving, among other things, the
+      acquisition by Manitoba Telecom Services Inc. ("MTS")
+      of all the outstanding shares of the corporation in
