@@ -559,11 +559,17 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 	// of the body. A name two distinct series answer to maps to nothing, which is
 	// what keeps an ambiguous heading from stamping either of them.
 	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	issFormerKeys(seriesIx, meta.FormerNames)
 	seriesIdx := seriesIx.byName
 
 	var (
 		rows      []VoteRow
 		curSeries string
+		// curFund is the heading text as printed, recorded on every row of the
+		// section whether or not it resolved, so an unresolved heading is
+		// visible downstream instead of a bare blank (3.8M rows of this
+		// filer-agent vintage carried neither on 2026-09-02).
+		curFund string
 
 		issuer  string
 		ticker  string
@@ -599,6 +605,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		if cur.item != "" {
 			rows = append(rows, VoteRow{
 				SeriesID:                 curSeries,
+				FundName:                 curFund,
 				IssuerName:               issuer,
 				Ticker:                   ticker,
 				CUSIP:                    cusip,
@@ -665,6 +672,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 						if d, declared := lookupSeriesTolerantEntry(seriesIdx, slot); declared {
 							flush()
 							curSeries = ""
+							curFund = slot
 							if d != nil {
 								curSeries = d.SeriesID
 							}
@@ -672,11 +680,19 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 					} else {
 						flush()
 						curSeries = brResolveHeading(seriesIx, slot)
+						// Headings sit at column 0; the slot is lines[i-2] when
+						// reached directly. An indented line there is a wrapped
+						// proposal, not a name worth recording.
+						curFund = ""
+						if !strings.HasPrefix(lines[i-2], " ") && !strings.HasPrefix(lines[i-2], "\t") {
+							curFund = slot
+						}
 					}
 				}
 			} else if brSilentSection(lines, i, &silentBuf) {
 				flush()
 				curSeries = ""
+				curFund = ""
 			}
 		}
 
