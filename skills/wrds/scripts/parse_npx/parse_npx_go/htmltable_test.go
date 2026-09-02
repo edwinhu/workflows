@@ -152,6 +152,7 @@ func TestHTMLTableVoteValuesAreVotes(t *testing.T) {
 const (
 	colIssuerName      = 10
 	colCUSIP           = 11
+	colISIN            = 12
 	colTicker          = 14
 	colMeetingDate     = 15
 	colItemSeq         = 18

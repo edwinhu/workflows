@@ -203,6 +203,16 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			}
 		}
 
+		// The fund named inside a cover-table cell (`ProxyEdge` / `Meeting Date
+		// Range: ...` / `The Gabelli Equity Income Fund`): a line of a row with at
+		// most two filled cells that resolves to a declared series, under the
+		// same rules as a bare paragraph.
+		if htmlFilledCells(cells) <= 2 {
+			if name, id, ok := htmlBareFundLine(seriesIx, strings.Join(cells, "\n")); ok {
+				curFund, curSeries = name, id
+			}
+		}
+
 		if m, mayCarry, mayPartition, consumed, ok := htmlSplitHeaderMapping(cells, feed, repeats); consumed {
 			if ok {
 				mapping, headerArity = m, len(cells)
@@ -1651,6 +1661,7 @@ func htmlSplitCamel(s string) string {
 type htmlContext struct {
 	Issuer      string
 	CUSIP       string
+	ISIN        string
 	Ticker      string
 	MeetingDate string
 }
@@ -1661,6 +1672,9 @@ func (c *htmlContext) merge(n htmlContext) {
 	}
 	if n.CUSIP != "" {
 		c.CUSIP = n.CUSIP
+	}
+	if n.ISIN != "" {
+		c.ISIN = n.ISIN
 	}
 	if n.Ticker != "" {
 		c.Ticker = n.Ticker
@@ -1675,7 +1689,18 @@ func (c *htmlContext) merge(n htmlContext) {
 // comes first, because filers put two labels on one line.
 var htmlContextLabels = []string{
 	"ISSUER NAME:", "ISSUER:", "MEETING DATE:", "RECORD DATE:",
-	"TICKER SYMBOL:", "TICKER:", "SECURITY ID:", "CUSIP NUMBER:", "CUSIP:",
+	"TICKER SYMBOL:", "TICKER:", "SECURITY ID:", "CUSIP NUMBER:", "CUSIP:", "ISIN:",
+}
+
+// htmlBareLabels are the labels the ProxyEdge grammar prints WITHOUT a colon,
+// each in its own cell with the value in the next (`Security | G16612106`,
+// `ISIN | GB0030913577`, `Meeting Date | 13-Jul-2016`; Gabelli's filer-agent
+// vintage, 616k rows in 256 filings with no id, date or issuer on 2026-09-02).
+// They are read as the colon form.
+var htmlBareLabels = map[string]string{
+	"SECURITY": "SECURITY ID:", "SECURITY ID": "SECURITY ID:", "CUSIP": "CUSIP:",
+	"TICKER": "TICKER:", "TICKER SYMBOL": "TICKER SYMBOL:", "ISIN": "ISIN:",
+	"MEETING DATE": "MEETING DATE:", "ISSUER": "ISSUER:", "ISSUER NAME": "ISSUER NAME:",
 }
 
 // htmlReadContext pulls the meeting identity out of a block row. labelled
@@ -1691,12 +1716,20 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 		items  []string
 		cellOf []int // the cell each item came from
 	)
+	// Bare labels are read only on a short identity row. A data row of a wide
+	// export carries the WORD `CUSIP` as a column value (Brighthouse Funds
+	// Trust II: 5,021 vote rows consumed as context on 2026-09-02).
+	bare := htmlFilledCells(cells) <= 4
 	for ci, cell := range cells {
 		// A label wrapped at a source newline inside its cell (`Meeting
 		// Date:`, GMO Trust: 38,059 of 38,551 rows with no date on
 		// 2026-09-02) is one item, read whole.
 		if flat := htmlFlat(cell); htmlHasLabelPrefix(htmlUpperASCII(flat)) {
 			items = append(items, flat)
+			cellOf = append(cellOf, ci)
+			continue
+		} else if label, ok := htmlBareLabels[htmlUpperASCII(flat)]; ok && bare {
+			items = append(items, label)
 			cellOf = append(cellOf, ci)
 			continue
 		}
@@ -1766,6 +1799,10 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 				case "SECURITY ID:", "CUSIP NUMBER:", "CUSIP:":
 					if ctx.CUSIP == "" {
 						ctx.CUSIP = htmlValueOrEmpty(v)
+					}
+				case "ISIN:":
+					if ctx.ISIN == "" {
+						ctx.ISIN = htmlValueOrEmpty(v)
 					}
 				}
 			}
@@ -1871,6 +1908,16 @@ func htmlPreLead(pre, fund string) string {
 		return ""
 	}
 	return line
+}
+
+func htmlFilledCells(cells []string) int {
+	n := 0
+	for _, c := range cells {
+		if htmlFlat(c) != "" {
+			n++
+		}
+	}
+	return n
 }
 
 // htmlContextLead retains a one-value issuer row only as a candidate. It becomes
@@ -2042,6 +2089,7 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 	r := VoteRow{
 		IssuerName:               ctx.Issuer,
 		CUSIP:                    ctx.CUSIP,
+		ISIN:                     ctx.ISIN,
 		Ticker:                   ctx.Ticker,
 		MeetingDate:              ctx.MeetingDate,
 		ItemSeq:                  item,

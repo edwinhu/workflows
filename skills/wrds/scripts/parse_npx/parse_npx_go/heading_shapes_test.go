@@ -201,3 +201,22 @@ func TestHTMLReadContextWrappedLabel(t *testing.T) {
 		t.Errorf("wrapped issuer paragraph: %q", got)
 	}
 }
+
+func TestHTMLTableProxyEdgeGrid(t *testing.T) {
+	// Gabelli Equity Series Funds 2017: the ProxyEdge report as HTML. Labels
+	// without colons in their own cells, the issuer on its own row, the fund
+	// inside a cover-table cell. Every row lacked issuer, id, date and series.
+	b, err := os.ReadFile(filepath.Join("testdata", "htmltable", "H19_gabelli_proxyedge.txt"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows := runISSNPXDoc(t, string(b))
+	if len(rows) == 0 {
+		t.Fatal("no rows")
+	}
+	for _, r := range rows {
+		if r[colSeriesID] != "S000001061" || r[colIssuerName] != "BT GROUP PLC, LONDON" || r[colCUSIP] != "G16612106" || r[colISIN] != "GB0030913577" || r[colMeetingDate] != "20160713" {
+			t.Errorf("series %q issuer %q cusip %q isin %q date %q", r[colSeriesID], r[colIssuerName], r[colCUSIP], r[colISIN], r[colMeetingDate])
+		}
+	}
+}
