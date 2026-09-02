@@ -48,6 +48,7 @@ Submission patterns and working array jobs: `references/edgar.md` (§ SGE index 
 - The quorum parser does not run on the login node and never did — it runs via `submit_quorum.sh`. Citing it as login-node precedent is an unverified claim presented as fact.
 - The `wrds_clean_filings` path convention is `cik_int.zfill(10)[:6]/{cik_int}/{accession}.txt` (see `references/edgar.md`). Hand-rolled path logic gets this wrong.
 - `scan_covers` profiles handle header extraction, body parsing, and custom extractors (`Custom` field type) — "this parser is different enough to need its own binary" has not yet been true once.
+- **A pixi/conda env under `/scratch` is not durable.** A grid job that ran fine in August 2026 came back `rc=127` weeks later: the env its submit script hard-coded had been swept, and no interpreter on WRDS had polars any more. Either rebuild the env as a step of the job, or keep the heavy pull on the grid and do the dataframe work locally. Do not hard-code an env path and assume it survives.
 
 ### Red Flags — STOP Immediately If You're About To:
 

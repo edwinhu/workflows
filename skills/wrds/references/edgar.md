@@ -62,6 +62,40 @@ Company registration information.
 - **Row PK `wrdssec_all.forms`** (~26.9M rows): `fname` — VERIFIED SAMPLED 2023 fdate slice: 0 dupes over
   1,160,114 rows. **`forms` has NO `accession` column** (cols: gvkey, cik, fdate, findexdate, lindexdate,
   form, coname, fname, iname, source) — derive the accession from `fname` if needed.
+- **`fname` is the EDGAR path; `wrdsfname` is the on-disk path. Bulk pulls need `wrdsfname`.**
+  `fname` = `edgar/data/745467/0001145549-18-005124.txt`, `wrdsfname` =
+  `000074/745467/0001145549-18-005124.txt` (CIK zero-padded to 6, sharded). Under
+  `/wrds/sec/archives` only the second resolves; the first fails per-file with
+  `tar: ...: Cannot stat: No such file or directory` and still exits 0 with a valid empty
+  archive, so the pull looks like it worked. Feed `wrdsfname` to `tar -T -`.
+- **Fund-level HOLDINGS are `N-PORT` / `N-Q`, and only one of them is joinable.** `NPORT-P`
+  (2019-10-22 on, 344,217 filings, 2,455 CIKs) is structured XML carrying `<seriesId>` — the
+  same series identifier the N-PX vote panel holds — with each position giving `cusip`, `lei`,
+  `title`, `balance` (SHARES), `valUSD`, `pctVal`. `NPORT-EX` covers 2019-04..2019-10.
+  **`N-Q` (2003-10-27 .. 2021-04-29, 95,003 filings, 4,206 CIKs) carries series IDs in its SGML
+  HEADER, not its body.** The `<SEC-HEADER>` block holds
+  `<SERIES-AND-CLASSES-CONTRACTS-DATA>` → `<SERIES>` → `<SERIES-ID>S000007420` +
+  `<SERIES-NAME>` + per-class `<CLASS-CONTRACT-ID>`/`<CLASS-CONTRACT-TICKER-SYMBOL>`. Measured
+  over N-Q filings from N-PX-filing registrants: **27 of 40 sampled carry the block, 8 of 20
+  sampled pre-2010** — absent for single-portfolio registrants, which have no series, and
+  thinner before series/class tagging phased in around 2006. The header gives the trust's
+  series ROSTER, not a per-holding attribution: the portfolio schedules are HTML tables in the
+  body and must still be parsed and mapped to a series, but that is a within-filing match of a
+  schedule heading against a short `<SERIES-NAME>` list, NOT a global fuzzy join. Do not
+  conclude "no series identifier" from one filing — a size-picked sample lands on a tiny
+  single-series filer. Since `N-PX`,
+  `N-Q` and `N-PORT` are all '40 Act filings from one registrant, the registrant CIK is the
+  join key and **no name matching is needed**: 1,374 of 1,377 panel registrant CIKs (99.8%)
+  file one of them. A 13F position is the MANAGER's book and an `N-PORT` position is the
+  FUND's — different quantities, never blend them.
+- **`N-CEN` is the fund-registrant → investment-adviser bridge, and it exists only as filings.**
+  No WRDS SQL table carries it (`information_schema` has no `%ncen%`); it is in `wrds_forms` as
+  `form LIKE 'N-CEN%'` — 26,358 `N-CEN` + 2,278 `N-CEN/A` over 3,443 CIKs, 2018-09 onward, ~3.2 GB,
+  median 20 KB. Pull the `.txt` and parse Item C.7: `<investmentAdviserName>`, `...FileNo` (801-),
+  `...CrdNo`, and `<subAdviserName>` separately. **Advisers are declared per SERIES, inside
+  `<managementInvestmentQuestion>` keyed by `<mgmtInvSeriesId>`** — take the union across a filing
+  and a 34-series trust hands you 34 advisers. This is what links a fund complex to its 13F manager
+  when the fund's brand name matches nothing on EDGAR.
 - **Business/event key:** one EDGAR submission = `accession` (equivalently the accession embedded in
   `fname`). Amendments (`10-K/A`, `SC 13D/A`, ...) are separate submissions with their own accessions —
   supersede by `(cik, form-family, period)` taking the latest `fdate`, as in `blockholders.md`.

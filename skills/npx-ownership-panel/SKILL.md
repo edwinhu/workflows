@@ -50,6 +50,45 @@ Legs 1, 2, 4 start together. **Leg 4 hard-gates leg 3** — the array hash-merge
 the crosswalk; without it every task opens a missing dataset and exits 0 having
 written nothing.
 
+**Which leg needs a fund link, and which does not.** Leg 2 (13F) answers *institutional ownership
+of a STOCK* and aggregates to `permno × quarter` — **no fund-level link is needed for it**, so
+work spent linking N-PX filers to 13F filers does not serve it. Leg 1 (S12) is what estimates
+*shares voted by index funds*, and that is the leg `wficn` serves. Route link work to leg 1.
+
+**`wficn` is in leg 1 only because the holdings come from S12.** Its three jobs are: bridge S12
+`fundno` → `crsp_fundno` for `crsp.portnomap`'s `index_fund_flag`/`et_flag`; act as the
+`(wficn, rqdate, cusip8)` dedup key; and supply `count(distinct wficn)` as `num_mf_owners`.
+`crsp_portno` can do all three — `portnomap` already carries both flags, dedup on `crsp_portno` is
+already the house rule, and `crsp.holdings` is keyed on it. Sourcing leg 1 from `crsp.holdings`
+drops `wficn`, `mflink1/2`, `mfl2` and `mfl3` from the chain and moves coverage from **87.33% to
+93.54%** of the 229,787,146-row vote universe. Before switching, check `crsp.holdings`' start date
+against the panel start (S12 reaches 1980; votes start 2003-07-01) and reconcile shares between the
+two sources — coverage parity with a shares disagreement is worse than the status quo.
+
+**Before linking anything to 13F, check which question you have.** `N-PX`, `N-Q` and
+`N-PORT` are all '40 Act filings from the same registrant, so the registrant CIK — parsed
+from the N-PX filing path — is already the join key, and **1,374 of 1,377 panel registrant
+CIKs (99.8%) file `N-Q` or `N-PORT`, covering 99.11% of the vote universe**. Stock-level
+institutional ownership comes from 13F collapsed to cusip × quarter and needs NO fund link;
+**shares held by a fund come from `N-PORT` `balance` per `<seriesId>`**, which is the same
+identifier the vote panel carries, also with NO link. An ISS→13F crosswalk is needed only
+when the question is explicitly about a MANAGER's own reported book. Caveat: `N-PORT` is
+structured XML from 2019-04 (41.19% of the panel's vote rows); `N-Q` covers 2003-2021 but
+carries no series id and is unstructured, so earlier holdings are registrant-level and need
+parsing.
+
+**If you do need an ISS-institution → 13F-manager link, do not match on the ISS name.** The
+deterministic linker is `npx-reconcile/src/link13f/` (92.37% of the vote universe, gate-passing).
+The channel that carries it is **N-CEN Item C.7**, where a registrant declares its adviser's legal
+name per series per year — reached from the N-PX `filepath`, which encodes the registrant CIK.
+Brand strings do not resolve: `Fidelity` appears in **none** of the 25,073 EDGAR conames, while
+`FIDELITY SELECTCO, LLC` does. Name rules alone plateau near 60%, and the 13F `om` family graph
+adds **zero** institutions on its own. Attribute advisers **per series** (`<mgmtInvSeriesId>`), not
+per trust: a 34-series trust lists 34 advisers and only one advises the fund that voted. Validate
+with holdings overlap, which **rejects only** — the known-wrong `Russell → JPMorgan` pair scores
+0.932 against a random-pair p90 of 0.940. A further 4.13% of the universe has advisers that file
+no 13F at all, so it is unlinkable rather than unlinked.
+
 **Leg 2 has two sources for one quantity, and they are NOT interchangeable.**
 Thomson S34 decayed after 2013 and undercounts; the EDGAR scrape exists for that
 reason. EDGAR wins where present, S34 is fallback-only, **never blended**.
