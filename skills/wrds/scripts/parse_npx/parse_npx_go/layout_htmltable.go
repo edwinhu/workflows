@@ -115,6 +115,8 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		sawData     bool
 		ctx         htmlContext
 		ctxLead     string
+		stacked     map[int]string
+		leadJoin    bool
 		ctxSealed   bool
 		nilRow      bool
 		// curSeries is the fund the following blocks belong to. This layout
@@ -223,10 +225,42 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// One-cell issuer headings are tentative until a following labelled context
 		// row proves what they are. This is the split used by the partitioned export:
 		// issuer, then Ticker Symbol/Cusip Number, then Record Date/Meeting Date.
-		if lead, candidate := htmlContextLead(cells); candidate {
-			ctxLead = lead
+		// The stacked grid: a row of bare labels (`Ticker | Security ID: |
+		// Meeting Date | Meeting Status`) and the values in the SAME columns of
+		// the next row (Putnam Variable Trust, 36,599 rows with the issuer read
+		// as "Ticker" and no security id or date on 2026-09-02).
+		if stacked != nil {
+			labels := stacked
+			stacked = nil
+			if next := htmlStackedValues(cells, labels); next != (htmlContext{}) {
+				if ctxSealed {
+					ctx = htmlContext{}
+					ctxSealed = false
+				}
+				if next.Issuer == "" && ctxLead != "" {
+					next.Issuer = ctxLead
+				}
+				ctxLead = ""
+				ctx.merge(next)
+				continue
+			}
+		}
+		if labels, ok := htmlStackedLabels(cells); ok {
+			stacked = labels
 			continue
 		}
+		if lead, candidate := htmlContextLead(cells); candidate {
+			// An issuer wrapped over two one-cell rows: `Putnam Money Market
+			// Liquidity` then `Fund`. Only a short continuation joins.
+			if leadJoin && len(strings.Fields(lead)) <= 2 {
+				ctxLead += " " + lead
+			} else {
+				ctxLead = lead
+			}
+			leadJoin = true
+			continue
+		}
+		leadJoin = false
 
 		// The context test runs BEFORE the data test, and must: in this grammar the
 		// meeting identity is printed in block rows whose cell count often falls
@@ -1703,6 +1737,62 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 		ctx.Issuer = htmlFlat(lead)
 	}
 	return ctx, labelled
+}
+
+// htmlStackedLabelSet is the vocabulary of a bare label row, without colons.
+var htmlStackedLabelSet = map[string]string{
+	"TICKER": "TICKER", "TICKER SYMBOL": "TICKER",
+	"SECURITY ID": "CUSIP", "CUSIP": "CUSIP", "CUSIP NUMBER": "CUSIP",
+	"MEETING DATE": "MEETING DATE", "RECORD DATE": "RECORD DATE",
+	"MEETING TYPE": "MEETING TYPE", "MEETING STATUS": "MEETING STATUS",
+	"COUNTRY OF TRADE": "COUNTRY", "ISSUER": "ISSUER", "ISSUER NAME": "ISSUER",
+}
+
+// htmlStackedLabels reports a row whose every non-empty cell is a bare context
+// label, at least two of them, keyed by cell index.
+func htmlStackedLabels(cells []string) (map[int]string, bool) {
+	var labels map[int]string
+	for i, cell := range cells {
+		flat := htmlFlat(cell)
+		if flat == "" {
+			continue
+		}
+		key := strings.TrimSpace(strings.TrimSuffix(htmlUpperASCII(flat), ":"))
+		canon, ok := htmlStackedLabelSet[key]
+		if !ok {
+			return nil, false
+		}
+		if labels == nil {
+			labels = map[int]string{}
+		}
+		labels[i] = canon
+	}
+	return labels, len(labels) >= 2
+}
+
+// htmlStackedValues reads the row under a stacked label row, column by column.
+func htmlStackedValues(cells []string, labels map[int]string) (ctx htmlContext) {
+	for i, label := range labels {
+		if i >= len(cells) {
+			continue
+		}
+		v := htmlFlat(cells[i])
+		switch label {
+		case "CUSIP":
+			// `CUSIP 746763168`: the value carries its own label word.
+			if f := strings.Fields(v); len(f) > 1 && htmlUpperASCII(f[0]) == "CUSIP" {
+				v = strings.Join(f[1:], " ")
+			}
+			ctx.CUSIP = htmlValueOrEmpty(v)
+		case "TICKER":
+			ctx.Ticker = htmlValueOrEmpty(v)
+		case "MEETING DATE":
+			ctx.MeetingDate = htmlDate(v)
+		case "ISSUER":
+			ctx.Issuer = v
+		}
+	}
+	return ctx
 }
 
 // htmlContextLead retains a one-value issuer row only as a candidate. It becomes
