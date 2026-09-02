@@ -98,7 +98,8 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 	body := htmlTableBody(raw)
 	// Built ONCE per filing: these bodies reach 142 MB and 452,552 vote rows, so
 	// a per-row rebuild would make the job quadratic in the input.
-	seriesIdx := seriesByName(meta.SeriesDecls)
+	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	seriesIdx := seriesIx.byName
 	if indexFrom(body, 0, "</tr>") < 0 {
 		return nil, errLayoutDeclined
 	}
@@ -163,21 +164,8 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// under the fund above it.
 		if name, ok := htmlFundHeading(row.pre); ok {
 			curSeries = icrResolveFund(seriesIdx, name)
-		} else if row.pre != "" {
-			// One vintage prints each fund's name as a bare centred paragraph
-			// between tables, with no label at all: American Century ETF Trust
-			// alone is 713k rows, and htmltable's series fill was 34.5%
-			// (2026-09-02). A line that equals a declared series name EXACTLY is
-			// the header's own evidence of which fund follows; a line that does
-			// not is left alone, and nothing positional is guessed.
-			// The text between two tables can hold several such names when the
-			// funds between them reported no activity; the fund that follows is
-			// the NEAREST name above the table, so the last match wins.
-			for _, line := range strings.Split(row.pre, "\n") {
-				if d := lookupSeriesByName(seriesIdx, strings.TrimSpace(line)); d != nil {
-					curSeries = d.SeriesID
-				}
-			}
+		} else if id, ok := htmlBareFundLine(seriesIx, row.pre); ok {
+			curSeries = id
 		}
 		if row.pre != "" {
 			if next, labelled := htmlReadContext([]string{row.pre}); labelled {
@@ -1895,6 +1883,36 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 	// declares exactly one series; guessing which fund a table belongs to would
 	// move one fund's votes onto another, which is far worse than a blank.
 	return r, true
+}
+
+// htmlBareFundLine reads a fund name printed as a bare paragraph between two
+// tables, with no label at all. One vintage prints every fund that way
+// (Workiva-built filings such as American Century ETF Trust, 713k rows;
+// htmltable's series fill was 34.5% on 2026-09-02), and another prints it with
+// the sub-adviser clause the ISS layout learned to cut (Advanced Series Trust,
+// `AST AB Global Bond Portfolio- Sub-Adviser: AllianceBernstein`, 1.6M rows).
+//
+// A line that resolves to a declared series through the shared rules -- exact
+// after one described edit, refused on collision -- is the header's own
+// evidence of which fund follows; a line that does not is left alone, and
+// nothing positional is guessed. The text between two tables can hold several
+// such names when the funds between them reported no activity; the fund that
+// follows is the NEAREST name above the table, so the last match wins.
+func htmlBareFundLine(ix *issSeriesIndex, pre string) (string, bool) {
+	if pre == "" {
+		return "", false
+	}
+	id, found := "", false
+	for _, line := range strings.Split(pre, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		if _, d := issResolveFund(ix, line); d != nil {
+			id, found = d.SeriesID, true
+		}
+	}
+	return id, found
 }
 
 // htmlVoteSummaryBanner is the heading this grammar prints above each fund's

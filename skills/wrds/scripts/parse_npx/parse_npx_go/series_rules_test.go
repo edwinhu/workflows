@@ -241,3 +241,18 @@ func TestBroadridgeHeadingUsesSharedRules(t *testing.T) {
 		t.Errorf("noun swap: got %q, want blank", got)
 	}
 }
+
+func TestHTMLBareFundLine(t *testing.T) {
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "AST AB GLOBAL BOND PORTFOLIO"},
+		{SeriesID: "S2", Name: "AST ACADEMIC STRATEGIES ASSET ALLOCATION PORTFOLIO"},
+	}
+	ix := newISSSeriesIndex(decls, normalizeSeriesName("ADVANCED SERIES TRUST"))
+	pre := "\nAST AB Global Bond Portfolio- Sub-Adviser: AllianceBernstein\n\nThere is no proxy voting activity for the fund.\n\nAST Academic Strategies Asset Allocation Portfolio - Sub-Adviser: Alpha Simplex\n"
+	if id, ok := htmlBareFundLine(ix, pre); !ok || id != "S2" {
+		t.Errorf("got %q,%v, want S2 (the nearest name above the table)", id, ok)
+	}
+	if _, ok := htmlBareFundLine(ix, "\nThere is no proxy voting activity for the fund.\n"); ok {
+		t.Error("a paragraph naming no fund must not set one")
+	}
+}
