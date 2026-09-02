@@ -140,6 +140,11 @@ var issVoteValues = map[string]bool{
 	// what it printed. `proportional` is the same outcome spelled out, and the
 	// shared howVotedVocabulary has carried PROPORTIONAL all along.
 	"echo vote": true, "proportional": true,
+	// And one family prints `Echo` BARE -- `For  Echo  Management` with the
+	// next row on the next line, 598 rows placed by the shape finder. Admitting
+	// it is safe for the wrapped family only because the row loop extends a
+	// vote by a continuation that completes a longer value (`Echo` + `Vote`).
+	"echo": true,
 	// `Did Note Vote` is the filing's OWN typo for `Did Not Vote`. how_voted is
 	// verbatim, so the spelling is recorded as printed rather than corrected --
 	// 1,264 rows of 0000950137-05-010894.txt. `Not Cast` was simply missing.
@@ -526,7 +531,21 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			// The open row already carries its trailing cells, so this line is
 			// the wrapped tail of the proposal and is text only. It is never
 			// peeled, even when it is exactly a vocabulary word.
-			if tail := strings.TrimSpace(rest); tail != "" {
+			//
+			// One exception, and it is the vote cell wrapping rather than the
+			// proposal: `Echo` is printed bare by one family (598 rows,
+			// 2026-09-01) and as `Echo` over `Vote` by another. Now that the
+			// bare form is a value the row line's peel succeeds on it, so the
+			// `Vote` below would land here as text. A tail that does nothing but
+			// complete a LONGER vocabulary value extends the cell instead; a
+			// description wrapping to a lone `Vote` under a bare `Echo` row is
+			// the one shape this cannot tell apart, and neither could a reader.
+			tail := strings.TrimSpace(rest)
+			if ext := cur.cast + " " + tail; tail != "" && issVoteValues[strings.ToLower(strings.Trim(ext, ".,;*"))] {
+				cur.cast = ext
+				continue
+			}
+			if tail != "" {
 				cur.text = append(cur.text, tail)
 			}
 			continue

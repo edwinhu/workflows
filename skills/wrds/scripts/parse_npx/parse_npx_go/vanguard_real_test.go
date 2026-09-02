@@ -256,7 +256,7 @@ var howVotedVocabulary = map[string]bool{
 	// F 5,637, A 59, N 9, D 7 in the filing that prints it. W is absent there
 	// and is deliberately not admitted.
 	"F": true, "A": true, "N": true, "D": true, "S": true, "W": true,
-	"WHOLD": true, "1YEAR": true, "3YEARS": true,
+	"WHOLD": true, "1YEAR": true, "3YEARS": true, "ECHO": true,
 	// `DidNot Vote` spelled without the space, and the `Null` recommendation
 	// that vintage prints beside it.
 	"DIDNOT VOTE": true, "NULL": true, "ECHO VOTE": true,
