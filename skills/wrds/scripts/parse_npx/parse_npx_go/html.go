@@ -81,6 +81,13 @@ func removeMarkup(src []byte) string {
 			}
 			i += n
 			col = 0
+			// EDGAR prefixes `- ` to a line that begins with a dash AFTER it
+			// has wrapped the file, so such a line runs 1025 bytes and its
+			// break sits two columns past the width. The prefix is not part
+			// of the wrapped text and is not counted.
+			if i+2 < len(src) && src[i] == '-' && src[i+1] == ' ' && src[i+2] == '-' {
+				col = -2
+			}
 			continue
 		}
 		if c != '<' {
