@@ -163,6 +163,21 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// under the fund above it.
 		if name, ok := htmlFundHeading(row.pre); ok {
 			curSeries = icrResolveFund(seriesIdx, name)
+		} else if row.pre != "" {
+			// One vintage prints each fund's name as a bare centred paragraph
+			// between tables, with no label at all: American Century ETF Trust
+			// alone is 713k rows, and htmltable's series fill was 34.5%
+			// (2026-09-02). A line that equals a declared series name EXACTLY is
+			// the header's own evidence of which fund follows; a line that does
+			// not is left alone, and nothing positional is guessed.
+			// The text between two tables can hold several such names when the
+			// funds between them reported no activity; the fund that follows is
+			// the NEAREST name above the table, so the last match wins.
+			for _, line := range strings.Split(row.pre, "\n") {
+				if d := lookupSeriesByName(seriesIdx, strings.TrimSpace(line)); d != nil {
+					curSeries = d.SeriesID
+				}
+			}
 		}
 		if row.pre != "" {
 			if next, labelled := htmlReadContext([]string{row.pre}); labelled {
