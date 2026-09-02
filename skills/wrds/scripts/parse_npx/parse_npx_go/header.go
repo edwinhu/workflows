@@ -181,6 +181,11 @@ func seriesIDs(sc []SeriesClass) []string {
 // Duration Portfolio" are different registered series — and must not be added.
 func normalizeSeriesName(s string) string {
 	s = strings.ToLower(s)
+	// An SGML header can carry an ampersand encoded once or twice
+	// (`S&amp;amp;P 500`); decode until stable so it folds like the body's `&`.
+	for strings.Contains(s, "&amp;") {
+		s = strings.ReplaceAll(s, "&amp;", "&")
+	}
 	s = seriesMarkReplacer.Replace(s)
 	s = seriesPunctReplacer.Replace(s)
 

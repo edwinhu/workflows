@@ -367,3 +367,15 @@ func TestSeriesBrandSpelledAsSeveralTokens(t *testing.T) {
 		t.Errorf("got %q, want S1", got)
 	}
 }
+
+func TestNormalizeSeriesNameDecodesEntities(t *testing.T) {
+	// The SGML header can carry an ampersand encoded once or twice:
+	// `S&amp;amp;P 500 Index Master Portfolio` (Master Investment Portfolio,
+	// 60k rows unmatched on 2026-09-02).
+	if got, want := normalizeSeriesName("S&amp;amp;P 500 Index Master Portfolio"), normalizeSeriesName("S&P 500 Index Master Portfolio"); got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+	if got, want := normalizeSeriesName("Growth &amp; Income Fund"), normalizeSeriesName("Growth & Income Fund"); got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
