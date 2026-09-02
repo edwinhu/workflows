@@ -78,3 +78,26 @@ func TestHTMLTableClassLetterHeading(t *testing.T) {
 		}
 	}
 }
+
+func TestHTMLBareFundLineRegistrantDashFund(t *testing.T) {
+	// The Ultimus vintage (filer agent 0001580642, 809k rows with no fund on
+	// 2026-09-02) labels the section `Registrant: GLOBAL ATLANTIC PORTFOLIOS -
+	// Global Atlantic American Funds® Managed Risk Portfolio`. Only the part
+	// after the dash may name the fund; the registrant half never does, or a
+	// trust sharing its flagship's name would stamp every other section.
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "Global Atlantic American Funds Managed Risk Portfolio"},
+		{SeriesID: "S2", Name: "Global Atlantic Portfolios"},
+	}
+	ix := newISSSeriesIndex(decls, normalizeSeriesName("FORETHOUGHT VARIABLE INSURANCE TRUST"))
+	for pre, want := range map[string]string{
+		"Registrant: GLOBAL ATLANTIC PORTFOLIOS -  Global Atlantic American Funds® Managed Risk Portfolio\nItem 1, Exhibit 1": "S1",
+		"Registrant: GLOBAL ATLANTIC PORTFOLIOS\nItem 1, Exhibit 1":                                                           "",
+		"Registrant: GLOBAL ATLANTIC PORTFOLIOS - Something Else Portfolio":                                                   "",
+	} {
+		_, id, _ := htmlBareFundLine(ix, pre)
+		if id != want {
+			t.Errorf("%q -> %q, want %q", pre, id, want)
+		}
+	}
+}
