@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 // The ISS-generated "FORM N-Px REPORT" is the highest-volume legacy layout: a
@@ -59,7 +60,11 @@ import (
 // and 12 that follow the slate. issnpx is the largest remaining source of
 // partial parsing at 115,096 items across 1,814 filings.
 // Continuation lines never carry one, which is what separates them from a new row.
-var issItemRe = regexp.MustCompile(`^\d+(\.+\d+)*[A-Za-z]?[.)]?$`)
+// A sub-item may be lettered AND numbered -- `3a1`, `3a2` -- in the vintage
+// that puts a blank line between every physical line. One trailing letter was
+// allowed; a letter followed by digits was not, and those rows opened no row at
+// all. Measured 2026-09-01, four of ten items in one excerpt.
+var issItemRe = regexp.MustCompile(`^\d+(\.+\d+)*([A-Za-z]\d*)?[.)]?$`)
 
 // issSponsors is the rightmost column's vocabulary. It anchors the peel: an
 // N-PX proposal is put forward either by management or by a shareholder.
@@ -261,6 +266,10 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		lastLine    string
 
 		inTable bool
+		// tailRow is the index in rows of the last row flushed from the OPEN
+		// table, or -1. A wrapped tail that arrives after a blank line -- with no
+		// row open -- belongs to it; see the lookahead below.
+		tailRow int
 		// sponsorFirst is set from the column header: one vintage names Sponsor
 		// before Proposal, which moves it off the right edge the peel works from.
 		sponsorFirst bool
@@ -276,6 +285,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		blankRun int
 	)
 
+	tailRow = -1
 	flush := func() {
 		if cur == nil {
 			return
@@ -298,6 +308,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				VoteSource:               cur.sponsor,
 				VoteOtherInfo:            cur.voted,
 			})
+			tailRow = len(rows) - 1
 		}
 		cur = nil
 	}
@@ -327,7 +338,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 
 		if name, ok := issFundSeparator(line); ok {
 			flush()
-			inTable = false
+			inTable, tailRow = false, -1
 			if name == "" {
 				// A bare rule closes any banner still accumulating above it, so a
 				// name never joins across a divider.
@@ -393,7 +404,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		// line as the issuer name.
 		if tk, id, ok := issTickerLine(line); ok {
 			flush()
-			inTable = false
+			inTable, tailRow = false, -1
 			ticker, cusip = tk, id
 			issuer = lastLine
 			mtgDate, mtgType, recDate = "", "", ""
@@ -401,13 +412,13 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 		if d, typ, ok := issMeetingLine(line); ok {
 			flush()
-			inTable = false
+			inTable, tailRow = false, -1
 			mtgDate, mtgType = d, typ
 			continue
 		}
 		if d, ok := issRecordLine(line); ok {
 			flush()
-			inTable = false
+			inTable, tailRow = false, -1
 			recDate = d
 			continue
 		}
@@ -423,7 +434,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		// one issuer's votes to another -- see issForeignTableHeader.
 		if issForeignTableHeader(line) {
 			flush()
-			inTable = false
+			inTable, tailRow = false, -1
 			continue
 		}
 
@@ -471,6 +482,32 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			flush()
 			cur = &issRowBuf{item: strings.TrimRight(item, ".)")}
 		} else if cur == nil {
+			// A WRAPPED TAIL CAN ARRIVE AFTER A BLANK LINE. The HTML vintage puts
+			// a blank between every physical line, so the blank flushes the
+			// complete row and its wrapped description lands here with no row
+			// open -- where, read as the next meeting's issuer name, it truncated
+			// every description in that vintage at its first line.
+			//
+			// An issuer name is followed by a `Ticker:` line; a wrapped tail is
+			// not. That lookahead is the whole test, and it is applied only while
+			// a table is open and only to a line carrying no cells of its own.
+			// A dashed rule is a table boundary, not text: two fixtures caught it
+			// being appended as a tail. A tail has letters in it.
+			if inTable && tailRow >= 0 && tailRow < len(rows) && strings.ContainsFunc(rest, unicode.IsLetter) {
+				if _, _, _, sp := issPeelColumns(rest); sp == "" {
+					if _, _, _, cellsOnly := issPeelTrailingCells(rest); !cellsOnly {
+						// End of input counts as "no ticker follows": the last tail
+						// in a document has nothing after it.
+						next := issNextNonBlank(lines, i+1)
+						_, _, isTicker := issTickerLine(next)
+						_, isBanner := issFundSeparator(next)
+						if next == "" || (!isTicker && !isBanner) {
+							rows[tailRow].VoteDescription += " " + strings.TrimSpace(rest)
+							continue
+						}
+					}
+				}
+			}
 			// A non-item line with no row open is not a continuation: the table
 			// has ended and this is the next meeting's issuer name.
 			lastLine = line
@@ -1152,6 +1189,17 @@ func issPeelVotedColumn(rest string) (body, mgmt, cast, voted, sponsor string, o
 		return "", "", "", "", "", false
 	}
 	return strings.Join(toks, " "), mgmt, cast, voted, sponsor, true
+}
+
+// issNextNonBlank returns the next non-blank line at or after index j, trimmed,
+// or "" at end of input.
+func issNextNonBlank(lines []string, j int) string {
+	for ; j < len(lines); j++ {
+		if t := strings.TrimSpace(lines[j]); t != "" {
+			return t
+		}
+	}
+	return ""
 }
 
 // issPeelColumns takes the Mgt Rec / Vote Cast / Sponsor cells off the right of a
