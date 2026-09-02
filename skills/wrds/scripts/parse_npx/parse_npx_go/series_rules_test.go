@@ -379,3 +379,27 @@ func TestNormalizeSeriesNameDecodesEntities(t *testing.T) {
 		t.Errorf("got %q, want %q", got, want)
 	}
 }
+
+func TestSeriesRegistrantTypeWordOmitted(t *testing.T) {
+	// John Hancock Variable Insurance Trust 2012 heads each fund without the
+	// registrant's own type word, wherever it sits in the declared name:
+	// `6721 500 Index B` for `500 Index Trust B`, `6724 Small Cap Growth` for
+	// `Small Cap Growth Trust`.
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "500 Index Trust B"},
+		{SeriesID: "S2", Name: "500 Index Trust"},
+		{SeriesID: "S3", Name: "Small Cap Growth Trust"},
+		{SeriesID: "S4", Name: "Money Market Trust B"},
+	}
+	ix := newISSSeriesIndex(decls, normalizeSeriesName("JOHN HANCOCK VARIABLE INSURANCE TRUST"))
+	for h, want := range map[string]string{
+		"6721 500 Index B":      "S1",
+		"6724 Small Cap Growth": "S3",
+		"6721 500 Index":        "S2",
+		"6733 Money Market":     "", // no declared name is Money Market minus Trust
+	} {
+		if got := brResolveHeading(ix, h); got != want {
+			t.Errorf("%q -> %q, want %q", h, got, want)
+		}
+	}
+}

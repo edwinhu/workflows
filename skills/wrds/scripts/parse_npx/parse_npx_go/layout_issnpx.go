@@ -881,6 +881,11 @@ type issSeriesIndex struct {
 	// and prints its banners without it. A fact of the filing's own header,
 	// not a tolerance; nil when the names do not all agree.
 	lessSuffix map[string]*SeriesDecl
+	// lessTypeWord keys the declared names with the registrant's own last
+	// token removed from WHEREVER it sits ("500 Index Trust B" under "500
+	// index b" for JOHN HANCOCK VARIABLE INSURANCE TRUST), built only when
+	// two thirds of the declared names carry that token; nil otherwise.
+	lessTypeWord map[string]*SeriesDecl
 }
 
 func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex {
@@ -944,6 +949,26 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 			put(ix.lessParen, normalizeSeriesName(cut), d)
 		}
 	}
+	if tw := issRegistrantTypeWord(registrantKey, decls); tw != "" {
+		ix.lessTypeWord = make(map[string]*SeriesDecl)
+		for i := range decls {
+			d := &decls[i]
+			if d.SeriesID == "" || d.Name == "" {
+				continue
+			}
+			toks := strings.Fields(normalizeSeriesName(d.Name))
+			for j, t := range toks {
+				if t != tw {
+					continue
+				}
+				rest := append(append([]string{}, toks[:j]...), toks[j+1:]...)
+				if len(rest) > 0 {
+					put(ix.lessTypeWord, strings.Join(rest, " "), d)
+				}
+				break
+			}
+		}
+	}
 	if suffix := issCommonLastWord(decls); suffix != "" {
 		ix.lessSuffix = make(map[string]*SeriesDecl)
 		for i := range decls {
@@ -958,6 +983,46 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		}
 	}
 	return ix
+}
+
+// issRegistrantTypeWord returns the registrant's last token when at least two
+// thirds of the declared names (two at least) carry it as a whole token, and
+// "" otherwise. Corporate suffixes are skipped so "... FUNDS INC" yields
+// "funds".
+func issRegistrantTypeWord(registrantKey string, decls []SeriesDecl) string {
+	toks := strings.Fields(registrantKey)
+	for len(toks) > 0 {
+		switch toks[len(toks)-1] {
+		case "inc", "corp", "llc", "ltd", "co", "the":
+			toks = toks[:len(toks)-1]
+			continue
+		}
+		break
+	}
+	if len(toks) < 2 {
+		return ""
+	}
+	tw := toks[len(toks)-1]
+	if len(tw) < 4 {
+		return ""
+	}
+	n, with := 0, 0
+	for _, d := range decls {
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		n++
+		for _, t := range strings.Fields(normalizeSeriesName(d.Name)) {
+			if t == tw {
+				with++
+				break
+			}
+		}
+	}
+	if n < 2 || with*3 < n*2 {
+		return ""
+	}
+	return tw
 }
 
 // issCommonLastWord returns the last word the declared names share -- all of
@@ -1189,6 +1254,13 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// The banner spaces a token the header runs together.
 	if d, seen := ix.byCompact[strings.ReplaceAll(key, " ", "")]; seen {
 		return banner, d
+	}
+
+	// The registrant's own type word, omitted from wherever it sits.
+	if ix.lessTypeWord != nil {
+		if d, seen := ix.lessTypeWord[key]; seen {
+			return banner, d
+		}
 	}
 
 	// The last word every declared name shares, missing from the banner.
