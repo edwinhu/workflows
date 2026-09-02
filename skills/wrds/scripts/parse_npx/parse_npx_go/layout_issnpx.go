@@ -516,10 +516,16 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		// and that is what makes it a row. `10 Percent Per Year of Issued
 		// Capital` ends in neither, and is text. Gating on whether the open row
 		// is complete separates neither case and swallowed that whole vintage.
+		//
+		// A right edge that is the HEAD of a vote value the column wrapped --
+		// `2  Elect Georg Ehrnrooth as Chairman of  For  Did Not`, with `Vote`
+		// two lines down -- is a row too. Demoting it folded every such row
+		// into the one above: the corpus's largest ISS filing emitted 41,241
+		// rows where it prints 44,696. Measured 2026-09-02.
 		if item != "" && inTable && cur != nil {
 			toks := strings.Fields(rest)
 			if _, _, sponsored := issPeelCell(toks, issSponsors); !sponsored {
-				if _, _, voted := issPeelVote(toks); !voted {
+				if _, _, voted := issPeelVote(toks); !voted && !issVoteHead(toks) {
 					item, rest = "", line
 				}
 			}
@@ -686,6 +692,13 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				if !haveSponsor {
 					continue
 				}
+				// THE SPONSOR MAY BE ALONE ON ITS LINE (the vintage that prints
+				// it below the row); the vote's head is then the line above it.
+				headIdx := j
+				if len(prev) == 0 && j > 0 {
+					headIdx = j - 1
+					prev = strings.Fields(cur.text[headIdx])
+				}
 				vote, prevKeep, contKeep, ok := issJoinWrappedVote(prev, strings.Fields(rest))
 				// A CELL CAN WRAP OVER MORE THAN ONE LINE BELOW ITS ROW, in its own
 				// column with nothing else on them:
@@ -722,8 +735,10 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 					cur.mgmt, prevKeep = mg, remaining
 				}
 				cur.cast = vote
-				cur.text[j] = strings.Join(prevKeep, " ")
-				if spanned > 0 {
+				cur.text[headIdx] = strings.Join(prevKeep, " ")
+				if headIdx != j {
+					cur.text = cur.text[:headIdx+1] // drops the lone sponsor line
+				} else if spanned > 0 {
 					cur.text = cur.text[:j+1]
 				}
 				if tail := strings.Join(contKeep, " "); tail != "" {
@@ -1176,6 +1191,22 @@ func issSkippableHeader(line string) bool {
 		return true
 	case strings.HasPrefix(up, "REPORTING PERIOD:"):
 		return true
+	}
+	return false
+}
+
+// issVoteHead reports whether a line's last tokens are the head of a vote
+// value whose tail the column wrapped onto a later line: `Did Not` for
+// `Did Not Vote`, `Echo` for `Echo Vote`, `No shares` for `No shares held on
+// record`. A whole value is not a head.
+func issVoteHead(toks []string) bool {
+	for k := 1; k <= issMaxCellWords && k <= len(toks); k++ {
+		head := strings.ToLower(strings.Trim(strings.Join(toks[len(toks)-k:], " "), issCellTrim)) + " "
+		for v := range issVoteValues {
+			if strings.HasPrefix(v, head) {
+				return true
+			}
+		}
 	}
 	return false
 }
