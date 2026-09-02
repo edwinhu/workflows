@@ -61,7 +61,12 @@ func TestISSNPXBroadridgeNotesHeaderIsForeign(t *testing.T) {
 		t.Fatalf("read fixture: %v", err)
 	}
 	rows := runISSNPXDoc(t, string(b))
-	if len(rows) != 0 {
-		t.Errorf("got %d rows from a Broadridge block, want 0: %q", len(rows), rows[0][colVoteDescription])
+	if len(rows) == 0 {
+		t.Fatal("the ISS section before the block emitted nothing; the fixture must be claimed")
+	}
+	for _, r := range rows {
+		if strings.Contains(r[colVoteDescription], "With Mgmt") || r[colHowVoted] == "" {
+			t.Errorf("a Broadridge row was read as ISS: item %s %q vote %q", r[colItemSeq], r[colVoteDescription], r[colHowVoted])
+		}
 	}
 }
