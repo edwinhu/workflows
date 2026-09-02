@@ -103,8 +103,12 @@ var issVoteValues = map[string]bool{
 	// Vote Cast columns -- `3  Management Proposal  F  F  Management`. Counted
 	// in that filing's own bytes: F 5,637, A 59, N 9, D 7. W does not appear and
 	// is not admitted, because the vocabulary records what the corpus prints
-	// rather than what an alphabet suggests.
-	"f": true, "a": true, "n": true, "d": true,
+	// rather than what an alphabet suggests. `S` does: one 2020 filing prints
+	// `F  S  Management` and `N  S  Shareholder` on 244 rows and the corpus
+	// harvest finds 289 of the first shape, every one between a lettered Mgt
+	// Rec and a sponsor. The filing defines no legend, and none is needed --
+	// how_voted is what the cell printed.
+	"f": true, "a": true, "n": true, "d": true, "s": true,
 	// `No` in the Vote Cast column -- the fund did not vote the item. The shared
 	// howVotedVocabulary in the test suite already recognised NO, so the two
 	// lists had drifted apart; one filing prints it on 5,941 rows.
