@@ -403,3 +403,22 @@ func TestSeriesRegistrantTypeWordOmitted(t *testing.T) {
 		}
 	}
 }
+
+func TestHTMLBareFundLineInstitutionAccount(t *testing.T) {
+	// Ivy Funds VIP's later sections name the fund only in the export field
+	// `Institution Account(s): 90 Ivy Funds VIP Asset Strategy` -- an account
+	// code before the name; the line under the banner is the period.
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "Ivy Funds VIP Asset Strategy"},
+		{SeriesID: "S2", Name: "Ivy Funds VIP Growth"},
+	}
+	ix := newISSSeriesIndex(decls, normalizeSeriesName("Ivy Funds Variable Insurance Portfolios"))
+	pre := "Vote Summary Report\nReporting Period: 07/01/2014 to 06/30/2015\nLocation(s): All Locations\nInstitution Account(s): 90 Ivy Funds VIP Asset Strategy\n"
+	name, id, ok := htmlBareFundLine(ix, pre)
+	if !ok || id != "S1" {
+		t.Errorf("got %q,%q,%v, want S1", name, id, ok)
+	}
+	if name != "90 Ivy Funds VIP Asset Strategy" {
+		t.Errorf("fund name recorded as %q, want the field's value as printed", name)
+	}
+}

@@ -1940,11 +1940,38 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool)
 		if line == "" {
 			continue
 		}
-		if _, d := issResolveFund(ix, line); d != nil {
+		// The export field `Institution Account(s): 90 Ivy Funds VIP Asset
+		// Strategy` names the fund behind an account code, where the line
+		// under the banner is the reporting period (Ivy Funds VIP, ~500k
+		// rows named `Reporting Period: ...` on 2026-09-02). The value is
+		// recorded as printed; the code is dropped only for the lookup.
+		candidate := line
+		if i := strings.Index(strings.ToLower(line), "institution account"); i == 0 {
+			if colon := strings.IndexByte(line, ':'); colon > 0 {
+				candidate = strings.TrimSpace(line[colon+1:])
+				line = candidate
+				if f := strings.Fields(candidate); len(f) > 1 && isAllDigits(f[0]) {
+					candidate = strings.Join(f[1:], " ")
+				}
+			}
+		}
+		if _, d := issResolveFund(ix, candidate); d != nil {
 			name, id, ok = line, d.SeriesID, true
 		}
 	}
 	return name, id, ok
+}
+
+func isAllDigits(s string) bool {
+	if s == "" {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		if s[i] < '0' || s[i] > '9' {
+			return false
+		}
+	}
+	return true
 }
 
 // htmlVoteSummaryBanner is the heading this grammar prints above each fund's

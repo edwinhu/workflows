@@ -30,7 +30,10 @@ func TestHTMLTableNameAboveBanner(t *testing.T) {
 		if v := r[colSeriesID]; v != "S000006224" {
 			t.Errorf("%s: series_id = %q, want S000006224 (Ivy Funds VIP Asset Strategy)", r[colIssuerName], v)
 		}
-		if v := r[colFundName]; v != "IVY FUNDS VIP ASSET STRATEGY" {
+		// Two printed forms name this fund: the line above the banner and
+		// the Institution Account(s) field nearer the table; either is the
+		// filing's own text.
+		if v := r[colFundName]; v != "IVY FUNDS VIP ASSET STRATEGY" && v != "90 Ivy Funds VIP Asset Strategy" {
 			t.Errorf("%s: fund_name = %q", r[colIssuerName], v)
 		}
 	}
