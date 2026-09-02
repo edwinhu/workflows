@@ -277,3 +277,13 @@ func TestHTMLReadContextNotADataRow(t *testing.T) {
 		t.Errorf("Gabelli security row: labelled %v cusip %q", labelled, ctx.CUSIP)
 	}
 }
+
+func TestHTMLIdentityRowRefusesHeader(t *testing.T) {
+	mapping := map[string]int{htmlFieldIssuer: 0, htmlFieldTicker: 1, htmlFieldDesc: 2, htmlFieldVote: 3}
+	if _, ok := htmlIdentityRow([]string{"Company Name", "Ticker", "", ""}, mapping); ok {
+		t.Error("a repeated header row read as an identity row")
+	}
+	if ctx, ok := htmlIdentityRow([]string{"Ivax Corp", "IVX", "", ""}, mapping); !ok || ctx.Issuer != "Ivax Corp" {
+		t.Errorf("identity row: ok %v issuer %q", ok, ctx.Issuer)
+	}
+}
