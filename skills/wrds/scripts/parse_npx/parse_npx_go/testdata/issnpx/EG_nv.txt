@@ -1,0 +1,10 @@
+
+2U, INC.
+
+Ticker:       TWOU           Security ID:  90214J101
+Meeting Date: JUN 08, 2022   Meeting Type: Annual
+Record Date:  APR 11, 2022
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.    DIRECTOR                                          NV           Management
+2.    Approval, on a non-binding advisory     For       For          Management

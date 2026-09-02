@@ -122,6 +122,9 @@ var issVoteValues = map[string]bool{
 	// `DoNotVote` the value without its spaces (14), `Mixed` a split vote by
 	// another name (12). Recorded as printed.
 	"withold": true, "donotvote": true, "mixed": true,
+	// `NV`, a non-vote code printed with a blank Mgt Rec (14 rows, one
+	// registrant), and `Angst`, a misspelling of Against (7 rows).
+	"nv": true, "angst": true,
 	// `No` in the Vote Cast column -- the fund did not vote the item. The shared
 	// howVotedVocabulary in the test suite already recognised NO, so the two
 	// lists had drifted apart; one filing prints it on 5,941 rows.

@@ -257,7 +257,7 @@ var howVotedVocabulary = map[string]bool{
 	// and is deliberately not admitted.
 	"F": true, "A": true, "N": true, "D": true, "S": true, "W": true,
 	"WHOLD": true, "1YEAR": true, "3YEARS": true, "FOR ALL": true,
-	"WITHOLD": true, "DONOTVOTE": true, "MIXED": true, "ECHO": true,
+	"WITHOLD": true, "DONOTVOTE": true, "MIXED": true, "NV": true, "ANGST": true, "ECHO": true,
 	// `DidNot Vote` spelled without the space, and the `Null` recommendation
 	// that vintage prints beside it.
 	"DIDNOT VOTE": true, "NULL": true, "ECHO VOTE": true,
