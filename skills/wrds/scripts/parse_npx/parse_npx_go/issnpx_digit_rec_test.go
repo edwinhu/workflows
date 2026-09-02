@@ -9,7 +9,7 @@ import (
 // TestISSNPXDigitRecommendationLetterVote pins a digit Mgt Rec beside a
 // one-letter vote:
 //
-//	4.    Management                              1         F            Management
+//  4. Management                              1         F            Management
 //
 // issDigitCellsAgree refuses a digit recommendation unless the vote is a
 // digit too, because `Approve Plan 2  For  Management` would otherwise read
