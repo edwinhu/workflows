@@ -11,7 +11,7 @@ model IDs alone route across families:
 |---|---|---|
 | `anthropic` | `claude-code` | `claude-opus-5` / `claude-sonnet-5` / `claude-haiku-4-5-20251001` |
 | `openai` | `codex-code` | `gpt-5.6-sol` / `gpt-5.6-terra` / `gpt-5.6-luna` |
-| `antigravity` | `gemini-code` | `gemini-pro-agent` / `gemini-3.6-flash-high` / `gemini-3.5-flash-extra-low` |
+| `antigravity` | `gemini-code` | `gemini-pro-agent` / `gemini-3.7-flash-high` / `gemini-3.1-flash-lite` |
 
 `<wrapper> --settings-json` starts the proxy **and** prints the env block
 (`ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`, the three
