@@ -900,6 +900,16 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		if acr.Len() >= 3 {
 			ix.brands = append(ix.brands, acr.String())
 		}
+		// And the initials of the registrant's TRAILING tokens: Rydex Variable
+		// Trust prints "VT BANKING FUND". Two letters at least, and only the
+		// runs that leave a leading token out.
+		for k := 1; k <= len(toks)-2; k++ {
+			var tail strings.Builder
+			for _, t := range toks[k:] {
+				tail.WriteByte(t[0])
+			}
+			ix.brands = append(ix.brands, tail.String())
+		}
 	}
 	put := func(m map[string]*SeriesDecl, key string, d *SeriesDecl) {
 		if key == "" {
@@ -1057,6 +1067,20 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// A trailing parenthetical on the banner.
 	if cut, ok := issCutTrailingParenthetical(banner); ok {
 		if _, d := issResolveFund(ix, cut); d != nil {
+			return banner, d
+		}
+	}
+
+	// A sleeve or an unlabelled sub-adviser after a dash: `State Street Total
+	// Return V.I.S. Fund - ACWI xUS Index`, `International Equity Fund - AQR
+	// Capital Management, LLC`. The HEAD must be a declared name exactly; when
+	// it is not, the TAIL may be (`Variable Trust - Amerigo Fund`). Either way
+	// one side of the dash equals a declared name and the other is dropped.
+	if head, tail, ok := strings.Cut(banner, " - "); ok && strings.TrimSpace(head) != "" && strings.TrimSpace(tail) != "" {
+		if d := lookupSeriesByName(idx, head); d != nil {
+			return banner, d
+		}
+		if d := lookupSeriesByName(idx, tail); d != nil {
 			return banner, d
 		}
 	}
