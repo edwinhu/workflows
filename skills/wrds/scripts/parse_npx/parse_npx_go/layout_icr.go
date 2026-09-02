@@ -83,6 +83,19 @@ func init() {
 // be trusted as evidence that a new fund section has begun.
 const icrFundNameLabel = "FUND NAME"
 
+// icrUnderscoreRule reports a rule of underscores, twenty at least.
+func icrUnderscoreRule(line string) bool {
+	if len(line) < 20 {
+		return false
+	}
+	for i := 0; i < len(line); i++ {
+		if line[i] != '_' {
+			return false
+		}
+	}
+	return true
+}
+
 // icrReportLine is the line one vintage prints directly under the fund name.
 const icrReportLine = "Investment Company Report"
 
@@ -365,6 +378,14 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		if name, ok := icrFundName(line); ok {
 			curFund = name
 			curSeries = icrResolveFundShared(seriesIx, name)
+		} else if icrUnderscoreRule(line) && lineAbove != "" && icrResolveFundShared(seriesIx, lineAbove) != "" {
+			// Another vintage names the fund on the bare line ABOVE a rule of
+			// underscores (T. Rowe Price Index Trust, 2026-09-02). The rule is
+			// the marker, and the line is taken only when it resolves to a
+			// declared series -- the header's own evidence -- so an issuer name
+			// above the same rule is never mistaken for a fund.
+			curFund = lineAbove
+			curSeries = icrResolveFundShared(seriesIx, lineAbove)
 		} else if strings.EqualFold(line, icrReportLine) && lineAbove != "" {
 			// One vintage names the fund on a bare line ABOVE its `Investment
 			// Company Report` line (Hartford Mutual Funds, ~180k rows with no
@@ -483,7 +504,10 @@ func icrFundName(line string) (string, bool) {
 	if colon < 0 {
 		return "", false
 	}
-	if !strings.EqualFold(strings.TrimSpace(line[:colon]), icrFundNameLabel) {
+	label := strings.TrimSpace(line[:colon])
+	// `Portfolio Name :` is the same label under the other noun (Ohio
+	// National Fund, 2026-09-02).
+	if !strings.EqualFold(label, icrFundNameLabel) && !strings.EqualFold(label, "PORTFOLIO NAME") {
 		return "", false
 	}
 	return strings.TrimSpace(line[colon+1:]), true
