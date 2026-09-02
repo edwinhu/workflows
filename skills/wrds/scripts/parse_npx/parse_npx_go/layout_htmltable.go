@@ -99,7 +99,6 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 	// Built ONCE per filing: these bodies reach 142 MB and 452,552 vote rows, so
 	// a per-row rebuild would make the job quadratic in the input.
 	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
-	seriesIdx := seriesIx.byName
 	if indexFrom(body, 0, "</tr>") < 0 {
 		return nil, errLayoutDeclined
 	}
@@ -163,7 +162,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// a blank series_id costs coverage, a wrong one files this fund's votes
 		// under the fund above it.
 		if name, ok := htmlFundHeading(row.pre); ok {
-			curSeries = icrResolveFund(seriesIdx, name)
+			curSeries = icrResolveFundShared(seriesIx, name)
 		} else if id, ok := htmlBareFundLine(seriesIx, row.pre); ok {
 			curSeries = id
 		}

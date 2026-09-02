@@ -910,6 +910,11 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		for k := 1; k <= len(toks)-2; k++ {
 			ix.brands = append(ix.brands, issInitials(toks[k:]))
 		}
+		// And of its LEADING tokens: Variable Insurance Products Fund II
+		// prints "VIP CONTRAFUND PORTFOLIO". Three letters at least.
+		for k := len(toks) - 1; k >= 3; k-- {
+			ix.brands = append(ix.brands, issInitials(toks[:k]))
+		}
 	}
 	put := func(m map[string]*SeriesDecl, key string, d *SeriesDecl) {
 		if key == "" {
@@ -955,29 +960,38 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 	return ix
 }
 
-// issCommonLastWord returns the last word every declared name ends in, when
-// there are at least two names and they all agree; otherwise "".
+// issCommonLastWord returns the last word the declared names share -- all of
+// them, or a dominant two thirds when a few target-date or otherwise-named
+// series sit beside the convention (Advanced Series Trust 2012: 59 of 68 end
+// in Portfolio). Two names at least; "" otherwise. Safe under exact-first: a
+// series declared WITHOUT the word is found by the exact reading before this
+// index is consulted.
 func issCommonLastWord(decls []SeriesDecl) string {
-	suffix, n := "", 0
+	count := map[string]int{}
+	n := 0
 	for _, d := range decls {
 		if d.SeriesID == "" || d.Name == "" {
 			continue
 		}
 		toks := strings.Fields(normalizeSeriesName(d.Name))
-		if len(toks) < 2 {
-			return ""
-		}
-		last := toks[len(toks)-1]
-		if n > 0 && last != suffix {
-			return ""
-		}
-		suffix = last
 		n++
+		if len(toks) >= 2 {
+			count[toks[len(toks)-1]]++
+		}
 	}
 	if n < 2 {
 		return ""
 	}
-	return suffix
+	best, bestN := "", 0
+	for w, c := range count {
+		if c > bestN || (c == bestN && w < best) {
+			best, bestN = w, c
+		}
+	}
+	if bestN*3 < n*2 {
+		return ""
+	}
+	return best
 }
 
 // issInitials builds the acronym a registrant makes of its own name: the first
@@ -1183,7 +1197,7 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			return banner, d
 		}
 		for _, b := range ix.brands {
-			if rest, ok := strings.CutPrefix(key, b+" "); ok && rest != "" {
+			if rest, ok := issCutBrand(key, b); ok {
 				if d, seen := ix.lessSuffix[rest]; seen {
 					return banner, d
 				}
@@ -1199,13 +1213,35 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 		return banner, d
 	}
 	for _, b := range ix.brands {
-		if rest, ok := strings.CutPrefix(key, b+" "); ok && rest != "" {
+		if rest, ok := issCutBrand(key, b); ok {
 			if d, seen := ix.byName[rest]; seen {
 				return banner, d
 			}
 		}
 	}
 	return banner, nil
+}
+
+// issCutBrand removes brand from the front of a normalised key on a whole-token
+// boundary. The brand may be printed as one token or spelled over several --
+// John Hancock Funds II prints both `JHFII` and `JHF II` -- so the leading
+// tokens are also tried joined.
+func issCutBrand(key, brand string) (string, bool) {
+	if rest, ok := strings.CutPrefix(key, brand+" "); ok && rest != "" {
+		return rest, true
+	}
+	toks := strings.Fields(key)
+	joined := ""
+	for i := 0; i < len(toks)-1 && i < 4; i++ {
+		joined += toks[i]
+		if joined == brand {
+			return strings.Join(toks[i+1:], " "), true
+		}
+		if len(joined) >= len(brand) {
+			break
+		}
+	}
+	return "", false
 }
 
 // issFundSeparator recognises the '===== FUND NAME =====' rule that opens a fund
