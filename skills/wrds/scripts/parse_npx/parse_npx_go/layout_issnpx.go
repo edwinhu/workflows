@@ -115,6 +115,8 @@ var issVoteValues = map[string]bool{
 	// rows); `1Year` and `3Years` are the say-on-pay frequency answers printed
 	// without the hyphen of `1-year` (124 rows). Both placed by the finder.
 	"whold": true, "1year": true, "3years": true,
+	// `For All` on a director slate, 35 rows in one 2005 SGML-table filing.
+	"for all": true,
 	// `No` in the Vote Cast column -- the fund did not vote the item. The shared
 	// howVotedVocabulary in the test suite already recognised NO, so the two
 	// lists had drifted apart; one filing prints it on 5,941 rows.
