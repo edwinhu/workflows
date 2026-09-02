@@ -873,6 +873,7 @@ type issSeriesIndex struct {
 	// distinct series answer to maps to nil, and nil is never stamped.
 	byCompact map[string]*SeriesDecl
 	lessBrand map[string]*SeriesDecl
+	lessParen map[string]*SeriesDecl // declared names with a trailing parenthetical removed
 	brands    []string
 }
 
@@ -882,10 +883,22 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		registrantKey: registrantKey,
 		byCompact:     make(map[string]*SeriesDecl, len(decls)),
 		lessBrand:     make(map[string]*SeriesDecl),
+		lessParen:     make(map[string]*SeriesDecl),
 	}
 	if toks := strings.Fields(registrantKey); len(toks) > 1 {
 		for k := len(toks) - 1; k >= 1; k-- {
 			ix.brands = append(ix.brands, strings.Join(toks[:k], " "))
+		}
+		// The registrant's initials are a brand too: SEI Institutional
+		// Investments Trust declares "SIIT Dynamic Asset Allocation Fund", the
+		// College Retirement Equities Fund prints "CREF Stock Account". Three
+		// letters at least, so a two-token name cannot manufacture one.
+		var acr strings.Builder
+		for _, t := range toks {
+			acr.WriteByte(t[0])
+		}
+		if acr.Len() >= 3 {
+			ix.brands = append(ix.brands, acr.String())
 		}
 	}
 	put := func(m map[string]*SeriesDecl, key string, d *SeriesDecl) {
@@ -912,8 +925,32 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 				put(ix.lessBrand, rest, d)
 			}
 		}
+		if cut, ok := issCutTrailingParenthetical(d.Name); ok {
+			put(ix.lessParen, normalizeSeriesName(cut), d)
+		}
 	}
 	return ix
+}
+
+// issCutTrailingParenthetical removes a parenthetical at the END of a fund
+// name: a sleeve (`... Portfolio (Core Plus)`) or a former name (`Victory 500
+// Index Fund (Formerly USAA 500 Index Fund)`). Only a trailing one, and only
+// as a lookup key; two declared names that differ inside the parentheses
+// collide in the index and stamp nothing.
+func issCutTrailingParenthetical(name string) (string, bool) {
+	s := strings.TrimSpace(name)
+	if !strings.HasSuffix(s, ")") {
+		return "", false
+	}
+	i := strings.LastIndex(s, "(")
+	if i <= 0 {
+		return "", false
+	}
+	head := strings.TrimSpace(s[:i])
+	if head == "" {
+		return "", false
+	}
+	return head, true
 }
 
 // issCutSubAdviser removes the labelled sub-adviser clause one registrant
@@ -1017,9 +1054,21 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 		}
 	}
 
+	// A trailing parenthetical on the banner.
+	if cut, ok := issCutTrailingParenthetical(banner); ok {
+		if _, d := issResolveFund(ix, cut); d != nil {
+			return banner, d
+		}
+	}
+
 	key := normalizeSeriesName(banner)
 	if key == "" {
 		return banner, nil
+	}
+
+	// A trailing parenthetical on the declared name.
+	if d, seen := ix.lessParen[key]; seen {
+		return banner, d
 	}
 
 	// The banner spaces a token the header runs together.

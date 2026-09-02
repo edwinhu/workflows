@@ -91,3 +91,61 @@ func TestSeriesRulesRefuseToGuess(t *testing.T) {
 		t.Errorf("exact first: got %q, want S1", got)
 	}
 }
+
+func TestSeriesTrailingParenthetical(t *testing.T) {
+	// A sleeve or a former name in parentheses, on the banner side ...
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "AST ACADEMIC STRATEGIES ASSET ALLOCATION PORTFOLIO"},
+		{SeriesID: "S2", Name: "AST Core Fixed Income Portfolio"},
+	}
+	for _, b := range []string{
+		"AST Academic Strategies Asset Allocation Portfolio (Core Plus) - Subadviser: PGIM Fixed Income",
+		"AST Academic Strategies Asset Allocation Portfolio  (ETF & Futures Overlay) - Subadviser: QMA LLC",
+		"AST Academic Strategies Asset Allocation Portfolio (International Core)",
+	} {
+		if got := resolve(t, decls, "ADVANCED SERIES TRUST", b); got != "S1" {
+			t.Errorf("%q -> %q, want S1", b, got)
+		}
+	}
+	// ... or on the declared side.
+	decls = []SeriesDecl{
+		{SeriesID: "S1", Name: "Victory 500 Index Fund (Formerly USAA 500 Index Fund)"},
+		{SeriesID: "S2", Name: "Victory Nasdaq-100 Index Fund (Formerly USAA Nasdaq-100 Index Fund)"},
+	}
+	if got := resolve(t, decls, "VICTORY PORTFOLIOS III", "Victory 500 Index Fund"); got != "S1" {
+		t.Errorf("declared-side parenthetical: got %q, want S1", got)
+	}
+	// Two series that differ only inside the parentheses stay apart.
+	decls = []SeriesDecl{
+		{SeriesID: "S1", Name: "Growth Fund (Institutional)"},
+		{SeriesID: "S2", Name: "Growth Fund (Retail)"},
+	}
+	if got := resolve(t, decls, "SOME TRUST", "Growth Fund"); got != "" {
+		t.Errorf("parenthetical is the whole difference: got %q, want blank", got)
+	}
+}
+
+func TestSeriesRegistrantAcronymBrand(t *testing.T) {
+	// SEI Institutional Investments Trust declares "SIIT Dynamic Asset
+	// Allocation Fund" and prints "Dynamic Asset Allocation Fund"; the College
+	// Retirement Equities Fund declares "Stock Account" and prints "CREF STOCK
+	// ACCOUNT". The brand is the registrant's own initials.
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "SIIT Dynamic Asset Allocation Fund"},
+		{SeriesID: "S2", Name: "SIIT S&P 500 Index Fund"},
+	}
+	if got := resolve(t, decls, "SEI INSTITUTIONAL INVESTMENTS TRUST", "Dynamic Asset Allocation Fund"); got != "S1" {
+		t.Errorf("declared-side acronym: got %q, want S1", got)
+	}
+	decls = []SeriesDecl{
+		{SeriesID: "S1", Name: "Stock Account"},
+		{SeriesID: "S2", Name: "Bond Market Account"},
+	}
+	if got := resolve(t, decls, "COLLEGE RETIREMENT EQUITIES FUND", "CREF STOCK ACCOUNT"); got != "S1" {
+		t.Errorf("banner-side acronym: got %q, want S1", got)
+	}
+	// A missing suffix word is still not tolerated.
+	if got := resolve(t, decls, "COLLEGE RETIREMENT EQUITIES FUND", "CREF Bond Market"); got != "" {
+		t.Errorf("missing word: got %q, want blank", got)
+	}
+}
