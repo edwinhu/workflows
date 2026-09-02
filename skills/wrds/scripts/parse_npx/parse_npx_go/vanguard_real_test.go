@@ -325,7 +325,7 @@ func isVoteValue(s string) bool {
 	// vocabulary is consulted directly: it was mirrored by hand into the
 	// static map above for months, and the two lists of one fact drifted five
 	// times before this line existed (No, NO VOTE, PROPORTIONAL, ...).
-	if issVoteValues[strings.ToLower(strings.Trim(v, ".,;*"))] {
+	if issVoteValues[strings.ToLower(strings.Trim(v, issCellTrim))] {
 		return true
 	}
 	return pvTextVote(v) || htmlIsVoteValue(v)
