@@ -1063,6 +1063,14 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// requires exact equality after one described edit, and refuses on any
 	// collision. The printed banner is kept as the fund name in every case.
 
+	// An internal fund code before a name the rules below can read: the code
+	// comes off and the remainder goes through the whole chain again.
+	if f := strings.Fields(banner); len(f) > 1 && internalFundCode(strings.Trim(f[0], "()")) {
+		if _, d := issResolveFund(ix, strings.Join(f[1:], " ")); d != nil {
+			return banner, d
+		}
+	}
+
 	// A labelled sub-adviser clause after the fund name.
 	if cut, ok := issCutSubAdviser(banner); ok {
 		if _, d := issResolveFund(ix, cut); d != nil {
