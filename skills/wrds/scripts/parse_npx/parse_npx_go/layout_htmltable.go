@@ -286,12 +286,23 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// labelled row arriving after a header opens a NEW block, so the previous
 		// block's issuer and meeting must not leak onto it.
 		if next, labelled := htmlReadContext(cells); labelled {
-			if ctxSealed {
-				ctx = htmlContext{}
-				ctxSealed = false
-			}
-			if next.Issuer == "" && ctxLead != "" {
-				next.Issuer = ctxLead
+			// A labelled row after a header opens a new block -- unless it
+			// carries only a date: the issuer and ids of this block were
+			// printed before a page-break header (Advisors' Inner Circle
+			// 2023), and clearing them here files the votes under nobody.
+			dateOnly := next.Issuer == "" && next.CUSIP == "" && next.Ticker == "" && next.ISIN == ""
+			if dateOnly {
+				// The issuer continues; whatever one-cell line preceded this
+				// (a wrapped proposal fragment, usually) is not its name.
+				ctxLead = ""
+			} else {
+				if ctxSealed {
+					ctx = htmlContext{}
+					ctxSealed = false
+				}
+				if next.Issuer == "" && ctxLead != "" {
+					next.Issuer = ctxLead
+				}
 			}
 			ctxLead = ""
 			ctx.merge(next)
