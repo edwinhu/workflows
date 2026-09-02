@@ -268,6 +268,9 @@ var howVotedVocabulary = map[string]bool{
 	// NON-VOTE 78, UNAVAILABLE 74, AG 73. AGNST and UNKNOWN were already carried.
 	"ECHO VOTED": true, "OPPOSE": true,
 	"AG": true, "W'HOLD": true, "NON-VOTE": true, "UNAVAILABLE": true,
+	// Hyphenated frequency votes: 1 - Year 394, 1-Year 422, 3 - Year 16,
+	// 3-Years 15 in the two filings that print them.
+	"1 - YEAR": true, "3 - YEAR": true, "1-YEAR": true, "3-YEARS": true,
 	// Proportional (or "echo") voting: the fund votes in proportion to the
 	// other shareholders rather than forming a view. It is a real vote value,
 	// not a parse defect -- 7,270 rows carry it in the revalidation run, each

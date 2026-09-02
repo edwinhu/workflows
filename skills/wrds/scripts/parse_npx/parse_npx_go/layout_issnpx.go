@@ -149,7 +149,11 @@ var issVoteValues = map[string]bool{
 	"echo voted": true, "oppose": true, "unknown": true,
 	"agnst": true, "ag": true, "w'hold": true, "non-vote": true,
 	"unavailable": true,
-	"refer":       true, "unvoted": true, "n/a": true, "na": true, "tna": true,
+	// Frequency votes spelled with a hyphen. Counted in the two filings that
+	// print them: `1 - Year` 394, `3 - Year` 16, `1-Year` 422, `3-Years` 15. No
+	// 2-year form appears there and none is admitted.
+	"1 - year": true, "3 - year": true, "1-year": true, "3-years": true,
+	"refer": true, "unvoted": true, "n/a": true, "na": true, "tna": true,
 	"do not vote": true, "take no action": true, "no action": true,
 	"did not vote": true, "non voting": true, "non-voting": true,
 	"one year": true, "two years": true, "three years": true,
