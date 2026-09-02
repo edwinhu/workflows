@@ -92,7 +92,7 @@ var issSponsors = map[string]bool{
 var issVoteValues = map[string]bool{
 	"---": true, "----": true, "--": true, "n/m": true,
 	"for": true, "against": true, "abstain": true, "abstained": true,
-	"withhold": true, "withheld": true, "split": true, "none": true,
+	"withhold": true, "withheld": true, "whld": true, "split": true, "none": true,
 	// `Split Vote` is what a fund reports when it held the security across
 	// several accounts that voted differently -- an outcome, not an absence.
 	// issPeelCell matches a WHOLE cell, never a prefix, so carrying `split`

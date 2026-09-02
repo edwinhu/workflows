@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -217,6 +218,43 @@ func TestHTMLTableProxyEdgeGrid(t *testing.T) {
 	for _, r := range rows {
 		if r[colSeriesID] != "S000001061" || r[colIssuerName] != "BT GROUP PLC, LONDON" || r[colCUSIP] != "G16612106" || r[colISIN] != "GB0030913577" || r[colMeetingDate] != "20160713" {
 			t.Errorf("series %q issuer %q cusip %q isin %q date %q", r[colSeriesID], r[colIssuerName], r[colCUSIP], r[colISIN], r[colMeetingDate])
+		}
+	}
+}
+
+func TestHTMLDataRowProposalTypeHoldsProponent(t *testing.T) {
+	// Prudential Series Fund 2005: `Proposal Type` maps to the description,
+	// but the row prints MGMT there and the proposal in an unlabelled
+	// spanning cell.
+	cells := []string{"", "", "", "", "", "", "1.01        Elect Directors", "", "MGMT", "", "YES", "", "FOR", "", "FOR"}
+	mapping := map[string]int{htmlFieldDesc: 8, htmlFieldVote: 12, htmlFieldMgmtRec: 14}
+	r, ok := htmlDataRow(cells, mapping, len(cells), htmlContext{})
+	if !ok || r.VoteDescription != "1.01 Elect Directors" || r.VoteSource != "MGMT" || r.HowVoted != "FOR" {
+		t.Errorf("ok %v desc %q source %q vote %q", ok, r.VoteDescription, r.VoteSource, r.HowVoted)
+	}
+	// The sibling shape, where Proposal Type IS the description, is unchanged.
+	cells = []string{"Elect Directors", "YES", "FOR", "FOR"}
+	mapping = map[string]int{htmlFieldDesc: 0, htmlFieldVote: 2, htmlFieldMgmtRec: 3}
+	if r, ok := htmlDataRow(cells, mapping, len(cells), htmlContext{}); !ok || r.VoteDescription != "Elect Directors" {
+		t.Errorf("sibling shape: ok %v desc %q", ok, r.VoteDescription)
+	}
+}
+
+func TestHTMLTableSharedHeaderIdentityRow(t *testing.T) {
+	// Prudential Series Fund 2005: issuer, ticker, CUSIP and date in a row
+	// under the same header as the proposals; the proposal text spans the
+	// identity columns and 'Proposal Type' holds MGMT.
+	b, err := os.ReadFile(filepath.Join("testdata", "htmltable", "H20_prudential_shared_header.txt"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows := runISSNPXDoc(t, string(b))
+	if len(rows) == 0 {
+		t.Fatal("no rows")
+	}
+	for _, r := range rows {
+		if r[colIssuerName] != "Ivax Corp" || r[colCUSIP] != "465823102" || r[colMeetingDate] != "20040715" || !strings.Contains(r[colVoteDescription], "Elect Directors") || r[colVoteDescription] == "MGMT" {
+			t.Errorf("issuer %q cusip %q date %q desc %q", r[colIssuerName], r[colCUSIP], r[colMeetingDate], r[colVoteDescription])
 		}
 	}
 }
