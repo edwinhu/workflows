@@ -185,3 +185,19 @@ func TestHTMLPreLead(t *testing.T) {
 		}
 	}
 }
+
+func TestHTMLReadContextWrappedLabel(t *testing.T) {
+	// GMO Trust 2005: the label cell wraps at a source newline.
+	ctx, labelled := htmlReadContext([]string{"Meeting\n  Date:", "MAY 18, 2005", "Meeting\n  Type:", "Annual"})
+	if !labelled || ctx.MeetingDate != "20050518" {
+		t.Errorf("date %q labelled %v", ctx.MeetingDate, labelled)
+	}
+	// ... and so does the value cell.
+	ctx, _ = htmlReadContext([]string{"Meeting\n  Date:", "MAY 12,\n  2005", "Meeting\n  Type:", "Annual"})
+	if ctx.MeetingDate != "20050512" {
+		t.Errorf("wrapped value: date %q", ctx.MeetingDate)
+	}
+	if got := htmlPreLead("GMO Trust\n\nGENTING\n  LEISURE LTD.\n\n", ""); got != "GENTING LEISURE LTD." {
+		t.Errorf("wrapped issuer paragraph: %q", got)
+	}
+}

@@ -1687,10 +1687,22 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 		lead     string // the unlabelled line directly above the FIRST label
 		leadSeen bool
 	)
-	var items []string
-	for _, cell := range cells {
+	var (
+		items  []string
+		cellOf []int // the cell each item came from
+	)
+	for ci, cell := range cells {
+		// A label wrapped at a source newline inside its cell (`Meeting
+		// Date:`, GMO Trust: 38,059 of 38,551 rows with no date on
+		// 2026-09-02) is one item, read whole.
+		if flat := htmlFlat(cell); htmlHasLabelPrefix(htmlUpperASCII(flat)) {
+			items = append(items, flat)
+			cellOf = append(cellOf, ci)
+			continue
+		}
 		for _, line := range strings.Split(cell, "\n") {
 			items = append(items, strings.TrimSpace(line))
+			cellOf = append(cellOf, ci)
 		}
 	}
 	for i, line := range items {
@@ -1721,13 +1733,19 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 				// A cell that is ONLY the label has its value in the next cell:
 				// `Ticker: | MMM | Security ID: | 88579Y101` (FundVantage Trust,
 				// 101,061 of 108,913 rows with no issuer, id or date on 2026-09-02).
+				// The value cell may wrap too (`MAY 12,` / `2005`), so it is
+				// read whole.
 				if strings.TrimSpace(v) == "" && strings.EqualFold(strings.TrimSpace(up), label) {
 					for j := i + 1; j < len(items); j++ {
-						if items[j] == "" {
+						if cellOf[j] == cellOf[i] {
 							continue
 						}
-						if !htmlHasLabelPrefix(htmlUpperASCII(items[j])) {
-							v = items[j]
+						flat := htmlFlat(cells[cellOf[j]])
+						if flat == "" {
+							continue
+						}
+						if !htmlHasLabelPrefix(htmlUpperASCII(flat)) {
+							v = flat
 						}
 						break
 					}
@@ -1824,17 +1842,35 @@ func htmlStackedValues(cells []string, labels map[int]string) (ctx htmlContext) 
 // it is issuer-shaped and is not the fund heading just read from that text.
 func htmlPreLead(pre, fund string) string {
 	lines := strings.Split(pre, "\n")
-	for i := len(lines) - 1; i >= 0; i-- {
-		line := strings.TrimSpace(lines[i])
-		if line == "" {
-			continue
-		}
-		if line == fund || !htmlIsIssuerLine(line) {
-			return ""
-		}
-		return htmlFlat(line)
+	end := len(lines)
+	for end > 0 && strings.TrimSpace(lines[end-1]) == "" {
+		end--
 	}
-	return ""
+	if end == 0 {
+		return ""
+	}
+	// The paragraph may wrap at source newlines (`GENTING` / `LEISURE LTD.`):
+	// the trailing run of non-blank lines is one paragraph, since the blank
+	// paragraphs between headings arrive as blank lines.
+	start := end
+	for start > 0 && strings.TrimSpace(lines[start-1]) != "" {
+		start--
+	}
+	// The fund heading may abut the issuer with no blank between; it is not
+	// part of the issuer's paragraph.
+	for i := start; i < end; i++ {
+		if strings.TrimSpace(lines[i]) == fund {
+			start = i + 1
+		}
+	}
+	if start >= end {
+		return ""
+	}
+	line := htmlFlat(strings.Join(lines[start:end], " "))
+	if line == fund || !htmlIsIssuerLine(line) {
+		return ""
+	}
+	return line
 }
 
 // htmlContextLead retains a one-value issuer row only as a candidate. It becomes
