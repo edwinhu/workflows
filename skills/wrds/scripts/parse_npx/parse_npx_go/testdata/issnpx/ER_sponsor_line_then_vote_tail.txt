@@ -1,0 +1,18 @@
+
+ASSA ABLOY AB
+
+Ticker:       NULL           Security ID:  SE0000255648
+Meeting Date: APR 27, 2005   Meeting Type: AGM
+Record Date:  APR 12, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast
+Sponsor
+1     Open Meeting                              Null      Did Not
+Management
+                                                          Vote
+2     Elect Georg Ehrnrooth as Chairman of      For       Did Not
+Management
+      Meeting                                             Vote
+3     Prepare and Approve List of Shareholders  For       Did Not
+Management
+                                                          Vote
