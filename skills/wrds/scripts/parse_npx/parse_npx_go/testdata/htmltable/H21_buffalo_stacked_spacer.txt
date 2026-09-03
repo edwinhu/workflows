@@ -1,0 +1,401 @@
+<SEC-DOCUMENT>0000894189-23-006273.txt : 20230825
+<SEC-HEADER>0000894189-23-006273.hdr.sgml : 20230825
+<ACCEPTANCE-DATETIME>20230825140144
+ACCESSION NUMBER:		0000894189-23-006273
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20230630
+FILED AS OF DATE:		20230825
+DATE AS OF CHANGE:		20230825
+EFFECTIVENESS DATE:		20230825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			BUFFALO FUNDS
+		CENTRAL INDEX KEY:			0001135300
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0331
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-10303
+		FILM NUMBER:		231206571
+
+	BUSINESS ADDRESS:	
+		STREET 1:		KORNITZER CAPITAL MANAGEMENT, INC.
+		STREET 2:		5420 WEST 61ST PLACE
+		CITY:			SHAWNEE MISSION
+		STATE:			KS
+		ZIP:			66205
+		BUSINESS PHONE:		9136777778
+
+	MAIL ADDRESS:	
+		STREET 1:		KORNITZER CAPITAL MANAGEMENT, INC.
+		STREET 2:		5420 WEST 61ST PLACE
+		CITY:			SHAWNEE MISSION
+		STATE:			KS
+		ZIP:			66205
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001135300
+<SERIES-ID>S000006555
+<SERIES-NAME>Buffalo Early Stage Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017894
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUFOX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000214587
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUIOX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001135300
+<SERIES-ID>S000006556
+<SERIES-NAME>Buffalo Mid Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017895
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUFMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000214588
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUIMX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001135300
+<SERIES-ID>S000006557
+<SERIES-NAME>Buffalo Discovery Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017896
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUFTX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000214589
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUITX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001135300
+<SERIES-ID>S000019058
+<SERIES-NAME>Buffalo International Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000052696
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUFIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000214590
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUIIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001135300
+<SERIES-ID>S000022450
+<SERIES-NAME>Buffalo Flexible Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064611
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUFBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000214591
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUIBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001135300
+<SERIES-ID>S000022451
+<SERIES-NAME>Buffalo High Yield Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064612
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUFHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000214592
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUIHX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001135300
+<SERIES-ID>S000022452
+<SERIES-NAME>Buffalo Large Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064613
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUFEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000214593
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUIEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001135300
+<SERIES-ID>S000022453
+<SERIES-NAME>Buffalo Small Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064614
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUFSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000214594
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUISX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001135300
+<SERIES-ID>S000022454
+<SERIES-NAME>Buffalo Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064615
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUFGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000214595
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BIIGX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001135300
+<SERIES-ID>S000039149
+<SERIES-NAME>Buffalo Dividend Focus Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000120435
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUFDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000214596
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BUIDX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>buffalo_npx.htm
+<DESCRIPTION>ANNUAL REPORT OF PROXY VOTING
+<TEXT>
+<html>
+  <head>
+    <title></title>
+    <!-- Licensed to: USBANK
+         Document created using Broadridge PROfile 23.5.1.5152
+         Copyright 1995 - 2023 Broadridge -->
+  </head>
+<body bgcolor="#ffffff" style="font-family: 'Times New Roman', Times, serif; font-size: 10pt; text-align: left; color: #000000;">
+  <div>
+    <hr align="center" style="border: none; border-bottom: 1px solid black; border-top: 4px solid black; height: 10px; color: #ffffff; background-color: #ffffff; text-align: center; margin-left: auto; margin-right: auto;"><br>
+    <div>
+      <div><br>
+      </div>
+      <div style="text-align: center;">UNITED STATES<br>
+        SECURITIES AND EXCHANGE COMMISSION<br>
+        Washington, DC 20549</div>
+      <div>&#160; <br>
+      </div>
+      <div>&#160;</div>
+      <div style="text-align: center; font-size: 14pt; font-weight: bold;">FORM N-PX</div>
+      <div>&#160;</div>
+      <div>&#160;</div>
+      <div style="text-align: center; font-size: 14pt; font-weight: bold;">ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED </div>
+      <div style="text-align: center; font-size: 14pt; font-weight: bold;">MANAGEMENT INVESTMENT COMPANY</div>
+      <div>&#160;</div>
+      <div><br>
+      </div>
+      <div style="text-align: center;">Investment Company Act file number <font style="font-weight: bold;">811-10303</font></div>
+      <div><br>
+      </div>
+      <div style="text-align: center;">Buffalo Funds</div>
+      <div style="text-align: center; font-weight: bold;">[Exact Name of Registration]</div>
+      <div><br>
+      </div>
+      <div><br>
+      </div>
+      <div style="text-align: center;">5420 West 61st Place</div>
+      <div style="text-align: center;">Shawnee Mission, S 66205</div>
+      <div style="text-align: center;">[Address of Principal Executive office]</div>
+      <div><br>
+      </div>
+      <div><br>
+      </div>
+      <div style="text-align: center;">Laura Symon Browne</div>
+      <div style="text-align: center;">5420 West 61st Place</div>
+      <div style="text-align: center;">Shawnee Mission, KS 66205</div>
+      <div><br>
+      </div>
+      <div><br>
+      </div>
+      <div style="text-align: center;">Registrant&#8217;s telephone number, including area code: (913) 384-1513</div>
+      <div><br>
+      </div>
+      <div>Date of fiscal year end: March 31</div>
+      <div><br>
+      </div>
+      <div>Date of reporting period: July 1, 2022 &#8211; June 30, 2023</div>
+      <div><br>
+      </div>
+      <div class="BRPFPageBreakArea" style="clear: both; margin-top: 10pt; margin-bottom: 10pt;">
+        <div class="BRPFPageBreak" style="page-break-after: always;">
+          <hr noshade="noshade" style="border-width: 0px; clear: both; margin: 4px 0px; width: 100%; height: 2px; color: #000000; background-color: #000000;"></div>
+      </div>
+      <div><br>
+      </div>
+      <div style="font-weight: bold;">Item 1. Proxy Voting Record.</div>
+      <div><br>
+      </div>
+      <div style="font-family: 'Times New Roman',Times,serif; color: rgb(0, 0, 0);"><br>
+      </div>
+      <div style="font-family: 'Times New Roman',Times,serif; color: rgb(0, 0, 0);">
+        <table cellspacing="0" cellpadding="0" border="0" style="font-family: 'Times New Roman', Times, serif; font-size: 10pt; width: 100%; border-collapse: collapse; text-align: left; color: #000000;" id="z27c597d183a2477a93c21e5b9af86c14">
+
+            <tr>
+              <td style="width: 15%; vertical-align: top; border-left: 2px solid rgb(0, 0, 0); border-top: 2px solid rgb(0, 0, 0);">
+                <div style="color: #000000; font-weight: bold;">Name Of Fund:</div>
+              </td>
+              <td style="width: 10%; vertical-align: top; border-right: 2px solid rgb(0, 0, 0); border-top: 2px solid rgb(0, 0, 0);">
+                <div style="color: #000000; font-weight: bold;">Buffalo Discovery Fund</div>
+              </td>
+              <td style="width: 39%; vertical-align: top;">&#160;</td>
+              <td style="width: 15%; vertical-align: top;">&#160;</td>
+            </tr>
+            <tr>
+              <td style="width: 15%; vertical-align: top; border-left: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+                <div style="color: #000000; font-weight: bold;">Period:</div>
+              </td>
+              <td style="width: 10%; vertical-align: top; border-right: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+                <div style="color: #000000; font-weight: bold;">July 1, 2022-June 30, 2023</div>
+              </td>
+              <td style="width: 39%; vertical-align: top;">&#160;</td>
+              <td style="width: 15%; vertical-align: top;">&#160;</td>
+            </tr>
+            <tr>
+              <td style="width: 15%; vertical-align: top;">&#160;</td>
+              <td style="width: 10%; vertical-align: top;">&#160;</td>
+              <td style="width: 39%; vertical-align: top;">&#160;</td>
+              <td style="width: 15%; vertical-align: top;">&#160;</td>
+            </tr>
+            <tr>
+              <td style="width: 15%; vertical-align: top; border-width: 2px; border-style: solid; border-color: rgb(0, 0, 0);">
+                <div style="color: #000000; font-weight: bold;">Company Name</div>
+              </td>
+              <td style="width: 10%; vertical-align: top; border-width: 2px; border-style: solid; border-color: rgb(0, 0, 0);">
+                <div style="color: #000000; font-weight: bold;">Meeting Date</div>
+              </td>
+              <td style="width: 39%; vertical-align: top; border-width: 2px; border-style: solid; border-color: rgb(0, 0, 0);">
+                <div style="color: #000000; font-weight: bold;">CUSIP</div>
+              </td>
+              <td style="width: 15%; vertical-align: top; border-width: 2px; border-style: solid; border-color: rgb(0, 0, 0);">
+                <div style="color: #000000; font-weight: bold;">Ticker</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 15%; vertical-align: top;">&#160;</td>
+              <td style="width: 10%; vertical-align: top;">&#160;</td>
+              <td style="width: 39%; vertical-align: top;">&#160;</td>
+              <td style="width: 15%; vertical-align: top;">&#160;</td>
+            </tr>
+            <tr>
+              <td style="width: 15%; vertical-align: top;">
+                <div style="color: #000000; font-weight: bold;">AGILENT TECHNOLOGIES, INC.</div>
+              </td>
+              <td style="width: 10%; vertical-align: top;">
+                <div style="color: #000000; font-weight: bold;">3/15/23</div>
+              </td>
+              <td style="width: 39%; vertical-align: top;">
+                <div style="color: #000000; font-weight: bold;">00846U101</div>
+              </td>
+              <td style="width: 15%; vertical-align: top;">
+                <div style="color: #000000; font-weight: bold;">A</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 15%; vertical-align: top;">&#160;</td>
+              <td style="width: 10%; vertical-align: top;">&#160;</td>
+              <td style="width: 39%; vertical-align: top;">&#160;</td>
+              <td style="width: 15%; vertical-align: top;">&#160;</td>
+            </tr>
+            <tr>
+              <td style="width: 15%; vertical-align: top; border-width: 2px; border-style: solid; border-color: rgb(0, 0, 0);">
+                <div style="color: #000000; font-weight: bold;">Vote</div>
+              </td>
+              <td style="width: 10%; vertical-align: top; border-width: 2px; border-style: solid; border-color: rgb(0, 0, 0);">
+                <div style="color: #000000; font-weight: bold;">MRV</div>
+              </td>
+              <td style="width: 39%; vertical-align: top; border-width: 2px; border-style: solid; border-color: rgb(0, 0, 0);">
+                <div style="color: #000000; font-weight: bold;">Proposal</div>
+              </td>
+              <td style="width: 15%; vertical-align: top; border-width: 2px; border-style: solid; border-color: rgb(0, 0, 0);">
+                <div style="color: #000000; font-weight: bold;">Proposed by Issuer or Security Holder</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 15%; vertical-align: top;">&#160;</td>
+              <td style="width: 10%; vertical-align: top;">
+                <div style="color: #000000;">For</div>
+              </td>
+              <td style="width: 39%; vertical-align: top;">
+                <div style="color: #000000;">Director</div>
+              </td>
+              <td style="width: 15%; vertical-align: top;">
+                <div style="color: #000000;">Issuer</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 15%; vertical-align: top;">&#160;</td>
+              <td style="width: 10%; vertical-align: top;">&#160;</td>
+              <td style="width: 39%; vertical-align: top;">&#160;</td>
+              <td style="width: 15%; vertical-align: top;">&#160;</td>
+            </tr>
+            <tr>
+              <td style="width: 15%; vertical-align: top;">
+                <div style="color: #000000;">For</div>
+              </td>
+              <td style="width: 10%; vertical-align: top;">&#160;</td>
+              <td style="width: 39%; vertical-align: top;">
+                <div style="color: #000000;">1.1 Election of Director for a three-year term: Heidi K. Kunz</div>
+              </td>
+              <td style="width: 15%; vertical-align: top;">&#160;</td>
+            </tr>
+            <tr>
+              <td style="width: 15%; vertical-align: top;">
+                <div style="color: #000000;">For</div>
+              </td>
+              <td style="width: 10%; vertical-align: top;">&#160;</td>
+              <td style="width: 39%; vertical-align: top;">
+                <div style="color: #000000;">1.2 Election of Director for a three-year term: Susan H. Rataj</div>
+              </td>
+              <td style="width: 15%; vertical-align: top;">&#160;</td>
+            </tr>
+            <tr>
+              <td style="width: 15%; vertical-align: top;">
+                <div style="color: #000000;">For</div>
+              </td>
+              <td style="width: 10%; vertical-align: top;">&#160;</td>
+              <td colspan="2" style="vertical-align: top;">
+                <div style="color: #000000;">1.3 Election of Director for a three-year term: George A. Scangos, Ph.D.</div>
+              </td>
+            </tr>

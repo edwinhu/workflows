@@ -245,6 +245,11 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// Meeting Date | Meeting Status`) and the values in the SAME columns of
 		// the next row (Putnam Variable Trust, 36,599 rows with the issuer read
 		// as "Ticker" and no security id or date on 2026-09-02).
+		if stacked != nil && htmlFilledCells(cells) == 0 {
+			// A blank spacer row between the labels and their values (Buffalo
+			// Funds: 124k rows with no issuer, id or date on 2026-09-02).
+			continue
+		}
 		if stacked != nil {
 			labels := stacked
 			stacked = nil
@@ -1869,6 +1874,7 @@ var htmlStackedLabelSet = map[string]string{
 	"MEETING DATE": "MEETING DATE", "RECORD DATE": "RECORD DATE",
 	"MEETING TYPE": "MEETING TYPE", "MEETING STATUS": "MEETING STATUS",
 	"COUNTRY OF TRADE": "COUNTRY", "ISSUER": "ISSUER", "ISSUER NAME": "ISSUER",
+	"COMPANY NAME": "ISSUER", "COMPANY": "ISSUER", "SECURITY": "CUSIP",
 }
 
 // htmlStackedLabels reports a row whose every non-empty cell is a bare context
