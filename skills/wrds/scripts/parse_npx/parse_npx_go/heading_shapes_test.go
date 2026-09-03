@@ -485,3 +485,16 @@ func TestSeriesLeadingEnumerator(t *testing.T) {
 		t.Error("a fund's first word cut as an enumerator")
 	}
 }
+
+func TestHTMLBareFundLineFundLabel(t *testing.T) {
+	decls := []SeriesDecl{{SeriesID: "S1", Name: "SP AIM Aggressive Growth Portfolio"}, {SeriesID: "S2", Name: "Money Market Portfolio"}}
+	ix := newISSSeriesIndex(decls, normalizeSeriesName("PRUDENTIAL SERIES FUND INC"))
+	_, id, _ := htmlBareFundLine(ix, "Trust: Prudential Series Fund\nManager: Prudential\nFund: PSF: SP Aim Aggressive Growth Portfolio\n")
+	if id != "S1" {
+		t.Errorf("Fund: label: %q", id)
+	}
+	// A footnote 'Fund:' that resolves to nothing sets nothing.
+	if _, id, ok := htmlBareFundLine(ix, "Fund: With Performance Fees Only\n"); ok || id != "" {
+		t.Errorf("footnote: %q %v", id, ok)
+	}
+}
