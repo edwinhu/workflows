@@ -1,66 +1,80 @@
 ---
 name: goal-and-loop
-description: "Use when a session's stopping condition is being written or repaired — \"set the goal\", \"write the /goal line\", \"what should the goal be\", \"give it a goal before I go to bed\", \"write the brief for the spawned agent\", \"it stopped overnight\", \"it idled while I was asleep\", \"it asked me a question instead of continuing\", \"why did it stop\", \"make it keep working\", \"run this unattended\", \"leave it running overnight\". Use proactively BEFORE handing work to any session that will outlive the user's attention — a spawned agent, a background job, a craft dispatch left running, or this session at night. NEGATIVE ROUTING: composing a craft run's own goal is craft-dispatch.sh, which calls compose-goal.sh and needs no help; spawning the session is agent-spawn; delegating a task to a subagent is farm-out. This skill owns the WORDING of the stopping condition and the standing authority that travels with it."
+description: "Use when a session's stopping condition is being written or repaired — \"set the goal\", \"write the /goal line\", \"what should the goal be\", \"give it a goal before I go to bed\", \"write the brief for the spawned agent\", \"it stopped overnight\", \"it idled while I was asleep\", \"it asked me a question instead of continuing\", \"why did it stop\", \"is the goal actually set\", \"make it keep working\", \"run this unattended\", \"leave it running overnight\". Use proactively BEFORE handing work to any session that will outlive the user's attention — a spawned agent, a background job, a craft dispatch left running, or this session at night. NEGATIVE ROUTING: composing a craft run's own goal is craft-dispatch.sh, which calls compose-goal.sh and needs no help; spawning the session is agent-spawn; delegating a task to a subagent is farm-out. This skill owns the WORDING of the stopping condition, the standing authority that travels with it, and the proof that it actually landed."
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob]
 ---
 
 # goal-and-loop — a stopping condition, and something that keeps asking
 
-Two mechanisms, and an unattended run needs both. **`/goal` decides whether to continue**: it is
-the only thing standing between a session and an idle terminal, and when it closes the Stop hook
-releases. **`/loop` guarantees something asks**: a cron tick the model cannot cancel, which reaches
-the case a goal cannot — a session that already went quiet, because nothing in a goal runs when no
-turn is running.
+`/goal` decides whether to continue. `/loop` guarantees something asks — a cron tick the model
+cannot cancel, reaching the case a goal cannot: a session already gone quiet, because nothing in a
+goal runs when no turn is running. An unattended run needs both.
 
-A loop with no goal ticks forever with no notion of done. A goal with no loop is 401 hours of
-measured silence. Write the goal so it closes at the end of the work rather than the middle, make
-everything it does not cover pre-decided, and put a tick behind it.
+## Raise it
 
-## The loop
+Three commands, in this order. Do not hand-write the transport.
 
-A goal is a stopping condition. It cannot restart a session that has already gone quiet — nothing in the goal runs when no turn is running. An unattended run gets both:
-
-```
-/goal <the stopping condition, linted>
-/loop 30m Check the goal. If it is not met, take the next action now rather than proposing it.
+```bash
+S=${CLAUDE_SKILL_DIR}/../craft/scripts/goal-self-send.sh
+bash $S "/goal <the linted goal>"
+bash $S "/loop 30m Check the goal. If it is not met, take the next action now rather than proposing it."
 ```
 
-A fixed-interval `/loop` compiles to a **recurring cron the model cannot cancel** — the harness says so outright: "a recurring /loop cron is not cancelled by `stop:true`". That is the whole value. Every failure in this file is the session's own judgment that it was finished or waiting, and a cron tick does not consult that judgment. So the loop reaches what no goal lint can: the cases where the goal string is fine and the *turn* ended anyway — "That's next.", "Writing the plan now.", "I'll report when it lands."
+Pass the goal as **one single-quoted argument**. The template is backticked, so double quotes hand
+every `<CHECK>` to the shell to run *before* the script sees the string, and the goal then carries
+that command's output where its text should be.
 
-The division of labor is exact. `/goal` decides whether to continue; `/loop` guarantees something asks. A loop with no goal ticks forever with no notion of done. A goal with no loop is every row in the table above.
+**Never build the command as `GOAL="$(cat goal.txt)"; bash $S "/goal $GOAL"`.** A staging file is
+fine for `goal-lint.ts --file`, but interpolating it makes a compound command that no permission
+rule can allowlist, so auto mode blocks the whole send.
 
-**A craft dispatch raises both for you.** `craft-dispatch.sh` self-sends the composed `/goal` and then a `/loop` (30m; override with `CRAFT_LOOP_INTERVAL`), so do not set a second one by hand — two crons means two ticks. The composed goal carries the teardown instruction itself, because no shell can cancel a cron: `CronDelete` is a model tool, there is no cron CLI, and a session-scoped cron lives in memory rather than in `.claude/scheduled_tasks.json`.
+**A craft dispatch raises both for you** — `craft-dispatch.sh` self-sends the composed goal and the
+loop. Do not add a second loop; two crons means two ticks.
 
-**Cancel it when the run ends.** Because the cron ignores `stop:true`, a goal that closes does not stop the ticking — that is the `CronDelete` tool, not the model deciding it is finished.
+## Verify it — the send is not the setting
 
+`goal-self-send.sh` **queues**; it does not set. It exits 0 on a successful enqueue, and a detached
+drainer sends the line once this turn ends. So on your **next turn**, prove it:
 
-## The night this skill is made of
+```bash
+bash ${CLAUDE_SKILL_DIR}/scripts/goal-verify.sh    # 0 = active (prints it), 1 = not set, 2 = can't tell
+```
 
-Three sessions, 2026-08-27 into 2026-08-28, all stopped between 01:21 and 02:42 local, all with
-4–5½ hours of unattended capacity left, **all holding a next action they had already named
-themselves**. Nothing was broken. Nobody was asked anything hard.
+Exit 1 means no goal is set whatever the send reported. Re-send, or hand the user the `/goal` line
+and say plainly that it is not active.
 
-| session | stopped | resumed on | lost | what actually stopped it |
-|---|---|---|---|---|
-| `mail-bridge/ab48c3a7` | 01:21 | a human typing `status` | **5h26m** | Ended a turn on "Writing the plan now." Came back with two questions: push three green commits, and how far to take a fix it had *fully diagnosed*. It wrote that it "held off on a version bump since you were asleep." |
-| `npx-reconcile/49cab015` | 02:42 | `read blockers` | **4h10m** | Goal was `craft has returned a verdict` — satisfied by a hard FAIL (0/5 tasks, 20 blocking findings). It then asked: "amend and re-dispatch, or read the 20 blocking findings first?" Both branches were its own work. |
-| `npx-iss-reconcile/9c82497d` | 01:42 | `commit. then investigate...` | **5h07m** | Brief said "when done or blocked, notify". 5 of 15 rounds used. It had already scoped the next defect to the row — 288 filings, 57,967 rows, 80% of the remaining off-vocabulary total — and declined it because it could not cut a faithful 40-line fixture. |
+<EXTREMELY-IMPORTANT>
+**Never report a goal as set on the strength of a send's exit code, and never treat one you only
+wrote down as binding.** Measured 2026-09-02: four self-sends across three sessions all reported
+success and set nothing — the sessions ran with no goal, and one of them wrote "I'm treating that
+as binding on myself regardless" and idled three hours later. A goal held in prose is re-adjudicated
+away; only the harness's goal blocks a stop.
+</EXTREMELY-IMPORTANT>
 
-**14 hours 43 minutes.** Not one of those was a decision the user had to make.
+**Why the send is deferred, so nobody re-inlines it:** `herdr agent prompt` delivers text+Enter even
+to a working agent, but Claude Code enqueues a prompt arriving mid-turn and does not parse slash
+commands out of it — it lands as literal text. A self-send is always made from a working turn, so
+the drainer must `agent wait --until idle --until done` first. Do not "simplify" that wait away.
+
+Screen scraping cannot substitute for `goal-verify.sh`: `pane wait-output` matches the assistant's
+own prose about `Goal set:`, and the `/goal active` chrome renders only in the working spinner, so
+an idle pane shows nothing either way.
+
+## Clear it
+
+A closing goal does not stop the cron — that is the `CronDelete` tool, not the model deciding it is
+finished. `bash $S '/goal clear'` for the goal; `CronDelete` for the loop.
 
 <EXTREMELY-IMPORTANT>
 ## IRON LAW: NO GOAL A FINISHED STEP CAN SATISFY
 
-**A goal names the state the WORK reaches. Never the event on the way there.**
+**A goal names the state the WORK reaches, never the event on the way there.**
 
 "craft has returned a verdict", "the recon report exists", "BRIEF.md has been carried out", "the
-agent has reported back" — every one of those is true while the objective is still unmet. The
-moment it closes, the session stops, and if it is 02:00 the work stops for the rest of the night.
-
-Writing a milestone-shaped goal is not caution, it is the opposite of helpful: it converts hours of
-paid, unattended capacity into an idle terminal and hands the user a question they would have
-answered with one word. The session that stops at 01:21 does not save the user anything — it
-spends their night and then asks them to spend their morning too.
+agent has reported back" — each is true while the objective is still unmet. The moment it closes the
+session stops, and at 02:00 the work stops for the night. `craft has returned a verdict` closed on
+`overallPass=false` with 0 of 5 tasks done and 20 blocking findings; craft's own loop is FAIL → fix
+→ re-run, and a goal calling FAIL "done" stops the loop that was going to fix it.
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>
@@ -68,129 +82,64 @@ spends their night and then asks them to spend their morning too.
 
 **Every decision the goal leaves open becomes a question asked into an empty room.**
 
-If the session may commit, push, pick round-2 scope, choose between two branches it named itself,
-or spend the rest of its round budget — the goal says so, in one sentence, up front. A session that
-holds a green, tested commit because the human is asleep is not being careful; it is making the
-human the bottleneck on work the human already authorized by starting it.
+If the session may commit, push, pick round-2 scope, choose between two branches it named itself, or
+spend the rest of its round budget — the goal says so, in one sentence, up front.
 </EXTREMELY-IMPORTANT>
 
-## Writing the goal — the four parts
+## The four parts
 
-Every goal has all four. Missing any one produced a stall above.
+| | |
+|---|---|
+| **1. END STATE** | the objective in its own terms, with a number someone could dispute. An adjective is a feeling. |
+| **2. CHECK** | the backticked command whose exit code settles it, so running it is evidence rather than a claim. A goal settled by re-reading the conversation gets reasoned out of. |
+| **3. ESCAPES** | a work counter AND a wall clock, both readable by the session. A counter stops a *losing* run, a clock stops a *stuck* one. The clock must outlast `maxRounds × a round` — craft's 6 and 720 min are the defaults to borrow. |
+| **4. AUTHORITY** | what it may decide alone, plus the SHORT list of what genuinely stops it — a missing credential, a dead network, an irreversible or outward-facing action. **Everything not on that list is the next task, difficulty included.** |
 
-```
-   ┌──────────────────────────────────────────────────────────────────┐
-   │ 1. END STATE     the objective in its own terms, with a number   │
-   │                  someone could dispute                           │
-   │ 2. CHECK         the backticked command whose exit code settles  │
-   │                  it — so running it is evidence, not a claim     │
-   │ 3. ESCAPES       a work counter AND a wall clock. Either closes  │
-   │                  the goal; both are things the session can read  │
-   │ 4. AUTHORITY     what it may decide alone, and the SHORT list of │
-   │                  what genuinely stops it                         │
-   └──────────────────────────────────────────────────────────────────┘
-```
-
-**1. End state.** Not "the parser has been fixed" — `parse_status=error` is under 1% of XML-era
-filings, measured on the full 31,902-filing corpus. A number a referee could argue with is a state;
-an adjective is a feeling.
-
-**2. Check.** Backticked, so its output lands in the transcript. A goal whose truth is settled by
-re-reading the conversation is re-adjudicated on every stop attempt and reasoned out of — measured
-four consecutive times, `craft/references/goal-and-review-gate-defects.md` §1.
-
-**3. Escapes.** Two, because they fail differently. A counter (`jq -r .rounds args.json` reads N or
-more) stops a *losing* run; a wall clock stops a *stuck* one. Rounds alone put a guaranteed stop
-twelve hours out on 2026-08-19 when rounds ran 3h+ each.
-
-**4. Authority.** See the second Iron Law. Also enumerate what is genuinely terminal — a missing
-credential, a dead network, an irreversible or outward-facing action. **Everything not on that list
-is the next task**, including difficulty.
-
-## Run the lint before you set it
+## Lint it before you send it
 
 ```bash
 bun ${CLAUDE_SKILL_DIR}/scripts/goal-lint.ts "<the goal text>" --unattended
 bun ${CLAUDE_SKILL_DIR}/scripts/goal-lint.ts --file BRIEF.md --unattended
 ```
 
-Exit 0 clean, 1 findings, 2 usage. Twelve rules, all decidable from the string: milestone verbs,
-human-only clauses, turn counting, missing check, missing ceiling, missing counter, adjectives
-where a number belongs, question marks, `done or blocked`, and — under `--unattended` — missing
-standing authority and missing continuation.
+Exit 0 clean, 1 findings, 2 usage. Twelve rules, all decidable from the string. Fix every critical
+and major. `goal-self-send.sh` runs it at the chokepoint anyway — a critical refuses the send with
+exit 8 and sends nothing; `--no-lint` overrides.
 
-It is a lint, not a review: it settles what an exit code can settle and renders no opinion on
-whether the goal is *right*. Fix every critical and major before setting the goal. Run it on the
-real `BRIEF.md` above and it returns 5 findings, three of which are exactly why that session slept.
-
-**You do not have to remember to run it.** `craft/scripts/goal-self-send.sh` — the single chokepoint
-every `/goal` passes through — runs it before it sends. A **critical** finding refuses the send with
-exit 8, touches no transport, and names this file. Majors and minors warn and go through. What
-`compose-goal.sh` emits passes silently, so craft dispatches are untouched, and `--no-lint`
-overrides when you have a reason.
+It settles what an exit code can settle and renders no opinion on whether the goal is *right*.
 
 ## The continuation rule
 
 **When a sub-run returns and the goal is still open, take the next action. Do not propose it.**
 
-Every stall above happened at a moment of *legitimate completion* — a verdict landed, a brief
-finished, a recon report arrived. That moment is where a session naturally turns to the human. Under
-an open goal it is instead the moment with the most information it will ever have, and the next
-action is the one it just finished naming.
-
-If two branches are genuinely open, pick one, state the pick and the reason in one line, and do it.
-A menu offered at 02:00 is a five-hour pause with extra steps.
-
-## Facts
-
-- A 21-day sweep of 12,654 transcripts found 592 stalls across 161 sessions; **558 had no goal set at all**, and **zero lint-clean goals stopped early**. The wording of the rules is not what fails — writing one at all is. Do not add lint rules on stall evidence until goals are routinely set.
-- `craft has returned a verdict` closed on `overallPass=false` with **0 of 5 tasks implemented and
-  20 surviving blocking findings**. `craft-result.sh` exits 1 on FAIL, so a clause reading "a
-  verdict" or "exits 0 or 1" is satisfied by losing. Craft's own loop is FAIL → fix → re-run;
-  a goal that calls FAIL "done" stops the loop that was going to fix it.
-- The 9c82497d session declined its own next task because it could not cut a *faithful* fixture
-  from a 40-line excerpt. Refusing to ship a test that does not reproduce the defect was correct.
-  Treating that as terminal was not: a fixture that is hard to cut is the task, and it had 10 of 15
-  rounds and 5 hours left to cut it.
-- `stop after N turns` counts nothing. There is no `num_turns`, no `turn_count`, no `stopHookActive`
-  in the session JSONL — the clause is prose a model re-adjudicates, and it held four times that
-  stopping *deliberately* disqualifies the escape while losing control would qualify. An escape that
-  releases on runaway but not on a clean finish inverts what it exists to encourage.
-- A human clause inside a goal made a tested, reversible bugfix wait **~18 hours** on 2026-08-22
-  while the outage it repaired stayed live. Review is real and still happens — it belongs *after*
-  the goal clears, as a step the session performs, not a condition it waits on.
-- A wall-clock ceiling must outlast `maxRounds x a round`, not a human's attention span. A
-  10-minute default against a 54-minute round printed `CEILING REACHED` with zero rounds on disk.
-  Craft's defaults are **6 rounds and 720 minutes** (raised from 3 and 480 on 2026-08-28, after
-  this night); rounds have measured 30–60 min here and 3h+ in mail-bridge on 2026-08-19, so six
-  rounds under the old 8h made the wall clock bind before the round cap in the ordinary case.
-  Borrow both unless you have measured otherwise.
-- `compose-goal.sh` already emits a conforming goal for craft runs and passes this lint clean. For
-  a craft dispatch, do not hand-write one — `craft-dispatch.sh` composes it.
+Every measured stall happened at a moment of legitimate completion — a verdict landed, a brief
+finished, a recon report arrived. Under an open goal that is the moment with the most information
+the session will ever have, and the next action is the one it just finished naming. If two branches
+are genuinely open, pick one, say why in a clause, do it. A menu offered at 02:00 is a five-hour
+pause with extra steps.
 
 ## Red flags — STOP
 
 | About to | Why wrong | Do instead |
 |---|---|---|
-| Leave a session running overnight on a goal alone | Nothing in a goal runs once the session goes quiet, so a goal cannot restart it | Add `/loop 30m`, and `CronDelete` it when the goal closes |
-| Write "has returned a verdict" / "has been carried out" / "the report exists" | Milestone: true while the objective is unmet | Name PASS, or the number the work has to reach |
-| End a turn with a question mark under an open goal | At 02:00 that is a 5-hour pause | Answer it, state the answer in one line, act on it |
-| Offer the user a menu — "A, or B first?" | Both branches are usually your own work | Pick, say why in one clause, do it |
-| Write "when done or blocked, notify and stop" | Every difficulty becomes terminal | Enumerate the terminal blockers; everything else is the next task |
-| Hold a green commit "because the user is asleep" | The goal should have pre-authorized it; if it did not, the commit is still reversible and the silence is not | Commit, and say so plainly in the report |
-| Put "and the user has approved" in a goal | A session cannot close it by working — measured 18h | Move review after the goal, as a step the session performs |
-| Write "or stop after N turns" | Nothing counts turns | A counter file it can `cat`, and a wall clock |
-| Set a goal with no minutes in it | A stalled run has no way out | Add the ceiling and the script that prints it |
-| Set an unattended goal without saying what it may decide alone | Every open decision becomes a 5-hour question | One sentence of standing authority |
-| Report "N of M rounds used" and stop at N | The budget was the authorization, not the ceiling on ambition | Spend it, or say why the remainder is genuinely unusable |
+| Report "goal set" because the send exited 0 | the send only queues; 4 of 4 reported success and set nothing | `goal-verify.sh` next turn |
+| Treat a goal you wrote down as binding on yourself | prose is re-adjudicated away; only the harness blocks a stop | verify, or tell the user it is not active |
+| `GOAL="$(cat goal.txt)"; bash $S "/goal $GOAL"` | a compound command no permission rule can allowlist | pass the text as one single-quoted argument |
+| Send inline without waiting for idle | lands as a queued prompt, parsed as literal text, no goal | the drainer's `agent wait` — never remove it |
+| Leave a session running overnight on a goal alone | nothing in a goal runs once the session is quiet | add `/loop 30m`, `CronDelete` when it closes |
+| Write "has returned a verdict" / "the report exists" | milestone: true while the objective is unmet | name PASS, or the number the work must reach |
+| End a turn with a question mark under an open goal | at 02:00 that is a five-hour pause | answer it in one line and act |
+| Write "when done or blocked, notify and stop" | every difficulty becomes terminal | enumerate the terminal blockers; the rest is the next task |
+| Hold a green commit "because the user is asleep" | the goal should have pre-authorized it; the commit is reversible, the silence is not | commit, and say so in the report |
+| Put "and the user has approved" in a goal | a session cannot close it by working — measured 18h | review after the goal, as a step it performs |
+| Write "or stop after N turns" | nothing counts turns | a counter file it can `cat`, and a wall clock |
+| Report "N of M rounds used" and stop at N | the budget was the authorization, not a ceiling on ambition | spend it, or say why the remainder is unusable |
 | Hand-write a goal for a craft run | `compose-goal.sh` already emits a conforming one | `craft-dispatch.sh` |
 
 ## References
 
-- `references/templates.md` — the goal template, the unattended-brief template, and the three real
-  goals rewritten side by side with what each rewrite would have bought.
-- `${CLAUDE_SKILL_DIR}/../craft/references/goal-and-review-gate-defects.md` — the three older,
-  now-fixed defects: turn counting, PASS-unsatisfiable-after-success, and a review gate that
-  accepted a rejection in words but not an approval.
-- `${CLAUDE_SKILL_DIR}/../craft/scripts/compose-goal.sh` — the reference implementation. Its header
-  comment is the measured history of every clause in it.
+- `references/templates.md` — the goal template, the unattended-brief template, and three real goals
+  rewritten side by side.
+- `scripts/goal-verify.sh`, `../craft/scripts/goal-send-drain.sh` — the proof and the transport.
+- `../craft/scripts/compose-goal.sh` — the reference implementation; its header records why each
+  clause is worded as it is.

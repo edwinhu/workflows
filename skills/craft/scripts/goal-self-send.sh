@@ -104,38 +104,25 @@ if command -v herdr >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
         echo "goal-self-send: herdr says $SID is on pane $PANE but we occupy ${HERDR_PANE_ID} — refusing to send" >&2
         exit 4
       fi
-      # SUBMIT WITH `agent prompt`, and take its typed event as the answer.
+      # ENQUEUE; the SEND happens after this turn ends. `agent prompt` delivers text+Enter even
+      # to a working agent, but Claude Code enqueues a prompt arriving mid-turn and does not parse
+      # slash commands out of it — measured 2026-09-02, 4 of 4 inline sends recorded
+      # promptSource="queued" with no `Goal set:` receipt, while the same line delivered to an idle
+      # pane expanded normally. A self-send is always made from a working turn, so the send is
+      # deferred to a detached drainer that waits for idle first. See goal-send-drain.sh.
       #
-      # This replaced a hand-rolled `pane send-text` + `send-keys Enter` + input-line readback on
-      # 2026-09-01, because that readback answered the one question it could not answer. Measured
-      # from identical output, both directions: four self-send probes in this session printed
-      # "text is sitting unsubmitted" and REGISTERED anyway, while workflows/f31b7734 printed the
-      # same string and genuinely never submitted — the goal text never appeared as a user prompt
-      # and the user typed it by hand. A screen-scrape cannot separate those two cases, so the old
-      # exit 5 meant "unknown" while reading as "failed", and callers guessed in both directions:
-      # f31b7734's agent wrote "Goal set." on a send that had not landed.
-      #
-      # It also deadlocked itself. The collision guard refused a `/goal clear` with exit 6
-      # ("input box is not empty") on residue it could not interpret; `agent prompt` delivered the
-      # same line immediately afterwards.
-      #
-      # NO `--wait`. Per `herdr agent prompt --help` it "does not track turns: if the agent is
-      # already working, that active turn's completion may match" — and a self-send is always made
-      # from a working turn, so the wait would match our own turn and prove nothing.
-      OUT=$(herdr agent prompt "$PANE" "$CMD" 2>&1)
-      if printf '%s' "$OUT" | grep -q 'agent_prompted'; then
-        echo "goal-self-send: submitted via herdr agent prompt (pane $PANE)"
-        exit 0
+      # NO `--wait` anywhere: it waits for a turn to settle AFTER submitting, which is the wrong
+      # end of the problem, and a self-send's own turn can satisfy it.
+      Q="${TMPDIR:-/tmp}/herdr-goal-send-$SID.q"
+      printf '%s\n' "$CMD" >> "$Q" || { echo "goal-self-send: cannot write queue $Q" >&2; exit 5; }
+      DRAIN="$(dirname "${BASH_SOURCE[0]}")/goal-send-drain.sh"
+      if [ ! -x "$DRAIN" ]; then
+        echo "goal-self-send: drainer missing at $DRAIN" >&2; exit 5
       fi
-      # A BLOCKED agent is rejected before any input is sent — a real failure the old path could
-      # not distinguish from success, because it typed into the box either way.
-      if printf '%s' "$OUT" | grep -q 'agent_blocked'; then
-        echo "goal-self-send: agent on $PANE is blocked; nothing was sent" >&2
-        exit 5
-      fi
-      echo "goal-self-send: herdr agent prompt did not confirm submission for $PANE" >&2
-      printf '%s\n' "$OUT" | head -3 >&2
-      exit 5
+      setsid nohup "$DRAIN" "$PANE" "$Q" >/dev/null 2>&1 &
+      echo "goal-self-send: queued ${CMD%% *} for pane $PANE — sends when this turn ends"
+      echo "goal-self-send: verify next turn with goal-verify.sh (a queued send is not a set goal)"
+      exit 0
     fi
   fi
 fi

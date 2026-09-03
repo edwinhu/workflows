@@ -5,8 +5,14 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 /**
- * The herdr transport must submit with `agent prompt`, which returns a typed `agent_prompted`
- * event, and must NOT hand-roll `pane send-text` + `send-keys` + an input-line readback.
+ * The herdr transport must ENQUEUE and let a detached drainer send after the turn ends, and must
+ * NOT hand-roll `pane send-text` + `send-keys` + an input-line readback.
+ *
+ * Measured 2026-09-02: `agent prompt` delivers text+Enter even to a working agent, but Claude Code
+ * enqueues a prompt arriving mid-turn and does not parse slash commands out of it. Four of four
+ * inline self-sends recorded promptSource="queued" with no `Goal set:` receipt; the identical line
+ * delivered to an IDLE pane expanded into a real /goal. A self-send is always made from a working
+ * turn, so an inline `agent prompt` can never set a goal.
  *
  * Measured 2026-09-01, both directions from identical output: four self-send probes in this
  * session reported `sitting unsubmitted` and registered anyway, while workflows/f31b7734 reported
@@ -40,16 +46,22 @@ exit 0
   const r = spawnSync(SEND, [arg, '--no-lint'], {
     encoding: 'utf8',
     env: { ...process.env, PATH: `${dir}:${process.env.PATH}`, CLAUDE_CODE_SESSION_ID: SID,
-           HERDR_PANE_ID: 'wT:p1' },
+           HERDR_PANE_ID: 'wT:p1', TMPDIR: dir },
   })
-  return { r, calls: existsSync(log) ? readFileSync(log, 'utf8') : '' }
+  const q = join(dir, `herdr-goal-send-${SID}.q`)
+  return { r, calls: existsSync(log) ? readFileSync(log, 'utf8') : '',
+           queue: existsSync(q) ? readFileSync(q, 'utf8') : '' }
 }
 
-describe('the herdr transport submits with `agent prompt`', () => {
-  const { r, calls } = runWithStubHerdr('/goal `x` exits 0 within 60 minutes; rounds in a.json reads 3 or more. You may decide alone. When a run returns, take the next action.')
+describe('the herdr transport defers the send to a drainer', () => {
+  const { r, calls, queue } = runWithStubHerdr('/goal `x` exits 0 within 60 minutes; rounds in a.json reads 3 or more. You may decide alone. When a run returns, take the next action.')
 
-  test('it calls `agent prompt`', () => {
-    expect(calls).toContain('agent prompt')
+  test('it does NOT call `agent prompt` inline — that lands as a queued prompt, never a goal', () => {
+    expect(calls).not.toContain('agent prompt')
+  })
+
+  test('it enqueues the line for the drainer', () => {
+    expect(queue).toContain('/goal `x` exits 0')
   })
 
   test('it does NOT hand-roll send-text / send-keys / ctrl+u', () => {
