@@ -333,3 +333,19 @@ func TestSecurityIDThatIsAnISIN(t *testing.T) {
 		t.Errorf("htmltable cusip: isin %q cusip %q", ctx.ISIN, ctx.CUSIP)
 	}
 }
+
+func TestVanguard2004DateWithoutColon(t *testing.T) {
+	b, err := os.ReadFile(filepath.Join("testdata", "vanguard", "V6_2004_no_colon_date.txt"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows := runISSNPXDoc(t, string(b))
+	if len(rows) == 0 {
+		t.Fatal("no rows")
+	}
+	for _, r := range rows {
+		if r[colIssuerName] != "1-800 CONTACTS, INC." || r[colCUSIP] != "681977104" || r[colMeetingDate] != "20040521" {
+			t.Errorf("issuer %q cusip %q date %q", r[colIssuerName], r[colCUSIP], r[colMeetingDate])
+		}
+	}
+}

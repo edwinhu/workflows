@@ -272,6 +272,17 @@ func parseVanguard(text string, meta FilingMeta) ([]VoteRow, error) {
 			rec.meetingDate = xmlDate(strings.TrimSpace(trimmed[len("MEETING DATE:"):]))
 			continue
 
+		case strings.HasPrefix(upper, "MEETING DATE "):
+			// The 2004 vintage prints the label without a colon, the date in
+			// the next column and a `For/Against` column header at the far
+			// right of the same line (458k rows with no date on 2026-09-02).
+			flush()
+			issuerOpen = false
+			if f := strings.Fields(trimmed[len("MEETING DATE "):]); len(f) > 0 {
+				rec.meetingDate = xmlDate(f[0])
+			}
+			continue
+
 		case strings.HasPrefix(upper, "RECORD DATE:"):
 			flush()
 			issuerOpen = false
