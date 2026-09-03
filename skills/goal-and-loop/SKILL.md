@@ -51,10 +51,13 @@ as binding on myself regardless" and idled three hours later. A goal held in pro
 away; only the harness's goal blocks a stop.
 </EXTREMELY-IMPORTANT>
 
-**Why the send is deferred, so nobody re-inlines it:** `herdr agent prompt` delivers text+Enter even
-to a working agent, but Claude Code enqueues a prompt arriving mid-turn and does not parse slash
-commands out of it — it lands as literal text. A self-send is always made from a working turn, so
-the drainer must `agent wait --until idle --until done` first. Do not "simplify" that wait away.
+**Two things make a self-send land, and both are load-bearing.** It must arrive when the pane is
+IDLE — a prompt arriving mid-turn is enqueued and parsed as literal text — and it must be TYPED,
+not pasted. `herdr agent prompt` honors bracketed paste, and Claude Code does not run a slash
+command out of a paste, so the drainer uses `pane send-text` + `send-keys enter`. Measured: three
+consecutive `agent prompt` sends to a confirmed-idle pane all landed literal, including a 94-char
+`/loop`. Length is not the variable — 2,373 chars has executed, 182 has not. Do not "simplify"
+either the wait or the transport.
 
 Screen scraping cannot substitute for `goal-verify.sh`: `pane wait-output` matches the assistant's
 own prose about `Goal set:`, and the `/goal active` chrome renders only in the working spinner, so
@@ -126,6 +129,8 @@ pause with extra steps.
 | Treat a goal you wrote down as binding on yourself | prose is re-adjudicated away; only the harness blocks a stop | verify, or tell the user it is not active |
 | `GOAL="$(cat goal.txt)"; bash $S "/goal $GOAL"` | a compound command no permission rule can allowlist | pass the text as one single-quoted argument |
 | Send inline without waiting for idle | lands as a queued prompt, parsed as literal text, no goal | the drainer's `agent wait` — never remove it |
+| Switch the drainer to `herdr agent prompt` | it pastes, and a paste is never parsed as a slash command | `pane send-text` + `send-keys enter` |
+| Treat a delivery receipt as proof the goal is set | delivery is not execution; only an executed command writes a `<command-name>` record | `goal-verify.sh` |
 | Leave a session running overnight on a goal alone | nothing in a goal runs once the session is quiet | add `/loop 30m`, `CronDelete` when it closes |
 | Write "has returned a verdict" / "the report exists" | milestone: true while the objective is unmet | name PASS, or the number the work must reach |
 | End a turn with a question mark under an open goal | at 02:00 that is a five-hour pause | answer it in one line and act |
