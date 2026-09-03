@@ -50,7 +50,8 @@ exit 0
     encoding: 'utf8',
     env: { ...process.env, HOME: home, PATH: `${home}:${process.env.PATH}`,
            GOAL_SEND_WAIT_MS: '1000', GOAL_SEND_FOCUS_TRIES: '2', GOAL_SEND_FOCUS_SLEEP: '0',
-           GOAL_SEND_CONFIRM_TRIES: '2', GOAL_SEND_CONFIRM_SLEEP: '0' },
+           GOAL_SEND_CONFIRM_TRIES: '2', GOAL_SEND_CONFIRM_SLEEP: '0',
+           GOAL_SEND_ATTEMPTS: '3' },
   })
   return { r, calls: existsSync(log) ? readFileSync(log, 'utf8') : '',
            queue: readFileSync(q, 'utf8'),
@@ -87,10 +88,17 @@ describe('delivery is not execution', () => {
   })
 
   test('no record means UNCONFIRMED and is recorded, not reported as success', () => {
-    const { drainLog, unconfirmed } = runDrain(['/goal the thing is measured'], { executes: false })
+    const { drainLog, unconfirmed, calls } = runDrain(['/goal the thing is measured'], { executes: false })
     expect(drainLog).toContain('UNCONFIRMED')
     expect(unconfirmed).toContain('/goal the thing is measured')
-  })
+    // A /goal is idempotent, so an unconfirmed one is re-attempted rather than abandoned.
+    expect((calls.match(/pane send-text/g) || []).length).toBe(3)
+  }, 30000)
+
+  test('a /loop is attempted ONCE even unconfirmed — two lines would be two crons', () => {
+    const { calls } = runDrain(['/loop 30m tick'], { executes: false })
+    expect((calls.match(/pane send-text/g) || []).length).toBe(1)
+  }, 30000)
 
   test('an unconfirmed line is NOT resent — two /loop lines would mean two crons', () => {
     const { queue } = runDrain(['/loop 30m tick'], { executes: false })
@@ -101,7 +109,7 @@ describe('delivery is not execution', () => {
 describe('two lines each get their own idle window', () => {
   const { calls } = runDrain(['/goal measured thing', '/loop 30m tick'])
 
-  test('one wait per send — a /goal starts a turn the /loop must wait out', () => {
+  test('each line gets its own idle wait — a /goal starts a turn the /loop must wait out', () => {
     expect((calls.match(/agent wait/g) || []).length).toBe(2)
     expect((calls.match(/pane send-text/g) || []).length).toBe(2)
   })
