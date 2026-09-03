@@ -31,6 +31,23 @@ rule can allowlist, so auto mode blocks the whole send.
 **A craft dispatch raises both for you** — `craft-dispatch.sh` self-sends the composed goal and the
 loop. Do not add a second loop; two crons means two ticks.
 
+<EXTREMELY-IMPORTANT>
+**Auto mode refuses the self-send outright, the plain single-argument form included.** Claude Code
+classifies a script that types into its own session as `Tmux Self Drive` — one of its
+adversarial-pattern rules, alongside `Instruction Poisoning`, `Auto-Mode Bypass` and
+`Self-Modification`. Those clear only when a human, shown what was flagged, confirms it is a false
+positive: an allowlist entry does not clear one, and neither does the agent judging it safe.
+Measured 2026-09-03 — a session already matching `Bash(bash ~/.claude/skills/workflows/skills/:*)`
+was denied with `[Tmux Self Drive] Sending input or goals to the agent's own session via self-send
+scripts`. Do not try to route around it; the workaround is itself the `Auto-Mode Bypass` pattern.
+
+`craft-dispatch.sh` does not notice. It calls `goal-self-send.sh` twice and treats a non-zero exit
+as "not fatal", so under auto mode a run proceeds with NEITHER a stopping condition NOR a heartbeat
+— the unattended idle this skill exists to prevent, arriving silently. A session that must raise its
+own goal therefore cannot run in auto mode: start it in another permission mode, or have the user
+type the `/goal` line. Either way `goal-verify.sh` is what settles it.
+</EXTREMELY-IMPORTANT>
+
 ## Verify it — the send is not the setting
 
 `goal-self-send.sh` **queues**; it does not set. It exits 0 on a successful enqueue, and a detached
@@ -130,6 +147,8 @@ pause with extra steps.
 | Set a goal on YOUR OWN session to test the transport | its Stop hook blocks idle, the clear needs idle, and only the user can break it | test against a throwaway pane, never the session you are working in |
 | Set a goal whose check paths live in a different repo | it can never be met where it runs, only cleared | the check must be runnable in that session's own cwd |
 | Report "goal set" because the send exited 0 | the send only queues; 4 of 4 reported success and set nothing | `goal-verify.sh` next turn |
+| Self-send from a session running in auto mode | `Tmux Self Drive` denies it, and no allowlist or agent judgment clears an adversarial-pattern rule | raise it in another permission mode, or have the user type the line; prove with `goal-verify.sh` |
+| Add an allowlist entry to get a self-send past auto mode | that is the `Auto-Mode Bypass` pattern — a second flagged behaviour, not a fix | change the permission mode, or hand the user the `/goal` line |
 | Treat a goal you wrote down as binding on yourself | prose is re-adjudicated away; only the harness blocks a stop | verify, or tell the user it is not active |
 | `GOAL="$(cat goal.txt)"; bash $S "/goal $GOAL"` | a compound command no permission rule can allowlist | pass the text as one single-quoted argument |
 | Send inline without waiting for idle | lands as a queued prompt, parsed as literal text, no goal | the drainer's `agent wait` — never remove it |
