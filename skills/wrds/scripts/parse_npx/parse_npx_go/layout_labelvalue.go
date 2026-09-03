@@ -285,6 +285,7 @@ func lvVoteRow(cells []string, issuer, ticker, cusip, mtgDate, mtgType, fund, se
 	return VoteRow{
 		IssuerName:               issuer,
 		CUSIP:                    icrCUSIP(cusip),
+		ISIN:                     icrISIN(cusip),
 		Ticker:                   ticker,
 		MeetingDate:              mtgDate,
 		MeetingType:              mtgType,

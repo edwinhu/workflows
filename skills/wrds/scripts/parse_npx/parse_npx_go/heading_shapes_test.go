@@ -319,3 +319,17 @@ func TestHTMLTableStackedLabelsAcrossSpacer(t *testing.T) {
 		}
 	}
 }
+
+func TestSecurityIDThatIsAnISIN(t *testing.T) {
+	if icrISIN("GB00B0BL5R37") != "GB00B0BL5R37" || icrISIN("015271109") != "" || icrCUSIP("GB00B0BL5R37") != "" {
+		t.Error("ISIN/CUSIP token split")
+	}
+	ctx, _ := htmlReadContext([]string{"Ticker:", "Security ID: GB00B0BL5R37"})
+	if ctx.ISIN != "GB00B0BL5R37" || ctx.CUSIP != "" {
+		t.Errorf("htmltable: isin %q cusip %q", ctx.ISIN, ctx.CUSIP)
+	}
+	ctx, _ = htmlReadContext([]string{"Security ID: 015271109"})
+	if ctx.CUSIP != "015271109" || ctx.ISIN != "" {
+		t.Errorf("htmltable cusip: isin %q cusip %q", ctx.ISIN, ctx.CUSIP)
+	}
+}

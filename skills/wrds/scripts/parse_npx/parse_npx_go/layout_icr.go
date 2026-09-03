@@ -325,11 +325,38 @@ func icrCUSIP(cell string) string {
 	return ""
 }
 
+// icrISIN returns the ISIN token in a Security ID cell, if any: two letters,
+// nine alphanumerics, a check digit. Foreign issuers file with an ISIN in the
+// Security ID field and no CUSIP at all (College Retirement Equities Fund
+// 2007: 47,660 rows with no id on 2026-09-02).
+func icrISIN(cell string) string {
+	for _, f := range strings.Fields(cell) {
+		if isinToken(f) {
+			return f
+		}
+	}
+	return ""
+}
+
+func isinToken(s string) bool {
+	if len(s) != 12 || !isASCIILetter(s[0]) || !isASCIILetter(s[1]) || s[11] < '0' || s[11] > '9' {
+		return false
+	}
+	for i := 2; i < 11; i++ {
+		c := s[i]
+		if !(c >= '0' && c <= '9') && !isASCIILetter(c) {
+			return false
+		}
+	}
+	return true
+}
+
 func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 	lines := strings.Split(text, "\n")
 	// Built ONCE per filing: these filings reach 171,705 vote-like lines, and a
 	// per-section rebuild would make the job quadratic in the body.
 	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	issFormerKeys(seriesIx, meta.FormerNames)
 	var (
 		rows    []VoteRow
 		meeting icrMeeting
