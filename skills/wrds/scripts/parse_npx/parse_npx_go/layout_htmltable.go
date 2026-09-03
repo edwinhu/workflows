@@ -1453,9 +1453,13 @@ var htmlSynonyms = map[string][]string{
 		"FOR AGAINST MANAGEMENT", "WITH MANAGEMENT",
 	},
 	htmlFieldTicker: {"TICKER", "SYMBOL", "TICKER SYMBOL"},
-	htmlFieldCUSIP:  {"CUSIP", "SECURITY ID", "CUSIP NUMBER", "SECURITY IDENTIFIER"},
+	// "SECURITY" is the CUSIP column of the Vote Summary Report (SSGA Funds,
+	// Thrivent: 'Mtg Date/Type | Company/Ballot Issues | Security | ...'); a
+	// value that is not CUSIP- or ISIN-shaped is dropped, so a "Security"
+	// column holding names cannot pollute the id.
+	htmlFieldCUSIP: {"CUSIP", "SECURITY ID", "CUSIP NUMBER", "SECURITY IDENTIFIER", "SECURITY"},
 	htmlFieldMtgDate: {
-		"MEETING DATE", "MTG DATE", "DATE OF MEETING",
+		"MEETING DATE", "MTG DATE", "DATE OF MEETING", "MTG DATE/TYPE",
 	},
 	htmlFieldIssuer: {
 		"ISSUER", "ISSUER NAME", "COMPANY", "COMPANY NAME", "SECURITY NAME",
@@ -2221,10 +2225,30 @@ func htmlIdentityRow(cells []string, mapping map[string]int) (ctx htmlContext, o
 		}
 	}
 	ctx.Issuer = at(htmlFieldIssuer)
-	ctx.CUSIP = htmlValueOrEmpty(at(htmlFieldCUSIP))
+	ctx.CUSIP, ctx.ISIN = htmlSecurityID(at(htmlFieldCUSIP))
 	ctx.Ticker = htmlValueOrEmpty(at(htmlFieldTicker))
 	ctx.MeetingDate = htmlDate(at(htmlFieldMtgDate))
-	if ctx.Issuer == "" && ctx.CUSIP == "" && ctx.MeetingDate == "" {
+	if d := at(htmlFieldMtgDate); ctx.MeetingDate == "" && d != "" {
+		// `05/02/07 - A`: the date with the meeting-type letter after a dash.
+		if f := strings.Fields(d); len(f) > 0 {
+			ctx.MeetingDate = htmlDate(f[0])
+		}
+	}
+	if _, hasIssuer := mapping[htmlFieldIssuer]; !hasIssuer && ctx.Issuer == "" && (ctx.CUSIP != "" || ctx.ISIN != "" || ctx.MeetingDate != "") {
+		// The Vote Summary Report prints the issuer in the proposal column of
+		// the identity row, the ticker in asterisks: `Advanced Energy
+		// Industries, Inc. *AEIS*` (SSGA Funds 2007, Thrivent 2008: 23k rows).
+		if name := at(htmlFieldDesc); name != "" && htmlIsIssuerLine(name) {
+			ctx.Issuer = name
+			if i := strings.LastIndex(name, " *"); i > 0 && strings.HasSuffix(name, "*") {
+				ctx.Issuer = strings.TrimSpace(name[:i])
+				if ctx.Ticker == "" {
+					ctx.Ticker = strings.Trim(name[i+2:], "*")
+				}
+			}
+		}
+	}
+	if ctx.Issuer == "" && ctx.CUSIP == "" && ctx.ISIN == "" && ctx.MeetingDate == "" {
 		return htmlContext{}, false
 	}
 	if ctx.Issuer != "" && !htmlIsIssuerLine(ctx.Issuer) {
@@ -2266,6 +2290,23 @@ func htmlAllLabels(cells []string) bool {
 		}
 	}
 	return filled > 0
+}
+
+// htmlSecurityID splits a security-id cell into its CUSIP and ISIN by shape;
+// anything else (a name under a "Security" header) is dropped.
+func htmlSecurityID(v string) (cusip, isin string) {
+	v = htmlValueOrEmpty(v)
+	if v == "" {
+		return "", ""
+	}
+	for _, f := range strings.Fields(v) {
+		if isinToken(f) && isin == "" {
+			isin = f
+		} else if pvTextCUSIP(f) && cusip == "" {
+			cusip = f
+		}
+	}
+	return cusip, isin
 }
 
 // htmlIsIdentityLabel reports a cell that is an identity-grid label.
@@ -2409,8 +2450,13 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 	if v := at(htmlFieldIssuer); v != "" {
 		r.IssuerName = v
 	}
-	if v := htmlValueOrEmpty(at(htmlFieldCUSIP)); v != "" {
-		r.CUSIP = v
+	if c, isin := htmlSecurityID(at(htmlFieldCUSIP)); c != "" || isin != "" {
+		if c != "" {
+			r.CUSIP = c
+		}
+		if isin != "" && r.ISIN == "" {
+			r.ISIN = isin
+		}
 	}
 	if v := htmlValueOrEmpty(at(htmlFieldTicker)); v != "" {
 		r.Ticker = v
