@@ -933,6 +933,14 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		for k := 1; k <= len(toks)-2; k++ {
 			ix.brands = append(ix.brands, issInitials(toks[k:]))
 		}
+		// And the trailing tokens themselves, two at least: Rydex Variable
+		// Trust heads "Variable Trust Russell 2000(R) 1.5x Strategy Fund" for
+		// a declared "Russell 2000(R) 1.5x Strategy Fund" (688k rows with no
+		// series on 2026-09-02). A lone trailing "Trust" or "Fund" is too
+		// common a word to be a brand.
+		for k := 1; k <= len(toks)-2; k++ {
+			ix.brands = append(ix.brands, strings.Join(toks[k:], " "))
+		}
 		// And of its LEADING tokens: Variable Insurance Products Fund II
 		// prints "VIP CONTRAFUND PORTFOLIO". Three letters at least.
 		for k := len(toks) - 1; k >= 3; k-- {
