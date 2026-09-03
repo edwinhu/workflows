@@ -964,6 +964,17 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 				ix.brands = append(ix.brands, acr)
 			}
 		}
+		// And any single token of the registrant's own name of six letters
+		// or more that is not a generic word: Mutual of America
+		// Institutional Funds heads "Institutional All America Fund" for a
+		// declared "All America Fund" (298k rows with no series). A cut is
+		// only ever followed by an exact lookup, so the token must sit at the
+		// front of a heading whose remainder is a declared name.
+		for _, t := range toks {
+			if len(t) >= 6 && !issGenericRegistrantWord[t] {
+				ix.brands = append(ix.brands, t)
+			}
+		}
 	}
 	put := func(m map[string]*SeriesDecl, key string, d *SeriesDecl) {
 		if key == "" {
@@ -1595,6 +1606,15 @@ func issLeadingEnumerator(name string) (rest string, ok bool) {
 		return "", false
 	}
 	return strings.Join(f[1:], " "), true
+}
+
+// issGenericRegistrantWord lists registrant tokens too common to be a brand.
+var issGenericRegistrantWord = map[string]bool{
+	"funds": true, "trust": true, "series": true, "company": true, "portfolio": true,
+	"portfolios": true, "investment": true, "investments": true, "insurance": true,
+	"variable": true, "products": true, "capital": true, "management": true,
+	"financial": true, "securities": true, "income": true, "equity": true, "growth": true,
+	"international": true, "global": true, "american": true, "national": true,
 }
 
 // issDropTypeWord removes a trailing type word from a normalised key.

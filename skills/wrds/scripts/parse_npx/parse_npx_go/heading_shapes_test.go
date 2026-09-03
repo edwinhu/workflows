@@ -639,3 +639,22 @@ func TestSeriesBrandAndTypeWordBothSides(t *testing.T) {
 		}
 	}
 }
+
+func TestSeriesRegistrantSingleTokenBrand(t *testing.T) {
+	ix := newISSSeriesIndex([]SeriesDecl{{SeriesID: "S1", Name: "All America Fund"}, {SeriesID: "S2", Name: "Equity Index Fund"}, {SeriesID: "S3", Name: "Mid-Cap Equity Index Fund"}}, normalizeSeriesName("MUTUAL OF AMERICA INSTITUTIONAL FUNDS INC"))
+	for h, want := range map[string]string{
+		"Institutional All America Fund":          "S1",
+		"Institutional Equity Index":              "S2",
+		"Institutional Mid Cap Equity Index Fund": "S3",
+		"Institutional Small Cap Growth":          "",
+	} {
+		_, d := issResolveFund(ix, h)
+		got := ""
+		if d != nil {
+			got = d.SeriesID
+		}
+		if got != want {
+			t.Errorf("%q -> %q, want %q", h, got, want)
+		}
+	}
+}
