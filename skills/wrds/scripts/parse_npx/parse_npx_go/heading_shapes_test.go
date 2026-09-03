@@ -541,3 +541,17 @@ func TestSeriesSleeveSuffix(t *testing.T) {
 		}
 	}
 }
+
+func TestHTMLBareFundLineRegistrantDashFundThenItem(t *testing.T) {
+	decls := []SeriesDecl{{SeriesID: "S1", Name: "Dunham Corporate/Government Bond Fund"}, {SeriesID: "S2", Name: "U.S. Government Money Market Portfolio"}}
+	ix := newISSSeriesIndex(decls, normalizeSeriesName("DUNHAM FUNDS"))
+	for pre, want := range map[string]string{
+		"Registrant: Dunham Funds - Dunham Corporate/Government Bond Fund    Item 1":                                 "S1",
+		"Registrant: Saratoga Advantage Trust - U.S. Government Money Market Portfolio   Item 1":                     "S2",
+		"Registrant:   NORTHERN LIGHTS FUND TRUST IV - Dunham Corporate/Government Bond Fund   \nItem 1, Exhibit 11": "S1",
+	} {
+		if _, id, _ := htmlBareFundLine(ix, pre); id != want {
+			t.Errorf("%q -> %q, want %q", pre, id, want)
+		}
+	}
+}

@@ -2613,6 +2613,14 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool)
 			if colon := strings.IndexByte(line, ':'); colon > 0 {
 				if i := strings.LastIndex(line, " - "); i > colon {
 					candidate = strings.TrimSpace(line[i+3:])
+					// `Registrant: Dunham Funds - Dunham Corporate/Government
+					// Bond Fund    Item 1` (the Ultimus vintage, 2017+): the
+					// form item follows the fund on the same line.
+					if k := strings.Index(candidate, "  Item "); k > 0 {
+						candidate = strings.TrimSpace(candidate[:k])
+					} else if k := strings.LastIndex(candidate, " Item "); k > 0 && strings.Trim(candidate[k+6:], "0123456789, ExhibitBIT") == "" {
+						candidate = strings.TrimSpace(candidate[:k])
+					}
 					line = candidate
 				} else {
 					continue
