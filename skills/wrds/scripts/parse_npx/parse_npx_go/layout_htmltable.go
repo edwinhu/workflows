@@ -2306,6 +2306,12 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 	if vote == "" {
 		return VoteRow{}, false
 	}
+	// A label in the vote column (`Period:`, `Company Name`) is a cover or
+	// identity row that shares the table, never a vote (Special Opportunities
+	// Fund 2023: 125 rows voted "Period:").
+	if strings.HasSuffix(vote, ":") || htmlIsHeaderWord(vote) {
+		return VoteRow{}, false
+	}
 	item, desc := at(htmlFieldItem), at(htmlFieldDesc)
 	// `Proposal Type` maps to the description for the shape that prints no
 	// other proposal column; Prudential Series Fund 2005 prints MGMT under it

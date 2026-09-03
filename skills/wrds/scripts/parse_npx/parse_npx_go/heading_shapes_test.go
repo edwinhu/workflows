@@ -358,3 +358,15 @@ func TestHTMLStackedValuesOffByOne(t *testing.T) {
 		t.Errorf("ticker %q cusip %q date %q", ctx.Ticker, ctx.CUSIP, ctx.MeetingDate)
 	}
 }
+
+func TestHTMLDataRowRejectsLabelVote(t *testing.T) {
+	mapping := map[string]int{htmlFieldVote: 0, htmlFieldDesc: 2, htmlFieldBy: 3}
+	for _, cells := range [][]string{{"Period:", "", "July 1, 2022-June 30, 2023", ""}, {"Company Name", "", "Meeting Date", "CUSIP"}} {
+		if _, ok := htmlDataRow(cells, mapping, 4, htmlContext{}); ok {
+			t.Errorf("%q emitted as a vote", cells)
+		}
+	}
+	if _, ok := htmlDataRow([]string{"For", "", "1.1 Election of Director", ""}, mapping, 4, htmlContext{}); !ok {
+		t.Error("a real vote row refused")
+	}
+}
