@@ -190,7 +190,15 @@ func vanguardJoinSplitLabels(lines []string) []string {
 func parseVanguard(text string, meta FilingMeta) ([]VoteRow, error) {
 	var rows []VoteRow
 
+	// Built once per filing, as in every other layout: the FUND: heading resolves
+	// against the header's declared series under the shared rules (exact or one
+	// described edit, refused on ambiguity), so a multi-series Vanguard filing
+	// stamps the link key instead of carrying a bare fund name.
+	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	issFormerKeys(seriesIx, meta.FormerNames)
+
 	fund := ""
+	fundSeries := ""
 	rec := vanguardRecord{}
 
 	// pending holds the lines of a proposal whose text has not finished
@@ -212,6 +220,7 @@ func parseVanguard(text string, meta FilingMeta) ([]VoteRow, error) {
 			return
 		}
 		if row, ok := vanguardRowFrom(pending, fund, rec, cols); ok {
+			row.SeriesID = fundSeries
 			rows = append(rows, row)
 		}
 		pending = pending[:0]
@@ -240,6 +249,10 @@ func parseVanguard(text string, meta FilingMeta) ([]VoteRow, error) {
 			flush()
 			issuerOpen = false
 			fund = strings.TrimSpace(trimmed[len("FUND:"):])
+			fundSeries = ""
+			if _, d := issResolveFund(seriesIx, fund); d != nil {
+				fundSeries = d.SeriesID
+			}
 			rec = vanguardRecord{}
 			continue
 
