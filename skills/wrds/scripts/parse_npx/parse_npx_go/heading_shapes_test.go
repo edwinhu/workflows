@@ -573,3 +573,17 @@ func TestSeriesBrandAndTrailingTypeWord(t *testing.T) {
 		}
 	}
 }
+
+func TestSeriesAmpersandDropped(t *testing.T) {
+	ix := newISSSeriesIndex([]SeriesDecl{{SeriesID: "S1", Name: "Segall Bryant & Hamill Emerging Markets Fund"}, {SeriesID: "S2", Name: "Segall Bryant & Hamill International Small Cap Fund"}}, normalizeSeriesName("Investment Managers Series Trust"))
+	for h, want := range map[string]string{"Segall Bryant Hamill Emerging Markets Fund": "S1", "Segall Bryant & Hamill Emerging Markets Fund": "S1", "Segall Bryant Hamill Small Cap Fund": ""} {
+		_, d := issResolveFund(ix, h)
+		got := ""
+		if d != nil {
+			got = d.SeriesID
+		}
+		if got != want {
+			t.Errorf("%q -> %q, want %q", h, got, want)
+		}
+	}
+}

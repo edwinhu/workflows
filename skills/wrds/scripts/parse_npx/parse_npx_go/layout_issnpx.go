@@ -877,6 +877,10 @@ type issSeriesIndex struct {
 	// distinct series answer to maps to nil, and nil is never stamped.
 	byCompact map[string]*SeriesDecl
 	lessBrand map[string]*SeriesDecl
+	// lessAnd keys declared names with their `and` (an `&` in the header)
+	// dropped: Investment Managers Series Trust heads `Segall Bryant Hamill
+	// Emerging Markets Fund` for `Segall Bryant & Hamill ...` (11k rows).
+	lessAnd   map[string]*SeriesDecl
 	lessParen map[string]*SeriesDecl // declared names with a trailing parenthetical removed
 	brands    []string
 	// lessSuffix keys the declared names with their common last word removed,
@@ -908,6 +912,7 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		byCompact:     make(map[string]*SeriesDecl, len(decls)),
 		lessBrand:     make(map[string]*SeriesDecl),
 		lessParen:     make(map[string]*SeriesDecl),
+		lessAnd:       make(map[string]*SeriesDecl),
 	}
 	if toks := strings.Fields(registrantKey); len(toks) > 1 {
 		for k := len(toks) - 1; k >= 1; k-- {
@@ -948,6 +953,9 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 	}
 	for i := range decls {
 		d := &decls[i]
+		if k := normalizeSeriesName(d.Name); strings.Contains(k, " and ") {
+			put(ix.lessAnd, strings.ReplaceAll(k, " and ", " "), d)
+		}
 		if d.SeriesID == "" || d.Name == "" {
 			continue
 		}
@@ -1336,6 +1344,13 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// The banner spaces a token the header runs together.
 	if d, seen := ix.byCompact[strings.ReplaceAll(key, " ", "")]; seen {
 		return banner, d
+	}
+
+	// The header's `&` (normalised to `and`) absent from the banner.
+	if !strings.Contains(key, " and ") {
+		if d, seen := ix.lessAnd[key]; seen {
+			return banner, d
+		}
 	}
 
 	// The registrant's own type word, omitted from wherever it sits.
