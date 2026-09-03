@@ -84,3 +84,23 @@ func TestDictionaryExactFallbackForUndeclaredHeading(t *testing.T) {
 		t.Fatal("no dictionary must yield no fallback")
 	}
 }
+
+// A sub-adviser after a colon: `<B>Clearwater Core Equity Fund: AQR Capital
+// Management, LLC</B>` (Clearwater Investment Trust; the largest no-heading
+// shape in run65's htmltable top 40, 205k rows). Same rule as the dash: one
+// side equals a declared name exactly and the other is dropped.
+func TestSeriesColonSubAdviser(t *testing.T) {
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "Clearwater Core Equity Fund"},
+		{SeriesID: "S2", Name: "Clearwater Small Companies Fund"},
+	}
+	for banner, want := range map[string]string{
+		"Clearwater Core Equity Fund: AQR Capital Management, LLC": "S1",
+		"Fund: Clearwater Small Companies Fund":                    "S2",
+		"Clearwater Balanced Fund: Some Adviser":                   "",
+	} {
+		if got := resolve(t, decls, "CLEARWATER INVESTMENT TRUST", banner); got != want {
+			t.Errorf("%q -> %q, want %q", banner, got, want)
+		}
+	}
+}

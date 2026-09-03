@@ -1367,7 +1367,10 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// Fund- AIA` (Natixis Funds Trust IV, 74,006 of 74,666 rows with no
 	// series on 2026-09-02). A hyphenated word (`Growth-Income`) has no space
 	// after its dash and is never cut.
-	for _, sep := range []string{" - ", "- "} {
+	// A colon does the same work: `Clearwater Core Equity Fund: AQR Capital
+	// Management, LLC` (Clearwater Investment Trust, the largest no-heading
+	// htmltable shape on run65).
+	for _, sep := range []string{" - ", "- ", ": "} {
 		if head, tail, ok := strings.Cut(banner, sep); ok && strings.TrimSpace(head) != "" && strings.TrimSpace(tail) != "" {
 			if d := lookupSeriesByName(idx, head); d != nil {
 				return banner, d
