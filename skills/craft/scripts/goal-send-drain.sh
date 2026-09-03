@@ -29,6 +29,15 @@ while :; do
   # state for a tab that has not been refocused, which is every backgrounded session.
   herdr agent wait "$PANE" --until idle --until done --timeout "${GOAL_SEND_WAIT_MS:-900000}" \
     >>"$LOG" 2>&1 || { echo "drain: wait failed for $PANE, leaving queue intact" >>"$LOG"; exit 5; }
+  # Idle means "not working", NOT "no human at the keyboard". Measured 2026-09-02: a send to a
+  # FOCUSED pane interleaved with the user's own typing and corrupted their message. Give a focused
+  # pane a grace window to become unfocused, then send anyway — a late goal beats no goal.
+  for _ in $(seq 1 "${GOAL_SEND_FOCUS_TRIES:-12}"); do
+    FOCUSED=$(herdr agent list 2>/dev/null | jq -r --arg p "$PANE" \
+      '[.result.agents[]? | select(.pane_id == $p)][0].focused // false' 2>/dev/null)
+    [ "$FOCUSED" = "true" ] || break
+    sleep "${GOAL_SEND_FOCUS_SLEEP:-5}"
+  done
   OUT=$(herdr agent prompt "$PANE" "$CMD" 2>&1)
   printf '%s\n' "$OUT" >>"$LOG"
   if printf '%s' "$OUT" | grep -q 'agent_prompted'; then
