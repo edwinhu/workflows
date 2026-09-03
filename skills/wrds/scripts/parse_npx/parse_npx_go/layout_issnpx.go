@@ -1200,6 +1200,13 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d != nil || declared {
 		return banner, d
 	}
+	// A leading enumerator: `1.A.  SC IBBOTSON BALANCED FUND` (Sun Capital
+	// Advisers Trust 2011, 34,952 rows with no fund). Exact after the cut.
+	if rest, ok := issLeadingEnumerator(banner); ok {
+		if alt, _ := lookupSeriesEntry(idx, rest); alt != nil {
+			return rest, alt
+		}
+	}
 	// A class letter glued to the name: `a-Global Growth Fund`, `e-New World
 	// Fund` (American Funds Insurance Series, all 45,253 rows with no series
 	// on 2026-09-02). Exact after the two-character cut.
@@ -1438,6 +1445,36 @@ func issBannerContinues(lines []string, i int) bool {
 // caller must try the heading WITH the token as well -- a real fund name can
 // begin with a one-letter word, and dropping it unconditionally would be a
 // tolerance rather than a reading of what the filing printed.
+// issLeadingEnumerator cuts a section number such as `1.A.`, `2.`, `(3)` or
+// `I.` from the front of a heading. The token must carry a digit or be a
+// dotted or bracketed letter, so a fund's own first word is never cut.
+func issLeadingEnumerator(name string) (rest string, ok bool) {
+	f := strings.Fields(name)
+	if len(f) < 2 || len(f[0]) > 6 {
+		return "", false
+	}
+	tok := f[0]
+	digit, punct := false, false
+	for i := 0; i < len(tok); i++ {
+		switch c := tok[i]; {
+		case c >= '0' && c <= '9':
+			digit = true
+		case c == '.' || c == ')' || c == '(':
+			punct = true
+		case isASCIILetter(c):
+		default:
+			return "", false
+		}
+	}
+	if !digit && !(punct && len(strings.Trim(tok, ".()")) <= 2) {
+		return "", false
+	}
+	if !punct && !digit {
+		return "", false
+	}
+	return strings.Join(f[1:], " "), true
+}
+
 // issClassLetterPrefix cuts a single letter and a dash glued to the name:
 // `a-Global Growth Fund` -> `Global Growth Fund`. The character after the dash
 // must be a letter, so `T-Bill` is a word and `- ` a sleeve separator.
