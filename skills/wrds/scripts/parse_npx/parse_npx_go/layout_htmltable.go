@@ -117,8 +117,10 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		ctxLead     string
 		stacked     map[int]string
 		leadJoin    bool
-		ctxSealed   bool
-		nilRow      bool
+		// fundCells is the set of distinct fund-cell values in the open table.
+		fundCells map[string]bool
+		ctxSealed bool
+		nilRow    bool
 		// curSeries is the fund the following blocks belong to. This layout
 		// stamped NO series of its own: measured 2026-08-31, 10.20% of its
 		// 55,195,672 rows carried one and every such row came from the chassis
@@ -151,6 +153,9 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// partitioned crosses repeated one-row tables only while each new row is a
 		// mapped vote, a context row or the repeated header itself. An unrelated new
 		// table therefore still closes the mapping rather than inheriting columns.
+		if row.newTable {
+			fundCells = nil
+		}
 		deferredBoundary := row.newTable && partitioned
 		if row.newTable && !partitioned {
 			if carry && !sawData {
@@ -325,9 +330,20 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 					r.FundName = curFund
 					if v := htmlFundCell(cells, mapping, headerArity); v != "" {
 						// The row names its own fund; the shared rules decide
-						// the series, refusing where they cannot.
+						// the series. A cell they cannot read (MET Investors:
+						// `MetInvestorSeriesTrustFortyPortfolio`) keeps the
+						// section's series only while the table names ONE fund;
+						// a table naming several refuses.
 						r.FundName = v
-						r.SeriesID = icrResolveFundShared(seriesIx, v)
+						if fundCells == nil {
+							fundCells = map[string]bool{}
+						}
+						fundCells[v] = true
+						if id := icrResolveFundShared(seriesIx, v); id != "" {
+							r.SeriesID = id
+						} else if len(fundCells) > 1 {
+							r.SeriesID = ""
+						}
 					}
 					out = append(out, r)
 					sawData, emitted = true, true
