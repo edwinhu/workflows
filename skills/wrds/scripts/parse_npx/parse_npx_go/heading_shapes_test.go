@@ -369,4 +369,33 @@ func TestHTMLDataRowRejectsLabelVote(t *testing.T) {
 	if _, ok := htmlDataRow([]string{"For", "", "1.1 Election of Director", ""}, mapping, 4, htmlContext{}); !ok {
 		t.Error("a real vote row refused")
 	}
+	// 'No' is a vote in a Voted? export, whatever else the word means.
+	if _, ok := htmlDataRow([]string{"No", "", "Approve Discharge of Management Board", "Management"}, mapping, 4, htmlContext{}); !ok {
+		t.Error("a 'No' vote refused")
+	}
+}
+
+func TestHTMLReadContextDeutscheGrid(t *testing.T) {
+	// db-X Exchange-Traded Funds 2014: labels two cells before their values,
+	// six filled cells to a row, 'Primary CUSIP <value>' in one cell.
+	ctx, labelled := htmlReadContext([]string{"Meeting Date", "", "07/16/2013", "", "Country", "", "USA", "", "Provider Security ID", "", "35671D857"})
+	if !labelled || ctx.MeetingDate != "20130716" || ctx.CUSIP != "35671D857" {
+		t.Errorf("row 1: labelled %v date %q cusip %q", labelled, ctx.MeetingDate, ctx.CUSIP)
+	}
+	ctx, _ = htmlReadContext([]string{"Record Date", "", "05/24/2013", "", "Meeting Type", "", "Annual", "", "Ticker", "", "FCX"})
+	if ctx.Ticker != "FCX" {
+		t.Errorf("row 2: ticker %q", ctx.Ticker)
+	}
+	ctx, _ = htmlReadContext([]string{"Shares Voted 100", "", "Primary CUSIP 35671D857", "", "Primary ISIN US35671D8570", "", "Primary SEDOL 2352118"})
+	if ctx.CUSIP != "35671D857" || ctx.ISIN != "US35671D8570" {
+		t.Errorf("row 3: cusip %q isin %q", ctx.CUSIP, ctx.ISIN)
+	}
+}
+
+func TestHTMLReadContextWideDataRowWithNoVote(t *testing.T) {
+	// Brighthouse prints 'No' as the vote of an unvoted item; the row's CUSIP
+	// value must not make it an identity row.
+	if _, labelled := htmlReadContext([]string{"Aalberts NV", "", "20230101", "", "AALB", "", "N0300L103", "", "CUSIP", "", "1", "", "Accept Financial Statements", "", "MGMT", "", "For", "", "No"}); labelled {
+		t.Error("a wide data row read as identity")
+	}
 }

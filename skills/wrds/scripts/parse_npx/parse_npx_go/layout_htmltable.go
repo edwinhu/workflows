@@ -1729,6 +1729,13 @@ var htmlContextLabels = []string{
 	"TICKER SYMBOL:", "TICKER:", "SECURITY ID:", "CUSIP NUMBER:", "CUSIP:", "ISIN:",
 }
 
+// htmlBareValued are bare labels printed WITH their value in the same cell
+// (`Primary CUSIP 35671D857`, `Primary ISIN US35671D8570`; Deutsche's db-X
+// and DBX ETF trusts, 58k rows with no issuer, id or date on 2026-09-02).
+var htmlBareValued = map[string]string{
+	"PRIMARY CUSIP ": "CUSIP:", "PRIMARY ISIN ": "ISIN:", "CUSIP ": "CUSIP:", "ISIN ": "ISIN:",
+}
+
 // htmlBareLabels are the labels the ProxyEdge grammar prints WITHOUT a colon,
 // each in its own cell with the value in the next (`Security | G16612106`,
 // `ISIN | GB0030913577`, `Meeting Date | 13-Jul-2016`; Gabelli's filer-agent
@@ -1738,6 +1745,7 @@ var htmlBareLabels = map[string]string{
 	"SECURITY": "SECURITY ID:", "SECURITY ID": "SECURITY ID:", "CUSIP": "CUSIP:",
 	"TICKER": "TICKER:", "TICKER SYMBOL": "TICKER SYMBOL:", "ISIN": "ISIN:",
 	"MEETING DATE": "MEETING DATE:", "ISSUER NAME": "ISSUER NAME:",
+	"PROVIDER SECURITY ID": "SECURITY ID:", "RECORD DATE": "RECORD DATE:",
 	// Not "ISSUER": it is a proponent value ('Issuer' in Buffalo Funds' Proposed
 	// By column), and reading it as a label consumed 173,538 vote rows across
 	// 395 filings on run55.
@@ -1762,7 +1770,11 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 	// ... and never on a repeated header row, whose every filled cell is a
 	// column label (`Company Name | Ticker | ...`, Buffalo Funds: every issuer
 	// read as "Company Name" on 2026-09-02).
-	bare := htmlFilledCells(cells) <= 4 && !htmlHasVoteCell(cells) && !htmlAllLabels(cells)
+	// A row of up to four cells may carry one bare label; a wider row must
+	// carry two (Deutsche's grid: three labels to a row), because a wide
+	// export's data row can print CUSIP as a value and 'No' as its vote
+	// (Brighthouse Funds Trust II: 8,224 rows consumed as context once).
+	bare := !htmlHasVoteCell(cells) && !htmlAllLabels(cells) && (htmlFilledCells(cells) <= 4 || htmlBareLabelCount(cells) >= 2)
 	for ci, cell := range cells {
 		// A label wrapped at a source newline inside its cell (`Meeting
 		// Date:`, GMO Trust: 38,059 of 38,551 rows with no date on
@@ -1775,6 +1787,20 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 			items = append(items, label)
 			cellOf = append(cellOf, ci)
 			continue
+		} else if bare {
+			up := htmlUpperASCII(flat)
+			valued := false
+			for prefix, label := range htmlBareValued {
+				if strings.HasPrefix(up, prefix) {
+					items = append(items, label+" "+strings.TrimSpace(flat[len(prefix):]))
+					cellOf = append(cellOf, ci)
+					valued = true
+					break
+				}
+			}
+			if valued {
+				continue
+			}
 		}
 		for _, line := range strings.Split(cell, "\n") {
 			items = append(items, strings.TrimSpace(line))
@@ -2208,6 +2234,26 @@ func htmlIdentityRow(cells []string, mapping map[string]int) (ctx htmlContext, o
 }
 
 // htmlAllLabels reports a row whose every filled cell is a column label.
+// htmlBareLabelCount counts cells that are a bare label or a bare label with
+// its value.
+func htmlBareLabelCount(cells []string) int {
+	n := 0
+	for _, c := range cells {
+		up := htmlUpperASCII(htmlFlat(c))
+		if _, ok := htmlBareLabels[up]; ok {
+			n++
+			continue
+		}
+		for prefix := range htmlBareValued {
+			if strings.HasPrefix(up, prefix) {
+				n++
+				break
+			}
+		}
+	}
+	return n
+}
+
 func htmlAllLabels(cells []string) bool {
 	filled := 0
 	for _, c := range cells {
@@ -2220,6 +2266,14 @@ func htmlAllLabels(cells []string) bool {
 		}
 	}
 	return filled > 0
+}
+
+// htmlIsIdentityLabel reports a cell that is an identity-grid label.
+func htmlIsIdentityLabel(s string) bool {
+	key := htmlCanonLabel(s)
+	_, bare := htmlBareLabels[key]
+	_, stacked := htmlStackedLabelSet[key]
+	return bare || stacked || key == "COMPANY NAME"
 }
 
 // htmlIsHeaderWord reports a cell whose text is one of the column labels this
@@ -2309,7 +2363,9 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 	// A label in the vote column (`Period:`, `Company Name`) is a cover or
 	// identity row that shares the table, never a vote (Special Opportunities
 	// Fund 2023: 125 rows voted "Period:").
-	if strings.HasSuffix(vote, ":") || htmlIsHeaderWord(vote) {
+	// Identity labels only: 'No' is a vote in exports with a Voted? column and
+	// also an item-number synonym (Brighthouse Funds Trust II, 8,224 rows).
+	if strings.HasSuffix(vote, ":") || htmlIsIdentityLabel(vote) {
 		return VoteRow{}, false
 	}
 	item, desc := at(htmlFieldItem), at(htmlFieldDesc)
