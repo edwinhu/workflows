@@ -127,6 +127,8 @@ pause with extra steps.
 
 | About to | Why wrong | Do instead |
 |---|---|---|
+| Set a goal on YOUR OWN session to test the transport | its Stop hook blocks idle, the clear needs idle, and only the user can break it | test against a throwaway pane, never the session you are working in |
+| Set a goal whose check paths live in a different repo | it can never be met where it runs, only cleared | the check must be runnable in that session's own cwd |
 | Report "goal set" because the send exited 0 | the send only queues; 4 of 4 reported success and set nothing | `goal-verify.sh` next turn |
 | Treat a goal you wrote down as binding on yourself | prose is re-adjudicated away; only the harness blocks a stop | verify, or tell the user it is not active |
 | `GOAL="$(cat goal.txt)"; bash $S "/goal $GOAL"` | a compound command no permission rule can allowlist | pass the text as one single-quoted argument |
