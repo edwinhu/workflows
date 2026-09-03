@@ -305,6 +305,9 @@ func (s *rowSink) flush() {
 //
 // headBuf is the worker's reusable head buffer, sized headBytes; it is owned by
 // the caller so the allocation is once per worker rather than once per filing.
+// seriesMap is the optional -series-map overlay; nil means none loaded.
+var seriesMap *seriesOverlay
+
 func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta FilingMeta) {
 	meta = FilingMeta{FilePath: relPath, ParseMode: "none", ParseStatus: "error"}
 	sink.meta = &meta
@@ -373,10 +376,18 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 		return joined
 	}
 
+	var declared map[string]bool
+	if seriesMap != nil {
+		declared = map[string]bool{}
+		for _, id := range seriesIDs(sc) {
+			declared[id] = true
+		}
+	}
 	stamp := func(r VoteRow) error {
 		if r.SeriesID == "" {
 			r.SeriesID = seriesRow
 		}
+		seriesMap.apply(relPath, declared, &r)
 		if r.ClassIDs == "" && r.SeriesID != "" {
 			r.ClassIDs = classesOf(r.SeriesID)
 		}
@@ -442,12 +453,13 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 
 func main() {
 	var (
-		filesFrom    string
-		archiveRoot  string
-		outFile      string
-		manifestFile string
-		concurrency  int
-		showVersion  bool
+		filesFrom     string
+		archiveRoot   string
+		outFile       string
+		manifestFile  string
+		concurrency   int
+		showVersion   bool
+		seriesMapPath string
 	)
 
 	flag.StringVar(&filesFrom, "files-from", "", "filelist, one path per line (required)")
@@ -459,8 +471,19 @@ func main() {
 		"issnpx: when a fund banner begins with the filing's own COMPANY CONFORMED NAME,"+
 			" retry the lookup with that prefix removed; -issnpx-registrant-prefix-strip=false"+
 			" disables it, which is the first step of the audit this rule requires")
+	flag.StringVar(&seriesMapPath, "series-map", "",
+		"TSV (filing, heading, series_id) filling a blank series_id for the exact fund heading"+
+			" printed, only with a series the filing's header declares")
 	flag.BoolVar(&showVersion, "version", false, "print version and exit")
 	flag.Parse()
+	if seriesMapPath != "" {
+		ov, err := loadSeriesOverlay(seriesMapPath)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(2)
+		}
+		seriesMap = ov
+	}
 
 	if showVersion {
 		fmt.Println(version)
