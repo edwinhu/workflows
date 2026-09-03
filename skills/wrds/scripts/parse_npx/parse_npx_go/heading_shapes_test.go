@@ -427,3 +427,11 @@ func TestHTMLDataRowISINColumnAndCarry(t *testing.T) {
 		t.Errorf("carry: ok %v isin %q date %q issuer %q", ok, r2.ISIN, r2.MeetingDate, r2.IssuerName)
 	}
 }
+
+func TestHTMLDateTwoDigitYearWithTime(t *testing.T) {
+	for in, want := range map[string]string{"15-Oct-14 11:30": "20141015", "10-Nov-14 15:00": "20141110", "05/27/2015 10:00": "20150527", "24-May-2012": "20120524", "11/19/2009": "20091119"} {
+		if got := htmlDate(in); got != want {
+			t.Errorf("htmlDate(%q) = %q, want %q", in, got, want)
+		}
+	}
+}

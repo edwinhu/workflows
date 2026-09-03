@@ -2192,6 +2192,16 @@ func htmlDate(s string) string {
 	if s == "" {
 		return ""
 	}
+	// `15-Oct-14 11:30`: a two-digit year and a meeting time (JPMorgan China
+	// Region Fund, 4,743 rows with no date on 2026-09-02). The time is
+	// dropped and the year expanded before the ordinary parse.
+	if f := strings.Fields(s); len(f) >= 1 {
+		if p := strings.Split(f[0], "-"); len(p) == 3 && len(p[2]) == 2 && len(p[1]) == 3 && isASCIILetter(p[1][0]) {
+			s = p[0] + "-" + p[1] + "-20" + p[2]
+		} else if len(f) >= 2 && strings.Contains(f[1], ":") {
+			s = f[0]
+		}
+	}
 	if d := brDate(s); d != "" {
 		return d
 	}
