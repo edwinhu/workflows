@@ -56,3 +56,15 @@ func TestSeriesOverlayFillsOnlyDeclaredBlankSeries(t *testing.T) {
 		t.Fatalf("no map loaded must be a no-op: got %q", r.SeriesID)
 	}
 }
+
+// The ids an overlay may stamp are the ones the filing DECLARES -- and for a
+// pre-2006 filing that is the CIK dictionary's decls, not the empty header
+// triples. Building the set from the triples silently refused every mapping on
+// a dictionary-backed filing.
+func TestOverlayDeclaredIDsComeFromTheDecls(t *testing.T) {
+	meta := FilingMeta{SeriesDecls: []SeriesDecl{{SeriesID: "S000000001"}, {SeriesID: "S000000002"}}}
+	got := overlayDeclaredIDs(meta)
+	if !got["S000000001"] || !got["S000000002"] || len(got) != 2 {
+		t.Fatalf("declared ids = %v, want both decl ids", got)
+	}
+}
