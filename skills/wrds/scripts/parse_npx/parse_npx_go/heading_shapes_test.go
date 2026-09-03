@@ -522,3 +522,22 @@ func TestHTMLFundCell(t *testing.T) {
 		t.Error("no fund column")
 	}
 }
+
+func TestSeriesSleeveSuffix(t *testing.T) {
+	ix := newISSSeriesIndex([]SeriesDecl{{SeriesID: "S1", Name: "FLEXIBLE MANAGED PORTFOLIO"}, {SeriesID: "S2", Name: "JENNISON 20/20 FOCUS PORTFOLIO"}}, normalizeSeriesName("PRUDENTIAL SERIES FUND"))
+	for h, want := range map[string]string{
+		"PSF  Flexible Managed Portfolio Equity Sleeve - Sub-Adviser: QMA":   "S1",
+		"PSF  Flexible Managed Portfolio - Bond - Sub-Adviser: PIM":          "S1",
+		"PSF Jennison 20/20 Focus Portfolio - Value - Sub-Adviser: Jennison": "S2",
+		"PSF Growth Sleeve": "",
+	} {
+		_, d := issResolveFund(ix, h)
+		got := ""
+		if d != nil {
+			got = d.SeriesID
+		}
+		if got != want {
+			t.Errorf("%q -> %q, want %q", h, got, want)
+		}
+	}
+}
