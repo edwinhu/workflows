@@ -51,13 +51,15 @@ as binding on myself regardless" and idled three hours later. A goal held in pro
 away; only the harness's goal blocks a stop.
 </EXTREMELY-IMPORTANT>
 
-**Two things make a self-send land, and both are load-bearing.** It must arrive when the pane is
-IDLE — a prompt arriving mid-turn is enqueued and parsed as literal text — and it must be TYPED,
-not pasted. `herdr agent prompt` honors bracketed paste, and Claude Code does not run a slash
-command out of a paste, so the drainer uses `pane send-text` + `send-keys enter`. Measured: three
-consecutive `agent prompt` sends to a confirmed-idle pane all landed literal, including a 94-char
-`/loop`. Length is not the variable — 2,373 chars has executed, 182 has not. Do not "simplify"
-either the wait or the transport.
+**Three things make a self-send land, and all are load-bearing.** It must arrive when the pane is
+IDLE — a prompt arriving mid-turn is enqueued and parsed as literal text. It must be TYPED, not
+pasted — `herdr agent prompt` honors bracketed paste, so the drainer uses `pane send-text` +
+`send-keys enter`. And it must be CHUNKED: Claude Code turns any single insert over **800
+characters** (`kre=800` in its bundle) or ~2 lines into a `[Pasted text #N]` block, and the slash
+parser requires input that literally starts with `/`, which a paste placeholder never does.
+Sub-threshold inserts concatenate exactly like typing — which is why a long goal the user TYPES
+works and the same goal sent in one call does not. Measured: a 1,460-char goal failed four
+consecutive attempts in one call and executed first try when split into three.
 
 Screen scraping cannot substitute for `goal-verify.sh`: `pane wait-output` matches the assistant's
 own prose about `Goal set:`, and the `/goal active` chrome renders only in the working spinner, so

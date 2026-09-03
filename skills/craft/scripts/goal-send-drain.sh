@@ -75,7 +75,19 @@ while :; do
       sleep "${GOAL_SEND_FOCUS_SLEEP:-5}"
     done
     SENT_AT=$(date +%s)
-    herdr pane send-text "$PANE" "$CMD" >>"$LOG" 2>&1 || { echo "drain: send-text failed" >>"$LOG"; exit 5; }
+    # CHUNKED, and the chunk size is not arbitrary. Claude Code turns a single inserted string
+    # into a "[Pasted text #N]" block when it exceeds 800 characters (`kre=800` in the bundle) or
+    # ~2 lines, and its slash parser requires the input to literally start with "/" -- a paste
+    # placeholder never does. Sub-threshold inserts concatenate in the input box exactly like
+    # typing, which is why a goal the user TYPES works at any length and a 1,346-char one sent in
+    # one call never parses. Keep chunks well under 800.
+    i=0; n="${GOAL_SEND_CHUNK:-600}"
+    while [ "$i" -lt "${#CMD}" ]; do
+      herdr pane send-text "$PANE" "${CMD:$i:$n}" >>"$LOG" 2>&1 \
+        || { echo "drain: send-text failed" >>"$LOG"; exit 5; }
+      i=$((i + n))
+      sleep 0.3
+    done
     sleep 1
     herdr pane send-keys "$PANE" enter >>"$LOG" 2>&1 || { echo "drain: send-keys failed" >>"$LOG"; exit 5; }
 

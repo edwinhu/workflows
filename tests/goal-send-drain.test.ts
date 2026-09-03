@@ -106,6 +106,31 @@ describe('delivery is not execution', () => {
   })
 })
 
+describe('a command over 800 chars is chunked, because Claude Code pastes above that', () => {
+  // `kre=800` in the Claude Code bundle: a single insert longer than 800 chars (or ~2 lines)
+  // becomes a "[Pasted text #N]" block, and the slash parser requires input starting with "/".
+  // Sub-threshold inserts concatenate exactly like typing. Measured: a 1,460-char goal failed
+  // four times in one call and executed first try when chunked.
+  const long = '/goal ' + 'x'.repeat(1400)
+  const { calls } = runDrain([long])
+  const sends = calls.split('\n').filter(l => l.startsWith('pane send-text'))
+
+  test('it splits into several send-text calls', () => {
+    expect(sends.length).toBeGreaterThan(1)
+  })
+
+  test('every chunk is comfortably under the 800-char paste threshold', () => {
+    for (const s of sends) {
+      const payload = s.replace(/^pane send-text \S+ /, '')
+      expect(payload.length).toBeLessThan(800)
+    }
+  })
+
+  test('one Enter for the whole command, not one per chunk', () => {
+    expect((calls.match(/pane send-keys/g) || []).length).toBe(1)
+  })
+})
+
 describe('two lines each get their own idle window', () => {
   const { calls } = runDrain(['/goal measured thing', '/loop 30m tick'])
 
