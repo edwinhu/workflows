@@ -30,3 +30,28 @@ func TestHTMLTableVotedFlagBesideVoteInstruction(t *testing.T) {
 		}
 	}
 }
+
+// The 2005 `Proposal Type | Voted | Vote | For/Agnst Mgmt` export: once "Vote"
+// holds the vote, "Voted" is the did-vote flag. A row the fund did NOT vote
+// prints Voted=NO with an empty Vote cell; it is a real agenda item, not table
+// furniture, and it stays as a row with an empty vote and the flag recorded --
+// on run65 the flag WAS the vote ("YES"/"NO"), and dropping the flag alone cost
+// 59,588 rows on the htmltable-scoped run s72.
+func TestHTMLTableVotedFlagKeepsUnvotedRows(t *testing.T) {
+	mapping := htmlMapFields([]string{"Proposal Type", "Voted", "Vote", "For/Agnst Mgmt"})
+	if mapping[htmlFieldVote] != 2 {
+		t.Fatalf("vote column = %d, want 2 (Vote), mapping %v", mapping[htmlFieldVote], mapping)
+	}
+	r, ok := htmlDataRow([]string{"Elect Vance D. Coffman", "YES", "FOR", "FOR"}, mapping, 4, htmlContext{})
+	if !ok || r.HowVoted != "FOR" {
+		t.Fatalf("voted row: ok %v how_voted %q, want FOR", ok, r.HowVoted)
+	}
+	r, ok = htmlDataRow([]string{"Elect Vance D. Coffman", "NO", "", "FOR"}, mapping, 4, htmlContext{})
+	if !ok || r.HowVoted != "" || r.VoteOtherInfo != "Voted: NO" {
+		t.Fatalf("unvoted row: ok %v how_voted %q other %q, want kept with empty vote and 'Voted: NO'", ok, r.HowVoted, r.VoteOtherInfo)
+	}
+	// Furniture stays furniture: no flag value, no vote, no row.
+	if _, ok := htmlDataRow([]string{"", "", "", ""}, mapping, 4, htmlContext{}); ok {
+		t.Fatal("an empty row was emitted")
+	}
+}

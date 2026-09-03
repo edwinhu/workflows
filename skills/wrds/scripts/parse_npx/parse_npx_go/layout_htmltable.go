@@ -1443,6 +1443,11 @@ const (
 	htmlFieldIssuer  = "issuer"
 	htmlFieldISIN    = "isin"
 	htmlFieldFund    = "fund"
+	// htmlFieldVotedFlag is the did-the-fund-vote column ("Voted", Yes/No) that
+	// sits beside a header naming the vote itself. It is never the vote; it
+	// keeps an unvoted agenda item (flag NO, vote cell empty) from reading as
+	// table furniture.
+	htmlFieldVotedFlag = "votedflag"
 )
 
 // htmlSynonyms is the canonical label vocabulary, keyed by schema field. Labels
@@ -1593,6 +1598,15 @@ func htmlMapFields(cells []string) map[string]int {
 		if htmlExactSynonym(lab, htmlSynonyms[htmlFieldVote]) && !htmlWeakVoteLabel(lab) {
 			mapping[htmlFieldVote] = i
 			claimed[i] = true
+		}
+	}
+	if _, taken := mapping[htmlFieldVote]; taken {
+		for i, lab := range canon {
+			if lab == "VOTED" && !claimed[i] {
+				mapping[htmlFieldVotedFlag] = i
+				claimed[i] = true
+				break
+			}
 		}
 	}
 
@@ -2490,8 +2504,15 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 	}
 
 	vote := at(htmlFieldVote)
+	votedFlag := ""
 	if vote == "" {
-		return VoteRow{}, false
+		// An unvoted agenda item under a `Voted | Vote` header: the flag says
+		// NO and the vote cell is empty. The row is real; the vote is blank.
+		if f := at(htmlFieldVotedFlag); f != "" && htmlIsYesNo(f) {
+			votedFlag = f
+		} else {
+			return VoteRow{}, false
+		}
 	}
 	// A label in the vote column (`Period:`, `Company Name`) is a cover or
 	// identity row that shares the table, never a vote (Special Opportunities
@@ -2534,6 +2555,7 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 		VoteDescription:          desc,
 		VoteSource:               src,
 		HowVoted:                 vote,
+		VoteOtherInfo:            htmlVotedFlagInfo(votedFlag),
 		ManagementRecommendation: at(htmlFieldMgmtRec),
 	}
 
@@ -2764,4 +2786,21 @@ func htmlFundHeading(pre string) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+// htmlIsYesNo reports a did-vote flag value.
+func htmlIsYesNo(v string) bool {
+	switch strings.ToUpper(strings.TrimSpace(v)) {
+	case "YES", "NO", "Y", "N":
+		return true
+	}
+	return false
+}
+
+// htmlVotedFlagInfo renders the flag for vote_other_info; empty when unset.
+func htmlVotedFlagInfo(flag string) string {
+	if flag == "" {
+		return ""
+	}
+	return "Voted: " + strings.TrimSpace(flag)
 }
