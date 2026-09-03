@@ -1200,6 +1200,14 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d != nil || declared {
 		return banner, d
 	}
+	// A sleeve suffix: `PSF Flexible Managed Portfolio Equity Sleeve` for a
+	// declared `Flexible Managed Portfolio` (Prudential Series Fund 2015, 15k
+	// rows with no fund). The last two words go, then the ordinary rules.
+	if f := strings.Fields(banner); len(f) > 3 && strings.EqualFold(f[len(f)-1], "sleeve") {
+		if _, d := issResolveFund(ix, strings.Join(f[:len(f)-2], " ")); d != nil {
+			return banner, d
+		}
+	}
 	// A type word the heading adds and the declared name lacks: `PGIM Ultra
 	// Short Bond ETF Fund` for `PGIM Ultra Short Bond ETF` (PGIM ETF Trust,
 	// 67k rows with no fund). Exact after dropping the last word.
@@ -1297,6 +1305,14 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			}
 			if d := lookupSeriesByName(idx, tail); d != nil {
 				return banner, d
+			}
+			// The head may still carry a brand or code: `PSF Jennison 20/20
+			// Focus Portfolio - Value` (Prudential Series Fund). The other
+			// rules run on it; the head has no dash of its own, so this ends.
+			if !strings.Contains(head, "- ") {
+				if _, d := issResolveFund(ix, strings.TrimSpace(head)); d != nil {
+					return banner, d
+				}
 			}
 		}
 	}
