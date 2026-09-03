@@ -460,3 +460,28 @@ func TestHTMLBareFundLineWrappedLabelValueAndBanner(t *testing.T) {
 		t.Error("', a series of' clause")
 	}
 }
+
+func TestSeriesLeadingEnumerator(t *testing.T) {
+	decls := []SeriesDecl{{SeriesID: "S1", Name: "SC Ibbotson Balanced Fund"}, {SeriesID: "S2", Name: "Sun Capital Global Real Estate Fund"}}
+	ix := newISSSeriesIndex(decls, normalizeSeriesName("SUN CAPITAL ADVISERS TRUST"))
+	for h, want := range map[string]string{
+		"1.A.  SC IBBOTSON BALANCED FUND":        "S1",
+		"2. Sun Capital Global Real Estate Fund": "S2",
+		"(3) SC Ibbotson Balanced Fund":          "S1",
+		"I. SC Ibbotson Balanced Fund":           "S1",
+		"SC Ibbotson Balanced Fund":              "S1",
+		"1.A. SC Ibbotson Growth Fund":           "", // not declared
+	} {
+		_, d := issResolveFund(ix, h)
+		got := ""
+		if d != nil {
+			got = d.SeriesID
+		}
+		if got != want {
+			t.Errorf("%q -> %q, want %q", h, got, want)
+		}
+	}
+	if _, ok := issLeadingEnumerator("Core Fund"); ok {
+		t.Error("a fund's first word cut as an enumerator")
+	}
+}
