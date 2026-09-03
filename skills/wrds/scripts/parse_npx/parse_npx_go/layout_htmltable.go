@@ -323,6 +323,12 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				if r, ok := htmlDataRow(cells, mapping, headerArity, ctx); ok {
 					r.SeriesID = curSeries
 					r.FundName = curFund
+					if v := htmlFundCell(cells, mapping, headerArity); v != "" {
+						// The row names its own fund; the shared rules decide
+						// the series, refusing where they cannot.
+						r.FundName = v
+						r.SeriesID = icrResolveFundShared(seriesIx, v)
+					}
 					out = append(out, r)
 					sawData, emitted = true, true
 					// Grouped exports print the identity on a meeting's first
@@ -1420,6 +1426,7 @@ const (
 	htmlFieldMtgDate = "mtgdate"
 	htmlFieldIssuer  = "issuer"
 	htmlFieldISIN    = "isin"
+	htmlFieldFund    = "fund"
 )
 
 // htmlSynonyms is the canonical label vocabulary, keyed by schema field. Labels
@@ -1471,6 +1478,10 @@ var htmlSynonyms = map[string][]string{
 	// An ISIN column of its own (JPMorgan China Region Fund: \'Meeting Date |
 	// Company Name | ISIN | Sedol | ...\', 4,743 rows with no id).
 	htmlFieldISIN: {"ISIN"},
+	// The fund as a column of the vote table (FQF Trust: 'Fund Name | Company
+	// Name | Ticker | Primary CUSIP | Meeting Date | ...', 86k rows with no
+	// fund).
+	htmlFieldFund: {"FUND NAME", "INSTITUTIONAL ACCOUNT NAME", "ACCOUNT NAME"},
 	htmlFieldMtgDate: {
 		"MEETING DATE", "MTG DATE", "DATE OF MEETING", "MTG DATE/TYPE",
 	},
@@ -1491,7 +1502,7 @@ var htmlSynonyms = map[string][]string{
 var htmlFieldOrder = htmlBuildFieldOrder([]string{
 	htmlFieldVote, htmlFieldDesc, htmlFieldItem, htmlFieldMgmtRec,
 	htmlFieldBy, htmlFieldVsMgmt, htmlFieldCUSIP, htmlFieldTicker,
-	htmlFieldMtgDate, htmlFieldIssuer, htmlFieldISIN,
+	htmlFieldMtgDate, htmlFieldIssuer, htmlFieldISIN, htmlFieldFund,
 })
 
 // htmlBuildFieldOrder returns want filtered to fields htmlSynonyms actually
@@ -2330,6 +2341,22 @@ func htmlSecurityID(v string) (cusip, isin string) {
 		}
 	}
 	return cusip, isin
+}
+
+// htmlFundCell returns the row's own fund-name cell under a mapped Fund
+// column, honouring the one-cell item offset htmlDataRow applies.
+func htmlFundCell(cells []string, mapping map[string]int, headerArity int) string {
+	i, ok := mapping[htmlFieldFund]
+	if !ok {
+		return ""
+	}
+	if len(cells) == headerArity+1 && htmlIsItemNumber(htmlFlat(cells[0])) {
+		i++
+	}
+	if i < 0 || i >= len(cells) {
+		return ""
+	}
+	return htmlFlat(cells[i])
 }
 
 // htmlIsIdentityLabel reports a cell that is an identity-grid label.

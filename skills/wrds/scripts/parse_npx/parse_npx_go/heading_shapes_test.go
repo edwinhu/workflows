@@ -498,3 +498,27 @@ func TestHTMLBareFundLineFundLabel(t *testing.T) {
 		t.Errorf("footnote: %q %v", id, ok)
 	}
 }
+
+func TestSeriesTrailingTypeWordOnHeading(t *testing.T) {
+	ix := newISSSeriesIndex([]SeriesDecl{{SeriesID: "S1", Name: "PGIM Ultra Short Bond ETF"}}, normalizeSeriesName("PGIM ETF TRUST"))
+	for h, want := range map[string]string{"PGIM Ultra Short Bond ETF Fund": "S1", "PGIM Ultra Short Bond ETF Fund  - Subadviser: PGIM Fixed Income, a business unit of PGIM Inc.": "S1", "PGIM Ultra Short Fund": ""} {
+		_, d := issResolveFund(ix, h)
+		got := ""
+		if d != nil {
+			got = d.SeriesID
+		}
+		if got != want {
+			t.Errorf("%q -> %q, want %q", h, got, want)
+		}
+	}
+}
+
+func TestHTMLFundCell(t *testing.T) {
+	mapping := map[string]int{htmlFieldFund: 0, htmlFieldIssuer: 1, htmlFieldVote: 7}
+	if v := htmlFundCell([]string{"AGFiQ U.S. Market Neutral Anti-Beta Fund", "Automatic Data Processing, Inc.", "ADP", "", "", "", "", "For"}, mapping, 8); v != "AGFiQ U.S. Market Neutral Anti-Beta Fund" {
+		t.Errorf("fund cell %q", v)
+	}
+	if v := htmlFundCell([]string{"x"}, map[string]int{}, 1); v != "" {
+		t.Error("no fund column")
+	}
+}

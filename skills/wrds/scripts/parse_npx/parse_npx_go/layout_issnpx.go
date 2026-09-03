@@ -1200,6 +1200,17 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d != nil || declared {
 		return banner, d
 	}
+	// A type word the heading adds and the declared name lacks: `PGIM Ultra
+	// Short Bond ETF Fund` for `PGIM Ultra Short Bond ETF` (PGIM ETF Trust,
+	// 67k rows with no fund). Exact after dropping the last word.
+	if f := strings.Fields(banner); len(f) > 2 {
+		switch strings.ToLower(strings.Trim(f[len(f)-1], ".,")) {
+		case "fund", "portfolio", "trust":
+			if alt, _ := lookupSeriesEntry(idx, strings.Join(f[:len(f)-1], " ")); alt != nil {
+				return banner, alt
+			}
+		}
+	}
 	// A leading enumerator: `1.A.  SC IBBOTSON BALANCED FUND` (Sun Capital
 	// Advisers Trust 2011, 34,952 rows with no fund). Exact after the cut.
 	if rest, ok := issLeadingEnumerator(banner); ok {
