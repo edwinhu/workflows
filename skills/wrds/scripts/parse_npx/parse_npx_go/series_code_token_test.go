@@ -36,18 +36,12 @@ func TestSeriesLeadingCodeToken(t *testing.T) {
 	}
 }
 
-// A trademark mark spelled as a bare token: `ING Russell TM Small Cap Index
-// Portfolio` declared, `ING RUSSELL(TM) SMALL CAP INDEX PORTFOLIO` printed
-// (ING Partners 2011, 14k rows). Both fold to the same name.
-func TestSeriesBareTrademarkToken(t *testing.T) {
-	a := normalizeSeriesName("ING RUSSELL(TM) SMALL CAP INDEX PORTFOLIO")
-	b := normalizeSeriesName("ING Russell TM Small Cap Index Portfolio")
-	c := normalizeSeriesName("ING Russell Small Cap Index Portfolio")
-	if a != b || b != c {
-		t.Errorf("fold: %q / %q / %q", a, b, c)
-	}
-	if normalizeSeriesName("TM Growth Fund") == normalizeSeriesName("Growth Fund") {
-		t.Error("a leading TM that could be a brand must not be dropped")
+// A bare TM token is NOT a trademark mark: AQR declares both `AQR Emerging
+// Multi-Style Fund` and `AQR TM Emerging Multi-Style Fund` (TM = tax-managed),
+// and folding the token made 145k rows ambiguous on r67. The two stay distinct.
+func TestSeriesBareTMTokenStaysDistinct(t *testing.T) {
+	if normalizeSeriesName("AQR TM Emerging Multi-Style Fund") == normalizeSeriesName("AQR Emerging Multi-Style Fund") {
+		t.Error("TM folded away")
 	}
 }
 
