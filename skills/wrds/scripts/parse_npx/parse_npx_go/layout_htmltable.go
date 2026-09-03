@@ -1479,7 +1479,7 @@ var htmlSynonyms = map[string][]string{
 	},
 	htmlFieldVote: {
 		"VOTE CAST", "VOTES CAST", "REGISTRANT VOTED", "FUND VOTE", "HOW VOTED",
-		"VOTE", "CAST", "VOTED", "VOTE CASTS",
+		"VOTE", "CAST", "VOTED", "VOTE CASTS", "VOTE INSTRUCTION",
 	},
 	htmlFieldVsMgmt: {
 		"FOR/AGAINST MANAGEMENT", "FOR/AGNST MGMT", "FOR/ AGNST MGMT", "WITH MGMT",
@@ -1576,6 +1576,26 @@ func htmlMapFields(cells []string) map[string]int {
 		}
 	}
 
+	// A bare "Voted" or "Cast" column beside a header that names the vote itself
+	// ("Vote Instruction", "Vote Cast", "How Voted") is the WHETHER-voted flag,
+	// Yes/No, not the vote. FQF Trust / O'Shares 2018 print `Vote Instruction |
+	// Voted | Vote Against Management`, and reading "Voted" as the vote emitted
+	// "Yes" on 103,215 matched rows, 4,759 of them against an ISS AGAINST. The
+	// vote field is offered to the strong names first, whatever their column
+	// position, so the flag can claim nothing.
+	for i, lab := range canon {
+		if lab == "" || claimed[i] {
+			continue
+		}
+		if _, taken := mapping[htmlFieldVote]; taken {
+			break
+		}
+		if htmlExactSynonym(lab, htmlSynonyms[htmlFieldVote]) && !htmlWeakVoteLabel(lab) {
+			mapping[htmlFieldVote] = i
+			claimed[i] = true
+		}
+	}
+
 	for i, lab := range canon {
 		if lab == "" || claimed[i] {
 			continue
@@ -1616,6 +1636,12 @@ func htmlMapFields(cells []string) map[string]int {
 		}
 	}
 	return mapping
+}
+
+// htmlWeakVoteLabel is a vote synonym that, on its own, cannot tell a vote column
+// from a did-the-fund-vote flag; it claims the vote only when no strong name does.
+func htmlWeakVoteLabel(canon string) bool {
+	return canon == "VOTED" || canon == "CAST"
 }
 
 // htmlIsGateLabel reports whether a header cell asks a yes/no QUESTION about the
