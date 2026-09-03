@@ -2537,10 +2537,19 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool)
 	if pre == "" {
 		return "", "", false
 	}
-	for _, line := range strings.Split(pre, "\n") {
+	lines := strings.Split(pre, "\n")
+	for li, line := range lines {
 		line = strings.TrimSpace(line)
 		if line == "" {
 			continue
+		}
+		// `===== Clarion Global Real Estate Portfolio =====`: the ISS banner
+		// printed between HTML tables (MET Investors Series Trust).
+		if strings.HasPrefix(line, "==") && strings.HasSuffix(line, "==") {
+			line = strings.TrimSpace(strings.Trim(line, "="))
+			if line == "" {
+				continue
+			}
 		}
 		// The export field `Institution Account(s): 90 Ivy Funds VIP Asset
 		// Strategy` names the fund behind an account code, where the line
@@ -2548,6 +2557,7 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool)
 		// rows named `Reporting Period: ...` on 2026-09-02). The value is
 		// recorded as printed; the code is dropped only for the lookup.
 		candidate := line
+		labelled := htmlFundLabelled(line)
 		// `Registrant: GLOBAL ATLANTIC PORTFOLIOS - Global Atlantic American
 		// Funds Managed Risk Portfolio` (the Ultimus vintage): only the part
 		// after the dash may name the fund. The registrant half never does,
@@ -2573,6 +2583,18 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool)
 		}
 		if _, d := issResolveFund(ix, candidate); d != nil {
 			name, id, ok = line, d.SeriesID, true
+		} else if labelled {
+			// The label's value wraps onto the next line: `Institution
+			// Account(s): db X-trackers MSCI Brazil` / `Hedged Equity Fund`
+			// (DBX ETF Trust, 38k rows). Exact after the join.
+			for _, next := range lines[li+1:] {
+				if n := strings.TrimSpace(next); n != "" {
+					if _, d := issResolveFund(ix, candidate+" "+n); d != nil {
+						name, id, ok = line+" "+n, d.SeriesID, true
+					}
+					break
+				}
+			}
 		}
 	}
 	return name, id, ok
@@ -2620,6 +2642,20 @@ const htmlVoteSummaryBanner = "VOTE SUMMARY REPORT"
 // field -- so neither is a heading guessed from position, and a section this
 // layout cannot name returns ok with an empty string so the caller clears rather
 // than carrying the previous fund forward.
+// htmlIsPeriodLine reports a reporting-period line: a `Period` label, or a
+// line that opens with a date.
+func htmlIsPeriodLine(s string) bool {
+	low := strings.ToLower(s)
+	if strings.HasPrefix(low, "reporting period") || strings.HasPrefix(low, "period") {
+		return true
+	}
+	f := strings.Fields(s)
+	if len(f) >= 3 && htmlDate(strings.Join(f[:3], " ")) != "" {
+		return true
+	}
+	return len(f) >= 1 && htmlDate(f[0]) != ""
+}
+
 func htmlFundHeading(pre string) (string, bool) {
 	if pre == "" {
 		return "", false
@@ -2630,6 +2666,13 @@ func htmlFundHeading(pre string) (string, bool) {
 		if strings.EqualFold(trimmed, htmlVoteSummaryBanner) {
 			for _, next := range lines[i+1:] {
 				if v := strings.TrimSpace(next); v != "" {
+					// The line under the banner is the reporting period in
+					// some vintages (`Reporting Period: 07/01/2013 to
+					// 06/30/2014`, `July 1, 2009 - June 30, 2010`; DBX ETF
+					// Trust and MET Investors, 74k rows named after it).
+					if htmlIsPeriodLine(v) {
+						return "", true
+					}
 					return v, true
 				}
 			}

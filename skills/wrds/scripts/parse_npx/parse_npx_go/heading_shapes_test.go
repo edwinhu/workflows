@@ -435,3 +435,28 @@ func TestHTMLDateTwoDigitYearWithTime(t *testing.T) {
 		}
 	}
 }
+
+func TestHTMLFundHeadingSkipsPeriodLine(t *testing.T) {
+	for _, pre := range []string{"Vote Summary Report\nReporting Period: 07/01/2013 to 06/30/2014\n", "Vote Summary Report\nJuly 1, 2009 - June 30, 2010\n"} {
+		if name, _ := htmlFundHeading(pre); name != "" {
+			t.Errorf("period line read as fund: %q", name)
+		}
+	}
+	if name, ok := htmlFundHeading("Vote Summary Report\nIvy Funds VIP Asset Strategy\n"); !ok || name != "Ivy Funds VIP Asset Strategy" {
+		t.Errorf("real heading: %q %v", name, ok)
+	}
+}
+
+func TestHTMLBareFundLineWrappedLabelValueAndBanner(t *testing.T) {
+	decls := []SeriesDecl{{SeriesID: "S1", Name: "db X-trackers MSCI Brazil Hedged Equity Fund"}, {SeriesID: "S2", Name: "Clarion Global Real Estate Portfolio"}}
+	ix := newISSSeriesIndex(decls, normalizeSeriesName("DBX ETF TRUST"))
+	if _, id, _ := htmlBareFundLine(ix, "Reporting Period: 07/01/2013 to 06/30/2014\nInstitution Account(s): db X-trackers MSCI Brazil\nHedged Equity Fund\nBanco Santander Brasil SA"); id != "S1" {
+		t.Errorf("wrapped label value: %q", id)
+	}
+	if _, id, _ := htmlBareFundLine(ix, "MET INVESTORS SERIES TRUST\n===================== Clarion Global Real Estate Portfolio =====================\n"); id != "S2" {
+		t.Errorf("banner: %q", id)
+	}
+	if _, d := issResolveFund(ix, "Clarion Global Real Estate Portfolio, a series of Met Investors Series Trust"); d == nil || d.SeriesID != "S2" {
+		t.Error("', a series of' clause")
+	}
+}

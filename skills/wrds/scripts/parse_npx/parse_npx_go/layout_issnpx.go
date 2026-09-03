@@ -1243,6 +1243,13 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	}
 
 	// A labelled sub-adviser clause after the fund name.
+	// `Clarion Global Real Estate Portfolio, a series of Met Investors Series
+	// Trust`: the registrant named after the fund (MET Investors, 20k rows).
+	if k := strings.Index(strings.ToLower(banner), ", a series of "); k > 0 {
+		if _, d := issResolveFund(ix, strings.TrimSpace(banner[:k])); d != nil {
+			return banner, d
+		}
+	}
 	if cut, ok := issCutSubAdviser(banner); ok {
 		if _, d := issResolveFund(ix, cut); d != nil {
 			return banner, d
