@@ -349,3 +349,12 @@ func TestVanguard2004DateWithoutColon(t *testing.T) {
 		}
 	}
 }
+
+func TestHTMLStackedValuesOffByOne(t *testing.T) {
+	labels := map[int]string{1: "TICKER", 2: "CUSIP", 6: "MEETING DATE", 8: "MEETING STATUS"}
+	cells := []string{"", "PG", "CUSIP 742718109", "", "", "10/11/2016", "", "Voted", ""}
+	ctx := htmlStackedValues(cells, labels)
+	if ctx.Ticker != "PG" || ctx.CUSIP != "742718109" || ctx.MeetingDate != "20161011" {
+		t.Errorf("ticker %q cusip %q date %q", ctx.Ticker, ctx.CUSIP, ctx.MeetingDate)
+	}
+}

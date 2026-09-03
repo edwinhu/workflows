@@ -1913,11 +1913,32 @@ func htmlStackedLabels(cells []string) (map[int]string, bool) {
 
 // htmlStackedValues reads the row under a stacked label row, column by column.
 func htmlStackedValues(cells []string, labels map[int]string) (ctx htmlContext) {
+	// A colspan on the label row can put a label one column off its value
+	// (Neuberger Berman: `Meeting Date` at column 6, the date at column 5;
+	// 185k rows with no date on 2026-09-02). An empty cell under a label
+	// takes the neighbour that no other label claims.
+	at := func(i int) string {
+		if i < 0 || i >= len(cells) {
+			return ""
+		}
+		return htmlFlat(cells[i])
+	}
 	for i, label := range labels {
 		if i >= len(cells) {
 			continue
 		}
-		v := htmlFlat(cells[i])
+		v := at(i)
+		if v == "" {
+			for _, j := range []int{i - 1, i + 1} {
+				if _, claimed := labels[j]; claimed {
+					continue
+				}
+				if w := at(j); w != "" && !htmlIsHeaderWord(w) {
+					v = w
+					break
+				}
+			}
+		}
 		switch label {
 		case "CUSIP":
 			// `CUSIP 746763168`: the value carries its own label word.
