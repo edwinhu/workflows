@@ -399,3 +399,17 @@ func TestHTMLReadContextWideDataRowWithNoVote(t *testing.T) {
 		t.Error("a wide data row read as identity")
 	}
 }
+
+func TestHTMLIdentityRowVoteSummaryReport(t *testing.T) {
+	// SSGA Funds 2007 / Thrivent 2008: 'Mtg Date/Type | Company/Ballot Issues |
+	// Security | Mgmt Rec | Vote Cast | Record Date | Prpnent | Shares Voted'.
+	mapping := map[string]int{htmlFieldMtgDate: 0, htmlFieldDesc: 2, htmlFieldCUSIP: 3, htmlFieldMgmtRec: 4, htmlFieldVote: 5, htmlFieldBy: 7}
+	ctx, ok := htmlIdentityRow([]string{"05/02/07 - A", "", "Advanced\nEnergy Industries, Inc. *AEIS*", "007973100", "", "", "03/12/07", "", "4,125"}, mapping)
+	if !ok || ctx.Issuer != "Advanced Energy Industries, Inc." || ctx.Ticker != "AEIS" || ctx.CUSIP != "007973100" || ctx.MeetingDate != "20070502" {
+		t.Errorf("ok %v issuer %q ticker %q cusip %q date %q", ok, ctx.Issuer, ctx.Ticker, ctx.CUSIP, ctx.MeetingDate)
+	}
+	// A "Security" column holding a name never becomes a CUSIP.
+	if c, i := htmlSecurityID("Advanced Energy Industries"); c != "" || i != "" {
+		t.Errorf("name as id: %q %q", c, i)
+	}
+}
