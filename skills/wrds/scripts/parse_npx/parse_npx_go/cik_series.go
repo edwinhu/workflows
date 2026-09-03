@@ -55,3 +55,42 @@ func (d *cikSeries) back(meta *FilingMeta) {
 		meta.SeriesDecls = append([]SeriesDecl(nil), decls...)
 	}
 }
+
+// dictFallback stamps a row whose heading equals, EXACTLY, one dictionary name of
+// the filing's registrant that the header itself did not declare. The header
+// stays the authority for what it declares (those names are excluded here, so
+// a rule that already refused them cannot be overridden); this only reaches
+// headings the header does not know at all, and a name two dictionary series
+// answer to is refused the way seriesByName refuses it.
+type dictFallback struct {
+	byName map[string]*SeriesDecl
+}
+
+func (d *cikSeries) exactFallback(meta FilingMeta) *dictFallback {
+	if d == nil {
+		return nil
+	}
+	declared := map[string]bool{}
+	for _, x := range meta.SeriesDecls {
+		declared[x.SeriesID] = true
+	}
+	var extra []SeriesDecl
+	for _, x := range d.byCIK[meta.CIK] {
+		if !declared[x.SeriesID] {
+			extra = append(extra, x)
+		}
+	}
+	if len(extra) == 0 {
+		return nil
+	}
+	return &dictFallback{byName: seriesByName(extra)}
+}
+
+func (f *dictFallback) apply(r *VoteRow) {
+	if f == nil || r.SeriesID != "" || r.FundName == "" {
+		return
+	}
+	if d, _ := lookupSeriesEntry(f.byName, r.FundName); d != nil {
+		r.SeriesID = d.SeriesID
+	}
+}

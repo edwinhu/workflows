@@ -1279,6 +1279,15 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			}
 		}
 	}
+	// A sleeve or account code before the name: `2DCN Emerging Markets Value
+	// Fund`, `(ZW4X) Total Return Blackrock ACWI xUS Index` (John Hancock Funds
+	// II, JHVIT, GE Investments: the largest unmatched-heading blocks on run65).
+	// The rest goes back through every rule; an ambiguous rest still refuses.
+	if rest, ok := issLeadingCodeToken(banner); ok {
+		if _, d := issResolveFund(ix, rest); d != nil {
+			return rest, d
+		}
+	}
 	// A leading enumerator: `1.A.  SC IBBOTSON BALANCED FUND` (Sun Capital
 	// Advisers Trust 2011, 34,952 rows with no fund). Exact after the cut.
 	if rest, ok := issLeadingEnumerator(banner); ok {
@@ -1683,6 +1692,40 @@ func issLeadingIndexToken(name string) (rest string, ok bool) {
 		return strings.Join(fields[1:], " "), true
 	}
 	return "", false
+}
+
+// issLeadingCodeToken strips a sleeve/account code that precedes the fund name:
+// 2-6 letters or digits carrying at least one digit (`2DCN`, `3347`, `ZW4X`), or
+// any 2-6 letter/digit run in parentheses (`(ZW4X)`). A plain word is never a
+// code, so `Growth Emerging Markets Value Fund` keeps its first word.
+func issLeadingCodeToken(name string) (rest string, ok bool) {
+	fields := strings.Fields(name)
+	if len(fields) < 2 {
+		return "", false
+	}
+	tok := fields[0]
+	paren := len(tok) > 2 && tok[0] == '(' && tok[len(tok)-1] == ')'
+	if paren {
+		tok = tok[1 : len(tok)-1]
+	}
+	if len(tok) < 2 || len(tok) > 6 {
+		return "", false
+	}
+	digit := false
+	for i := 0; i < len(tok); i++ {
+		c := tok[i]
+		switch {
+		case c >= '0' && c <= '9':
+			digit = true
+		case c >= 'A' && c <= 'Z', c >= 'a' && c <= 'z':
+		default:
+			return "", false
+		}
+	}
+	if !digit && !paren {
+		return "", false
+	}
+	return strings.Join(fields[1:], " "), true
 }
 
 // issTickerLine parses 'Ticker: <t>   Security ID: <id>'. CUSIP: appears as an
