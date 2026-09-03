@@ -296,11 +296,14 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			// printed before a page-break header (Advisors' Inner Circle
 			// 2023), and clearing them here files the votes under nobody.
 			dateOnly := next.Issuer == "" && next.CUSIP == "" && next.Ticker == "" && next.ISIN == ""
-			if dateOnly {
+			if dateOnly && ctx.Issuer != "" {
 				// The issuer continues; whatever one-cell line preceded this
 				// (a wrapped proposal fragment, usually) is not its name.
 				ctxLead = ""
 			} else {
+				// With no issuer to continue, a one-cell line above a date row
+				// is the issuer of the interleaved export (issuer row, then
+				// Meeting Date row); run59 blanked 294k such rows.
 				if ctxSealed {
 					ctx = htmlContext{}
 					ctxSealed = false
@@ -1845,8 +1848,13 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 						ctx.Ticker = htmlValueOrEmpty(v)
 					}
 				case "SECURITY ID:", "CUSIP NUMBER:", "CUSIP:":
-					if ctx.CUSIP == "" {
-						ctx.CUSIP = htmlValueOrEmpty(v)
+					// A Security ID that is an ISIN belongs in the ISIN column.
+					if id := htmlValueOrEmpty(v); isinToken(id) {
+						if ctx.ISIN == "" {
+							ctx.ISIN = id
+						}
+					} else if ctx.CUSIP == "" {
+						ctx.CUSIP = id
 					}
 				case "ISIN:":
 					if ctx.ISIN == "" {
