@@ -308,6 +308,9 @@ func (s *rowSink) flush() {
 // seriesMap is the optional -series-map overlay; nil means none loaded.
 var seriesMap *seriesOverlay
 
+// cikDict is the optional -cik-series dictionary; nil means none loaded.
+var cikDict *cikSeries
+
 func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta FilingMeta) {
 	meta = FilingMeta{FilePath: relPath, ParseMode: "none", ParseStatus: "error"}
 	sink.meta = &meta
@@ -328,6 +331,7 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 	head := headBuf[:n]
 
 	h := parseHeader(head)
+	cikDict.back(&h)
 	h.FilePath = relPath
 	h.ParseMode = "none"
 	h.ParseStatus = "error"
@@ -460,6 +464,7 @@ func main() {
 		concurrency   int
 		showVersion   bool
 		seriesMapPath string
+		cikSeriesPath string
 	)
 
 	flag.StringVar(&filesFrom, "files-from", "", "filelist, one path per line (required)")
@@ -474,8 +479,19 @@ func main() {
 	flag.StringVar(&seriesMapPath, "series-map", "",
 		"TSV (filing, heading, series_id) filling a blank series_id for the exact fund heading"+
 			" printed, only with a series the filing's header declares")
+	flag.StringVar(&cikSeriesPath, "cik-series", "",
+		"TSV (cik, series_id, series_name) backing a filing whose header declares no series"+
+			" with the ids the same registrant declared in other filings")
 	flag.BoolVar(&showVersion, "version", false, "print version and exit")
 	flag.Parse()
+	if cikSeriesPath != "" {
+		d, err := loadCIKSeries(cikSeriesPath)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(2)
+		}
+		cikDict = d
+	}
 	if seriesMapPath != "" {
 		ov, err := loadSeriesOverlay(seriesMapPath)
 		if err != nil {
