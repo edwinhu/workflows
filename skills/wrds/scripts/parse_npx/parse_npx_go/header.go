@@ -214,7 +214,20 @@ func normalizeSeriesName(s string) string {
 	if rest, ok := strings.CutPrefix(b.String(), "the "); ok {
 		return rest
 	}
-	return b.String()
+	// A trademark mark spelled as a bare token (`ING Russell TM Small Cap Index
+	// Portfolio` declared, `ING RUSSELL(TM) ...` printed) folds away like the
+	// parenthesised form; never the first token, which could be a brand.
+	out := b.String()
+	if f := strings.Fields(out); len(f) > 2 {
+		kept := f[:1]
+		for _, w := range f[1:] {
+			if w != "tm" && w != "sm" {
+				kept = append(kept, w)
+			}
+		}
+		out = strings.Join(kept, " ")
+	}
+	return out
 }
 
 // seriesMarkReplacer deletes the registered/trademark marks. The ASCII spellings

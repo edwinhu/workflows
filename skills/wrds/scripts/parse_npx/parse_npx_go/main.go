@@ -384,11 +384,13 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 	if seriesMap != nil {
 		declared = overlayDeclaredIDs(h)
 	}
+	dictFB := cikDict.exactFallback(h)
 	stamp := func(r VoteRow) error {
 		if r.SeriesID == "" {
 			r.SeriesID = seriesRow
 		}
 		seriesMap.apply(relPath, declared, &r)
+		dictFB.apply(&r)
 		if r.ClassIDs == "" && r.SeriesID != "" {
 			r.ClassIDs = classesOf(r.SeriesID)
 		}
