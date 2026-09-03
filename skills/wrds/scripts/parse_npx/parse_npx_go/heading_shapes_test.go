@@ -587,3 +587,22 @@ func TestSeriesAmpersandDropped(t *testing.T) {
 		}
 	}
 }
+
+func TestSeriesRegistrantTrailingTokensAsBrand(t *testing.T) {
+	ix := newISSSeriesIndex([]SeriesDecl{{SeriesID: "S1", Name: "Russell 2000(R) 1.5x Strategy Fund"}, {SeriesID: "S2", Name: "Banking Fund"}, {SeriesID: "S3", Name: "Nova Fund"}}, normalizeSeriesName("RYDEX VARIABLE TRUST"))
+	for h, want := range map[string]string{
+		"Variable Trust Russell 2000(R) 1.5x Strategy Fund": "S1",
+		"Variable Trust Nova Fund":                          "S3",
+		"VT BANKING FUND":                                   "S2",
+		"Trust Banking Fund":                                "", // a lone trailing word is no brand
+	} {
+		_, d := issResolveFund(ix, h)
+		got := ""
+		if d != nil {
+			got = d.SeriesID
+		}
+		if got != want {
+			t.Errorf("%q -> %q, want %q", h, got, want)
+		}
+	}
+}
