@@ -301,3 +301,21 @@ func TestHTMLReadContextIssuerBeforeLabelsOnOneLine(t *testing.T) {
 		t.Error("a sentence mentioning a label read as context")
 	}
 }
+
+func TestHTMLTableStackedLabelsAcrossSpacer(t *testing.T) {
+	// Buffalo Funds 2023: `Company Name | Meeting Date | CUSIP | Ticker` over
+	// a blank spacer row over the values; the votes sit in column 0.
+	b, err := os.ReadFile(filepath.Join("testdata", "htmltable", "H21_buffalo_stacked_spacer.txt"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows := runISSNPXDoc(t, string(b))
+	if len(rows) == 0 {
+		t.Fatal("no rows")
+	}
+	for _, r := range rows {
+		if r[colIssuerName] != "AGILENT TECHNOLOGIES, INC." || r[colCUSIP] != "00846U101" || r[colTicker] != "A" || r[colMeetingDate] != "20230315" || r[colHowVoted] != "For" {
+			t.Errorf("issuer %q cusip %q ticker %q date %q vote %q", r[colIssuerName], r[colCUSIP], r[colTicker], r[colMeetingDate], r[colHowVoted])
+		}
+	}
+}
