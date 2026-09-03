@@ -606,3 +606,36 @@ func TestSeriesRegistrantTrailingTokensAsBrand(t *testing.T) {
 		}
 	}
 }
+
+func TestSeriesBrandAndTypeWordBothSides(t *testing.T) {
+	gs := newISSSeriesIndex([]SeriesDecl{{SeriesID: "S1", Name: "Goldman Sachs Structured International Small Cap Fund"}, {SeriesID: "S2", Name: "Goldman Sachs Structured International Equity Fund"}, {SeriesID: "S3", Name: "Financial Square Government Fund"}}, normalizeSeriesName("GOLDMAN SACHS TRUST"))
+	for h, want := range map[string]string{
+		"GS STRUCTURED INTERNATIONAL SMALL CAP":    "S1",
+		"GS STRUCTURED INTERNATIONAL EQUITY FUND":  "S2",
+		"GS STRUCTURED INTERNATIONAL EQUITY TRUST": "", // a different type word, not a missing one
+	} {
+		_, d := issResolveFund(gs, h)
+		got := ""
+		if d != nil {
+			got = d.SeriesID
+		}
+		if got != want {
+			t.Errorf("%q -> %q, want %q", h, got, want)
+		}
+	}
+	sf := newISSSeriesIndex([]SeriesDecl{{SeriesID: "S1", Name: "State Farm Small Cap Equity Index Fund"}, {SeriesID: "S2", Name: "State Farm International Equity Index Fund"}}, normalizeSeriesName("STATE FARM VARIABLE PRODUCT TRUST"))
+	for h, want := range map[string]string{
+		"State Farm Variable Product Trust Small Cap Equity Index":          "S1",
+		"State Farm Variable Product Trust International Equity Index Fund": "S2",
+		"State Farm Variable Product Trust Bond Index":                      "",
+	} {
+		_, d := issResolveFund(sf, h)
+		got := ""
+		if d != nil {
+			got = d.SeriesID
+		}
+		if got != want {
+			t.Errorf("%q -> %q, want %q", h, got, want)
+		}
+	}
+}

@@ -880,9 +880,17 @@ type issSeriesIndex struct {
 	// lessAnd keys declared names with their `and` (an `&` in the header)
 	// dropped: Investment Managers Series Trust heads `Segall Bryant Hamill
 	// Emerging Markets Fund` for `Segall Bryant & Hamill ...` (11k rows).
-	lessAnd   map[string]*SeriesDecl
-	lessParen map[string]*SeriesDecl // declared names with a trailing parenthetical removed
-	brands    []string
+	lessAnd map[string]*SeriesDecl
+	// lessBrandFull keys declared names with a brand cut; lessBrandType the
+	// same with the trailing type word also dropped. Goldman Sachs Trust
+	// heads `GS STRUCTURED INTERNATIONAL SMALL CAP` for `Goldman Sachs
+	// Structured International Small Cap Fund` (327k rows). The type-word
+	// form is consulted only for a banner that has NO type word of its own,
+	// so `Total Bond Market Fund` is never `Total Bond Market Trust`.
+	lessBrandFull map[string]*SeriesDecl
+	lessBrandType map[string]*SeriesDecl
+	lessParen     map[string]*SeriesDecl // declared names with a trailing parenthetical removed
+	brands        []string
 	// lessSuffix keys the declared names with their common last word removed,
 	// built ONLY when every declared name (two at least) ends in the same word:
 	// the College Retirement Equities Fund declares `<name> Account` throughout
@@ -913,6 +921,8 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		lessBrand:     make(map[string]*SeriesDecl),
 		lessParen:     make(map[string]*SeriesDecl),
 		lessAnd:       make(map[string]*SeriesDecl),
+		lessBrandFull: make(map[string]*SeriesDecl),
+		lessBrandType: make(map[string]*SeriesDecl),
 	}
 	if toks := strings.Fields(registrantKey); len(toks) > 1 {
 		for k := len(toks) - 1; k >= 1; k-- {
@@ -942,9 +952,17 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 			ix.brands = append(ix.brands, strings.Join(toks[k:], " "))
 		}
 		// And of its LEADING tokens: Variable Insurance Products Fund II
-		// prints "VIP CONTRAFUND PORTFOLIO". Three letters at least.
+		// prints "VIP CONTRAFUND PORTFOLIO". Three letters at least -- except
+		// the first two tokens of a registrant with three or more, cut only
+		// on a whole-token boundary: Goldman Sachs Trust prints "GS
+		// STRUCTURED INTERNATIONAL SMALL CAP" (327k rows with no series).
 		for k := len(toks) - 1; k >= 3; k-- {
 			ix.brands = append(ix.brands, issInitials(toks[:k]))
+		}
+		if len(toks) >= 3 {
+			if acr := issInitials(toks[:2]); len(acr) == 2 {
+				ix.brands = append(ix.brands, acr)
+			}
 		}
 	}
 	put := func(m map[string]*SeriesDecl, key string, d *SeriesDecl) {
@@ -963,6 +981,15 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		d := &decls[i]
 		if k := normalizeSeriesName(d.Name); strings.Contains(k, " and ") {
 			put(ix.lessAnd, strings.ReplaceAll(k, " and ", " "), d)
+		}
+		for _, b := range ix.brands {
+			k := normalizeSeriesName(d.Name)
+			if rest, ok := issCutBrand(k, b); ok {
+				put(ix.lessBrandFull, rest, d)
+				if r2, ok := issDropTypeWord(rest); ok {
+					put(ix.lessBrandType, r2, d)
+				}
+			}
 		}
 		if d.SeriesID == "" || d.Name == "" {
 			continue
@@ -1354,6 +1381,45 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 		return banner, d
 	}
 
+	// A brand on the declared side and, when the banner carries no type
+	// word, the declared type word as well.
+	for _, b := range ix.brands {
+		rest, ok := issCutBrand(key, b)
+		if !ok {
+			continue
+		}
+		if d, seen := ix.lessBrandFull[rest]; seen {
+			return banner, d
+		}
+		if _, typed := issDropTypeWord(rest); !typed {
+			if d, seen := ix.lessBrandType[rest]; seen {
+				return banner, d
+			}
+		}
+	}
+	// The registrant's FULL name where the declared names carry only its
+	// leading tokens: `State Farm Variable Product Trust Small Cap Equity
+	// Index` for `State Farm Small Cap Equity Index Fund` (441k rows). The
+	// full name becomes each shorter leading run, once.
+	if rest, ok := strings.CutPrefix(key, registrantKey+" "); ok && rest != "" {
+		for _, b := range ix.brands {
+			if !strings.HasPrefix(registrantKey, b+" ") {
+				continue
+			}
+			if d, seen := ix.byName[b+" "+rest]; seen {
+				return banner, d
+			}
+			if d, seen := ix.lessBrandFull[rest]; seen {
+				return banner, d
+			}
+			if _, typed := issDropTypeWord(rest); !typed {
+				if d, seen := ix.lessBrandType[rest]; seen {
+					return banner, d
+				}
+			}
+		}
+	}
+
 	// The header's `&` (normalised to `and`) absent from the banner.
 	if !strings.Contains(key, " and ") {
 		if d, seen := ix.lessAnd[key]; seen {
@@ -1529,6 +1595,19 @@ func issLeadingEnumerator(name string) (rest string, ok bool) {
 		return "", false
 	}
 	return strings.Join(f[1:], " "), true
+}
+
+// issDropTypeWord removes a trailing type word from a normalised key.
+func issDropTypeWord(key string) (string, bool) {
+	f := strings.Fields(key)
+	if len(f) < 2 {
+		return key, false
+	}
+	switch f[len(f)-1] {
+	case "fund", "portfolio", "trust", "account", "series":
+		return strings.Join(f[:len(f)-1], " "), true
+	}
+	return key, false
 }
 
 // issExactOrBrandUntyped looks name up exactly or with a brand cut, and refuses
