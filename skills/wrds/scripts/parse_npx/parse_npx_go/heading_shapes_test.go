@@ -555,3 +555,21 @@ func TestHTMLBareFundLineRegistrantDashFundThenItem(t *testing.T) {
 		}
 	}
 }
+
+func TestSeriesBrandAndTrailingTypeWord(t *testing.T) {
+	ix := newISSSeriesIndex([]SeriesDecl{{SeriesID: "S1", Name: "LARGE CAPITALIZATION GROWTH"}, {SeriesID: "S2", Name: "SMALL CAPITALIZATION GROWTH"}}, normalizeSeriesName("TARGET PORTFOLIO TRUST"))
+	for h, want := range map[string]string{
+		"Target Large Capitalization Growth Portfolio - Sub-Adviser: Brown Advisory": "S1",
+		"Target Small Capitalization Growth Portfolio":                               "S2",
+		"Target Mid Capitalization Growth Portfolio":                                 "",
+	} {
+		_, d := issResolveFund(ix, h)
+		got := ""
+		if d != nil {
+			got = d.SeriesID
+		}
+		if got != want {
+			t.Errorf("%q -> %q, want %q", h, got, want)
+		}
+	}
+}

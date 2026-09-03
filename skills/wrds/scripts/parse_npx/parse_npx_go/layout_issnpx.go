@@ -1214,8 +1214,14 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if f := strings.Fields(banner); len(f) > 2 {
 		switch strings.ToLower(strings.Trim(f[len(f)-1], ".,")) {
 		case "fund", "portfolio", "trust":
-			if alt, _ := lookupSeriesEntry(idx, strings.Join(f[:len(f)-1], " ")); alt != nil {
-				return banner, alt
+			// Exact or brand-cut only, and never against a declared name that
+			// carries a type word of its own: a heading may ADD a word the
+			// declared name lacks, never replace one (`Total Bond Market Fund`
+			// is not `Total Bond Market Trust`). `Target Large Capitalization
+			// Growth Portfolio` for `LARGE CAPITALIZATION GROWTH` (Target
+			// Portfolio Trust, 35k rows) is the brand case.
+			if d := issExactOrBrandUntyped(ix, strings.Join(f[:len(f)-1], " ")); d != nil {
+				return banner, d
 			}
 		}
 	}
@@ -1500,6 +1506,35 @@ func issLeadingEnumerator(name string) (rest string, ok bool) {
 		return "", false
 	}
 	return strings.Join(f[1:], " "), true
+}
+
+// issExactOrBrandUntyped looks name up exactly or with a brand cut, and refuses
+// a declared name whose last word is itself a type word.
+func issExactOrBrandUntyped(ix *issSeriesIndex, name string) *SeriesDecl {
+	key := normalizeSeriesName(name)
+	if key == "" {
+		return nil
+	}
+	d, seen := ix.byName[key]
+	if !seen {
+		for _, b := range ix.brands {
+			if rest, ok := issCutBrand(key, b); ok {
+				if x, s := ix.byName[rest]; s {
+					d, seen = x, true
+					break
+				}
+			}
+		}
+	}
+	if !seen || d == nil {
+		return nil
+	}
+	f := strings.Fields(normalizeSeriesName(d.Name))
+	switch f[len(f)-1] {
+	case "fund", "portfolio", "trust", "account", "series":
+		return nil
+	}
+	return d
 }
 
 // issClassLetterPrefix cuts a single letter and a dash glued to the name:
