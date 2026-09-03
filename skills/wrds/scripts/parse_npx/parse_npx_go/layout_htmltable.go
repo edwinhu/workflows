@@ -296,7 +296,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			// printed before a page-break header (Advisors' Inner Circle
 			// 2023), and clearing them here files the votes under nobody.
 			dateOnly := next.Issuer == "" && next.CUSIP == "" && next.Ticker == "" && next.ISIN == ""
-			if dateOnly && ctx.Issuer != "" {
+			if dateOnly && ctxLead == "" && ctx.Issuer != "" {
 				// The issuer continues; whatever one-cell line preceded this
 				// (a wrapped proposal fragment, usually) is not its name.
 				ctxLead = ""
@@ -325,6 +325,10 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 					r.FundName = curFund
 					out = append(out, r)
 					sawData, emitted = true, true
+					// A one-cell lead is claimed by the very next context row;
+					// a vote emitted in between makes it stale (a wrapped
+					// proposal's first line, Advisors' Inner Circle 2023).
+					ctxLead = ""
 				}
 			}
 			if !emitted {
