@@ -382,10 +382,7 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 
 	var declared map[string]bool
 	if seriesMap != nil {
-		declared = map[string]bool{}
-		for _, id := range seriesIDs(sc) {
-			declared[id] = true
-		}
+		declared = overlayDeclaredIDs(h)
 	}
 	stamp := func(r VoteRow) error {
 		if r.SeriesID == "" {
