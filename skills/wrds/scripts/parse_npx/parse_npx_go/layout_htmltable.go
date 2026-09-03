@@ -325,6 +325,15 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 					r.FundName = curFund
 					out = append(out, r)
 					sawData, emitted = true, true
+					// Grouped exports print the identity on a meeting's first
+					// row and leave it blank on the rest (JPMorgan China Region,
+					// Nuveen Investment Trust 2008): a row's own identity
+					// becomes the context the next rows fall back to.
+					if ctxSealed {
+						ctx = htmlContext{}
+						ctxSealed = false
+					}
+					ctx.merge(htmlContext{Issuer: r.IssuerName, CUSIP: r.CUSIP, ISIN: r.ISIN, Ticker: r.Ticker, MeetingDate: r.MeetingDate})
 					// A one-cell lead is claimed by the very next context row;
 					// a vote emitted in between makes it stale (a wrapped
 					// proposal's first line, Advisors' Inner Circle 2023).
@@ -1410,6 +1419,7 @@ const (
 	htmlFieldCUSIP   = "cusip"
 	htmlFieldMtgDate = "mtgdate"
 	htmlFieldIssuer  = "issuer"
+	htmlFieldISIN    = "isin"
 )
 
 // htmlSynonyms is the canonical label vocabulary, keyed by schema field. Labels
@@ -1457,7 +1467,10 @@ var htmlSynonyms = map[string][]string{
 	// Thrivent: 'Mtg Date/Type | Company/Ballot Issues | Security | ...'); a
 	// value that is not CUSIP- or ISIN-shaped is dropped, so a "Security"
 	// column holding names cannot pollute the id.
-	htmlFieldCUSIP: {"CUSIP", "SECURITY ID", "CUSIP NUMBER", "SECURITY IDENTIFIER", "SECURITY"},
+	htmlFieldCUSIP: {"CUSIP", "SECURITY ID", "CUSIP NUMBER", "SECURITY IDENTIFIER", "SECURITY", "SECURITYID"},
+	// An ISIN column of its own (JPMorgan China Region Fund: \'Meeting Date |
+	// Company Name | ISIN | Sedol | ...\', 4,743 rows with no id).
+	htmlFieldISIN: {"ISIN"},
 	htmlFieldMtgDate: {
 		"MEETING DATE", "MTG DATE", "DATE OF MEETING", "MTG DATE/TYPE",
 	},
@@ -1478,7 +1491,7 @@ var htmlSynonyms = map[string][]string{
 var htmlFieldOrder = htmlBuildFieldOrder([]string{
 	htmlFieldVote, htmlFieldDesc, htmlFieldItem, htmlFieldMgmtRec,
 	htmlFieldBy, htmlFieldVsMgmt, htmlFieldCUSIP, htmlFieldTicker,
-	htmlFieldMtgDate, htmlFieldIssuer,
+	htmlFieldMtgDate, htmlFieldIssuer, htmlFieldISIN,
 })
 
 // htmlBuildFieldOrder returns want filtered to fields htmlSynonyms actually
@@ -2460,6 +2473,9 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 	}
 	if v := htmlValueOrEmpty(at(htmlFieldTicker)); v != "" {
 		r.Ticker = v
+	}
+	if v := htmlValueOrEmpty(at(htmlFieldISIN)); isinToken(v) {
+		r.ISIN = v
 	}
 	if v := htmlDate(at(htmlFieldMtgDate)); v != "" {
 		r.MeetingDate = v

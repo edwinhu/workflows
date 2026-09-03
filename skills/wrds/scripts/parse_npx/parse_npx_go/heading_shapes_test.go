@@ -413,3 +413,17 @@ func TestHTMLIdentityRowVoteSummaryReport(t *testing.T) {
 		t.Errorf("name as id: %q %q", c, i)
 	}
 }
+
+func TestHTMLDataRowISINColumnAndCarry(t *testing.T) {
+	mapping := map[string]int{htmlFieldMtgDate: 0, htmlFieldIssuer: 1, htmlFieldISIN: 2, htmlFieldItem: 4, htmlFieldDesc: 5, htmlFieldBy: 6, htmlFieldMgmtRec: 7, htmlFieldVote: 8}
+	r, ok := htmlDataRow([]string{"05/27/2015", "GCL-Poly Energy Holdings Ltd.", "KYG3774X1088", "B4XZWN4", "1", "Approve Share Option Scheme", "Mgmt", "For", "Against"}, mapping, 9, htmlContext{})
+	if !ok || r.ISIN != "KYG3774X1088" || r.MeetingDate != "20150527" || r.IssuerName != "GCL-Poly Energy Holdings Ltd." {
+		t.Errorf("ok %v isin %q date %q issuer %q", ok, r.ISIN, r.MeetingDate, r.IssuerName)
+	}
+	// The next row prints no identity; it falls back to the context carried from the first.
+	ctx := htmlContext{Issuer: r.IssuerName, ISIN: r.ISIN, MeetingDate: r.MeetingDate}
+	r2, ok := htmlDataRow([]string{"", "", "", "", "2", "Approve Co-establishment of Joint Venture", "Mgmt", "For", "Against"}, mapping, 9, ctx)
+	if !ok || r2.ISIN != "KYG3774X1088" || r2.MeetingDate != "20150527" || r2.IssuerName != "GCL-Poly Energy Holdings Ltd." {
+		t.Errorf("carry: ok %v isin %q date %q issuer %q", ok, r2.ISIN, r2.MeetingDate, r2.IssuerName)
+	}
+}
