@@ -115,6 +115,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		sawData     bool
 		ctx         htmlContext
 		ctxLead     string
+		leadTicker  string // a bare ticker line under the issuer heading
 		stacked     map[int]string
 		leadJoin    bool
 		// fundCells is the set of distinct fund-cell values in the open table.
@@ -287,7 +288,11 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		if lead, candidate := htmlContextLead(cells); candidate {
 			// An issuer wrapped over two one-cell rows: `Putnam Money Market
 			// Liquidity` then `Fund`. Only a short continuation joins.
-			if leadJoin && len(strings.Fields(lead)) <= 2 {
+			if leadJoin && htmlTickerShaped(lead) {
+				// `WACHOVIA CORPORATION` over `WB` (Manning & Napier 2007): the
+				// ticker on its own line is not part of the name.
+				leadTicker = lead
+			} else if leadJoin && len(strings.Fields(lead)) <= 2 {
 				ctxLead += " " + lead
 			} else {
 				ctxLead = lead
@@ -325,8 +330,11 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				if next.Issuer == "" && ctxLead != "" {
 					next.Issuer = ctxLead
 				}
+				if next.Ticker == "" && leadTicker != "" {
+					next.Ticker = leadTicker
+				}
 			}
-			ctxLead = ""
+			ctxLead, leadTicker = "", ""
 			ctx.merge(next)
 			continue
 		}
@@ -1903,7 +1911,9 @@ var htmlBareLabels = map[string]string{
 func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 	var (
 		above    string // the last unlabelled line seen
+		above2   string // the unlabelled line before that
 		lead     string // the unlabelled line directly above the FIRST label
+		leadPrev string // the unlabelled line above lead
 		leadSeen bool
 	)
 	var (
@@ -1965,7 +1975,12 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 			// issuer-shaped prefix is split; a sentence mentioning one label
 			// is not context.
 			if !htmlHasLabelPrefix(up) {
-				if cut, ok := htmlLeadingIssuerCut(line, up); ok {
+				if cut := htmlMeetingTypeCut(up); cut > 0 {
+					// `Special Meeting Date: 08/31/2006`, `AGM Meeting Date:`
+					// (Manning & Napier 2007, 10,822 rows with no date): the
+					// meeting type rides inside the label.
+					line, up = line[cut:], up[cut:]
+				} else if cut, ok := htmlLeadingIssuerCut(line, up); ok {
 					above = strings.TrimSpace(line[:cut])
 					line, up = line[cut:], up[cut:]
 				}
@@ -1977,12 +1992,12 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 			// the same line are still read: filers print two per line.
 			if !htmlHasLabelPrefix(up) {
 				if line != "" {
-					above = line
+					above2, above = above, line
 				}
 				continue
 			}
 			if !leadSeen {
-				lead, leadSeen = above, true
+				lead, leadPrev, leadSeen = above, above2, true
 			}
 			for _, label := range htmlContextLabels {
 				v, ok := htmlLabelValue(line, up, label)
@@ -2012,7 +2027,9 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 				}
 				switch label {
 				case "ISSUER NAME:", "ISSUER:":
-					if ctx.Issuer == "" {
+					// `Issuer: 929903` is an issuer NUMBER (Manning & Napier
+					// 2007), never the name; the heading line above keeps it.
+					if ctx.Issuer == "" && !htmlIsNumeric(strings.TrimSpace(htmlFlat(v))) {
 						ctx.Issuer = htmlFlat(v)
 					}
 				case "MEETING DATE:":
@@ -2045,8 +2062,18 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 	// `Security ID: ... Ticker: ...`. It is read only when the block carried a
 	// label but no ISSUER NAME:, and only from the line DIRECTLY above the first
 	// label, so a paragraph elsewhere in the same chunk cannot supply it.
-	if labelled && ctx.Issuer == "" && htmlIsIssuerLine(lead) {
-		ctx.Issuer = htmlFlat(lead)
+	if labelled && ctx.Issuer == "" {
+		// `WACHOVIA CORPORATION` / `WB` / `Special Meeting Date: ...` in one row
+		// (Manning & Napier 2007): the line above the label is the ticker, and
+		// the issuer is the line above that.
+		if htmlTickerShaped(lead) && htmlIsIssuerLine(leadPrev) && !htmlTickerShaped(leadPrev) {
+			ctx.Issuer = htmlFlat(leadPrev)
+			if ctx.Ticker == "" {
+				ctx.Ticker = strings.TrimSpace(lead)
+			}
+		} else if htmlIsIssuerLine(lead) {
+			ctx.Issuer = htmlFlat(lead)
+		}
 	}
 	return ctx, labelled
 }
@@ -2217,6 +2244,44 @@ func htmlContextLead(cells []string) (string, bool) {
 func htmlIsIssuerLine(s string) bool {
 	flat := htmlFlat(s)
 	return flat != "" && !htmlLooksLikeValue(flat)
+}
+
+// htmlMeetingTypeCut returns the length of a meeting-type word that precedes
+// `MEETING DATE:` on an uppercased line (`SPECIAL MEETING DATE:`, `AGM MEETING
+// DATE:`), or 0 when the line does not open that way.
+func htmlMeetingTypeCut(up string) int {
+	i := strings.Index(up, " MEETING DATE:")
+	if i <= 0 || i > 12 {
+		return 0
+	}
+	for j := 0; j < i; j++ {
+		if !isASCIILetter(up[j]) {
+			return 0
+		}
+	}
+	return i + 1
+}
+
+// htmlTickerShaped reports a bare exchange symbol: one token of one to five
+// ASCII capitals, optionally with a dot (`BRK.B`).
+func htmlTickerShaped(s string) bool {
+	s = strings.TrimSpace(s)
+	if len(s) < 1 || len(s) > 6 {
+		return false
+	}
+	letters := 0
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if c >= 'A' && c <= 'Z' {
+			letters++
+			continue
+		}
+		if c == '.' && i > 0 && i < len(s)-1 {
+			continue
+		}
+		return false
+	}
+	return letters >= 1 && letters <= 5
 }
 
 // htmlLeadingIssuerCut finds where the labels begin on a line that opens with
