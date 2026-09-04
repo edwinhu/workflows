@@ -869,21 +869,48 @@ func htmlSplitHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHead
 	if !htmlHeaderFragment(cells) {
 		return nil, false, false, false, false
 	}
-	next, exists := feed.peek(0)
-	if !exists || next.newTable || len(next.cells) != len(cells) || !htmlHeaderFragment(next.cells) {
-		return nil, false, false, false, false
-	}
+	// A header wraps over two rows in most exports and over FOUR in filer
+	// agent 1580642's (`Shareholder | Brief Identification | ...`, `Ticker |
+	// Meeting | of the Matter | ...`, `Issuer Name | Symbol | CUSIP | Date |
+	// ...`, `(Issuer/Security Holder) | (Y/N) | ...`; 13,177 rows of
+	// 0001580642-23-004388 read a later fragment as the header and the one
+	// beneath it as a vote, issuer "Symbol", CUSIP "Date"). Fragments are
+	// joined column-wise until the join is header-shaped; the trailing
+	// legend row `(Y/N) | (For/Against/Abstain)` is a fragment too and is
+	// folded in so it is not read as data.
+	// The DEEPEST header-shaped join wins: two rows of the four-row header
+	// already look like a header (`Ticker | Shareholder Meeting | ... | How did
+	// the Fund Cast its Vote?`), and stopping there reads the rows that
+	// complete it as votes.
 	joined := make([]string, len(cells))
-	for i := range cells {
-		joined[i] = htmlFlat(cells[i] + " " + next.cells[i])
+	copy(joined, cells)
+	var best []string
+	bestDepth := 0
+	for depth := 0; depth < htmlSplitHeaderMaxRows-1; depth++ {
+		next, exists := feed.peek(depth)
+		if !exists || next.newTable || len(next.cells) != len(cells) || !htmlHeaderFragment(next.cells) {
+			break
+		}
+		for i := range joined {
+			joined[i] = htmlFlat(joined[i] + " " + next.cells[i])
+		}
+		if _, _, headerLike := htmlHeaderShape(joined); headerLike {
+			best = append([]string(nil), joined...)
+			bestDepth = depth + 1
+		}
 	}
-	if _, _, headerLike := htmlHeaderShape(joined); !headerLike {
+	if best == nil {
 		return nil, false, false, false, false
 	}
-	_, _ = feed.next()
-	mapping, carry, partitioned, ok = htmlHeaderMapping(joined, feed, repeats)
+	for k := 0; k < bestDepth; k++ {
+		_, _ = feed.next()
+	}
+	mapping, carry, partitioned, ok = htmlHeaderMapping(best, feed, repeats)
 	return mapping, carry, partitioned, true, ok
 }
+
+// htmlSplitHeaderMaxRows bounds how many rows one wrapped header may span.
+const htmlSplitHeaderMaxRows = 4
 
 func htmlHeaderFragment(cells []string) bool {
 	labels := 0
@@ -1684,6 +1711,17 @@ func htmlWeakVoteLabel(canon string) bool {
 // Trailing footnote markers are stripped first: "Voted?*" is the same question.
 func htmlIsGateLabel(cell string) bool {
 	s := strings.TrimRight(htmlFlat(cell), "*†‡§ ")
+	// A legend after the question, `Did the Fund Vote? (Y/N)` (filer agent
+	// 1580642's four-row header), is not the label; it is read past. A question
+	// that asks HOW the fund voted names the vote itself and is no gate.
+	if strings.HasSuffix(s, ")") {
+		if i := strings.LastIndex(s, "("); i > 0 {
+			s = strings.TrimSpace(s[:i])
+		}
+	}
+	if strings.HasSuffix(s, "?") && strings.HasPrefix(htmlUpperASCII(s), "HOW ") {
+		return false
+	}
 	if strings.HasSuffix(s, "?") || htmlCanonLabel(s) == "VOTED YES OR NO" {
 		return true
 	}

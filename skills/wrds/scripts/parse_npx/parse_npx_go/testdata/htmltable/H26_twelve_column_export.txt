@@ -1,0 +1,89 @@
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: bold 12pt Times New Roman, Times, Serif; margin: 0; text-align: justify"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Fund
+Name: Blue Current Global Dividend Fund</FONT></P>
+
+<P STYLE="font: bold 12pt Times New Roman, Times, Serif; margin: 0; text-align: justify"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Proxy
+Voting Record</FONT></P>
+
+<P STYLE="font: bold 12pt Times New Roman, Times, Serif; margin: 0 0 8pt; text-align: justify"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">July
+1, 2022 - June 30, 2023</FONT></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 11pt Calibri, Helvetica, Sans-Serif">
+  <TR STYLE="vertical-align: bottom; background-color: #3366FF">
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border: Black 0.5pt solid; width: 5%">Company Name</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 9%">Primary Ticker Symbol</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 5%">Security ID</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 5%">Meeting Date</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 15%">Proposal Long Text</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 26%">Proposal Short Text</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 11%">For/Against Recommended Vote</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 5%">Proposed By</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 6%">Director Name</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 2%">Vote</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 5%">Voted Shares</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 6%">Ballot Shares</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt">GSK PLC</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">GSK</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">37733W105</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">06-Jul-2022</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Demerger Resolution&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Miscellaneous Corporate Actions</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Management</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">24330</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">24330</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt">GSK PLC</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">GSK</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">37733W105</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">06-Jul-2022</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Related Party Transactions Resolution&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Miscellaneous Corporate Actions</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Management</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">24330</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">24330</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt">DIAGEO PLC</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">DEO</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">25243Q205</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">06-Oct-2022</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Report and accounts 2022&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Adopt Accounts for Past Year</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Management</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">6996</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">6996</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt">DIAGEO PLC</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">DEO</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">25243Q205</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">06-Oct-2022</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Directors' remuneration report 2022&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Receive Directors' Report</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Management</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">6996</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">6996</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt">DIAGEO PLC</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">DEO</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">25243Q205</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">06-Oct-2022</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Declaration of final dividend&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Dividends</TD>
+</TABLE>
