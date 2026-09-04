@@ -885,3 +885,104 @@ generation_config = {
 ```
 
 Verify the accepted levels against the live model docs before pinning a new model — this is exactly the kind of detail that shifts between releases.
+
+---
+
+## Gotcha 18: A `genai.Client()` created inline is garbage-collected mid-request
+
+Constructing the client as a temporary — inside the call, or in a helper that returns a fresh one every time — lets Python collect it while its HTTP request is still in flight:
+
+```
+RuntimeError: Cannot send a request, as the client has been closed.
+```
+
+The traceback bottoms out in `httpx/_client.py send()`, so it reads like a network or SDK bug. It is neither: the `Client` owns an `httpx` connection pool and closes it on `__del__`.
+
+Both of these fail, and the second is the trap — it *looks* like a clean factory:
+
+```python
+# BAD — temporary, collected while the request is in flight
+print(genai.Client().batches.get(name=job).state)
+
+# BAD — a new client per call, same lifetime problem
+def client():
+    return genai.Client(vertexai=True, project=P, location=L)
+client().batches.create(...)
+```
+
+Hold the reference for the life of the process:
+
+```python
+_CLIENT = None
+
+def client():
+    global _CLIENT
+    if _CLIENT is None:
+        _CLIENT = genai.Client(vertexai=True, project=P, location=L)
+    return _CLIENT
+```
+
+This bites hardest in **polling loops** (`while true; do python3 -c "...genai.Client().batches.get..."`), where every iteration builds and drops a client. Verified 2026-08-30 on `google-genai` 2.20.0; it killed a batch monitor and then the submit itself.
+
+---
+
+## Gotcha 19: Vertex batch needs the fully-qualified publisher model path
+
+`batches.create(model="gemini-2.5-flash-lite", ...)` on a Vertex client returns:
+
+```json
+{"error": {"code": 404, "message": "The PublisherModel gemini-2.5-flash-lite does not exist.", "status": "NOT_FOUND"}}
+```
+
+The bare id works for `generate_content` but **not** for batch. Qualify it:
+
+```python
+model = m if m.startswith("publishers/") else f"publishers/google/models/{m}"
+job = client.batches.create(model=model, src=src, config={"dest": dest})
+```
+
+The Standard API takes the bare id, so a script ported from that path hits this immediately.
+
+---
+
+## Gotcha 20: `models.list()` lists models Vertex batch will NOT serve in that region
+
+This is the dangerous one, because the obvious diagnostic lies to you.
+
+Chasing the Gotcha 19 404, the natural check is "is the model actually available here?" — and `models.list()` on a `us-central1` Vertex client **does** return `gemini-3.5-flash-lite`. Qualifying the path (Gotcha 19) still 404s with the identical message:
+
+```
+404 NOT_FOUND. The PublisherModel gemini-3.5-flash-lite does not exist.
+```
+
+The model is listed in the region and is not batch-servable there. Gemini **3.x is `location: "global"`**, while the 2.5 tier serves batch from `us-central1` — but batch also wants its GCS bucket in `us-central1`, so the two constraints pull apart and the error message never mentions region at all.
+
+**`models.list()` membership is not a batch-availability check.** The only reliable test is submitting a job — and it takes about twenty seconds, so run it rather than reasoning about it.
+
+**The fix is the location, NOT a model downgrade.** Verified 2026-08-30 by submitting the same JSONL four ways:
+
+```
+global       gemini-3.5-flash-lite    ACCEPTED
+global       gemini-2.5-flash-lite    ACCEPTED
+us-central1  gemini-3.5-flash-lite    REJECTED (404)
+us-central1  gemini-2.5-flash-lite    ACCEPTED
+```
+
+A `location="global"` client accepts a `us-central1` `src` **and** `dest`, so the bucket does not move and the two constraints never actually conflict:
+
+```python
+loc = "global" if model_id.startswith("gemini-3") else "us-central1"
+client = genai.Client(vertexai=True, project=P, location=loc)
+```
+
+**Do not respond to this 404 by dropping a tier.** That is the trap: the 404 names the model, so a downgrade looks like the fix and the job then runs — with a weaker model you never evaluated. In the incident that produced this note, dropping 3.5-flash-lite → 2.5-flash-lite silently changed the *output*: on a document citing an out-of-enum statute, 3.5 correctly returned the schema's `other`, while 2.5 coerced it to a plausible in-enum value the document never cited. The batch still "succeeded". Swapping a model mid-pipeline invalidates every prompt eval you ran before the swap — re-validate, or fix the location instead.
+
+And pair this with Gotcha 17 in the other direction: 2.5 has thinking off by default and **rejects** `thinkingConfig`, which 3.x requires. So switching tiers to dodge this 404 also means making `thinkingConfig` conditional:
+
+```python
+cfg = {"response_mime_type": "application/json", "temperature": 0}
+if model_id.startswith("gemini-3"):
+    cfg["thinking_config"] = {"thinking_level": thinking_level_for(model_id)}
+```
+
+Verified 2026-08-30, us-central1, `google-genai` 2.20.0: four consecutive submit failures — client GC, bare model id, listed-but-unservable 3.5-flash-lite, then a thinking-config mismatch — before a job reached `JOB_STATE_PENDING`.

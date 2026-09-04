@@ -217,7 +217,7 @@ See the Red Flags in the first Iron Law section above — the same gotchas apply
 | Invalid JSONL | Use `scripts/validate_jsonl.py` |
 | Image batch: inline data | Use `fileData.fileUri` for batch, not inline |
 | Duplicate IDs | Hash file content + prompt for unique IDs |
-| Large PDFs fail | Split at 50 pages / 50MB max |
+| Large PDFs fail | Split at 1,000 pages / 50MB max (the per-file limit) |
 | JSON parsing fails | Use robust extraction (see gotchas.md) |
 | Output not found (Vertex) | Output URI is prefix, not file path |
 | **`uploadToFileSearchStore` 503 for files >10KB** | **Use two-step: `files.upload()` then `fileSearchStores.importFile()`** |
@@ -226,13 +226,62 @@ See the Red Flags in the first Iron Law section above — the same gotchas apply
 | **Batch `inlinedResponse.response.text` is undefined** | **Response is raw JSON, not hydrated class. Use `candidates[0].content.parts[0].text`** |
 | **Store document displayName is random ID after importFile** | **Read bibkey from `customMetadata`, not `displayName`** |
 | **`responseMimeType` + tools in batch = error code 3** | **Omit responseMimeType when using tools; use prompt-based JSON instructions** |
+| **RuntimeError: Cannot send a request, as the client has been closed** | **Hold ONE `genai.Client` for the process; an inline/per-call client is GC'd mid-request** |
+| **Vertex batch: 404 `The PublisherModel <id> does not exist`** | **Qualify it: `publishers/google/models/<id>` — the bare id works only on the Standard API** |
+| **Vertex batch 404 on a model `models.list()` SHOWS in the region** | **Listing ≠ batch-servable. Fix the LOCATION, not the model: `location="global"` for 3.x — it accepts a us-central1 src/dest. Downgrading a tier silently changes output** |
 
 **Top 3 mistakes** (bolded above):
 1. Using nested objects in metadata instead of flat primitives
 2. Mixing Standard API and Vertex AI patterns
 3. Passing `dest=` as a kwarg instead of inside `config={}` (Vertex AI; current SDK)
 
-See `references/gotchas.md` for detailed solutions (now with Gotchas 10-17).
+See `references/gotchas.md` for detailed solutions (now with Gotchas 10-20; 18-20 are Vertex-batch specific).
+
+## Red Flags — STOP If You Catch Yourself:
+
+| About to | Why Wrong | Do Instead |
+|---|---|---|
+| Write `genai.Client().batches.get(...)` inline, or a `def client(): return genai.Client(...)` factory | The client owns an httpx pool and closes it on `__del__`; the request dies mid-flight with `Cannot send a request, as the client has been closed`. Fatal in polling loops. | Hold a module-level singleton for the life of the process |
+| Run `pdftotext` and send the string because "text is cheaper" | It is not: 258 tokens/page vs ~4 chars/token, and native PDF text is unbilled. Measured 22% *more* expensive, plus truncation and manual OCR | Send the PDF via `fileData.fileUri` |
+| Pass a bare model id to `batches.create` on a Vertex client | Batch needs the publisher path; the bare id 404s even though `generate_content` accepts it | `publishers/google/models/<id>` |
+| Conclude a model is unavailable — or available — from `models.list()` | Listing is not a batch-availability check: `us-central1` lists 3.x models that batch then 404s, because 3.x is `location: global` | Submit a probe job (~20s). Fix the LOCATION; never downgrade a tier to clear a 404 — that swaps the model your evals were run on |
+| Reuse one `generationConfig` across model tiers | 3.x needs `thinkingConfig` pinned or it returns empty on MAX_TOKENS; 2.5 rejects the field outright | Set `thinkingConfig` only for `gemini-3*`, per Gotcha 17/20 |
+| Debug a Vertex 404 by reading docs instead of listing + submitting | The error text names the model, never the region or the availability rule — it is the same string for three different causes | Check Gotchas 19 and 20 before assuming the id is wrong |
+
+## Send the PDF, not extracted text
+
+<EXTREMELY-IMPORTANT>
+**When the source is a PDF, send the PDF. Do NOT run `pdftotext` and send the string.**
+
+Gemini bills a document at **258 tokens per page**, and native text extracted from the PDF is
+**not charged at all** (Google's document-processing docs, verified 2026-08-31). Extracted text is
+billed as ordinary input at roughly 4 chars/token, so for text-heavy documents the string is the
+*more* expensive representation. Measured on a 1,313-document legal corpus — 21,393 pages,
+28.2M extracted characters:
+
+| representation | tokens |
+|---|---|
+| the PDFs | **5,519,394** |
+| pdftotext output | 7,050,563 |
+
+**Extracting first cost 22% more and bought nothing.** It also created three problems that do not
+exist when you send the document:
+
+- **You will truncate.** A char cap drops whatever sits at the end — in that corpus, counsel's
+  signature block, which silently blanked a required field on every long document until it was
+  caught by hand.
+- **You will OCR scans yourself.** 99 image-only PDFs were run through tesseract at real
+  wall-clock cost; Gemini reads scanned pages natively at the same 258/page.
+- **You lose layout.** Tables, exhibits and signature blocks arrive as flattened text, and the
+  model can no longer see the structure it would use to disambiguate them.
+
+Reach for `pdftotext` only to *triage* locally (is this file a scan? how long is it?) — never as
+the transport into the model.
+</EXTREMELY-IMPORTANT>
+
+Limits: **50 MB or 1,000 pages** per file, for both inline data and Files API uploads. Batch
+requests reference the document with `fileData.fileUri` (a GCS URI on Vertex); never inline the
+bytes in a batch JSONL.
 
 ## Rate Limits
 
@@ -298,7 +347,7 @@ Two honest caveats. The human sample was small (20 rows, 11 companies), and iden
 ### References
 - `references/embeddings.md` - **NEW:** Dedicated reference for embedding batches (model choice, file-based + keyed pattern, sentinel verification)
 - `references/gcs-setup.md` - Complete GCS and Vertex AI setup guide
-- `references/gotchas.md` - 17 critical production gotchas (Gemini 3.x thinking_level per tier, location='global'; embedding gotcha now lives in embeddings.md)
+- `references/gotchas.md` - 20 critical production gotchas (Gemini 3.x thinking_level per tier, location='global'; embedding gotcha now lives in embeddings.md)
 - `references/best-practices.md` - Idempotent IDs, state tracking, validation
 - `references/scale-up-testing.md` - Incremental scale-up testing (LangExtract prototyping, LLM-as-judge, Vertex AI batch, gate design, input- vs output-dominated cost)
 - `references/troubleshooting.md` - Common errors and debugging
