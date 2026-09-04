@@ -1,0 +1,45 @@
+<TABLE BORDER="0" CELLPADDING="1" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+  <TR STYLE="vertical-align: middle">
+    <TD STYLE="text-align: left; font-weight: bold; vertical-align: top">Name</TD>
+    <TD STYLE="text-align: left; font-weight: bold; vertical-align: top">Ticker</TD>
+    <TD STYLE="text-align: left; font-weight: bold; vertical-align: top">Cusip</TD>
+    <TD STYLE="text-align: left; font-weight: bold; vertical-align: top">Meeting Data</TD>
+    <TD STYLE="text-align: left; font-weight: bold; vertical-align: top">Proposal Text</TD>
+    <TD STYLE="text-align: left; font-weight: bold; vertical-align: top">Proponent</TD>
+    <TD STYLE="text-align: left; font-weight: bold; vertical-align: top">Voted</TD>
+    <TD STYLE="text-align: left; font-weight: bold; vertical-align: top">Vote Instruction</TD>
+    <TD STYLE="text-align: left; font-weight: bold; vertical-align: top">Vote Against Management</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: top; text-align: left; width: 15%">Healthcare Realty Trust Incorporated</TD>
+    <TD STYLE="vertical-align: top; text-align: left; width: 7%">HR</TD>
+    <TD STYLE="vertical-align: top; text-align: left; width: 8%">421946104</TD>
+    <TD STYLE="vertical-align: top; text-align: left; width: 8%">15-Jul-22</TD>
+    <TD STYLE="vertical-align: top; text-align: left; width: 30%">Approve Merger Agreement</TD>
+    <TD STYLE="vertical-align: top; text-align: left; width: 9%">Management</TD>
+    <TD STYLE="vertical-align: top; text-align: left; width: 6%">Yes</TD>
+    <TD STYLE="vertical-align: top; text-align: left; width: 8%">For</TD>
+    <TD STYLE="vertical-align: top; text-align: left; width: 9%">No</TD>
+    </TR>
+  <TR>
+    <TD STYLE="vertical-align: top; text-align: left">Healthcare Realty Trust Incorporated</TD>
+    <TD STYLE="vertical-align: top; text-align: left">HR</TD>
+    <TD STYLE="vertical-align: top; text-align: left">421946104</TD>
+    <TD STYLE="vertical-align: top; text-align: left">15-Jul-22</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Adjourn Meeting</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Management</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Yes</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD STYLE="vertical-align: top; text-align: left">No</TD>
+    </TR>
+  <TR>
+    <TD STYLE="vertical-align: top; text-align: left">Cal-Maine Foods, Inc.</TD>
+    <TD STYLE="vertical-align: top; text-align: left">CALM</TD>
+    <TD STYLE="vertical-align: top; text-align: left">128030202</TD>
+    <TD STYLE="vertical-align: top; text-align: left">30-Sep-22</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Elect Director Adolphus B. Baker</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Management</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Yes</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Withhold</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Yes</TD>
+  </TR>
+</TABLE>
