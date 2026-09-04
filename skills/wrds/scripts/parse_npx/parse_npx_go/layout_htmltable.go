@@ -1839,6 +1839,12 @@ var htmlBareLabels = map[string]string{
 	"TICKER": "TICKER:", "TICKER SYMBOL": "TICKER SYMBOL:", "ISIN": "ISIN:",
 	"MEETING DATE": "MEETING DATE:", "ISSUER NAME": "ISSUER NAME:",
 	"PROVIDER SECURITY ID": "SECURITY ID:", "RECORD DATE": "RECORD DATE:",
+	// Donnelley's identity grid alternates label and value cells across one row
+	// (`Meeting Date | | 07/15/2014 | | Country | | Spain | | Primary Security
+	// ID | | E6282J109`); with only one known label among six filled cells the
+	// row was too wide to be bare, and 17,472 rows of 0001193125-15-291803 lost
+	// their date on run71.
+	"PRIMARY SECURITY ID": "SECURITY ID:",
 	// Not "ISSUER": it is a proponent value ('Issuer' in Buffalo Funds' Proposed
 	// By column), and reading it as a label consumed 173,538 vote rows across
 	// 395 filings on run55.
