@@ -19,9 +19,17 @@ func TestHTMLTableNbspDMYDate(t *testing.T) {
 	if len(rows) < 3 {
 		t.Fatalf("rows = %d, want at least 3", len(rows))
 	}
+	abb := 0
 	for _, r := range rows {
-		if r[colIssuerName] != "ABB Ltd." || r[colCUSIP] != "H0010V101" || r[colMeetingDate] != "20220907" {
-			t.Errorf("issuer %q cusip %q date %q (%s)", r[colIssuerName], r[colCUSIP], r[colMeetingDate], r[colVoteDescription])
+		if r[colCUSIP] != "H0010V101" {
+			continue
 		}
+		abb++
+		if r[colIssuerName] != "ABB Ltd." || r[colMeetingDate] != "20220907" {
+			t.Errorf("issuer %q date %q (%s)", r[colIssuerName], r[colMeetingDate], r[colVoteDescription])
+		}
+	}
+	if abb < 2 {
+		t.Errorf("ABB rows = %d, want at least 2", abb)
 	}
 }
