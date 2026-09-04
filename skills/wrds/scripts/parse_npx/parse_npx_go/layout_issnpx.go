@@ -382,7 +382,16 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
 
-		if name, ok := issFundSeparator(line); ok {
+		name, ok := issFundSeparator(line)
+		bannerTail := ""
+		if !ok {
+			// The banner and the first issuer on ONE line, `=== Praxis Growth
+			// Index Fund ===   ABBOTT LABORATORIES` (Praxis Mutual Funds 2023,
+			// 10,786 of 11,550 rows with no date on run71): unread as a banner,
+			// the whole line became the issuer and the fund heading was lost.
+			name, bannerTail, ok = issBannerWithTail(line)
+		}
+		if ok {
 			flush()
 			inTable, tailRow = false, -1
 			if name == "" {
@@ -400,7 +409,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			}
 			issuer, ticker, cusip = "", "", ""
 			mtgDate, mtgType, recDate = "", "", ""
-			lastLine = ""
+			lastLine = bannerTail
 			continue
 		}
 		// A banner cannot span anything but rule lines. Any other line ends it,
@@ -454,6 +463,16 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			ticker, cusip = tk, id
 			issuer = lastLine
 			mtgDate, mtgType, recDate = "", "", ""
+			// The identity on ONE line: `Ticker: ABT Security ID: 002824100
+			// Meeting Date: APR 28, 2023 Meeting Type: Annual Record Date: MAR
+			// 01, 2023` (Praxis Mutual Funds 2023). The dates after the security
+			// id are read here, or the meeting has none.
+			if d, typ, ok := issMeetingLine(line); ok {
+				mtgDate, mtgType = d, typ
+			}
+			if d, ok := issRecordLine(line); ok {
+				recDate = d
+			}
 			continue
 		}
 		if d, typ, ok := issMeetingLine(line); ok {
@@ -1555,6 +1574,23 @@ func issFundSeparator(line string) (string, bool) {
 	return strings.TrimSpace(line[lead : n-trail]), true
 }
 
+// issBannerWithTail reads a banner rule that carries the first issuer's name after
+// its closing '=' run, `=== Praxis Growth Index Fund ===   ABBOTT LABORATORIES`:
+// the rule up to the last '=' must be a banner with a name, and the tail is
+// returned as the issuer candidate the next Ticker line claims.
+func issBannerWithTail(line string) (name, tail string, ok bool) {
+	last := strings.LastIndex(line, "=")
+	if last < 0 || last == len(line)-1 {
+		return "", "", false
+	}
+	tail = strings.TrimSpace(line[last+1:])
+	name, ok = issFundSeparator(line[:last+1])
+	if !ok || name == "" || tail == "" {
+		return "", "", false
+	}
+	return name, tail, true
+}
+
 // issBannerMinEquals is how many '=' a line must spend before it is read as a
 // banner rule rather than as prose that happens to start and end on one.
 const issBannerMinEquals = 8
@@ -1764,6 +1800,9 @@ func issMeetingLine(line string) (date, typ string, ok bool) {
 	if ti := strings.Index(strings.ToUpper(rest), "MEETING TYPE:"); ti >= 0 {
 		typ = strings.TrimSpace(rest[ti+len("MEETING TYPE:"):])
 		rest = rest[:ti]
+	}
+	if ri := strings.Index(strings.ToUpper(typ), "RECORD DATE:"); ri >= 0 {
+		typ = strings.TrimSpace(typ[:ri])
 	}
 	return issDate(rest), typ, true
 }
