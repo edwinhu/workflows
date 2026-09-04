@@ -232,6 +232,15 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			ctxLead, ctxSealed = "", true
 			continue
 		}
+		// A stacked label row (`ISSUER NAME | TICKER | CUSIP | MTG DATE | MTG
+		// TYPE`) is header-shaped too; it must be recognised before the
+		// header-shape skip below, or its values two rows down (Putnam 2005:
+		// a column header sits between) lose their date. Only identity labels
+		// qualify, so a vote-table header can never land here.
+		if labels, ok := htmlStackedLabels(cells); ok {
+			stacked = labels
+			continue
+		}
 		// A label-shaped row that lacks the required table beneath it is not data.
 		// Ignoring it is safer than emitting "Vote Cast" as a fund's actual vote.
 		if _, _, headerLike := htmlHeaderShape(cells); headerLike {
@@ -1993,8 +2002,9 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 var htmlStackedLabelSet = map[string]string{
 	"TICKER": "TICKER", "TICKER SYMBOL": "TICKER",
 	"SECURITY ID": "CUSIP", "CUSIP": "CUSIP", "CUSIP NUMBER": "CUSIP",
-	"MEETING DATE": "MEETING DATE", "RECORD DATE": "RECORD DATE",
-	"MEETING TYPE": "MEETING TYPE", "MEETING STATUS": "MEETING STATUS",
+	"MEETING DATE": "MEETING DATE", "MTG DATE": "MEETING DATE", "DATE OF MEETING": "MEETING DATE",
+	"RECORD DATE":  "RECORD DATE",
+	"MEETING TYPE": "MEETING TYPE", "MTG TYPE": "MEETING TYPE", "MEETING STATUS": "MEETING STATUS",
 	"COUNTRY OF TRADE": "COUNTRY", "ISSUER": "ISSUER", "ISSUER NAME": "ISSUER",
 	"COMPANY NAME": "ISSUER", "COMPANY": "ISSUER", "SECURITY": "CUSIP",
 }
@@ -2324,6 +2334,28 @@ func htmlIdentityRow(cells []string, mapping map[string]int) (ctx htmlContext, o
 			ctx.MeetingDate = htmlDate(f[0])
 		}
 	}
+	if ctx.MeetingDate == "" && (ctx.Issuer != "" || ctx.CUSIP != "") {
+		// A split header can put the date column under a vote-side label
+		// (Putnam 2005: `MTG DATE` and `Proposal Type` share an index after
+		// colspan padding), so the date has no mapping. An identity row that
+		// prints exactly one date-shaped cell prints its meeting date there;
+		// two candidates settle nothing (803k htmltable rows on run66).
+		found := ""
+		for _, c := range cells {
+			v := htmlFlat(c)
+			if v == "" || len(v) > 12 {
+				continue
+			}
+			if d := htmlDate(v); d != "" {
+				if found != "" {
+					found = ""
+					break
+				}
+				found = d
+			}
+		}
+		ctx.MeetingDate = found
+	}
 	if _, hasIssuer := mapping[htmlFieldIssuer]; !hasIssuer && ctx.Issuer == "" && (ctx.CUSIP != "" || ctx.ISIN != "" || ctx.MeetingDate != "") {
 		// The Vote Summary Report prints the issuer in the proposal column of
 		// the identity row, the ticker in asterisks: `Advanced Energy
@@ -2392,11 +2424,22 @@ func htmlSecurityID(v string) (cusip, isin string) {
 	for _, f := range strings.Fields(v) {
 		if isinToken(f) && isin == "" {
 			isin = f
-		} else if pvTextCUSIP(f) && cusip == "" {
+		} else if pvTextCUSIP(f) && htmlHasDigit(f) && cusip == "" {
+			// A CUSIP always carries digits; a nine-letter word in a
+			// proposal cell ("selection", "Incentive") never does.
 			cusip = f
 		}
 	}
 	return cusip, isin
+}
+
+func htmlHasDigit(s string) bool {
+	for i := 0; i < len(s); i++ {
+		if s[i] >= '0' && s[i] <= '9' {
+			return true
+		}
+	}
+	return false
 }
 
 // htmlFundCell returns the row's own fund-name cell under a mapped Fund
