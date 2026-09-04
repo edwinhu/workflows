@@ -1711,19 +1711,21 @@ func htmlWeakVoteLabel(canon string) bool {
 // Trailing footnote markers are stripped first: "Voted?*" is the same question.
 func htmlIsGateLabel(cell string) bool {
 	s := strings.TrimRight(htmlFlat(cell), "*†‡§ ")
+	if htmlCanonLabel(s) == "VOTED YES OR NO" {
+		return true
+	}
 	// A legend after the question, `Did the Fund Vote? (Y/N)` (filer agent
-	// 1580642's four-row header), is not the label; it is read past. A question
-	// that asks HOW the fund voted names the vote itself and is no gate.
-	if strings.HasSuffix(s, ")") {
-		if i := strings.LastIndex(s, "("); i > 0 {
-			s = strings.TrimSpace(s[:i])
+	// 1580642's four-row header), is not the label; the question mark before
+	// it is what is read. A question that asks HOW the fund voted names the
+	// vote itself and is no gate.
+	q := s
+	if strings.HasSuffix(q, ")") {
+		if i := strings.LastIndex(q, "("); i > 0 {
+			q = strings.TrimSpace(q[:i])
 		}
 	}
-	if strings.HasSuffix(s, "?") && strings.HasPrefix(htmlUpperASCII(s), "HOW ") {
-		return false
-	}
-	if strings.HasSuffix(s, "?") || htmlCanonLabel(s) == "VOTED YES OR NO" {
-		return true
+	if strings.HasSuffix(q, "?") {
+		return !strings.HasPrefix(htmlUpperASCII(q), "HOW ")
 	}
 	label, letter, ok := htmlLetteredLabel(s)
 	return ok && letter == 'g' && htmlCanonLabel(label) == "VOTED"
