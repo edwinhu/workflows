@@ -155,6 +155,7 @@ const (
 	colISIN            = 12
 	colTicker          = 14
 	colMeetingDate     = 15
+	colRecordDate      = 17
 	colItemSeq         = 18
 	colVoteDescription = 19
 	colHowVoted        = 25
