@@ -378,7 +378,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 	}
 
-	lines := strings.Split(text, "\n")
+	lines := issRejoinWrappedLabels(strings.Split(text, "\n"))
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
 
@@ -2558,4 +2558,62 @@ func issPad4(v int) string {
 		s = "0" + s
 	}
 	return s
+}
+
+// issRejoinWrappedLabels undoes the line wrapping an HTML converter applies to
+// the ISS text report (Praxis Mutual Funds 2020, 16,447 rows with no issuer, id
+// or date): `Ticker: ABT Security` / `ID: 002824100`, `Meeting Date:` / `APR 24,
+// 2020 ...`, `Record Date: FEB` / `26, 2020`. Only these three shapes join, each
+// on evidence from both lines, so an ordinary report is untouched.
+func issRejoinWrappedLabels(lines []string) []string {
+	out := make([]string, 0, len(lines))
+	for i := 0; i < len(lines); i++ {
+		cur := strings.TrimRight(lines[i], " \t\r")
+		if i+1 < len(lines) {
+			next := strings.TrimSpace(lines[i+1])
+			up := strings.ToUpper(strings.TrimSpace(cur))
+			join := false
+			switch {
+			case strings.HasSuffix(up, " SECURITY") && strings.HasPrefix(strings.ToUpper(next), "ID:"):
+				join = true
+			case (strings.HasSuffix(up, "MEETING DATE:") || strings.HasSuffix(up, "RECORD DATE:")) && issStartsWithMonthOrDigit(next):
+				join = true
+			case issEndsWithMonth(up) && len(next) > 0 && next[0] >= '0' && next[0] <= '9':
+				join = true
+			}
+			if join {
+				out = append(out, cur+" "+next)
+				i++
+				continue
+			}
+		}
+		out = append(out, lines[i])
+	}
+	return out
+}
+
+func issStartsWithMonthOrDigit(s string) bool {
+	if s == "" {
+		return false
+	}
+	if s[0] >= '0' && s[0] <= '9' {
+		return true
+	}
+	f := strings.Fields(strings.ToUpper(s))
+	return len(f) > 0 && issMonthWord(f[0])
+}
+
+func issEndsWithMonth(up string) bool {
+	f := strings.Fields(up)
+	return len(f) > 1 && issMonthWord(f[len(f)-1]) && strings.Contains(up, "DATE:")
+}
+
+func issMonthWord(w string) bool {
+	w = strings.TrimRight(w, ".,")
+	switch w {
+	case "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "SEPT", "OCT", "NOV", "DEC",
+		"JANUARY", "FEBRUARY", "MARCH", "APRIL", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER":
+		return true
+	}
+	return false
 }

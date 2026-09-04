@@ -1,0 +1,325 @@
+<SEC-DOCUMENT>0001398344-20-014805.txt : 20200803
+<SEC-HEADER>0001398344-20-014805.hdr.sgml : 20200803
+<ACCEPTANCE-DATETIME>20200803093020
+ACCESSION NUMBER:		0001398344-20-014805
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20200630
+FILED AS OF DATE:		20200803
+DATE AS OF CHANGE:		20200803
+EFFECTIVENESS DATE:		20200803
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PRAXIS MUTUAL FUNDS
+		CENTRAL INDEX KEY:			0000912900
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08056
+		FILM NUMBER:		201068139
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1110 N. MAIN ST.
+		CITY:			GOSHEN
+		STATE:			IN
+		ZIP:			46527
+		BUSINESS PHONE:		8009772947
+
+	MAIL ADDRESS:	
+		STREET 1:		PO BOX 483
+		CITY:			GOSHEN
+		STATE:			IN
+		ZIP:			46527
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	MMA PRAXIS MUTUAL FUNDS
+		DATE OF NAME CHANGE:	19931229
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRAXIS MUTUAL FUNDS
+		DATE OF NAME CHANGE:	19931001
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000912900
+<SERIES-ID>S000003160
+<SERIES-NAME>Praxis Impact Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008547
+<CLASS-CONTRACT-NAME>Praxis Impact Bond Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>MIIAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000035282
+<CLASS-CONTRACT-NAME>Praxis Impact Bond Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>MIIIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000912900
+<SERIES-ID>S000003162
+<SERIES-NAME>Praxis Value Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008551
+<CLASS-CONTRACT-NAME>Praxis Value Index Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>MVIAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000035284
+<CLASS-CONTRACT-NAME>Praxis Value Index Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>MVIIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000912900
+<SERIES-ID>S000017266
+<SERIES-NAME>Praxis Growth Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000047793
+<CLASS-CONTRACT-NAME>Praxis Growth Index Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>MGNDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000047795
+<CLASS-CONTRACT-NAME>Praxis Growth Index Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>MMDEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000912900
+<SERIES-ID>S000017267
+<SERIES-NAME>Praxis Small Cap Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000047796
+<CLASS-CONTRACT-NAME>Praxis Small Cap Index Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>MMSCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000047798
+<CLASS-CONTRACT-NAME>Praxis Small Cap Index Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>MMSIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000912900
+<SERIES-ID>S000026797
+<SERIES-NAME>Praxis Genesis Conservative Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080567
+<CLASS-CONTRACT-NAME>Praxis Genesis Conservative Portfolio Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>MCONX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000912900
+<SERIES-ID>S000026798
+<SERIES-NAME>Praxis Genesis Balanced Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080568
+<CLASS-CONTRACT-NAME>Praxis Genesis Balanced Portfolio Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>MBAPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000912900
+<SERIES-ID>S000026799
+<SERIES-NAME>Praxis Genesis Growth Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080569
+<CLASS-CONTRACT-NAME>Praxis Genesis Growth Portfolio Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>MGAFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000912900
+<SERIES-ID>S000030941
+<SERIES-NAME>Praxis International Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000095945
+<CLASS-CONTRACT-NAME>Praxis International Index Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>MPLAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000095946
+<CLASS-CONTRACT-NAME>Praxis International Index Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>MPLIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fp0056018_npx.htm
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 11pt Times New Roman, Times, Serif">
+
+<P STYLE="font: 14pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>UNITED STATES<BR>
+SECURITIES AND EXCHANGE COMMISSION</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>Washington, D.C. 20549</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>&nbsp;</B></P>
+
+<P STYLE="font: 14pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>FORM N-PX</B></P>
+
+<P STYLE="font: 14pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>&nbsp;</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED<BR>
+MANAGEMENT INVESTMENT COMPANIES</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>Investment Company Act file number 811-08056</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 14pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>PRAXIS MUTUAL FUNDS</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">(Exact name of registrant as specified in charter)</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>1110 N. Main Street</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>Goshen, IN 46528</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">(Address of principal executive offices) (Zip
+code)</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>Anthony Zacharski, Dechert LLP</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>90 State House Square</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>Hartford, CT 06103</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">(Name and address of agent for service)</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">Registrant&rsquo;s telephone number, including
+area code: <B>(800) 977-2947</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">Date of fiscal year end: <B>December 31</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">Date of reporting period: <B>July 1, 2019 &ndash;
+June 30, 2020</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: justify">Form N-PX is to be used by a registered management
+investment company, other than a small business investment company registered on Form N-5 (&sect;&sect; 239.24 and 274.5 of this
+chapter), to file reports with the Commission, not later than August 31 of each year, containing the registrant&rsquo;s proxy voting
+record for the most recent twelve-month period ended June 30, pursuant to section 30 of the Investment Company Act of 1940 and
+rule 30bl-4 there under (17 CFR 270.30bl-4). The Commission may use the information provided on Form N-PX in its regulatory, disclosure
+review, inspection, and policymaking roles.</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: justify">A registrant is required to disclose the information
+specified by Form N-PX, and the Commission will make this information public. A registrant is not required to respond to the collection
+of information contained in Form N-PX unless the Form displays a currently valid Office of Management and Budget (&ldquo;OMB&rdquo;)
+control number. Please direct comments concerning the accuracy of the information collection burden estimate and any suggestions
+for reducing the burden to the Secretary, Securities and Exchange Commission, 450 Fifth Street, NW, Washington, DC 20549-0609.
+The OMB has reviewed this collection of information under the clearance requirements of 44 U.S.C. &sect; 3507.</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<!-- Field: Page; Sequence: 1 -->
+    <DIV STYLE="margin-bottom: 6pt"><P STYLE="margin: 0pt; font: 9pt Times New Roman, Times, Serif">&nbsp;</P></DIV>
+    <DIV STYLE="page-break-before: always; margin-top: 6pt"><P STYLE="margin: 0pt">&nbsp;</P></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: justify"></P>
+
+
+
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 11pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; width: 100%; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">*******************************
+    FORM N-Px REPORT *******************************</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Courier New, Courier, Monospace">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">ICA File Number:
+    811-08056&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">Reporting Period:
+    07/01/2019 - 06/30/2020&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">Praxis Mutual
+    Funds&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Courier New, Courier, Monospace">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Courier New, Courier, Monospace">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Courier New, Courier, Monospace">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Courier New, Courier, Monospace">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Courier New, Courier, Monospace">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Courier New, Courier, Monospace">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">===========================
+    Praxis Growth Index Fund ===========================</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Courier New, Courier, Monospace">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Courier New, Courier, Monospace">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">ABBOTT LABORATORIES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Courier New, Courier, Monospace">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">Ticker:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ABT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Security
+    ID:&nbsp;&nbsp;002824100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">Meeting Date:
+    APR 24, 2020&nbsp;&nbsp;&nbsp;Meeting Type: Annual&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">Record Date:&nbsp;&nbsp;FEB
+    26, 2020&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Courier New, Courier, Monospace">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Proposal&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mgt
+    Rec&nbsp;&nbsp;&nbsp;Vote Cast&nbsp;&nbsp;&nbsp;&nbsp;Sponsor&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">1.1&nbsp;&nbsp;&nbsp;Elect
+    Director Robert J. Alpern&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Withhold&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Management</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">1.2&nbsp;&nbsp;&nbsp;Elect
+    Director Roxanne S. Austin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Withhold&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Management</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">1.3&nbsp;&nbsp;&nbsp;Elect
+    Director Sally E. Blount&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Management</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; font-size: 11pt"><FONT STYLE="font-family: Courier New, Courier, Monospace">1.4&nbsp;&nbsp;&nbsp;Elect
+</TEXT>
+</DOCUMENT>
