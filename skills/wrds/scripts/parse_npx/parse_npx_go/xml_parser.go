@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 	"unicode/utf8"
 )
@@ -485,6 +486,17 @@ func (rec *proxyRecord) addManager(d *xml.Decoder, se xml.StartElement) error {
 	return nil
 }
 
+// sortedKeys returns a map's keys in order, so a stamp is the same string on
+// every run.
+func sortedKeys(m map[string][]string) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
 // emitRows hands one VoteRow per <voteRecord> to emit, each carrying the whole
 // enclosing <proxyTable>. The record-level fields are only complete once the
 // element has closed — voteManager, voteSeries and voteOtherInfo follow the
@@ -518,6 +530,14 @@ func (rec *proxyRecord) emitRows(meta *FilingMeta, classes map[string][]string, 
 		if ids := classes[rec.VoteSeries]; len(ids) > 0 {
 			base.ClassIDs = strings.Join(ids, MultiValueSep)
 		}
+	} else if len(classes) >= 2 {
+		// The form omits <voteSeries> when the vote applies to every series
+		// the report covers (Natixis Funds Trust IV 2024: 52,482 of 59,609
+		// proxy tables; 435,489 rows in 90 multi-series XML filings had no
+		// series on run71). Those rows are every series of the report,
+		// joined as the text layouts' consolidated filings are and fanned
+		// out at conversion. A single-series report is the chassis's stamp.
+		base.SeriesID = strings.Join(sortedKeys(classes), MultiValueSep)
 	}
 
 	// An agenda item with no <voteRecord> is still an agenda item: the fund held
