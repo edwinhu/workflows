@@ -42,10 +42,10 @@ def test_deck_profile_runs_at_all():
 
 
 def test_deck_profile_keeps_scored_tics():
-    """'The selection is the argument.' is ai-tic sev2 announce-is-the-argument."""
+    """'The selection is the argument.' is ai-tic sev2 the-x-is-the-y."""
     spans = _audit("--profile", "deck").get("spans", [])
     labels = " ".join(str(s.get("labels") or s.get("label", "")) for s in spans)
-    assert "announce-is-the-argument" in labels, (
+    assert "the-x-is-the-y" in labels, (
         "the deck profile must still catch corpus-gated AI tics; got systems "
         f"{sorted(_systems(spans))}"
     )
