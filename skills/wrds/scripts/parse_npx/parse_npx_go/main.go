@@ -431,9 +431,13 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 		meta = res.Meta
 		meta.FilePath = relPath
 		meta.ParseMode = mode
+		consolidated := consolidatedSeries(sc, res.Rows)
 		for _, r := range res.Rows {
 			if r.Layout == "" {
 				r.Layout = meta.Layout
+			}
+			if consolidated != "" && r.SeriesID == "" {
+				r.SeriesID = consolidated
 			}
 			if err := stamp(r); err != nil {
 				meta.ParseStatus = "error"
@@ -618,4 +622,25 @@ func main() {
 	wg.Wait()
 	close(results)
 	writerWG.Wait()
+}
+
+// consolidatedSeries returns the MultiValueSep-joined ids of every series the
+// header declares when the filing reports the trust's votes as ONE record: two or
+// more declared series, and not a single row carrying a fund heading or a
+// resolved series. Such a filing (JHVIT 2011: 111 series, 6,267 meetings, no fund
+// name anywhere; 645 filings and 2.45M rows on run68) attributes each vote to all
+// of its funds; the linker expands the list and the ISS agreement gate is what
+// says whether the funds did vote alike. Anything less than fully unlabelled
+// keeps the ordinary rules, so a partially headed filing is never widened.
+func consolidatedSeries(sc []SeriesClass, rows []VoteRow) string {
+	ids := seriesIDs(sc)
+	if len(ids) < 2 || len(rows) == 0 {
+		return ""
+	}
+	for _, r := range rows {
+		if r.FundName != "" || r.SeriesID != "" {
+			return ""
+		}
+	}
+	return strings.Join(ids, MultiValueSep)
 }
