@@ -29,6 +29,7 @@ scratch/
 # Local config
 *.local.md
 .env
+.envrc
 
 # Investigation reports (local only)
 docs/investigations/
@@ -38,6 +39,7 @@ docs/investigations/
 .claude/SPEC.md
 .claude/LEARNINGS.md
 .planning/
+.claude/plans/
 
 # WRDS SGE runtime staging
 .staging_proxy/
