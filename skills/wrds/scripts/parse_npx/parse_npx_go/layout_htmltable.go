@@ -2751,7 +2751,9 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool)
 // on 2026-09-02), TFS's `NAME OF FUND: TFS MARKET NEUTRAL FUND (TFSMX)`.
 func htmlFundLabelled(line string) bool {
 	low := strings.ToLower(line)
-	for _, l := range []string{"institution account", "fund name", "name of fund", "portfolio name", "series name"} {
+	// `Account Number: Putnam Asset Allocation: Balanced Portfolio` (the 2005
+	// Putnam filer agent, 55k rows with no fund on run68): the "number" is a name.
+	for _, l := range []string{"institution account", "fund name", "name of fund", "portfolio name", "series name", "account number"} {
 		if strings.HasPrefix(low, l) {
 			return true
 		}
