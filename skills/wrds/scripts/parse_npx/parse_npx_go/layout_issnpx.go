@@ -2,6 +2,7 @@ package main
 
 import (
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"unicode"
@@ -908,7 +909,9 @@ type issSeriesIndex struct {
 	// so `Total Bond Market Fund` is never `Total Bond Market Trust`.
 	lessBrandFull map[string]*SeriesDecl
 	lessBrandType map[string]*SeriesDecl
-	lessParen     map[string]*SeriesDecl // declared names with a trailing parenthetical removed
+	lessParen     map[string]*SeriesDecl   // declared names with a trailing parenthetical removed
+	classPairs    map[string][]*SeriesDecl // the declared names behind a lessParen collision that differ only by a class marker
+	decls         []SeriesDecl
 	brands        []string
 	// lessSuffix keys the declared names with their common last word removed,
 	// built ONLY when every declared name (two at least) ends in the same word:
@@ -939,6 +942,8 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		byCompact:     make(map[string]*SeriesDecl, len(decls)),
 		lessBrand:     make(map[string]*SeriesDecl),
 		lessParen:     make(map[string]*SeriesDecl),
+		classPairs:    make(map[string][]*SeriesDecl),
+		decls:         decls,
 		lessAnd:       make(map[string]*SeriesDecl),
 		lessBrandFull: make(map[string]*SeriesDecl),
 		lessBrandType: make(map[string]*SeriesDecl),
@@ -1033,6 +1038,10 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		}
 		if cut, ok := issCutTrailingParenthetical(d.Name); ok {
 			put(ix.lessParen, normalizeSeriesName(cut), d)
+			if issClassMarker(d.Name) {
+				k := normalizeSeriesName(cut)
+				ix.classPairs[k] = append(ix.classPairs[k], d)
+			}
 		}
 	}
 	if tw := issRegistrantTypeWord(registrantKey, decls); tw != "" {
@@ -1189,6 +1198,57 @@ func issCutTrailingParenthetical(name string) (string, bool) {
 		return "", false
 	}
 	return head, true
+}
+
+// issClassMarker reports a declared name whose trailing parenthetical is a share
+// class marker rather than a sleeve or a former name: one to three letters or
+// digits, or the word CLASS followed by one (`(A)`, `(I)`, `(R6)`, `(CLASS A)`).
+func issClassMarker(name string) bool {
+	s := strings.TrimSpace(name)
+	i := strings.LastIndex(s, "(")
+	if i < 0 || !strings.HasSuffix(s, ")") {
+		return false
+	}
+	inner := strings.ToUpper(strings.TrimSpace(s[i+1 : len(s)-1]))
+	inner = strings.TrimSpace(strings.TrimPrefix(inner, "CLASS "))
+	if len(inner) == 0 || len(inner) > 3 {
+		return false
+	}
+	for j := 0; j < len(inner); j++ {
+		c := inner[j]
+		if !((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
+			return false
+		}
+	}
+	return true
+}
+
+// issClassPairDecl returns one synthetic declaration carrying every series that
+// is the banner's fund under a class marker, or nil when the collision behind
+// key is not made only of such series (then it is a refusal, as before).
+func issClassPairDecl(ix *issSeriesIndex, key, banner string) *SeriesDecl {
+	pairs := ix.classPairs[key]
+	if len(pairs) < 2 {
+		return nil
+	}
+	// Every declared name that reduces to key must be class-marked; a sleeve
+	// among them means the banner is ambiguous after all.
+	n := 0
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if cut, ok := issCutTrailingParenthetical(d.Name); ok && normalizeSeriesName(cut) == key {
+			n++
+		}
+	}
+	if n != len(pairs) {
+		return nil
+	}
+	ids := make([]string, 0, len(pairs))
+	for _, d := range pairs {
+		ids = append(ids, d.SeriesID)
+	}
+	sort.Strings(ids)
+	return &SeriesDecl{SeriesID: strings.Join(ids, MultiValueSep), Name: banner}
 }
 
 // issCutSubAdviser removes the labelled sub-adviser clause one registrant
@@ -1415,6 +1475,18 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 
 	// A trailing parenthetical on the declared name.
 	if d, seen := ix.lessParen[key]; seen {
+		if d == nil {
+			// The collision is a fund registered once per CLASS, `JNL/AIM
+			// LARGE CAP GROWTH FUND (A)` and `(B)` (JNL Series Trust 2006,
+			// 61,151 rows with no series on run71), and the banner names the
+			// fund once. Every class-marked series is that fund; all of them
+			// are stamped, MultiValueSep-joined, as a consolidated filing is.
+			// A collision of different sleeves (`(Core Plus)` against `(Short
+			// Duration)`) is not a class pair and stays refused.
+			if d := issClassPairDecl(ix, key, banner); d != nil {
+				return banner, d
+			}
+		}
 		return banner, d
 	}
 
