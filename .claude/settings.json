@@ -1,3 +1,6 @@
 {
-  "plansDirectory": "./.planning"
+  "plansDirectory": "./.planning",
+  "enabledPlugins": {
+    "gopls-lsp@claude-plugins-official": true
+  }
 }
