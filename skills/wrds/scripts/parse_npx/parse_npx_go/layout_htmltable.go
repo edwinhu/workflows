@@ -1541,9 +1541,16 @@ var htmlSynonyms = map[string][]string{
 	htmlFieldFund: {"FUND NAME", "INSTITUTIONAL ACCOUNT NAME", "ACCOUNT NAME"},
 	htmlFieldMtgDate: {
 		"MEETING DATE", "MTG DATE", "DATE OF MEETING", "MTG DATE/TYPE",
+		// `Meeting Data`, the filer's spelling (PFM Multi-Manager Series Trust
+		// 2023, 13,154 rows with no date on run71).
+		"MEETING DATA",
 	},
 	htmlFieldIssuer: {
 		"ISSUER", "ISSUER NAME", "COMPANY", "COMPANY NAME", "SECURITY NAME",
+		// A bare `Name` heading the first column of `Name | Ticker | Cusip |
+		// Meeting Data | ...` (PFM Multi-Manager Series Trust 2023). Exact
+		// only: `Fund Name` and `Director Name` are other labels.
+		"NAME",
 	},
 }
 
