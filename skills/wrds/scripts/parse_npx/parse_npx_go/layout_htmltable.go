@@ -2042,16 +2042,20 @@ type htmlContext struct {
 }
 
 func (c *htmlContext) merge(n htmlContext) {
-	if n.Issuer != "" {
+	// A column label is never an identity value, whichever reader offered it
+	// (MET Investors 2010: `Security ID on Ballot` as the CUSIP and the
+	// ticker of 2,639 rows through a reader the row-level guards did not
+	// cover).
+	if n.Issuer != "" && !htmlIsBareLabel(n.Issuer) {
 		c.Issuer = n.Issuer
 	}
-	if n.CUSIP != "" {
+	if n.CUSIP != "" && !htmlIsBareLabel(n.CUSIP) {
 		c.CUSIP = n.CUSIP
 	}
 	if n.ISIN != "" {
 		c.ISIN = n.ISIN
 	}
-	if n.Ticker != "" {
+	if n.Ticker != "" && !htmlIsBareLabel(n.Ticker) {
 		c.Ticker = n.Ticker
 	}
 	if n.MeetingDate != "" {
