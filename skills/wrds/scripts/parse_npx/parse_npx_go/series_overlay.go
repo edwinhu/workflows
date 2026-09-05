@@ -75,14 +75,22 @@ func (o *seriesOverlay) apply(relPath string, declared map[string]bool, r *VoteR
 	}
 }
 
-// overlayDeclaredIDs is the set of series a filing declares: the header's decls,
-// or the CIK dictionary's when the header carries none. The overlay stamps only
-// ids in this set.
+// overlayDeclaredIDs is the set of series the overlay may stamp: the header's
+// decls (or the CIK dictionary's when the header carries none) plus every series
+// the registrant's dictionary knows, since a fund merged or renamed before the
+// filing still voted under its old series id and the audited map names it.
 func overlayDeclaredIDs(meta FilingMeta) map[string]bool {
 	out := map[string]bool{}
 	for _, d := range meta.SeriesDecls {
 		if d.SeriesID != "" {
 			out[d.SeriesID] = true
+		}
+	}
+	if cikDict != nil {
+		for _, d := range cikDict.byCIK[meta.CIK] {
+			if d.SeriesID != "" {
+				out[d.SeriesID] = true
+			}
 		}
 	}
 	return out
