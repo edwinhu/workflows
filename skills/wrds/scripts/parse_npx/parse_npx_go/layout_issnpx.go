@@ -419,8 +419,14 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		// each rule as its own block with an empty block between (Wells Fargo
 		// Master Trust 2010), and that gap is layout, not a section boundary.
 		if len(bannerBuf) > 0 {
+			// ... and only while the banner so far names no declared series: a
+			// complete banner followed by a blank line and another banner is two
+			// funds (Russell Investment Co 2008, a fund with no votes above the
+			// next fund), and joining them lost the second fund's series.
 			if line == "" && issBannerContinues(lines, i+1) {
-				continue
+				if _, d := issResolveFund(seriesIx, strings.Join(bannerBuf, " ")); d == nil {
+					continue
+				}
 			}
 			commitBanner()
 		}
