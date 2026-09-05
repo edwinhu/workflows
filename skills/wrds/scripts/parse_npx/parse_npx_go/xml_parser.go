@@ -793,6 +793,12 @@ func xmlDate(s string) string {
 	if len(parts) != 3 {
 		return ""
 	}
+	// `05-Jul-2023`: day, spelt month, year (Empower Advisory Group 2024 and
+	// its filer agent's siblings, 5,150 undated rows on r156).
+	if mon, ok := xmlMonths[strings.ToUpper(parts[1])]; ok {
+		parts[1] = mon
+		parts[0], parts[1] = parts[1], parts[0]
+	}
 	for _, p := range parts {
 		if p == "" || !allDigits(p) {
 			return ""
@@ -813,10 +819,21 @@ func xmlDate(s string) string {
 			y = "19" + y
 		}
 	}
+	// `06/12/20244`, `10/10/20233`: a five-digit year with its last digit
+	// doubled (filer agent 0001580642's 2024 filings, 8,568 undated rows on
+	// r156). The first four digits must be a year a proxy season can carry.
+	if len(y) == 5 && y[:4] >= "1990" && y[:4] <= "2035" {
+		y = y[:4]
+	}
 	if len(y) != 4 || len(m) > 2 || len(dd) > 2 {
 		return ""
 	}
 	return y + pad2(m) + pad2(dd)
+}
+
+var xmlMonths = map[string]string{
+	"JAN": "01", "FEB": "02", "MAR": "03", "APR": "04", "MAY": "05", "JUN": "06",
+	"JUL": "07", "AUG": "08", "SEP": "09", "OCT": "10", "NOV": "11", "DEC": "12",
 }
 
 func allDigits(s string) bool {
