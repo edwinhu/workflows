@@ -1789,6 +1789,12 @@ var htmlSynonyms = map[string][]string{
 		// `(d) Shareholder Meeting Date/Type` over `05/11/2023 - Annual`
 		// (Advisors Preferred Trust 2023).
 		"MEETING DATE/TYPE", "SHAREHOLDER MEETING DATE/TYPE",
+		// A bare `Date` beside Issuer, Ticker and CUSIP: the qualifier sat in
+		// a fragment row above the header that the forward join cannot reach
+		// (`Meeting | Proposed | Vote | Against` over `Issuer | Ticker | CUSIP
+		// | Date | ...`, American Pension Investors Trust 2018, 1,946 undated
+		// rows on r159). A record date is always labelled as one.
+		"DATE",
 		// `(d) Shareholder Meeting Type & Date` with the date alone beneath
 		// (Mutual Fund Series Trust 2018 and the agent's siblings).
 		// (the canonical label drops the ampersand).
@@ -2434,6 +2440,13 @@ var htmlStackedLabelSet = map[string]string{
 	"INSTITUTIONAL ACCOUNT NAME": "ACCOUNT", "INSTITUTIONAL ACCOUNT NUMBER": "ACCOUNT",
 	"CUSTODIAN": "ACCOUNT", "CUSTODIAN ACCOUNT NUMBER": "ACCOUNT",
 	"PRIMARY SECURITY ID": "CUSIP", "SECURITY ID ON BALLOT": "CUSIP",
+	// The words run together (`Issuer Name | Ticker | MeetingDate | Country |
+	// SecurityID | MeetingType | RecordDate | SharesVoted | SharesAvailable |
+	// ISIN | SEDOL`; 0001193125-13-348301, 1,795 of 1,925 rows with no
+	// issuer, id or date on r159).
+	"MEETINGDATE": "MEETING DATE", "SECURITYID": "CUSIP", "MEETINGTYPE": "MEETING TYPE",
+	"RECORDDATE": "RECORD DATE", "SHARESVOTED": "SHARES", "SHARESAVAILABLE": "SHARES",
+	"SHARES AVAILABLE": "SHARES", "ISIN": "ISIN",
 }
 
 // htmlStackedLabelKey is the label-set key of a stacked label cell: upper
