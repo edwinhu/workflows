@@ -104,3 +104,28 @@ func TestSeriesColonSubAdviser(t *testing.T) {
 		}
 	}
 }
+
+// A trailing parenthetical that is not a class marker -- `(Master Trust)`, a
+// sleeve, a former name -- is cut before the dictionary lookup, the same cut the
+// header rules already make (Wells Fargo Master Trust 2010, 109,230 rows under
+// `Wells Fargo Advantage Diversified Stock Portfolio (Master Trust)` with the
+// dictionary naming `Wells Fargo Advantage Diversified Stock Portfolio`). A class
+// marker is never cut: `FUND (A)` is a class-pair question, not a dictionary one.
+func TestDictionaryFallbackCutsATrailingParenthetical(t *testing.T) {
+	d := &cikSeries{byCIK: map[string][]SeriesDecl{"1087961": {
+		{SeriesID: "S000013207", Name: "Wells Fargo Advantage Diversified Stock Portfolio"},
+		{SeriesID: "S000013206", Name: "Wells Fargo Advantage Diversified Fixed Income Portfolio"},
+	}}}
+	meta := FilingMeta{CIK: "1087961", SeriesDecls: []SeriesDecl{{SeriesID: "S000007541", Name: "Managed Fixed Income Portfolio"}}}
+	fb := d.exactFallback(meta)
+	r := VoteRow{FundName: "Wells Fargo Advantage Diversified Stock Portfolio (Master Trust)"}
+	fb.apply(&r)
+	if r.SeriesID != "S000013207" {
+		t.Fatalf("dictionary name plus a trailing parenthetical: got %q want S000013207", r.SeriesID)
+	}
+	r = VoteRow{FundName: "Wells Fargo Advantage Diversified Stock Portfolio (A)"}
+	fb.apply(&r)
+	if r.SeriesID != "" {
+		t.Fatalf("a class marker is not cut: got %q", r.SeriesID)
+	}
+}
