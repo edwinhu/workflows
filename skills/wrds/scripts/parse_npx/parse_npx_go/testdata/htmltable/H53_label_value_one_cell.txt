@@ -1,0 +1,593 @@
+
+<HR noshade align="center" width="100%" size=2>
+
+
+<!--$$/page=-->
+<A name="page_22"></A>
+<TABLE cellSpacing=0 cellPadding=0 border=0>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=right width="15%" colSpan=3><B><FONT face=Arial-BoldMT,Arial,Helvetica,sans-serif size=1>Vote Summary Report (Long)</FONT></B>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="47%" colSpan=3><FONT face=ArialMT,Arial,Helvetica,sans-serif size=2>Principal Variable Contracts Funds, Inc. - LargeCap Growth Account</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp;Sub-Advisor:&nbsp;CCI </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=right width="15%" colSpan=3><B><FONT face=Arial-BoldMT,Arial,Helvetica,sans-serif size=1>07/01/07 to 06/30/08</FONT></B>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%"><B><FONT face=Arial-BoldMT,Arial,Helvetica,sans-serif size=1>Sorted by Company Name.</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="54%" colSpan=5><B><FONT face=Arial-BoldMT,Arial,Helvetica,sans-serif size=1>In All Markets, for all statuses, for Principal Variable Contracts Fund, Inc.-Growth, Principal Variable Contracts Fund, Inc.-Growth.</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%"><B><FONT face=Arial-BoldMT,Arial,Helvetica,sans-serif size=1>Show Research notes.</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR>
+     <TD width="95%" colSpan=17>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Alcon Inc.</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="47%" colSpan=3>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Meeting Date/Type </FONT></B><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>05/06/08 AGM</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Security</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=right width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>H01301102</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Shares Voted</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=right width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>74,800</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Record Date</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>03/20/2008</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR>
+     <TD width="95%" colSpan=17>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Ballot Issues</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Proponent</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Mgmt</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Vote</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Rec</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Cast</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>This is a duplicate meeting for ballots received via the Broadridge North American ballot distribution</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>APPROVAL OF THE 2007 ANNUAL REPORT AND ACCOUNTS OF ALCON, INC. AND THE 2007</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Mgmt</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>APPROPRIATION OF AVAILABLE EARNINGS AND PROPOSED DIVIDEND TO SHAREHOLDERS FOR</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Mgmt</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>DISCHARGE OF THE MEMBERS OF THE BOARD OF DIRECTORS FOR THE FINANCIAL YEAR 2007</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Mgmt</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="41%" colSpan=3><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>ELECTION OF KPMG KLYNVELD PEAT MARWICK GOERDELER SA, ZURICH, AS GROUP AND PARENT Mgmt</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>ELECTION OF OBT AG, ZURICH, AS SPECIAL AUDITORS</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Mgmt</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>ELECTION TO THE BOARD OF DIRECTORS: PAUL BULCKE</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Mgmt</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Against</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>ELECTION TO THE BOARD OF DIRECTORS: THOMAS G. PLASKETT</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Mgmt</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>ELECTION TO THE BOARD OF DIRECTORS: PAUL POLMAN</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Mgmt</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Against</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>ELECTION TO THE BOARD OF DIRECTORS: CARY R. RAYMENT</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Mgmt</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>ELECTION TO THE BOARD OF DIRECTORS: James Singh</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Mgmt</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Against</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>ELECTION TO THE BOARD OF DIRECTORS: Dr. Daniel Vasella</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Mgmt</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Against</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>APPROVAL OF SHARE CANCELLATION</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Mgmt</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR>
+     <TD width="95%" colSpan=17>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Alliance Data Systems Corp.</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="47%" colSpan=3>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Meeting Date/Type </FONT></B><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>06/16/08 AGM</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Security</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=right width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>18581108</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Shares Voted</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=right width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>65,700</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Record Date</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>04/17/2008</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR>
+     <TD width="95%" colSpan=17>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Ballot Issues</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Proponent</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Mgmt</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Vote</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Rec</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><B><FONT face=Tahoma-Bold,Arial,Helvetica,sans-serif size=1>Cast</FONT></B>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Elect Director Bruce K. Anderson</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Mgmt</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Elect Director Roger H. Ballou</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Mgmt</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Elect Director E.L. Draper Jr.</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Mgmt</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="34%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Ratify Auditors</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>Mgmt</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="3%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%"><FONT face=Tahoma,Arial,Helvetica,sans-serif size=1>For</FONT>&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="9%">&nbsp; </TD>
+     <TD width="2%">&nbsp; </TD>
+     <TD noWrap align=left width="4%">&nbsp; </TD></TR></TABLE><BR>
