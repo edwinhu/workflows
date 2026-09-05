@@ -1,0 +1,255 @@
+<SERIES-NAME>RevenueShares Mid Cap Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>RWK
+<SERIES-NAME>RevenueShares Large Cap Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>RWL
+<SERIES-NAME>RevenueShares Small Cap Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>RWJ
+<SEC-DOCUMENT>0001438934-12-000438.txt : 20120831
+<SEC-HEADER>0001438934-12-000438.hdr.sgml : 20120831
+<ACCEPTANCE-DATETIME>20120831114342
+ACCESSION NUMBER:		0001438934-12-000438
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20120630
+FILED AS OF DATE:		20120831
+DATE AS OF CHANGE:		20120831
+EFFECTIVENESS DATE:		20120831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			RevenueShares ETF Trust
+		CENTRAL INDEX KEY:			0001384032
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0630
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-21993
+		FILM NUMBER:		121067637
+
+	BUSINESS ADDRESS:	
+		STREET 1:		2005 MARKET STREET
+		STREET 2:		SUITE 3320
+		CITY:			PHILADELPHIA
+		STATE:			PA
+		ZIP:			19103
+		BUSINESS PHONE:		215-854-8181
+
+	MAIL ADDRESS:	
+		STREET 1:		2005 MARKET STREET
+		STREET 2:		SUITE 3320
+		CITY:			PHILADELPHIA
+		STATE:			PA
+		ZIP:			19103
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	TIGERS Revenue Trust
+		DATE OF NAME CHANGE:	20061219
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001384032
+<SERIES-ID>S000015928
+<SERIES-NAME>RevenueShares Mid Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043762
+<CLASS-CONTRACT-NAME>RevenueShares Mid Cap Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>RWK
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001384032
+<SERIES-ID>S000015929
+<SERIES-NAME>RevenueShares Large Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043763
+<CLASS-CONTRACT-NAME>RevenueShares Large Cap Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>RWL
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001384032
+<SERIES-ID>S000015930
+<SERIES-NAME>RevenueShares Small Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043764
+<CLASS-CONTRACT-NAME>RevenueShares Small Cap Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>RWJ
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001384032
+<SERIES-ID>S000023037
+<SERIES-NAME>RevenueShares Consumer Discretionary Sector Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000067098
+<CLASS-CONTRACT-NAME>RevenueShares Consumer Discretionary Sector Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001384032
+<SERIES-ID>S000023038
+<SERIES-NAME>RevenueShares Consumer Staples Sector Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000067099
+<CLASS-CONTRACT-NAME>RevenueShares Consumer Staples Sector Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001384032
+<SERIES-ID>S000023039
+<SERIES-NAME>RevenueShares Energy Sector Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000067100
+<CLASS-CONTRACT-NAME>RevenueShares Energy Sector Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001384032
+<SERIES-ID>S000023040
+<SERIES-NAME>RevenueShares Financials Sector Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000067101
+<CLASS-CONTRACT-NAME>RevenueShares Financials Sector Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001384032
+<SERIES-ID>S000023041
+<SERIES-NAME>RevenueShares Health Care Sector Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000067102
+<CLASS-CONTRACT-NAME>RevenueShares Health Care Sector Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001384032
+<SERIES-ID>S000023042
+<SERIES-NAME>RevenueShares Industrials Sector Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000067103
+<CLASS-CONTRACT-NAME>RevenueShares Industrials Sector Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001384032
+<SERIES-ID>S000023043
+<SERIES-NAME>RevenueShares Information Technology Sector Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000067104
+<CLASS-CONTRACT-NAME>RevenueShares Information Technology Sector Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001384032
+<SERIES-ID>S000023044
+<SERIES-NAME>RevenueShares Materials Sector Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000067105
+<CLASS-CONTRACT-NAME>RevenueShares Materials Sector Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001384032
+<SERIES-ID>S000023045
+<SERIES-NAME>RevenueShares Utilities Sector Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000067106
+<CLASS-CONTRACT-NAME>RevenueShares Utilities Sector Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001384032
+<SERIES-ID>S000023425
+<SERIES-NAME>RevenueShares ADR Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000068761
+<CLASS-CONTRACT-NAME>RevenueShares ADR Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>RTR
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001384032
+<SERIES-ID>S000023426
+<SERIES-NAME>RevenueShares Navellier Overall A-100 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000068762
+<CLASS-CONTRACT-NAME>RevenueShares Navellier Overall A-100 Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>RWV
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+2.     PROPOSAL TO APPROVE, BY NON-BINDING VOTE,                 Mgmt          For                            For
+       COMPENSATION OF NAMED EXECUTIVE OFFICERS.
+
+3.     PROPOSAL TO RATIFY ERNST & YOUNG LLP AS                   Mgmt          For                            For
+       INDEPENDENT AUDITORS.
+
+
+
+RWL
+--------------------------------------------------------------------------------------------------------------------------
+ 3M COMPANY                                                                                  Agenda Number:  933562185
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  88579Y101
+    Meeting Type:  Annual
+    Meeting Date:  08-May-2012
+          Ticker:  MMM
+            ISIN:  US88579Y1010
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1A.    ELECTION OF DIRECTOR: LINDA G. ALVARADO                   Mgmt          For                            For
+
+1B.    ELECTION OF DIRECTOR: VANCE D. COFFMAN                    Mgmt          For                            For
+
+1C.    ELECTION OF DIRECTOR: MICHAEL L. ESKEW                    Mgmt          For                            For
+
+1D.    ELECTION OF DIRECTOR: W. JAMES FARRELL                    Mgmt          For                            For
+
+1E.    ELECTION OF DIRECTOR: HERBERT L. HENKEL                   Mgmt          For                            For
+
+1F.    ELECTION OF DIRECTOR: EDWARD M. LIDDY                     Mgmt          For                            For
+
+1G.    ELECTION OF DIRECTOR: ROBERT S. MORRISON                  Mgmt          For                            For
+
+1H.    ELECTION OF DIRECTOR: AULANA L. PETERS                    Mgmt          For                            For
+
+1I.    ELECTION OF DIRECTOR: INGE G. THULIN                      Mgmt          For                            For
+
+1J.    ELECTION OF DIRECTOR: ROBERT J. ULRICH                    Mgmt          For                            For
+
+2.     TO RATIFY THE APPOINTMENT OF                              Mgmt          For                            For
+       PRICEWATERHOUSECOOPERS LLP AS 3M'S
+       INDEPENDENT REGISTERED PUBLIC ACCOUNTING
+       FIRM.
+
+3.     ADVISORY APPROVAL OF EXECUTIVE                            Mgmt          For                            For
+       COMPENSATION.
+
+4.     TO APPROVE THE 2012 AMENDED AND RESTATED                  Mgmt          For                            For
+       GENERAL EMPLOYEES STOCK PURCHASE PLAN.
+
+5.     TO APPROVE THE AMENDED 2008 LONG-TERM                     Mgmt          For                            For
+       INCENTIVE PLAN.
+
+6.     STOCKHOLDER PROPOSAL ON LOBBYING.                         Shr           For                            Against
+
+7.     STOCKHOLDER PROPOSAL TO PROHIBIT POLITICAL                Shr           Against                        For
+       SPENDING FROM CORPORATE TREASURY FUNDS.
+
+8.     STOCKHOLDER PROPOSAL ON INDEPENDENT BOARD                 Shr           For                            Against
+       CHAIRMAN.
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+ ABBOTT LABORATORIES                                                                         Agenda Number:  933560408

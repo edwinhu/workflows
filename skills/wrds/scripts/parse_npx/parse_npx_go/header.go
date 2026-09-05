@@ -141,6 +141,10 @@ func parseSeriesDecls(buf []byte) ([]SeriesClass, []SeriesDecl) {
 			// <CLASS-CONTRACT> block, so it belongs to the last triple opened.
 			if n := len(classes); n > 0 && classes[n-1].Ticker == "" {
 				classes[n-1].Ticker = val
+				if open {
+					d := &decls[len(decls)-1]
+					d.Tickers = append(d.Tickers, val)
+				}
 			}
 		}
 	}
