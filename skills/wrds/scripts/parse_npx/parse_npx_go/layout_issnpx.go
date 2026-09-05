@@ -414,8 +414,14 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			continue
 		}
 		// A banner cannot span anything but rule lines. Any other line ends it,
-		// including one the loop below goes on to ignore.
+		// including one the loop below goes on to ignore -- except a WHITESPACE
+		// line with the continuation rule right after it: an HTML report renders
+		// each rule as its own block with an empty block between (Wells Fargo
+		// Master Trust 2010), and that gap is layout, not a section boundary.
 		if len(bannerBuf) > 0 {
+			if line == "" && issBannerContinues(lines, i+1) {
+				continue
+			}
 			commitBanner()
 		}
 
@@ -1686,6 +1692,10 @@ func issBannerContinues(lines []string, i int) bool {
 		return false
 	}
 	name, ok := issFundSeparator(strings.TrimSpace(lines[i]))
+	if !ok && strings.TrimSpace(lines[i]) == "" && i+1 < len(lines) {
+		// one blank line between the rules (an HTML block gap); two is a break
+		name, ok = issFundSeparator(strings.TrimSpace(lines[i+1]))
+	}
 	return ok && name != ""
 }
 
