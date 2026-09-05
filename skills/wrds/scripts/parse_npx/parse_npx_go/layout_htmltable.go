@@ -2868,7 +2868,13 @@ func htmlShapeIdentityRow(cells []string) (ctx htmlContext, ok bool) {
 			ctx.CUSIP = v
 			continue
 		}
-		if htmlIsNumeric(v) {
+		// `4,000` (a share count with a thousands separator) is a number.
+		if htmlIsNumeric(v) || htmlIsNumeric(strings.ReplaceAll(v, ",", "")) {
+			continue
+		}
+		// `AGM` and `Vote For All Proposals` beside the name (Nomura Partners
+		// 2010): the meeting type and a voting instruction are not names.
+		if pvTextMeetingType(v) || strings.HasPrefix(htmlUpperASCII(v), "VOTE ") {
 			continue
 		}
 		if htmlIsIssuerLine(v) {
