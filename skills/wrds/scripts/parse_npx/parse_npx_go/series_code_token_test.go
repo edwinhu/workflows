@@ -129,3 +129,24 @@ func TestDictionaryFallbackCutsATrailingParenthetical(t *testing.T) {
 		t.Fatalf("a class marker is not cut: got %q", r.SeriesID)
 	}
 }
+
+// The header declares the id under one name and the registrant's other filings
+// under another: 0001140361-10-035309 declares S000013207 as `Diversified Stock
+// Portfolio` while the dictionary also holds `Wells Fargo Advantage Diversified
+// Stock Portfolio` for it, and the heading prints the latter. An alternate name
+// of a DECLARED id is the registrant's own evidence and resolves; the header's
+// own spelling stays the rules' business and is not repeated here.
+func TestDictionaryFallbackKnowsADeclaredIdsOtherNames(t *testing.T) {
+	d := &cikSeries{byCIK: map[string][]SeriesDecl{"1087961": {
+		{SeriesID: "S000013207", Name: "Diversified Stock Portfolio"},
+		{SeriesID: "S000013207", Name: "Wells Fargo Advantage Diversified Stock Portfolio"},
+		{SeriesID: "S000013206", Name: "Wells Fargo Advantage Diversified Fixed Income Portfolio"},
+	}}}
+	meta := FilingMeta{CIK: "1087961", SeriesDecls: []SeriesDecl{{SeriesID: "S000013207", Name: "Diversified Stock Portfolio"}}}
+	fb := d.exactFallback(meta)
+	r := VoteRow{FundName: "Wells Fargo Advantage Diversified Stock Portfolio (Master Trust)"}
+	fb.apply(&r)
+	if r.SeriesID != "S000013207" {
+		t.Fatalf("alternate name of a declared id: got %q want S000013207", r.SeriesID)
+	}
+}
