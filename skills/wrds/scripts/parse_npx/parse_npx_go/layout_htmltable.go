@@ -924,7 +924,7 @@ func htmlFindBoundary(seg []byte, from, k int) int {
 // is how this grammar separates "ISSUER NAME:" from "MEETING DATE:" inside one
 // merged cell.
 func htmlCellText(b []byte) string {
-	return strings.TrimSpace(string(stripHTML(b)))
+	return strings.TrimSpace(string(stripHTMLCell(b)))
 }
 
 // htmlFlat renders cell text as a single line for label and value comparison.
