@@ -299,6 +299,7 @@ func icrVoteRow(cells []string, m icrMeeting, series, fund string) (VoteRow, boo
 	return VoteRow{
 		IssuerName:  m.issuer,
 		CUSIP:       icrCUSIP(m.securityID),
+		ISIN:        icrISIN(m.securityID),
 		Ticker:      m.ticker,
 		MeetingDate: m.meetingDate,
 		MeetingType: m.meetingType,
