@@ -2801,6 +2801,14 @@ func htmlDate(s string) string {
 	if d := issDate(s); d != "" {
 		return d
 	}
+	// `2005 0715`: the year, a space, then the month and day (Heritage Series
+	// Trust 2006, 3,481 rows with no date on r133). Both halves must be
+	// digits of the right width and the month and day in range.
+	if f := strings.Fields(s); len(f) == 2 && len(f[0]) == 4 && len(f[1]) == 4 && htmlIsNumeric(f[0]) && htmlIsNumeric(f[1]) && (f[0][:2] == "19" || f[0][:2] == "20") {
+		if mm, dd := f[1][:2], f[1][2:]; mm >= "01" && mm <= "12" && dd >= "01" && dd <= "31" {
+			return f[0] + f[1]
+		}
+	}
 	// The SEC lettered table prefixes the date with the meeting type, e.g.
 	// "Annual; 07/10/2012". Only a suffix that independently parses as a date
 	// is accepted; the prefix is never guessed through.
