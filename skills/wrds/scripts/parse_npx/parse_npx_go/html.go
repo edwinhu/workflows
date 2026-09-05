@@ -45,7 +45,7 @@ var namedEntities = map[string]string{
 // decodes named and numeric character references. Runs of spaces collapse; runs
 // of newlines never collapse away, because the legacy layouts are line-oriented.
 func stripHTML(src []byte) []byte {
-	stripped := removeMarkup(src)
+	stripped := removeMarkup(src, true)
 	decoded := decodeEntities(stripped)
 	return []byte(collapseSpaces(decoded))
 }
@@ -66,17 +66,37 @@ const edgarWrapWidth = 1023
 // third-party bytes read at up to 200 MB a file.
 const maxTagNameLen = 2 * edgarWrapWidth
 
+// stripHTMLCell is stripHTML for one table cell's inner markup: the lines
+// inside the cell are kept as printed.
+func stripHTMLCell(src []byte) []byte {
+	stripped := removeMarkup(src, false)
+	return []byte(collapseSpaces(decodeEntities(stripped)))
+}
+
 // removeMarkup walks the byte stream once, emitting text and turning tags into
 // either a newline (block), nothing (inline), or a skip past the closing tag
 // (script/style). Line breaks at the EDGAR wrap column are dropped as it goes.
-func removeMarkup(src []byte) string {
+//
+// joinPara treats a raw newline inside a <p> element as a space: an HTML
+// generator wraps a paragraph's text over source newlines at word boundaries
+// (Dreyfus Opportunity Funds 2015: `Ticker:` / `ARI   Security ID:
+// S01680107`), and inside a paragraph a newline is whitespace, not a line of
+// the grammar. Any block tag ends the paragraph; <pre> is never one. The table
+// layout strips each cell on its own with joinPara off, because it reads the
+// lines inside a cell as stacked labels and values (Clearwater 2011).
+func removeMarkup(src []byte, joinPara bool) string {
 	var b strings.Builder
 	b.Grow(len(src))
 	col := 0
+	inPara := false
 	for i := 0; i < len(src); {
 		c := src[i]
 		if n := breakLen(src, i); n > 0 {
-			if col != edgarWrapWidth {
+			if col == edgarWrapWidth {
+				// dropped: the EDGAR wrap
+			} else if inPara && joinPara {
+				b.WriteByte(' ')
+			} else {
 				b.Write(src[i : i+n])
 			}
 			i += n
@@ -138,6 +158,7 @@ func removeMarkup(src []byte) string {
 		}
 		if blockTags[name] {
 			b.WriteByte('\n')
+			inPara = name == "p" && !(after > i+1 && src[i+1] == '/')
 		}
 		end := indexByteFrom(src, after, '>')
 		if end < 0 {
