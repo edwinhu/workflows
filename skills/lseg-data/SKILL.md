@@ -1,7 +1,7 @@
 ---
 name: lseg-data
 version: 2.0
-description: 'Use when "query LSEG/Refinitiv", "fundamentals or market data from LSEG", "ESG scores", "RIC/ISIN symbology", "corporate governance or activism (poison pills, campaigns)", "M&A or IPO deals", "syndicated loans or project finance", "PE/VC investments", "joint ventures", "municipal bonds", "Lipper fund details", "stock screening (fscreen)", "Refinitiv news", "Workspace web client", "Codebook", or any use of the `lseg.data` Python API. (academic loan/PE data: prefer the wrds skill.)'
+description: 'Use when "query LSEG/Refinitiv", "fundamentals or market data from LSEG", "ESG scores", "management guidance / guidance reports / GR", "RIC/ISIN symbology", "corporate governance or activism (poison pills, campaigns)", "M&A or IPO deals", "syndicated loans or project finance", "PE/VC investments", "joint ventures", "municipal bonds", "Lipper fund details", "stock screening (fscreen)", "Refinitiv news", "Workspace web client", "Codebook", or any use of the `lseg.data` Python API. (academic loan/PE data: prefer the wrds skill.)'
 user-invocable: false
 ---
 
@@ -73,6 +73,7 @@ This is not negotiable. Skipping result inspection is NOT HELPFUL — the user b
 - Field-name typos are common and fail silently (TR.EPS vs TR.Eps). Validate field names against the documentation before executing.
 - User-supplied RICs often carry the wrong exchange suffix. Verify against the RIC Symbology section (`.O`, `.N`, `.L`, `.T`) before querying.
 - Market data has T-1 availability — today's data arrives tomorrow. Querying through today produces silent gaps; see the Date Awareness section.
+- **The default `http.request-timeout` is 20 seconds**, and on text-heavy content it — not a row cap or an entitlement — is what raises `ReadTimeout`. Five instruments of guidance failed at the default and returned 66,447 rows at `ld.get_config().set_param("http.request-timeout", 180)`, which must be called BEFORE the session opens. Reaching for a smaller batch first wastes the run.
 - Rate limits bind per session (500 requests/minute) and per request (`get_data()` 10,000 data points, `get_history()` 3,000 rows) — many small queries still hit the session cap. Batch instead of looping.
 
 ### Workspace Web / CDP Facts
@@ -338,6 +339,7 @@ export RDP_APP_KEY=”YOUR_APP_KEY”
 - **`references/esg.md`** - ESG scores, pillars, controversies
 - **`references/symbology.md`** - RIC/ISIN/CUSIP conversion
 - **`references/short-interest.md`** - `TR.ShortInterest`: the only working field, the delisted-instrument coverage cliff, and the gap vs Compustat
+- **`references/guidance.md`** - Management guidance (`TR.Guidance*`), the content set behind LSEG Guidance Reports (GR): the ten fields that exist, `SDate`/`EDate` filtering the guided period rather than the announcement date, and datagrid row padding that inflates instance counts ~55%
 - **`references/pricing.md`** - Historical prices, real-time data
 - **`references/screening.md`** - Stock screening with Screener object
 - **`references/fscreen.md`** - Fund screening (ETFs, mutual funds) with FSCREEN app
@@ -368,6 +370,7 @@ export RDP_APP_KEY=”YOUR_APP_KEY”
 ### Scripts
 
 - **`scripts/test_connection.py`** - Validate connectivity. No args tests the `lseg.data` platform session; `--browser` tests the CDP/Workspace-Web path.
+- **`scripts/guidance_pull.py`** - Pull `TR.Guidance*` instances with the timeout, padding drop and batching already handled: `guidance_pull.py AAPL.O --start 2015-01-01 --end 2016-12-31 -o gr.csv`
 - **`scripts/workspace_cdp.py`** - Drive Workspace Web over CDP: `token`, `datagrid`, `history`, `symbology`, `search`, `sdc-screen`, `deal-data`, `fetch`. Importable as a module or usable as a CLI.
 
 Deal-level SDC work is two steps — `sdc_deal_ids()` resolves a `SCREEN(U(IN(DEALS)) ...)` universe to deal IDs, then `deal_data()` fetches field values for them as `<id>@DEALID`. See `references/workspace-web-cdp.md`.
