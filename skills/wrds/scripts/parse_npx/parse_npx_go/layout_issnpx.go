@@ -424,9 +424,12 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			// funds (Russell Investment Co 2008, a fund with no votes above the
 			// next fund), and joining them lost the second fund's series.
 			if line == "" && issBannerContinues(lines, i+1) {
-				_, whole := issResolveFund(seriesIx, strings.Join(bannerBuf, " "))
-				_, next := issResolveFund(seriesIx, issNextBannerName(lines, i+1))
-				if whole == nil && next == nil {
+				// ... and only when the wrap is visible in the text itself: the
+				// banner so far has an unclosed parenthesis, or the next rule is a
+				// lone type word (`Portfolio`, `Trust)`). Two headings that merely
+				// fail to resolve are two funds the audited map may still know
+				// (JNL/Mellon 2006), and joining them changed the map's key.
+				if issBannerWrapVisible(strings.Join(bannerBuf, " "), issNextBannerName(lines, i+1)) {
 					continue
 				}
 			}
@@ -1705,6 +1708,24 @@ func issBannerContinues(lines []string, i int) bool {
 		name, ok = issFundSeparator(strings.TrimSpace(lines[i+1]))
 	}
 	return ok && name != ""
+}
+
+// issBannerWrapVisible reports a banner that cannot be complete without the
+// next rule: an open parenthesis nobody closed, or a continuation that is one
+// type word or a closing fragment on its own.
+func issBannerWrapVisible(sofar, next string) bool {
+	if strings.Count(sofar, "(") > strings.Count(sofar, ")") {
+		return true
+	}
+	f := strings.Fields(next)
+	if len(f) != 1 {
+		return false
+	}
+	switch strings.ToUpper(strings.Trim(f[0], "()")) {
+	case "FUND", "PORTFOLIO", "TRUST", "ETF", "SERIES", "ACCOUNT", "INDEX":
+		return true
+	}
+	return strings.HasSuffix(f[0], ")")
 }
 
 // issNextBannerName is the text of the banner rule issBannerContinues found at
