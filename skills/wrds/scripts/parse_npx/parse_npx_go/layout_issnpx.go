@@ -424,7 +424,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			// funds (Russell Investment Co 2008, a fund with no votes above the
 			// next fund), and joining them lost the second fund's series.
 			if line == "" && issBannerContinues(lines, i+1) {
-				if _, d := issResolveFund(seriesIx, strings.Join(bannerBuf, " ")); d == nil {
+				_, whole := issResolveFund(seriesIx, strings.Join(bannerBuf, " "))
+				_, next := issResolveFund(seriesIx, issNextBannerName(lines, i+1))
+				if whole == nil && next == nil {
 					continue
 				}
 			}
@@ -1703,6 +1705,17 @@ func issBannerContinues(lines []string, i int) bool {
 		name, ok = issFundSeparator(strings.TrimSpace(lines[i+1]))
 	}
 	return ok && name != ""
+}
+
+// issNextBannerName is the text of the banner rule issBannerContinues found at
+// or just past lines[i]; empty when there is none.
+func issNextBannerName(lines []string, i int) string {
+	for k := i; k < len(lines) && k <= i+1; k++ {
+		if name, ok := issFundSeparator(strings.TrimSpace(lines[k])); ok {
+			return name
+		}
+	}
+	return ""
 }
 
 // issLeadingIndexToken splits off a leading single-letter index token, which some
