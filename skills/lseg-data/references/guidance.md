@@ -99,8 +99,21 @@ df = df[df["Guidance Text"].notna()]        # MANDATORY — see padding, below
 
 ## Getting actual GR (PDFs, link table, item list)
 
-Not an API path. The supplementary materials — link table for all 23,738 reports keyed to Compustat,
-CRSP and I/B/E/S identifiers, the full item list, Excel and Stata formats — come from a Google Form on
-guidance-reports.com (`/gr-data-summary`). Separate FLS data and code (17,299 CIKs, 2005–2023) sit
-behind a second form on `/other-resources`. The PDFs themselves are pulled inside Workspace, and the
-site warns their content is currently incomplete while LSEG re-automates the background datafeeds.
+Not an API path, and **guidance-reports.com hosts no data at all** — no PDFs, no archive, no code
+repo. Verified by extracting every outbound link from all five pages: the only ones are four Google
+Forms, SSRN author pages, and the RAST article. Each form emails a different artifact:
+
+| Form (page) | What it returns |
+|---|---|
+| `forms.gle/XdRipz3H8HptYd1ZA` (`/gr-data-summary`) | link table for all 23,738 reports keyed to Compustat/CRSP/I/B/E/S ids, plus the full 181-item list — Excel and Stata, readme in the Excel tab |
+| `/gr-data-collection` | step-by-step GR data-collection guide |
+| `/gr-data-collection` | the Python PDF parser (tested on 3.11) |
+| `forms.gle/8y1Gk36GyXLELTbMA` (`/other-resources`) | FLS data and code, 17,299 CIKs, 2005–2023 |
+
+**You download the PDFs yourself from Workspace, one report at a time**, using their guide and an
+active LSEG account — the site's framing is "How can I collect my *own* LSEG Detail Guidance Reports
+data?". At 23,738 reports that is a scraping project, which is the practical argument for the field
+route above when you want the instances rather than the report artifact.
+
+The site currently carries a warning to check each downloaded PDF against the dashboard display:
+**LSEG is re-automating the background datafeeds and PDF content may be incomplete.**
