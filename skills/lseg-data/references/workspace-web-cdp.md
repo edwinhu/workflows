@@ -1,5 +1,20 @@
 # Driving Workspace Web over CDP
 
+## NEVER OPEN A SECOND WORKSPACE TAB
+
+Refinitiv treats a second tab as a **duplicate login and force-logs-out BOTH**. Measured
+2026-09-05: repeated session expiries mid-audit, and the Data Item Browser returning zero items for
+every query — including a control term that had returned dozens minutes earlier — all traced to
+tooling opening its own origin tab.
+
+`in_page_fetch()` opens a tab when no tab on the target origin exists, so it is unsafe by default.
+Use **`scripts/ws_fetch.py <url>`**, which runs `fetch(..., {credentials:'include'})` inside the
+tab already open and exits rather than creating one.
+
+Corollary for any empty result from a Workspace app: run a control query that is known to return
+rows before recording the empty one as a finding.
+
+
 `https://workspace.refinitiv.com/web` in a CDP-controlled Chromium, for everything the
 `lseg.data` Python library cannot reach. Verified on Linux 2026-07-27.
 

@@ -1,6 +1,27 @@
 # People, officers and boards in LSEG — what is and is not there
 
-Short version: **LSEG is not a board-data source.** It reaches private companies and it names
+## THE FIELDS ARE NOT THE DATA — use the Officers & Directors app endpoint
+
+**Re-probed 2026-09-05, and it reverses the conclusion below for anyone who can use a browser.**
+`TR.Officer*` really is four fields with no person key. The app endpoint is a different world:
+
+```
+/Apps/OfficersDirectors/officers?fields=full&isPublic=false&lang=en-US&oapermid={PermID}   -> 200 JSON
+```
+
+Per person it returns `personId` (a real person key), `Person{id,active}`,
+`Name{First,Last,Prefix,Sex}`, `PositionInformation.Titles` **with Start/End years**, structured
+title codes (`CHM CFD DRC PRC CEO EXO PRE`), `CommitteeMemberships`, `EducationHistory`,
+`Certifications`, `BiographicalInformation`, and — the one that matters —
+`CorporateAffiliations[] = {Company:{oapermid,name}, Officer:{id,title,active}}`, which is the
+cross-company link this file says does not exist.
+
+Verified on Blue Bottle Coffee (oapermid 5037930253): 4 people, personId 1601851 (Meehan, Chairman
+/ Co-Founder) and 1941400 (Freeman) with dated role changes in 2015.
+
+Fetch it with `scripts/ws_fetch.py`, never a helper that opens its own tab (see below).
+
+Short version of the FIELD surface: **LSEG is not a board-data source.** It reaches private companies and it names
 officers, but it carries no person identifier and no employment history, so it cannot answer "does
 this director also work for firm X" — the question most governance work actually needs. For that,
 use Capital IQ People Intelligence or BoardEx on WRDS (see the `wrds` skill's `capiq.md`,
