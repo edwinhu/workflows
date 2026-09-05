@@ -95,7 +95,6 @@ const (
 // leaves the filing parse_status=skip with a body-derived signature rather than
 // parsed against a guessed header.
 func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
-	println("DBG enter parseHTMLTableRaw", len(raw))
 	body := htmlTableBody(raw)
 	// Built ONCE per filing: these bodies reach 142 MB and 452,552 vote rows, so
 	// a per-row rebuild would make the job quadratic in the input.
@@ -108,17 +107,18 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 	feed := &htmlRowFeed{src: body}
 	repeats := &htmlHeaderRepeats{body: body}
 	var (
-		out         []VoteRow
-		mapping     map[string]int
-		headerArity int
-		carry       bool
-		partitioned bool
-		sawData     bool
-		ctx         htmlContext
-		ctxLead     string
-		leadTicker  string // a bare ticker line under the issuer heading
-		stacked     map[int]string
-		leadJoin    bool
+		out           []VoteRow
+		mapping       map[string]int
+		headerArity   int
+		carry         bool
+		partitioned   bool
+		sawData       bool
+		ctx           htmlContext
+		ctxLead       string
+		leadTicker    string // a bare ticker line under the issuer heading
+		stacked       map[int]string
+		stackedIssuer string
+		leadJoin      bool
 		// fundCells is the set of distinct fund-cell values in the open table.
 		fundCells map[string]bool
 		ctxSealed bool
@@ -141,7 +141,6 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			break
 		}
 		cells := row.cells
-		println("DBG row", row.newTable, len(cells), strings.Join(cells, "|"))
 
 		// Once the filing has stated that this block held no votes, any later row
 		// carrying two values is enough to withdraw that conclusion. It may be a
@@ -251,8 +250,8 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			ctx.merge(next)
 			continue
 		}
-		if labels, ok := htmlStackedLabels(cells); ok {
-			stacked = labels
+		if labels, name, ok := htmlStackedLabelsWithIssuer(cells); ok {
+			stacked, stackedIssuer = labels, name
 			continue
 		}
 		// A label-shaped row that lacks the required table beneath it is not data.
@@ -282,6 +281,10 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			labels := stacked
 			stacked = nil
 			if next := htmlStackedValues(cells, labels); next != (htmlContext{}) {
+				if next.Issuer == "" && stackedIssuer != "" {
+					next.Issuer = stackedIssuer
+				}
+				stackedIssuer = ""
 				if ctxSealed {
 					ctx = htmlContext{}
 					ctxSealed = false
@@ -294,8 +297,8 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				continue
 			}
 		}
-		if labels, ok := htmlStackedLabels(cells); ok {
-			stacked = labels
+		if labels, name, ok := htmlStackedLabelsWithIssuer(cells); ok {
+			stacked, stackedIssuer = labels, name
 			continue
 		}
 		if lead, candidate := htmlContextLead(cells); candidate {
@@ -322,6 +325,14 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// PREVIOUS block's meeting stays attached to the next block's votes. A
 		// labelled row arriving after a header opens a NEW block, so the previous
 		// block's issuer and meeting must not leak onto it.
+		// A label row that opens with the issuer's name (`Booker Group plc | |
+		// Meeting Date | | Country | Security ID | ...`) is the stacked grid's,
+		// and must be read as labels before htmlReadContext can take `Group
+		// plc` for the issuer and `Meeting Type` for the cusip.
+		if labels, name, ok := htmlStackedLabelsWithIssuer(cells); ok && name != "" {
+			stacked, stackedIssuer = labels, name
+			continue
+		}
 		if next, labelled := htmlReadContext(cells); labelled {
 			// A labelled row after a header opens a new block -- unless it
 			// carries only a date: the issuer and ids of this block were
@@ -963,6 +974,9 @@ func htmlHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHeaderRep
 	if !ok {
 		return nil, false, false, false
 	}
+	if _, has := mapping[htmlFieldDesc]; !has && !htmlAdoptUnlabelledDesc(cells, mapping, feed) {
+		return nil, false, false, false
+	}
 	below, crossed := htmlHasTableBelow(len(cells), feed)
 	if !below && !repeats.has(key) {
 		if !htmlHasPartitionedVotes(mapping, len(cells), feed) {
@@ -1049,6 +1063,60 @@ func htmlAdoptUnlabelledItem(cells []string, mapping map[string]int, feed *htmlR
 		return
 	}
 	mapping[htmlFieldItem] = idx
+}
+
+// htmlAdoptUnlabelledDesc maps the description onto the one blank header column
+// whose rows beneath carry running text (`| | | | Proponent | | Mgmt Rec | |
+// Vote Instruction` over `1 | | Approve Final Dividend | | Mgmt | | For | |
+// For`, Clearwater Investment Trust 2011). Every comparable row must print a
+// non-numeric text of at least two words there, over htmlHeaderConfirm rows;
+// two candidate columns, or a column any row leaves numeric, is a guess and
+// adopts nothing.
+func htmlAdoptUnlabelledDesc(cells []string, mapping map[string]int, feed *htmlRowFeed) bool {
+	claimed := make(map[int]bool, len(mapping))
+	for _, i := range mapping {
+		claimed[i] = true
+	}
+	arity := len(cells)
+	chosen := -1
+	for idx, c := range cells {
+		if claimed[idx] || htmlFlat(c) != "" {
+			continue
+		}
+		seen, textual := 0, true
+		for i := 0; i < htmlHeaderLookahead && textual; i++ {
+			row, ok := feed.peek(i)
+			if !ok {
+				break
+			}
+			if _, _, isHeader := htmlHeaderShape(row.cells); isHeader {
+				break
+			}
+			if !htmlComparableArity(len(row.cells), arity) || idx >= len(row.cells) {
+				continue
+			}
+			v := htmlFlat(row.cells[idx])
+			if v == "" {
+				continue
+			}
+			if htmlIsNumeric(v) || len(strings.Fields(v)) < 2 {
+				textual = false
+				break
+			}
+			seen++
+		}
+		if textual && seen >= htmlHeaderConfirm {
+			if chosen >= 0 {
+				return false
+			}
+			chosen = idx
+		}
+	}
+	if chosen < 0 {
+		return false
+	}
+	mapping[htmlFieldDesc] = chosen
+	return true
 }
 
 // htmlItemColumnConfirmed reports whether every comparable row under the header
@@ -1140,7 +1208,12 @@ func htmlHeaderShape(cells []string) (map[string]int, string, bool) {
 		return nil, "", false
 	}
 	if _, ok := mapping[htmlFieldDesc]; !ok {
-		return nil, "", false
+		// No description label: only a header that names the vote AND the
+		// management recommendation may go on, and htmlHeaderMapping must then
+		// find the description column in the rows beneath.
+		if _, rec := mapping[htmlFieldMgmtRec]; !rec {
+			return nil, "", false
+		}
 	}
 	return mapping, htmlHeaderKey(cells), true
 }
@@ -2098,7 +2171,7 @@ var htmlStackedLabelSet = map[string]string{
 	"MEETING DATE": "MEETING DATE", "MTG DATE": "MEETING DATE", "DATE OF MEETING": "MEETING DATE",
 	"RECORD DATE":  "RECORD DATE",
 	"MEETING TYPE": "MEETING TYPE", "MTG TYPE": "MEETING TYPE", "MEETING STATUS": "MEETING STATUS",
-	"COUNTRY OF TRADE": "COUNTRY", "ISSUER": "ISSUER", "ISSUER NAME": "ISSUER",
+	"COUNTRY OF TRADE": "COUNTRY", "COUNTRY": "COUNTRY", "ISSUER": "ISSUER", "ISSUER NAME": "ISSUER",
 	"COMPANY NAME": "ISSUER", "COMPANY": "ISSUER", "SECURITY": "CUSIP",
 }
 
@@ -2220,7 +2293,18 @@ func htmlInCellStacked(cells []string) (ctx htmlContext, ok bool) {
 // htmlStackedLabels reports a row whose every non-empty cell is a bare context
 // label, at least two of them, keyed by cell index.
 func htmlStackedLabels(cells []string) (map[int]string, bool) {
+	labels, _, ok := htmlStackedLabelsWithIssuer(cells)
+	return labels, ok
+}
+
+// htmlStackedLabelsWithIssuer is htmlStackedLabels allowing the FIRST filled
+// cell to be the issuer's name instead of a label (`Booker Group plc | | Meeting
+// Date | | Country | Security ID | ...`, Clearwater Investment Trust 2011): the
+// name is returned beside the labels and stamps the values row's issuer.
+func htmlStackedLabelsWithIssuer(cells []string) (map[int]string, string, bool) {
 	var labels map[int]string
+	issuer := ""
+	first := true
 	for i, cell := range cells {
 		flat := htmlFlat(cell)
 		if flat == "" {
@@ -2229,14 +2313,20 @@ func htmlStackedLabels(cells []string) (map[int]string, bool) {
 		key := strings.TrimSpace(strings.TrimSuffix(htmlUpperASCII(flat), ":"))
 		canon, ok := htmlStackedLabelSet[key]
 		if !ok {
-			return nil, false
+			if first && !htmlIsHeaderWord(flat) && len(strings.Fields(flat)) <= 8 {
+				issuer = flat
+				first = false
+				continue
+			}
+			return nil, "", false
 		}
+		first = false
 		if labels == nil {
 			labels = map[int]string{}
 		}
 		labels[i] = canon
 	}
-	return labels, len(labels) >= 2
+	return labels, issuer, len(labels) >= 2
 }
 
 // htmlStackedValues reads the row under a stacked label row, column by column.
@@ -2250,6 +2340,22 @@ func htmlStackedValues(cells []string, labels map[int]string) (ctx htmlContext) 
 			return ""
 		}
 		return htmlFlat(cells[i])
+	}
+	// A value printed with its own label word in a cell no label claims
+	// (`Ticker BOKl` in the issuer's column).
+	for i := range cells {
+		if _, claimed := labels[i]; claimed {
+			continue
+		}
+		f := strings.Fields(at(i))
+		if len(f) == 2 {
+			switch htmlUpperASCII(f[0]) {
+			case "TICKER":
+				ctx.Ticker = f[1]
+			case "CUSIP":
+				ctx.CUSIP = htmlValueOrEmpty(f[1])
+			}
+		}
 	}
 	for i, label := range labels {
 		if i >= len(cells) {
