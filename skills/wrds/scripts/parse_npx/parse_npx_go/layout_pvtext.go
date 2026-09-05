@@ -249,6 +249,14 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 			}
 
 			if continuationRow >= 0 && pvTextDescriptionContinuationAt(lines, i) {
+				// An echo of the row's own lines beneath it (`1.10 ELECT
+				// DIRECTOR DOUGLAS D. FRENCH ... FOR` / `ELECT DIRECTOR DOUGLAS
+				// D. FRENCH`, and both lines of a wrapped item; Putnam 2004,
+				// 2,529 doubled descriptions) is not a continuation: the
+				// description already carries it.
+				if d := rows[continuationRow].VoteDescription; strings.Contains(" "+d+" ", " "+line+" ") {
+					continue
+				}
 				rows[continuationRow].VoteDescription += " " + line
 				// continuationRow is NOT cleared: a run of echo lines all belong to
 				// the row above them, and clearing after the first left the second
