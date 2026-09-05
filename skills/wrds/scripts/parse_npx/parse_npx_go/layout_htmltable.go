@@ -2159,11 +2159,17 @@ var htmlBareValued = map[string]string{
 	// no date on r155). `Security` is read only before an id-shaped value,
 	// because it also opens an issuer's name (Security Capital Corp).
 	"MEETING DATE/TYPE ": "MEETING DATE:", "SECURITY ": "SECURITY ID:",
+	// `Meeting\nDate 28-Apr-05`, one cell wrapped at a newline (North Track
+	// Funds 2005, 3,148 undated rows on r156); read only before a date.
+	"MEETING DATE ": "MEETING DATE:",
 }
 
 // htmlBareValuedOK reports whether a bare label printed with its value may be
 // read: an id label needs an id-shaped value.
 func htmlBareValuedOK(prefix, rest string) bool {
+	if prefix == "MEETING DATE " {
+		return htmlDate(rest) != ""
+	}
 	if prefix != "SECURITY " {
 		return true
 	}
@@ -2315,6 +2321,26 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 						}
 						if !htmlHasLabelPrefix(htmlUpperASCII(flat)) {
 							v = flat
+							// `Meeting Date: | MAY | 17, 2005` (T. Rowe Price
+							// Small-Cap Stock Fund 2005, 1,855 undated rows): the
+							// value is split over two cells, and the month alone is
+							// no date. The next filled cell joins when the pair
+							// parses and the first cell alone does not.
+							if label == "MEETING DATE:" && htmlDate(v) == "" {
+								for k := j + 1; k < len(items); k++ {
+									if cellOf[k] == cellOf[j] {
+										continue
+									}
+									next := htmlFlat(cells[cellOf[k]])
+									if next == "" {
+										continue
+									}
+									if !htmlHasLabelPrefix(htmlUpperASCII(next)) && htmlDate(v+" "+next) != "" {
+										v = v + " " + next
+									}
+									break
+								}
+							}
 						}
 						break
 					}
@@ -2351,8 +2377,10 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 						ctx.CUSIP = id
 					}
 				case "ISIN:":
-					if ctx.ISIN == "" {
-						ctx.ISIN = htmlValueOrEmpty(v)
+					// `ISIN | Agenda 932273458 - Management` (North Track 2005):
+					// only an ISIN-shaped value is one.
+					if id := htmlValueOrEmpty(v); ctx.ISIN == "" && isinToken(id) {
+						ctx.ISIN = id
 					}
 				}
 			}

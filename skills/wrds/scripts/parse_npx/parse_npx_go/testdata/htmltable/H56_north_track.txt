@@ -1,0 +1,352 @@
+      <table border="0" cellpadding="0" cellspacing="1">
+
+          <tr valign="bottom">
+            <td colspan="5" nowrap width="54%"><strong><font style="FONT-FAMILY: sans-serif" size="2">ADOBE
+              SYSTEMS
+              INCORPORATED</font></strong>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><strong><font style="FONT-FAMILY: sans-serif" size="2">Security</font></strong>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="36%"><font style="FONT-FAMILY: sans-serif" size="2">00724F101</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%"><strong><font style="FONT-FAMILY: sans-serif" size="2">Meeting
+              Type </font></strong><font style="FONT-FAMILY: sans-serif" size="2">Annual</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><strong><font style="FONT-FAMILY: sans-serif" size="2">Ticker</font></strong>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="36%"><font style="FONT-FAMILY: sans-serif" size="2">ADBE</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%"><strong><font style="FONT-FAMILY: sans-serif" size="2">Meeting
+              Date </font></strong><font style="FONT-FAMILY: sans-serif" size="2">28-Apr-05</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><strong><font style="FONT-FAMILY: sans-serif" size="2">ISIN</font></strong>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="36%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="31%"><strong><font style="FONT-FAMILY: sans-serif" size="2">Agenda
+</font></strong><font style="FONT-FAMILY: sans-serif" size="2">932273458
+              - Management</font>&#160;
+              </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="36%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><strong><font style="FONT-FAMILY: sans-serif" size="2">For/Against</font></strong>&#160;
+</td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%"><strong><font style="FONT-FAMILY: sans-serif" size="2">Item</font></strong>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="36%"><strong><font style="FONT-FAMILY: sans-serif" size="2">Proposal</font></strong>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%"><strong><font style="FONT-FAMILY: sans-serif" size="2">Type</font></strong>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%"><strong><font style="FONT-FAMILY: sans-serif" size="2">Vote</font></strong>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><strong><font style="FONT-FAMILY: sans-serif" size="2">Management</font></strong>&#160;
+</td>
+          </tr>
+          <tr>
+            <td colspan="11">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%"><font style="FONT-FAMILY: sans-serif" size="2">01</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">DIRECTOR</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%"><font style="FONT-FAMILY: sans-serif" size="2">Mgmt</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%"><font style="FONT-FAMILY: sans-serif" size="2">1</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">CAROL
+              MILLS</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%"><font style="FONT-FAMILY: sans-serif" size="2">For</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><font style="FONT-FAMILY: sans-serif" size="2">For</font>&#160;
+</td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%"><font style="FONT-FAMILY: sans-serif" size="2">2</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">COLLEEN
+              M. POULIOT</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%"><font style="FONT-FAMILY: sans-serif" size="2">For</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><font style="FONT-FAMILY: sans-serif" size="2">For</font>&#160;
+</td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%"><font style="FONT-FAMILY: sans-serif" size="2">3</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">ROBERT
+              SEDGEWICK</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%"><font style="FONT-FAMILY: sans-serif" size="2">For</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><font style="FONT-FAMILY: sans-serif" size="2">For</font>&#160;
+</td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%"><font style="FONT-FAMILY: sans-serif" size="2">4</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">JOHN
+              E. WARNOCK</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%"><font style="FONT-FAMILY: sans-serif" size="2">For</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><font style="FONT-FAMILY: sans-serif" size="2">For</font>&#160;
+</td>
+          </tr>
+          <tr>
+            <td colspan="11">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%"><font style="FONT-FAMILY: sans-serif" size="2">02</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">APPROVAL
+              OF AN AMENDMENT TO THE 2003 EQUITY</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%"><font style="FONT-FAMILY: sans-serif" size="2">Mgmt</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%"><font style="FONT-FAMILY: sans-serif" size="2">For</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><font style="FONT-FAMILY: sans-serif" size="2">For</font>&#160;
+</td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">INCENTIVE
+              PLAN INCREASING THE SHARE RESERVE BY</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">8,000,000
+              SHARES.</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+          <tr>
+            <td colspan="11">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%"><font style="FONT-FAMILY: sans-serif" size="2">03</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">APPROVAL
+              OF AN AMENDMENT TO THE 1996 OUTSIDE</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%"><font style="FONT-FAMILY: sans-serif" size="2">Mgmt</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%"><font style="FONT-FAMILY: sans-serif" size="2">For</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><font style="FONT-FAMILY: sans-serif" size="2">For</font>&#160;
+</td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">DIRECTORS'
+              STOCK OPTION PLAN INCREASING THE</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">SHARE
+              RESERVE BY 400,000 SHARES.</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+          <tr>
+            <td colspan="11">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%"><font style="FONT-FAMILY: sans-serif" size="2">04</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">STOCKHOLDER
+              PROPOSAL.</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%"><font style="FONT-FAMILY: sans-serif" size="2">Shr</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%"><font style="FONT-FAMILY: sans-serif" size="2">For</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><font style="FONT-FAMILY: sans-serif" size="2">Against</font>&#160;
+</td>
+          </tr>
+          <tr>
+            <td colspan="11">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%"><font style="FONT-FAMILY: sans-serif" size="2">05</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">STOCKHOLDER
+              PROPOSAL.</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%"><font style="FONT-FAMILY: sans-serif" size="2">Shr</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%"><font style="FONT-FAMILY: sans-serif" size="2">For</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><font style="FONT-FAMILY: sans-serif" size="2">Against</font>&#160;
+</td>
+          </tr>
+          <tr>
+            <td colspan="11">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%"><font style="FONT-FAMILY: sans-serif" size="2">06</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">RATIFICATION
+              OF THE APPOINTMENT OF KPMG LLP AS</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%"><font style="FONT-FAMILY: sans-serif" size="2">Mgmt</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%"><font style="FONT-FAMILY: sans-serif" size="2">For</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><font style="FONT-FAMILY: sans-serif" size="2">For</font>&#160;
+</td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">THE
+              COMPANY'S INDEPENDENT REGISTERED PUBLIC</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">ACCOUNTING
+              FIRM FOR THE FISCAL YEAR ENDING</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="5%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="47%"><font style="FONT-FAMILY: sans-serif" size="2">DECEMBER
+              2, 2005.</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="19%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="10%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+
+      </table>
