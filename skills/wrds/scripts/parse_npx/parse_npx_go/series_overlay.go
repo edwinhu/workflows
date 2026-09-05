@@ -70,9 +70,18 @@ func (o *seriesOverlay) apply(relPath string, declared map[string]bool, r *VoteR
 	if m == nil {
 		return
 	}
-	if id := m[sanitize(r.FundName)]; id != "" && declared[id] {
-		r.SeriesID = id
+	id := m[sanitize(r.FundName)]
+	if id == "" {
+		return
 	}
+	// A class pair the map names as "S1;S2" is stamped whole, the form the issnpx
+	// class-pair rule emits; every id in it must be one the filing declares.
+	for _, one := range strings.Split(id, MultiValueSep) {
+		if !declared[one] {
+			return
+		}
+	}
+	r.SeriesID = id
 }
 
 // overlayDeclaredIDs is the set of series the overlay may stamp: the header's

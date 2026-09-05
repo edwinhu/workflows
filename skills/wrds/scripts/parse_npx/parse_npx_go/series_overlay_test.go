@@ -86,3 +86,32 @@ func TestOverlayDeclaredIDsIncludeTheRegistrantsDictionary(t *testing.T) {
 		t.Fatalf("declared ids = %v, want the header's and the registrant's dictionary ids only", got)
 	}
 }
+
+// A fund declared only as a class pair -- "FUND (A)" and "FUND (B)" -- is stamped with
+// both ids joined by MultiValueSep, the form the issnpx class-pair rule emits; the
+// map may name that pair. Every id in it must be declared, or none is stamped.
+func TestSeriesOverlayStampsADeclaredClassPair(t *testing.T) {
+	dir := t.TempDir()
+	p := filepath.Join(dir, "map.tsv")
+	body := "filing\theading\tseries_id\tconfidence\trows\n" +
+		"000000/1/0001-01.txt\tJNL/MELLON INTERNATIONAL INDEX FUND\tS000000001;S000000002\t1.0\t10\n" +
+		"000000/1/0001-01.txt\tJNL/MELLON SMALL CAP INDEX FUND\tS000000003;S000000099\t1.0\t5\n"
+	if err := os.WriteFile(p, []byte(body), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	ov, err := loadSeriesOverlay(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	declared := map[string]bool{"S000000001": true, "S000000002": true, "S000000003": true}
+	r := VoteRow{FundName: "JNL/MELLON INTERNATIONAL INDEX FUND"}
+	ov.apply("000000/1/0001-01.txt", declared, &r)
+	if r.SeriesID != "S000000001"+MultiValueSep+"S000000002" {
+		t.Fatalf("declared class pair: got %q", r.SeriesID)
+	}
+	r = VoteRow{FundName: "JNL/MELLON SMALL CAP INDEX FUND"}
+	ov.apply("000000/1/0001-01.txt", declared, &r)
+	if r.SeriesID != "" {
+		t.Fatalf("a pair with an undeclared id must not be stamped: got %q", r.SeriesID)
+	}
+}
