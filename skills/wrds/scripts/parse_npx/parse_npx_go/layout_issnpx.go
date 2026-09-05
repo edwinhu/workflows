@@ -1951,6 +1951,10 @@ func issMeetingLine(line string) (date, typ string, ok bool) {
 	if ti := strings.Index(strings.ToUpper(rest), "MEETING TYPE:"); ti >= 0 {
 		typ = strings.TrimSpace(rest[ti+len("MEETING TYPE:"):])
 		rest = rest[:ti]
+	} else if ti := strings.Index(strings.ToUpper(rest), "MEETINGTYPE:"); ti >= 0 {
+		// `MeetingType:` without its space (Comerica 2004)
+		typ = strings.TrimSpace(rest[ti+len("MEETINGTYPE:"):])
+		rest = rest[:ti]
 	}
 	if ri := strings.Index(strings.ToUpper(typ), "RECORD DATE:"); ri >= 0 {
 		typ = strings.TrimSpace(typ[:ri])
