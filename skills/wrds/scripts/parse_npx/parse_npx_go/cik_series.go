@@ -92,5 +92,16 @@ func (f *dictFallback) apply(r *VoteRow) {
 	}
 	if d, _ := lookupSeriesEntry(f.byName, r.FundName); d != nil {
 		r.SeriesID = d.SeriesID
+		return
+	}
+	// The heading may carry a trailing parenthetical the dictionary name lacks --
+	// `(Master Trust)`, a sleeve, a former name -- the same cut the header rules
+	// make. A class marker stays: `FUND (A)` is a class-pair question.
+	if !issClassMarker(r.FundName) {
+		if head, ok := issCutTrailingParenthetical(r.FundName); ok {
+			if d, _ := lookupSeriesEntry(f.byName, head); d != nil {
+				r.SeriesID = d.SeriesID
+			}
+		}
 	}
 }
