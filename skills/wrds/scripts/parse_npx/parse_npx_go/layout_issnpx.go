@@ -900,6 +900,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 type issSeriesIndex struct {
 	byName        map[string]*SeriesDecl
 	registrantKey string
+	// byTicker keys each class ticker the header declares, upper-cased, to its
+	// series; a ticker two series share is dropped rather than guessed.
+	byTicker map[string]*SeriesDecl
 	// formerKeys are the registrant's FORMER CONFORMED NAMEs, normalised; the
 	// registrant-prefix strip tries each of them after the current name.
 	formerKeys []string
@@ -964,6 +967,23 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		lessAnd:       make(map[string]*SeriesDecl),
 		lessBrandFull: make(map[string]*SeriesDecl),
 		lessBrandType: make(map[string]*SeriesDecl),
+		byTicker:      make(map[string]*SeriesDecl),
+	}
+	dupTicker := map[string]bool{}
+	for i := range decls {
+		for _, t := range decls[i].Tickers {
+			k := strings.ToUpper(strings.TrimSpace(t))
+			if k == "" {
+				continue
+			}
+			if prev, seen := ix.byTicker[k]; seen && prev.SeriesID != decls[i].SeriesID {
+				dupTicker[k] = true
+			}
+			ix.byTicker[k] = &decls[i]
+		}
+	}
+	for k := range dupTicker {
+		delete(ix.byTicker, k)
 	}
 	if toks := strings.Fields(registrantKey); len(toks) > 1 {
 		for k := len(toks) - 1; k >= 1; k-- {
@@ -1327,6 +1347,15 @@ func issCutSubAdviser(banner string) (string, bool) {
 func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	idx, registrantKey := ix.byName, ix.registrantKey
 	d, declared := lookupSeriesEntry(idx, banner)
+	// A heading that is exactly one declared class ticker (`RWL`, RevenueShares
+	// 2012, 18,687 rows with no series): the header's own evidence, exact.
+	if d == nil {
+		if t := strings.ToUpper(strings.TrimSpace(banner)); t != "" && !strings.ContainsAny(t, " \t") && len(t) <= 6 {
+			if td, ok := ix.byTicker[t]; ok {
+				return banner, td
+			}
+		}
+	}
 
 	if stripped, ok := issLeadingIndexToken(banner); ok {
 		alt, altDeclared := lookupSeriesEntry(idx, stripped)

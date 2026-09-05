@@ -85,6 +85,9 @@ type SeriesDecl struct {
 	SeriesID string
 	Name     string
 	ClassIDs []string
+	// Tickers are the class tickers the header lists under this series; a
+	// heading that is exactly one of them names the series (RevenueShares 2012).
+	Tickers []string
 }
 
 // MultiValueSep joins repeated child values into one TSV cell.
