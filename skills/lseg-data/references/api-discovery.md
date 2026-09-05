@@ -1,4 +1,48 @@
-# API Discovery via Network Monitoring
+# API Discovery
+
+## STOP GUESSING FIELD NAMES — query the Data Item Browser
+
+**`scripts/dib_query.py "<words>"` prints real `TR.*` codes.** Guessed field names are the single
+biggest time sink against this API, and every "no-such-field" you collect is worth nothing: it says
+your guess was wrong, never that the data is absent. DIB is LSEG's own field dictionary and it
+settles the question.
+
+```bash
+python3 scripts/dib_query.py "segment revenue"
+#   TR.SegmentRevenueActValue   Segment Revenue - Actual   35,686,000,000
+```
+
+Needs a signed-in Workspace tab on CDP 9222 with the DIB app open at
+`https://workspace.refinitiv.com/web/Apps/DataItemBrowser/` — the **`/web/` path**, which runs
+inside the Workspace shell. The bare `/Apps/DataItemBrowser/` URL loads but is inert.
+
+**It renders no `<script src>` and issues NO network request when you search** — it filters a
+catalog held client-side, so network capture returns nothing and there is no endpoint to replicate.
+The script therefore reads the rendered DOM, walking up to 6 levels of same-origin iframes
+(`web` → `rap/webcontainer` → `AppContainer` → `apps/DataItemBrowser` → the app) to find the
+document holding the `Find Data Item` box. A hook installed only one frame deep captures nothing;
+that failure cost several rounds.
+
+`/Apps/UdipApi/` is DIB's backend (`Load`, `GetFields`, `GetRcsCodes` — the last POST-only, 405 on
+GET). Every body shape tried returned `{"rc":{"codes":[]}}`, so read the DOM instead.
+
+### DIB gives you the NAME. It does not give you the ENTITLEMENT.
+
+Always confirm a discovered name with a real `get_data` call and read which error comes back —
+`no-such-field` vs `access to field(s) denied` (see SKILL.md). Verified this way 2026-09-04:
+
+| Field | Instrument | Result |
+|---|---|---|
+| `TR.SegmentRevenueActValue` | AAPL.O | 35,686,000,000 (10 segment rows) |
+| `TR.SSSActValue` | WMT.N | 3.2 (same-store sales) |
+| `TR.NAREITFFOActual` | SPG.N | 12.34 (FFO per share) |
+
+And two negatives that are now evidence rather than failed guesses, because the dictionary itself
+was searched: **major-customer / supply-chain relationships do not exist** ("supply chain" returns
+only ESG policy flags such as `TR.SocialSupplyChainPolicy`), and **REIT property-level data does not
+exist** ("REIT"/"property" return NAREIT FFO estimates and Japan-specific statements only).
+
+## Network monitoring
 
 When LSEG/Refinitiv data is available in Workspace but not documented in the Python API, you can reverse-engineer the API by monitoring the web client's network traffic.
 

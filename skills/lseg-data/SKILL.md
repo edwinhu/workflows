@@ -371,6 +371,7 @@ export RDP_APP_KEY=”YOUR_APP_KEY”
 ### Scripts
 
 - **`scripts/test_connection.py`** - Validate connectivity. No args tests the `lseg.data` platform session; `--browser` tests the CDP/Workspace-Web path.
+- **`scripts/dib_query.py`** - Query the Data Item Browser as a field dictionary: `dib_query.py "segment revenue"` prints real `TR.*` codes. Use it INSTEAD OF guessing field names; needs a signed-in Workspace tab with DIB open at the `/web/` path. See `references/api-discovery.md`
 - **`scripts/guidance_pull.py`** - Pull `TR.Guidance*` instances with the timeout, padding drop and batching already handled: `guidance_pull.py AAPL.O --start 2015-01-01 --end 2016-12-31 -o gr.csv`
 - **`scripts/workspace_cdp.py`** - Drive Workspace Web over CDP: `token`, `datagrid`, `history`, `symbology`, `search`, `sdc-screen`, `deal-data`, `fetch`. Importable as a module or usable as a CLI.
 
