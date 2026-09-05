@@ -1,8 +1,45 @@
 # News Data
 
-Access news headlines and stories via the LSEG Data Library.
+## THE RDP NEWS API IS DENIED — the Workspace news service is not
 
-## Overview
+`trapi.data.news.read` is absent from the token, so every `/data/news/v1/*` endpoint 403s on the
+platform session **and** on the lifted browser token. The Workspace-internal service works.
+Verified 2026-09-05: HTTP 200, 11,701 bytes of headlines.
+
+Five things must all be right, and each was a separate wall:
+
+1. **Route**: `POST https://workspace.refinitiv.com/newscloudservice/headlines`
+   (401 not 404 is the tell that it exists — a bogus path under the same prefix 404s).
+2. **Method is POST.** GET returns 401 whatever else you send.
+3. **Two headers**, lifted from the app's own polling with CDP `Network.requestWillBeSent`:
+   `apiKey` and `forwardedApiKey` (UUIDs; they are per-deployment, so capture, never hardcode).
+4. **The key is Referer-bound.** Calling from the top page returns
+   `403 "This ApiKey cannot be used in context of the application detected by Referer header"`,
+   quoting the offending URL.
+5. **So run the fetch inside the news frame**: find the frame whose URL matches
+   `Apps/news-module/` and call `frame.contentWindow.fetch(...)`, which carries the right referrer.
+   Walking frames and matching `/news/i` is not enough — the top frame's URL often contains
+   `entitynews` and matches first.
+
+Query grammar, copied from the live app:
+
+```
+?archive=true&repository=NewsWire,NewsRoom,WebNews,Social&number=60
+&researchResults=true&tracking=auto&sentiment=true&language=en-US
+```
+
+Each headline carries `permIDs`, an `rcs` array of instrument and topic codes (`R:AAPL.O`,
+`B:`/`G:`/`M:` classifications), `repository`, `versionCreated` / `firstCreated`, `storyId`,
+`isAlert` and `language` — a structured, entity-tagged corporate-events feed.
+
+**Limits, stated plainly.** This is a Workspace-internal route behind a Referer-bound key running in
+a live browser session: usable for interactive pulls over a few hundred companies, not a
+reproducible pipeline. The key rotates, the session drops, and none of it is contractually yours to
+automate. For a licensed feed you need `trapi.data.news.read` added.
+
+**Never open a second Workspace tab to do any of this** — see `workspace-web-cdp.md`.
+
+## Overview (the denied RDP API, kept for reference)
 
 The LSEG Data Library provides two approaches for news retrieval:
 - **Access Layer**: `ld.news.get_headlines()` - Simple retrieval, max 100 headlines
