@@ -2169,6 +2169,9 @@ var htmlBareLabels = map[string]string{
 	// row was too wide to be bare, and 17,472 rows of 0001193125-15-291803 lost
 	// their date on run71.
 	"PRIMARY SECURITY ID": "SECURITY ID:",
+	// `Meeting Date/Type | | 06/10/08 AGM` (CRM Mutual Fund Trust 2008, 1,408
+	// rows with no date on r154): the type rides in the label and the value.
+	"MEETING DATE/TYPE": "MEETING DATE:",
 	// Not "ISSUER": it is a proponent value ('Issuer' in Buffalo Funds' Proposed
 	// By column), and reading it as a label consumed 173,538 vote rows across
 	// 395 filings on run55.
@@ -2318,7 +2321,7 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 					}
 				case "SECURITY ID:", "CUSIP NUMBER:", "CUSIP:":
 					// A Security ID that is an ISIN belongs in the ISIN column.
-					if id := htmlValueOrEmpty(v); isinToken(id) {
+					if id := htmlPadCUSIP(htmlValueOrEmpty(v)); isinToken(id) {
 						if ctx.ISIN == "" {
 							ctx.ISIN = id
 						}
@@ -2887,6 +2890,17 @@ func htmlUpperASCII(s string) string {
 // htmlValueOrEmpty folds a printed placeholder to the empty string. This
 // grammar writes "TICKER: --" for a security with no ticker, and carrying "--"
 // into the ticker column would make a placeholder look like a symbol.
+// htmlPadCUSIP restores the leading zeros a spreadsheet dropped from an
+// all-digit CUSIP (`4498101` for ACI Worldwide's 004498101; CRM Mutual Fund
+// Trust 2008). Only a seven- or eight-digit number is padded: six digits is
+// an issuer number, and a nine-character id is complete.
+func htmlPadCUSIP(id string) string {
+	if n := len(id); (n == 7 || n == 8) && htmlIsNumeric(id) {
+		return strings.Repeat("0", 9-n) + id
+	}
+	return id
+}
+
 func htmlValueOrEmpty(v string) string {
 	v = htmlFlat(v)
 	if v == "" {
