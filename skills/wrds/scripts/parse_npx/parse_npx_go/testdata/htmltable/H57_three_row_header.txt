@@ -1,0 +1,122 @@
+<TABLE CELLSPACING="0" CELLPADDING="4" STYLE="font: 11pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; width: 19%"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B><I>API Trust</I></B></FONT></TD>
+    <TD STYLE="white-space: nowrap; width: 6%">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 8%">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 6%">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 36%">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 7%">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 6%">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 6%">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 6%">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B><I>Capital Income Fund</I></B></FONT></TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Proxy Voting Record</FONT></TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">July 1, 2017 - June 30, 2018</FONT></TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For or</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Meeting</FONT></TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Proposed</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vote</FONT></TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Against</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; text-align: center; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Issuer</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Ticker</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CUSIP</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Date</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Matter Voted On</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">By</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Cast</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vote</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Mgt.</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">BT Group Plc</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">BT</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">05577E101</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">07/12/17</FONT></TD>
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Receive Accounts and Reports</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Issuer</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: White">
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve the Remuneration Report</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Issuer</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Revised Remuneration Policy</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Issuer</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: White">
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Declare a Final Dividend</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Issuer</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD></TR>
+</TABLE>
