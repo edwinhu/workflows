@@ -77,13 +77,27 @@ Chief Legal Counsel; two companies returned nothing.
 rich officer/director property set — `OfficersAndDirectorsPersonId`, `OfficerDirectorCompanies`,
 `OfficerDirectorTitles`, `OfficerDirectorStartDate`. In practice:
 
-- `Select` on those properties returns them empty; hits carry only
-  `BusinessEntity, DocumentTitle, PermID, PI`.
+- **Those properties DO populate — re-verified 2026-09-04.** An earlier version of this file said
+  `Select` returned them empty. It does not: `OfficersAndDirectorsPersonId` came back 100% filled
+  (Tim Cook → `88090`), as did `PersonGender` and `OfficerDirectorActiveCompanies`. If you read the
+  old claim and skipped the view, re-probe before believing any negative here.
+- **The view is filterable on that person id**: `filter="OfficersAndDirectorsPersonId eq '88090'"`
+  returns the Tim Cook row. It is a queryable key, not just a display value.
+- **But it is per-ROLE, not per-person, exactly like the PermID.** Orlando Bravo's 8 hits carry 8
+  distinct PermIDs *and* 8 distinct `OfficersAndDirectorsPersonId` values (2553718, 2131448,
+  5005981, 1549387 …). So it does not solve cross-company linkage, and the conclusion at the top of
+  this file stands — for a different reason than originally recorded.
+- **`OfficerDirectorActiveCompanies` is the actual way to get affiliations**, and it needs no join at
+  all: Tim Cook's row carries `['NIKE, Inc.', 'Apple Inc.']` inline. That answers "does this person
+  also sit at firm X" directly off the row. It is the one route here that reaches the multi-company
+  question.
+- **Requested properties are dropped silently.** Of 8 passed to `select`, only 3 came back —
+  `OfficerDirectorCompanies`, `OfficerDirectorTitles`, `OfficerDirectorStartDate` and
+  `OfficerDirectorRics` vanished with no error. Always diff `list(df.columns)` against what you asked
+  for; a missing column is not an empty column.
 - `DocumentTitle` is `"Name - Company - Role"`, so one row per person-company-role, and searching a
   person's name does return their other roles — Orlando Bravo appears at Dynatrace, QlikTech AND
-  Thoma Bravo Lp.
-- **But each row carries a DIFFERENT PermID**, so the PermID is per-role, not a stable person id.
-  Linking still requires name matching, with the usual hazard: "J. Orlando Bravo, SED International
+  Thoma Bravo Lp. Name matching still carries the usual hazard: "J. Orlando Bravo, SED International
   CFO" is a different person.
 
 Tested end to end on three PE-owned companies (Ivanti/Clearlake, Culligan/Advent, Vera Whole
