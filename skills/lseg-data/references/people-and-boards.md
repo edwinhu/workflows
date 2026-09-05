@@ -46,6 +46,27 @@ r = discovery.search(query="Ivanti Inc", top=5)          # -> PI 5000484437, "Pr
 ld.get_data(universe=["5000484437"], fields=["TR.CommonName"])   # -> "Ivanti Inc"
 ```
 
+### A SHORT PI SILENTLY RESOLVES TO THE WRONG COMPANY
+
+A bare numeric universe is put through identifier *guessing*, not a PI lookup, and short ids collide
+with another namespace. There is no error and no null — you get a different company's data under the
+id you asked for. Verified 2026-09-04:
+
+```python
+search("Koch Industries", view=ORGANISATIONS)   # -> PI 11501, "Koch Industries LLC, Private Company"
+ld.get_data(["11501"], ["TR.CommonName"])       # -> "Eurafrep", France          <-- WRONG COMPANY
+ld.get_data(["5000484437"], ["TR.CommonName"])  # -> "Ivanti Inc"                <-- correct
+```
+
+`"11501@PI"` is not the fix — that raises `Unable to resolve all requested identifiers`. The suffix
+form does not work here at all.
+
+**Always carry `DocumentTitle` from the search hit and assert it against `TR.CommonName` before
+keeping a row.** A private-company panel keyed on search PIs is silently contaminated otherwise, and
+the contamination is invisible in every downstream check: the row count is right, no field is null,
+and the name column is a real company. Ten-digit PIs resolved correctly in every case tested; the
+short ones are the hazard, and you cannot tell which you have without looking.
+
 Officer coverage for them is thin and management-weighted: across 8 PE-owned private companies,
 **13 officer rows total, 1 with a board title, 0 sponsor-affiliated**. Ivanti returned CEO, CMO and
 Chief Legal Counsel; two companies returned nothing.
