@@ -220,6 +220,24 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			}
 		}
 
+		// A label/value row whose labels wrap inside their cells (`Ticker /
+		// Symbol | JAVA | Meeting / Date | 16-Jul-2009`, Green Century 2010)
+		// looks like a header stacked over rows to the split-header reader,
+		// which consumed it. A row that reads as context WITH a value is context.
+		if wrapped := htmlHasWrappedLabelCell(cells); wrapped {
+			if next, labelled := htmlReadContext(cells); labelled && (next.MeetingDate != "" || pvTextCUSIP(next.CUSIP) || isinToken(next.ISIN)) {
+				if ctxSealed {
+					ctx = htmlContext{}
+					ctxSealed = false
+				}
+				if next.Issuer == "" && ctxLead != "" {
+					next.Issuer = ctxLead
+				}
+				ctxLead, leadTicker = "", ""
+				ctx.merge(next)
+				continue
+			}
+		}
 		if m, mayCarry, mayPartition, consumed, ok := htmlSplitHeaderMapping(cells, feed, repeats); consumed {
 			if ok {
 				mapping, headerArity = m, len(cells)
@@ -2724,6 +2742,22 @@ func htmlShapeIdentityRow(cells []string) (ctx htmlContext, ok bool) {
 		return htmlContext{}, false
 	}
 	return ctx, true
+}
+
+// htmlHasWrappedLabelCell reports a row with a bare context label broken over
+// two lines inside one cell (`Ticker\n Symbol`, `Meeting\n Date`), the shape
+// the split-header reader mistakes for a header stacked over rows.
+func htmlHasWrappedLabelCell(cells []string) bool {
+	for _, c := range cells {
+		if !strings.Contains(strings.TrimSpace(c), "\n") {
+			continue
+		}
+		key := strings.TrimSpace(strings.TrimSuffix(htmlUpperASCII(htmlFlat(c)), ":"))
+		if _, ok := htmlBareLabels[key]; ok {
+			return true
+		}
+	}
+	return false
 }
 
 // htmlIdentityRow reads a row that fills the identity columns of a shared
