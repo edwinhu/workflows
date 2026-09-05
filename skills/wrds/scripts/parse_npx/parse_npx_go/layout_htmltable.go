@@ -2326,6 +2326,15 @@ func htmlStackedLabelsWithIssuer(cells []string) (map[int]string, string, bool) 
 		}
 		labels[i] = canon
 	}
+	if len(labels) == 1 {
+		// A row holding the single label `Meeting Date`, with or without the
+		// issuer beside it (`Textron Inc. | | Meeting Date`, Donnelley 2010):
+		// the date is on the next row, and a date is the one value that proves
+		// itself, so the one-label row is admitted for that label alone.
+		for _, c := range labels {
+			return labels, issuer, c == "MEETING DATE"
+		}
+	}
 	return labels, issuer, len(labels) >= 2
 }
 
@@ -2465,6 +2474,11 @@ func htmlContextLead(cells []string) (string, bool) {
 	// ...` in one spanning cell; Fidelity Fixed Income Trust, 26,992 rows with
 	// no security id on 2026-09-02) is context, not an issuer candidate.
 	if htmlHasLabelPrefix(htmlUpperASCII(lead)) {
+		return "", false
+	}
+	if htmlDate(lead) != "" {
+		// A date on its own row is a value (the one under a `Meeting Date`
+		// label row), never the issuer of the block.
 		return "", false
 	}
 	return lead, htmlIsIssuerLine(lead)
