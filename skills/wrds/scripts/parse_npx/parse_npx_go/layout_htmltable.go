@@ -2363,6 +2363,11 @@ var htmlStackedLabelSet = map[string]string{
 	// 2004: 1,077 rows whose hyphenated CUSIPs the shape reader refused, so
 	// each meeting inherited the identity of the last one read by shape).
 	"NUMBER": "NUMBER", "SHARES VOTED": "SHARES",
+	// `SEDOL` heads a foreign issuer's id (M Fund 2017: `Company Name | Meeting
+	// Date | SEDOL | Ticker`); the linker reads no SEDOL, but the name and the
+	// date beside it are the meeting's, and refusing the row left the proposals
+	// with the cover page as their issuer.
+	"SEDOL": "SEDOL",
 	// The account grid MET Investors Series Trust 2010 prints above each
 	// meeting: the location and account labels carry no identity, the two
 	// security-id labels carry the CUSIP.
