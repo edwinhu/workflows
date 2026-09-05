@@ -2067,6 +2067,12 @@ var htmlContextLabels = []string{
 	"TICKER SYMBOL:", "TICKER:", "SECURITY ID:", "CUSIP NUMBER:", "CUSIP:", "ISIN:",
 }
 
+// htmlContextCutLabels end a value without being read: `Meeting Date: JUL 25,
+// 2018 Meeting Type: Annual` (Keeley Funds 2019, 3,017 rows with no date on
+// r133). Reading the type as context of its own would let a lone `Meeting
+// Type:` row open a new, empty meeting.
+var htmlContextCutLabels = []string{"MEETING TYPE:", "MTG TYPE:"}
+
 // htmlBareValued are bare labels printed WITH their value in the same cell
 // (`Primary CUSIP 35671D857`, `Primary ISIN US35671D8570`; Deutsche's db-X
 // and DBX ETF trusts, 58k rows with no issuer, id or date on 2026-09-02).
@@ -2715,7 +2721,7 @@ func htmlLabelValue(line, up, label string) (string, bool) {
 	rest := line[i+len(label):]
 	restUp := up[i+len(label):]
 	cut := len(rest)
-	for _, other := range htmlContextLabels {
+	for _, other := range append(append([]string(nil), htmlContextLabels...), htmlContextCutLabels...) {
 		if j := strings.Index(restUp, other); j >= 0 && j < cut {
 			cut = j
 		}
