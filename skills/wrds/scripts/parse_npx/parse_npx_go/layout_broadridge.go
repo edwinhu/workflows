@@ -143,8 +143,10 @@ var (
 	brItemNumeric = regexp.MustCompile(`^[0-9]{1,3}(\.[0-9]{1,3})*[A-Za-z]?[.)]?$`)
 	brItemParen   = regexp.MustCompile(`^[0-9]{1,3}\([A-Za-z]\)$`)
 	brItemMixed   = regexp.MustCompile(`^[0-9]{1,3}[A-Z][0-9]{1,2}$`)
-	brItemAlpha   = regexp.MustCompile(`^[A-Z](\.?[0-9]{1,2})?$`)
-	brItemRoman   = regexp.MustCompile(`^([IVX]{1,4}|[ivx]{1,4})$`)
+	// `S.1.1`, `S.5`: a special resolution of a Hong Kong meeting (Hartford
+	// Series Fund 2006, Air China; 719 rows with no issuer on r159).
+	brItemAlpha = regexp.MustCompile(`^[A-Z](\.?[0-9]{1,2})?(\.[0-9]{1,2}){0,2}$`)
+	brItemRoman = regexp.MustCompile(`^([IVX]{1,4}|[ivx]{1,4})$`)
 )
 
 // brMonths maps the month spellings of the family's date formats.
@@ -636,7 +638,9 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 	// It is called ONLY when a new label block opens or free-standing text ends
 	// the table -- never at a repeated column header or a page footer, which are
 	// interruptions inside one meeting rather than the end of it.
+	repeatHeader := false
 	boundary := func() {
+		repeatHeader = false
 		if !sawTable {
 			return
 		}
@@ -701,6 +705,12 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 
 		if brColumnHeader(line) {
 			flush()
+			// A column header repeated inside an open meeting is a page
+			// break; the text that follows it before any item is the tail of
+			// the row the page cut (Hartford Series Fund 2006, Air China:
+			// `preliminary prospectus, the prospectus,` opened no meeting of
+			// its own and closed Air China's).
+			repeatHeader = sawTable
 			headerText = strings.Join(append(spill, line), " ")
 			spill = nil
 			hasType, maxVote = brColumnShape(headerText)
@@ -838,7 +848,22 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 			}
 
 			// Free-standing text. It ends any open table and is the candidate
-			// issuer name for the block whose label lines follow it.
+			// issuer name for the block whose label lines follow it -- unless
+			// it is the tail of a row a page break cut, which names nothing.
+			if repeatHeader && !brIssuerHeading(lines, i) && !brNameOpensBlock(lines, i) {
+				continue
+			}
+			// An unnumbered row that carries its vote cells (`PLEASE NOTE
+			// THAT THIS IS A MIX MEETING.  Non-Voting  No vote`, the note
+			// that opens a Hartford Series Fund 2006 meeting) is a row of the
+			// open table, not the next meeting's name.
+			if inTable && cur == nil && !brNameOpensBlock(lines, i) {
+				if _, typ, vote, _ := brPeelColumns(line, hasType, maxVote); vote != "" || typ != "" {
+					cur = &brRowBuf{}
+					brAbsorb(cur, line, hasType, maxVote)
+					continue
+				}
+			}
 			flush()
 			boundary()
 			inTable = false
@@ -854,6 +879,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 
 		flush()
+		repeatHeader = false
 		cur = &brRowBuf{item: brNormalizeItem(item)}
 		brAbsorb(cur, rest, hasType, maxVote)
 	}
@@ -909,6 +935,33 @@ func brIssuerHeading(lines []string, i int) bool {
 		k++
 	}
 	return k < len(lines) && brDashRule(strings.TrimSpace(lines[k]))
+}
+
+// brNameOpensBlock reports whether the free text at lines[i] opens a meeting
+// block in either identity form: a dashed rule directly above it, or label
+// lines directly below it (`NEXTEL COMMUNICATIONS` / `Ticker Symbol: NXTL
+// CUSIP/Security ID: 65332V103`).
+func brNameOpensBlock(lines []string, i int) bool {
+	j := i - 1
+	for j >= 0 && strings.TrimSpace(lines[j]) == "" {
+		j--
+	}
+	if j >= 0 && brDashRule(strings.TrimSpace(lines[j])) {
+		// The rule under a column header underlines it; a rule under
+		// anything else closes the block above.
+		j2 := j - 1
+		for j2 >= 0 && strings.TrimSpace(lines[j2]) == "" {
+			j2--
+		}
+		if j2 < 0 || !brColumnHeader(strings.TrimSpace(lines[j2])) {
+			return true
+		}
+	}
+	k := i + 1
+	for k < len(lines) && strings.TrimSpace(lines[k]) == "" {
+		k++
+	}
+	return k < len(lines) && len(brFindLabels(strings.TrimSpace(lines[k]))) > 0
 }
 
 // brAbsorb folds one physical line into the open row: the proposal text is
