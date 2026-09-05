@@ -265,11 +265,16 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		if next, ok := htmlInCellStacked(cells); ok {
 			// Labels stacked INSIDE one cell, values inside the next (Clearwater
 			// Investment Trust 2011): each line of the label cell names the same
-			// line of the value cell.
+			// line of the value cell. The issuer printed on its own row above
+			// (Gabelli's ProxyEdge grid) is this row's issuer.
 			if ctxSealed {
 				ctx = htmlContext{}
 				ctxSealed = false
 			}
+			if next.Issuer == "" && ctxLead != "" {
+				next.Issuer = ctxLead
+			}
+			ctxLead, leadTicker = "", ""
 			ctx.merge(next)
 			continue
 		}
@@ -2243,13 +2248,54 @@ func htmlInCellStacked(cells []string) (ctx htmlContext, ok bool) {
 			return c, true
 		}
 		switch key {
-		case "ISIN":
+		case "ISIN", "ISN":
 			return "ISIN", true
 		case "AGENDA", "FUND NAME":
 			return "", true
 		}
 		return "", false
 	}
+	keyOf := func(v string) string { return strings.TrimSpace(strings.TrimSuffix(htmlUpperASCII(v), ":")) }
+	// A value must have its field's shape; a cell that is neither a label nor
+	// a shaped value leaves the row to the other readers.
+	take := func(c, v string) bool {
+		switch c {
+		case "CUSIP":
+			if f := strings.Fields(v); len(f) > 1 && htmlUpperASCII(f[0]) == "CUSIP" {
+				v = strings.Join(f[1:], " ")
+			}
+			if !pvTextCUSIP(v) {
+				return false
+			}
+			ctx.CUSIP = v
+		case "ISIN":
+			if !isinToken(v) {
+				return false
+			}
+			ctx.ISIN = v
+		case "TICKER":
+			if !htmlTickerShaped(v) {
+				return false
+			}
+			ctx.Ticker = v
+		case "MEETING DATE":
+			d := htmlDate(v)
+			if d == "" {
+				return false
+			}
+			ctx.MeetingDate = d
+		case "ISSUER":
+			if !htmlIsIssuerLine(v) {
+				return false
+			}
+			ctx.Issuer = v
+		default:
+			// a label this reader carries no field for (`Meeting Type`, `Agenda`):
+			// its value is accepted and dropped
+		}
+		return true
+	}
+	assigned := 0
 	for i := 0; i < len(cells); i++ {
 		labels := lines(cells[i])
 		if len(labels) == 0 {
@@ -2261,8 +2307,7 @@ func htmlInCellStacked(cells []string) (ctx htmlContext, ok bool) {
 		for a := 0; a < len(labels); {
 			took := 0
 			for b := len(labels); b > a; b-- {
-				key := strings.TrimSpace(strings.TrimSuffix(htmlUpperASCII(strings.Join(labels[a:b], " ")), ":"))
-				if c, known := labelOf(key); known {
+				if c, known := labelOf(keyOf(strings.Join(labels[a:b], " "))); known {
 					canon = append(canon, c)
 					took = b - a
 					break
@@ -2275,63 +2320,40 @@ func htmlInCellStacked(cells []string) (ctx htmlContext, ok bool) {
 			a += took
 		}
 		if len(canon) == 0 {
-			continue
+			// not a label cell: only a value that follows a label may sit here
+			return htmlContext{}, false
 		}
 		j := i + 1
 		for j < len(cells) && htmlFlat(cells[j]) == "" {
 			j++
 		}
 		if j >= len(cells) {
-			continue
+			break
 		}
 		values := lines(cells[j])
 		if len(canon) == 1 {
-			// one label beside one value: only as a two-cell row, so a bare
-			// label row (`Ticker | Security ID | ...`) stays the stacked grid's
-			if htmlFilledCells(cells) != 2 {
-				continue
-			}
 			values = []string{htmlFlat(cells[j])}
 		}
+		if _, nextIsLabel := labelOf(keyOf(htmlFlat(cells[j]))); nextIsLabel && len(canon) == 1 {
+			// a label with no value on this row (`Ticker Symbol | | | Meeting
+			// Date | 07-Jul-10`, Clearwater 2011): the next label follows
+			continue
+		}
 		if len(values) != len(canon) {
-			continue
-		}
-		labelShaped := false
-		for _, v := range values {
-			if _, known := labelOf(strings.TrimSpace(strings.TrimSuffix(htmlUpperASCII(v), ":"))); known {
-				labelShaped = true
-			}
-		}
-		if labelShaped {
-			continue
+			return htmlContext{}, false
 		}
 		for k, c := range canon {
-			v := values[k]
-			switch c {
-			case "CUSIP":
-				if f := strings.Fields(v); len(f) > 1 && htmlUpperASCII(f[0]) == "CUSIP" {
-					v = strings.Join(f[1:], " ")
-				}
-				ctx.CUSIP = htmlValueOrEmpty(v)
-			case "ISIN":
-				if isinToken(v) {
-					ctx.ISIN = v
-				}
-			case "TICKER":
-				ctx.Ticker = htmlValueOrEmpty(v)
-			case "MEETING DATE":
-				ctx.MeetingDate = htmlDate(v)
-			case "ISSUER":
-				ctx.Issuer = v
+			if !take(c, values[k]) {
+				return htmlContext{}, false
 			}
 		}
-		ok = true
+		assigned++
 		i = j
 	}
-	if ctx == (htmlContext{}) {
+	if assigned == 0 || ctx == (htmlContext{}) {
 		return htmlContext{}, false
 	}
-	return ctx, ok
+	return ctx, true
 }
 
 // htmlStackedLabels reports a row whose every non-empty cell is a bare context
