@@ -22,8 +22,11 @@ var vanguardDashRule = regexp.MustCompile(`^-{8,}$`)
 // the opening line of a proposal. The number is the item_seq.
 var vanguardProposalLine = regexp.MustCompile(`(?i)^PROPOSAL\s*#\s*([0-9A-Za-z][0-9A-Za-z.\-]*)\s*[:.]?\s*(.*)$`)
 
-// vanguardTickerLine captures the ticker and CUSIP that share one line.
-var vanguardTickerLine = regexp.MustCompile(`(?i)^TICKER:\s*(\S*)\s*(?:CUSIP:\s*(\S+))?\s*$`)
+// vanguardTickerLine captures the ticker and CUSIP that share one line. The
+// ticker runs to the CUSIP label: a Nordic share class puts a space in it
+// (`TICKER: MAERSK B  CUSIP: K0514G135`, Vanguard International Equity Index
+// Funds 2017, 1,779 rows with no security id).
+var vanguardTickerLine = regexp.MustCompile(`(?i)^TICKER:\s*(.*?)\s*(?:CUSIP:\s*(\S+))?\s*$`)
 
 // The trailing columns are read PRIMARILY from the column separator the filing
 // printed: collapseSpaces (html.go) now squeezes a horizontal run to two spaces
