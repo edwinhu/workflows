@@ -1,4 +1,4 @@
-# Management Guidance (`TR.Guidance*`) — and LSEG Guidance Reports (GR)
+# I/B/E/S Guidance (`TR.Guidance*`) — and the GR packaging of it
 
 The content set behind **guidance-reports.com** (LSEG "Guidance Reports", GR — Mayew, Pinto & Wu),
 reachable as datagrid fields on the ordinary platform session. No separate entitlement was needed on
@@ -17,9 +17,41 @@ That is a different artifact from the PDF report: you get the instance rows, not
 structure, its 181-item taxonomy, or its identifier link table. Reproducing GR exactly still means the
 PDFs. Use the fields when what you want is the guidance data itself.
 
-The distinction that motivates GR holds here — `Guidance Low/High Value` is populated on only **8.7%**
-of instances (AAPL+MSFT, 2015–2016). The other ~91% are qualitative, i.e. outside the 13 quantitative
-items I/B/E/S Guidance carries.
+`Guidance Low/High Value` is populated on only **8.7%** of instances (AAPL+MSFT, 2015–2016); the other
+~91% are qualitative text.
+
+## This is I/B/E/S Guidance. GR is a packaging of it, not a separate dataset
+
+One product, three renderings — do not describe them as three datasets:
+
+| Layer | What it is |
+|---|---|
+| **I/B/E/S Guidance** (`lseg.com/en/data-catalogue/company-data/ibes-estimates/guidance`) | the database. 9,500+ active companies, US **from 1994**, **20 comparable numeric measures + 110 as-reported measures**, quantitative *and* qualitative records, carries `GuidanceCollectedText` |
+| **"Detail Guidance Report" PDF** | a Workspace report rendering of that database, per firm-period |
+| **GR** (guidance-reports.com) | 23,738 of those PDFs — S&P 1500, FY2005–2021 — collected and parsed, plus a link table and a 181-item tabulation |
+| **`TR.Guidance*`** | the same database as datagrid fields (this file) |
+
+GR's contribution is the packaging: the parsed corpus, the identifier link table, the item taxonomy.
+It is not new data and not a different vendor.
+
+**Do not repeat the "I/B/E/S covers only 13 quantitative items" comparison.** It comes off the GR site
+and is measured against the narrow *academic guidance file*, not this product — which carries 110
+as-reported measures and qualitative records natively. Stating it unqualified misrepresents I/B/E/S.
+
+The two field families map onto the two halves of the product, and the WRDS column lists confirm it:
+
+- `TR.EstGuid{LowValue,HighValue,MeanAtDate,Date}` ↔ **comparable numeric** guidance — the same shape
+  as WRDS `det_guidance` (`measure, val_1, val_2, mean_at_date, prd_yr, prd_mon`), which has **no text
+  column at all**.
+- `TR.Guidance*` (this file) ↔ the **as-reported** layer: the text, the doc type, the qualitative
+  measures. WRDS's nearest equivalent is `det_guidance_ext` (`announce_type, announce_txt`).
+
+### On this account, the API is the ONLY guidance route
+
+**WRDS is not entitled to I/B/E/S Guidance here.** `tr_ibes_guidance.*` and the `ibes.det_guidance`
+views both return `ERROR: permission denied for schema tr_ibes_guidance`, while `ibes.det_epsus`
+answers normally (136,246 rows for 2016-01) — so this is a subscription gap, not a broken login. Do
+not plan a guidance pull around WRDS and discover this at query time; verified 2026-09-04.
 
 ## The ten fields that exist
 
@@ -94,8 +126,9 @@ df = df[df["Guidance Text"].notna()]        # MANDATORY — see padding, below
   `lseg.data` fact that guidance hits first because the payload carries full text.
 - One firm-year is thousands of instances (AAPL FY2005: 4,950 rows; MSFT 2015–2016: 22,647). Volume
   here is text, not securities — budget by firm-years, not by RIC count.
-- Coverage reaches back to **FY2005**, matching GR's window. Not verified past 2021, where GR stops but
-  the feed does not; AAPL returns FY2026 rows.
+- Coverage was **tested back to FY2005** (GR's window) and forward past it — AAPL returns FY2026 rows,
+  so the feed does not stop where GR does. The product claims US history **from 1994**; the 1994–2004
+  stretch is untested here, so do not promise it without a probe.
 - **The measure vocabulary is small at the top and long-tailed.** 25 distinct measures across two firms
   × two years: `Business Outlook` (2,906), `Revenue` (2,559), `Operating Expense` (2,037), `EBIT`
   (1,906), `Capital Plans` (1,591), `Capital Expenditures`, `Tax Rate`, `Gross Profit Margin`,
