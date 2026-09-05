@@ -2767,6 +2767,17 @@ func htmlDate(s string) string {
 			return d
 		}
 	}
+	// `ANNUAL: 07/01/2022`: the same, with a colon (Northern Lights Fund Trust
+	// III 2023; the agent's 107 filings held 42,450 undated rows on r132). The
+	// head must be one word of letters, so a time (`11:30`) never matches.
+	if i := strings.IndexByte(s, ':'); i > 0 {
+		head := strings.TrimSpace(s[:i])
+		if len(strings.Fields(head)) == 1 && strings.IndexFunc(head, func(r rune) bool { return !isASCIILetter(byte(r)) }) < 0 {
+			if d := brDate(strings.TrimSpace(s[i+1:])); d != "" {
+				return d
+			}
+		}
+	}
 	return ""
 }
 

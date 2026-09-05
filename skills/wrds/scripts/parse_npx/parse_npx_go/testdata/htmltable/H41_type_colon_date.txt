@@ -1,0 +1,941 @@
+<SEC-DOCUMENT>0001580642-23-004154.txt : 20230809
+<SEC-HEADER>0001580642-23-004154.hdr.sgml : 20230809
+<ACCEPTANCE-DATETIME>20230809164847
+ACCESSION NUMBER:		0001580642-23-004154
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20230630
+FILED AS OF DATE:		20230809
+DATE AS OF CHANGE:		20230809
+EFFECTIVENESS DATE:		20230809
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			NORTHERN LIGHTS FUND TRUST III
+		CENTRAL INDEX KEY:			0001537140
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22655
+		FILM NUMBER:		231155950
+
+	BUSINESS ADDRESS:	
+		STREET 1:		225 PICTORIA DRIVE
+		STREET 2:		SUITE 450
+		CITY:			CINCINNATI
+		STATE:			OH
+		ZIP:			45246
+		BUSINESS PHONE:		631-470-2621
+
+	MAIL ADDRESS:	
+		STREET 1:		17605 WRIGHT STREET
+		CITY:			OMAHA
+		STATE:			NE
+		ZIP:			68130
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001537140
+<SERIES-ID>S000045942
+<SERIES-NAME>HCM Tactical Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143207
+<CLASS-CONTRACT-NAME>HCM Tactical Growth Fund Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCMGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143208
+<CLASS-CONTRACT-NAME>HCM Tactical Growth Fund Investor Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCMDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143209
+<CLASS-CONTRACT-NAME>HCM Tactical Growth Fund Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCMIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143210
+<CLASS-CONTRACT-NAME>HCM Tactical Growth Fund Class R Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCMSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001537140
+<SERIES-ID>S000046898
+<SERIES-NAME>Counterpoint Tactical Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000146567
+<CLASS-CONTRACT-NAME>Counterpoint Tactical Income Fund Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CPATX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000146568
+<CLASS-CONTRACT-NAME>Counterpoint Tactical Income Fund Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CPCTX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000146569
+<CLASS-CONTRACT-NAME>Counterpoint Tactical Income Fund Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CPITX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001537140
+<SERIES-ID>S000048332
+<SERIES-NAME>HCM Dividend Sector Plus Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000152642
+<CLASS-CONTRACT-NAME>HCM Dividend Sector Plus Fund Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCMNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000152643
+<CLASS-CONTRACT-NAME>HCM Dividend Sector Plus Fund Class A1 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCMWX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000152644
+<CLASS-CONTRACT-NAME>HCM Dividend Sector Plus Fund Investor Class Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCMPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000152645
+<CLASS-CONTRACT-NAME>HCM Dividend Sector Plus Fund Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCMQX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000152646
+<CLASS-CONTRACT-NAME>HCM Dividend Sector Plus Fund Class R Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCMZX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001537140
+<SERIES-ID>S000051248
+<SERIES-NAME>Counterpoint Tactical Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161620
+<CLASS-CONTRACT-NAME>Counterpoint Tactical Equity Fund Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CPAEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161621
+<CLASS-CONTRACT-NAME>Counterpoint Tactical Equity Fund Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CPCEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161622
+<CLASS-CONTRACT-NAME>Counterpoint Tactical Equity Fund Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CPIEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001537140
+<SERIES-ID>S000055429
+<SERIES-NAME>HCM Income Plus Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000174412
+<CLASS-CONTRACT-NAME>HCM Income Plus Fund Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCMEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000174413
+<CLASS-CONTRACT-NAME>HCM Income Plus Fund Investor Class Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCMKX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000213465
+<CLASS-CONTRACT-NAME>HCM Income Plus Fund Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCMLX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001537140
+<SERIES-ID>S000061857
+<SERIES-NAME>Counterpoint Tactical Municipal Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000200261
+<CLASS-CONTRACT-NAME>Counterpoint Tactical Municipal Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>TMNAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000200262
+<CLASS-CONTRACT-NAME>Counterpoint Tactical Municipal Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>TMNCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000200263
+<CLASS-CONTRACT-NAME>Counterpoint Tactical Municipal Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>TMNIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001537140
+<SERIES-ID>S000066141
+<SERIES-NAME>HCM Defender 100 Index ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000213732
+<CLASS-CONTRACT-NAME>HCM Defender 100 Index ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>QQH
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001537140
+<SERIES-ID>S000066142
+<SERIES-NAME>HCM Defender 500 Index ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000213733
+<CLASS-CONTRACT-NAME>HCM Defender 500 Index ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>LGH
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001537140
+<SERIES-ID>S000067284
+<SERIES-NAME>CP High Yield Trend ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000216396
+<CLASS-CONTRACT-NAME>CP High Yield Trend ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>HYTR
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001537140
+<SERIES-ID>S000076537
+<SERIES-NAME>HCM Dynamic Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000236510
+<CLASS-CONTRACT-NAME>HCM Dynamic Income Fund Investor Class Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCMFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000236511
+<CLASS-CONTRACT-NAME>HCM Dynamic Income Fund Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCMBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000236512
+<CLASS-CONTRACT-NAME>HCM Dynamic Income Fund Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCMUX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>nlftiii_npx2.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: right; text-indent: 2.5in">-------------------------------</P>
+
+<P STYLE="text-align: right; font: 11pt Times New Roman, Times, Serif; margin: 0; text-indent: 2in">OMB APPROVAL</P>
+
+<P STYLE="text-align: right; font: 11pt Times New Roman, Times, Serif; margin: 0; text-indent: 2in">-------------------------------</P>
+
+<P STYLE="text-align: right; font: 11pt Times New Roman, Times, Serif; margin: 0; text-indent: 2in">OMB Number: 3235-0582</P>
+
+<P STYLE="text-align: right; font: 11pt Times New Roman, Times, Serif; margin: 0 0 0 3.5in; text-indent: 0.5in">Expires: July 31, 2024</P>
+
+<P STYLE="text-align: right; font: 11pt Times New Roman, Times, Serif; margin: 0 0 0 3.5in; text-indent: 0.5in">Estimated average burden</P>
+
+<P STYLE="text-align: right; font: 11pt Times New Roman, Times, Serif; margin: 0 0 0 4in">hours per response&#8230;4</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; text-align: right; margin: 0 0 0 4in">---------------------------</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">UNITED STATES</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">SECURITIES AND EXCHANGE COMMISSION</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">Washington, DC 20549</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">FORM N-PX</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED
+MANAGEMENT INVESTMENT COMPANY</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">Investment Company Act file number: 811-22655</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-indent: 1in">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">Northern Lights Fund Trust III</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center; border-bottom: Black 0.5pt solid">(Exact
+name of registrant as specified in charter)</P>
+
+<P STYLE="font: 10pt Garamond, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Garamond, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center; border-bottom: Black 0.5pt solid">225 Pictoria Drive,
+Suite 450 Cincinnati, OH 45246</P>
+
+<P STYLE="text-align: center; font: 12pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0">(Address of principal executive offices) (Zip code)</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">The Corporation Trust Company</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">1209 Orange Street</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center; border-bottom: Black 0.5pt solid">Wilmington,
+DE 19801</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">(Name and address of agent for service)</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">Registrant's telephone number, including area code: (631) 490-4300</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">Date of fiscal year end: June 30, September 30 &amp; December 31</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">Date of reporting period: July 1, 2022 - June 30, 2023</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-indent: 1in">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: justify; text-indent: 0.5in">Form N-PX is to be used by a registered
+management investment company, other than a small business investment company registered on Form N-5 (ss.ss. 239.24 and 274.5 of this
+chapter), to file reports with the Commission, not later than August 31 of each year, containing the registrant's proxy voting record
+for the most recent twelve-month period ended June 30, pursuant to section 30 of the Investment Company Act of 1940 and rule 30b1-4 thereunder
+(17 CFR 270.30b1-4). The Commission may use the</P>
+
+
+<!-- Field: Page; Sequence: 1 -->
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="5" STYLE="font-weight: bold">Registrant: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 700"><U>NORTHERN LIGHTS FUND TRUST III - HCM Tactical Growth Fund&nbsp;</U></FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">Item 1, Exhibit 9</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font-weight: bold">Investment Company Act file number: 811-22655</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font-weight: bold">Reporting Period: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 400">July 1, 2022 through June 30, 2023</FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 1%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 9%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 3%">&nbsp;</TD>
+    <TD STYLE="width: 16%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 17%">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="font-size: 14pt; font-weight: bold; text-decoration: underline; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: middle; border: Black 0.5pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(a) Issuer's Name</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(b) Exchange Ticker Symbol</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(c)&quot;CUSIP&quot; #</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(d) Shareholder Meeting Date</TD>
+    <TD COLSPAN="2" STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(e) Matter Identification</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(f) Proposal Type</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(g) Voted</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(h) Vote Cast</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(i) For/Against Management</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">There were no proxy votes to report during the Reporting Period.</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  </TABLE>
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="6" STYLE="font-weight: bold">Registrant: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 700"><U>NORTHERN LIGHTS FUND TRUST III - HCM Dividend Sector Plus Fund&nbsp;</U></FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">Item 1, Exhibit 10</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font-weight: bold">Investment Company Act file number: 811-22655</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font-weight: bold">Reporting Period: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 400">July 1, 2022 through June 30, 2023</FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 1%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 9%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 3%">&nbsp;</TD>
+    <TD STYLE="width: 16%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 17%">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="font-size: 14pt; font-weight: bold; text-decoration: underline; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: middle; border: Black 0.5pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(a) Issuer's Name</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(b) Exchange Ticker Symbol</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(c)&quot;CUSIP&quot; #</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(d) Shareholder Meeting Date</TD>
+    <TD COLSPAN="2" STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(e) Matter Identification</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(f) Proposal Type</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(g) Voted</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(h) Vote Cast</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(i) For/Against Management</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">There were no proxy votes to report during the Reporting Period.</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  </TABLE>
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="5" STYLE="font-weight: bold">Registrant: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 700"><U>NORTHERN LIGHTS FUND TRUST III - HCM Income Plus Fund</U></FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">Item 1, Exhibit 11</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font-weight: bold">Investment Company Act file number: 811-22655</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font-weight: bold">Reporting Period: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 400">July 1, 2022 through June 30, 2023</FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 1%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 9%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 3%">&nbsp;</TD>
+    <TD STYLE="width: 16%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 17%">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="font-size: 14pt; font-weight: bold; text-decoration: underline; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: middle; border: Black 0.5pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(a) Issuer's Name</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(b) Exchange Ticker Symbol</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(c)&quot;CUSIP&quot; #</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(d) Shareholder Meeting Date</TD>
+    <TD COLSPAN="2" STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(e) Matter Identification</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(f) Proposal Type</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(g) Voted</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(h) Vote Cast</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(i) For/Against Management</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">There were no proxy votes to report during the Reporting Period.</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  </TABLE>
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="5" STYLE="font-weight: bold">Registrant: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 700"><U>NORTHERN LIGHTS FUND TRUST III - HCM Defender 100 Index ETF</U></FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">Item 1, Exhibit 12</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font-weight: bold">Investment Company Act file number: 811-22655</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font-weight: bold">Reporting Period: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 400">July 1, 2022 through June 30, 2023</FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 1%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 9%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 3%">&nbsp;</TD>
+    <TD STYLE="width: 16%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 17%">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="font-size: 14pt; font-weight: bold; text-decoration: underline; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: middle; border: Black 0.5pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(a) Issuer's Name</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(b) Exchange Ticker Symbol</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(c)&quot;CUSIP&quot; #</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(d) Shareholder Meeting Date</TD>
+    <TD COLSPAN="2" STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(e) Matter Identification</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(f) Proposal Type</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(g) Voted</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(h) Vote Cast</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(i) For/Against Management</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">There were no proxy votes to report during the Reporting Period.</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  </TABLE>
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="5" STYLE="font-weight: bold">Registrant: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 700"><U>NORTHERN LIGHTS FUND TRUST III - HCM Defender 500 Index ETF</U></FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">Item 1, Exhibit 13</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font-weight: bold">Investment Company Act file number: 811-22655</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font-weight: bold">Reporting Period: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 400">July 1, 2022 through June 30, 2023</FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 1%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 9%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 3%">&nbsp;</TD>
+    <TD STYLE="width: 16%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 17%">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="font-size: 14pt; font-weight: bold; text-decoration: underline; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: middle; border: Black 0.5pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(a) Issuer's Name</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(b) Exchange Ticker Symbol</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(c)&quot;CUSIP&quot; #</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(d) Shareholder Meeting Date</TD>
+    <TD COLSPAN="2" STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(e) Matter Identification</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(f) Proposal Type</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(g) Voted</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(h) Vote Cast</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(i) For/Against Management</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">There were no proxy votes to report during the Reporting Period.</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  </TABLE>
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="5" STYLE="font-weight: bold">Registrant: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 700"><U>NORTHERN LIGHTS FUND TRUST III - HCM Dynamic Income Fund&nbsp;</U></FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">&nbsp;</TD>
+    <TD STYLE="text-align: right">Item 1, Exhibit 14</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font-weight: bold">Investment Company Act file number: 811-22655</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font-weight: bold">Reporting Period: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 400">July 1, 2022 through June 30, 2023</FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 1%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 9%">&nbsp;</TD>
+    <TD STYLE="width: 2%">&nbsp;</TD>
+    <TD STYLE="width: 14%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 9%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 18%">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="12" STYLE="font-size: 14pt; font-weight: bold; text-decoration: underline; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</TD></TR>
+  <TR STYLE="vertical-align: middle">
+    <TD STYLE="border: Black 0.5pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(a) Issuer's Name</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(b) Exchange Ticker Symbol</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(c)&quot;CUSIP&quot; #</TD>
+    <TD COLSPAN="2" STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(d) Shareholder Meeting Date</TD>
+    <TD COLSPAN="2" STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(e) Matter Identification</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(f) Proposal Type</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(g) Voted</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(h) Vote Cast</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(i) For/Against Management</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt">&nbsp;</TD>
+    <TD COLSPAN="11" STYLE="border-top: Black 0.5pt solid; border-right: black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">There were no proxy votes to report during the Reporting Period.</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  </TABLE>
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="5" STYLE="font-weight: bold">Registrant: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 700"><U>NORTHERN LIGHTS FUND TRUST III - Counterpoint Tactical Income Fund</U></FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">Item 1, Exhibit 15</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="3" STYLE="font-weight: bold">Investment Company Act file number: 811-22655</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="3" STYLE="font-weight: bold">Reporting Period: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 400">July 1, 2022 through June 30, 2023</FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 1%">&nbsp;</TD>
+    <TD STYLE="width: 25%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 9%">&nbsp;</TD>
+    <TD STYLE="width: 2%">&nbsp;</TD>
+    <TD STYLE="width: 14%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 5%">&nbsp;</TD>
+    <TD STYLE="width: 9%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="font-size: 14pt; font-weight: bold; text-decoration: underline; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: middle; border: Black 0.5pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(a) Issuer's Name</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(b) Exchange Ticker Symbol</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(c)&quot;CUSIP&quot; #</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(d) Shareholder Meeting Date</TD>
+    <TD COLSPAN="2" STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(e) Matter Identification</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(f) Proposal Type</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(g) Voted</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(h) Vote Cast*</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(i) For/Against Management*</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">There were no proxy votes to report during the Reporting Period.</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-left: Black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid">&nbsp;</TD></TR>
+  </TABLE>
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="5" STYLE="font-weight: bold">Registrant: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 700"><U>NORTHERN LIGHTS FUND TRUST III - Counterpoint Tactical Equity Fund</U></FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">Item 1, Exhibit 16</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font-weight: bold">Investment Company Act file number: 811-22655</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font-weight: bold">Reporting Period: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 400">July 1, 2022 through June 30, 2023</FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 3%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 9%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 3%">&nbsp;</TD>
+    <TD STYLE="width: 21%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="font-size: 14pt; font-weight: bold; text-decoration: underline; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: middle; border: Black 0.5pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(a) Issuer's Name</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(b) Exchange Ticker Symbol</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(c)&quot;CUSIP&quot; #</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(d) Shareholder Meeting Date</TD>
+    <TD COLSPAN="2" STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(e) Matter Identification</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(f) Proposal Type</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(g) Voted</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(h) Vote Cast</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(i) For/Against Management</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>PLAYAGS, INC.</TD>
+    <TD>AGS</TD>
+    <TD>72814N104</TD>
+    <TD>ANNUAL: 07/01/2022</TD>
+    <TD>1.1</TD>
+    <TD>Election of Director: Adam Chibib&nbsp;</TD>
+    <TD>MGMT</TD>
+    <TD>Y</TD>
+    <TD>WITHHOLD</TD>
+    <TD>AGAINST</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>PLAYAGS, INC.</TD>
+    <TD>AGS</TD>
+    <TD>72814N104</TD>
+    <TD>ANNUAL: 07/01/2022</TD>
+    <TD>2.</TD>
+    <TD>To conduct an advisory vote to approve the compensation of the Company's named executive officers.&nbsp;</TD>
+    <TD>MGMT</TD>
+    <TD>Y</TD>
+    <TD>AGAINST</TD>
+    <TD>AGAINST</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>PLAYAGS, INC.</TD>
+    <TD>AGS</TD>
+    <TD>72814N104</TD>
+    <TD>ANNUAL: 07/01/2022</TD>
+    <TD>3.</TD>
+    <TD>To approve an amendment to the Company's Omnibus Incentive Plan to increase the number of shares of common stock authorized for issuance thereunder.&nbsp;</TD>
+    <TD>MGMT</TD>
+    <TD>Y</TD>
+    <TD>AGAINST</TD>
+    <TD>AGAINST</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>PLAYAGS, INC.</TD>
+    <TD>AGS</TD>
+    <TD>72814N104</TD>
+    <TD>ANNUAL: 07/01/2022</TD>
+    <TD>4.</TD>
+    <TD>To ratify the appointment of PricewaterhouseCoopers LLP as the Company's independent registered public accounting firm for the fiscal year ending December 31, 2022.&nbsp;</TD>
+    <TD>MGMT</TD>
+    <TD>Y</TD>
+    <TD>FOR</TD>
+    <TD>FOR</TD></TR>
