@@ -754,6 +754,15 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		// 1,866 continuation lines begin with a label word -- the worst being a
 		// line that is exactly "MEETING DATE", the wrapped tail of "STOCKHOLDER
 		// PROPOSAL - ANNUAL MEETING DATE" -- so the label test must not see it.
+		// A wrapped row stays open until a line that cannot be its text: the
+		// dashed rule that closes a block, or a label line. Without this the
+		// rule, the next issuer's name and its `Security 968223206` line were
+		// all absorbed into item 03's text, and the meeting that followed had
+		// no id or issuer of its own (Clearwater Investment Trust 2007: 693 of
+		// 722 meetings, their rows carrying the previous meeting's CUSIP).
+		if inTable && cur != nil && item == "" && (brValuedLabelLine(line) || brIssuerHeading(lines, i)) {
+			flush()
+		}
 		if inTable && cur != nil && item == "" {
 			// A DIRECTOR SLATE'S NOMINEES CARRY THEIR OWN VOTES AND ARE NOT
 			// CONTINUATIONS. One proposal number covers the whole slate and each
@@ -854,6 +863,52 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		return nil, fmt.Errorf("broadridge: column header matched but no proposal rows parsed")
 	}
 	return rows, nil
+}
+
+// brValuedLabelLine reports whether a line is an identity label WITH its value
+// (`Security 968223206 Meeting Type Annual`, `Ticker Symbol JWA Meeting Date
+// 21-Sep-2006`). A bare `MEETING DATE` is wrapped proposal text (E1:
+// `STOCKHOLDER PROPOSAL - ANNUAL` / `MEETING DATE`), not a label line.
+func brValuedLabelLine(line string) bool {
+	for label, v := range brFindLabels(line) {
+		switch label {
+		case "CUSIP", "SECURITY ID", "SECURITY":
+			if brLooksLikeSecurityID(brFirstField(v)) {
+				return true
+			}
+		case "MEETING DATE", "RECORD DATE":
+			if brDate(v) != "" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// brIssuerHeading reports whether lines[i] is an issuer's name printed between
+// two dashed rules (`- ----`, `JOHN WILEY & SONS, INC.`, `- ----`), the report's
+// heading of a new meeting block. A rule at a page break (E1: a slate continues
+// across it) frames no name and opens nothing.
+func brIssuerHeading(lines []string, i int) bool {
+	name := strings.TrimSpace(lines[i])
+	if brDashRule(name) || brPageFurniture(name) || brColumnHeader(name) || len(brFindLabels(name)) > 0 {
+		return false
+	}
+	if item, _ := brSplitItem(name); item != "" {
+		return false
+	}
+	j := i - 1
+	for j >= 0 && strings.TrimSpace(lines[j]) == "" {
+		j--
+	}
+	if j < 0 || !brDashRule(strings.TrimSpace(lines[j])) {
+		return false
+	}
+	k := i + 1
+	for k < len(lines) && strings.TrimSpace(lines[k]) == "" {
+		k++
+	}
+	return k < len(lines) && brDashRule(strings.TrimSpace(lines[k]))
 }
 
 // brAbsorb folds one physical line into the open row: the proposal text is
