@@ -1944,10 +1944,24 @@ func issTickerLine(line string) (ticker, id string, ok bool) {
 func issMeetingLine(line string) (date, typ string, ok bool) {
 	up := strings.ToUpper(line)
 	di := strings.Index(up, "MEETING DATE:")
-	if di < 0 {
-		return "", "", false
+	var rest string
+	if di >= 0 {
+		rest = line[di+len("MEETING DATE:"):]
+	} else {
+		// `Meeting           12/08/2004         Meeting Type:    Annual`: the
+		// word Date dropped (Safeco Common Stock Trust 2005, 759 undated
+		// rows on r156). The line must open with Meeting, run straight into
+		// a date, and still carry the meeting type.
+		t := strings.TrimSpace(up)
+		if !strings.HasPrefix(t, "MEETING ") || !strings.Contains(t, "MEETING TYPE:") {
+			return "", "", false
+		}
+		after := strings.TrimSpace(strings.TrimSpace(line)[len("MEETING"):])
+		if !issStartsWithMonthOrDigit(after) {
+			return "", "", false
+		}
+		rest = after
 	}
-	rest := line[di+len("MEETING DATE:"):]
 	if ti := strings.Index(strings.ToUpper(rest), "MEETING TYPE:"); ti >= 0 {
 		typ = strings.TrimSpace(rest[ti+len("MEETING TYPE:"):])
 		rest = rest[:ti]
