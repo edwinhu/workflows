@@ -1721,6 +1721,10 @@ var htmlSynonyms = map[string][]string{
 	htmlFieldFund: {"FUND NAME", "INSTITUTIONAL ACCOUNT NAME", "ACCOUNT NAME"},
 	htmlFieldMtgDate: {
 		"MEETING DATE", "MTG DATE", "DATE OF MEETING", "MTG DATE/TYPE", "SHAREHOLDER MEETING DATE",
+		// `(d) Shareholder Meeting Type & Date` with the date alone beneath
+		// (Mutual Fund Series Trust 2018 and the agent's siblings).
+		// (the canonical label drops the ampersand).
+		"SHAREHOLDER MEETING TYPE DATE", "MEETING TYPE DATE", "MEETING TYPE AND DATE",
 		// `Meeting Data`, the filer's spelling (PFM Multi-Manager Series Trust
 		// 2023, 13,154 rows with no date on run71).
 		"MEETING DATA",
