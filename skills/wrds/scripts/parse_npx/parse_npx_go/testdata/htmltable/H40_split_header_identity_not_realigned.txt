@@ -1,0 +1,310 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ IQvOPYryHTHCGX/uIovL2yVQ5L2I0+auMRGFxjymJ4WHxdpA6F0cmNQCouMcNAqI
+ gXjMBAR2qCV/A7Zc9WHutg==
+
+<SEC-DOCUMENT>0000894189-04-001534.txt : 20040824
+<SEC-HEADER>0000894189-04-001534.hdr.sgml : 20040824
+<ACCEPTANCE-DATETIME>20040824171213
+ACCESSION NUMBER:		0000894189-04-001534
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040824
+DATE AS OF CHANGE:		20040824
+EFFECTIVENESS DATE:		20040824
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ALLIED ASSET ADVISORS FUNDS
+		CENTRAL INDEX KEY:			0001105877
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-09821
+		FILM NUMBER:		04994740
+
+	BUSINESS ADDRESS:	
+		STREET 1:		U.S. BANCORP FUND SERVICES, LLC
+		STREET 2:		615 E. MICHIGAN AVE, MK-WI-LC2
+		CITY:			MILWAUKEE
+		STATE:			WI
+		ZIP:			53202
+		BUSINESS PHONE:		4147655067
+
+	MAIL ADDRESS:	
+		STREET 1:		U.S. BANCORP FUND SERVICES, LLC
+		STREET 2:		615 E. MICHIGAN AVE, MK-WI-LC2
+		CITY:			MILWAUKEE
+		STATE:			WI
+		ZIP:			53202
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	AAA FUNDS
+		DATE OF NAME CHANGE:	20000209
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>alliedasset.htm
+<DESCRIPTION>ALLIED ASSET ADVISORS FUNDS
+<TEXT>
+<HTML><HEAD><TITLE>Allied Asset Advisors Funds</TITLE><!-- Licensed to: US Bancorp Fund Services--><!-- Document Created using EDGARIZER HTML --><!-- Copyright 2004 EDGARfilings, Ltd., an IEC company.--><!-- All rights reserved EDGARfilings.com -->
+<META content="MSHTML 6.00.2800.1458" name=GENERATOR></HEAD>
+<BODY id=38>
+<DIV>
+<DIV><BR>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif">UNITED STATES</FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif">SECURITIES AND EXCHANGE COMMISSION</FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif">Washington, DC 20549</FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=justify>&nbsp;</DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=justify>&nbsp;</DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=justify>&nbsp;</DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 14pt; FONT-FAMILY: Times New Roman, serif"><STRONG>FORM N-PX</STRONG></FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=justify>&nbsp;</DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=justify>&nbsp;</DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 14pt; FONT-FAMILY: Times New Roman, serif"><STRONG>ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT COMPANY</STRONG></FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=justify>&nbsp;</DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif">Investment Company Act file number </FONT><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif"><STRONG><U>811-9821 </U></STRONG></FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 14pt; FONT-FAMILY: Times New Roman, serif"><STRONG><U>Allied Asset Advisors Funds </U></STRONG></FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif">(Exact name of registrant as specified in charter) </FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif"><STRONG><U>745 McClintock Drive, Suite 114 </U></STRONG></FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif"><STRONG><U>Burr Ridge, IL 60527 </U></STRONG></FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif">(Address of principal executive offices) (Zip code) </FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif"><STRONG><U>Bassam Osman </U></STRONG></FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif"><STRONG><U>Allied Asset Advisors Funds </U></STRONG></FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif"><STRONG><U>745 McClintock Drive, Suite 114 </U></STRONG></FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif"><STRONG><U>Burr Ridge, IL 60527 </U></STRONG></FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif">(Name and address of agent for service) </FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif"><STRONG><U>(877) 417-6161 </U></STRONG></FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif">Registrant's telephone number, including area code </FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif">Date of fiscal year end: </FONT><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif"><U>May 31</U></FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif">Date of reporting period: </FONT><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman, serif"><U>June 30, 2004</U></FONT></DIV><BR>
+<TABLE id=PGBRK cellSpacing=0 cellPadding=0 width="100%" align=center border=0>
+<TR vAlign=top>
+<TD width="100%" colSpan=3>&nbsp; </TD></TR>
+<TR>
+<TD align=left width="33%"><FONT size=1>&nbsp;</FONT></TD>
+<TD align=middle width="34%"><FONT size=1>&nbsp;</FONT></TD>
+<TD align=right width="33%"><FONT size=1>&nbsp;</FONT></TD></TR>
+<TR vAlign=top>
+<TD style="PAGE-BREAK-AFTER: always" width="100%" colSpan=3><FONT size=1>
+<HR noShade SIZE=2>
+</FONT></TD></TR></TABLE>
+<TABLE id=HDR cellSpacing=0 cellPadding=0 width="100%" align=center border=0>
+<TR>
+<TD vAlign=bottom width="100%">&nbsp;</TD></TR></TABLE><BR>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><BR></DIV>
+<DIV></DIV></DIV>
+<DIV>
+<HR align=center width="100%" noShade SIZE=5>
+</DIV></DIV>
+<P><BR>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+<TR>
+<TD style="BORDER-BOTTOM: black thin solid" vAlign=top align=left width="3%">&nbsp;</TD>
+<TD style="BORDER-BOTTOM: black thin solid" vAlign=top align=left width="10%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">Company Name</FONT></DIV></TD>
+<TD style="BORDER-BOTTOM: black thin solid" vAlign=top align=left width="6%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">Meeting Date</FONT></DIV></TD>
+<TD style="BORDER-BOTTOM: black thin solid" vAlign=top align=left width="13%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">Shares Voted</FONT></DIV></TD>
+<TD style="BORDER-BOTTOM: black thin solid" vAlign=top align=left width="4%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">CUSIP(2)</FONT></DIV></TD>
+<TD style="BORDER-BOTTOM: black thin solid" vAlign=top align=left width="13%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">Ticker (2)</FONT></DIV></TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">5</FONT></DIV></TD>
+<TD vAlign=top align=left width="10%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">AMERICAN POWER CONVERSION CORPORATION </FONT></DIV></TD>
+<TD vAlign=top align=left width="6%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">06/10/2004 </FONT></DIV></TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD>
+<TD vAlign=top align=left width="4%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">029066- 107 </FONT></DIV></TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">&nbsp;</TD>
+<TD vAlign=top align=left width="6%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">Vote </FONT><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">(3)</FONT></DIV></TD>
+<TD vAlign=top align=left width="6%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">MRV </FONT><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">(4)</FONT></DIV></TD>
+<TD vAlign=top align=left width="13%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">Proposal </FONT><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">(5)</FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">Proposed by Issuer or Security Holder </FONT><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">(6)</FONT></DIV></TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">&nbsp;</TD>
+<TD vAlign=top align=left width="6%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">01.</FONT><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman"> DIRECTOR</FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">Issuer</FONT></DIV></TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">&nbsp;</TD>
+<TD vAlign=top align=left width="6%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="6%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="13%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">RODGER B. DOWDELL, JR.</FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="6%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="13%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">EMANUEL E. LANDSMAN</FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="6%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="13%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">NEIL E. RASMUSSEN</FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="6%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="13%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">ERVIN F. LYON</FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="6%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="13%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">JAMES D. GERSON</FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="6%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="13%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">JOHN G. KASSAKIAN</FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="6%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="13%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">JOHN F. KEANE, SR.</FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="6%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="13%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">ELLEN B. RICHSTONE</FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">&nbsp;</TD>
+<TD vAlign=top align=left width="6%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="6%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="13%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">02 . </FONT><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">TO FIX THE NUMBER OF DIRECTORS AT EIGHT.</FONT><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman"> </FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">&nbsp;</TD>
+<TD vAlign=top align=left width="6%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="6%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="13%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">03 . </FONT><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; COLOR: #000000; FONT-FAMILY: Times New Roman">TO APPROVE THE COMPANY'S 2004 LONG-TERM INCENTIVE PLAN. </FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="3%">&nbsp;</TD>
+<TD vAlign=top align=left width="10%">&nbsp;</TD>
+<TD vAlign=top align=left width="6%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="13%">&nbsp;</TD></TR>

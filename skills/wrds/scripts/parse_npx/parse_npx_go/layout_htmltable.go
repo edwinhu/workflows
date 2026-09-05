@@ -2235,6 +2235,25 @@ var htmlStackedLabelSet = map[string]string{
 	"MEETING TYPE": "MEETING TYPE", "MTG TYPE": "MEETING TYPE", "MEETING STATUS": "MEETING STATUS",
 	"COUNTRY OF TRADE": "COUNTRY", "COUNTRY": "COUNTRY", "ISSUER": "ISSUER", "ISSUER NAME": "ISSUER",
 	"COMPANY NAME": "ISSUER", "COMPANY": "ISSUER", "SECURITY": "CUSIP",
+	// Labels of an identity header that carry no identity: the meeting's
+	// running number and its share count (`NUMBER | Company Name | Meeting
+	// Date | Shares Voted | CUSIP (2) | Ticker (2)`, Allied Asset Advisors
+	// 2004: 1,077 rows whose hyphenated CUSIPs the shape reader refused, so
+	// each meeting inherited the identity of the last one read by shape).
+	"NUMBER": "NUMBER", "SHARES VOTED": "SHARES",
+}
+
+// htmlStackedLabelKey is the label-set key of a stacked label cell: upper
+// ASCII, no trailing colon, and no trailing footnote marker (`CUSIP (2)`,
+// `Ticker (2)`, `CUSIP(2)`).
+func htmlStackedLabelKey(flat string) string {
+	key := strings.TrimSpace(strings.TrimSuffix(htmlUpperASCII(flat), ":"))
+	if strings.HasSuffix(key, ")") {
+		if i := strings.LastIndex(key, "("); i > 0 && htmlIsNumeric(key[i+1:len(key)-1]) {
+			key = strings.TrimSpace(key[:i])
+		}
+	}
+	return key
 }
 
 // htmlInCellStacked reads a row whose label cell stacks several bare labels on
@@ -2389,8 +2408,7 @@ func htmlStackedLabelsWithIssuer(cells []string) (map[int]string, string, bool) 
 		if flat == "" {
 			continue
 		}
-		key := strings.TrimSpace(strings.TrimSuffix(htmlUpperASCII(flat), ":"))
-		canon, ok := htmlStackedLabelSet[key]
+		canon, ok := htmlStackedLabelSet[htmlStackedLabelKey(flat)]
 		if !ok {
 			if first && !htmlIsHeaderWord(flat) && len(strings.Fields(flat)) <= 8 {
 				issuer = flat
@@ -2820,9 +2838,16 @@ func htmlHasWrappedLabelCell(cells []string) bool {
 // when the row and the header are the same width with the same number of filled
 // cells, every value the row holds under a header blank is matched by a header
 // label the row leaves blank, and the header's blanks are unmapped columns;
-// any other shape is returned untouched.
+// any other shape is returned untouched. A row that already reads as a
+// meeting's identity by shape (one date, one CUSIP, one issuer name, no vote)
+// is never a shifted vote row: under a split header the identity row and the
+// vote header leave the same cells blank (Allied Asset Advisors 2004), and
+// shifting it emitted the issuer name as the vote.
 func htmlRealignBySpacers(cells, header []string, mapping map[string]int) []string {
 	if len(header) == 0 || len(cells) != len(header) {
+		return cells
+	}
+	if _, identity := htmlShapeIdentityRow(cells); identity {
 		return cells
 	}
 	mapped := map[int]bool{}
