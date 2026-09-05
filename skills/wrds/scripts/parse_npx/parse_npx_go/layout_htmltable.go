@@ -1786,6 +1786,9 @@ var htmlSynonyms = map[string][]string{
 	htmlFieldFund: {"FUND NAME", "INSTITUTIONAL ACCOUNT NAME", "ACCOUNT NAME"},
 	htmlFieldMtgDate: {
 		"MEETING DATE", "MTG DATE", "DATE OF MEETING", "MTG DATE/TYPE", "SHAREHOLDER MEETING DATE",
+		// `(d) Shareholder Meeting Date/Type` over `05/11/2023 - Annual`
+		// (Advisors Preferred Trust 2023).
+		"MEETING DATE/TYPE", "SHAREHOLDER MEETING DATE/TYPE",
 		// `(d) Shareholder Meeting Type & Date` with the date alone beneath
 		// (Mutual Fund Series Trust 2018 and the agent's siblings).
 		// (the canonical label drops the ampersand).
@@ -2151,6 +2154,25 @@ var htmlContextCutLabels = []string{"MEETING TYPE:", "MTG TYPE:"}
 // and DBX ETF trusts, 58k rows with no issuer, id or date on 2026-09-02).
 var htmlBareValued = map[string]string{
 	"PRIMARY CUSIP ": "CUSIP:", "PRIMARY ISIN ": "ISIN:", "CUSIP ": "CUSIP:", "ISIN ": "ISIN:",
+	// `Meeting Date/Type 05/06/08 AGM | Security H01301102 | Shares Voted
+	// 74,800` (Principal Variable Contracts Funds 2008, 431 of 513 rows with
+	// no date on r155). `Security` is read only before an id-shaped value,
+	// because it also opens an issuer's name (Security Capital Corp).
+	"MEETING DATE/TYPE ": "MEETING DATE:", "SECURITY ": "SECURITY ID:",
+}
+
+// htmlBareValuedOK reports whether a bare label printed with its value may be
+// read: an id label needs an id-shaped value.
+func htmlBareValuedOK(prefix, rest string) bool {
+	if prefix != "SECURITY " {
+		return true
+	}
+	f := strings.Fields(rest)
+	if len(f) != 1 {
+		return false
+	}
+	id := htmlPadCUSIP(f[0])
+	return pvTextCUSIP(id) || isinToken(id)
 }
 
 // htmlBareLabels are the labels the ProxyEdge grammar prints WITHOUT a colon,
@@ -2219,7 +2241,7 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 			up := htmlUpperASCII(flat)
 			valued := false
 			for prefix, label := range htmlBareValued {
-				if strings.HasPrefix(up, prefix) {
+				if strings.HasPrefix(up, prefix) && htmlBareValuedOK(prefix, flat[len(prefix):]) {
 					items = append(items, label+" "+strings.TrimSpace(flat[len(prefix):]))
 					cellOf = append(cellOf, ci)
 					valued = true
@@ -2935,11 +2957,12 @@ func htmlDate(s string) string {
 		}
 	}
 	// `05/24/06 - A`: the meeting type after a dash (the SSgA vote summary
-	// grid, Kiewit Investment Fund 2006). Only a one- to three-letter tail is
-	// cut, and the head must still parse on its own.
+	// grid, Kiewit Investment Fund 2006), or spelt out, `05/11/2023 - Annual`
+	// (Advisors Preferred Trust 2023, 450 undated rows on r155). Only a tail
+	// of letters and spaces is cut, and the head must still parse on its own.
 	if i := strings.Index(s, " - "); i > 0 {
 		tail := strings.TrimSpace(s[i+3:])
-		if n := len(tail); n >= 1 && n <= 3 && strings.IndexFunc(tail, func(r rune) bool { return !isASCIILetter(byte(r)) }) < 0 {
+		if n := len(tail); n >= 1 && n <= 24 && strings.IndexFunc(tail, func(r rune) bool { return r != ' ' && !isASCIILetter(byte(r)) }) < 0 {
 			if d := brDate(strings.TrimSpace(s[:i])); d != "" {
 				return d
 			}
