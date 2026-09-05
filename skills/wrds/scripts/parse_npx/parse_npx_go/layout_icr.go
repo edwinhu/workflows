@@ -369,6 +369,11 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		// row of the section so an unattributed section is still visible as
 		// unmatched rather than unnamed.
 		curFund string
+		// fundFromBanner records that the carried fund came from a '=====' banner
+		// rule, the one grammar in which a bare rule is a section end. Under the
+		// labelled grammar a bare rule is the divider between issuer blocks
+		// (Royce Fund 2011) and must not clear the fund.
+		fundFromBanner bool
 		// prevText is the previous non-blank line, for the vintage that names
 		// the fund on the line above its Investment Company Report line.
 		prevText string
@@ -405,6 +410,7 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		if name, ok := icrFundName(line); ok {
 			curFund = name
 			curSeries = icrResolveFundShared(seriesIx, name)
+			fundFromBanner = false
 		} else if icrUnderscoreRule(line) && lineAbove != "" && icrResolveFundShared(seriesIx, lineAbove) != "" {
 			// Another vintage names the fund on the bare line ABOVE a rule of
 			// underscores (T. Rowe Price Index Trust, 2026-09-02). The rule is
@@ -425,10 +431,13 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 			// by one registrant in this grammar too (the College Retirement
 			// Equities Fund, 6.2M rows with no fund name read, 2026-09-02). A
 			// structural marker, resolved like the labelled line; a bare rule
-			// with no name clears the carried fund.
-			curFund, curSeries = name, ""
+			// with no name clears a fund a banner set, and is only the divider
+			// between issuer blocks under a `Fund Name :` label.
 			if name != "" {
-				curSeries = icrResolveFundShared(seriesIx, name)
+				curFund, curSeries = name, icrResolveFundShared(seriesIx, name)
+				fundFromBanner = true
+			} else if fundFromBanner {
+				curFund, curSeries = "", ""
 			}
 			continue
 		}
