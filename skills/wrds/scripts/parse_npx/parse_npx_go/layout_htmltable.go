@@ -2267,7 +2267,7 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 			if ctx.Ticker == "" {
 				ctx.Ticker = strings.TrimSpace(lead)
 			}
-		} else if htmlIsIssuerLine(lead) {
+		} else if htmlIsIssuerLine(lead) && !htmlIsBareLabel(lead) {
 			ctx.Issuer = htmlFlat(lead)
 		}
 	}
@@ -2289,6 +2289,13 @@ var htmlStackedLabelSet = map[string]string{
 	// 2004: 1,077 rows whose hyphenated CUSIPs the shape reader refused, so
 	// each meeting inherited the identity of the last one read by shape).
 	"NUMBER": "NUMBER", "SHARES VOTED": "SHARES",
+	// The account grid MET Investors Series Trust 2010 prints above each
+	// meeting: the location and account labels carry no identity, the two
+	// security-id labels carry the CUSIP.
+	"LOCATION ID": "LOCATION", "LOCATION NAME": "LOCATION",
+	"INSTITUTIONAL ACCOUNT NAME": "ACCOUNT", "INSTITUTIONAL ACCOUNT NUMBER": "ACCOUNT",
+	"CUSTODIAN": "ACCOUNT", "CUSTODIAN ACCOUNT NUMBER": "ACCOUNT",
+	"PRIMARY SECURITY ID": "CUSIP", "SECURITY ID ON BALLOT": "CUSIP",
 }
 
 // htmlStackedLabelKey is the label-set key of a stacked label cell: upper
@@ -2527,6 +2534,12 @@ func htmlStackedValues(cells []string, labels map[int]string) (ctx htmlContext) 
 				}
 			}
 		}
+		// A label is never a value: a second label row under the first
+		// (MET Investors 2010) read `Country` as the issuer and `Security ID
+		// on Ballot` as the CUSIP of 3,328 rows.
+		if _, isLabel := htmlStackedLabelSet[htmlStackedLabelKey(v)]; isLabel || htmlIsHeaderWord(v) {
+			continue
+		}
 		switch label {
 		case "CUSIP":
 			// `CUSIP 746763168`: the value carries its own label word.
@@ -2603,6 +2616,14 @@ func htmlFilledCells(cells []string) int {
 
 // htmlContextLead retains a one-value issuer row only as a candidate. It becomes
 // context only when the following row supplies an explicit context label.
+// htmlIsBareLabel reports a cell that is one of the block-row labels on its
+// own (`Country`, `Meeting Date`): furniture that names a column, never a value
+// and never the issuer (MET Investors 2010 led a label row with `Country`).
+func htmlIsBareLabel(s string) bool {
+	_, isLabel := htmlStackedLabelSet[htmlStackedLabelKey(htmlFlat(s))]
+	return isLabel || htmlIsHeaderWord(s)
+}
+
 func htmlContextLead(cells []string) (string, bool) {
 	lead := ""
 	for _, cell := range cells {
@@ -2624,6 +2645,9 @@ func htmlContextLead(cells []string) (string, bool) {
 	if htmlDate(lead) != "" {
 		// A date on its own row is a value (the one under a `Meeting Date`
 		// label row), never the issuer of the block.
+		return "", false
+	}
+	if htmlIsBareLabel(lead) {
 		return "", false
 	}
 	return lead, htmlIsIssuerLine(lead)
