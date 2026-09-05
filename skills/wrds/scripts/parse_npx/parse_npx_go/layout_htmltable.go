@@ -1318,13 +1318,19 @@ const htmlItemMaxLen = 8
 // from what the main pass accepts.
 func htmlHeaderShape(cells []string) (map[string]int, string, bool) {
 	labels := 0
-	for _, c := range cells {
+	for i, c := range cells {
 		flat := htmlFlat(c)
 		if flat == "" {
 			continue
 		}
 		if htmlIsNumeric(flat) {
-			// A bare number in a header row is a value, not a label.
+			// A bare number in a header row is a value, not a label -- except
+			// a row number in the FIRST cell of a numbered grid (`1 | Company
+			// Name | Ticker | CUSIP | Meeting Date | ...`, Mutual Fund Series
+			// Trust 2012), which the rows beneath continue as 2, 3, 4.
+			if i == 0 && htmlFilledCells(cells) >= 5 {
+				continue
+			}
 			return nil, "", false
 		}
 		valueText, maxLen := flat, htmlLabelMaxLen
@@ -2695,6 +2701,27 @@ func htmlFilledCells(cells []string) int {
 
 // htmlContextLead retains a one-value issuer row only as a candidate. It becomes
 // context only when the following row supplies an explicit context label.
+// htmlIsMeetingTypePhrase reports a cell that names a meeting's type in words
+// (`Annual Meeting`, `Special Meeting of Shareholders`, `Annual General
+// Meeting`): every word is type vocabulary and one of them is a type.
+func htmlIsMeetingTypePhrase(s string) bool {
+	words := strings.Fields(strings.Trim(htmlUpperASCII(htmlFlat(s)), ".,"))
+	if len(words) < 2 {
+		return false
+	}
+	typed := false
+	for _, w := range words {
+		switch w {
+		case "ANNUAL", "SPECIAL", "EXTRAORDINARY", "AGM", "EGM", "COURT", "CONTESTED":
+			typed = true
+		case "MEETING", "GENERAL", "OF", "SHAREHOLDERS", "STOCKHOLDERS", "SHAREOWNERS", "PROXY", "CONTEST", "WRITTEN", "CONSENT", "SOLICITATION":
+		default:
+			return false
+		}
+	}
+	return typed
+}
+
 // htmlIsBareLabel reports a cell that is one of the block-row labels on its
 // own (`Country`, `Meeting Date`): furniture that names a column, never a value
 // and never the issuer (MET Investors 2010 led a label row with `Country`).
@@ -2976,8 +3003,16 @@ func htmlShapeIdentityRow(cells []string) (ctx htmlContext, ok bool) {
 			continue
 		}
 		// `AGM` and `Vote For All Proposals` beside the name (Nomura Partners
-		// 2010): the meeting type and a voting instruction are not names.
-		if pvTextMeetingType(v) || strings.HasPrefix(htmlUpperASCII(v), "VOTE ") {
+		// 2010), `Annual Meeting` (Mutual Fund Series Trust 2012): the meeting
+		// type and a voting instruction are not names.
+		if pvTextMeetingType(v) || htmlIsMeetingTypePhrase(v) || strings.HasPrefix(htmlUpperASCII(v), "VOTE ") {
+			continue
+		}
+		// `RDS.B` beside the name: a ticker-shaped cell is the ticker.
+		if htmlTickerShaped(v) {
+			if ctx.Ticker == "" {
+				ctx.Ticker = v
+			}
 			continue
 		}
 		if htmlIsIssuerLine(v) {

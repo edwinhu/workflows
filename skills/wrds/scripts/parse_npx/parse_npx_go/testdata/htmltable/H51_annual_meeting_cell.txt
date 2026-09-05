@@ -1,0 +1,971 @@
+<SEC-DOCUMENT>0000910472-12-002680.txt : 20120910
+<SEC-HEADER>0000910472-12-002680.hdr.sgml : 20120910
+<ACCEPTANCE-DATETIME>20120907180746
+ACCESSION NUMBER:		0000910472-12-002680
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20120630
+FILED AS OF DATE:		20120910
+DATE AS OF CHANGE:		20120907
+EFFECTIVENESS DATE:		20120910
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			MUTUAL FUND SERIES TRUST
+		CENTRAL INDEX KEY:			0001355064
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			OH
+		FISCAL YEAR END:			0630
+
+	FILING VALUES:
+		FORM TYPE:		N-PX/A
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-21872
+		FILM NUMBER:		121081215
+
+	BUSINESS ADDRESS:	
+		STREET 1:		C/O GEMINI FUND SERVICES LLC
+		STREET 2:		4020 SOUTH 147TH STREET  STE 2
+		CITY:			OMAHA
+		STATE:			NE
+		ZIP:			68137
+		BUSINESS PHONE:		631 549 1859
+
+	MAIL ADDRESS:	
+		STREET 1:		C/O GEMINI FUND SERVICES LLC
+		STREET 2:		4020 SOUTH 147TH STREET  STE 2
+		CITY:			OMAHA
+		STATE:			NE
+		ZIP:			68137
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	CATALYST FUNDS
+		DATE OF NAME CHANGE:	20060303
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000012457
+<SERIES-NAME>Catalyst Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033860
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>CTVAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033861
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>CTVCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000075434
+<CLASS-CONTRACT-NAME>Class I
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000018977
+<SERIES-NAME>Listed Private Equity Plus Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000052539
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000052540
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000019089
+<SERIES-NAME>AmericaFirst Quantitative Strategies Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000052786
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000052787
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000022377
+<SERIES-NAME>Catalyst/SMH High Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064375
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064376
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000022378
+<SERIES-NAME>Catalyst/SMH Total Return Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064377
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064378
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000022598
+<SERIES-NAME>EVENTIDE GILEAD FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000065340
+<CLASS-CONTRACT-NAME>Retail Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080457
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080458
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080459
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000024567
+<SERIES-NAME>COMPASS EMP MULTI-ASSET BALANCED FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000072934
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000072935
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082276
+<CLASS-CONTRACT-NAME>CLASS T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000024568
+<SERIES-NAME>COMPASS EMP MULTI-ASSET GROWTH FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000072936
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000072937
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082277
+<CLASS-CONTRACT-NAME>CLASS T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000026891
+<SERIES-NAME>Day Hagan Tactical Allocation Fund of ETFs
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080932
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080933
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000027215
+<SERIES-NAME>CATALYST/GROESBECK GROWTH OF INCOME FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082156
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082157
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000092592
+<CLASS-CONTRACT-NAME>Class I
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000027262
+<SERIES-NAME>COMPASS EMP ALTERNATIVE STRATEGIES FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082273
+<CLASS-CONTRACT-NAME>CLASS A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082274
+<CLASS-CONTRACT-NAME>CLASS C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082275
+<CLASS-CONTRACT-NAME>CLASS T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000027982
+<SERIES-NAME>SMH Representation Trust
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085054
+<CLASS-CONTRACT-NAME>SMH Representation Trust
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000028009
+<SERIES-NAME>AmericaFirst Absolute Return Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085206
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085207
+<CLASS-CONTRACT-NAME>Class U
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000090302
+<CLASS-CONTRACT-NAME>Class I
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000029398
+<SERIES-NAME>AmericaFirst Income Trends Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000090299
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000090300
+<CLASS-CONTRACT-NAME>Class U
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000090301
+<CLASS-CONTRACT-NAME>Class I
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000029495
+<SERIES-NAME>Catalyst Strategic Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000090506
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000090507
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000030794
+<SERIES-NAME>CAMELOT PREMIUM RETURN FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000095448
+<CLASS-CONTRACT-NAME>CLASS A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000095449
+<CLASS-CONTRACT-NAME>CLASS C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000032501
+<SERIES-NAME>AmericaFirst Defensive Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000100258
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000100259
+<CLASS-CONTRACT-NAME>Class U
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000100260
+<CLASS-CONTRACT-NAME>Class I
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000033417
+<SERIES-NAME>Catalyst Large Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102754
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102755
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000033418
+<SERIES-NAME>Catalyst International Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102756
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102757
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000033419
+<SERIES-NAME>Catalyst/MAP Global Total Return Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102758
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102759
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000033420
+<SERIES-NAME>Catalyst/MAP Global Capital Appreciation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102760
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102761
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000033626
+<SERIES-NAME>Delux Long-Short Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000103338
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>DACAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000103339
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>DACIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000103340
+<CLASS-CONTRACT-NAME>Class N
+<CLASS-CONTRACT-TICKER-SYMBOL>DACNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000113286
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000035241
+<SERIES-NAME>JAG Large Cap Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000108404
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000108405
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000108406
+<CLASS-CONTRACT-NAME>Class I
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000035242
+<SERIES-NAME>Catalyst/CP Core Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000108407
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000108408
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000035243
+<SERIES-NAME>Catalyst/CP World Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000108409
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000108410
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000035244
+<SERIES-NAME>Catalyst/CP Focus Large Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000108411
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000108412
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000035245
+<SERIES-NAME>Catalyst/CP Focus Mid Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000108413
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000108414
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000035440
+<SERIES-NAME>Vista Capital Appreciation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000108837
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000108838
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000036622
+<SERIES-NAME>CATALYST INSIDER LONG/SHORT FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111977
+<CLASS-CONTRACT-NAME>CLASS A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111978
+<CLASS-CONTRACT-NAME>CLASS C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000036623
+<SERIES-NAME>CATALYST EVENT ARBITRAGE FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111979
+<CLASS-CONTRACT-NAME>CLASS A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111980
+<CLASS-CONTRACT-NAME>CLASS C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000036624
+<SERIES-NAME>CATALYST/LYONS TACTICAL ALLOCATION FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111981
+<CLASS-CONTRACT-NAME>CLASS A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111982
+<CLASS-CONTRACT-NAME>CLASS C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000036625
+<SERIES-NAME>CATALYST/LYONS HEDGED PREMIUM RETURN FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111983
+<CLASS-CONTRACT-NAME>CLASS A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111984
+<CLASS-CONTRACT-NAME>CLASS C
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>mfstnpx.htm
+<DESCRIPTION>N-PX/A
+<TEXT>
+<!doctype html public "-//IETF//DTD HTML//EN">
+<HTML>
+<table style="margin-top:0px; font-size:10pt" cellpadding="0" cellspacing="0">
+	<tr height="0" style="font-size:0">
+		<td width="29.333"></td>
+		<td width="154.667"></td>
+		<td width="106.667"></td>
+		<td width="110.8"></td>
+		<td width="110.667"></td>
+		<td width="186.667"></td>
+		<td width="121.333"></td>
+		<td width="305.333"></td>
+		<td width="97.333"></td>
+		<td width="54.667"></td>
+		<td width="78.667"></td>
+		<td width="97.333"></td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px" valign="bottom" width="512.133" colspan="5">
+		<p style="margin:0px"><b>Registrant:</b> Mutual Fund Series Trust-
+		&nbsp;Catalyst International Value Fund</td>
+		<td style="margin-top:0px" valign="bottom" width="186.667">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="121.333">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="305.333">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="97.333">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="54.667">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="78.667">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="97.333">Item 1</td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px" valign="bottom" width="696" colspan="6">
+		<p style="margin:0px"><b>Investment Company Act file number:</b>
+		811-21872</td>
+		<td style="margin-top:0px" valign="bottom" width="121.333">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="305.333">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="97.333">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="54.667">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="78.667">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="97.333">Exhibit 17</td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px" valign="bottom" width="401.467" colspan="4">
+		<p style="margin:0px"><b>Reporting Period: </b>July 1, 2011 through June
+		30, 2012</td>
+		<td style="margin-top:0px" valign="bottom" width="110.667">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="186.667">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="121.333">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="305.333">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="97.333">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="54.667">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="78.667">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="97.333">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px" valign="bottom" width="29.333">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="154.667">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="106.667">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="110.8">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="110.667">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="186.667">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="121.333">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="305.333">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="97.333">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="54.667">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="78.667">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+		<td style="margin-top:0px" valign="bottom" width="97.333">
+		<p style="margin:0px; padding:0px">&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px; border:1px solid #000000" valign="bottom" width="1453.467" colspan="12">
+		<p style="margin:0px; font-size:14pt" align="center"><b><u>FORM N-PX -
+		PROXY VOTING RECORD REQUIREMENTS</u></b></td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" width="29.333">
+		<p style="margin:0px" align="center">&nbsp;</td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" width="154.667">
+		<p style="margin:0px; font-size:9pt" align="center"><b>(a) Issuer's Name</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" width="106.667">
+		<p style="margin:0px; font-size:9pt" align="center"><b>(b) Exchange
+		Ticker Symbol</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" width="110.8">
+		<p style="margin:0px; font-size:9pt" align="center"><b>(c)&quot;CUSIP&quot; #</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" width="297.333" colspan="2">
+		<p style="margin:0px; font-size:9pt" align="center"><b>(d) Shareholder
+		Meeting Date</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" width="426.667" colspan="2">
+		<p style="margin:0px; font-size:9pt" align="center"><b>(e) Matter
+		Identification</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" width="97.333">
+		<p style="margin:0px; font-size:9pt" align="center"><b>(f) Proposal Type</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" width="54.667">
+		<p style="margin:0px; font-size:9pt" align="center"><b>(g) Voted</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" width="78.667">
+		<p style="margin:0px; font-size:9pt" align="center"><b>(h) Vote Cast</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" width="97.333">
+		<p style="margin:0px; font-size:9pt" align="center"><b>(i) For/Against
+		Management</b></td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign="bottom" width="29.333">
+		<p style="margin:0px" align="right">1</td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="154.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Company Name</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="106.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Ticker</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.8">
+		<p style="margin:0px; font-family:Arial" align="center"><b>CUSIP</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Meeting Date</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="186.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Meeting Type</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="121.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Proposal
+		Number</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="305.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Description</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Proposal Type</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="54.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Y</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="78.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Vote Cast</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>For/ Against
+		Mgmt</b></td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign="bottom" width="29.333">
+		<p style="margin:0px" align="right">2</td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="154.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Royal Dutch
+		Shell</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="106.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>RDS.B</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.8">
+		<p style="margin:0px; font-family:Arial" align="center"><b>780259206</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>5/22/2012</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="186.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Annual
+		Meeting</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="121.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>1 </b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="305.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Adoption of
+		annual report and accounts</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>MGMT</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="54.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Y</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="78.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>For</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>&nbsp;</b></td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign="bottom" width="29.333">
+		<p style="margin:0px" align="right">3</td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="154.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Royal Dutch
+		Shell</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="106.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>RDS.B</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.8">
+		<p style="margin:0px; font-family:Arial" align="center"><b>780259206</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>5/22/2012</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="186.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Annual
+		Meeting</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="121.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>2 </b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="305.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Approval of
+		renumeration report</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>MGMT</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="54.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Y</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="78.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>For</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>&nbsp;</b></td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign="bottom" width="29.333">
+		<p style="margin:0px" align="right">4</td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="154.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Royal Dutch
+		Shell</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="106.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>RDS.B</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.8">
+		<p style="margin:0px; font-family:Arial" align="center"><b>780259206</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>5/22/2012</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="186.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Annual
+		Meeting</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="121.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>3 </b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="305.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Appointment
+		of Sir Nigel Sheinwald as Director</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>MGMT</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="54.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Y</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="78.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>For</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>&nbsp;</b></td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign="bottom" width="29.333">
+		<p style="margin:0px" align="right">5</td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="154.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Royal Dutch
+		Shell</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="106.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>RDS.B</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.8">
+		<p style="margin:0px; font-family:Arial" align="center"><b>780259206</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>5/22/2012</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="186.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Annual
+		Meeting</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="121.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>4a</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="305.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>
+		Re-appointment of Josef Ackerman</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>MGMT</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="54.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Y</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="78.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>For</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>&nbsp;</b></td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign="bottom" width="29.333">
+		<p style="margin:0px" align="right">6</td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="154.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Royal Dutch
+		Shell</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="106.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>RDS.B</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.8">
+		<p style="margin:0px; font-family:Arial" align="center"><b>780259206</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>5/22/2012</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="186.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Annual
+		Meeting</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="121.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>4b</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="305.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>
+		Re-appointment of Guy Elliott</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>MGMT</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="54.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Y</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="78.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>For</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>&nbsp;</b></td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign="bottom" width="29.333">
+		<p style="margin:0px" align="right">7</td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="154.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Royal Dutch
+		Shell</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="106.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>RDS.B</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.8">
+		<p style="margin:0px; font-family:Arial" align="center"><b>780259206</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>5/22/2012</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="186.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Annual
+		Meeting</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="121.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>4c</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="305.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>
+		Re-appointment of Simon Henry</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>MGMT</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="54.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Y</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="78.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>For</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>&nbsp;</b></td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign="bottom" width="29.333">
+		<p style="margin:0px" align="right">8</td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="154.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Royal Dutch
+		Shell</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="106.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>RDS.B</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.8">
+		<p style="margin:0px; font-family:Arial" align="center"><b>780259206</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>5/22/2012</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="186.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Annual
+		Meeting</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="121.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>4d</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="305.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>
+		Re-appointment of Charles Holliday</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>MGMT</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="54.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Y</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="78.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>For</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>&nbsp;</b></td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign="bottom" width="29.333">
+		<p style="margin:0px" align="right">9</td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="154.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Royal Dutch
+		Shell</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="106.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>RDS.B</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.8">
+		<p style="margin:0px; font-family:Arial" align="center"><b>780259206</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>5/22/2012</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="186.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Annual
+		Meeting</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="121.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>4e</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="305.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>
+		Re-appointment of Gerald Kleisterlee</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>MGMT</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="54.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Y</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="78.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>For</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>&nbsp;</b></td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign="bottom" width="29.333">
+		<p style="margin:0px" align="right">10</td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="154.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Royal Dutch
+		Shell</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="106.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>RDS.B</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.8">
+		<p style="margin:0px; font-family:Arial" align="center"><b>780259206</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>5/22/2012</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="186.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Annual
+		Meeting</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="121.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>4f</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="305.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>
+		Re-appointment of Christine Morin-Postel</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>MGMT</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="54.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Y</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="78.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>For</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>&nbsp;</b></td>
+	</tr>
+	<tr>
+		<td style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign="bottom" width="29.333">
+		<p style="margin:0px" align="right">11</td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="154.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Royal Dutch
+		Shell</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="106.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>RDS.B</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.8">
+		<p style="margin:0px; font-family:Arial" align="center"><b>780259206</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="110.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>5/22/2012</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="186.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Annual
+		Meeting</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="121.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>4g</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="305.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>
+		Re-appointment of Jorma Ollila</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>MGMT</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="54.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>Y</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="78.667">
+		<p style="margin:0px; font-family:Arial" align="center"><b>For</b></td>
+		<td style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign="bottom" width="97.333">
+		<p style="margin:0px; font-family:Arial" align="center"><b>&nbsp;</b></td>
+	</tr>
