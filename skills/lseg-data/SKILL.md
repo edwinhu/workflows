@@ -74,6 +74,7 @@ This is not negotiable. Skipping result inspection is NOT HELPFUL — the user b
 - User-supplied RICs often carry the wrong exchange suffix. Verify against the RIC Symbology section (`.O`, `.N`, `.L`, `.T`) before querying.
 - Market data has T-1 availability — today's data arrives tomorrow. Querying through today produces silent gaps; see the Date Awareness section.
 - **The default `http.request-timeout` is 20 seconds**, and on text-heavy content it — not a row cap or an entitlement — is what raises `ReadTimeout`. Five instruments of guidance failed at the default and returned 66,447 rows at `ld.get_config().set_param("http.request-timeout", 180)`, which must be called BEFORE the session opens. Reaching for a smaller batch first wastes the run.
+- **A 403 enumerates the platform token's entitlements.** `Insufficient scope` names the required scope, the **full `Available scopes` set**, and the missing one — so probing one unentitled endpoint (e.g. `/data/news/v1/headlines`) reveals what the account actually holds. The browser-token caveat below, that entitlements cannot be enumerated, applies to the lifted `edp-token`, not to this path.
 - Rate limits bind per session (500 requests/minute) and per request (`get_data()` 10,000 data points, `get_history()` 3,000 rows) — many small queries still hit the session cap. Batch instead of looping.
 
 ### Workspace Web / CDP Facts
