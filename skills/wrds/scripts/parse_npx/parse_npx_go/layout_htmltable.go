@@ -2233,7 +2233,14 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 				case "ISSUER NAME:", "ISSUER:":
 					// `Issuer: 929903` is an issuer NUMBER (Manning & Napier
 					// 2007), never the name; the heading line above keeps it.
-					if ctx.Issuer == "" && !htmlIsNumeric(strings.TrimSpace(htmlFlat(v))) {
+					// Six characters of it are the CUSIP issuer number (929903
+					// is Wachovia's, 501049 Kroll's in SM&R 2005), the id the
+					// linker's cusip6 rung reads.
+					if num := strings.TrimSpace(htmlFlat(v)); htmlIsNumeric(num) {
+						if ctx.CUSIP == "" && len(num) == 6 {
+							ctx.CUSIP = num
+						}
+					} else if ctx.Issuer == "" {
 						ctx.Issuer = htmlFlat(v)
 					}
 				case "MEETING DATE:":
