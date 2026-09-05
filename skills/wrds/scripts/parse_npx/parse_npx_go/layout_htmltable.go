@@ -243,6 +243,13 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		}
 		if m, mayCarry, mayPartition, consumed, ok := htmlSplitHeaderMapping(cells, feed, repeats); consumed {
 			if ok {
+				if _, has := m[htmlFieldDesc]; !has && !htmlAdoptUnlabelledDesc(cells, m, feed) {
+					// a split header with no description column and none to adopt
+					// beneath it maps nothing (the ProxyEdge full-width table)
+					ok = false
+				}
+			}
+			if ok {
 				mapping, headerArity = m, len(cells)
 				headerCells = cells
 				carry, partitioned, sawData = mayCarry, mayPartition, false
@@ -1817,13 +1824,19 @@ func htmlMapFields(cells []string) map[string]int {
 				// voted: the flag, never the vote (Tributary Funds 2021).
 				continue
 			}
+			if field == htmlFieldDesc && strings.Contains(lab, "VOTABLE") {
+				// `Votable Proposal` heads a Yes/No column in the ProxyEdge
+				// full-width table (Clearwater 2011); the proposal text sits in
+				// an unlabelled column the description adoption finds.
+				continue
+			}
 			for _, s := range htmlSynonyms[field] {
 				if len(s) > bestLen && htmlContainsWords(lab, s) {
 					best, bestLen = field, len(s)
 				}
 			}
 		}
-		if best == "" && strings.HasPrefix(lab, "DID ") && strings.Contains(lab, "VOTE") {
+		if best == "" && ((strings.HasPrefix(lab, "DID ") && strings.Contains(lab, "VOTE")) || strings.Contains(lab, "VOTABLE")) {
 			if _, taken := mapping[htmlFieldVotedFlag]; !taken {
 				best = htmlFieldVotedFlag
 			}
