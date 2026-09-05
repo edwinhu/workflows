@@ -70,13 +70,19 @@ func (d *cikSeries) exactFallback(meta FilingMeta) *dictFallback {
 	if d == nil {
 		return nil
 	}
-	declared := map[string]bool{}
+	// declared maps each header id to its header name (normalised); a dictionary
+	// entry is extra when the header does not know the id, or knows it under a
+	// DIFFERENT name -- the registrant's own alternate spelling of a declared id.
+	declared := map[string]map[string]bool{}
 	for _, x := range meta.SeriesDecls {
-		declared[x.SeriesID] = true
+		if declared[x.SeriesID] == nil {
+			declared[x.SeriesID] = map[string]bool{}
+		}
+		declared[x.SeriesID][normalizeSeriesName(x.Name)] = true
 	}
 	var extra []SeriesDecl
 	for _, x := range d.byCIK[meta.CIK] {
-		if !declared[x.SeriesID] {
+		if names, ok := declared[x.SeriesID]; !ok || !names[normalizeSeriesName(x.Name)] {
 			extra = append(extra, x)
 		}
 	}
