@@ -408,7 +408,15 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				// CUSIP and date under the SAME header as the proposals
 				// (Prudential Series Fund 2005: 36,441 rows with no issuer,
 				// id or date on 2026-09-02).
-				if next, ok := htmlIdentityRow(cells, mapping); ok {
+				next, ok := htmlIdentityRow(cells, mapping)
+				if !ok {
+					// The header names the columns for the ITEM rows (`CUSIP/
+					// Proposal`, `Company/Ticker`), so the meeting's own row
+					// is read by its shape: one date, one CUSIP, one name and
+					// no vote (SSgA vote summary, Kiewit 2006).
+					next, ok = htmlShapeIdentityRow(cells)
+				}
+				if ok {
 					if ctxSealed {
 						ctx = htmlContext{}
 						ctxSealed = false
@@ -2645,6 +2653,17 @@ func htmlDate(s string) string {
 			s = f[0]
 		}
 	}
+	// `05/24/06 - A`: the meeting type after a dash (the SSgA vote summary
+	// grid, Kiewit Investment Fund 2006). Only a one- to three-letter tail is
+	// cut, and the head must still parse on its own.
+	if i := strings.Index(s, " - "); i > 0 {
+		tail := strings.TrimSpace(s[i+3:])
+		if n := len(tail); n >= 1 && n <= 3 && strings.IndexFunc(tail, func(r rune) bool { return !isASCIILetter(byte(r)) }) < 0 {
+			if d := brDate(strings.TrimSpace(s[:i])); d != "" {
+				return d
+			}
+		}
+	}
 	if d := brDate(s); d != "" {
 		return d
 	}
@@ -2667,6 +2686,46 @@ func htmlDate(s string) string {
 // reading the raw markup. A row carrying no vote is table furniture -- a spacer
 // or a subtotal -- and emitting it as a vote record would put a non-vote into
 // the how_voted column.
+// htmlShapeIdentityRow reads a meeting's identity row by the shape of its
+// values alone: the leftmost date-shaped cell is the meeting date, exactly one
+// nine-character CUSIP-shaped cell is the security id, exactly one cell reads as
+// an issuer name, and no cell is a vote. Anything else (two names, no id, a vote
+// value) is refused, so an item row can never be mistaken for an identity.
+func htmlShapeIdentityRow(cells []string) (ctx htmlContext, ok bool) {
+	names, cusips := 0, 0
+	for _, c := range cells {
+		v := htmlFlat(c)
+		if v == "" {
+			continue
+		}
+		if htmlIsVoteValue(v) {
+			return htmlContext{}, false
+		}
+		if d := htmlDate(v); d != "" {
+			if ctx.MeetingDate == "" {
+				ctx.MeetingDate = d
+			}
+			continue
+		}
+		if pvTextCUSIP(v) {
+			cusips++
+			ctx.CUSIP = v
+			continue
+		}
+		if htmlIsNumeric(v) {
+			continue
+		}
+		if htmlIsIssuerLine(v) {
+			names++
+			ctx.Issuer = v
+		}
+	}
+	if ctx.MeetingDate == "" || cusips != 1 || names != 1 {
+		return htmlContext{}, false
+	}
+	return ctx, true
+}
+
 // htmlIdentityRow reads a row that fills the identity columns of a shared
 // header and none of the vote columns.
 func htmlIdentityRow(cells []string, mapping map[string]int) (ctx htmlContext, ok bool) {
