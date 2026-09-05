@@ -241,7 +241,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				continue
 			}
 		}
-		if m, mayCarry, mayPartition, consumed, ok := htmlSplitHeaderMapping(cells, feed, repeats); consumed {
+		if m, joined, mayCarry, mayPartition, consumed, ok := htmlSplitHeaderMapping(cells, feed, repeats); consumed {
 			if ok {
 				if _, has := m[htmlFieldDesc]; !has && !htmlAdoptUnlabelledDesc(cells, m, feed) {
 					// a split header with no description column and none to adopt
@@ -251,7 +251,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			}
 			if ok {
 				mapping, headerArity = m, len(cells)
-				headerCells = cells
+				headerCells = joined
 				carry, partitioned, sawData = mayCarry, mayPartition, false
 				ctxLead, ctxSealed = "", true
 			}
@@ -941,9 +941,16 @@ func htmlFlat(s string) string {
 // arities become equal logical widths without positional guessing. consumed is
 // true when the second fragment belongs to the header even if the block lacks
 // enough rows to open a new mapping (as at a repeated page-break header).
-func htmlSplitHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHeaderRepeats) (mapping map[string]int, carry, partitioned, consumed, ok bool) {
+//
+// header is the joined label row the mapping was read from, for the spacer
+// realignment of the rows beneath (Diamond Hill 2011 prints the CUSIP one
+// column left of the joined header's label).
+func htmlSplitHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHeaderRepeats) (mapping map[string]int, header []string, carry, partitioned, consumed, ok bool) {
 	if !htmlHeaderFragment(cells) {
-		return nil, false, false, false, false
+		below, exists := feed.peek(0)
+		if !exists || below.newTable || !htmlHeaderFragmentOver(cells, below.cells) {
+			return nil, nil, false, false, false, false
+		}
 	}
 	// A header wraps over two rows in most exports and over FOUR in filer
 	// agent 1580642's (`Shareholder | Brief Identification | ...`, `Ticker |
@@ -976,13 +983,13 @@ func htmlSplitHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHead
 		}
 	}
 	if best == nil {
-		return nil, false, false, false, false
+		return nil, nil, false, false, false, false
 	}
 	for k := 0; k < bestDepth; k++ {
 		_, _ = feed.next()
 	}
 	mapping, carry, partitioned, ok = htmlHeaderMapping(best, feed, repeats)
-	return mapping, carry, partitioned, true, ok
+	return mapping, best, carry, partitioned, true, ok
 }
 
 // htmlSplitHeaderMaxRows bounds how many rows one wrapped header may span.
@@ -996,6 +1003,36 @@ func htmlHeaderFragment(cells []string) bool {
 			continue
 		}
 		if htmlIsNumeric(flat) || htmlLooksLikeValueLimit(flat, htmlLabelMaxLen) {
+			return false
+		}
+		labels++
+	}
+	return labels >= 2 && labels <= htmlHeaderMaxCells
+}
+
+// htmlHeaderFragmentOver is htmlHeaderFragment for the upper piece of a wrapped
+// header whose cells are bare vote words: `Meeting | Proposed | Matter | Vote |
+// Against` over `Issuer | Ticker | CUSIP | Date | Description of Vote | by |
+// Voted | Cast | Mgmt` (Diamond Hill Funds 2011, 3,820 rows with no date and
+// the flag as the vote). A vote-valued cell is a label piece only when the row
+// beneath prints a label, not a value, in the same column; every other cell is
+// held to the ordinary fragment rule, so a data row still never qualifies.
+func htmlHeaderFragmentOver(cells, below []string) bool {
+	if len(below) != len(cells) {
+		return false
+	}
+	labels := 0
+	for i, c := range cells {
+		flat := htmlFlat(c)
+		if flat == "" {
+			continue
+		}
+		if htmlIsVoteValue(flat) {
+			b := htmlFlat(below[i])
+			if b == "" || htmlIsNumeric(b) || htmlLooksLikeValueLimit(b, htmlLabelMaxLen) {
+				return false
+			}
+		} else if htmlIsNumeric(flat) || htmlLooksLikeValueLimit(flat, htmlLabelMaxLen) {
 			return false
 		}
 		labels++
@@ -1235,7 +1272,9 @@ func htmlHeaderShape(cells []string) (map[string]int, string, bool) {
 		if label, _, lettered := htmlLetteredLabel(flat); lettered {
 			valueText, maxLen = label, htmlLetteredLabelMaxLen
 		}
-		if htmlLooksLikeValueLimit(valueText, maxLen) {
+		// A cell that is exactly a known column label is a label even when it
+		// also spells a decorated vote (`Against Mgmt`, Diamond Hill 2011).
+		if htmlLooksLikeValueLimit(valueText, maxLen) && !htmlIsHeaderWord(flat) {
 			return nil, "", false
 		}
 		labels++
@@ -1663,6 +1702,9 @@ var htmlSynonyms = map[string][]string{
 	htmlFieldVsMgmt: {
 		"FOR/AGAINST MANAGEMENT", "FOR/AGNST MGMT", "FOR/ AGNST MGMT", "WITH MGMT",
 		"FOR AGAINST MANAGEMENT", "WITH MANAGEMENT",
+		// `Against Mgmt`, the lower half of a wrapped `For / Against Mgmt`
+		// (Diamond Hill Funds 2011).
+		"AGAINST MGMT", "AGAINST MANAGEMENT",
 	},
 	htmlFieldTicker: {"TICKER", "SYMBOL", "TICKER SYMBOL"},
 	// "SECURITY" is the CUSIP column of the Vote Summary Report (SSGA Funds,
