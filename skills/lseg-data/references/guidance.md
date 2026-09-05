@@ -45,6 +45,23 @@ resolve — the I/B/E/S quantitative side — but returned all-null for AAPL wit
 parameter. They are a different surface from `TR.Guidance*`; do not mix them in one call expecting
 aligned rows.
 
+## There is no pointer to a document — the API returns the text, not a reference
+
+**Nothing in the response links an instance back to a source document.** No document id, no URL, no
+attachment, no GR report id. Twenty candidate names (`TR.Guidance{DocumentId,DocId,StoryId,URL,Link,
+Source,SourceDoc,EventId,ReportId,DocTitle,DocLink,PermId,InstanceId,Id,…}`) all fail to resolve, and
+the raw datagrid response confirms it structurally: `headers` carries exactly the columns you asked
+for and nothing else, `links` is just `{"count": N}`, and the only identifier anywhere is
+`Organization PermID` on `universe` — firm-level, not document-level.
+
+So the traceability you get per instance is **`Activation Date` + `The Doc Type`** (`Transcript` or
+`Press Release`) and nothing more. Tying an instance to the specific transcript or release means
+matching on company + date + type against a separate source, and on the verified account
+`trapi.data.news.read` is **not** in the token's scopes, so that source is not this API.
+
+This is the practical trade: the field route hands you machine-readable text with no provenance
+pointer; the GR PDFs carry the report structure but must be collected by hand. Neither gives you both.
+
 ## Working query
 
 ```python
