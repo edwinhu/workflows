@@ -95,6 +95,7 @@ const (
 // leaves the filing parse_status=skip with a body-derived signature rather than
 // parsed against a guessed header.
 func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
+	println("DBG enter parseHTMLTableRaw", len(raw))
 	body := htmlTableBody(raw)
 	// Built ONCE per filing: these bodies reach 142 MB and 452,552 vote rows, so
 	// a per-row rebuild would make the job quadratic in the input.
@@ -140,6 +141,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			break
 		}
 		cells := row.cells
+		println("DBG row", row.newTable, len(cells), strings.Join(cells, "|"))
 
 		// Once the filing has stated that this block held no votes, any later row
 		// carrying two values is enough to withdraw that conclusion. It may be a
@@ -238,6 +240,17 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// header-shape skip below, or its values two rows down (Putnam 2005:
 		// a column header sits between) lose their date. Only identity labels
 		// qualify, so a vote-table header can never land here.
+		if next, ok := htmlInCellStacked(cells); ok {
+			// Labels stacked INSIDE one cell, values inside the next (Clearwater
+			// Investment Trust 2011): each line of the label cell names the same
+			// line of the value cell.
+			if ctxSealed {
+				ctx = htmlContext{}
+				ctxSealed = false
+			}
+			ctx.merge(next)
+			continue
+		}
 		if labels, ok := htmlStackedLabels(cells); ok {
 			stacked = labels
 			continue
@@ -2087,6 +2100,121 @@ var htmlStackedLabelSet = map[string]string{
 	"MEETING TYPE": "MEETING TYPE", "MTG TYPE": "MEETING TYPE", "MEETING STATUS": "MEETING STATUS",
 	"COUNTRY OF TRADE": "COUNTRY", "ISSUER": "ISSUER", "ISSUER NAME": "ISSUER",
 	"COMPANY NAME": "ISSUER", "COMPANY": "ISSUER", "SECURITY": "CUSIP",
+}
+
+// htmlInCellStacked reads a row whose label cell stacks several bare labels on
+// its own lines and whose next filled cell stacks the values the same way:
+// `Security ID / Ticker Symbol / ISIN` beside `151290889 / CX / US1512908898`,
+// and `Meeting Type / Meeting Date / Agenda` beside `Special / 24-Feb-2011 /
+// 933370796`. A bare one-line label with its value in the next cell (`Issuer` |
+// `CEMEX, S.A.B. DE C.V.`) is the one-line case. Lines pair by position, so a
+// label cell and a value cell of different heights carry nothing.
+func htmlInCellStacked(cells []string) (ctx htmlContext, ok bool) {
+	lines := func(s string) []string {
+		var out []string
+		for _, l := range strings.Split(s, "\n") {
+			if l = htmlFlat(l); l != "" {
+				out = append(out, l)
+			}
+		}
+		return out
+	}
+	// A source newline inside the markup splits a label across lines too
+	// (`Security` / `ID`), so fragments are joined until they spell a label.
+	labelOf := func(key string) (string, bool) {
+		if c, known := htmlStackedLabelSet[key]; known {
+			return c, true
+		}
+		switch key {
+		case "ISIN":
+			return "ISIN", true
+		case "AGENDA", "FUND NAME":
+			return "", true
+		}
+		return "", false
+	}
+	for i := 0; i < len(cells); i++ {
+		labels := lines(cells[i])
+		if len(labels) == 0 {
+			continue
+		}
+		// The longest run of fragments that spells a label wins: `Security`
+		// alone is a label, but `Security` / `ID` is the label printed.
+		var canon []string
+		for a := 0; a < len(labels); {
+			took := 0
+			for b := len(labels); b > a; b-- {
+				key := strings.TrimSpace(strings.TrimSuffix(htmlUpperASCII(strings.Join(labels[a:b], " ")), ":"))
+				if c, known := labelOf(key); known {
+					canon = append(canon, c)
+					took = b - a
+					break
+				}
+			}
+			if took == 0 {
+				canon = nil
+				break
+			}
+			a += took
+		}
+		if len(canon) == 0 {
+			continue
+		}
+		j := i + 1
+		for j < len(cells) && htmlFlat(cells[j]) == "" {
+			j++
+		}
+		if j >= len(cells) {
+			continue
+		}
+		values := lines(cells[j])
+		if len(canon) == 1 {
+			// one label beside one value: only as a two-cell row, so a bare
+			// label row (`Ticker | Security ID | ...`) stays the stacked grid's
+			if htmlFilledCells(cells) != 2 {
+				continue
+			}
+			values = []string{htmlFlat(cells[j])}
+		}
+		if len(values) != len(canon) {
+			continue
+		}
+		labelShaped := false
+		for _, v := range values {
+			if _, known := labelOf(strings.TrimSpace(strings.TrimSuffix(htmlUpperASCII(v), ":"))); known {
+				labelShaped = true
+			}
+		}
+		if labelShaped {
+			continue
+		}
+		for k, c := range canon {
+			v := values[k]
+			switch c {
+			case "CUSIP":
+				if f := strings.Fields(v); len(f) > 1 && htmlUpperASCII(f[0]) == "CUSIP" {
+					v = strings.Join(f[1:], " ")
+				}
+				ctx.CUSIP = htmlValueOrEmpty(v)
+			case "ISIN":
+				if isinToken(v) {
+					ctx.ISIN = v
+				}
+			case "TICKER":
+				ctx.Ticker = htmlValueOrEmpty(v)
+			case "MEETING DATE":
+				ctx.MeetingDate = htmlDate(v)
+			case "ISSUER":
+				ctx.Issuer = v
+			}
+		}
+		ok = true
+		i = j
+	}
+	if ctx == (htmlContext{}) {
+		return htmlContext{}, false
+	}
+	return ctx, ok
 }
 
 // htmlStackedLabels reports a row whose every non-empty cell is a bare context
