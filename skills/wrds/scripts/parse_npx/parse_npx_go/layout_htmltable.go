@@ -1066,7 +1066,66 @@ func htmlHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHeaderRep
 		partitioned = true
 	}
 	htmlAdoptUnlabelledItem(cells, mapping, feed)
+	htmlShiftToFilledNeighbour(mapping, len(cells), feed)
 	return mapping, below && crossed, partitioned, true
+}
+
+// htmlShiftToFilledNeighbour moves a mapped field one column to an unmapped
+// neighbour when the header's colspan grid differs from the rows' (the SSgA
+// vote summary: `Company/ Ballot Issues` joined at column 3, the proposals
+// printed at 4; `Prpnent` at 9, `Mgmt` at 10; Kiewit 2007, Thrivent 2005, 295
+// htmltable filings on the 2026-09-05 census). The move needs the rows'
+// evidence: over the lookahead, every comparable row that fills the neighbour
+// leaves the mapped column empty, at least htmlHeaderConfirm such rows exist,
+// and no row fills both. A field the rows fill where the header put it stays.
+func htmlShiftToFilledNeighbour(mapping map[string]int, arity int, feed *htmlRowFeed) {
+	// An identity field's column does not block the move: the identity row
+	// sits on its own grid and is read by shape, and a proposal row prints
+	// nothing under those labels (the CUSIP label's column holds the
+	// proposals in Kiewit 2007).
+	identity := map[string]bool{htmlFieldIssuer: true, htmlFieldCUSIP: true, htmlFieldISIN: true, htmlFieldTicker: true, htmlFieldMtgDate: true, htmlFieldFund: true}
+	claimed := make(map[int]bool, len(mapping))
+	for f, i := range mapping {
+		if !identity[f] {
+			claimed[i] = true
+		}
+	}
+	for _, field := range []string{htmlFieldDesc, htmlFieldBy, htmlFieldVote, htmlFieldMgmtRec, htmlFieldVsMgmt, htmlFieldItem} {
+		col, mapped := mapping[field]
+		if !mapped {
+			continue
+		}
+		for _, nb := range []int{col + 1, col - 1} {
+			if nb < 0 || nb >= arity || claimed[nb] {
+				continue
+			}
+			seen, ok := 0, true
+			for i := 0; i < htmlHeaderLookahead && ok; i++ {
+				row, exists := feed.peek(i)
+				if !exists {
+					break
+				}
+				if _, _, isHeader := htmlHeaderShape(row.cells); isHeader {
+					break
+				}
+				if len(row.cells) != arity {
+					continue
+				}
+				here, there := htmlFlat(row.cells[col]) != "", htmlFlat(row.cells[nb]) != ""
+				if here && there {
+					ok = false
+				} else if there {
+					seen++
+				}
+			}
+			if ok && seen >= htmlHeaderConfirm {
+				delete(claimed, col)
+				mapping[field] = nb
+				claimed[nb] = true
+				break
+			}
+		}
+	}
 }
 
 // htmlHasPartitionedVotes recognises exports that close the table after every
@@ -3257,6 +3316,12 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 	// Identity labels only: 'No' is a vote in exports with a Voted? column and
 	// also an item-number synonym (Brighthouse Funds Trust II, 8,224 rows).
 	if strings.HasSuffix(vote, ":") || htmlIsIdentityLabel(vote) {
+		return VoteRow{}, false
+	}
+	// A CUSIP in the vote column is a meeting's identity row printed on a
+	// colspan grid the header does not share (the SSgA vote summary, Kiewit
+	// 2007: 2,766 rows voted their CUSIP); it is never a vote.
+	if pvTextCUSIP(vote) && htmlHasDigit(vote) {
 		return VoteRow{}, false
 	}
 	item, desc := at(htmlFieldItem), at(htmlFieldDesc)
