@@ -68,3 +68,21 @@ func TestOverlayDeclaredIDsComeFromTheDecls(t *testing.T) {
 		t.Fatalf("declared ids = %v, want both decl ids", got)
 	}
 }
+
+// A registrant's dictionary series -- every id its CIK ever declared -- are ids
+// the overlay may stamp on a filing that declares series of its own: a fund that
+// merged or was renamed still voted under the old name, and the audited map names
+// its id from that dictionary. An id from a different registrant stays refused.
+func TestOverlayDeclaredIDsIncludeTheRegistrantsDictionary(t *testing.T) {
+	saved := cikDict
+	defer func() { cikDict = saved }()
+	cikDict = &cikSeries{byCIK: map[string][]SeriesDecl{
+		"0000746687": {{SeriesID: "S000001637", Name: "Total Return Fund"}, {SeriesID: "S000009999", Name: "Retired Fund"}},
+		"0000000001": {{SeriesID: "S000000777", Name: "Someone Else"}},
+	}}
+	meta := FilingMeta{CIK: "0000746687", SeriesDecls: []SeriesDecl{{SeriesID: "S000001637"}}}
+	got := overlayDeclaredIDs(meta)
+	if !got["S000001637"] || !got["S000009999"] || got["S000000777"] || len(got) != 2 {
+		t.Fatalf("declared ids = %v, want the header's and the registrant's dictionary ids only", got)
+	}
+}
