@@ -1,0 +1,318 @@
+		COMPANY CONFORMED NAME:			Kiewit Investment Fund LLLP
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ LvT2q+RQTjGMKELlG/x52IxhTGjSdX+qfH9H7NxtaZsaAAj0dbWMnUZUx0UmuGlU
+ QigQDicdLAEgc3AdjsV3Nw==
+
+<SEC-DOCUMENT>0001302716-06-000006.txt : 20060824
+<SEC-HEADER>0001302716-06-000006.hdr.sgml : 20060824
+<ACCEPTANCE-DATETIME>20060824111204
+ACCESSION NUMBER:		0001302716-06-000006
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20060630
+FILED AS OF DATE:		20060824
+DATE AS OF CHANGE:		20060824
+EFFECTIVENESS DATE:		20060824
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Kiewit Investment Fund LLLP
+		CENTRAL INDEX KEY:			0001302716
+		IRS NUMBER:				201589752
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0331
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-21632
+		FILM NUMBER:		061052274
+
+	BUSINESS ADDRESS:	
+		STREET 1:		73 TREMONT STREET
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02108
+		BUSINESS PHONE:		800-443-4306
+
+	MAIL ADDRESS:	
+		STREET 1:		73 TREMONT STREET
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02108
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	Kiewit Investment Fund L.P.
+		DATE OF NAME CHANGE:	20050304
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	Kiewit Employees Diversified Investment Fund L.P.
+		DATE OF NAME CHANGE:	20040909
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npxform082406.htm
+<DESCRIPTION>FORM N-PX
+<TEXT>
+<!doctype html public "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>UNITED STATES</TITLE>
+<META NAME="author" CONTENT="MaryL">
+<META NAME="date" CONTENT="08/24/2006">
+</HEAD>
+<BODY style="line-height:12pt; font-size:10pt; color:#000000" LINK=#0000FF VLINK=#FF00FF ALINK=#FF0000>
+<BR>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center>UNITED STATES</P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center>SECURITIES AND EXCHANGE COMMISSION</P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center>Washington, D.C. 20549</P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; font-family:Times New Roman; font-size:11pt" align=center><BR></P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center>FORM N-PX</P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; font-family:Times New Roman; font-size:11pt" align=center><BR></P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center>ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT COMPANY</P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; font-family:Times New Roman; font-size:11pt" align=center><BR></P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center>Investment Company Act file number: &nbsp;<U>811-21632</U></P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; font-family:Times New Roman; font-size:11pt" align=center><BR></P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center><U>Kiewit Investment Fund LLLP</U></P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center>(Exact name of registrant as specified in charter)</P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; font-family:Times New Roman; font-size:11pt" align=center><BR></P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center>73 Tremont Street</P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center><U>Boston, Massachusetts &nbsp;02108</U></P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center>(Address of principal executive offices) (Zip code)</P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; font-family:Times New Roman; font-size:11pt"><BR></P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center>Robert L. Giles, Jr.</P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center>&nbsp;73 Tremont Street</P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center><U>Boston, Massachusetts &nbsp;02108</U></P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center>(Name and Address of Agent for Service)</P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; font-family:Times New Roman; font-size:11pt"><BR></P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt">Registrant&#146;s telephone number, including area code: &nbsp;<U>800-443-4306 &nbsp;&nbsp;&nbsp;</U></P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; font-family:Times New Roman; font-size:11pt"><BR></P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt">Date of fiscal year end: March 31 </P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; font-family:Times New Roman; font-size:11pt"><BR></P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt">Date of reporting period: August 24, 2005 (commencement of operations) to June 30, 2006</P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; font-family:Times New Roman; font-size:11pt"><BR></P>
+<HR style="padding-top:7.2pt; padding-bottom:7.2pt" noshade size=1.333>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; font-family:Times New Roman"><BR></P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; font-family:Times New Roman"><BR></P>
+<P style="page-break-before:always; margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; font-family:Times New Roman; font-size:11pt"><BR></P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; line-height:13pt; font-family:Times New Roman; font-size:11pt">Item 1. &nbsp;Proxy Voting Record.</P>
+<P style="margin-top:0pt; margin-right:36pt; margin-bottom:0pt; width:576pt; font-family:Times New Roman; font-size:11pt"><BR></P>
+<TABLE style="margin-right:36pt" cellspacing=0><TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=736 colspan=11><P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center>SSgA Funds Management, Inc.</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=736 colspan=11><P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center>Vote Summary Report</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=736 colspan=11>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933><P style="margin:0pt; font-family:Times New Roman">Mtg</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=219.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Company/</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=74.933><P style="margin:0pt; font-family:Times New Roman">CUSIP/</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">Mgmt</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">Vote</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68><P style="margin:0pt; font-family:Times New Roman">Record</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=62.733>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=58.133><P style="margin:0pt; font-family:Times New Roman" align=right>Shares</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt; border-bottom:0.5pt solid #000000" valign=top width=96.933><P style="margin:0pt; font-family:Times New Roman">Date/Type</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt; border-bottom:0.5pt solid #000000" valign=top width=219.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Ticker</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt; border-bottom:0.5pt solid #000000" valign=top width=74.933><P style="margin:0pt; font-family:Times New Roman">Proposal</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt; border-bottom:0.5pt solid #000000" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">Rec</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt; border-bottom:0.5pt solid #000000" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">Cast</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt; border-bottom:0.5pt solid #000000" valign=top width=68><P style="margin:0pt; font-family:Times New Roman">Date</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt; border-bottom:0.5pt solid #000000" valign=top width=62.733><P style="margin:0pt; font-family:Times New Roman">Prpnent</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt; border-bottom:0.5pt solid #000000" valign=top width=58.133><P style="margin:0pt; font-family:Times New Roman" align=right>Voted</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=736 colspan=11>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933><P style="margin:0pt; font-family:Times New Roman">05/24/06 - A</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=219.933 colspan=3><P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:11pt">21st Century Insurance Group *TW* </P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=230.267 colspan=4><P style="margin:0pt; font-family:Times New Roman">90130N103</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68><P style="margin:0pt; font-family:Times New Roman">04/03/06</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman" align=right>100</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Directors</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">Split</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">Mgmt</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1.1</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Director Steven J. Bensinger --- For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1.2</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Director John B. De Nault, III --- For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1.3</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Director Carlene M. Ellis --- For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1.4</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Director R. Scott Foster, M.D. --- For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1.5</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Director Roxani M. Gillespie --- Withhold</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1.6</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Director Jeffrey L. Hayman --- For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1.7</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Director Phillip L. Isenberg --- For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1.8</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Director Bruce W. Marlow --- For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1.9</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Director Keith W. Renken --- For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1.10</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Director Robert M. Sandler --- Withhold</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1.11</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Director Thomas R. Tizzio --- For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">2</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Ratify Auditors</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">Mgmt</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=736 colspan=11>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=736 colspan=11>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933><P style="margin:0pt; font-family:Times New Roman">05/09/06 - A</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=219.933 colspan=3><P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:11pt">3M CO *MMM* </P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=230.267 colspan=4><P style="margin:0pt; font-family:Times New Roman">88579Y101</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68><P style="margin:0pt; font-family:Times New Roman">03/10/06</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman" align=right>2,600</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Directors</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">Mgmt</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">2</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Ratify Auditors</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">Mgmt</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">3</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Declassify the Board of Directors</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">Mgmt</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">4</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Performance-Based</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">Against</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">Against</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">ShrHoldr</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">5</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Adopt Animal Welfare Policy</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">Against</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">Against</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">ShrHoldr</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">6</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Implement China Principles</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">Against</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">Against</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">ShrHoldr</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=736 colspan=11>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=736 colspan=11>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933><P style="margin:0pt; font-family:Times New Roman">10/18/05 - A</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=219.933 colspan=3><P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:11pt">99 (Cents) Only Stores *NDN* </P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=230.267 colspan=4><P style="margin:0pt; font-family:Times New Roman">65440K106</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68><P style="margin:0pt; font-family:Times New Roman">09/13/05</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman" align=right>100</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Directors</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">Mgmt</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">2</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Submit Shareholder Rights Plan (Poison Pill) to Shareholder Vote</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">Against</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">ShrHoldr</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=736 colspan=11>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=736 colspan=11>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933><P style="margin:0pt; font-family:Times New Roman">04/10/06 - A</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=219.933 colspan=3><P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:11pt">A. O. Smith Corp. *SAOSA* </P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=230.267 colspan=4><P style="margin:0pt; font-family:Times New Roman">831865209</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68><P style="margin:0pt; font-family:Times New Roman">02/22/06</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman" align=right>100</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Directors</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">Mgmt</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">2</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Ratify Auditors</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">Mgmt</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=736 colspan=11>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=736 colspan=11>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933><P style="margin:0pt; font-family:Times New Roman">12/08/05 - A</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=219.933 colspan=3><P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:11pt">A. Schulman, Inc. *SHLM* </P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=230.267 colspan=4><P style="margin:0pt; font-family:Times New Roman">808194104</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68><P style="margin:0pt; font-family:Times New Roman">10/19/05</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman" align=right>100</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Directors</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">Mgmt</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">2</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Amend Articles</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">Mgmt</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">3</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Ratify Auditors</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">Mgmt</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=736 colspan=11>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=736 colspan=11>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933><P style="margin:0pt; font-family:Times New Roman">06/22/06 - A</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=219.933 colspan=3><P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:11pt">A.G. Edwards, Inc. *AGE* </P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=230.267 colspan=4><P style="margin:0pt; font-family:Times New Roman">281760108</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68><P style="margin:0pt; font-family:Times New Roman">05/01/06</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman" align=right>300</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">1</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Elect Directors</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">Mgmt</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=41.933><P style="margin:0pt; font-family:Times New Roman">2</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=252.933 colspan=3><P style="margin:0pt; font-family:Times New Roman">Ratify Auditors</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=72.133><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=83.2 colspan=2><P style="margin:0pt; font-family:Times New Roman">For</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68>&nbsp;</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman">Mgmt</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=736 colspan=11>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=736 colspan=11>&nbsp;</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=96.933><P style="margin:0pt; font-family:Times New Roman">06/02/06 - A</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=219.933 colspan=3><P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:11pt">A.S.V., Inc. *ASVI* </P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=230.267 colspan=4><P style="margin:0pt; font-family:Times New Roman">001963107</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=68><P style="margin:0pt; font-family:Times New Roman">04/07/06</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=120.867 colspan=2><P style="margin:0pt; font-family:Times New Roman" align=right>100</P>
