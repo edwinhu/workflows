@@ -2447,6 +2447,11 @@ var htmlStackedLabelSet = map[string]string{
 	"MEETINGDATE": "MEETING DATE", "SECURITYID": "CUSIP", "MEETINGTYPE": "MEETING TYPE",
 	"RECORDDATE": "RECORD DATE", "SHARESVOTED": "SHARES", "SHARESAVAILABLE": "SHARES",
 	"SHARES AVAILABLE": "SHARES", "ISIN": "ISIN",
+	// US Bancorp's grammar heads each meeting with `Company Name | Meeting
+	// Date | Provider Security ID | Ticker | Meeting Type` (Listed Funds
+	// Trust 2022) or `... | Cusip | Ticker | For/Against Mgmnt` (Hennessy
+	// 2011) over one value row; the last label of each carries no identity.
+	"PROVIDER SECURITY ID": "CUSIP", "FOR/AGAINST MGMNT": "NUMBER",
 }
 
 // htmlStackedLabelKey is the label-set key of a stacked label cell: upper
@@ -2721,6 +2726,10 @@ func htmlStackedValues(cells []string, labels map[int]string) (ctx htmlContext) 
 			// `CUSIP 746763168`: the value carries its own label word.
 			if f := strings.Fields(v); len(f) > 1 && htmlUpperASCII(f[0]) == "CUSIP" {
 				v = strings.Join(f[1:], " ")
+			}
+			// `091 826 107`: printed in groups (Hennessy Funds 2011).
+			if joined := strings.ReplaceAll(v, " ", ""); pvTextCUSIP(joined) {
+				v = joined
 			}
 			ctx.CUSIP = htmlValueOrEmpty(v)
 		case "TICKER":
