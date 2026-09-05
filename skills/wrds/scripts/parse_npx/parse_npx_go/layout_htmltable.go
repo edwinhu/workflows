@@ -118,7 +118,10 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		leadTicker    string // a bare ticker line under the issuer heading
 		stacked       map[int]string
 		stackedIssuer string
-		leadJoin      bool
+		// headerCells is the row the open mapping was read from, for the
+		// spacer-shift realignment (htmlRealignBySpacers).
+		headerCells []string
+		leadJoin    bool
 		// fundCells is the set of distinct fund-cell values in the open table.
 		fundCells map[string]bool
 		ctxSealed bool
@@ -241,6 +244,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		if m, mayCarry, mayPartition, consumed, ok := htmlSplitHeaderMapping(cells, feed, repeats); consumed {
 			if ok {
 				mapping, headerArity = m, len(cells)
+				headerCells = cells
 				carry, partitioned, sawData = mayCarry, mayPartition, false
 				ctxLead, ctxSealed = "", true
 			}
@@ -248,6 +252,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		}
 		if m, mayCarry, mayPartition, ok := htmlHeaderMapping(cells, feed, repeats); ok {
 			mapping, headerArity = m, len(cells)
+			headerCells = cells
 			carry, partitioned, sawData = mayCarry, mayPartition, false
 			ctxLead, ctxSealed = "", true
 			continue
@@ -384,6 +389,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		emitted := false
 		if mapping != nil && htmlComparableArity(len(cells), headerArity) {
 			if !partitioned || htmlMappedVoteValue(cells, mapping, headerArity) {
+				cells = htmlRealignBySpacers(cells, headerCells, mapping)
 				if r, ok := htmlDataRow(cells, mapping, headerArity, ctx); ok {
 					r.SeriesID = curSeries
 					r.FundName = curFund
@@ -1640,7 +1646,7 @@ var htmlSynonyms = map[string][]string{
 	},
 	htmlFieldVote: {
 		"VOTE CAST", "VOTES CAST", "REGISTRANT VOTED", "FUND VOTE", "HOW VOTED",
-		"VOTE", "CAST", "VOTED", "VOTE CASTS", "VOTE INSTRUCTION",
+		"VOTE", "CAST", "VOTED", "VOTE CASTS", "VOTE INSTRUCTION", "HOW VOTE WAS CAST",
 	},
 	htmlFieldVsMgmt: {
 		"FOR/AGAINST MANAGEMENT", "FOR/AGNST MGMT", "FOR/ AGNST MGMT", "WITH MGMT",
@@ -1660,7 +1666,7 @@ var htmlSynonyms = map[string][]string{
 	// fund).
 	htmlFieldFund: {"FUND NAME", "INSTITUTIONAL ACCOUNT NAME", "ACCOUNT NAME"},
 	htmlFieldMtgDate: {
-		"MEETING DATE", "MTG DATE", "DATE OF MEETING", "MTG DATE/TYPE",
+		"MEETING DATE", "MTG DATE", "DATE OF MEETING", "MTG DATE/TYPE", "SHAREHOLDER MEETING DATE",
 		// `Meeting Data`, the filer's spelling (PFM Multi-Manager Series Trust
 		// 2023, 13,154 rows with no date on run71).
 		"MEETING DATA",
@@ -1765,7 +1771,7 @@ func htmlMapFields(cells []string) map[string]int {
 	}
 	if _, taken := mapping[htmlFieldVote]; taken {
 		for i, lab := range canon {
-			if lab == "VOTED" && !claimed[i] {
+			if (lab == "VOTED" || (strings.HasPrefix(lab, "DID ") && strings.Contains(lab, "VOTE"))) && !claimed[i] {
 				mapping[htmlFieldVotedFlag] = i
 				claimed[i] = true
 				break
@@ -1801,10 +1807,20 @@ func htmlMapFields(cells []string) map[string]int {
 			if _, taken := mapping[field]; taken {
 				continue
 			}
+			if field == htmlFieldVote && strings.HasPrefix(lab, "DID ") {
+				// `Did Fund Cast Vote on Matter (Y/N)` asks whether the fund
+				// voted: the flag, never the vote (Tributary Funds 2021).
+				continue
+			}
 			for _, s := range htmlSynonyms[field] {
 				if len(s) > bestLen && htmlContainsWords(lab, s) {
 					best, bestLen = field, len(s)
 				}
+			}
+		}
+		if best == "" && strings.HasPrefix(lab, "DID ") && strings.Contains(lab, "VOTE") {
+			if _, taken := mapping[htmlFieldVotedFlag]; !taken {
+				best = htmlFieldVotedFlag
 			}
 		}
 		if best != "" {
@@ -1818,7 +1834,9 @@ func htmlMapFields(cells []string) map[string]int {
 // htmlWeakVoteLabel is a vote synonym that, on its own, cannot tell a vote column
 // from a did-the-fund-vote flag; it claims the vote only when no strong name does.
 func htmlWeakVoteLabel(canon string) bool {
-	return canon == "VOTED" || canon == "CAST"
+	// `Did Fund Cast Vote on Matter (Y/N)` (Tributary Funds 2021) asks WHETHER
+	// the fund voted; it is the voted flag, never the vote.
+	return canon == "VOTED" || canon == "CAST" || strings.HasPrefix(canon, "DID ")
 }
 
 // htmlIsGateLabel reports whether a header cell asks a yes/no QUESTION about the
@@ -2758,6 +2776,51 @@ func htmlHasWrappedLabelCell(cells []string) bool {
 		}
 	}
 	return false
+}
+
+// htmlRealignBySpacers moves a data row's values back under the header's
+// labels when a colspan puts the header's spacer blank at one column and the
+// row's at the next (Tributary Funds 2021: `CUSIP # | | Shareholder Meeting
+// Date | ...` over `21036P108 | 21-Jul-2020 | | DIRECTOR | ...`). It fires only
+// when the row and the header are the same width with the same number of filled
+// cells, every value the row holds under a header blank is matched by a header
+// label the row leaves blank, and the header's blanks are unmapped columns;
+// any other shape is returned untouched.
+func htmlRealignBySpacers(cells, header []string, mapping map[string]int) []string {
+	if len(header) == 0 || len(cells) != len(header) {
+		return cells
+	}
+	mapped := map[int]bool{}
+	for _, i := range mapping {
+		mapped[i] = true
+	}
+	var hf, cf []int
+	underBlank, labelBlank := 0, 0
+	for i := range header {
+		h, c := htmlFlat(header[i]) != "", htmlFlat(cells[i]) != ""
+		if h {
+			hf = append(hf, i)
+		} else if mapped[i] {
+			return cells
+		}
+		if c {
+			cf = append(cf, i)
+		}
+		if !h && c {
+			underBlank++
+		}
+		if h && !c {
+			labelBlank++
+		}
+	}
+	if len(hf) != len(cf) || len(hf) < 3 || underBlank == 0 || underBlank != labelBlank {
+		return cells
+	}
+	out := make([]string, len(cells))
+	for k := range hf {
+		out[hf[k]] = cells[cf[k]]
+	}
+	return out
 }
 
 // htmlIdentityRow reads a row that fills the identity columns of a shared
