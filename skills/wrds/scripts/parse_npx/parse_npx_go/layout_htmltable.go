@@ -2669,11 +2669,33 @@ func htmlStackedValues(cells []string, labels map[int]string) (ctx htmlContext) 
 			}
 		}
 	}
-	for i, label := range labels {
-		if i >= len(cells) {
-			continue
+	// When the value row's spacer cells differ from the label row's (`Ticker
+	// | Security ID: | Meeting Date | Meeting Status` over `AKAM | CUSIP
+	// 00971T101 | 05/14/2014 | | Voted`, Brown Capital Management 2014:
+	// 1,575 rows with no date on r160b), the columns no longer meet. With as
+	// many filled values as labels, the k-th label takes the k-th value.
+	var labelOrder []int
+	for i := range labels {
+		labelOrder = append(labelOrder, i)
+	}
+	sort.Ints(labelOrder)
+	var filled []string
+	for i := range cells {
+		if w := at(i); w != "" {
+			filled = append(filled, w)
 		}
-		v := at(i)
+	}
+	byRank := map[int]string{}
+	if len(filled) == len(labelOrder) {
+		for k, i := range labelOrder {
+			byRank[i] = filled[k]
+		}
+	}
+	for i, label := range labels {
+		v := ""
+		if i < len(cells) {
+			v = at(i)
+		}
 		if v == "" {
 			for _, j := range []int{i - 1, i + 1} {
 				if _, claimed := labels[j]; claimed {
@@ -2684,6 +2706,9 @@ func htmlStackedValues(cells []string, labels map[int]string) (ctx htmlContext) 
 					break
 				}
 			}
+		}
+		if v == "" {
+			v = byRank[i]
 		}
 		// A label is never a value: a second label row under the first
 		// (MET Investors 2010) read `Country` as the issuer and `Security ID
