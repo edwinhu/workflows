@@ -103,6 +103,9 @@ var brLabels = []string{
 	"AGENDA NUMBER", "MEETING DATE", "MEETING TYPE", "RECORD DATE",
 	"SECURITY", "CUSIP", "TICKER", "AGENDA", "ISIN", "SEDOL",
 	"CITY", "COUNTRY",
+	// `TYPE: ANNUAL` closing the one-line identity (Baron 2005); without it
+	// the meeting date's value ran on into the type and parsed as nothing.
+	"TYPE",
 }
 
 // brColumnWords is the vocabulary of the column header and of its spill line. A
@@ -804,6 +807,8 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 				}
 				for label, v := range labels {
 					switch label {
+					case "ISSUER":
+						issuer = v
 					case "TICKER", "TICKER SYMBOL":
 						ticker = brFirstField(v)
 					case "CUSIP", "SECURITY ID", "SECURITY":
@@ -814,7 +819,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 						isin = brFirstField(v)
 					case "MEETING DATE":
 						mtgDate = brDate(v)
-					case "MEETING TYPE":
+					case "MEETING TYPE", "TYPE":
 						mtgType = v
 					case "RECORD DATE":
 						recDate = brDate(v)
@@ -1079,11 +1084,31 @@ func brFindLabels(line string) map[string]string {
 	// -- '5 Approve Change of Record Date for Annual Meeting' -- is a table row,
 	// and reading it as a label line would close the table and blank the meeting
 	// date, dropping every later proposal of that meeting.
+	lead := ""
 	if kept[0].at != 0 {
-		return nil
+		// The identity on one line LED BY THE ISSUER (Baron Investment Funds
+		// 2005: `ALEXANDER'S INC.  CUSIP: 014752109  TICKER: ALX  MEETING
+		// DATE: 05/18/05  TYPE: ANNUAL`): two or more labels each followed by
+		// a colon are labels, whatever precedes them, and the prefix is the
+		// name. A colon-less mention stays a proposal.
+		if len(kept) < 2 {
+			return nil
+		}
+		for _, h := range kept {
+			if e := h.at + len(h.label); e >= len(line) || line[e] != ':' {
+				return nil
+			}
+		}
+		lead = strings.TrimSpace(line[:kept[0].at])
+		if lead == "" || brColumnFurniture(lead) {
+			return nil
+		}
 	}
 
 	out := map[string]string{}
+	if lead != "" {
+		out["ISSUER"] = lead
+	}
 	for i, h := range kept {
 		from := h.at + len(h.label)
 		to := len(line)
