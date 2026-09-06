@@ -2336,6 +2336,29 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 						break
 					}
 				}
+				if label == "MEETING DATE:" && strings.TrimSpace(v) != "" && htmlDate(v) == "" {
+					// `Meeting Date:  MAY` / `09, 2014 Record Date: ...`: the value
+					// wraps over the line break inside the cell (Oppenheimer Rising
+					// Dividends 2014, 1,047 undated rows on r179). The next line's
+					// text before any label joins when the pair parses.
+					for j := i + 1; j < len(items) && cellOf[j] == cellOf[i]; j++ {
+						if items[j] == "" {
+							continue
+						}
+						rest := items[j]
+						restUp := htmlUpperASCII(rest)
+						cut := len(rest)
+						for _, other := range append(append([]string(nil), htmlContextLabels...), htmlContextCutLabels...) {
+							if k := strings.Index(restUp, other); k >= 0 && k < cut {
+								cut = k
+							}
+						}
+						if joined := strings.TrimSpace(v) + " " + strings.TrimSpace(rest[:cut]); htmlDate(joined) != "" {
+							v = joined
+						}
+						break
+					}
+				}
 				if strings.TrimSpace(v) == "" && strings.EqualFold(bareUp, label) {
 					for j := i + 1; j < len(items); j++ {
 						if cellOf[j] == cellOf[i] {
