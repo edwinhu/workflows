@@ -3,6 +3,7 @@ package main
 import (
 	"sort"
 	"strings"
+	"time"
 )
 
 // htmltable is the generic HTML <table> layout: the residue of the legacy era
@@ -3342,6 +3343,9 @@ func htmlIdentityRow(cells []string, mapping map[string]int) (ctx htmlContext, o
 	ctx.CUSIP, ctx.ISIN = htmlSecurityID(at(htmlFieldCUSIP))
 	ctx.Ticker = htmlValueOrEmpty(at(htmlFieldTicker))
 	ctx.MeetingDate = htmlDate(at(htmlFieldMtgDate))
+	if ctx.MeetingDate == "" {
+		ctx.MeetingDate = htmlExcelSerialDate(at(htmlFieldMtgDate))
+	}
 	if d := at(htmlFieldMtgDate); ctx.MeetingDate == "" && d != "" {
 		// `05/02/07 - A`: the date with the meeting-type letter after a dash.
 		if f := strings.Fields(d); len(f) > 0 {
@@ -3643,6 +3647,9 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 	}
 	if v := htmlDate(at(htmlFieldMtgDate)); v != "" {
 		r.MeetingDate = v
+	} else if v := htmlExcelSerialDate(at(htmlFieldMtgDate)); v != "" {
+		// `39930` under `Meeting Date`: a spreadsheet serial (Glenmede 2009).
+		r.MeetingDate = v
 	} else if _, mapped := mapping[htmlFieldMtgDate]; mapped && r.MeetingDate == "" {
 		// A spanned header label lands in the LAST column it covers, so `(d)
 		// Shareholder Meeting Date` over two columns maps to the meeting-type
@@ -3926,4 +3933,26 @@ func htmlBareLabelledValueRow(cells []string) bool {
 		}
 	}
 	return false
+}
+
+// htmlExcelSerialDate reads a date printed as a spreadsheet serial day count
+// (`39930` for 2009-04-27; Glenmede 2009's International Portfolio table).
+// Only five-digit counts between 1998 and 2036 are read, and only from a
+// mapped date column, because a share count is a five-digit integer too.
+func htmlExcelSerialDate(s string) string {
+	s = strings.TrimSpace(s)
+	if len(s) != 5 {
+		return ""
+	}
+	n := 0
+	for i := 0; i < 5; i++ {
+		if s[i] < '0' || s[i] > '9' {
+			return ""
+		}
+		n = n*10 + int(s[i]-'0')
+	}
+	if n < 35800 || n > 50000 {
+		return ""
+	}
+	return time.Date(1899, time.December, 30, 0, 0, 0, 0, time.UTC).AddDate(0, 0, n).Format("20060102")
 }
