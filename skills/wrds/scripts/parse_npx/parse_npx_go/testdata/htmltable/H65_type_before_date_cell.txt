@@ -1,0 +1,161 @@
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 14%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Registrant:&nbsp;&nbsp;Mutual Fund Series Trust</B></FONT></TD>
+    <TD STYLE="width: 9%">&nbsp;</TD>
+    <TD STYLE="width: 9%; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Fund Name - Catalyst/MAP Global Balanced Fund - TRXAX</B></FONT></TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 47%">&nbsp;</TD>
+    <TD STYLE="width: 4%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Item 1</FONT></TD>
+    <TD STYLE="width: 1%">&nbsp;</TD>
+    <TD STYLE="width: 4%">&nbsp;</TD>
+    <TD STYLE="width: 4%">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Investment Compnay 1940 Act File # 811-21872</B></FONT></TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Reporting Period:&nbsp;&nbsp;July 1, 2017 - June 30, 2018</B></FONT></TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-top: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 1pt solid">&nbsp;</TD>
+    <TD NOWRAP COLSPAN="2" STYLE="border-top: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 14pt"><B>N-PX Form Requirements</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 1pt solid; border-bottom: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="border: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(a) Issuer's Name</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(b) Exchange Ticker Symbol</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(c)&quot;CUSIP&quot; #</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(d) Shareholder Meeting Type &amp; Date</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(e) Matter Identification</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(f) Proposal Type</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(g) Voted</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(h) Vote Cast</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(i) For or Against Management</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Vodafone Group Plc.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">VOD</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">92857W308</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Annual 28-Jul-2017</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">TO RECEIVE THE COMPANY'S ACCOUNTS, THE STRATEGIC REPORT AND REPORTS OF THE DIRECTORS AND THE AUDITOR FOR THE YEAR ENDED 31 MARCH 2017 </FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Vodafone Group Plc.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">VOD</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">92857W308</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Annual 28-Jul-2017</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">TO RE-ELECT GERARD KLEISTERLEE AS A DIRECTOR </FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Vodafone Group Plc.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">VOD</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">92857W308</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Annual 28-Jul-2017</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">TO RE-ELECT VITTORIO COLAO AS A DIRECTOR </FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Vodafone Group Plc.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">VOD</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">92857W308</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Annual 28-Jul-2017</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">TO RE-ELECT NICK READ AS A DIRECTOR </FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Vodafone Group Plc.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">VOD</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">92857W308</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Annual 28-Jul-2017</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">TO RE-ELECT SIR CRISPIN DAVIS AS A DIRECTOR </FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Vodafone Group Plc.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">VOD</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">92857W308</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Annual 28-Jul-2017</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">TO RE-ELECT DR MATHIAS DOPFNER AS A DIRECTOR </FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Vodafone Group Plc.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">VOD</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">92857W308</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Annual 28-Jul-2017</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">TO RE-ELECT DAME CLARA FURSE AS A DIRECTOR </FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Vodafone Group Plc.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">VOD</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">92857W308</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Annual 28-Jul-2017</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">TO RE-ELECT VALERIE GOODING AS A DIRECTOR </FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Vodafone Group Plc.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">VOD</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">92857W308</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Annual 28-Jul-2017</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">TO RE-ELECT RENEE JAMES AS A DIRECTOR </FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Vodafone Group Plc.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">VOD</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">92857W308</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Annual 28-Jul-2017</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">TO RE-ELECT SAMUEL JONAH AS A DIRECTOR </FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt.</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
