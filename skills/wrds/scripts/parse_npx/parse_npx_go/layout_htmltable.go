@@ -2528,6 +2528,10 @@ var htmlStackedLabelSet = map[string]string{
 	// issuer, id or date on r159).
 	"MEETINGDATE": "MEETING DATE", "SECURITYID": "CUSIP", "MEETINGTYPE": "MEETING TYPE",
 	"RECORDDATE": "RECORD DATE", "SHARESVOTED": "SHARES", "SHARESAVAILABLE": "SHARES",
+	// `... | SharesInstructed | SharesAvailable | Shares onLoan` (Ivy Funds
+	// 2011, 1,542 undated rows on r202): one unknown label rejects the row.
+	"SHARESINSTRUCTED": "SHARES", "SHARES INSTRUCTED": "SHARES",
+	"SHARES ONLOAN": "SHARES", "SHARES ON LOAN": "SHARES",
 	"SHARES AVAILABLE": "SHARES", "ISIN": "ISIN",
 	// US Bancorp's grammar heads each meeting with `Company Name | Meeting
 	// Date | Provider Security ID | Ticker | Meeting Type` (Listed Funds
