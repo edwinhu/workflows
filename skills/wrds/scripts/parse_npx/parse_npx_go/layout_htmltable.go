@@ -2316,7 +2316,27 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 				// 101,061 of 108,913 rows with no issuer, id or date on 2026-09-02).
 				// The value cell may wrap too (`MAY 12,` / `2005`), so it is
 				// read whole.
-				if strings.TrimSpace(v) == "" && strings.EqualFold(strings.TrimSpace(up), label) {
+				bareUp := strings.TrimSpace(up)
+				if label == "MEETING DATE:" {
+					if cut := htmlMeetingTypeCut(bareUp); cut > 0 {
+						bareUp = strings.TrimSpace(bareUp[cut:])
+					}
+				}
+				if strings.TrimSpace(v) == "" && strings.EqualFold(bareUp, label) {
+					// `Annual Meeting Date:<br> 07/31/2003` (Ivy Funds 2004, 3,153 of
+					// 3,530 rows without a date on r174b): the value is the label
+					// cell's own next line, before any other cell is asked.
+					for j := i + 1; j < len(items) && cellOf[j] == cellOf[i]; j++ {
+						if items[j] == "" {
+							continue
+						}
+						if label == "MEETING DATE:" && htmlDate(items[j]) != "" {
+							v = items[j]
+						}
+						break
+					}
+				}
+				if strings.TrimSpace(v) == "" && strings.EqualFold(bareUp, label) {
 					for j := i + 1; j < len(items); j++ {
 						if cellOf[j] == cellOf[i] {
 							continue
