@@ -3098,6 +3098,13 @@ func htmlValueOrEmpty(v string) string {
 // column shape every other layout writes. brDate reads the numeric and
 // day-month-year forms; issDate reads "FEB 28, 2017".
 func htmlDate(s string) string {
+	// `07/13/2020; Special`: the meeting type after a semicolon (Timothy Plan
+	// 2021's Israel Common Values Fund section, 1,275 undated rows on r194).
+	if k := strings.Index(s, ";"); k > 0 {
+		if d := htmlDate(strings.TrimSpace(s[:k])); d != "" {
+			return d
+		}
+	}
 	// `6/12/2013 (Due Date)`: a parenthetical after the date (Investment
 	// Managers Series Trust 2013).
 	if k := strings.Index(s, " ("); k > 0 {
