@@ -3554,6 +3554,28 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 	}
 	if v := htmlDate(at(htmlFieldMtgDate)); v != "" {
 		r.MeetingDate = v
+	} else if _, mapped := mapping[htmlFieldMtgDate]; mapped && r.MeetingDate == "" {
+		// A spanned header label lands in the LAST column it covers, so `(d)
+		// Shareholder Meeting Date` over two columns maps to the meeting-type
+		// column beside the date (Northern Lights Fund Trust 2021 and its filer
+		// agent's 91 filings, 17,778 undated rows on r179). A vote row that
+		// prints exactly one date-shaped cell prints its meeting date there;
+		// two candidates (a record date beside it) settle nothing.
+		found := ""
+		for _, c := range cells {
+			v := htmlFlat(c)
+			if v == "" || len(v) > 12 {
+				continue
+			}
+			if d := htmlDate(v); d != "" {
+				if found != "" {
+					found = ""
+					break
+				}
+				found = d
+			}
+		}
+		r.MeetingDate = found
 	}
 
 	// series_id is deliberately NOT set. The chassis stamps it when the header

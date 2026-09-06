@@ -1,0 +1,126 @@
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="5" STYLE="font-weight: bold">Registrant: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 700"><U>NORTHERN LIGHTS FUND TRUST -TOEWS TACTICAL DEFENSIVE ALPHA FUND</U></FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">Item 1, Exhibit 75</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="2" STYLE="font-weight: bold">Investment Company Act file number: 811-21720</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="2" STYLE="font-weight: bold">Reporting Period: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 400">July 1, 2019 through June 30, 2020</FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 1%">&nbsp;</TD>
+    <TD STYLE="width: 23%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 5%">&nbsp;</TD>
+    <TD STYLE="width: 12%">&nbsp;</TD>
+    <TD STYLE="width: 13%">&nbsp;</TD>
+    <TD STYLE="width: 4%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="12" STYLE="font-size: 14pt; font-weight: bold; text-decoration: underline; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</TD></TR>
+<TR STYLE="vertical-align: middle">
+    <TD STYLE="border: Black 0.5pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(a) Issuer's Name</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(b) Exchange Ticker Symbol</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(c)&quot;CUSIP&quot; #</TD>
+    <TD COLSPAN="2" STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(d) Shareholder Meeting Date</TD>
+    <TD COLSPAN="2" STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(e) Matter Identification</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(f) Proposal Type</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(g) Voted</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(h) Vote Cast</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(i) For/Against Management</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: right">1</TD>
+    <TD STYLE="border-right: Black 0.5pt solid">FIDELITY NAT'L INFORMATION SERVICES,INC.</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">FIS</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">31620M106</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">24-Jul-2019</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Special</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">935051538</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">To adjourn the FIS special meeting, if necessary or appropriate, to solicit additional proxies if, immediately prior to such adjournment, sufficient votes to approve the FIS share issuance proposal or the FIS articles amendment proposal have not been obtained by FIS, which proposal we refer to as the FIS adjournment proposal.&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Approve Motion to Adjourn Meeting</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Y</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid">F</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: right">2</TD>
+    <TD STYLE="border-right: Black 0.5pt solid">FIDELITY NAT'L INFORMATION SERVICES,INC.</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">FIS</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">31620M106</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">24-Jul-2019</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Special</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">935051538</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">To approve the issuance of shares of common stock of Fidelity National Information Services, Inc., which we refer to as FIS, in connection with the transactions contemplated by the Agreement and Plan of Merger, dated March 17, 2019, as it may be amended from time to time, by and among FIS, Wrangler Merger Sub, Inc., a wholly-owned subsidiary of FIS, and Worldpay, Inc., which proposal we refer to as the FIS share issuance proposal.&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Stock Issuance</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Y</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid">F</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: right">3</TD>
+    <TD STYLE="border-right: Black 0.5pt solid">FIDELITY NAT'L INFORMATION SERVICES,INC.</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">FIS</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">31620M106</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">24-Jul-2019</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Special</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">935051538</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">To approve an amendment to the articles of incorporation of FIS to increase the number of authorized shares of common stock of FIS from 600,000,000 to 750,000,000, effective only immediately prior to consummation of the merger, which proposal we refer to as the FIS articles amendment proposal.&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Authorize Common Stock Increase</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Y</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid">F</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: right">4</TD>
+    <TD STYLE="border-right: Black 0.5pt solid">VORNADO REALTY TRUST</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">VNO</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">929042109</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">07-Aug-2019</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Special</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">935054887</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">APPROVAL OF AN AMENDMENT TO THE COMPANY'S DECLARATION OF TRUST RELATED TO THE COMPANY'S QUALIFICATION AS A &quot;DOMESTICALLY CONTROLLED QUALIFIED INVESTMENT ENTITY&quot; WITHIN THE MEANING OF SECTION 897(H)(4)(B) OF THE INTERNAL REVENUE CODE OF 1986, AS AMENDED.&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Approve Charter Amendment</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Y</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid">F</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: right">5</TD>
+    <TD STYLE="border-right: Black 0.5pt solid">THE PROCTER &amp; GAMBLE COMPANY</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">PG</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">742718109</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">08-Oct-2019</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Annual</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">935072998</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Ratify Appointment of the Independent Registered Public Accounting Firm&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Ratify Appointment of Independent Auditors</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Y</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid">F</TD></TR>
+<TR STYLE="vertical-align: bottom">
