@@ -1,0 +1,395 @@
+<table id="za38b5d108cf04a8b8b66d228f722c644" style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; WIDTH: 100%" cellspacing="0" cellpadding="2" border="0">
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15"></div>
+</td>
+<td style="WIDTH: 77.94%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left; BACKGROUND-COLOR: #004f75" colspan="8">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; LINE-HEIGHT: 1.15">AGNICO EAGLE MINES LIMITED</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15"></div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 16.13%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="4">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; LINE-HEIGHT: 1.15">Security</div>
+</td>
+<td style="WIDTH: 31.02%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">008474108</div>
+</td>
+<td style="WIDTH: 10.97%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 19.71%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; LINE-HEIGHT: 1.15">Meeting Type</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">Annual</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 16.13%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="4">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; LINE-HEIGHT: 1.15">Ticker Symbol</div>
+</td>
+<td style="WIDTH: 31.02%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">AEM</div>
+</td>
+<td style="WIDTH: 10.97%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 19.71%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; LINE-HEIGHT: 1.15">Meeting Date</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">28-Apr-2017</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15"></div>
+</td>
+<td style="WIDTH: 4.03%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; LINE-HEIGHT: 1.15">Item</div>
+</td>
+<td style="WIDTH: 43.11%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left; BACKGROUND-COLOR: #004f75" colspan="4">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; LINE-HEIGHT: 1.15">Proposal</div>
+</td>
+<td style="WIDTH: 10.97%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; LINE-HEIGHT: 1.15">Proposed by</div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; LINE-HEIGHT: 1.15">Vote</div>
+</td>
+<td style="WIDTH: 9.74%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; LINE-HEIGHT: 1.15">For/Against Management</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15"></div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 4.03%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">01</div>
+</td>
+<td style="WIDTH: 43.11%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="4">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">DIRECTOR</div>
+</td>
+<td style="WIDTH: 10.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">Management</div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15"></div>
+</td>
+<td style="WIDTH: 9.74%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15"></div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 4.03%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 3.02%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 6.05%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">1</div>
+</td>
+<td style="WIDTH: 34.04%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">LEANNE M. BAKER</div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15"></div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 9.74%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 4.03%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 3.02%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 6.05%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">2</div>
+</td>
+<td style="WIDTH: 34.04%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">SEAN BOYD</div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15"></div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 9.74%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 4.03%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 3.02%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 6.05%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">3</div>
+</td>
+<td style="WIDTH: 34.04%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">MARTINE A. CELEJ</div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15"></div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 9.74%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 4.03%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 3.02%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 6.05%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">4</div>
+</td>
+<td style="WIDTH: 34.04%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">ROBERT J. GEMMELL</div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15"></div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 9.74%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 4.03%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 3.02%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 6.05%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">5</div>
+</td>
+<td style="WIDTH: 34.04%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">MEL LEIDERMAN</div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15"></div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 9.74%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 4.03%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 3.02%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 6.05%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">6</div>
+</td>
+<td style="WIDTH: 34.04%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">DEBORAH A. MCCOMBE</div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15"></div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 9.74%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 4.03%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 3.02%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 6.05%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">7</div>
+</td>
+<td style="WIDTH: 34.04%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">JAMES D. NASSO</div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15"></div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 9.74%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 4.03%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 3.02%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 6.05%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">8</div>
+</td>
+<td style="WIDTH: 34.04%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">SEAN RILEY</div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15"></div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 9.74%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 4.03%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 3.02%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 6.05%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">9</div>
+</td>
+<td style="WIDTH: 34.04%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">J. MERFYN ROBERTS</div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15"></div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 9.74%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 4.03%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 3.02%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 6.05%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">10</div>
+</td>
+<td style="WIDTH: 34.04%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">JAMIE C. SOKALSKY</div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15"></div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 9.74%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 4.03%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 3.02%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 6.05%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">11</div>
+</td>
+<td style="WIDTH: 34.04%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">HOWARD R. STOCKFORD</div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15"></div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 9.74%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 4.03%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 3.02%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+<td style="WIDTH: 6.05%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">12</div>
+</td>
+<td style="WIDTH: 34.04%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">PERTTI VOUTILAINEN</div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15"></div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 9.74%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 4.03%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">02</div>
+</td>
+<td style="WIDTH: 43.11%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="4">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">APPOINTMENT OF ERNST &amp; YOUNG LLP AS AUDITORS OF THE COMPANY AND AUTHORIZING THE DIRECTORS TO FIX THEIR REMUNERATION.</div>
+</td>
+<td style="WIDTH: 10.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">Management</div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 9.74%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+</tr>
+
+<tr>
+<td style="WIDTH: 1.01%; VERTICAL-ALIGN: bottom"></td>
+<td style="WIDTH: 4.03%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">03</div>
+</td>
+<td style="WIDTH: 43.11%; VERTICAL-ALIGN: top; TEXT-ALIGN: left" colspan="4">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">A NON-BINDING, ADVISORY RESOLUTION ACCEPTING THE COMPANY'S APPROACH TO EXECUTIVE COMPENSATION.</div>
+</td>
+<td style="WIDTH: 10.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">Management</div>
+</td>
+<td style="WIDTH: 9.97%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 9.74%; VERTICAL-ALIGN: top; TEXT-ALIGN: left">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 21.05%; VERTICAL-ALIGN: bottom; TEXT-ALIGN: left"></td>
+</tr>
+</table>
