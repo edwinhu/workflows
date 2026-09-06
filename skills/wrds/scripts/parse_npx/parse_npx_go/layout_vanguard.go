@@ -248,10 +248,10 @@ func parseVanguard(text string, meta FilingMeta) ([]VoteRow, error) {
 		upper := strings.ToUpper(trimmed)
 
 		switch {
-		case strings.HasPrefix(upper, "FUND:"):
+		case vanguardFundLabel(trimmed) != "":
 			flush()
 			issuerOpen = false
-			fund = strings.TrimSpace(trimmed[len("FUND:"):])
+			fund = vanguardFundLabel(trimmed)
 			fundSeries = ""
 			if _, d := issResolveFund(seriesIx, fund); d != nil {
 				fundSeries = d.SeriesID
@@ -714,4 +714,23 @@ func vanguardPeelCell(toks []string, vocab map[string]bool) (cell string, remain
 // It is used only for vocabulary lookup; what is RECORDED stays verbatim.
 func vanguardCellKey(candidate string) string {
 	return strings.ToLower(strings.Trim(candidate, ".,;:"))
+}
+
+// vanguardFundLabel reads the fund a `FUND: name` line opens. The 2004-06 cover
+// block prints it with a column gap and no colon, `Fund             VANGUARD
+// TOTAL STOCK MARKET INDEX FUND` (Vanguard Index Funds 2004: 24,050 rows with
+// no series on r204, 457,261 across the filer agent's 95 single-fund filings);
+// two spaces after the word are the gap, one space is prose.
+func vanguardFundLabel(trimmed string) string {
+	upper := strings.ToUpper(trimmed)
+	if strings.HasPrefix(upper, "FUND:") {
+		return strings.TrimSpace(trimmed[len("FUND:"):])
+	}
+	if strings.HasPrefix(upper, "FUND  ") {
+		name := strings.TrimSpace(trimmed[len("FUND"):])
+		if name != "" && !strings.Contains(name, ":") {
+			return name
+		}
+	}
+	return ""
 }
