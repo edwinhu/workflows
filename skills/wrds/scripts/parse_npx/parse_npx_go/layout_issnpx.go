@@ -392,6 +392,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			// the whole line became the issuer and the fund heading was lost.
 			name, bannerTail, ok = issBannerWithTail(line)
 		}
+		if !ok {
+			name, ok = issOpenBanner(line, lines, i)
+		}
 		if ok {
 			flush()
 			inTable, tailRow = false, -1
@@ -2824,4 +2827,34 @@ func issMonthWord(w string) bool {
 		return true
 	}
 	return false
+}
+
+// issOpenBanner reads a banner whose closing rule wrapped onto the next line:
+// `======================= SUMMIT BALANCED INDEX PORTFOLIO` over a bare
+// `========================` (Summit Mutual Funds 2005, 43,263 rows with no
+// fund on r204). The opening run must be a rule on its own, the text must hold
+// no '=', and the next non-blank line must be a bare rule.
+func issOpenBanner(line string, lines []string, i int) (string, bool) {
+	lead := 0
+	for lead < len(line) && line[lead] == '=' {
+		lead++
+	}
+	if lead < issBannerMinEquals || lead == len(line) {
+		return "", false
+	}
+	name := strings.TrimSpace(line[lead:])
+	if name == "" || strings.Contains(name, "=") {
+		return "", false
+	}
+	for j := i + 1; j < len(lines); j++ {
+		next := strings.TrimSpace(lines[j])
+		if next == "" {
+			continue
+		}
+		if n, ok := issFundSeparator(next); ok && n == "" {
+			return name, true
+		}
+		return "", false
+	}
+	return "", false
 }
