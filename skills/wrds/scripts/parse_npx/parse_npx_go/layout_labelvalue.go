@@ -192,6 +192,20 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 						ticker = p.value
 					case "MEETING DATE":
 						mtgDate = htmlDate(p.value)
+						// `Meeting Date: APR 17` with `2019 Meeting Type: Annual` on
+						// the next line: the year wraps (Timothy Plan 2019, 867
+						// undated rows on r185). The next line's leading year joins.
+						if mtgDate == "" {
+							k := i + 1
+							for k < len(lines) && strings.TrimSpace(lines[k]) == "" {
+								k++
+							}
+							if k < len(lines) {
+								if f := strings.Fields(strings.TrimSpace(lines[k])); len(f) > 0 && lvYear(f[0]) {
+									mtgDate = htmlDate(p.value + " " + f[0])
+								}
+							}
+						}
 					case "SECURITY ID":
 						cusip = p.value
 					case "MEETING TYPE":
@@ -208,8 +222,11 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 			continue
 		}
 
-		// A wrapped description, on the line directly under its row.
-		if lastRow >= 0 && i == lastLine+1 && len(cells) == 1 && !icrItem(cells[0]) {
+		// A wrapped description, on the line directly under its row -- or under
+		// the blank lines the cell markup leaves there (`Approve Consolidated
+		// Financial` / `Statements`, Timothy Plan 2019: every item after the
+		// first of a block was lost when the wrap closed it).
+		if lastRow >= 0 && lvOnlyBlankBetween(lines, lastLine, i) && len(cells) == 1 && !icrItem(cells[0]) {
 			rows[lastRow].VoteDescription += " " + cells[0]
 			lastLine = i
 			continue
@@ -229,9 +246,10 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 		// one issuer's items, and the next column header reopens it.
 		inBlock = false
 		lastRow = -1
-		if len(cells) == 1 {
+		if len(cells) == 1 && !lvYear(cells[0]) {
 			// The ISSUER heading, which this grammar prints above the identity
-			// pairs with nothing to mark it.
+			// pairs with nothing to mark it. A lone year is the wrapped tail of
+			// a `Record Date:` line, not a name.
 			issuer = cells[0]
 			ticker, cusip, mtgDate, mtgType = "", "", "", ""
 		}
@@ -297,4 +315,31 @@ func lvVoteRow(cells []string, issuer, ticker, cusip, mtgDate, mtgType, fund, se
 		ManagementRecommendation: trimmed[n-2],
 		HowVoted:                 trimmed[n-1],
 	}, true
+}
+
+// lvYear reports a bare four-digit year.
+func lvYear(s string) bool {
+	if len(s) != 4 {
+		return false
+	}
+	for i := 0; i < 4; i++ {
+		if s[i] < '0' || s[i] > '9' {
+			return false
+		}
+	}
+	return s[0] == '1' || s[0] == '2'
+}
+
+// lvOnlyBlankBetween reports that every line strictly between from and to is
+// blank.
+func lvOnlyBlankBetween(lines []string, from, to int) bool {
+	if to <= from {
+		return false
+	}
+	for k := from + 1; k < to; k++ {
+		if strings.TrimSpace(lines[k]) != "" {
+			return false
+		}
+	}
+	return true
 }
