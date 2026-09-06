@@ -2338,12 +2338,23 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 					continue
 				}
 				labelled = true
+				// `Issuer: a | Caterpillar Inc`, `Meeting Date: d | 6/12/2013`: the
+				// form's item letter after the colon is no value (Investment
+				// Managers Series Trust 2013, 895 rows with `a` for the issuer
+				// on r187); the value is in the next cell.
+				letterOnly := false
+				if t := strings.TrimSpace(v); len(t) == 1 && t[0] >= 'a' && t[0] <= 'i' {
+					v, letterOnly = "", true
+				}
 				// A cell that is ONLY the label has its value in the next cell:
 				// `Ticker: | MMM | Security ID: | 88579Y101` (FundVantage Trust,
 				// 101,061 of 108,913 rows with no issuer, id or date on 2026-09-02).
 				// The value cell may wrap too (`MAY 12,` / `2005`), so it is
 				// read whole.
 				bareUp := strings.TrimSpace(up)
+				if letterOnly {
+					bareUp = strings.TrimSpace(bareUp[:len(bareUp)-1])
+				}
 				if label == "MEETING DATE:" {
 					if cut := htmlMeetingTypeCut(bareUp); cut > 0 {
 						bareUp = strings.TrimSpace(bareUp[cut:])
@@ -3087,6 +3098,13 @@ func htmlValueOrEmpty(v string) string {
 // column shape every other layout writes. brDate reads the numeric and
 // day-month-year forms; issDate reads "FEB 28, 2017".
 func htmlDate(s string) string {
+	// `6/12/2013 (Due Date)`: a parenthetical after the date (Investment
+	// Managers Series Trust 2013).
+	if k := strings.Index(s, " ("); k > 0 {
+		if d := htmlDate(strings.TrimSpace(s[:k])); d != "" {
+			return d
+		}
+	}
 	// `Annual 04-May-2018`, `Special 12/01/2016`: the meeting type BEFORE the
 	// date in one cell (Mutual Fund Series Trust 2018 and Northern Lights Fund
 	// Trust IV 2017, 2,222 undated rows on r181). One leading type word goes
