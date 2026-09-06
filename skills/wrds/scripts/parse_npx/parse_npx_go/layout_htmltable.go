@@ -227,7 +227,11 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// Symbol | JAVA | Meeting / Date | 16-Jul-2009`, Green Century 2010)
 		// looks like a header stacked over rows to the split-header reader,
 		// which consumed it. A row that reads as context WITH a value is context.
-		if wrapped := htmlHasWrappedLabelCell(cells); wrapped {
+		// So does a bare-labelled row (`Meeting Date | 22-Apr-20` between the
+		// proposals, FS Series Trust 2020; `Ticker Symbol | AEM | | Meeting
+		// Date | 28-Apr-2017`, CM Advisors 2017; 1,317 undated rows on r185),
+		// which the split-header reader took for a header over its rows.
+		if wrapped := htmlHasWrappedLabelCell(cells) || htmlBareLabelledValueRow(cells); wrapped {
 			if next, labelled := htmlReadContext(cells); labelled && (next.MeetingDate != "" || pvTextCUSIP(next.CUSIP) || isinToken(next.ISIN)) {
 				if ctxSealed {
 					ctx = htmlContext{}
@@ -440,6 +444,22 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				}
 			}
 			if !emitted {
+				// Labelled identity rows INSIDE the vote table (`Issuer | Bank
+				// of America Corporation`, `Meeting Date | 22-Apr-20` between
+				// the proposals, FS Series Trust 2020; CM Advisors 2017 and
+				// Bragg Capital 2020 the same in their own spellings; 2,205
+				// undated rows on r185): read as the block's context, the way
+				// the same rows are read outside a mapped table.
+				if !htmlHasVoteCell(cells) {
+					if next, labelled := htmlReadContext(cells); labelled && (next.MeetingDate != "" || next.Issuer != "" || pvTextCUSIP(next.CUSIP) || isinToken(next.ISIN)) {
+						if ctxSealed {
+							ctx = htmlContext{}
+							ctxSealed = false
+						}
+						ctx.merge(next)
+						continue
+					}
+				}
 				// The identity row of an export that prints issuer, ticker,
 				// CUSIP and date under the SAME header as the proposals
 				// (Prudential Series Fund 2005: 36,441 rows with no issuer,
@@ -2209,6 +2229,10 @@ var htmlBareLabels = map[string]string{
 	// `Meeting Date/Type | | 06/10/08 AGM` (CRM Mutual Fund Trust 2008, 1,408
 	// rows with no date on r154): the type rides in the label and the value.
 	"MEETING DATE/TYPE": "MEETING DATE:",
+	// `Record | Meeting | 4/23/2020`: the dates row of Bragg Capital Trust
+	// 2020 (888 undated rows on r185) labels the meeting date with the bare
+	// word, beside a record-date label that carries no value.
+	"MEETING": "MEETING DATE:", "RECORD": "RECORD DATE:",
 	// Not "ISSUER": it is a proponent value ('Issuer' in Buffalo Funds' Proposed
 	// By column), and reading it as a label consumed 173,538 vote rows across
 	// 395 filings on run55.
@@ -3845,9 +3869,36 @@ func htmlVotedFlagInfo(flag string) string {
 
 // htmlMeetingTypeWord reports a bare meeting-type word.
 func htmlMeetingTypeWord(w string) bool {
-	switch strings.ToUpper(strings.Trim(w, ":")) {
+	switch strings.ToUpper(strings.Trim(w, ":;,")) {
 	case "ANNUAL", "SPECIAL", "AGM", "EGM", "CONSENT", "CONTEST", "ANNUAL/SPECIAL", "SPECIAL/ANNUAL":
 		return true
+	}
+	return false
+}
+
+// htmlBareLabelledValueRow reports a row in which a bare label is followed, in
+// the same row, by a filled cell that is no label: `Meeting Date | 22-Apr-20`.
+// A stacked grid's label-only row (`Ticker | Security ID: | Meeting Date`) has
+// no such value and stays with the stacked and split-header readers.
+func htmlBareLabelledValueRow(cells []string) bool {
+	if htmlHasVoteCell(cells) || htmlAllLabels(cells) {
+		return false
+	}
+	for i, c := range cells {
+		if _, ok := htmlBareLabels[htmlUpperASCII(htmlFlat(c))]; !ok {
+			continue
+		}
+		for j := i + 1; j < len(cells); j++ {
+			v := htmlFlat(cells[j])
+			if v == "" {
+				continue
+			}
+			up := htmlUpperASCII(v)
+			if _, lab := htmlBareLabels[up]; lab || htmlHasLabelPrefix(up) || htmlIsHeaderWord(v) {
+				break
+			}
+			return true
+		}
 	}
 	return false
 }
