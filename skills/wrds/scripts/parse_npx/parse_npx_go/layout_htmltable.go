@@ -3060,6 +3060,15 @@ func htmlValueOrEmpty(v string) string {
 // column shape every other layout writes. brDate reads the numeric and
 // day-month-year forms; issDate reads "FEB 28, 2017".
 func htmlDate(s string) string {
+	// `Annual 04-May-2018`, `Special 12/01/2016`: the meeting type BEFORE the
+	// date in one cell (Mutual Fund Series Trust 2018 and Northern Lights Fund
+	// Trust IV 2017, 2,222 undated rows on r181). One leading type word goes
+	// when what follows is a date.
+	if f := strings.Fields(strings.TrimSpace(s)); len(f) >= 2 && htmlMeetingTypeWord(f[0]) {
+		if d := htmlDate(strings.Join(f[1:], " ")); d != "" {
+			return d
+		}
+	}
 	s = htmlFlat(s)
 	if s == "" {
 		return ""
@@ -3824,4 +3833,13 @@ func htmlVotedFlagInfo(flag string) string {
 		return ""
 	}
 	return "Voted: " + strings.TrimSpace(flag)
+}
+
+// htmlMeetingTypeWord reports a bare meeting-type word.
+func htmlMeetingTypeWord(w string) bool {
+	switch strings.ToUpper(strings.Trim(w, ":")) {
+	case "ANNUAL", "SPECIAL", "AGM", "EGM", "CONSENT", "CONTEST", "ANNUAL/SPECIAL", "SPECIAL/ANNUAL":
+		return true
+	}
+	return false
 }
