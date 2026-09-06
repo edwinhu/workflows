@@ -3065,7 +3065,12 @@ func htmlDate(s string) string {
 	// Trust IV 2017, 2,222 undated rows on r181). One leading type word goes
 	// when what follows is a date.
 	if f := strings.Fields(strings.TrimSpace(s)); len(f) >= 2 && htmlMeetingTypeWord(f[0]) {
-		if d := htmlDate(strings.Join(f[1:], " ")); d != "" {
+		rest := f[1:]
+		// `Special Meeting 4/3/2014` (Advisors Preferred Trust 2014).
+		if len(rest) >= 2 && strings.EqualFold(rest[0], "meeting") {
+			rest = rest[1:]
+		}
+		if d := htmlDate(strings.Join(rest, " ")); d != "" {
 			return d
 		}
 	}
