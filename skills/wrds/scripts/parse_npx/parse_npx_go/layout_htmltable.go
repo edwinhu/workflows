@@ -1786,6 +1786,9 @@ var htmlSynonyms = map[string][]string{
 	htmlFieldFund: {"FUND NAME", "INSTITUTIONAL ACCOUNT NAME", "ACCOUNT NAME"},
 	htmlFieldMtgDate: {
 		"MEETING DATE", "MTG DATE", "DATE OF MEETING", "MTG DATE/TYPE", "SHAREHOLDER MEETING DATE",
+		// `Meeting Dt` beside a `Holding Dt` record date (Stadion Investment
+		// Trust 2016, 942 undated rows on r182; the agent's 15 filings 5,349).
+		"MEETING DT", "MTG DT",
 		// `(d) Shareholder Meeting Date/Type` over `05/11/2023 - Annual`
 		// (Advisors Preferred Trust 2023).
 		"MEETING DATE/TYPE", "SHAREHOLDER MEETING DATE/TYPE",
