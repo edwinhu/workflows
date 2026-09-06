@@ -1,0 +1,410 @@
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">ITEM 1. PROXY VOTING RECORD.</div>
+
+<div style="LINE-HEIGHT: 1.15"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">STADION TRILOGY ALTERNATIVE RETURN FUND</div>
+
+<div style="LINE-HEIGHT: 1.15">&#160;</div>
+
+<div style="LINE-HEIGHT: 1.15">
+<div id="DSPFPageHeader"></div>
+
+<div style="LINE-HEIGHT: 1.15">
+<table id="za9a9d7524a764f439393f34f23476f1c" style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; WIDTH: 100%" cellspacing="0" cellpadding="4" border="0">
+<tr>
+<td style="BORDER-TOP: #000000 2px solid; WIDTH: 5.9%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BORDER-LEFT: #000000 2px solid">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Fund</div>
+</td>
+<td style="BORDER-TOP: #000000 2px solid; WIDTH: 12.89%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Security Name</div>
+</td>
+<td style="BORDER-TOP: #000000 2px solid; WIDTH: 5.9%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Ticker</div>
+</td>
+<td style="BORDER-TOP: #000000 2px solid; WIDTH: 8.89%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Cusip</div>
+</td>
+<td style="BORDER-TOP: #000000 2px solid; WIDTH: 8.89%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Holding Dt</div>
+</td>
+<td style="BORDER-TOP: #000000 2px solid; WIDTH: 8.89%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Meeting Dt</div>
+</td>
+<td style="BORDER-TOP: #000000 2px solid; WIDTH: 23.87%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Proposal</div>
+</td>
+<td style="BORDER-TOP: #000000 2px solid; WIDTH: 7.87%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Vote</div>
+</td>
+<td style="BORDER-TOP: #000000 2px solid; WIDTH: 7.87%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Proposed By</div>
+</td>
+<td style="BORDER-TOP: #000000 2px solid; BORDER-RIGHT: #000000 2px solid; WIDTH: 8.89%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">For/Against Mgmt</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BORDER-LEFT: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Trilogy</div>
+</td>
+<td style="WIDTH: 12.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">GENERAL MILLS INC</div>
+</td>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">GIS</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">370334104</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">7/31/2015</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">9/29/2015</div>
+</td>
+<td style="WIDTH: 23.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Election of Directors</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR ALL</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">MGMT</div>
+</td>
+<td style="BORDER-RIGHT: #000000 2px solid; WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BORDER-LEFT: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Trilogy</div>
+</td>
+<td style="WIDTH: 12.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">GENERAL MILLS INC</div>
+</td>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">GIS</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">370334104</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">7/31/2015</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">9/29/2015</div>
+</td>
+<td style="WIDTH: 23.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">CAST AN ADVISORY VOTE ON EXECUTIVE COMPENSATION.</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">MGMT</div>
+</td>
+<td style="BORDER-RIGHT: #000000 2px solid; WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BORDER-LEFT: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Trilogy</div>
+</td>
+<td style="WIDTH: 12.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">GENERAL MILLS INC</div>
+</td>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">GIS</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">370334104</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">7/31/2015</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">9/29/2015</div>
+</td>
+<td style="WIDTH: 23.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">RATIFY THE APPOINTMENT OF KPMG LLP AS GENERAL MILLS' INDEPENDENT REGISTERED PUBLIC ACCOUNTING FIRM.</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">MGMT</div>
+</td>
+<td style="BORDER-RIGHT: #000000 2px solid; WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BORDER-LEFT: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Trilogy</div>
+</td>
+<td style="WIDTH: 12.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">PROCTER &amp; GAMBLE CO/THE</div>
+</td>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">PG</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">742718109</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">8/14/2015</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">10/13/2015</div>
+</td>
+<td style="WIDTH: 23.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Election of Directors</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR ALL</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">MGMT</div>
+</td>
+<td style="BORDER-RIGHT: #000000 2px solid; WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BORDER-LEFT: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Trilogy</div>
+</td>
+<td style="WIDTH: 12.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">PROCTER &amp; GAMBLE CO/THE</div>
+</td>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">PG</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">742718109</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">8/14/2015</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">10/13/2015</div>
+</td>
+<td style="WIDTH: 23.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">RATIFY APPOINTMENT OF THE INDEPENDENT REGISTERED PUBLIC ACCOUNTING FIRM</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">MGMT</div>
+</td>
+<td style="BORDER-RIGHT: #000000 2px solid; WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BORDER-LEFT: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Trilogy</div>
+</td>
+<td style="WIDTH: 12.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">PROCTER &amp; GAMBLE CO/THE</div>
+</td>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">PG</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">742718109</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">8/14/2015</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">10/13/2015</div>
+</td>
+<td style="WIDTH: 23.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">ADVISORY VOTE ON THE COMPANY'S EXECUTIVE COMPENSATION (THE "SAY ON PAY" VOTE)</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">MGMT</div>
+</td>
+<td style="BORDER-RIGHT: #000000 2px solid; WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BORDER-LEFT: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Trilogy</div>
+</td>
+<td style="WIDTH: 12.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">PROCTER &amp; GAMBLE CO/THE</div>
+</td>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">PG</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">742718109</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">8/14/2015</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">10/13/2015</div>
+</td>
+<td style="WIDTH: 23.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">SHAREHOLDER PROPOSAL - PROXY ACCESS</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">AGAINST</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">SH</div>
+</td>
+<td style="BORDER-RIGHT: #000000 2px solid; WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BORDER-LEFT: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Trilogy</div>
+</td>
+<td style="WIDTH: 12.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">HARRIS CORP</div>
+</td>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">HRS</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">413875105</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">8/28/2015</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">10/23/2015</div>
+</td>
+<td style="WIDTH: 23.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Election of Directors</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR ALL</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">MGMT</div>
+</td>
+<td style="BORDER-RIGHT: #000000 2px solid; WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BORDER-LEFT: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Trilogy</div>
+</td>
+<td style="WIDTH: 12.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">HARRIS CORP</div>
+</td>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">HRS</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">413875105</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">8/28/2015</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">10/23/2015</div>
+</td>
+<td style="WIDTH: 23.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">ADVISORY VOTE TO APPROVE THE COMPENSATION OF NAMED EXECUTIVE OFFICERS AS DISCLOSED IN PROXY STATEMENT</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">MGMT</div>
+</td>
+<td style="BORDER-RIGHT: #000000 2px solid; WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BORDER-LEFT: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Trilogy</div>
+</td>
+<td style="WIDTH: 12.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">HARRIS CORP</div>
+</td>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">HRS</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">413875105</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">8/28/2015</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">10/23/2015</div>
+</td>
+<td style="WIDTH: 23.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">APPROVAL OF NEW HARRIS CORPORATION 2015 EQUITY INCENTIVE PLAN</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">MGMT</div>
+</td>
+<td style="BORDER-RIGHT: #000000 2px solid; WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BORDER-LEFT: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Trilogy</div>
+</td>
+<td style="WIDTH: 12.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">HARRIS CORP</div>
+</td>
+<td style="WIDTH: 5.9%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">HRS</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">413875105</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">8/28/2015</div>
+</td>
+<td style="WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">10/23/2015</div>
+</td>
+<td style="WIDTH: 23.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">APPROVAL OF NEW HARRIS CORPORATION ANNUAL INCENTIVE PLAN</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+<td style="WIDTH: 7.87%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">MGMT</div>
+</td>
+<td style="BORDER-RIGHT: #000000 2px solid; WIDTH: 8.89%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FOR</div>
+</td>
+</tr>
+
