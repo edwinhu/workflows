@@ -1,0 +1,53 @@
+<table cellpadding="2" cellspacing="0" border="1" style="width: 100%">
+<tr style="font-size: 10pt; border-style: none"><th colspan="5" style="font-size: 10pt; border-style: none"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></th></tr>
+<td colspan="5" style="font-size: 10pt; font-weight: bold"><FONT STYLE="font-size: 8pt">ABBVIE INC. <br>Meeting Date:&nbsp;&nbsp;MAY
+09, 2014 <br>Record Date:&nbsp;&nbsp;MAR 12, 2014 <br>Meeting Type:&nbsp;&nbsp;ANNUAL</FONT></td>
+</tr>
+<tr>
+<td colspan="5" style="font-size: 10pt"><FONT STYLE="font-size: 8pt">Ticker:&nbsp;&nbsp;ABBV <br>Security ID:&nbsp;&nbsp;00287Y109
+<br></FONT></td>
+</tr>
+<tr>
+<th style="font-size: 10pt; width: 10%"><FONT STYLE="font-size: 8pt">Proposal No</FONT></th>
+<th style="font-size: 10pt; width: 55%"><FONT STYLE="font-size: 8pt">Proposal</FONT></th>
+<th style="font-size: 10pt; width: 15%"><FONT STYLE="font-size: 8pt">Proposed By</FONT></th>
+<th style="font-size: 10pt; width: 15%"><FONT STYLE="font-size: 8pt">Management Recommendation</FONT></th>
+<th style="font-size: 10pt; width: 10%"><FONT STYLE="font-size: 8pt">Vote Cast</FONT></th>
+</tr>
+<tr>
+<td><FONT STYLE="font-size: 8pt">1.1</FONT></td>
+<td><FONT STYLE="font-size: 8pt">Elect Director Robert J. Alpern</FONT></td>
+<td><FONT STYLE="font-size: 8pt">Management</FONT></td>
+<td><FONT STYLE="font-size: 8pt">For</FONT></td>
+<td><FONT STYLE="font-size: 8pt">For</FONT></td>
+</tr>
+<tr>
+<td><FONT STYLE="font-size: 8pt">1.2</FONT></td>
+<td><FONT STYLE="font-size: 8pt">Elect Director Edward M. Liddy</FONT></td>
+<td><FONT STYLE="font-size: 8pt">Management</FONT></td>
+<td><FONT STYLE="font-size: 8pt">For</FONT></td>
+<td><FONT STYLE="font-size: 8pt">For</FONT></td>
+</tr>
+<tr>
+<td><FONT STYLE="font-size: 8pt">1.3</FONT></td>
+<td><FONT STYLE="font-size: 8pt">Elect Director Frederick H. Waddell</FONT></td>
+<td><FONT STYLE="font-size: 8pt">Management</FONT></td>
+<td><FONT STYLE="font-size: 8pt">For</FONT></td>
+<td><FONT STYLE="font-size: 8pt">For</FONT></td>
+</tr>
+<tr>
+<td><FONT STYLE="font-size: 8pt">2</FONT></td>
+<td><FONT STYLE="font-size: 8pt">Ratify Auditors</FONT></td>
+<td><FONT STYLE="font-size: 8pt">Management</FONT></td>
+<td><FONT STYLE="font-size: 8pt">For</FONT></td>
+<td><FONT STYLE="font-size: 8pt">For</FONT></td>
+</tr>
+<tr>
+<td><FONT STYLE="font-size: 8pt">3</FONT></td>
+<td><FONT STYLE="font-size: 8pt">Advisory Vote to Ratify Named Executive Officers' Compensation</FONT></td>
+<td><FONT STYLE="font-size: 8pt">Management</FONT></td>
+<td><FONT STYLE="font-size: 8pt">For</FONT></td>
+<td><FONT STYLE="font-size: 8pt">For</FONT></td>
+</tr>
+
+</table>
