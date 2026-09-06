@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -721,6 +722,45 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		// The header's spill line. It must not close the table, must not become
 		// an issuer name, and its words tell us whether the table has a TYPE
 		// column and a sixth PREFERRED PROVIDER column.
+		// `COMPANY NAME | TICKER | SECURITY ID ON BALLOT | MEETING DATE |
+		// MEETING TYPE` over `Analog Devices, Inc. | ADI | 032654105 |
+		// 20-Jul-09 | Special`: the identity as a column header and one value
+		// line (First Trust Active Dividend Income Fund 2010, 1,101 rows with
+		// no issuer, id or date on r179). The header's spill (`BALLOT`) and
+		// tag furniture sit between; the value line is split on wide gaps.
+		if fields := brIdentityColumnHeader(line); fields != nil {
+			k := i + 1
+			for k < len(lines) && (strings.TrimSpace(lines[k]) == "" || brColumnFurniture(lines[k]) || brPageFurniture(lines[k]) || brIdentityHeaderSpill(lines[k])) {
+				k++
+			}
+			if k < len(lines) {
+				if vals := brSplitWide(lines[k]); len(vals) == len(fields) {
+					flush()
+					boundary()
+					inTable = false
+					spill = nil
+					pendingIssuer = ""
+					for j, f := range fields {
+						switch f {
+						case "ISSUER":
+							issuer = vals[j]
+						case "TICKER":
+							ticker = brFirstField(vals[j])
+						case "SECURITY ID":
+							if id := brFirstField(vals[j]); brLooksLikeSecurityID(id) {
+								cusip = id
+							}
+						case "MEETING DATE":
+							mtgDate = brDate(vals[j])
+						case "MEETING TYPE":
+							mtgType = vals[j]
+						}
+					}
+					i = k
+					continue
+				}
+			}
+		}
 		if cur == nil && brColumnFurniture(line) {
 			if inTable {
 				headerText += " " + line
@@ -1363,4 +1403,78 @@ func brSlateHead(cur *brRowBuf) string {
 		return ""
 	}
 	return cur.text[0]
+}
+
+// brIdentityColumnHeader recognises a line that heads the identity columns --
+// it names COMPANY NAME and MEETING DATE and at least one of TICKER, SECURITY
+// ID and CUSIP, and nothing else -- and returns the fields in column order.
+func brIdentityColumnHeader(line string) []string {
+	up := strings.ToUpper(strings.TrimSpace(line))
+	if !strings.Contains(up, "COMPANY NAME") || !strings.Contains(up, "MEETING DATE") {
+		return nil
+	}
+	known := []struct{ text, field string }{
+		{"COMPANY NAME", "ISSUER"}, {"TICKER", "TICKER"}, {"SECURITY ID", "SECURITY ID"},
+		{"CUSIP", "SECURITY ID"}, {"MEETING DATE", "MEETING DATE"}, {"MEETING TYPE", "MEETING TYPE"},
+	}
+	type at struct {
+		pos   int
+		field string
+	}
+	var hits []at
+	rest := up
+	for _, k := range known {
+		if j := strings.Index(up, k.text); j >= 0 {
+			hits = append(hits, at{j, k.field})
+			rest = strings.Replace(rest, k.text, strings.Repeat(" ", len(k.text)), 1)
+		}
+	}
+	// Every other word on the line must belong to a wrapped label (`ON`, `BALLOT`).
+	for _, w := range strings.Fields(rest) {
+		if w != "ON" && w != "BALLOT" && w != "SYMBOL" {
+			return nil
+		}
+	}
+	sort.Slice(hits, func(a, b int) bool { return hits[a].pos < hits[b].pos })
+	fields := make([]string, 0, len(hits))
+	hasID := false
+	for _, h := range hits {
+		if h.field == "TICKER" || h.field == "SECURITY ID" {
+			hasID = true
+		}
+		fields = append(fields, h.field)
+	}
+	if !hasID || len(fields) < 3 {
+		return nil
+	}
+	return fields
+}
+
+// brSplitWide splits a printed row on runs of two or more spaces, the gaps a
+// fixed-width report leaves between its cells.
+func brSplitWide(line string) []string {
+	var out []string
+	for _, part := range strings.Split(strings.TrimSpace(line), "  ") {
+		if p := strings.TrimSpace(part); p != "" {
+			out = append(out, p)
+		}
+	}
+	return out
+}
+
+// brIdentityHeaderSpill reports a line built only from the words of a wrapped
+// identity column label (`BALLOT` under `SECURITY ID ON`).
+func brIdentityHeaderSpill(line string) bool {
+	words := brAlphaWords(line)
+	if len(words) == 0 {
+		return false
+	}
+	for _, w := range words {
+		switch w {
+		case "ON", "BALLOT", "SYMBOL", "NAME", "ID", "DATE", "TYPE", "COMPANY", "TICKER", "SECURITY", "MEETING", "CUSIP":
+		default:
+			return false
+		}
+	}
+	return true
 }
