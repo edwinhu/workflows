@@ -1,0 +1,104 @@
+</DIV><TABLE style="margin-top:0px; font-size:10pt" cellpadding=0 cellspacing=0><TR height=0 style="font-size:0"><TD width=78 /><TD width=108 /><TD width=288 /><TD width=72 /><TD width=54 /><TD width=72 /><TD width=72 /><TD width=54 /><TD width=42 /></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=672 height=60 colspan=6><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:8pt; color:#073559"><B>VOTING REPORT</B></P>
+<P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066"><B>Date Range: 07/01/2012 to 06/30/2013</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=60><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=54 height=60><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=42 height=60><P style="margin:0px"><BR></P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=672 height=62 colspan=6><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=62><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=54 height=62><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=42 height=62><P style="margin:0px"><BR></P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=186 height=24 colspan=2><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066"><B>RMG/4532/UNION BANK AND TRUST</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=414 height=24 colspan=3><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=right><B>Number of Meetings:</B> 52 </P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=24><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=24><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=54 height=24><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=42 height=24><P style="margin:0px"><BR></P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=186 height=20 colspan=2><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066"><B>Voting Agent: 00001 </B></P>
+</TD><TD style="margin-top:0px" width=414 height=20 colspan=3><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=20><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=20><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=54 height=20><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=42 height=20><P style="margin:0px"><BR></P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=474 height=20 colspan=3><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=20><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=54 height=20><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=20><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=20><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=54 height=20><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=42 height=20><P style="margin:0px"><BR></P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=78 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066"><B>Meeting</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=108 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066"><B>Issuer\</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=288 height=20><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=center><B>Meet Type</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=54 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=center><B>Vote</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=center><B>For/</B><B>Agst</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066"><B>Record</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=54 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=right><B>Shares</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=42 height=20><P style="margin:0px"><BR></P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=78 height=26><P style="margin:0px"><BR></P>
+<P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=108 height=26><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066"><B>Agenda Items </B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=288 height=26><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066"><B>Security[Symbol] </B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=26><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=center><B>Prop Type </B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=54 height=26><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=center><B>Cast </B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=26><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=center><B>Mrv</B><B> </B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=26><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066"><B>Date </B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=54 height=26><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=right><B>Voted </B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=42 height=26><P style="margin:0px"><BR></P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=798 height=20 colspan=8><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066"><B>Account #</B> <B>00000000000000007983</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=42 height=20><P style="margin:0px"><BR></P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=798 height=20 colspan=8><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=42 height=20><P style="margin:0px"><BR></P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=78 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=right><B>7/24/2012</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=108 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066"><B>LEGG MASON, INC. </B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=288 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066"><B>524901105 [LM ] </B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066"><B>Annual Meeting </B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=126 height=20 colspan=2><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=right><B>5/24/2012</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=54 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=right><B>23,000.00</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=42 height=20><P style="margin:0px"><BR></P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=186 height=20 colspan=2><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=288 height=20><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=198 height=20 colspan=3><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=72 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066"><B><I>Vote Date: </I></B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=96 height=20 colspan=2><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=right><B><I>6/28/2012</I></B></P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=top width=78 height=20><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=top width=108 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=right>1</P>
+</TD><TD style="margin-top:0px" valign=top width=288 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066">Election of Director(s) </P>
+</TD><TD style="margin-top:0px" valign=top width=72 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=center>Mgmt </P>
+</TD><TD style="margin-top:0px" valign=top width=54 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=center>For </P>
+</TD><TD style="margin-top:0px" valign=top width=72 height=20><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=center>For </P>
+</TD><TD style="margin-top:0px" valign=bottom width=126 height=20 colspan=2><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=42 height=20><P style="margin:0px"><BR></P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=top width=78 height=24><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=top width=108 height=24><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=right>2</P>
+</TD><TD style="margin-top:0px" valign=top width=288 height=24><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066">An advisory vote to approve the compensation of the Company's named executive officers. </P>
+</TD><TD style="margin-top:0px" valign=top width=72 height=24><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=center>Mgmt </P>
+</TD><TD style="margin-top:0px" valign=top width=54 height=24><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=center>For </P>
+</TD><TD style="margin-top:0px" valign=top width=72 height=24><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=center>For </P>
+</TD><TD style="margin-top:0px" valign=bottom width=126 height=24 colspan=2><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=42 height=24><P style="margin:0px"><BR></P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=top width=78 height=36><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=top width=108 height=36><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=right>3</P>
+</TD><TD style="margin-top:0px" valign=top width=288 height=36><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066">Ratification of the appointment of PricewaterhouseCoopers LLP as the independent registered public accounting firm for the fiscal year ending March 31, 2013. </P>
+</TD><TD style="margin-top:0px" valign=top width=72 height=36><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=center>Mgmt </P>
+</TD><TD style="margin-top:0px" valign=top width=54 height=36><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=center>For </P>
+</TD><TD style="margin-top:0px" valign=top width=72 height=36><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066" align=center>For </P>
+</TD><TD style="margin-top:0px" valign=bottom width=126 height=36 colspan=2><P style="margin:0px"><BR></P>
+</TD><TD style="margin-top:0px" valign=bottom width=42 height=36><P style="margin:0px"><BR></P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=798 height=20 colspan=8><P style="margin:0px; font-family:Tahoma,Times New Roman; font-size:7.5pt; color:#000066"><B>Account #</B> <B>00000000000000007983</B></P>

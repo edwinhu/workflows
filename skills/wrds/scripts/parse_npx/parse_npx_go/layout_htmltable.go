@@ -268,6 +268,10 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				continue
 			}
 		}
+		if labels, name, ok := htmlSplitStackedLabelsWithIssuer(cells, feed); ok {
+			stacked, stackedIssuer = labels, name
+			continue
+		}
 		if m, joined, mayCarry, mayPartition, consumed, ok := htmlSplitHeaderMapping(cells, feed, repeats); consumed {
 			if ok {
 				if _, has := m[htmlFieldDesc]; !has && !htmlAdoptUnlabelledDesc(cells, m, feed) {
@@ -1119,8 +1123,64 @@ func htmlHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHeaderRep
 		partitioned = true
 	}
 	htmlAdoptUnlabelledItem(cells, mapping, feed)
+	htmlAdoptBareMeetingDate(cells, mapping, feed)
 	htmlShiftToFilledNeighbour(mapping, len(cells), feed)
 	return mapping, below && crossed, partitioned, true
+}
+
+// A bare MEETING is a date only beside TYPE/MEETING TYPE and with dated
+// values beneath it. Blank continuation cells do not disprove the column.
+func htmlAdoptBareMeetingDate(cells []string, mapping map[string]int, feed *htmlRowFeed) {
+	if _, taken := mapping[htmlFieldMtgDate]; taken {
+		return
+	}
+	idx := -1
+	for i, c := range cells {
+		if htmlCanonLabel(c) != "MEETING" {
+			continue
+		}
+		adjacentType := false
+		for _, nb := range []int{i - 1, i + 1} {
+			if nb >= 0 && nb < len(cells) {
+				label := htmlCanonLabel(cells[nb])
+				adjacentType = adjacentType || label == "TYPE" || label == "MEETING TYPE"
+			}
+		}
+		if adjacentType {
+			if idx >= 0 {
+				return
+			}
+			idx = i
+		}
+	}
+	if idx < 0 {
+		return
+	}
+	for _, col := range mapping {
+		if col == idx {
+			return
+		}
+	}
+	seen := false
+	for i := 0; i < htmlHeaderLookahead; i++ {
+		row, ok := feed.peek(i)
+		if !ok || row.newTable {
+			break
+		}
+		if _, _, header := htmlHeaderShape(row.cells); header {
+			break
+		}
+		if len(row.cells) != len(cells) || htmlFlat(row.cells[idx]) == "" {
+			continue
+		}
+		if htmlDate(row.cells[idx]) == "" {
+			return
+		}
+		seen = true
+	}
+	if seen {
+		mapping[htmlFieldMtgDate] = idx
+	}
 }
 
 // htmlShiftToFilledNeighbour moves a mapped field one column to an unmapped
@@ -1785,18 +1845,20 @@ func htmlIsNumeric(s string) bool {
 // ---------------------------------------------------------------------------
 
 const (
-	htmlFieldItem    = "item"
-	htmlFieldDesc    = "desc"
-	htmlFieldBy      = "by"
-	htmlFieldMgmtRec = "mgmtrec"
-	htmlFieldVote    = "vote"
-	htmlFieldVsMgmt  = "vsmgmt"
-	htmlFieldTicker  = "ticker"
-	htmlFieldCUSIP   = "cusip"
-	htmlFieldMtgDate = "mtgdate"
-	htmlFieldIssuer  = "issuer"
-	htmlFieldISIN    = "isin"
-	htmlFieldFund    = "fund"
+	htmlFieldItem           = "item"
+	htmlFieldDesc           = "desc"
+	htmlFieldBy             = "by"
+	htmlFieldMgmtRec        = "mgmtrec"
+	htmlFieldVote           = "vote"
+	htmlFieldVsMgmt         = "vsmgmt"
+	htmlFieldTicker         = "ticker"
+	htmlFieldCUSIP          = "cusip"
+	htmlFieldMtgDate        = "mtgdate"
+	htmlFieldIssuer         = "issuer"
+	htmlFieldISIN           = "isin"
+	htmlFieldFund           = "fund"
+	htmlFieldSecuritySymbol = "securitysymbol"
+	htmlFieldRecordDate     = "recorddate"
 	// htmlFieldVotedFlag is the did-the-fund-vote column ("Voted", Yes/No) that
 	// sits beside a header naming the vote itself. It is never the vote; it
 	// keeps an unvoted agenda item (flag NO, vote cell empty) from reading as
@@ -1861,7 +1923,7 @@ var htmlSynonyms = map[string][]string{
 	// fund).
 	htmlFieldFund: {"FUND NAME", "INSTITUTIONAL ACCOUNT NAME", "ACCOUNT NAME"},
 	htmlFieldMtgDate: {
-		"MEETING DATE", "MTG DATE", "DATE OF MEETING", "MTG DATE/TYPE", "SHAREHOLDER MEETING DATE",
+		"MEETING DATE", "MEETING DAT", "MTG DATE", "DATE OF MEETING", "MTG DATE/TYPE", "SHAREHOLDER MEETING DATE",
 		// `Meeting Dt` beside a `Holding Dt` record date (Stadion Investment
 		// Trust 2016, 942 undated rows on r182; the agent's 15 filings 5,349).
 		"MEETING DT", "MTG DT",
@@ -1949,6 +2011,15 @@ func htmlMapFields(cells []string) map[string]int {
 			continue
 		}
 		canon[i] = htmlCanonLabel(c)
+
+		// This split label names the proposal's source, not the company.
+		// Claim it before the ISSUER/PROPOSAL word-sequence fallbacks.
+		if canon[i] == "ISSUER I OR SHAREHOLDER S" || canon[i] == "ISSUER I OR SHAREHOLDER S PROPOSAL" {
+			if _, taken := mapping[htmlFieldBy]; !taken {
+				mapping[htmlFieldBy] = i
+				claimed[i] = true
+			}
+		}
 
 		// In the SEC's lettered Item 1 wording, column (f) is named "Proposal
 		// Type" but carries MGMT/SHOLDER -- the source of the proposal. Outside
@@ -2043,6 +2114,25 @@ func htmlMapFields(cells []string) map[string]int {
 		if best != "" {
 			mapping[best] = i
 			claimed[i] = true
+		}
+	}
+	// This mixed header labels identity rows above proposal rows on the same
+	// grid: Issuer/Agenda Items is the issuer or item number, and
+	// Security[Symbol] is the combined identifier or proposal description.
+	for i, lab := range canon {
+		if lab == "SECURITY SYMBOL" && i >= 2 && i+4 < len(canon) &&
+			canon[i-2] == "MEETING" && canon[i-1] == "ISSUER AGENDA ITEMS" &&
+			canon[i+1] == "MEET TYPE PROP TYPE" && canon[i+4] == "RECORD DATE" {
+			mapping[htmlFieldMtgDate] = i - 2
+			mapping[htmlFieldIssuer] = i - 1
+			mapping[htmlFieldItem] = i - 1
+			mapping[htmlFieldDesc] = i
+			mapping[htmlFieldCUSIP] = i
+			mapping[htmlFieldSecuritySymbol] = i
+			mapping[htmlFieldBy] = i + 1
+			mapping[htmlFieldRecordDate] = i + 4
+			delete(mapping, htmlFieldTicker)
+			break
 		}
 	}
 	return mapping
@@ -2233,7 +2323,7 @@ func (c *htmlContext) merge(n htmlContext) {
 // cut list: a value runs to the end of its line or to the next label, whichever
 // comes first, because filers put two labels on one line.
 var htmlContextLabels = []string{
-	"ISSUER NAME:", "ISSUER:", "MEETING DATE:", "RECORD DATE:",
+	"ISSUER NAME:", "ISSUER:", "MEETING DATE:", "SHAREHOLDER MEETING:", "RECORD DATE:",
 	"TICKER SYMBOL:", "TICKER:", "SECURITY ID:", "CUSIP NUMBER:", "CUSIP:", "CUSIP/SEDOL:", "ISIN:",
 }
 
@@ -2393,6 +2483,13 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 			// The fold is hoisted out of the six-label loop: done inside it, every
 			// line of every row of a 155 MB body is uppercased six times over.
 			up := htmlUpperASCII(line)
+			if bare && len(cells) == 1 {
+				if next, ok := htmlInlineMeetingHeading(line, up); ok {
+					ctx.merge(next)
+					labelled = true
+					continue
+				}
+			}
 			// The issuer may precede the labels on the SAME line: `TELUS
 			// CORPORATION MEETING DATE: MAY 7, 2009 TICKER: T SECURITY ID:
 			// 87971M996` (Fidelity Investment Trust 2009, 24,488 rows with no
@@ -2546,7 +2643,7 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 					} else if ctx.Issuer == "" {
 						ctx.Issuer = htmlFlat(v)
 					}
-				case "MEETING DATE:":
+				case "MEETING DATE:", "SHAREHOLDER MEETING:":
 					if ctx.MeetingDate == "" {
 						ctx.MeetingDate = htmlDate(v)
 					}
@@ -2621,8 +2718,9 @@ var htmlStackedLabelSet = map[string]string{
 	"TICKER": "TICKER", "TICKER SYMBOL": "TICKER",
 	"SECURITY ID": "CUSIP", "CUSIP": "CUSIP", "CUSIP NUMBER": "CUSIP",
 	"MEETING DATE": "MEETING DATE", "MTG DATE": "MEETING DATE", "DATE OF MEETING": "MEETING DATE",
-	"RECORD DATE":  "RECORD DATE",
-	"MEETING TYPE": "MEETING TYPE", "MTG TYPE": "MEETING TYPE", "MEETING STATUS": "MEETING STATUS",
+	"MEETING COUNTRY DATE": "MEETING DATE COUNTRY",
+	"RECORD DATE":          "RECORD DATE",
+	"MEETING TYPE":         "MEETING TYPE", "MTG TYPE": "MEETING TYPE", "MEETING STATUS": "MEETING STATUS",
 	"COUNTRY OF TRADE": "COUNTRY", "COUNTRY": "COUNTRY", "ISSUER": "ISSUER", "ISSUER NAME": "ISSUER",
 	"COMPANY NAME": "ISSUER", "COMPANY": "ISSUER", "SECURITY": "CUSIP",
 	// Labels of an identity header that carry no identity: the meeting's
@@ -2665,7 +2763,7 @@ var htmlStackedLabelSet = map[string]string{
 // ASCII, no trailing colon, and no trailing footnote marker (`CUSIP (2)`,
 // `Ticker (2)`, `CUSIP(2)`).
 func htmlStackedLabelKey(flat string) string {
-	key := strings.TrimSpace(strings.TrimSuffix(htmlUpperASCII(flat), ":"))
+	key := strings.TrimSpace(strings.TrimRight(htmlUpperASCII(flat), ":* "))
 	if strings.HasSuffix(key, ")") {
 		if i := strings.LastIndex(key, "("); i > 0 && htmlIsNumeric(key[i+1:len(key)-1]) {
 			key = strings.TrimSpace(key[:i])
@@ -2813,6 +2911,49 @@ func htmlStackedLabels(cells []string) (map[int]string, bool) {
 	return labels, ok
 }
 
+// The merged date/country header wraps its other labels over the next row.
+// Join only within the same table and column grid; every joined cell must be
+// an identity label (apart from the leading issuer) before consuming that row.
+func htmlSplitStackedLabelsWithIssuer(cells []string, feed *htmlRowFeed) (map[int]string, string, bool) {
+	merged := false
+	for _, cell := range cells {
+		if htmlStackedLabelKey(htmlFlat(cell)) == "MEETING COUNTRY" {
+			merged = true
+			break
+		}
+	}
+	if !merged {
+		return nil, "", false
+	}
+	next, exists := feed.peek(0)
+	if !exists || next.newTable || len(next.cells) != len(cells) {
+		return nil, "", false
+	}
+	joined := make([]string, len(cells))
+	for i := range cells {
+		joined[i] = htmlFlat(cells[i] + " " + next.cells[i])
+		// Colspan values are anchored at the right edge. The lower `Date`
+		// can occupy the left half of the merged Meeting Country cell.
+		if i > 0 && htmlStackedLabelKey(htmlFlat(cells[i])) == "MEETING COUNTRY" &&
+			htmlFlat(cells[i-1]) == "" && htmlFlat(next.cells[i]) == "" &&
+			htmlStackedLabelKey(htmlFlat(next.cells[i-1])) == "DATE" {
+			joined[i] = htmlFlat(cells[i] + " " + next.cells[i-1])
+			joined[i-1] = ""
+		}
+	}
+	labels, issuer, ok := htmlStackedLabelsWithIssuer(joined)
+	if !ok || issuer == "" {
+		return nil, "", false
+	}
+	for _, label := range labels {
+		if label == "MEETING DATE COUNTRY" {
+			_, _ = feed.next()
+			return labels, issuer, true
+		}
+	}
+	return nil, "", false
+}
+
 // htmlStackedLabelsWithIssuer is htmlStackedLabels allowing the FIRST filled
 // cell to be the issuer's name instead of a label (`Booker Group plc | | Meeting
 // Date | | Country | Security ID | ...`, Clearwater Investment Trust 2011): the
@@ -2943,11 +3084,57 @@ func htmlStackedValues(cells []string, labels map[int]string) (ctx htmlContext) 
 			ctx.Ticker = htmlValueOrEmpty(v)
 		case "MEETING DATE":
 			ctx.MeetingDate = htmlDate(v)
+		case "MEETING DATE COUNTRY":
+			// Country is not carried in htmlContext; it must not be parsed as
+			// part of the date in the merged `24-Jul-09 USA` value cell.
+			date, country, ok := strings.Cut(v, " ")
+			if ok && strings.TrimSpace(country) != "" {
+				ctx.MeetingDate = htmlDate(date)
+			}
 		case "ISSUER":
 			ctx.Issuer = v
 		}
 	}
 	return ctx
+}
+
+// htmlInlineMeetingHeading reads `Issuer *TICKER* CUSIP 008190100, 10/30/03 Meeting`.
+// All four parts must be present so prose mentioning a CUSIP is not context.
+func htmlInlineMeetingHeading(line, up string) (htmlContext, bool) {
+	const suffix = " MEETING"
+	if !strings.HasSuffix(up, suffix) {
+		return htmlContext{}, false
+	}
+	cut := strings.Index(up, " CUSIP ")
+	if cut < 0 {
+		return htmlContext{}, false
+	}
+	head := strings.TrimSpace(line[:cut])
+	if head == "" || !strings.HasSuffix(head, "*") {
+		return htmlContext{}, false
+	}
+	star := strings.LastIndexByte(head[:len(head)-1], '*')
+	if star <= 0 {
+		return htmlContext{}, false
+	}
+	issuer, ticker := strings.TrimSpace(head[:star]), head[star+1:len(head)-1]
+	if !htmlIsIssuerLine(issuer) || !htmlTickerShaped(ticker) {
+		return htmlContext{}, false
+	}
+	if cut+len(" CUSIP ") > len(line)-len(suffix) {
+		return htmlContext{}, false
+	}
+	rest := line[cut+len(" CUSIP ") : len(line)-len(suffix)]
+	cusip, date, ok := strings.Cut(rest, ",")
+	cusip = strings.TrimSpace(cusip)
+	if !ok || !htmlIsCUSIP(cusip) {
+		return htmlContext{}, false
+	}
+	date = htmlDate(date)
+	if date == "" {
+		return htmlContext{}, false
+	}
+	return htmlContext{Issuer: issuer, Ticker: ticker, CUSIP: cusip, MeetingDate: date}, true
 }
 
 // htmlPreLead returns the last non-empty line of the text before a row when
@@ -3372,6 +3559,12 @@ func htmlDate(s string) string {
 	s = htmlFlat(s)
 	if s == "" {
 		return ""
+	}
+	if k := strings.IndexByte(s, ','); k > 0 {
+		switch strings.ToUpper(strings.TrimSpace(s[:k])) {
+		case "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY":
+			s = strings.TrimSpace(s[k+1:])
+		}
 	}
 	// `15-Oct-14 11:30`: a two-digit year and a meeting time (JPMorgan China
 	// Region Fund, 4,743 rows with no date on 2026-09-02). The time is
@@ -3812,6 +4005,14 @@ func htmlIdentityRow(cells []string, mapping map[string]int) (ctx htmlContext, o
 	ctx.Issuer = at(htmlFieldIssuer)
 	ctx.CUSIP, ctx.ISIN = htmlSecurityID(at(htmlFieldCUSIP))
 	ctx.Ticker = htmlValueOrEmpty(at(htmlFieldTicker))
+	if v := at(htmlFieldSecuritySymbol); ctx.CUSIP != "" && strings.HasSuffix(v, "]") {
+		if open := strings.LastIndexByte(v, '['); open > 0 {
+			ticker := strings.TrimSpace(v[open+1 : len(v)-1])
+			if htmlTickerShaped(ticker) {
+				ctx.Ticker = ticker
+			}
+		}
+	}
 	ctx.MeetingDate = htmlDate(at(htmlFieldMtgDate))
 	if ctx.MeetingDate == "" {
 		ctx.MeetingDate = htmlExcelSerialDate(at(htmlFieldMtgDate))
@@ -4026,6 +4227,11 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 	}
 
 	at := func(field string) string {
+		if _, mixed := mapping[htmlFieldSecuritySymbol]; mixed &&
+			(field == htmlFieldIssuer || field == htmlFieldCUSIP || field == htmlFieldTicker) {
+			// These columns carry item numbers and descriptions on vote rows.
+			return ""
+		}
 		i, ok := mapping[field]
 		if !ok {
 			return ""
