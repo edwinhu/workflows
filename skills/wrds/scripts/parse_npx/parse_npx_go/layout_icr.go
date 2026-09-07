@@ -171,6 +171,10 @@ func icrIdentity(cells []string) (icrMeeting, bool) {
 		}
 		if i >= 2 {
 			m.ticker = cells[i-2]
+		} else if i == 1 && pvTextTicker(m.securityID) && icrCUSIP(m.securityID) == "" && icrISIN(m.securityID) == "" {
+			// A blank Security ID also collapses away; the sole non-ID
+			// symbol before the date still belongs to the Ticker column.
+			m.ticker, m.securityID = m.securityID, ""
 		}
 		return m, true
 	}
