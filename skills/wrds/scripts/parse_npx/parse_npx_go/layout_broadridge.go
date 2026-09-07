@@ -913,7 +913,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 					case "TICKER", "TICKER SYMBOL":
 						ticker = brFirstField(v)
 					case "CUSIP", "SECURITY ID", "SECURITY":
-						if id := brFirstField(v); brLooksLikeSecurityID(id) {
+						if id := strings.TrimSuffix(brFirstField(v), ","); brLooksLikeSecurityID(id) {
 							cusip = id
 						}
 					case "ISIN":

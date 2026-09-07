@@ -2050,6 +2050,11 @@ func htmlMapFields(cells []string) map[string]int {
 			mapping[htmlFieldCUSIP] = i
 			claimed[i] = true
 		}
+		if canon[i] == "SECURITY / PROPONENT" || canon[i] == "SECURITY/PROPONENT" {
+			mapping[htmlFieldCUSIP] = i
+			mapping[htmlFieldBy] = i
+			claimed[i] = true
+		}
 
 		// This split label names the proposal's source, not the company.
 		// Claim it before the ISSUER/PROPOSAL word-sequence fallbacks.
@@ -2377,14 +2382,15 @@ func (c *htmlContext) merge(n htmlContext) {
 // comes first, because filers put two labels on one line.
 var htmlContextLabels = []string{
 	"ISSUER NAME:", "ISSUER:", "MEETING DATE:", "SHAREHOLDER MEETING:", "RECORD DATE:",
-	"TICKER SYMBOL:", "TICKER:", "SECURITY ID:", "CUSIP NUMBER:", "CUSIP:", "CUSIP/SEDOL:", "ISIN:",
+	"EXCHANGE TICKER SYMBOL:", "TICKER SYMBOL:", "TICKER:", "SECURITY ID:", "SECURITY:",
+	"CUSIP NUMBER / ISIN CODE:", "CUSIP NUMBER/ISIN CODE:", "CUSIP NUMBER:", "CUSIP:", "CUSIP/SEDOL:", "ISIN:",
 }
 
 // htmlContextCutLabels end a value without being read: `Meeting Date: JUL 25,
 // 2018 Meeting Type: Annual` (Keeley Funds 2019, 3,017 rows with no date on
 // r133). Reading the type as context of its own would let a lone `Meeting
 // Type:` row open a new, empty meeting.
-var htmlContextCutLabels = []string{"MEETING TYPE:", "MTG TYPE:"}
+var htmlContextCutLabels = []string{"MEETING TYPE:", "MTG TYPE:", "QUICK CODE:"}
 
 // htmlBareValued are bare labels printed WITH their value in the same cell
 // (`Primary CUSIP 35671D857`, `Primary ISIN US35671D8570`; Deutsche's db-X
@@ -2712,7 +2718,7 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 					if ctx.MeetingDate == "" {
 						ctx.MeetingDate = htmlDate(v)
 					}
-				case "TICKER SYMBOL:", "TICKER:":
+				case "EXCHANGE TICKER SYMBOL:", "TICKER SYMBOL:", "TICKER:":
 					if ctx.Ticker == "" {
 						ctx.Ticker = htmlValueOrEmpty(v)
 					}
@@ -2722,7 +2728,15 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 					if id := htmlValueOrEmpty(v); ctx.CUSIP == "" && pvTextCUSIP(id) {
 						ctx.CUSIP = id
 					}
-				case "SECURITY ID:", "CUSIP NUMBER:", "CUSIP:":
+				case "CUSIP NUMBER / ISIN CODE:", "CUSIP NUMBER/ISIN CODE:":
+					cusip, isin := htmlSecurityID(v)
+					if ctx.CUSIP == "" {
+						ctx.CUSIP = cusip
+					}
+					if ctx.ISIN == "" {
+						ctx.ISIN = isin
+					}
+				case "SECURITY:", "SECURITY ID:", "CUSIP NUMBER:", "CUSIP:":
 					// A Security ID that is an ISIN belongs in the ISIN column.
 					if id := htmlPadCUSIP(htmlValueOrEmpty(v)); isinToken(id) {
 						if ctx.ISIN == "" {
@@ -4712,7 +4726,7 @@ func htmlVotedFlagInfo(flag string) string {
 // htmlMeetingTypeWord reports a bare meeting-type word.
 func htmlMeetingTypeWord(w string) bool {
 	switch strings.ToUpper(strings.Trim(w, ":;,")) {
-	case "ANNUAL", "SPECIAL", "AGM", "EGM", "CONSENT", "CONTEST", "ANNUAL/SPECIAL", "SPECIAL/ANNUAL":
+	case "ANNUAL", "SPECIAL", "AGM", "EGM", "CONSENT", "CONTEST", "CONTESTED", "ANNUAL/SPECIAL", "SPECIAL/ANNUAL":
 		return true
 	}
 	return false
