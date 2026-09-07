@@ -246,7 +246,16 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// Date | 28-Apr-2017`, CM Advisors 2017; 1,317 undated rows on r185),
 		// which the split-header reader took for a header over its rows.
 		if wrapped := htmlHasWrappedLabelCell(cells) || htmlBareLabelledValueRow(cells); wrapped {
-			if next, labelled := htmlReadContext(cells); labelled && (next.MeetingDate != "" || pvTextCUSIP(next.CUSIP) || isinToken(next.ISIN)) {
+			next, labelled := htmlReadContext(cells)
+			enough := labelled && (next.MeetingDate != "" || pvTextCUSIP(next.CUSIP) || isinToken(next.ISIN))
+			if labelled && !enough && next.Issuer != "" && next.CUSIP != "" {
+				// The first row of the wrapped identity strip carries the
+				// issuer and a SEDOL rather than a CUSIP (Guinness Atkinson
+				// Funds 2007), and its date is on the row below. Asked only
+				// once the cheaper evidence is absent.
+				_, enough = htmlWrappedLabelStripRow(cells)
+			}
+			if enough {
 				if ctxSealed {
 					ctx = htmlContext{}
 					ctxSealed = false
@@ -2225,7 +2234,7 @@ func (c *htmlContext) merge(n htmlContext) {
 // comes first, because filers put two labels on one line.
 var htmlContextLabels = []string{
 	"ISSUER NAME:", "ISSUER:", "MEETING DATE:", "RECORD DATE:",
-	"TICKER SYMBOL:", "TICKER:", "SECURITY ID:", "CUSIP NUMBER:", "CUSIP:", "ISIN:",
+	"TICKER SYMBOL:", "TICKER:", "SECURITY ID:", "CUSIP NUMBER:", "CUSIP:", "CUSIP/SEDOL:", "ISIN:",
 }
 
 // htmlContextCutLabels end a value without being read: `Meeting Date: JUL 25,
@@ -2289,6 +2298,10 @@ var htmlBareLabels = map[string]string{
 	// 2020 (888 undated rows on r185) labels the meeting date with the bare
 	// word, beside a record-date label that carries no value.
 	"MEETING": "MEETING DATE:", "RECORD": "RECORD DATE:",
+	// `Cusip/Sedol | B02ZK79`: the non-US sections of Guinness Atkinson Funds
+	// 2007 (1,653 of 2,882 rows with no id and no date on r206) label the one
+	// id column for both markets, and print a SEDOL under it.
+	"CUSIP/SEDOL": "CUSIP/SEDOL:",
 	// Not "ISSUER": it is a proponent value ('Issuer' in Buffalo Funds' Proposed
 	// By column), and reading it as a label consumed 173,538 vote rows across
 	// 395 filings on run55.
@@ -2319,7 +2332,30 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 	// carry two (Deutsche's grid: three labels to a row), because a wide
 	// export's data row can print CUSIP as a value and 'No' as its vote
 	// (Brighthouse Funds Trust II: 8,224 rows consumed as context once).
-	bare := !htmlHasVoteCell(cells) && !htmlAllLabels(cells) && (htmlFilledCells(cells) <= 4 || htmlBareLabelCount(cells) >= 2)
+	hasVote := htmlHasVoteCell(cells)
+	allLabels := htmlAllLabels(cells)
+	bare := !hasVote && !allLabels && (htmlFilledCells(cells) <= 4 || htmlBareLabelCount(cells) >= 2)
+	// The Security label grid opens a meeting with the issuer's name in the
+	// leading unlabelled cell and its id behind a bare `Security` label
+	// (`Electrolux AB | | Shares Voted | 0 | Security | W24713120 | Meeting
+	// Status | Submitted`, Lincoln Variable Insurance Products Trust 2005:
+	// 2,054 of 7,890 rows with no id, and the centered page-break paragraph
+	// before the table read as the issuer instead). Seven filled cells with one
+	// bare label is too wide for the rule above, so the shape is asked for only
+	// AFTER that rule refused the row -- the common row pays nothing for it, and
+	// hasVote and allLabels are already established here, so the detector never
+	// scans for them again.
+	gridIssuer := ""
+	if !bare && !hasVote && !allLabels {
+		if issuer, ok := htmlSecurityLabelGridIssuer(cells); ok {
+			gridIssuer, bare = issuer, true
+		} else if issuer, ok := htmlWrappedLabelStripRow(cells); ok {
+			// The wrapped two-row identity strip (Guinness Atkinson Funds
+			// 2007): same reason for asking only here -- the row is too wide
+			// for the bare rule, and the common row never pays for the scan.
+			gridIssuer, bare = issuer, true
+		}
+	}
 	for ci, cell := range cells {
 		// A label wrapped at a source newline inside its cell (`Meeting
 		// Date:`, GMO Trust: 38,059 of 38,551 rows with no date on
@@ -2363,6 +2399,11 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 			// security id). Only a line carrying at least two labels after an
 			// issuer-shaped prefix is split; a sentence mentioning one label
 			// is not context.
+			if !htmlHasLabelPrefix(up) {
+				if expanded, ok := htmlExpandMtgDateLabel(line, up); ok {
+					line, up = expanded, htmlUpperASCII(expanded)
+				}
+			}
 			if !htmlHasLabelPrefix(up) {
 				if cut := htmlMeetingTypeCut(up); cut > 0 {
 					// `Special Meeting Date: 08/31/2006`, `AGM Meeting Date:`
@@ -2513,6 +2554,12 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 					if ctx.Ticker == "" {
 						ctx.Ticker = htmlValueOrEmpty(v)
 					}
+				case "CUSIP/SEDOL:":
+					// A mixed-market label provides no evidence that a short numeric
+					// id lost leading zeros: padding a SEDOL fabricates a CUSIP.
+					if id := htmlValueOrEmpty(v); ctx.CUSIP == "" && pvTextCUSIP(id) {
+						ctx.CUSIP = id
+					}
 				case "SECURITY ID:", "CUSIP NUMBER:", "CUSIP:":
 					// A Security ID that is an ISIN belongs in the ISIN column.
 					if id := htmlPadCUSIP(htmlValueOrEmpty(v)); isinToken(id) {
@@ -2537,6 +2584,22 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 	// `Security ID: ... Ticker: ...`. It is read only when the block carried a
 	// label but no ISSUER NAME:, and only from the line DIRECTLY above the first
 	// label, so a paragraph elsewhere in the same chunk cannot supply it.
+	// The grid's own leading cell is the issuer, and it outranks the line-above
+	// fallback: on this shape the line above the first label is the value of a
+	// preceding label pair (`0`), not a company.
+	// The wrapped two-row identity strip leads its first row with a bare
+	// issuer name (Guinness Atkinson Funds 2007), and its labels are numerous
+	// enough that the bare rule above already accepted the row -- so the shape
+	// is asked for here instead, and only for a bare identity row that reached
+	// the line-above fallback with no issuer of its own.
+	if labelled && bare && ctx.Issuer == "" && gridIssuer == "" {
+		if issuer, ok := htmlWrappedLabelStripRow(cells); ok {
+			gridIssuer = issuer
+		}
+	}
+	if labelled && ctx.Issuer == "" && gridIssuer != "" {
+		ctx.Issuer = gridIssuer
+	}
 	if labelled && ctx.Issuer == "" {
 		// `WACHOVIA CORPORATION` / `WB` / `Special Meeting Date: ...` in one row
 		// (Manning & Napier 2007): the line above the label is the ticker, and
@@ -3010,7 +3073,62 @@ func htmlContextLead(cells []string) (string, bool) {
 // company that never held the meeting.
 func htmlIsIssuerLine(s string) bool {
 	flat := htmlFlat(s)
+	// A page-break paragraph prints the page number alone, centered, right
+	// before a meeting's table (`30`, Lincoln Variable Insurance Products Trust
+	// 2005). A bare integer names no company: reading it as one booked every
+	// proposal of the page against an issuer called `30`.
+	if htmlIsNumeric(flat) {
+		return false
+	}
 	return flat != "" && !htmlLooksLikeValue(flat)
+}
+
+// htmlSecurityLabelGridIssuer reads the one-row label/value grid that opens a
+// meeting with its issuer in the leading unlabelled cell: `Electrolux AB | |
+// Shares Voted | 0 | Security | W24713120 | Meeting Status | Submitted`. It
+// returns that name when the cells after it alternate label, value, label,
+// value with at least two known labels, one of them naming the security's id.
+//
+// The caller has ALREADY established that the row carries no vote cell and is
+// not an all-label header row, so neither is checked again here; the row is
+// walked exactly once.
+func htmlSecurityLabelGridIssuer(cells []string) (string, bool) {
+	issuer := ""
+	labels, idLabel := 0, false
+	wantLabel := false // set once the issuer is seen: the next filled cell is a label
+	for _, cell := range cells {
+		flat := htmlFlat(cell)
+		if flat == "" {
+			continue
+		}
+		canon, isLabel := htmlStackedLabelSet[htmlStackedLabelKey(flat)]
+		if issuer == "" {
+			// The grid must LEAD with the name; a row opening with a label is
+			// the ordinary stacked shape and belongs to its own reader.
+			if isLabel || !htmlIsIssuerLine(flat) || len(strings.Fields(flat)) > 8 {
+				return "", false
+			}
+			issuer, wantLabel = flat, true
+			continue
+		}
+		if wantLabel {
+			if !isLabel {
+				return "", false
+			}
+			labels++
+			if canon == "CUSIP" {
+				idLabel = true
+			}
+		} else if isLabel {
+			// Two labels running: no value between them, so the pairing this
+			// reading depends on does not hold.
+			return "", false
+		}
+		wantLabel = !wantLabel
+	}
+	// Every pair closed leaves the walk expecting the next label; a trailing
+	// label with no value leaves it expecting a value, and does not pair.
+	return issuer, labels >= 2 && idLabel && wantLabel
 }
 
 // htmlMeetingTypeCut returns the length of a meeting-type word that precedes
@@ -3027,6 +3145,36 @@ func htmlMeetingTypeCut(up string) int {
 		}
 	}
 	return i + 1
+}
+
+// htmlExpandMtgDateLabel rewrites the abbreviated meeting-date label into the
+// vocabulary form, so the value after it is read as the meeting date. The label
+// may carry a leading meeting-type word and may be wrapped at a source newline
+// inside its own cell -- `<strong>Annual` / `Mtg Date: 10/20/2004` (Hillview
+// Investment Trust II 2005, 2,646 undated rows over a sibling pair). The type
+// word is cut like `Special Meeting Date:` already is; only the label is
+// rewritten, so the value stays verbatim. up must be line folded by
+// htmlUpperASCII, which is length-preserving.
+func htmlExpandMtgDateLabel(line, up string) (string, bool) {
+	i := strings.Index(up, "MTG DATE:")
+	if i < 0 {
+		return line, false
+	}
+	// At the start of the line, or after exactly one leading word of ASCII
+	// letters (the meeting type). Anything else is prose that mentions the
+	// abbreviation, not a label.
+	if i > 0 {
+		head := strings.TrimSpace(up[:i])
+		if head == "" {
+			return line, false
+		}
+		for j := 0; j < len(head); j++ {
+			if !isASCIILetter(head[j]) {
+				return line, false
+			}
+		}
+	}
+	return "MEETING DATE:" + line[i+len("MTG DATE:"):], true
 }
 
 // htmlTickerShaped reports a bare exchange symbol: one token of one to five
@@ -3358,6 +3506,76 @@ func htmlHasWrappedLabelCell(cells []string) bool {
 	return false
 }
 
+// htmlStripOnlyLabels are identity-strip labels that carry no field of their
+// own and are absent from the stacked vocabulary, where a bare `Shares` would
+// make too many vote-table headers read as identity.
+var htmlStripOnlyLabels = map[string]bool{"SHARES": true, "CUSIP/SEDOL": true}
+
+// htmlWrappedLabelStripRow reads one row of the two-row identity strip Guinness
+// Atkinson Funds 2007 prints above each non-US meeting: alternating label and
+// value cells (`Shares Voted | 1,812,000 | Cusip/Sedol | B02ZK79 | Ticker |
+// TLKM IJ`, `Meeting Date | 6/30/2006 | Shares | 1,812,000 | Meeting Type |
+// AGM`), each label broken over a line break inside its own cell, and the first
+// row led by a bare issuer name under no label at all. Seven filled cells with
+// one bare label is too wide for the bare rule, so 1,653 of 2,882 rows emitted
+// a blank issuer, id and date on r206.
+//
+// The shape is refused unless it is strictly a leading issuer name (optional)
+// followed by at least two label/value pairs, with at least one label wrapped
+// inside its cell and at least one label the context reader can act on. A vote
+// row, whose values sit under no label, can therefore never match.
+func htmlWrappedLabelStripRow(cells []string) (issuer string, ok bool) {
+	pairs, wrapped, known := 0, false, false
+	wantLabel := true
+	for i, c := range cells {
+		flat := htmlFlat(c)
+		if flat == "" {
+			continue
+		}
+		key := htmlCanonLabel(c)
+		_, stacked := htmlStackedLabelSet[key]
+		_, bare := htmlBareLabels[key]
+		if stacked || bare || htmlStripOnlyLabels[key] {
+			if !wantLabel {
+				return "", false
+			}
+			if strings.Contains(strings.TrimSpace(c), "\n") {
+				wrapped = true
+			}
+			if bare {
+				known = true
+			}
+			wantLabel = false
+			continue
+		}
+		if wantLabel {
+			// Only the row's leading cell may be an unlabelled value, and only
+			// as the issuer's name.
+			if pairs > 0 || issuer != "" || i != htmlFirstFilled(cells) || !htmlIsIssuerLine(flat) {
+				return "", false
+			}
+			issuer = flat
+			continue
+		}
+		wantLabel = true
+		pairs++
+	}
+	if !wantLabel || pairs < 2 || !wrapped || !known {
+		return "", false
+	}
+	return issuer, true
+}
+
+// htmlFirstFilled returns the index of the row's first non-empty cell, or -1.
+func htmlFirstFilled(cells []string) int {
+	for i, c := range cells {
+		if htmlFlat(c) != "" {
+			return i
+		}
+	}
+	return -1
+}
+
 // htmlRealignBySpacers moves a data row's values back under the header's
 // labels when a colspan puts the header's spacer blank at one column and the
 // row's at the next (Tributary Funds 2021: `CUSIP # | | Shareholder Meeting
@@ -3541,6 +3759,35 @@ func htmlIdentityOnlyHeader(cells []string) (map[string]int, bool) {
 
 // htmlIdentityRow reads a row that fills the identity columns of a shared
 // header and none of the vote columns.
+// htmlAdoptLeadingBareDate reads the meeting date out of the unlabelled cell
+// that precedes a `Name (TICKER/CUSIP)` identity cell -- `2/24/2010 | Deere &
+// Co. (DE/244199105) | 12/31/2009 | 412` under a header whose spanned `Meeting
+// Date` leaves the row's mapped cell empty (Nuveen Investment Trust 2010, 710
+// undated rows). The shape is the whole warrant, so all three hold: the issuer
+// cell carries the ticker/CUSIP parens, no mapped meeting date is filled, and
+// the nearest non-empty cell to the LEFT of the issuer parses as a date. The
+// record date sits to the RIGHT and is never reached.
+func htmlAdoptLeadingBareDate(cells []string, mapping map[string]int) string {
+	issuerIdx, mapped := mapping[htmlFieldIssuer]
+	if !mapped || issuerIdx <= 0 || issuerIdx >= len(cells) {
+		return ""
+	}
+	if _, _, _, shaped := htmlIssuerTickerCUSIPParens(htmlFlat(cells[issuerIdx])); !shaped {
+		return ""
+	}
+	if di, m := mapping[htmlFieldMtgDate]; m && di >= 0 && di < len(cells) && htmlFlat(cells[di]) != "" {
+		return ""
+	}
+	for i := issuerIdx - 1; i >= 0; i-- {
+		v := htmlFlat(cells[i])
+		if v == "" {
+			continue
+		}
+		return htmlDate(v)
+	}
+	return ""
+}
+
 func htmlIdentityRow(cells []string, mapping map[string]int) (ctx htmlContext, ok bool) {
 	at := func(f string) string {
 		i, m := mapping[f]
@@ -3574,6 +3821,9 @@ func htmlIdentityRow(cells []string, mapping map[string]int) (ctx htmlContext, o
 		if f := strings.Fields(d); len(f) > 0 {
 			ctx.MeetingDate = htmlDate(f[0])
 		}
+	}
+	if ctx.MeetingDate == "" {
+		ctx.MeetingDate = htmlAdoptLeadingBareDate(cells, mapping)
 	}
 	if ctx.MeetingDate == "" && (ctx.Issuer != "" || ctx.CUSIP != "") {
 		// A split header can put the date column under a vote-side label
