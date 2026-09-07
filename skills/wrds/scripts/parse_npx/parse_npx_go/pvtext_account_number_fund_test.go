@@ -22,4 +22,24 @@ func TestPVTextAccountNumberFund(t *testing.T) {
 	if seen == 0 {
 		t.Fatalf("no ACE rows among %d", len(rows))
 	}
+	// With the registrant's series known (the header, or the CIK dictionary
+	// standing in for a 2005 header), the coded heading resolves.
+	meta := FilingMeta{SeriesDecls: []SeriesDecl{{SeriesID: "S000008081", Name: "Alliance Growth Portfolio"}, {SeriesID: "S000008099", Name: "Emerging Markets Portfolio"}}}
+	typed, err := parsePVText(loadPVFixture(t, "P_account_number_fund.txt"), meta)
+	if err != nil {
+		t.Fatal(err)
+	}
+	stamped := 0
+	for _, r := range typed {
+		if r.IssuerName != "ACE" {
+			continue
+		}
+		if r.SeriesID != "S000008081" {
+			t.Fatalf("ACE: series %q, want S000008081", r.SeriesID)
+		}
+		stamped++
+	}
+	if stamped == 0 {
+		t.Fatalf("no typed ACE rows among %d", len(typed))
+	}
 }

@@ -68,8 +68,12 @@ func matchPVText(head string) bool {
 	return false
 }
 
-func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
+func parsePVText(text string, meta FilingMeta) ([]VoteRow, error) {
 	lines := strings.Split(text, "\n")
+	// The Account Number heading resolves against the declared (or dictionary)
+	// series under the shared rules, as in every other layout.
+	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	issFormerKeys(seriesIx, meta.FormerNames)
 	var (
 		rows            []VoteRow
 		meeting         pvTextMeeting
@@ -78,11 +82,15 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 		pendingIssuer   bool
 		continuationRow = -1
 		fund            string
+		fundSeries      string
 	)
 
 	for i := 0; i < len(lines); i++ {
 		if f, ok := pvTextAccountFund(lines[i]); ok {
-			fund = f
+			fund, fundSeries = f, ""
+			if _, d := issResolveFund(seriesIx, f); d != nil {
+				fundSeries = d.SeriesID
+			}
 			continue
 		}
 		if n := pvTextHeaderLinesAt(lines, i); n != 0 {
@@ -154,7 +162,7 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 		}
 		if haveMtg {
 			if row, ok := pvTextVoteLine(line, meeting); ok {
-				row.FundName = fund
+				row.FundName, row.SeriesID = fund, fundSeries
 				rows = append(rows, row)
 				continuationRow = len(rows) - 1
 				continue
@@ -181,7 +189,7 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 						}
 					}
 					if row, ok := pvTextVoteLine(joined, meeting); ok {
-						row.FundName = fund
+						row.FundName, row.SeriesID = fund, fundSeries
 						rows = append(rows, row)
 						continuationRow = len(rows) - 1
 						i++ // the vote tail is part of this row, never a row of its own
@@ -243,7 +251,7 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 					}
 					joined += " " + strings.TrimSpace(lines[k])
 					if row, ok := pvTextVoteLine(joined, meeting); ok {
-						row.FundName = fund
+						row.FundName, row.SeriesID = fund, fundSeries
 						rows = append(rows, row)
 						continuationRow = len(rows) - 1
 						i = k // every joined line belongs to this row
