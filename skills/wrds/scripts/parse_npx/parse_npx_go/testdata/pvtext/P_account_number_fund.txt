@@ -1,0 +1,27 @@
+
+<PAGE>
+
+
+   Item 1. Proxy Voting Record
+   Account Number: JU77 Alliance Growth Portfolio
+
+   ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE
+           Proposal Type Voted? Vote For/Agnst Mgmt
+   ACE Ltd   G0070K103  5/26/05  Annual
+   1.01   Elect Evan G. Greenberg MGMT YES FOR FOR
+   1.02   Elect John A. Krol MGMT YES FOR FOR
+   2   Ratify selection of auditors MGMT YES FOR FOR
+
+   Advanced Micro Devices AMD  007903107  4/28/05  Annual
+   1.01   Elect Hector de J. Ruiz MGMT YES FOR FOR
+   1.02   Elect W. Michael Barnes MGMT YES FOR FOR
+   1.03   Elect Bruce Claflin MGMT YES FOR FOR
+   1.04   Elect H. Paulett Eberhart MGMT YES FOR FOR
+   1.05   Elect David J. Edmondson MGMT YES FOR FOR
+   1.06   Elect Robert B. Palmer MGMT YES FOR FOR
+   1.07   Elect Leonard M. Silverman MGMT YES FOR FOR
+   1.08   Elect Morton L. Topfer MGMT YES FOR FOR
+   2   Ratify selection of auditors MGMT YES FOR FOR
+   3   Majority vote to elect directors SHLDR YES AGNST FOR
+   4   Expense stock options SHLDR YES FOR AGNST
+
