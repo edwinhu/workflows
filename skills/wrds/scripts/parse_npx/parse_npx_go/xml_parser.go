@@ -697,6 +697,62 @@ func (s *siblingIDs) add(cusip, isin string) {
 	s.isins[isin] = struct{}{}
 }
 
+// xmlIsCUSIPShape reads the nine-character alphanumeric body of a CUSIP.
+func xmlIsCUSIPShape(s string) bool {
+	if len(s) != 9 {
+		return false
+	}
+	for i := 0; i < 9; i++ {
+		c := s[i]
+		if !(c >= '0' && c <= '9') && !(c >= 'A' && c <= 'Z') && !(c >= 'a' && c <= 'z') {
+			return false
+		}
+	}
+	return true
+}
+
+// xmlIsISINShape reads the twelve characters of an ISIN: a two-letter country
+// code, a nine-character national number, and a numeric check digit.
+func xmlIsISINShape(s string) bool {
+	if len(s) != 12 {
+		return false
+	}
+	for i := 0; i < 2; i++ {
+		c := s[i]
+		if !(c >= 'A' && c <= 'Z') && !(c >= 'a' && c <= 'z') {
+			return false
+		}
+	}
+	if !xmlIsCUSIPShape(s[2:11]) {
+		return false
+	}
+	return s[11] >= '0' && s[11] <= '9'
+}
+
+// unrotateIdentity repairs an identity block printed one element too far right.
+// Symmetry Panoramic Trust 2024 (0001135428-24-000106) prints a sibling series'
+// copy of an agenda item with the meeting date fallen off the front: the
+// spreadsheet serial for the date lands in cusip, the CUSIP in isin and the ISIN
+// in figi, and meetingDate is empty (7,951 of 35,019 rows). All four conditions
+// must hold together — an empty date alone, or a five-digit cusip alone, is an
+// ordinary shape and is left exactly as printed.
+func (rec *proxyRecord) unrotateIdentity() {
+	if rec.MeetingDate != "" || rec.FIGI == "" {
+		return
+	}
+	if !xmlIsCUSIPShape(rec.ISIN) || !xmlIsISINShape(rec.FIGI) {
+		return
+	}
+	date := htmlExcelSerialDate(rec.CUSIP)
+	if date == "" {
+		return
+	}
+	rec.MeetingDate = date
+	rec.CUSIP = rec.ISIN
+	rec.ISIN = rec.FIGI
+	rec.FIGI = ""
+}
+
 // only returns the single member of set, or "" when the set is empty or holds
 // two or more.
 func only(set map[string]struct{}) string {
@@ -766,6 +822,7 @@ func parseVoteTable(r io.Reader, meta *FilingMeta, classes map[string][]string, 
 		if err := rec.decode(d); err != nil {
 			return total, err
 		}
+		rec.unrotateIdentity()
 		if rec.CUSIP == "" && rec.ISIN == "" && rec.FIGI == "" {
 			held = append(held, rec)
 			continue
