@@ -2011,6 +2011,10 @@ func htmlMapFields(cells []string) map[string]int {
 			continue
 		}
 		canon[i] = htmlCanonLabel(c)
+		if canon[i] == "CUSIP/ISIN" {
+			mapping[htmlFieldCUSIP] = i
+			claimed[i] = true
+		}
 
 		// This split label names the proposal's source, not the company.
 		// Claim it before the ISSUER/PROPOSAL word-sequence fallbacks.
@@ -2116,16 +2120,30 @@ func htmlMapFields(cells []string) map[string]int {
 			claimed[i] = true
 		}
 	}
+	// A spanned issuer heading covers the item number and proposal text;
+	// the combined ID column distinguishes this shared identity/vote grid.
+	if id, hasID := mapping[htmlFieldCUSIP]; hasID && canon[id] == "CUSIP/ISIN" {
+		if issuer, hasIssuer := mapping[htmlFieldIssuer]; hasIssuer && issuer > 0 && issuer+1 < len(canon) &&
+			canon[issuer] == "ISSUER NAME" && canon[issuer-1] == "" && canon[issuer+1] == "PROPOSAL TYPE" {
+			mapping[htmlFieldItem] = issuer - 1
+			mapping[htmlFieldDesc] = issuer
+			mapping[htmlFieldBy] = issuer + 1
+		}
+	}
 	// This mixed header labels identity rows above proposal rows on the same
 	// grid: Issuer/Agenda Items is the issuer or item number, and
 	// Security[Symbol] is the combined identifier or proposal description.
 	for i, lab := range canon {
+		meeting, item := i-2, i-1
+		if i >= 3 && canon[i-3] == "MEETING DATE" && canon[i-2] == "" {
+			meeting, item = i-3, i-2
+		}
 		if lab == "SECURITY SYMBOL" && i >= 2 && i+4 < len(canon) &&
-			canon[i-2] == "MEETING" && canon[i-1] == "ISSUER AGENDA ITEMS" &&
+			(canon[meeting] == "MEETING" || canon[meeting] == "MEETING DATE") && canon[i-1] == "ISSUER AGENDA ITEMS" &&
 			canon[i+1] == "MEET TYPE PROP TYPE" && canon[i+4] == "RECORD DATE" {
-			mapping[htmlFieldMtgDate] = i - 2
+			mapping[htmlFieldMtgDate] = meeting
 			mapping[htmlFieldIssuer] = i - 1
-			mapping[htmlFieldItem] = i - 1
+			mapping[htmlFieldItem] = item
 			mapping[htmlFieldDesc] = i
 			mapping[htmlFieldCUSIP] = i
 			mapping[htmlFieldSecuritySymbol] = i
@@ -2727,7 +2745,7 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 
 // htmlStackedLabelSet is the vocabulary of a bare label row, without colons.
 var htmlStackedLabelSet = map[string]string{
-	"TICKER": "TICKER", "TICKER SYMBOL": "TICKER",
+	"TICKER": "TICKER", "TICKER SYMBOL": "TICKER", "SYMBOL": "TICKER",
 	"SECURITY ID": "CUSIP", "CUSIP": "CUSIP", "CUSIP NUMBER": "CUSIP",
 	"MEETING DATE": "MEETING DATE", "MTG DATE": "MEETING DATE", "DATE OF MEETING": "MEETING DATE",
 	"MEETING COUNTRY DATE": "MEETING DATE COUNTRY",
@@ -4125,6 +4143,10 @@ func htmlSecurityID(v string) (cusip, isin string) {
 	if v == "" {
 		return "", ""
 	}
+	if open := strings.LastIndexByte(v, '['); open > 0 && strings.HasSuffix(v, "]") &&
+		htmlTickerShaped(strings.TrimSpace(v[open+1:len(v)-1])) {
+		v = strings.TrimSpace(v[:open])
+	}
 	for _, f := range strings.Fields(v) {
 		if isinToken(f) && isin == "" {
 			isin = f
@@ -4320,7 +4342,9 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 	// A table that prints its own identity columns overrides the block context
 	// for that row: the row is the more specific statement.
 	if v := at(htmlFieldIssuer); v != "" {
-		r.IssuerName = v
+		if descCol, shared := mapping[htmlFieldDesc]; !shared || descCol != mapping[htmlFieldIssuer] {
+			r.IssuerName = v
+		}
 	}
 	if c, isin := htmlSecurityID(at(htmlFieldCUSIP)); c != "" || isin != "" {
 		if c != "" {
