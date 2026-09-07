@@ -194,6 +194,16 @@ func normalizeSeriesName(s string) string {
 	for strings.Contains(s, "&amp;") {
 		s = strings.ReplaceAll(s, "&amp;", "&")
 	}
+	// Columbia Funds Variable Insurance Trust abbreviates the `, Variable
+	// Series` sleeve that every one of its declared series spells out
+	// (`Columbia International Fund, VS` for `Columbia International Fund,
+	// Variable Series`, S000012559; 9,934 rows with no series). This is the
+	// comparison key only -- the stored FundName keeps the printed spelling.
+	// Only a WHOLE trailing `, VS` folds, so a class-bearing sleeve such as
+	// `, VS-LCG` is left unmatched rather than merged onto the base series.
+	if rest, ok := strings.CutSuffix(strings.TrimRight(s, " \t."), ", vs"); ok {
+		s = rest + ", variable series"
+	}
 	s = seriesMarkReplacer.Replace(s)
 	s = seriesPunctReplacer.Replace(s)
 

@@ -932,6 +932,14 @@ type issSeriesIndex struct {
 	// so `Total Bond Market Fund` is never `Total Bond Market Trust`.
 	lessBrandFull map[string]*SeriesDecl
 	lessBrandType map[string]*SeriesDecl
+	// lessLeadToken keys each declared name with exactly ONE leading token
+	// removed, for a printed heading that drops a brand the registrant's own
+	// name does not supply: JP Morgan Fleming Series Trust 2004 heads
+	// `MULTI-MANAGER SMALL CAP GROWTH FUND` for a declared `JPMorgan
+	// Multi-Manager Small Cap Growth Fund`. Built once per filing and, like
+	// every map here, nil on collision, so two declared names that agree after
+	// the cut stay unresolved rather than guessed.
+	lessLeadToken map[string]*SeriesDecl
 	lessParen     map[string]*SeriesDecl   // declared names with a trailing parenthetical removed
 	classPairs    map[string][]*SeriesDecl // the declared names behind a lessParen collision that differ only by a class marker
 	decls         []SeriesDecl
@@ -965,6 +973,7 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		byCompact:     make(map[string]*SeriesDecl, len(decls)),
 		lessBrand:     make(map[string]*SeriesDecl),
 		lessParen:     make(map[string]*SeriesDecl),
+		lessLeadToken: make(map[string]*SeriesDecl),
 		classPairs:    make(map[string][]*SeriesDecl),
 		decls:         decls,
 		lessAnd:       make(map[string]*SeriesDecl),
@@ -1071,6 +1080,11 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		}
 		key := normalizeSeriesName(d.Name)
 		put(ix.byCompact, strings.ReplaceAll(key, " ", ""), d)
+		// One leading token off the DECLARED name; the remainder must still be
+		// two tokens at least, so a two-word name never collapses to one word.
+		if toks := strings.Fields(key); len(toks) >= 3 {
+			put(ix.lessLeadToken, strings.Join(toks[1:], " "), d)
+		}
 		for _, b := range ix.brands {
 			if rest, ok := strings.CutPrefix(key, b+" "); ok {
 				put(ix.lessBrand, rest, d)
@@ -1624,6 +1638,16 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 				return banner, d
 			}
 		}
+	}
+
+	// A brand on the declared side that the registrant's own name never
+	// supplies: `MULTI-MANAGER SMALL CAP GROWTH FUND` for a declared
+	// `JPMorgan Multi-Manager Small Cap Growth Fund` (JP Morgan Fleming Series
+	// Trust 2004, 5,702 rows with no fund). The banner must equal a declared
+	// name with exactly ONE leading token removed, and exactly one declared
+	// series may answer to it -- a collision was recorded as nil and refuses.
+	if d := ix.lessLeadToken[key]; d != nil {
+		return banner, d
 	}
 	return banner, nil
 }
