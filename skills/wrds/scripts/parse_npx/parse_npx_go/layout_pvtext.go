@@ -77,9 +77,14 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 		haveMtg         bool
 		pendingIssuer   bool
 		continuationRow = -1
+		fund            string
 	)
 
 	for i := 0; i < len(lines); i++ {
+		if f, ok := pvTextAccountFund(lines[i]); ok {
+			fund = f
+			continue
+		}
 		if n := pvTextHeaderLinesAt(lines, i); n != 0 {
 			inTable = true
 			haveMtg = false
@@ -149,6 +154,7 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 		}
 		if haveMtg {
 			if row, ok := pvTextVoteLine(line, meeting); ok {
+				row.FundName = fund
 				rows = append(rows, row)
 				continuationRow = len(rows) - 1
 				continue
@@ -175,6 +181,7 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 						}
 					}
 					if row, ok := pvTextVoteLine(joined, meeting); ok {
+						row.FundName = fund
 						rows = append(rows, row)
 						continuationRow = len(rows) - 1
 						i++ // the vote tail is part of this row, never a row of its own
@@ -236,6 +243,7 @@ func parsePVText(text string, _ FilingMeta) ([]VoteRow, error) {
 					}
 					joined += " " + strings.TrimSpace(lines[k])
 					if row, ok := pvTextVoteLine(joined, meeting); ok {
+						row.FundName = fund
 						rows = append(rows, row)
 						continuationRow = len(rows) - 1
 						i = k // every joined line belongs to this row
@@ -828,4 +836,22 @@ func pvTextItemLoose(s string) bool {
 		}
 	}
 	return true
+}
+
+// pvTextAccountFund reads the fund a section opens with: `Account Number: JU77
+// Alliance Growth Portfolio` above the header (SunAmerica Series Trust 2005,
+// 28,965 rows with no fund on r207; 465,597 across the layout's declaring
+// registrants). The account code stays in the name; the series dictionary
+// reads past a leading code token.
+func pvTextAccountFund(line string) (string, bool) {
+	t := strings.TrimSpace(line)
+	const label = "ACCOUNT NUMBER:"
+	if len(t) <= len(label) || !strings.EqualFold(t[:len(label)], label) {
+		return "", false
+	}
+	name := strings.TrimSpace(t[len(label):])
+	if name == "" {
+		return "", false
+	}
+	return name, true
 }
