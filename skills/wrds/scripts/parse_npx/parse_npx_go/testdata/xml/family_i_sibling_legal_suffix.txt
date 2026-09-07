@@ -1,0 +1,42 @@
+  <proxyTable>
+    <issuerName>AERSALE CORPORATION</issuerName>
+    <cusip>00810F106</cusip>
+    <isin>US00810F1066</isin>
+    <meetingDate>06/11/2026</meetingDate>
+    <voteDescription>Approval, on an advisory basis, of the Company's named executive officer compensation.</voteDescription>
+    <voteCategories>
+      <voteCategory>
+        <categoryType>SECTION 14A SAY-ON-PAY VOTES</categoryType>
+      </voteCategory>
+    </voteCategories>
+    <voteSource>ISSUER</voteSource>
+    <sharesVoted>1296</sharesVoted>
+    <sharesOnLoan>0</sharesOnLoan>
+    <vote>
+      <voteRecord>
+        <howVoted>AGAINST</howVoted>
+        <sharesVoted>1296</sharesVoted>
+        <managementRecommendation>AGAINST</managementRecommendation>
+      </voteRecord>
+    </vote>
+  </proxyTable>
+  <proxyTable>
+    <issuerName>AERSALE INC.</issuerName>
+    <meetingDate>06/11/2026</meetingDate>
+    <voteDescription>Approval, on an advisory basis, of the Company's named executive officer compensation.</voteDescription>
+    <voteCategories>
+      <voteCategory>
+        <categoryType>SECTION 14A SAY-ON-PAY VOTES</categoryType>
+      </voteCategory>
+    </voteCategories>
+    <voteSource>ISSUER</voteSource>
+    <sharesVoted>1841</sharesVoted>
+    <sharesOnLoan>0</sharesOnLoan>
+    <vote>
+      <voteRecord>
+        <howVoted>AGAINST</howVoted>
+        <sharesVoted>1841</sharesVoted>
+        <managementRecommendation>AGAINST</managementRecommendation>
+      </voteRecord>
+    </vote>
+  </proxyTable>

@@ -1,0 +1,42 @@
+  <inf:proxyTable>
+    <inf:issuerName>INTAPP, INC</inf:issuerName>
+    <inf:meetingDate>11/18/2025</inf:meetingDate>
+    <inf:voteDescription>To conduct an advisory vote to approve named executive officer compensation (&#34;Say-On-Pay Vote&#34;).</inf:voteDescription>
+    <inf:voteCategories>
+      <inf:voteCategory>
+        <inf:categoryType>SECTION 14A SAY-ON-PAY VOTES</inf:categoryType>
+      </inf:voteCategory>
+    </inf:voteCategories>
+    <inf:voteSource>ISSUER</inf:voteSource>
+    <inf:sharesVoted>3346</inf:sharesVoted>
+    <inf:sharesOnLoan>0</inf:sharesOnLoan>
+    <inf:vote>
+      <inf:voteRecord>
+        <inf:howVoted>ABSTAIN</inf:howVoted>
+        <inf:sharesVoted>3346</inf:sharesVoted>
+        <inf:managementRecommendation>FOR</inf:managementRecommendation>
+      </inf:voteRecord>
+    </inf:vote>
+  </inf:proxyTable>
+  <inf:proxyTable>
+    <inf:issuerName>Intapp, Inc.</inf:issuerName>
+    <inf:cusip>45827U109</inf:cusip>
+    <inf:isin>US45827U1097</inf:isin>
+    <inf:meetingDate>11/18/2025</inf:meetingDate>
+    <inf:voteDescription>To conduct an advisory vote to approve named executive officer compensation (&#34;Say-On-Pay Vote&#34;).</inf:voteDescription>
+    <inf:voteCategories>
+      <inf:voteCategory>
+        <inf:categoryType>SECTION 14A SAY-ON-PAY VOTES</inf:categoryType>
+      </inf:voteCategory>
+    </inf:voteCategories>
+    <inf:voteSource>ISSUER</inf:voteSource>
+    <inf:sharesVoted>4249</inf:sharesVoted>
+    <inf:sharesOnLoan>0</inf:sharesOnLoan>
+    <inf:vote>
+      <inf:voteRecord>
+        <inf:howVoted>FOR</inf:howVoted>
+        <inf:sharesVoted>4249</inf:sharesVoted>
+        <inf:managementRecommendation>FOR</inf:managementRecommendation>
+      </inf:voteRecord>
+    </inf:vote>
+  </inf:proxyTable>
