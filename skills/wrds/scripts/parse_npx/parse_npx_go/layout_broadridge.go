@@ -761,7 +761,12 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 				}
 			}
 		}
-		if cur == nil && brColumnFurniture(line) {
+		// A label line whose value carries no letter reduces to the label word
+		// alone, which is itself a column word: `Security:  46655@109` (JNL
+		// Series Trust 2021) reads as header spill and the id is lost, while the
+		// sibling `Security:  46628D411` survives on the letter in its id. A
+		// label WITH a value is never furniture.
+		if cur == nil && brColumnFurniture(line) && !brValuedLabelLine(line) {
 			if inTable {
 				headerText += " " + line
 				hasType, maxVote = brColumnShape(headerText)
@@ -1189,22 +1194,22 @@ func brFindLabels(line string) map[string]string {
 
 	type hit struct {
 		at    int
+		end   int
 		label string
 	}
 	var hits []hit
 	for _, label := range brLabels {
-		for i := 0; ; {
-			j := strings.Index(up[i:], label)
-			if j < 0 {
+		for i := 0; i <= len(up); {
+			at, end := brLabelIndex(up, i, label)
+			if at < 0 {
 				break
 			}
-			at := i + j
-			if !brLabelBoundary(up, at, len(label)) {
+			if !brLabelBoundary(up, at, end-at) {
 				i = at + 1
 				continue
 			}
-			hits = append(hits, hit{at: at, label: label})
-			i = at + len(label)
+			hits = append(hits, hit{at: at, end: end, label: label})
+			i = end
 		}
 	}
 	if len(hits) == 0 {
@@ -1225,7 +1230,7 @@ func brFindLabels(line string) map[string]string {
 			continue
 		}
 		kept = append(kept, h)
-		end = h.at + len(h.label)
+		end = h.end
 	}
 
 	// A label BLOCK begins with a label. A proposal whose text merely names one
@@ -1243,7 +1248,7 @@ func brFindLabels(line string) map[string]string {
 			return nil
 		}
 		for _, h := range kept {
-			if e := h.at + len(h.label); e >= len(line) || line[e] != ':' {
+			if e := h.end; e >= len(line) || line[e] != ':' {
 				return nil
 			}
 		}
@@ -1258,7 +1263,7 @@ func brFindLabels(line string) map[string]string {
 		out["ISSUER"] = lead
 	}
 	for i, h := range kept {
-		from := h.at + len(h.label)
+		from := h.end
 		to := len(line)
 		if i+1 < len(kept) {
 			to = kept[i+1].at
@@ -1268,6 +1273,53 @@ func brFindLabels(line string) map[string]string {
 		out[h.label] = v
 	}
 	return out
+}
+
+// brLabelIndex finds the first occurrence of a multi-word label at or after
+// `from`, returning its start and end offsets (-1, -1 when absent). The single
+// space the vocabulary spells between words matches ANY run of spaces: GAMCO
+// Westwood Funds 2011 doubles it in sixty-three of its identity blocks
+// (`TICKER  SYMBOL     SWSH`, `MEETING  DATE       05-May-2011`), and a literal
+// match there loses the meeting date and reads the ticker as the word SYMBOL.
+func brLabelIndex(up string, from int, label string) (int, int) {
+	first := label
+	if i := strings.IndexByte(label, ' '); i >= 0 {
+		first = label[:i]
+	}
+	for i := from; i <= len(up); {
+		j := strings.Index(up[i:], first)
+		if j < 0 {
+			return -1, -1
+		}
+		at := i + j
+		if end := brLabelEnd(up, at, label); end >= 0 {
+			return at, end
+		}
+		i = at + 1
+	}
+	return -1, -1
+}
+
+// brLabelEnd matches `label` at `at`, treating each space in the label as one or
+// more spaces in the line; it returns the offset just past the match, or -1.
+func brLabelEnd(up string, at int, label string) int {
+	i := at
+	for j := 0; j < len(label); j++ {
+		if label[j] == ' ' {
+			if i >= len(up) || up[i] != ' ' {
+				return -1
+			}
+			for i < len(up) && up[i] == ' ' {
+				i++
+			}
+			continue
+		}
+		if i >= len(up) || up[i] != label[j] {
+			return -1
+		}
+		i++
+	}
+	return i
 }
 
 // brLabelBoundary rejects a label that is part of a longer word, which is what
@@ -1290,16 +1342,25 @@ func brWordByte(c byte) bool {
 // 'Security' label holds the company NAME and the CUSIP arrives under its own
 // label further down; without this test the column would carry a fragment of the
 // issuer's name and the real identifier would be the one discarded.
+// A nine-character value may carry exactly one '@' among its letters and digits
+// (JNL Series Trust 2021 prints `Security:  46655@109`); it is kept verbatim,
+// since the character stands for one the vendor could not render and guessing it
+// would invent an identifier.
 func brLooksLikeSecurityID(s string) bool {
 	if len(s) < 5 || len(s) > 12 {
 		return false
 	}
+	ats := 0
 	for i := 0; i < len(s); i++ {
+		if s[i] == '@' {
+			ats++
+			continue
+		}
 		if !brWordByte(s[i]) {
 			return false
 		}
 	}
-	return true
+	return ats == 0 || (ats == 1 && len(s) == 9)
 }
 
 // brFirstField takes the leading whitespace-delimited token, which is how a

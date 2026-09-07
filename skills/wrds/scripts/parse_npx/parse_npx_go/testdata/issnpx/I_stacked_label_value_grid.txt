@@ -1,0 +1,53 @@
+         Repurchased Shares
+
+
+--------------------------------------------------------------------------------
+
+HeidelbergCement AG
+Ticker:  Security ID:               Meeting Date:   Meeting Type:   Record Date:
+HEI      D31709104                  May-11-2023     Annual          Apr-19-2023
+
+#        Proposal                   Mgmt Rec        Vote Cast       Sponsor
+1        Receive Financial                                          Management
+         Statements and Statutory
+         Reports for Fiscal Year
+         2022 (Non-Voting)
+2        Approve Allocation of      For             For             Management
+         Income and Dividends of
+         EUR 2.60 per Share
+3.1      Approve Discharge of       For             For             Management
+         Management Board Member
+         Dominik von Achten for
+         Fiscal Year 2022
+3.2      Approve Discharge of       For             For             Management
+         Management Board Member
+         Rene Aldach for Fiscal
+         Year 2022
+3.3      Approve Discharge of       For             For             Management
+         Management Board Member
+         Kevin Gluskie for Fiscal
+         Year 2022
+3.4      Approve Discharge of       For             For             Management
+         Management Board Member
+         Hakan Gurdal for Fiscal
+         Year 2022
+3.5      Approve Discharge of       For             For             Management
+         Management Board Member
+         Ernest Jelito for Fiscal
+         Year 2022
+3.6      Approve Discharge of       For             For             Management
+         Management Board Member
+         Nicola Kimm for Fiscal
+         Year 2022
+3.7      Approve Discharge of       For             For             Management
+         Management Board Member
+         Dennis Lentz for Fiscal
+         Year 2022
+3.8      Approve Discharge of       For             For             Management
+         Management Board Member
+         Jon Morrish for Fiscal
+         Year 2022
+3.9      Approve Discharge of       For             For             Management
+         Management Board Member
+         Chris Ward for Fiscal Year
+         2022

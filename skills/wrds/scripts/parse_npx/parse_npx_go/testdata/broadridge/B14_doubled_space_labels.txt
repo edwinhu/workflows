@@ -1,0 +1,46 @@
+03    ADVISORY VOTE ON THE FREQUENCY OF THE ADVISORY      Management  Abstain      Against
+      VOTE ON EXECUTIVE COMPENSATION.
+04    RATIFY AND APPROVE THE APPOINTMENT OF UHY LLP AS    Management  For          For
+      THE INDEPENDENT REGISTERED PUBLIC ACCOUNTING
+      FIRM FOR THE COMPANY FOR 2011.
+</TABLE>
+
+SWISHER HYGIENE INC.
+
+SECURITY           870808102          MEETING TYPE        Annual
+TICKER  SYMBOL     SWSH               MEETING  DATE       05-May-2011
+ISIN               US8708081026       AGENDA              933423004 - Management
+
+<TABLE>
+<CAPTION>
+                                                                                   FOR/AGAINST
+ITEM  PROPOSAL                                            TYPE        VOTE         MANAGEMENT
+----  ------------------------------------------------    ----------  -------      -----------
+<S>   <C>                                                 <C>         <C>          <C>
+01    DIRECTOR                                            Management
+      1     H. WAYNE HUIZENGA                                         For           For
+      2     STEVEN R. BERRARD                                         For           For
+      3     DAVID BRALEY                                              For           For
+      4     JOHN ELLIS BUSH                                           For           For
+      5     HARRIS W. HUDSON                                          For           For
+      6     WILLIAM D. PRUITT                                         For           For
+      7     DAVID PRUSSKY                                             For           For
+      8     MICHAEL SERRUYA                                           For           For
+02    TO APPROVE AN AMENDMENT TO SWISHER HYGIENE          Management  For           For
+      INC.'S CERTIFICATE OF INCORPORATION TO INCREASE
+      THE AUTHORIZED NUMBER OF SHARES OF COMMON
+      STOCK FROM 400,000,000 TO 600,000,000.
+03    TO APPROVE AN AMENDMENT TO SWISHER HYGIENE          Management  Against       Against
+      INC.'S CERTIFICATE OF INCORPORATION TO AUTHORIZE
+      10,000,000 SHARES OF "BLANK CHECK" PREFERRED
+      STOCK.
+04    TO APPROVE AN AMENDMENT TO SWISHER HYGIENE          Management  For           For
+      INC.'S CERTIFICATE OF INCORPORATION TO PERMIT
+      STOCKHOLDERS TO ACT BY WRITTEN CONSENT.
+05    TO APPROVE THE AMENDED AND RESTATED SWISHER         Management  For           For
+      HYGIENE INC. 2010 STOCK INCENTIVE PLAN AND RATIFY
+      AWARDS PREVIOUSLY GRANTED UNDER THE PLAN.
+06    TO APPROVE THE SWISHER HYGIENE INC. SENIOR          Management  For           For
+      EXECUTIVE OFFICERS PERFORMANCE INCENTIVE BONUS
+      PLAN.
+07    TO OBTAIN NON-BINDING ADVISORY APPROVAL OF THE      Management  Abstain       Against
