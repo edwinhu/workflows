@@ -1,0 +1,151 @@
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="4"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Registrant: <U>NORTHERN LIGHTS FUND TRUST - Athena Value Fund</U></B></FONT></TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP STYLE="text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Item 1, Exhibit 14</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="3"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Investment Company Act file number: 811-21720</B></FONT></TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="3"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Reporting Period: </B>July 1, 2017 through June 30, 2018</FONT></TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="width: 1%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 9%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 1%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 2%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 5%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 1%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 68%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 3%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 2%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 4%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 4%">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="11" STYLE="border-top: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 14pt"><B><U>FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</U></B></FONT></TD></TR>
+<TR>
+    <TD STYLE="border: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(a) Issuer's Name</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(b) Exchange Ticker Symbol</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(c)&quot;CUSIP&quot; #</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(d) Shareholder Meeting Date</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="border-top: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(e) Matter Identification</B></FONT></TD>
+    <TD STYLE="border: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(f) Proposal Type</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(g) Voted</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(h) Vote Cast</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(i) For/Against Management</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">1</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">METLIFE, INC.</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">MET</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">59156R108</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Special - 2017-10-19</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">1.</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">AMEND THE PREFERRED STOCK DIVIDEND PAYMENT TESTS IN THE COMPANY'S CERTIFICATE OF INCORPORATION. </TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">MGMT</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">2</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">METLIFE, INC.</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">MET</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">59156R108</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Special - 2017-10-19</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">2.</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">ADJOURN THE SPECIAL MEETING, IF NECESSARY OR APPROPRIATE, TO SOLICIT ADDITIONAL PROXIES. </TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">MGMT</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">3</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">CARDINAL HEALTH, INC.</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">CAH</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">14149Y108</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Annual - 2017-11-08</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">1A.</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">ELECTION OF DIRECTOR: DAVID J. ANDERSON </TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">MGMT</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">4</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">CARDINAL HEALTH, INC.</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">CAH</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">14149Y108</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Annual - 2017-11-08</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">1B.</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">ELECTION OF DIRECTOR: COLLEEN F. ARNOLD </TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">MGMT</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">5</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">CARDINAL HEALTH, INC.</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">CAH</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">14149Y108</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Annual - 2017-11-08</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">1C.</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">ELECTION OF DIRECTOR: GEORGE S. BARRETT </TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">MGMT</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">6</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">CARDINAL HEALTH, INC.</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">CAH</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">14149Y108</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Annual - 2017-11-08</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">1D.</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">ELECTION OF DIRECTOR: CARRIE S. COX </TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">MGMT</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">7</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">CARDINAL HEALTH, INC.</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">CAH</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">14149Y108</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Annual - 2017-11-08</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">1E.</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">ELECTION OF DIRECTOR: CALVIN DARDEN </TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">MGMT</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">8</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">CARDINAL HEALTH, INC.</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">CAH</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">14149Y108</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Annual - 2017-11-08</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">1F.</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">ELECTION OF DIRECTOR: BRUCE L. DOWNEY </TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">MGMT</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Yes</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD></TR>
