@@ -110,4 +110,14 @@ func (f *dictFallback) apply(r *VoteRow) {
 			}
 		}
 	}
+	// `JU77 Alliance Growth Portfolio`: an account code before the name
+	// (SunAmerica Series Trust 2005, pvtext), read past the way the header
+	// rules read `2DCN ...`.
+	if r.SeriesID == "" {
+		if rest, ok := issLeadingCodeToken(r.FundName); ok {
+			if d, _ := lookupSeriesEntry(f.byName, rest); d != nil {
+				r.SeriesID = d.SeriesID
+			}
+		}
+	}
 }
