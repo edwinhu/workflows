@@ -1,0 +1,52 @@
+  <TR STYLE="vertical-align: middle">
+    <TD COLSPAN="11" STYLE="color: white; font-size: 16pt; font-weight: bold; text-decoration: underline; border-top: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; background-color: #244062">FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</TD></TR>
+  <TR>
+    <TD STYLE="color: white; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; background-color: #244062">&nbsp;</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center; background-color: #244062">(a) Issuer's Name</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; background-color: #244062">(b) Exchange Ticker Symbol</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; background-color: #244062">(c)&quot;CUSIP&quot; #</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: middle; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; background-color: #244062">(d) Shareholder Meeting Date</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; vertical-align: top; border-top: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; background-color: #244062">(e) Matter Identification</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border: Black 0.5pt solid; text-align: center; background-color: #244062">(f) Proposal Type</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border: Black 0.5pt solid; text-align: center; background-color: #244062">(g) Voted</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border: Black 0.5pt solid; text-align: center; background-color: #244062">(h) Vote Cast</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; background-color: #244062">(i) For/Against Management</TD></TR>
+  <TR>
+    <TD STYLE="color: white; vertical-align: middle; border-left: Black 0.5pt solid; text-align: center; background-color: #244062">&nbsp;</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: middle; text-align: center; background-color: #244062">&nbsp;</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: middle; text-align: center; background-color: #244062">&nbsp;</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: middle; text-align: center; background-color: #244062">&nbsp;</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: middle; text-align: center; background-color: #244062">&nbsp;</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-top: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; background-color: #244062">&nbsp;</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; background-color: #244062">&nbsp;</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border: Black 0.5pt solid; text-align: center; background-color: #244062">&nbsp;</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border: Black 0.5pt solid; text-align: center; background-color: #244062">&nbsp;</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border: Black 0.5pt solid; text-align: center; background-color: #244062">&nbsp;</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; background-color: #244062">&nbsp;</TD></TR>
+  <TR>
+    <TD STYLE="font-weight: bold; vertical-align: middle; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; background-color: #D9D9D9">1</TD>
+    <TD DIR="LTR" STYLE="font-weight: bold; vertical-align: middle; border-bottom: Black 0.5pt solid; text-align: center; background-color: #D9D9D9">BOX INC</TD>
+    <TD STYLE="font-weight: bold; vertical-align: middle; border-bottom: Black 0.5pt solid; text-align: center; background-color: #D9D9D9">BOX</TD>
+    <TD DIR="LTR" STYLE="font-weight: bold; vertical-align: middle; border-bottom: Black 0.5pt solid; text-align: center; background-color: #D9D9D9">10316T104</TD>
+    <TD STYLE="font-weight: bold; vertical-align: middle; border-bottom: Black 0.5pt solid; text-align: center; background-color: #D9D9D9">2021 Contested Annual Meeting<BR>
+September 9, 2021</TD>
+    <TD COLSPAN="2" STYLE="font-weight: bold; vertical-align: bottom; border-top: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: left; background-color: white">Management Proxy (Blue Proxy Card)</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; background-color: white">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; background-color: white">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; background-color: white">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; background-color: white">&nbsp;</TD></TR>
+  <TR>
+    <TD STYLE="font-weight: bold; vertical-align: middle; border-left: Black 0.5pt solid; text-align: center; background-color: white">&nbsp;</TD>
+    <TD DIR="LTR" STYLE="font-weight: bold; vertical-align: middle; text-align: center; background-color: white">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: middle; text-align: center; background-color: white">&nbsp;</TD>
+    <TD DIR="LTR" STYLE="font-weight: bold; vertical-align: middle; text-align: center; background-color: white">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: middle; text-align: center; background-color: white">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; background-color: white">1</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: left; background-color: white">Vote Board of Directors:<BR>
+Election of Director: Dana Evan<BR>
+Election of Director: Peter Leav<BR>
+Election of Director: Aaron Levie</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; background-color: white">Management</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; background-color: white">No</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; background-color: white">Did Note Vote</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; background-color: white">&nbsp;</TD></TR>

@@ -1,0 +1,116 @@
+<TD vAlign=top align=left width="87%" colSpan=9>&nbsp;</TD></TR></TABLE></P>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><BR></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><BR></DIV>
+<P>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+<TR>
+<TD vAlign=center align=left width="9%">&nbsp;</TD>
+<TD vAlign=center align=left width="7%">&nbsp;</TD>
+<TD vAlign=center align=left width="3%">&nbsp;</TD>
+<TD vAlign=center align=left width="3%">&nbsp;</TD>
+<TD vAlign=center align=left width="36%">&nbsp;</TD>
+<TD vAlign=center align=left width="5%">&nbsp;</TD>
+<TD vAlign=center align=left width="9%">&nbsp;</TD>
+<TD vAlign=center align=left width="2%">&nbsp;</TD>
+<TD vAlign=center align=left width="12%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=middle width="87%" colSpan=9>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><STRONG>Vote Summary Report</STRONG></FONT></DIV></TD></TR>
+<TR>
+<TD vAlign=top align=middle width="87%" colSpan=9>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=center><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Jul 01, 2003 - Jun 30, 2004</FONT></DIV></TD></TR>
+<TR>
+<TD vAlign=top align=left width="87%" colSpan=9>&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="87%" colSpan=9>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><STRONG>Alpine International Real Estate Equity Fund</STRONG></FONT></DIV></TD></TR>
+<TR>
+<TD vAlign=top align=left width="87%" colSpan=9>&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=right width="87%" colSpan=9>&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="64%" colSpan=6>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><STRONG>Beazer Homes USA, Inc.</STRONG></FONT></DIV></TD>
+<TD vAlign=top align=right width="9%">
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=right><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Security:</FONT></DIV></TD>
+<TD vAlign=top align=left width="14%" colSpan=2>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">07556Q105</FONT></DIV></TD></TR>
+<TR>
+<TD vAlign=top align=left width="16%" colSpan=2>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Meeting Date:</FONT></DIV></TD>
+<TD vAlign=top align=left width="43%" colSpan=3>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">02/10/04</FONT></DIV></TD>
+<TD vAlign=top align=right width="14%" colSpan=2>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=right><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Record Date:</FONT></DIV></TD>
+<TD vAlign=top align=left width="14%" colSpan=2>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">12/12/03</FONT></DIV></TD></TR>
+<TR>
+<TD vAlign=center align=left width="87%" colSpan=9>&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="9%">&nbsp;</TD>
+<TD vAlign=top align=left width="55%" colSpan=5>&nbsp;</TD>
+<TD vAlign=top align=left width="11%" colSpan=2>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><STRONG>Mtg</STRONG></FONT></DIV></TD>
+<TD vAlign=top align=left width="12%">
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><STRONG>Vote</STRONG></FONT></DIV></TD></TR>
+<TR>
+<TD vAlign=top align=left width="9%">
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><STRONG>Prpnent</STRONG></FONT></DIV></TD>
+<TD vAlign=top align=left width="55%" colSpan=5>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><STRONG>Ballot Issues</STRONG></FONT></DIV></TD>
+<TD vAlign=top align=left width="11%" colSpan=2>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><STRONG>Rec</STRONG></FONT></DIV></TD>
+<TD vAlign=top align=left width="12%">
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><STRONG>Cast</STRONG></FONT></DIV></TD></TR>
+<TR>
+<TD vAlign=center align=left width="87%" colSpan=9>&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="9%">
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Mgmt</FONT></DIV></TD>
+<TD vAlign=top align=left width="7%">
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">1</FONT></DIV></TD>
+<TD vAlign=top align=left width="48%" colSpan=4>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Elect Directors</FONT></DIV></TD>
+<TD vAlign=top align=left width="11%" colSpan=2>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="12%">
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</FONT></DIV></TD></TR>
+<TR>
+<TD vAlign=top align=left width="9%">&nbsp;</TD>
+<TD vAlign=top align=left width="7%">
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">1.1</FONT></DIV></TD>
+<TD vAlign=top align=left width="48%" colSpan=4>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Elect Director Laurent Alpert --- For</FONT></DIV></TD>
+<TD vAlign=top align=left width="11%" colSpan=2>&nbsp;</TD>
+<TD vAlign=top align=left width="12%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="20%" colSpan=3>&nbsp;</TD>
+<TD vAlign=top width="45%" colSpan=3>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=justify>&nbsp;</DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=justify><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><EM>We recommend a vote FOR the directors. </EM></FONT></DIV>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=justify>&nbsp;</DIV></TD>
+<TD vAlign=top align=left width="23%" colSpan=3>&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="9%">&nbsp;</TD>
+<TD vAlign=top align=left width="7%">
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">1.2</FONT></DIV></TD>
+<TD vAlign=top align=left width="48%" colSpan=4>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Elect Director Katie J. Bayne --- For</FONT></DIV></TD>
+<TD vAlign=top align=left width="11%" colSpan=2>&nbsp;</TD>
+<TD vAlign=top align=left width="12%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="20%" colSpan=3>&nbsp;</TD>
+<TD vAlign=top width="45%" colSpan=3>&nbsp;</TD>
+<TD vAlign=top align=left width="23%" colSpan=3>&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="9%">&nbsp;</TD>
+<TD vAlign=top align=left width="7%">
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">1.3</FONT></DIV></TD>
+<TD vAlign=top align=left width="48%" colSpan=4>
+<DIV style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align=left><FONT style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Elect Director Brian C. Beazer --- For</FONT></DIV></TD>
+<TD vAlign=top align=left width="11%" colSpan=2>&nbsp;</TD>
+<TD vAlign=top align=left width="12%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="20%" colSpan=3>&nbsp;</TD>
+<TD vAlign=top width="45%" colSpan=3>&nbsp;</TD>
+<TD vAlign=top align=left width="23%" colSpan=3>&nbsp;</TD></TR>

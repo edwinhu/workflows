@@ -1,0 +1,211 @@
+<table border="0" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:collapse;width:100.0%;">
+ <tr style="page-break-inside:avoid;">
+  <td width="19%" valign="top" style="padding:0in 0in 0in 0in;width:19.62%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Issuer Name:</font></p>
+  </td>
+  <td width="1%" valign="bottom" style="padding:0in 0in 0in 0in;width:1.1%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><b><font size="2" face="Times New Roman" style="font-size:1.0pt;font-weight:bold;">&nbsp;</font></b></p>
+  </td>
+  <td width="79%" colspan="10" valign="top" style="padding:0in 0in 0in 0in;width:79.28%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">Advanced Info Service
+  Public Company Limited</font></b></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="19%" valign="top" style="padding:0in 0in 0in 0in;width:19.62%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Exchange Ticker Symbol:</font></p>
+  </td>
+  <td width="1%" valign="bottom" style="padding:0in 0in 0in 0in;width:1.1%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><b><font size="2" face="Times New Roman" style="font-size:1.0pt;font-weight:bold;">&nbsp;</font></b></p>
+  </td>
+  <td width="79%" colspan="10" valign="top" style="padding:0in 0in 0in 0in;width:79.28%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">ADVANC</font></b></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="19%" valign="top" style="padding:0in 0in 0in 0in;width:19.62%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">SEDOL/CUSIP #</font></p>
+  </td>
+  <td width="1%" valign="bottom" style="padding:0in 0in 0in 0in;width:1.1%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="79%" colspan="10" valign="top" style="padding:0in 0in 0in 0in;width:79.28%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">6412568</font></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="19%" valign="top" style="padding:0in 0in 0in 0in;width:19.62%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Meeting Date:</font></p>
+  </td>
+  <td width="1%" valign="bottom" style="padding:0in 0in 0in 0in;width:1.1%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="79%" colspan="10" valign="top" style="padding:0in 0in 0in 0in;width:79.28%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">4/23/04</font></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="19%" valign="top" style="padding:0in 0in 0in 0in;width:19.62%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="1%" valign="bottom" style="padding:0in 0in 0in 0in;width:1.1%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="79%" colspan="10" valign="top" style="padding:0in 0in 0in 0in;width:79.28%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="19%" valign="top" style="border:none;border-bottom:solid windowtext 1.0pt;padding:0in 0in 0in 0in;width:19.62%;">
+  <p style="margin:0in 0in .0001pt;"><b><font size="1" face="Times New Roman" style="font-size:8.0pt;font-weight:bold;">Agenda Number</font></b></p>
+  </td>
+  <td width="1%" valign="bottom" style="padding:0in 0in 0in 0in;width:1.1%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:1.0pt;font-weight:bold;">&nbsp;</font></b></p>
+  </td>
+  <td width="34%" valign="top" style="border:none;border-bottom:solid windowtext 1.0pt;padding:0in 0in 0in 0in;width:34.44%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:8.0pt;font-weight:bold;">Proposal</font></b></p>
+  </td>
+  <td width="1%" valign="bottom" style="padding:0in 0in 0in 0in;width:1.5%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:1.0pt;font-weight:bold;">&nbsp;</font></b></p>
+  </td>
+  <td width="9%" valign="top" style="border:none;border-bottom:solid windowtext 1.0pt;padding:0in 0in 0in 0in;width:9.14%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:8.0pt;font-weight:bold;">Mgmt Rec.</font></b></p>
+  </td>
+  <td width="1%" valign="bottom" style="padding:0in 0in 0in 0in;width:1.42%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:1.0pt;font-weight:bold;">&nbsp;</font></b></p>
+  </td>
+  <td width="8%" valign="top" style="border:none;border-bottom:solid windowtext 1.0pt;padding:0in 0in 0in 0in;width:8.74%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:8.0pt;font-weight:bold;">Vote Cast</font></b></p>
+  </td>
+  <td width="1%" valign="bottom" style="padding:0in 0in 0in 0in;width:1.5%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:1.0pt;font-weight:bold;">&nbsp;</font></b></p>
+  </td>
+  <td width="10%" valign="top" style="border:none;border-bottom:solid windowtext 1.0pt;padding:0in 0in 0in 0in;width:10.16%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:8.0pt;font-weight:bold;">Manner Cast</font></b></p>
+  </td>
+  <td width="1%" valign="bottom" style="padding:0in 0in 0in 0in;width:1.24%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:1.0pt;font-weight:bold;">&nbsp;</font></b></p>
+  </td>
+  <td width="10%" valign="top" style="border:none;border-bottom:solid windowtext 1.0pt;padding:0in 0in 0in 0in;width:10.4%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:8.0pt;font-weight:bold;">Proposed by</font></b></p>
+  </td>
+  <td width="0%" valign="top" style="padding:0in 0in 0in 0in;width:.74%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:1.0pt;font-weight:bold;">&nbsp;</font></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="19%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;border:none;padding:0in 0in 0in 0in;width:19.62%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">1</font></p>
+  </td>
+  <td width="1%" valign="bottom" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:1.1%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="34%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;border:none;padding:0in 0in 0in 0in;width:34.44%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Matters to be informed</font></p>
+  </td>
+  <td width="1%" valign="bottom" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:1.5%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="9%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:9.14%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">None</font></p>
+  </td>
+  <td width="1%" valign="bottom" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:1.42%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="8%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:8.74%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">No</font></p>
+  </td>
+  <td width="1%" valign="bottom" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:1.5%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="10%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:10.16%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">None</font></p>
+  </td>
+  <td width="1%" valign="bottom" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:1.24%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="10%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:10.4%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Management</font></p>
+  </td>
+  <td width="0%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:.74%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="19%" valign="top" style="padding:0in 0in 0in 0in;width:19.62%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">2</font></p>
+  </td>
+  <td width="1%" valign="bottom" style="padding:0in 0in 0in 0in;width:1.1%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="34%" valign="top" style="padding:0in 0in 0in 0in;width:34.44%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">To consider approval for Minutes of the
+  2003 Annual General Meeting of Shareholders April 29, 2003</font></p>
+  </td>
+  <td width="1%" valign="bottom" style="padding:0in 0in 0in 0in;width:1.5%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="9%" valign="top" style="padding:0in 0in 0in 0in;width:9.14%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">For</font></p>
+  </td>
+  <td width="1%" valign="bottom" style="padding:0in 0in 0in 0in;width:1.42%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="8%" valign="top" style="padding:0in 0in 0in 0in;width:8.74%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Yes</font></p>
+  </td>
+  <td width="1%" valign="bottom" style="padding:0in 0in 0in 0in;width:1.5%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="10%" valign="top" style="padding:0in 0in 0in 0in;width:10.16%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">For</font></p>
+  </td>
+  <td width="1%" valign="bottom" style="padding:0in 0in 0in 0in;width:1.24%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="10%" valign="top" style="padding:0in 0in 0in 0in;width:10.4%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Management</font></p>
+  </td>
+  <td width="0%" valign="top" style="padding:0in 0in 0in 0in;width:.74%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="19%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:19.62%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">3</font></p>
+  </td>
+  <td width="1%" valign="bottom" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:1.1%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="34%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:34.44%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Approval for the 2003 Annual Report of the
+  Board of Directors</font></p>
+  </td>
+  <td width="1%" valign="bottom" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:1.5%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="9%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:9.14%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">For</font></p>
+  </td>
+  <td width="1%" valign="bottom" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:1.42%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="8%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:8.74%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Yes</font></p>
+  </td>
+  <td width="1%" valign="bottom" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:1.5%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="10%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:10.16%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">For</font></p>
+  </td>
+  <td width="1%" valign="bottom" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:1.24%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="10%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:10.4%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Management</font></p>
+  </td>
+  <td width="0%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:.74%;">
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
