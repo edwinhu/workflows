@@ -137,6 +137,11 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// curFund is the fund name as the filing printed it, recorded on every
 		// row so an unattributed section shows as unmatched, not unnamed.
 		curFund string
+		// The split-page halves: a table whose header names only identity
+		// columns is the LEFT half of a page too wide to print in one table,
+		// and the table that follows it carries the same rows' votes in the
+		// same order (MET Investors Series Trust 2013).
+		half htmlSplitHalf
 	)
 
 	for {
@@ -161,6 +166,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// table therefore still closes the mapping rather than inheriting columns.
 		if row.newTable {
 			fundCells = nil
+			half.closeTable(out)
 		}
 		deferredBoundary := row.newTable && partitioned
 		if row.newTable && !partitioned {
@@ -223,6 +229,13 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				curFund, curSeries = name, id
 			}
 		}
+
+		// The identity half of a split page: its header names identity columns
+		// and no vote column at all, so no mapping opens on it and its rows
+		// reach nothing below. Recording them here is additive -- the row is
+		// still offered to every reader beneath -- and the values are used only
+		// when the next table emits exactly as many rows.
+		half.read(cells)
 
 		// A label/value row whose labels wrap inside their cells (`Ticker /
 		// Symbol | JAVA | Meeting / Date | 16-Jul-2009`, Green Century 2010)
@@ -486,6 +499,10 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			mapping, headerArity, carry, partitioned = nil, 0, false, false
 		}
 	}
+
+	// The vote half is normally the document's last table, so its join is
+	// settled here rather than at a following </table>.
+	half.closeTable(out)
 
 	if len(out) == 0 {
 		if nilRow {
@@ -835,7 +852,13 @@ func htmlCellColspan(tag []byte) (int, bool) {
 			after++
 		}
 		if after >= len(tag) || tag[after] != '=' {
-			return 0, false
+			// The word with no `=` after it is not an attribute at all: Excel's
+			// export carries it inside a style string,
+			// `style="...; mso-ignore: colspan" colSpan=2` (SM&R Investments
+			// 2005), and disqualifying the row there dropped every identity and
+			// vote row of the filing. Keep scanning for the real attribute.
+			from = i + len(attr)
+			continue
 		}
 		after++
 		for after < len(tag) && htmlIsSpace(tag[after]) {
@@ -1713,6 +1736,29 @@ var htmlMonths = map[string]bool{
 	"JUL": true, "AUG": true, "SEP": true, "OCT": true, "NOV": true, "DEC": true,
 }
 
+// htmlIsCUSIP6 reports whether a value is a CUSIP issuer number: exactly six
+// characters of letters and digits, at least one of them a digit. `Issuer:
+// 24702R` (Dell, SM&R Investments 2005) and `Issuer: 929903` (Wachovia,
+// Manning & Napier 2007) are the id the linker's cusip6 rung reads. Requiring
+// the digit keeps a six-LETTER issuer name off that rung.
+func htmlIsCUSIP6(s string) bool {
+	if len(s) != 6 {
+		return false
+	}
+	digit := false
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		switch {
+		case c >= '0' && c <= '9':
+			digit = true
+		case c >= 'A' && c <= 'Z', c >= 'a' && c <= 'z':
+		default:
+			return false
+		}
+	}
+	return digit
+}
+
 func htmlIsNumeric(s string) bool {
 	if s == "" {
 		return false
@@ -2148,6 +2194,15 @@ func (c *htmlContext) merge(n htmlContext) {
 	// (MET Investors 2010: `Security ID on Ballot` as the CUSIP and the
 	// ticker of 2,639 rows through a reader the row-level guards did not
 	// cover).
+	if name, tic, cus, ok := htmlIssuerTickerCUSIPParens(n.Issuer); ok {
+		n.Issuer = name
+		if n.Ticker == "" {
+			n.Ticker = tic
+		}
+		if n.CUSIP == "" {
+			n.CUSIP = cus
+		}
+	}
 	if n.Issuer != "" && !htmlIsBareLabel(n.Issuer) {
 		c.Issuer = n.Issuer
 	}
@@ -2440,8 +2495,11 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 					// Six characters of it are the CUSIP issuer number (929903
 					// is Wachovia's, 501049 Kroll's in SM&R 2005), the id the
 					// linker's cusip6 rung reads.
-					if num := strings.TrimSpace(htmlFlat(v)); htmlIsNumeric(num) {
-						if ctx.CUSIP == "" && len(num) == 6 {
+					// Every all-numeric value keeps being discarded as before;
+					// the six-character CUSIP-shaped value is the only reading
+					// this branch adds.
+					if num := strings.TrimSpace(htmlFlat(v)); htmlIsNumeric(num) || htmlIsCUSIP6(num) {
+						if ctx.CUSIP == "" && htmlIsCUSIP6(num) {
 							ctx.CUSIP = num
 						}
 					} else if ctx.Issuer == "" {
@@ -2993,6 +3051,38 @@ func htmlTickerShaped(s string) bool {
 	return letters >= 1 && letters <= 5
 }
 
+// htmlIssuerTickerCUSIPParens splits an issuer that carries its ticker and
+// CUSIP in a trailing parenthetical -- `Wal-Mart Stores, Inc. (WMT/931142103)`
+// under a combined `Company (Ticker/CUSIP) / Ballot Issues` column (MET
+// Investors Series Trust 2010, the Rainier Large Cap Equity Portfolio section,
+// 1,112 rows with no id). Both halves must be shaped, so an ordinary
+// parenthetical in a name is left alone.
+func htmlIssuerTickerCUSIPParens(issuer string) (name, ticker, cusip string, ok bool) {
+	s := strings.TrimSpace(issuer)
+	if !strings.HasSuffix(s, ")") {
+		return "", "", "", false
+	}
+	open := strings.LastIndexByte(s, '(')
+	if open <= 0 {
+		return "", "", "", false
+	}
+	inner := s[open+1 : len(s)-1]
+	slash := strings.IndexByte(inner, '/')
+	if slash < 0 {
+		return "", "", "", false
+	}
+	tic := strings.TrimSpace(inner[:slash])
+	cus := strings.TrimSpace(inner[slash+1:])
+	if !htmlTickerShaped(htmlUpperASCII(tic)) || !htmlIsCUSIP(cus) {
+		return "", "", "", false
+	}
+	name = strings.TrimSpace(s[:open])
+	if name == "" {
+		return "", "", "", false
+	}
+	return name, tic, cus, true
+}
+
 // htmlLeadingIssuerCut finds where the labels begin on a line that opens with
 // the issuer, when at least two labels follow and the prefix is issuer-shaped.
 func htmlLeadingIssuerCut(line, up string) (int, bool) {
@@ -3318,6 +3408,135 @@ func htmlRealignBySpacers(cells, header []string, mapping map[string]int) []stri
 		out[hf[k]] = cells[cf[k]]
 	}
 	return out
+}
+
+// htmlSplitHalf joins the two tables a filer prints when one page's report is
+// too wide for the page: a LEFT half headed by identity columns alone
+// (`... | Company Name | Ticker | Primary Security ID | ISIN | CUSIP`) and a
+// RIGHT half headed by the vote columns, carrying the SAME rows in the SAME
+// order (MET Investors Series Trust 2013, 13,313 rows with no id). Only the
+// right half maps, so today every one of those votes is filed under no issuer
+// and no id.
+//
+// The join is by row ORDINAL and is licensed by one fact only: the vote half
+// emitted exactly as many rows as the identity half printed. A short count is
+// evidence that the two halves are not the same rows -- a dropped row would
+// shift every id below it onto the wrong meeting -- so an inexact match fills
+// nothing. Reading is additive: every row is still offered to every reader
+// below this one, and a field the vote half printed itself is never overwritten.
+//
+// Cost is one pass: the identity rows of one table are held, and each is
+// visited once when the next table closes.
+type htmlSplitHalf struct {
+	// rows of the identity half now being read, and the mapping it was read
+	// under; nil mapping means no identity half is open.
+	mapping map[string]int
+	arity   int
+	rows    []htmlContext
+	// armed is the identity half of the table now open, and at is the index in
+	// out where that table's first row landed.
+	armed []htmlContext
+	at    int
+}
+
+// read offers a row to the open identity half: a header that names identity
+// columns and no vote column opens one, and a row beneath it that fills those
+// columns is held.
+func (h *htmlSplitHalf) read(cells []string) {
+	if m, ok := htmlIdentityOnlyHeader(cells); ok {
+		h.mapping, h.arity, h.rows = m, len(cells), nil
+		return
+	}
+	if h.mapping == nil || htmlFilledCells(cells) == 0 {
+		return
+	}
+	if !htmlComparableArity(len(cells), h.arity) {
+		// Content the identity half did not print: the halves can no longer be
+		// paired by ordinal.
+		h.mapping, h.rows = nil, nil
+		return
+	}
+	ctx, ok := htmlIdentityRow(cells, h.mapping)
+	if !ok {
+		h.mapping, h.rows = nil, nil
+		return
+	}
+	if i, m := h.mapping[htmlFieldISIN]; m && ctx.ISIN == "" && i >= 0 && i < len(cells) {
+		if v := htmlFlat(cells[i]); isinToken(v) {
+			ctx.ISIN = v
+		}
+	}
+	h.rows = append(h.rows, ctx)
+}
+
+// closeTable settles the join for the table that just ended and arms the next
+// one with the identity half read since.
+func (h *htmlSplitHalf) closeTable(out []VoteRow) {
+	if len(h.armed) > 0 && len(out)-h.at == len(h.armed) {
+		for k, id := range h.armed {
+			r := &out[h.at+k]
+			if r.IssuerName == "" {
+				r.IssuerName = id.Issuer
+			}
+			if r.CUSIP == "" {
+				r.CUSIP = id.CUSIP
+			}
+			if r.ISIN == "" {
+				r.ISIN = id.ISIN
+			}
+			if r.Ticker == "" {
+				r.Ticker = id.Ticker
+			}
+			// Identity columns only. The three-way split whose middle half
+			// carries `Meeting Date` (MET Investors 2010) is a separate shape,
+			// and filling a date by ordinal here would date a vote from a half
+			// this join never proved belongs to it.
+		}
+	}
+	h.armed, h.at = h.rows, len(out)
+	h.mapping, h.rows = nil, nil
+}
+
+// htmlIdentityOnlyHeader recognises the header of a split page's identity half:
+// a label row that names the issuer and at least one id column and NO vote
+// column at all. A header naming any vote-side column belongs to a table this
+// layout maps itself, and never reaches here.
+func htmlIdentityOnlyHeader(cells []string) (map[string]int, bool) {
+	labels := 0
+	for _, c := range cells {
+		flat := htmlFlat(c)
+		if flat == "" {
+			continue
+		}
+		if htmlIsNumeric(flat) {
+			return nil, false
+		}
+		if htmlLooksLikeValueLimit(flat, htmlLabelMaxLen) && !htmlIsHeaderWord(flat) {
+			return nil, false
+		}
+		labels++
+	}
+	if labels < htmlHeaderMinCells || labels > htmlHeaderMaxCells {
+		return nil, false
+	}
+	mapping := htmlMapFields(cells)
+	for _, f := range []string{
+		htmlFieldItem, htmlFieldDesc, htmlFieldBy, htmlFieldMgmtRec,
+		htmlFieldVote, htmlFieldVsMgmt, htmlFieldVotedFlag,
+	} {
+		if _, has := mapping[f]; has {
+			return nil, false
+		}
+	}
+	if _, has := mapping[htmlFieldIssuer]; !has {
+		return nil, false
+	}
+	for _, f := range []string{htmlFieldCUSIP, htmlFieldISIN, htmlFieldTicker} {
+		if _, has := mapping[f]; has {
+			return mapping, true
+		}
+	}
+	return nil, false
 }
 
 // htmlIdentityRow reads a row that fills the identity columns of a shared

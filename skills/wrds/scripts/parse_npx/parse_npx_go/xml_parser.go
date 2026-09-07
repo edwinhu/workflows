@@ -668,18 +668,95 @@ func parsePrimaryDoc(r io.Reader, meta *FilingMeta, classes map[string][]string)
 	}
 }
 
+// siblingKey identifies the agenda items of one meeting: an issuer name and a
+// meeting date already normalised by xmlDate, so that 05/23/2024 and 5/23/2024
+// are the same meeting rather than two.
+type siblingKey struct {
+	issuer string
+	date   string
+}
+
+// siblingIDs is the set of distinct identifiers the votes of one meeting print.
+// Only sets, not counts: a donor value is usable exactly when the meeting prints
+// one of it, and repeats of the same value are one donor.
+type siblingIDs struct {
+	cusips map[string]struct{}
+	isins  map[string]struct{}
+}
+
+func (s *siblingIDs) add(cusip, isin string) {
+	if s.cusips == nil {
+		s.cusips = map[string]struct{}{}
+		s.isins = map[string]struct{}{}
+	}
+	s.cusips[cusip] = struct{}{}
+	// The empty isin is a member like any other: a donor printing none
+	// disagrees with a donor printing one, so the set stays larger than one and
+	// nothing is borrowed. Skipping it would let a single isin among silent
+	// donors pass for agreement.
+	s.isins[isin] = struct{}{}
+}
+
+// only returns the single member of set, or "" when the set is empty or holds
+// two or more.
+func only(set map[string]struct{}) string {
+	if len(set) != 1 {
+		return ""
+	}
+	for v := range set {
+		return v
+	}
+	return ""
+}
+
 // parseVoteTable streams <proxyTable> elements, decoding and releasing each one
 // before the next is read.
+//
+// One exception to the stream-and-release rule: a vote printing no cusip, no
+// isin and no figi at all is held back, because a sibling later in the same
+// document may carry the identifier for the same issuer and meeting (Northern
+// Lights Fund Trust II 2024 prints all three empty on 6,096 of 9,474 votes whose
+// siblings identify the security). Held rows are emitted in their original order
+// once the section closes. Only the id-less share is buffered, so the cost is
+// bounded by how many votes arrive without an identifier, not by filing size,
+// and a filing where every vote is identified buffers nothing.
 func parseVoteTable(r io.Reader, meta *FilingMeta, classes map[string][]string, emit func(VoteRow) error) (int, error) {
 	d := newXMLDecoder(r)
 	total := 0
+
+	donors := map[siblingKey]*siblingIDs{}
+	var held []proxyRecord
+
+	flush := func() (int, error) {
+		n := 0
+		for i := range held {
+			rec := &held[i]
+			if ids := donors[siblingKey{rec.IssuerName, rec.MeetingDate}]; ids != nil {
+				// A meeting whose votes disagree about the security offers no
+				// value to borrow: the row stays as printed rather than take a
+				// coin flip between two identifiers.
+				rec.CUSIP = only(ids.cusips)
+				if rec.CUSIP != "" {
+					rec.ISIN = only(ids.isins)
+				}
+			}
+			k, err := rec.emitRows(meta, classes, emit)
+			n += k
+			if err != nil {
+				return n, err
+			}
+		}
+		return n, nil
+	}
+
 	for {
 		tok, err := d.Token()
 		if err != nil {
-			if err == io.EOF {
-				return total, nil
+			if err != io.EOF {
+				return total, err
 			}
-			return total, err
+			n, ferr := flush()
+			return total + n, ferr
 		}
 		se, ok := tok.(xml.StartElement)
 		if !ok || se.Name.Local != "proxyTable" {
@@ -688,6 +765,19 @@ func parseVoteTable(r io.Reader, meta *FilingMeta, classes map[string][]string, 
 		var rec proxyRecord
 		if err := rec.decode(d); err != nil {
 			return total, err
+		}
+		if rec.CUSIP == "" && rec.ISIN == "" && rec.FIGI == "" {
+			held = append(held, rec)
+			continue
+		}
+		if rec.CUSIP != "" {
+			key := siblingKey{rec.IssuerName, rec.MeetingDate}
+			ids := donors[key]
+			if ids == nil {
+				ids = &siblingIDs{}
+				donors[key] = ids
+			}
+			ids.add(rec.CUSIP, rec.ISIN)
 		}
 		n, err := rec.emitRows(meta, classes, emit)
 		total += n

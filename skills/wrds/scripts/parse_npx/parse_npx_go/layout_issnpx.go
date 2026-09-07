@@ -475,6 +475,35 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			continue
 		}
 
+		// THE IDENTITY MAY BE A GRID RATHER THAN LABELLED PAIRS: a row of bare
+		// labels with the values on the line beneath, aligned by column
+		// (WisdomTree Trust 2023):
+		//
+		//	Ticker:  Security ID:   Meeting Date:  Meeting Type:  Record Date:
+		//	HEI      D31709104      May-11-2023    Annual         Apr-19-2023
+		//
+		// Read as labelled pairs the label line yields ticker "" and security id
+		// "Meeting" -- the word scraped off the next label -- the meeting date is
+		// lost, and the value line, carrying no cells, becomes the next issuer
+		// name. This must be tested BEFORE issTickerLine, which matches the label
+		// line. Both lines are consumed here.
+		// issMaybeGridRow is a byte scan, no allocation: the common line leaves
+		// here before anything splits it into columns.
+		if j := -1; issMaybeGridRow(line) {
+			j = issNextNonBlankIdx(lines, i+1)
+			if j >= 0 && issMaybeGridRow(lines[j]) {
+				if tk, id, md, mt, rd, ok := issStackedLabelGrid(line, strings.TrimSpace(lines[j])); ok {
+					flush()
+					inTable, tailRow = false, -1
+					ticker, cusip = tk, id
+					issuer = lastLine
+					mtgDate, mtgType, recDate = md, mt, rd
+					i = j
+					continue
+				}
+			}
+		}
+
 		// Meeting headers. A Ticker/Security ID line opens a new meeting, so it
 		// closes any table still open above it and claims the last free-standing
 		// line as the issuer name.
@@ -1966,6 +1995,136 @@ func issTickerLine(line string) (ticker, id string, ok bool) {
 	ticker = strings.TrimSpace(line[ti+len("TICKER:") : si])
 	id = strings.TrimSpace(line[si+label:])
 	return issFirstField(ticker), issFirstField(id), true
+}
+
+// issMaybeGridRow is the cheap gate in front of the stacked-label grid probe:
+// a fixed-width row of three or more columns holds at least two runs of two or
+// more spaces. It is a byte scan over the line and allocates nothing, so the
+// common prose line costs O(len) and never reaches issGridColumns.
+func issMaybeGridRow(line string) bool {
+	runs, run := 0, 0
+	for n := 0; n < len(line); n++ {
+		if line[n] == ' ' {
+			run++
+			if run == 2 {
+				runs++
+				if runs == 2 {
+					return true
+				}
+			}
+			continue
+		}
+		run = 0
+	}
+	return false
+}
+
+// issGridColumns splits a fixed-width row into its columns: a run of two or
+// more spaces is a column break, a single space is inside a value or a label.
+func issGridColumns(line string) []string {
+	var out []string
+	for _, f := range strings.Split(line, "  ") {
+		if f = strings.TrimSpace(f); f != "" {
+			out = append(out, f)
+		}
+	}
+	return out
+}
+
+// issGridLabel maps one bare identity label to the field it names.
+func issGridLabel(s string) string {
+	switch strings.ToUpper(strings.TrimSpace(strings.TrimSuffix(strings.TrimSpace(s), ":"))) {
+	case "TICKER":
+		return "ticker"
+	case "SECURITY ID", "PRIMARY SECURITY ID", "CUSIP":
+		return "id"
+	case "MEETING DATE":
+		return "mtgdate"
+	case "MEETING TYPE":
+		return "mtgtype"
+	case "RECORD DATE":
+		return "recdate"
+	}
+	return ""
+}
+
+// issStackedLabelGrid reads the identity off a two-line grid: a line holding
+// ONLY bare labels, each ending in a colon with no value beside it, and the
+// next non-blank line holding the same number of columns. Values are taken
+// positionally, by the label above them.
+//
+// Both halves are demanded. The label line must name a ticker and a security
+// id -- a partial grid is some other table's header -- and every one of its
+// columns must be a label this identity knows, so a proposal header cannot
+// enter here. The value line must carry no label of its own; a second labelled
+// line below the first is two labelled pairs, not a grid.
+func issStackedLabelGrid(labelLine, valueLine string) (ticker, id, mtgDate, mtgType, recDate string, ok bool) {
+	labels := issGridColumns(labelLine)
+	if len(labels) < 2 {
+		return "", "", "", "", "", false
+	}
+	keys := make([]string, len(labels))
+	for n, l := range labels {
+		if !strings.HasSuffix(l, ":") {
+			return "", "", "", "", "", false
+		}
+		if keys[n] = issGridLabel(l); keys[n] == "" {
+			return "", "", "", "", "", false
+		}
+	}
+	var hasTicker, hasID bool
+	for _, k := range keys {
+		hasTicker = hasTicker || k == "ticker"
+		hasID = hasID || k == "id"
+	}
+	if !hasTicker || !hasID {
+		return "", "", "", "", "", false
+	}
+	vals := issGridColumns(valueLine)
+	if len(vals) != len(labels) {
+		return "", "", "", "", "", false
+	}
+	for _, v := range vals {
+		if strings.Contains(v, ":") {
+			return "", "", "", "", "", false
+		}
+	}
+	for n, k := range keys {
+		v := issFirstField(vals[n])
+		switch k {
+		case "ticker":
+			ticker = v
+		case "id":
+			id = v
+		case "mtgdate":
+			mtgDate = issGridDate(v)
+		case "mtgtype":
+			mtgType = strings.TrimSpace(vals[n])
+		case "recdate":
+			recDate = issGridDate(v)
+		}
+	}
+	return ticker, id, mtgDate, mtgType, recDate, true
+}
+
+// issGridDate reads a grid cell's date. A column cannot separate a date's parts
+// with a space, so the month-name form arrives hyphenated (`May-11-2023`).
+func issGridDate(s string) string {
+	if d := issDate(s); d != "" {
+		return d
+	}
+	return issDate(strings.ReplaceAll(s, "-", " "))
+}
+
+// issNextNonBlankIdx returns the index of the next non-blank line at or after
+// j, or -1 when the document ends first.
+func issNextNonBlankIdx(lines []string, j int) int {
+	for ; j < len(lines); j++ {
+		if strings.TrimSpace(lines[j]) != "" {
+			return j
+		}
+	}
+	return -1
 }
 
 // issMeetingLine parses 'Meeting Date: <date>   Meeting Type: <type>'.

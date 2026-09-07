@@ -1,0 +1,204 @@
+  <TR style="HEIGHT: 20.1pt; mso-height-source: userset" height=26>
+    <TD class=xl24 style="HEIGHT: 20.1pt; mso-ignore: colspan" colSpan=2
+    height=26>DELL INC.</TD>
+    <TD class=xl24>&nbsp;</TD>
+    <TD class=xl24>DELL</TD>
+    <TD class=xl24>&nbsp;</TD>
+    <TD class=xl25>Annual Meeting Date: 07/16/2004</TD>
+    <TD class=xl25>&nbsp;</TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 20.1pt; mso-height-source: userset" height=26>
+    <TD class=xl23 style="HEIGHT: 20.1pt; mso-ignore: colspan" colSpan=2
+    height=26>Issuer: 24702R</TD>
+    <TD class=xl23 x:str="ISIN: ">ISIN:&nbsp;</TD>
+    <TD class=xl23></TD>
+    <TD class=xl23></TD>
+    <TD class=xl23></TD>
+    <TD class=xl26></TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 20.1pt; mso-height-source: userset" height=26>
+    <TD class=xl23 style="HEIGHT: 20.1pt; mso-ignore: colspan" colSpan=2
+    height=26 x:str="SEDOL:  ">SEDOL:&nbsp;&nbsp;</TD>
+    <TD class=xl23></TD>
+    <TD class=xl23></TD>
+    <TD class=xl23></TD>
+    <TD class=xl23></TD>
+    <TD class=xl26></TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl22 style="HEIGHT: 12.75pt" height=17>&nbsp;</TD>
+    <TD class=xl22>&nbsp;</TD>
+    <TD class=xl22>&nbsp;</TD>
+    <TD class=xl22>&nbsp;</TD>
+    <TD class=xl22>&nbsp;</TD>
+    <TD class=xl22>&nbsp;</TD>
+    <TD class=xl22>&nbsp;</TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl27 style="HEIGHT: 12.75pt; mso-ignore: colspan" colSpan=2
+    height=17>Vote Group: GLOBAL</TD>
+    <TD class=xl27></TD>
+    <TD class=xl27></TD>
+    <TD class=xl27></TD>
+    <TD class=xl27></TD>
+    <TD class=xl27></TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD style="HEIGHT: 12.75pt" height=17></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl28 style="HEIGHT: 12.75pt" height=17>Proposal</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD>Proposal</TD>
+    <TD class=xl28>Vote</TD>
+    <TD class=xl28>For or Against</TD>
+    <TD>Contrary to</TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl28 style="HEIGHT: 12.75pt" height=17>Number</TD>
+    <TD>Proposal</TD>
+    <TD></TD>
+    <TD>Type</TD>
+    <TD class=xl28>Cast</TD>
+    <TD class=xl28>Mgmt.</TD>
+    <TD>Policy</TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl29 style="HEIGHT: 12.75pt" height=17>01</TD>
+    <TD class=xl22>ELECTION OF DIRECTORS</TD>
+    <TD class=xl22>&nbsp;</TD>
+    <TD class=xl22>Management</TD>
+    <TD class=xl30 style="WIDTH: 49pt" width=65>For</TD>
+    <TD class=xl31>&nbsp;</TD>
+    <TD class=xl31>No</TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl28 style="HEIGHT: 12.75pt" height=17></TD>
+    <TD class=xl28></TD>
+    <TD class=xl28>DONALD J. CARTY</TD>
+    <TD class=xl40>Management</TD>
+    <TD class=xl28>For</TD>
+    <TD class=xl28>For</TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl28 style="HEIGHT: 12.75pt" height=17></TD>
+    <TD class=xl28></TD>
+    <TD class=xl28>MICHAEL S. DELL</TD>
+    <TD class=xl40>Management</TD>
+    <TD class=xl28>For</TD>
+    <TD class=xl28>For</TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl28 style="HEIGHT: 12.75pt" height=17></TD>
+    <TD class=xl28></TD>
+    <TD class=xl28>WILLIAM H. GRAY, III</TD>
+    <TD class=xl40>Management</TD>
+    <TD class=xl28>For</TD>
+    <TD class=xl28>For</TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl28 style="HEIGHT: 12.75pt" height=17></TD>
+    <TD class=xl28></TD>
+    <TD class=xl28>JUDY C. LEWENT</TD>
+    <TD class=xl40>Management</TD>
+    <TD class=xl28>For</TD>
+    <TD class=xl28>For</TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl28 style="HEIGHT: 12.75pt" height=17></TD>
+    <TD class=xl28></TD>
+    <TD class=xl28>THOMAS W. LUCE, III</TD>
+    <TD class=xl40>Management</TD>
+    <TD class=xl28>For</TD>
+    <TD class=xl28>For</TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl28 style="HEIGHT: 12.75pt" height=17></TD>
+    <TD class=xl28></TD>
+    <TD class=xl28>KLAUS S. LUFT</TD>
+    <TD class=xl40>Management</TD>
+    <TD class=xl28>For</TD>
+    <TD class=xl28>For</TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl28 style="HEIGHT: 12.75pt" height=17></TD>
+    <TD class=xl28></TD>
+    <TD class=xl28>ALEX J. MANDL</TD>
+    <TD class=xl40>Management</TD>
+    <TD class=xl28>For</TD>
+    <TD class=xl28>For</TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl28 style="HEIGHT: 12.75pt" height=17></TD>
+    <TD class=xl28></TD>
+    <TD class=xl28>MICHAEL A. MILES</TD>
+    <TD class=xl40>Management</TD>
+    <TD class=xl28>For</TD>
+    <TD class=xl28>For</TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl28 style="HEIGHT: 12.75pt" height=17></TD>
+    <TD class=xl28></TD>
+    <TD class=xl28>SAMUEL A. NUNN, JR.</TD>
+    <TD class=xl40>Management</TD>
+    <TD class=xl28>For</TD>
+    <TD class=xl28>For</TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl28 style="HEIGHT: 12.75pt" height=17></TD>
+    <TD class=xl28></TD>
+    <TD class=xl28>KEVIN B. ROLLINS</TD>
+    <TD class=xl40>Management</TD>
+    <TD class=xl28>For</TD>
+    <TD class=xl28>For</TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl33 style="HEIGHT: 12.75pt" height=17>02</TD>
+    <TD style="mso-ignore: colspan" colSpan=2>RATIFY APPOINTMENT OF
+      INDEPENDENT AUDITORS</TD>
+    <TD>Management</TD>
+    <TD class=xl34 style="WIDTH: 49pt" width=65>For</TD>
+    <TD class=xl28>For</TD>
+    <TD class=xl28>No</TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD class=xl33 style="HEIGHT: 12.75pt" height=17>03</TD>
+    <TD style="mso-ignore: colspan" colSpan=2>S/H - EXPENSING OF STOCK
+    OPTIONS</TD>
+    <TD>Shareholder</TD>
+    <TD class=xl34 style="WIDTH: 49pt" width=65>Against</TD>
+    <TD class=xl28>For</TD>
+    <TD class=xl28>No</TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD style="HEIGHT: 12.75pt" height=17></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR style="HEIGHT: 12.75pt" height=17>
+    <TD style="HEIGHT: 12.75pt" height=17></TD>
+    <TD></TD>
+    <TD>Custodian</TD>
+    <TD class=xl28>Stock</TD>
+    <TD class=xl28>Ballot</TD>
