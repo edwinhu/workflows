@@ -261,13 +261,27 @@ func brPageFurniture(line string) bool {
 		return true
 	}
 	switch {
-	case up == "INVESTMENT COMPANY REPORT",
+	case up == "PROXYEDGE", strings.HasPrefix(up, "PROXYEDGE ") && strings.HasPrefix(strings.TrimSpace(up[len("PROXYEDGE "):]), "REPORT DATE:"),
+		up == "INVESTMENT COMPANY REPORT",
 		up == "ANNUAL REPORT OF PROXY VOTING RECORD":
 		return true
 	case strings.HasPrefix(up, "MEETING DATE RANGE"),
 		strings.HasPrefix(up, "REPORT DATE:"),
 		strings.HasPrefix(up, "PAGE:"):
 		return true
+	}
+	// A wrapped reporting range may share its value line with the page count.
+	if f := strings.Fields(up); len(f) == 3 || len(f) == 7 {
+		if (f[1] == "-" || f[1] == "TO") && brDate(f[0]) != "" && brDate(f[2]) != "" {
+			if len(f) == 3 {
+				return true
+			}
+			_, pageErr := strconv.Atoi(f[4])
+			_, totalErr := strconv.Atoi(f[6])
+			if f[3] == "PAGE" && f[5] == "OF" && pageErr == nil && totalErr == nil {
+				return true
+			}
+		}
 	}
 	// "Page 367 of 3908" on its own line, 20,132 occurrences.
 	if f := strings.Fields(up); len(f) == 4 && f[0] == "PAGE" && f[2] == "OF" {
@@ -276,6 +290,26 @@ func brPageFurniture(line string) bool {
 		}
 	}
 	return false
+}
+
+// brFundMasthead recognises the fund name between a report date range and
+// the repeated proposal header. A name followed by meeting labels is an issuer.
+func brFundMasthead(lines []string, i int) bool {
+	if brDate(brFirstField(lines[i])) != "" {
+		return false
+	}
+	j := i - 1
+	for j >= 0 && strings.TrimSpace(lines[j]) == "" {
+		j--
+	}
+	if j < 0 || !strings.HasPrefix(strings.ToUpper(strings.TrimSpace(lines[j])), "MEETING DATE RANGE") {
+		return false
+	}
+	k := i + 1
+	for k < len(lines) && strings.TrimSpace(lines[k]) == "" {
+		k++
+	}
+	return k < len(lines) && (brColumnHeader(lines[k]) || brColumnFurniture(lines[k])) && len(brFindLabels(strings.TrimSpace(lines[i]))) == 0
 }
 
 // brDashRule reports whether a line is a horizontal rule. Both '-----' and
@@ -776,7 +810,10 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 			continue
 		}
 
-		if brPageFurniture(line) {
+		if inTable && strings.EqualFold(line, "Comments:") {
+			continue
+		}
+		if brPageFurniture(line) || brFundMasthead(lines, i) {
 			continue
 		}
 
