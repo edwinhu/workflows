@@ -330,6 +330,15 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		// survive the single `&nbsp;` paragraph that separates it from its
 		// wrapped tail without surviving a real gap in the document.
 		blankRun int
+
+		// blankID marks that the CURRENT meeting block printed its identity line
+		// with both values empty (`Ticker:            Security ID:`), and
+		// blankIDRows collects the indexes of the rows that block emitted. The
+		// twin block that carries the id may appear anywhere later in the filing,
+		// so the fill is resolved once at the end over the rows already emitted;
+		// nothing rescans the document. See issFillBlankIdentity.
+		blankID     bool
+		blankIDRows []int
 	)
 
 	tailRow = -1
@@ -356,6 +365,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				VoteOtherInfo:            cur.voted,
 			})
 			tailRow = len(rows) - 1
+			if blankID {
+				blankIDRows = append(blankIDRows, tailRow)
+			}
 		}
 		cur = nil
 	}
@@ -413,6 +425,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			}
 			issuer, ticker, cusip = "", "", ""
 			mtgDate, mtgType, recDate = "", "", ""
+			blankID = false
 			lastLine = bannerTail
 			continue
 		}
@@ -496,6 +509,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 					flush()
 					inTable, tailRow = false, -1
 					ticker, cusip = tk, id
+					blankID = false
 					issuer = lastLine
 					mtgDate, mtgType, recDate = md, mt, rd
 					i = j
@@ -511,6 +525,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			flush()
 			inTable, tailRow = false, -1
 			ticker, cusip = tk, id
+			blankID = tk == "" && id == ""
 			issuer = lastLine
 			mtgDate, mtgType, recDate = "", "", ""
 			// The identity on ONE line: `Ticker: ABT Security ID: 002824100
@@ -902,6 +917,8 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	}
 	flush()
 
+	issFillBlankIdentity(rows, blankIDRows)
+
 	// A ZERO-ROW CLAIM IS NOT A RESULT. Measured 2026-08-31, this layout claimed
 	// 3,722 filings and read nothing out of any of them, and each was recorded as
 	// `ok` with n_rows=0 -- indistinguishable in the manifest from a fund that
@@ -923,6 +940,61 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		return nil, errLayoutDeclined
 	}
 	return rows, nil
+}
+
+// issFillBlankIdentity fills the ticker and CUSIP of the rows a BLANK identity
+// block emitted from a TWIN block in the same filing -- same issuer name, same
+// meeting date, id printed. Artisan Funds (CIK 935015) prints `Ticker:
+// Security ID:` with nothing after either label, and a few blocks later the
+// same meeting again with `Ticker: CBY  Security ID: 12721E102`; 252 rows
+// across six filings 2004-2010 carry an id the filing does print.
+//
+// AN ID IS A LINK KEY, SO A TIE IS A REFUSAL. The fill runs only when EXACTLY
+// ONE (ticker, cusip) pair appears among the id-bearing rows for that (issuer,
+// meeting date); zero candidates and two or more disagreeing candidates both
+// leave the block blank rather than guess. Most Artisan blank blocks have no
+// twin at all and stay blank -- that is the floor, not a failure.
+//
+// Cost is O(rows): one pass to index the id-bearing rows, one over the blank
+// rows recorded during the walk. Nothing rescans the document, and the index is
+// built only when the filing actually has a blank block.
+func issFillBlankIdentity(rows []VoteRow, blank []int) {
+	if len(blank) == 0 {
+		return
+	}
+	type issIDCand struct {
+		ticker, cusip string
+		tie           bool
+	}
+	byMeeting := make(map[[2]string]*issIDCand)
+	for i := range rows {
+		if rows[i].CUSIP == "" && rows[i].Ticker == "" {
+			continue
+		}
+		if rows[i].IssuerName == "" || rows[i].MeetingDate == "" {
+			continue
+		}
+		k := [2]string{rows[i].IssuerName, rows[i].MeetingDate}
+		c, seen := byMeeting[k]
+		if !seen {
+			byMeeting[k] = &issIDCand{ticker: rows[i].Ticker, cusip: rows[i].CUSIP}
+			continue
+		}
+		if c.ticker != rows[i].Ticker || c.cusip != rows[i].CUSIP {
+			c.tie = true
+		}
+	}
+	for _, ix := range blank {
+		r := &rows[ix]
+		if r.CUSIP != "" || r.Ticker != "" || r.IssuerName == "" || r.MeetingDate == "" {
+			continue
+		}
+		c, ok := byMeeting[[2]string{r.IssuerName, r.MeetingDate}]
+		if !ok || c.tie {
+			continue
+		}
+		r.Ticker, r.CUSIP = c.ticker, c.cusip
+	}
 }
 
 // issSeriesIndex is the per-filing bridge from a printed fund heading to a
@@ -1975,16 +2047,25 @@ func issLeadingCodeToken(name string) (rest string, ok bool) {
 	return strings.Join(fields[1:], " "), true
 }
 
-// issTickerLine parses 'Ticker: <t>   Security ID: <id>'. CUSIP: appears as an
-// alternate spelling of the same field in some vintages.
+// issTickerLine parses 'Ticker: <t>   Security ID: <id>'. The id label is read
+// as the prefix SECURITY ID up to its own colon, so `Security ID:` and
+// `Security ID and/or CUSIP No.:` (Bear Stearns 2004) both resolve. CUSIP:
+// appears as an alternate spelling of the same field in some vintages.
+//
+// htmlUpperASCII is length-preserving, so offsets found in the uppercased copy
+// index the raw line safely; strings.ToUpper can change byte length.
 func issTickerLine(line string) (ticker, id string, ok bool) {
-	up := strings.ToUpper(line)
+	up := htmlUpperASCII(line)
 	ti := strings.Index(up, "TICKER:")
 	if ti < 0 {
 		return "", "", false
 	}
-	si := strings.Index(up, "SECURITY ID:")
-	label := len("SECURITY ID:")
+	si, label := -1, 0
+	if n := strings.Index(up, "SECURITY ID"); n >= 0 {
+		if c := strings.Index(up[n:], ":"); c >= 0 {
+			si, label = n, c+1
+		}
+	}
 	if si < 0 {
 		si = strings.Index(up, "CUSIP:")
 		label = len("CUSIP:")
@@ -2033,10 +2114,15 @@ func issGridColumns(line string) []string {
 
 // issGridLabel maps one bare identity label to the field it names.
 func issGridLabel(s string) string {
-	switch strings.ToUpper(strings.TrimSpace(strings.TrimSuffix(strings.TrimSpace(s), ":"))) {
+	up := strings.ToUpper(strings.TrimSpace(strings.TrimSuffix(strings.TrimSpace(s), ":")))
+	// `Security ID and/or CUSIP No.` names the same field as `Security ID`.
+	if strings.HasPrefix(up, "SECURITY ID") {
+		return "id"
+	}
+	switch up {
 	case "TICKER":
 		return "ticker"
-	case "SECURITY ID", "PRIMARY SECURITY ID", "CUSIP":
+	case "PRIMARY SECURITY ID", "CUSIP":
 		return "id"
 	case "MEETING DATE":
 		return "mtgdate"

@@ -1,0 +1,63 @@
+
+CADBURY PLC
+
+Ticker:                      Security ID:
+Meeting Date: MAY 14, 2009   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Accept Financial Statements and         For       For          Management
+      Statutory Reports
+2     Approve Final Dividend of 11.1 Pence    For       For          Management
+      Per Ordinary Share
+3     Approve Remuneration Report             For       For          Management
+4     Re-elect Roger Carr as Director         For       For          Management
+5     Re-elect Todd Stitzer as Director       For       For          Management
+6     Elect Baroness Hogg as Director         For       For          Management
+7     Elect Colin Day as Director             For       For          Management
+8     Elect Andrew Bonfield as Director       For       For          Management
+9     Reappoint Deloitte LLP as Auditors of   For       For          Management
+      the Company
+10    Authorise Board to Fix Remuneration of  For       For          Management
+      Auditors
+11    Authorise Company and its Subsidiaries  For       For          Management
+      to Make EU Political Donations to
+      Political Parties or Independent
+      Election Candidates, to Political
+      Organisations Other than Political
+      Parties and to Incur EU Political
+      Expenditure up to GBP 100,000
+12    Authorise Issue of Equity with          For       For          Management
+      Pre-emptive Rights Under a General
+      Authority up to GBP 45,410,520 and an
+      Additional Amount Pursuant to a Rights
+      Issue of up to GBP 90,821,040 After
+      Deducting Any Securities Issued Under
+      the General Authority
+13    Authorise Issue of Equity or            For       For          Management
+      Equity-Linked Securities without
+      Pre-emptive Rights up to Aggregate
+      Nominal Amount of GBP 6,811,578
+14    Authorise Market Purchase of up to GBP  For       For          Management
+      13,623,156
+15    Approve That a General Meeting Other    For       For          Management
+      Than an Annual General  Meeting May Be
+      Called on Not Less than 14 Clear Days'
+      Notice
+
+
+- --------------------------------------------------------------------------------
+
+CADBURY PLC
+
+Ticker:       CBY            Security ID:  12721E102
+Meeting Date: MAY 14, 2009   Meeting Type: Annual
+Record Date:  APR 9, 2009
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Accept Financial Statements and         For       For          Management
+      Statutory Reports
+2     Approve Final Dividend of 11.1 Pence    For       For          Management
+      Per Ordinary Share
+3     Approve Remuneration Report             For       For          Management
+4     Re-elect Roger Carr as Director         For       For          Management
