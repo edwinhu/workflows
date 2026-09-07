@@ -326,6 +326,24 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			continue
 		}
 
+		// Account allocations can follow the proposals inside the same table.
+		// Their share counts must not inherit the proposal vote mapping.
+		account, shares, class := false, false, false
+		for _, c := range cells {
+			switch htmlCanonLabel(c) {
+			case "ACCOUNT NAME":
+				account = true
+			case "SHARES":
+				shares = true
+			case "CLASS":
+				class = true
+			}
+		}
+		if account && shares && class {
+			mapping, headerArity, carry, partitioned = nil, 0, false, false
+			continue
+		}
+
 		if mapping != nil && htmlIsTableNilRow(cells) {
 			nilRow = true
 			continue
@@ -1028,11 +1046,24 @@ func htmlSplitHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHead
 	bestDepth := 0
 	for depth := 0; depth < htmlSplitHeaderMaxRows-1; depth++ {
 		next, exists := feed.peek(depth)
-		if !exists || next.newTable || len(next.cells) != len(cells) || !htmlHeaderFragment(next.cells) {
+		if !exists || next.newTable || !htmlHeaderFragment(next.cells) {
+			break
+		}
+		fragment := next.cells
+		// Security[Symbol] spans both header rows; the lower row omits it.
+		if depth == 0 && len(fragment)+1 == len(cells) {
+			for i, c := range cells {
+				if htmlCanonLabel(c) == "SECURITY SYMBOL" {
+					fragment = append(append(append([]string(nil), fragment[:i]...), ""), fragment[i:]...)
+					break
+				}
+			}
+		}
+		if len(fragment) != len(cells) {
 			break
 		}
 		for i := range joined {
-			joined[i] = htmlFlat(joined[i] + " " + next.cells[i])
+			joined[i] = htmlFlat(joined[i] + " " + fragment[i])
 		}
 		if _, _, headerLike := htmlHeaderShape(joined); headerLike {
 			best = append([]string(nil), joined...)
@@ -1046,6 +1077,10 @@ func htmlSplitHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHead
 		_, _ = feed.next()
 	}
 	mapping, carry, partitioned, ok = htmlHeaderMapping(best, feed, repeats)
+	if ok && len(cells) > 3 && htmlCanonLabel(cells[3]) == "SECURITY SYMBOL" && htmlCanonLabel(cells[2]) == "ISSUER" && htmlFlat(cells[1]) == "" {
+		mapping[htmlFieldItem] = 1
+		mapping[htmlFieldDesc] = 2
+	}
 	return mapping, best, carry, partitioned, true, ok
 }
 
@@ -3576,10 +3611,18 @@ func htmlDate(s string) string {
 	// date in one cell (Mutual Fund Series Trust 2018 and Northern Lights Fund
 	// Trust IV 2017, 2,222 undated rows on r181). One leading type word goes
 	// when what follows is a date.
-	if f := strings.Fields(strings.TrimSpace(s)); len(f) >= 2 && htmlMeetingTypeWord(f[0]) {
+	f := strings.Fields(strings.TrimSpace(s))
+	// A printed year may qualify the meeting type, but is never the date.
+	if len(f) >= 3 && len(f[0]) == 4 && htmlIsNumeric(f[0]) && f[0] >= "1900" && f[0] <= "2099" && htmlMeetingTypeWord(f[1]) {
+		f = f[1:]
+	}
+	if len(f) >= 2 && htmlMeetingTypeWord(f[0]) {
 		rest := f[1:]
 		// `Special Meeting 4/3/2014` (Advisors Preferred Trust 2014).
 		if len(rest) >= 2 && strings.EqualFold(rest[0], "meeting") {
+			rest = rest[1:]
+		}
+		if len(rest) >= 2 && rest[0] == "-" {
 			rest = rest[1:]
 		}
 		if d := htmlDate(strings.Join(rest, " ")); d != "" {
@@ -3678,6 +3721,12 @@ func htmlShapeIdentityRow(cells []string) (ctx htmlContext, ok bool) {
 			if ctx.MeetingDate == "" {
 				ctx.MeetingDate = d
 			}
+			continue
+		}
+		if open := strings.IndexByte(v, '['); open > 0 && strings.HasSuffix(v, "]") && pvTextCUSIP(v[:open]) && htmlTickerShaped(v[open+1:len(v)-1]) {
+			cusips++
+			ctx.CUSIP = v[:open]
+			ctx.Ticker = v[open+1 : len(v)-1]
 			continue
 		}
 		if pvTextCUSIP(v) {

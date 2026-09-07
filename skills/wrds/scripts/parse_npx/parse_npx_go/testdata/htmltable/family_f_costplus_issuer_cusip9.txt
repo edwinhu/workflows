@@ -1,0 +1,437 @@
+      <table cellpadding="0" cellspacing="0" width="100%">
+
+          <tr>
+            <td align="left" valign="middle" width="9%" style="BORDER-BOTTOM: black thin solid">&#160;</td>
+            <td align="left" valign="middle" width="40%" style="BORDER-BOTTOM: black thin solid">&#160;</td>
+            <td align="left" valign="middle" width="25%" style="BORDER-BOTTOM: black thin solid">&#160;</td>
+            <td align="left" valign="middle" width="12%" style="BORDER-BOTTOM: black thin solid">&#160;</td>
+            <td align="left" valign="middle" width="14%" style="BORDER-BOTTOM: black thin solid">&#160;</td>
+            <td align="left" valign="middle" width="27%" style="BORDER-BOTTOM: black thin solid">&#160;</td>
+            <td align="right" valign="middle" width="10%" style="BORDER-BOTTOM: black thin solid">&#160;</td>
+          </tr>
+          <tr>
+            <td align="left" colspan="2" valign="middle" width="48%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><strong>COST
+                PLUS, INC.</strong></font></div>
+            </td>
+            <td align="left" valign="middle" width="25%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left">&#160;</div>
+            </td>
+            <td align="left" valign="middle" width="12%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><strong>CPWM</strong></font></div>
+            </td>
+            <td align="right" colspan="2" valign="middle" width="41%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><strong>&#160;Annual
+                Meeting Date: 07/01/2004</strong></font></div>
+            </td>
+            <td align="right" valign="middle" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td align="left" colspan="2" valign="middle" width="48%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><strong>Issuer:
+                221485105</strong></font></div>
+            </td>
+            <td align="left" valign="middle" width="25%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><strong>ISIN:
+                </strong></font></div>
+            </td>
+            <td align="left" valign="middle" width="12%">&#160;</td>
+            <td align="left" valign="middle" width="14%">&#160;</td>
+            <td align="left" valign="middle" width="27%">&#160;</td>
+            <td align="right" valign="middle" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td align="left" colspan="2" valign="middle" width="48%" style="BORDER-BOTTOM: black thin solid">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><strong>SEDOL:
+                </strong></font></div>
+            </td>
+            <td align="left" valign="middle" width="25%" style="BORDER-BOTTOM: black thin solid">&#160;</td>
+            <td align="left" valign="middle" width="12%" style="BORDER-BOTTOM: black thin solid">&#160;</td>
+            <td align="left" valign="middle" width="14%" style="BORDER-BOTTOM: black thin solid">&#160;</td>
+            <td align="left" valign="middle" width="27%" style="BORDER-BOTTOM: black thin solid">&#160;</td>
+            <td align="right" valign="middle" width="10%" style="BORDER-BOTTOM: black thin solid">&#160;</td>
+          </tr>
+          <tr>
+            <td align="left" valign="bottom" width="9%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left">&#160;</div>
+            </td>
+            <td align="left" valign="bottom" width="40%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left">&#160;</div>
+            </td>
+            <td align="left" valign="bottom" width="25%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left">&#160;</div>
+            </td>
+            <td align="left" valign="bottom" width="12%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left">&#160;</div>
+            </td>
+            <td align="left" valign="bottom" width="14%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left">&#160;</div>
+            </td>
+            <td align="left" valign="bottom" width="27%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left">&#160;</div>
+            </td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td align="left" colspan="2" valign="bottom" width="48%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><strong>Vote
+                Group: GLOBAL</strong></font></div>
+            </td>
+            <td align="left" valign="bottom" width="25%">&#160;</td>
+            <td align="left" valign="bottom" width="12%">&#160;</td>
+            <td align="left" valign="bottom" width="14%">&#160;</td>
+            <td align="left" valign="bottom" width="27%">&#160;</td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td align="left" valign="bottom" width="9%">&#160;</td>
+            <td align="left" valign="bottom" width="40%">&#160;</td>
+            <td align="left" valign="bottom" width="25%">&#160;</td>
+            <td align="left" valign="bottom" width="12%">&#160;</td>
+            <td align="left" valign="bottom" width="14%">&#160;</td>
+            <td align="left" valign="bottom" width="27%">&#160;</td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td valign="bottom" width="9%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Proposal</font></div>
+            </td>
+            <td align="left" valign="bottom" width="40%">&#160;</td>
+            <td align="left" valign="bottom" width="25%">&#160;</td>
+            <td align="left" valign="bottom" width="12%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Proposal</font></div>
+            </td>
+            <td valign="bottom" width="14%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Vote</font></div>
+            </td>
+            <td valign="bottom" width="27%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For
+                or Against</font></div>
+            </td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td valign="bottom" width="9%" style="BORDER-BOTTOM: black thin solid">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Number</font></div>
+            </td>
+            <td align="left" valign="bottom" width="40%" style="BORDER-BOTTOM: black thin solid">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Proposal</font></div>
+            </td>
+            <td align="left" valign="bottom" width="25%" style="BORDER-BOTTOM: black thin solid">&#160;</td>
+            <td align="left" valign="bottom" width="12%" style="BORDER-BOTTOM: black thin solid">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Type</font></div>
+            </td>
+            <td valign="bottom" width="14%" style="BORDER-BOTTOM: black thin solid">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Cast</font></div>
+            </td>
+            <td valign="bottom" width="27%" style="BORDER-BOTTOM: black thin solid">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Mgmt.</font></div>
+            </td>
+            <td align="left" valign="bottom" width="10%" style="BORDER-BOTTOM: black thin solid">&#160;</td>
+          </tr>
+          <tr>
+            <td valign="bottom" width="9%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">01</font></div>
+            </td>
+            <td align="left" valign="bottom" width="40%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">ELECTION
+                OF DIRECTORS</font></div>
+            </td>
+            <td align="left" valign="bottom" width="25%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left">&#160;</div>
+            </td>
+            <td align="left" valign="bottom" width="12%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Management</font></div>
+            </td>
+            <td valign="bottom" width="14%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td valign="bottom" width="27%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td valign="bottom" width="9%">&#160;</td>
+            <td valign="bottom" width="40%">&#160;</td>
+            <td valign="bottom" width="25%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">MURRAY
+                H. DASHE</font></div>
+            </td>
+            <td align="left" valign="bottom" width="12%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Management</font></div>
+            </td>
+            <td valign="bottom" width="14%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td valign="bottom" width="27%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td valign="bottom" width="9%">&#160;</td>
+            <td valign="bottom" width="40%">&#160;</td>
+            <td valign="bottom" width="25%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">JOESPH
+                H. COULOMBE</font></div>
+            </td>
+            <td align="left" valign="bottom" width="12%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Management</font></div>
+            </td>
+            <td valign="bottom" width="14%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td valign="bottom" width="27%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td valign="bottom" width="9%">&#160;</td>
+            <td valign="bottom" width="40%">&#160;</td>
+            <td valign="bottom" width="25%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">BARRY
+                J. FELD</font></div>
+            </td>
+            <td align="left" valign="bottom" width="12%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Management</font></div>
+            </td>
+            <td valign="bottom" width="14%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td valign="bottom" width="27%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td valign="bottom" width="9%">&#160;</td>
+            <td valign="bottom" width="40%">&#160;</td>
+            <td valign="bottom" width="25%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">DANNY
+                W. GURR</font></div>
+            </td>
+            <td align="left" valign="bottom" width="12%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Management</font></div>
+            </td>
+            <td valign="bottom" width="14%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td valign="bottom" width="27%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td valign="bottom" width="9%">&#160;</td>
+            <td valign="bottom" width="40%">&#160;</td>
+            <td valign="bottom" width="25%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">KIM
+                D. ROBBINS</font></div>
+            </td>
+            <td align="left" valign="bottom" width="12%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Management</font></div>
+            </td>
+            <td valign="bottom" width="14%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td valign="bottom" width="27%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td valign="bottom" width="9%">&#160;</td>
+            <td valign="bottom" width="40%">&#160;</td>
+            <td valign="bottom" width="25%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">FREDRIC
+                M. ROBERTS</font></div>
+            </td>
+            <td align="left" valign="bottom" width="12%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Management</font></div>
+            </td>
+            <td valign="bottom" width="14%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td valign="bottom" width="27%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td valign="bottom" width="9%">&#160;</td>
+            <td valign="bottom" width="40%">&#160;</td>
+            <td valign="bottom" width="25%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">THOMAS
+                D. WILLARDSON</font></div>
+            </td>
+            <td align="left" valign="bottom" width="12%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Management</font></div>
+            </td>
+            <td valign="bottom" width="14%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td valign="bottom" width="27%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td valign="bottom" width="9%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">02</font></div>
+            </td>
+            <td align="left" colspan="2" valign="bottom" width="65%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">AMEND
+                INCENTIVE STOCK OPTION PLAN</font></div>
+            </td>
+            <td align="left" valign="bottom" width="12%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Management</font></div>
+            </td>
+            <td valign="bottom" width="14%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td valign="bottom" width="27%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td valign="bottom" width="9%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">03</font></div>
+            </td>
+            <td align="left" colspan="2" valign="bottom" width="65%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">AMEND
+                INCENTIVE STOCK OPTION PLAN</font></div>
+            </td>
+            <td align="left" valign="bottom" width="12%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Management</font></div>
+            </td>
+            <td valign="bottom" width="14%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td valign="bottom" width="27%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td valign="bottom" width="9%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">04</font></div>
+            </td>
+            <td align="left" colspan="2" valign="bottom" width="65%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">RATIFY
+                APPOINTMENT OF INDEPENDENT AUDITORS</font></div>
+            </td>
+            <td align="left" valign="bottom" width="12%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Management</font></div>
+            </td>
+            <td valign="bottom" width="14%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td valign="bottom" width="27%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">For</font></div>
+            </td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td align="left" valign="bottom" width="9%">&#160;</td>
+            <td align="left" valign="bottom" width="40%">&#160;</td>
+            <td align="left" valign="bottom" width="25%">&#160;</td>
+            <td align="left" valign="bottom" width="12%">&#160;</td>
+            <td align="left" valign="bottom" width="14%">&#160;</td>
+            <td align="left" valign="bottom" width="27%">&#160;</td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td align="left" valign="bottom" width="9%">&#160;</td>
+            <td align="left" valign="bottom" width="40%">&#160;</td>
+            <td align="left" valign="bottom" width="25%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Custodian</font></div>
+            </td>
+            <td valign="bottom" width="12%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Stock</font></div>
+            </td>
+            <td align="right" valign="bottom" width="14%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Ballot</font></div>
+            </td>
+            <td align="right" valign="bottom" width="27%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Voted</font></div>
+            </td>
+            <td valign="bottom" width="10%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Vote</font></div>
+            </td>
+          </tr>
+          <tr>
+            <td align="left" valign="bottom" width="9%">&#160;</td>
+            <td align="left" valign="bottom" width="40%" style="BORDER-BOTTOM: black thin solid">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Account
+                Name</font></div>
+            </td>
+            <td align="left" valign="bottom" width="25%" style="BORDER-BOTTOM: black thin solid">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Account</font></div>
+            </td>
+            <td valign="bottom" width="12%" style="BORDER-BOTTOM: black thin solid">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Class</font></div>
+            </td>
+            <td align="right" valign="bottom" width="14%" style="BORDER-BOTTOM: black thin solid">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Shares</font></div>
+            </td>
+            <td align="right" valign="bottom" width="27%" style="BORDER-BOTTOM: black thin solid">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Shares</font></div>
+            </td>
+            <td valign="bottom" width="10%" style="BORDER-BOTTOM: black thin solid">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Date</font></div>
+            </td>
+          </tr>
+          <tr>
+            <td align="left" valign="bottom" width="9%">&#160;</td>
+            <td align="left" valign="bottom" width="40%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">FORWARD
+                EMERALD GROWTH FUND</font></div>
+            </td>
+            <td align="left" valign="bottom" width="25%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">000015136300</font></div>
+            </td>
+            <td valign="bottom" width="12%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">105</font></div>
+            </td>
+            <td align="right" valign="bottom" width="14%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">18,200</font></div>
+            </td>
+            <td align="right" valign="bottom" width="27%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">18,200</font></div>
+            </td>
+            <td valign="bottom" width="10%">
+              <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 2.15pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">06/02/2004</font></div>
+            </td>
+          </tr>
+          <tr>
+            <td align="left" valign="bottom" width="9%">&#160;</td>
+            <td align="left" valign="bottom" width="40%">&#160;</td>
+            <td align="left" valign="bottom" width="25%">&#160;</td>
+            <td align="left" valign="bottom" width="12%">&#160;</td>
+            <td align="left" valign="bottom" width="14%">&#160;</td>
+            <td align="left" valign="bottom" width="27%">&#160;</td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td align="left" valign="bottom" width="9%">&#160;</td>
+            <td align="left" valign="bottom" width="40%">&#160;</td>
+            <td align="left" valign="bottom" width="25%">&#160;</td>
+            <td align="left" valign="bottom" width="12%">&#160;</td>
+            <td align="left" valign="bottom" width="14%">&#160;</td>
+            <td align="left" valign="bottom" width="27%">&#160;</td>
+            <td align="left" valign="bottom" width="10%">&#160;</td>
+          </tr>
+          <tr>
+            <td align="left" valign="middle" width="9%">&#160;</td>
+            <td align="left" valign="middle" width="40%">&#160;</td>
+            <td align="left" valign="middle" width="25%">&#160;</td>
+            <td align="left" valign="middle" width="12%">&#160;</td>
+            <td align="left" valign="middle" width="14%">&#160;</td>
+            <td align="left" valign="middle" width="27%">&#160;</td>
+            <td align="right" valign="middle" width="10%">&#160;</td>
+          </tr>
+
+      </table>
