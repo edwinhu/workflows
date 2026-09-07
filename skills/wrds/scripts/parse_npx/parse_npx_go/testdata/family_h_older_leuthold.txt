@@ -1,0 +1,166 @@
+Investment Company Report
+MEETING DATE RANGE:                                  REPORT DATE:    09-Aug-2005
+                    01-jul-2004  -  30-jun-2005
+                                                                   Page 32 of 90
+
+
+
+ EL PASO CORPORATION
+
+   SECURITY: 28336L109                               AGENDA NUMBER:  932272127
+
+     TICKER:  EP                                      MEETING TYPE:  Annual
+
+       ISIN:                                          MEETING DATE:  26-May-05
+
+
+<TABLE>
+<CAPTION>
+PROP. #        PROPOSAL                         PROPOSED    PROPOSAL VOTE      FOR/AGAINST
+                                                   BY                          MANAGEMENT
+
+<S>     <C>                                     <C>         <C>                <C>
+ 01      DIRECTOR
+
+        1     JUAN CARLOS BRANIFF                Mgmt            For                For
+
+
+        2     JAMES L. DUNLAP                    Mgmt            For                For
+
+
+
+        3     DOUGLAS L. FOSHEE                  Mgmt            For                For
+
+
+
+        4     ROBERT W. GOLDMAN                  Mgmt            For                For
+
+
+
+        5     ANTHONY W. HALL, JR.               Mgmt            For                For
+
+
+
+        6     THOMAS R. HIX                      Mgmt            For                For
+
+
+
+        7     WILLIAM H. JOYCE                   Mgmt            For                For
+
+
+
+        8     RONALD L. KUEHN, JR.               Mgmt            For                For
+
+
+
+        9     J. MICHAEL TALBERT                 Mgmt            For                For
+
+
+
+        10    ROBERT F. VAGT                     Mgmt            For                For
+</TABLE>
+
+<PAGE>
+
+Investment Company Report
+
+MEETING DATE RANGE:                              REPORT DATE:   09-Aug-2005
+                     01-jul-2004 - 30-jun-2005                 Page 33 of 90
+
+
+<TABLE>
+<CAPTION>
+PROP. #     PROPOSAL                                         PROPOSED       PROPOSAL VOTE       FOR/AGAINST
+                                                                BY                               MANAGEMENT
+<S>         <C>                                              <C>            <C>                 <C>
+            11  JOHN L. WHITMIRE                               Mgmt              For                For
+
+            12  JOE B. WYATT                                   Mgmt              For                For
+
+ 02         APPROVAL OF EL PASO CORPORATION                    Mgmt              For                For
+            2005 COMPENSATION PLAN FOR NON-
+            EMPLOYEE DIRECTORS.
+
+ 03         APPROVAL OF EL PASO CORPORATION                    Mgmt              For                For
+            2005 OMNIBUS INCENTIVE
+            COMPENSATION PLAN.
+
+ 04         RATIFICATION OF THE APPOINTMENT OF                 Mgmt              For                For
+            PRICEWATERHOUSECOOPERS LLP AS INDEPENDENT
+            CERTIFIED PUBLIC ACCOUNTANTS FOR FISCAL YEAR
+            ENDING DECEMBER 31, 2005.
+</TABLE>
+
+
+<TABLE>
+<CAPTION>
+ Account Number    Custodian  Ballot Shares   Shares on Loan    Vote Date
+<S>                <C>        <C>             <C>               <C>
+ 000014113700        6178         287211            0           12-Apr-05
+</TABLE>
+
+EMC CORPORATION
+
+          SECURITY:  268648102         AGENDA NUMBER:  932269081
+            TICKER:  EMC                  MEETING TYPE:  Annual
+               ISIN:                      MEETING DATE:  05-May-05
+
+<TABLE>
+<CAPTION>
+PROP. #        PROPOSAL                PROPOSED     PROPOSAL VOTE    FOR/AGAINST
+                                           BY                         MANAGEMENT
+<S>            <C>                     <C>          <C>              <C>
+ 01            DIRECTOR
+
+               1  MICHAEL J. CRONIN      Mgmt          For               For
+</TABLE>
+<PAGE>
+Investment Company Report
+
+MEETING DATE RANGE:                               REPORT DATE:    09-Aug-2005
+                    01-jul-2004 - 30-jun-2005                    Page 34 of 90
+
+
+<TABLE>
+<CAPTION>
+PROP. #     PROPOSAL                                                  PROPOSED     PROPOSAL VOTE        FOR/AGAINST
+                                                                          BY                            MANAGEMENT
+<S>         <C>                                                       <C>          <C>                  <C>
+            2       W. PAUL FITZGERALD                                   Mgmt              For               For
+
+            3       JOSEPH M. TUCCI                                      Mgmt              For               For
+
+ 02         PROPOSAL 2 - TO APPROVE                                      Mgmt              For               For
+            AMENDMENTS TO THE EMC CORPORATION 2003 STOCK PLAN
+            TO INCREASE BY 100,000,000 THE NUMBER OF SHARES
+            AVAILABLE UNDER THE PLAN, AND INCREASE THE NUMBER
+            OF SHARES WHICH MAY BE ISSUED PURSUANT TO AWARDS
+            OF RESTRICTED STOCK AND/ OR RESTRICTED STOCK UNITS
+            TO 30% OF THE TOTAL AUTHORIZED SHARES UNDER THE PLAN,
+            AS DESCRIBED IN EMC S PROXY STATEMENT.
+
+ 03         PROPOSAL 3 - TO RATIFY THE                                   Mgmt              For               For
+            SELECTION BY THE AUDIT COMMITTEE OF THE BOARD OF
+            DIRECTORS OF PRICEWATERHOUSECOOPERS LLP AS EMC'S
+            INDEPENDENT AUDITORS FOR THE FISCAL YEAR ENDING
+            DECEMBER 31, 2005.
+
+ 04         PROPOSAL 4 - TO ACT UPON A                                    Shr            Against             For
+            SHAREHOLDER PROPOSAL RELATING TO PERFORMANCE-BASED
+            STOCK OPTIONS, AS DESCRIBED IN EMC'S PROXY STATEMENT.
+
+ 05         PROPOSAL 5 - TO ACT UPON A                                    Shr            Against             For
+            SHAREHOLDER PROPOSAL RELATING TO EMC'S AUDIT COMMITTEE,
+            AS DESCRIBED IN EMC'S PROXY STATEMENT.
+</TABLE>
+
+<TABLE>
+<CAPTION>
+ Account Number    Custodian   Ballot Shares    Shares on Loan     Vote Date
+<S>                <C>         <C>              <C>                <C>
+ 000014113700        6178        279565                0           07-Apr-05
+</TABLE>
+<PAGE>
+Investment Company Report
+
+MEETING DATE RANGE:                               REPORT DATE:    09-Aug-2005

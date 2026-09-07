@@ -217,6 +217,10 @@ func fixedWidthContext(lines []string, header int) htmlContext {
 			continue
 		}
 		values := vanguardGapCells(strings.TrimSpace(lines[j]))
+		if len(labels) == len(values)+1 && fixedWidthInlineIssuer(labels) != "" {
+			labels = labels[1:]
+			mapping, _ = fixedWidthContextMapping(labels)
+		}
 		if len(values) != len(labels) {
 			continue
 		}
@@ -251,7 +255,21 @@ func fixedWidthContextMapping(cells []string) (map[string]int, bool) {
 	return mapping, true
 }
 
+// Some reports print the issuer beside the labels, leaving its value cell empty.
+func fixedWidthInlineIssuer(cells []string) string {
+	if len(cells) < 4 || !htmlIsIssuerLine(cells[0]) {
+		return ""
+	}
+	if _, ok := fixedWidthContextMapping(cells[1:]); !ok {
+		return ""
+	}
+	return htmlFlat(cells[0])
+}
+
 func fixedWidthIssuerAbove(lines []string, labels, lo int) string {
+	if issuer := fixedWidthInlineIssuer(vanguardGapCells(strings.TrimSpace(lines[labels]))); issuer != "" {
+		return issuer
+	}
 	for i := labels - 1; i >= lo; i-- {
 		line := strings.TrimSpace(lines[i])
 		if line == "" {
@@ -268,7 +286,7 @@ func fixedWidthIssuerAbove(lines []string, labels, lo int) string {
 func fixedWidthCUSIP(s string) string {
 	s = htmlFlat(s)
 	up := htmlUpperASCII(s)
-	for _, prefix := range []string{"CUSIP:", "CUSIP"} {
+	for _, prefix := range []string{"CUSIP9 ", "CUSIP:", "CUSIP"} {
 		if !strings.HasPrefix(up, prefix) {
 			continue
 		}
