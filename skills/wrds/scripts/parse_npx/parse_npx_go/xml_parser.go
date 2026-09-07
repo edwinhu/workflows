@@ -676,6 +676,21 @@ type siblingKey struct {
 	date   string
 }
 
+// xmlSiblingIssuer normalises only the lookup key, not the printed issuer name.
+// Keep the full name and fold only terminal corporate suffixes, never prefixes.
+func xmlSiblingIssuer(name string) string {
+	name = strings.TrimRight(strings.ToUpper(strings.TrimSpace(name)), ".,;:!?")
+	if i := strings.LastIndexByte(name, ' '); i >= 0 {
+		switch name[i+1:] {
+		case "CO":
+			name = name[:i+1] + "COMPANY"
+		case "INC":
+			name = name[:i+1] + "CORPORATION"
+		}
+	}
+	return name
+}
+
 // siblingIDs is the set of distinct identifiers the votes of one meeting print.
 // Only sets, not counts: a donor value is usable exactly when the meeting prints
 // one of it, and repeats of the same value are one donor.
@@ -787,7 +802,7 @@ func parseVoteTable(r io.Reader, meta *FilingMeta, classes map[string][]string, 
 		n := 0
 		for i := range held {
 			rec := &held[i]
-			if ids := donors[siblingKey{rec.IssuerName, rec.MeetingDate}]; ids != nil {
+			if ids := donors[siblingKey{xmlSiblingIssuer(rec.IssuerName), rec.MeetingDate}]; ids != nil {
 				// A meeting whose votes disagree about the security offers no
 				// value to borrow: the row stays as printed rather than take a
 				// coin flip between two identifiers.
@@ -828,7 +843,7 @@ func parseVoteTable(r io.Reader, meta *FilingMeta, classes map[string][]string, 
 			continue
 		}
 		if rec.CUSIP != "" {
-			key := siblingKey{rec.IssuerName, rec.MeetingDate}
+			key := siblingKey{xmlSiblingIssuer(rec.IssuerName), rec.MeetingDate}
 			ids := donors[key]
 			if ids == nil {
 				ids = &siblingIDs{}
