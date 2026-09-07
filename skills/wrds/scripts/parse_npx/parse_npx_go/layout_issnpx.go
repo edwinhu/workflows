@@ -1888,9 +1888,10 @@ func issLeadingIndexToken(name string) (rest string, ok bool) {
 }
 
 // issLeadingCodeToken strips a sleeve/account code that precedes the fund name:
-// 2-6 letters or digits carrying at least one digit (`2DCN`, `3347`, `ZW4X`), or
-// any 2-6 letter/digit run in parentheses (`(ZW4X)`). A plain word is never a
-// code, so `Growth Emerging Markets Value Fund` keeps its first word.
+// 2-7 letters or digits carrying at least one digit (`2DCN`, `3347`, `ZW4X`,
+// `997RK13` on Federated Index Trust 2005), or any 2-7 letter/digit run in
+// parentheses (`(ZW4X)`). A plain word is never a code, so `Growth Emerging
+// Markets Value Fund` keeps its first word.
 func issLeadingCodeToken(name string) (rest string, ok bool) {
 	fields := strings.Fields(name)
 	if len(fields) < 2 {
@@ -1901,7 +1902,7 @@ func issLeadingCodeToken(name string) (rest string, ok bool) {
 	if paren {
 		tok = tok[1 : len(tok)-1]
 	}
-	if len(tok) < 2 || len(tok) > 6 {
+	if len(tok) < 2 || len(tok) > 7 {
 		return "", false
 	}
 	digit := false
