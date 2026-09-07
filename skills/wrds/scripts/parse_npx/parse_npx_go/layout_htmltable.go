@@ -2447,10 +2447,23 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 		}
 	}
 	for ci, cell := range cells {
+		// Firsthand prints `Ticker :` and misspells the id label `CUSPID :`.
+		// Canonicalize only the label; leave its printed value untouched.
+		if colon := strings.IndexByte(cell, ':'); colon >= 0 {
+			key := htmlUpperASCII(strings.TrimSpace(cell[:colon]))
+			if key == "CUSPID" || key == "TICKER" {
+				if key == "CUSPID" {
+					key = "CUSIP"
+				}
+				items = append(items, key+":"+htmlFlat(cell[colon+1:]))
+				cellOf = append(cellOf, ci)
+				continue
+			}
+		}
 		// A label wrapped at a source newline inside its cell (`Meeting
 		// Date:`, GMO Trust: 38,059 of 38,551 rows with no date on
 		// 2026-09-02) is one item, read whole.
-		if flat := htmlFlat(cell); htmlHasLabelPrefix(htmlUpperASCII(flat)) {
+		if flat := htmlFlat(cell); htmlHasLabelPrefix(htmlUpperASCII(flat)) || htmlMeetingTypeCut(htmlUpperASCII(flat)) > 0 {
 			items = append(items, flat)
 			cellOf = append(cellOf, ci)
 			continue
@@ -2633,11 +2646,10 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 					// Six characters of it are the CUSIP issuer number (929903
 					// is Wachovia's, 501049 Kroll's in SM&R 2005), the id the
 					// linker's cusip6 rung reads.
-					// Every all-numeric value keeps being discarded as before;
-					// the six-character CUSIP-shaped value is the only reading
-					// this branch adds.
-					if num := strings.TrimSpace(htmlFlat(v)); htmlIsNumeric(num) || htmlIsCUSIP6(num) {
-						if ctx.CUSIP == "" && htmlIsCUSIP6(num) {
+					// A full CUSIP under Issuer: is also an id, not a replacement
+					// for the company name in the preceding meeting row.
+					if num := strings.TrimSpace(htmlFlat(v)); htmlIsNumeric(num) || htmlIsCUSIP6(num) || pvTextCUSIP(num) {
+						if ctx.CUSIP == "" && (htmlIsCUSIP6(num) || pvTextCUSIP(num)) {
 							ctx.CUSIP = num
 						}
 					} else if ctx.Issuer == "" {
