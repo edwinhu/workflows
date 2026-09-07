@@ -3778,6 +3778,12 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool)
 				if f := strings.Fields(candidate); len(f) > 1 && isAllDigits(f[0]) {
 					candidate = strings.Join(f[1:], " ")
 				}
+				// `Fund: Jennison Growth Fund #19F2` (Prudential Investment
+				// Portfolios 2004, 5,658 rows): the account code trails the
+				// name instead of leading it. Cut for the lookup only.
+				if f := strings.Fields(candidate); len(f) > 1 && isAccountCodeToken(f[len(f)-1]) {
+					candidate = strings.Join(f[:len(f)-1], " ")
+				}
 			}
 		}
 		if _, d := issResolveFund(ix, candidate); d != nil {
@@ -3789,7 +3795,7 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool)
 			for _, next := range lines[li+1:] {
 				if n := strings.TrimSpace(next); n != "" {
 					if _, d := issResolveFund(ix, candidate+" "+n); d != nil {
-						name, id, ok = line+" "+n, d.SeriesID, true
+						name, id, ok = strings.TrimSpace(line+" "+n), d.SeriesID, true
 					}
 					break
 				}
@@ -3812,6 +3818,26 @@ func htmlFundLabelled(line string) bool {
 		}
 	}
 	return false
+}
+
+// isAccountCodeToken reports a trailing account code printed beside the fund
+// name: `#19F2`, `#146996`. Two to eight letters or digits after the `#`, so a
+// bare `#` or a footnote marker such as `#*` is not one.
+func isAccountCodeToken(s string) bool {
+	if len(s) < 3 || s[0] != '#' {
+		return false
+	}
+	body := s[1:]
+	if len(body) > 8 {
+		return false
+	}
+	for i := 0; i < len(body); i++ {
+		c := body[i]
+		if (c < '0' || c > '9') && (c < 'a' || c > 'z') && (c < 'A' || c > 'Z') {
+			return false
+		}
+	}
+	return true
 }
 
 func isAllDigits(s string) bool {
@@ -3880,6 +3906,26 @@ func htmlFundHeading(pre string) (string, bool) {
 			return "", true
 		}
 		if name, ok := icrFundName(trimmed); ok {
+			if name == "" {
+				// The label's value WRAPS onto the next line: `Fund Name :`
+				// then `Columbia International Fund, VS` (Columbia Funds
+				// Variable Insurance Trust 2007, 9,934 rows with no series,
+				// 5,695 of them with no name at all). The section IS named,
+				// just not on the label's own line, so the wrapped value is
+				// read rather than the carried fund cleared. A period line or
+				// a further labelled line is not the value, and those still
+				// clear.
+				for _, next := range lines[i+1:] {
+					v := strings.TrimSpace(next)
+					if v == "" {
+						continue
+					}
+					if !htmlIsPeriodLine(v) && !strings.Contains(v, ":") {
+						name = v
+					}
+					break
+				}
+			}
 			return name, true
 		}
 	}
