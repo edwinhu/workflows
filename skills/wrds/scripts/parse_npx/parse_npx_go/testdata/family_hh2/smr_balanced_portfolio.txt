@@ -1,0 +1,123 @@
+		COMPANY CONFORMED NAME:			SM&R INVESTMENTS, INC.
+		CENTRAL INDEX KEY:			0000881166
+<br>
+2450 South Shore Blvd.,<br>
+Suite 400<br>
+League City, TX 77573<br>
+(Address of principal executive offices) (Zip code)<br>
+<br>
+Michael W. McCroskey<br>
+Securities Management and Research, Inc.<br>
+2450 South Shore Blvd.,<br>
+Suite 400<br>
+League City, TX 77573<br>
+(Name and address of agent for service)<br>
+<br>
+Registrant's telephone number, including area code: &nbsp;(281) 334-2469<br>
+<br>
+Date of fiscal year end: &nbsp;August 31<br>
+<br>
+Date of reporting period: &nbsp;July 1, 2005 - June 30, 2006
+<br>
+<br>
+<font size="2" face="Courier New">--------------------------------------------------------------------------------</font></td><br><br><br>
+
+<table style="font-family: Courier New; font-size: 10pt;" border=0 cellpadding=1 cellspacing=0 width=929 style='border-collapse:
+ collapse;table-layout:fixed;width:699pt'>
+    <tr height=21 style='height:15.75pt'>
+        <td height=21 class=xl24 colspan=2 width=320 style='height:15.75pt;
+  width:240pt'>SM&amp;R BALANCED PORTFOLIO</td>
+        <td width=181 style='width:136pt'></td>
+        <td width=94 style='width:71pt'></td>
+        <td width=94 style='width:71pt'></td>
+        <td width=94 style='width:71pt'></td>
+        <td width=82 style='width:62pt'></td>
+        <td width=64 style='width:48pt'></td>
+    </tr>
+    <tr height=17 style='height:12.75pt'>
+        <td height=17 colspan=6 class=xl25 style='height:12.75pt;'></td>
+        <td class=xl26></td>
+        <td></td>
+    </tr>
+    <tr height=17 style='height:12.75pt'>
+        <td height=17 class=xl27 colspan=2 style='height:12.75pt;'>THE
+  GILLETTE COMPANY</td>
+        <td class=xl27>&nbsp;</td>
+        <td class=xl27>G</td>
+        <td class=xl27>&nbsp;</td>
+        <td class=xl28>&nbsp;</td>
+        <td class=xl28>Special Meeting Date: 07/12/2005</td>
+        <td></td>
+    </tr>
+    <tr height=17 style='height:12.75pt'>
+        <td height=17 class=xl25 colspan=2 style='height:12.75pt;'>Issuer:
+  375766102</td>
+        <td class=xl25>ISIN:&nbsp;</td>
+        <td colspan=3 class=xl25></td>
+        <td class=xl26></td>
+        <td></td>
+    </tr>
+    <tr height=17 style='height:12.75pt'>
+        <td height=17 class=xl25 colspan=2 style='height:12.75pt;'>SEDOL:&nbsp;&nbsp;</td>
+        <td colspan=4 class=xl25></td>
+        <td class=xl26></td>
+        <td></td>
+    </tr>
+    <tr height=17 style='height:12.75pt'>
+        <td height=17 class=xl29 style='height:12.75pt'>&nbsp;</td>
+        <td class=xl29>&nbsp;</td>
+        <td class=xl29>&nbsp;</td>
+        <td class=xl29>&nbsp;</td>
+        <td class=xl29>&nbsp;</td>
+        <td class=xl29>&nbsp;</td>
+        <td class=xl29>&nbsp;</td>
+        <td></td>
+    </tr>
+    <tr height=17 style='height:12.75pt'>
+        <td height=17 class=xl30 colspan=2 style='height:12.75pt;'>Vote
+  Group: GLOBAL</td>
+        <td colspan=5 class=xl30></td>
+        <td></td>
+    </tr>
+    <tr height=17 style='height:12.75pt'>
+        <td height=17 colspan=8 style='height:12.75pt;'></td>
+    </tr>
+    <tr height=17 style='height:12.75pt'>
+        <td height=17 class=xl31 style='height:12.75pt'>Proposal</td>
+        <td colspan=2></td>
+        <td>Proposal</td>
+        <td class=xl31>Vote</td>
+        <td>For or Against&nbsp;</td>
+        <td colspan=2></td>
+    </tr>
+    <tr height=17 style='height:12.75pt'>
+        <td height=17 class=xl31 style='height:12.75pt'>Number</td>
+        <td>Proposal</td>
+        <td></td>
+        <td>Type</td>
+        <td class=xl31>Cast</td>
+        <td>Management</td>
+        <td colspan=2></td>
+    </tr>
+    <tr height=17 style='height:12.75pt'>
+        <td height=17 class=xl32 style='height:12.75pt'>01</td>
+        <td class=xl29>APPROVE MERGER AGREEMENT</td>
+        <td class=xl29>&nbsp;</td>
+        <td class=xl29>Management</td>
+        <td class=xl33 width=94 style='width:71pt'>For</td>
+        <td class=xl29>For</td>
+        <td class=xl29>&nbsp;</td>
+        <td></td>
+    </tr>
+    <tr height=17 style='height:12.75pt'>
+        <td height=17 class=xl34 style='height:12.75pt'>02</td>
+        <td colspan=2>APPROVE MOTION TO ADJOURN MEETING</td>
+        <td>Management</td>
+        <td class=xl35 width=94 style='width:71pt'>For</td>
+        <td>For</td>
+        <td colspan=2></td>
+    </tr>
+    <tr height=17 style='height:12.75pt'>
+        <td height=17 colspan=8 style='height:12.75pt;'></td>
+    </tr>
+    <tr height=17 style='height:12.75pt'>

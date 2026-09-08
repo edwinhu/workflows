@@ -1,0 +1,117 @@
+		COMPANY CONFORMED NAME:			BRIDGEWAY FUND INC
+		CENTRAL INDEX KEY:			0000916006
+<TEXT>
+<P align="center" style="font-size: 10pt">Ultra-Small Company Market Fund &#151; Proxy Voting Record<BR>
+5615 Kirby #518<BR>
+Houston, TX 77005<BR>
+800-661-3550
+
+
+<DIV align="center">
+<TABLE style="font-size: 8pt" cellspacing="0" border="0" cellpadding="0" width="100%">
+<!-- Begin Table Head -->
+<TR valign="bottom">
+<TR style="font-size: 7pt" valign="bottom">
+    <TD nowrap align="center"><B>Meeting<BR>Date</B><HR size="1" noshade></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Ticker</B><HR size="1" noshade></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>CUSIP</B><HR size="1" noshade></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Company Name</B><HR size="1" noshade></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Control Number</B><HR size="1" noshade></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Proposals / Matter Voted On</B><HR size="1" noshade></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Proposed by<BR>(Issuer or<BR>Shareholder)</B><HR size="1" noshade></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Vote</B><HR size="1" noshade></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>MGMT<BR>Recom-<BR>mendation</B><HR size="1" noshade></TD>
+</TR>
+
+<!-- End Table Head -->
+<!-- Begin Table Body -->
+<TR valign="bottom" style="background: #eeeeee">
+    <TD align="center" valign="top">07/02/03
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">sgen
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">812578102
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Seattle Genetics
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">4425-8108-8848
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Approve a Private Placement of $41 Million of Series&nbsp;A Convertible Preferred Stock &#038; Warrant to Purchase
+2,050,00 Shares of Common Stock and Authorize the Issuance of 16,400,000 Shares of Common Stock
+Upon Conversion of the Series&nbsp;A Convertible Preferred Stock and Authorize the Issuance of 2,050,000 Shares
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Director
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For</TD>
+</TR>
+
+<TR valign="bottom">
+    <TD align="center" valign="top">07/02/03
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">rusha
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">781846209
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Rush Enterprises
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">0394-1532-9008
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Nominees for Board of Directors
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Director
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Withhold
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For</TD>
+</TR>
+
+<TR valign="bottom" style="background: #eeeeee">
+    <TD align="center" valign="top">
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">0394-1533-4718
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Ratification of Auditors
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Director
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For</TD>
+</TR>

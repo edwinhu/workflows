@@ -536,6 +536,80 @@ func brResolveHeading(ix *issSeriesIndex, slot string) string {
 	return ""
 }
 
+// brEqualsRuleHeading reads the fund heading this vintage brackets between two
+// rules of '=' instead of printing above the block's dashed rule (North Track
+// Funds 2004, 4,145 rows with neither fund nor series). ONLY '=' counts: the
+// dashed rule is this grammar's block separator and appears in every section,
+// while a text line sandwiched between two '=' rules is a section banner and
+// nothing else. The heading sits at column 0, so an indented line there is a
+// wrapped proposal rather than a name.
+func brEqualsRuleHeading(lines []string, i int) (string, bool) {
+	if i < 1 || i+1 >= len(lines) {
+		return "", false
+	}
+	if !brEqualsRule(lines[i-1]) || !brEqualsRule(lines[i+1]) {
+		return "", false
+	}
+	if strings.HasPrefix(lines[i], " ") || strings.HasPrefix(lines[i], "\t") {
+		return "", false
+	}
+	slot := strings.TrimSpace(lines[i])
+	if slot == "" {
+		return "", false
+	}
+	return slot, true
+}
+
+// brEqualsRule reports a rule drawn entirely of '='.
+func brEqualsRule(line string) bool {
+	s := strings.TrimSpace(line)
+	if len(s) < 3 {
+		return false
+	}
+	return strings.Trim(s, "=") == ""
+}
+
+// brInlineAgendaFund returns the text printed to the LEFT of the block opener's
+// `Agenda Number:` label, with the two columns' gap required: a single space
+// before the label would make the tail of a long issuer name a candidate.
+func brInlineAgendaFund(line string) (string, bool) {
+	for _, needle := range brAgendaNeedles {
+		k := brIndexFolded(line, needle)
+		if k <= 0 {
+			continue
+		}
+		head := strings.TrimRight(line[:k], " \t")
+		if len(line[:k])-len(head) < 2 || strings.TrimSpace(head) == "" {
+			return "", false
+		}
+		return strings.TrimSpace(head), true
+	}
+	return "", false
+}
+
+// brIndexFolded is strings.Index with an ASCII-case-insensitive compare, in
+// place: this runs once per meeting block and the corpus carries 2.9 million of
+// them, so lowercasing a copy of each line would be an allocation apiece.
+// needle must already be lowercase.
+func brIndexFolded(text, needle string) int {
+	for i := 0; i+len(needle) <= len(text); i++ {
+		j := 0
+		for ; j < len(needle); j++ {
+			c := text[i+j]
+			if c >= 'A' && c <= 'Z' {
+				c += 'a' - 'A'
+			}
+			if c != needle[j] {
+				break
+			}
+		}
+		if j == len(needle) {
+			return i
+		}
+	}
+	return -1
+}
+
 // brSilentSection reports whether lines[i] opens a fund section that states it
 // held nothing to vote: a heading, the rule under it, and the sentence instead
 // of a meeting block.
@@ -704,7 +778,25 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		// the state moves, the row still open belongs to the block ABOVE this
 		// one, so it is emitted under the fund that was current when it was read.
 		if !brDashRule(line) {
-			if brAgendaOpener(line) {
+			if slot, ok := brEqualsRuleHeading(lines, i); ok {
+				if _, d := issResolveFund(seriesIx, slot); d != nil {
+					flush()
+					curSeries, curFund = d.SeriesID, slot
+				}
+			} else if brAgendaOpener(line) {
+				// The fund name may share the block-opener's line, printed to
+				// the left of the `Agenda Number:` label (Calamos Investment
+				// Trust 2004, 4,144 rows with neither fund nor series). That
+				// slot normally holds the ISSUER, so it counts only when it
+				// resolves to one of this registrant's own series; an issuer
+				// name never does, and a slot that does not resolve leaves the
+				// section above standing rather than clearing it.
+				if slot, ok := brInlineAgendaFund(line); ok {
+					if _, d := issResolveFund(seriesIx, slot); d != nil {
+						flush()
+						curSeries, curFund = d.SeriesID, slot
+					}
+				}
 				if slot, crossedBlank := brHeadingSlot(lines, i); slot != "" {
 					if crossedBlank {
 						// Evidence-only: act solely on a name this filing's own

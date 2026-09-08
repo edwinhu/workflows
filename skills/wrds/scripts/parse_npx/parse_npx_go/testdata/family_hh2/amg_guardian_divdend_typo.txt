@@ -1,0 +1,32 @@
+		COMPANY CONFORMED NAME:			AMG Funds IV
+		CENTRAL INDEX KEY:			0000912036
+AMG Managers Guardian Capital Global Divdend Fund
+--------------------------------------------------------------------------------------------------------------------------
+ AUTOMATIC DATA PROCESSING, INC.                                                             Agenda Number:  934482340
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  053015103
+    Meeting Type:  Annual
+    Meeting Date:  08-Nov-2016
+          Ticker:  ADP
+            ISIN:  US0530151036
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1.     DIRECTOR
+       PETER BISSON                                              Mgmt          For                            For
+       RICHARD T. CLARK                                          Mgmt          For                            For
+       ERIC C. FAST                                              Mgmt          For                            For
+       LINDA R. GOODEN                                           Mgmt          For                            For
+       MICHAEL P. GREGOIRE                                       Mgmt          For                            For
+       R. GLENN HUBBARD                                          Mgmt          For                            For
+       JOHN P. JONES                                             Mgmt          For                            For
+       WILLIAM J. READY                                          Mgmt          For                            For
+       CARLOS A. RODRIGUEZ                                       Mgmt          For                            For
+       SANDRA S. WIJNBERG                                        Mgmt          For                            For
+
+2.     ADVISORY VOTE ON EXECUTIVE COMPENSATION.                  Mgmt          For                            For
+
+3.     RATIFICATION OF THE APPOINTMENT OF                        Mgmt          For                            For
+       AUDITORS.
