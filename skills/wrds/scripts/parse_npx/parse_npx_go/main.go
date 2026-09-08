@@ -331,6 +331,7 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 	head := headBuf[:n]
 
 	h := parseHeader(head)
+	headerHasSeries := len(h.SeriesDecls) > 0
 	cikDict.back(&h)
 	h.FilePath = relPath
 	h.ParseMode = "none"
@@ -345,6 +346,20 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 	if ids := seriesIDs(sc); len(ids) == 1 {
 		seriesRow = ids[0]
 		classRow = strings.Join(classIDsFor(sc, seriesRow), MultiValueSep)
+	}
+	if !headerHasSeries {
+		// Dictionary aliases can repeat an id; only distinct series count.
+		ids := map[string]bool{}
+		for _, d := range h.SeriesDecls {
+			if d.SeriesID != "" {
+				ids[d.SeriesID] = true
+			}
+		}
+		if len(ids) == 1 {
+			for id := range ids {
+				seriesRow = id
+			}
+		}
 	}
 
 	defer func() {
