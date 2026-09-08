@@ -1757,6 +1757,19 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			return banner, idx[strings.Replace(strings.TrimSuffix(key, " series"), "northern trust ", "northern ", 1)]
 		}
 	}
+	// The spreadsheet-export half of SM&R's filings heads each section
+	// `SM&R BALANCED PORTFOLIO` for a declared `SM&R Balanced Fund` (3,989
+	// rows); the ISS-banner half of the same filing spells `FUND` and
+	// resolves. Confined to this registrant like WT's below: a heading that
+	// REPLACES a type word is `Total Bond Market Fund` against a declared
+	// `Total Bond Market Trust` everywhere else, which is a different fund.
+	if registrantKey == "sm and r investments inc" {
+		if stem, ok := strings.CutSuffix(normalizeSeriesName(banner), " portfolio"); ok && stem != "" {
+			if d, seen := idx[stem+" fund"]; seen {
+				return banner, d
+			}
+		}
+	}
 	// WT's audited Wilmington headings replace FUND with PORTFOLIO. Keep
 	// this noun substitution confined to the observed stems and registrant.
 	if registrantKey == "wt mutual fund" {
@@ -1881,7 +1894,14 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// A colon does the same work: `Clearwater Core Equity Fund: AQR Capital
 	// Management, LLC` (Clearwater Investment Trust, the largest no-heading
 	// htmltable shape on run65).
-	for _, sep := range []string{" - ", "- ", ": "} {
+	// An em or en dash does the same work as the hyphen, and carries the
+	// report title rather than a sleeve: `Ultra-Small Company Market Fund
+	// &#151; Proxy Voting Record` (Bridgeway Fund 2004, 4,256 rows with no
+	// fund). `&#151;` is the cp1252 spelling and decodes to U+0097, so both
+	// it and the Unicode dashes are separators here. The rule is unchanged --
+	// one side of the dash must equal a declared name and the other is
+	// dropped -- so a title that is itself a fund name still refuses.
+	for _, sep := range []string{" - ", "- ", ": ", " \u2014 ", " \u2013 ", " \u0097 ", " \u0096 "} {
 		if head, tail, ok := strings.Cut(banner, sep); ok && strings.TrimSpace(head) != "" && strings.TrimSpace(tail) != "" {
 			if d := lookupSeriesByName(idx, head); d != nil {
 				return banner, d
@@ -2023,7 +2043,220 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d := ix.lessLeadToken[key]; d != nil {
 		return banner, d
 	}
+
+	// The registrant's own name, misspelled or one word short of the header's.
+	if d := issNearMissDecl(ix, key); d != nil {
+		return banner, d
+	}
+	// The registrant's own vocabulary, when the heading prints a name that has
+	// since been changed and no single edit reaches it.
+	if d := issDistinctiveTokenDecl(ix, key); d != nil {
+		return banner, d
+	}
 	return banner, nil
+}
+
+// issNearMissMinDrop and issNearMissMinEdit are the shortest token issNearMiss
+// may drop and the shortest it may repair. Four and five characters are what
+// keep a class letter, a numeral, a Roman suffix or a two-word type token out
+// of the rule: `Fund A` and `Fund B` are different funds and differ by one
+// character, and nothing here may ever read one as the other.
+const (
+	issNearMissMinDrop = 4
+	issNearMissMinEdit = 5
+)
+
+// issNearMissDecl reads a heading that names one series of this registrant with
+// a single typographic slip: at most one interior token of the declared name
+// missing, and at most one token differing by one character.
+//
+// Measured shapes: `Goldman Sachs Future Real Estate and Infrastructure Equitiy
+// ETF` (255 rows), `Goldman Sachs Equal Weight U.S. Large Cap ETF` for a
+// declared `... Large Cap Equity ETF` (6,949 rows, the dropped word alone),
+// `AMG Managers Guardian Capital Global Divdend Fund` (958 rows) and
+// `MASSMUTUAL AGGRESIVE GROWTH FUND` for a declared `MassMutual Select
+// Aggressive Growth Fund` (3,873 rows, both slips at once).
+//
+// Every other token must match EXACTLY, and exactly one series of this
+// registrant may answer -- two candidates refuse, because choosing between them
+// would move one fund's votes onto another. This runs last, so a heading any
+// exact or described-edit rule above reads is never reinterpreted here.
+func issNearMissDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	banner := strings.Fields(key)
+	if len(banner) < 3 {
+		return nil
+	}
+	// The registrant's OWN name is never a fund. `First Investors Life Series
+	// Fund` is one dropped token from the declared `First Investors Life Series
+	// Discovery Fund`, and reading it as that fund files the whole filing's
+	// votes under one of its sub-funds.
+	if key == ix.registrantKey {
+		return nil
+	}
+	var hit *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		if !issNearMiss(banner, strings.Fields(normalizeSeriesName(d.Name))) {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	return hit
+}
+
+// issNearMiss reports whether banner reads as decl after at most one INTERIOR
+// token of decl is dropped. The first and last tokens are never dropped: the
+// brand at the front and the type word at the end are the two places a cut
+// collapses distinct funds onto each other.
+func issNearMiss(banner, decl []string) bool {
+	switch len(decl) - len(banner) {
+	case 0:
+		return issOneTokenEdit(banner, decl)
+	case 1:
+		for j := 1; j < len(decl)-1; j++ {
+			if len(decl[j]) < issNearMissMinDrop {
+				continue
+			}
+			cut := append(append([]string{}, decl[:j]...), decl[j+1:]...)
+			if issOneTokenEdit(banner, cut) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// issOneTokenEdit reports two token runs of equal length that agree everywhere
+// but at most one position, and there by a single character.
+func issOneTokenEdit(a, b []string) bool {
+	diff := -1
+	for i := range a {
+		if a[i] == b[i] {
+			continue
+		}
+		if diff >= 0 {
+			return false
+		}
+		diff = i
+	}
+	if diff < 0 {
+		return true
+	}
+	x, y := a[diff], b[diff]
+	if len(x) < issNearMissMinEdit || len(y) < issNearMissMinEdit {
+		return false
+	}
+	return issEditDistanceOne(x, y)
+}
+
+// issEditDistanceOne reports one character inserted, deleted or substituted.
+func issEditDistanceOne(x, y string) bool {
+	if len(x) > len(y) {
+		x, y = y, x
+	}
+	if len(y)-len(x) > 1 {
+		return false
+	}
+	i := 0
+	for i < len(x) && x[i] == y[i] {
+		i++
+	}
+	if i == len(x) {
+		// Nothing differs before the end of the shorter token: equal strings, or
+		// one character appended.
+		return len(y)-len(x) == 1
+	}
+	if len(x) == len(y) {
+		return x[i+1:] == y[i+1:]
+	}
+	return x[i:] == y[i+1:]
+}
+
+// issDistinctiveTokenMin is the shortest token that may count as distinctive,
+// and issDistinctiveMinPool the smallest vocabulary it may be distinctive
+// AGAINST. A token carried by exactly one of two declared names is not rare, it
+// is merely one of them: with a small pool every word of every name qualifies
+// and the rule degenerates into a substring match. Goldman Sachs ETF Trust,
+// where this was measured, declares 69.
+const (
+	issDistinctiveTokenMin = 5
+	issDistinctiveMinPool  = 10
+)
+
+// issDistinctiveTokenDecl reads a heading printing the fund's name at the time
+// of the report against a declared name that has since changed:
+// `Goldman Sachs ActiveBeta Paris-Align Climate U.S. Low Vol Plus Equity ETF`
+// for a declared `Goldman Sachs ActiveBeta(R) Paris-Aligned Climate U.S. Large
+// Cap Equity ETF` (S000074467, 4,173 rows) differs in three places at once --
+// the mark dropped, `Align` for `Aligned`, `Low Vol Plus` for `Large Cap` --
+// so no single edit reaches it.
+//
+// The evidence is the registrant's own vocabulary: a token of five characters
+// or more that exactly ONE of this registrant's series carries. TWO such tokens
+// must agree (`Paris` and `Climate` here) and none may point elsewhere, so a
+// heading sharing one rare word with a sibling fund stamps nothing.
+func issDistinctiveTokenDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 3 {
+		return nil
+	}
+	pool := map[string]bool{}
+	for i := range ix.decls {
+		if ix.decls[i].SeriesID != "" && ix.decls[i].Name != "" {
+			pool[ix.decls[i].SeriesID] = true
+		}
+	}
+	if len(pool) < issDistinctiveMinPool {
+		return nil
+	}
+	var hit *SeriesDecl
+	agree := 0
+	for _, t := range toks {
+		if len(t) < issDistinctiveTokenMin {
+			continue
+		}
+		var owner *SeriesDecl
+		ids := map[string]bool{}
+		for i := range ix.decls {
+			d := &ix.decls[i]
+			if d.SeriesID == "" || d.Name == "" {
+				continue
+			}
+			if !issHasToken(normalizeSeriesName(d.Name), t) {
+				continue
+			}
+			owner = d
+			ids[d.SeriesID] = true
+		}
+		if len(ids) != 1 {
+			continue
+		}
+		if hit != nil && hit.SeriesID != owner.SeriesID {
+			return nil
+		}
+		hit = owner
+		agree++
+	}
+	if agree < 2 {
+		return nil
+	}
+	return hit
+}
+
+// issHasToken reports whether a normalised name carries tok as a whole token.
+func issHasToken(key, tok string) bool {
+	for _, t := range strings.Fields(key) {
+		if t == tok {
+			return true
+		}
+	}
+	return false
 }
 
 // issCutBrand removes brand from the front of a normalised key on a whole-token
