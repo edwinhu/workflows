@@ -101,6 +101,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 	// a per-row rebuild would make the job quadratic in the input.
 	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
 	issFormerKeys(seriesIx, meta.FormerNames)
+	dict := cikDict.exactFallback(meta)
 	if indexFrom(body, 0, "</tr>") < 0 {
 		return nil, errLayoutDeclined
 	}
@@ -190,7 +191,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// second, because one vintage prints the reporting period there and
 		// the fund's name above the banner (Ivy Funds VIP, ~500k rows read as
 		// `Reporting Period: ...` on 2026-09-02).
-		if name, id, ok := htmlBareFundLine(seriesIx, row.pre); ok {
+		if name, id, ok := htmlBareFundLine(seriesIx, row.pre, dict); ok {
 			curFund, curSeries = name, id
 		} else if name, ok := htmlFundHeading(row.pre); ok {
 			curFund = name
@@ -769,6 +770,12 @@ func (f *htmlRowFeed) scan() (htmlFeedRow, bool) {
 	start = indexFrom(seg, 0, "<tr")
 	if start < 0 {
 		start = 0
+		// An omitted opening row still has a cell boundary; keep the
+		// paragraph before that cell available to the heading reader.
+		var boundary htmlBoundaryFinder
+		if at, _, closing, ok := boundary.next(seg, 0); ok && !closing {
+			start = at
+		}
 	}
 	// One scan for the terminator: before this row's <tr> it closed the previous
 	// table, after it the table closes before the NEXT row.
@@ -4577,9 +4584,13 @@ func htmlLabelledCells(cells []string) (label, value string, ok bool) {
 // nothing positional is guessed. The text between two tables can hold several
 // such names when the funds between them reported no activity; the fund that
 // follows is the NEAREST name above the table, so the last match wins.
-func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool) {
+func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback) (name, id string, ok bool) {
 	if pre == "" {
 		return "", "", false
+	}
+	var dict *dictFallback
+	if len(fallback) > 0 {
+		dict = fallback[0]
 	}
 	lines := strings.Split(pre, "\n")
 	for li, line := range lines {
@@ -4665,6 +4676,8 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool)
 		}
 		if _, d := issResolveFund(ix, candidate); d != nil {
 			name, id, ok = line, d.SeriesID, true
+		} else if dictID := htmlDictionaryFund(ix, dict, candidate); dictID != "" {
+			name, id, ok = line, dictID, true
 		} else if labelled {
 			// The label's value wraps onto the next line: `Institution
 			// Account(s): db X-trackers MSCI Brazil` / `Hedged Equity Fund`
@@ -4692,6 +4705,32 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool)
 		}
 	}
 	return name, id, ok
+}
+
+// htmlDictionaryFund only admits names the header does not declare, even
+// ambiguously. The sub-adviser cut is the only additional dictionary reading.
+func htmlDictionaryFund(ix *issSeriesIndex, fallback *dictFallback, candidate string) string {
+	if fallback == nil {
+		return ""
+	}
+	if _, declared := lookupSeriesEntry(ix.byName, candidate); declared {
+		return ""
+	}
+	if d, seen := lookupSeriesEntry(fallback.byName, candidate); seen {
+		if d != nil {
+			return d.SeriesID
+		}
+		return ""
+	}
+	if cut, ok := issCutSubAdviser(candidate); ok {
+		if _, declared := lookupSeriesEntry(ix.byName, cut); declared {
+			return ""
+		}
+		if d, _ := lookupSeriesEntry(fallback.byName, cut); d != nil {
+			return d.SeriesID
+		}
+	}
+	return ""
 }
 
 // htmlFundLabelled reports a pre-text line that labels the fund: Putnam's

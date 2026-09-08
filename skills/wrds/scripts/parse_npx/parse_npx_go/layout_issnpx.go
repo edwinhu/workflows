@@ -407,6 +407,12 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		if !ok {
 			name, ok = issOpenBanner(line, lines, i)
 		}
+		if !ok && line != "" && i+2 < len(lines) && strings.EqualFold(strings.TrimSpace(lines[i+1]), "Proxy Voting Records") {
+			period := strings.Split(strings.TrimSpace(lines[i+2]), "-")
+			if len(period) == 2 && htmlDate(period[0]) != "" && htmlDate(period[1]) != "" {
+				name, ok = line, true
+			}
+		}
 		if !ok && line != "" && i+1 < len(lines) && strings.TrimSpace(lines[i+1]) == "" {
 			// A bare paragraph is a boundary only on an exact, unique name.
 			if d, _ := lookupSeriesEntry(seriesIx.byName, line); d != nil {

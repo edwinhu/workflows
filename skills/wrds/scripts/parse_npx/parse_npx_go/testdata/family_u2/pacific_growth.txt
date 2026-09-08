@@ -1,0 +1,40 @@
+<SEC-DOCUMENT>0000813900-04-000016.txt : 20040901
+<SEC-HEADER>0000813900-04-000016.hdr.sgml : 20040901
+<ACCEPTANCE-DATETIME>20040831174045
+ACCESSION NUMBER:		0000813900-04-000016
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		38
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040901
+DATE AS OF CHANGE:		20040831
+EFFECTIVENESS DATE:		20040901
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PACIFIC SELECT FUND
+		CENTRAL INDEX KEY:			0000813900
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>EX-99
+<SEQUENCE>2
+<FILENAME>growthltnpx.txt
+<TEXT>
+Pacific Select Fund Growth LT Portfolio
+Proxy Voting Records
+7/1/03-6/30/04
+
+
+
+
+- --------------------------------------------------------------------------------
+
+
+ALLIED WASTE INDUSTRIES, INC.
+
+Ticker:       AW             Security ID:  019589308
+Meeting Date: DEC 18, 2003   Meeting Type: Special
+Record Date:  NOV 3, 2003
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Approve Conversion of Securities          For       For        Management
