@@ -1,0 +1,28 @@
+		COMPANY CONFORMED NAME:			AXA ENTERPRISE FUNDS TRUST
+		CENTRAL INDEX KEY:			0001312580
+<PRE>
+
+============== AXA ENTERPRISE DEEP VALUE FUND ***FORMERLY EGF***===============
+
+
+ADVANCE AUTO PARTS INC
+
+Ticker:       AAP            Security ID:  00751Y106
+Meeting Date: MAY 18, 2005   Meeting Type: Annual
+Record Date:  MAR 30, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director John C. Brouillard        For       For        Management
+1.2   Elect  Director Lawrence P. Castellani    For       For        Management
+1.3   Elect  Director Michael N. Coppola        For       For        Management
+1.4   Elect  Director Darren R. Jackson         For       For        Management
+1.5   Elect  Director William S. Oglesby        For       For        Management
+1.6   Elect  Director Gilbert T. Ray            For       For        Management
+1.7   Elect  Director Carlos A. Saladrigas      For       For        Management
+1.8   Elect  Director William L. Salter         For       For        Management
+1.9   Elect  Director Francesca Spinelli, Ph.D. For       For        Management
+1.10  Elect  Director Nicholas F. Taubman       For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Adopt Policy to Prohibit Discrimination   Against   Against    Shareholder
+      based on Sexual Orientation
+

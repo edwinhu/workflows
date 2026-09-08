@@ -436,7 +436,28 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 			// fund read, 2026-09-02). The report line is the marker; the line
 			// above it is the name, resolved like any other heading.
 			curFund = lineAbove
-			curSeries = icrResolveFundShared(seriesIx, lineAbove)
+			if len(lineAbove) <= 300 && strings.HasPrefix(strings.ToLower(lineAbove), "(merged into ") && strings.HasSuffix(lineAbove, ")") {
+				// The note names a successor, not this section's fund. Look only
+				// immediately above the complete note for a separately printed name.
+				curSeries = ""
+				skippedNote := false
+				for k := i - 1; k >= 0 && k >= i-4; k-- {
+					candidate := strings.TrimSpace(lines[k])
+					if candidate == "" {
+						continue
+					}
+					if !skippedNote {
+						skippedNote = true
+						continue
+					}
+					if id := icrResolveFundShared(seriesIx, candidate); id != "" {
+						curFund, curSeries = candidate, id
+					}
+					break
+				}
+			} else {
+				curSeries = icrResolveFundShared(seriesIx, lineAbove)
+			}
 		} else if name, ok := issFundSeparator(line); ok {
 			// The '=====' banner rule the ISS report opens a fund with, printed
 			// by one registrant in this grammar too (the College Retirement
