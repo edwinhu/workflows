@@ -1687,6 +1687,18 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			return banner, d
 		}
 	}
+	// Infix FKA separates the current name from a former name, not a second
+	// series. Admit only the exact current name, with an optional terminal Fund.
+	if current, former, ok := strings.Cut(normalizeSeriesName(banner), " fka "); ok && current != "" && former != "" {
+		if d, seen := lookupSeriesEntry(idx, current); seen {
+			return banner, d
+		}
+		if !strings.HasSuffix(current, " fund") {
+			d, _ := lookupSeriesEntry(idx, current+" fund")
+			return banner, d
+		}
+		return banner, nil
+	}
 	// A terminal annotation without a former name is not part of the name.
 	if cut := reISSTerminalFormerly.ReplaceAllString(banner, ""); cut != banner {
 		d, _ := lookupSeriesEntry(idx, strings.TrimSpace(cut))
