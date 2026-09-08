@@ -235,7 +235,7 @@ func normalizeSeriesName(s string) string {
 // must go before punctuation folding, because "(r)" would otherwise leave a bare
 // "r" token that the body heading does not carry.
 var seriesMarkReplacer = strings.NewReplacer(
-	"(r)", "", "(tm)", "", "(sm)", "", "(c)", "",
+	"(r)", "", "/r/", "", "(tm)", "", "(sm)", "", "(c)", "",
 	"®", "", "™", "", "℠", "", "©", "",
 )
 

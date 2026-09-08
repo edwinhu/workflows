@@ -1,0 +1,38 @@
+		COMPANY CONFORMED NAME:			DBX ETF TRUST
+		CENTRAL INDEX KEY:			0001503123
+<PRE STYLE="font-size: 8pt">
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-22487
+Reporting Period: 07/01/2021 - 06/30/2022
+DBX ETF Trust
+=========== Xtrackers Emerging Markets Carbon Reduction and Climate Improvers ETF (formerly, Xtrackers MSCI ACWI ex
+USA ESG Leaders Equity ETF)
+===========
+
+
+360 SECURITY TECHNOLOGY, INC.
+
+Ticker:       601360         Security ID:  Y444T7106
+Meeting Date: OCT 15, 2021   Meeting Type: Special
+Record Date:  OCT 11, 2021
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Approve to Appoint Financial Report     For       For          Management
+      Auditor and Internal Control Auditor
+2.1   Elect Sun Ying as Supervisor            For       For          Management
+
+
+======================== Xtrackers Eurozone Equity ETF (liquidated 3/16/22) ============
+
+
+A2A SPA
+
+Ticker:       A2A            Security ID:  T0579B105
+Meeting Date: OCT 08, 2021   Meeting Type: Extraordinary Shareholders
+Record Date:  SEP 29, 2021
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Approve Merger by Incorporation of      For       For          Management
+      Linea Group Holding SpA into A2A SpA
+

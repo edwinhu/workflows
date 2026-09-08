@@ -4651,6 +4651,18 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool)
 					break
 				}
 			}
+		} else {
+			// An unlabelled portfolio heading may be split across two block
+			// lines. Adopt the join only when the declared-series lookup resolves.
+			for _, next := range lines[li+1:] {
+				if n := strings.TrimSpace(next); n != "" {
+					joined := line + " " + n
+					if _, d := issResolveFund(ix, joined); d != nil {
+						name, id, ok = joined, d.SeriesID, true
+					}
+					break
+				}
+			}
 		}
 	}
 	return name, id, ok

@@ -3184,6 +3184,21 @@ func issOpenBanner(line string, lines []string, i int) (string, bool) {
 		if n, ok := issFundSeparator(next); ok && n == "" {
 			return name, true
 		}
+		// A long open banner may wrap its trailing former-name clause onto one
+		// unruled line before the bare closing rule.
+		if strings.Contains(next, "=") {
+			return "", false
+		}
+		for k := j + 1; k < len(lines); k++ {
+			close := strings.TrimSpace(lines[k])
+			if close == "" {
+				continue
+			}
+			if n, ok := issFundSeparator(close); ok && n == "" {
+				return name + " " + next, true
+			}
+			return "", false
+		}
 		return "", false
 	}
 	return "", false
