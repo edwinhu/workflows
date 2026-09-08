@@ -1557,6 +1557,21 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d != nil || declared {
 		return banner, d
 	}
+	// Hirtle's audited strategy/account pairs resolve only to declared names.
+	// Keep the account code in the key rather than stripping codes generally.
+	if registrantKey == "hirtle callaghan trust" {
+		switch normalizeSeriesName(banner) {
+		case "hirtle callaghan trust growth equity 11vb":
+			return banner, idx["growth equity portfolio"]
+		case "hirtle callaghan trust value equity 11vw":
+			return banner, idx["value equity portfolio"]
+		}
+	}
+	// The bare Nicholas Applegate strategy omits the brand and terminal Fund.
+	// Only this audited title is admitted; an inserted EQUITY is not omitted.
+	if registrantKey == "nicholas applegate institutional funds" && normalizeSeriesName(banner) == "u s systematic large cap growth" {
+		return banner, idx["nicholas applegate u s systematic large cap growth fund"]
+	}
 	// Harding Loevner's audited historical spellings; never substitute type
 	// words for other registrants or resolve the repaired name through aliases.
 	if registrantKey == "harding loevner funds inc" {

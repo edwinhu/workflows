@@ -1,0 +1,45 @@
+<SEC-DOCUMENT>0000352564-05-000017.txt : 20050826
+<SEC-HEADER>0000352564-05-000017.hdr.sgml : 20050826
+<ACCEPTANCE-DATETIME>20050826100009
+ACCESSION NUMBER:		0000352564-05-000017
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050826
+DATE AS OF CHANGE:		20050826
+EFFECTIVENESS DATE:		20050826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			FIRST INVESTORS LIFE SERIES FUND
+		CENTRAL INDEX KEY:			0000770906
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>life.txt
+<DESCRIPTION>FIRST INVESTORS LIFE SERIES FUND
+<TEXT>
+
+                                 FORM N-PX
+
+   First Investors Life Series Fund - High Yield Fund
+
+   ISSUER NAME    TICKER    CUSIP    MTG    DATE    MTG    TYPE
+
+           Proposal Type Voted? Vote For/Agnst Mgmt
+
+   Ingles Markets Inc IMKTA  457030104  3/29/05  Annual
+   1.01   Elect Charles L. Gaither Jr. 			MGMT YES FOR FOR
+   1.02   Elect Robert P. Ingle 			MGMT YES FOR FOR
+
+   First Investors Life Series Fund - Discovery Fund
+
+   ISSUER NAME    TICKER    CUSIP    MTG    DATE    MTG    TYPE
+
+           Proposal Type Voted? Vote For/Agnst Mgmt
+
+   Advanced Micro Devices   007903SMH  4/28/05  Annual
+   1.01   Elect Hector de J. Ruiz 			MGMT YES FOR FOR
+   1.02   Elect W. Michael Barnes 			MGMT YES FOR FOR

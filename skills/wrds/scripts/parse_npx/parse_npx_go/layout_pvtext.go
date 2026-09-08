@@ -108,7 +108,7 @@ func parsePVText(text string, meta FilingMeta) ([]VoteRow, error) {
 			continue
 		}
 		if line := strings.TrimSpace(lines[i]); line != "" && i+1 < len(lines) && strings.TrimSpace(lines[i+1]) == "" {
-			if d, _ := lookupSeriesEntry(seriesIx.byName, line); d != nil {
+			if _, d := issResolveFund(seriesIx, line); d != nil {
 				fund, fundSeries, bareAccount = line, d.SeriesID, true
 				inTable, haveMtg, pendingIssuer, continuationRow = false, false, false, -1
 				continue
