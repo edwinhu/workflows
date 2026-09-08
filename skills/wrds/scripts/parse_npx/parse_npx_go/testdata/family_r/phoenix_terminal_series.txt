@@ -1,0 +1,21 @@
+		CENTRAL INDEX KEY:			0000792359
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-04642
+Reporting Period: 07/01/2004 - 06/30/2005
+Phoenix Edge Series Fund
+
+
+==================== PHOENIX-KAYNE RISING DIVIDENDS SERIES =====================
+
+
+AFLAC INCORPORATED
+
+Ticker:       TICKER:  A     Security ID:  001055
+Meeting Date: MAY 2, 2005    Meeting Type: Contested Annual
+Record Date:  FEB 23, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+01    ELECTION OF DIRECTORS                     For       For        Management
+02    RATIFY APPOINTMENT OF INDEPENDENT         For       For        Management
+      AUDITORS

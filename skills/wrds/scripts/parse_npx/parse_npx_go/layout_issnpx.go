@@ -1051,8 +1051,9 @@ type issSeriesIndex struct {
 	// Structured International Small Cap Fund` (327k rows). The type-word
 	// form is consulted only for a banner that has NO type word of its own,
 	// so `Total Bond Market Fund` is never `Total Bond Market Trust`.
-	lessBrandFull map[string]*SeriesDecl
-	lessBrandType map[string]*SeriesDecl
+	lessBrandFull   map[string]*SeriesDecl
+	lessBrandType   map[string]*SeriesDecl
+	lessLeadCompact map[string]*SeriesDecl
 	// lessLeadToken keys each declared name with exactly ONE leading token
 	// removed, for a printed heading that drops a brand the registrant's own
 	// name does not supply: JP Morgan Fleming Series Trust 2004 heads
@@ -1101,6 +1102,7 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		lessAnd:           make(map[string]*SeriesDecl),
 		lessBrandFull:     make(map[string]*SeriesDecl),
 		lessBrandType:     make(map[string]*SeriesDecl),
+		lessLeadCompact:   make(map[string]*SeriesDecl),
 		byTicker:          make(map[string]*SeriesDecl),
 	}
 	dupTicker := map[string]bool{}
@@ -1192,6 +1194,7 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 			k := normalizeSeriesName(d.Name)
 			if rest, ok := issCutBrand(k, b); ok {
 				put(ix.lessBrandFull, rest, d)
+				put(ix.lessLeadCompact, strings.ReplaceAll(rest, " ", ""), d)
 				if r2, ok := issDropTypeWord(rest); ok {
 					put(ix.lessBrandType, r2, d)
 				}
@@ -1206,7 +1209,9 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		// One leading token off the DECLARED name; the remainder must still be
 		// two tokens at least, so a two-word name never collapses to one word.
 		if toks := strings.Fields(key); len(toks) >= 3 {
-			put(ix.lessLeadToken, strings.Join(toks[1:], " "), d)
+			rest := strings.Join(toks[1:], " ")
+			put(ix.lessLeadToken, rest, d)
+			put(ix.lessLeadCompact, strings.ReplaceAll(rest, " ", ""), d)
 		}
 		for _, b := range ix.brands {
 			if rest, ok := strings.CutPrefix(key, b+" "); ok {
@@ -1473,7 +1478,10 @@ func issHistoricalBrandKey(key string) string {
 	return ""
 }
 
-var reISSTerminalFormerly = regexp.MustCompile(`(?i)\s+\*?\s*FORMERLY\s*:?\s*$`)
+var (
+	reISSTerminalFormerly = regexp.MustCompile(`(?i)\s+\*?\s*FORMERLY\s*:?\s*$`)
+	reISSNPFAccount       = regexp.MustCompile(`(?i)^NPF-(.+)\s+A/C\s+JND[0-9]+$`)
+)
 
 // issResolveFund turns one banner, already reassembled across any lines it
 // wrapped onto, into the fund name to store and the series it names. A nil decl
@@ -1553,6 +1561,27 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 		d, _ := lookupSeriesEntry(idx, strings.TrimSpace(cut))
 		return banner, d
 	}
+	// Nomura Partners Funds wraps headings in both an NPF- prefix and a terminal
+	// account code. Neither decoration is removed unless the pair is complete.
+	if m := reISSNPFAccount.FindStringSubmatch(strings.TrimSpace(banner)); m != nil {
+		inner := strings.TrimSpace(m[1])
+		if _, d := issResolveFund(ix, inner); d != nil {
+			return banner, d
+		}
+		// This filing omits the incorporated suffix from THE JAPAN FUND, INC.
+		// Keep that reading inside the paired NPF/account wrapper.
+		if d, seen := idx[normalizeSeriesName(inner)+" inc"]; seen {
+			return banner, d
+		}
+	}
+	// JHF is the filing-agent abbreviation used on John Hancock registrants.
+	if strings.Contains(registrantKey, "john hancock") {
+		if f := strings.Fields(banner); len(f) > 1 && strings.EqualFold(f[0], "JHF") {
+			if _, d := issResolveFund(ix, strings.Join(f[1:], " ")); d != nil {
+				return banner, d
+			}
+		}
+	}
 	// A sleeve suffix: `PSF Flexible Managed Portfolio Equity Sleeve` for a
 	// declared `Flexible Managed Portfolio` (Prudential Series Fund 2015, 15k
 	// rows with no fund). The last two words go, then the ordinary rules.
@@ -1566,7 +1595,7 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// 67k rows with no fund). Exact after dropping the last word.
 	if f := strings.Fields(banner); len(f) > 2 {
 		switch strings.ToLower(strings.Trim(f[len(f)-1], ".,")) {
-		case "fund", "portfolio", "trust":
+		case "fund", "portfolio", "trust", "series":
 			// Exact or brand-cut only, and never against a declared name that
 			// carries a type word of its own: a heading may ADD a word the
 			// declared name lacks, never replace one (`Total Bond Market Fund`
@@ -1651,10 +1680,16 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	}
 
 	// A trailing parenthetical on the banner.
+	seriesCandidate := banner
 	if cut, ok := issCutTrailingParenthetical(banner); ok {
 		if _, d := issResolveFund(ix, cut); d != nil {
 			return banner, d
 		}
+		seriesCandidate = cut
+	}
+	// Some Phoenix headings insert one standalone SERIES before the fund stem.
+	if d := issWithoutStandaloneSeries(ix, seriesCandidate); d != nil {
+		return banner, d
 	}
 
 	// A sleeve or an unlabelled sub-adviser after a dash: `State Street Total
@@ -1711,7 +1746,12 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	}
 
 	// The banner spaces a token the header runs together.
-	if d, seen := ix.byCompact[strings.ReplaceAll(key, " ", "")]; seen {
+	compactKey := strings.ReplaceAll(key, " ", "")
+	if d, seen := ix.byCompact[compactKey]; seen {
+		return banner, d
+	}
+	// The same compact reading after an audited registrant brand is omitted.
+	if d, seen := ix.lessLeadCompact[compactKey]; seen {
 		return banner, d
 	}
 
@@ -2011,6 +2051,28 @@ func issDropTypeWord(key string) (string, bool) {
 		return strings.Join(f[:len(f)-1], " "), true
 	}
 	return key, false
+}
+
+// issWithoutStandaloneSeries removes one internal SERIES token and accepts only
+// a unique declared name. Multiple possible readings that disagree refuse.
+func issWithoutStandaloneSeries(ix *issSeriesIndex, name string) *SeriesDecl {
+	f := strings.Fields(normalizeSeriesName(name))
+	var found *SeriesDecl
+	for i := 1; i < len(f)-1; i++ {
+		if f[i] != "series" {
+			continue
+		}
+		candidate := strings.Join(append(append([]string{}, f[:i]...), f[i+1:]...), " ")
+		d, seen := ix.byName[candidate]
+		if !seen {
+			continue
+		}
+		if d == nil || found != nil && found.SeriesID != d.SeriesID {
+			return nil
+		}
+		found = d
+	}
+	return found
 }
 
 // issExactOrBrandUntyped looks name up exactly or with a brand cut, and refuses

@@ -1,0 +1,21 @@
+		CENTRAL INDEX KEY:			0000792359
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-04642
+Reporting Period: 07/01/2004 - 06/30/2005
+Phoenix Edge Series Fund
+
+
+========== PHOENIX-DUFF & PHELPS SERIES REAL ESTATE SECURITIES (CHI) ===========
+
+
+ALEXANDRIA REAL ESTATE EQUITIES, INC.
+
+Ticker:       ARE            Security ID:  015271109
+Meeting Date: MAY 19, 2005   Meeting Type: Annual
+Record Date:  MAR 31, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Jerry M. Sudarsky         For       Withhold   Management
+1.2   Elect  Director Joel S. Marcus            For       For        Management
+1.3   Elect  Director James H. Richardson       For       For        Management

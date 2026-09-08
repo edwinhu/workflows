@@ -4618,7 +4618,17 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool)
 					}
 					line = candidate
 				} else {
-					continue
+					// A direct Registrant value counts only when it is the nearest
+					// nonblank line above the table; Ultimus prints form metadata after
+					// the registrant name and must not turn that name into a fund.
+					if strings.TrimSpace(strings.Join(lines[li+1:], "")) != "" {
+						continue
+					}
+					candidate = strings.TrimSpace(line[colon+1:])
+					if candidate == "" || normalizeSeriesName(candidate) == ix.registrantKey {
+						continue
+					}
+					line = candidate
 				}
 			}
 		}
