@@ -225,7 +225,13 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// most two filled cells that resolves to a declared series, under the
 		// same rules as a bare paragraph.
 		if htmlFilledCells(cells) <= 2 {
-			if name, id, ok := htmlBareFundLine(seriesIx, strings.Join(cells, "\n")); ok {
+			heading := strings.Join(cells, "\n")
+			if htmlFilledCells(cells) == 1 {
+				if flat := htmlFlat(heading); strings.HasPrefix(flat, "In All Markets, for all voted ballots, for ") {
+					heading = flat
+				}
+			}
+			if name, id, ok := htmlBareFundLine(seriesIx, heading); ok {
 				curFund, curSeries = name, id
 			}
 		}
@@ -4595,6 +4601,16 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string) (name, id string, ok bool)
 		// rows named `Reporting Period: ...` on 2026-09-02). The value is
 		// recorded as printed; the code is dropped only for the lookup.
 		candidate := line
+		// This complete one-cell export sentence is a fund boundary even when
+		// its name is unresolved; do not carry the preceding fund across it.
+		if rest, wrapped := strings.CutPrefix(line, "In All Markets, for all voted ballots, for "); wrapped && strings.TrimSpace(pre) == line {
+			if fund, terminated := strings.CutSuffix(rest, "."); terminated && strings.TrimSpace(fund) != "" {
+				if _, d := issResolveFund(ix, strings.TrimSpace(fund)); d != nil {
+					return line, d.SeriesID, true
+				}
+				return line, "", true
+			}
+		}
 		// `Fund: PSF: SP Aim Aggressive Growth Portfolio` (Prudential Series
 		// Fund 2005, 36k rows): the bare `Fund:` label is accepted only here,
 		// where a value must RESOLVE to count -- on the labelled-cell path it
