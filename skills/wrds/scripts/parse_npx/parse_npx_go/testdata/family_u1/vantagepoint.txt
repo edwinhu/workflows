@@ -1,0 +1,61 @@
+<SEC-DOCUMENT>0000950133-05-003960.txt : 20050829
+<SEC-HEADER>0000950133-05-003960.hdr.sgml : 20050829
+<ACCEPTANCE-DATETIME>20050829145259
+ACCESSION NUMBER:		0000950133-05-003960
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050829
+DATE AS OF CHANGE:		20050829
+EFFECTIVENESS DATE:		20050829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			VANTAGEPOINT FUNDS
+		CENTRAL INDEX KEY:			0001066980
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>w12005nvpx.txt
+<DESCRIPTION>ICMA/VANTAGEPOINT FUNDS
+<TEXT>
+<PAGE>
+<PAGE>
+Vantagepoint Growth & Income Fund
+
+Subadviser: Capital Guardian Trust Co.
+
+   Item 1. Proxy Voting Record
+   Account Number: 44298000 CGTC 2980 - Vantagepoint - USE
+
+   ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE
+           Proposal Type Voted? Vote For/Agnst Mgmt
+   3M Co MMM  88579Y101  5/10/05  Annual
+   1.01   Elect Vance D. Coffman MGMT YES FOR FOR
+   1.02   Elect Rozanne L. Ridgway MGMT YES FOR FOR
+   1.03   Elect Louis W. Sullivan MGMT YES FOR FOR
+   2   Ratify selection of auditors MGMT YES FOR FOR
+   3   Adopt Stock Incentive Plan MGMT YES AGNST AGNST
+   4   Review or promote animal welfare SHLDR YES AGNST FOR
+   5   China--adopt code of conduct SHLDR YES AGNST FOR
+
+<PAGE>
+Vantagepoint Aggressive Opportunities Fund
+
+Subadviser: Southeastern Asset Management, Inc.
+
+Name Ticker SecurityID Country
+MeetingDate RecordDate MeetingType BallotShares
+BallotItemNumber MorS ItemDesc
+MgtRecVote: For or Against
+VoteCast: For, Against or Withold
+
+FedEx Corporation FDX 31428X106 USA
+9/27/2004 8/2/2004 Annual 237000
+1.1 M Elect Director Charles T. Manatt
+MgtRecVote: For
+VoteCast: For
+
+FedEx Corporation FDX 31428X106 USA
+9/27/2004 8/2/2004 Annual 237000

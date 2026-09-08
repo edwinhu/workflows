@@ -1,6 +1,11 @@
 package main
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
+
+var pvTextDatedHeading = regexp.MustCompile(`(?i)^(.+?)\s+(\d{1,2}-\d{1,2}-\d{4})\s+through\s+(\d{1,2}-\d{1,2}-\d{4})$`)
 
 // pvtext is a plain-text account report made of a wrapped two-line header,
 // followed by meeting lines and item-numbered vote lines. The filing that exposed
@@ -83,17 +88,46 @@ func parsePVText(text string, meta FilingMeta) ([]VoteRow, error) {
 		continuationRow = -1
 		fund            string
 		fundSeries      string
+		bareAccount     bool
 	)
 
 	for i := 0; i < len(lines); i++ {
 		if f, ok := pvTextAccountFund(lines[i]); ok {
-			fund, fundSeries = f, ""
-			if _, d := issResolveFund(seriesIx, f); d != nil {
-				fundSeries = d.SeriesID
+			_, d := issResolveFund(seriesIx, f)
+			// Only the first numeric account following a resolved bare heading
+			// belongs to that section; later account headings are new boundaries.
+			opaque := strings.HasPrefix(strings.ToUpper(strings.TrimSpace(lines[i])), "ACCOUNT NUMBER:") && len(f) > 0 && f[0] >= '0' && f[0] <= '9'
+			if !bareAccount || !opaque || d != nil {
+				fund, fundSeries = f, ""
+				if d != nil {
+					fundSeries = d.SeriesID
+				}
 			}
+			bareAccount = false
+			inTable, haveMtg, pendingIssuer, continuationRow = false, false, false, -1
 			continue
 		}
+		if line := strings.TrimSpace(lines[i]); line != "" && i+1 < len(lines) && strings.TrimSpace(lines[i+1]) == "" {
+			if d, _ := lookupSeriesEntry(seriesIx.byName, line); d != nil {
+				fund, fundSeries, bareAccount = line, d.SeriesID, true
+				inTable, haveMtg, pendingIssuer, continuationRow = false, false, false, -1
+				continue
+			}
+		}
+		if m := pvTextDatedHeading.FindStringSubmatch(strings.TrimSpace(lines[i])); m != nil && htmlDate(m[2]) != "" && htmlDate(m[3]) != "" {
+			for j := i + 1; j < len(lines) && j <= i+pvTextHeaderGapMax; j++ {
+				if pvTextHeaderAt(lines, j) {
+					fund, fundSeries, bareAccount = m[1], "", false
+					if _, d := issResolveFund(seriesIx, fund); d != nil {
+						fundSeries = d.SeriesID
+					}
+					inTable, haveMtg, pendingIssuer, continuationRow = false, false, false, -1
+					break
+				}
+			}
+		}
 		if n := pvTextHeaderLinesAt(lines, i); n != 0 {
+			bareAccount = false
 			inTable = true
 			haveMtg = false
 			continuationRow = -1
@@ -853,13 +887,11 @@ func pvTextItemLoose(s string) bool {
 // reads past a leading code token.
 func pvTextAccountFund(line string) (string, bool) {
 	t := strings.TrimSpace(line)
-	const label = "ACCOUNT NUMBER:"
-	if len(t) <= len(label) || !strings.EqualFold(t[:len(label)], label) {
-		return "", false
+	for _, label := range []string{"ACCOUNT NUMBER:", "ACCOUNT NAME:"} {
+		if len(t) > len(label) && strings.EqualFold(t[:len(label)], label) {
+			name := strings.TrimSpace(t[len(label):])
+			return name, name != ""
+		}
 	}
-	name := strings.TrimSpace(t[len(label):])
-	if name == "" {
-		return "", false
-	}
-	return name, true
+	return "", false
 }
