@@ -1488,11 +1488,15 @@ func issHistoricalBrandKey(key string) string {
 			return "wells fargo:" + stem
 		}
 	}
-	// TDAX account sleeves and TDX's registered ETF names retain the target
-	// year or exact In Target stem. No other suffix or brand word is dropped.
+	// TDAX account sleeves and the TDX/db-X registered names retain the
+	// target year or exact In Target stem.
+	if key == "db x in target date fund" {
+		return "tdx independence:in target"
+	}
 	for _, form := range []struct{ prefix, suffix string }{
 		{"tdax independence ", " equity"},
 		{"tdx independence ", " exchange traded fund"},
+		{"db x ", " target date fund"},
 	} {
 		if rest, ok := strings.CutPrefix(key, form.prefix); ok {
 			if stem, ok := strings.CutSuffix(rest, form.suffix); ok && (stem == "in target" || len(stem) == 4 && isAllDigits(stem)) {
@@ -1661,6 +1665,25 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if f := strings.Fields(banner); len(f) > 3 && strings.EqualFold(f[len(f)-1], "sleeve") {
 		if _, d := issResolveFund(ix, strings.Join(f[:len(f)-2], " ")); d != nil {
 			return banner, d
+		}
+	}
+	// These two Phoenix adviser headings expand NORTHERN to NORTHERN TRUST;
+	// the dictionary's exact untyped names remain the only identity evidence.
+	if registrantKey == "phoenix edge series fund" {
+		key := normalizeSeriesName(banner)
+		switch key {
+		case "phoenix northern trust dow 30 series", "phoenix northern trust nasdaq 100 index series":
+			return banner, idx[strings.Replace(strings.TrimSuffix(key, " series"), "northern trust ", "northern ", 1)]
+		}
+	}
+	// WT's audited Wilmington headings replace FUND with PORTFOLIO. Keep
+	// this noun substitution confined to the observed stems and registrant.
+	if registrantKey == "wt mutual fund" {
+		key := normalizeSeriesName(banner)
+		switch key {
+		case "wilmington large cap core portfolio", "wilmington large cap growth portfolio",
+			"wilmington large cap value portfolio", "wilmington small cap core portfolio":
+			return banner, idx[strings.TrimSuffix(key, " portfolio")+" fund"]
 		}
 	}
 	// A type word the heading adds and the declared name lacks: `PGIM Ultra

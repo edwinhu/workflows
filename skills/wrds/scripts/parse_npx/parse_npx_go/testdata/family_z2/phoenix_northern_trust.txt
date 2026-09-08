@@ -1,0 +1,60 @@
+<SEC-DOCUMENT>0000950123-04-010355.txt : 20040830
+<SEC-HEADER>0000950123-04-010355.hdr.sgml : 20040830
+<ACCEPTANCE-DATETIME>20040830115553
+ACCESSION NUMBER:		0000950123-04-010355
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040830
+DATE AS OF CHANGE:		20040830
+EFFECTIVENESS DATE:		20040830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PHOENIX EDGE SERIES FUND
+		CENTRAL INDEX KEY:			0000792359
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>y00948nvpx.txt
+<DESCRIPTION>N-PX
+<TEXT>
+<PAGE>
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-04642
+Reporting Period: 07/01/2003 - 06/30/2004
+Phoenix Edge Series Fund
+
+===================== PHOENIX-NORTHERN TRUST DOW 30 SERIES =====================
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 11, 2004   Meeting Type: Annual
+Record Date:  MAR 12, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Edward A. Brennan         For       For        Management
+1.2   Elect  Director Michael L. Eskew          For       For        Management
+1.3   Elect  Director W. James McNerney, Jr.    For       For        Management
+1.4   Elect  Director Kevin W. Sharer           For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Increase Authorized Common Stock          For       For        Management
+4     Separate Chairman and CEO Positions       Against   Against    Shareholder
+
+================ PHOENIX-NORTHERN TRUST NASDAQ-100 INDEX SERIES ================
+
+
+ADOBE SYSTEMS INC.
+
+Ticker:       ADBE           Security ID:  00724F101
+Meeting Date: APR 28, 2004   Meeting Type: Annual
+Record Date:  MAR 3, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Michael R. Cannon         For       For        Management
+1.2   Elect  Director Bruce R. Chizen           For       For        Management
