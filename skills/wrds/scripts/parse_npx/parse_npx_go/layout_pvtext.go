@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+var pvTextNCFAccount = regexp.MustCompile(`^NCF-[0-9]+ NCF-\s*[A-Z]+\s+.+$`)
+
 var pvTextDatedHeading = regexp.MustCompile(`(?i)^(.+?)\s+(\d{1,2}-\d{1,2}-\d{4})\s+through\s+(\d{1,2}-\d{1,2}-\d{4})$`)
 
 // pvtext is a plain-text account report made of a wrapped two-line header,
@@ -94,9 +96,9 @@ func parsePVText(text string, meta FilingMeta) ([]VoteRow, error) {
 	for i := 0; i < len(lines); i++ {
 		if f, ok := pvTextAccountFund(lines[i]); ok {
 			_, d := issResolveFund(seriesIx, f)
-			// Only the first numeric account following a resolved bare heading
-			// belongs to that section; later account headings are new boundaries.
-			opaque := strings.HasPrefix(strings.ToUpper(strings.TrimSpace(lines[i])), "ACCOUNT NUMBER:") && len(f) > 0 && f[0] >= '0' && f[0] <= '9'
+			// Only the first numeric or NCF sleeve account following a resolved
+			// bare heading belongs to it; later accounts are new boundaries.
+			opaque := strings.HasPrefix(strings.ToUpper(strings.TrimSpace(lines[i])), "ACCOUNT NUMBER:") && len(f) > 0 && (f[0] >= '0' && f[0] <= '9' || pvTextNCFAccount.MatchString(f))
 			if !bareAccount || !opaque || d != nil {
 				fund, fundSeries = f, ""
 				if d != nil {

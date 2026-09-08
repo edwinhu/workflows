@@ -490,6 +490,13 @@ func brHeadingSlot(lines []string, i int) (slot string, crossedBlank bool) {
 		return "", false
 	}
 	slot = strings.TrimSpace(lines[j])
+	// A dated Period line sits between the fund and the rule in IronBridge.
+	// Read only the immediately preceding heading, never a prior section.
+	if period, ok := strings.CutPrefix(slot, "Period: "); ok && j > 0 {
+		if start, end, ok := strings.Cut(period, " - "); ok && htmlDate(start) != "" && htmlDate(end) != "" {
+			slot = strings.TrimSpace(lines[j-1])
+		}
+	}
 	if slot == "" || brDashRule(slot) {
 		return "", false
 	}

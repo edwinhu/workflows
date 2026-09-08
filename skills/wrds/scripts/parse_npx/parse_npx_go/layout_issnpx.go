@@ -419,6 +419,25 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				name, ok = line, true
 			}
 		}
+		if ok && fundSeries != "" && bannerTail == "" && len(bannerBuf) == 0 &&
+			(name == "Nuveen Asset Management LLC" || name == "Institutional Capital LLC") {
+			// These audited manager banners are subheadings only immediately
+			// after a resolved fund banner, not aliases for any fund.
+			j := i - 1
+			for j >= 0 && j >= i-3 && strings.TrimSpace(lines[j]) == "" {
+				j--
+			}
+			if j >= 0 && j >= i-3 {
+				if prior, ruled := issFundSeparator(strings.TrimSpace(lines[j])); ruled {
+					_, d := issResolveFund(seriesIx, prior)
+					_, declared := lookupSeriesTolerantEntry(seriesIx.byName, name)
+					_, manager := issResolveFund(seriesIx, name)
+					if d != nil && d.SeriesID == fundSeries && !declared && manager == nil {
+						continue
+					}
+				}
+			}
+		}
 		if ok {
 			flush()
 			inTable, tailRow = false, -1
@@ -1470,14 +1489,14 @@ func issHistoricalBrandKey(key string) string {
 		}
 	}
 	// TDAX account sleeves and TDX's registered ETF names retain the target
-	// year. No other suffix or arbitrary brand word is dropped.
+	// year or exact In Target stem. No other suffix or brand word is dropped.
 	for _, form := range []struct{ prefix, suffix string }{
 		{"tdax independence ", " equity"},
 		{"tdx independence ", " exchange traded fund"},
 	} {
 		if rest, ok := strings.CutPrefix(key, form.prefix); ok {
-			if year, ok := strings.CutSuffix(rest, form.suffix); ok && len(year) == 4 && isAllDigits(year) {
-				return "tdx independence:" + year
+			if stem, ok := strings.CutSuffix(rest, form.suffix); ok && (stem == "in target" || len(stem) == 4 && isAllDigits(stem)) {
+				return "tdx independence:" + stem
 			}
 		}
 	}
