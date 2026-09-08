@@ -1,0 +1,57 @@
+		COMPANY CONFORMED NAME:			IronBridge Funds, Inc.
+		CENTRAL INDEX KEY:			0001487592
+IronBridge Global Fund
+Period: 7/1/10 - 6/30/11
+--------------------------------------------------------------------------------------------------------------------------
+ AMAZON.COM, INC.                                                                            Agenda Number:  933435566
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  023135106
+    Meeting Type:  Annual
+    Meeting Date:  07-Jun-2011
+          Ticker:  AMZN
+            ISIN:  US0231351067
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1A     ELECTION OF DIRECTOR: JEFFREY P. BEZOS                    Mgmt          For                            For
+
+1B     ELECTION OF DIRECTOR: TOM A. ALBERG                       Mgmt          For                            For
+
+1C     ELECTION OF DIRECTOR: JOHN SEELY BROWN                    Mgmt          For                            For
+
+1D     ELECTION OF DIRECTOR: WILLIAM B. GORDON                   Mgmt          For                            For
+
+1E     ELECTION OF DIRECTOR: ALAIN MONIE                         Mgmt          For                            For
+
+1F     ELECTION OF DIRECTOR: JONATHAN J. RUBINSTEIN              Mgmt          For                            For
+
+1G     ELECTION OF DIRECTOR: THOMAS O. RYDER                     Mgmt          For                            For
+
+1H     ELECTION OF DIRECTOR: PATRICIA Q. STONESIFER              Mgmt          For                            For
+
+IronBridge Horizon Fund
+Period: 12/10/10 - 6/30/11
+--------------------------------------------------------------------------------------------------------------------------
+ A.O. SMITH CORPORATION                                                                      Agenda Number:  933375342
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  831865209
+    Meeting Type:  Annual
+    Meeting Date:  11-Apr-2011
+          Ticker:  AOS
+            ISIN:  US8318652091
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+01     DIRECTOR
+       GLOSTER B. CURRENT, JR.                                   Mgmt          For                            For
+       ROBERT J. O'TOOLE                                         Mgmt          For                            For
+       IDELLE K. WOLF                                            Mgmt          For                            For
+       GENE C. WULF                                              Mgmt          For                            For
+
+02     PROPOSAL TO RATIFY THE APPOINTMENT OF ERNST               Mgmt          For                            For
+       & YOUNG LLP AS THE INDEPENDENT REGISTERED PUBLIC
+       ACCOUNTING FIRM OF THE CORPORATION.

@@ -1,0 +1,65 @@
+		COMPANY CONFORMED NAME:			db-X Exchange-Traded Funds Inc.
+		CENTRAL INDEX KEY:			0001385533
+ <P STYLE="margin-top:0px;margin-bottom:0px"><FONT STYLE="font-family:Times New Roman" SIZE="2"><B>Vote Summary Report </B></FONT></P> <P STYLE="margin-top:12px;margin-bottom:0px"><FONT
+STYLE="font-family:Times New Roman" SIZE="2">Report was run from: 7/1/11 to 6/30/12 </FONT></P> <P STYLE="margin-top:12px;margin-bottom:0px"><FONT STYLE="font-family:Times New Roman" SIZE="2">Institution Account(s): TDAX Independence In Target -
+Equity </FONT></P> <P STYLE="margin-top:24px;margin-bottom:0px" ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="2"><B>Tesco plc </B></FONT></P> <P STYLE="font-size:12px;margin-top:0px;margin-bottom:0px">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE">
+<TR>
+<TD VALIGN="bottom" NOWRAP><FONT STYLE="font-family:Times New Roman" SIZE="1"><B>Ticker</B></FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="1"><B>Meeting Date</B></FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="1"><B>Country</B></FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="1"><B>Security ID</B></FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="1"><B>Meeting Type</B></FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="1"><B>Record Date</B></FONT></TD></TR>
+<TR>
+<TD VALIGN="bottom" NOWRAP><FONT STYLE="font-family:Times New Roman" SIZE="2">TSCO</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="2">01-Jul-11</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="2">United Kingdom</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="2">G87621101</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="2">Annual</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="2">29-Jun-11</FONT></TD></TR>
+</TABLE> <P STYLE="font-size:12px;margin-top:0px;margin-bottom:0px">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE">
+<TR>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="1">Proponent</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP><FONT STYLE="font-family:Times New Roman" SIZE="1">Mgmt Rec</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="1">Vote Instruction</FONT></TD></TR>
+<TR BGCOLOR="#cceeff">
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2">Accept Financial Statements and Statutory Reports</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">Mgmt</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">For</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">For</FONT></TD></TR>
+<TR>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2">Approve Remuneration Report</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">Mgmt</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">For</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">For</FONT></TD></TR>
+<TR BGCOLOR="#cceeff">
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2">Approve Final Dividend</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">Mgmt</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">For</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">For</FONT></TD></TR>
+</TABLE>

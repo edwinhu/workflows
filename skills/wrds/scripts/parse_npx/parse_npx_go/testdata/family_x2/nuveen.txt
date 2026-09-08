@@ -1,0 +1,44 @@
+		COMPANY CONFORMED NAME:			NUVEEN INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0001013881
+=================== Nuveen Multi-Manager Large-Cap Value Fund ==================
+
+========================== Nuveen Asset Management LLC =========================
+
+
+ACE LIMITED
+
+Ticker:       ACE            Security ID:  H0023R105
+Meeting Date: JAN 09, 2012   Meeting Type: Special
+Record Date:  NOV 30, 2011
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Approve Dividend Distribution from      For       For          Management
+      Legal Reserves
+
+===================== Nuveen Multi-Manager Large Cap Value =====================
+
+========================== Institutional Capital LLC ===========================
+
+ACE LIMITED
+
+Ticker:       ACE            Security ID:  H0023R105
+Meeting Date: JAN 09, 2012   Meeting Type: Special
+Record Date:  NOV 30, 2011
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Approve Dividend Distribution from      For       For          Management
+      Legal Reserves
+
+
+--------------------------------------------------------------------------------
+
+ACE LIMITED
+
+Ticker:       ACE            Security ID:  H0023R105
+Meeting Date: MAY 16, 2012   Meeting Type: Annual
+Record Date:  MAR 30, 2012
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Michael G. Atieh as Director      For       For          Management
+1.2   Elect Mary A. Cirillo as Director       For       For          Management
+1.3   Elect Thomas J. Neff as Director        For       For          Management
