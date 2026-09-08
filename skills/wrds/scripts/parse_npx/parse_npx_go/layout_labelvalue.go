@@ -177,13 +177,20 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 			for j < len(lines) && strings.TrimSpace(lines[j]) == "" {
 				j++
 			}
-			if j < len(lines) && strings.HasPrefix(strings.ToLower(strings.TrimSpace(lines[j])), "subadviser:") {
-				fund, curSeries = line, ""
-				if _, d := issResolveFund(sharedIdx, line); d != nil {
-					curSeries = d.SeriesID
+			if j < len(lines) {
+				next := strings.ToLower(strings.TrimSpace(lines[j]))
+				_, d := issResolveFund(sharedIdx, line)
+				// The period-only form requires a declared fund, not a manager.
+				period := strings.Split(next, "--")
+				periodHeading := d != nil && len(period) == 2 && htmlDate(period[0]) != "" && htmlDate(period[1]) != ""
+				if strings.HasPrefix(next, "subadviser:") || periodHeading {
+					fund, curSeries = line, ""
+					if d != nil {
+						curSeries = d.SeriesID
+					}
+					inBlock, lastRow = false, -1
+					continue
 				}
-				inBlock, lastRow = false, -1
-				continue
 			}
 		}
 		if strings.Trim(line, "-") == "" {
