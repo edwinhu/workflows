@@ -1,0 +1,17 @@
+		CENTRAL INDEX KEY:			0000804239
+                                   FORM N-PX
+Registrant :SEI Institutional Managed Trust
+Fund Name : U.S. Managed Volatility Fund
+________________________________________________________________________________
+Aaron's, Inc.
+Ticker     Security ID:             Meeting Date          Meeting Status
+AAN        CUSIP 002535300          05/04/2016            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Elect Matthew E. Avril   Mgmt       For        For        For
+2          Elect Kathy T. Betty     Mgmt       For        For        For
+3          Elect Douglas C.         Mgmt       For        For        For
+            Curling
