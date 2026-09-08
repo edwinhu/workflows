@@ -237,7 +237,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 					heading = flat
 				}
 			}
-			if name, id, ok := htmlBareFundLine(seriesIx, heading); ok {
+			if name, id, ok := htmlBareFundLine(seriesIx, heading, dict); ok {
 				curFund, curSeries, outerSection = name, id, false
 			}
 		}
@@ -4748,6 +4748,19 @@ func htmlDictionaryFund(ix *issSeriesIndex, fallback *dictFallback, candidate st
 			return d.SeriesID
 		}
 		return ""
+	}
+	// This registrant prints its Cavanal Hill brand before unbranded dictionary
+	// names. Never reread a name the native header declares, even ambiguously.
+	if ix.registrantKey == "cavanal hill funds" {
+		if rest, ok := issCutBrand(normalizeSeriesName(candidate), "cavanal hill"); ok {
+			if _, declared := lookupSeriesEntry(ix.byName, rest); declared {
+				return ""
+			}
+			if d, _ := lookupSeriesEntry(fallback.byName, rest); d != nil {
+				return d.SeriesID
+			}
+			return ""
+		}
 	}
 	if rest, ok := issCutBrand(normalizeSeriesName(candidate), "lincoln"); ok && fallback.byHeadingName != nil {
 		if d, _ := lookupSeriesEntry(fallback.byHeadingName, rest); d != nil {

@@ -1,0 +1,77 @@
+		COMPANY CONFORMED NAME:			Cavanal Hill Funds
+		CENTRAL INDEX KEY:			0000864508
+<SERIES>
+<OWNER-CIK>0000864508
+<SERIES-ID>S000008940
+<SERIES-NAME>U.S. Tax Efficient Small Cap Equity Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000864508
+<SERIES-ID>S000008941
+<SERIES-NAME>U.S. Treasury Fund
+</SERIES>
+<TEXT>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+<tr style="vertical-align: top">
+    <TD COLSPAN="9" STYLE="text-align: center">&nbsp;Cavanal Hill Balanced Fund&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <TD STYLE="text-align: left">Ticker:</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">MMM</td>
+    <TD>&nbsp;</TD>
+    <TD NOWRAP STYLE="text-align: left; vertical-align: top">Security ID:</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">88579Y101</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <TD STYLE="text-align: left">Meeting Date:</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">MAY 10, 2016</td>
+    <TD>&nbsp;</TD>
+    <TD NOWRAP STYLE="text-align: left; vertical-align: top">Meeting Type:</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">Annual</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <TD STYLE="text-align: left">#</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">Proposal</td>
+    <TD>&nbsp;</TD>
+    <TD NOWRAP STYLE="text-align: left; vertical-align: top">Mgt Rec</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">Vote Cast</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">Sponsor</td></tr>
+<TR STYLE="vertical-align: top; background-color: rgb(204,238,255)">
+    <TD STYLE="text-align: left">1a</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">Elect Director Sondra L. Barbour</td>
+    <TD>&nbsp;</TD>
+    <TD NOWRAP STYLE="text-align: left; vertical-align: top">For</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">For</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">Management&nbsp;</td></tr>
+<TR STYLE="vertical-align: top; background-color: White">
+    <TD STYLE="text-align: left">1b</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">Elect Director Thomas &lsquo;Tony&rsquo; K. Brown</td>
+    <TD>&nbsp;</TD>
+    <TD NOWRAP STYLE="text-align: left; vertical-align: top">For</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">For</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">Management&nbsp;</td></tr>
+<TR STYLE="vertical-align: top; background-color: rgb(204,238,255)">
+    <TD STYLE="text-align: left">1c</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">Elect Director Vance D. Coffman</td>
+    <TD>&nbsp;</TD>
+    <TD NOWRAP STYLE="text-align: left; vertical-align: top">For</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">For</td>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: left">Management&nbsp;</td></tr>
+</TABLE>
