@@ -1592,6 +1592,14 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d != nil || declared {
 		return banner, d
 	}
+	// Franklin's terminal -Master is an export decoration, not a master/feeder alias.
+	// Retry only the remaining exact declared name; collisions still return nil.
+	if registrantKey == "franklin alternative strategies funds" {
+		if rest, ok := strings.CutSuffix(strings.ToLower(strings.TrimSpace(banner)), "-master"); ok {
+			d, _ := lookupSeriesEntry(idx, rest)
+			return banner, d
+		}
+	}
 	// VALIC Company I prints VALIC I without the incorporated company token.
 	if registrantKey == "valic co i" || registrantKey == "valic company i" {
 		if rest, ok := strings.CutPrefix(normalizeSeriesName(banner), "valic i "); ok {
