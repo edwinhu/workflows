@@ -385,7 +385,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			stacked, stackedIssuer = labels, name
 			continue
 		}
-		if lead, candidate := htmlContextLead(cells); candidate {
+		if lead, candidate := htmlContextLead(cells); candidate && (ctx.Issuer == "" || len(cells) == 0 || htmlFlat(cells[0]) != "") {
 			// An issuer wrapped over two one-cell rows: `Putnam Money Market
 			// Liquidity` then `Fund`. Only a short continuation joins.
 			if leadJoin && htmlTickerShaped(lead) {
@@ -418,6 +418,9 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			continue
 		}
 		if next, labelled := htmlReadContext(cells); labelled {
+			if next.MeetingDate == "" {
+				next.MeetingDate = htmlFollowingMeetingDate(cells, feed)
+			}
 			// A labelled row after a header opens a new block -- unless it
 			// carries only a date: the issuer and ids of this block were
 			// printed before a page-break header (Advisors' Inner Circle
@@ -1173,6 +1176,12 @@ func htmlAdoptBareMeetingDate(cells []string, mapping map[string]int, feed *html
 	for i, c := range cells {
 		if htmlCanonLabel(c) != "MEETING" {
 			continue
+		}
+		// A lower header row can complete MEETING even when its other
+		// cells (such as Against) are not accepted as header fragments.
+		if below, ok := feed.peek(0); ok && !below.newTable && len(below.cells) == len(cells) && htmlCanonLabel(below.cells[i]) == "DATE" {
+			mapping[htmlFieldMtgDate] = i
+			return
 		}
 		adjacentType := false
 		for _, nb := range []int{i - 1, i + 1} {
@@ -2046,7 +2055,7 @@ func htmlMapFields(cells []string) map[string]int {
 			continue
 		}
 		canon[i] = htmlCanonLabel(c)
-		if canon[i] == "CUSIP/ISIN" {
+		if canon[i] == "CUSIP/ISIN" || canon[i] == "ISIN/CUSIP" {
 			mapping[htmlFieldCUSIP] = i
 			claimed[i] = true
 		}
@@ -2456,6 +2465,23 @@ var htmlBareLabels = map[string]string{
 	// 395 filings on run55.
 }
 
+// A label at the end of the identity row can put its value directly below.
+// Join adjacent label cells, but take only the date under the label's last cell.
+func htmlFollowingMeetingDate(cells []string, feed *htmlRowFeed) string {
+	last := len(cells) - 1
+	for last >= 0 && htmlFlat(cells[last]) == "" {
+		last--
+	}
+	if last < 0 || !strings.HasSuffix(htmlUpperASCII(htmlFlat(strings.Join(cells[:last+1], " "))), "MEETING DATE:") {
+		return ""
+	}
+	below, ok := feed.peek(0)
+	if !ok || below.newTable || len(below.cells) != len(cells) || htmlHasVoteCell(below.cells) {
+		return ""
+	}
+	return htmlDate(below.cells[last])
+}
+
 // htmlReadContext pulls the meeting identity out of a block row. labelled
 // reports whether the row carried any of the labels at all, which is what tells
 // a new meeting block apart from decorative furniture.
@@ -2555,7 +2581,7 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 			// The fold is hoisted out of the six-label loop: done inside it, every
 			// line of every row of a 155 MB body is uppercased six times over.
 			up := htmlUpperASCII(line)
-			if bare && len(cells) == 1 {
+			if bare && htmlFilledCells(cells) == 1 {
 				if next, ok := htmlInlineMeetingHeading(line, up); ok {
 					ctx.merge(next)
 					labelled = true
@@ -3180,6 +3206,19 @@ func htmlStackedValues(cells []string, labels map[int]string) (ctx htmlContext) 
 // htmlInlineMeetingHeading reads `Issuer *TICKER* CUSIP 008190100, 10/30/03 Meeting`.
 // All four parts must be present so prose mentioning a CUSIP is not context.
 func htmlInlineMeetingHeading(line, up string) (htmlContext, bool) {
+	if close := strings.Index(up, ") MEETING "); close > 0 {
+		open := strings.LastIndexByte(line[:close], '(')
+		cut := strings.Index(up[:close], ", CUSIP ")
+		if open > 0 && cut > open {
+			issuer := strings.TrimSpace(line[:open])
+			ticker := strings.TrimSpace(line[open+1 : cut])
+			cusip := strings.TrimSpace(line[cut+len(", CUSIP ") : close])
+			date := htmlDate(line[close+len(") MEETING "):])
+			if htmlIsIssuerLine(issuer) && htmlTickerShaped(ticker) && htmlIsCUSIP(cusip) && date != "" {
+				return htmlContext{Issuer: issuer, Ticker: ticker, CUSIP: cusip, MeetingDate: date}, true
+			}
+		}
+	}
 	const suffix = " MEETING"
 	if !strings.HasSuffix(up, suffix) {
 		return htmlContext{}, false
@@ -4211,6 +4250,10 @@ func htmlSecurityID(v string) (cusip, isin string) {
 		v = strings.TrimSpace(v[:open])
 	}
 	for _, f := range strings.Fields(v) {
+		// Seven-character security ids may be SEDOLs, not truncated CUSIPs.
+		if len(f) == 8 && htmlIsNumeric(f) {
+			f = htmlPadCUSIP(f)
+		}
 		if isinToken(f) && isin == "" {
 			isin = f
 		} else if pvTextCUSIP(f) && htmlHasDigit(f) && cusip == "" {

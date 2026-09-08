@@ -1,0 +1,18 @@
+<TABLE style="margin-top:0px; font-size:10pt" cellpadding=0 cellspacing=0><TR height=0 style="font-size:0"><TD width=277.2 /><TD width=72.533 /><TD width=74.133 /><TD width=79.6 /></TR>
+<TR><TD style="margin-top:0px; border:1px solid #000000" valign=top width=277.2><P style="margin:0px; font-family:Arial; font-size:8pt" align=center><B>Matter Voted On</B></P>
+</TD><TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=top width=72.533><P style="margin:0px; font-family:Arial; font-size:8pt" align=center><B>Proposed By</B></P>
+</TD><TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=top width=74.133><P style="margin:0px; font-family:Arial; font-size:8pt" align=center><B>Vote</B></P>
+</TD><TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=top width=79.6><P style="margin:0px; font-family:Arial; font-size:8pt" align=center><B>For or Against Management</B></P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=top width=503.467 colspan=4><P style="margin:0px; font-family:Arial; font-size:8pt"><B>American Express Company (AXP, CUSIP 025816109&nbsp;) meeting 5/2/11</B></P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=top width=277.2><P style="margin:0px; font-family:Arial; font-size:8pt">Election of directors</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=top width=72.533><P style="margin:0px; font-family:Arial; font-size:8pt">Issuer</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=top width=74.133><P style="margin:0px; font-family:Arial; font-size:8pt">For</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=top width=79.6><P style="margin:0px; font-family:Arial; font-size:8pt">For</P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=top width=277.2><P style="margin:0px; font-family:Arial; font-size:8pt">Ratification of auditor</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=top width=72.533><P style="margin:0px; font-family:Arial; font-size:8pt">Issuer</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=top width=74.133><P style="margin:0px; font-family:Arial; font-size:8pt">For</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=top width=79.6><P style="margin:0px; font-family:Arial; font-size:8pt">For</P>
+</TD></TR>
