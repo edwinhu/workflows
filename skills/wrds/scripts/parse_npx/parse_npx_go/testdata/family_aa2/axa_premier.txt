@@ -1,0 +1,59 @@
+<SEC-DOCUMENT>0001193125-04-146426.txt : 20040825
+<SEC-HEADER>0001193125-04-146426.hdr.sgml : 20040825
+<ACCEPTANCE-DATETIME>20040825160019
+ACCESSION NUMBER:		0001193125-04-146426
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040825
+DATE AS OF CHANGE:		20040825
+EFFECTIVENESS DATE:		20040825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			AXA PREMIER FUNDS TRUST
+		CENTRAL INDEX KEY:			0001160167
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>dnpx.htm
+<DESCRIPTION>AXA PREMIER FINDS TRUST
+<TEXT>
+========================= AXA PREMIER HEALTH CARE FUND =========================
+
+
+ABBOTT LABORATORIES
+
+Ticker:       ABT            Security ID:  002824100
+Meeting Date: APR 23, 2004   Meeting Type: ANNUAL
+Record Date:  FEB 25, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.01  Elect Roxanne S. Austin                   FOR       FOR        Management
+1.02  Elect H. Laurance Fuller                  FOR       FOR        Management
+====================== AXA PREMIER LARGE CAP GROWTH FUND =======================
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 11, 2004   Meeting Type: Annual
+Record Date:  MAR 12, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Edward A. Brennan         For       For        Management
+1.2   Elect  Director Michael L. Eskew          For       For        Management
+==================== AXA PREMIER SMALL/MID CAP GROWTH FUND =====================
+
+
+A.G. EDWARDS, INC.
+
+Ticker:       AGE            Security ID:  281760108
+Meeting Date: JUN 24, 2004   Meeting Type: Annual
+Record Date:  MAY 3, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Robert L. Bagby           For       For        Management
+1.2   Elect  Director Dr. E. Eugene Carter      For       For        Management

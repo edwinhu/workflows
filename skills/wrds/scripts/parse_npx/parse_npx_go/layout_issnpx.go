@@ -1580,6 +1580,22 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d != nil || declared {
 		return banner, d
 	}
+	// The audited BRIC heading omits Small-Mid Cap only for this registrant.
+	if registrantKey == "claymore exchange traded fund trust 2" && normalizeSeriesName(banner) == "guggenheim bric etf" {
+		return banner, idx["guggenheim small mid cap bric etf"]
+	}
+	// These Premier headings are audited predecessors of exact dictionary
+	// names, not a general brand or capitalization-modifier substitution.
+	if registrantKey == "axa premier funds trust" {
+		switch normalizeSeriesName(banner) {
+		case "axa premier health care fund":
+			return banner, idx["axa enterprise multimanager health care fund"]
+		case "axa premier large cap growth fund":
+			return banner, idx["axa enterprise multimanager growth fund"]
+		case "axa premier small mid cap growth fund":
+			return banner, idx["axa enterprise multimanager mid cap growth fund"]
+		}
+	}
 	// Hirtle's audited strategy/account pairs resolve only to declared names.
 	// Keep the account code in the key rather than stripping codes generally.
 	if registrantKey == "hirtle callaghan trust" {
