@@ -1,0 +1,273 @@
+<TABLE cellSpacing=0 cellPadding=0 border=0>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="32%" colSpan=4><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>AFFILIATED MANAGERS GROUP</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="18%">&nbsp; </TD>
+     <TD noWrap align=left width="18%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="14%" colSpan=2><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Ticker:</FONT>&nbsp; </TD>
+     <TD noWrap align=right width="6%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>AMG</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="12%">&nbsp; </TD>
+     <TD noWrap align=left width="18%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Security ID:</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="18%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>8252108</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="20%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Meeting Date: JUN</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="12%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>3, 2008</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="36%" colSpan=2><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Meeting Type: Annual</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="20%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Record Date: APR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="12%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>22, 2008</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="18%">&nbsp; </TD>
+     <TD noWrap align=left width="18%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="4%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>#</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="16%" colSpan=2><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Proposal</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="12%">&nbsp; </TD>
+     <TD noWrap align=left width="18%">&nbsp; </TD>
+     <TD noWrap align=left width="18%">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Mgt Rec</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Vote Cast</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="13%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Sponsor</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="4%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>1</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="16%" colSpan=2><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Director(s)</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="12%">&nbsp; </TD>
+     <TD noWrap align=left width="18%">&nbsp; </TD>
+     <TD noWrap align=left width="18%">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="13%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Management</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="4%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>2</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="46%" colSpan=4><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>TO RATIFY THE SELECTION OF</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="18%">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="13%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Management</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD noWrap align=left width="46%" colSpan=4><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>PRICEATERHOUSECOOPERS LLP AS THE</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="18%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD noWrap align=left width="64%" colSpan=5><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>COMPANY'S INDEPENDENT REGISTERED PUBLIC</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD noWrap align=left width="64%" colSpan=5><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>ACCOUNTING FIRM FOR THE CURRENT FISCAL</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="4%">&nbsp; </TD>
+     <TD noWrap align=left width="10%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>YEAR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="6%">&nbsp; </TD>
+     <TD noWrap align=left width="12%">&nbsp; </TD>
+     <TD noWrap align=left width="18%">&nbsp; </TD>
+     <TD noWrap align=left width="18%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR></TABLE><BR>
+<P align=left><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>--------------------------------------------------------------------------------</FONT></P>
+<TABLE cellSpacing=0 cellPadding=0 border=0>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="59%" colSpan=4><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>ALLIED WORLD ASSURANCE COMPANY</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="15%" colSpan=2><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Ticker:</FONT>&nbsp; </TD>
+     <TD noWrap align=right width="20%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>AWH</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="35%" colSpan=2><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Security ID: G0219G203</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="35%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Meeting Date: MAY 8, 2008</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="35%" colSpan=2><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Meeting Type: Annual</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="35%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Record Date: MAR 12, 2008</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="24%">&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>#</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="30%" colSpan=2><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Proposal</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="24%">&nbsp; </TD>
+     <TD noWrap align=left width="11%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Mgt Rec</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Vote Cast</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="13%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Sponsor</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>A</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="30%" colSpan=2><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Director(s)</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="24%">&nbsp; </TD>
+     <TD noWrap align=left width="11%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="13%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Management</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>B1</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Election of nominees of Allied World</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="13%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Management</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Assurance Holdings (Ireland)</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>B2</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Election of nominees of Allied World</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="13%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Management</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Assurance Holdings (Europe)</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>B3</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Election of nominees of Allied World</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="13%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Management</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Assurance Holdings (Reinsurance)</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>B4</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Election of nominees of Newmarket</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="13%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Management</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Administrative Services (Bermuda)</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>B5</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Election of nominees of Newmarket</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="13%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Management</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Administrative Services (Ireland)</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>C</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>To approve the Allied World Assurance Co</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="13%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Management</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Holding, LTD second amended and restated</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>2001 Employee Stock Option Plan</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>D</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>To approve the Allied World Assurance Co</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="13%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Management</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Holding, LTD second amended and restated</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>2004 stock incentive plan</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>E</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>To approve the Allied World Assurance Co</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="13%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Management</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Holding, LTD 2008 employee share purchase</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD noWrap align=left width="10%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>plan</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="20%">&nbsp; </TD>
+     <TD noWrap align=left width="24%">&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>F</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>To approve and adopt the Allied World</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="13%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Management</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Assurance Co Holding, LTD second amended</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD noWrap align=left width="30%" colSpan=2><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>and restated bye-laws</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="24%">&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>G</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>To appoint Deloitte &amp; Touche as the</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="14%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>FOR</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="13%"><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Management</FONT>&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>company's independedt auditors to serve</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD noWrap align=left width="54%" colSpan=3><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>until the company's annual general</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left width="5%">&nbsp; </TD>
+     <TD noWrap align=left width="30%" colSpan=2><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>meeting in 2009</FONT>&nbsp; </TD>
+     <TD noWrap align=left width="24%">&nbsp; </TD>
+     <TD noWrap align=left width="11%">&nbsp; </TD>
+     <TD noWrap align=left width="14%">&nbsp; </TD>
+     <TD noWrap align=left width="13%">&nbsp; </TD></TR></TABLE><BR>
