@@ -1,0 +1,50 @@
+________________________________________________________________________________
+SITE Centers Corp
+Ticker     Security ID:             Meeting Date          Meeting Status
+SITC                                05/09/2019            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+1          Elect Linda B. Abraham   Mgmt       For        For        For
+2          Elect Terrance R. Ahern  Mgmt       For        For        For
+3          Elect Jane E. DeFlorio   Mgmt       For        For        For
+4          Elect Thomas Finne       Mgmt       For        For        For
+5          Elect David R. Lukes     Mgmt       For        For        For
+6          Elect Victor B.          Mgmt       For        For        For
+            MacFarlane
+7          Elect Alexander Otto     Mgmt       For        For        For
+8          Elect Dawn M. Sweeney    Mgmt       For        For        For
+9          Advisory Vote on         Mgmt       For        For        For
+            Executive
+            Compensation
+10         Ratification of Auditor  Mgmt       For        For        For
+11         Approval of the 2019     Mgmt       For        For        For
+            Equity and Incentive
+            Compensation
+            Plan
+________________________________________________________________________________
+SITE Centers Corp.
+Ticker     Security ID:             Meeting Date          Meeting Status
+SITC       CUSIP 82981J109          05/09/2019            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+1          Elect Linda B. Abraham   Mgmt       For        For        For
+2          Elect Terrance R. Ahern  Mgmt       For        For        For
+3          Elect Jane E. DeFlorio   Mgmt       For        For        For
+4          Elect Thomas Finne       Mgmt       For        For        For
+5          Elect David R. Lukes     Mgmt       For        For        For
+6          Elect Victor B.          Mgmt       For        For        For
+            MacFarlane
+7          Elect Alexander Otto     Mgmt       For        For        For
+8          Elect Dawn M. Sweeney    Mgmt       For        For        For
+9          Advisory Vote on         Mgmt       For        For        For
+            Executive
+            Compensation
+10         Ratification of Auditor  Mgmt       For        For        For
+11         Approval of the 2019     Mgmt       For        For        For
+            Equity and Incentive
+            Compensation
+            Plan

@@ -362,6 +362,12 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 	// per-section rebuild would make the job quadratic in the body.
 	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
 	issFormerKeys(seriesIx, meta.FormerNames)
+	// Donors are collected before any fill; conflicting identities stay blank.
+	identities := make(map[[2]string][3]string)
+	conflicts := make(map[[2]string]bool)
+	identityKey := func(issuer, date string) [2]string {
+		return [2]string{strings.TrimRight(strings.TrimSpace(issuer), ".,;:!? "), date}
+	}
 	var (
 		rows    []VoteRow
 		meeting icrMeeting
@@ -454,6 +460,14 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 					continue
 				}
 				next.issuer = icrIssuerAbove(lines, i)
+				key := identityKey(next.issuer, next.meetingDate)
+				id := [3]string{icrCUSIP(next.securityID), icrISIN(next.securityID), next.ticker}
+				if key[0] != "" && key[1] != "" && (id[0] != "" || id[1] != "") {
+					if prev, ok := identities[key]; ok && prev != id {
+						conflicts[key] = true
+					}
+					identities[key] = id
+				}
 				meeting, haveMtg = next, true
 				lastRow, lastLine = -1, -2
 				i = k
@@ -531,6 +545,21 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 
 	if len(rows) == 0 {
 		return nil, errLayoutDeclined
+	}
+	for i := range rows {
+		r := &rows[i]
+		if r.CUSIP != "" || r.ISIN != "" {
+			continue
+		}
+		key := identityKey(r.IssuerName, r.MeetingDate)
+		id, ok := identities[key]
+		if !ok || conflicts[key] || (r.Ticker != "" && r.Ticker != id[2]) {
+			continue
+		}
+		r.CUSIP, r.ISIN = id[0], id[1]
+		if r.Ticker == "" {
+			r.Ticker = id[2]
+		}
 	}
 	return rows, nil
 }

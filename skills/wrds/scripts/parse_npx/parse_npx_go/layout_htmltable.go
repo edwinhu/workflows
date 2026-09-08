@@ -245,7 +245,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// proposals, FS Series Trust 2020; `Ticker Symbol | AEM | | Meeting
 		// Date | 28-Apr-2017`, CM Advisors 2017; 1,317 undated rows on r185),
 		// which the split-header reader took for a header over its rows.
-		if wrapped := htmlHasWrappedLabelCell(cells) || htmlBareLabelledValueRow(cells); wrapped {
+		if wrapped := htmlHasWrappedLabelCell(cells) || htmlBareLabelledValueRow(cells) || htmlPartialMeetingDateCell(cells); wrapped {
 			next, labelled := htmlReadContext(cells)
 			enough := labelled && (next.MeetingDate != "" || pvTextCUSIP(next.CUSIP) || isinToken(next.ISIN))
 			if labelled && !enough && next.Issuer != "" && next.CUSIP != "" {
@@ -2482,6 +2482,17 @@ func htmlFollowingMeetingDate(cells []string, feed *htmlRowFeed) string {
 	return htmlDate(below.cells[last])
 }
 
+// A labelled month fragment is context, not a header over the following row.
+func htmlPartialMeetingDateCell(cells []string) bool {
+	for _, cell := range cells {
+		flat := htmlUpperASCII(htmlFlat(cell))
+		if strings.HasPrefix(flat, "MEETING DATE:") && htmlMonths[strings.TrimSpace(flat[len("MEETING DATE:"):])] {
+			return true
+		}
+	}
+	return false
+}
+
 // htmlReadContext pulls the meeting identity out of a block row. labelled
 // reports whether the row carried any of the labels at all, which is what tells
 // a new meeting block apart from decorative furniture.
@@ -2687,6 +2698,26 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 							v = joined
 						}
 						break
+					}
+				}
+				// Join a date's printed fragments across adjacent value cells,
+				// stopping at the next label or a complete date.
+				if label == "MEETING DATE:" && htmlDate(v) == "" {
+					joined, parts := strings.TrimSpace(v), 0
+					for ci := cellOf[i] + 1; ci < len(cells) && parts < 3; ci++ {
+						next := htmlFlat(cells[ci])
+						if next == "" {
+							continue
+						}
+						if strings.Contains(next, ":") {
+							break
+						}
+						joined = strings.TrimSpace(joined + " " + next)
+						parts++
+						if htmlDate(joined) != "" {
+							v = joined
+							break
+						}
 					}
 				}
 				if strings.TrimSpace(v) == "" && strings.EqualFold(bareUp, label) {
@@ -3441,6 +3472,9 @@ func htmlSecurityLabelGridIssuer(cells []string) (string, bool) {
 // DATE:`), or 0 when the line does not open that way.
 func htmlMeetingTypeCut(up string) int {
 	i := strings.Index(up, " MEETING DATE:")
+	if i > 0 && up[:i] == "SPECIAL SHAREHOLDER" {
+		return i + 1
+	}
 	if i <= 0 || i > 12 {
 		return 0
 	}
@@ -3686,10 +3720,10 @@ func htmlDate(s string) string {
 	if s == "" {
 		return ""
 	}
-	if k := strings.IndexByte(s, ','); k > 0 {
-		switch strings.ToUpper(strings.TrimSpace(s[:k])) {
+	if k := strings.IndexAny(s, ", "); k > 0 {
+		switch strings.ToUpper(s[:k]) {
 		case "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY":
-			s = strings.TrimSpace(s[k+1:])
+			s = strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(s[k:]), ","))
 		}
 	}
 	// `15-Oct-14 11:30`: a two-digit year and a meeting time (JPMorgan China

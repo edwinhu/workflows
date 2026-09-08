@@ -1436,6 +1436,16 @@ func brDate(s string) string {
 		return ""
 	}
 
+	// Month-first full dates, e.g. February 20, 2004.
+	if m, ok := brMonths[strings.ToLower(brPrefix(fields[0], 3))]; ok {
+		day, err := strconv.Atoi(fields[1])
+		year, yok := brYear(fields[2])
+		if err == nil && yok && len(fields[2]) == 4 && day >= 1 && day <= 31 {
+			return brPad4(year) + brPad2(m) + brPad2(day)
+		}
+		return ""
+	}
+
 	// mm/dd/yy(yy).
 	month, merr := strconv.Atoi(fields[0])
 	day, derr := strconv.Atoi(fields[1])

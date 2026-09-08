@@ -1,0 +1,17 @@
+Company Name:     California Limited Maturity Municipals Portfolio
+Ticker:           N/A
+ISIN:             N/A
+Meeting Type:     Special
+Meeting Date      February 20, 2004
+
+PROP. #  PROPOSAL              PROPOSAL TYPE   PROPOSAL VOTE     FOR/AGAINST
+                                                                 MANAGEMENT
+01       To consider and act   Mgmt            84.304% For       84.304% For
+         upon a proposal to                     7.197% Against    7.197% Against
+         change the Fund's                      8.499% Abstain    8.499% Abstain
+         diversification
+         status from
+         diversified to
+         nondiversified.
+
+<PAGE>

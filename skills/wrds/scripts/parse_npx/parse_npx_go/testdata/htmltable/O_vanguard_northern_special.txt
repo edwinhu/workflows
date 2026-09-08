@@ -1,0 +1,450 @@
+<TABLE style="margin-top:0px; font-size:10pt" cellpadding=0 cellspacing=0 width="1385"><TR height=0 style="font-size:0"><TD width=361.333 />
+	<TD width=13 />&nbsp;<TD width=414 /><TD width=104 /><TD width=82 />
+	<TD width=203 /><TD width=87 /><TD width=136 /></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Registrant: NORTHERN LIGHTS FUND TRUST III - Lifetime Achievement Fund </P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Investment Company Act file number:
+	811-22655</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Item 1, Exhibit 1</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Reporting Period: July 1, 2013 through June 30, 2014</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">JP Morgan Value Advantage Fund - Inst</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Exchange Ticker Symbol:</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">JVAIX</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">CUSIP:</P>
+</TD><TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; text-indent:10.667px; font-family:Calibri,Times New Roman; font-size:8pt">4812A2587</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Special Shareholder Meeting Date:</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>6/10/2014</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Special Joint Meeting of Shareholders</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proposed by</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proposal</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Issuer</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Security Holder</P>
+</TD><TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Voted</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">LFTAX Voted</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Management Recommended</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">The Board of Trustees recommends you vote FOR the following:</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.01</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Dr. Matthew Goldstein</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proportional</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.02</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">John F. Finn</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proportional</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.03</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Robert J. Higgins</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proportional</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.04</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Peter C. Marshall</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proportional</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.05</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Mary E. Martinez</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proportional</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.06</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Marilyn McCoy</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proportional</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.07</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Mitchell M. Merin</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proportional</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.08</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">William G. Morton, Jr.</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proportional</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.09</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Dr. Robtert A. Oden, Jr.</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proportional</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.1</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Marian U. Pardo</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proportional</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.11</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Frederick W. Ruebeck</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proportional</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.12</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">James J. Schonbachler</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proportional</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.13</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Frankie D. Hughes</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proportional</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>2</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">SUCH OTHER BUSINESS AS MAY PROPERLY COME BEFORE THE MEETING OR</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proportional</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">ANY ADJOURNMENT THEREOF. &nbsp;</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Level 3 Communications, Inc.</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Exchange Ticker Symbol:</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">LVLT</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">CUSIP:</P>
+</TD><TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">52729N308</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Shareholder Meeting Date:</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>5/22/2014</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Annual Meeting</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proposed by</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Proposal</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Issuer</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Security Holder</P>
+</TD><TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Voted</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">LFTAX Voted</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Management Recommended</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">Directors recommend: A vote for election of the following nominees:</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.01</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">JEFF K. STOREY</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.02</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">GEN. KEVIN P. CHILTON</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.03</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">ADM. ARCHIE R. CLEMINS</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.04</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">STEVEN T. CLONTZ</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.05</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">ADM. JAMES O. ELLIS, JR</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.06</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">T. MICHAEL GLENN</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.07</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">RICHARD R. JAROS</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.08</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">MICHAEL J. MAHONEY</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.09</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">PETER SEAH LIM HUAT</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.1</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">PETER VAN OPPEN</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>1.11</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">DR. ALBERT C. YATES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>2</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">TO APPROVE THE NAMED EXECUTIVE OFFICER COMPENSATION,</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">&nbsp;WHICH VOTE IS ON AN ADVISORY BASIS.</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt" align=right>3</P>
+</TD><TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">TO AUTHORIZE THE TRANSACTION OF SUCH OTHER BUSINESS AS MAY </P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">X</P>
+</TD><TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">YES</P>
+</TD><TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD><TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">FOR</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">PROPERLY COME BEFORE THE ANNUAL MEETING OR ANY </P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=361.333><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=13>&nbsp;</TD>
+	<TD style="margin-top:0px" valign=bottom width=414><P style="margin:0px; font-family:Calibri,Times New Roman; font-size:8pt">ADJOURNMENTS OR POSTPONEMENTS THEREOF.</P>
+</TD><TD style="margin-top:0px" valign=bottom width=104><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+			<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+			<TD style="margin-top:0px" valign=bottom width=203><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+			<TD style="margin-top:0px" valign=bottom width=87><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD>
+			<TD style="margin-top:0px" valign=bottom width=136><P style="margin:0px; padding:0px; font-size:8pt">&nbsp;</P></TD></TR>
+</TABLE>

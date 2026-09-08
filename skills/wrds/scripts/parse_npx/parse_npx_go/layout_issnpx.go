@@ -541,6 +541,19 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			continue
 		}
 		if d, typ, ok := issMeetingLine(line); ok {
+			if d == "" && i+1 < len(lines) {
+				year := strings.TrimSpace(lines[i+1])
+				if len(year) == 4 && allDigits(year) {
+					cut := strings.Index(strings.ToUpper(line), "MEETING TYPE:")
+					if cut < 0 {
+						cut = len(line)
+					}
+					if joined, _, _ := issMeetingLine(strings.TrimSpace(line[:cut]) + " " + year + " " + line[cut:]); joined != "" {
+						d = joined
+						i++
+					}
+				}
+			}
 			flush()
 			inTable, tailRow = false, -1
 			mtgDate, mtgType = d, typ
@@ -2216,10 +2229,14 @@ func issNextNonBlankIdx(lines []string, j int) int {
 // issMeetingLine parses 'Meeting Date: <date>   Meeting Type: <type>'.
 func issMeetingLine(line string) (date, typ string, ok bool) {
 	up := strings.ToUpper(line)
-	di := strings.Index(up, "MEETING DATE:")
+	label := "MEETING DATE:"
+	di := strings.Index(up, label)
+	if di < 0 && strings.HasPrefix(up, "CONSENT DATE:") {
+		label, di = "CONSENT DATE:", 0
+	}
 	var rest string
 	if di >= 0 {
-		rest = line[di+len("MEETING DATE:"):]
+		rest = line[di+len(label):]
 	} else {
 		// `Meeting           12/08/2004         Meeting Type:    Annual`: the
 		// word Date dropped (Safeco Common Stock Trust 2005, 759 undated
