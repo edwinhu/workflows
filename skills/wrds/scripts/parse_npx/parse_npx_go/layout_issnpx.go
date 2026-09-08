@@ -1521,6 +1521,7 @@ func issHistoricalBrandKey(key string) string {
 
 var (
 	reISSTerminalFormerly = regexp.MustCompile(`(?i)\s+\*?\s*FORMERLY\s*:?\s*$`)
+	reISSStarredFormerly  = regexp.MustCompile(`(?i)\s+\*{1,3}\s*FORMERLY\s+[^*\r\n]{1,80}\*{1,3}\s*$`)
 	reISSNPFAccount       = regexp.MustCompile(`(?i)^NPF-(.+)\s+A/C\s+JND[0-9]+$`)
 )
 
@@ -1706,6 +1707,12 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			return banner, d
 		}
 		return banner, nil
+	}
+	// A complete starred former-brand annotation leaves only the current name;
+	// never use the former brand as an alternative series lookup.
+	if cut := reISSStarredFormerly.ReplaceAllString(banner, ""); cut != banner {
+		d, _ := lookupSeriesEntry(idx, strings.TrimSpace(cut))
+		return banner, d
 	}
 	// A terminal annotation without a former name is not part of the name.
 	if cut := reISSTerminalFormerly.ReplaceAllString(banner, ""); cut != banner {

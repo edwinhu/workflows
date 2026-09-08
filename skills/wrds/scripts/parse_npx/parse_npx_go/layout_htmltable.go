@@ -1,6 +1,7 @@
 package main
 
 import (
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -232,13 +233,27 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// same rules as a bare paragraph.
 		if htmlFilledCells(cells) <= 2 {
 			heading := strings.Join(cells, "\n")
+			registrantSection := false
+			if htmlFilledCells(cells) == 2 {
+				var filled []string
+				for _, cell := range cells {
+					if value := strings.TrimSpace(cell); value != "" {
+						filled = append(filled, value)
+					}
+				}
+				// Only a separate exhibit cell may follow a fund-valued Registrant;
+				// do not relax the guard for prose between tables.
+				if strings.HasPrefix(strings.ToLower(filled[0]), "registrant:") && reHTMLRegistrantExhibit.MatchString(filled[1]) {
+					heading, registrantSection = filled[0], true
+				}
+			}
 			if htmlFilledCells(cells) == 1 {
 				if flat := htmlFlat(heading); strings.HasPrefix(flat, "In All Markets, for all voted ballots, for ") {
 					heading = flat
 				}
 			}
 			if name, id, ok := htmlBareFundLine(seriesIx, heading, dict); ok {
-				curFund, curSeries, outerSection = name, id, false
+				curFund, curSeries, outerSection = name, id, registrantSection && id != ""
 			}
 		}
 
@@ -4575,6 +4590,8 @@ func htmlLabelledCells(cells []string) (label, value string, ok bool) {
 	}
 	return vals[0], vals[1], true
 }
+
+var reHTMLRegistrantExhibit = regexp.MustCompile(`(?i)^Item [0-9]{1,2}, Exhibit [0-9]{1,3}$`)
 
 // htmlBareFundLine reads a fund name printed as a bare paragraph between two
 // tables, with no label at all. One vintage prints every fund that way

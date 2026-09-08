@@ -1,0 +1,62 @@
+		COMPANY CONFORMED NAME:			Two Roads Shared Trust
+		CENTRAL INDEX KEY:			0001552947
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 11pt Calibri, Helvetica, Sans-Serif">
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="2" STYLE="font: bold 10pt Times New Roman, Times, Serif">Registrant: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 700">APEX HealthCare ETF</FONT></TD>
+    <TD STYLE="font: bold 10pt Times New Roman, Times, Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">Item 1, Exhibit 3</TD>
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif; text-align: right">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: middle">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif; border: Black 0.5pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(a) Issuer's Name</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(b) Exchange Ticker Symbol</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(c)&quot;CUSIP&quot; #</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(d) Shareholder Meeting Date</TD>
+    <TD COLSPAN="2" STYLE="font: bold 9pt Times New Roman, Times, Serif; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(e) Matter Identification</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(f) Proposal Type (issuer or security holder)</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(g) Whether Registrant Voted</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(h) Vote Cast</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(i) For/Against Management</TD></TR>
+  <TR>
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif; vertical-align: middle; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">GRAND PHARMACEUTICAL GROUP LIMITED</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">G210A7101</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">30-Sep-2021</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; vertical-align: middle; border-right: Black 0.5pt solid; text-align: center; border-top-color: Black; border-top-width: 0.5pt; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">A</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Management</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; vertical-align: middle; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">N</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; vertical-align: middle; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">NA</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; vertical-align: middle; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">NA</TD></TR>
+  <TR>
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif; vertical-align: middle; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">GRAND PHARMACEUTICAL GROUP LIMITED</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">G210A7101</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">30-Sep-2021</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; vertical-align: middle; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">B</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Management</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; vertical-align: middle; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">N</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; vertical-align: middle; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">NA</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; vertical-align: middle; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">NA</TD></TR>
+  <TR>
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif; vertical-align: middle; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">GRAND PHARMACEUTICAL GROUP LIMITED</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">G210A7101</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">30-Sep-2021</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; vertical-align: middle; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">C</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Management</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; vertical-align: middle; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">N</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; vertical-align: middle; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">NA</TD>
+    <TD STYLE="font: bold 9pt Times New Roman, Times, Serif; vertical-align: middle; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">NA</TD></TR>
+  </TABLE>
