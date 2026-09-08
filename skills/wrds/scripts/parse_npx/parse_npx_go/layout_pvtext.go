@@ -81,6 +81,23 @@ func parsePVText(text string, meta FilingMeta) ([]VoteRow, error) {
 	// series under the shared rules, as in every other layout.
 	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
 	issFormerKeys(seriesIx, meta.FormerNames)
+	// Read definitions before references so a later conflicting definition also
+	// refuses attribution. References are not themselves fund definitions.
+	accounts := make(map[string]*SeriesDecl)
+	for _, line := range lines {
+		if name, ok := pvTextAccountFund(line); ok {
+			f := strings.Fields(name)
+			if len(f) < 2 || !internalFundCode(f[0]) || pvTextAccountReference(name) != "" {
+				continue
+			}
+			code := strings.ToUpper(f[0])
+			d := pvTextResolveAccount(seriesIx, name)
+			if prior, seen := accounts[code]; seen && (prior == nil || d == nil || prior.SeriesID != d.SeriesID) {
+				d = nil
+			}
+			accounts[code] = d
+		}
+	}
 	var (
 		rows            []VoteRow
 		meeting         pvTextMeeting
@@ -95,7 +112,10 @@ func parsePVText(text string, meta FilingMeta) ([]VoteRow, error) {
 
 	for i := 0; i < len(lines); i++ {
 		if f, ok := pvTextAccountFund(lines[i]); ok {
-			_, d := issResolveFund(seriesIx, f)
+			d := pvTextResolveAccount(seriesIx, f)
+			if target := pvTextAccountReference(f); target != "" {
+				d = accounts[target]
+			}
 			// Only the first numeric or NCF sleeve account following a resolved
 			// bare heading belongs to it; later accounts are new boundaries.
 			opaque := strings.HasPrefix(strings.ToUpper(strings.TrimSpace(lines[i])), "ACCOUNT NUMBER:") && len(f) > 0 && (f[0] >= '0' && f[0] <= '9' || pvTextNCFAccount.MatchString(f))
@@ -882,11 +902,43 @@ func pvTextItemLoose(s string) bool {
 	return true
 }
 
-// pvTextAccountFund reads the fund a section opens with: `Account Number: JU77
-// Alliance Growth Portfolio` above the header (SunAmerica Series Trust 2005,
-// 28,965 rows with no fund on r207; 465,597 across the layout's declaring
-// registrants). The account code stays in the name; the series dictionary
-// reads past a leading code token.
+func pvTextAccountReference(name string) string {
+	f := strings.Fields(name)
+	if len(f) == 4 && internalFundCode(f[0]) && strings.EqualFold(f[1], "part") && strings.EqualFold(f[2], "of") && internalFundCode(strings.ToUpper(f[3])) {
+		return strings.ToUpper(f[3])
+	}
+	return ""
+}
+
+func pvTextResolveAccount(ix *issSeriesIndex, name string) *SeriesDecl {
+	_, d := issResolveFund(ix, name)
+	if _, declared := lookupSeriesEntry(ix.byName, name); d != nil || declared {
+		return d
+	}
+	if f := strings.Fields(name); len(f) > 1 && internalFundCode(f[0]) {
+		if _, declared := lookupSeriesEntry(ix.byName, strings.Join(f[1:], " ")); declared {
+			return nil
+		}
+	}
+	// Remove only an echo of the leading account code, never a fund token.
+	if f := strings.Fields(name); len(f) > 2 && internalFundCode(f[0]) && strings.EqualFold(f[0], f[len(f)-1]) {
+		_, d = issResolveFund(ix, strings.Join(f[:len(f)-1], " "))
+	}
+	// VALIC's numbered second accounts use -2, not a target date or class.
+	if d == nil && (ix.registrantKey == "valic co i" || ix.registrantKey == "valic company i") {
+		if f := strings.Fields(name); len(f) > 1 && internalFundCode(f[0]) && strings.HasSuffix(name, "-2") {
+			stem := strings.TrimSuffix(strings.Join(f[1:], " "), "-2")
+			switch normalizeSeriesName(stem) {
+			case "science and technology fund", "vci large capital growth":
+				_, d = issResolveFund(ix, stem)
+			}
+		}
+	}
+	return d
+}
+
+// pvTextAccountFund retains the printed account code and name; only the
+// resolver removes account decorations when matching a declared series.
 func pvTextAccountFund(line string) (string, bool) {
 	t := strings.TrimSpace(line)
 	for _, label := range []string{"ACCOUNT NUMBER:", "ACCOUNT NAME:"} {

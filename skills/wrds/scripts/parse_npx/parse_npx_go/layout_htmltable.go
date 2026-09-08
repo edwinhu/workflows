@@ -137,7 +137,8 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		curSeries string
 		// curFund is the fund name as the filing printed it, recorded on every
 		// row so an unattributed section shows as unmatched, not unnamed.
-		curFund string
+		curFund      string
+		outerSection bool // a resolved enclosing heading, not a labelled account cell
 		// The split-page halves: a table whose header names only identity
 		// columns is the LEFT half of a page too wide to print in one table,
 		// and the table that follows it carries the same rows' votes in the
@@ -192,17 +193,21 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// the fund's name above the banner (Ivy Funds VIP, ~500k rows read as
 		// `Reporting Period: ...` on 2026-09-02).
 		if name, id, ok := htmlBareFundLine(seriesIx, row.pre, dict); ok {
-			curFund, curSeries = name, id
+			curFund, curSeries, outerSection = name, id, id != ""
 		} else if name, ok := htmlFundHeading(row.pre); ok {
 			curFund = name
 			curSeries = icrResolveFundShared(seriesIx, name)
+			outerSection = curSeries != ""
 		}
 		// One vintage prints the labelled heading as TWO CELLS of a table row,
 		// `Fund Name :` beside the name (Putnam, ~1M rows): the label is the
 		// evidence, exactly as it is on a line.
 		if label, value, ok := htmlLabelledCells(cells); ok && htmlFundLabelled(label+":") {
-			curFund = value
-			curSeries = icrResolveFundShared(seriesIx, value)
+			id := icrResolveFundShared(seriesIx, value)
+			// A registrant or sleeve label cannot erase a proven outer section.
+			if id != "" || !outerSection {
+				curFund, curSeries, outerSection = value, id, false
+			}
 			continue
 		}
 		if row.pre != "" {
@@ -233,7 +238,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				}
 			}
 			if name, id, ok := htmlBareFundLine(seriesIx, heading); ok {
-				curFund, curSeries = name, id
+				curFund, curSeries, outerSection = name, id, false
 			}
 		}
 

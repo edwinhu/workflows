@@ -1588,6 +1588,13 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d != nil || declared {
 		return banner, d
 	}
+	// VALIC Company I prints VALIC I without the incorporated company token.
+	if registrantKey == "valic co i" || registrantKey == "valic company i" {
+		if rest, ok := strings.CutPrefix(normalizeSeriesName(banner), "valic i "); ok {
+			_, d := issResolveFund(ix, rest)
+			return banner, d
+		}
+	}
 	// MIP headings omit Master (and sometimes Portfolio), never strategy tokens.
 	if registrantKey == "master investment portfolio" {
 		if stem, ok := strings.CutPrefix(normalizeSeriesName(banner), "mip "); ok && stem != "" {

@@ -1,0 +1,38 @@
+<SEC-DOCUMENT>0000950129-05-008752.txt : 20050829
+<SEC-HEADER>0000950129-05-008752.hdr.sgml : 20050829
+<ACCEPTANCE-DATETIME>20050829085218
+ACCESSION NUMBER:		0000950129-05-008752
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050829
+		COMPANY CONFORMED NAME:			VALIC CO I
+		CENTRAL INDEX KEY:			0000719423
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>h28231nvpx.txt
+<DESCRIPTION>VALIC COMPANY I - JUNE 30, 2005
+<TEXT>
+   Account Number: F442 VCI Large Capital Growth-2
+
+   ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE
+           Proposal Type Voted? Vote For/Agnst Mgmt
+   Abercrombie & Fitch ANF  002896207  6/15/05  Annual
+   1.01   Elect Russell M. Gertmenian MGMT YES FOR FOR
+   1.02   Elect Archie M. Griffin MGMT YES FOR FOR
+   1.03   Elect Allan A. Tuttle MGMT YES FOR FOR
+   2   Ratify selection of auditors MGMT YES FOR FOR
+   3   Adopt the 2005 Long-Term Incentive Plan MGMT YES AGNST AGNST
+   Item 1. Proxy Voting Record
+   Account Number: F417 Science & Technology Fund-2
+
+   ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE
+           Proposal Type Voted? Vote For/Agnst Mgmt
+   Accenture Ltd ACN  G1150G111  2/2/05  Annual
+   1.01   Elect Joe W. Forehand MGMT YES FOR FOR
+   1.02   Elect Blythe J. McGarvie MGMT YES FOR FOR
+   1.03   Elect Mark Moody-Stuart MGMT YES FOR FOR
+   2   Approve non-technical bylaw amendments MGMT YES FOR FOR
+   3   Ratify selection of auditors MGMT YES FOR FOR
