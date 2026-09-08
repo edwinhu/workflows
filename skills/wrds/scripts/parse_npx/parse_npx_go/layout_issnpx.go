@@ -446,6 +446,14 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				// name never joins across a divider.
 				commitBanner()
 			} else {
+				if len(bannerBuf) > 0 && seriesIx.registrantKey == "munder series trust" {
+					prior := strings.Join(bannerBuf, " ")
+					// Munder's empty funds have adjacent, independently complete banners.
+					if strings.HasSuffix(normalizeSeriesName(prior), " fund") &&
+						strings.HasSuffix(normalizeSeriesName(name), " fund") && !issBannerWrapVisible(prior, name) {
+						commitBanner()
+					}
+				}
 				if len(bannerBuf) >= issMaxBannerLines {
 					commitBanner()
 				}
@@ -1579,6 +1587,13 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 
 	if d != nil || declared {
 		return banner, d
+	}
+	// MIP headings omit Master (and sometimes Portfolio), never strategy tokens.
+	if registrantKey == "master investment portfolio" {
+		if stem, ok := strings.CutPrefix(normalizeSeriesName(banner), "mip "); ok && stem != "" {
+			stem = strings.TrimSuffix(stem, " portfolio")
+			return banner, idx[stem+" master portfolio"]
+		}
 	}
 	// The audited BRIC heading omits Small-Mid Cap only for this registrant.
 	if registrantKey == "claymore exchange traded fund trust 2" && normalizeSeriesName(banner) == "guggenheim bric etf" {
