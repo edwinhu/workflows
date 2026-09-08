@@ -1206,6 +1206,10 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 			}
 		}
 	}
+	// Enterprise's historical EGF and AXA Enterprise brands share exact stems.
+	if registrantKey == "enterprise group of funds inc" {
+		ix.brands = append(ix.brands, "axa enterprise", "egf")
+	}
 	put := func(m map[string]*SeriesDecl, key string, d *SeriesDecl) {
 		if key == "" {
 			return
@@ -1616,6 +1620,18 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			return banner, idx["axa enterprise multimanager growth fund"]
 		case "axa premier small mid cap growth fund":
 			return banner, idx["axa enterprise multimanager mid cap growth fund"]
+		}
+	}
+	// Audited Lincoln export headings: exact aliases, never general TRP expansion
+	// or prefix matching between allocation siblings. The exact index refuses collisions.
+	if registrantKey == "lincoln variable insurance products trust" {
+		switch normalizeSeriesName(banner) {
+		case "peters lincoln vip trp structured mid cap growth fund":
+			return banner, idx["lvip t rowe price structured mid cap growth fund"]
+		case "lvip del cons alloca":
+			return banner, idx[normalizeSeriesName("LVIP Delaware Foundation(R) Conservative Allocation Fund")]
+		case "lvip del mod allocat":
+			return banner, idx[normalizeSeriesName("LVIP Delaware Foundation(R) Moderate Allocation Fund")]
 		}
 	}
 	// Hirtle's audited strategy/account pairs resolve only to declared names.

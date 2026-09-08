@@ -4735,7 +4735,7 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 }
 
 // htmlDictionaryFund only admits names the header does not declare, even
-// ambiguously. The sub-adviser cut is the only additional dictionary reading.
+// ambiguously. Additional readings are bounded sub-adviser and Lincoln brand cuts.
 func htmlDictionaryFund(ix *issSeriesIndex, fallback *dictFallback, candidate string) string {
 	if fallback == nil {
 		return ""
@@ -4745,6 +4745,12 @@ func htmlDictionaryFund(ix *issSeriesIndex, fallback *dictFallback, candidate st
 	}
 	if d, seen := lookupSeriesEntry(fallback.byName, candidate); seen {
 		if d != nil {
+			return d.SeriesID
+		}
+		return ""
+	}
+	if rest, ok := issCutBrand(normalizeSeriesName(candidate), "lincoln"); ok && fallback.byHeadingName != nil {
+		if d, _ := lookupSeriesEntry(fallback.byHeadingName, rest); d != nil {
 			return d.SeriesID
 		}
 		return ""

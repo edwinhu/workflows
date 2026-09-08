@@ -63,7 +63,8 @@ func (d *cikSeries) back(meta *FilingMeta) {
 // headings the header does not know at all, and a name two dictionary series
 // answer to is refused the way seriesByName refuses it.
 type dictFallback struct {
-	byName map[string]*SeriesDecl
+	byName        map[string]*SeriesDecl
+	byHeadingName map[string]*SeriesDecl // Lincoln heading lookup, including declared-name collisions
 }
 
 func (d *cikSeries) exactFallback(meta FilingMeta) *dictFallback {
@@ -89,7 +90,13 @@ func (d *cikSeries) exactFallback(meta FilingMeta) *dictFallback {
 	if len(extra) == 0 {
 		return nil
 	}
-	return &dictFallback{byName: seriesByName(extra)}
+	f := &dictFallback{byName: seriesByName(extra)}
+	if normalizeSeriesName(meta.CompanyName) == "lincoln variable insurance products trust" {
+		// Keep the declaring pool unchanged; combine names only to refuse collisions.
+		all := append(append([]SeriesDecl(nil), meta.SeriesDecls...), extra...)
+		f.byHeadingName = seriesByName(all)
+	}
+	return f
 }
 
 func (f *dictFallback) apply(r *VoteRow) {
