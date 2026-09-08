@@ -1,0 +1,47 @@
+<SEC-DOCUMENT>0001169232-05-004255.txt : 20050818
+<SEC-HEADER>0001169232-05-004255.hdr.sgml : 20050818
+<ACCEPTANCE-DATETIME>20050818150442
+ACCESSION NUMBER:		0001169232-05-004255
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050818
+DATE AS OF CHANGE:		20050818
+EFFECTIVENESS DATE:		20050818
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SELIGMAN GLOBAL FUND SERIES INC
+		CENTRAL INDEX KEY:			0000881466
+		DATE OF NAME CHANGE:	19920717
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d64982_n-px.txt
+<DESCRIPTION>ANNUAL REPORT OF PROXY VOTING RECORD
+<TEXT>
+SELIGMAN EMERGING MARKETS FUND
+
+<TABLE>
+<CAPTION>
+ISSUER NAME                           TICKER            CUSIP               MTG DATE       MTG TYPE
+                                                                            Proposal Type  Voted?     Vote            For/Agnst Mgmt
+<S>                                   <C>               <C>                 <C>            <C>        <C>             <C>
+ADVANCED INFO SERVICE                                   Y0014U183           3/30/05        Annual
+1.00       AUTHORIZE LEGAL FORMALITIES                                      MGMT           YES        FOR             FOR
+2.00       AUTHORIZE LEGAL FORMALITIES                                      MGMT           YES        FOR             FOR
+3.00       AUTHORIZE LEGAL FORMALITIES                                      MGMT           YES        FOR             FOR
+SELIGMAN GLOBAL SMALLER COMPANIES FUND
+
+<TABLE>
+<CAPTION>
+ISSUER NAME                               TICKER            CUSIP          MTG DATE       MTG TYPE
+                                                                           Proposal Type  Voted?      Vote            For/Agnst Mgmt
+<S>                                       <C>               <C>            <C>            <C>         <C>             <C>
+1-800 CONTACTS                            CTAC              681977104      5/20/05        ANNUAL
+1.01       ELECT THOMAS H. BOGGS JR.                                       MGMT           YES         FOR             FOR
+1.02       ELECT JOHN F. NICHOLS                                           MGMT           YES         FOR             FOR
+1.03       ELECT GARTH T. VINCENT                                          MGMT           YES         FOR             FOR
+2.00       ADD SHARES TO THE 2004 STOCK INCENTIVE PLAN                     MGMT           YES         AGNST           AGNST

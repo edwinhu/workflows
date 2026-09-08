@@ -4661,8 +4661,30 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 		}
 		if labelled {
 			if colon := strings.IndexByte(line, ':'); colon > 0 {
+				accountNumber := strings.EqualFold(strings.TrimSpace(line[:colon]), "Account Number")
 				candidate = strings.TrimSpace(line[colon+1:])
 				line = candidate
+				// Federated prints alphabetic account codes before exact fund names.
+				// Keep the printed value and never reinterpret a declared full name.
+				if f := strings.Fields(candidate); accountNumber && len(f) > 2 && f[1] == "Federated" && strings.Trim(f[0], "ABCDEFGHIJKLMNOPQRSTUVWXYZ") == "" {
+					_, declared := lookupSeriesEntry(ix.byName, candidate)
+					if dict != nil {
+						_, seen := lookupSeriesEntry(dict.byName, candidate)
+						declared = declared || seen
+					}
+					if !declared {
+						remainder := strings.Join(f[1:], " ")
+						if d, seen := lookupSeriesEntry(ix.byName, remainder); seen {
+							if d != nil {
+								name, id, ok = line, d.SeriesID, true
+								continue
+							}
+						} else if dictID := htmlDictionaryFund(ix, dict, remainder); dictID != "" {
+							name, id, ok = line, dictID, true
+							continue
+						}
+					}
+				}
 				if f := strings.Fields(candidate); len(f) > 1 && isAllDigits(f[0]) {
 					candidate = strings.Join(f[1:], " ")
 				}
