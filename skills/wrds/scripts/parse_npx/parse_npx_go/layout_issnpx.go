@@ -1551,6 +1551,39 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d != nil || declared {
 		return banner, d
 	}
+	// Harding Loevner's audited historical spellings; never substitute type
+	// words for other registrants or resolve the repaired name through aliases.
+	if registrantKey == "harding loevner funds inc" {
+		target := ""
+		switch normalizeSeriesName(banner) {
+		case "hlf international equity":
+			target = "harding loevner international equity portfolio"
+		case "hlf global equity":
+			target = "harding loevner global equity portfolio"
+		case "hlf emerging market portfolio":
+			target = "harding loevner emerging markets portfolio"
+		case "harding loevner institutional emerging markets fund":
+			target = "harding loevner institutional emerging markets portfolio"
+		}
+		if target != "" {
+			return banner, idx[target]
+		}
+	}
+	// The EQ/ALLAIANCE spelling is an audited typo, not a fuzzy-name rule.
+	if key := normalizeSeriesName(banner); strings.Contains(" "+key+" ", " allaiance ") {
+		repaired := strings.TrimSpace(strings.ReplaceAll(" "+key+" ", " allaiance ", " alliance "))
+		if d, seen := idx[repaired]; seen {
+			return banner, d
+		}
+	}
+	// STI Classic prints EQUITY for STOCK in otherwise-identical historical
+	// names. Retry one internal token only, against the collision-refusing exact
+	// index; neither a declared heading nor an ambiguous alias may be re-read.
+	if key := normalizeSeriesName(banner); strings.Count(key, " equity ") == 1 {
+		if d, seen := idx[strings.Replace(key, " equity ", " stock ", 1)]; seen {
+			return banner, d
+		}
+	}
 	if key := issHistoricalBrandKey(normalizeSeriesName(banner)); key != "" {
 		if d, seen := ix.byHistoricalBrand[key]; seen {
 			return banner, d
