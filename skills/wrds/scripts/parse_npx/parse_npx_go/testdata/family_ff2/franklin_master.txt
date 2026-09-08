@@ -1,0 +1,111 @@
+		COMPANY CONFORMED NAME:			Franklin Alternative Strategies Funds
+		CENTRAL INDEX KEY:			0001535538
+<TEXT>
+
+<HTML>
+<P style="TEXT-ALIGN: center; MARGIN: 0in 0in 0pt" align=center><FONT lang=EN-US style="FONT-SIZE: 12pt" face="times new roman">Franklin K2 Alternative Strategies Fund-Master</FONT></P>
+
+<DIV align=left>
+
+<TABLE style="WIDTH: 100%" cellSpacing=0 cellPadding=0 border=0>
+
+
+
+<TR>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="100%" colSpan=5>
+
+   <P style="MARGIN: 0in 0in 0pt"><B><FONT style="FONT-SIZE: 10pt" face="times new roman">ABBOTT LABORATORIES <BR>Meeting Date:&nbsp;&nbsp;APR 24, 2020 <BR>Record Date:&nbsp;&nbsp;FEB 26, 2020 <BR>Meeting Type:&nbsp;&nbsp;ANNUAL </FONT></B></P></TD></TR>
+
+<TR>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="100%" colSpan=5>
+
+   <P style="MARGIN: 0in 0in 0pt"><FONT style="FONT-SIZE: 10pt" face="times new roman">Ticker:&nbsp;&nbsp;ABT <BR>Security ID:&nbsp;&nbsp;002824100 </FONT></P></TD></TR>
+
+<TR>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="9%">
+
+   <P style="TEXT-ALIGN: center; MARGIN: 0in 0in 0pt" align=center><B><FONT style="FONT-SIZE: 10pt" face="times new roman">Proposal No</FONT></B></P></TD>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="49%">
+
+   <P style="TEXT-ALIGN: center; MARGIN: 0in 0in 0pt" align=center><B><FONT style="FONT-SIZE: 10pt" face="times new roman">Proposal</FONT></B></P></TD>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="15%">
+
+   <P style="TEXT-ALIGN: center; MARGIN: 0in 0in 0pt" align=center><B><FONT style="FONT-SIZE: 10pt" face="times new roman">Proposed By</FONT></B></P></TD>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="16%">
+
+   <P style="TEXT-ALIGN: center; MARGIN: 0in 0in 0pt" align=center><B><FONT style="FONT-SIZE: 10pt" face="times new roman">Management Recommendation</FONT></B></P></TD>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="11%">
+
+   <P style="TEXT-ALIGN: center; MARGIN: 0in 0in 0pt" align=center><B><FONT style="FONT-SIZE: 10pt" face="times new roman">Vote Cast</FONT></B></P></TD></TR>
+
+<TR>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="9%">
+
+   <P style="MARGIN: 0in 0in 0pt"><FONT style="FONT-SIZE: 12pt" face="times new roman">1.001</FONT></P></TD>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="49%">
+
+   <P style="MARGIN: 0in 0in 0pt"><FONT style="FONT-SIZE: 12pt" face="times new roman">Elect Robert J. Alpern</FONT></P></TD>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="15%">
+
+   <P style="MARGIN: 0in 0in 0pt"><FONT style="FONT-SIZE: 12pt" face="times new roman">Management</FONT></P></TD>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="16%">
+
+   <P style="MARGIN: 0in 0in 0pt"><FONT style="FONT-SIZE: 12pt" face="times new roman">For</FONT></P></TD>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="11%">
+
+   <P style="MARGIN: 0in 0in 0pt"><FONT style="FONT-SIZE: 12pt" face="times new roman">For</FONT></P></TD></TR>
+
+<TR>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="9%">
+
+   <P style="MARGIN: 0in 0in 0pt"><FONT style="FONT-SIZE: 12pt" face="times new roman">1.002</FONT></P></TD>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="49%">
+
+   <P style="MARGIN: 0in 0in 0pt"><FONT style="FONT-SIZE: 12pt" face="times new roman">Elect Roxanne S. Austin</FONT></P></TD>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="15%">
+
+   <P style="MARGIN: 0in 0in 0pt"><FONT style="FONT-SIZE: 12pt" face="times new roman">Management</FONT></P></TD>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="16%">
+
+   <P style="MARGIN: 0in 0in 0pt"><FONT style="FONT-SIZE: 12pt" face="times new roman">For</FONT></P></TD>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="11%">
+
+   <P style="MARGIN: 0in 0in 0pt"><FONT style="FONT-SIZE: 12pt" face="times new roman">For</FONT></P></TD></TR>
+<TR>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="9%">
+
+   <P style="MARGIN: 0in 0in 0pt"><FONT style="FONT-SIZE: 12pt" face="times new roman">7</FONT></P></TD>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="49%">
+
+   <P style="MARGIN: 0in 0in 0pt"><FONT style="FONT-SIZE: 12pt" face="times new roman">Shareholder Proposal Regarding Simple Majority Vote</FONT></P></TD>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="15%">
+
+   <P style="MARGIN: 0in 0in 0pt"><FONT style="FONT-SIZE: 12pt" face="times new roman">Shareholder</FONT></P></TD>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="16%">
+
+   <P style="MARGIN: 0in 0in 0pt"><FONT style="FONT-SIZE: 12pt" face="times new roman">Against</FONT></P></TD>
+
+   <TD style="PADDING-BOTTOM: 1.2pt; PADDING-TOP: 1.2pt; PADDING-LEFT: 1.2pt; PADDING-RIGHT: 1.2pt" width="11%">
+
+   <P style="MARGIN: 0in 0in 0pt"><FONT style="FONT-SIZE: 12pt" face="times new roman">For</FONT></P></TD></TR></TABLE></DIV></DIV>
