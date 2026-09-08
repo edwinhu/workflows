@@ -13,6 +13,7 @@ description: >
   user's own notes, mail, calendar and chats go to `assistant`; a draft that needs its citations
   checked against the sources goes to the `cite-check` skill.
 model: inherit
+effort: low
 color: cyan
 tools: ["Read", "Write", "Bash", "Grep", "Glob", "Skill", "ToolSearch"]
 ---
