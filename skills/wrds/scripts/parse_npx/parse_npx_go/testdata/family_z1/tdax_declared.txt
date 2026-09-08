@@ -1,0 +1,176 @@
+<SEC-DOCUMENT>0001193125-12-332271.txt : 20120802
+<SEC-HEADER>0001193125-12-332271.hdr.sgml : 20120802
+<ACCEPTANCE-DATETIME>20120802172809
+ACCESSION NUMBER:		0001193125-12-332271
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20120630
+FILED AS OF DATE:		20120802
+DATE AS OF CHANGE:		20120802
+EFFECTIVENESS DATE:		20120802
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			db-X Exchange-Traded Funds Inc.
+		CENTRAL INDEX KEY:			0001385533
+		IRS NUMBER:				000000000
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22001
+		FILM NUMBER:		121004545
+
+	BUSINESS ADDRESS:	
+		STREET 1:		60 WALL STREET
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10005
+		BUSINESS PHONE:		212-250-5883
+
+	MAIL ADDRESS:	
+		STREET 1:		60 WALL STREET
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10005
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	db-X Exchange - Traded Funds Inc.
+		DATE OF NAME CHANGE:	20110620
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	TDX Independence Funds, Inc.
+		DATE OF NAME CHANGE:	20080717
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	TDAX Funds, Inc.
+		DATE OF NAME CHANGE:	20070108
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001385533
+<SERIES-ID>S000016521
+<SERIES-NAME>db-X 2010 Target Date Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000045993
+<CLASS-CONTRACT-NAME>db-X 2010 Target Date Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>TDD
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001385533
+<SERIES-ID>S000016522
+<SERIES-NAME>db-X 2020 Target Date Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000045994
+<CLASS-CONTRACT-NAME>db-X 2020 Target Date Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>TDH
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001385533
+<SERIES-ID>S000016523
+<SERIES-NAME>db-X 2030 Target Date Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000045995
+<CLASS-CONTRACT-NAME>db-X 2030 Target Date Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>TDN
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001385533
+<SERIES-ID>S000016524
+<SERIES-NAME>db-X 2040 Target Date Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000045996
+<CLASS-CONTRACT-NAME>db-X 2040 Target Date Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>TDV
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001385533
+<SERIES-ID>S000016525
+<SERIES-NAME>db-X In-Target Date Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000045997
+<CLASS-CONTRACT-NAME>db-X In-Target Date Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>TDX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d381098dnpx.htm
+<DESCRIPTION>DB-X EXCHANGE-TRADED FUNDS, INC.
+<TEXT>
+<HTML><HEAD>
+<TITLE>db-X Exchange-Traded Funds, Inc.</TITLE>
+</HEAD>
+ <BODY BGCOLOR="WHITE">
+ <P STYLE="margin-top:0px;margin-bottom:0px"><FONT STYLE="font-family:Times New Roman" SIZE="2"><B>Vote Summary Report </B></FONT></P> <P STYLE="margin-top:12px;margin-bottom:0px"><FONT
+STYLE="font-family:Times New Roman" SIZE="2">Report was run from: 7/1/11 to 6/30/12 </FONT></P> <P STYLE="margin-top:12px;margin-bottom:0px"><FONT STYLE="font-family:Times New Roman" SIZE="2">Institution Account(s): TDAX Independence In Target -
+Equity </FONT></P> <P STYLE="margin-top:24px;margin-bottom:0px" ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="2"><B>Tesco plc </B></FONT></P> <P STYLE="font-size:12px;margin-top:0px;margin-bottom:0px">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE">
+<TR>
+<TD VALIGN="bottom" NOWRAP><FONT STYLE="font-family:Times New Roman" SIZE="1"><B>Ticker</B></FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="1"><B>Meeting Date</B></FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="1"><B>Country</B></FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="1"><B>Security ID</B></FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="1"><B>Meeting Type</B></FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="1"><B>Record Date</B></FONT></TD></TR>
+<TR>
+<TD VALIGN="bottom" NOWRAP><FONT STYLE="font-family:Times New Roman" SIZE="2">TSCO</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="2">01-Jul-11</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="2">United Kingdom</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="2">G87621101</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="2">Annual</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="2">29-Jun-11</FONT></TD></TR>
+</TABLE> <P STYLE="font-size:12px;margin-top:0px;margin-bottom:0px">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE">
+<TR>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="1">Proponent</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP><FONT STYLE="font-family:Times New Roman" SIZE="1">Mgmt Rec</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="1">Vote Instruction</FONT></TD></TR>
+<TR BGCOLOR="#cceeff">
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2">Accept Financial Statements and Statutory Reports</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">Mgmt</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">For</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">For</FONT></TD></TR>
+<TR>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2">Approve Remuneration Report</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">Mgmt</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">For</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">For</FONT></TD></TR>
+<TR BGCOLOR="#cceeff">
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2">Approve Final Dividend</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">Mgmt</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">For</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT STYLE="font-family:Times New Roman" SIZE="2">For</FONT></TD></TR>
+</TABLE>

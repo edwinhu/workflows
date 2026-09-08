@@ -137,6 +137,7 @@ func lvPeelProponent(cell string) (rest, proponent string) {
 func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 	lines := strings.Split(text, "\n")
 	seriesIdx := seriesByName(meta.SeriesDecls)
+	sharedIdx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
 
 	var (
 		rows      []VoteRow
@@ -167,6 +168,23 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 			inBlock = false
 			lastRow = -1
 			continue
+		}
+		// Vantagepoint's mixed reports print a bare fund before Subadviser,
+		// including sections with no declared series. Account numbers below it
+		// are sleeve metadata, not replacement fund headings.
+		if sharedIdx.registrantKey == "vantagepoint funds" && strings.HasPrefix(strings.ToLower(line), "vantagepoint ") && strings.HasSuffix(strings.ToLower(line), " fund") {
+			j := i + 1
+			for j < len(lines) && strings.TrimSpace(lines[j]) == "" {
+				j++
+			}
+			if j < len(lines) && strings.HasPrefix(strings.ToLower(strings.TrimSpace(lines[j])), "subadviser:") {
+				fund, curSeries = line, ""
+				if _, d := issResolveFund(sharedIdx, line); d != nil {
+					curSeries = d.SeriesID
+				}
+				inBlock, lastRow = false, -1
+				continue
+			}
 		}
 		if strings.Trim(line, "-") == "" {
 			inBlock = false // the rule between issuer blocks
