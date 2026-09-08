@@ -407,6 +407,12 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		if !ok {
 			name, ok = issOpenBanner(line, lines, i)
 		}
+		if !ok && line != "" && i+1 < len(lines) && strings.TrimSpace(lines[i+1]) == "" {
+			// A bare paragraph is a boundary only on an exact, unique name.
+			if d, _ := lookupSeriesEntry(seriesIx.byName, line); d != nil {
+				name, ok = line, true
+			}
+		}
 		if ok {
 			flush()
 			inTable, tailRow = false, -1
@@ -1032,8 +1038,9 @@ type issSeriesIndex struct {
 	// and brands holds those runs, longest first, for the banner-side strip.
 	// Every map refuses on collision the way seriesByName does: a key two
 	// distinct series answer to maps to nil, and nil is never stamped.
-	byCompact map[string]*SeriesDecl
-	lessBrand map[string]*SeriesDecl
+	byHistoricalBrand map[string]*SeriesDecl
+	byCompact         map[string]*SeriesDecl
+	lessBrand         map[string]*SeriesDecl
 	// lessAnd keys declared names with their `and` (an `&` in the header)
 	// dropped: Investment Managers Series Trust heads `Segall Bryant Hamill
 	// Emerging Markets Fund` for `Segall Bryant & Hamill ...` (11k rows).
@@ -1082,18 +1089,19 @@ func issFormerKeys(ix *issSeriesIndex, former []string) {
 
 func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex {
 	ix := &issSeriesIndex{
-		byName:        seriesByName(decls),
-		registrantKey: registrantKey,
-		byCompact:     make(map[string]*SeriesDecl, len(decls)),
-		lessBrand:     make(map[string]*SeriesDecl),
-		lessParen:     make(map[string]*SeriesDecl),
-		lessLeadToken: make(map[string]*SeriesDecl),
-		classPairs:    make(map[string][]*SeriesDecl),
-		decls:         decls,
-		lessAnd:       make(map[string]*SeriesDecl),
-		lessBrandFull: make(map[string]*SeriesDecl),
-		lessBrandType: make(map[string]*SeriesDecl),
-		byTicker:      make(map[string]*SeriesDecl),
+		byName:            seriesByName(decls),
+		registrantKey:     registrantKey,
+		byHistoricalBrand: make(map[string]*SeriesDecl),
+		byCompact:         make(map[string]*SeriesDecl, len(decls)),
+		lessBrand:         make(map[string]*SeriesDecl),
+		lessParen:         make(map[string]*SeriesDecl),
+		lessLeadToken:     make(map[string]*SeriesDecl),
+		classPairs:        make(map[string][]*SeriesDecl),
+		decls:             decls,
+		lessAnd:           make(map[string]*SeriesDecl),
+		lessBrandFull:     make(map[string]*SeriesDecl),
+		lessBrandType:     make(map[string]*SeriesDecl),
+		byTicker:          make(map[string]*SeriesDecl),
 	}
 	dupTicker := map[string]bool{}
 	for i := range decls {
@@ -1193,6 +1201,7 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 			continue
 		}
 		key := normalizeSeriesName(d.Name)
+		put(ix.byHistoricalBrand, issHistoricalBrandKey(key), d)
 		put(ix.byCompact, strings.ReplaceAll(key, " ", ""), d)
 		// One leading token off the DECLARED name; the remainder must still be
 		// two tokens at least, so a two-word name never collapses to one word.
@@ -1442,6 +1451,30 @@ func issCutSubAdviser(banner string) (string, bool) {
 	return "", false
 }
 
+// Audited successor brands only; the full distinctive stem must still agree.
+func issHistoricalBrandKey(key string) string {
+	for _, brand := range []string{"wells fargo advantage", "wells fargo", "allspring"} {
+		if stem, ok := strings.CutPrefix(key, brand+" "); ok && stem != "" {
+			return "wells fargo:" + stem
+		}
+	}
+	// TDAX account sleeves and TDX's registered ETF names retain the target
+	// year. No other suffix or arbitrary brand word is dropped.
+	for _, form := range []struct{ prefix, suffix string }{
+		{"tdax independence ", " equity"},
+		{"tdx independence ", " exchange traded fund"},
+	} {
+		if rest, ok := strings.CutPrefix(key, form.prefix); ok {
+			if year, ok := strings.CutSuffix(rest, form.suffix); ok && len(year) == 4 && isAllDigits(year) {
+				return "tdx independence:" + year
+			}
+		}
+	}
+	return ""
+}
+
+var reISSTerminalFormerly = regexp.MustCompile(`(?i)\s+\*?\s*FORMERLY\s*:?\s*$`)
+
 // issResolveFund turns one banner, already reassembled across any lines it
 // wrapped onto, into the fund name to store and the series it names. A nil decl
 // means stamp nothing, which is the answer whenever the filing's own header does
@@ -1508,6 +1541,16 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	}
 
 	if d != nil || declared {
+		return banner, d
+	}
+	if key := issHistoricalBrandKey(normalizeSeriesName(banner)); key != "" {
+		if d, seen := ix.byHistoricalBrand[key]; seen {
+			return banner, d
+		}
+	}
+	// A terminal annotation without a former name is not part of the name.
+	if cut := reISSTerminalFormerly.ReplaceAllString(banner, ""); cut != banner {
+		d, _ := lookupSeriesEntry(idx, strings.TrimSpace(cut))
 		return banner, d
 	}
 	// A sleeve suffix: `PSF Flexible Managed Portfolio Equity Sleeve` for a
