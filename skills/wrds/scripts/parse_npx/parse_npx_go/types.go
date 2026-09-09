@@ -91,6 +91,10 @@ type SeriesDecl struct {
 	SeriesID string
 	Name     string
 	ClassIDs []string
+	// ClassNames are the <CLASS-CONTRACT-NAME> values declared under this
+	// series, kept so a heading printing a class word behind the series name
+	// can be read against the registrant's own vocabulary.
+	ClassNames []string
 	// Tickers are the class tickers the header lists under this series; a
 	// heading that is exactly one of them names the series (RevenueShares 2012).
 	Tickers []string

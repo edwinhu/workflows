@@ -378,6 +378,14 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	// Bounded by issMaxBannerLines.
 	var bannerBuf []string
 
+	// reorgPred/reorgSucc carry the reorganization banner a filing prints over the
+	// section of a merged-away fund, `VOTES BY VICTORY INTERNATIONAL FUND PRIOR TO
+	// THE REORGANIZATION WITH TEMPLETON FOREIGN FUND EFFECTIVE OCTOBER 24, 2003.`
+	// The predecessor has no series id of its own and never will; the SUCCESSOR is
+	// a name the filing's own header or dictionary carries, and it is the fund
+	// whose assets cast these votes.
+	reorgPred, reorgSucc := "", ""
+
 	commitBanner := func() {
 		if len(bannerBuf) == 0 {
 			return
@@ -386,6 +394,16 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		name, d := issResolveFund(seriesIx, banner)
 		if alt := issDictInsertedWordDecl(seriesIx, dict, banner, d); alt != nil {
 			d = alt
+		}
+		// The successor named over this very section replaces whatever the
+		// predecessor's name fuzz-matched: on the full Templeton filing the
+		// heading reaches `Templeton International Climate Change Fund`, a fund
+		// that did not exist in 2004. Only an EXACT declared name is read.
+		if reorgPred != "" && normalizeSeriesName(banner) == reorgPred {
+			if succ, _ := lookupSeriesEntry(seriesIx.byName, reorgSucc); succ != nil {
+				d = succ
+			}
+			reorgPred, reorgSucc = "", ""
 		}
 		bannerBuf = bannerBuf[:0]
 		fund = name
@@ -407,6 +425,10 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		// family is a brand for the rest of the file.
 		if fam, ok := issItemFamilyBrand(line); ok {
 			seriesIx.addBrand(fam)
+		}
+
+		if pred, succ, ok := issReorganizationBanner(lines, i); ok {
+			reorgPred, reorgSucc = pred, succ
 		}
 
 		name, ok := issFundSeparator(line)
@@ -3025,9 +3047,13 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	// recurse, and an ambiguous retry still refuses. A heading that already
 	// carries a type word of its own is left alone -- `GS STRUCTURED
 	// INTERNATIONAL EQUITY TRUST` is a different registered series from the
-	// declared `... Equity Fund`, not a heading missing a word.
+	// declared `... Equity Fund`, not a heading missing a word. The type word
+	// counts wherever it stands: `Fidelity Real Estate High Income Fund II`
+	// prints one behind a sequence marker, and appending Fidelity Covington
+	// Trust's shared `ETF` turned that 2004 fund into the 2020 `Fidelity Real
+	// Estate Investment ETF`.
 	if toks := strings.Fields(key); ix.commonSuffix != "" && len(toks) > 1 &&
-		!issTypeWord(toks[len(toks)-1]) && toks[len(toks)-1] != ix.commonSuffix {
+		issLastTypeWord(toks) == "" && toks[len(toks)-1] != ix.commonSuffix {
 		if _, d := issResolveFund(ix, banner+" "+ix.commonSuffix); d != nil {
 			return banner, d
 		}
@@ -3081,6 +3107,17 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	}
 	if d := issLeadingStemDecl(ix, key); d != nil {
 		return banner, d
+	}
+	// The heading closes on a word of the series' OWN class, and may open on the
+	// report's one-letter fund code: both readings are tried and the code is only
+	// read past when the remainder answers.
+	if d := issClassWordDecl(ix, key); d != nil {
+		return banner, d
+	}
+	if stripped, ok := issLeadingIndexToken(key); ok {
+		if d := issClassWordDecl(ix, stripped); d != nil {
+			return banner, d
+		}
 	}
 	return banner, nil
 }
@@ -4259,7 +4296,117 @@ func issDistinctivePairDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		indexOfToken(strings.Fields(normalizeSeriesName(hit.Name)), "and") < 0 {
 		return nil
 	}
+	// One side names an ETF and the other a fund: `Fidelity Real Estate High
+	// Income Fund II` reaches Fidelity Covington Trust's `Fidelity Real Estate
+	// Investment ETF` (S000070235) on the pair `fidelity real` alone, filing a
+	// 2004 high-yield fund's votes under a 2020 ETF. Fund, portfolio, trust and
+	// series are the registrant's own spellings of one vehicle and a pair may
+	// still read across them; an exchange-traded fund is a different vehicle and
+	// a rare pair is no evidence that the heading meant it.
+	if hit != nil {
+		h := indexOfToken(toks, "etf") >= 0
+		d := indexOfToken(strings.Fields(normalizeSeriesName(hit.Name)), "etf") >= 0
+		if h != d {
+			return nil
+		}
+	}
 	return hit
+}
+
+// issClassWordDecl reads a heading that prints a CLASS word behind the series
+// name: `M     NY Tax Free Money Fund Investment` for the declared `NY Tax Free
+// Money Fund` (S000032033), whose only class is `Investment Class` (DWS Money
+// Market Trust 2016, the whole filing's 16 rows). The trailing word must be a
+// word of that same series' own <CLASS-CONTRACT-NAME>, the remainder must be
+// the series name EXACTLY, and two series answering refuse: the sibling here is
+// `Tax Free Money Fund Investment`, which the heading is not, since it carries
+// the `NY` the sibling lacks.
+func issClassWordDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 3 {
+		return nil
+	}
+	last := toks[len(toks)-1]
+	if len(last) < issNearMissMinDrop || issTypeWord(last) {
+		return nil
+	}
+	stem := strings.Join(toks[:len(toks)-1], " ")
+	var hit *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || normalizeSeriesName(d.Name) != stem {
+			continue
+		}
+		carries := false
+		for _, cn := range d.ClassNames {
+			if issHasToken(normalizeSeriesName(cn), last) {
+				carries = true
+				break
+			}
+		}
+		if !carries {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	return hit
+}
+
+// issMaxReorgBannerLines is how far the reorganization banner may wrap: the
+// measured shapes run to three lines, the successor clause reaching the second
+// and the effective date the third.
+const issMaxReorgBannerLines = 3
+
+// issReorganizationBanner reads the sentence a filing prints over the section of
+// a fund that merged away, and returns the predecessor and successor names,
+// normalised: `VOTES BY FRANKLIN MULTI-INCOME TRUST PRIOR TO THE REORGANIZATION
+// WITH FRANKLIN INCOME FUND A SERIES OF FRANKLIN CUSTODIAN FUNDS, INC.
+// EFFECTIVE AUGUST 4, 2005`. The sentence wraps, so the lines are joined before
+// matching, and the successor clause runs on into `A SERIES OF <registrant>` or
+// the effective date, either of which ends the name.
+func issReorganizationBanner(lines []string, i int) (pred, succ string, ok bool) {
+	joined := strings.TrimSpace(lines[i])
+	if !strings.HasPrefix(strings.ToUpper(joined), "VOTES BY ") {
+		return "", "", false
+	}
+	for j := i + 1; j < len(lines) && j <= i+issMaxReorgBannerLines-1; j++ {
+		next := strings.TrimSpace(lines[j])
+		if next == "" {
+			break
+		}
+		joined += " " + next
+	}
+	up := strings.ToUpper(joined)
+	head, tail, cut := strings.Cut(up, " PRIOR TO THE REORGANIZATION WITH ")
+	if !cut {
+		return "", "", false
+	}
+	pred = normalizeSeriesName(strings.TrimPrefix(head, "VOTES BY "))
+	for _, end := range []string{" A SERIES OF ", " EFFECTIVE "} {
+		if k := strings.Index(tail, end); k >= 0 {
+			tail = tail[:k]
+		}
+	}
+	succ = normalizeSeriesName(tail)
+	if pred == "" || succ == "" {
+		return "", "", false
+	}
+	return pred, succ, true
+}
+
+// issLastTypeWord is the last type word a normalised name prints, or "" when it
+// prints none. It is the last rather than the trailing token because a heading
+// may carry a class or sequence marker behind it (`... Fund II`).
+func issLastTypeWord(toks []string) string {
+	for i := len(toks) - 1; i >= 0; i-- {
+		if issTypeWord(toks[i]) {
+			return toks[i]
+		}
+	}
+	return ""
 }
 
 // issRegistrantAbbrevSuffix folds an abbreviated registrant brand back into a

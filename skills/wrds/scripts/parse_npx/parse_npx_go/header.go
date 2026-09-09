@@ -40,7 +40,7 @@ var (
 	// state machine over the matches in document order, never by a first-match
 	// lookup, which would report one series for a filing that carries dozens.
 	reSeriesTag = regexp.MustCompile(
-		`<(SERIES-ID|SERIES-NAME|CLASS-CONTRACT-ID|CLASS-CONTRACT-TICKER-SYMBOL)>([^<\r\n]*)`)
+		`<(SERIES-ID|SERIES-NAME|CLASS-CONTRACT-ID|CLASS-CONTRACT-NAME|CLASS-CONTRACT-TICKER-SYMBOL)>([^<\r\n]*)`)
 )
 
 // headerRegion returns the slice of buf holding the SGML header.
@@ -141,6 +141,13 @@ func parseSeriesDecls(buf []byte) ([]SeriesClass, []SeriesDecl) {
 			if open {
 				d := &decls[len(decls)-1]
 				d.ClassIDs = append(d.ClassIDs, val)
+			}
+		case "CLASS-CONTRACT-NAME":
+			// The class name is the fund's own word for a share class, which a
+			// section heading may print behind the series name.
+			if open {
+				d := &decls[len(decls)-1]
+				d.ClassNames = append(d.ClassNames, val)
 			}
 		case "CLASS-CONTRACT-TICKER-SYMBOL":
 			// The ticker follows its class-contract id inside the same
