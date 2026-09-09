@@ -84,6 +84,11 @@ func init() {
 const icrFundNameLabel = "FUND NAME"
 
 // icrUnderscoreRule reports a rule of underscores, twenty at least.
+// icrParentheticalNote reports a line that is wholly one parenthesised note.
+func icrParentheticalNote(line string) bool {
+	return len(line) > 2 && len(line) <= 300 && strings.HasPrefix(line, "(") && strings.HasSuffix(line, ")")
+}
+
 func icrUnderscoreRule(line string) bool {
 	if len(line) < 20 {
 		return false
@@ -436,18 +441,14 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 			// fund read, 2026-09-02). The report line is the marker; the line
 			// above it is the name, resolved like any other heading.
 			curFund = lineAbove
-			if len(lineAbove) <= 300 && strings.HasPrefix(strings.ToLower(lineAbove), "(merged into ") && strings.HasSuffix(lineAbove, ")") {
-				// The note names a successor, not this section's fund. Look only
-				// immediately above the complete note for a separately printed name.
+			if icrParentheticalNote(lineAbove) {
+				// A fully parenthesised note -- a merger successor, a sub-adviser
+				// attribution -- is commentary on the section, not its fund. Skip
+				// the notes and read the first line above them.
 				curSeries = ""
-				skippedNote := false
-				for k := i - 1; k >= 0 && k >= i-4; k-- {
+				for k := i - 1; k >= 0 && k >= i-6; k-- {
 					candidate := strings.TrimSpace(lines[k])
-					if candidate == "" {
-						continue
-					}
-					if !skippedNote {
-						skippedNote = true
+					if candidate == "" || icrParentheticalNote(candidate) {
 						continue
 					}
 					if id := icrResolveFundShared(seriesIx, candidate); id != "" {

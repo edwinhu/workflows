@@ -4585,6 +4585,14 @@ func htmlLabelledCells(cells []string) (label, value string, ok bool) {
 			return strings.TrimSpace(vals[0][:colon]), strings.TrimSpace(vals[0][colon+1:]), true
 		}
 	}
+	// One vintage opens each fund section with the registrant, the label and
+	// the fund in THREE cells: `Registrant:  Mutual Fund & Variable Insurance
+	// Trust` | `Fund Name -` | `Rational Dynamic Brands Fund` (3,744 of 4,221
+	// rows with no fund on 2026-09-08). The registrant cell is dropped and the
+	// remaining pair read as label and value, exactly as a two-cell row.
+	if len(vals) == 3 && strings.HasPrefix(strings.ToLower(vals[0]), "registrant:") {
+		vals = vals[1:]
+	}
 	if len(vals) != 2 {
 		return "", "", false
 	}

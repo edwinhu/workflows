@@ -25,13 +25,16 @@ const (
 )
 
 var (
-	rePeriod      = regexp.MustCompile(`CONFORMED PERIOD OF REPORT:\s*(\d{8})`)
-	reFiledDate   = regexp.MustCompile(`FILED AS OF DATE:\s*(\d{8})`)
-	reSubType     = regexp.MustCompile(`CONFORMED SUBMISSION TYPE:\s*([^\r\n]+)`)
-	reCompanyName = regexp.MustCompile(`COMPANY CONFORMED NAME:\s*([^\r\n]+)`)
-	reFormerName  = regexp.MustCompile(`FORMER CONFORMED NAME:\s*([^\r\n]+)`)
-	reCIK         = regexp.MustCompile(`CENTRAL INDEX KEY:\s*(\d+)`)
-	reAccession   = regexp.MustCompile(`ACCESSION NUMBER:\s*([^\r\n]+)`)
+	rePeriod = regexp.MustCompile(`CONFORMED PERIOD OF REPORT:\s*(\d{8})`)
+	// The ISS report's own preamble line, `Reporting Period: 07/01/2004 -
+	// 06/30/2005`; the END date is captured.
+	reReportingPeriod = regexp.MustCompile(`(?i)Reporting Period:\s*\d{2}/\d{2}/\d{4}\s*(?:-|to|through)\s*(\d{2})/(\d{2})/(\d{4})`)
+	reFiledDate       = regexp.MustCompile(`FILED AS OF DATE:\s*(\d{8})`)
+	reSubType         = regexp.MustCompile(`CONFORMED SUBMISSION TYPE:\s*([^\r\n]+)`)
+	reCompanyName     = regexp.MustCompile(`COMPANY CONFORMED NAME:\s*([^\r\n]+)`)
+	reFormerName      = regexp.MustCompile(`FORMER CONFORMED NAME:\s*([^\r\n]+)`)
+	reCIK             = regexp.MustCompile(`CENTRAL INDEX KEY:\s*(\d+)`)
+	reAccession       = regexp.MustCompile(`ACCESSION NUMBER:\s*([^\r\n]+)`)
 
 	// One pattern for all four series tags: the records are recovered by a
 	// state machine over the matches in document order, never by a first-match
@@ -68,6 +71,9 @@ func parseHeader(buf []byte) FilingMeta {
 	}
 	if m := rePeriod.FindSubmatch(head); m != nil {
 		meta.PeriodOfReport = string(m[1])
+	}
+	if m := reReportingPeriod.FindSubmatch(buf); m != nil {
+		meta.ReportPeriodEnd = string(m[3]) + string(m[1]) + string(m[2])
 	}
 	if m := reFiledDate.FindSubmatch(head); m != nil {
 		meta.FiledDate = string(m[1])

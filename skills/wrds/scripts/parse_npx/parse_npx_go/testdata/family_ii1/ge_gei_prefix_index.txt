@@ -1,0 +1,48 @@
+		COMPANY CONFORMED NAME:			GE INVESTMENT FUNDS INC
+		CENTRAL INDEX KEY:			0000746687
+<SERIES>
+<OWNER-CIK>0000746687
+<SERIES-ID>S000001647
+<SERIES-NAME>Premier Growth Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000004449
+<CLASS-CONTRACT-NAME>Class 1 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>GEPGX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000746687
+<SERIES-ID>S000001648
+<SERIES-NAME>S&P 500 Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000004450
+<CLASS-CONTRACT-NAME>Class 1 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>GESPX
+</CLASS-CONTRACT>
+</SERIES>
+<TEXT>
+
+
+
+============================== GEI S&P 500 INDEX ===============================
+
+
+3M COMPANY
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 10, 2011   Meeting Type: Annual
+Record Date:  MAR 11, 2011
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Elect Director Linda G. Alvarado        For       For          Management
+2     Elect Director George W. Buckley        For       For          Management
+3     Elect Director Vance D. Coffman         For       For          Management
+4     Elect Director Michael L. Eskew         For       For          Management
+5     Elect Director W. James Farrell         For       For          Management
+6     Elect Director Herbert L. Henkel        For       For          Management
+7     Elect Director Edward M. Liddy          For       For          Management
+8     Elect Director Robert S. Morrison       For       For          Management
+9     Elect Director Aulana L. Peters         For       For          Management
+10    Elect Director Robert J. Ulrich         For       For          Management
+11    Ratify Auditors                         For       For          Management
+12    Advisory Vote to Ratify Named Executive For       For          Management

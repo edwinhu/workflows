@@ -1190,7 +1190,7 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 			ix.brands = append(ix.brands, issInitials(toks[:k]))
 		}
 		if len(toks) >= 3 {
-			if acr := issInitials(toks[:2]); len(acr) == 2 {
+			if acr := issInitials(toks[:2]); len(acr) >= 2 {
 				ix.brands = append(ix.brands, acr)
 			}
 		}
@@ -1378,8 +1378,10 @@ func issCommonLastWord(decls []SeriesDecl) string {
 // ("John Hancock Funds II" -> "jhfii"). Tokens are already normalised.
 func issInitials(toks []string) string {
 	var b strings.Builder
-	for _, t := range toks {
-		if issRomanNumeral(t) {
+	for i, t := range toks {
+		// A leading two-letter token is already an abbreviation and is kept
+		// whole: GE Investment Funds heads its banners `GEI ...`.
+		if issRomanNumeral(t) || i == 0 && len(t) == 2 {
 			b.WriteString(t)
 			continue
 		}
@@ -1795,6 +1797,16 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			if d := issExactOrBrandUntyped(ix, strings.Join(f[:len(f)-1], " ")); d != nil {
 				return banner, d
 			}
+			// The heading may add the asset-class word with it: `BlackRock
+			// Mid-Cap Value Equity Portfolio` for a declared `BlackRock Mid
+			// Cap Value` (BlackRock Funds 2004, 439 rows with no series).
+			// `EQUITY` only, and the declared name must still carry no type
+			// word of its own, so a heading that REPLACES a word is refused.
+			if len(f) > 3 && strings.EqualFold(f[len(f)-2], "equity") {
+				if d := issExactOrBrandUntyped(ix, strings.Join(f[:len(f)-2], " ")); d != nil {
+					return banner, d
+				}
+			}
 		}
 	}
 	// A sleeve or account code before the name: `2DCN Emerging Markets Value
@@ -2042,6 +2054,21 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// series may answer to it -- a collision was recorded as nil and refuses.
 	if d := ix.lessLeadToken[key]; d != nil {
 		return banner, d
+	}
+	// The same reading where the banner carries the registrant's HISTORICAL
+	// brand and the declared name a successor brand: `AXP Variable Portfolio -
+	// S&P 500 Index Fund` for a declared `RiverSource Variable Portfolio S&P
+	// 500 Index Fund` (AXP Variable Portfolio Investment Series, 8,106 rows
+	// with no series). The registrant's own brand comes off the banner and
+	// exactly one leading token off the declared name; a collision refuses.
+	for _, b := range ix.brands {
+		rest, ok := issCutBrand(key, b)
+		if !ok {
+			continue
+		}
+		if d := ix.lessLeadToken[rest]; d != nil {
+			return banner, d
+		}
 	}
 
 	// The registrant's own name, misspelled or one word short of the header's.
