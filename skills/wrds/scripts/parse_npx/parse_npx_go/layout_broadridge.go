@@ -526,6 +526,62 @@ func brOpenProposalTail(cur *brRowBuf, slot string) bool {
 	return strings.TrimSpace(cur.text[len(cur.text)-1]) == slot
 }
 
+// brVoteRowSlot reports a heading slot that is a complete PROPOSAL ROW of this
+// grammar rather than a name: a director-slate nominee carries the vote columns
+// of its own row (`DONALD A. WASHBURN  Mgmt  For  For`), so it is neither the
+// wrapped tail brOpenProposalTail catches nor the corporate name brStraySlot
+// does, and it stood as the fund of every block after it (Touchstone Strategic
+// Trust 2005, 680 rows with no series). A proposal-type token followed by a vote
+// token is the grammar's own signature and never occurs in a fund name.
+func brVoteRowSlot(slot string) bool {
+	f := strings.Fields(slot)
+	for i := 1; i+1 < len(f); i++ {
+		switch strings.ToLower(f[i]) {
+		case "mgmt", "mgt", "management", "shareholder":
+			switch strings.ToLower(f[i+1]) {
+			case "for", "against", "abstain", "withheld", "withhold", "none", "split":
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// brRulelessHeadingSlot returns the fund heading of a vintage that draws NO rule
+// between blocks at all (Leuthold Funds 2005, 1,372 rows with no series). The
+// block opener carries the agenda number, a blank line stands above it, the
+// ISSUER name above that, another blank, and the section's fund heading at
+// column 0 above them both. brHeadingSlot refuses the block outright because
+// lines[i-1] is not a dashed rule, so no heading is ever read. Every ordinary
+// continuing block reaches this slot too, which is why the caller acts only on a
+// slot the registrant's own series index resolves.
+func brRulelessHeadingSlot(lines []string, i int) string {
+	if i < 4 || brDashRule(lines[i-1]) || strings.TrimSpace(lines[i-1]) != "" {
+		return ""
+	}
+	j := i - 2
+	for j >= 0 && strings.TrimSpace(lines[j]) == "" {
+		j--
+	}
+	// The issuer line the block opens under.
+	if j < 1 || brDashRule(lines[j]) || brAgendaOpener(lines[j]) {
+		return ""
+	}
+	j--
+	for j >= 0 && strings.TrimSpace(lines[j]) == "" {
+		j--
+	}
+	if j < 0 {
+		return ""
+	}
+	slot := strings.TrimSpace(lines[j])
+	// Headings sit at column 0; anything indented there is body text.
+	if slot == "" || brDashRule(slot) || strings.HasPrefix(lines[j], " ") || strings.HasPrefix(lines[j], "\t") {
+		return ""
+	}
+	return slot
+}
+
 // brPeriodEndpoint reports a date at one end of a printed reporting period,
 // including the `3/23/11` two-digit-year spelling htmlDate declines.
 func brPeriodEndpoint(s string) bool {
@@ -1002,7 +1058,13 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 						curSeries, curFund = d.SeriesID, slot
 					}
 				}
-				if slot, crossedBlank := brHeadingSlot(lines, i); slot != "" && !brOpenProposalTail(cur, slot) {
+				if slot := brRulelessHeadingSlot(lines, i); slot != "" && !brVoteRowSlot(slot) {
+					if _, d := issResolveFund(seriesIx, slot); d != nil {
+						flush()
+						curSeries, curFund = d.SeriesID, slot
+					}
+				}
+				if slot, crossedBlank := brHeadingSlot(lines, i); slot != "" && !brOpenProposalTail(cur, slot) && !brVoteRowSlot(slot) {
 					if crossedBlank {
 						// Evidence-only: act solely on a name this filing's own
 						// header declares, because this slot is also what an
