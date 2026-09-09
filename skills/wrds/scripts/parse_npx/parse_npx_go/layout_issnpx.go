@@ -4623,9 +4623,17 @@ func issBannerWrapVisible(sofar, next string, ix ...*issSeriesIndex) bool {
 	if len(ix) > 0 && ix[0] != nil && strings.TrimSpace(next) != "" {
 		_, sofarDecl := issResolveFund(ix[0], sofar)
 		_, nextDecl := issResolveFund(ix[0], strings.TrimSpace(next))
-		if sofarDecl == nil && nextDecl == nil {
+		if nextDecl == nil {
+			// The banner so far may already resolve on its own -- the full
+			// ten-name Lord Abbett header resolves `... FUND- WORLD GROWTH &
+			// INCOME` tolerantly -- and refusing the join there is strictly
+			// worse: the continuation commits as its own banner, resolves to
+			// nothing and blanks the section. Join only when it names the SAME
+			// series, so a rule that names a different fund still breaks.
 			if _, joined := issResolveFund(ix[0], sofar+" "+strings.TrimSpace(next)); joined != nil {
-				return true
+				if sofarDecl == nil || sofarDecl.SeriesID == joined.SeriesID {
+					return true
+				}
 			}
 		}
 	}

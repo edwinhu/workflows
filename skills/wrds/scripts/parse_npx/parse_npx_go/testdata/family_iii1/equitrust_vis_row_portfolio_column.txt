@@ -237,19 +237,19 @@ FILER:
  </tr>
  <tr>
   <td width="12%" valign="top" style="padding:0in 0in 0in 0in;width:12.06%;">
-  <p align="center" style="margin:0in 0in .0001pt;text-align:center;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  <p style="margin:0in 0in .0001pt;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
   </td>
   <td width="1%" valign="top" style="padding:0in 0in 0in 0in;width:1.02%;">
   <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
   </td>
   <td width="6%" valign="top" style="padding:0in 0in 0in 0in;width:6.98%;">
-  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">7-Eleven</font></p>
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">Abbott Laboratories</font></p>
   </td>
   <td width="1%" valign="top" style="padding:0in 0in 0in 0in;width:1.02%;">
   <p align="right" style="margin:0in 0in .0001pt;text-align:right;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
   </td>
   <td width="5%" valign="top" style="padding:0in 0in 0in 0in;width:5.54%;">
-  <p align="right" style="margin:0in 0in .0001pt;text-align:right;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">20040421</font></p>
+  <p align="right" style="margin:0in 0in .0001pt;text-align:right;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">20040423</font></p>
   </td>
   <td width="1%" valign="top" style="padding:0in 0in 0in 0in;width:1.04%;">
   <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
@@ -261,25 +261,25 @@ FILER:
   <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
   </td>
   <td width="4%" valign="top" style="padding:0in 0in 0in 0in;width:4.16%;">
-  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">SE</font></p>
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">ABT</font></p>
   </td>
   <td width="1%" valign="top" style="padding:0in 0in 0in 0in;width:1.02%;">
   <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
   </td>
   <td width="6%" valign="top" style="padding:0in 0in 0in 0in;width:6.44%;">
-  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">817826209</font></p>
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">2824100</font></p>
   </td>
   <td width="1%" valign="top" style="padding:0in 0in 0in 0in;width:1.02%;">
   <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
   </td>
   <td width="4%" valign="top" style="padding:0in 0in 0in 0in;width:4.2%;">
-  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">1.02</font></p>
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">1.01</font></p>
   </td>
   <td width="1%" valign="top" style="padding:0in 0in 0in 0in;width:1.02%;">
   <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
   </td>
   <td width="11%" valign="top" style="padding:0in 0in 0in 0in;width:11.3%;">
-  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">Elect Yoshitami Arai</font></p>
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">Elect Roxanne S. Austin</font></p>
   </td>
   <td width="1%" valign="top" style="padding:0in 0in 0in 0in;width:1.02%;">
   <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
@@ -323,13 +323,13 @@ FILER:
   <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
   </td>
   <td width="6%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:6.98%;">
-  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">7-Eleven</font></p>
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">Abbott Laboratories</font></p>
   </td>
   <td width="1%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:1.02%;">
   <p align="right" style="margin:0in 0in .0001pt;text-align:right;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
   </td>
   <td width="5%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:5.54%;">
-  <p align="right" style="margin:0in 0in .0001pt;text-align:right;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">20040421</font></p>
+  <p align="right" style="margin:0in 0in .0001pt;text-align:right;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">20040423</font></p>
   </td>
   <td width="1%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:1.04%;">
   <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
@@ -341,25 +341,25 @@ FILER:
   <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
   </td>
   <td width="4%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:4.16%;">
-  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">SE</font></p>
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">ABT</font></p>
   </td>
   <td width="1%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:1.02%;">
   <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
   </td>
   <td width="6%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:6.44%;">
-  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">817826209</font></p>
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">2824100</font></p>
   </td>
   <td width="1%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:1.02%;">
   <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
   </td>
   <td width="4%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:4.2%;">
-  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">1.03</font></p>
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">1.02</font></p>
   </td>
   <td width="1%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:1.02%;">
   <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
   </td>
   <td width="11%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:11.3%;">
-  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">Elect Masaaki Asakura</font></p>
+  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">Elect H. Laurance Fuller</font></p>
   </td>
   <td width="1%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:1.02%;">
   <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
