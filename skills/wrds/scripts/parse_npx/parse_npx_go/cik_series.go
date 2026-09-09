@@ -152,6 +152,13 @@ type dictFallback struct {
 	// its undotted spelling, for a heading that prints the same initialism
 	// without its periods. Consulted only after byName has failed.
 	byUndotted map[string]*SeriesDecl
+	// brandPrefixes are the registrant-brand prefixes the DICTIONARY spells and
+	// a heading may drop, normalised. Two sources, both the registrant's own
+	// evidence: the leading token run every dictionary name of this CIK shares
+	// (`MCBT`, Martin Currie Business Trust), and the leading token run of the
+	// filing's own COMPANY CONFORMED NAME that a dictionary name begins with
+	// (`Mirae Asset`, of `Mirae Asset Discovery Funds`).
+	brandPrefixes []string
 }
 
 func (d *cikSeries) exactFallback(meta FilingMeta) *dictFallback {
@@ -195,6 +202,7 @@ func (d *cikSeries) exactFallback(meta FilingMeta) *dictFallback {
 		}
 		f.byUndotted[k] = d
 	}
+	f.brandPrefixes = dictBrandPrefixes(extra, normalizeSeriesName(meta.CompanyName))
 	if normalizeSeriesName(meta.CompanyName) == "lincoln variable insurance products trust" {
 		// Keep the declaring pool unchanged; combine names only to refuse collisions.
 		all := append(append([]SeriesDecl(nil), meta.SeriesDecls...), extra...)
@@ -277,6 +285,79 @@ func (f *dictFallback) apply(r *VoteRow) {
 			r.SeriesID = d.SeriesID
 		}
 	}
+	// The heading drops the registrant brand the DICTIONARY name keeps:
+	// `Emerging Markets Great Consumer VIT Fund` for `Mirae Asset Emerging
+	// Markets Great Consumer VIT Fund` (S000065276, 374 rows), `Opportunistic
+	// EAFE Fund` for `MCBT Opportunistic EAFE Fund` (S000009976). The strip
+	// rules read the opposite direction only. The prefix is prepended and the
+	// result must be a dictionary name EXACTLY; two prefixes naming two series
+	// refuse, the way every other rung here refuses.
+	if r.SeriesID == "" {
+		if d := f.brandPrefixed(r.FundName); d != nil {
+			r.SeriesID = d.SeriesID
+		}
+	}
+}
+
+func (f *dictFallback) brandPrefixed(heading string) *SeriesDecl {
+	key := normalizeSeriesName(heading)
+	if key == "" {
+		return nil
+	}
+	var hit *SeriesDecl
+	for _, pre := range f.brandPrefixes {
+		if pre == "" || strings.HasPrefix(key, pre+" ") {
+			continue
+		}
+		d := f.byName[pre+" "+key]
+		if d == nil {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	return hit
+}
+
+// dictBrandPrefixes collects the registrant-brand prefixes a heading may have
+// dropped. Each is evidence the registrant itself supplies: a leading token run
+// EVERY dictionary name carries, or the filing's own registrant name as far as a
+// dictionary name spells it. A prefix that is a whole dictionary name on its own
+// is not collected -- prepending it could only build a longer name out of one
+// that already answers.
+func dictBrandPrefixes(decls []SeriesDecl, registrantKey string) []string {
+	var out []string
+	shared := []string(nil)
+	for i := range decls {
+		toks := strings.Fields(normalizeSeriesName(decls[i].Name))
+		if len(toks) < 2 {
+			return nil
+		}
+		if shared == nil {
+			shared = toks[:len(toks)-1]
+			continue
+		}
+		n := 0
+		for n < len(shared) && n < len(toks)-1 && shared[n] == toks[n] {
+			n++
+		}
+		shared = shared[:n]
+	}
+	if len(shared) > 0 {
+		out = append(out, strings.Join(shared, " "))
+	}
+	reg := strings.Fields(registrantKey)
+	for n := len(reg) - 1; n >= 1; n-- {
+		pre := strings.Join(reg[:n], " ")
+		for i := range decls {
+			if strings.HasPrefix(normalizeSeriesName(decls[i].Name), pre+" ") {
+				return append(out, pre)
+			}
+		}
+	}
+	return out
 }
 
 func dictInternalTokenDrop(idx map[string]*SeriesDecl, heading string) *SeriesDecl {

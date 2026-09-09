@@ -1,0 +1,59 @@
+<SEC-DOCUMENT>0000038778-06-000030.txt : 20060830
+<SEC-HEADER>0000038778-06-000030.hdr.sgml : 20060830
+<ACCEPTANCE-DATETIME>20060830112327
+ACCESSION NUMBER:		0000038778-06-000030
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+		COMPANY CONFORMED NAME:			FRANKLIN CUSTODIAN FUNDS INC
+		CENTRAL INDEX KEY:			0000038721
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000038721
+<SERIES-ID>S000006754
+<SERIES-NAME>FRANKLIN DYNATECH FUND
+<SERIES-ID>S000006755
+<SERIES-NAME>FRANKLIN GROWTH FUND
+<SERIES-ID>S000006756
+<SERIES-NAME>FRANKLIN INCOME FUND
+<SERIES-ID>S000006757
+<SERIES-NAME>FRANKLIN U.S. GOVERNMENT SECURITIES FUND
+<SERIES-ID>S000006758
+<SERIES-NAME>FRANKLIN UTILITIES FUND
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fcf_npx-06.txt
+<DESCRIPTION>FR. CUSTODIAN FUNDS, INC. N-PX PE 6/30/06
+<TEXT>
+===============================================================================
+
+VOTES BY FRANKLIN MULTI-INCOME TRUST PRIOR TO THE REORGANIZATION WITH
+FRANKLIN INCOME FUND A SERIES OF FRANKLIN CUSTODIAN FUNDS, INC. EFFECTIVE
+AUGUST 4, 2005
+
+
+========================= FRANKLIN MULTI-INCOME TRUST ==========================
+
+
+EXELON CORP.
+
+Ticker:       EXC            Security ID:  30161N101
+Meeting Date: JUL 22, 2005   Meeting Type: Annual
+Record Date:  MAY 2, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Issue Shares in Connection with an        For       For        Management
+      Acquisition
+2.1   Elect Director Edward A. Brennan          For       For        Management
+2.2   Elect Director Bruce De Mars              For       For        Management
+2.3   Elect Director Nelson A. Diaz             For       Against    Management
+2.4   Elect Director John W. Rowe               For       For        Management
+2.5   Elect Director Ronald Rubin               For       For        Management
+3     Increase Authorized Common Stock          For       For        Management
+4     Ratify Auditors                           For       For        Management
+5     Approve Omnibus Stock Plan                For       For        Management
+6     Approve Qualified Employee Stock Purchase For       For        Management

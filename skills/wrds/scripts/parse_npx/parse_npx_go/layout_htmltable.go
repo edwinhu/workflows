@@ -5286,6 +5286,27 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 				}
 			}
 		}
+		// `Item 1.    Proxy Voting Record. (Opportunistic EAFE Fund)` (Martin
+		// Currie Business Trust 2004, all 26 rows of the filing): the fund is
+		// named nowhere else, in a trailing parenthetical on the item line the
+		// layout otherwise reads as report scaffolding. Adopted only when the
+		// parenthetical NAMES a series -- an item line carrying a note, a date
+		// range or an account marker resolves to nothing and stays scaffolding.
+		if low := strings.ToLower(line); strings.HasPrefix(low, "item 1") && strings.HasSuffix(line, ")") {
+			if o := strings.LastIndex(line, "("); o > 0 {
+				inner := strings.TrimSpace(line[o+1 : len(line)-1])
+				if _, d := issResolveFund(ix, inner); d != nil {
+					name, id, ok = inner, d.SeriesID, true
+					adoptedAt, adoptedLine = li, inner
+					continue
+				}
+				if dictID := htmlDictionaryFund(ix, dict, inner); dictID != "" {
+					name, id, ok = inner, dictID, true
+					adoptedAt, adoptedLine = li, inner
+					continue
+				}
+			}
+		}
 		// This complete one-cell export sentence is a fund boundary even when
 		// its name is unresolved; do not carry the preceding fund across it.
 		if rest, wrapped := strings.CutPrefix(line, "In All Markets, for all voted ballots, for "); wrapped && strings.TrimSpace(pre) == line {
@@ -5617,6 +5638,12 @@ func htmlDictionaryFund(ix *issSeriesIndex, fallback *dictFallback, candidate st
 	// dictionary path had no such rung. Two type words naming two different
 	// series refuse, and a name the native header declares is never reread.
 	if d := htmlDictTypeWordAdded(ix, fallback, normalizeSeriesName(candidate)); d != nil {
+		return d.SeriesID
+	}
+	// The heading drops the registrant brand the dictionary name keeps, the same
+	// reading dictFallback.apply makes: `Opportunistic EAFE Fund` for `MCBT
+	// Opportunistic EAFE Fund` (S000009976).
+	if d := fallback.brandPrefixed(candidate); d != nil {
 		return d.SeriesID
 	}
 	return ""
