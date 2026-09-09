@@ -57,6 +57,12 @@ type FilingMeta struct {
 	// parsers, which are the only layer that knows which series a given vote
 	// belongs to. It is not a manifest column and is not serialized.
 	SeriesDecls []SeriesDecl
+
+	// ReportPeriodEnd is the end date of the `Reporting Period:` line the ISS
+	// report prints in its own preamble, YYYYMMDD. It stands in for
+	// PeriodOfReport only when the SGML header omits that field, and only for
+	// dating the dictionary; it is not a manifest column and is not serialized.
+	ReportPeriodEnd string
 }
 
 // ParseResult bundles the output of parsing a single filing.
@@ -88,6 +94,10 @@ type SeriesDecl struct {
 	// Tickers are the class tickers the header lists under this series; a
 	// heading that is exactly one of them names the series (RevenueShares 2012).
 	Tickers []string
+	// DeclDate is the period of the filing this (id, name) pair was declared
+	// in, YYYYMMDD. Set only on dictionary decls; a header declares the filing
+	// it sits in and carries none.
+	DeclDate string
 }
 
 // MultiValueSep joins repeated child values into one TSV cell.

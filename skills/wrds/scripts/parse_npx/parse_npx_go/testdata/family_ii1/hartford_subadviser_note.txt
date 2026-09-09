@@ -1,0 +1,34 @@
+		COMPANY CONFORMED NAME:			HARTFORD MUTUAL FUNDS II INC
+		CENTRAL INDEX KEY:			0000049905
+<TEXT>
+The Hartford SmallCap Growth Fund
+(This portion sub-advised by Wellington Management Company, LLC)
+Investment Company Report
+07/01/10 - 06/30/11
+
+<TABLE>
+<S>              <C>                                   <C>         <C>         <C>         <C>
+99(cent) Only Stores
+Ticker           Security ID:                          Meeting Date             Meeting Status
+NDN              CUSIP 65440K106                      09/14/2010               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Elect Eric Flamholtz                  Mgmt        For         For         For
+2                Elect Lawrence Glascott               Mgmt        For         For         For
+3                Elect David Gold                      Mgmt        For         For         For
+4                Elect Jeff Gold                       Mgmt        For         For         For
+5                Elect Marvin Holen                    Mgmt        For         For         For
+6                Elect Eric Schiffer                   Mgmt        For         For         For
+7                Elect Peter Woo                       Mgmt        For         For         For
+8                Ratification of Auditor               Mgmt        For         For         For
+9                2010 Equity Incentive Plan            Mgmt        For         For         For
+10               Shareholder Proposal Regarding        ShrHoldr    Against     Against     For
+                  Requiring Key Committee Directors
+                  To Receive Less Than 20% Against
+                  Votes
+
+</TABLE>
+

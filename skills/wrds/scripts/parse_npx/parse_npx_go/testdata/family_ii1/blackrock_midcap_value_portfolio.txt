@@ -1,0 +1,21 @@
+		COMPANY CONFORMED NAME:			BLACKROCK FUNDS
+		CENTRAL INDEX KEY:			0000844779
+<TEXT>
+=================== BLACKROCK MID-CAP VALUE EQUITY PORTFOLIO ===================
+
+ITEM 1 PROXY VOTING RECORD
+
+ABERCROMBIE &amp; FITCH CO.
+
+Ticker:       ANF            Security ID:  002896207
+Meeting Date: MAY 20, 2004   Meeting Type: Annual
+Record Date:  MAR 26, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director John A. Golden            For       For        Management
+1.2   Elect  Director Seth R. Johnson           For       For        Management
+1.3   Elect  Director Edward F. Limato          For       For        Management
+
+
+- --------------------------------------------------------------------------------
+

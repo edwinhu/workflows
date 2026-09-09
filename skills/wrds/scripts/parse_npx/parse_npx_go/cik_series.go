@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -41,7 +42,11 @@ func loadCIKSeries(path string) (*cikSeries, error) {
 			continue
 		}
 		seen[k] = true
-		d.byCIK[p[0]] = append(d.byCIK[p[0]], SeriesDecl{SeriesID: p[1], Name: p[2]})
+		decl := SeriesDecl{SeriesID: p[1], Name: p[2]}
+		if len(p) > 3 && len(p[3]) == 8 && isAllDigits(p[3]) {
+			decl.DeclDate = p[3]
+		}
+		d.byCIK[p[0]] = append(d.byCIK[p[0]], decl)
 	}
 	return d, sc.Err()
 }
@@ -52,7 +57,85 @@ func (d *cikSeries) back(meta *FilingMeta) {
 		return
 	}
 	if decls := d.byCIK[meta.CIK]; len(decls) > 0 {
-		meta.SeriesDecls = append([]SeriesDecl(nil), decls...)
+		period := meta.PeriodOfReport
+		if period == "" {
+			period = meta.ReportPeriodEnd
+		}
+		meta.SeriesDecls = dictContemporaneous(decls, period)
+	}
+}
+
+// dictContemporaneous drops the dictionary entries that make one name answer to
+// two series when the registrant simply reused the name years apart: CIK
+// 1217286 declared `JPMorgan Market Neutral Fund` for S000002614 in 2006 and
+// again for S000002838 in 2014, and a 2005 filing printing that banner means
+// the 2006 holder. The entry whose DECLARATION is nearest the filing's period
+// survives and the rest of that name is dropped, so seriesByName sees one
+// answer instead of refusing both.
+//
+// The tiebreak is dictionary-only evidence: it fires only when every colliding
+// entry carries a declaration date, which a header-sourced decl never does, and
+// only when one entry is strictly nearest. Names that do not collide, and the
+// surviving id's OTHER names, are untouched.
+func dictContemporaneous(decls []SeriesDecl, period string) []SeriesDecl {
+	if len(period) != 8 {
+		return append([]SeriesDecl(nil), decls...)
+	}
+	byName := map[string][]int{}
+	for i, x := range decls {
+		if k := normalizeSeriesName(x.Name); k != "" {
+			byName[k] = append(byName[k], i)
+		}
+	}
+	drop := map[int]bool{}
+	for _, idx := range byName {
+		best, bestGap, tied := -1, 0, false
+		ids := map[string]bool{}
+		for _, i := range idx {
+			if decls[i].DeclDate == "" {
+				best = -1
+				break
+			}
+			ids[decls[i].SeriesID] = true
+			gap := dateGapDays(decls[i].DeclDate, period)
+			switch {
+			case best < 0 || gap < bestGap:
+				best, bestGap, tied = i, gap, false
+			case gap == bestGap && decls[i].SeriesID != decls[best].SeriesID:
+				tied = true
+			}
+		}
+		if best < 0 || tied || len(ids) < 2 {
+			continue
+		}
+		for _, i := range idx {
+			if decls[i].SeriesID != decls[best].SeriesID {
+				drop[i] = true
+			}
+		}
+	}
+	out := make([]SeriesDecl, 0, len(decls))
+	for i, x := range decls {
+		if !drop[i] {
+			out = append(out, x)
+		}
+	}
+	return out
+}
+
+// dateGapDays is the absolute distance between two YYYYMMDD dates, counting
+// months as 31 days: an ordering, not a calendar.
+func dateGapDays(a, b string) int {
+	n := func(s string) int {
+		y, _ := strconv.Atoi(s[:4])
+		m, _ := strconv.Atoi(s[4:6])
+		d, _ := strconv.Atoi(s[6:8])
+		return y*372 + m*31 + d
+	}
+	if g := n(a) - n(b); g < 0 {
+		return -g
+	} else {
+		return g
 	}
 }
 

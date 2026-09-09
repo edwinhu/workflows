@@ -1,0 +1,22 @@
+		COMPANY CONFORMED NAME:			AXP VARIABLE PORTFOLIO INVESTMENT SERIES INC
+		CENTRAL INDEX KEY:			0000353968
+<TEXT>
+================= AXP VARIABLE PORTFOLIO - S&P 500 INDEX FUND ==================
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 11, 2004   Meeting Type: Annual
+Record Date:  MAR 12, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Edward A. Brennan         For       For        Management
+1.2   Elect  Director Michael L. Eskew          For       For        Management
+1.3   Elect  Director W. James McNerney, Jr.    For       For        Management
+1.4   Elect  Director Kevin W. Sharer           For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Increase Authorized Common Stock          For       For        Management
+4     Separate Chairman and CEO Positions       Against   Against    Shareholder
+
+
