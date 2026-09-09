@@ -1,0 +1,62 @@
+<SEC-HEADER>0001056288-04-000555.hdr.sgml : 20040826
+<ACCEPTANCE-DATETIME>20040826150336
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+		COMPANY CONFORMED NAME:			FEDERATED INSURANCE SERIES
+		CENTRAL INDEX KEY:			0000912577
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx10923425101.htm
+<TEXT>
+<br>
+Account Number: <u>IFISCF Federated International Small Co. Fund 2</u> <br>
+
+<br>
+<table border=0>
+<tr>
+        <td colspan="2"><b>ISSUER NAME</b></td>
+        <td><b>TICKER</b></td>
+        <td><b>CUSIP</b></td>
+        <td><b>MTG DATE</b></td>
+        <td colspan="3"><b>MTG TYPE</b></td>
+</tr>
+<tr>
+        <td width="5%">&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td><b>Proposal Type</b></td>
+        <td><b>Voted?</b></td>
+        <td><b>Vote</b></td>
+        <td><b>For/Agnst Mgmt</b></td>
+</tr>
+<tr>
+        <td colspan="2"><b><i>ACS Actividades de Construcciones y Servicios</i></b></td>
+        <td><b><i></i></b>&nbsp;</td>
+        <td><b><i>5333381</i></b>&nbsp;</td>
+        <td><b><i>10/13/03</i></b>&nbsp;</td>
+        <td colspan="3"><b><i>Special</i></b>&nbsp;</td>
+</tr>
+<tr>
+        <td>1.00 </td>
+        <td colspan="3">&nbsp;&nbsp;Authorize Legal Formalities</td>
+        <td>MGMT</td>
+        <td>YES</td>
+        <td>FOR</td>
+        <td>FOR</td>
+</tr>
+<tr>
+        <td>2.00 </td>
+        <td colspan="3">&nbsp;&nbsp;Approve Merger/Acquisition</td>
+        <td>MGMT</td>
+        <td>YES</td>
+        <td>FOR</td>
+        <td>FOR</td>
+</tr>
+</table>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
