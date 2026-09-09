@@ -1,0 +1,79 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ OnG5KYpowWsaqeYCtWyTEDpLlU9snHoaxfrArPi7s07trXkhcesvOrgQItq17OhW
+ jNQ+BfciR7qTsOj9hS6N8Q==
+
+<SEC-DOCUMENT>0001137439-05-000199.txt : 20050830
+<SEC-HEADER>0001137439-05-000199.hdr.sgml : 20050830
+<ACCEPTANCE-DATETIME>20050830151452
+ACCESSION NUMBER:		0001137439-05-000199
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050830
+DATE AS OF CHANGE:		20050830
+EFFECTIVENESS DATE:		20050830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ASSETMARK FUNDS
+		CENTRAL INDEX KEY:			0001131042
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0630
+
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>assetmk2005npx.htm
+<TEXT>
+<HTML>
+<HEAD>
+- --------------------------------------------------------------------------------
+- --------------------------------------------------------------------------------
+TCW INVESTMENT MANAGEMENT COMPANY
+- --------------------------------------------------------------------------------
+- --------------------------------------------------------------------------------
+
+
+Name of Fund:                       Assetmark Large Cap Growth Fund
+Period:                             July 1, 2004 - September 30, 2004
+==============================================================================================================
+
+Account Number: 3596 Assetmark LG CAP GR
+
+ISSUER NAME                             TICKER      CUSIP              MTG DATE           MTG TYPE
+                                                                       Proposal Type      Voted?    Vote      For/Agnst Mgmt
+Dell Inc                                DELL        24702R101          7/16/04            Annual
+         1.01   Elect Donald J. Carty                                  MGMT               YES       FOR       FOR
+         1.02   Elect Michael S. Dell                                  MGMT               YES       FOR       FOR
+         1.03   Elect William H. Gray III                              MGMT               YES       FOR       FOR
+         1.04   Elect Judy C. Lewent                                   MGMT               YES       FOR       FOR
+         1.05   Elect Thomas W. Luce III                               MGMT               YES       FOR       FOR
+         1.06   Elect Klaus S. Luft                                    MGMT               YES       FOR       FOR
+         1.07   Elect Alex J. Mandl                                    MGMT               YES       FOR       FOR
+         1.08   Elect Michael A. Miles                                 MGMT               YES       FOR       FOR
+         1.09   Elect Samuel A. Nunn Jr.                               MGMT               YES       FOR       FOR
+          1.1   Elect Kevin B. Rollins                                 MGMT               YES       FOR       FOR
+Name of Fund:                       Assetmark Large Cap Value Fund
+Period:                             July 1, 2004 - September 30, 2004
+==============================================================================================================
+
+- --------------------------------------------------------------------------------------------------------------
+R.J. REYNOLDS TOBACCO HOLDINGS, INC.
+Special Meeting Date: 07/28/2004
+Issuer: 76182K
+SEDOL:                                       ISIN:                   RJR
+- --------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+ Proposal                                                          Proposal       Vote      Against
+  Number    Proposal                                                 Type         Cast       Mgmt.
+- --------------------------------------------------------------------------------------------------------------

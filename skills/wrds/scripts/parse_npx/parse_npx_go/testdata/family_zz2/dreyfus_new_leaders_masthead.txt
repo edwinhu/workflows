@@ -1,0 +1,613 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ GD6h6eDA6IhPVZN77pglmYuqu3VzZmjsTwx4UbnY12HtublpIQ5aYM3qXrff5spa
+ XVHOKmlVsZXFkIq64ns0cw==
+
+<SEC-DOCUMENT>0000737520-05-000010.txt : 20050818
+<SEC-HEADER>0000737520-05-000010.hdr.sgml : 20050818
+<ACCEPTANCE-DATETIME>20050818093308
+ACCESSION NUMBER:		0000737520-05-000010
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050818
+DATE AS OF CHANGE:		20050818
+EFFECTIVENESS DATE:		20050818
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			DREYFUS PREMIER  NEW LEADERS FUND INC
+		CENTRAL INDEX KEY:			0000737520
+		IRS NUMBER:				133272460
+		STATE OF INCORPORATION:			NY
+		FISCAL YEAR END:			1231
+
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>form085.htm
+<DESCRIPTION>FORM N-PX
+<TEXT>
+
+
+
+<HTML>
+<HEAD>
+   <TITLE>form085</TITLE>
+   <META name="HandheldFriendly" content="true">
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<A name="page_2"></A>
+
+<P>
+<B><FONT size=2 face="serif">Item 1. Proxy Voting Record </FONT></B></P>
+<P>
+<FONT size=2 face="monospace">==================== DREYFUS PREMIER NEW LEADERS FUND, INC. ====================</FONT></P>
+<TABLE border=0 cellspacing=1 cellpadding=0>
+<TR valign="bottom">
+        <TD width=56% nowrap colspan=5 align=left>
+<FONT size=2 face="monospace">ALUMINA LTD (FORMERLY WMC LIMITED)</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+<TR>
+        <TD colspan=11>
+&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=32% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">Ticker:</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=34% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">Security ID: 022205108</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=32% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">Meeting Date: APR 27, 2005</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=34% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">Meeting Type: Annual</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=32% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">Record Date: MAR 21, 2005</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=22% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+<TR>
+        <TD colspan=11>
+&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=3% nowrap align=left>
+<FONT size=2 face="monospace">#</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=27% nowrap align=left>
+<FONT size=2 face="monospace">Proposal</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=22% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+<FONT size=2 face="monospace">Mgt Rec</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+<FONT size=2 face="monospace">Vote Cast</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+<FONT size=2 face="monospace">Sponsor</FONT>&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=3% nowrap align=left>
+<FONT size=2 face="monospace">1</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=51% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">TO RE-ELECT MR. R J MCNEILLY AS A</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+<FONT size=2 face="monospace">For</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+<FONT size=2 face="monospace">For</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+<FONT size=2 face="monospace">Management</FONT>&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=3% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=51% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">DIRECTOR MR. MCNEILLY RETIRES IN</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=3% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=51% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">ACCORDANCE WITH THE COMPANY S</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=3% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=51% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">CONSTITUTION. BEING ELIGIBLE , MR.</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=3% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=51% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">MCNEILLY OFFERS HIMSELF FOR RELECTION.</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=3% nowrap align=left>
+<FONT size=2 face="monospace">2</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=51% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">TO RE-ELECT MR M R RAYNER AS A DIRECTOR</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+<FONT size=2 face="monospace">For</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+<FONT size=2 face="monospace">For</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+<FONT size=2 face="monospace">Management</FONT>&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=3% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=51% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">MR RAYNER RETIRES IN ACCORDANCE WITH THE</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=3% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=51% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">COMPANY S CONSTITUTION, BEING ELIGIBLE,</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=3% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=51% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">MR RAYNER OFFERS HIMSELF FOR RE-ELECTION</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=3% nowrap align=left>
+<FONT size=2 face="monospace">3</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=51% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">TO CONSIDER AND, IF THOUGHT FIT, TO PASS</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+<FONT size=2 face="monospace">For</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+<FONT size=2 face="monospace">For</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+<FONT size=2 face="monospace">Management</FONT>&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=3% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=51% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">THE FOLLOWING RESOLUTION: THAT, PURSUANT</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=3% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=51% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">TO SECTIONS 136(2) AND 648G OF THE</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=3% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=51% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">CORPORATIONS ACT 2001 (CTH), RULE 139 OF</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=3% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=51% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">THE CONSTITUTION OF THE COMPANY IS</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=3% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=27% nowrap align=left>
+<FONT size=2 face="monospace">RENEWED.</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=22% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=10% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=13% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+</TABLE><BR>
+<P>
+<FONT size=2 face="monospace">--------------------------------------------------------------------------------</FONT></P>
+<TABLE border=0 cellspacing=1 cellpadding=0>
+<TR valign="bottom">
+        <TD width=15% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">AMETEK, INC.</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=16% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=16% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=16% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=12% nowrap align=left>
+&nbsp;
+        </TD>
+</TR>
+<TR>
+        <TD colspan=13>
+&nbsp;
+        </TD>
+</TR>
+<TR valign="bottom">
+        <TD width=15% nowrap colspan=3 align=left>
+<FONT size=2 face="monospace">Ticker:</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=16% nowrap align=left>
+ &nbsp;<FONT size=2 face="monospace">AME</FONT>&nbsp;
+        </TD>
+        <TD width=2%>
+&nbsp;  </TD>
+        <TD width=16% nowrap align=center>
+<FONT size=2 face="monospace">Security ID:</FONT>&nbsp;
+        </TD>

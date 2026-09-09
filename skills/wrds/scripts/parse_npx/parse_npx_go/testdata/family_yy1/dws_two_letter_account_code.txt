@@ -10,12 +10,13 @@ FILER:
 
 	COMPANY DATA:	
 		COMPANY CONFORMED NAME:			DWS VARIABLE SERIES II
+		CENTRAL INDEX KEY:			0000810573
+		IRS NUMBER:				810105002
 ******************************* FORM N-Px REPORT *******************************
 
 ICA File Number: 811-05002
 Reporting Period: 07/01/2005 - 06/30/2006
 DWS Variable Series II
-
 =========================== AA      DWS BALANCED VIP ===========================
 
 

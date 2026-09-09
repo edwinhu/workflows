@@ -1,0 +1,76 @@
+<SEC-DOCUMENT>0001438934-12-000376.txt : 20120829
+<SEC-HEADER>0001438934-12-000376.hdr.sgml : 20120829
+<ACCEPTANCE-DATETIME>20120829105416
+ACCESSION NUMBER:		0001438934-12-000376
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20120630
+FILED AS OF DATE:		20120829
+DATE AS OF CHANGE:		20120829
+EFFECTIVENESS DATE:		20120829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			MANAGERS FUNDS
+		CENTRAL INDEX KEY:			0000720309
+		IRS NUMBER:				222528211
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-03752
+		FILM NUMBER:		121061912
+
+	BUSINESS ADDRESS:	
+		STREET 1:		800 CONNECTICUT AVENUE
+		CITY:			NORWALK
+		STATE:			CT
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000720309
+<SERIES-ID>S000009862
+<SERIES-NAME>Managers Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000027302
+<CLASS-CONTRACT-NAME>Managers Value Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>MGIEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000720309
+<SERIES-ID>S000009863
+<SERIES-NAME>Managers AMG Essex Large Cap Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000027303
+<CLASS-CONTRACT-NAME>Managers AMG Essex Large Cap Growth Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>MGCAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000720309
+Managers Cadence Capital Appreciation Fund
+--------------------------------------------------------------------------------------------------------------------------
+ ABBOTT LABORATORIES                                                                         Agenda Number:  933560408
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  002824100
+    Meeting Type:  Annual
+    Meeting Date:  27-Apr-2012
+          Ticker:  ABT
+            ISIN:  US0028241000
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1.     DIRECTOR
+       R.J. ALPERN                                               Mgmt          For                            For
+       R.S. AUSTIN                                               Mgmt          For                            For
+       S.E. BLOUNT                                               Mgmt          For                            For
+       W.J. FARRELL                                              Mgmt          For                            For
+       E.M. LIDDY                                                Mgmt          For                            For
+       N. MCKINSTRY                                              Mgmt          Withheld                       Against
+       P.N. NOVAKOVIC                                            Mgmt          For                            For
