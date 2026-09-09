@@ -1,0 +1,535 @@
+		COMPANY CONFORMED NAME:			MUTUAL FUND SERIES TRUST
+		CENTRAL INDEX KEY:			0001355064
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000022598
+<SERIES-NAME>Eventide Gilead Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000065340
+<CLASS-CONTRACT-NAME>Eventide Gilead Fund Class N
+<CLASS-CONTRACT-TICKER-SYMBOL>ETGLX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080457
+<CLASS-CONTRACT-NAME>Eventide Gilead Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>ETAGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080458
+<CLASS-CONTRACT-NAME>Eventide Gilead Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>ETCGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080459
+<CLASS-CONTRACT-NAME>Eventide Gilead Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>ETILX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000182346
+<CLASS-CONTRACT-NAME>Eventide Gilead Fund Class T Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000033419
+<SERIES-NAME>Catalyst/MAP Global Balanced Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102758
+<CLASS-CONTRACT-NAME>Catalyst/MAP Global Balanced Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>TRXAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102759
+<CLASS-CONTRACT-NAME>Catalyst/MAP Global Balanced Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>TRXCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142549
+<CLASS-CONTRACT-NAME>Catalyst/MAP Global Balanced Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>TRXIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189546
+<CLASS-CONTRACT-NAME>Catalyst/MAP Global Balanced Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000033420
+<SERIES-NAME>Catalyst/MAP Global Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102760
+<CLASS-CONTRACT-NAME>Catalyst/MAP Global Equity Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>CAXAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102761
+<CLASS-CONTRACT-NAME>Catalyst/MAP Global Equity Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>CAXCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142550
+<CLASS-CONTRACT-NAME>Catalyst/MAP Global Equity Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>CAXIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188996
+<CLASS-CONTRACT-NAME>Catalyst/MAP Global Equity Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000039514
+<SERIES-NAME>Eventide Healthcare & Life Sciences Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121707
+<CLASS-CONTRACT-NAME>Eventide Healthcare & Life Sciences Fund Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETAHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121708
+<CLASS-CONTRACT-NAME>Eventide Healthcare & Life Sciences Fund Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETCHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121709
+<CLASS-CONTRACT-NAME>Eventide Healthcare & Life Sciences Fund Class N Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETNHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121710
+<CLASS-CONTRACT-NAME>Eventide Healthcare & Life Sciences Fund Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETIHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000182347
+<CLASS-CONTRACT-NAME>Eventide Healthcare & Life Sciences Fund Class T Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000045780
+<SERIES-NAME>AlphaCentric Asset Rotation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142725
+<CLASS-CONTRACT-NAME>AlphaCentric Asset Rotation Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>ROTAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142726
+<CLASS-CONTRACT-NAME>AlphaCentric Asset Rotation Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>ROTCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142727
+<CLASS-CONTRACT-NAME>AlphaCentric Asset Rotation Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>ROTIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189860
+<CLASS-CONTRACT-NAME>AlphaCentric Asset Rotation Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000045781
+<SERIES-NAME>Catalyst MLP & Infrastructure Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142728
+<CLASS-CONTRACT-NAME>Catalyst MLP & Infrastructure Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>MLXAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142729
+<CLASS-CONTRACT-NAME>Catalyst MLP & Infrastructure Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>MLXCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142730
+<CLASS-CONTRACT-NAME>Catalyst MLP & Infrastructure Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>MLXIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189000
+<CLASS-CONTRACT-NAME>Catalyst MLP & Infrastructure Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000048680
+<SERIES-NAME>AlphaCentric Income Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000153405
+<CLASS-CONTRACT-NAME>AlphaCentric Income Opportunities Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>IOFAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000153406
+<CLASS-CONTRACT-NAME>AlphaCentric Income Opportunities Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>IOFCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000153407
+<CLASS-CONTRACT-NAME>AlphaCentric Income Opportunities Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>IOFIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189861
+<CLASS-CONTRACT-NAME>AlphaCentric Income Opportunities Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000048681
+<SERIES-NAME>AlphaCentric Bond Rotation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000153408
+<CLASS-CONTRACT-NAME>AlphaCentric Bond Rotation Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>BDRAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000153409
+<CLASS-CONTRACT-NAME>AlphaCentric Bond Rotation Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>BDRCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000153410
+<CLASS-CONTRACT-NAME>AlphaCentric Bond Rotation Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>BDRIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189862
+<CLASS-CONTRACT-NAME>AlphaCentric Bond Rotation Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000049985
+<SERIES-NAME>Eventide Multi-Asset Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000157835
+<CLASS-CONTRACT-NAME>Eventide Multi-Asset Income Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>ETAMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000157836
+<CLASS-CONTRACT-NAME>Eventide Multi-Asset Income Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>ETCMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000157837
+<CLASS-CONTRACT-NAME>Eventide Multi-Asset Income Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>ETIMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000157838
+<CLASS-CONTRACT-NAME>Eventide Multi-Asset Income Fund Class N
+<CLASS-CONTRACT-TICKER-SYMBOL>ETNMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000182348
+<CLASS-CONTRACT-NAME>Eventide Multi-Asset Income Fund Class T Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000055006
+<SERIES-NAME>AlphaCentric Premium Opportunity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000173003
+<CLASS-CONTRACT-NAME>AlphaCentric Premium Opportunity Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>HMXAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000173004
+<CLASS-CONTRACT-NAME>AlphaCentric Premium Opportunity Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>HMXCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000173005
+<CLASS-CONTRACT-NAME>AlphaCentric Premium Opportunity Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>HMXIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189863
+<CLASS-CONTRACT-NAME>AlphaCentric Premium Opportunity Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000057714
+<SERIES-NAME>AlphaCentric Robotics and Automation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000186116
+<CLASS-CONTRACT-NAME>AlphaCentric Robotics and Automation Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>GNXAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000186117
+<CLASS-CONTRACT-NAME>AlphaCentric Robotics and Automation Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>GNXCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000186118
+<CLASS-CONTRACT-NAME>AlphaCentric Robotics and Automation Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>GNXIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000186119
+<CLASS-CONTRACT-NAME>AlphaCentric Robotics and Automation Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000059102
+<SERIES-NAME>Eventide Global Dividend Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000193764
+<CLASS-CONTRACT-NAME>Eventide Global Dividend Opportunities Fund Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETADX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000193765
+<CLASS-CONTRACT-NAME>Eventide Global Dividend Opportunities Fund Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETCDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000193766
+<CLASS-CONTRACT-NAME>Eventide Global Dividend Opportunities Fund Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETIDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000193767
+<CLASS-CONTRACT-NAME>Eventide Global Dividend Opportunities Fund Class N Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETNDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000193768
+<CLASS-CONTRACT-NAME>Eventide Global Dividend Opportunities Fund Class T Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000062017
+<SERIES-NAME>AlphaCentric Small Cap Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000200865
+<CLASS-CONTRACT-NAME>AlphaCentric Small Cap Opportunities Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SMZAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000200866
+<CLASS-CONTRACT-NAME>AlphaCentric Small Cap Opportunities Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>SMZCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000200867
+<CLASS-CONTRACT-NAME>AlphaCentric Small Cap Opportunities Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>SMZIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000200868
+<CLASS-CONTRACT-NAME>AlphaCentric Small Cap Opportunities Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000062486
+<SERIES-NAME>Eventide Limited-Term Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000202730
+<CLASS-CONTRACT-NAME>Class A Eventide Limited-Term Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>ETABX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000202731
+<CLASS-CONTRACT-NAME>Class C Eventide Limited-Term Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>ETCBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000202732
+<CLASS-CONTRACT-NAME>Class I Eventide Limited-Term Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>ETIBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000202733
+<CLASS-CONTRACT-NAME>Class N Eventide Limited-Term Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>ETNBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000202734
+<CLASS-CONTRACT-NAME>Class T Eventide Limited-Term Bond Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000064011
+<SERIES-NAME>AlphaCentric Municipal Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000207082
+<CLASS-CONTRACT-NAME>AlphaCentric Municipal Opportunities Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>MUNIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000207083
+<CLASS-CONTRACT-NAME>AlphaCentric Municipal Opportunities Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>MUNAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000207084
+<CLASS-CONTRACT-NAME>AlphaCentric Municipal Opportunities Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>MUNCX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>mfstnpx2.htm
+<DESCRIPTION>N-PX
+<TEXT>
+
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 10pt Calibri, Helvetica, Sans-Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Registrant:&nbsp;&nbsp;Mutual Fund Series Trust</B></FONT></TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Fund Name - </B></FONT></TD>
+    <TD COLSPAN="2" STYLE="white-space: nowrap"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Eventide Gilead Fund</B></FONT></TD>
+    <TD STYLE="white-space: nowrap"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Item 1</B></FONT></TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="2" STYLE="white-space: nowrap"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Investment Company 1940 Act File # 811-21872</B></FONT></TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="2" STYLE="white-space: nowrap"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Reporting Period:&nbsp;&nbsp;July 1, 2018 - June 30, 2019</B></FONT></TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; width: 23%">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 6%">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 7%">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 7%">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 37%">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 7%">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 2%">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 5%">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 6%">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; border-top: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-top: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-top: Black 1pt solid">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="white-space: nowrap; border-top: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>N-PX Form Requirements</B></FONT></TD>
+    <TD STYLE="white-space: nowrap; border-top: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-top: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-top: Black 1pt solid; border-bottom: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; border-top: Black 1pt solid; border-right: Black 1pt solid">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="border: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(a) Issuer's Name</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(b) Exchange Ticker Symbol</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(c)&quot;CUSIP&quot; #</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(d) Shareholder Meeting Date</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(e) Matter Identification</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(f) Proposal Type</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(g) Voted</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(h) Vote Cast</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(i) For or Against Management</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Cirrus Logic, Inc.</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">CRUS</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">172755100</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">8/3/2018</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Elect Director John C. Carter</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Management</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Yes</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Cirrus Logic, Inc.</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">CRUS</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">172755100</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">8/3/2018</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Elect Director Alexander M. Davern</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Management</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Yes</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Cirrus Logic, Inc.</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">CRUS</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">172755100</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">8/3/2018</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Elect Director Timothy R. Dehne</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Management</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Yes</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Cirrus Logic, Inc.</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">CRUS</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">172755100</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">8/3/2018</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Elect Director Christine King</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Management</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Yes</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Cirrus Logic, Inc.</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">CRUS</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">172755100</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">8/3/2018</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Elect Director Jason P. Rhode</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Management</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Yes</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Cirrus Logic, Inc.</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">CRUS</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">172755100</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">8/3/2018</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Elect Director Alan R. Schuele</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Management</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Yes</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Cirrus Logic, Inc.</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">CRUS</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">172755100</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">8/3/2018</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Elect Director David J. Tupman</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Management</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Yes</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Cirrus Logic, Inc.</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">CRUS</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">172755100</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; text-align: right"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">8/3/2018</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Ratify Ernst &amp; Young LLP as Auditors</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Management</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Yes</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; border-right: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Cirrus Logic, Inc.</FONT></TD>

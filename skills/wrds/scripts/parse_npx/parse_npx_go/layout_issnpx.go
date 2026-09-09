@@ -407,7 +407,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		if !ok {
 			name, ok = issOpenBanner(line, lines, i)
 		}
-		if !ok && line != "" && i+2 < len(lines) && strings.EqualFold(strings.TrimSpace(lines[i+1]), "Proxy Voting Records") {
+		if !ok && line != "" && i+2 < len(lines) && issReportTitleLine(strings.TrimSpace(lines[i+1])) {
 			period := strings.Split(strings.TrimSpace(lines[i+2]), "-")
 			if len(period) == 2 && htmlDate(period[0]) != "" && htmlDate(period[1]) != "" {
 				name, ok = line, true
@@ -1207,7 +1207,9 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		// only ever followed by an exact lookup, so the token must sit at the
 		// front of a heading whose remainder is a declared name.
 		for _, t := range toks {
-			if len(t) >= 6 && !issGenericRegistrantWord[t] {
+			// Five letters up: Janus Aspen Series heads "ASPEN WORLDWIDE
+			// GROWTH PORTFOLIO" for a declared "Worldwide Growth Portfolio".
+			if len(t) >= 5 && !issGenericRegistrantWord[t] {
 				ix.brands = append(ix.brands, t)
 			}
 		}
@@ -1249,6 +1251,24 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		key := normalizeSeriesName(d.Name)
 		put(ix.byHistoricalBrand, issHistoricalBrandKey(key), d)
 		put(ix.byCompact, strings.ReplaceAll(key, " ", ""), d)
+		// The marketing abbreviation of `capitalization`: Target Portfolio
+		// Trust heads `Target Large Cap Value Portfolio` for a declared `LARGE
+		// CAPITALIZATION VALUE` (S000004688, 2,292 rows). One declared-name
+		// key more, refused on collision like every other.
+		if toks := strings.Fields(key); len(toks) > 1 {
+			short := make([]string, len(toks))
+			cut := false
+			for j, t := range toks {
+				if t == "capitalization" {
+					short[j], cut = "cap", true
+					continue
+				}
+				short[j] = t
+			}
+			if cut {
+				put(ix.byName, strings.Join(short, " "), d)
+			}
+		}
 		// One leading token off the DECLARED name; the remainder must still be
 		// two tokens at least, so a two-word name never collapses to one word.
 		if toks := strings.Fields(key); len(toks) >= 3 {
@@ -2114,7 +2134,90 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d := issAbbrevStemDecl(ix, key); d != nil {
 		return banner, d
 	}
+	// The declared name cut off at the banner's own width: `ALLIANCEBERNSTEIN
+	// BALANCED WEALTH STRATEGY PORT` for a declared `AllianceBernstein
+	// Balanced Wealth Strategy Portfolio` (S000010443, 2,535 rows). Exactly
+	// one declared name may continue the heading, and its last word must be a
+	// genuine stem of the declared word.
+	if d := issWidthTruncatedDecl(ix, key); d != nil {
+		return banner, d
+	}
+	// A fund-family prefix glued to the fund by a hyphen and no space:
+	// `ALLIANCEBERNSTEIN VARIABLE SERIES FUND-VALUE PORTFOLIO` for a declared
+	// `AllianceBernstein Value Portfolio` (825316, 8,055 rows). Every token of
+	// the prefix must be a token of the registrant's own name, so only the
+	// registrant's own vocabulary is ever cut; the remainder goes back through
+	// the whole chain and an ambiguous remainder still refuses.
+	if rest, ok := issHyphenGluedRegistrantPrefix(banner, registrantKey); ok {
+		if _, alt := issResolveFund(ix, rest); alt != nil {
+			return banner, alt
+		}
+	}
 	return banner, nil
+}
+
+// issHyphenGluedRegistrantPrefix cuts a hyphen-glued prefix built entirely from
+// the registrant's own tokens, returning the remainder.
+func issHyphenGluedRegistrantPrefix(banner, registrantKey string) (string, bool) {
+	regToks := make(map[string]bool)
+	for _, t := range strings.Fields(registrantKey) {
+		regToks[strings.Trim(t, ".,")] = true
+	}
+	if len(regToks) == 0 {
+		return "", false
+	}
+	for i, r := range banner {
+		if r != '-' {
+			continue
+		}
+		head, rest := strings.TrimSpace(banner[:i]), strings.TrimSpace(banner[i+1:])
+		f := strings.Fields(normalizeSeriesName(head))
+		if len(f) < 2 || rest == "" || len(strings.Fields(rest)) < 2 {
+			continue
+		}
+		ok := true
+		for _, t := range f {
+			if !regToks[strings.Trim(t, ".,")] {
+				ok = false
+				break
+			}
+		}
+		if ok {
+			return rest, true
+		}
+	}
+	return "", false
+}
+
+// issWidthTruncatedDecl reads a heading the report cut off at its banner width:
+// the key must be a proper prefix of exactly ONE declared name, ending inside a
+// word rather than at a token boundary, so a heading that is merely a shorter
+// name than another is never widened onto it.
+func issWidthTruncatedDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	f := strings.Fields(key)
+	if len(f) < 3 || len(key) < 20 || len(f[len(f)-1]) < 3 {
+		return nil
+	}
+	var hit *SeriesDecl
+	for i := range ix.decls {
+		dk := normalizeSeriesName(ix.decls[i].Name)
+		g := strings.Fields(dk)
+		if len(g) != len(f) {
+			continue
+		}
+		last := g[len(g)-1]
+		if last == f[len(f)-1] || !strings.HasPrefix(last, f[len(f)-1]) {
+			continue
+		}
+		if strings.Join(g[:len(g)-1], " ") != strings.Join(f[:len(f)-1], " ") {
+			continue
+		}
+		if hit != nil && hit.SeriesID != ix.decls[i].SeriesID {
+			return nil
+		}
+		hit = &ix.decls[i]
+	}
+	return hit
 }
 
 // issAbbrevStemDecl reads a heading that abbreviates the tail of a declared name
@@ -2650,6 +2753,15 @@ func issLeadingEnumerator(name string) (rest string, ok bool) {
 		return "", false
 	}
 	return strings.Join(f[1:], " "), true
+}
+
+// issReportTitleLine reports whether a line is the report title printed under a
+// bannerless section opener. MEMBERS Mutual Funds prints "PROXY VOTING SUMMARY
+// REPORT" where later vintages print "Proxy Voting Records"; both are proved by
+// the period line beneath them.
+func issReportTitleLine(s string) bool {
+	return strings.EqualFold(s, "Proxy Voting Records") ||
+		strings.EqualFold(s, "Proxy Voting Summary Report")
 }
 
 // issGenericRegistrantWord lists registrant tokens too common to be a brand.
