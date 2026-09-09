@@ -726,6 +726,41 @@ func brSandwichResolves(ix *issSeriesIndex, slot string) bool {
 	return d != nil
 }
 
+// brBannerAboveOpener reads the section masthead this vintage centres over the
+// report's `<TABLE>` furniture rather than over a block: `BARON SELECT FUND` /
+// `BARON CAPITAL PARTNERS FUND SERIES` above the first meeting (Baron Select
+// Funds 2005, all 312 rows with neither fund nor series). The furniture is gone
+// by the time this grammar is read and the block opener carries the meeting's
+// LABELS rather than an `Agenda Number:`, so the ordinary heading slot -- which
+// this grammar reads only on an agenda opener -- never reaches it.
+//
+// The anchor is the labelled opener two lines below: a banner stands above the
+// block rule that introduces a meeting. The registrant's own name sits above the
+// series line, so only the line nearest the rule is offered, and the caller
+// stamps only on a name the registrant's own series index resolves -- a wrapped
+// proposal tail standing in the same place resolves to nothing and leaves the
+// section above alone.
+func brBannerAboveOpener(lines []string, i int) (string, bool) {
+	j := i + 1
+	for j < len(lines) && strings.TrimSpace(lines[j]) == "" {
+		j++
+	}
+	if j >= len(lines) || j+1 >= len(lines) || !brDashRule(lines[j]) {
+		return "", false
+	}
+	if len(brFindLabels(lines[j+1])) == 0 {
+		return "", false
+	}
+	slot := strings.TrimSpace(lines[i])
+	if slot == "" || slot != strings.ToUpper(slot) || brAgendaOpener(slot) || brVoteRowSlot(slot) || brColumnHeader(lines[i]) {
+		return "", false
+	}
+	if len(brFindLabels(slot)) != 0 {
+		return "", false
+	}
+	return slot, true
+}
+
 // brColonBannerHeading reads the fund heading Baron's vintage prints as the
 // declared name plus a type word and a COLON, over a rule of its own that is
 // not the block opener (`BARON ASSET FUND SERIES:` above a 24-character rule,
@@ -1098,6 +1133,10 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 					curSeries, curFund = d.SeriesID, slot
 				}
 			} else if slot, ok := brRuleSandwichHeading(lines, i); ok && brSandwichResolves(seriesIx, slot) {
+				_, d := issResolveFund(seriesIx, slot)
+				flush()
+				curSeries, curFund = d.SeriesID, slot
+			} else if slot, ok := brBannerAboveOpener(lines, i); ok && brSandwichResolves(seriesIx, slot) {
 				_, d := issResolveFund(seriesIx, slot)
 				flush()
 				curSeries, curFund = d.SeriesID, slot

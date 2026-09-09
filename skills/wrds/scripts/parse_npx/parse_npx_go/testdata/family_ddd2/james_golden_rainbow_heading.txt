@@ -1,0 +1,82 @@
+<SEC-DOCUMENT>0001398344-15-005572.txt : 20150825
+<SEC-HEADER>0001398344-15-005572.hdr.sgml : 20150825
+<ACCEPTANCE-DATETIME>20150825123004
+ACCESSION NUMBER:		0001398344-15-005572
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20150630
+FILED AS OF DATE:		20150825
+DATE AS OF CHANGE:		20150825
+EFFECTIVENESS DATE:		20150825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			JAMES ADVANTAGE FUNDS
+		CENTRAL INDEX KEY:			0001045487
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			OH
+		FISCAL YEAR END:			0630
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001045487
+<SERIES-ID>S000003560
+<SERIES-NAME>James Balanced: Golden Rainbow Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000009900
+<CLASS-CONTRACT-NAME>Retail Class
+<CLASS-CONTRACT-TICKER-SYMBOL>GLRBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000075008
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>GLRIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001045487
+<SERIES-ID>S000003563
+<SERIES-NAME>James Small Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000009903
+<CLASS-CONTRACT-NAME>James Small Cap Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>JASCX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fp0015456_npx.htm
+<TEXT>
+<html>
+<div style="TEXT-ALIGN: left; LINE-HEIGHT: 1.15; FONT-FAMILY: 'Courier New', Courier, monospace; FONT-SIZE: 10pt">================ The Golden Rainbow/A James Advised Mutual Fund ================</div>
+
+<div style="LINE-HEIGHT: 1.15; FONT-FAMILY: Tahoma, Geneva, 'sans-serif'"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<div style="LINE-HEIGHT: 1.15; FONT-FAMILY: Tahoma, Geneva, 'sans-serif'"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<div style="TEXT-ALIGN: left; LINE-HEIGHT: 1.15; FONT-FAMILY: 'Courier New', Courier, monospace; FONT-SIZE: 10pt">AAR CORP.</div>
+
+<div style="LINE-HEIGHT: 1.15; FONT-FAMILY: Tahoma, Geneva, 'sans-serif'"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<div style="TEXT-ALIGN: left; LINE-HEIGHT: 1.15; FONT-FAMILY: 'Courier New', Courier, monospace; FONT-SIZE: 10pt">Ticker:&#160; &#160; &#160;&#160; AIR&#160; &#160; &#160; &#160; &#160; &#160; Security ID:&#160; 000361105</div>
+
+<div style="TEXT-ALIGN: left; LINE-HEIGHT: 1.15; FONT-FAMILY: 'Courier New', Courier, monospace; FONT-SIZE: 10pt">Meeting Date: OCT 08, 2014&#160;&#160; Meeting Type: Annual</div>
+
+<div style="TEXT-ALIGN: left; LINE-HEIGHT: 1.15; FONT-FAMILY: 'Courier New', Courier, monospace; FONT-SIZE: 10pt">Record Date:&#160; AUG 19, 2014</div>
+
+<div style="LINE-HEIGHT: 1.15; FONT-FAMILY: Tahoma, Geneva, 'sans-serif'"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<div style="TEXT-ALIGN: left; LINE-HEIGHT: 1.15; FONT-FAMILY: 'Courier New', Courier, monospace; FONT-SIZE: 10pt">#&#160; &#160;&#160; Proposal&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Mgt Rec&#160;&#160; Vote Cast&#160; &#160; Sponsor</div>
+
+<div style="TEXT-ALIGN: left; LINE-HEIGHT: 1.15; FONT-FAMILY: 'Courier New', Courier, monospace; FONT-SIZE: 10pt">1.1&#160;&#160; Elect Director Patrick J. Kelly&#160; &#160; &#160; &#160;&#160; For&#160; &#160; &#160;&#160; For&#160; &#160; &#160; &#160; &#160; Management</div>
+
+<div style="TEXT-ALIGN: left; LINE-HEIGHT: 1.15; FONT-FAMILY: 'Courier New', Courier, monospace; FONT-SIZE: 10pt">1.2&#160;&#160; Elect Director Peter Pace&#160; &#160; &#160; &#160; &#160; &#160; &#160;&#160; For&#160; &#160; &#160;&#160; For&#160; &#160; &#160; &#160; &#160; Management</div>

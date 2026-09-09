@@ -2690,6 +2690,11 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	if d := issDistinctivePairDecl(ix, key); d != nil {
 		return banner, d
 	}
+	// The heading is the fund's MARKETING name, which re-orders and re-words
+	// the declared name around a distinctive stem.
+	if d := issDistinctiveStemDecl(ix, key); d != nil {
+		return banner, d
+	}
 	// An abbreviated stem of a declared name followed by a sub-adviser sleeve.
 	if d := issAbbrevStemDecl(ix, key); d != nil {
 		return banner, d
@@ -3730,6 +3735,104 @@ func issDistinctiveTokenDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		return nil
 	}
 	return hit
+}
+
+// issDistinctiveStemDecl reads the MARKETING name of a fund, which keeps the
+// declared name's distinctive stem but re-orders and re-words everything around
+// it: `The Golden Rainbow/A James Advised Mutual Fund` for a declared `James
+// Balanced: Golden Rainbow Fund` (S000003560, James Advantage Funds 2015, 1,574
+// rows with no series). Token containment in order fails -- the banner adds
+// `The`, `A`, `Advised` and `Mutual`, drops `Balanced`, and puts the brand
+// behind a slash -- so the adjacent stem is the only evidence left.
+//
+// It is issDistinctivePairDecl's reading with the pool floor traded for a
+// stricter stem: BOTH words must reach issDistinctiveTokenMin (the pair rule
+// admits one short word), neither may be a type word, and exactly one declared
+// series may carry the stem adjacent and in order. Those floors are what let it
+// answer on a two-series header, where the pair rule refuses: `small cap` and
+// `mid cap` cannot reach it at all.
+func issDistinctiveStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 3 {
+		return nil
+	}
+	var hit *SeriesDecl
+	seen := map[string]bool{}
+	for i := 0; i+1 < len(toks); i++ {
+		// The marketing name LEADS with the stem, behind an article at most:
+		// `The Golden Rainbow/...`. A stem buried mid-heading is one qualifier
+		// among many and the ordinary rules own it.
+		if i > 1 || (i == 1 && toks[0] != "the" && toks[0] != "a" && toks[0] != "an") {
+			break
+		}
+		stem := toks[i] + " " + toks[i+1]
+		if len(toks[i]) < issDistinctiveTokenMin || len(toks[i+1]) < issDistinctiveTokenMin || seen[stem] {
+			continue
+		}
+		if issTypeWord(toks[i]) || issTypeWord(toks[i+1]) {
+			continue
+		}
+		seen[stem] = true
+		var owner *SeriesDecl
+		ownerAt := -1
+		ids := map[string]bool{}
+		for j := range ix.decls {
+			d := &ix.decls[j]
+			if d.SeriesID == "" || d.Name == "" {
+				continue
+			}
+			if !strings.Contains(" "+ix.declNorm(j)+" ", " "+stem+" ") {
+				continue
+			}
+			owner, ownerAt = d, j
+			ids[d.SeriesID] = true
+		}
+		if len(ids) != 1 {
+			continue
+		}
+		if !issStemOrderInverted(toks, i, ix.declNorm(ownerAt)) {
+			continue
+		}
+		if hit != nil && hit.SeriesID != owner.SeriesID {
+			return nil
+		}
+		hit = owner
+	}
+	return hit
+}
+
+// issStemOrderInverted reports that the banner prints the stem at toks[i:i+2]
+// on the OTHER side of a word it shares with the declared name than the
+// declared name does. That inversion is what separates a marketing name from a
+// heading that merely drops or adds a qualifier: `PGIM Ultra Short Fund` keeps
+// the declared word order and must stay refused, while `The Golden
+// Rainbow/A James Advised Mutual Fund` puts `james` behind the stem where the
+// declared `James Balanced: Golden Rainbow Fund` puts it in front.
+func issStemOrderInverted(toks []string, i int, declKey string) bool {
+	decl := strings.Fields(declKey)
+	di := -1
+	for j := 0; j+1 < len(decl); j++ {
+		if decl[j] == toks[i] && decl[j+1] == toks[i+1] {
+			di = j
+			break
+		}
+	}
+	if di < 0 {
+		return false
+	}
+	for bj, t := range toks {
+		if bj == i || bj == i+1 || len(t) < issDistinctivePairTokenMin || issTypeWord(t) {
+			continue
+		}
+		dj := indexOfToken(decl, t)
+		if dj < 0 || dj == di || dj == di+1 {
+			continue
+		}
+		if (bj < i) != (dj < di) {
+			return true
+		}
+	}
+	return false
 }
 
 // issDistinctivePairDecl reads the same historical-name shape as
