@@ -131,6 +131,9 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// carried onto the continuation rows that leave the column blank.
 		lastFundCell   string
 		lastFundSeries string
+		// lastFundIssuer is the issuer that row printed, so a continuation row
+		// repeating the same issuer is recognised as the same block.
+		lastFundIssuer string
 		ctxSealed      bool
 		nilRow         bool
 		// curSeries is the fund the following blocks belong to. This layout
@@ -186,7 +189,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// table therefore still closes the mapping rather than inheriting columns.
 		if row.newTable {
 			fundCells = nil
-			lastFundCell, lastFundSeries = "", ""
+			lastFundCell, lastFundSeries, lastFundIssuer = "", "", ""
 			half.closeTable(out)
 		}
 		deferredBoundary := row.newTable && partitioned
@@ -608,8 +611,13 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 							r.SeriesID = ""
 						}
 						lastFundCell, lastFundSeries = r.FundName, r.SeriesID
+						lastFundIssuer = htmlMappedCell(cells, mapping, headerArity, htmlFieldIssuer)
 					} else if _, mapped := mapping[htmlFieldFund]; mapped && lastFundCell != "" &&
-						htmlMappedCell(cells, mapping, headerArity, htmlFieldIssuer) == "" {
+						// The EquiTrust vintage (EquiTrust Series Fund 2004) repeats the
+						// issuer on every proposal row of a block while printing the fund
+						// only on its first, so an issuer REPEATED from the row that named
+						// the fund is the same block as a blank one.
+						htmlSameFundBlock(htmlMappedCell(cells, mapping, headerArity, htmlFieldIssuer), lastFundIssuer) {
 						// The fund column is printed once per issuer block and
 						// left blank on every continuation row (The Weitz Funds
 						// 2008: `BALANCED` on proposal 1, an empty cell on 2 and
@@ -2146,7 +2154,10 @@ var htmlSynonyms = map[string][]string{
 	// 2005, 332 rows), which prints no section heading and names the fund on
 	// every row in that column. Without the exact label the bare `#` synonym
 	// claims it for the item sequence and the fund name lands in item_seq.
-	htmlFieldFund: {"FUND NAME", "INSTITUTIONAL ACCOUNT NAME", "ACCOUNT NAME", "PORTFOLIO NAME", "FUND #"},
+	// `Series Fund` heads the leading column of the EquiTrust vintage (EquiTrust
+	// Series Fund 2004, 115 rows), which prints no section heading and names the
+	// portfolio on every row in that column.
+	htmlFieldFund: {"FUND NAME", "INSTITUTIONAL ACCOUNT NAME", "ACCOUNT NAME", "PORTFOLIO NAME", "FUND #", "SERIES FUND"},
 	htmlFieldMtgDate: {
 		"MEETING DATE", "MEETING DAT", "MTG DATE", "DATE OF MEETING", "MTG DATE/TYPE", "SHAREHOLDER MEETING DATE",
 		// `Meeting Dt` beside a `Holding Dt` record date (Stadion Investment
@@ -4902,6 +4913,38 @@ func htmlFormNPXSleeveBanner(ix *issSeriesIndex, pre string) (name, id string, o
 	return "", "", false
 }
 
+// htmlSameFundBlock reports a row whose blank fund cell repeats the fund above
+// it: the row carries no issuer of its own, or prints the same issuer as the row
+// that named the fund.
+func htmlSameFundBlock(issuer, fundIssuer string) bool {
+	return issuer == "" || issuer == fundIssuer && fundIssuer != ""
+}
+
+// htmlRegistrantIntervening reports content between a direct `Registrant:`
+// heading and the table that is not the form metadata printed with it: the
+// Investment Company Act file number, the reporting period, the FORM N-PX
+// banner and the bare `01-Jul-2015 To 30-Jun-2016` range.
+func htmlRegistrantIntervening(lines []string) bool {
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		low := strings.ToLower(line)
+		if strings.HasPrefix(low, "investment company act file number") ||
+			strings.HasPrefix(low, "reporting period") ||
+			strings.HasPrefix(low, "form n-px") {
+			continue
+		}
+		if period := strings.Split(low, " to "); len(period) == 2 &&
+			htmlDate(strings.TrimSpace(period[0])) != "" && htmlDate(strings.TrimSpace(period[1])) != "" {
+			continue
+		}
+		return true
+	}
+	return false
+}
+
 // htmlPrevNonblank returns the index of the nearest nonblank line above i, or
 // -1 when none stands there.
 func htmlPrevNonblank(lines []string, i int) int {
@@ -4970,7 +5013,11 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 					// A direct Registrant value counts only when it is the nearest
 					// nonblank line above the table; Ultimus prints form metadata after
 					// the registrant name and must not turn that name into a fund.
-					if strings.TrimSpace(strings.Join(lines[li+1:], "")) != "" {
+					// ... looking past the form metadata this vendor prints under the
+					// registrant inside the same cell (AmericaFirst Quantitative Funds
+					// 2016: file number, reporting period, the FORM N-PX banner and the
+					// bare date range), which is not another heading.
+					if htmlRegistrantIntervening(lines[li+1:]) {
 						continue
 					}
 					candidate = htmlCutFormItemSuffix(strings.TrimSpace(line[colon+1:]))
