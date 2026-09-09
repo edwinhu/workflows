@@ -1,0 +1,60 @@
+		COMPANY CONFORMED NAME:			FRONTEGRA FUNDS INC
+		CENTRAL INDEX KEY:			0001014913
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001014913
+<SERIES-ID>S000022841
+<SERIES-NAME>Frontegra Timpani Small Cap Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000066233
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FTSYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000066234
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>FTSGX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001014913
+<SERIES-ID>S000029404
+<SERIES-NAME>Frontegra Hexam Emerging Markets Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000090312
+<CLASS-CONTRACT-NAME>Frontegra Hexam Emerging Markets Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FHEMX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+<TEXT>
+
+
+Frontegra Timpani Small Cap Growth Fund
+Reporting Period: 3/23/11 - 6/30/11
+--------------------------------------------------------------------------------------------------------------------------
+ AXT, INC.                                                                                   Agenda Number:  933410071
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  00246W103
+    Meeting Type:  Annual
+    Meeting Date:  23-May-2011
+          Ticker:  AXTI
+            ISIN:  US00246W1036
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+01     DIRECTOR
+       MORRIS S. YOUNG                                           Mgmt          For                            For
+       DAVID C. CHANG                                            Mgmt          For                            For
+
+02     TO HOLD AN ADVISORY VOTE ON EXECUTIVE COMPENSATION.       Mgmt          For                            For
+
+03     TO HOLD AN ADVISORY VOTE ON THE FREQUENCY OF              Mgmt          1 Year                         Against
+       HOLDING AN ADVISORY VOTE ON EXECUTIVE COMPENSATION.
+
+04     TO RATIFY THE APPOINTMENT OF BURR PILGER MAYER,           Mgmt          For                            For
+       INC. AS AXT'S INDEPENDENT REGISTERED PUBLIC

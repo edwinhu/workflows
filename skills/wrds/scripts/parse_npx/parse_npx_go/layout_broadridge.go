@@ -492,15 +492,44 @@ func brHeadingSlot(lines []string, i int) (slot string, crossedBlank bool) {
 	slot = strings.TrimSpace(lines[j])
 	// A dated Period line sits between the fund and the rule in IronBridge.
 	// Read only the immediately preceding heading, never a prior section.
-	if period, ok := strings.CutPrefix(slot, "Period: "); ok && j > 0 {
-		if start, end, ok := strings.Cut(period, " - "); ok && htmlDate(start) != "" && htmlDate(end) != "" {
+	// Frontegra spells the same line `Reporting Period: 3/23/11 - 6/30/11`, whose
+	// two-digit years htmlDate does not read.
+	for _, label := range []string{"Period: ", "Reporting Period: "} {
+		period, ok := strings.CutPrefix(slot, label)
+		if !ok || j == 0 {
+			continue
+		}
+		if start, end, ok := strings.Cut(period, " - "); ok && brPeriodEndpoint(start) && brPeriodEndpoint(end) {
 			slot = strings.TrimSpace(lines[j-1])
+			break
 		}
 	}
 	if slot == "" || brDashRule(slot) {
 		return "", false
 	}
 	return slot, crossedBlank
+}
+
+// brPeriodEndpoint reports a date at one end of a printed reporting period,
+// including the `3/23/11` two-digit-year spelling htmlDate declines.
+func brPeriodEndpoint(s string) bool {
+	if htmlDate(s) != "" {
+		return true
+	}
+	f := strings.Split(strings.TrimSpace(s), "/")
+	if len(f) != 3 {
+		return false
+	}
+	for i, part := range f {
+		want := 2
+		if i < 2 {
+			want = 1
+		}
+		if len(part) < want || len(part) > 2 || !isAllDigits(part) {
+			return false
+		}
+	}
+	return true
 }
 
 // brResolveHeading returns the series a directly-reached slot puts on the state:

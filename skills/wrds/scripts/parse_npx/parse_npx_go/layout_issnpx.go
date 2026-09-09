@@ -1537,6 +1537,15 @@ func issHistoricalBrandKey(key string) string {
 			return "wells fargo:" + stem
 		}
 	}
+	// Goldman's quantitative sleeves are headed with the CORE brand of the
+	// reporting period and declared under the successor Structured name:
+	// `GS CORE International Equity Fund` for `Goldman Sachs Structured
+	// International Equity Fund` (S000009330). The stem must still agree whole.
+	for _, brand := range []string{"gs core ", "goldman sachs core ", "goldman sachs structured "} {
+		if stem, ok := strings.CutPrefix(key, brand); ok && stem != "" {
+			return "goldman structured:" + stem
+		}
+	}
 	// TDAX account sleeves and the TDX/db-X registered names retain the
 	// target year or exact In Target stem.
 	if key == "db x in target date fund" {
@@ -1730,6 +1739,25 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	}
 	if key := issHistoricalBrandKey(normalizeSeriesName(banner)); key != "" {
 		if d, seen := ix.byHistoricalBrand[key]; seen {
+			return banner, d
+		}
+	}
+	// The registrant's brand ABBREVIATED across the name: `STI CLASSIC
+	// INTERNATIONAL EQUITY FUND VA` for a declared `STI Classic Variable Trust
+	// International Equity Fund` (S000004745). The banner keeps the head of the
+	// registrant name and re-spells its dropped tail as a trailing token, so the
+	// whole registrant name is folded back in and the lookup retried exactly.
+	if rest, ok := issRegistrantAbbrevSuffix(normalizeSeriesName(banner), registrantKey); ok {
+		if d, seen := lookupSeriesEntry(idx, rest); seen && d != nil {
+			return banner, d
+		}
+	}
+	// The document's own title printed after the fund: `Claymore Peroni Equity
+	// Opportunities Fund Proxy Voting` for a declared `Claymore Peroni Equity
+	// Opportunities Fund` (S000011377). One exact edit, and the exact index
+	// still refuses a name two series answer to.
+	if head, ok := issCutProxyVotingSuffix(normalizeSeriesName(banner)); ok {
+		if d, seen := lookupSeriesEntry(idx, head); seen && d != nil {
 			return banner, d
 		}
 	}
@@ -2149,6 +2177,11 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d := issDistinctiveTokenDecl(ix, key); d != nil {
 		return banner, d
 	}
+	// The same vocabulary read as an adjacent ordered PAIR, which is rare enough
+	// to answer where no single word of the heading is.
+	if d := issDistinctivePairDecl(ix, key); d != nil {
+		return banner, d
+	}
 	// An abbreviated stem of a declared name followed by a sub-adviser sleeve.
 	if d := issAbbrevStemDecl(ix, key); d != nil {
 		return banner, d
@@ -2457,6 +2490,12 @@ func issEditDistanceOne(x, y string) bool {
 const (
 	issDistinctiveTokenMin = 5
 	issDistinctiveMinPool  = 10
+	// A PAIR is rarer than a single token and may answer against a smaller
+	// vocabulary, but not against a handful of names: with two or three declared
+	// series any two adjacent words of one of them are "distinctive", and the
+	// rule would supply the swapped noun and the wrong type word that the
+	// refuse-to-guess rules exist to withhold.
+	issDistinctivePairMinPool = 6
 )
 
 // issDistinctiveTokenDecl reads a heading printing the fund's name at the time
@@ -2470,7 +2509,10 @@ const (
 // The evidence is the registrant's own vocabulary: a token of five characters
 // or more that exactly ONE of this registrant's series carries. TWO such tokens
 // must agree (`Paris` and `Climate` here) and none may point elsewhere, so a
-// heading sharing one rare word with a sibling fund stamps nothing.
+// heading sharing one rare word with a sibling fund stamps nothing. The two are
+// DISTINCT words: a title repeating one rare word (`... REGISTERED MANAGEMENT
+// INVESTMENT COMPANY INVESTMENT COMPANY ACT ...`) is one piece of evidence, not
+// two, and scored as occurrences it stamped a whole Fidelity filing wrongly.
 func issDistinctiveTokenDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 	toks := strings.Fields(key)
 	if len(toks) < 3 {
@@ -2487,10 +2529,12 @@ func issDistinctiveTokenDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 	}
 	var hit *SeriesDecl
 	agree := 0
+	seen := map[string]bool{}
 	for _, t := range toks {
-		if len(t) < issDistinctiveTokenMin {
+		if len(t) < issDistinctiveTokenMin || seen[t] {
 			continue
 		}
+		seen[t] = true
 		var owner *SeriesDecl
 		ids := map[string]bool{}
 		for i := range ix.decls {
@@ -2517,6 +2561,104 @@ func issDistinctiveTokenDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		return nil
 	}
 	return hit
+}
+
+// issDistinctivePairDecl reads the same historical-name shape as
+// issDistinctiveTokenDecl where the rare evidence is an ADJACENT ORDERED PAIR
+// rather than two separate words: `NATIONS MARSICO GROWTH FUND MASTER` carries
+// no word that only one declared series has (`marsico` is on four of them,
+// `growth` on two), but the pair `marsico growth` occurs, in order and adjacent,
+// in exactly one declared name (`Columbia Marsico Growth Master Portfolio`,
+// S000010833).
+//
+// A pair is at least as discriminating as the two single tokens the token rule
+// demands, which is why it also answers below issDistinctiveMinPool: `premier
+// selections` reaches `Legg Mason Partners Variable Premier Selections All Cap
+// Growth Portfolio` (S000010847) in a registrant declaring seven series. Both
+// words must run issDistinctiveTokenMin characters, exactly one series may carry
+// the pair, and two pairs naming different series refuse rather than choose.
+func issDistinctivePairDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 3 {
+		return nil
+	}
+	pool := map[string]bool{}
+	for i := range ix.decls {
+		if ix.decls[i].SeriesID != "" && ix.decls[i].Name != "" {
+			pool[ix.decls[i].SeriesID] = true
+		}
+	}
+	if len(pool) < issDistinctivePairMinPool {
+		return nil
+	}
+	var hit *SeriesDecl
+	seen := map[string]bool{}
+	for i := 0; i+1 < len(toks); i++ {
+		pair := toks[i] + " " + toks[i+1]
+		if len(toks[i]) < issDistinctiveTokenMin || len(toks[i+1]) < issDistinctiveTokenMin || seen[pair] {
+			continue
+		}
+		seen[pair] = true
+		var owner *SeriesDecl
+		ids := map[string]bool{}
+		for j := range ix.decls {
+			d := &ix.decls[j]
+			if d.SeriesID == "" || d.Name == "" {
+				continue
+			}
+			if !strings.Contains(" "+normalizeSeriesName(d.Name)+" ", " "+pair+" ") {
+				continue
+			}
+			owner = d
+			ids[d.SeriesID] = true
+		}
+		if len(ids) != 1 {
+			continue
+		}
+		if hit != nil && hit.SeriesID != owner.SeriesID {
+			return nil
+		}
+		hit = owner
+	}
+	return hit
+}
+
+// issRegistrantAbbrevSuffix folds an abbreviated registrant brand back into a
+// heading: `sti classic international equity fund va` for the registrant `sti
+// classic variable trust` becomes `sti classic variable trust international
+// equity fund`. The heading must open on the registrant's own leading tokens and
+// close on a token abbreviating the first word the heading dropped (`va` for
+// `variable`), so only this registrant's own name is ever restored.
+func issRegistrantAbbrevSuffix(key, registrantKey string) (string, bool) {
+	toks, reg := strings.Fields(key), strings.Fields(registrantKey)
+	if len(toks) < 3 || len(reg) < 2 {
+		return "", false
+	}
+	suffix := toks[len(toks)-1]
+	toks = toks[:len(toks)-1]
+	shared := 0
+	for shared < len(toks) && shared < len(reg) && toks[shared] == reg[shared] {
+		shared++
+	}
+	if shared == 0 || shared >= len(reg) || shared >= len(toks) {
+		return "", false
+	}
+	dropped := reg[shared]
+	if len(suffix) < 2 || len(suffix) >= len(dropped) || !strings.HasPrefix(dropped, suffix) {
+		return "", false
+	}
+	return registrantKey + " " + strings.Join(toks[shared:], " "), true
+}
+
+// issCutProxyVotingSuffix removes the document's own title from the end of a
+// heading that appends it to the fund name.
+func issCutProxyVotingSuffix(key string) (string, bool) {
+	for _, suffix := range []string{" proxy voting record", " proxy voting"} {
+		if head, ok := strings.CutSuffix(key, suffix); ok && len(strings.Fields(head)) >= 2 {
+			return head, true
+		}
+	}
+	return "", false
 }
 
 // issDropTrailingConjunct removes the `and <words>` run that sits before a
