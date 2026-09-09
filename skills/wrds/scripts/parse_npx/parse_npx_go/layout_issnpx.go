@@ -2483,6 +2483,18 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 
 	// The registrant's own name, misspelled or one word short of the header's.
 	if d := issNearMissDecl(ix, key); d != nil {
+		// A near miss that DROPS a qualifier supposes the filing omitted a word
+		// it never printed, while a spliced reading takes the heading to print
+		// one declared name whole. When the two name DIFFERENT series the
+		// heading has given two answers and neither is evidence: `Copeland Risk
+		// Managed Dividend Growth Fund` reads as the declared `Copeland
+		// International Risk Managed Dividend Growth Fund` (S000039172) only by
+		// supposing a dropped `International`, while it prints the declared
+		// `Copeland Dividend Growth Fund` (S000030695) entire. Refusing here
+		// leaves the exact dictionary alias to answer.
+		if s := issSplicedDecl(ix, key); s != nil && s.SeriesID != d.SeriesID {
+			return banner, nil
+		}
 		return banner, d
 	}
 	// The registrant's brand MISSPELLED in front of the fund: `VAN EKK INT'L
@@ -2595,7 +2607,116 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			return banner, d
 		}
 	}
+	// The heading spells the declared name's trailing words as an ACRONYM:
+	// `BB&T MID CAP GROWTH VIF` for a declared `BB&T MID CAP GROWTH VARIABLE
+	// INSURANCE FUND` (S000012132, 487 rows; 2,140 rows in that filing carry a
+	// VIF banner). Every other token must agree exactly.
+	if d := issTrailingAcronymDecl(ix, key); d != nil {
+		return banner, d
+	}
+	// The registrant prints its OWN name abbreviated in front of the fund: `GE
+	// INST STRATEGIC INV FUND (MF)` for a declared `Strategic Investment Fund`
+	// (S000001632, 2,113 rows), where the sibling section spelling the prefix in
+	// full resolves through the exact strip above. Only the registrant's own
+	// leading words come off, each of them a prefix of the word it shortens, and
+	// the remainder goes back through the whole chain; an ambiguous remainder
+	// still refuses.
+	if issStripRegistrantPrefix {
+		if rest, ok := issCutAbbreviatedRegistrantPrefix(banner, registrantKey); ok {
+			if _, d := issResolveFund(ix, rest); d != nil {
+				return banner, d
+			}
+		}
+	}
 	return banner, nil
+}
+
+// issTrailingAcronymDecl reads a heading whose trailing words a declared name
+// spells out and the heading prints as their initials. The heading's leading
+// tokens must equal the declared name's exactly, the acronym must carry at least
+// two letters and stand for that many trailing declared words, and exactly one
+// series of this registrant may answer -- two candidates refuse.
+func issTrailingAcronymDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 2 {
+		return nil
+	}
+	acr := toks[len(toks)-1]
+	head := toks[:len(toks)-1]
+	if len(acr) < 2 || len(acr) > 4 {
+		return nil
+	}
+	var hit *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		want := strings.Fields(normalizeSeriesName(d.Name))
+		if len(want) != len(head)+len(acr) {
+			continue
+		}
+		agree := true
+		for j := range head {
+			if head[j] != want[j] {
+				agree = false
+				break
+			}
+		}
+		if !agree {
+			continue
+		}
+		for j, w := range want[len(head):] {
+			if w == "" || w[0] != acr[j] {
+				agree = false
+				break
+			}
+		}
+		if !agree {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	return hit
+}
+
+// issCutAbbreviatedRegistrantPrefix cuts the registrant's own leading words off
+// a heading that shortens them: each cut token must be the registrant's token or
+// a prefix of it of at least three characters, at least two tokens come off, at
+// least one of them is shortened -- the unshortened form is the exact strip's
+// business -- and two tokens must survive. The cut is made on the PRINTED
+// banner, so the remainder keeps the punctuation the later rules read; a leading
+// word that does not fold to exactly one token is not cut at all.
+func issCutAbbreviatedRegistrantPrefix(banner, registrantKey string) (string, bool) {
+	rt := strings.Fields(registrantKey)
+	printed := strings.Fields(banner)
+	kt := make([]string, len(printed))
+	for i, t := range printed {
+		kt[i] = normalizeSeriesName(t)
+	}
+	if len(rt) < 2 || len(kt) < 4 {
+		return "", false
+	}
+	short, n := false, 0
+	for n < len(rt) && n < len(kt)-2 {
+		if kt[n] == rt[n] {
+			n++
+			continue
+		}
+		if len(kt[n]) >= 3 && len(kt[n]) < len(rt[n]) && strings.HasPrefix(rt[n], kt[n]) {
+			short = true
+			n++
+			continue
+		}
+		break
+	}
+	if n < 2 || !short {
+		return "", false
+	}
+	return strings.Join(printed[n:], " "), true
 }
 
 // issSleeveStemDecl resolves a heading whose type word sits INSIDE it, with a
@@ -2702,6 +2823,15 @@ func issSplicedDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 			}
 		}
 		if !branded || !isOrderedSubsequence(want, heading[at:]) {
+			continue
+		}
+		// A conjunction the declared name does not carry joins a SECOND
+		// objective onto the fund's name rather than decorating the declared
+		// one: `DREYFUS FOUNDERS GROWTH AND INCOME FUND` is a different
+		// registered fund from the declared `Dreyfus Founders Growth Fund`
+		// (S000000567), not that name with words spliced in, and stamping it
+		// moved 866 rows onto a sibling series.
+		if indexOfToken(heading, "and") >= 0 && indexOfToken(want, "and") < 0 {
 			continue
 		}
 		if found != nil && found.SeriesID != d.SeriesID {
@@ -3261,6 +3391,14 @@ func issDistinctivePairDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		if short < issDistinctivePairTokenMin || long < issDistinctiveTokenMin || seen[pair] {
 			continue
 		}
+		// A pair whose second word is the vehicle's TYPE word is the suffix of
+		// most names in the pool, not rare evidence: `growth fund` reached the
+		// declared `Putnam Small Cap Growth Fund` (S000000777) for a heading
+		// `Putnam Growth Fund` printed as its own account in the same filing,
+		// reporting two funds as one series.
+		if issTypeWord(toks[i+1]) {
+			continue
+		}
 		seen[pair] = true
 		var owner *SeriesDecl
 		ids := map[string]bool{}
@@ -3282,6 +3420,15 @@ func issDistinctivePairDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 			return nil
 		}
 		hit = owner
+	}
+	// A conjunction the declared name does not carry joins a SECOND objective
+	// onto the fund: the pair `founders growth` sits in exactly one declared
+	// name, but the heading `DREYFUS FOUNDERS GROWTH AND INCOME FUND` names a
+	// fund this registrant never declared, and stamping it moved 866 rows onto
+	// the sibling `Dreyfus Founders Growth Fund` (S000000567).
+	if hit != nil && indexOfToken(toks, "and") >= 0 &&
+		indexOfToken(strings.Fields(normalizeSeriesName(hit.Name)), "and") < 0 {
+		return nil
 	}
 	return hit
 }
