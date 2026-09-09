@@ -276,7 +276,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				}
 				// Only a separate exhibit cell may follow a fund-valued Registrant;
 				// do not relax the guard for prose between tables.
-				if strings.HasPrefix(strings.ToLower(filled[0]), "registrant:") && reHTMLRegistrantExhibit.MatchString(filled[1]) {
+				if strings.HasPrefix(strings.ToLower(filled[0]), "registrant:") && reHTMLSplitExhibit.MatchString(filled[1]) {
 					heading, registrantSection = filled[0], true
 				}
 			}
@@ -2127,7 +2127,11 @@ var htmlSynonyms = map[string][]string{
 	// `Portfolio Name` heads the leading column of the Masters' Select vintage
 	// (Masters Select Funds Trust 2005, 1,892 rows), which prints no section
 	// heading at all and names the fund once per block in this column.
-	htmlFieldFund: {"FUND NAME", "INSTITUTIONAL ACCOUNT NAME", "ACCOUNT NAME", "PORTFOLIO NAME"},
+	// `Fund #` heads the leading column of the Amidex vintage (Amidex Funds
+	// 2005, 332 rows), which prints no section heading and names the fund on
+	// every row in that column. Without the exact label the bare `#` synonym
+	// claims it for the item sequence and the fund name lands in item_seq.
+	htmlFieldFund: {"FUND NAME", "INSTITUTIONAL ACCOUNT NAME", "ACCOUNT NAME", "PORTFOLIO NAME", "FUND #"},
 	htmlFieldMtgDate: {
 		"MEETING DATE", "MEETING DAT", "MTG DATE", "DATE OF MEETING", "MTG DATE/TYPE", "SHAREHOLDER MEETING DATE",
 		// `Meeting Dt` beside a `Holding Dt` record date (Stadion Investment
