@@ -143,6 +143,10 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// fundCol is the column a lone `Portfolio Name` header cell opened, in
 		// which a later lone cell names the block's fund.
 		fundCol = -1
+		// accountNames maps an internal account number to the account name the
+		// filing printed beside it, for the rows that later print the number in
+		// the name's own cell. "" marks a number two names answered to.
+		accountNames map[string]string
 		// The split-page halves: a table whose header names only identity
 		// columns is the LEFT half of a page too wide to print in one table,
 		// and the table that follows it carries the same rows' votes in the
@@ -545,7 +549,33 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				if r, ok := htmlDataRow(cells, mapping, headerArity, ctx); ok {
 					r.SeriesID = curSeries
 					r.FundName = curFund
-					if v := htmlFundCell(cells, mapping, headerArity); v != "" {
+					v := htmlFundCell(cells, mapping, headerArity)
+					// The account-name cell degrades into the account NUMBER
+					// partway through each account's block (Northern Lights
+					// Fund Trust II 2022: `North Star Dividend Fund NSDVX` /
+					// `6734305800` on the first rows, `6734305800` in both
+					// cells thereafter; 757 rows with a numeric fund name).
+					// The mapping is the filing's own -- the name is read only
+					// off rows that print BOTH -- so this substitutes evidence
+					// the filing states rather than guessing a fund.
+					if v != "" {
+						if htmlAllDigits(v) {
+							if name := accountNames[v]; name != "" {
+								v = name
+							}
+						} else if n := htmlRowAccountNumber(cells); n != "" {
+							if accountNames == nil {
+								accountNames = map[string]string{}
+							}
+							if prior, seen := accountNames[n]; !seen {
+								accountNames[n] = v
+							} else if prior != v {
+								// Two names for one number: no substitution.
+								accountNames[n] = ""
+							}
+						}
+					}
+					if v != "" {
 						// The row names its own fund; the shared rules decide
 						// the series. A cell they cannot read (MET Investors:
 						// `MetInvestorSeriesTrustFortyPortfolio`) keeps the
@@ -759,7 +789,14 @@ func htmlPreText(seg []byte) string {
 			seg = seg[j+1:]
 		}
 	}
-	return htmlCellText(seg)
+	// A raw newline INSIDE a paragraph is markup wrap, not a line of the
+	// grammar: Legg Mason Investors Trust wraps its section heading mid-element
+	// (`<p><b><font>Legg Mason` / `Financial Services Funds</font></b></p>`),
+	// and reading only the first line takes the bare brand `Legg Mason` as the
+	// fund -- which stamps the wrong sibling. Unlike a CELL, whose stacked lines
+	// are labels and values, the markup between rows is paragraphs, so the join
+	// is on here and off there.
+	return strings.TrimSpace(collapseSpaces(decodeEntities(removeMarkup(seg, true))))
 }
 
 func (f *htmlRowFeed) fill(n int) {
@@ -4394,6 +4431,32 @@ func htmlSecurityID(v string) (cusip, isin string) {
 		}
 	}
 	return cusip, isin
+}
+
+// htmlAllDigits reports a value that is nothing but digits, long enough to be
+// an internal account number rather than an item or a share count.
+func htmlAllDigits(s string) bool {
+	if len(s) < 6 {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		if s[i] < '0' || s[i] > '9' {
+			return false
+		}
+	}
+	return true
+}
+
+// htmlRowAccountNumber returns the internal account number a row prints beside
+// its account name: the LAST all-digit cell, since the account number column
+// stands to the right of the name and a security id stands to its left.
+func htmlRowAccountNumber(cells []string) string {
+	for i := len(cells) - 1; i >= 0; i-- {
+		if v := htmlFlat(cells[i]); htmlAllDigits(v) {
+			return v
+		}
+	}
+	return ""
 }
 
 func htmlHasDigit(s string) bool {

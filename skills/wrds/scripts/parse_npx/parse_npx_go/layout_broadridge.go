@@ -661,6 +661,44 @@ func brEqualsRuleHeading(lines []string, i int) (string, bool) {
 	return slot, true
 }
 
+// brRuleSandwichHeading reads the section masthead this vintage centres between
+// two DASHED rules, above the SGML table furniture rather than above the block
+// (Century Capital Management Trust 2005, all 816 rows with neither fund nor
+// series). The ordinary heading slot cannot reach it: `<TABLE>`, `<S> <C>...`
+// and a two-line report banner stand between the masthead and the first block,
+// which is more than brHeadingBlankWalk allows. Read on the masthead line
+// itself, so the intervening furniture is irrelevant.
+//
+// The dashed rule is this grammar's block separator, so a sandwich of two is
+// only a banner when EXACTLY ONE line stands between them -- the repeated
+// proposal header puts two there -- and the caller stamps only on a name the
+// registrant's own series index resolves.
+func brRuleSandwichHeading(lines []string, i int) (string, bool) {
+	if i < 1 || i+1 >= len(lines) {
+		return "", false
+	}
+	if !brDashRule(strings.TrimSpace(lines[i-1])) || !brDashRule(strings.TrimSpace(lines[i+1])) {
+		return "", false
+	}
+	slot := strings.TrimSpace(lines[i])
+	if slot == "" || brAgendaOpener(slot) || brVoteRowSlot(slot) || brColumnHeader(lines[i]) {
+		return "", false
+	}
+	if len(brFindLabels(slot)) != 0 {
+		return "", false
+	}
+	return slot, true
+}
+
+// brSandwichResolves reports whether a rule-sandwiched masthead names one of
+// this registrant's own series. Checked in the branch condition so a sandwich
+// that names nothing falls through to the branches below rather than swallowing
+// the line.
+func brSandwichResolves(ix *issSeriesIndex, slot string) bool {
+	_, d := issResolveFund(ix, slot)
+	return d != nil
+}
+
 // brColonBannerHeading reads the fund heading Baron's vintage prints as the
 // declared name plus a type word and a COLON, over a rule of its own that is
 // not the block opener (`BARON ASSET FUND SERIES:` above a 24-character rule,
@@ -1032,6 +1070,10 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 					flush()
 					curSeries, curFund = d.SeriesID, slot
 				}
+			} else if slot, ok := brRuleSandwichHeading(lines, i); ok && brSandwichResolves(seriesIx, slot) {
+				_, d := issResolveFund(seriesIx, slot)
+				flush()
+				curSeries, curFund = d.SeriesID, slot
 			} else if slot, ok := brColonBannerHeading(lines, i); ok {
 				if d := brResolveColonBanner(seriesIx, slot); d != nil {
 					flush()
