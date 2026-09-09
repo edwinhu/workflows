@@ -108,6 +108,7 @@ func parsePVText(text string, meta FilingMeta) ([]VoteRow, error) {
 		fund            string
 		fundSeries      string
 		bareAccount     bool
+		namedAt         = -1
 	)
 
 	for i := 0; i < len(lines); i++ {
@@ -119,13 +120,23 @@ func parsePVText(text string, meta FilingMeta) ([]VoteRow, error) {
 			// Only the first numeric or NCF sleeve account following a resolved
 			// bare heading belongs to it; later accounts are new boundaries.
 			opaque := strings.HasPrefix(strings.ToUpper(strings.TrimSpace(lines[i])), "ACCOUNT NUMBER:") && len(f) > 0 && (f[0] >= '0' && f[0] <= '9' || pvTextNCFAccount.MatchString(f))
-			if !bareAccount || !opaque || d != nil {
+			// `Account Number: 9485` printed directly under the `Account Name:`
+			// line that just resolved is that account's number, not a new
+			// section (Seligman Portfolios 2004, 646 rows filed under `9485`
+			// with no series). Overwriting here discards the series one line
+			// after the filing printed the name it came from.
+			numbered := opaque && d == nil && namedAt >= 0 && pvTextBlankBetween(lines, namedAt, i)
+			if !numbered && (!bareAccount || !opaque || d != nil) {
 				fund, fundSeries = f, ""
 				if d != nil {
 					fundSeries = d.SeriesID
 				}
 			}
 			bareAccount = false
+			namedAt = -1
+			if !opaque && fundSeries != "" {
+				namedAt = i
+			}
 			inTable, haveMtg, pendingIssuer, continuationRow = false, false, false, -1
 			continue
 		}
@@ -948,4 +959,14 @@ func pvTextAccountFund(line string) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+// pvTextBlankBetween reports that nothing but blank lines separates lines a and b.
+func pvTextBlankBetween(lines []string, a, b int) bool {
+	for j := a + 1; j < b; j++ {
+		if strings.TrimSpace(lines[j]) != "" {
+			return false
+		}
+	}
+	return true
 }

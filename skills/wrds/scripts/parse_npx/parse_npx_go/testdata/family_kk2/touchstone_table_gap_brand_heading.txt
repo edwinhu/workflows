@@ -1,0 +1,30 @@
+		COMPANY CONFORMED NAME:			Touchstone Variable Series Trust
+		CENTRAL INDEX KEY:			0000920547
+<TEXT>
+Item 1.  Proxy Voting Record
+
+Touchstone Value Plus Fund
+<TABLE>
+<CAPTION>
+<S>     <C>
+- --------------------------------------------------------------------------------------------------------------------------
+ ALLTEL CORPORATION                                                                          Agenda Number:  932450872
+- --------------------------------------------------------------------------------------------------------------------------
+    Security:  020039103                                                             Meeting Type:  Annual
+      Ticker:  AT                                                                    Meeting Date:  20-Apr-2006
+        ISIN:
+- --------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+01     DIRECTOR
+       WILLIAM H. CROWN                                          Mgmt          For                            For
+       JOE T. FORD                                               Mgmt          For                            For
+       JOHN P. MCCONNELL                                         Mgmt          For                            For
+       JOSIE C. NATORI                                           Mgmt          For                            For
+
+02     APPROVAL OF AMENDED AND RESTATED ALLTEL PERFORMANCE       Mgmt          For                            For
+       INCENTIVE COMPENSATION PLAN
+
+03     APPROVAL OF AMENDED AND RESTATED ALLTEL LONG-TERM         Mgmt          For                            For

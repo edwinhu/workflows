@@ -4784,6 +4784,24 @@ func htmlDictionaryFund(ix *issSeriesIndex, fallback *dictFallback, candidate st
 		}
 		return ""
 	}
+	// The banner may carry a trailing parenthetical the dictionary name lacks --
+	// `Institution Account(s): Aspiriant Risk-Managed Global Equity Fund (GMV)`,
+	// a FORMER name of a declared series (Aspiriant Trust 2017, 2,631 rows with
+	// no series). Same cut the header rules and dictFallback.apply already make,
+	// and a class marker still stays: `FUND (A)` is a class-pair question.
+	if !htmlDeclaredClassMarker(ix, candidate) {
+		if head, cut := issCutTrailingParenthetical(candidate); cut {
+			if _, declared := lookupSeriesEntry(ix.byName, head); declared {
+				return ""
+			}
+			if d, seen := lookupSeriesEntry(fallback.byName, head); seen {
+				if d != nil {
+					return d.SeriesID
+				}
+				return ""
+			}
+		}
+	}
 	// This registrant prints its Cavanal Hill brand before unbranded dictionary
 	// names. Never reread a name the native header declares, even ambiguously.
 	if ix.registrantKey == "cavanal hill funds" {
@@ -5134,4 +5152,23 @@ func htmlExcelSerialDate(s string) string {
 		return ""
 	}
 	return time.Date(1899, time.December, 30, 0, 0, 0, 0, time.UTC).AddDate(0, 0, n).Format("20060102")
+}
+
+// htmlDeclaredClassMarker reports a trailing parenthetical this registrant
+// spells as one of its OWN class tickers, which makes the name a class-pair
+// question rather than a stem to cut. A marker the filing never declares --
+// Aspiriant's `(GMV)` -- is an account code, and the collision refusal in the
+// dictionary lookup still settles a stem two series answer to.
+func htmlDeclaredClassMarker(ix *issSeriesIndex, name string) bool {
+	if !issClassMarker(name) {
+		return false
+	}
+	s := strings.TrimSpace(name)
+	i := strings.LastIndex(s, "(")
+	inner := strings.ToUpper(strings.TrimSpace(s[i+1 : len(s)-1]))
+	inner = strings.TrimSpace(strings.TrimPrefix(inner, "CLASS "))
+	if _, ok := ix.byTicker[inner]; ok {
+		return true
+	}
+	return len(inner) <= 2
 }
