@@ -1,0 +1,58 @@
+ACCESSION NUMBER:		0001275125-04-000299
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+DATE AS OF CHANGE:		20040831
+EFFECTIVENESS DATE:		20040831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			FORUM FUNDS
+		CENTRAL INDEX KEY:			0000315774
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>ff04-118.txt
+<DESCRIPTION>FORUM FUNDS N-PX 2004
+<TEXT>
+<PAGE>
+
+
+AUSTIN GLOBAL EQUITY FUND
+
+ABN AMRO HOLDING NV
+<TABLE>
+<S>       <C>         <C>                                                       <C>                           <C>
+          CUSIP/CINS: N0030P459                                                                 MEETING TYPE: AGM
+              TICKER: AABA NA                                                                   MEETING DATE: 29-Apr-04
+                ISIN: NL0000301109                                                                    AGENDA: 700482069 - Management
+                CITY: AMSTERDAM                                                 HOLDINGS RECONCILIATION DATE: 22-Apr-04
+             COUNTRY: NETHERLANDS                 BLOCKING                                VOTE DEADLINE DATE: 16-Apr-04
+               SEDOL: 0276920 5250769 5250770 5250781 5250792 5254589 6004114
+- ------------------------------------------------------------------------------------------------------------------------------------
+</TABLE>
+
+<TABLE>
+<CAPTION>
+                                                                                                                      FOR/AGAINST
+ITEM             PROPOSAL                                                                 TYPE            VOTE         MANAGEMENT
+- ------------------------------------------------------------------------------------------------------------------------------------
+<S>       <C>                                                                          <C>              <C>           <C>
+          PLEASE NOTE THAT BLOCKING CONDITIONS FOR VOTING AT                           Non-Voting       No Vote             *
+          THIS GENERAL MEETING ARE RELAXED. BLOCKING PERIOD
+          ENDS ONE DAY AFTER THE REGISTRATION DATE SET ON 22
+          APR2004. SHARES CAN BE TRADED THEREAFTER. THANK YOU
+
+Comments:
+
+1.        Receive the report of Board of Management for the year 2003                     Mgmt             For              F
+
+Comments:
+
+2.        Approve the Corporate Governance                                                Mgmt             For              F
+
+Comments:
+

@@ -1,0 +1,63 @@
+ACCESSION NUMBER:		0000932471-04-000909
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040830
+DATE AS OF CHANGE:		20040830
+EFFECTIVENESS DATE:		20040830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			VANGUARD WHITEHALL FUNDS
+		CENTRAL INDEX KEY:			0001004655
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+
+<PRE>
+
+Fund             VANGUARD INTERNATIONAL EXPLORER FUND
+- ----------------------------------------------------------------------------------------------------
+Issuer:             AAREAL BANK AG, WIESBADEN
+- ----------------------------------------------------------------------------------------------------
+Issuer:             SHANKS GROUP PLC
+Ticker:             N/A                      CUSIP:       N/A
+Meeting Date        6/23/2004                                                                                      For/Against
+Proposal:                                                              Proposed by      Voted?     Vote Cast           Mgmt
+
+PROPOSAL #1.: APPROVE THE SALE OF THE DISPOSAL GROUP                   ISSUER             YES       FOR          N/A
+WHICH WILL HOLD THE UK LANDFILL AND RELATED POWER
+OPERATIONS  TO TERRA FIRMA INVESTMENTS  GP  2 LIMITED
+FOR AND ON BEHALF OF THE TERRA FIRMA CAPITAL PARTNERS II
+FUND   OR AS NOVATED TO SUCH OTHER COMPANY FORMED AT THE
+DIRECTION OF TERRA FIRMA  SUBJECT AND PURSUANT TO THE
+TERMS AND CONDITIONS SET OUT IN THE CONDITIONAL SALE AND
+PURCHASE AGREEMENT DATED 25 MAY 2004 AS AMENDED AND
+RESTATED; AND AUTHORIZE THE DIRECTORS TO DO ALL ACTS AND
+THINGS THAT THEY MAY CONSIDER NECESSARY OR DESIRABLE TO
+COMPLETE AND GIVE EFFECT TO SUCH AGREEMENT AND TO AGREE
+SUCH AMENDMENTS  OTHER THAN TO A MATERIAL EXTENT  AS THEY
+ MAY CONSIDER NECESSARY OR DESIRABLE
+
+
+
+- ----------------------------------------------------------------------------------------------------
+Issuer:             SHANKS GROUP PLC (FRM. SHANKS&amp; MCEWAN GROUP PLC)
+Ticker:             N/A                      CUSIP:       N/A
+Meeting Date        7/24/2003                                                                                      For/Against
+Proposal:                                                              Proposed by      Voted?     Vote Cast           Mgmt
+
+PROPOSAL #1: ACCEPT FINANCIAL STATEMENTS AND STATUTORY                 ISSUER             YES       FOR          FOR
+REPORTS
+
+PROPOSAL #2: APPROVE REMUNERATION REPORT                               ISSUER             YES       FOR          FOR
+
+PROPOSAL #3: APPROVE FINAL DIVIDEND OF 3.8 PENCE PER                   ISSUER             YES       FOR          FOR
+SHARE
+
+PROPOSAL #4: REELECT IAN CLUBB AS DIRECTOR                             ISSUER             YES       FOR          FOR
+

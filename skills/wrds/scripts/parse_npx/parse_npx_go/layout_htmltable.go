@@ -4840,6 +4840,17 @@ func htmlFormNPXSleeveBanner(ix *issSeriesIndex, pre string) (name, id string, o
 	return "", "", false
 }
 
+// htmlPrevNonblank returns the index of the nearest nonblank line above i, or
+// -1 when none stands there.
+func htmlPrevNonblank(lines []string, i int) int {
+	for j := i - 1; j >= 0; j-- {
+		if strings.TrimSpace(lines[j]) != "" {
+			return j
+		}
+	}
+	return -1
+}
+
 func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback) (name, id string, ok bool) {
 	if pre == "" {
 		return "", "", false
@@ -4849,6 +4860,7 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 		dict = fallback[0]
 	}
 	lines := strings.Split(pre, "\n")
+	adoptedAt, adoptedLine := -1, ""
 	for li, line := range lines {
 		line = strings.TrimSpace(line)
 		if line == "" {
@@ -4955,7 +4967,27 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 			}
 		}
 		if _, d := issResolveFund(ix, candidate); d != nil {
+			// A banner wrapped over two elements resolves TWICE -- once per
+			// half -- and the later half wins by standing last: `Portfolio I`
+			// under `Large Cap Growth` is a suffix of all six declared names
+			// and lands on another fund (Multi-Select Securities Fund for
+			// Puerto Rico Residents 2023, 709 rows stamped S000074350 for
+			// S000074347). When this line directly follows the one already
+			// adopted and the JOIN resolves, the two are one heading.
+			// The join must be a name the header spells OUTRIGHT: the tolerant
+			// resolver answers for `Large Cap Growth Portfolio I Large Cap
+			// Growth` too, and adopting that would make every following line
+			// join onto a heading that never existed.
+			if ok && !labelled && adoptedAt == htmlPrevNonblank(lines, li) {
+				joined := adoptedLine + " " + line
+				if jd, _ := lookupSeriesEntry(ix.byName, joined); jd != nil {
+					name, id = joined, jd.SeriesID
+					adoptedAt, adoptedLine = li, joined
+					continue
+				}
+			}
 			name, id, ok = line, d.SeriesID, true
+			adoptedAt, adoptedLine = li, line
 		} else if dictID := htmlDictionaryFund(ix, dict, candidate); dictID != "" {
 			name, id, ok = line, dictID, true
 		} else if labelled {
