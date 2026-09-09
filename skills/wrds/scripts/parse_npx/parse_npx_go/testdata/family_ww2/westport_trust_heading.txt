@@ -1,0 +1,100 @@
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			WESTPORT FUNDS
+		CENTRAL INDEX KEY:			0001046068
+<TABLE cellSpacing=0 cellPadding=2 width="100%">
+
+<TR>
+<TD vAlign=top align=right width="22%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">The Westport Funds</FONT></DIV></TD>
+<TD vAlign=top align=right width="4%">
+<P align=left>&nbsp;</P></TD>
+<TD vAlign=top align=right width="6%">
+<P align=left>&nbsp;</P></TD>
+<TD vAlign=top align=right width="5%">
+<P align=left>&nbsp;</P></TD>
+<TD vAlign=top align=right width="33%">
+<P align=left>&nbsp;</P></TD>
+<TD vAlign=top align=right width="5%">
+<P align=left>&nbsp;</P></TD>
+<TD vAlign=top align=right width="4%">
+<P align=left>&nbsp;</P></TD>
+<TD vAlign=top align=right width="5%">
+<P align=left>&nbsp;</P></TD>
+<TD vAlign=top align=right width="4%">
+<P align=left>&nbsp;</P></TD>
+<TD vAlign=top align=right width="5%">
+<P align=left>&nbsp;</P></TD></TR>
+<TR>
+<TD style="BORDER-BOTTOM: black thin solid" vAlign=top align=left width="22%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">Issuer</FONT></DIV></TD>
+<TD style="BORDER-BOTTOM: black thin solid" vAlign=top align=left width="4%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">Ticker</FONT></DIV></TD>
+<TD style="BORDER-BOTTOM: black thin solid" vAlign=top align=left width="6%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">Cusip</FONT></DIV></TD>
+<TD style="BORDER-BOTTOM: black thin solid" vAlign=top align=left width="5%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">Date</FONT></DIV></TD>
+<TD style="BORDER-BOTTOM: black thin solid" vAlign=top align=left width="33%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">Description of Vote</FONT></DIV></TD>
+<TD style="BORDER-BOTTOM: black thin solid" vAlign=top align=left width="5%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">Type</FONT></DIV></TD>
+<TD style="BORDER-BOTTOM: black thin solid" vAlign=top align=left width="4%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">Voted?</FONT></DIV></TD>
+<TD style="BORDER-BOTTOM: black thin solid" vAlign=top align=left width="5%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">Cast</FONT></DIV></TD>
+<TD style="BORDER-BOTTOM: black thin solid" vAlign=top align=left width="4%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">Mgmt</FONT></DIV></TD>
+<TD style="BORDER-BOTTOM: black thin solid" vAlign=top align=left width="5%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial"># Shares</FONT></DIV></TD></TR>
+<TR>
+<TD vAlign=top align=left width="22%">&nbsp;</TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="6%">&nbsp;</TD>
+<TD vAlign=top align=left width="5%">&nbsp;</TD>
+<TD vAlign=top align=left width="33%">&nbsp;</TD>
+<TD vAlign=top align=left width="5%">&nbsp;</TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="5%">&nbsp;</TD>
+<TD vAlign=top align=left width="4%">&nbsp;</TD>
+<TD vAlign=top align=left width="5%">&nbsp;</TD></TR>
+<TR>
+<TD vAlign=top align=left width="22%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">AAR Corp.</FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">air</FONT></DIV></TD>
+<TD vAlign=top align=left width="6%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">000361105</FONT></DIV></TD>
+<TD vAlign=top align=left width="5%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">10/08/03</FONT></DIV></TD>
+<TD vAlign=top align=left width="33%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">Elect Director-J. Brocksmith, Jr.</FONT></DIV></TD>
+<TD vAlign=top align=left width="5%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">MGMT</FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">yes</FONT></DIV></TD>
+<TD vAlign=top align=left width="5%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="5%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">248,050</FONT></DIV></TD></TR>
+<TR>
+<TD vAlign=top align=left width="22%">&nbsp;</TD>
+<TD vAlign=top align=left width="4%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">air</FONT></DIV></TD>
+<TD vAlign=top align=left width="6%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">000361105</FONT></DIV></TD>
+<TD vAlign=top align=left width="5%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">10/08/03</FONT></DIV></TD>
+<TD vAlign=top align=left width="33%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">Elect Director - Joel Spungin</FONT></DIV></TD>
+<TD vAlign=top align=left width="5%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">MGMT</FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">yes</FONT></DIV></TD>
+<TD vAlign=top align=left width="5%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="4%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">For</FONT></DIV></TD>
+<TD vAlign=top align=left width="5%">
+<DIV align=left><FONT style="DISPLAY: inline; FONT-SIZE: 8pt; COLOR: #000000; FONT-FAMILY: Arial">248,050</FONT></DIV></TD></TR>
+<TR>

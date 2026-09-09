@@ -1823,6 +1823,16 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d != nil || declared {
 		return banner, d
 	}
+	// The registrant's OWN name, spelled exactly, names the trust and not a
+	// series: The Westport Funds heads its single undivided vote table `The
+	// Westport Funds` and declares two funds, and every tolerance below folds
+	// that heading onto the sibling spelled `Westport Fund` -- 746 rows stamped
+	// S000003152, half of them presumptively the other fund's. Only an EXACT
+	// declared name may carry the trust's own spelling, and that has already
+	// returned above.
+	if issTrustOwnName(ix, banner) {
+		return banner, nil
+	}
 	// Franklin's terminal -Master is an export decoration, not a master/feeder alias.
 	// Retry only the remaining exact declared name; collisions still return nil.
 	if registrantKey == "franklin alternative strategies funds" {
@@ -1932,6 +1942,18 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// declared names answering to the heading stamp nothing.
 	if d := issDeclaredAbbrevWord(ix, normalizeSeriesName(banner)); d != nil {
 		return banner, d
+	}
+	// A SUB-ADVISER's brand printed in front of the registrant's own acronym:
+	// `DREYFUS GVIT MID CAP INDEX FUND` for a declared `GVIT Mid Cap Index
+	// Fund` (Gartmore Variable Insurance Trust 2004, 2,468 rows with no
+	// series). The registrant-prefix strips key on the registrant's own tokens,
+	// so a foreign brand never fires them. The acronym is the anchor: only
+	// tokens standing BEFORE it are dropped, the residual still starts with the
+	// registrant's own family token, and the lookup is exact and unambiguous.
+	if rest, ok := issCutBrandBeforeAcronym(normalizeSeriesName(banner), registrantKey, ix.formerKeys); ok {
+		if d, seen := lookupSeriesEntry(idx, rest); seen && d != nil {
+			return rest, d
+		}
 	}
 	// The registrant's brand ABBREVIATED across the name: `STI CLASSIC
 	// INTERNATIONAL EQUITY FUND VA` for a declared `STI Classic Variable Trust
@@ -3439,6 +3461,52 @@ func issDistinctivePairDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 // equity fund`. The heading must open on the registrant's own leading tokens and
 // close on a token abbreviating the first word the heading dropped (`va` for
 // `variable`), so only this registrant's own name is ever restored.
+// issTrustOwnName reports whether a heading is the registrant's own name while
+// the header declares more than one series, in which case the heading names the
+// trust and cannot pick a fund out of it.
+func issTrustOwnName(ix *issSeriesIndex, banner string) bool {
+	if normalizeSeriesName(banner) != ix.registrantKey || ix.registrantKey == "" {
+		return false
+	}
+	ids := map[string]bool{}
+	for _, d := range ix.decls {
+		ids[d.SeriesID] = true
+	}
+	return len(ids) > 1
+}
+
+// issRegistrantAcronym reports whether tok spells the initials of every token
+// of registrantKey, in order: `gvit` for `gartmore variable insurance trust`.
+// Three letters at least, so a two-word registrant cannot be spelled by a word
+// that merely happens to start with the right letters.
+func issRegistrantAcronym(tok, registrantKey string) bool {
+	reg := strings.Fields(registrantKey)
+	if len(tok) < 3 || len(tok) != len(reg) {
+		return false
+	}
+	for i := range reg {
+		if reg[i] == "" || reg[i][0] != tok[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// issCutBrandBeforeAcronym drops the leading tokens a banner prints in front of
+// the registrant's own acronym, keeping the acronym and everything after it. At
+// most two tokens may be dropped -- a sub-adviser's brand, not a name.
+func issCutBrandBeforeAcronym(key, registrantKey string, formerKeys []string) (string, bool) {
+	toks := strings.Fields(key)
+	for j := 1; j < len(toks) && j <= 2; j++ {
+		for _, rk := range append([]string{registrantKey}, formerKeys...) {
+			if issRegistrantAcronym(toks[j], rk) {
+				return strings.Join(toks[j:], " "), true
+			}
+		}
+	}
+	return "", false
+}
+
 func issRegistrantAbbrevSuffix(key, registrantKey string) (string, bool) {
 	toks, reg := strings.Fields(key), strings.Fields(registrantKey)
 	if len(toks) < 3 || len(reg) < 2 {

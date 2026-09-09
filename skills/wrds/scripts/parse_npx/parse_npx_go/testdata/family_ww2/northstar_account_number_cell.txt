@@ -1,0 +1,51 @@
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			NORTHERN LIGHTS FUND TRUST II
+		CENTRAL INDEX KEY:			0001518042
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border: Black 0.5pt solid; width: 6%">Company Name</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 8%">Primary Ticker Symbol</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 4%">Security ID</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 5%">Meeting Date</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 7%">Meeting Type Code</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 27%">Proposal Long Text</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 14%">Proposal Short Text</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 4%">For/Against Preferred Provider Recommendation</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 2%">Vote</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 14%">Account Name</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 9%">Internal Account Number</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt">STEELCASE INC.</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">SCS</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">858155203</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">14-Jul-2021</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">A</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Election of Director: Sara E. Armbruster&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Election of Directors (Majority Voting)</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">North Star Dividend Fund NSDVX</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">6734305800</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt">STEELCASE INC.</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">SCS</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">858155203</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">14-Jul-2021</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">A</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Election of Director: Timothy C. E. Brown&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Election of Directors (Majority Voting)</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">North Star Dividend Fund NSDVX</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">6734305800</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt">MONMOUTH REAL ESTATE INVESTMENT CORP.</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">MNR</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">609720107</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">31-Aug-2021</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">S</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">To approve, on a non-binding advisory basis, certain compensation that may be paid or become payable to MNR's five executive officers in connection with the Merger Agreement and the transactions contemplated thereby.&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">14A Executive Compensation</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">6734305800</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">6734305800&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD></TR>
+  </TABLE>
