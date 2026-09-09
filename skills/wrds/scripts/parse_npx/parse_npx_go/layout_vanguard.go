@@ -248,10 +248,10 @@ func parseVanguard(text string, meta FilingMeta) ([]VoteRow, error) {
 		upper := strings.ToUpper(trimmed)
 
 		switch {
-		case vanguardFundLabel(trimmed) != "":
+		case vanguardFundBanner(seriesIx, trimmed, fund != "") != "":
 			flush()
 			issuerOpen = false
-			fund = vanguardFundLabel(trimmed)
+			fund = vanguardFundBanner(seriesIx, trimmed, fund != "")
 			fundSeries = ""
 			if _, d := issResolveFund(seriesIx, fund); d != nil {
 				fundSeries = d.SeriesID
@@ -721,6 +721,27 @@ func vanguardCellKey(candidate string) string {
 // TOTAL STOCK MARKET INDEX FUND` (Vanguard Index Funds 2004: 24,050 rows with
 // no series on r204, 457,261 across the filer agent's 95 single-fund filings);
 // two spaces after the word are the gap, one space is prose.
+// vanguardFundBanner is vanguardFundLabel with the colonless column-gap form
+// held to evidence: a wrapped proposal continuation reads the same shape
+// (`FUND   OR AS NOVATED TO SUCH OTHER COMPANY FORMED AT THE`, Vanguard
+// Whitehall 2004) and replacing the standing fund with it clears the series on
+// every row that follows -- 522 of that filing's 2,457. A labelled `Fund:` line,
+// and the cover block that opens a filing with no fund standing yet, are read
+// whether or not they resolve.
+func vanguardFundBanner(ix *issSeriesIndex, trimmed string, standing bool) string {
+	name := vanguardFundLabel(trimmed)
+	if name == "" {
+		return ""
+	}
+	if !standing || strings.Contains(trimmed, ":") {
+		return name
+	}
+	if _, d := issResolveFund(ix, name); d != nil {
+		return name
+	}
+	return ""
+}
+
 func vanguardFundLabel(trimmed string) string {
 	upper := strings.ToUpper(trimmed)
 	if strings.HasPrefix(upper, "FUND:") {

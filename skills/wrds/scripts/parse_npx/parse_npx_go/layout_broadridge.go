@@ -582,6 +582,33 @@ func brRulelessHeadingSlot(lines []string, i int) string {
 	return slot
 }
 
+// brPageBannerSlot returns the fund banner a PAGINATED vintage reprints at
+// column 0 once per page, one dashed rule further up than brHeadingSlot looks:
+// the banner, a rule, the ISSUER, a rule, then the block opener (CM Advisers
+// Family of Funds 2009, 43 occurrences of `CM ADVISORS FUND`, all 494 rows
+// carrying the issuer as fund_name and a blank series). Every ordinary block of
+// the page reaches this slot too -- it is whatever the layout printed four lines
+// up -- which is why the caller acts only on a slot the registrant's own series
+// index resolves.
+func brPageBannerSlot(lines []string, i int) string {
+	if i < 4 || !brDashRule(lines[i-1]) || !brDashRule(lines[i-3]) {
+		return ""
+	}
+	if strings.TrimSpace(lines[i-2]) == "" {
+		return ""
+	}
+	j := i - 4
+	// Headings sit at column 0; anything indented there is body text.
+	if strings.HasPrefix(lines[j], " ") || strings.HasPrefix(lines[j], "\t") {
+		return ""
+	}
+	slot := strings.TrimSpace(lines[j])
+	if slot == "" || brDashRule(slot) {
+		return ""
+	}
+	return slot
+}
+
 // brPeriodEndpoint reports a date at one end of a printed reporting period,
 // including the `3/23/11` two-digit-year spelling htmlDate declines.
 func brPeriodEndpoint(s string) bool {
@@ -1175,6 +1202,17 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 						}
 					}
 				}
+				// Read after the slot above, which on this vintage holds the
+				// ISSUER and leaves the section blank: the page banner one rule
+				// further up is the fund. Evidence-only, so a block whose
+				// fourth line up is ordinary body text leaves the section
+				// standing.
+				if slot := brPageBannerSlot(lines, i); slot != "" && !brVoteRowSlot(slot) {
+					if _, d := issResolveFund(seriesIx, slot); d != nil {
+						flush()
+						curSeries, curFund = d.SeriesID, slot
+					}
+				}
 			} else if brSilentSection(lines, i, &silentBuf) {
 				flush()
 				curSeries = ""
@@ -1394,6 +1432,18 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 			boundary()
 			inTable = false
 			spill = nil
+			// TWO free-standing lines before a block's label lines: the first
+			// is the section's fund heading and the second the issuer the
+			// block opens under (Forum Funds 2004 prints 17 bare column-0
+			// headings, one blank line above the issuer, with no rule over or
+			// under them -- all 500 rows carry neither fund nor series).
+			// Evidence-only, so an issuer name wrapped over two lines leaves
+			// the section already open standing.
+			if pendingIssuer != "" {
+				if _, d := issResolveFund(seriesIx, pendingIssuer); d != nil {
+					curSeries, curFund = d.SeriesID, pendingIssuer
+				}
+			}
 			pendingIssuer = brIssuerName(line)
 			continue
 		}

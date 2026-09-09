@@ -1796,6 +1796,18 @@ func issHistoricalBrandKey(key string) string {
 			return "legg mason partners:" + stem
 		}
 	}
+	// The variable-insurance sleeves print the contemporaneous `AIM V.I.`
+	// prefix where the dictionary carries only the successor `INVESCO VIF -`
+	// spelling: `AIM V.I. Total Return Fund` for `INVESCO VIF - Total Return
+	// Fund` (S000000197, AIM Variable Insurance Funds 2005, 707 rows with no
+	// series). Kept ahead of the bare AIM/INVESCO brands below so the sleeve
+	// token is cut with the brand rather than left in the stem, and the stem
+	// after it must still agree whole.
+	for _, brand := range []string{"aim v i ", "invesco vif ", "invesco v i "} {
+		if stem, ok := strings.CutPrefix(key, brand); ok && stem != "" {
+			return "invesco vi:" + stem
+		}
+	}
 	// AIM's 2004 filings head their sections with the predecessor INVESCO
 	// brand and declare the same funds under the successor AIM name:
 	// `INVESCO Dynamics Fund` for `AIM Dynamics Fund` (S000000163). The stem
