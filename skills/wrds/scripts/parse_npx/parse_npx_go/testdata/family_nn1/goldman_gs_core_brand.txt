@@ -1,0 +1,30 @@
+		COMPANY CONFORMED NAME:			GOLDMAN SACHS TRUST
+		CENTRAL INDEX KEY:			0000822977
+<TEXT>
+====================== GS CORE INTERNATIONAL EQUITY FUND =======================
+
+
+ADERANS CO. LTD.
+
+Ticker:                      Security ID:  J00126102
+Meeting Date: MAY 26, 2005   Meeting Type: Annual
+Record Date:  FEB 28, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Approve Allocation of Income, Including   For       For        Management
+      the Following Dividends: Interim JY 19,
+      Final JY 19, Special JY 0
+2     Amend Articles to: Abolish Retirement     For       For        Management
+      Bonus System
+3.1   Elect Director                            For       For        Management
+3.2   Elect Director                            For       For        Management
+3.3   Elect Director                            For       For        Management
+3.4   Elect Director                            For       For        Management
+3.5   Elect Director                            For       For        Management
+3.6   Elect Director                            For       For        Management
+3.7   Elect Director                            For       For        Management
+3.8   Elect Director                            For       For        Management
+3.9   Elect Director                            For       For        Management
+4     Approve Retirement Bonuses for Directors  For       Against    Management
+      and Special Payments to Continuing
+      Directors and Statutory Auditors in

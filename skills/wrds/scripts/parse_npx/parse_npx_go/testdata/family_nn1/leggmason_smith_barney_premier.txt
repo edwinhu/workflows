@@ -1,0 +1,20 @@
+		COMPANY CONFORMED NAME:			SMITH BARNEY INVESTMENT SERIES
+		CENTRAL INDEX KEY:			0000810271
+<TEXT>
+============ SMITH BARNEY INVESTMENT SERIES - SMITH BARNEY PREMIER =============
+============          SELECTIONS ALL CAP GROWTH PORTFOLIO          =============
+
+
+ADVANCED FIBRE COMMUNICATIONS, INC.
+
+Ticker:       AFCI           Security ID:  00754A105
+Meeting Date: MAY 20, 2004   Meeting Type: Annual
+Record Date:  MAR 23, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director John A. Schofield         For       For        Management
+1.2   Elect  Director Ruann F. Ernst            For       For        Management
+1.3   Elect  Director Frank Ianna               For       For        Management
+2     Ratify Auditors                           For       For        Management
+
+

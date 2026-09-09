@@ -1,0 +1,32 @@
+		COMPANY CONFORMED NAME:			STI CLASSIC VARIABLE TRUST
+		CENTRAL INDEX KEY:			0000944487
+<TEXT>
+
+
+
+
+=================== STI CLASSIC INTERNATIONAL EQUITY FUND VA ===================
+
+
+ABN AMRO HOLDING NV
+
+Ticker:       ABN            Security ID:  N0030P459
+Meeting Date: APR 29, 2004   Meeting Type: Annual
+Record Date:  APR 22, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Receive Report of Management Board        None      None       Management
+2     Discussion about Company's Corporate      None      None       Management
+      Governance Report
+3.1   Approve Financial Statements and          For       For        Management
+      Statutory Reports
+3.2   Approve Dividends                         For       For        Management
+3.3   Approve Discharge of Management Board     For       For        Management
+3.4   Approve Discharge of Supervisory Board    For       For        Management
+4     Approve Remuneration Policy               For       For        Management
+5     Reappoint Ernst & Young as Auditors       For       For        Management
+6.1   Reelect T. Maas-de Bouwer to Supervisory  For       For        Management
+      Board
+6.2   Elect A. Olijslager to Supervisory Board  For       For        Management
+7.1   Abolish Antitakeover Preference Shares    For       For        Management
+      through Repurchase and Cancellation of
