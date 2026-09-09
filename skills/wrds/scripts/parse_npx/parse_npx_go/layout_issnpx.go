@@ -1210,10 +1210,49 @@ type issSeriesIndex struct {
 	// commonSuffix is the last word every declared name shares, kept so a
 	// heading that DROPS it can be retried with it appended.
 	commonSuffix string
+
+	// normNames and normToks hold each declaration's normalised name and its
+	// tokens, folded once at build time. The declaration-scanning rungs walk
+	// every decl on every banner, and the normalisation depends only on the
+	// declaration, so recomputing it in the loop is pure waste: a registrant
+	// with 882 declared series costs 35+ CPU minutes on one filing without
+	// this.
+	normNames []string
+	normToks  [][]string
+	// resolved memoises issResolveFund per banner. A body prints the same page
+	// heading on every page, and the resolution is pure in (ix, banner), so the
+	// repeat is recomputation and never new evidence. Per-filing and
+	// single-goroutine, so no lock.
+	resolved map[string]issResolved
+}
+
+// issResolved is one memoised issResolveFund answer.
+type issResolved struct {
+	name string
+	decl *SeriesDecl
+}
+
+// declNorm is the declaration's normalised name, folded once at build time.
+func (ix *issSeriesIndex) declNorm(i int) string {
+	if i < len(ix.normNames) {
+		return ix.normNames[i]
+	}
+	return normalizeSeriesName(ix.decls[i].Name)
+}
+
+// declToks is the declaration's normalised name split into tokens, once.
+func (ix *issSeriesIndex) declToks(i int) []string {
+	if i < len(ix.normToks) {
+		return ix.normToks[i]
+	}
+	return strings.Fields(ix.declNorm(i))
 }
 
 // issFormerKeys normalises the header's former conformed names for the index.
 func issFormerKeys(ix *issSeriesIndex, former []string) {
+	// A former key is new evidence, so answers memoised before it arrived are
+	// stale; the resolver's cache is only valid for a fixed index.
+	clear(ix.resolved)
 	for _, f := range former {
 		if k := normalizeSeriesName(f); k != "" && k != ix.registrantKey {
 			ix.formerKeys = append(ix.formerKeys, k)
@@ -1242,6 +1281,13 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		lessAnyType:          make(map[string]*SeriesDecl),
 		lessLeadTokenAnyType: make(map[string]*SeriesDecl),
 		lessBrandTypeCompact: make(map[string]*SeriesDecl),
+		resolved:             make(map[string]issResolved),
+	}
+	ix.normNames = make([]string, len(decls))
+	ix.normToks = make([][]string, len(decls))
+	for i := range decls {
+		ix.normNames[i] = normalizeSeriesName(decls[i].Name)
+		ix.normToks[i] = strings.Fields(ix.normNames[i])
 	}
 	dupTicker := map[string]bool{}
 	for i := range decls {
@@ -1818,6 +1864,18 @@ var (
 // registrantKey is the filing's COMPANY CONFORMED NAME already normalised, since
 // it is constant across every banner in the filing.
 func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
+	if ix == nil || ix.resolved == nil {
+		return issResolveFundUncached(ix, banner)
+	}
+	if r, ok := ix.resolved[banner]; ok {
+		return r.name, r.decl
+	}
+	name, d := issResolveFundUncached(ix, banner)
+	ix.resolved[banner] = issResolved{name: name, decl: d}
+	return name, d
+}
+
+func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	idx, registrantKey := ix.byName, ix.registrantKey
 	d, declared := lookupSeriesEntry(idx, banner)
 	// A heading that is exactly one declared class ticker (`RWL`, RevenueShares
@@ -1859,6 +1917,16 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// S000003152, half of them presumptively the other fund's. Only an EXACT
 	// declared name may carry the trust's own spelling, and that has already
 	// returned above.
+	// A terminal corporate suffix the header omits: the masthead
+	// `DREYFUS PREMIER NEW LEADERS FUND, INC.` over a declared
+	// `DREYFUS PREMIER NEW LEADERS FUND` (S000000092, 533 rows with no
+	// series). Only an exact unambiguous hit on the remainder counts, so a
+	// declared name that carries the suffix itself is unaffected.
+	if rest, ok := issTrailingCorpSuffix(banner); ok {
+		if alt, _ := lookupSeriesEntry(idx, rest); alt != nil {
+			return rest, alt
+		}
+	}
 	if issTrustOwnName(ix, banner) {
 		return banner, nil
 	}
@@ -2185,6 +2253,18 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if rest, ok := issLeadingCodeToken(banner); ok {
 		if _, d := issResolveFund(ix, rest); d != nil {
 			return rest, d
+		}
+	}
+	// A pure-letter sleeve code before the name: `AA  DWS BALANCED VIP`,
+	// `DDD  DWS JANUS GROWTH & INCOME VIP` (DWS Variable Series II 2006, whose
+	// codes run A..Z and then double and triple off the same letters; the
+	// one-character form already strips above). The token alone is no evidence
+	// it IS a code, so the remainder must be an EXACT unambiguous declared
+	// name -- that exact hit is itself the evidence, and it leaves an ordinary
+	// leading word such as `Growth Emerging Markets Value Fund` untouched.
+	if rest, ok := issRepeatedLetterCode(banner); ok {
+		if alt, _ := lookupSeriesEntry(idx, rest); alt != nil {
+			return rest, alt
 		}
 	}
 	// A leading enumerator: `1.A.  SC IBBOTSON BALANCED FUND` (Sun Capital
@@ -2722,7 +2802,7 @@ func issTrailingAcronymDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		if d.SeriesID == "" || d.Name == "" {
 			continue
 		}
-		want := strings.Fields(normalizeSeriesName(d.Name))
+		want := ix.declToks(i)
 		if len(want) != len(head)+len(acr) {
 			continue
 		}
@@ -3091,7 +3171,7 @@ func issWidthTruncatedDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 	}
 	var hit *SeriesDecl
 	for i := range ix.decls {
-		dk := normalizeSeriesName(ix.decls[i].Name)
+		dk := ix.declNorm(i)
 		g := strings.Fields(dk)
 		if len(g) != len(f) {
 			continue
@@ -3135,7 +3215,7 @@ func issAbbrevStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 			if d.SeriesID == "" || d.Name == "" {
 				continue
 			}
-			stem, typed := issDropTypeWord(normalizeSeriesName(d.Name))
+			stem, typed := issDropTypeWord(ix.declNorm(i))
 			if !typed {
 				continue
 			}
@@ -3222,7 +3302,7 @@ func issNearMissDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		if d.SeriesID == "" || d.Name == "" {
 			continue
 		}
-		if !issNearMiss(banner, strings.Fields(normalizeSeriesName(d.Name))) {
+		if !issNearMiss(banner, ix.declToks(i)) {
 			continue
 		}
 		if hit != nil && hit.SeriesID != d.SeriesID {
@@ -3397,7 +3477,7 @@ func issDistinctiveTokenDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 			if d.SeriesID == "" || d.Name == "" {
 				continue
 			}
-			if !issHasToken(normalizeSeriesName(d.Name), t) {
+			if !issHasToken(ix.declNorm(i), t) {
 				continue
 			}
 			owner = d
@@ -3477,7 +3557,7 @@ func issDistinctivePairDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 			if d.SeriesID == "" || d.Name == "" {
 				continue
 			}
-			if !strings.Contains(" "+normalizeSeriesName(d.Name)+" ", " "+pair+" ") {
+			if !strings.Contains(" "+ix.declNorm(j)+" ", " "+pair+" ") {
 				continue
 			}
 			owner = d
@@ -3646,7 +3726,7 @@ func issAbbrevWordDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		if d.SeriesID == "" || d.Name == "" {
 			continue
 		}
-		dt := strings.Fields(normalizeSeriesName(d.Name))
+		dt := ix.declToks(i)
 		if len(dt) != len(toks) {
 			continue
 		}
@@ -3698,7 +3778,7 @@ func issHyphenInitialismDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		if len(pairs) == 0 {
 			continue
 		}
-		declKey := normalizeSeriesName(d.Name)
+		declKey := ix.declNorm(i)
 		cands := []string{declKey}
 		for _, b := range ix.brands {
 			if rest, ok := strings.CutPrefix(declKey, b+" "); ok && rest != "" {
@@ -4216,6 +4296,49 @@ func issLeadingCodeToken(name string) (rest string, ok bool) {
 	}
 	if !digit && !paren {
 		return "", false
+	}
+	return strings.Join(fields[1:], " "), true
+}
+
+// issTrailingCorpSuffix drops a terminal incorporation word from a heading:
+// `... FUND, INC.` -> `... FUND`. It says nothing about whether the shorter
+// name is declared -- the caller must require an exact hit.
+func issTrailingCorpSuffix(name string) (rest string, ok bool) {
+	fields := strings.Fields(name)
+	if len(fields) < 2 {
+		return "", false
+	}
+	last := strings.ToLower(strings.Trim(fields[len(fields)-1], ".,"))
+	switch last {
+	case "inc", "incorporated", "corp", "corporation", "llc", "ltd", "plc":
+	default:
+		return "", false
+	}
+	head := strings.TrimRight(strings.Join(fields[:len(fields)-1], " "), " ,")
+	if head == "" {
+		return "", false
+	}
+	return head, true
+}
+
+// issRepeatedLetterCode strips a leading sleeve code of 2-3 copies of ONE
+// letter (`AA`, `DDD`). The repetition is what marks it as a code rather than a
+// word or a brand initialism -- `RIC DIVERSIFIED EQUITY FUND` keeps its RIC --
+// and the caller must still require the remainder to be an exact declared name.
+func issRepeatedLetterCode(name string) (rest string, ok bool) {
+	fields := strings.Fields(name)
+	if len(fields) < 2 {
+		return "", false
+	}
+	tok := fields[0]
+	if len(tok) < 2 || len(tok) > 3 {
+		return "", false
+	}
+	for i := 0; i < len(tok); i++ {
+		c := tok[i]
+		if c < 'A' || c > 'Z' || c != tok[0] {
+			return "", false
+		}
 	}
 	return strings.Join(fields[1:], " "), true
 }

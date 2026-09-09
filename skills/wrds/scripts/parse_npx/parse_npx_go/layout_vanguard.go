@@ -726,6 +726,11 @@ func vanguardFundLabel(trimmed string) string {
 	if strings.HasPrefix(upper, "FUND:") {
 		return strings.TrimSpace(trimmed[len("FUND:"):])
 	}
+	// `Name of Fund:   Assetmark Large Cap Growth Fund` (AssetMark Funds 2005,
+	// 544 rows with no fund name) is the same label spelled long.
+	if strings.HasPrefix(upper, "NAME OF FUND:") {
+		return strings.TrimSpace(trimmed[len("NAME OF FUND:"):])
+	}
 	if strings.HasPrefix(upper, "FUND  ") {
 		name := strings.TrimSpace(trimmed[len("FUND"):])
 		if name != "" && !strings.Contains(name, ":") {

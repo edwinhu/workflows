@@ -502,7 +502,7 @@ func sortedKeys(m map[string][]string) []string {
 // element has closed — voteManager, voteSeries and voteOtherInfo follow the
 // votes in real filings — so the votes of one proxyTable, and only those, are
 // held until then.
-func (rec *proxyRecord) emitRows(meta *FilingMeta, classes map[string][]string, emit func(VoteRow) error) (int, error) {
+func (rec *proxyRecord) emitRows(meta *FilingMeta, classes map[string][]string, reported map[string]bool, emit func(VoteRow) error) (int, error) {
 	base := VoteRow{
 		FilePath:             meta.FilePath,
 		SeriesID:             rec.VoteSeries,
@@ -530,14 +530,22 @@ func (rec *proxyRecord) emitRows(meta *FilingMeta, classes map[string][]string, 
 		if ids := classes[rec.VoteSeries]; len(ids) > 0 {
 			base.ClassIDs = strings.Join(ids, MultiValueSep)
 		}
-	} else if len(classes) >= 2 {
+	} else if len(classes) >= 2 || len(reported) == 1 {
 		// The form omits <voteSeries> when the vote applies to every series
 		// the report covers (Natixis Funds Trust IV 2024: 52,482 of 59,609
 		// proxy tables; 435,489 rows in 90 multi-series XML filings had no
 		// series on run71). Those rows are every series of the report,
 		// joined as the text layouts' consolidated filings are and fanned
-		// out at conversion. A single-series report is the chassis's stamp.
-		base.SeriesID = strings.Join(sortedKeys(classes), MultiValueSep)
+		// out at conversion. A report whose seriesPage names exactly ONE series
+		// is the same evidence in its simplest form (Forester Funds 2025:
+		// <seriesCount>1</seriesCount> over S000004887, while the SGML header
+		// declares two series so the chassis's single-series stamp never
+		// fires); all 564 rows left series_id blank.
+		ids := sortedKeys(classes)
+		if len(classes) < 2 {
+			ids = sortedBoolKeys(reported)
+		}
+		base.SeriesID = strings.Join(ids, MultiValueSep)
 	}
 
 	// An agenda item with no <voteRecord> is still an agenda item: the fund held
@@ -612,7 +620,7 @@ func isNoticeReportType(v string) bool {
 // elements are matched wherever they sit, because filers nest seriesClass under
 // headerData in some schema revisions and flat in others; the SEC schema places
 // reportType at formData/coverPage/reportInfo/reportType.
-func parsePrimaryDoc(r io.Reader, meta *FilingMeta, classes map[string][]string) (bool, error) {
+func parsePrimaryDoc(r io.Reader, meta *FilingMeta, classes map[string][]string, reported map[string]bool) (bool, error) {
 	d := newXMLDecoder(r)
 	series := ""
 	isNotice := false
@@ -656,6 +664,9 @@ func parsePrimaryDoc(r io.Reader, meta *FilingMeta, classes map[string][]string)
 			}
 			if v != "" {
 				series = v
+				if se.Name.Local == "idOfSeries" {
+					reported[series] = true
+				}
 				if _, seen := classes[series]; !seen {
 					classes[series] = nil
 				}
@@ -795,7 +806,7 @@ func only(set map[string]struct{}) string {
 // once the section closes. Only the id-less share is buffered, so the cost is
 // bounded by how many votes arrive without an identifier, not by filing size,
 // and a filing where every vote is identified buffers nothing.
-func parseVoteTable(r io.Reader, meta *FilingMeta, classes map[string][]string, emit func(VoteRow) error) (int, error) {
+func parseVoteTable(r io.Reader, meta *FilingMeta, classes map[string][]string, reported map[string]bool, emit func(VoteRow) error) (int, error) {
 	d := newXMLDecoder(r)
 	total := 0
 
@@ -815,7 +826,7 @@ func parseVoteTable(r io.Reader, meta *FilingMeta, classes map[string][]string, 
 					rec.ISIN = only(ids.isins)
 				}
 			}
-			k, err := rec.emitRows(meta, classes, emit)
+			k, err := rec.emitRows(meta, classes, reported, emit)
 			n += k
 			if err != nil {
 				return n, err
@@ -855,7 +866,7 @@ func parseVoteTable(r io.Reader, meta *FilingMeta, classes map[string][]string, 
 			}
 			ids.add(rec.CUSIP, rec.ISIN)
 		}
-		n, err := rec.emitRows(meta, classes, emit)
+		n, err := rec.emitRows(meta, classes, reported, emit)
 		total += n
 		if err != nil {
 			return total, err
@@ -890,6 +901,7 @@ const (
 func parseNPXXML(r io.Reader, meta *FilingMeta, emit func(VoteRow) error) (int, error) {
 	src := newLineSrc(r)
 	classes := map[string][]string{}
+	reported := map[string]bool{}
 	total := 0
 	sawVoteTable := false
 	isNotice := false
@@ -907,11 +919,11 @@ func parseNPXXML(r io.Reader, meta *FilingMeta, emit func(VoteRow) error) (int, 
 		case strings.Contains(up, docTypeVoteTable):
 			sawVoteTable = true
 			var n int
-			n, err = parseVoteTable(sec, meta, classes, emit)
+			n, err = parseVoteTable(sec, meta, classes, reported, emit)
 			total += n
 		case strings.HasPrefix(up, docTypePrimary):
 			var notice bool
-			notice, err = parsePrimaryDoc(sec, meta, classes)
+			notice, err = parsePrimaryDoc(sec, meta, classes, reported)
 			isNotice = isNotice || notice
 		}
 
@@ -1016,4 +1028,14 @@ func pad2(s string) string {
 		return "0" + s
 	}
 	return s
+}
+
+// sortedBoolKeys is sortedKeys for a set.
+func sortedBoolKeys(m map[string]bool) []string {
+	out := make([]string, 0, len(m))
+	for k := range m {
+		out = append(out, k)
+	}
+	sort.Strings(out)
+	return out
 }

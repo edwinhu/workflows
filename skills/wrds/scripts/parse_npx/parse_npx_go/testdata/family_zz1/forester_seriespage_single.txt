@@ -1,0 +1,77 @@
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			FORESTER FUNDS INC
+		CENTRAL INDEX KEY:			0001088323
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001088323
+<SERIES-ID>S000004887
+<SERIES-NAME>Forester Value Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001088323
+<SERIES-ID>S000011996
+<SERIES-NAME>Forester Discovery Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>primary_doc.xml
+<TEXT>
+<XML>
+<?xml version="1.0" encoding="UTF-8"?>
+<edgarSubmission xmlns="http://www.sec.gov/edgar/npx" xmlns:com="http://www.sec.gov/edgar/common">
+  <formData>
+    <seriesPage>
+      <seriesCount>1</seriesCount>
+      <seriesDetails>
+        <seriesReports>
+          <idOfSeries>S000004887</idOfSeries>
+          <nameOfSeries>FORESTER FUNDS INC</nameOfSeries>
+          <leiOfSeries>549300P6TVRJIQF86J18</leiOfSeries>
+        </seriesReports>
+      </seriesDetails>
+    </seriesPage>
+  </formData>
+</edgarSubmission>
+</XML>
+</TEXT>
+</DOCUMENT>
+<DOCUMENT>
+<TYPE>PROXY VOTING RECORD
+<SEQUENCE>2
+<FILENAME>proxytable.xml
+<TEXT>
+<XML>
+<?xml version="1.0" ?>
+<proxyVoteTable xmlns="http://www.sec.gov/edgar/document/npxproxy/informationtable">
+  <proxyTable>
+    <issuerName>Oracle Corporation</issuerName>
+    <cusip>68389X105</cusip>
+    <isin>US68389X1054</isin>
+    <meetingDate>11/14/2024</meetingDate>
+    <voteDescription>Election of Director: Awo Ablo</voteDescription>
+    <voteCategories>
+      <voteCategory>
+        <categoryType>DIRECTOR ELECTIONS</categoryType>
+      </voteCategory>
+    </voteCategories>
+    <voteSource>ISSUER</voteSource>
+    <sharesVoted>500</sharesVoted>
+    <sharesOnLoan>0</sharesOnLoan>
+    <vote>
+      <voteRecord>
+        <howVoted>abstain</howVoted>
+        <sharesVoted>0</sharesVoted>
+        <managementRecommendation>AGAINST</managementRecommendation>
+      </voteRecord>
+    </vote>
+  </proxyTable>
+</proxyVoteTable>
+</XML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

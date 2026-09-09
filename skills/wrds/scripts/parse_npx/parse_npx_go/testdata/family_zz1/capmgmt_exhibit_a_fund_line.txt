@@ -1,0 +1,83 @@
+<SEC-DOCUMENT>0001398344-11-001891.txt : 20110819
+<SEC-HEADER>0001398344-11-001891.hdr.sgml : 20110819
+<ACCEPTANCE-DATETIME>20110819122708
+ACCESSION NUMBER:		0001398344-11-001891
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20110630
+FILED AS OF DATE:		20110819
+DATE AS OF CHANGE:		20110819
+EFFECTIVENESS DATE:		20110819
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CAPITAL MANAGEMENT INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000931491
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000931491
+<SERIES-ID>S000010455
+<SERIES-NAME>Capital Management Small-Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028880
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CMSSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028881
+<CLASS-CONTRACT-NAME>Investor Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CMSVX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000931491
+<SERIES-ID>S000010456
+<SERIES-NAME>Capital Management Mid-Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028882
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CMEIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028883
+<CLASS-CONTRACT-NAME>Investor Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CMCIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+
+
+<PAGE>
+
+
+EXHIBIT A
+---------
+Capital Management Small-Cap Fund
+
+<TABLE>
+<CAPTION>
+UNASSIGNED
+-----------------------------------------------------------------------------------------------------------------
+    ASHFORD HOSPITALITY TRUST, INC.
+-----------------------------------------------------------------------------------------------------------------
+            SECURITY: 044103109                                                  AGENDA NUMBER: 933431114
+            TICKER:   AHT                                                        MEETING TYPE: Annual
+            ISIN:     US0441031095                                               MEETING DATE: 5/17/2011
+-----------------------------------------------------------------------------------------------------------------
+                                                                                                FOR/AGAINST
+                                                                                                MANAGEMENT'S
+PROP. #     PROPOSAL                                      PROPOSED BY       PROPOSAL VOTE      RECOMMENDATION
+-----------------------------------------------------------------------------------------------------------------
+<S>         <C>                                           <C>               <C>                      <C>
+    01      DIRECTOR
+            1    ARCHIE BENNETT, JR.                      Mgmt                   For                 For
+
+            2    MONTY J. BENNETT                         Mgmt                   For                 For
+
+            3    BENJAMIN J. ANSELL, MD                   Mgmt                   For                 For
+
+            4    THOMAS E. CALLAHAN                       Mgmt                   For                 For
+

@@ -68,4 +68,13 @@ func TestFamilyYY1TrendStarInlineAgendaFund(t *testing.T) {
 // resolve while `AA  DWS BALANCED VIP` and `DDD  DWS JANUS GROWTH & INCOME VIP`
 // do not, on the same dictionary. 4,166 rows sit under the AA heading and 598
 // under the DDD heading; both names are declared in the filing's own header
-// (S000006265 at line 217, S000006270 at line 282).
+// (S000006265 at line 217, S000006270 at line 282). Fixture: raw lines 14-27,
+// 568-572, 1584-1610.
+func TestFamilyYY1DWSTwoLetterAccountCode(t *testing.T) {
+	rows := familyYY1Dispatch(t, "dws_two_letter_account_code.txt", "dws_dict.tsv", "issnpx", 17)
+	for _, r := range rows {
+		if r.SeriesID != "S000006265" {
+			t.Errorf("AA DWS BALANCED VIP: fund=%q issuer=%q item=%q series=%q want S000006265", r.FundName, r.IssuerName, r.ItemSeq, r.SeriesID)
+		}
+	}
+}
