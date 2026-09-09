@@ -152,7 +152,6 @@ func lvReportTitleBelow(lines []string, i int) bool {
 
 func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 	lines := strings.Split(text, "\n")
-	seriesIdx := seriesByName(meta.SeriesDecls)
 	sharedIdx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
 	dict := cikDict.exactFallback(meta)
 
@@ -181,7 +180,15 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 		// this grammar is filed by houses that print both.
 		if name, ok := issFundSeparator(line); ok {
 			fund = name
-			curSeries = icrResolveFund(seriesIdx, name)
+			// The banner goes through the same rules the sibling text layouts use,
+			// so a hybrid filing that falls to this layout rather than issnpx reads
+			// its banners the same way: `PF LAZARD INTERNATIONAL VALUE FUND` names
+			// the fund by its then sub-adviser for a declared `PF International
+			// Value Fund` (S000001888, Pacific Funds 2006, 498 rows).
+			curSeries = icrResolveFundShared(sharedIdx, name)
+			if curSeries == "" {
+				curSeries = htmlDictionaryFund(sharedIdx, dict, name)
+			}
 			inBlock = false
 			lastRow = -1
 			continue
