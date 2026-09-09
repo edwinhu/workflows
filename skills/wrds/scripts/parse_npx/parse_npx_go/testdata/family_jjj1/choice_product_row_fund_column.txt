@@ -1,0 +1,321 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ WVUMtVM9YL7lILV3rURkO0f3jmIC+w3BVEYCmYjEmc4YpD2jkyIP5iPRNmo25NcH
+ jjLpmUDMaKfRilZXjMwlKg==
+
+<SEC-DOCUMENT>0000910472-04-000098.txt : 20040820
+<SEC-HEADER>0000910472-04-000098.hdr.sgml : 20040820
+<ACCEPTANCE-DATETIME>20040820114951
+ACCESSION NUMBER:		0000910472-04-000098
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040820
+FILED AS OF DATE:		20040820
+EFFECTIVENESS DATE:		20040820
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CHOICE FUNDS
+		CENTRAL INDEX KEY:			0001091159
+		IRS NUMBER:				841515649
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-09485
+		FILM NUMBER:		04988032
+
+	BUSINESS ADDRESS:	
+		STREET 1:		803 WEST MICHIGAN STREET
+		STREET 2:		SUITE A
+		CITY:			MILWAUKEE
+		STATE:			WI
+		ZIP:			53233
+
+	MAIL ADDRESS:	
+		STREET 1:		803 WEST MICHIGAN STREET
+		STREET 2:		SUITE A
+		CITY:			MILWAUKEE
+		STATE:			WI
+		ZIP:			53233
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	AB FUNDS TRUST
+		DATE OF NAME CHANGE:	19990719
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>signaturepage.htm
+<TEXT>
+<!doctype html public "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>CHOICE N-PX</TITLE>
+<META NAME="author" CONTENT="JOSEPH MIOLA">
+<META NAME="date" CONTENT="07/28/2004">
+</HEAD>
+<BODY style="line-height:12pt; font-size:10pt; color:#000000" BGCOLOR=#FFFFFF LINK=#0000FF VLINK=#FF00FF ALINK=#FF0000>
+<TABLE cellspacing=0><TR><P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center><B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Item 1 Exhibit A</B></P>
+
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center><b>Choice Funds: Market Neutral, Focus, Balance and Long-Short Funds</b></P>
+
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center>Investment Company Act file number: 811-09485</P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:11pt" align=center>July 1, 2003-June 30, 2004</P>
+<BR>
+
+<TD style="border:0.5pt solid #000000" valign=top width=131.933><P style="margin:0pt; padding-right:-30pt; font-family:Times New Roman; font-size:8pt"><BR></P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt"><B>Choice Product</B></P>
+</TD><TD style="border-top:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=132.133><P style="margin:0pt; padding-right:-30pt; font-family:Times New Roman; font-size:8pt"><BR></P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align="center"><B>Issuer</B></P>
+</TD>
+	<TD style="border-top:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=47.933 align="center"><P style="margin:0pt; padding-right:-30pt; font-family:Times New Roman; font-size:8pt"><BR></P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt"><B>Ticker</B></P>
+</TD>
+	<TD style="border-top:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=72 align="center"><P style="margin:0pt; padding-right:-30pt; font-family:Times New Roman; font-size:8pt"><BR></P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt"><B>Cusip</B></P>
+</TD>
+	<TD style="border-top:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=60.067 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt"><B>Meeting</B></P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt"><B>Date</B></P>
+</TD><TD style="border-top:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=67><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt"><B>&nbsp;&nbsp;Proposed</B></P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt"><B>&nbsp;By Issuer</B></P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt"><B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Or</B></P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt"><B>Shareholder</B></P>
+</TD><TD style="border-top:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=328.933><P style="margin:0pt; padding-right:-30pt; font-family:Times New Roman; font-size:8pt"><BR></P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center><B>Matter</B></P>
+</TD><TD style="border-top:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=51.6><P style="margin:0pt; padding-right:-30pt; font-family:Times New Roman; font-size:8pt"><BR></P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt"><B>Vote</B></P>
+</TD><TD style="border-top:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=71.267><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt"><B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For or</B></P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt"><B>&nbsp;&nbsp;&nbsp;&nbsp;Against</B></P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt"><B>Management</B></P>
+</TD></TR>
+<TR><TD style="border-left:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=131.933><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt"><B>Choice Balanced Fund</B></P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=132.133>
+	<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align="center">Nokia Corporation</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=47.933 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">NOK</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=72 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">654902204</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=60.067 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">3/25/04</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=67><P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" width=328.933><P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">1.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Board of Directors</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">2.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Income and Balance Sheets</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">3.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Dividend</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">4.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Discharge Chairman</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">5.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Board Directors and President from liability;</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">6.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Approval of auditor</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">7.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Reduction of share capital</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">8.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Approval to increase share capital</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">9.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Approval to repurchase Nokia shares</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">10.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Approval to dispose Nokia shares</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">11.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Approval to increase capital;</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">12.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Approve proxy vote on our behalf.</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=51.6><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=71.267><P style="margin:0pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+</TD></TR>
+<TR><TD style="border-left:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=131.933>&nbsp;</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=132.133>
+	<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align="center">CVS Corporation</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=47.933 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">CVS</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=72 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">126650100</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=60.067 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">5/12/04</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=67><P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>S</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" width=328.933><P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-5.05pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">1.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-5.05pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Directors</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-5.05pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">2.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-5.05pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Amendment to Company Incentive Plan</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-5.05pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">3.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-5.05pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Auditors</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-5.05pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">4.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-5.05pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Executive Compensation</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=51.6><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Against</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=71.267><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+</TD></TR>
+<TR><TD style="border-left:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=131.933>&nbsp;</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=132.133>
+	<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align="center">Pepsico Inc.</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=47.933 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">PEP</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=72 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">713448108</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=60.067 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">5/05/04</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=67><P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>S</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>S</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" width=328.933><P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">1.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Directors</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">2.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Auditors,</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">3.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Executive Incentive Compensations</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">4.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Political Contributions</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">5.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Impact of HIV/AIS, TB and Malaria in Emerging Markets</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=51.6><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Against</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Against</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=71.267><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For </P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+</TD></TR>
+<TR><TD style="border-left:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=131.933>&nbsp;</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=132.133 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Baxter International </P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=47.933 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">BAX</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=72 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">071813109</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=60.067 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">5/04/04</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=67><P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>S</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" width=328.933><P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">1.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Directors</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">2.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Auditors</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">3.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Cumulative Voting in election of directors</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=51.6><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Against</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=71.267><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+</TD></TR>
+<TR><TD style="border-left:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=131.933>&nbsp;</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=132.133 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">MBNA Corporation</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=47.933 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">KRB</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=72 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">55262L100</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=60.067 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">5/03/04</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=67><P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>S</P>
+<P style="margin:0pt; padding-right:-4.8pt; font-family:Times New Roman; font-size:8pt" align=center><BR></P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>S</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" width=328.933><P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">1.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Directors</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">2.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Auditors</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">3.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Cost of employee and director stock options be recognized in income statement</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">4.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Adopt policy that two-thirds of elected directors would be &#147;independent.&#148;</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=51.6><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Against</P>
+<P style="margin:0pt; padding-right:-30pt; font-family:Times New Roman; font-size:8pt"><BR></P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Against</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=71.267><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; font-family:Times New Roman; font-size:8pt"><BR></P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+</TD></TR>
+<TR><TD style="border-left:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=131.933>&nbsp;</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=132.133 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Clear Channel </P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Communications</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=47.933 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">CCU</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=72 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">184502102</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=60.067 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">4/28/04</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=67><P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+<P style="margin:0pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt" align=center>I</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" width=328.933><P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">1.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Directors</P>
+<P style="margin-top:0pt; margin-bottom:-10pt; padding-left:36pt; padding-right:-4.8pt; text-indent:-18pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">2.</P>
+<P style="margin:0pt; padding-left:36pt; padding-right:-4.8pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Auditors</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=51.6><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+</TD><TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=71.267><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+<P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">For</P>
+</TD></TR>
+<TR><TD style="border-left:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=131.933>&nbsp;</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=132.133 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">Pfizer Inc.</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=47.933 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">PFE</P>
+</TD>
+	<TD style="border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" valign=top width=72 align="center"><P style="margin:0pt; padding-right:-30pt; line-height:10pt; font-family:Times New Roman; font-size:8pt">727081103</P>
+</TD>
+</TABLE>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

@@ -1,0 +1,248 @@
+<SEC-DOCUMENT>0001623632-23-001067.txt : 20230824
+<SEC-HEADER>0001623632-23-001067.hdr.sgml : 20230824
+<ACCEPTANCE-DATETIME>20230824153126
+ACCESSION NUMBER:		0001623632-23-001067
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20230630
+FILED AS OF DATE:		20230824
+DATE AS OF CHANGE:		20230824
+EFFECTIVENESS DATE:		20230824
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Federated Hermes Income Securities Trust
+		CENTRAL INDEX KEY:			0000789281
+		IRS NUMBER:				251412886
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0430
+
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000789281
+<SERIES-ID>S000009073
+<SERIES-NAME>Federated Hermes Capital Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000024648
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CAPAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000789281
+<SERIES-ID>S000009076
+<SERIES-NAME>Federated Hermes Muni and Stock Advantage Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000024657
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FMUAX
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fist1147-form.htm
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+
+
+<P STYLE="font: 9pt/12.05pt Times New Roman, Times, Serif; margin: 0; text-align: right; color: #221E1F">OMB APPROVAL</P>
+
+<P STYLE="font: 9pt/12.05pt Times New Roman, Times, Serif; margin: 0; text-align: right; color: #221E1F">OMB Number: 3235-0582</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0; text-align: right; color: #221E1F">Expires: July 31, 2024</P>
+
+<P STYLE="font: 9pt/12.05pt Times New Roman, Times, Serif; margin: 0; text-align: right; color: #221E1F">Estimated average burden</P>
+
+<P STYLE="font: 9pt/12.05pt Times New Roman, Times, Serif; margin: 0; text-align: right; color: #221E1F">hours per response&#8230;..7.2</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>United States</B></P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>Securities and Exchange Commission</B></P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>Washington, DC 20549</B></P>
+
+<P STYLE="color: #221E1F; font: 9pt/14.05pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>&nbsp;</B></P>
+
+<P STYLE="color: #221E1F; font: 9pt/14.05pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>FORM N-PX</B></P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0; text-align: center">ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT
+INVESTMENT COMPANY</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0; text-align: center; color: #221E1F">&nbsp;</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0">Investment Company Act file number: 811-04577</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0 0 0 0.25in; text-indent: -0.25in"><B>Federated Hermes Income Securities Trust</B></P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0; color: #221E1F">(Exact name of registrant as specified in charter)</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0; text-align: justify; color: #221E1F">&nbsp;</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0; text-align: justify; color: #221E1F">4000 Ericsson Drive</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0">Warrendale, PA 15086-7561</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0; text-align: justify; color: #221E1F">(Address of principal executive offices)
+(Zip code)</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0; text-align: justify; color: #221E1F">&nbsp;</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0; text-align: justify">Peter J. Germain, Esquire</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0">Federated Hermes, Inc.</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0">1001 Liberty Avenue</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0">Pittsburgh, PA 15222-3779</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0; color: #221E1F">(Name and address of agent for service)</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0; text-align: justify; color: #221E1F">&nbsp;</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0; text-align: justify; color: #221E1F">Registrant&#8217;s telephone number,
+including area code: 412-288-1900</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0">Date of fiscal year end: Various, see below.</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="color: #221E1F; font: 9pt Times New Roman, Times, Serif; margin: 6pt 0 6pt 0.5in; text-indent: -0.5in">Date of reporting period:
+7/1/2022 through 6/30/2023</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 6pt 0 6pt 0.5in; text-indent: -0.5in"><B>Item 1. Proxy Voting Record.</B></P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0">Registrant Name: Federated Hermes Income Securities Trust</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0">Fund Names:</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0 0 0 1in; text-indent: -0.5in">Federated Hermes Fund for U.S. Government Securities
+- (Fiscal Year End 03/31)</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0 0 0 1in; text-indent: -0.5in">Federated Hermes Intermediate Corporate Bond
+Fund - (Fiscal Year End 04/30)</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0 0 0 1in; text-indent: -0.5in">Federated Hermes Inflation Protected Securities
+Fund - (Fiscal Year End 09/30)</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0 0 0 1in; text-indent: -0.5in">Federated Hermes Short-Term Income Fund - (Fiscal
+Year End 04/30)</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0">There were no matters related to a portfolio security consideration at any
+shareholder meeting held during the period covered by this report and with respect to which the above-named funds were entitled to vote.</P>
+
+
+<!-- Field: Page; Sequence: 1 -->
+    <DIV STYLE="margin-bottom: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <DIV STYLE="break-before: page; margin-top: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 0">Registrant Name: Federated Hermes Income Securities Trust</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 6pt 0">Fund Name: Federated Hermes Capital Income Fund (Fiscal Year End 11/30)</P>
+
+<P STYLE="font: 9pt Times New Roman, Times, Serif; margin: 6pt 0">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width: 100%; font: 12pt Times New Roman, Times, Serif; border-collapse: collapse">
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="width: 16%; border: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt"><B>Issuer Name</B></FONT></TD>
+    <TD STYLE="width: 6%; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt"><B>Country</B></FONT></TD>
+    <TD STYLE="width: 6%; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt"><B>Meeting Date</B></FONT></TD>
+    <TD STYLE="width: 6%; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt"><B>Meeting Type</B></FONT></TD>
+    <TD STYLE="width: 6%; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt"><B>Record Date</B></FONT></TD>
+    <TD STYLE="width: 6%; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt"><B>Ticker</B></FONT></TD>
+    <TD STYLE="width: 6%; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt"><B>Security ID</B></FONT></TD>
+    <TD STYLE="width: 6%; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt"><B>Symbol Type</B></FONT></TD>
+    <TD STYLE="width: 6%; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt"><B>Ballot Issue Number</B></FONT></TD>
+    <TD STYLE="width: 6%; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt"><B>Proposal Text</B></FONT></TD>
+    <TD STYLE="width: 6%; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt"><B>Proponent</B></FONT></TD>
+    <TD STYLE="width: 6%; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt"><B>Mgmt Reco</B></FONT></TD>
+    <TD STYLE="width: 6%; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt"><B>Vote Cast</B></FONT></TD>
+    <TD STYLE="width: 6%; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt"><B>Fund Name</B></FONT></TD>
+    <TD STYLE="width: 6%; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt"><B>Logical Ballot Status</B></FONT></TD></TR>
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Bank of America Corporation</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">United States</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">4/25/2023</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Annual</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">3/1/2023</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">BAC</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">060505583</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">CUSIP</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">15</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Advisory Vote on Executive Compensation</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Mgmt</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">For</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">For</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Federated Hermes Capital Income Fund</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Voted</FONT></TD></TR>
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Bank of America Corporation</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">United States</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">4/25/2023</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Annual</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">3/1/2023</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">BAC</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">060505583</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">CUSIP</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">16</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Frequency of Advisory Vote on Executive Compensation</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Mgmt</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">1 Year</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">1 Year</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Federated Hermes Capital Income Fund</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Voted</FONT></TD></TR>
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Bank of America Corporation</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">United States</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">4/25/2023</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Annual</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">3/1/2023</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">BAC</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">060505583</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">CUSIP</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">17</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Ratification of Auditor</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Mgmt</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">For</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">For</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Federated Hermes Capital Income Fund</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Voted</FONT></TD></TR>
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Bank of America Corporation</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">United States</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">4/25/2023</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Annual</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">3/1/2023</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">BAC</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">060505583</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">CUSIP</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">18</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Amendment to the Bank of America Corporation Equity Plan Mgmt</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">For</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">For</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Federated Hermes Capital Income Fund</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt"><FONT STYLE="font-size: 9pt">Voted</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 6pt; padding-bottom: 6pt">&nbsp;</TD></TR>
+</TABLE></BODY></HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

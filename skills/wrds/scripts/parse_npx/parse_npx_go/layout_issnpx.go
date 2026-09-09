@@ -1773,6 +1773,145 @@ func issCutSubAdviser(banner string) (string, bool) {
 	return "", false
 }
 
+// issCutGluedBrand removes a sub-adviser brand the filing GLUES to the house
+// token with a hyphen and no label -- `PHOENIX-DUFF & PHELPS REAL ESTATE
+// SECURITIES FUND`, `PHOENIX-ABERDEEN INTERNATIONAL`. Only the registrant's own
+// leading token may carry the glue, and only the words between it and the fund
+// stem are dropped, one candidate width at a time, longest brand first.
+//
+// A candidate that resolves through the ordinary chain is stamped. A candidate
+// that does not may still be the declared name printed SHORT of its own tail
+// (`PHOENIX INTERNATIONAL` for `PHOENIX INTERNATIONAL STRATEGIES FUND`), and
+// that is admitted only when it is the leading token-prefix of exactly one
+// declared name: a prefix two names share still refuses.
+func issCutGluedBrand(ix *issSeriesIndex, banner, registrantKey string) *SeriesDecl {
+	// The hyphen is read off the PRINTED banner: normalizeSeriesName folds
+	// punctuation to spaces, and the glue is exactly the punctuation.
+	rawHead, rawTail, ok := strings.Cut(banner, "-")
+	if !ok {
+		return nil
+	}
+	head := normalizeSeriesName(rawHead)
+	if head == "" || strings.ContainsAny(head, " \t") {
+		return nil
+	}
+	reg := strings.Fields(registrantKey)
+	if len(reg) == 0 || strings.Trim(reg[0], ".,") != head {
+		return nil
+	}
+	toks := strings.Fields(normalizeSeriesName(rawTail))
+	for k := len(toks) - 1; k >= 1; k-- {
+		cand := head + " " + strings.Join(toks[k:], " ")
+		if _, d := issResolveFund(ix, cand); d != nil {
+			return d
+		}
+		if d := issUniqueNamePrefix(ix, cand); d != nil {
+			return d
+		}
+	}
+	return nil
+}
+
+// issVowelDropped reports the vendor's vowel-dropping abbreviation of one word:
+// the same first letter and the rest a subsequence of it (`glbl` of `global`,
+// `rl` of `real`). Shorter than issAbbreviates admits, because this form only
+// ever fires beside two tokens spelled out in full.
+func issVowelDropped(short, long string) bool {
+	if len(short) < 2 || len(short) >= len(long) || short[0] != long[0] {
+		return false
+	}
+	k := 0
+	for i := 0; i < len(long) && k < len(short); i++ {
+		if long[i] == short[k] {
+			k++
+		}
+	}
+	return k == len(short)
+}
+
+// issUniqueNamePrefix finds the one declared name whose leading tokens are
+// exactly key's, refusing when two names share the prefix.
+func issUniqueNamePrefix(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(normalizeSeriesName(key))
+	if len(toks) < 2 {
+		return nil
+	}
+	var hit *SeriesDecl
+	for name, d := range ix.byName {
+		if d == nil {
+			continue
+		}
+		dt := strings.Fields(name)
+		if len(dt) <= len(toks) {
+			continue
+		}
+		same := true
+		for j, t := range toks {
+			if dt[j] != t {
+				same = false
+				break
+			}
+		}
+		if !same {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	return hit
+}
+
+// issVowelDroppedAbbrev reads a vendor's per-word abbreviation of a declared
+// name -- `GLBL RL ESTATE ETF` for `Cambria Global Real Estate ETF` (Cambria ETF
+// Trust 2021, 384 rows with no series), where the same account prints the
+// readable spelling on other rows of the same table.
+//
+// Every printed token must be the declared token itself or an abbreviation of
+// it, in order, and the declared name may carry extra LEADING tokens only (the
+// house brand the abbreviation drops). One hit stamps; two refuse.
+func issVowelDroppedAbbrev(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(normalizeSeriesName(key))
+	if len(toks) < 3 {
+		return nil
+	}
+	var hit *SeriesDecl
+	for name, d := range ix.byName {
+		if d == nil {
+			continue
+		}
+		dt := strings.Fields(name)
+		if len(dt) < len(toks) || len(dt) > len(toks)+2 {
+			continue
+		}
+		dt = dt[len(dt)-len(toks):]
+		short, exact := 0, 0
+		fit := true
+		for j, t := range toks {
+			if t == dt[j] {
+				exact++
+				continue
+			}
+			if !issVowelDropped(t, dt[j]) {
+				fit = false
+				break
+			}
+			short++
+		}
+		// Two tokens spelled out in full are what keeps a two-letter
+		// abbreviation from reading as a fund it merely shares a letter with.
+		if !fit || short == 0 || exact < 2 {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	return hit
+}
+
 // issDeclaredAbbrevWord finds the one declared name that differs from key in
 // exactly one token, where the declared token is an abbreviation of the printed
 // one. It mirrors htmlDictAbbrevWord in the other direction and refuses on any
@@ -2109,6 +2248,9 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	// Z ETF` for a declared `The Gen Z ETF` (S000074694). Exactly one token may
 	// differ, the declared token must abbreviate the printed one, and two
 	// declared names answering to the heading stamp nothing.
+	if d := issVowelDroppedAbbrev(ix, banner); d != nil {
+		return banner, d
+	}
 	if d := issDeclaredAbbrevWord(ix, normalizeSeriesName(banner)); d != nil {
 		return banner, d
 	}
@@ -2798,6 +2940,16 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 		if _, alt := issResolveFund(ix, rest); alt != nil {
 			return banner, alt
 		}
+	}
+	// An UNLABELLED sub-adviser brand hyphen-glued to the house token:
+	// `PHOENIX-DUFF & PHELPS REAL ESTATE SECURITIES FUND` and
+	// `PHOENIX-ABERDEEN INTERNATIONAL` for a registrant whose declared names all
+	// read `PHOENIX <strategy>` (Phoenix Multi Portfolio Fund 2004, 899 rows with
+	// no series). issCutSubAdviser needs the literal `Sub-Adviser:` label and
+	// never fires; issHyphenGluedRegistrantPrefix cuts `PHOENIX-` and leaves the
+	// brand in place.
+	if d := issCutGluedBrand(ix, banner, registrantKey); d != nil {
+		return banner, d
 	}
 	// The same prefix cut where the filing's own separator is a colon.
 	if rest, ok := issColonRegistrantPrefix(banner, registrantKey); ok {
