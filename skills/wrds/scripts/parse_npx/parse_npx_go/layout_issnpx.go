@@ -2733,6 +2733,26 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	if d := issGeographyInflectionDecl(ix, key); d != nil {
 		return banner, d
 	}
+	// `SMID` is the industry contraction of `SMALL/MID`, which the registered
+	// name spells out: `CRM SMID Cap` for a declared `CRM SMALL/MID CAP VALUE
+	// FUND` (S000001325, 203 rows), where the sibling banner `CRM Mid Cap`
+	// resolves to `CRM MID CAP VALUE FUND` through the rungs above. One token
+	// only, and the expanded key goes back through the whole chain, so an
+	// ambiguous expansion still refuses.
+	if alt, ok := issExpandSmid(key); ok {
+		if _, d := issResolveFund(ix, alt); d != nil {
+			return banner, d
+		}
+	}
+	// The declaration prints an adviser's name as an ACRONYM the heading spells
+	// out: `JNL/Mellon Capital Management Dow 10 Fund` for a declared `JNL/MCM
+	// DOW 10 FUND` (S000001693, 187 rows), where the sibling declarations differ
+	// from it only after the acronym. Every other token must agree in order, the
+	// acronym's letters must be the initials of exactly that many consecutive
+	// heading tokens, and two series answering refuse.
+	if d := issInternalAcronymDecl(ix, key); d != nil {
+		return banner, d
+	}
 	// A token the heading INSERTS before the terminal type word, which the
 	// trailing-type-word rung above never reaches: `GAMERICA CAPITAL FUND` for
 	// a declared `GAMerica Fund` (353 rows). Exactly one internal token is
@@ -2922,6 +2942,16 @@ func issTypoTypeWordDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 func issLeadingStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 	toks := strings.Fields(key)
 	if len(toks) < 4 || !issTypeWord(toks[len(toks)-1]) || issTypeWord(toks[1]) {
+		return nil
+	}
+	// The pair must be the fund's own stem, not the registrant's brand plus a
+	// descriptor. `AIM GLOBAL ENERGY FUND` leads with the registrant's own `AIM`
+	// (AIM INVESTMENT FUNDS), so the only candidate sharing the pair -- `AIM
+	// Global Health Care Fund`, S000000235 -- overlaps it on brand tokens alone
+	// and names a different fund: all 272 rows of that filing were stamped with
+	// it. `Pin Oak Aggressive Stock Fund` leads with `Pin`, which the registrant
+	// OAK ASSOCIATES FUNDS does not supply, and still answers.
+	if issRegistrantOwnWords(toks[0], ix.registrantKey) {
 		return nil
 	}
 	family, owners := map[string]bool{}, map[string]bool{}
@@ -3208,6 +3238,85 @@ func issGeographyInflectionDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		out = d
 	}
 	return out
+}
+
+// issExpandSmid rewrites a whole `smid` token as the two tokens `small mid`,
+// which is what the registered name spells: `SMID Cap` is `SMALL/MID CAP` and
+// the '/' is already a separator. Only a whole token is rewritten, so no word
+// carrying those letters is touched, and only the first is, since a name never
+// prints the contraction twice.
+func issExpandSmid(key string) (string, bool) {
+	f := strings.Fields(key)
+	for i, t := range f {
+		if t != "smid" {
+			continue
+		}
+		alt := append(append([]string{}, f[:i]...), append([]string{"small", "mid"}, f[i+1:]...)...)
+		return strings.Join(alt, " "), true
+	}
+	return "", false
+}
+
+// issInternalAcronymDecl reads a heading that spells OUT an adviser name the
+// declaration prints as an acronym. The declared name's tokens must equal the
+// heading's exactly but for ONE token, which must be the initials of two or more
+// consecutive heading tokens standing in its place; exactly one series of this
+// registrant may answer, and a second refuses.
+func issInternalAcronymDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 3 {
+		return nil
+	}
+	var hit *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		want := ix.declToks(i)
+		if len(want) < 2 || len(want) >= len(toks) {
+			continue
+		}
+		n := len(toks) - len(want) + 1 // heading tokens the acronym stands for
+		if n < 2 {
+			continue
+		}
+		for j := range want {
+			if len(want[j]) != n || !issIsAcronymOf(want[j], toks[j:j+n]) {
+				continue
+			}
+			agree := true
+			for k := 0; agree && k < j; k++ {
+				agree = want[k] == toks[k]
+			}
+			for k := j + 1; agree && k < len(want); k++ {
+				agree = want[k] == toks[k+n-1]
+			}
+			if !agree {
+				continue
+			}
+			if hit != nil && hit.SeriesID != d.SeriesID {
+				return nil
+			}
+			hit = d
+		}
+	}
+	return hit
+}
+
+// issIsAcronymOf reports whether acr's runes are, in order, the first rune of
+// each of toks.
+func issIsAcronymOf(acr string, toks []string) bool {
+	r := []rune(acr)
+	if len(r) != len(toks) {
+		return false
+	}
+	for i, t := range toks {
+		if t == "" || []rune(t)[0] != r[i] {
+			return false
+		}
+	}
+	return true
 }
 
 // issInternalTokenDropDecl drops exactly one token that is neither the first nor

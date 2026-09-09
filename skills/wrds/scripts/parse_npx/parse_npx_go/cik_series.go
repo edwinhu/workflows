@@ -148,6 +148,10 @@ func dateGapDays(a, b string) int {
 type dictFallback struct {
 	byName        map[string]*SeriesDecl
 	byHeadingName map[string]*SeriesDecl // Lincoln heading lookup, including declared-name collisions
+	// byUndotted keys the dictionary names carrying a dotted initialism under
+	// its undotted spelling, for a heading that prints the same initialism
+	// without its periods. Consulted only after byName has failed.
+	byUndotted map[string]*SeriesDecl
 }
 
 func (d *cikSeries) exactFallback(meta FilingMeta) *dictFallback {
@@ -173,7 +177,24 @@ func (d *cikSeries) exactFallback(meta FilingMeta) *dictFallback {
 	if len(extra) == 0 {
 		return nil
 	}
-	f := &dictFallback{byName: seriesByName(extra)}
+	f := &dictFallback{byName: seriesByName(extra), byUndotted: map[string]*SeriesDecl{}}
+	// The dictionary spells an initialism with its periods where the heading
+	// spells it without: `Vesper U.S. Large Cap Short-Term Reversal Strategy ETF`
+	// (S000063053) for a banner `Vesper US ...`. Only the names whose two
+	// spellings differ are keyed, and a key two distinct series answer to is
+	// recorded nil and refuses, the way seriesByName refuses it.
+	for i := range extra {
+		d := &extra[i]
+		k := normalizeUndottedSeriesName(d.Name)
+		if d.SeriesID == "" || k == "" {
+			continue
+		}
+		if prev, seen := f.byUndotted[k]; seen && (prev == nil || prev.SeriesID != d.SeriesID) {
+			f.byUndotted[k] = nil
+			continue
+		}
+		f.byUndotted[k] = d
+	}
 	if normalizeSeriesName(meta.CompanyName) == "lincoln variable insurance products trust" {
 		// Keep the declaring pool unchanged; combine names only to refuse collisions.
 		all := append(append([]SeriesDecl(nil), meta.SeriesDecls...), extra...)
@@ -238,4 +259,42 @@ func (f *dictFallback) apply(r *VoteRow) {
 			}
 		}
 	}
+	// The dictionary's dotted initialism against the heading's undotted one.
+	if r.SeriesID == "" {
+		if d := f.byUndotted[normalizeSeriesName(r.FundName)]; d != nil {
+			r.SeriesID = d.SeriesID
+		}
+	}
+	// One word the HEADING inserts that the dictionary name does not carry:
+	// `ROBO Global Healthcare Technology and Innovation Index ETF` for a
+	// dictionary `ROBO Global(R) Healthcare Technology and Innovation ETF`
+	// (S000065730, 909 rows), where the sibling banners resolve on the (R) fold
+	// alone. Exactly one internal token comes off -- the first carries the brand
+	// and the last the type word, so neither is ever cut -- the remainder must be
+	// a dictionary name EXACTLY, and two drops naming two different series refuse.
+	if r.SeriesID == "" {
+		if d := dictInternalTokenDrop(f.byName, r.FundName); d != nil {
+			r.SeriesID = d.SeriesID
+		}
+	}
+}
+
+func dictInternalTokenDrop(idx map[string]*SeriesDecl, heading string) *SeriesDecl {
+	toks := strings.Fields(normalizeSeriesName(heading))
+	if len(toks) < 4 {
+		return nil
+	}
+	var out *SeriesDecl
+	for i := 1; i < len(toks)-1; i++ {
+		alt := append(append([]string{}, toks[:i]...), toks[i+1:]...)
+		d := idx[strings.Join(alt, " ")]
+		if d == nil {
+			continue
+		}
+		if out != nil && out.SeriesID != d.SeriesID {
+			return nil
+		}
+		out = d
+	}
+	return out
 }
