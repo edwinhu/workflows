@@ -1628,6 +1628,64 @@ func issCutSubAdviser(banner string) (string, bool) {
 	return "", false
 }
 
+// issDeclaredAbbrevWord finds the one declared name that differs from key in
+// exactly one token, where the declared token is an abbreviation of the printed
+// one. It mirrors htmlDictAbbrevWord in the other direction and refuses on any
+// collision; nil means stamp nothing.
+func issDeclaredAbbrevWord(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 3 {
+		return nil
+	}
+	var hit *SeriesDecl
+	for name, d := range ix.byName {
+		if d == nil {
+			continue
+		}
+		dt := strings.Fields(name)
+		if len(dt) != len(toks) {
+			continue
+		}
+		diff := 0
+		for j := range toks {
+			if toks[j] == dt[j] {
+				continue
+			}
+			diff++
+			if diff > 1 || !issAbbreviates(dt[j], toks[j]) {
+				diff = 2
+				break
+			}
+		}
+		if diff != 1 {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	return hit
+}
+
+// issCutRegistrantPrefix deletes the filing's own already-normalised registrant
+// name off the front of an already-normalised heading, on a whole-token
+// boundary, exactly as lookupSeriesStrippingRegistrant does before its lookup.
+func issCutRegistrantPrefix(key, prefix string) (string, bool) {
+	if prefix == "" {
+		return "", false
+	}
+	rest, ok := strings.CutPrefix(key, prefix)
+	if !ok {
+		return "", false
+	}
+	rest, ok = strings.CutPrefix(rest, " ")
+	if !ok || rest == "" {
+		return "", false
+	}
+	return rest, true
+}
+
 // Audited successor brands only; the full distinctive stem must still agree.
 func issHistoricalBrandKey(key string) string {
 	for _, brand := range []string{"wells fargo advantage", "wells fargo", "allspring"} {
@@ -1642,6 +1700,24 @@ func issHistoricalBrandKey(key string) string {
 	for _, brand := range []string{"gs core ", "goldman sachs core ", "goldman sachs structured "} {
 		if stem, ok := strings.CutPrefix(key, brand); ok && stem != "" {
 			return "goldman structured:" + stem
+		}
+	}
+	// Citigroup's Smith Barney funds are declared under their successor Legg
+	// Mason Partners brand: `SMITH BARNEY EMERGING MARKETS EQUITY FUND` for
+	// `Legg Mason Partners Emerging Markets Equity Fund` (S000009469). The
+	// stem after the brand must still agree whole.
+	for _, brand := range []string{"smith barney ", "legg mason partners "} {
+		if stem, ok := strings.CutPrefix(key, brand); ok && stem != "" {
+			return "legg mason partners:" + stem
+		}
+	}
+	// AIM's 2004 filings head their sections with the predecessor INVESCO
+	// brand and declare the same funds under the successor AIM name:
+	// `INVESCO Dynamics Fund` for `AIM Dynamics Fund` (S000000163). The stem
+	// after the brand must still agree whole.
+	for _, brand := range []string{"invesco ", "aim "} {
+		if stem, ok := strings.CutPrefix(key, brand); ok && stem != "" {
+			return "invesco aim:" + stem
 		}
 	}
 	// TDAX account sleeves and the TDX/db-X registered names retain the
@@ -1839,6 +1915,13 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 		if d, seen := ix.byHistoricalBrand[key]; seen {
 			return banner, d
 		}
+	}
+	// The heading spells out a word the declared name abbreviates: `Generation
+	// Z ETF` for a declared `The Gen Z ETF` (S000074694). Exactly one token may
+	// differ, the declared token must abbreviate the printed one, and two
+	// declared names answering to the heading stamp nothing.
+	if d := issDeclaredAbbrevWord(ix, normalizeSeriesName(banner)); d != nil {
+		return banner, d
 	}
 	// The registrant's brand ABBREVIATED across the name: `STI CLASSIC
 	// INTERNATIONAL EQUITY FUND VA` for a declared `STI Classic Variable Trust
@@ -2058,6 +2141,22 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 		for _, fk := range ix.formerKeys {
 			if d := lookupSeriesStrippingRegistrant(idx, banner, fk); d != nil {
 				return banner, d
+			}
+		}
+		// The registrant prefix and a historical brand on the SAME heading:
+		// `CITIFUNDS TRUST I - SMITH BARNEY EMERGING MARKETS EQUITY FUND` for a
+		// series declared under the successor brand. The prefix comes off by
+		// the exact rule above, then the remainder goes through the
+		// collision-refusing brand index; nothing else is retried.
+		for _, pk := range append([]string{registrantKey}, ix.formerKeys...) {
+			rest, ok := issCutRegistrantPrefix(normalizeSeriesName(banner), pk)
+			if !ok {
+				continue
+			}
+			if bk := issHistoricalBrandKey(rest); bk != "" {
+				if d, seen := ix.byHistoricalBrand[bk]; seen {
+					return banner, d
+				}
 			}
 		}
 	}

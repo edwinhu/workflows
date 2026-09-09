@@ -4657,10 +4657,33 @@ func htmlLabelledCells(cells []string) (label, value string, ok bool) {
 	if len(vals) == 4 && strings.HasPrefix(strings.ToLower(vals[0]), "registrant:") && reHTMLBannerItemCell.MatchString(vals[3]) {
 		vals = vals[1:3]
 	}
+	// Hodges prints the registrant's internal account code in a THIRD cell
+	// after the fund: `Name of Fund:` | `Hodges Blue Chip 25 Fund` | `19-3657`
+	// (Professionally Managed Portfolios 2010, 1,012 of 1,651 rows with no
+	// fund). The code cell is dropped like the registrant cell above; only a
+	// hyphenated all-digit code qualifies, so a numbered fund name is safe.
+	if len(vals) == 3 && htmlFundLabelled(vals[0]) && isBannerNumericAccountCode(vals[2]) {
+		vals = vals[:2]
+	}
 	if len(vals) != 2 {
 		return "", "", false
 	}
 	return vals[0], vals[1], true
+}
+
+// isBannerNumericAccountCode reports whether a banner cell is nothing but a
+// hyphenated run of digits, the shape of the internal account code some filers
+// append to the fund cell.
+func isBannerNumericAccountCode(s string) bool {
+	if len(s) < 3 || len(s) > 12 || !strings.Contains(s, "-") {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		if c := s[i]; (c < '0' || c > '9') && c != '-' {
+			return false
+		}
+	}
+	return true
 }
 
 var reHTMLRegistrantExhibit = regexp.MustCompile(`(?i)^Item [0-9]{1,2}, Exhibit [0-9]{1,3}$`)
