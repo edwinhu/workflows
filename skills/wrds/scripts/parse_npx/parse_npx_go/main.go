@@ -362,6 +362,29 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 		}
 	}
 
+	// The registrant's own conformed name IS a dictionary fund name: a
+	// single-fund registrant whose 2005 filing prints no fund heading at all
+	// (`MIDAS SPECIAL EQUITIES FUND INC /MD`, S000011690). It answers only rows
+	// the parser left unnamed, and only when the header declared nothing and
+	// exactly one dictionary series of the CIK is spelled that way -- two
+	// series answering to it refuse, the way seriesByName refuses a collision.
+	registrantSeries := ""
+	if !headerHasSeries && seriesRow == "" {
+		want := normalizeSeriesName(h.CompanyName)
+		if want != "" {
+			for _, d := range h.SeriesDecls {
+				if d.SeriesID == "" || normalizeSeriesName(d.Name) != want {
+					continue
+				}
+				if registrantSeries != "" && registrantSeries != d.SeriesID {
+					registrantSeries = ""
+					break
+				}
+				registrantSeries = d.SeriesID
+			}
+		}
+	}
+
 	defer func() {
 		if r := recover(); r != nil {
 			meta.ParseStatus = "error"
@@ -403,6 +426,9 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 	stamp := func(r VoteRow) error {
 		if r.SeriesID == "" {
 			r.SeriesID = seriesRow
+		}
+		if r.SeriesID == "" && r.FundName == "" {
+			r.SeriesID = registrantSeries
 		}
 		seriesMap.apply(relPath, declared, &r)
 		dictFB.apply(&r)

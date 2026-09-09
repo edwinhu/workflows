@@ -5005,6 +5005,16 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 							name, id, ok = line, dictID, true
 							continue
 						}
+						// Reading past the account code is licensed by an EXACT hit
+						// on the remainder and by nothing else. `IFISCF Federated
+						// International Small Co. Fund 2` (Federated Insurance
+						// Series 2004, 141 rows) names a fund no dictionary row of
+						// the registrant carries, and the tolerant resolver folds it
+						// onto the sibling `Federated International Equity Fund II`
+						// (S000009750), which the SAME filing gives its own section.
+						// The section is named and its series refused.
+						name, id, ok = line, "", true
+						continue
 					}
 				}
 				if f := strings.Fields(candidate); len(f) > 1 && (isAllDigits(f[0]) || isLeadingAccountCode(f[0])) {
@@ -5025,6 +5035,18 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 				// name instead of leading it. Cut for the lookup only.
 				if f := strings.Fields(candidate); len(f) > 1 && isAccountCodeToken(f[len(f)-1]) {
 					candidate = strings.Join(f[:len(f)-1], " ")
+				}
+			}
+		}
+		// `Investment Company Report --Zevenbergen Genea Fund` (Trust for Advised
+		// Portfolios 2016, 158 rows): the dash run is glued to the brand token,
+		// where the sibling banner of the same filing types a space after it and
+		// resolves. Split the run off for the lookup only, and only when the split
+		// candidate resolves -- the printed heading is what gets recorded.
+		if _, d := issResolveFund(ix, candidate); d == nil {
+			if split := htmlSplitGluedDashRun(candidate); split != candidate {
+				if _, sd := issResolveFund(ix, split); sd != nil {
+					candidate = split
 				}
 			}
 		}
@@ -5122,6 +5144,26 @@ func htmlCutFormItemSuffix(candidate string) string {
 		return strings.TrimSpace(candidate[:k])
 	}
 	return candidate
+}
+
+// htmlSplitGluedDashRun puts a space between a leading run of dashes and the
+// word it is glued to, so the resolver's leading-token walk makes the cut it
+// already makes when the filing types that space.
+func htmlSplitGluedDashRun(candidate string) string {
+	f := strings.Fields(candidate)
+	changed := false
+	for i, tok := range f {
+		rest := strings.TrimLeft(tok, "-")
+		if rest == tok || rest == "" {
+			continue
+		}
+		f[i] = tok[:len(tok)-len(rest)] + " " + rest
+		changed = true
+	}
+	if !changed {
+		return candidate
+	}
+	return strings.Join(f, " ")
 }
 
 func htmlDictionaryFund(ix *issSeriesIndex, fallback *dictFallback, candidate string) string {
