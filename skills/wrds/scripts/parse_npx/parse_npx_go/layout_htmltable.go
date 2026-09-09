@@ -234,6 +234,15 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// evidence, exactly as it is on a line.
 		if label, value, ok := htmlLabelledCells(cells); ok && htmlFundLabelled(label+":") {
 			id := icrResolveFundShared(seriesIx, value)
+			// `Name of Fund: Legg Mason Charles Street Trust, Inc.` (Legg Mason
+			// Charles Street Trust 2005, 61 rows): the labelled value is the
+			// filing's own COMPANY CONFORMED NAME in full, so it names the
+			// registrant and not a fund. It is not adopted at all -- the section
+			// heading above the vote table, and the `on behalf of <name>` Item 1
+			// prose, are the fund of record.
+			if id == "" && normalizeSeriesName(value) == seriesIx.registrantKey {
+				continue
+			}
 			// A registrant or sleeve label cannot erase a proven outer section.
 			if id != "" || !outerSection {
 				curFund, curSeries, outerSection = value, id, false
@@ -5044,6 +5053,22 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 		// rows named `Reporting Period: ...` on 2026-09-02). The value is
 		// recorded as printed; the code is dropped only for the lookup.
 		candidate := line
+		// `Item 1 - Proxy Voting Record - Attached on behalf of Batterymarch
+		// U.S. Small Capitalization Equity Portfolio.` (Legg Mason Charles
+		// Street Trust 2005, 61 rows): the Item 1 prose states the fund in the
+		// declared spelling where the section heading above the table prints an
+		// abbreviated one. Adopted only on an exact declared match, so prose
+		// that names no series stamps nothing.
+		if i := strings.Index(line, "behalf of "); i >= 0 {
+			stated := strings.TrimSpace(strings.TrimSuffix(strings.TrimSpace(line[i+len("behalf of "):]), "."))
+			if stated != "" {
+				if d, _ := lookupSeriesEntry(ix.byName, stated); d != nil {
+					name, id, ok = stated, d.SeriesID, true
+					adoptedAt, adoptedLine = li, stated
+					continue
+				}
+			}
+		}
 		// This complete one-cell export sentence is a fund boundary even when
 		// its name is unresolved; do not carry the preceding fund across it.
 		if rest, wrapped := strings.CutPrefix(line, "In All Markets, for all voted ballots, for "); wrapped && strings.TrimSpace(pre) == line {
