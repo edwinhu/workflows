@@ -2056,6 +2056,17 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			if d := lookupSeriesByName(idx, tail); d != nil {
 				return banner, d
 			}
+			// The colon is a LABEL's, not a sleeve separator: `Fund/Fund Family
+			// Name: Dreman High Opportunity Large Cap Value Fund` (Dreman
+			// Contrarian Funds 2011, 631 rows with no fund at all). The head has
+			// to be one of the labels a cover sheet names its fund with, so an
+			// ordinary `Fund: sleeve` heading is untouched, and the tail then
+			// goes through the whole chain exactly as a bare heading would.
+			if sep == ": " && issFundLabelHead(head) {
+				if _, d := issResolveFund(ix, strings.TrimSpace(tail)); d != nil {
+					return banner, d
+				}
+			}
 			// The head may still carry a brand or code: `PSF Jennison 20/20
 			// Focus Portfolio - Value` (Prudential Series Fund). The other
 			// rules run on it; the head has no dash of its own, so this ends.
@@ -2292,7 +2303,116 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d := issInternalTokenDropDecl(ix, key); d != nil {
 		return banner, d
 	}
+	// The heading SPLICES words into a declared name: `Dreman High Opportunity
+	// Large Cap Value Fund` for a declared `DREMAN HIGH OPPORTUNITY FUND`
+	// (S000019613, 631 rows), `Claymore/Zacks Yield Hog ETF` for a declared
+	// `ZACKS YIELD HOG` (S000012992, 1,546 rows) where the sibling declaration
+	// `Claymore?Zacks Yield Hog Portfolio` keeps a bare-stem lookup ambiguous.
+	// Every token of the declared name must appear in the heading IN ORDER, so
+	// this is a superset reading of one declared name rather than a word-overlap
+	// score; the declared name must carry at least three tokens and the heading
+	// may add at most issSpliceExtraWords of its own, and exactly one declared
+	// series may answer -- a second one refuses, which is what keeps two funds
+	// that differ only by an inserted qualifier from collapsing onto each other.
+	if d := issSplicedDecl(ix, key); d != nil {
+		return banner, d
+	}
 	return banner, nil
+}
+
+// issFundLabelHead reports whether a heading's pre-colon head is one of the
+// labels a cover sheet names its fund with, folded the same way series names are
+// so `Fund/Fund Family Name` and `Fund Family Name` read alike.
+func issFundLabelHead(head string) bool {
+	key := normalizeSeriesName(head)
+	if key == "" {
+		return false
+	}
+	for _, l := range brFundLabels {
+		if key == normalizeSeriesName(l) {
+			return true
+		}
+	}
+	return false
+}
+
+// issSpliceMinWords is the shortest declared name issSplicedDecl will read a
+// heading as a superset of, and issSpliceExtraWords the most the heading may add.
+const (
+	issSpliceMinWords   = 3
+	issSpliceExtraWords = 3
+)
+
+// issSplicedDecl resolves a heading that is one declared name with extra words
+// inserted, and nothing else. Uniqueness is enforced here rather than borrowed
+// from the exact index, because the candidate set is scanned: a heading that is a
+// superset of two declared names stamps nothing.
+func issSplicedDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	heading := strings.Fields(key)
+	if len(heading) < issSpliceMinWords+1 {
+		return nil
+	}
+	registrant := map[string]bool{}
+	for _, t := range strings.Fields(ix.registrantKey) {
+		registrant[t] = true
+	}
+	var found *SeriesDecl
+	for name, d := range ix.byName {
+		if d == nil {
+			continue
+		}
+		want := strings.Fields(name)
+		if len(want) < issSpliceMinWords || len(heading) <= len(want) || len(heading)-len(want) > issSpliceExtraWords {
+			continue
+		}
+		// The declared name must START the heading, so the words the heading
+		// adds are internal or trailing. Anything ahead of it may only be the
+		// registrant's OWN tokens, which every other rung here is already free
+		// to strip: `Growth Emerging Markets Value Fund` must not read as a
+		// declared `Emerging Markets Value Fund`, while `Claymore/Zacks Yield
+		// Hog ETF` may drop its registrant's `Claymore`.
+		at := indexOfToken(heading, want[0])
+		if at < 0 {
+			continue
+		}
+		branded := true
+		for _, t := range heading[:at] {
+			if !registrant[t] {
+				branded = false
+				break
+			}
+		}
+		if !branded || !isOrderedSubsequence(want, heading[at:]) {
+			continue
+		}
+		if found != nil && found.SeriesID != d.SeriesID {
+			return nil // two declared names sit inside this heading; refuse to pick
+		}
+		found = d
+	}
+	return found
+}
+
+// indexOfToken returns the position of the first whole token equal to want, or -1.
+func indexOfToken(tokens []string, want string) int {
+	for i, t := range tokens {
+		if t == want {
+			return i
+		}
+	}
+	return -1
+}
+
+// isOrderedSubsequence reports whether every token of want appears in have, in
+// order, on whole-token equality.
+func isOrderedSubsequence(want, have []string) bool {
+	i := 0
+	for _, t := range have {
+		if i < len(want) && want[i] == t {
+			i++
+		}
+	}
+	return i == len(want)
 }
 
 // issGeographyInflectionDecl retries the key with one geography noun replaced by

@@ -1,0 +1,333 @@
+		COMPANY CONFORMED NAME:			EPIPHANY FUNDS
+		CENTRAL INDEX KEY:			0001377031
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001377031
+<SERIES-ID>S000015061
+<SERIES-NAME>Epiphany FFV Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000041031
+<CLASS-CONTRACT-NAME>Epiphany FFV Fund Class N shares
+<CLASS-CONTRACT-TICKER-SYMBOL>EPVNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000051241
+<CLASS-CONTRACT-NAME>Epiphany FFV Fund Class A shares
+<CLASS-CONTRACT-TICKER-SYMBOL>EPVAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000051242
+<CLASS-CONTRACT-NAME>Epiphany FFV Fund Class C shares
+<CLASS-CONTRACT-TICKER-SYMBOL>EPVCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001377031
+<SERIES-ID>S000027960
+<SERIES-NAME>Epiphany FFV Strategic Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084989
+<CLASS-CONTRACT-NAME>Epiphany FFV Strategic Income Fund Class A shares
+<CLASS-CONTRACT-TICKER-SYMBOL>EPIAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084990
+<CLASS-CONTRACT-NAME>Epiphany FFV Strategic Income Fund Class C shares
+<CLASS-CONTRACT-TICKER-SYMBOL>EPICX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084992
+<CLASS-CONTRACT-NAME>Epiphany FFV Strategic Income Fund Class N shares
+<CLASS-CONTRACT-TICKER-SYMBOL>EPINX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001377031
+<SERIES-ID>S000027961
+<SERIES-NAME>Dana Large Cap Core Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084993
+<CLASS-CONTRACT-NAME>Dana Large Cap Core Fund Class A shares
+<CLASS-CONTRACT-TICKER-SYMBOL>EPCAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084994
+<CLASS-CONTRACT-NAME>Dana Large Cap Core Fund Class C shares
+<CLASS-CONTRACT-TICKER-SYMBOL>EPCCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084996
+<CLASS-CONTRACT-NAME>Dana Large Cap Core Fund Class N shares
+<CLASS-CONTRACT-TICKER-SYMBOL>EPCNX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001377031
+<SERIES-ID>S000036397
+<SERIES-NAME>Epiphany FFV Latin America Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111343
+<CLASS-CONTRACT-NAME>Epiphany FFV Latin America Fund Class A shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ELAAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111344
+<CLASS-CONTRACT-NAME>Epiphany FFV Latin America Fund Class C shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ELACX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111345
+<CLASS-CONTRACT-NAME>Epiphany FFV Latin America Fund Class N shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ELANX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>epiphanynpx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<!doctype html public "-//IETF//DTD HTML//EN">
+<HTML>
+<TABLE style="margin-top:0px; font-size:10pt" cellpadding=0 cellspacing=0 width="1259"><TR height=0 style="font-size:0"><TD width=34.4 /><TD width=193.867 /><TD width=82.667 /><TD width=84.067 /><TD width=100 /><TD width=17.733 />
+	<TD width=420 /><TD width=84 /><TD width=52 /><TD width=91 /><TD width=90 /></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=228.267 colspan=2><P style="margin:0px"><B>Registrant:<U> </U></B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=712 colspan="5">
+	<P style="margin:0px" align=left>EPIPHANY FUNDS - Epiphany FFV Fund</P>
+</TD><TD style="margin-top:0px" valign=bottom width=84><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=52><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=91><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=90><P style="margin:0px" align=right>Item 1, Exhibit A </P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=310.933 colspan=3><P style="margin:0px"><B>Investment Company Act file number:</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=84.067><P style="margin:0px" align=center>811-21962</P>
+</TD><TD style="margin-top:0px" valign=bottom width=100><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=17.733><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=420><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=84><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=52><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=91><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=90><P style="margin:0px; padding:0px">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=395 colspan=4><P style="margin:0px"><B>Reporting Period: </B>July 1, 2011 through June 30, 2012</P>
+</TD><TD style="margin-top:0px" valign=bottom width=100><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=17.733><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=420><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=84><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=52><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=91><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=90><P style="margin:0px; padding:0px">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=34.4><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=193.867><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=82.667><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=84.067><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=100><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=17.733><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=420><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=84><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=52><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=91><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=90><P style="margin:0px; padding:0px">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-top:1px solid #000000; border-right:1px solid #000000" valign=bottom width=1257 colspan=11><P style="margin:0px; font-size:14pt" align=center><B><U>FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</U></B></P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border:1px solid #000000" width=34.4><P style="margin:0px" align=center>&nbsp;</P>
+</TD><TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=193.867><P style="margin:0px"><B>(a) Issuer's Name</B></P>
+</TD><TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=82.667><P style="margin:0px" align=center><B>(b) Exchange Ticker Symbol</B></P>
+</TD><TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=84.067><P style="margin:0px" align=center><B>(c)&quot;CUSIP&quot; #</B></P>
+</TD><TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=100><P style="margin:0px" align=center><B>(d) Shareholder Meeting Date</B></P>
+</TD>
+	<TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=437 colspan=2><P style="margin:0px"><B>(e) Matter Identification</B></P>
+</TD>
+	<TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=83><P style="margin:0px" align=center><B>(f) Proposal Type</B></P>
+</TD>
+	<TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=51><P style="margin:0px" align=center><B>(g) Voted</B></P>
+</TD>
+	<TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=90><P style="margin:0px" align=center><B>(h) Vote Cast</B></P>
+</TD>
+	<TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=89><P style="margin:0px" align=center><B>(i) For / Against Mgmt</B></P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=34.4><P style="margin:0px" align=center>1</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=193.867><P style="margin:0px">CA, Inc</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=82.667><P style="margin:0px" align=center>CA</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=84.067><P style="margin:0px" align=center>&nbsp;</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=100><P style="margin:0px" align=center>8/3/2011</P>
+</TD><TD style="margin-top:0px" valign=bottom width=17.733><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=418><P style="margin:0px">All Proxies</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=83><P style="margin:0px" align=center>NA</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=51><P style="margin:0px" align=center>No</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=90><P style="margin:0px" align=center>&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=89><P style="margin:0px" align=center>&nbsp;</P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=34.4><P style="margin:0px" align=center>2</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=193.867><P style="margin:0px">H.J. Heinz</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=82.667><P style="margin:0px" align=center>HNZ</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=84.067><P style="margin:0px" align=center>&nbsp;</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=100><P style="margin:0px" align=center>8/30/2011</P>
+</TD><TD style="margin-top:0px" valign=bottom width=17.733><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=418><P style="margin:0px">All Proxies</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=83><P style="margin:0px" align=center>NA</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=51><P style="margin:0px" align=center>No</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=90><P style="margin:0px" align=center>&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=89><P style="margin:0px" align=center>&nbsp;</P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=34.4><P style="margin:0px" align=center>3</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=193.867><P style="margin:0px">General Mills</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=82.667><P style="margin:0px" align=center>GIS</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=84.067><P style="margin:0px" align=center>&nbsp;</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=100><P style="margin:0px" align=center>9/26/2011</P>
+</TD><TD style="margin-top:0px" valign=bottom width=17.733><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=418><P style="margin:0px">All Proxies</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=83><P style="margin:0px" align=center>NA</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=51><P style="margin:0px" align=center>No</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=90><P style="margin:0px" align=center>&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=89><P style="margin:0px" align=center>&nbsp;</P>
+</TD></TR>
+<P style="margin:0px"><BR>
+<BR></P>
+<TABLE style="margin-top:0px; font-size:10pt" cellpadding=0 cellspacing=0><TR height=0 style="font-size:0"><TD width=36.4 />
+	<TD width=192 /><TD width=171 /><TD width=93.333 /><TD width=98.667 /><TD width=18.067 />
+	<TD width=410 /><TD width=108 /><TD width=82 /><TD width=96 /><TD width=96.733 /></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=1025 colspan=7><P style="margin:0px; font-size:11pt"><B>Registrant:&nbsp; </B>EPIPHANY FUNDS - FFV Latin America Fund</P>
+</TD><TD style="margin-top:0px" valign=bottom width=108><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=96><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=96.733><P style="margin:0px; font-size:11pt" align=center>
+	Item 1, Exhibit E</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=401 colspan=3><P style="margin:0px; font-size:11pt"><B>Investment Company Act file number:</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=93.333><P style="margin:0px; font-size:11pt" align=center>811-21962</P>
+</TD><TD style="margin-top:0px" valign=bottom width=98.667><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=18.067><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=410><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=108><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=96><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=96.733><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=1025 colspan=7><P style="margin:0px; font-size:11pt"><B>Reporting Period: </B>July 1, 2011 through June 30, 2012</P>
+</TD><TD style="margin-top:0px" valign=bottom width=108><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=96><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=96.733><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=36.4><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=192><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=171><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=93.333><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=98.667><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=18.067><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=410><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=108><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=82><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=96><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=96.733><P style="margin:0px; padding:0px; font-size:11pt">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-top:1px solid #000000; border-right:1px solid #000000" valign=bottom width=1398.267 colspan=11><P style="margin:0px; font-size:11pt" align=center><B><U>FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</U></B></P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border:1px solid #000000" width=36.4><P style="margin:0px; font-size:11pt" align=center>&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" width=191><P style="margin:0px; font-size:11pt" align=center><B>(a) Issuer's Name</B></P>
+</TD>
+	<TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" width=170><P style="margin:0px; font-size:11pt" align=center><B>(b) Exchange Ticker Symbol</B></P>
+</TD><TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" width=93.333><P style="margin:0px; font-size:11pt" align=center><B>(c)&quot;CUSIP&quot; #</B></P>
+</TD><TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" width=98.667><P style="margin:0px; font-size:11pt" align=center><B>(d) Shareholder Meeting Date</B></P>
+</TD>
+	<TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" width=428 colspan=2><P style="margin:0px; font-size:11pt" align=center><B>(e) Matter Identification</B></P>
+</TD>
+	<TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" width=107><P style="margin:0px; font-size:11pt" align=center><B>(f) Proposal Type</B></P>
+</TD>
+	<TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" width=81><P style="margin:0px; font-size:11pt" align=center><B>(g) Voted</B></P>
+</TD>
+	<TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" width=95><P style="margin:0px; font-size:11pt" align=center><B>(h) Vote Cast</B></P>
+</TD><TD style="margin-top:0px; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" width=96.733><P style="margin:0px; font-size:11pt" align=center><B>(i) For/Against Management</B></P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=36.4><P style="margin:0px; font-size:11pt" align=right>1</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=191><P style="margin:0px; font-size:11pt">Banco Macro S.A.</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=170><P style="margin:0px; font-size:11pt" align=center>BMA</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=93.333><P style="margin:0px; font-size:11pt" align=center>05961W-105</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=98.667><P style="margin:0px; font-size:11pt" align=center>4/16/2012</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=18.067><P style="margin:0px; font-size:11pt">&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=409><P style="margin:0px; font-size:11pt">Appt. 2 shareholders to sign minutes of shareholders' meeting.</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=107><P style="margin:0px; font-size:11pt" align=center>Issuer</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=81><P style="margin:0px; font-size:11pt" align=center>For</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=95><P style="margin:0px; font-size:11pt" align=center>Yes</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=96.733><P style="margin:0px; font-size:11pt" align=center>For</P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=36.4><P style="margin:0px; font-size:11pt" align=right>2</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=191><P style="margin:0px; font-size:11pt">Banco Macro S.A.</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=170><P style="margin:0px; font-size:11pt" align=center>BMA</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=93.333><P style="margin:0px; font-size:11pt" align=center>05961W-105</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=98.667><P style="margin:0px; font-size:11pt" align=center>4/16/2012</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=18.067><P style="margin:0px; font-size:11pt">&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=409><P style="margin:0px; font-size:11pt">Evaluate documentation in sec. 234 subsec. 1 of law 19550 for fiscal yr ended 2011</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=107><P style="margin:0px; font-size:11pt" align=center>Issuer</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=81><P style="margin:0px; font-size:11pt" align=center>For</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=95><P style="margin:0px; font-size:11pt" align=center>Yes</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=96.733><P style="margin:0px; font-size:11pt" align=center>For</P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=36.4><P style="margin:0px; font-size:11pt" align=right>3</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=191><P style="margin:0px; font-size:11pt">Banco Macro S.A.</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=170><P style="margin:0px; font-size:11pt" align=center>BMA</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=93.333><P style="margin:0px; font-size:11pt" align=center>05961W-105</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=98.667><P style="margin:0px; font-size:11pt" align=center>4/16/2012</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=18.067><P style="margin:0px; font-size:11pt">&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=409><P style="margin:0px; font-size:11pt">Evaluate mgt. of Board of Directors &amp; Supervisory Committee</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=107><P style="margin:0px; font-size:11pt" align=center>Issuer</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=81><P style="margin:0px; font-size:11pt" align=center>For</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=95><P style="margin:0px; font-size:11pt" align=center>Yes</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=96.733><P style="margin:0px; font-size:11pt" align=center>For</P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=36.4><P style="margin:0px; font-size:11pt" align=right>4</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=191><P style="margin:0px; font-size:11pt">Banco Macro S.A.</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=170><P style="margin:0px; font-size:11pt" align=center>BMA</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=93.333><P style="margin:0px; font-size:11pt" align=center>05961W-105</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=98.667><P style="margin:0px; font-size:11pt" align=center>4/16/2012</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=18.067><P style="margin:0px; font-size:11pt">&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=409><P style="margin:0px; font-size:11pt">Appl. of retained earning for fiscal yr 2011 as described in proxy</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=107><P style="margin:0px; font-size:11pt" align=center>Issuer</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=81><P style="margin:0px; font-size:11pt" align=center>For</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=95><P style="margin:0px; font-size:11pt" align=center>Yes</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=96.733><P style="margin:0px; font-size:11pt" align=center>For</P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=36.4><P style="margin:0px; font-size:11pt" align=right>5</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=191><P style="margin:0px; font-size:11pt">Banco Macro S.A.</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=170><P style="margin:0px; font-size:11pt" align=center>BMA</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=93.333><P style="margin:0px; font-size:11pt" align=center>05961W-105</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=98.667><P style="margin:0px; font-size:11pt" align=center>4/16/2012</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=18.067><P style="margin:0px; font-size:11pt">&nbsp;</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=409><P style="margin:0px; font-size:11pt">Evaluate renumerations of board for fiscal yr 2011 w/in limits of sec. 261</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=107><P style="margin:0px; font-size:11pt" align=center>Issuer</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=81><P style="margin:0px; font-size:11pt" align=center>For</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=95><P style="margin:0px; font-size:11pt" align=center>Yes</P>
+</TD><TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=96.733><P style="margin:0px; font-size:11pt" align=center>For</P>
+</TD></TR>
+<TR><TD style="margin-top:0px; border-left:1px solid #000000; border-right:1px solid #000000" valign=bottom width=36.4><P style="margin:0px; font-size:11pt" align=right>6</P>
+</TD>
+	<TD style="margin-top:0px; border-right:1px solid #000000" valign=bottom width=191><P style="margin:0px; font-size:11pt">Banco Macro S.A.</P>
+</TABLE></BODY></HTML>

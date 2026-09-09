@@ -1,0 +1,118 @@
+		COMPANY CONFORMED NAME:			Natixis Funds Trust I
+		CENTRAL INDEX KEY:			0000770540
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000770540
+<SERIES-ID>S000006656
+<SERIES-NAME>Hansberger International Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018156
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>NEFDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018157
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>NEDBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018158
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>NEDCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000069267
+<CLASS-CONTRACT-NAME>Class Y
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000770540
+<SERIES-ID>S000006657
+<SERIES-NAME>Natixis Diversified Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018159
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>IIDPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018160
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>CIDPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000770540
+<SERIES-ID>S000006658
+<SERIES-NAME>Natixis U.S. Multi-Cap Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018161
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>NEFSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018162
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>NESBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018163
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>NECCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018164
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>NESYX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+Hansberger International Fund
+--------------------------------------------------------------------------------------------------------------------------
+ ABB LTD                                                                                     Agenda Number:  702941522
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  H0010V101
+    Meeting Type:  AGM
+    Meeting Date:  29-Apr-2011
+          Ticker:
+            ISIN:  CH0012221716
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+IIF    TO SUBSTANTIALLY REVIEW AND AMEND THE PROVISIONS          Mgmt          For                            For
+       OF THE BY-LAWS: UPDATE OF EXECUTIVE OFFICERS'
+       FUNCTIONS (ARTICLES 30 TO 37).
+
+IIG    TO SUBSTANTIALLY REVIEW AND AMEND THE PROVISIONS          Mgmt          For                            For
+       OF THE BY-LAWS: OTHER NECESSARY ADAPTATIONS
+       AND IMPROVEMENTS.
+--------------------------------------------------------------------------------------------------------------------------
+ GAFISA S.A.                                                                                 Agenda Number:  933332861
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  362607301
+    Meeting Type:  Special
+    Meeting Date:  14-Oct-2010
+          Ticker:  GFA
+            ISIN:  US3626073015
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+01     ELECTION OF TWO NEW MEMBERS TO OCCUPY VACANT              Mgmt          For                            For
+       SEATS ON COMPANY'S BOARD OF DIRECTORS, IN ADDITION
+       TO THE MEMBERS THAT ARE CURRENTLY ELECTED,
+       BOTH WITH TERM OF OFFICE UNTIL THE COMPANY'S
+       ANNUAL GENERAL MEETING TO BE HELD IN 2012;
+       (I) WILSON AMARAL DE OLIVEIRA, BRAZILIAN, (II)
+       RENATO DE ALBUQUERQUE, BRAZILIAN, ALL AS MORE
+       FULLY DESCRIBED IN THE PROXY STATEMENT.
+
+02     ADJUSTMENT OF THE ANNUAL GLOBAL REMUNERATION              Mgmt          For                            For
+       FOR 2010. : WE HEREBY PROPOSE THAT THE GLOBAL
+       COMPENSATION OF THE MANAGEMENT OF THE COMPANY
+       FOR 2010 IS INCREASED IN THE AMOUNT OF R$86,400.00,
+       DUE TO THE INCREASE OF THE NUMBER OF DIRECTORS.
+       THEREFORE, THE ANNUAL GLOBAL COMPENSATION WOULD
+       BE IN THE TOTAL AMOUNT UP TO R$9,781,681.00.
