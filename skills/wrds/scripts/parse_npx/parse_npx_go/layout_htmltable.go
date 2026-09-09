@@ -4715,8 +4715,18 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 						}
 					}
 				}
-				if f := strings.Fields(candidate); len(f) > 1 && isAllDigits(f[0]) {
+				if f := strings.Fields(candidate); len(f) > 1 && (isAllDigits(f[0]) || isLeadingAccountCode(f[0])) {
 					candidate = strings.Join(f[1:], " ")
+				}
+				// `Fund Name : Columbia Liberty Fund-C7P3` (Columbia Funds
+				// Series Trust I 2007, 1,711 rows): the portfolio code is glued
+				// to the declared `Columbia Liberty Fund` with a hyphen rather
+				// than standing as a token of its own. Cut for the lookup only,
+				// and only when what remains resolves.
+				if stem, ok := htmlCutGluedCode(candidate); ok {
+					if _, d := issResolveFund(ix, stem); d != nil {
+						candidate = stem
+					}
 				}
 				// `Fund: Jennison Growth Fund #19F2` (Prudential Investment
 				// Portfolios 2004, 5,658 rows): the account code trails the
@@ -4801,7 +4811,69 @@ func htmlDictionaryFund(ix *issSeriesIndex, fallback *dictFallback, candidate st
 			return d.SeriesID
 		}
 	}
+	// The registrant's own brand in front of an unbranded dictionary name:
+	// `Commerce Growth Fund` for the dictionary's `The Growth Fund` (Commerce
+	// Funds 2005, S000010025). The same brand list the declared-name path uses,
+	// and a name the native header declares is still never reread.
+	for _, b := range ix.brands {
+		rest, ok := issCutBrand(normalizeSeriesName(candidate), b)
+		if !ok {
+			continue
+		}
+		if _, declared := lookupSeriesEntry(ix.byName, rest); declared {
+			return ""
+		}
+		if d, _ := lookupSeriesEntry(fallback.byName, rest); d != nil {
+			return d.SeriesID
+		}
+	}
+	// One word of the dictionary name abbreviated by the heading: `Brandes
+	// Institutional Intl Equity Fund` for `... International Equity Fund`
+	// (Brandes Investment Trust 2013, S000005855, 1,021 rows). The same edit
+	// issAbbrevWordDecl admits on the declared side, and a heading the native
+	// header declares is still never reread.
+	if d := htmlDictAbbrevWord(fallback, normalizeSeriesName(candidate)); d != nil {
+		return d.SeriesID
+	}
 	return ""
+}
+
+// htmlDictAbbrevWord finds the one dictionary name key differs from by exactly
+// one abbreviated word. Two candidates that name different series refuse.
+func htmlDictAbbrevWord(fallback *dictFallback, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 3 {
+		return nil
+	}
+	var hit *SeriesDecl
+	for name, d := range fallback.byName {
+		if d == nil {
+			continue
+		}
+		dt := strings.Fields(name)
+		if len(dt) != len(toks) {
+			continue
+		}
+		diff := 0
+		for j := range toks {
+			if toks[j] == dt[j] {
+				continue
+			}
+			diff++
+			if diff > 1 || !issAbbreviates(toks[j], dt[j]) {
+				diff = 2
+				break
+			}
+		}
+		if diff != 1 {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	return hit
 }
 
 // htmlFundLabelled reports a pre-text line that labels the fund: Putnam's
@@ -4817,6 +4889,64 @@ func htmlFundLabelled(line string) bool {
 		}
 	}
 	return false
+}
+
+// isLeadingAccountCode reports the alphanumeric account code some agents print
+// in front of the fund name: `CBNA-4C13 Commerce Growth Fund` (Commerce Funds
+// 2005, 3,348 rows with no fund). Upper-case letters, digits and hyphens only,
+// one of each at least, so neither a word (`Commerce`) nor a Roman numeral is
+// one.
+func isLeadingAccountCode(s string) bool {
+	if len(s) < 3 || len(s) > 12 {
+		return false
+	}
+	digit, letter := false, false
+	for i := 0; i < len(s); i++ {
+		switch c := s[i]; {
+		case c >= '0' && c <= '9':
+			digit = true
+		case c >= 'A' && c <= 'Z':
+			letter = true
+		case c == '-':
+		default:
+			return false
+		}
+	}
+	return digit && letter
+}
+
+// htmlCutGluedCode removes a hyphen-attached code from the last word of a fund
+// name: `Columbia Liberty Fund-C7P3`. Two to eight upper-case letters or digits
+// with a digit among them, so a hyphenated word (`Mid-Cap`) is never cut.
+func htmlCutGluedCode(name string) (string, bool) {
+	f := strings.Fields(name)
+	if len(f) < 2 {
+		return "", false
+	}
+	last := f[len(f)-1]
+	i := strings.LastIndexByte(last, '-')
+	if i <= 0 {
+		return "", false
+	}
+	code := last[i+1:]
+	if len(code) < 2 || len(code) > 8 {
+		return "", false
+	}
+	digit := false
+	for j := 0; j < len(code); j++ {
+		switch c := code[j]; {
+		case c >= '0' && c <= '9':
+			digit = true
+		case c >= 'A' && c <= 'Z':
+		default:
+			return "", false
+		}
+	}
+	if !digit {
+		return "", false
+	}
+	f[len(f)-1] = last[:i]
+	return strings.Join(f, " "), true
 }
 
 // isAccountCodeToken reports a trailing account code printed beside the fund

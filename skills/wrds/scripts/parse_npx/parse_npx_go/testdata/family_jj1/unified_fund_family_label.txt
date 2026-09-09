@@ -1,0 +1,73 @@
+		COMPANY CONFORMED NAME:		UNIFIED SERIES TRUST
+		CENTRAL INDEX KEY:		0001199046
+<SERIES-ID>S000020493
+<SERIES-NAME>AUER GROWTH FUND
+<TEXT>
+<PAGE>
+
+                    Quarterly Report of Proxy Voting Record
+
+Fund/Fund Family Name: The Auer Growth Fund/SB Auer Funds, LLC
+
+Date of Fiscal Year End: 11/30/13
+
+Date of Reporting Period April 1, 2013 - June 30, 2013
+
+[Auer Growth Fund]
+-------------------------------------------------------------------------------
+Page 17 of 52                                            Friday, July 05, 2013
+
+<PAGE>
+
+                              Proxy Voting Record
+
+AGL RESOURCES INC.
+
+SECURITY:        001204106                   MEETING TYPE:         Annual
+
+TICKER:          GAS                         MEETING DATE:         30-Apr-2013
+
+ISIN             US0012041069                VOTE DEADLINE DATE:   29-Apr-2013
+
+AGENDA           933748785     Management    TOTAL BALLOT SHARES:  57760.5128
+
+LAST VOTE DATE:  18-Mar-2013
+
+<TABLE>
+<CAPTION>
+ITEM  PROPOSAL                                     RECOMMENDATION  DEFAULT VOTE  FOR   AGAINST  ABSTAIN  TAKE NO ACTION
+----  -------------------------------------------- --------------  ------------  ----- -------  -------  --------------
+<C>   <S>                                          <C>             <C>           <C>   <C>      <C>      <C>
+ 1    DIRECTOR                                     For             None
+
+      1 SANDRA N. BANE                                                           3860       0        0               0
+
+      2 THOMAS D. BELL, JR.                                                      3860       0        0               0
+
+      3 NORMAN R. BOBINS                                                         3860       0        0               0
+
+      4 CHARLES R. CRISP                                                         3860       0        0               0
+
+      5 BRENDA J. GAINES                                                         3860       0        0               0
+
+      6 ARTHUR E. JOHNSON                                                        3860       0        0               0
+
+      7 WYCK A. KNOX, JR.                                                        3860       0        0               0
+
+      8 DENNIS M. LOVE                                                           3860       0        0               0
+
+      9 CHARLES H."PETE" MCTIER                                                  3860       0        0               0
+
+      10 DEAN R. O'HARE                                                          3860       0        0               0
+
+      11 ARMANDO J. OLIVERA                                                      3860       0        0               0
+
+      12 JOHN E. RAU                                                             3860       0        0               0
+
+      13 JAMES A. RUBRIGHT                                                       3860       0        0               0
+
+      14 JOHN W. SOMERHALDER II                                                  3860       0        0               0
+
+      15 BETTINA M. WHYTE                                                        3860       0        0               0
+
+      16 HENRY C. WOLF                                                           3860       0        0               0

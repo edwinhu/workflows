@@ -1110,6 +1110,11 @@ type issSeriesIndex struct {
 	// index b" for JOHN HANCOCK VARIABLE INSURANCE TRUST), built only when
 	// two thirds of the declared names carry that token; nil otherwise.
 	lessTypeWord map[string]*SeriesDecl
+	// lessConjunct keys a declared name whose trailing `and <words>` conjunct
+	// is dropped ahead of its type word: `PowerShares Dynamic Hardware
+	// Portfolio` for a declared `PowerShares Dynamic Hardware & Consumer
+	// Electronics Portfolio` (S000003050, 273 rows). Nil on collision.
+	lessConjunct map[string]*SeriesDecl
 }
 
 // issFormerKeys normalises the header's former conformed names for the index.
@@ -1137,6 +1142,7 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		lessBrandType:     make(map[string]*SeriesDecl),
 		lessLeadCompact:   make(map[string]*SeriesDecl),
 		byTicker:          make(map[string]*SeriesDecl),
+		lessConjunct:      make(map[string]*SeriesDecl),
 	}
 	dupTicker := map[string]bool{}
 	for i := range decls {
@@ -1254,6 +1260,15 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 			if rest, ok := strings.CutPrefix(key, b+" "); ok {
 				put(ix.lessBrand, rest, d)
 			}
+		}
+		// The registrant's WHOLE name, which brands (its leading runs) never
+		// supply: `RSI Retirement Trust - Core Equity Fund` (S000001852) under
+		// `core equity fund` for a heading that abbreviates the trust to `RSI`.
+		if rest, ok := strings.CutPrefix(key, registrantKey+" "); ok && rest != "" {
+			put(ix.lessBrand, rest, d)
+		}
+		if rest, ok := issDropTrailingConjunct(key); ok {
+			put(ix.lessConjunct, rest, d)
 		}
 		if cut, ok := issCutTrailingParenthetical(d.Name); ok {
 			put(ix.lessParen, normalizeSeriesName(cut), d)
@@ -2043,7 +2058,22 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			if d, seen := ix.byName[rest]; seen {
 				return banner, d
 			}
+			// The brand comes off BOTH sides: `RSI Core Equity Fund` for a
+			// declared `RSI Retirement Trust - Core Equity Fund` (RSI
+			// Retirement Trust 2004, 2,761 rows with no fund).
+			if d, seen := ix.lessBrand[rest]; seen {
+				return banner, d
+			}
 		}
+	}
+
+	// The declared name's trailing conjunct, dropped from the heading.
+	if d, seen := ix.lessConjunct[key]; seen {
+		return banner, d
+	}
+	// One word of the declared name abbreviated by the heading.
+	if d := issAbbrevWordDecl(ix, key); d != nil {
+		return banner, d
 	}
 
 	// A brand on the declared side that the registrant's own name never
@@ -2080,7 +2110,79 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d := issDistinctiveTokenDecl(ix, key); d != nil {
 		return banner, d
 	}
+	// An abbreviated stem of a declared name followed by a sub-adviser sleeve.
+	if d := issAbbrevStemDecl(ix, key); d != nil {
+		return banner, d
+	}
 	return banner, nil
+}
+
+// issAbbrevStemDecl reads a heading that abbreviates the tail of a declared name
+// and then names the sleeve reporting it: `Agg Growth LB Pax World` for a
+// declared `ESG Managers Aggressive Growth Portfolio` (S000027263, 20,380 rows
+// of Pax World Funds Series Trust I with no series).
+//
+// The heading's LEADING k tokens (two at least, and never the whole heading)
+// must match the declared name's trailing k tokens once its type word is
+// dropped, each token spelled exactly or abbreviated in order, and at least one
+// genuinely abbreviated -- an all-exact tail match is an ordinary prefix and
+// belongs to the rules above. Exactly one series may answer across every k, so
+// `Growth`, `Moderate` and `Conservative`, which head three sibling
+// portfolios, stamp nothing.
+func issAbbrevStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 3 {
+		return nil
+	}
+	var hit *SeriesDecl
+	for k := 2; k < len(toks); k++ {
+		for i := range ix.decls {
+			d := &ix.decls[i]
+			if d.SeriesID == "" || d.Name == "" {
+				continue
+			}
+			stem, typed := issDropTypeWord(normalizeSeriesName(d.Name))
+			if !typed {
+				continue
+			}
+			dt := strings.Fields(stem)
+			if len(dt) <= k {
+				continue
+			}
+			dt = dt[len(dt)-k:]
+			abbrev := false
+			ok := true
+			for j := 0; j < k; j++ {
+				switch {
+				case toks[j] == dt[j]:
+				case issAbbreviatesStem(toks[j], dt[j]):
+					abbrev = true
+				default:
+					ok = false
+				}
+				if !ok {
+					break
+				}
+			}
+			if !ok || !abbrev {
+				continue
+			}
+			if hit != nil && hit.SeriesID != d.SeriesID {
+				return nil
+			}
+			hit = d
+		}
+	}
+	return hit
+}
+
+// issAbbreviatesStem is issAbbreviates with the three-character stems a fund
+// family clips its own portfolio names to (`Agg` for `Aggressive`).
+func issAbbreviatesStem(short, long string) bool {
+	if len(short) == 3 && len(long) > 3 && strings.HasPrefix(long, short) {
+		return true
+	}
+	return issAbbreviates(short, long)
 }
 
 // issNearMissMinDrop and issNearMissMinEdit are the shortest token issNearMiss
@@ -2274,6 +2376,88 @@ func issDistinctiveTokenDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		return nil
 	}
 	return hit
+}
+
+// issDropTrailingConjunct removes the `and <words>` run that sits before a
+// declared name's type word: `powershares dynamic hardware and consumer
+// electronics portfolio` becomes `powershares dynamic hardware portfolio`. Two
+// tokens at least must survive in front of the `and`, so a name that is itself a
+// conjunction (`growth and income fund`) never collapses to `growth fund`.
+func issDropTrailingConjunct(key string) (string, bool) {
+	stem, typed := issDropTypeWord(key)
+	if !typed {
+		return "", false
+	}
+	full := strings.Fields(key)
+	typeWord := full[len(full)-1]
+	toks := strings.Fields(stem)
+	for i := len(toks) - 2; i >= 2; i-- {
+		if toks[i] == "and" {
+			return strings.Join(toks[:i], " ") + " " + typeWord, true
+		}
+	}
+	return "", false
+}
+
+// issAbbrevWordDecl reads a heading that abbreviates exactly ONE word of a
+// declared name and spells every other token exactly: `PowerShares Dynamic
+// Telecom & Wireless Portfolio` for a declared `... Telecommunications &
+// Wireless Portfolio` (S000003051, 284 rows), `Brandes Institutional Intl
+// Equity Fund` for `... International Equity Fund` (S000005855, 1,021 rows).
+//
+// The abbreviation must share the declared word's first letter, run four
+// characters at least, be strictly shorter and appear in it in order -- `Intl`
+// inside `International`. Exactly one series of this registrant may answer;
+// two candidates refuse rather than move one fund's votes onto another.
+func issAbbrevWordDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 3 {
+		return nil
+	}
+	var hit *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		dt := strings.Fields(normalizeSeriesName(d.Name))
+		if len(dt) != len(toks) {
+			continue
+		}
+		diff := 0
+		for j := range toks {
+			if toks[j] == dt[j] {
+				continue
+			}
+			diff++
+			if diff > 1 || !issAbbreviates(toks[j], dt[j]) {
+				diff = 2
+				break
+			}
+		}
+		if diff != 1 {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	return hit
+}
+
+// issAbbreviates reports whether short is an in-order abbreviation of long.
+func issAbbreviates(short, long string) bool {
+	if len(short) < 4 || len(short) >= len(long) || short[0] != long[0] {
+		return false
+	}
+	k := 0
+	for i := 0; i < len(long) && k < len(short); i++ {
+		if long[i] == short[k] {
+			k++
+		}
+	}
+	return k == len(short)
 }
 
 // issHasToken reports whether a normalised name carries tok as a whole token.
