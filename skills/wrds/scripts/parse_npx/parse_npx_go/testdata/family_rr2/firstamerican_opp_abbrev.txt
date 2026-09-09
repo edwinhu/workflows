@@ -1,0 +1,48 @@
+<SEC-DOCUMENT>0001104659-07-066433.txt : 20070831
+<SEC-HEADER>0001104659-07-066433.hdr.sgml : 20070831
+<ACCEPTANCE-DATETIME>20070831111119
+ACCESSION NUMBER:		0001104659-07-066433
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20070630
+FILED AS OF DATE:		20070831
+DATE AS OF CHANGE:		20070831
+EFFECTIVENESS DATE:		20070831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			FIRST AMERICAN INVESTMENT FUNDS INC
+		CENTRAL INDEX KEY:			0000820892
+		IRS NUMBER:				411418224
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			0930
+
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005550
+<SERIES-NAME>First American Large Cap Growth Opportunities Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005553
+<SERIES-NAME>First American Mid Cap Growth Opportunities Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>a07-18611_1npx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<div><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">******************************* FORM N-Px REPORT *******************************</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">ICA File Number: 811-05309&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Reporting Period: 07/01/2006 - 06/30/2007&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160
+e="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">=================== FIRST AMERICAN LARGE CAP GROWTH OPP FUND ===================</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">ABBOTT LABORATORIES&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#1
+60;&#160;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker:&#160;&#160;&#160;&#160;&#160;&#160; ABT&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Security ID:&#160; 002824100&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Date: APR 27, 2007&#160;&#160; Meeting Type: Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Record Date:&#160; FEB 28, 2007&#160;&#160;&#160;&#160;
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">#&#160;&#160;&#160;&#160; Proposal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgt Rec&#160;&#160; Vote Cast&#160; Sponsor&#160;&#160;&#160; </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.1&#160;&#160; Elect Director R.S. Austin&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&
+ize:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">==================== FIRST AMERICAN MID CAP GRWTH OPP FUND =====================</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">ABERCROMBIE &amp; FITCH CO.&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p><p style="margin:0pt 
+0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker:&#160;&#160;&#160;&#160;&#160;&#160; ANF&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Security ID:&#160; 002896207&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Date: JUN 13, 2007&#160;&#160; Meeting Type: Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Record Date:&#160; APR 17, 2007&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160
+;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">#&#160;&#160;&#160;&#160; Proposal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgt Rec&#160;&#160; Vote Cast&#160; Sponsor&#160;&#160;&#160; </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.1&#160;&#160; Elect Director John A. Golden&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&
