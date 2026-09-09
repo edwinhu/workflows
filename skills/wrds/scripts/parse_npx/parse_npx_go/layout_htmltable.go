@@ -156,6 +156,12 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// and the table that follows it carries the same rows' votes in the
 		// same order (MET Investors Series Trust 2013).
 		half htmlSplitHalf
+		// brandOnlyFund is the heading that names the registrant's brand and a
+		// type word and nothing else, and brandOnlyRows the rows standing under
+		// it: a section the filing proves exists but never names, resolved by
+		// elimination against the declared set once the file is read.
+		brandOnlyFund string
+		brandOnlyRows []int
 	)
 
 	for {
@@ -315,6 +321,11 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			}
 			if ok {
 				curFund, curSeries, outerSection = name, id, registrantSection && id != ""
+			} else if value, brandOnly := htmlBrandOnlyHeading(seriesIx, heading); brandOnly {
+				// A heading that names the registrant and a type word and
+				// nothing else cannot resolve, but it does open a section.
+				curFund, curSeries, outerSection = value, "", false
+				brandOnlyFund = value
 			}
 			// A lone header cell naming the fund column opens it for the rows
 			// below; it is not itself a fund.
@@ -608,6 +619,9 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 						// printed carries with the rest of the block's identity.
 						r.FundName, r.SeriesID = lastFundCell, lastFundSeries
 					}
+					if brandOnlyFund != "" && r.SeriesID == "" && r.FundName == brandOnlyFund {
+						brandOnlyRows = append(brandOnlyRows, len(out))
+					}
 					out = append(out, r)
 					sawData, emitted = true, true
 					// Grouped exports print the identity on a meeting's first
@@ -678,6 +692,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		}
 		return nil, errLayoutDeclined
 	}
+	htmlStampBrandOnlyByElimination(out, brandOnlyRows, meta.SeriesDecls)
 	return out, nil
 }
 
@@ -5324,6 +5339,118 @@ func htmlRegistrantSplitCells(cells []string) (string, bool) {
 		return "", false
 	}
 	return filled[0] + " " + value, true
+}
+
+// htmlBrandOnlyHeading reads a section heading that names the registrant's own
+// brand and a type word and NOTHING else: `Account Name: Neiman Fund` over a
+// header declaring `Neiman Large Cap Value Fund` and `Neiman Small Cap Value
+// Fund` (Neiman Funds 2006, 216 of 297 rows with no fund name and no series).
+// Such a heading carries no token separating one declaration from another, so
+// it can never resolve; what it does establish is that a section opened here.
+func htmlBrandOnlyHeading(ix *issSeriesIndex, pre string) (string, bool) {
+	if pre == "" || ix == nil || len(ix.decls) < 2 {
+		return "", false
+	}
+	// The brand is what EVERY declared name carries: a heading built of nothing
+	// but those words and a type word names no one of them in particular.
+	shared := map[string]bool{}
+	for i := range ix.decls {
+		toks := strings.Fields(normalizeSeriesName(ix.decls[i].Name))
+		if i == 0 {
+			for _, t := range toks {
+				shared[t] = true
+			}
+			continue
+		}
+		seen := map[string]bool{}
+		for _, t := range toks {
+			seen[t] = true
+		}
+		for t := range shared {
+			if !seen[t] {
+				delete(shared, t)
+			}
+		}
+	}
+	for _, line := range strings.Split(pre, "\n") {
+		line = htmlFlat(line)
+		if line == "" {
+			continue
+		}
+		low := strings.ToLower(line)
+		if !htmlFundLabelled(line) && !strings.HasPrefix(low, "account name") {
+			continue
+		}
+		colon := strings.IndexByte(line, ':')
+		if colon <= 0 {
+			continue
+		}
+		value := strings.TrimSpace(line[colon+1:])
+		toks := strings.Fields(normalizeSeriesName(value))
+		if len(toks) < 2 || len(toks) > 3 {
+			continue
+		}
+		brandTok, typeTok := false, false
+		for _, t := range toks {
+			switch {
+			case htmlBrandOnlyTypeWord[t]:
+				typeTok = true
+			case shared[t]:
+				brandTok = true
+			default:
+				return "", false
+			}
+		}
+		if brandTok && typeTok && icrResolveFundShared(ix, value) == "" {
+			return value, true
+		}
+	}
+	return "", false
+}
+
+// htmlBrandOnlyTypeWord lists the words a brand-only heading may carry beside
+// the registrant's own name.
+var htmlBrandOnlyTypeWord = map[string]bool{
+	"fund": true, "funds": true, "portfolio": true, "portfolios": true,
+	"trust": true, "series": true, "account": true,
+}
+
+// htmlStampBrandOnlyByElimination attributes the rows of a brand-only section
+// when the filing's own declarations settle it: the other sections named their
+// series outright, and exactly one declaration is left for the section that
+// named none. Nothing is stamped when more than one remains.
+func htmlStampBrandOnlyByElimination(out []VoteRow, rows []int, decls []SeriesDecl) {
+	if len(rows) == 0 || len(decls) < 2 {
+		return
+	}
+	claimed := map[string]bool{}
+	for i := range out {
+		if out[i].SeriesID != "" {
+			claimed[out[i].SeriesID] = true
+		}
+	}
+	if len(claimed) == 0 {
+		return
+	}
+	unclaimed := ""
+	for i := range decls {
+		id := decls[i].SeriesID
+		if id == "" || claimed[id] {
+			continue
+		}
+		if unclaimed != "" {
+			return
+		}
+		unclaimed = id
+	}
+	if unclaimed == "" {
+		return
+	}
+	for _, i := range rows {
+		if i < len(out) && out[i].SeriesID == "" {
+			out[i].SeriesID = unclaimed
+		}
+	}
 }
 
 func htmlFundLabelled(line string) bool {
