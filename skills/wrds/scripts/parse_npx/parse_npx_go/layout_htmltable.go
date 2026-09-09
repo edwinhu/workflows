@@ -607,7 +607,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 						fundCells[v] = true
 						if id := icrResolveFundShared(seriesIx, v); id != "" {
 							r.SeriesID = id
-						} else if len(fundCells) > 1 {
+						} else if len(fundCells) > 1 && !htmlAccountCodeFundCell(v, accountNames, outerSection && curSeries != "") {
 							r.SeriesID = ""
 						}
 						lastFundCell, lastFundSeries = r.FundName, r.SeriesID
@@ -4493,6 +4493,36 @@ func htmlSecurityID(v string) (cusip, isin string) {
 
 // htmlAllDigits reports a value that is nothing but digits, long enough to be
 // an internal account number rather than an item or a share count.
+// htmlAccountCodeFundCell reports whether an unresolvable fund cell is the
+// registrant's internal ACCOUNT CODE rather than a second fund: upper-case
+// letters and digits with no space and no word in it, unknown to the filing's
+// own number/name pairing (AdvisorShares Trust 2023 prints `RK2404400N` in the
+// `Account Name` column partway through the Gerber Kawasaki block, on 765 lines
+// and beside a fund name on none of them; 78 rows with no series). A code is
+// not a fund, so it must not withdraw the series of a resolved enclosing
+// section heading -- which is why the caller only allows it there.
+func htmlAccountCodeFundCell(v string, accountNames map[string]string, inResolvedSection bool) bool {
+	if !inResolvedSection || accountNames[v] != "" {
+		return false
+	}
+	if len(v) < 4 || len(v) > 16 || strings.ContainsAny(v, " \t") {
+		return false
+	}
+	digit, letter := false, false
+	for i := 0; i < len(v); i++ {
+		switch c := v[i]; {
+		case c >= '0' && c <= '9':
+			digit = true
+		case c >= 'A' && c <= 'Z':
+			letter = true
+		case c == '-':
+		default:
+			return false
+		}
+	}
+	return digit && letter
+}
+
 func htmlAllDigits(s string) bool {
 	if len(s) < 6 {
 		return false
@@ -4781,7 +4811,20 @@ func htmlLabelledCells(cells []string) (label, value string, ok bool) {
 	// Trust` | `Fund Name -` | `Rational Dynamic Brands Fund` (3,744 of 4,221
 	// rows with no fund on 2026-09-08). The registrant cell is dropped and the
 	// remaining pair read as label and value, exactly as a two-cell row.
-	if len(vals) == 3 && strings.HasPrefix(strings.ToLower(vals[0]), "registrant:") {
+	// An earlier vintage of that same banner glues the label to the fund in ONE
+	// cell and still prints the form item beside it: `Registrant:  Mutual Fund
+	// Series Trust` | `Fund Name - Eventide Health Care & Life Sciences Fund` |
+	// `Item 1` (Mutual Fund Series Trust 2018, 502 of 1,433 rows with no
+	// series). The registrant and the item cell are dropped and the glued cell
+	// split on its own separator, as the Putnam single-cell path above does.
+	if len(vals) == 3 && strings.HasPrefix(strings.ToLower(vals[0]), "registrant:") &&
+		reHTMLBannerItemCell.MatchString(vals[2]) && htmlFundLabelled(vals[1]) {
+		if l, v, ok := htmlSplitGluedLabelCell(vals[1]); ok {
+			return l, v, true
+		}
+	}
+	if len(vals) == 3 && strings.HasPrefix(strings.ToLower(vals[0]), "registrant:") &&
+		!reHTMLBannerItemCell.MatchString(vals[2]) {
 		vals = vals[1:]
 	}
 	// A later vintage of the same banner prints the form item in a FOURTH cell
@@ -4849,6 +4892,22 @@ func htmlFlattenCells(cells []string) string {
 
 // reHTMLBannerItemCell matches the bare form-item cell some fund banners trail.
 var reHTMLBannerItemCell = regexp.MustCompile(`(?i)^Item [0-9]{1,2}\.?$`)
+
+// htmlSplitGluedLabelCell splits a banner cell that carries both the label and
+// the fund: `Fund Name - Eventide Health Care & Life Sciences Fund`, or the
+// colon form the Putnam path reads. The separator must be followed by text.
+func htmlSplitGluedLabelCell(cell string) (label, value string, ok bool) {
+	for _, sep := range []string{":", " - ", " -- ", " – "} {
+		if i := strings.Index(cell, sep); i > 0 {
+			l := strings.TrimSpace(cell[:i])
+			v := strings.TrimSpace(cell[i+len(sep):])
+			if l != "" && v != "" {
+				return l, v, true
+			}
+		}
+	}
+	return "", "", false
+}
 
 // htmlBareFundLine reads a fund name printed as a bare paragraph between two
 // tables, with no label at all. One vintage prints every fund that way

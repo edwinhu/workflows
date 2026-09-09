@@ -1,0 +1,183 @@
+<SEC-DOCUMENT>0001580642-18-004117.txt : 20180827
+<SEC-HEADER>0001580642-18-004117.hdr.sgml : 20180827
+<ACCEPTANCE-DATETIME>20180827171402
+ACCESSION NUMBER:		0001580642-18-004117
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20180630
+FILED AS OF DATE:		20180827
+DATE AS OF CHANGE:		20180827
+EFFECTIVENESS DATE:		20180827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			MUTUAL FUND SERIES TRUST
+		CENTRAL INDEX KEY:			0001355064
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			OH
+		FISCAL YEAR END:			0630
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000039514
+<SERIES-NAME>Eventide Healthcare & Life Sciences Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121707
+<CLASS-CONTRACT-NAME>Eventide Healthcare & Life Sciences Fund Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETAHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121708
+<CLASS-CONTRACT-NAME>Eventide Healthcare & Life Sciences Fund Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETCHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121709
+<CLASS-CONTRACT-NAME>Eventide Healthcare & Life Sciences Fund Class N Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETNHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121710
+<CLASS-CONTRACT-NAME>Eventide Healthcare & Life Sciences Fund Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETIHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000182347
+<CLASS-CONTRACT-NAME>Eventide Healthcare & Life Sciences Fund Class T Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000045780
+<SERIES-NAME>AlphaCentric Asset Rotation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142725
+<CLASS-CONTRACT-NAME>AlphaCentric Asset Rotation Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>ROTAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142726
+<CLASS-CONTRACT-NAME>AlphaCentric Asset Rotation Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>ROTCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142727
+<CLASS-CONTRACT-NAME>AlphaCentric Asset Rotation Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>ROTIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189860
+<CLASS-CONTRACT-NAME>AlphaCentric Asset Rotation Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>mfstnpx4.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 10pt Calibri, Helvetica, Sans-Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Registrant:&nbsp;&nbsp;Mutual Fund Series Trust</B></FONT></TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP COLSPAN="4" STYLE="padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Fund Name - Eventide Health Care &amp; Life Sciences Fund</B></FONT></TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Item 1</FONT></TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="2" STYLE="padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Investment Company 1940 Act File # 811-21872</B></FONT></TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="2" STYLE="padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Reporting Period:&nbsp;&nbsp;July 1, 2017 - June 30, 2018</B></FONT></TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="width: 21%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 8%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 6%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 12%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 34%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 5%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 4%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 5%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 5%; padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="9" STYLE="border-top: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding: 0.75pt 5.4pt; text-align: center; vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 12pt"><B>N-PX Form Requirements</B></FONT></TD></TR>
+<TR>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(a) Issuer's Name</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(b) Exchange Ticker Symbol</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(c)&quot;CUSIP&quot; #</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(d) Shareholder Meeting Type &amp; Date</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(e) Matter Identification</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(f) Proposal Type</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(g) Voted</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(h) Vote Cast</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(i) For or Against Management</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Dicerna Pharmaceuticals, Inc.</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">DRNA</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">253031108</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Annual; 07/11/2017</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">&nbsp;&nbsp;&nbsp;1a. Elect Director Douglas M. Fambrough, III</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Dicerna Pharmaceuticals, Inc.</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">DRNA</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">253031108</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Annual; 07/11/2017</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">&nbsp;&nbsp;&nbsp;1b. Elect Director Martin Freed</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Dicerna Pharmaceuticals, Inc.</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">DRNA</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">253031108</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Annual; 07/11/2017</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">&nbsp;&nbsp;&nbsp;1c. Elect Director Brian K. Halak</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Dicerna Pharmaceuticals, Inc.</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">DRNA</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">253031108</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Annual; 07/11/2017</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">&nbsp;&nbsp;&nbsp;1d. Elect Director Stephen J. Hoffman</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
