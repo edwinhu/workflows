@@ -234,6 +234,19 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// Range: ...` / `The Gabelli Equity Income Fund`): a line of a row with at
 		// most two filled cells that resolves to a declared series, under the
 		// same rules as a bare paragraph.
+		// The `Registrant:` label may stand in a cell of its OWN, with the fund
+		// in the next cell and the exhibit marker in a third: Epiphany Funds
+		// splits its cover row that way for one section and puts label and value
+		// in one cell for the next (Epiphany Funds 2012, 1,441 of 1,561 rows with
+		// no fund name at all). The reading is the same either way -- a label
+		// cell, a fund cell, and an exhibit cell that is not part of the name --
+		// so the label and its value are rejoined and the exhibit cells dropped.
+		if joined, ok := htmlRegistrantSplitCells(cells); ok {
+			if name, id, ok := htmlBareFundLine(seriesIx, joined, dict); ok {
+				curFund, curSeries, outerSection = name, id, id != ""
+				continue
+			}
+		}
 		if htmlFilledCells(cells) <= 2 {
 			heading := strings.Join(cells, "\n")
 			registrantSection := false
@@ -5008,6 +5021,46 @@ func htmlDictAbbrevWord(fallback *dictFallback, key string) *SeriesDecl {
 // htmlFundLabelled reports a pre-text line that labels the fund: Putnam's
 // `Fund Name : Putnam VT Capital Appreciation Fund` (450k rows with no series
 // on 2026-09-02), TFS's `NAME OF FUND: TFS MARKET NEUTRAL FUND (TFSMX)`.
+// reHTMLSplitExhibit is reHTMLRegistrantExhibit widened to the LETTERED exhibit
+// this cover row prints (`Item 1, Exhibit A`). Kept separate from the two-cell
+// path's regexp, which decides whether a heading is read at all elsewhere.
+var reHTMLSplitExhibit = regexp.MustCompile(`(?i)^Item [0-9]{1,2}, Exhibit [0-9A-Z]{1,3}$`)
+
+// htmlRegistrantSplitCells rejoins a cover row whose `Registrant:` label, fund
+// value and exhibit marker each occupy a cell of their own, returning the label
+// and value as one line. Exactly one filled cell may remain once the label and
+// the exhibit markers are accounted for: a row carrying two candidate values is
+// not this shape and is left to the readers below.
+func htmlRegistrantSplitCells(cells []string) (string, bool) {
+	var filled []string
+	for _, cell := range cells {
+		if v := strings.TrimSpace(cell); v != "" {
+			filled = append(filled, v)
+		}
+	}
+	if len(filled) < 3 {
+		return "", false
+	}
+	label := strings.TrimSpace(strings.TrimSuffix(filled[0], ":"))
+	if !strings.EqualFold(label, "Registrant") {
+		return "", false
+	}
+	value := ""
+	for _, v := range filled[1:] {
+		if reHTMLSplitExhibit.MatchString(v) {
+			continue
+		}
+		if value != "" {
+			return "", false
+		}
+		value = v
+	}
+	if value == "" {
+		return "", false
+	}
+	return filled[0] + " " + value, true
+}
+
 func htmlFundLabelled(line string) bool {
 	low := strings.ToLower(line)
 	// `Account Number: Putnam Asset Allocation: Balanced Portfolio` (the 2005

@@ -200,6 +200,19 @@ func (f *dictFallback) apply(r *VoteRow) {
 			}
 		}
 	}
+	// A sub-adviser SLEEVE after a dash: `Natixis Income Diversified Portfolio -
+	// Active` for a dictionary `Natixis Income Diversified Portfolio`
+	// (S000006657, 1,859 rows across three sleeves of one filing). The same cut
+	// the header rules make with icrQualifierDelim, and the head still has to be
+	// a dictionary name exactly; a name that is itself hyphenated carries no
+	// space around its dash and is never cut.
+	if r.SeriesID == "" {
+		if head, _, ok := strings.Cut(r.FundName, icrQualifierDelim); ok && strings.TrimSpace(head) != "" {
+			if d, _ := lookupSeriesEntry(f.byName, head); d != nil {
+				r.SeriesID = d.SeriesID
+			}
+		}
+	}
 	// `JU77 Alliance Growth Portfolio`: an account code before the name
 	// (SunAmerica Series Trust 2005, pvtext), read past the way the header
 	// rules read `2DCN ...`.

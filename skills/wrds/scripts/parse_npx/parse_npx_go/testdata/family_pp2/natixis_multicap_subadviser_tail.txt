@@ -1,0 +1,100 @@
+		COMPANY CONFORMED NAME:			Natixis Funds Trust I
+		CENTRAL INDEX KEY:			0000770540
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000770540
+<SERIES-ID>S000006656
+<SERIES-NAME>Hansberger International Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018156
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>NEFDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018157
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>NEDBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018158
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>NEDCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000069267
+<CLASS-CONTRACT-NAME>Class Y
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000770540
+<SERIES-ID>S000006657
+<SERIES-NAME>Natixis Diversified Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018159
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>IIDPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018160
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>CIDPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000770540
+<SERIES-ID>S000006658
+<SERIES-NAME>Natixis U.S. Multi-Cap Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018161
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>NEFSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018162
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>NESBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018163
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>NECCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018164
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>NESYX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+Natixis U.S. Multi-cap Equity Fund Blackrock
+--------------------------------------------------------------------------------------------------------------------------
+ ACME PACKET, INC.                                                                           Agenda Number:  933391699
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  004764106
+    Meeting Type:  Annual
+    Meeting Date:  05-May-2011
+          Ticker:  APKT
+            ISIN:  US0047641065
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1      DIRECTOR
+       GARY J. BOWEN                                             Mgmt          For                            For
+       ROBERT C. HOWER                                           Mgmt          For                            For
+
+2      APPROVE AN ADVISORY PROPOSAL REGARDING ACME               Mgmt          For                            For
+       PACKET'S 2010 EXECUTIVE COMPENSATION.
+
+3      APPROVE AN ADVISORY PROPOSAL REGARDING THE FREQUENCY      Mgmt          3 Years                        Against
+       OF ACME PACKET'S ADVISORY PROPOSAL ON ITS EXECUTIVE
+       COMPENSATION.
+
+4      APPROVE AND ADOPT ACME PACKET'S 2011 EMPLOYEE             Mgmt          For                            For
+       STOCK PURCHASE PLAN.
+
+5      RATIFY THE SELECTION OF ERNST & YOUNG LLP AS              Mgmt          For                            For
+       ACME PACKET'S INDEPENDENT REGISTERED PUBLIC

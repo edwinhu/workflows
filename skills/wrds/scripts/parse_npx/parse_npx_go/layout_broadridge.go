@@ -510,6 +510,22 @@ func brHeadingSlot(lines []string, i int) (slot string, crossedBlank bool) {
 	return slot, crossedBlank
 }
 
+// brOpenProposalTail reports that the heading slot holds a line this parser has
+// ALREADY read as the tail of the proposal still open. A proposal whose text
+// wraps onto a short final line above a block rule leaves that line exactly
+// where a heading would sit: `AND IMPROVEMENTS.` closes a Hansberger by-laws
+// proposal and then stood as the fund heading of every block after it (Natixis
+// Funds Trust I 2011, 1,430 rows named after it with no series). Indentation
+// cannot decide this -- the text pipeline has already trimmed the proposal
+// column away by the time this grammar is read -- but the accumulated row can:
+// a line the open row claims is that row's, and the section already open stands.
+func brOpenProposalTail(cur *brRowBuf, slot string) bool {
+	if cur == nil || len(cur.text) == 0 {
+		return false
+	}
+	return strings.TrimSpace(cur.text[len(cur.text)-1]) == slot
+}
+
 // brPeriodEndpoint reports a date at one end of a printed reporting period,
 // including the `3/23/11` two-digit-year spelling htmlDate declines.
 func brPeriodEndpoint(s string) bool {
@@ -986,7 +1002,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 						curSeries, curFund = d.SeriesID, slot
 					}
 				}
-				if slot, crossedBlank := brHeadingSlot(lines, i); slot != "" {
+				if slot, crossedBlank := brHeadingSlot(lines, i); slot != "" && !brOpenProposalTail(cur, slot) {
 					if crossedBlank {
 						// Evidence-only: act solely on a name this filing's own
 						// header declares, because this slot is also what an

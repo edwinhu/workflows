@@ -134,10 +134,27 @@ func lvPeelProponent(cell string) (rest, proponent string) {
 	return cell, ""
 }
 
+// lvReportTitle is the one title this reader anchors on. A heading slot is only
+// a heading because the line under it is this exact sentence; nothing else about
+// a line makes it one.
+const lvReportTitle = "PROXY VOTING SUMMARY REPORT"
+
+// lvReportTitleBelow reports that the next nonblank line after lines[i] is the
+// report title, which makes lines[i] the fund heading of the page.
+func lvReportTitleBelow(lines []string, i int) bool {
+	for _, next := range lines[i+1:] {
+		if v := strings.TrimSpace(next); v != "" {
+			return strings.EqualFold(v, lvReportTitle)
+		}
+	}
+	return false
+}
+
 func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 	lines := strings.Split(text, "\n")
 	seriesIdx := seriesByName(meta.SeriesDecls)
 	sharedIdx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	dict := cikDict.exactFallback(meta)
 
 	var (
 		rows      []VoteRow
@@ -165,6 +182,25 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 		if name, ok := issFundSeparator(line); ok {
 			fund = name
 			curSeries = icrResolveFund(seriesIdx, name)
+			inBlock = false
+			lastRow = -1
+			continue
+		}
+		// The fund printed on the line ABOVE the report's own title, with no rule
+		// and no label to mark it: Ultra Series Fund heads every page of its
+		// report `ULTRA SERIES INTERNATIONAL STOCK FUND` over `PROXY VOTING
+		// SUMMARY REPORT`, and this layout read neither, leaving all 1,515 rows
+		// of the filing with no fund name at all. The TITLE is the evidence --
+		// the heading is the nearest nonblank line above a line that is exactly
+		// the report's title -- so no line is read as a name on its own account.
+		// Resolution goes through the same rules the sibling text layouts use,
+		// and an unresolved heading is still recorded, as they record theirs.
+		if lvReportTitleBelow(lines, i) {
+			fund = line
+			curSeries = icrResolveFundShared(sharedIdx, line)
+			if curSeries == "" {
+				curSeries = htmlDictionaryFund(sharedIdx, dict, line)
+			}
 			inBlock = false
 			lastRow = -1
 			continue
