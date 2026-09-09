@@ -1,0 +1,99 @@
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			THIRD AVENUE TRUST
+		CENTRAL INDEX KEY:			0001031661
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08039
+		FILM NUMBER:		121060469
+
+	BUSINESS ADDRESS:	
+		STREET 1:		622 THIRD AVENUE
+		STREET 2:		32ND FLOOR
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10017
+		BUSINESS PHONE:		2128886685
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001031661
+<SERIES-ID>S000001464
+<SERIES-NAME>THIRD AVENUE VALUE FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000003885
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>TAVFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085634
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>TVFVX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001031661
+<SERIES-ID>S000001465
+<SERIES-NAME>THIRD AVENUE SMALL-CAP VALUE FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000003886
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>TASCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085635
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>TVSVX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>brd_DJ60001031661.txt
+<DESCRIPTION>BRD_DJ60001031661
+<TEXT>
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              WASHINGTON, D.C. 20549
+
+                                   FORM N-PX
+Third Ave Small Cap
+--------------------------------------------------------------------------------------------------------------------------
+ ACKERMANS & VAN HAAREN NV                                                                   Agenda Number:  703392807
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  B01165156
+    Meeting Type:  EGM
+    Meeting Date:  25-Nov-2011
+          Ticker:
+            ISIN:  BE0003764785
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1      Receive special board report                              Non-Voting
+
+2      Authorize board to issue shares in the                    Mgmt          No vote
+       event of a public tender offer or
+       share exchange offer and renew
+       authorization to increase share capital
+       within the framework of authorized capital
+
+3      Authorize board to repurchase shares in the               Mgmt          No vote
+       event of a serious and imminent harm and
+       under normal conditions
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

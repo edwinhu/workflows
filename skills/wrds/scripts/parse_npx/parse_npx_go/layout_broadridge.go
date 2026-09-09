@@ -661,7 +661,81 @@ func brResolveHeading(ix *issSeriesIndex, slot string) string {
 	if _, d := issResolveFund(ix, slot); d != nil {
 		return d.SeriesID
 	}
+	if d := brHeadingDropsTypeTail(ix, slot); d != nil {
+		return d.SeriesID
+	}
 	return ""
+}
+
+// brTypeTailWord is the closed set of trailing words a printed heading may drop
+// off a declared name. They carry no strategy: two declared series never differ
+// by these tokens alone, so dropping them cannot merge distinct funds.
+var brTypeTailWord = map[string]bool{
+	"value": true, "fund": true, "funds": true, "portfolio": true,
+	"portfolios": true, "trust": true, "series": true,
+}
+
+// brHeadingDropsTypeTail resolves a heading that is the LEADING run of exactly
+// one declared name, with every remaining declared token a type word: Third
+// Avenue Trust 2012 heads `Third Ave Real Estate` over a declared `THIRD AVENUE
+// REAL ESTATE VALUE FUND` (S000001466, 484 rows with no series) and `Third Ave
+// Small Cap` over `THIRD AVENUE SMALL-CAP VALUE FUND` (S000001465, 378 rows) --
+// the hyphen is already a token separator after folding, so `Small Cap` aligns.
+// The existing tail-aligned abbreviation rule cannot reach either, because the
+// tokens the heading omits are at the END rather than the front.
+//
+// The discipline is the one every other tolerance here carries. Each printed
+// token must equal its declared token or be a vowel-dropped abbreviation of it
+// (`Ave` for `Avenue`), at least two must be spelled in full, the heading must
+// carry three tokens of its own, and two declared names answering stamps
+// NOTHING -- which is what keeps the sibling `Third Avenue International Real
+// Estate Value Fund` from ever being taken by a heading it merely neighbours.
+func brHeadingDropsTypeTail(ix *issSeriesIndex, slot string) *SeriesDecl {
+	toks := strings.Fields(normalizeSeriesName(slot))
+	if ix == nil || len(toks) < 3 {
+		return nil
+	}
+	var hit *SeriesDecl
+	for name, d := range ix.byName {
+		if d == nil {
+			continue
+		}
+		dt := strings.Fields(name)
+		if len(dt) <= len(toks) || len(dt) > len(toks)+2 {
+			continue
+		}
+		tail := true
+		for _, t := range dt[len(toks):] {
+			if !brTypeTailWord[t] {
+				tail = false
+				break
+			}
+		}
+		if !tail {
+			continue
+		}
+		exact, fit := 0, true
+		for j, t := range toks {
+			switch {
+			case t == dt[j]:
+				exact++
+			case issVowelDropped(t, dt[j]):
+			default:
+				fit = false
+			}
+			if !fit {
+				break
+			}
+		}
+		if !fit || exact < 2 {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	return hit
 }
 
 // brEqualsRuleHeading reads the fund heading this vintage brackets between two
