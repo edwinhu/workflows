@@ -935,6 +935,20 @@ func pvTextResolveAccount(ix *issSeriesIndex, name string) *SeriesDecl {
 	if f := strings.Fields(name); len(f) > 2 && internalFundCode(f[0]) && strings.EqualFold(f[0], f[len(f)-1]) {
 		_, d = issResolveFund(ix, strings.Join(f[:len(f)-1], " "))
 	}
+	// The account code carries no digit at all: `JUGH Focused Growth and
+	// Income` beside the sibling `JU68 Focused Dividend Strategy`, which
+	// internalFundCode already reads (SunAmerica Focused Series 2005, 1,253
+	// rows). Four upper-case letters, and what remains must be a declared name
+	// EXACTLY -- a leading word of a fund's own name is never dropped, because
+	// the whole heading is looked up first and a residual that only nearly
+	// matches stamps nothing.
+	if d == nil {
+		if f := strings.Fields(name); len(f) > 2 && pvTextLetterAccountCode(f[0]) {
+			if alt, _ := lookupSeriesEntry(ix.byName, strings.Join(f[1:], " ")); alt != nil {
+				d = alt
+			}
+		}
+	}
 	// VALIC's numbered second accounts use -2, not a target date or class.
 	if d == nil && (ix.registrantKey == "valic co i" || ix.registrantKey == "valic company i") {
 		if f := strings.Fields(name); len(f) > 1 && internalFundCode(f[0]) && strings.HasSuffix(name, "-2") {
@@ -946,6 +960,20 @@ func pvTextResolveAccount(ix *issSeriesIndex, name string) *SeriesDecl {
 		}
 	}
 	return d
+}
+
+// pvTextLetterAccountCode reports an account code of exactly four upper-case
+// letters, the digitless sibling of internalFundCode.
+func pvTextLetterAccountCode(tok string) bool {
+	if len(tok) != 4 {
+		return false
+	}
+	for i := 0; i < len(tok); i++ {
+		if tok[i] < 'A' || tok[i] > 'Z' {
+			return false
+		}
+	}
+	return true
 }
 
 // pvTextAccountFund retains the printed account code and name; only the

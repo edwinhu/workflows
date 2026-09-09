@@ -202,7 +202,9 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// Summary Report` banner over its reporting period (S000029069, 981 rows
 		// with no series). A nameless banner is a page break, not a new section,
 		// so it leaves the resolved fund alone; an unresolved one still clears.
-		if name, id, ok := htmlBareFundLine(seriesIx, row.pre, dict); ok {
+		if name, id, ok := htmlFormNPXSleeveBanner(seriesIx, row.pre); ok {
+			curFund, curSeries, outerSection = name, id, true
+		} else if name, id, ok := htmlBareFundLine(seriesIx, row.pre, dict); ok {
 			curFund, curSeries, outerSection = name, id, id != ""
 		} else if name, ok := htmlFundHeading(row.pre); ok && (name != "" || curSeries == "") {
 			curFund = name
@@ -4725,6 +4727,56 @@ var reHTMLBannerItemCell = regexp.MustCompile(`(?i)^Item [0-9]{1,2}\.?$`)
 // nothing positional is guessed. The text between two tables can hold several
 // such names when the funds between them reported no activity; the fund that
 // follows is the NEAREST name above the table, so the last match wins.
+// htmlFormNPXSleeveBanner reads the sub-adviser sleeve one vintage prints as its
+// only section heading, between the tables: `Form N-PX Sector` over the section
+// declared as `Penn Street Advisors Sector Rotational Portfolio` (S000001801),
+// `Form N-PX Berkshire` over `Berkshire Advisors Select Equity Portfolio`
+// (S000001802) -- Penn Street Fund, Inc. 2004, 877 rows carrying no fund name at
+// all. The sleeve is what the filing prints, so it is stored as the fund name.
+//
+// The banner must be the whole line after the form title, at most two words of
+// five letters or more, and every one of them must sit in exactly ONE of this
+// registrant's declared names: a sleeve two series answer to stamps nothing,
+// which is what leaves the filing's Baldwin, Cumberland and McGlinn sleeves --
+// words no declared name carries -- blank rather than guessed.
+func htmlFormNPXSleeveBanner(ix *issSeriesIndex, pre string) (name, id string, ok bool) {
+	for _, line := range strings.Split(pre, "\n") {
+		line = strings.TrimSpace(line)
+		rest, cut := strings.CutPrefix(line, "Form N-PX ")
+		if !cut {
+			continue
+		}
+		words := strings.Fields(normalizeSeriesName(rest))
+		if len(words) == 0 || len(words) > 2 {
+			continue
+		}
+		var hit *SeriesDecl
+		for _, w := range words {
+			if len(w) < 5 {
+				return "", "", false
+			}
+			var owner *SeriesDecl
+			ids := map[string]bool{}
+			for i := range ix.decls {
+				d := &ix.decls[i]
+				if d.SeriesID == "" || d.Name == "" || !issHasToken(normalizeSeriesName(d.Name), w) {
+					continue
+				}
+				owner = d
+				ids[d.SeriesID] = true
+			}
+			if len(ids) != 1 || hit != nil && hit.SeriesID != owner.SeriesID {
+				return "", "", false
+			}
+			hit = owner
+		}
+		if hit != nil {
+			return line, hit.SeriesID, true
+		}
+	}
+	return "", "", false
+}
+
 func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback) (name, id string, ok bool) {
 	if pre == "" {
 		return "", "", false
