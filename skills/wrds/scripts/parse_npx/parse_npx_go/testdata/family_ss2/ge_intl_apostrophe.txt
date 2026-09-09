@@ -1,0 +1,59 @@
+<SEC-DOCUMENT>0000891079-07-000023.txt : 20070821
+<SEC-HEADER>0000891079-07-000023.hdr.sgml : 20070821
+<ACCEPTANCE-DATETIME>20070821133015
+ACCESSION NUMBER:		0000891079-07-000023
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20070630
+FILED AS OF DATE:		20070821
+DATE AS OF CHANGE:		20070821
+EFFECTIVENESS DATE:		20070821
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			GE FUNDS
+		CENTRAL INDEX KEY:			0000891079
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000891079
+<SERIES-ID>S000001619
+<SERIES-NAME>GE International Equity Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000891079
+<SERIES-ID>S000001624
+<SERIES-NAME>GE Strategic Investment Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>ge.txt
+<DESCRIPTION>GE FUNDS - ANNUAL REPORT OF PROXY VOTING RECORD  FOR THE PERIOD ENDED JUNE 30, 2007
+<TEXT>
+========================== GE INT'L EQUITY FUND (MF) ===========================
+
+
+ABB LTD.
+
+Ticker:                      Security ID:  H0010V101
+Meeting Date: MAY 3, 2007    Meeting Type: Annual
+Record Date:
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Receive Financial Statements and          None      None       Management
+      Statutory Reports (Non-Voting)
+2     Accept Financial Statements and Statutory For       For        Management
+      Reports
+3     Approve Discharge of Board and Senior     For       Abstain    Management
+      Management
+4     Approve Allocation of Income and          For       For        Management
+      Dividends of CHF 0.24 per Share
+5     Approve Creation of CHF 500 Million Pool  For       For        Management
+      of Capital without Preemptive Rights
+6.1   Reelect Roger Agnelli as Director         For       For        Management
+6.2   Reelect Louis Hughes as Director          For       For        Management

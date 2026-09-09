@@ -1182,6 +1182,19 @@ type issSeriesIndex struct {
 	// Portfolio` for a declared `PowerShares Dynamic Hardware & Consumer
 	// Electronics Portfolio` (S000003050, 273 rows). Nil on collision.
 	lessConjunct map[string]*SeriesDecl
+	// lessAnyType keys a declared name by its TRAILING type word dropped, so a
+	// heading that SUBSTITUTES one type word for another reaches it: `AMERITAS
+	// SMALL CAP FUND` for a declared `Ameritas Small Cap Portfolio`
+	// (S000008739, 1,021 rows). Two declared names that differ only by their
+	// type word collide here and refuse.
+	lessAnyType map[string]*SeriesDecl
+	// lessBrandTypeCompact is lessBrandType compacted, for a heading that runs
+	// the capitalization token together: `BRAZOS MIDCAP GROWTH` for a declared
+	// `Brazos Mid Cap Portfolio` (S000005275, 462 rows).
+	lessBrandTypeCompact map[string]*SeriesDecl
+	// commonSuffix is the last word every declared name shares, kept so a
+	// heading that DROPS it can be retried with it appended.
+	commonSuffix string
 }
 
 // issFormerKeys normalises the header's former conformed names for the index.
@@ -1210,6 +1223,9 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		lessLeadCompact:   make(map[string]*SeriesDecl),
 		byTicker:          make(map[string]*SeriesDecl),
 		lessConjunct:      make(map[string]*SeriesDecl),
+
+		lessAnyType:          make(map[string]*SeriesDecl),
+		lessBrandTypeCompact: make(map[string]*SeriesDecl),
 	}
 	dupTicker := map[string]bool{}
 	for i := range decls {
@@ -1309,6 +1325,7 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 				put(ix.lessLeadCompact, strings.ReplaceAll(rest, " ", ""), d)
 				if r2, ok := issDropTypeWord(rest); ok {
 					put(ix.lessBrandType, r2, d)
+					put(ix.lessBrandTypeCompact, strings.ReplaceAll(r2, " ", ""), d)
 				}
 			}
 		}
@@ -1354,8 +1371,21 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		if rest, ok := strings.CutPrefix(key, registrantKey+" "); ok && rest != "" {
 			put(ix.lessBrand, rest, d)
 		}
+		// A declared name typed anything BUT `fund`, keyed by its stem: the
+		// heading may print the generic marketing word in its place. Only that
+		// one direction, so `... EQUITY TRUST` for a declared `... Equity
+		// Fund` stays a different registered series and refuses.
+		if stem, ok := issDropTypeWord(key); ok && !strings.HasSuffix(key, " fund") {
+			put(ix.lessAnyType, stem, d)
+		}
 		if rest, ok := issDropTrailingConjunct(key); ok {
 			put(ix.lessConjunct, rest, d)
+			// A heading that prints the bare stem with no type word at all
+			// (`MID CAP VALUE` for `Mid Cap Value and Restructuring Fund`,
+			// S000004600) never reaches the typed reading above.
+			if bare, ok := issDropTypeWord(rest); ok {
+				put(ix.lessConjunct, bare, d)
+			}
 		}
 		if cut, ok := issCutTrailingParenthetical(d.Name); ok {
 			put(ix.lessParen, normalizeSeriesName(cut), d)
@@ -1386,6 +1416,7 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		}
 	}
 	if suffix := issCommonLastWord(decls); suffix != "" {
+		ix.commonSuffix = suffix
 		ix.lessSuffix = make(map[string]*SeriesDecl)
 		for i := range decls {
 			d := &decls[i]
@@ -2192,6 +2223,20 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 		if d, seen := ix.lessLeadCompact[restCompact]; seen && d != nil {
 			return banner, d
 		}
+		// The heading runs the capitalization token together AND prints a
+		// strategy word where the declared name carries its type word:
+		// `BRAZOS MIDCAP GROWTH` for a declared `Brazos Mid Cap Portfolio`
+		// (S000005275, 462 rows). The brand comes off both sides, the
+		// declared type word and the heading's trailing token come off, and
+		// what is left must compact to the same string; a collision refuses.
+		// The heading's trailing token may not itself be a type word, so
+		// `... EQUITY TRUST` for a declared `... Equity Fund` is untouched.
+		if toks := strings.Fields(rest); len(toks) > 1 && !issTypeWord(toks[len(toks)-1]) {
+			stemCompact := strings.ReplaceAll(strings.Join(toks[:len(toks)-1], " "), " ", "")
+			if d := ix.lessBrandTypeCompact[stemCompact]; d != nil {
+				return banner, d
+			}
+		}
 	}
 	// The registrant's FULL name where the declared names carry only its
 	// leading tokens: `State Farm Variable Product Trust Small Cap Equity
@@ -2226,6 +2271,18 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// The registrant's own type word, omitted from wherever it sits.
 	if ix.lessTypeWord != nil {
 		if d, seen := ix.lessTypeWord[key]; seen {
+			return banner, d
+		}
+	}
+
+	// The heading prints the generic `FUND` where the declared name carries its
+	// registered type word: `AMERITAS SMALL CAP FUND` for a declared `Ameritas
+	// Small Cap Portfolio` (S000008739, Calvert Variable Series 2004, 1,021
+	// rows). Only that direction -- a heading that swaps in `Trust` or
+	// `Portfolio` names a different registered series and still refuses -- and
+	// two declared names sharing a stem collided in the index and refuse.
+	if stem, ok := strings.CutSuffix(key, " fund"); ok {
+		if d := ix.lessAnyType[stem]; d != nil {
 			return banner, d
 		}
 	}
@@ -2377,7 +2434,72 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d := issSplicedDecl(ix, key); d != nil {
 		return banner, d
 	}
+	// The heading names a SLEEVE of a declared fund: the type word sits inside
+	// the heading and a sleeve qualifier trails it. `GE-STRATEGIC FUND INTL`
+	// and `STRATEGIC FUND DOMESTIC EQ LC` for a declared `GE Strategic
+	// Investment Fund` (S000001624, 3,975 rows), whose own section
+	// `GE STRATEGIC INV FUND (MF)` resolves beside them.
+	if d := issSleeveStemDecl(ix, key); d != nil {
+		return banner, d
+	}
+	// The heading DROPS the last word every declared name shares, and no rung
+	// above reaches it because the remaining edit is on the other side:
+	// `ARMADA LARGE CAP VALUE` for a dictionary-backed `ALLEGIANT LARGE CAP
+	// VALUE FUND` (S000001188, 5,588 rows), where the historical-brand swap
+	// fires only on the typed spelling. The word is appended and the whole
+	// chain runs once more; the retried key ends in the suffix, so it cannot
+	// recurse, and an ambiguous retry still refuses. A heading that already
+	// carries a type word of its own is left alone -- `GS STRUCTURED
+	// INTERNATIONAL EQUITY TRUST` is a different registered series from the
+	// declared `... Equity Fund`, not a heading missing a word.
+	if toks := strings.Fields(key); ix.commonSuffix != "" && len(toks) > 1 &&
+		!issTypeWord(toks[len(toks)-1]) && toks[len(toks)-1] != ix.commonSuffix {
+		if _, d := issResolveFund(ix, banner+" "+ix.commonSuffix); d != nil {
+			return banner, d
+		}
+	}
 	return banner, nil
+}
+
+// issSleeveStemDecl resolves a heading whose type word sits INSIDE it, with a
+// sleeve qualifier trailing: the stem through the type word must appear, in
+// order, inside exactly one declared name, and the stem must carry a word of its
+// own besides the type word. Uniqueness is enforced by the scan rather than
+// borrowed from the index, so a stem two declared names answer stamps nothing.
+func issSleeveStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	cut := -1
+	for i := 1; i < len(toks)-1; i++ {
+		switch toks[i] {
+		case "fund", "portfolio", "trust", "account":
+			cut = i
+		}
+	}
+	if cut < 1 {
+		return nil
+	}
+	stem := toks[:cut+1]
+	var found *SeriesDecl
+	for name, d := range ix.byName {
+		if d == nil {
+			continue
+		}
+		cand := strings.Fields(name)
+		k := 0
+		for _, t := range cand {
+			if k < len(stem) && t == stem[k] {
+				k++
+			}
+		}
+		if k != len(stem) {
+			continue
+		}
+		if found != nil && found.SeriesID != d.SeriesID {
+			return nil
+		}
+		found = d
+	}
+	return found
 }
 
 // issFundLabelHead reports whether a heading's pre-colon head is one of the
@@ -3490,6 +3612,16 @@ var issGenericRegistrantWord = map[string]bool{
 	"variable": true, "products": true, "capital": true, "management": true,
 	"financial": true, "securities": true, "income": true, "equity": true, "growth": true,
 	"international": true, "global": true, "american": true, "national": true,
+}
+
+// issTypeWord reports whether tok is one of the words a registered fund names
+// its vehicle with.
+func issTypeWord(tok string) bool {
+	switch tok {
+	case "fund", "portfolio", "trust", "account", "series", "etf":
+		return true
+	}
+	return false
 }
 
 // issDropTypeWord removes a trailing type word from a normalised key.

@@ -250,9 +250,15 @@ var seriesMarkReplacer = strings.NewReplacer(
 // the separators everything else becomes. '&' must expand to the WORD, since
 // folding alone would delete it and glue "s" to "p"; '?' must become a separator
 // rather than expand to anything, because the character it stands in for is '/'.
+// An apostrophe is DELETED rather than made a separator, so an abbreviation that
+// spells it stays one token: `GE INT'L EQUITY FUND` folds to `int l` otherwise
+// and is no longer an abbreviation of the declared `International` (S000001619,
+// 1,549 rows). Both the ASCII and the typographic spelling.
 var seriesPunctReplacer = strings.NewReplacer(
 	"&", " and ",
 	"?", " ",
+	"'", "",
+	"’", "",
 )
 
 // seriesByName maps each declared series name, normalised, onto its series id.

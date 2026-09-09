@@ -4977,7 +4977,44 @@ func htmlDictionaryFund(ix *issSeriesIndex, fallback *dictFallback, candidate st
 	if d := htmlDictAbbrevWord(fallback, normalizeSeriesName(candidate)); d != nil {
 		return d.SeriesID
 	}
+	// The heading drops the type word the dictionary name carries: `Core Equity
+	// Plus` for the dictionary's `CORE EQUITY PLUS FUND` (American Century
+	// Quantitative Equity Funds 2020, S000021731, 1,091 rows over five such
+	// headings). The declared-name path already reads a heading this way; the
+	// dictionary path had no such rung. Two type words naming two different
+	// series refuse, and a name the native header declares is never reread.
+	if d := htmlDictTypeWordAdded(ix, fallback, normalizeSeriesName(candidate)); d != nil {
+		return d.SeriesID
+	}
 	return ""
+}
+
+// htmlDictTypeWordAdded finds the one dictionary name key equals once a type
+// word is appended. Nil when key already carries one, when the native header
+// declares the result, or when two type words name different series.
+func htmlDictTypeWordAdded(ix *issSeriesIndex, fallback *dictFallback, key string) *SeriesDecl {
+	if key == "" {
+		return nil
+	}
+	if _, typed := issDropTypeWord(key); typed {
+		return nil
+	}
+	var hit *SeriesDecl
+	for _, tw := range []string{"fund", "portfolio", "trust", "account", "series"} {
+		try := key + " " + tw
+		if _, declared := lookupSeriesEntry(ix.byName, try); declared {
+			return nil
+		}
+		d, seen := lookupSeriesEntry(fallback.byName, try)
+		if !seen {
+			continue
+		}
+		if d == nil || hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	return hit
 }
 
 // htmlDictAbbrevWord finds the one dictionary name key differs from by exactly
