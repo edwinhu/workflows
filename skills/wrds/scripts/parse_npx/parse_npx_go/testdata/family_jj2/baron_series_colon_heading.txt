@@ -1,0 +1,74 @@
+CONFORMED PERIOD OF REPORT:	20060630
+		COMPANY CONFORMED NAME:			BARON INVESTMENT FUNDS TRUST (f/k/a BARON ASSET FUND)
+		CENTRAL INDEX KEY:			0000810902
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000810902
+<SERIES-ID>S000000582
+<SERIES-NAME>BARON ASSET FUND
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000810902
+<SERIES-ID>S000000583
+<SERIES-NAME>BARON GROWTH FUND
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000810902
+<SERIES-ID>S000000584
+<SERIES-NAME>BARON SMALL CAP FUND
+</SERIES>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+<FILENAME>adpu02_0000810902.txt
+<DESCRIPTION>BARON INVESTMENTS FUNDS TRUST
+<TEXT>
+
+<PAGE>
+                               VOTE SUMMARY REPORT
+                       JULY 1, 2005 THROUGH JUNE 30, 2006
+
+                          BARON INVESTMENT FUNDS TRUST
+
+BARON ASSET FUND SERIES:
+- ------------------------
+<TABLE>
+<S>    <C>                                                       <C>           <C>                            <C>
+==========================================================================================================================
+ ADVANCED MEDICAL OPTICS, INC.                                                               Agenda Number:  932503356
+- --------------------------------------------------------------------------------------------------------------------------
+        Security:  00763M108
+    Meeting Type:  Annual
+    Meeting Date:  25-May-2006
+          Ticker:  EYE
+- --------------------------------------------------------------------------------------------------------------------------
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+01     DIRECTOR
+       W. LINK                                                   Mgmt          For                            For
+       M. MUSSALLEM                                              Mgmt          For                            For
+       D. NEFF                                                   Mgmt          For                            For
+
+02     TO APPROVE RATIFICATION OF APPOINTMENT OF INDEPENDENT     Mgmt          For                            For
+       REGISTERED PUBLIC ACCOUNTING FIRM
+==========================================================================================================================
+ ALEXANDER'S, INC.                                                                           Agenda Number:  932519525
+- --------------------------------------------------------------------------------------------------------------------------
+        Security:  014752109
+    Meeting Type:  Annual
+    Meeting Date:  18-May-2006
+          Ticker:  ALX
+- --------------------------------------------------------------------------------------------------------------------------
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+01     DIRECTOR
+       DAVID MANDELBAUM                                          Mgmt          Withheld                       Against
+       ARTHUR I. SONNENBLICK                                     Mgmt          Withheld                       Against
+       RICHARD R. WEST                                           Mgmt          Withheld                       Against
+
+02     APPROVE THE COMPANY'S 2006 OMNIBUS STOCK PLAN.            Mgmt          For                            For
+
+03     RATIFICATION OF SELECTION OF INDEPENDENT REGISTERED       Mgmt          For                            For
+       PUBLIC ACCOUNTING FIRM.
+==========================================================================================================================

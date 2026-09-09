@@ -560,6 +560,137 @@ func brEqualsRuleHeading(lines []string, i int) (string, bool) {
 	return slot, true
 }
 
+// brColonBannerHeading reads the fund heading Baron's vintage prints as the
+// declared name plus a type word and a COLON, over a rule of its own that is
+// not the block opener (`BARON ASSET FUND SERIES:` above a 24-character rule,
+// Baron Investment Funds Trust 2006, all 2,976 rows with no series). The colon
+// is what separates this banner from the ordinary heading slot, which sits two
+// lines above an `Agenda Number` line; without one, a line above a rule is read
+// there and nowhere else. The heading sits at column 0.
+func brColonBannerHeading(lines []string, i int) (string, bool) {
+	if i+1 >= len(lines) || !brDashRule(lines[i+1]) {
+		return "", false
+	}
+	if strings.HasPrefix(lines[i], " ") || strings.HasPrefix(lines[i], "\t") {
+		return "", false
+	}
+	slot := strings.TrimSpace(lines[i])
+	if !strings.HasSuffix(slot, ":") || brAgendaOpener(slot) {
+		return "", false
+	}
+	return slot, true
+}
+
+// brFundLabels are the labels a cover sheet names its fund with. Unified Series
+// Trust staples one sub-adviser's report per series behind a cover reading
+// `Fund/Fund Family Name: The Auer Growth Fund/SB Auer Funds, LLC` (Unified
+// Series Trust 2013), which this grammar has no heading slot for.
+var brFundLabels = []string{"fund/fund family name", "fund family name", "fund name", "name of fund", "portfolio name", "series name"}
+
+// brLabelledFundLine returns the value of such a label.
+func brLabelledFundLine(line string) (string, bool) {
+	low := strings.ToLower(line)
+	for _, l := range brFundLabels {
+		if !strings.HasPrefix(low, l) {
+			continue
+		}
+		rest := strings.TrimSpace(line[len(l):])
+		rest = strings.TrimSpace(strings.TrimLeft(rest, ":-"))
+		if rest != "" {
+			return rest, true
+		}
+	}
+	return "", false
+}
+
+// brResolveLabelledFund resolves such a value: the whole of it, then the half
+// before the slash that separates the fund from the adviser reporting it. Only
+// a resolution acts -- a cover naming a fund FAMILY rather than a series leaves
+// the state exactly as it was rather than clearing it.
+func brResolveLabelledFund(ix *issSeriesIndex, value string) *SeriesDecl {
+	if _, d := issResolveFund(ix, value); d != nil {
+		return d
+	}
+	if head, _, ok := strings.Cut(value, "/"); ok && strings.TrimSpace(head) != "" {
+		if _, d := issResolveFund(ix, strings.TrimSpace(head)); d != nil {
+			return d
+		}
+	}
+	return nil
+}
+
+// brFundTypeWords are the words a fund heading is spelled with. A slot holding
+// none of them names no fund of anybody's.
+var brFundTypeWords = map[string]bool{
+	"fund": true, "funds": true, "series": true, "portfolio": true,
+	"portfolios": true, "trust": true, "account": true, "etf": true,
+}
+
+// brStraySlot reports a heading slot that must be left alone: it resolves to
+// nothing AND it is not shaped like a fund heading at all, so the section above
+// it stands rather than being cleared.
+//
+// Two shapes reach it. A page break can leave the PREVIOUS meeting's issuer name
+// alone in the slot -- `AIRBUS SE` two lines above the AIR LIQUIDE block's rule
+// (Manning & Napier Fund 2023, 3,468 rows) -- and a block opened over a rule of
+// '=' rather than '-' is separated from the one above it rather than introduced
+// by a heading, so its slot holds the tail of the last wrapped proposal
+// (`REGISTERED PUBLIC ACCOUNTING FIRM`, Baron Investment Funds Trust 2006).
+// Neither is furniture the rejector can claim, and clearing on either drops the
+// fund the section's own banner set.
+func brStraySlot(ix *issSeriesIndex, rule, slot string) bool {
+	if brResolveHeading(ix, slot) != "" {
+		return false
+	}
+	if brEqualsRule(rule) {
+		return true
+	}
+	// An issuer name: a corporate form as its last word and no fund word at
+	// all. Furniture ("SEDOL(S) QUICK CODE") carries neither and still clears,
+	// because a rejected candidate is a section boundary all the same.
+	toks := strings.Fields(normalizeSeriesName(slot))
+	if len(toks) < 2 || !brCorporateSuffixes[toks[len(toks)-1]] {
+		return false
+	}
+	for _, t := range toks {
+		if brFundTypeWords[t] {
+			return false
+		}
+	}
+	return true
+}
+
+// brCorporateSuffixes are the corporate forms an ISSUER name ends in. A fund
+// heading that carries one carries a fund word beside it.
+var brCorporateSuffixes = map[string]bool{
+	"se": true, "sa": true, "ag": true, "nv": true, "bv": true, "plc": true,
+	"spa": true, "ab": true, "asa": true, "oyj": true, "as": true, "kgaa": true,
+	"inc": true, "corp": true, "co": true, "ltd": true, "llc": true, "lp": true,
+}
+
+// brResolveColonBanner resolves such a banner: the colon comes off, and then the
+// type word the banner adds and the declared name does not carry. Only an
+// exact resolution counts -- this heading never clears the state, so a line that
+// merely ends in a colon leaves the section above exactly as it was.
+func brResolveColonBanner(ix *issSeriesIndex, slot string) *SeriesDecl {
+	name := strings.TrimSpace(strings.TrimSuffix(slot, ":"))
+	if name == "" {
+		return nil
+	}
+	if _, d := issResolveFund(ix, name); d != nil {
+		return d
+	}
+	if f := strings.Fields(name); len(f) > 2 {
+		switch strings.ToLower(f[len(f)-1]) {
+		case "series", "fund", "portfolio", "trust":
+			if _, d := issResolveFund(ix, strings.Join(f[:len(f)-1], " ")); d != nil {
+				return d
+			}
+		}
+	}
+	return nil
+}
+
 // brEqualsRule reports a rule drawn entirely of '='.
 func brEqualsRule(line string) bool {
 	s := strings.TrimSpace(line)
@@ -778,8 +909,18 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		// the state moves, the row still open belongs to the block ABOVE this
 		// one, so it is emitted under the fund that was current when it was read.
 		if !brDashRule(line) {
-			if slot, ok := brEqualsRuleHeading(lines, i); ok {
+			if slot, ok := brLabelledFundLine(line); ok {
+				if d := brResolveLabelledFund(seriesIx, slot); d != nil {
+					flush()
+					curSeries, curFund = d.SeriesID, slot
+				}
+			} else if slot, ok := brEqualsRuleHeading(lines, i); ok {
 				if _, d := issResolveFund(seriesIx, slot); d != nil {
+					flush()
+					curSeries, curFund = d.SeriesID, slot
+				}
+			} else if slot, ok := brColonBannerHeading(lines, i); ok {
+				if d := brResolveColonBanner(seriesIx, slot); d != nil {
 					flush()
 					curSeries, curFund = d.SeriesID, slot
 				}
@@ -791,8 +932,15 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 				// resolves to one of this registrant's own series; an issuer
 				// name never does, and a slot that does not resolve leaves the
 				// section above standing rather than clearing it.
+				// EXACT only. This slot normally holds the issuer, and a
+				// one-edit reading of one turns it into a fund: `PLAINS
+				// EXPLORATION & PRODUCTION CO.` resolves to `PowerShares
+				// Dynamic Energy Exploration & Production Portfolio` and
+				// carried S000003041 onto 6,203 rows of other portfolios
+				// (PowerShares Exchange Traded Fund Trust 2008). Only a name
+				// the header spells outright may be read here.
 				if slot, ok := brInlineAgendaFund(line); ok {
-					if _, d := issResolveFund(seriesIx, slot); d != nil {
+					if d, _ := lookupSeriesEntry(seriesIdx, slot); d != nil {
 						flush()
 						curSeries, curFund = d.SeriesID, slot
 					}
@@ -818,6 +966,16 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 								curSeries = d.SeriesID
 							}
 						}
+					} else if brStraySlot(seriesIx, lines[i-1], slot) {
+						// A block opened over a rule of '=' is separated from the
+						// one above it, not introduced by a heading: this vintage
+						// draws its section banner over a DASHED rule and closes
+						// each block with an equals rule, so the slot holds the
+						// tail of the last proposal (`REGISTERED PUBLIC ACCOUNTING
+						// FIRM`, Baron Investment Funds Trust 2006). Clearing here
+						// would drop the banner's fund at the second block of every
+						// section; recording the slot would file a proposal row as
+						// a fund name. Only a slot that RESOLVES acts.
 					} else {
 						flush()
 						curSeries = brResolveHeading(seriesIx, slot)
