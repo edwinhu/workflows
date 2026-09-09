@@ -28,9 +28,13 @@ func familyHHH2Dispatch(t *testing.T, fixture, dict, layout string, count int) [
 	return sink.buf
 }
 
-// 000091/911507/0001104659-07-064810.txt: 13-18, 25-26, 229-230, 288-289,
-// 318-319, 344-352, 517-527. Lord Abbett Investment Trust declares ten series in
-// the SGML header of this 2007 filing, among them
+// 000091/911507/0001104659-07-064810.txt: 13-18, 25-26, 53-54, 83-84, 113-114,
+// 143-144, 171-172, 201-202, 229-230, 258-259, 288-289, 318-319, 344-352,
+// 517-527. ALL TEN declared series must be cut: an earlier cut of this fixture
+// carried only three and passed, because the gate below turns on whether the
+// FIRST banner line resolves against the registrant's own index, and it resolves
+// only once the other seven names are present. Lord Abbett Investment Trust
+// declares ten series in the SGML header of this 2007 filing, among them
 //
 //	<SERIES-ID>S000007284
 //	<SERIES-NAME>Lord Abbett World Growth & Income Strategy Fund
@@ -49,10 +53,14 @@ func familyHHH2Dispatch(t *testing.T, fixture, dict, layout string, count int) [
 //	=========== LORD ABBETT STRATEGIC ALLOCATION FUND-DIVERSIFIED EQUITY ===========
 //	===========             STRATEGY FUND                     ===========
 //
-// The multi-line banner join in parseISSNPX is gated on issBannerWrapVisible,
-// which admits a continuation only when the wrap is legible in the text itself
-// -- an unclosed parenthesis, or a continuation that is a lone type word. Here
-// the first line closes every bracket and the continuation is TWO words, so the
+// Each rule is its own `<p>` block, so the text the layout sees carries a BLANK
+// LINE between the two rules, and the join is decided by the blank-line path in
+// parseISSNPX (layout_issnpx.go:498-507), which consults issBannerWrapVisible.
+// The declared-join rung there fires only while `sofarDecl == nil` -- only while
+// the banner so far names NOTHING declared. Against the full ten-name index the
+// first rule alone already resolves, tolerantly, to S000007284, so the rung is
+// skipped, no other rung matches (every bracket is closed, no trailing bare
+// dash, and the continuation is TWO words rather than a lone type word), the
 // join is refused, the second rule commits as a banner of its own, and the fund
 // of record for the whole section becomes the fragment `STRATEGY FUND`, which
 // names nothing declared.
@@ -66,11 +74,14 @@ func familyHHH2Dispatch(t *testing.T, fixture, dict, layout string, count int) [
 // unwrapped banners in the same filing (`LORD ABBETT HIGH YIELD FUND`, `LORD
 // ABBETT STRATEGIC ALLOCATION FUND- BALANCED STRATEGY FUND`) resolve today.
 //
-// Fix in issBannerWrapVisible (layout_issnpx.go), the gate parseISSNPX consults
-// before joining a continuation rule to the banner above it: a continuation
-// whose JOIN resolves to a declared series while the banner so far resolves to
-// nothing is a visible wrap, on the same evidence the paren and type-word rungs
-// already use.
+// Fix in issBannerWrapVisible (layout_issnpx.go), in the declared-join rung: the
+// `sofarDecl == nil` precondition is too strong. What distinguishes a wrap from
+// two adjacent funds is that the CONTINUATION names nothing on its own
+// (`nextDecl == nil`) while the JOIN names a declared series -- and, when the
+// banner so far also resolves, that it resolves to the SAME declaration the join
+// does. A continuation that would otherwise commit as a standalone banner and
+// blank the section is a wrap, on the same evidence the paren and type-word
+// rungs already use.
 func TestFamilyHHH2LordAbbettWrappedBannerNeverResolves(t *testing.T) {
 	rows := familyHHH2Dispatch(t, "lord_abbett_wrapped_banner.txt", "", "issnpx", 10)
 	for _, r := range rows {

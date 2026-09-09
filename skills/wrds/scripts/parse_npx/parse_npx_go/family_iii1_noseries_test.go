@@ -28,7 +28,10 @@ func familyIII1Dispatch(t *testing.T, fixture, dict, layout string, count int) [
 	return sink.buf
 }
 
-// 000081/811707/0001104659-04-026180.txt: 1-59, 296-633, 223106-223117.
+// 000081/811707/0001104659-04-026180.txt: 1-59, 296-473, 1434-1593,
+// 223106-223117. The Abbott block is in the cut on purpose: the portfolio cell
+// is printed only on the FIRST row of an issuer block, so a cut of the 7-Eleven
+// block alone resolves every row and stops reproducing the real filing's blank.
 // EquiTrust Variable Insurance Series Fund declares NO series in the SGML header
 // of this 2004 filing, so the resolver sees only cik_series.tsv for CIK
 // 0000811707, six ids under one spelling each:
@@ -56,36 +59,45 @@ func familyIII1Dispatch(t *testing.T, fixture, dict, layout string, count int) [
 //	...
 //	<p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">817826209</font></p>
 //
-// The htmltable layout reads the issuer, the meeting date and the CUSIP out of
-// that same row and drops the leading portfolio cell: a full-file dispatch emits
-// 51 rows and ALL 51 carry a blank series_id AND a blank fund_name, so
-// dictFallback.apply returns on its `r.FundName == ""` guard and no lookup is
-// ever attempted. All 51 rows of the filing are residue.
+// The vendor prints that cell ONLY on the first row of each issuer block. The
+// next block opens with the cell empty, verbatim:
 //
-// This is the same vendor and the same defect as family HHH1's EquiTrust Series
-// Fund (CIK 34549), whose column header reads `Series Fund` on ONE line. Here
-// the header is `Variable Insurance` / `Series Fund` across a `<br>`, so a fix
-// that keys on the literal single-line header text repairs the sibling filing
-// and leaves this one in residue.
+//	 <tr>
+//	  <td width="12%" valign="top" style="padding:0in 0in 0in 0in;width:12.06%;">
+//	  <p style="margin:0in 0in .0001pt;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+//	  </td>
+//	...
+//	  <p style="margin:0in 0in .0001pt;text-autospace:none;"><font size="1" face="Times New Roman" style="font-size:7.0pt;">Abbott Laboratories</font></p>
+//
+// and the htmltable layout does not carry the last non-empty value forward past
+// the issuer change. A full-file dispatch emits 51 rows: 13 -- the 7-Eleven
+// block, whose first row prints the portfolio -- carry fund_name `Value Growth
+// Portfolio` and S000007087, and the other 38 carry a blank fund_name AND a
+// blank series_id, so dictFallback.apply returns on its `r.FundName == ""`
+// guard and no lookup is ever attempted. The production census counts all 51
+// rows of this filing as no-series.
 //
 // The attribution is decidable per row: the six portfolio names the column
 // prints (`Value Growth Portfolio`, `High Grade Bond Portfolio`, `Strategic
 // Yield Portfolio`, `Managed Portfolio`, `Blue Chip Portfolio`, `Money Market
 // Portfolio`) are each the dictionary name minus the registrant prefix
 // `EquiTrust Variable Insurance Series Fund`, which the registrant-prefix strip
-// already removes for banner headings.
+// already removes for banner headings, and a blank cell in this vendor's layout
+// means "same as above" -- the filing never re-states a portfolio it has not
+// finished.
 //
 // Fix in the htmltable per-row fund column path (layout_htmltable.go, the column
 // header map that parseHTMLTableRaw builds and the row builder that fills
 // VoteRow.FundName next to htmlBareFundLine): a first column whose header cell
-// ends in `Series Fund` after the wrap is joined -- as `Fund #` already is in
-// family DDD -- is a per-row fund column, and its value must be handed to
-// icrResolveFundShared the way a section heading is, rather than dropped.
-func TestFamilyIII1EquiTrustVISWrappedPortfolioColumnNeverResolves(t *testing.T) {
+// reads `Variable Insurance / Series Fund` once the `<br>` wrap is joined is a
+// per-row fund column, as `Fund #` already is in family DDD, and an EMPTY cell
+// in it must inherit the last non-empty value of that column rather than reset
+// the section to nothing.
+func TestFamilyIII1EquiTrustVISBlankPortfolioCellNeverResolves(t *testing.T) {
 	rows := familyIII1Dispatch(t, "equitrust_vis_row_portfolio_column.txt", "equitrust_vis_dict.tsv", "htmltable", 3)
 	for _, r := range rows {
 		if r.SeriesID != "S000007087" {
-			t.Errorf("per-row `Value Growth Portfolio` column under a wrapped `Variable Insurance / Series Fund` header not resolved: fund=%q issuer=%q cusip=%q series=%q want S000007087", r.FundName, r.IssuerName, r.CUSIP, r.SeriesID)
+			t.Errorf("blank `Variable Insurance / Series Fund` cell on a continuation issuer block not inherited: fund=%q issuer=%q cusip=%q series=%q want S000007087", r.FundName, r.IssuerName, r.CUSIP, r.SeriesID)
 		}
 	}
 }

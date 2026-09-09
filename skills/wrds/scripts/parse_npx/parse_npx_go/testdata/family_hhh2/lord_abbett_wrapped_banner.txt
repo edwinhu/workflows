@@ -6,8 +6,22 @@ CONFORMED PERIOD OF REPORT:	20070630
 FILED AS OF DATE:		20070824
 		COMPANY CONFORMED NAME:			LORD ABBETT INVESTMENT TRUST
 		CENTRAL INDEX KEY:			0000911507
+<SERIES-ID>S000007276
+<SERIES-NAME>Lord Abbett Convertible Fund
+<SERIES-ID>S000007277
+<SERIES-NAME>Lord Abbett Core Fixed Income Fund
+<SERIES-ID>S000007278
+<SERIES-NAME>Lord Abbett High Yield Fund
+<SERIES-ID>S000007279
+<SERIES-NAME>Lord Abbett Limited Duration U.S. Government & Government Sponsored Enterprises Fund
+<SERIES-ID>S000007280
+<SERIES-NAME>Lord Abbett Total Return Fund
+<SERIES-ID>S000007281
+<SERIES-NAME>Lord Abbett U.S. Government & Government Sponsored Enterprises Fund
 <SERIES-ID>S000007282
 <SERIES-NAME>Lord Abbett Balanced Strategy Fund
+<SERIES-ID>S000007283
+<SERIES-NAME>Lord Abbett Income Strategy Fund
 <SERIES-ID>S000007284
 <SERIES-NAME>Lord Abbett World Growth & Income Strategy Fund
 <SERIES-ID>S000012541

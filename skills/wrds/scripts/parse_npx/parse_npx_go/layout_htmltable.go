@@ -626,7 +626,16 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 						// issuer on every proposal row of a block while printing the fund
 						// only on its first, so an issuer REPEATED from the row that named
 						// the fund is the same block as a blank one.
-						htmlSameFundBlock(htmlMappedCell(cells, mapping, headerArity, htmlFieldIssuer), lastFundIssuer) {
+						(htmlSameFundBlock(htmlMappedCell(cells, mapping, headerArity, htmlFieldIssuer), lastFundIssuer) ||
+							// The sibling EquiTrust Variable Insurance Series Fund vintage
+							// (2004, 51 rows) prints the portfolio only on the FIRST row of
+							// each ISSUER block, so the next issuer opens with the cell
+							// empty. In a table whose LEADING column is the fund column and
+							// whose last printed value named a declared series, an empty
+							// cell is that vendor's "same as above": nothing else in the
+							// table names a fund, so refusing to carry it blanks the
+							// section rather than protecting it.
+							(htmlLeadingFundColumn(mapping) && lastFundSeries != "")) {
 						// The fund column is printed once per issuer block and
 						// left blank on every continuation row (The Weitz Funds
 						// 2008: `BALANCED` on proposal 1, an empty cell on 2 and
@@ -4984,6 +4993,23 @@ func htmlFormNPXSleeveBanner(ix *issSeriesIndex, pre string) (name, id string, o
 // htmlSameFundBlock reports a row whose blank fund cell repeats the fund above
 // it: the row carries no issuer of its own, or prints the same issuer as the row
 // that named the fund.
+// htmlLeadingFundColumn reports whether the fund column is the leftmost mapped
+// column of the table: the vintages that name the fund per row print it first,
+// ahead of the issuer, and a table that maps the fund somewhere in the middle is
+// not one of them.
+func htmlLeadingFundColumn(mapping map[string]int) bool {
+	fund, ok := mapping[htmlFieldFund]
+	if !ok {
+		return false
+	}
+	for _, i := range mapping {
+		if i < fund {
+			return false
+		}
+	}
+	return true
+}
+
 func htmlSameFundBlock(issuer, fundIssuer string) bool {
 	return issuer == "" || issuer == fundIssuer && fundIssuer != ""
 }
