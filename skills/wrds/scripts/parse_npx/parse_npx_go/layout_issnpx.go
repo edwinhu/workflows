@@ -2273,6 +2273,10 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d := issAbbrevWordDecl(ix, key); d != nil {
 		return banner, d
 	}
+	// A hyphenated word of the declared name printed as its initialism.
+	if d := issHyphenInitialismDecl(ix, key); d != nil {
+		return banner, d
+	}
 
 	// A brand on the declared side that the registrant's own name never
 	// supplies: `MULTI-MANAGER SMALL CAP GROWTH FUND` for a declared
@@ -3051,15 +3055,18 @@ func issDropTrailingConjunct(key string) (string, bool) {
 	return "", false
 }
 
-// issAbbrevWordDecl reads a heading that abbreviates exactly ONE word of a
-// declared name and spells every other token exactly: `PowerShares Dynamic
-// Telecom & Wireless Portfolio` for a declared `... Telecommunications &
-// Wireless Portfolio` (S000003051, 284 rows), `Brandes Institutional Intl
-// Equity Fund` for `... International Equity Fund` (S000005855, 1,021 rows).
+// issAbbrevWordDecl reads a heading that abbreviates a word of a declared name
+// and spells every other token exactly: `PowerShares Dynamic Telecom & Wireless
+// Portfolio` for a declared `... Telecommunications & Wireless Portfolio`
+// (S000003051, 284 rows), `Brandes Institutional Intl Equity Fund` for `...
+// International Equity Fund` (S000005855, 1,021 rows), `FIRST AMERICAN MID CAP
+// GRWTH OPP FUND` for `First American Mid Cap Growth Opportunities Fund`
+// (S000005553, 588 rows).
 //
-// The abbreviation must share the declared word's first letter, run four
-// characters at least, be strictly shorter and appear in it in order -- `Intl`
-// inside `International`. Exactly one series of this registrant may answer;
+// The abbreviation must share the declared word's first letter, be strictly
+// shorter and appear in it in order -- `Intl` inside `International`. Two
+// abbreviated words at most, so a heading still spells the majority of the
+// declared name exactly. Exactly one series of this registrant may answer;
 // two candidates refuse rather than move one fund's votes onto another.
 func issAbbrevWordDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 	toks := strings.Fields(key)
@@ -3082,12 +3089,15 @@ func issAbbrevWordDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 				continue
 			}
 			diff++
-			if diff > 1 || !issAbbreviates(toks[j], dt[j]) {
-				diff = 2
+			if diff > 2 || !issAbbreviates(toks[j], dt[j]) {
+				diff = -1
 				break
 			}
 		}
-		if diff != 1 {
+		// Two abbreviated words at most, and the exactly-spelled tokens must
+		// still outnumber them, so a three-word heading never reaches a
+		// declared name on one exact token.
+		if diff < 1 || len(toks)-diff < diff+1 {
 			continue
 		}
 		if hit != nil && hit.SeriesID != d.SeriesID {
@@ -3098,9 +3108,123 @@ func issAbbrevWordDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 	return hit
 }
 
+// issHyphenInitialismDecl reads a heading that prints a HYPHENATED word of a
+// declared name as its initialism and spells every other token exactly: `Essex
+// LC Growth Fund` for a declared `Managers AMG Funds - Essex Large-Cap Growth
+// Fund` (S000009872, 429 rows). Only a run the declared name itself joins with
+// a hyphen may contract, so the declared side supplies the evidence that the
+// two words are one word; the declared name's leading registrant brand comes
+// off first, since the heading never prints it. Exactly one series may answer;
+// two candidates refuse rather than move one fund's votes onto another.
+func issHyphenInitialismDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 3 {
+		return nil
+	}
+	var hit *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		pairs := issHyphenPairs(d.Name)
+		if len(pairs) == 0 {
+			continue
+		}
+		declKey := normalizeSeriesName(d.Name)
+		cands := []string{declKey}
+		for _, b := range ix.brands {
+			if rest, ok := strings.CutPrefix(declKey, b+" "); ok && rest != "" {
+				cands = append(cands, rest)
+			}
+		}
+		if rest, ok := strings.CutPrefix(declKey, ix.registrantKey+" "); ok && rest != "" {
+			cands = append(cands, rest)
+		}
+		matched := false
+		for _, c := range cands {
+			if issInitialismAligns(toks, strings.Fields(c), pairs) {
+				matched = true
+				break
+			}
+		}
+		if !matched {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	return hit
+}
+
+// issHyphenPairs collects the two-word runs a declared name joins with a
+// hyphen, normalised: `Large-Cap` yields `large cap`.
+func issHyphenPairs(name string) []string {
+	var out []string
+	for _, w := range strings.Fields(name) {
+		parts := strings.Split(strings.Trim(w, ",.()"), "-")
+		if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
+			continue
+		}
+		p := normalizeSeriesName(parts[0] + " " + parts[1])
+		if len(strings.Fields(p)) == 2 {
+			out = append(out, p)
+		}
+	}
+	return out
+}
+
+// issInitialismAligns reports whether toks spells dt exactly apart from one
+// token that is the initialism of a hyphenated pair of dt's, in place.
+func issInitialismAligns(toks, dt []string, pairs []string) bool {
+	if len(dt) != len(toks)+1 {
+		return false
+	}
+	for j := range toks {
+		if j < len(dt) && toks[j] == dt[j] {
+			continue
+		}
+		// The contraction must sit here: the remaining tokens after it line up
+		// one position later, and this token must initial the hyphenated pair.
+		if j+1 >= len(dt) {
+			return false
+		}
+		pair := dt[j] + " " + dt[j+1]
+		if len(toks[j]) != 2 || toks[j][0] != dt[j][0] || toks[j][1] != dt[j+1][0] {
+			return false
+		}
+		found := false
+		for _, p := range pairs {
+			if p == pair {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
+		}
+		for k := j + 1; k < len(toks); k++ {
+			if toks[k] != dt[k+1] {
+				return false
+			}
+		}
+		return true
+	}
+	return false
+}
+
 // issAbbreviates reports whether short is an in-order abbreviation of long.
+// Four characters at least, or three when the heading truncates the declared
+// word rather than compressing it -- `OPP` for `OPPORTUNITIES` is a prefix and
+// names nothing else, while a three-letter in-order pick of scattered letters
+// would reach far too many declared names.
 func issAbbreviates(short, long string) bool {
-	if len(short) < 4 || len(short) >= len(long) || short[0] != long[0] {
+	if len(short) < 4 && !(len(short) == 3 && strings.HasPrefix(long, short)) {
+		return false
+	}
+	if len(short) >= len(long) || short[0] != long[0] {
 		return false
 	}
 	k := 0
