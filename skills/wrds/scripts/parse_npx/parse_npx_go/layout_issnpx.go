@@ -2790,7 +2790,111 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 			}
 		}
 	}
+	// The declaration MISSPELLS its own type word: `HARBINGER PORTFOLIO` for a
+	// dictionary-backed `Harbinger Portolio` (S000011315, Credit Suisse
+	// Institutional Fund 2004, 242 rows), the SEC's own dropped letter carried
+	// verbatim into cik_series.tsv. Everything but the type word must agree
+	// exactly and exactly one series may answer.
+	if d := issTypoTypeWordDecl(ix, key); d != nil {
+		return banner, d
+	}
+	// The heading and the declaration share a leading token run that names
+	// exactly one series of this registrant and diverge only after it: `Pin Oak
+	// Aggressive Stock Fund` for a declared `PIN OAK EQUITY FUND` (S000006539,
+	// Oak Associates Funds 2014, 417 rows), where the marketing name and the
+	// registered name agree on the `<Colour> Oak` stem no other series carries.
+	if d := issLeadingStemDecl(ix, key); d != nil {
+		return banner, d
+	}
 	return banner, nil
+}
+
+// issTypoTypeWordDecl reads a heading whose type word the DECLARATION spells
+// wrong. The heading must carry a type word of its own, every token before it
+// must equal the declaration's exactly, the declaration's last token must NOT
+// itself be a type word -- a heading swapping Portfolio for Fund is a different
+// registered series, not a typo -- and it must differ from the heading's type
+// word by a single character. Exactly one series may answer; two refuse.
+func issTypoTypeWordDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 2 || !issTypeWord(toks[len(toks)-1]) {
+		return nil
+	}
+	head, typ := toks[:len(toks)-1], toks[len(toks)-1]
+	var hit *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		want := ix.declToks(i)
+		if len(want) != len(toks) || issTypeWord(want[len(want)-1]) {
+			continue
+		}
+		agree := true
+		for j := range head {
+			if head[j] != want[j] {
+				agree = false
+				break
+			}
+		}
+		if !agree || !issEditDistanceOne(typ, want[len(want)-1]) {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	return hit
+}
+
+// issLeadingStemDecl reads a heading that keeps a declared name's own leading
+// PAIR and replaces the descriptor after it, which is how a registrant that
+// names its funds off one family word prints marketing names beside registered
+// ones: `Pin Oak Aggressive Stock Fund` for `PIN OAK EQUITY FUND`, `White Oak
+// Growth Stock Fund` for `WHITE OAK SELECT GROWTH FUND`.
+//
+// The guards are what keep this from folding siblings together. The shared run
+// must be EXACTLY the first two tokens -- a longer agreement is a name the
+// heading edits further in, where a noun swap (`... ex-US Index Portfolio` for a
+// declared `... ex-U.S. Index Fund`) is a different registered series and must
+// stay blank. The pair's SECOND token must be the second token of at least two
+// declared series, so it is the registrant's family word (`Oak`) rather than a
+// brand only one fund carries (`Putnam VT Vista Fund` against a declared
+// `Putnam VT Capital Appreciation Fund` names a fund of its own). And the pair
+// must lead exactly one declared series; two refuse.
+func issLeadingStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 4 || !issTypeWord(toks[len(toks)-1]) || issTypeWord(toks[1]) {
+		return nil
+	}
+	family, owners := map[string]bool{}, map[string]bool{}
+	var hit *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		want := ix.declToks(i)
+		if len(want) < 3 || want[1] != toks[1] {
+			continue
+		}
+		family[d.SeriesID] = true
+		if want[0] != toks[0] {
+			continue
+		}
+		if !issTypeWord(want[len(want)-1]) || want[2] == toks[2] {
+			// The agreement runs past the pair; this is not the shape.
+			return nil
+		}
+		owners[d.SeriesID] = true
+		hit = d
+	}
+	if len(family) < 2 || len(owners) != 1 {
+		return nil
+	}
+	return hit
 }
 
 // issTrailingAcronymDecl reads a heading whose trailing words a declared name
@@ -4092,10 +4196,19 @@ func issBannerContinues(lines []string, i int) bool {
 }
 
 // issBannerWrapVisible reports a banner that cannot be complete without the
-// next rule: an open parenthesis nobody closed, or a continuation that is one
-// type word or a closing fragment on its own.
+// next rule: an open parenthesis nobody closed, a banner left hanging on its
+// own separator dash, or a continuation that is one type word or a closing
+// fragment on its own.
 func issBannerWrapVisible(sofar, next string) bool {
 	if strings.Count(sofar, "(") > strings.Count(sofar, ")") {
+		return true
+	}
+	// A banner whose last token is a bare separator dash names nothing after it
+	// yet: `Alger Funds II - Alger Dynamic Opportunities Fund -` is continued by
+	// the sub-adviser rule below it (Alger Funds II 2018, 430 rows whose fund
+	// became `Weatherbie Capital`). The dash must stand alone, so a hyphenated
+	// word is never read as a wrap.
+	if sf := strings.Fields(sofar); len(sf) > 1 && sf[len(sf)-1] == "-" && strings.TrimSpace(next) != "" {
 		return true
 	}
 	f := strings.Fields(next)

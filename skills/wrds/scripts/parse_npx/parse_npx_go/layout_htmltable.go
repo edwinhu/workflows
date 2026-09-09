@@ -127,8 +127,12 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		leadJoin    bool
 		// fundCells is the set of distinct fund-cell values in the open table.
 		fundCells map[string]bool
-		ctxSealed bool
-		nilRow    bool
+		// lastFundCell is the last value the open table's fund COLUMN printed,
+		// carried onto the continuation rows that leave the column blank.
+		lastFundCell   string
+		lastFundSeries string
+		ctxSealed      bool
+		nilRow         bool
 		// curSeries is the fund the following blocks belong to. This layout
 		// stamped NO series of its own: measured 2026-08-31, 10.20% of its
 		// 55,195,672 rows carried one and every such row came from the chassis
@@ -176,6 +180,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// table therefore still closes the mapping rather than inheriting columns.
 		if row.newTable {
 			fundCells = nil
+			lastFundCell, lastFundSeries = "", ""
 			half.closeTable(out)
 		}
 		deferredBoundary := row.newTable && partitioned
@@ -591,6 +596,17 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 						} else if len(fundCells) > 1 {
 							r.SeriesID = ""
 						}
+						lastFundCell, lastFundSeries = r.FundName, r.SeriesID
+					} else if _, mapped := mapping[htmlFieldFund]; mapped && lastFundCell != "" &&
+						htmlMappedCell(cells, mapping, headerArity, htmlFieldIssuer) == "" {
+						// The fund column is printed once per issuer block and
+						// left blank on every continuation row (The Weitz Funds
+						// 2008: `BALANCED` on proposal 1, an empty cell on 2 and
+						// 3; 441 of 616 rows). A blank fund cell on a row whose
+						// ISSUER is carried too is a repeat of the fund above,
+						// not a new nameless fund, so the value the filing
+						// printed carries with the rest of the block's identity.
+						r.FundName, r.SeriesID = lastFundCell, lastFundSeries
 					}
 					out = append(out, r)
 					sawData, emitted = true, true
@@ -876,6 +892,7 @@ func (f *htmlRowFeed) scan() (htmlFeedRow, bool) {
 			end, implicit = next, true
 		}
 	}
+	segStart := f.pos
 	seg := f.src[f.pos:end]
 	if implicit {
 		f.pos = end
@@ -902,6 +919,17 @@ func (f *htmlRowFeed) scan() (htmlFeedRow, bool) {
 			newTable = true
 		} else {
 			f.pending = true
+			// The row's own table ends inside this segment because the row was
+			// never closed with a </tr>: the cover page of Undiscovered
+			// Managers Funds 2006 ends `...</p></td> </table>`, so the segment
+			// runs on to the next <tr> two headings below and swallows them
+			// (439 rows with no fund, no series and no issuer). Markup past the
+			// terminator belongs to no row; hand it back so it reaches the next
+			// row as its pre, where the heading reader sees it.
+			if consumed := t + len("</table>"); consumed < len(seg) {
+				seg = seg[:consumed]
+				f.pos = segStart + consumed
+			}
 		}
 	}
 	cells, cuttable := htmlRowCells(seg[start:])
@@ -4471,7 +4499,13 @@ func htmlHasDigit(s string) bool {
 // htmlFundCell returns the row's own fund-name cell under a mapped Fund
 // column, honouring the one-cell item offset htmlDataRow applies.
 func htmlFundCell(cells []string, mapping map[string]int, headerArity int) string {
-	i, ok := mapping[htmlFieldFund]
+	return htmlMappedCell(cells, mapping, headerArity, htmlFieldFund)
+}
+
+// htmlMappedCell returns the row's own cell under one mapped column, honouring
+// the one-cell item offset htmlDataRow applies.
+func htmlMappedCell(cells []string, mapping map[string]int, headerArity int, field string) string {
+	i, ok := mapping[field]
 	if !ok {
 		return ""
 	}
