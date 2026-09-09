@@ -645,7 +645,11 @@ func parsePrimaryDoc(r io.Reader, meta *FilingMeta, classes map[string][]string)
 			if isNoticeReportType(v) {
 				isNotice = true
 			}
-		case "seriesId":
+		// `idOfSeries` is the seriesPage spelling of the same registry
+		// (seriesDetails/seriesReports), used by the 2024 vintage. It carries no
+		// class contracts, so the value stays nil exactly as a seriesId without
+		// a classId beneath it does.
+		case "seriesId", "idOfSeries":
 			v, err := elemText(d, se)
 			if err != nil {
 				return isNotice, err

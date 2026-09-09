@@ -426,6 +426,18 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		if name, ok := icrFundName(line); ok {
 			curFund = name
 			curSeries = icrResolveFundShared(seriesIx, name)
+			// The value WRAPS, with the filing's own blank line between the
+			// halves (`Fund Name: RETFT Russell 2000 High` / `Volatility ETF`,
+			// Russell Exchange Traded Funds Trust 2013, 703 rows). The first
+			// line alone is a stem three declared series share; the
+			// continuation names the fund exactly. Joined only when the label
+			// line does not resolve on its own and the joined value does, so a
+			// resolved section is never re-read.
+			if curSeries == "" && name != "" {
+				if joined, id := icrJoinWrappedFundValue(seriesIx, lines, i, name); id != "" {
+					curFund, curSeries = joined, id
+				}
+			}
 			fundFromBanner = false
 		} else if icrUnderscoreRule(line) && lineAbove != "" && icrResolveFundShared(seriesIx, lineAbove) != "" {
 			// Another vintage names the fund on the bare line ABOVE a rule of
@@ -657,6 +669,25 @@ func icrFundName(line string) (string, bool) {
 		return "", false
 	}
 	return strings.TrimSpace(line[colon+1:]), true
+}
+
+// icrJoinWrappedFundValue reads the continuation of a wrapped `Fund Name:`
+// value: the first nonblank line below the label, taken only when it is not
+// itself a labelled field or a table marker, and only when the joined value
+// resolves to a declared series.
+func icrJoinWrappedFundValue(ix *issSeriesIndex, lines []string, i int, name string) (string, string) {
+	for k := i + 1; k < len(lines) && k <= i+3; k++ {
+		cont := strings.TrimSpace(lines[k])
+		if cont == "" {
+			continue
+		}
+		if strings.ContainsAny(cont, ":<") {
+			return "", ""
+		}
+		joined := name + " " + cont
+		return joined, icrResolveFundShared(ix, joined)
+	}
+	return "", ""
 }
 
 // icrResolveFundShared is icrResolveFund followed, when it resolves nothing,

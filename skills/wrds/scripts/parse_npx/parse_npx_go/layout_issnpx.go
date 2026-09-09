@@ -395,6 +395,15 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
 
+		// `Item 1. Signal Funds` opens a section of the report under a family
+		// name the registrant's own name never carries (The Coventry Group
+		// files for Signal and Shelby). The banners below it print that brand
+		// in front of names the header declares without one, so the opener's
+		// family is a brand for the rest of the file.
+		if fam, ok := issItemFamilyBrand(line); ok {
+			seriesIx.addBrand(fam)
+		}
+
 		name, ok := issFundSeparator(line)
 		bannerTail := ""
 		if !ok {
@@ -1564,6 +1573,26 @@ func issCutTrailingParenthetical(name string) (string, bool) {
 	return head, true
 }
 
+// issCutMedialParenthetical removes a parenthetical that sits between the fund
+// name and the tokens after it, joining the two halves.
+func issCutMedialParenthetical(name string) (string, bool) {
+	s := strings.TrimSpace(name)
+	i := strings.IndexByte(s, '(')
+	if i <= 0 {
+		return "", false
+	}
+	j := strings.IndexByte(s[i:], ')')
+	if j < 0 {
+		return "", false
+	}
+	j += i
+	head, tail := strings.TrimSpace(s[:i]), strings.TrimSpace(s[j+1:])
+	if head == "" || tail == "" {
+		return "", false
+	}
+	return head + " " + tail, true
+}
+
 // issClassMarker reports a declared name whose trailing parenthetical is a share
 // class marker rather than a sleeve or a former name: one to three letters or
 // digits, or the word CLASS followed by one (`(A)`, `(I)`, `(R6)`, `(CLASS A)`).
@@ -1974,6 +2003,16 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			return banner, d
 		}
 	}
+	// The reporting period printed on the heading line beside the fund name:
+	// `Longleaf Partners Fund For the Period July 1, 2004 - June 30, 2005` for a
+	// declared `Longleaf Partners Fund` (S000009311). The siblings resolve on a
+	// distinctive token even with the tail attached; the flagship shares every
+	// word with them, so the tail has to come off. Exact lookup only.
+	if head, ok := issCutReportingPeriodTail(normalizeSeriesName(banner)); ok {
+		if d, seen := lookupSeriesEntry(idx, head); seen && d != nil {
+			return banner, d
+		}
+	}
 	// Infix FKA separates the current name from a former name, not a second
 	// series. Admit only the exact current name, with an optional terminal Fund.
 	if current, former, ok := strings.Cut(normalizeSeriesName(banner), " fka "); ok && current != "" && former != "" {
@@ -2069,7 +2108,7 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// A type word the heading adds and the declared name lacks: `PGIM Ultra
 	// Short Bond ETF Fund` for `PGIM Ultra Short Bond ETF` (PGIM ETF Trust,
 	// 67k rows with no fund). Exact after dropping the last word.
-	if f := strings.Fields(banner); len(f) > 2 {
+	if f := strings.Fields(banner); len(f) >= 2 {
 		switch strings.ToLower(strings.Trim(f[len(f)-1], ".,")) {
 		case "fund", "portfolio", "trust", "series":
 			// Exact or brand-cut only, and never against a declared name that
@@ -2234,6 +2273,15 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			return banner, d
 		}
 		seriesCandidate = cut
+	}
+	// A parenthetical sitting BETWEEN the name and its type word: `RETFT Russell
+	// Small Cap Aggressive Growth (Earnings Momentum) ETF` for a declared
+	// `Russell Small Cap Aggressive Growth ETF` (S000034103). Same rule as the
+	// trailing one -- a lookup key only, and the exact index refuses collisions.
+	if cut, ok := issCutMedialParenthetical(banner); ok {
+		if _, d := issResolveFund(ix, cut); d != nil {
+			return banner, d
+		}
 	}
 	// Some Phoenix headings insert one standalone SERIES before the fund stem.
 	if d := issWithoutStandaloneSeries(ix, seriesCandidate); d != nil {
@@ -3539,6 +3587,20 @@ func issCutProxyVotingSuffix(key string) (string, bool) {
 	return "", false
 }
 
+// issCutReportingPeriodTail removes a reporting-period phrase printed after the
+// fund name on the same heading line.
+func issCutReportingPeriodTail(key string) (string, bool) {
+	for _, marker := range []string{" for the period ", " for the fiscal year ", " for the year ", " reporting period "} {
+		if i := strings.Index(key, marker); i > 0 {
+			head := strings.TrimSpace(key[:i])
+			if len(strings.Fields(head)) >= 2 {
+				return head, true
+			}
+		}
+	}
+	return "", false
+}
+
 // issDropTrailingConjunct removes the `and <words>` run that sits before a
 // declared name's type word: `powershares dynamic hardware and consumer
 // electronics portfolio` becomes `powershares dynamic hardware portfolio`. Two
@@ -3755,6 +3817,32 @@ func issHasToken(key, tok string) bool {
 // boundary. The brand may be printed as one token or spelled over several --
 // John Hancock Funds II prints both `JHFII` and `JHF II` -- so the leading
 // tokens are also tried joined.
+// issItemFamilyBrand reads the fund family an `Item 1. <family> Funds` section
+// opener names, normalised as a brand.
+func issItemFamilyBrand(line string) (string, bool) {
+	rest, ok := strings.CutPrefix(strings.TrimSpace(line), "Item 1.")
+	if !ok {
+		return "", false
+	}
+	key := normalizeSeriesName(rest)
+	stem, ok := strings.CutSuffix(key, " funds")
+	if !ok || stem == "" || len(strings.Fields(stem)) > 2 {
+		return "", false
+	}
+	return stem, true
+}
+
+// addBrand records a strippable brand the index did not derive from the
+// registrant's own name, longest-first order preserved by appending.
+func (ix *issSeriesIndex) addBrand(brand string) {
+	for _, b := range ix.brands {
+		if b == brand {
+			return
+		}
+	}
+	ix.brands = append(ix.brands, brand)
+}
+
 func issCutBrand(key, brand string) (string, bool) {
 	if rest, ok := strings.CutPrefix(key, brand+" "); ok && rest != "" {
 		return rest, true
