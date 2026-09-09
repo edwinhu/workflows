@@ -252,7 +252,18 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 					heading = flat
 				}
 			}
-			if name, id, ok := htmlBareFundLine(seriesIx, heading, dict); ok {
+			name, id, ok := htmlBareFundLine(seriesIx, heading, dict)
+			if !ok {
+				// One heading CELL may hold several paragraphs, and the name
+				// runs across them: `Wright Major` / `Blue Chip Equities Fund`
+				// in one <TD> (Wright Managed Equity Trust 2010, 942 rows).
+				// The cell's own paragraphs are one line, and only a name that
+				// still resolves is adopted.
+				if flat := htmlFlattenCells(cells); flat != heading {
+					name, id, ok = htmlBareFundLine(seriesIx, flat, dict)
+				}
+			}
+			if ok {
 				curFund, curSeries, outerSection = name, id, registrantSection && id != ""
 			}
 		}
@@ -4593,6 +4604,14 @@ func htmlLabelledCells(cells []string) (label, value string, ok bool) {
 	if len(vals) == 3 && strings.HasPrefix(strings.ToLower(vals[0]), "registrant:") {
 		vals = vals[1:]
 	}
+	// A later vintage of the same banner prints the form item in a FOURTH cell
+	// after the fund: `Registrant:  Mutual Fund Series Trust` | `Fund Name -` |
+	// `Eventide Gilead Fund` | `Item 1` (Mutual Fund Series Trust 2019, 1,359
+	// of 3,340 rows with no series). The item cell is dropped like the
+	// registrant cell.
+	if len(vals) == 4 && strings.HasPrefix(strings.ToLower(vals[0]), "registrant:") && reHTMLBannerItemCell.MatchString(vals[3]) {
+		vals = vals[1:3]
+	}
 	if len(vals) != 2 {
 		return "", "", false
 	}
@@ -4600,6 +4619,19 @@ func htmlLabelledCells(cells []string) (label, value string, ok bool) {
 }
 
 var reHTMLRegistrantExhibit = regexp.MustCompile(`(?i)^Item [0-9]{1,2}, Exhibit [0-9]{1,3}$`)
+
+// htmlFlattenCells renders each cell as ONE line, so a heading split over the
+// paragraphs of a single cell reads as one name.
+func htmlFlattenCells(cells []string) string {
+	flat := make([]string, len(cells))
+	for i, c := range cells {
+		flat[i] = strings.Join(strings.Fields(c), " ")
+	}
+	return strings.Join(flat, "\n")
+}
+
+// reHTMLBannerItemCell matches the bare form-item cell some fund banners trail.
+var reHTMLBannerItemCell = regexp.MustCompile(`(?i)^Item [0-9]{1,2}\.?$`)
 
 // htmlBareFundLine reads a fund name printed as a bare paragraph between two
 // tables, with no label at all. One vintage prints every fund that way
@@ -5030,6 +5062,24 @@ func htmlIsPeriodLine(s string) bool {
 	return len(f) >= 1 && htmlDate(f[0]) != ""
 }
 
+// htmlReportParameterLine reports whether a line is one of the export's own run
+// parameters printed under the Vote Summary Report banner. These never name a
+// fund.
+func htmlReportParameterLine(s string) bool {
+	low := strings.ToLower(strings.TrimSpace(s))
+	for _, p := range []string{"report was run from:", "location(s):", "ballot status(es):", "account group(s):"} {
+		if strings.HasPrefix(low, p) {
+			return true
+		}
+	}
+	// `Institution Account(s):` names a fund in other vintages, so only its
+	// blanket value counts as a parameter here.
+	if rest, ok := strings.CutPrefix(low, "institution account(s):"); ok {
+		return strings.HasPrefix(strings.TrimSpace(rest), "all ")
+	}
+	return false
+}
+
 func htmlFundHeading(pre string) (string, bool) {
 	if pre == "" {
 		return "", false
@@ -5038,8 +5088,17 @@ func htmlFundHeading(pre string) (string, bool) {
 	for i, line := range lines {
 		trimmed := strings.TrimSpace(line)
 		if strings.EqualFold(trimmed, htmlVoteSummaryBanner) {
+			// The banner may be followed only by the report's own run
+			// parameters (Ashmore Funds 2012, 2,199 rows named `Report was run
+			// from: 7/1/11 to 6/30/12`): that block continues the section above
+			// it, so no boundary opens and the section fund carries into it.
+			sawParam := false
 			for _, next := range lines[i+1:] {
 				if v := strings.TrimSpace(next); v != "" {
+					if htmlReportParameterLine(v) {
+						sawParam = true
+						continue
+					}
 					// The line under the banner is the reporting period in
 					// some vintages (`Reporting Period: 07/01/2013 to
 					// 06/30/2014`, `July 1, 2009 - June 30, 2010`; DBX ETF
@@ -5049,6 +5108,9 @@ func htmlFundHeading(pre string) (string, bool) {
 					}
 					return v, true
 				}
+			}
+			if sawParam {
+				return "", false
 			}
 			return "", true
 		}

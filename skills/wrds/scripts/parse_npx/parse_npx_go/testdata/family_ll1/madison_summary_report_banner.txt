@@ -1,0 +1,47 @@
+		COMPANY CONFORMED NAME:			MEMBERS MUTUAL FUNDS
+		CENTRAL INDEX KEY:			0001040612
+<TEXT>
+ITEM 1.   PROXY VOTING RECORD.
+
+                        MEMBERS INTERNATIONAL STOCK FUND
+                           PROXY VOTING SUMMARY REPORT
+                          July 1, 2004 - June 30, 2005
+
+VOTED BY LAZARD ASSET MANAGEMENT:
+
+A.B.C LEARNING CENTRES LTD
+
+Ticker:                      Security ID:  Q0011M100
+Meeting Date: NOV 24, 2004   Meeting Type: Annual
+Record Date:  NOV 22, 2004
+
+<TABLE>
+<CAPTION>
+#     Proposal                                  Mgt Rec   Vote Cast  Proponent
+<S>   <C>                                       <C>       <C>        <C>
+1     Accept Financial Statements and Statutory None      None       Management
+      Reports
+2     Elect Dr. Le Neve Groves as Director      For       For        Management
+3.1   Ratify Past Issuance of 114,285 Shares At For       For        Management
+      AUD 3.50 Per Share on January 23 2004
+3.2   Ratify Past Issuance of 30,000 Shares At  For       For        Management
+      AUD 0.10 Per Share and 193,780 Shares at
+      No Charge on May 8 2004
+3.3   Ratify Past Issuance of 495,050 Shares At For       For        Management
+      AUD 4.043 Per Share on June 11 2004
+3.4   Ratify Past Issuance of 30,000 Shares At  For       For        Management
+      AUD 0.10 Per Share and 172,310 Shares at
+      No Charge on August 6 2004
+3.5   Ratify Past Issuance of 6.25 Million      For       For        Management
+      Shares At AUD 4.00 Per Share on November
+      18 2004
+4     Adopt New Constitution                    For       For        Management
+5     Approve Proportional Takeover Provision   For       For        Management
+6.1   Approve Issue of up to 93.75 Million      For       For        Management
+      Shares Pursuant to the Placement
+6.2   Approve Issuance of up to 7.6 Million     For       For        Management
+      Shares to Directors
+</TABLE>
+
+A.F.P. PROVIDA S.A.
+
