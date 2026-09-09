@@ -4775,6 +4775,15 @@ func htmlLabelledCells(cells []string) (label, value string, ok bool) {
 	if len(vals) == 3 && htmlFundLabelled(vals[0]) && (isBannerNumericAccountCode(vals[2]) || isLeadingAccountCode(vals[2])) {
 		vals = vals[:2]
 	}
+	// The cover row prints TWO label/value pairs side by side: `Fund Name:` |
+	// `Vivaldi Multi-Strategy Fund` | `# Voted Against Management:` | `0`
+	// (Investment Managers Series Trust II 2021, 392 of 1,046 rows with no fund
+	// at all). The second pair is a count of the section's own votes, not part
+	// of the name, so the fund pair is read and the rest dropped; the third cell
+	// must carry a label's colon, which an ordinary continuation cell does not.
+	if len(vals) == 4 && htmlFundLabelled(vals[0]) && strings.HasSuffix(vals[2], ":") {
+		vals = vals[:2]
+	}
 	if len(vals) != 2 {
 		return "", "", false
 	}
@@ -5427,6 +5436,10 @@ func isAllDigits(s string) bool {
 // and those filings hold 44,801,362 rows.
 const htmlVoteSummaryBanner = "VOTE SUMMARY REPORT"
 
+// htmlVoteSummaryTitle is the same banner shortened to a page title, which names
+// no fund at all.
+const htmlVoteSummaryTitle = "VOTE SUMMARY"
+
 // htmlFundHeading reads the fund a section belongs to out of the markup between
 // two tables. Both spellings are LABELLED -- a banner line or a `Fund Name :`
 // field -- so neither is a heading guessed from position, and a section this
@@ -5471,6 +5484,15 @@ func htmlFundHeading(pre string) (string, bool) {
 	lines := strings.Split(pre, "\n")
 	for i, line := range lines {
 		trimmed := strings.TrimSpace(line)
+		// The same banner without its `Report`: a page title naming NO fund,
+		// printed over an ISS vote block whose own rows carry no fund column
+		// (Investment Managers Series Trust II 2021, 392 of 1,046 rows). The
+		// fund was stated once above the block by the `Fund Name:` label row,
+		// and the line under this banner is the ISSUER, so nothing here names a
+		// fund: the standing one carries into the block.
+		if strings.EqualFold(trimmed, htmlVoteSummaryTitle) {
+			return "", true
+		}
 		if strings.EqualFold(trimmed, htmlVoteSummaryBanner) {
 			// The banner may be followed only by the report's own run
 			// parameters (Ashmore Funds 2012, 2,199 rows named `Report was run

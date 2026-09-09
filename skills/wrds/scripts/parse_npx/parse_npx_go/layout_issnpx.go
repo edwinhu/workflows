@@ -291,6 +291,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	// chassis still stamps single-series filings, and nothing here guesses.
 	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
 	issFormerKeys(seriesIx, meta.FormerNames)
+	dict := cikDict.exactFallback(meta)
 
 	// The registrant name is a per-filing constant, so it is folded once here
 	// rather than once per banner: normalising it inside the lookup made the strip
@@ -381,7 +382,11 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		if len(bannerBuf) == 0 {
 			return
 		}
-		name, d := issResolveFund(seriesIx, strings.Join(bannerBuf, " "))
+		banner := strings.Join(bannerBuf, " ")
+		name, d := issResolveFund(seriesIx, banner)
+		if alt := issDictInsertedWordDecl(seriesIx, dict, banner, d); alt != nil {
+			d = alt
+		}
 		bannerBuf = bannerBuf[:0]
 		fund = name
 		fundSeries, fundClasses = "", ""
@@ -2803,6 +2808,19 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	// Aggressive Stock Fund` for a declared `PIN OAK EQUITY FUND` (S000006539,
 	// Oak Associates Funds 2014, 417 rows), where the marketing name and the
 	// registered name agree on the `<Colour> Oak` stem no other series carries.
+	// The heading prints the fund's PREDECESSOR brand where the header declares
+	// the registrant's own: `SYNOVUS MID CAP VALUE FUND` for a declared
+	// `SENTINEL MID CAP VALUE FUND` (S000015894, Sentinel Group Funds 2007, all
+	// 350 rows of the filing), the brand the 2007 reorganisation replaced. This
+	// is the registrant-prefix shape with the brand SUBSTITUTED rather than
+	// stripped, which is why no strip above fires on it. Only the leading token
+	// moves, the declared name's own leading token must be the registrant's
+	// brand -- so a heading naming a different fund of the family is untouched --
+	// and the remainder must answer to exactly one declared series, which
+	// lessLeadToken already refuses to do on a collision.
+	if d := issSubstitutedBrandDecl(ix, key); d != nil {
+		return banner, d
+	}
 	if d := issLeadingStemDecl(ix, key); d != nil {
 		return banner, d
 	}
@@ -2815,6 +2833,38 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 // itself be a type word -- a heading swapping Portfolio for Fund is a different
 // registered series, not a typo -- and it must differ from the heading's type
 // word by a single character. Exactly one series may answer; two refuse.
+// issSubstitutedBrandDecl reads a heading whose LEADING token stands where the
+// declared name carries the registrant's own brand, the rest agreeing word for
+// word. The declared side's first token must be a brand of this registrant, the
+// heading's must differ from it and not be a brand itself, and the remainder
+// must name exactly one declared series.
+func issSubstitutedBrandDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 3 {
+		return nil
+	}
+	isBrand := func(t string) bool {
+		for _, b := range ix.brands {
+			if b == t {
+				return true
+			}
+		}
+		return strings.HasPrefix(ix.registrantKey, t+" ")
+	}
+	if isBrand(toks[0]) {
+		return nil
+	}
+	d := ix.lessLeadToken[strings.Join(toks[1:], " ")]
+	if d == nil {
+		return nil
+	}
+	lead := strings.Fields(normalizeSeriesName(d.Name))
+	if len(lead) == 0 || !isBrand(lead[0]) {
+		return nil
+	}
+	return d
+}
+
 func issTypoTypeWordDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 	toks := strings.Fields(key)
 	if len(toks) < 2 || !issTypeWord(toks[len(toks)-1]) {
@@ -3159,6 +3209,74 @@ func issGeographyInflectionDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 // the last of the key and retries the exact index. The first token carries the
 // brand and the last the type word, so neither is ever cut here; two drops
 // naming different series are a refusal.
+// issDictInsertedWordDecl reads a heading the header does not declare against
+// the registrant's DICTIONARY, where the dictionary spells the same fund with
+// one extra word before its terminal type word: `AQR Emerging Momentum Fund`
+// for a dictionary `AQR Emerging Momentum Style Fund` (S000045145), the type
+// word the 2015 renaming inserted across the whole family.
+//
+// It exists to REFUSE the header reading, not to widen it. Without it the
+// heading resolves by discarding its own `Emerging` onto the declared, shorter
+// `AQR Momentum Fund` (S000025643) -- 632 rows of one fund filed under a
+// sibling. A candidate that lacks a distinctive word the heading prints names a
+// different fund, so it is no answer at all; the dictionary name, which carries
+// every word of the heading, is.
+//
+// The guards: the heading and the dictionary name agree token for token but for
+// ONE word the dictionary inserts before its type word, exactly one dictionary
+// series may answer, the header must not declare the heading itself, and the
+// header's own candidate must actually be missing a distinctive heading word --
+// a candidate that carries them all stands.
+func issDictInsertedWordDecl(ix *issSeriesIndex, dict *dictFallback, banner string, cur *SeriesDecl) *SeriesDecl {
+	if dict == nil {
+		return nil
+	}
+	key := normalizeSeriesName(banner)
+	toks := strings.Fields(key)
+	if len(toks) < 3 || !issTypeWord(toks[len(toks)-1]) {
+		return nil
+	}
+	if _, declared := lookupSeriesEntry(ix.byName, banner); declared {
+		return nil
+	}
+	var hit *SeriesDecl
+	var hitToks []string
+	for name, d := range dict.byName {
+		want := strings.Fields(name)
+		if len(want) != len(toks)+1 || !issTypeWord(want[len(want)-1]) {
+			continue
+		}
+		// The inserted word sits immediately before the type word; every other
+		// token, the type word included, must agree exactly.
+		agree := want[len(want)-1] == toks[len(toks)-1]
+		for j := 0; agree && j < len(toks)-1; j++ {
+			agree = want[j] == toks[j]
+		}
+		if !agree {
+			continue
+		}
+		if d == nil || (hit != nil && hit.SeriesID != d.SeriesID) {
+			return nil
+		}
+		hit, hitToks = d, want
+	}
+	if hit == nil || (cur != nil && cur.SeriesID == hit.SeriesID) {
+		return nil
+	}
+	if cur == nil {
+		return hit
+	}
+	// The header's candidate stands unless it is missing a word the heading and
+	// the dictionary name both print.
+	curKey := normalizeSeriesName(cur.Name)
+	for _, t := range toks {
+		if len(t) >= issDistinctiveTokenMin && issHasToken(strings.Join(hitToks, " "), t) && !issHasToken(curKey, t) {
+			return hit
+		}
+	}
+	return nil
+}
+
 func issInternalTokenDropDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 	f := strings.Fields(key)
 	if len(f) < 3 {
