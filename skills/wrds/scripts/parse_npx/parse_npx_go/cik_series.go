@@ -223,4 +223,19 @@ func (f *dictFallback) apply(r *VoteRow) {
 			}
 		}
 	}
+	// The same account code spelled in letters alone: DWS Variable Series II
+	// 2006 runs its sleeve codes A..Z and then doubles and triples off the same
+	// letters, `AA      DWS BALANCED VIP`, `DDD   DWS JANUS GROWTH & INCOME
+	// VIP`. issLeadingCodeToken refuses these because they carry no digit,
+	// which is what keeps `Growth Emerging Markets Value Fund` whole; the
+	// remainder must therefore be an EXACT, unambiguous dictionary name, which
+	// is itself the evidence that the first token was a code and not a word of
+	// the name.
+	if r.SeriesID == "" {
+		if rest, ok := issLetterCodeToken(r.FundName); ok {
+			if d, _ := lookupSeriesEntry(f.byName, rest); d != nil {
+				r.SeriesID = d.SeriesID
+			}
+		}
+	}
 }

@@ -4220,6 +4220,29 @@ func issLeadingCodeToken(name string) (rest string, ok bool) {
 	return strings.Join(fields[1:], " "), true
 }
 
+// issLetterCodeToken strips a leading pure-letter sleeve code of 2-3 characters
+// (`AA`, `DDD`). It says nothing about whether the token IS a code -- the caller
+// must require the remainder to be an exact declared name, since an ordinary
+// short word would otherwise be eaten.
+func issLetterCodeToken(name string) (rest string, ok bool) {
+	fields := strings.Fields(name)
+	if len(fields) < 2 {
+		return "", false
+	}
+	tok := fields[0]
+	if len(tok) < 2 || len(tok) > 3 {
+		return "", false
+	}
+	for i := 0; i < len(tok); i++ {
+		switch c := tok[i]; {
+		case c >= 'A' && c <= 'Z', c >= 'a' && c <= 'z':
+		default:
+			return "", false
+		}
+	}
+	return strings.Join(fields[1:], " "), true
+}
+
 // issTickerLine parses 'Ticker: <t>   Security ID: <id>'. The id label is read
 // as the prefix SECURITY ID up to its own colon, so `Security ID:` and
 // `Security ID and/or CUSIP No.:` (Bear Stearns 2004) both resolve. CUSIP:
