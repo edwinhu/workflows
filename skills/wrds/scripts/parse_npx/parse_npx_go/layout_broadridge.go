@@ -585,7 +585,7 @@ func brColonBannerHeading(lines []string, i int) (string, bool) {
 // Trust staples one sub-adviser's report per series behind a cover reading
 // `Fund/Fund Family Name: The Auer Growth Fund/SB Auer Funds, LLC` (Unified
 // Series Trust 2013), which this grammar has no heading slot for.
-var brFundLabels = []string{"fund/fund family name", "fund family name", "fund name", "name of fund", "portfolio name", "series name"}
+var brFundLabels = []string{"account group", "account name", "fund/fund family name", "fund family name", "fund name", "name of fund", "portfolio name", "series name"}
 
 // brLabelledFundLine returns the value of such a label.
 func brLabelledFundLine(line string) (string, bool) {
@@ -713,7 +713,16 @@ func brInlineAgendaFund(line string) (string, bool) {
 		if len(line[:k])-len(head) < 2 || strings.TrimSpace(head) == "" {
 			return "", false
 		}
-		return strings.TrimSpace(head), true
+		head = strings.TrimSpace(head)
+		// This vintage prints the fund behind its own label in that slot
+		// (`Account Group:  FBR Small Cap Financial Fund`, FBR Funds 2004,
+		// 2,420 rows with neither fund nor series). The label is what makes the
+		// slot a fund rather than the issuer it usually holds, so strip it and
+		// let the exact lookup at the call site judge the value.
+		if v, ok := brLabelledFundLine(head); ok {
+			head = v
+		}
+		return head, true
 	}
 	return "", false
 }
@@ -909,7 +918,10 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		// the state moves, the row still open belongs to the block ABOVE this
 		// one, so it is emitted under the fund that was current when it was read.
 		if !brDashRule(line) {
-			if slot, ok := brLabelledFundLine(line); ok {
+			// A labelled line that also opens a meeting block carries the
+			// agenda number to its right; it belongs to the block-opener branch
+			// below, which cuts at the label before reading the slot.
+			if slot, ok := brLabelledFundLine(line); ok && !brAgendaOpener(line) {
 				if d := brResolveLabelledFund(seriesIx, slot); d != nil {
 					flush()
 					curSeries, curFund = d.SeriesID, slot
@@ -965,6 +977,20 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 							if d != nil {
 								curSeries = d.SeriesID
 							}
+						} else if _, d := issResolveFund(seriesIx, slot); d != nil {
+							// The <TABLE>/<S> <C> furniture normalizes to one blank
+							// line, so a section's FIRST heading reaches this slot
+							// with crossedBlank set (John Hancock Funds III 2008,
+							// `2CVM Intrinsic Value Fund`, 2,565 rows; Touchstone
+							// 2006, `Touchstone Value Plus Fund` over a declared
+							// `Value Plus Fund`, 2,499). A slot this registrant's own
+							// resolver reads after ONE edit -- code prefix, brand --
+							// is the same evidence a declared name is, and refuses a
+							// collision the same way. A continuing block's opener
+							// resolves to nothing and still leaves the section above
+							// standing.
+							flush()
+							curSeries, curFund = d.SeriesID, slot
 						}
 					} else if brStraySlot(seriesIx, lines[i-1], slot) {
 						// A block opened over a rule of '=' is separated from the

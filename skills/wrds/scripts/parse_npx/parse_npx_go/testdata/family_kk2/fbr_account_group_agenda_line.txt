@@ -1,0 +1,45 @@
+		COMPANY CONFORMED NAME:			FBR FUNDS
+		CENTRAL INDEX KEY:			0001277946
+<TEXT>
+<PAGE>
+
+Investment Company Report
+
+Meeting Date Range:  01-Jul-03 - 30-Jun-04   Report Date:  19-Jul-2004
+
+Account Group:  FBR Small Cap Financial Fund           Agenda Number:  932094876
+
+ ALLIANCE BANCORP OF NEW ENGLAND
+
+    Security:  01852Q109                             Meeting Type:  Special
+      Ticker:  ANE                                   Meeting Date:  18-Mar-04
+        ISIN:
+
+                                                Proposal  Proposal  For/Against
+Prop. #  Proposal                                 Type      Vote    Management
+- -------------------------------------------------------------------------------
+1        THE AGREEMENT AND PLAN OF MERGER BY      Mgmt      For        For
+         AND BETWEEN NEWALLIANCE BANCSHARES,
+         INC., NEW HAVEN SAVINGS BANK AND
+         ALLIANCE BANCORP OF NEW ENGLAND,
+         INC., DATED AS OF JULY 15, 2003,
+         PURSUANT TO WHICH ALLIANCE BANCORP
+         OF NEW ENGLAND, INC. WILL BE MERGED
+         INTO NEWALLIANCE BANCSHARES, INC.
+         AND NEW HAVEN SAVINGS BANK, AS MORE
+         FULLY DESCRIBED IN THE PROXY
+         STATEMENT/PROSPECTUS.
+
+2        APPROVAL OF ADJOURNMENT OF THE           Mgmt      For        For
+         SPECIAL MEETING, IF NECESSARY, TO
+         PERMIT SOLICITATION OF PROXIES IN
+         THE EVENT THERE ARE NOT SUFFICIENT
+         VOTES AT THE TIME OF THE SPECIAL
+         MEETING TO APPROVE THE PLAN.
+
+<PAGE>
+
+Investment Company Report
+
+Meeting Date Range:  01-Jul-03 - 30-Jun-04   Report Date:  19-Jul-2004
+

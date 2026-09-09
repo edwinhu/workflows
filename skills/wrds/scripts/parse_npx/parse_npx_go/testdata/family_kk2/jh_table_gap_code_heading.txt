@@ -1,0 +1,29 @@
+		COMPANY CONFORMED NAME:			John Hancock Funds III
+		CENTRAL INDEX KEY:			0001329954
+<TEXT>
+<PAGE>
+
+<TABLE>
+<S>    <C>                                                       <C>           <C>                            <C>
+
+2CVM Intrinsic Value Fund
+
+- --------------------------------------------------------------------------------------------------------------------------
+ 3M COMPANY                                                                                  Agenda Number:  932834941
+- --------------------------------------------------------------------------------------------------------------------------
+        Security:  88579Y101
+    Meeting Type:  Annual
+    Meeting Date:  13-May-2008
+          Ticker:  MMM
+            ISIN:  US88579Y1010
+- --------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+01     DIRECTOR
+       LINDA G. ALVARADO                                         Mgmt          For                            For
+       GEORGE W. BUCKLEY                                         Mgmt          For                            For
+       VANCE D. COFFMAN                                          Mgmt          For                            For
+       MICHAEL L. ESKEW                                          Mgmt          For                            For
+       W. JAMES FARRELL                                          Mgmt          For                            For
