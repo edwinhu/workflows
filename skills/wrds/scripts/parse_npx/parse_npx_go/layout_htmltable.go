@@ -196,9 +196,15 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// second, because one vintage prints the reporting period there and
 		// the fund's name above the banner (Ivy Funds VIP, ~500k rows read as
 		// `Reporting Period: ...` on 2026-09-02).
+		// ... except a heading that names NOTHING while a resolved fund is
+		// standing: Valued Advisers Trust prints the fund only on the section's
+		// first page and heads every continuation page with the bare `Vote
+		// Summary Report` banner over its reporting period (S000029069, 981 rows
+		// with no series). A nameless banner is a page break, not a new section,
+		// so it leaves the resolved fund alone; an unresolved one still clears.
 		if name, id, ok := htmlBareFundLine(seriesIx, row.pre, dict); ok {
 			curFund, curSeries, outerSection = name, id, id != ""
-		} else if name, ok := htmlFundHeading(row.pre); ok {
+		} else if name, ok := htmlFundHeading(row.pre); ok && (name != "" || curSeries == "") {
 			curFund = name
 			curSeries = icrResolveFundShared(seriesIx, name)
 			outerSection = curSeries != ""
@@ -4662,7 +4668,12 @@ func htmlLabelledCells(cells []string) (label, value string, ok bool) {
 	// (Professionally Managed Portfolios 2010, 1,012 of 1,651 rows with no
 	// fund). The code cell is dropped like the registrant cell above; only a
 	// hyphenated all-digit code qualifies, so a numbered fund name is safe.
-	if len(vals) == 3 && htmlFundLabelled(vals[0]) && isBannerNumericAccountCode(vals[2]) {
+	// M Fund's code cell is alphanumeric instead -- `Name of Fund:` | `M
+	// International Equity Fund  (NC, LLC)` | `1TM0` (M Fund Inc 2012, 961 of
+	// 2,113 rows with no fund) -- and the same leading-account-code shape the
+	// labelled path already cuts admits it; a code carries no space, so a fund
+	// name never qualifies.
+	if len(vals) == 3 && htmlFundLabelled(vals[0]) && (isBannerNumericAccountCode(vals[2]) || isLeadingAccountCode(vals[2])) {
 		vals = vals[:2]
 	}
 	if len(vals) != 2 {

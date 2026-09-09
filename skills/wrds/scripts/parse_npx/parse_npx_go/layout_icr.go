@@ -473,6 +473,24 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 				curFund, curSeries = "", ""
 			}
 			continue
+		} else if icrReportPeriodLine(line) {
+			// Neuberger Berman heads each section with a bare fund line above the
+			// reporting period and no rule or label at all, and wraps a rename
+			// parenthetical across two physical lines:
+			//
+			//	Neuberger Berman Small and Mid Cap Growth Fund (formerly, Neuberger Berman All
+			//	Cap Growth Fund)
+			//
+			// The period line is the marker; the name above it is rejoined and
+			// resolved like any other heading (S000013239, 1,002 rows with no fund).
+			// It is adopted only when it resolves, so an issuer printed above the
+			// same line is never mistaken for a fund and nothing is cleared.
+			if name, ok := icrHeadingAbovePeriod(lines, i); ok {
+				if id := icrResolveFundShared(seriesIx, name); id != "" {
+					curFund, curSeries = name, id
+					fundFromBanner = false
+				}
+			}
 		}
 
 		if icrBlockHeader(cells) {
@@ -584,6 +602,42 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 	}
 	return rows, nil
+}
+
+// icrReportPeriodLine reports whether a line is nothing but the section's
+// reporting period: `07/01/2007 - 06/30/2008`.
+func icrReportPeriodLine(line string) bool {
+	head, tail, ok := strings.Cut(line, " - ")
+	if !ok {
+		return false
+	}
+	return htmlDate(strings.TrimSpace(head)) != "" && htmlDate(strings.TrimSpace(tail)) != ""
+}
+
+// icrHeadingAbovePeriod returns the nearest nonblank line above a reporting
+// period line, rejoined with the line above IT when the slot closes a
+// parenthesis it never opened -- the filer wrapped a `(formerly, ...)` marker
+// mid-parenthetical and the head of the name is on the previous line.
+func icrHeadingAbovePeriod(lines []string, i int) (string, bool) {
+	k := i - 1
+	for k >= 0 && strings.TrimSpace(lines[k]) == "" {
+		k--
+	}
+	if k < 0 {
+		return "", false
+	}
+	name := strings.TrimSpace(lines[k])
+	if strings.Count(name, ")") > strings.Count(name, "(") && k > 0 {
+		prev := strings.TrimSpace(lines[k-1])
+		if prev == "" || strings.Count(prev, "(") <= strings.Count(prev, ")") {
+			return "", false
+		}
+		name = prev + " " + name
+	}
+	if name == "" || strings.HasPrefix(name, "<") {
+		return "", false
+	}
+	return name, true
 }
 
 // icrFundName reads the labelled fund-section marker, returning the name it

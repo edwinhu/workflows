@@ -1188,6 +1188,12 @@ type issSeriesIndex struct {
 	// (S000008739, 1,021 rows). Two declared names that differ only by their
 	// type word collide here and refuse.
 	lessAnyType map[string]*SeriesDecl
+	// lessLeadTokenAnyType keys a declared name by ONE leading token dropped and
+	// its trailing type word dropped as well, so a heading that omits an
+	// acquirer's brand AND substitutes the type word reaches it: `ICAP Select
+	// Equity Portfolio` for a declared `MainStay ICAP Select Equity Fund`
+	// (S000000734, ICAP Funds 2005, 344 rows). Nil on collision.
+	lessLeadTokenAnyType map[string]*SeriesDecl
 	// lessBrandTypeCompact is lessBrandType compacted, for a heading that runs
 	// the capitalization token together: `BRAZOS MIDCAP GROWTH` for a declared
 	// `Brazos Mid Cap Portfolio` (S000005275, 462 rows).
@@ -1225,6 +1231,7 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		lessConjunct:      make(map[string]*SeriesDecl),
 
 		lessAnyType:          make(map[string]*SeriesDecl),
+		lessLeadTokenAnyType: make(map[string]*SeriesDecl),
 		lessBrandTypeCompact: make(map[string]*SeriesDecl),
 	}
 	dupTicker := map[string]bool{}
@@ -1359,6 +1366,9 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 			rest := strings.Join(toks[1:], " ")
 			put(ix.lessLeadToken, rest, d)
 			put(ix.lessLeadCompact, strings.ReplaceAll(rest, " ", ""), d)
+			if bare, typed := issDropTypeWord(rest); typed {
+				put(ix.lessLeadTokenAnyType, bare, d)
+			}
 		}
 		for _, b := range ix.brands {
 			if rest, ok := strings.CutPrefix(key, b+" "); ok {
@@ -2443,6 +2453,18 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if d := ix.lessLeadToken[key]; d != nil {
 		return banner, d
 	}
+	// The same reading where the heading ALSO substitutes the type word: `ICAP
+	// Select Equity Portfolio` for a declared `MainStay ICAP Select Equity Fund`
+	// (S000000734, 344 rows), the acquirer's brand and the registered type word
+	// both printed as the fund was known before the acquisition. The heading must
+	// carry a type word of its own, one leading token comes off the declared
+	// name, and a stem two declared series answer to was recorded as nil and
+	// refuses.
+	if stem, typed := issDropTypeWord(key); typed {
+		if d := ix.lessLeadTokenAnyType[stem]; d != nil {
+			return banner, d
+		}
+	}
 	// The same reading where the banner carries the registrant's HISTORICAL
 	// brand and the declared name a successor brand: `AXP Variable Portfolio -
 	// S&P 500 Index Fund` for a declared `RiverSource Variable Portfolio S&P
@@ -2462,6 +2484,22 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// The registrant's own name, misspelled or one word short of the header's.
 	if d := issNearMissDecl(ix, key); d != nil {
 		return banner, d
+	}
+	// The registrant's brand MISSPELLED in front of the fund: `VAN EKK INT'L
+	// INVESTORS GOLD FUND` for a declared `International Investors Gold Fund`
+	// (S000009199, Van Eck Funds 2009, 526 rows), where the sibling section
+	// `VAN ECK GLOBAL HARD ASSETS FUND` resolves through the exact brand cut
+	// beside it. Exactly one token of the brand may differ, by one character,
+	// so the remainder is still the registrant's own name; what is left goes
+	// back through the whole chain and an ambiguous remainder still refuses.
+	for _, b := range ix.brands {
+		rest, ok := issCutNearMissBrand(key, b)
+		if !ok {
+			continue
+		}
+		if _, d := issResolveFund(ix, rest); d != nil {
+			return banner, d
+		}
 	}
 	// The registrant's own vocabulary, when the heading prints a name that has
 	// since been changed and no single edit reaches it.
@@ -3038,6 +3076,37 @@ func issOneTokenEdit(a, b []string) bool {
 		return false
 	}
 	return issEditDistanceOne(x, y)
+}
+
+// issCutNearMissBrand cuts a leading brand the heading MISSPELLS: the brand must
+// carry at least two tokens, exactly one of the heading's leading tokens may
+// differ from the brand's, and it must differ by a single character. A one-token
+// brand is not admitted -- a single near word is not evidence that the
+// registrant named itself -- and the remainder must still hold two tokens.
+func issCutNearMissBrand(key, brand string) (string, bool) {
+	bt := strings.Fields(brand)
+	kt := strings.Fields(key)
+	if len(bt) < 2 || len(kt) < len(bt)+2 {
+		return "", false
+	}
+	diff := -1
+	for i, t := range bt {
+		if kt[i] == t {
+			continue
+		}
+		if diff >= 0 {
+			return "", false
+		}
+		diff = i
+	}
+	if diff < 0 {
+		return "", false // an exact brand; the exact rules already read it
+	}
+	x, y := kt[diff], bt[diff]
+	if len(x) < 3 || len(y) < 3 || !issEditDistanceOne(x, y) {
+		return "", false
+	}
+	return strings.Join(kt[len(bt):], " "), true
 }
 
 // issEditDistanceOne reports one character inserted, deleted or substituted.

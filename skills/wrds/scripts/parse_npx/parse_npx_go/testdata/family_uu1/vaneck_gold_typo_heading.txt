@@ -1,0 +1,88 @@
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			VAN ECK FUNDS
+		CENTRAL INDEX KEY:			0000768847
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000768847
+<SERIES-ID>S000009198
+<SERIES-NAME>Emerging Markets Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000024992
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>GBFAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000024993
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>EMRCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033045
+<CLASS-CONTRACT-NAME>Class I
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000768847
+<SERIES-ID>S000009199
+<SERIES-NAME>International Investors Gold Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000024994
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>INIVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000024995
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>IIGCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033046
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>INIIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000768847
+<SERIES-ID>S000009200
+<SERIES-NAME>Global Hard Assets Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000024996
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>GHAAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000024997
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>GHACX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033047
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>GHAIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+VAN EKK INT'L INVESTORS GOLD FUND
+- --------------------------------------------------------------------------------------------------------------------------
+ AGNICO-EAGLE MINES LIMITED                                                                  Agenda Number:  933039491
+- --------------------------------------------------------------------------------------------------------------------------
+    Security:  008474108                                                             Meeting Type:  Annual and Special
+      Ticker:  AEM                                                                   Meeting Date:  30-Apr-2009
+        ISIN:  CA0084741085
+- --------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+01     DIRECTOR
+       LEANNE M. BAKER                                           Mgmt          For                            For
+       DOUGLAS R. BEAUMONT                                       Mgmt          For                            For
+       SEAN BOYD                                                 Mgmt          For                            For
+       CLIFFORD DAVIS                                            Mgmt          For                            For
+       DAVID GAROFALO                                            Mgmt          For                            For
+       BERNARD KRAFT                                             Mgmt          For                            For
+       MEL LEIDERMAN                                             Mgmt          For                            For
+       JAMES D. NASSO                                            Mgmt          For                            For
+       MERFYN ROBERTS                                            Mgmt          For                            For
+       EBERHARD SCHERKUS                                         Mgmt          For                            For

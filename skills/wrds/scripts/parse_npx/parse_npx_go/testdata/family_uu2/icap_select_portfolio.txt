@@ -1,0 +1,126 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ OK22/U3SQHJuzsSbqDGOLmGHvGIyZ83Eu0w6Lml70xh/UXSs149pc2zvbQkFAHuD
+ G7+3asORDLgVavXGHJaX0A==
+
+<SEC-DOCUMENT>0000892712-05-000734.txt : 20050808
+<SEC-HEADER>0000892712-05-000734.hdr.sgml : 20050808
+<ACCEPTANCE-DATETIME>20050808161521
+ACCESSION NUMBER:		0000892712-05-000734
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20050808
+DATE AS OF CHANGE:		20050808
+EFFECTIVENESS DATE:		20050808
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ICAP FUNDS INC
+		CENTRAL INDEX KEY:			0000932510
+		IRS NUMBER:				000000000
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX/A
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08850
+		FILM NUMBER:		051006155
+
+	BUSINESS ADDRESS:	
+		STREET 1:		225 WEST WACKER
+		STREET 2:		STE 2400
+		CITY:			CHICAGO
+		STATE:			IL
+		ZIP:			60606
+		BUSINESS PHONE:		3124249100
+
+	MAIL ADDRESS:	
+		STREET 1:		C/O UMB FUND SERVICES, INC.
+		STREET 2:		803 W. MICHIGAN STREET
+		CITY:			MILWAUKEE
+		STATE:			WI
+		ZIP:			53233
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>icapnpxa.htm
+<TEXT>
+<!doctype html public "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<META NAME="author" CONTENT="Godfrey &amp; Kahn">
+<META NAME="date" CONTENT="08/02/2005">
+</HEAD>
+<BODY style="line-height:12pt; font-size:10pt; color:#000000">
+<TABLE style="font-size:10pt" cellspacing=0><TR><TD valign=top width=1026 colspan=9><P style="margin:0pt; line-height:14pt; font-family:Times New Roman; font-size:12pt"><B>ICAP Select Equity Portfolio</B></P>
+</TD></TR>
+<TR><TD valign=top width=263.533>&nbsp;</TD><TD valign=top width=48.067>&nbsp;</TD><TD valign=top width=72.4>&nbsp;</TD><TD valign=top width=48>&nbsp;</TD><TD valign=top width=354>&nbsp;</TD><TD valign=top width=78><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Proposed by </P>
+</TD><TD valign=top width=36>&nbsp;</TD><TD valign=top width=55.067>&nbsp;</TD><TD valign=top width=70.933>&nbsp;</TD></TR>
+<TR><TD valign=top width=263.533>&nbsp;</TD><TD valign=top width=48.067>&nbsp;</TD><TD valign=top width=72.4>&nbsp;</TD><TD valign=top width=48><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Meeting</P>
+</TD><TD valign=top width=354>&nbsp;</TD><TD valign=top width=78><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Shareholder or</P>
+</TD><TD valign=top width=36><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Voted</P>
+</TD><TD valign=top width=55.067><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Vote </P>
+</TD><TD valign=top width=70.933><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">With/Against</P>
+</TD></TR>
+<TR><TD valign=top width=263.533><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Name of Issuer</P>
+</TD><TD valign=top width=48.067><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Ticker</P>
+</TD><TD valign=top width=72.4><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">CUSIP</P>
+</TD><TD valign=top width=48><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Date</P>
+</TD><TD valign=top width=354><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Matter Description</P>
+</TD><TD valign=top width=78><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Management?</P>
+</TD><TD valign=top width=36><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Y/N?</P>
+</TD><TD valign=top width=55.067><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Cast</P>
+</TD><TD valign=top width=70.933><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Management</P>
+</TD></TR>
+<TR><TD style="background-color:#DFDFDF" valign=top width=263.533><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Microsoft Corp.</P>
+</TD><TD style="background-color:#DFDFDF" valign=top width=48.067><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">MSFT</P>
+</TD><TD style="background-color:#DFDFDF" valign=top width=72.4><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">594918104</P>
+</TD><TD style="background-color:#DFDFDF" valign=top width=48><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt" align=right>11/11/03</P>
+</TD><TD style="background-color:#DFDFDF" valign=top width=354><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Elect Director William H. Gates, III</P>
+</TD><TD style="background-color:#DFDFDF" valign=top width=78><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">M</P>
+</TD><TD style="background-color:#DFDFDF" valign=top width=36><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Yes</P>
+</TD><TD style="background-color:#DFDFDF" valign=top width=55.067><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">For</P>
+</TD><TD style="background-color:#DFDFDF" valign=top width=70.933><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">With</P>
+</TD></TR>
+<TR><TD valign=top width=263.533><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Microsoft Corp.</P>
+</TD><TD valign=top width=48.067><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">MSFT</P>
+</TD><TD valign=top width=72.4><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">594918104</P>
+</TD><TD valign=top width=48><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt" align=right>11/11/03</P>
+</TD><TD valign=top width=354><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Elect Director Steven A. Ballmer</P>
+</TD><TD valign=top width=78><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">M</P>
+</TD><TD valign=top width=36><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Yes</P>
+</TD><TD valign=top width=55.067><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">For</P>
+</TD><TD valign=top width=70.933><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">With</P>
+</TD></TR>
+<TR><TD style="background-color:#DFDFDF" valign=top width=263.533><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Microsoft Corp.</P>
+</TD><TD style="background-color:#DFDFDF" valign=top width=48.067><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">MSFT</P>
+</TD><TD style="background-color:#DFDFDF" valign=top width=72.4><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">594918104</P>
+</TD><TD style="background-color:#DFDFDF" valign=top width=48><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt" align=right>11/11/03</P>
+</TD><TD style="background-color:#DFDFDF" valign=top width=354><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Elect Director James I. Cash, Jr., Ph.D.</P>
+</TD><TD style="background-color:#DFDFDF" valign=top width=78><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">M</P>
+</TD><TD style="background-color:#DFDFDF" valign=top width=36><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Yes</P>
+</TD><TD style="background-color:#DFDFDF" valign=top width=55.067><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">For</P>
+</TD><TD style="background-color:#DFDFDF" valign=top width=70.933><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">With</P>
+</TD></TR>
+<TR><TD valign=top width=263.533><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Microsoft Corp.</P>
+</TD><TD valign=top width=48.067><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">MSFT</P>
+</TD><TD valign=top width=72.4><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">594918104</P>
+</TD><TD valign=top width=48><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt" align=right>11/11/03</P>
+</TD><TD valign=top width=354><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Elect Director Raymond V. Gilmartin</P>
+</TD><TD valign=top width=78><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">M</P>
+</TD><TD valign=top width=36><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">Yes</P>
+</TD><TD valign=top width=55.067><P style="margin:0pt; line-height:11pt; font-family:Times New Roman; font-size:9pt">For</P>
+</TABLE>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

@@ -1,0 +1,39 @@
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			NEUBERGER BERMAN EQUITY FUNDS
+		CENTRAL INDEX KEY:			0000044402
+
+ITEM 1. PROXY VOTING RECORD.
+
+NEUBERGER BERMAN EMERGING MARKETS EQUITY FUND
+
+The fund was not operational during the period from July 1, 2007 to June 30,
+2008.
+
+Neuberger Berman Small and Mid Cap Growth Fund (formerly, Neuberger Berman All
+Cap Growth Fund)
+
+07/01/2007 - 06/30/2008
+
+<TABLE>
+- ------------------------------------------------------------------------------------------------------------------------------------
+<S>          <C>            <C>                                          <C>            <C>            <C>            <C>
+AerCap Holdings NV
+             TICKER         SECURITY ID:                                 MEETING DATE                  MEETING STATUS
+             AER            CUSIP N00985106                              05/09/2008                    Voted
+             MEETING TYPE   COUNTRY OF TRADE
+             Annual         United States
+             ISSUE NO.      DESCRIPTION                                  PROPONENT      MGMT REC       VOTE CAST      FOR/AGNST MGMT
+             1              ADOPTION OF THE ANNUAL ACCOUNTS FOR THE
+                            FINANCIAL YEAR 2007.                         Mgmt           For            For            For
+             2              Ratification of Board Acts                   Mgmt           For            For            For
+             3              Elect Pieter Korteweg                        Mgmt           For            Against        Against
+             4              Elect Ronald Bolger                          Mgmt           For            For            For
+             5              Designation of Mr. Keith A. Helming          Mgmt           For            For            For
+             6              Appointment of Auditor                       Mgmt           For            For            For
+             7              Authority to Issue Shares w/ Preemptive
+                            Rights                                       Mgmt           For            Against        Against
+             8              Authority to Issue Shares w/o Preemptive
+                            Rights                                       Mgmt           For            Against        Against
+             9              AUTHORIZATION OF BOARD TO REPURCHASE SHARES. Mgmt           For            For            For
+             10             Amendment to Articles                        Mgmt           For            For            For
+
