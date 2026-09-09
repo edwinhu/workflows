@@ -1,0 +1,34 @@
+		COMPANY CONFORMED NAME:			EA Series Trust
+		CENTRAL INDEX KEY:			0001592900
+<TEXT>
+
+<PAGE>
+
+<TABLE>
+<S>    <C>                                                       <C>           <C>                            <C>
+
+Generation Z ETF
+--------------------------------------------------------------------------------------------------------------------------
+ 2U, INC.                                                                                    Agenda Number:  935611980
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  90214J101
+    Meeting Type:  Annual
+    Meeting Date:  08-Jun-2022
+          Ticker:  TWOU
+            ISIN:  US90214J1016
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1.     DIRECTOR
+       Timothy M. Haley                                          Mgmt          For                            For
+       Earl Lewis                                                Mgmt          For                            For
+       Coretha M. Rushing                                        Mgmt          For                            For
+
+2.     Approval, on a non-binding advisory basis,                Mgmt          For                            For
+       of the compensation of the Company's Named
+       Executive Officers.
+
+3.     Approval, on a non-binding advisory basis,                Mgmt          1 Year                         For
+       of the frequency of future advisory votes

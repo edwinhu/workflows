@@ -1,0 +1,34 @@
+		COMPANY CONFORMED NAME:			CITIFUNDS TRUST I
+		CENTRAL INDEX KEY:			0000744388
+<TEXT>
+
+
+&lt;PRE&gt;
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-04006
+Reporting Period: 07/01/2005 - 06/30/2006
+CitiFunds Trust I
+
+
+
+
+
+=========== CITIFUNDS TRUST I - SMITH BARNEY EMERGING MARKETS EQUITY ===========
+===========                           FUND                           ===========
+
+
+ANGLO AMERICAN PLC (FORMERLY ANGLO AME. CORP. OF S. AFRICA L
+
+Ticker:       AAUKF          Security ID:  G03764100
+Meeting Date: APR 25, 2006   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Accept Financial Statements and Statutory For       Did Not    Management
+      Reports                                             Vote
+2     Approve Final Dividend of USD 0.95 Per    For       Did Not    Management
+      Ordinary Share                                      Vote
+3     Elect Peter Woicke as Director            For       Did Not    Management
+                                                          Vote
+4     Elect Mamphela Ramphele as Director       For       Did Not    Management
