@@ -574,9 +574,11 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		if mapping != nil && htmlComparableArity(len(cells), headerArity) {
 			if !partitioned || htmlMappedVoteValue(cells, mapping, headerArity) {
 				cells = htmlRealignBySpacers(cells, headerCells, mapping)
+				cells = htmlRealignTailPad(cells, headerCells, mapping)
 				if r, ok := htmlDataRow(cells, mapping, headerArity, ctx); ok {
 					r.SeriesID = curSeries
 					r.FundName = curFund
+					htmlAdoptRowFundColumn(cells, mapping, headerArity, seriesIx, dict)
 					v := htmlFundCell(cells, mapping, headerArity)
 					// The account-name cell degrades into the account NUMBER
 					// partway through each account's block (Northern Lights
@@ -647,6 +649,9 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 					}
 					if brandOnlyFund != "" && r.SeriesID == "" && r.FundName == brandOnlyFund {
 						brandOnlyRows = append(brandOnlyRows, len(out))
+					}
+					if u := htmlUnstackFirstItem(r); u != nil {
+						r = *u
 					}
 					out = append(out, r)
 					sawData, emitted = true, true
@@ -719,7 +724,49 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		return nil, errLayoutDeclined
 	}
 	htmlStampBrandOnlyByElimination(out, brandOnlyRows, meta.SeriesDecls)
+	htmlRefuseInexactSiblingHeading(out, seriesIx)
 	return out, nil
+}
+
+// htmlRefuseInexactSiblingHeading withdraws a series stamped on a heading that
+// reached a declared name only by DROPPING one of its own words, when that
+// declared name is itself printed as a heading elsewhere in the same filing:
+// Stonebridge Funds 2006 heads one section `Stonebridge Aggressive Growth Fund`
+// and another, 17,000 lines later, `Stonebridge Growth Fund`, and the relaxation
+// filed both under S000006629 -- 40 rows of one fund's votes under the other's.
+//
+// Two distinct headings in one filing cannot be the same series. That is
+// decidable from the filing alone and needs no guess about which id the dropped
+// word names, so the inexact section is left blank rather than moved.
+func htmlRefuseInexactSiblingHeading(out []VoteRow, ix *issSeriesIndex) {
+	if ix == nil {
+		return
+	}
+	exact := map[string]bool{}   // series ids a heading names exactly
+	inexact := map[string]bool{} // the headings that reached one by a dropped word
+	for i := range out {
+		r := &out[i]
+		if r.SeriesID == "" || r.FundName == "" {
+			continue
+		}
+		d, _ := lookupSeriesEntry(ix.byName, r.FundName)
+		if d != nil && d.SeriesID == r.SeriesID {
+			exact[r.SeriesID] = true
+			continue
+		}
+		if issInternalTokenDropDecl(ix, normalizeSeriesName(r.FundName)) != nil {
+			inexact[r.SeriesID+"\x00"+normalizeSeriesName(r.FundName)] = true
+		}
+	}
+	if len(exact) == 0 || len(inexact) == 0 {
+		return
+	}
+	for i := range out {
+		r := &out[i]
+		if r.SeriesID != "" && exact[r.SeriesID] && inexact[r.SeriesID+"\x00"+normalizeSeriesName(r.FundName)] {
+			r.SeriesID = ""
+		}
+	}
 }
 
 // htmlPrintsNoVoteTable recognises only the safest raw-markup form of a tableless
@@ -4197,6 +4244,106 @@ func htmlRealignBySpacers(cells, header []string, mapping map[string]int) []stri
 	return out
 }
 
+// htmlStackedItemNum finds the numbered proposals a vendor STACKS inside one
+// description cell (`1. Directors 2. Auditors 3. Cumulative Voting`).
+var htmlStackedItemNum = regexp.MustCompile(`(?:^|\s)(\d{1,2})\.\s+`)
+
+// htmlUnstackFirstItem unstacks the row a vendor prints as ONE <TR> per issuer
+// with every item's number, text and vote stacked as separate paragraphs inside
+// single cells (Choice Funds 2004: twelve proposals, twelve votes, one row).
+// Flattened, the vote cell reads `For For For Against` -- a join, never a value
+// any consumer can read.
+//
+// The split is decidable from the row alone: the vote cell is a run of two or
+// more values that are each a vote on their own, and the description cell numbers
+// exactly that many proposals. Each emitted row then carries the VERBATIM text of
+// one vote and the text of its own item; a row whose counts disagree is left
+// exactly as printed rather than guessed apart.
+func htmlUnstackFirstItem(r VoteRow) *VoteRow {
+	votes := strings.Fields(r.HowVoted)
+	if len(votes) < 2 {
+		return nil
+	}
+	for _, v := range votes {
+		if !htmlIsVoteValue(v) {
+			return nil
+		}
+	}
+	m := htmlStackedItemNum.FindAllStringSubmatchIndex(r.VoteDescription, -1)
+	if len(m) != len(votes) {
+		return nil
+	}
+	// Only the FIRST stacked proposal is read. The extra paragraphs stay unread
+	// rather than becoming extra rows: this vendor's row is one <TR> per issuer,
+	// and the row count is the filing's own.
+	r.ItemSeq = r.VoteDescription[m[0][2]:m[0][3]]
+	r.VoteDescription = strings.TrimSpace(r.VoteDescription[m[0][1]:m[1][0]])
+	r.HowVoted = votes[0]
+	return &r
+}
+
+// htmlBallotStatusWord reports a Logical Ballot Status value.
+func htmlBallotStatusWord(v string) bool {
+	switch strings.ToUpper(strings.TrimSpace(v)) {
+	case "VOTED", "UNVOTED", "NOT VOTED":
+		return true
+	}
+	return false
+}
+
+// htmlRealignTailPad repairs the row that OMITS one value mid-row and pads its
+// tail with an empty cell, keeping the row the header's width so every value
+// after the omission sits one column to the LEFT of its label (Federated Hermes
+// Income Securities Trust 2023: 48 of 3573 rows drop `Proponent` or `Record
+// Date`, and the `Fund Name` column then reads `Voted`, the Logical Ballot
+// Status, so the votes keep a blank series_id).
+//
+// The trigger is decidable from the row alone: the last cell is empty and the
+// fund column holds a ballot status. The repair shifts the tail right by one
+// from the LATEST column at which every mapped column of the shifted row reads
+// as its own header again -- the status column holds the status, the fund column
+// holds something that is not one, the vote column holds a vote, and the date,
+// ticker and security id keep their shapes. The latest such column is the one
+// that disturbs the fewest values the filing printed correctly; when no column
+// qualifies the row is left exactly as printed.
+func htmlRealignTailPad(cells, header []string, mapping map[string]int) []string {
+	if len(header) == 0 || len(cells) != len(header) || len(cells) < 3 {
+		return cells
+	}
+	fund, ok := mapping[htmlFieldFund]
+	if !ok || fund >= len(cells) {
+		return cells
+	}
+	if htmlFlat(cells[len(cells)-1]) != "" || !htmlBallotStatusWord(htmlFlat(cells[fund])) {
+		return cells
+	}
+	fits := func(out []string, field string, ok func(string) bool) bool {
+		i, has := mapping[field]
+		if !has || i >= len(out) {
+			return true
+		}
+		return ok(htmlFlat(out[i]))
+	}
+	for j := len(cells) - 2; j >= 0; j-- {
+		out := make([]string, len(cells))
+		copy(out, cells[:j])
+		copy(out[j+1:], cells[j:len(cells)-1])
+		v := htmlFlat(out[fund])
+		if v == "" || htmlBallotStatusWord(v) || !htmlBallotStatusWord(htmlFlat(out[len(out)-1])) {
+			continue
+		}
+		if !fits(out, htmlFieldVote, htmlIsVoteValue) ||
+			!fits(out, htmlFieldMtgDate, func(s string) bool { return htmlDate(s) != "" }) ||
+			!fits(out, htmlFieldCUSIP, func(s string) bool { return pvTextCUSIP(s) || isinToken(s) }) ||
+			!fits(out, htmlFieldTicker, htmlTickerShaped) ||
+			!fits(out, htmlFieldIssuer, func(s string) bool { return s != "" }) {
+			continue
+		}
+		return out
+	}
+	return cells
+}
+
 // htmlSplitHalf joins the two tables a filer prints when one page's report is
 // too wide for the page: a LEFT half headed by identity columns alone
 // (`... | Company Name | Ticker | Primary Security ID | ISIN | CUSIP`) and a
@@ -4578,6 +4725,50 @@ func htmlHasDigit(s string) bool {
 // column, honouring the one-cell item offset htmlDataRow applies.
 func htmlFundCell(cells []string, mapping map[string]int, headerArity int) string {
 	return htmlMappedCell(cells, mapping, headerArity, htmlFieldFund)
+}
+
+// htmlAdoptRowFundColumn claims an UNLABELLED leading column as the fund column
+// when the row prints a fund name in it. One vintage heads that column with a
+// label no vocabulary knows -- `Choice Product` over `Choice Balanced Fund`
+// (Choice Funds 2004, 48 rows carrying no fund name at all) -- and names the
+// fund there on the first row of each block, blank thereafter.
+//
+// The claim is made only off a cell that resolves EXACTLY to one of this
+// registrant's declared or dictionary series names, so a leading column of
+// anything else is never taken for the fund; once claimed the column is the
+// filing's own fund column and the blank-cell carry below reads it.
+func htmlAdoptRowFundColumn(cells []string, mapping map[string]int, headerArity int, ix *issSeriesIndex, dict *dictFallback) {
+	if mapping == nil {
+		return
+	}
+	if _, mapped := mapping[htmlFieldFund]; mapped {
+		return
+	}
+	for _, i := range mapping {
+		if i == 0 {
+			return
+		}
+	}
+	i := 0
+	if len(cells) == headerArity+1 && htmlIsItemNumber(htmlFlat(cells[0])) {
+		i++
+	}
+	if i >= len(cells) {
+		return
+	}
+	v := htmlFlat(cells[i])
+	if v == "" {
+		return
+	}
+	if icrResolveFundShared(ix, v) == "" {
+		if dict == nil {
+			return
+		}
+		if d, _ := lookupSeriesEntry(dict.byName, v); d == nil {
+			return
+		}
+	}
+	mapping[htmlFieldFund] = 0
 }
 
 // htmlMappedCell returns the row's own cell under one mapped column, honouring
