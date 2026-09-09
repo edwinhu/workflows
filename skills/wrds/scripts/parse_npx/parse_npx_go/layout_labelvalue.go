@@ -150,6 +150,15 @@ func lvReportTitleBelow(lines []string, i int) bool {
 	return false
 }
 
+// lvResolveBanner is the banner-to-series resolution this layout uses: the
+// shared text rules first, then the registrant's dictionary.
+func lvResolveBanner(ix *issSeriesIndex, dict *dictFallback, name string) string {
+	if id := icrResolveFundShared(ix, name); id != "" {
+		return id
+	}
+	return htmlDictionaryFund(ix, dict, name)
+}
+
 func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 	lines := strings.Split(text, "\n")
 	sharedIdx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
@@ -179,6 +188,33 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 		// The fund banner is issnpx's `===== NAME =====` rule, reused verbatim:
 		// this grammar is filed by houses that print both.
 		if name, ok := issFundSeparator(line); ok {
+			// A banner too long for the rule wraps onto the next rule, which
+			// carries the tail of the SAME name:
+			//
+			//	========= MLIG VARIABLE INSURANC TRUST ROSZEL/LOOMIS SAYLES LARGE CAP ==========
+			//	=========                      GROWTH PORTFOLIO                       ==========
+			//
+			// (MLIG Variable Insurance Trust 2008, all 590 rows under
+			// `GROWTH PORTFOLIO` with no series). Both halves are full-width, so
+			// issThinBannerContinuation does not join them and the second was
+			// read as a fresh section. The join is admitted only when the second
+			// line alone resolves to nothing and the JOINED text resolves, which
+			// is the evidence that it is a tail and not a fund of its own.
+			// One blank line between the two rules is an HTML block gap, the
+			// same allowance issBannerContinues makes; two is a break.
+			j := i + 1
+			if j < len(lines) && strings.TrimSpace(lines[j]) == "" {
+				j++
+			}
+			if j < len(lines) {
+				if tail, ok2 := issFundSeparator(strings.TrimSpace(lines[j])); ok2 && tail != "" && name != "" {
+					if lvResolveBanner(sharedIdx, dict, tail) == "" &&
+						lvResolveBanner(sharedIdx, dict, name+" "+tail) != "" {
+						name = name + " " + tail
+						i = j
+					}
+				}
+			}
 			fund = name
 			// The banner goes through the same rules the sibling text layouts use,
 			// so a hybrid filing that falls to this layout rather than issnpx reads

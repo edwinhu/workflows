@@ -1095,7 +1095,19 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 				// (PowerShares Exchange Traded Fund Trust 2008). Only a name
 				// the header spells outright may be read here.
 				if slot, ok := brInlineAgendaFund(line); ok {
-					if d, _ := lookupSeriesEntry(seriesIdx, slot); d != nil {
+					d, _ := lookupSeriesEntry(seriesIdx, slot)
+					if d == nil {
+						// The slot may drop the declared name's terminal type
+						// word: `TrendStar American Endeavor` for a declared
+						// `TRENDSTAR AMERICAN ENDEAVOR FUND` (TrendStar
+						// Investment Trust 2004, all 634 rows with neither
+						// fund nor series). Still EXACT, and appending the type
+						// word does not reopen the issuer failure mode above --
+						// an issuer name plus `Fund` is not a declared series
+						// name.
+						d, _ = lookupSeriesEntry(seriesIdx, slot+" Fund")
+					}
+					if d != nil {
 						flush()
 						curSeries, curFund = d.SeriesID, slot
 					}
