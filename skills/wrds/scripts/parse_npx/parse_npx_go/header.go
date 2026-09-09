@@ -254,6 +254,33 @@ var seriesMarkReplacer = strings.NewReplacer(
 // spells it stays one token: `GE INT'L EQUITY FUND` folds to `int l` otherwise
 // and is no longer an abbreviation of the declared `International` (S000001619,
 // 1,549 rows). Both the ASCII and the typographic spelling.
+// seriesDottedInitialism matches a run of two or more single letters each
+// followed by a period. normalizeUndottedSeriesName deletes its dots BEFORE
+// folding, so a dotted initialism keys the same as its undotted spelling: the
+// heading `Vesper US Large Cap Short-Term Reversal Strategy ETF` and the
+// dictionary's `Vesper U.S. Large Cap ...` (S000063053, 341 rows) name one fund
+// and differ only in the periods. The run must be single letters throughout, so
+// no word of a name is ever shortened.
+//
+// This is a RETRY key, never the primary one: `AIM V.I. Total Return Fund` and
+// the brand strips built on its `v i` tokens are the registrant's own spelling,
+// and folding it globally would take that reading away.
+var seriesDottedInitialism = regexp.MustCompile(`(?:\b[a-z]\.){2,}`)
+
+// normalizeUndottedSeriesName is normalizeSeriesName with dotted initialisms
+// collapsed first. It returns "" when the name carries none, so a caller keys
+// only the names for which the two spellings actually differ.
+func normalizeUndottedSeriesName(s string) string {
+	l := strings.ToLower(s)
+	u := seriesDottedInitialism.ReplaceAllStringFunc(l, func(m string) string {
+		return strings.ReplaceAll(m, ".", "")
+	})
+	if u == l {
+		return ""
+	}
+	return normalizeSeriesName(u)
+}
+
 var seriesPunctReplacer = strings.NewReplacer(
 	"&", " and ",
 	"?", " ",

@@ -1,0 +1,117 @@
+ACCESSION NUMBER:		0001072428-12-000106
+CONFORMED SUBMISSION TYPE:	N-PX
+CONFORMED PERIOD OF REPORT:	20120630
+FILED AS OF DATE:		20120827
+		COMPANY CONFORMED NAME:			JNL VARIABLE FUND LLC
+		CENTRAL INDEX KEY:			0001072428
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<SERIES-ID>S000001693
+<SERIES-NAME>JNL/MCM DOW 10 FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000001694
+<SERIES-NAME>JNL/MCM VIP FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000001695
+<SERIES-NAME>JNL/MCM COMMUNICATIONS SECTOR FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000001696
+<SERIES-NAME>JNL/MCM CONSUMER BRANDS SECTOR FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000001697
+<SERIES-NAME>JNL/MCM HEALTHCARE SECTOR FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000001698
+<SERIES-NAME>JNL/MCM FINANCIAL SECTOR FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000001699
+<SERIES-NAME>JNL/MCM OIL & GAS SECTOR FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000001700
+<SERIES-NAME>JNL/MCM TECHNOLOGY SECTOR FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000001704
+<SERIES-NAME>JNL/MCM S&P 10 FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000001708
+<SERIES-NAME>JNL/MCM GLOBAL 15 FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000001709
+<SERIES-NAME>JNL/MCM 25 FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000001710
+<SERIES-NAME>JNL/MCM SELECT SMALL-CAP FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000001711
+<SERIES-NAME>JNL/MCM NASDAQ 25 FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000001712
+<SERIES-NAME>JNL/MCM VALUE LINE 30 FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000001713
+<SERIES-NAME>JNL/MCM DOW DIVIDEND FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000001714
+<SERIES-NAME>JNL/MCM JNL 5 FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000010716
+<SERIES-NAME>JNL/MCM S&P 24 FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000010717
+<SERIES-NAME>JNL/MCM JNL OPTIMIZED 5 FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000017140
+<SERIES-NAME>JNL/MCM S&P SMID 60 FUND
+</SERIES>
+<SERIES>
+<SERIES-ID>S000017142
+<SERIES-NAME>JNL/MCM NYSE INTERNATIONAL 25 FUND
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<TEXT>
+JNL/Mellon Capital Management Dow 10 Fund
+--------------------------------------------------------------------------------------------------------------------------
+ AT&T INC.                                                                                   Agenda Number:  933559049
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  00206R102
+    Meeting Type:  Annual
+    Meeting Date:  27-Apr-2012
+          Ticker:  T
+            ISIN:  US00206R1023
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1A.    ELECTION OF DIRECTOR: RANDALL L. STEPHENSON               Mgmt          For                            For
+
+1B.    ELECTION OF DIRECTOR: GILBERT F. AMELIO                   Mgmt          Against                        Against
+
+1C.    ELECTION OF DIRECTOR: REUBEN V. ANDERSON                  Mgmt          For                            For
+
+1D.    ELECTION OF DIRECTOR: JAMES H. BLANCHARD                  Mgmt          Against                        Against
+
+1E.    ELECTION OF DIRECTOR: JAIME CHICO PARDO                   Mgmt          For                            For
+
+1F.    ELECTION OF DIRECTOR: JAMES P. KELLY                      Mgmt          For                            For

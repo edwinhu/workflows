@@ -1,0 +1,44 @@
+ACCESSION NUMBER:		0000950129-04-006660
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			AIM INVESTMENT FUNDS
+		CENTRAL INDEX KEY:			0000826644
+<PAGE>
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-05426
+Reporting Period: 07/01/2003 - 06/30/2004
+AIM Investment Funds
+
+
+
+
+
+
+
+
+
+============================ AIM GLOBAL ENERGY FUND ============================
+
+
+CHC HELICOPTER CORP.
+
+Ticker:       FLY.A          Security ID:  12541C203
+Meeting Date: OCT 28, 2003   Meeting Type: Annual/Special
+Record Date:  SEP 8, 2003
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Elect Craig L. Dobbin, Craig C. Dobbin,   For       For        Management
+      John J. Fleming, John J. Kelly, William
+      W. Stinson, Michael A. Wadsworth as
+      Directors
+2     Approve Auditors and Authorize Board to   For       For        Management
+      Fix Remuneration of Auditors
+3     Allow Board to Appoint Additional         For       For        Management
+      Directors Between Annual Meetings
+4     Amend Bylaws Re:Appointment of Additional For       For        Management
+      Directors
+
