@@ -1,0 +1,18 @@
+		COMPANY CONFORMED NAME:			GAM FUNDS INC
+		CENTRAL INDEX KEY:			0000749155
+<TEXT>
+
+
+
+============================ GAMERICA CAPITAL FUND =============================
+
+
+ABRAXAS PETROLEUM CORP.
+
+Ticker:       ABP            Security ID:  003830106
+Meeting Date: MAY 21, 2004   Meeting Type: Annual
+Record Date:  APR 19, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Robert L.G. Watson        For       For        Management
+1.2   Elect  Director Harold D. Carter          For       For        Management
