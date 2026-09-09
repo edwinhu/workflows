@@ -1212,6 +1212,13 @@ type issSeriesIndex struct {
 	// the capitalization token together: `BRAZOS MIDCAP GROWTH` for a declared
 	// `Brazos Mid Cap Portfolio` (S000005275, 462 rows).
 	lessBrandTypeCompact map[string]*SeriesDecl
+	// lessRegistrantLead keys a declared name by any run of LEADING tokens that
+	// the registrant's own conformed name also carries, with its trailing
+	// corporate suffix dropped as well: `T. Rowe Price High Yield Fund, Inc.`
+	// under `high yield fund`, which is what the banner prints (S000002132, 215
+	// rows). Registrant-scoped by construction, three tokens at least, nil on
+	// collision.
+	lessRegistrantLead map[string]*SeriesDecl
 	// commonSuffix is the last word every declared name shares, kept so a
 	// heading that DROPS it can be retried with it appended.
 	commonSuffix string
@@ -1286,6 +1293,7 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		lessAnyType:          make(map[string]*SeriesDecl),
 		lessLeadTokenAnyType: make(map[string]*SeriesDecl),
 		lessBrandTypeCompact: make(map[string]*SeriesDecl),
+		lessRegistrantLead:   make(map[string]*SeriesDecl),
 		resolved:             make(map[string]issResolved),
 	}
 	ix.normNames = make([]string, len(decls))
@@ -1322,6 +1330,16 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		// manufacture one.
 		if acr := issInitials(toks); len(acr) >= 3 {
 			ix.brands = append(ix.brands, acr)
+		}
+		// EDGAR stores a founder's name INVERTED -- `RUSSELL FRANK INVESTMENT
+		// CO` for the printed `Frank Russell Investment Company` -- so the
+		// acronym the filing prints (`FRIC ...`) is built on the swapped
+		// leading pair and never on the conformed order.
+		if len(toks) > 2 {
+			swapped := append([]string{toks[1], toks[0]}, toks[2:]...)
+			if acr := issInitials(swapped); len(acr) >= 3 {
+				ix.brands = append(ix.brands, acr)
+			}
 		}
 		// And the initials of the registrant's TRAILING tokens: Rydex Variable
 		// Trust prints "VT BANKING FUND". Two letters at least, and only the
@@ -1398,6 +1416,22 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		}
 		if d.SeriesID == "" || d.Name == "" {
 			continue
+		}
+		// The declared name printed with the registrant's own leading words and
+		// its corporate suffix taken off, which is how the banner spells it.
+		if regToks := issRegistrantTokens(registrantKey); len(regToks) > 0 {
+			dt := strings.Fields(normalizeSeriesName(d.Name))
+			if n := len(dt); n > 0 && issCorporateSuffixWord[dt[n-1]] {
+				dt = dt[:n-1]
+			}
+			for k := 1; k < len(dt); k++ {
+				if !regToks[dt[k-1]] {
+					break
+				}
+				if len(dt)-k >= 3 {
+					put(ix.lessRegistrantLead, strings.Join(dt[k:], " "), d)
+				}
+			}
 		}
 		key := normalizeSeriesName(d.Name)
 		put(ix.byHistoricalBrand, issHistoricalBrandKey(key), d)
@@ -1574,6 +1608,27 @@ func issCommonLastWord(decls []SeriesDecl) string {
 		return ""
 	}
 	return best
+}
+
+// issRegistrantTokens is the set of tokens the registrant's own conformed name
+// carries, for the leading run a declared name may print in front of the fund.
+func issRegistrantTokens(registrantKey string) map[string]bool {
+	toks := strings.Fields(registrantKey)
+	if len(toks) == 0 {
+		return nil
+	}
+	set := make(map[string]bool, len(toks))
+	for _, t := range toks {
+		set[t] = true
+	}
+	return set
+}
+
+// issCorporateSuffixWord lists the trailing corporate form a declared name
+// carries and a printed banner drops.
+var issCorporateSuffixWord = map[string]bool{
+	"inc": true, "incorporated": true, "corp": true, "corporation": true,
+	"co": true, "company": true, "ltd": true, "llc": true, "lp": true, "plc": true,
 }
 
 // issInitials builds the acronym a registrant makes of its own name: the first
@@ -2646,6 +2701,32 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 		if d := ix.lessLeadToken[rest]; d != nil {
 			return banner, d
 		}
+	}
+	// The banner-side counterpart: the registrant's own token comes off and ONE
+	// further leading token of the retail brand goes with it, because the brand
+	// is two words and only the first belongs to the registrant key: `HSBC
+	// INVESTOR INTERNATIONAL EQUITY FUND` for a declared `International Equity
+	// Fund` (HSBC Advisor Funds Trust, 1,120 rows with no series). What remains
+	// must be a declared name OUTRIGHT, and a stem two series answer to is nil
+	// and refuses.
+	for _, b := range ix.brands {
+		rest, ok := issCutBrand(key, b)
+		if !ok {
+			continue
+		}
+		f := strings.Fields(rest)
+		if len(f) < 3 || issDeclaredToken(ix, f[0]) {
+			continue
+		}
+		if d, seen := lookupSeriesEntry(ix.byName, strings.Join(f[1:], " ")); seen && d != nil {
+			return banner, d
+		}
+	}
+	// The declared name printed WITHOUT the registrant's own leading words and
+	// without its corporate suffix: `HIGH YIELD FUND` for the declared `T. Rowe
+	// Price High Yield Fund, Inc.` (S000002132, 215 rows with no series).
+	if d := ix.lessRegistrantLead[key]; d != nil {
+		return banner, d
 	}
 
 	// The registrant's own name, misspelled or one word short of the header's.
@@ -5920,4 +6001,17 @@ func issOpenBanner(line string, lines []string, i int) (string, bool) {
 		return "", false
 	}
 	return "", false
+}
+
+// issDeclaredToken reports a word any declared name carries, which is therefore
+// evidence about which series a heading means and may never be dropped as brand.
+func issDeclaredToken(ix *issSeriesIndex, tok string) bool {
+	for i := range ix.decls {
+		for _, t := range ix.declToks(i) {
+			if t == tok {
+				return true
+			}
+		}
+	}
+	return false
 }

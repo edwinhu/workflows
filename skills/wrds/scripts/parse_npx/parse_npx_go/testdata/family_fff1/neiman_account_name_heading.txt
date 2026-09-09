@@ -1,0 +1,168 @@
+<SEC-HEADER>0001162044-06-000404.hdr.sgml : 20060830
+<ACCEPTANCE-DATETIME>20060830112407
+ACCESSION NUMBER:		0001162044-06-000404
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20060630
+FILED AS OF DATE:		20060830
+DATE AS OF CHANGE:		20060830
+EFFECTIVENESS DATE:		20060830
+	MAIL ADDRESS:	
+		STREET 1:		6325 LA VALLE PLATEADA
+		CITY:			RANCHO SANTA FE
+		STATE:			CA
+		ZIP:			92067
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001215880
+<SERIES-ID>S000005312
+<SERIES-NAME>Neiman Large Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000014503
+<CLASS-CONTRACT-NAME>Neiman Large Cap Value Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001215880
+<SERIES-ID>S000005313
+<SERIES-NAME>Neiman Small Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000014504
+<CLASS-CONTRACT-NAME>Neiman Small Cap Value Fund
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>neimanformnpx06.htm
+<TEXT>
+<!doctype html public "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>NEIMAN FUNDS</TITLE>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman"><B>Proxy Voting Record </B></P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman"><BR></P>
+<TABLE cellspacing=0><TR>
+  <TD style="background-color:#800000" valign=bottom width=276 colspan=2><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">
+  <font color="#FFFFFF"><B>Account Name: Neiman Fund</B></font></P>
+</TD><TD style="background-color:#800000" valign=bottom width=65.333><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>
+  <font color="#FFFFFF"><B>&nbsp;</B></font></P>
+</TD><TD style="background-color:#800000" valign=bottom width=104><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>
+  <font color="#FFFFFF"><B>&nbsp;</B></font></P>
+</TD><TD style="background-color:#800000" valign=bottom width=101.4><P style="margin:0pt; font-family:Arial; font-size:8pt">
+  <font color="#FFFFFF"><B>&nbsp;</B></font></P>
+</TD><TD style="background-color:#800000" valign=bottom width=135.6><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>
+  <font color="#FFFFFF"><B>&nbsp;</B></font></P>
+</TD><TD valign=bottom width=168.2 bgcolor="#800000"><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>
+  &nbsp;</P>
+</TD></TR>
+<TR><TD style="background-color:#C0C0C0" valign=bottom width=203.467><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><B>Company Name</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=72.533><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>Meeting Date</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=65.333><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center><B>&nbsp;</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=104><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center><B>&nbsp;</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=101.4><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>Shares Voted</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=135.6><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>CUSIP</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=168.2><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>Ticker</B></P>
+</TD></TR>
+<TR><TD style="border-top:0.5pt solid #000000" valign=bottom width=203.467><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD style="border-top:0.5pt solid #000000" valign=bottom width=72.533><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD style="border-top:0.5pt solid #000000" valign=bottom width=65.333><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>&nbsp;</P>
+</TD><TD style="border-top:0.5pt solid #000000" valign=bottom width=104><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>&nbsp;</P>
+</TD><TD style="border-top:0.5pt solid #000000" valign=bottom width=101.4><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD style="border-top:0.5pt solid #000000" valign=bottom width=135.6><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>&nbsp;</P>
+</TD><TD style="border-top:0.5pt solid #000000" valign=bottom width=168.2><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>&nbsp;</P>
+</TD></TR>
+<TR><TD valign=bottom width=203.467><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><U>Vote</U></P>
+</TD><TD valign=bottom width=72.533><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><U>MRV</U></P>
+</TD><TD valign=bottom width=65.333><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><U>vs. Mgmt.</U></P>
+</TD><TD valign=bottom width=104><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><U>Author</U></P>
+</TD><TD valign=bottom width=101.4><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><U>Proposal</U></P>
+</TD><TD valign=bottom width=135.6>&nbsp;</TD><TD valign=bottom width=168.2>&nbsp;</TD></TR>
+<TR><TD valign=bottom width=203.467>&nbsp;</TD><TD valign=bottom width=72.533>&nbsp;</TD><TD valign=bottom width=65.333>&nbsp;</TD><TD valign=bottom width=104>&nbsp;</TD><TD valign=bottom width=101.4>&nbsp;</TD><TD valign=bottom width=135.6>&nbsp;</TD><TD valign=bottom width=168.2>&nbsp;</TD></TR>
+<TR><TD style="background-color:#C0C0C0" valign=bottom width=203.467><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><B>MAY DEPT. STORES COMPANY</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=72.533><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=right><B>7/13/2005</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=65.333><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center><B>&nbsp;</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=104><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center><B>&nbsp;</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=101.4><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><B>2000</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=135.6><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>577778103</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=168.2><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>MAY</B></P>
+</TD></TR>
+<TR><TD valign=bottom width=203.467><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">FOR</P>
+</TD><TD valign=bottom width=72.533><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">FOR</P>
+</TD><TD valign=bottom width=65.333><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>WITH</P>
+</TD><TD valign=bottom width=104><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>ISSUER</P>
+</TD><TD valign=bottom width=237 colspan=2><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">1. ELECTION OF DIRECTORS (AS A GROUP)</P>
+</TD><TD valign=bottom width=168.2>&nbsp;</TD></TR>
+<TR><TD valign=bottom width=203.467>&nbsp;</TD><TD valign=bottom width=72.533>&nbsp;</TD><TD valign=bottom width=65.333>&nbsp;</TD><TD valign=bottom width=104>&nbsp;</TD><TD valign=bottom width=405.2 colspan=3><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">MARSHA J EVANS, DAVID B RICKARD, JOYCE M ROCHE, R DEAN WOLF</P>
+</TD></TR>
+<TR><TD valign=bottom width=203.467><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">FOR</P>
+</TD><TD valign=bottom width=72.533><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">FOR</P>
+</TD><TD valign=bottom width=65.333><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>WITH</P>
+</TD><TD valign=bottom width=104><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>ISSUER</P>
+</TD><TD valign=bottom width=405.2 colspan=3><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">2. APPROVE AND ADOPT THE AGREEMENT AND PLAN OF MERGER, </P>
+</TD></TR>
+<TR><TD valign=bottom width=203.467>&nbsp;</TD><TD valign=bottom width=72.533>&nbsp;</TD><TD valign=bottom width=65.333>&nbsp;</TD><TD valign=bottom width=104>&nbsp;</TD><TD valign=bottom width=405.2 colspan=3><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">DATED AS OF FEBRUARY 27, 2005, BY AND AMONG THE MAY</P>
+</TD></TR>
+<TABLE cellspacing=0><TR>
+  <TD style="background-color:#800000" valign=bottom width=289.333 colspan=2><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">
+  <font color="#FFFFFF"><B>Account Name: Neiman Small Cap Value Fund</B></font></P>
+</TD><TD style="background-color:#800000" valign=bottom width=65.333><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>
+  <font color="#FFFFFF"><B>&nbsp;</B></font></P>
+</TD><TD style="background-color:#800000" valign=bottom width=104><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>
+  <font color="#FFFFFF"><B>&nbsp;</B></font></P>
+</TD><TD style="background-color:#800000" valign=bottom width=95.533><P style="margin:0pt; font-family:Arial; font-size:8pt">
+  <font color="#FFFFFF"><B>&nbsp;</B></font></P>
+</TD><TD style="background-color:#800000" valign=bottom width=133.467><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>
+  <font color="#FFFFFF"><B>&nbsp;</B></font></P>
+</TD><TD valign=bottom width=150.533 bgcolor="#800000"><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>
+  <font color="#FFFFFF"><B>&nbsp;</B></font></P>
+</TD></TR>
+<TR><TD valign=bottom width=217.2>&nbsp;</TD><TD valign=bottom width=72.133>&nbsp;</TD><TD valign=bottom width=65.333>&nbsp;</TD><TD valign=bottom width=104>&nbsp;</TD><TD valign=bottom width=95.533>&nbsp;</TD><TD valign=bottom width=133.467>&nbsp;</TD><TD valign=bottom width=150.533>&nbsp;</TD></TR>
+<TR><TD style="background-color:#C0C0C0" valign=bottom width=217.2><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><B>Company Name</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=72.133><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>Meeting Date</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=65.333><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center><B>&nbsp;</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=104><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center><B>&nbsp;</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=95.533><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>Shares Voted</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=133.467><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>CUSIP</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=150.533><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>Ticker</B></P>
+</TD></TR>
+<TR><TD style="border-top:0.5pt solid #000000" valign=bottom width=217.2><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD style="border-top:0.5pt solid #000000" valign=bottom width=72.133><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD style="border-top:0.5pt solid #000000" valign=bottom width=65.333><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>&nbsp;</P>
+</TD><TD style="border-top:0.5pt solid #000000" valign=bottom width=104><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>&nbsp;</P>
+</TD><TD style="border-top:0.5pt solid #000000" valign=bottom width=95.533><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD style="border-top:0.5pt solid #000000" valign=bottom width=133.467><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>&nbsp;</P>
+</TD><TD style="border-top:0.5pt solid #000000" valign=bottom width=150.533><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>&nbsp;</P>
+</TD></TR>
+<TR><TD valign=bottom width=217.2><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><U>Vote</U></P>
+</TD><TD valign=bottom width=72.133><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><U>MRV</U></P>
+</TD><TD valign=bottom width=65.333><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><U>vs. Mgmt.</U></P>
+</TD><TD valign=bottom width=104><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><U>Author</U></P>
+</TD><TD valign=bottom width=95.533><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><U>Proposal</U></P>
+</TD><TD valign=bottom width=133.467>&nbsp;</TD><TD valign=bottom width=150.533>&nbsp;</TD></TR>
+<TR><TD valign=bottom width=217.2>&nbsp;</TD><TD valign=bottom width=72.133>&nbsp;</TD><TD valign=bottom width=65.333>&nbsp;</TD><TD valign=bottom width=104>&nbsp;</TD><TD valign=bottom width=95.533>&nbsp;</TD><TD valign=bottom width=133.467>&nbsp;</TD><TD valign=bottom width=150.533>&nbsp;</TD></TR>
+<TR><TD style="background-color:#C0C0C0" valign=bottom width=217.2><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><B>UICI</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=72.133><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=right><B>3/29/2006</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=65.333><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center><B>&nbsp;</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=104><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center><B>&nbsp;</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=95.533><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><B>200</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=133.467><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>902737105</B></P>
+</TD><TD style="background-color:#C0C0C0" valign=bottom width=150.533><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>UICI</B></P>
+</TD></TR>
+<TR><TD valign=bottom width=217.2><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">FOR</P>
+</TD><TD valign=bottom width=72.133><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">FOR</P>
+</TD><TD valign=bottom width=65.333><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>WITH</P>
+</TD><TD valign=bottom width=104><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>ISSUER</P>
+</TD><TD valign=bottom width=379.533 colspan=3><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">1. PROPOSAL TO APPROVE THE ADOPTION OF THE AGREEMENT AND</P>
+</TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
