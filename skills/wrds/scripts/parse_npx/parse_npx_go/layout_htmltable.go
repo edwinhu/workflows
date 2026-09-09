@@ -140,6 +140,9 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// row so an unattributed section shows as unmatched, not unnamed.
 		curFund      string
 		outerSection bool // a resolved enclosing heading, not a labelled account cell
+		// fundCol is the column a lone `Portfolio Name` header cell opened, in
+		// which a later lone cell names the block's fund.
+		fundCol = -1
 		// The split-page halves: a table whose header names only identity
 		// columns is the LEFT half of a page too wide to print in one table,
 		// and the table that follows it carries the same rows' votes in the
@@ -263,8 +266,34 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 					name, id, ok = htmlBareFundLine(seriesIx, flat, dict)
 				}
 			}
+			// The fund as the leading COLUMN of the vote table, named once per
+			// block in the cell under a `Portfolio Name` header cell and blank
+			// on every row after it (Masters Select Funds Trust 2005, 1,892
+			// rows, which prints no section heading at all). The label is the
+			// evidence: the value is read only from the column that header
+			// cell opened, and only when it resolves.
+			if !ok && fundCol >= 0 && fundCol < len(cells) && htmlFilledCells(cells) == 1 && strings.TrimSpace(cells[fundCol]) != "" {
+				if value := htmlFlat(cells[fundCol]); value != "" && !htmlFundLabelled(value) {
+					if fid := icrResolveFundShared(seriesIx, value); fid != "" {
+						name, id, ok = value, fid, true
+					} else if fid := htmlDictionaryFund(seriesIx, dict, value); fid != "" {
+						name, id, ok = value, fid, true
+					} else if fid := htmlFundColumnStem(seriesIx, value); fid != "" {
+						name, id, ok = value, fid, true
+					}
+				}
+			}
 			if ok {
 				curFund, curSeries, outerSection = name, id, registrantSection && id != ""
+			}
+			// A lone header cell naming the fund column opens it for the rows
+			// below; it is not itself a fund.
+			if htmlFilledCells(cells) == 1 {
+				for i, cell := range cells {
+					if v := htmlFlat(cell); v != "" && htmlFundLabelled(v) {
+						fundCol = i
+					}
+				}
 			}
 		}
 
@@ -2009,7 +2038,10 @@ var htmlSynonyms = map[string][]string{
 	// The fund as a column of the vote table (FQF Trust: 'Fund Name | Company
 	// Name | Ticker | Primary CUSIP | Meeting Date | ...', 86k rows with no
 	// fund).
-	htmlFieldFund: {"FUND NAME", "INSTITUTIONAL ACCOUNT NAME", "ACCOUNT NAME"},
+	// `Portfolio Name` heads the leading column of the Masters' Select vintage
+	// (Masters Select Funds Trust 2005, 1,892 rows), which prints no section
+	// heading at all and names the fund once per block in this column.
+	htmlFieldFund: {"FUND NAME", "INSTITUTIONAL ACCOUNT NAME", "ACCOUNT NAME", "PORTFOLIO NAME"},
 	htmlFieldMtgDate: {
 		"MEETING DATE", "MEETING DAT", "MTG DATE", "DATE OF MEETING", "MTG DATE/TYPE", "SHAREHOLDER MEETING DATE",
 		// `Meeting Dt` beside a `Holding Dt` record date (Stadion Investment
@@ -4696,15 +4728,7 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 		if low := strings.ToLower(line); strings.HasPrefix(low, "registrant") && !htmlFundLabelled(line) {
 			if colon := strings.IndexByte(line, ':'); colon > 0 {
 				if i := strings.LastIndex(line, " - "); i > colon {
-					candidate = strings.TrimSpace(line[i+3:])
-					// `Registrant: Dunham Funds - Dunham Corporate/Government
-					// Bond Fund    Item 1` (the Ultimus vintage, 2017+): the
-					// form item follows the fund on the same line.
-					if k := strings.Index(candidate, "  Item "); k > 0 {
-						candidate = strings.TrimSpace(candidate[:k])
-					} else if k := strings.LastIndex(candidate, " Item "); k > 0 && strings.Trim(candidate[k+6:], "0123456789, ExhibitBIT") == "" {
-						candidate = strings.TrimSpace(candidate[:k])
-					}
+					candidate = htmlCutFormItemSuffix(strings.TrimSpace(line[i+3:]))
 					line = candidate
 				} else {
 					// A direct Registrant value counts only when it is the nearest
@@ -4713,7 +4737,7 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 					if strings.TrimSpace(strings.Join(lines[li+1:], "")) != "" {
 						continue
 					}
-					candidate = strings.TrimSpace(line[colon+1:])
+					candidate = htmlCutFormItemSuffix(strings.TrimSpace(line[colon+1:]))
 					if candidate == "" || normalizeSeriesName(candidate) == ix.registrantKey {
 						continue
 					}
@@ -4803,6 +4827,47 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 
 // htmlDictionaryFund only admits names the header does not declare, even
 // ambiguously. Additional readings are bounded sub-adviser and Lincoln brand cuts.
+// htmlFundColumnStem reads the bare stem a `Portfolio Name` column prints for a
+// fund the registrant brands and types in full: `Equity` for a declared `The
+// Masters' Select Equity Fund` (S000005593). The stem must end exactly one
+// declared name once its type word is dropped, at least one leading token must
+// precede it, and exactly one series may answer -- two series answering refuse.
+//
+// It is asked ONLY of a cell in the column a fund-labelled header cell opened.
+// A stem this short is not evidence on its own; the column label is.
+func htmlFundColumnStem(ix *issSeriesIndex, stem string) string {
+	key := normalizeSeriesName(stem)
+	if key == "" || ix == nil {
+		return ""
+	}
+	id := ""
+	for i := range ix.decls {
+		base, typed := issDropTypeWord(normalizeSeriesName(ix.decls[i].Name))
+		if !typed || !strings.HasSuffix(base, " "+key) {
+			continue
+		}
+		if id != "" && id != ix.decls[i].SeriesID {
+			return ""
+		}
+		id = ix.decls[i].SeriesID
+	}
+	return id
+}
+
+// htmlCutFormItemSuffix drops the form item printed after the fund on a
+// Registrant line: `Registrant: Dunham Funds - Dunham Corporate/Government Bond
+// Fund    Item 1` (the Ultimus vintage, 2017+), and the same suffix on the
+// vintage that glues the registrant to the fund with a hyphen.
+func htmlCutFormItemSuffix(candidate string) string {
+	if k := strings.Index(candidate, "  Item "); k > 0 {
+		return strings.TrimSpace(candidate[:k])
+	}
+	if k := strings.LastIndex(candidate, " Item "); k > 0 && strings.Trim(candidate[k+6:], "0123456789, ExhibitBIT") == "" {
+		return strings.TrimSpace(candidate[:k])
+	}
+	return candidate
+}
+
 func htmlDictionaryFund(ix *issSeriesIndex, fallback *dictFallback, candidate string) string {
 	if fallback == nil {
 		return ""
@@ -4870,6 +4935,20 @@ func htmlDictionaryFund(ix *issSeriesIndex, fallback *dictFallback, candidate st
 		if !ok {
 			continue
 		}
+		if _, declared := lookupSeriesEntry(ix.byName, rest); declared {
+			return ""
+		}
+		if d, _ := lookupSeriesEntry(fallback.byName, rest); d != nil {
+			return d.SeriesID
+		}
+	}
+	// The registrant's own name glued to the fund by a hyphen and no space:
+	// `Registrant: Saratoga Advantage Trust- Health & Biotechnology Portfolio`
+	// for the dictionary's `Health & Biotechnology Portfolio` (S000010884),
+	// whose spelling in this filing's own header is a typo. Every token of the
+	// prefix must be a token of the registrant's name, and a name the native
+	// header declares is still never reread.
+	if rest, ok := issHyphenGluedRegistrantPrefix(candidate, ix.registrantKey); ok {
 		if _, declared := lookupSeriesEntry(ix.byName, rest); declared {
 			return ""
 		}
