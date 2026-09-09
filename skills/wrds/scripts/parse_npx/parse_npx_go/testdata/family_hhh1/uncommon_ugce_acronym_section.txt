@@ -1,0 +1,557 @@
+<SEC-DOCUMENT>0001580642-22-003545.txt : 20220715
+<SEC-HEADER>0001580642-22-003545.hdr.sgml : 20220715
+<ACCEPTANCE-DATETIME>20220715143104
+ACCESSION NUMBER:		0001580642-22-003545
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20220630
+FILED AS OF DATE:		20220715
+DATE AS OF CHANGE:		20220715
+EFFECTIVENESS DATE:		20220715
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Uncommon Investment Funds Trust
+		CENTRAL INDEX KEY:			0001785243
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-23464
+		FILM NUMBER:		221085376
+
+	BUSINESS ADDRESS:	
+		STREET 1:		75 VIRGINIA ROAD
+		STREET 2:		SECOND FLOOR, SUITE V1
+		CITY:			NORTH WHITE PLAINS
+		STATE:			NY
+		ZIP:			10603
+		BUSINESS PHONE:		212 810 1477
+
+	MAIL ADDRESS:	
+		STREET 1:		75 VIRGINIA ROAD
+		STREET 2:		SECOND FLOOR, SUITE V1
+		CITY:			NORTH WHITE PLAINS
+		STATE:			NY
+		ZIP:			10603
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001785243
+<SERIES-ID>S000070521
+<SERIES-NAME>Uncommon Generosity 50 Equity ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000224030
+<CLASS-CONTRACT-NAME>Uncommon Generosity 50 Equity ETF
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001785243
+<SERIES-ID>S000070522
+<SERIES-NAME>Uncommon Portfolio Design Core Equity ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000224031
+<CLASS-CONTRACT-NAME>Uncommon Portfolio Design Core Equity ETF
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>uncommonnpx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 9pt Calibri, Helvetica, Sans-Serif">
+  <TR>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" ROWSPAN="2" STYLE="color: #414141; font-weight: bold; vertical-align: top; text-align: left">Acct / Group</TD>
+    <TD ROWSPAN="2" STYLE="color: #414141; vertical-align: top; text-align: left">All Accounts</TD></TR>
+  <TR>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="3" ROWSPAN="3" STYLE="color: #414141; font: bold 16pt Calibri Light; vertical-align: top; text-align: center">Proxy Report 2021-Q3</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD></TR>
+  <TR>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="color: #414141; font-weight: bold; vertical-align: top; text-align: left">Countries</TD>
+    <TD STYLE="color: #414141; vertical-align: top; text-align: left">All Countries</TD></TR>
+  <TR>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="color: #414141; font-weight: bold; vertical-align: top; text-align: left">Meeting Range</TD>
+    <TD STYLE="color: #414141; vertical-align: top; text-align: left">01-Jul-2021 To 30-Sep-2021</TD></TR>
+  <TR>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="color: #414141; font-weight: bold; vertical-align: top; text-align: left">Vote Status</TD>
+    <TD STYLE="color: #414141; vertical-align: top; text-align: left">Voted/Unvoted</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="5" STYLE="font-weight: bold; text-align: left">UGCE Proxy Report 2021 Q3<BR>
+&nbsp;01-Jul-2021 To 30-Sep-2021</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: #00A3D6">
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; border-left: black 0.5pt solid; width: 3%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; width: 16%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; width: 4%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; width: 6%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; width: 9%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; width: 3%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; width: 1%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; width: 9%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; width: 5%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; width: 7%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; width: 7%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; width: 3%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; width: 7%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; width: 8%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; width: 1%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; width: 3%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; border-right: black 0.5pt solid; width: 8%">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: top; background-color: #00A3D6">
+    <TD STYLE="color: white; font-weight: bold; border-bottom: black 0.5pt solid; border-left: black 0.5pt solid; text-align: left">Ticker<BR>
+Symbol</TD>
+    <TD STYLE="color: white; font-weight: bold; border-bottom: black 0.5pt solid; text-align: left">Company Name</TD>
+    <TD STYLE="color: white; font-weight: bold; border-bottom: black 0.5pt solid; text-align: left">Meeting<BR>
+Date</TD>
+    <TD STYLE="color: white; font-weight: bold; border-bottom: black 0.5pt solid; text-align: left">Director Label</TD>
+    <TD STYLE="color: white; font-weight: bold; border-bottom: black 0.5pt solid; text-align: left">Director Name</TD>
+    <TD STYLE="color: white; font-weight: bold; border-bottom: black 0.5pt solid; text-align: left">Proposal<BR>
+Label</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; border-bottom: black 0.5pt solid; text-align: left">Proposal Long Text</TD>
+    <TD STYLE="color: white; font-weight: bold; border-bottom: black 0.5pt solid; text-align: left">Recorded Vote</TD>
+    <TD STYLE="color: white; font-weight: bold; border-bottom: black 0.5pt solid; text-align: left">Management<BR>
+Recommendation</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; border-bottom: black 0.5pt solid; text-align: center">Compare Vote With/Against<BR>
+Management</TD>
+    <TD STYLE="color: white; font-weight: bold; border-bottom: black 0.5pt solid; text-align: left">Preferred IR Provider<BR>
+Recommendation</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; border-bottom: black 0.5pt solid; text-align: center">Compare Vote With/Against<BR>
+Preferred Provider<BR>
+Recommendation</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; border-right: black 0.5pt solid; border-bottom: black 0.5pt solid; text-align: left">Primary Preferred Provider<BR>
+Recommendation Comments</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: top; text-align: left">STZ</TD>
+    <TD STYLE="vertical-align: top; text-align: left">CONSTELLATION BRANDS, INC.</TD>
+    <TD STYLE="vertical-align: top; text-align: left">20-Jul-2021</TD>
+    <TD STYLE="vertical-align: top; text-align: left">1.</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Christy Clark</TD>
+    <TD STYLE="vertical-align: top; text-align: left">1.</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left">DIRECTOR</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Management</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Preferred Provider<BR>
+Recommendation</TD>
+    <TD COLSPAN="2" STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: top; text-align: left">STZ</TD>
+    <TD STYLE="vertical-align: top; text-align: left">CONSTELLATION BRANDS, INC.</TD>
+    <TD STYLE="vertical-align: top; text-align: left">20-Jul-2021</TD>
+    <TD STYLE="vertical-align: top; text-align: left">1.</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Jennifer M. Daniels</TD>
+    <TD STYLE="vertical-align: top; text-align: left">1.</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left">DIRECTOR</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Management</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Preferred Provider<BR>
+Recommendation</TD>
+    <TD COLSPAN="2" STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: top; text-align: left">STZ</TD>
+    <TD STYLE="vertical-align: top; text-align: left">CONSTELLATION BRANDS, INC.</TD>
+    <TD STYLE="vertical-align: top; text-align: left">20-Jul-2021</TD>
+    <TD STYLE="vertical-align: top; text-align: left">1.</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Nicholas I. Fink</TD>
+    <TD STYLE="vertical-align: top; text-align: left">1.</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left">DIRECTOR</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Management</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Preferred Provider<BR>
+Recommendation</TD>
+    <TD COLSPAN="2" STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD></TR>
+  <TR>
+  </TABLE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 9pt Calibri, Helvetica, Sans-Serif">
+  <TR>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" ROWSPAN="2" STYLE="color: #414141; font-weight: bold; vertical-align: top; text-align: left">Acct / Group</TD>
+    <TD ROWSPAN="2" STYLE="color: #414141; vertical-align: top; text-align: left">All Accounts</TD></TR>
+  <TR>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="3" ROWSPAN="3" STYLE="color: #414141; font: bold 16pt Calibri Light; vertical-align: top; text-align: center">2022 - Q2 Proxy Report</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD></TR>
+  <TR>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="color: #414141; font-weight: bold; vertical-align: top; text-align: left">Countries</TD>
+    <TD STYLE="color: #414141; vertical-align: top; text-align: left">All Countries</TD></TR>
+  <TR>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="color: #414141; font-weight: bold; vertical-align: top; text-align: left">Meeting Range</TD>
+    <TD STYLE="color: #414141; vertical-align: top; text-align: left">01-Apr-2022 To 30-Jun-2022</TD></TR>
+  <TR>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="color: #414141; font-weight: bold; vertical-align: top; text-align: left">Vote Status</TD>
+    <TD STYLE="color: #414141; vertical-align: top; text-align: left">Voted/Unvoted</TD></TR>
+  <TR>
+    <TD COLSPAN="5" STYLE="font-weight: bold; vertical-align: bottom; text-align: left">Uncommon Portfolio Design Core Equity ETF<BR>
+&nbsp;01-Apr-2022 To 30-Jun-2022</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="6" STYLE="font-weight: bold; vertical-align: top; text-align: right">2022-Q2 Proxy Report</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; border-left: black 0.5pt solid; background-color: #00A3D6; width: 3%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; background-color: #00A3D6; width: 9%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; background-color: #00A3D6; width: 4%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; background-color: #00A3D6; width: 5%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; background-color: #00A3D6; width: 3%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; background-color: #00A3D6; width: 20%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; background-color: #00A3D6; width: 8%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; background-color: #00A3D6; width: 5%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; background-color: #00A3D6; width: 7%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; background-color: #00A3D6; width: 6%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; background-color: #00A3D6; width: 3%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; background-color: #00A3D6; width: 7%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; background-color: #00A3D6; width: 8%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; background-color: #00A3D6; width: 1%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; background-color: #00A3D6; width: 3%">&nbsp;</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; border-top: black 0.5pt solid; border-right: black 0.5pt solid; background-color: #00A3D6; width: 8%">&nbsp;</TD></TR>
+  <TR>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; border-left: black 0.5pt solid; text-align: left; background-color: #00A3D6">Ticker<BR>
+Symbol</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; text-align: left; background-color: #00A3D6">Company Name</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; text-align: left; background-color: #00A3D6">Meeting<BR>
+Date</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; text-align: left; background-color: #00A3D6">Director Label</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; text-align: left; background-color: #00A3D6">Proposal<BR>
+Label</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; text-align: left; background-color: #00A3D6">Proposal Long Text</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; text-align: left; background-color: #00A3D6">Director Name</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; text-align: left; background-color: #00A3D6">Recorded Vote</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; text-align: left; background-color: #00A3D6">Management<BR>
+Recommendation</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; text-align: center; background-color: #00A3D6">Compare Vote With/Against<BR>
+Management</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; text-align: left; background-color: #00A3D6">Preferred IR Provider<BR>
+Recommendation</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; text-align: center; background-color: #00A3D6">Compare Vote With/Against<BR>
+Preferred Provider<BR>
+Recommendation</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; vertical-align: top; border-right: black 0.5pt solid; border-bottom: black 0.5pt solid; text-align: left; background-color: #00A3D6">Primary Preferred Provider<BR>
+Recommendation Comments</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: top; text-align: left">AVGO</TD>
+    <TD STYLE="vertical-align: top; text-align: left">BROADCOM INC</TD>
+    <TD STYLE="vertical-align: top; text-align: left">04-Apr-2022</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">1A.</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Election of Director: Diane M.<BR>
+Bryant</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Management</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Preferred Provider<BR>
+Recommendation</TD>
+    <TD COLSPAN="2" STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: top; text-align: left">AVGO</TD>
+    <TD STYLE="vertical-align: top; text-align: left">BROADCOM INC</TD>
+    <TD STYLE="vertical-align: top; text-align: left">04-Apr-2022</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">1B.</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Election of Director: Gayla J. Delly</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Management</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Preferred Provider<BR>
+Recommendation</TD>
+    <TD COLSPAN="2" STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: top; text-align: left">AVGO</TD>
+    <TD STYLE="vertical-align: top; text-align: left">BROADCOM INC</TD>
+    <TD STYLE="vertical-align: top; text-align: left">04-Apr-2022</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">1C.</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Election of Director: Raul J.<BR>
+Fernandez</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Management</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Preferred Provider<BR>
+Recommendation</TD>
+    <TD COLSPAN="2" STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: top; text-align: left">AVGO</TD>
+    <TD STYLE="vertical-align: top; text-align: left">BROADCOM INC</TD>
+    <TD STYLE="vertical-align: top; text-align: left">04-Apr-2022</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">1D.</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Election of Director: Eddy W.<BR>
+Hartenstein</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Management</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Preferred Provider<BR>
+Recommendation</TD>
+    <TD COLSPAN="2" STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: top; text-align: left">AVGO</TD>
+    <TD STYLE="vertical-align: top; text-align: left">BROADCOM INC</TD>
+    <TD STYLE="vertical-align: top; text-align: left">04-Apr-2022</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">1E.</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Election of Director: Check Kian Low</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Management</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Preferred Provider<BR>
+Recommendation</TD>
+    <TD COLSPAN="2" STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: top; text-align: left">AVGO</TD>
+    <TD STYLE="vertical-align: top; text-align: left">BROADCOM INC</TD>
+    <TD STYLE="vertical-align: top; text-align: left">04-Apr-2022</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">1F.</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Election of Director: Justine F. Page</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Management</TD>
+    <TD STYLE="vertical-align: top; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">With Preferred Provider<BR>
+Recommendation</TD>
+    <TD COLSPAN="2" STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: top; text-align: left">AVGO</TD>
+    <TD STYLE="vertical-align: top; text-align: left">BROADCOM INC</TD>
+    <TD STYLE="vertical-align: top; text-align: left">04-Apr-2022</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">1G.</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Election of Director: Henry Samueli</TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: bottom">&nbsp;</TD>
+  </TABLE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="2" STYLE="font-weight: bold">Registrant:<FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 700"><U>&nbsp;</U></FONT></TD>
+    <TD COLSPAN="8" STYLE="font-weight: bold">UNCOMMON INVESTMENT FUNDS TRUST - Uncommon Generosity 50 Equity ETF</TD>
+    <TD STYLE="text-align: right">Item 1, Exhibit A<FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 400">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="6" STYLE="font-weight: bold">Investment Company Act file number: 811-23464</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="2" STYLE="font-weight: bold">Reporting Period:&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="font-weight: bold">July 1, 2021 through June 30, 2022</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 1%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 11%">&nbsp;</TD>
+    <TD STYLE="width: 3%">&nbsp;</TD>
+    <TD STYLE="width: 21%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD>
+    <TD STYLE="width: 11%">&nbsp;</TD>
+    <TD STYLE="width: 11%">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="font-size: 14pt; font-weight: bold; text-decoration: underline; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</TD></TR>
+  <TR STYLE="vertical-align: middle">
+    <TD STYLE="border: Black 0.5pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(a) Issuer's Name</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(b) Exchange Ticker Symbol</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(c)&quot;CUSIP&quot; #</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(d) Shareholder Meeting Date</TD>
+    <TD COLSPAN="2" STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(e) Matter Identification</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(f) Proposal Type</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(g) Voted</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(h) Vote Cast</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center">(i) For/Against Management</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: right">1</TD>
+    <TD STYLE="border-right: Black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-bottom: Black 1pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: right">2</TD>
+    <TD COLSPAN="10" STYLE="border-bottom: Black 1pt solid; font-weight: bold; border-right: Black 0.5pt solid">The Uncommon Generosity 50 Equity ETF was not operational during the reporting period ended June 30, 2022.</TD></TR>
+  </TABLE>
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0.45pt 0 0">&nbsp;</P>
+
+
+<P STYLE="margin: 0; color: #332F2F">(Registrant) <U>UNCOMMON INVESTMENT FUNDS TRUST</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0.35pt 0 0"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0 222pt 0 0pt; text-indent: 0pt">By (Signature and Title)* <U>/s/ Eric Rubin,
+President</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0.9pt 0 0 0pt; color: #332F2F">By: <U>Eric Rubin, President</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0.9pt 0 0 0pt; color: #332F2F"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0.9pt 0 0 0pt; color: #332F2F">Date: <U>July 15, 2022&#9;</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0.9pt 0 0 0pt"><FONT STYLE="color: #332F2F">* Print the name and title
+of <FONT STYLE="font-size: 10pt">each signing officer under his or her signature</FONT></FONT><FONT STYLE="font-size: 10pt; color: #6B6969">.</FONT></P>
+
+</BODY>
+</HTML>

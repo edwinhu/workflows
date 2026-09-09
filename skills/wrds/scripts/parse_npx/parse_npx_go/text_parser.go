@@ -421,6 +421,16 @@ func parseText(body []byte, meta FilingMeta) *ParseResult {
 			res.Meta.Layout = ""
 			continue
 		}
+		// The filing may state, in its own words, that a declared series cast no
+		// vote at all. When that leaves exactly ONE series able to have voted, the
+		// rows whose heading named nothing belong to it.
+		if sole := soleOperationalSeries(text, res.Meta.SeriesDecls); sole != "" {
+			for i := range rows {
+				if rows[i].SeriesID == "" {
+					rows[i].SeriesID = sole
+				}
+			}
+		}
 		res.Rows = stampRows(rows, res.Meta)
 		res.Meta.ParseStatus = "ok"
 		res.Meta.NRows = len(res.Rows)
@@ -529,6 +539,68 @@ func runLayoutParser(entry layoutEntry, raw []byte, text string, meta FilingMeta
 // stampRows carries the filing-level identity onto every row a layout produced.
 // A layout that already set a field wins, because it is the only layer that
 // knows which fund or series a vote belongs to.
+// issExclusionPhrases are the ways a filing states that a named series cast no
+// vote in the period, so the votes it prints cannot be that series'.
+var issExclusionPhrases = []string{
+	"was not operational",
+	"were not operational",
+	"did not vote",
+	"did not cast any votes",
+	"did not hold any voting securities",
+}
+
+// soleOperationalSeries is the one declared series a filing leaves able to have
+// voted after its own text excludes the others by name (Uncommon Investment
+// Funds Trust 2022: `The Uncommon Generosity 50 Equity ETF was not operational
+// during the reporting period ...`, 111 rows under an acronym banner that names
+// nothing declared). It is empty unless at least one series is excluded and
+// EXACTLY one survives, so a filing that excludes nobody -- or everybody but
+// two -- still leaves the rows blank rather than guessing.
+func soleOperationalSeries(text string, decls []SeriesDecl) string {
+	ids := map[string]bool{}
+	for _, d := range decls {
+		if d.SeriesID != "" && d.Name != "" {
+			ids[d.SeriesID] = true
+		}
+	}
+	if len(ids) < 2 {
+		return ""
+	}
+	excluded := false
+	for _, line := range strings.Split(strings.ToLower(text), "\n") {
+		line = strings.Join(strings.Fields(line), " ")
+		if line == "" {
+			continue
+		}
+		hit := false
+		for _, p := range issExclusionPhrases {
+			if strings.Contains(line, p) {
+				hit = true
+				break
+			}
+		}
+		if !hit {
+			continue
+		}
+		for _, d := range decls {
+			if d.SeriesID == "" || d.Name == "" || !ids[d.SeriesID] {
+				continue
+			}
+			if strings.Contains(line, strings.ToLower(strings.Join(strings.Fields(d.Name), " "))) {
+				delete(ids, d.SeriesID)
+				excluded = true
+			}
+		}
+	}
+	if !excluded || len(ids) != 1 {
+		return ""
+	}
+	for id := range ids {
+		return id
+	}
+	return ""
+}
+
 func stampRows(rows []VoteRow, meta FilingMeta) []VoteRow {
 	out := make([]VoteRow, 0, len(rows))
 	for _, r := range rows {

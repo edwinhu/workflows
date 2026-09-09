@@ -501,7 +501,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				// lone type word (`Portfolio`, `Trust)`). Two headings that merely
 				// fail to resolve are two funds the audited map may still know
 				// (JNL/Mellon 2006), and joining them changed the map's key.
-				if issBannerWrapVisible(strings.Join(bannerBuf, " "), issNextBannerName(lines, i+1)) {
+				if issBannerWrapVisible(strings.Join(bannerBuf, " "), issNextBannerName(lines, i+1), seriesIx) {
 					continue
 				}
 			}
@@ -4609,10 +4609,25 @@ func issBannerContinues(lines []string, i int) bool {
 // issBannerWrapVisible reports a banner that cannot be complete without the
 // next rule: an open parenthesis nobody closed, a banner left hanging on its
 // own separator dash, or a continuation that is one type word or a closing
-// fragment on its own.
-func issBannerWrapVisible(sofar, next string) bool {
+// fragment on its own -- or, when the registrant's index is at hand, a
+// continuation whose JOIN names a declared series while the banner so far names
+// none (Lord Abbett Investment Trust 2007, `... FUND- WORLD GROWTH & INCOME` /
+// `STRATEGY FUND`, 108 rows whose fund became the fragment `STRATEGY FUND`).
+func issBannerWrapVisible(sofar, next string, ix ...*issSeriesIndex) bool {
 	if strings.Count(sofar, "(") > strings.Count(sofar, ")") {
 		return true
+	}
+	// ... and only while the continuation names nothing on its own: a rule that
+	// resolves by itself is the next fund, not the tail of this one (Russell
+	// Investment Co, `RIC DIVERSIFIED BOND FUND` / `RIC DIVERSIFIED EQUITY FUND`).
+	if len(ix) > 0 && ix[0] != nil && strings.TrimSpace(next) != "" {
+		_, sofarDecl := issResolveFund(ix[0], sofar)
+		_, nextDecl := issResolveFund(ix[0], strings.TrimSpace(next))
+		if sofarDecl == nil && nextDecl == nil {
+			if _, joined := issResolveFund(ix[0], sofar+" "+strings.TrimSpace(next)); joined != nil {
+				return true
+			}
+		}
 	}
 	// A banner whose last token is a bare separator dash names nothing after it
 	// yet: `Alger Funds II - Alger Dynamic Opportunities Fund -` is continued by
