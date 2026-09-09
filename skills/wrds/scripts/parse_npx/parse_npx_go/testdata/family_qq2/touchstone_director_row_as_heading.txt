@@ -1,0 +1,36 @@
+		COMPANY CONFORMED NAME:			TOUCHSTONE STRATEGIC TRUST
+		CENTRAL INDEX KEY:			0000711080
+
+<PRE>
+Touchstone Small Cap Growth Fund
+- --------------------------------------------------------------------------------------------------------------------------
+ AMEDISYS, INC.                                                                              Agenda Number:  932347051
+- --------------------------------------------------------------------------------------------------------------------------
+    Security:  023436108                                                             Meeting Type:  Annual
+      Ticker:  AMED                                                                  Meeting Date:  09-Jun-2005
+        ISIN:
+- --------------------------------------------------------------------------------------------------------------------------
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+01     DIRECTOR
+       WILLIAM F. BORNE                                          Mgmt          Withheld                       Against
+       RONALD A. LABORDE                                         Mgmt          For                            For
+       JAKE L. NETTERVILLE                                       Mgmt          For                            For
+       DAVID R. PITTS                                            Mgmt          Withheld                       Against
+       PETER F. RICCHIUTI                                        Mgmt          For                            For
+       DONALD A. WASHBURN                                        Mgmt          For                            For
+- --------------------------------------------------------------------------------------------------------------------------
+ AMERICAN DENTAL PARTNERS, INC.                                                              Agenda Number:  932286695
+- --------------------------------------------------------------------------------------------------------------------------
+    Security:  025353103                                                             Meeting Type:  Annual
+      Ticker:  ADPI                                                                  Meeting Date:  26-Apr-2005
+        ISIN:
+- --------------------------------------------------------------------------------------------------------------------------
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+01     DIRECTOR
+       JAMES T. KELLY                                            Mgmt          For                            For
+       MARTIN J. MANNION                                         Mgmt          For                            For
+02     TO APPROVE THE ADOPTION OF AMERICAN DENTAL PARTNERS       Mgmt          For                            For
+       2005 EQUITY INCENTIVE PLAN AND 450,000 SHARES
+       OF COMMON STOCK RESERVED FOR ISSUANCE UNDER

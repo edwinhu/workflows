@@ -407,6 +407,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		if !ok {
 			name, ok = issOpenBanner(line, lines, i)
 		}
+		if !ok && len(bannerBuf) > 0 {
+			name, ok = issThinBannerContinuation(lines, i)
+		}
 		if !ok && line != "" && i+2 < len(lines) && issReportTitleLine(strings.TrimSpace(lines[i+1])) {
 			period := strings.Split(strings.TrimSpace(lines[i+2]), "-")
 			if len(period) == 2 && htmlDate(period[0]) != "" && htmlDate(period[1]) != "" {
@@ -1944,6 +1947,52 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			}
 		}
 	}
+	// The mirror case: a type word the DECLARED name carries and the heading
+	// OMITS: `ProShares Merger` for a declared `ProShares Merger ETF`
+	// (S000037318, ProShares Trust 2017, 460 rows with no series). Every
+	// extension that resolves must name the same series, so a stem two
+	// differently-typed series answer to refuses rather than chooses.
+	if f := strings.Fields(banner); len(f) > 1 {
+		switch strings.ToLower(strings.Trim(f[len(f)-1], ".,")) {
+		case "fund", "portfolio", "trust", "series", "etf":
+		default:
+			var hit *SeriesDecl
+			ambiguous := false
+			for _, w := range []string{"etf", "fund", "portfolio", "trust", "series"} {
+				cand, seen := lookupSeriesEntry(idx, banner+" "+w)
+				if !seen {
+					continue
+				}
+				if cand == nil || (hit != nil && hit.SeriesID != cand.SeriesID) {
+					ambiguous = true
+					break
+				}
+				hit = cand
+			}
+			if hit != nil && !ambiguous {
+				return banner, hit
+			}
+		}
+	}
+	// A series letter printed as the digit it looks like: `SBL Fund - Series 0`
+	// for a declared `SERIES O (ALL CAP VALUE SERIES)` (S000010054, SBL Fund
+	// 2013, 1,292 rows). One STANDALONE single-character token only, and the
+	// repair has to land on an exact declared name.
+	if f := strings.Fields(banner); len(f) > 0 && len(f[len(f)-1]) == 1 {
+		var alt string
+		switch f[len(f)-1] {
+		case "0":
+			alt = "O"
+		case "1":
+			alt = "I"
+		}
+		if alt != "" {
+			g := append(append([]string{}, f[:len(f)-1]...), alt)
+			if _, d := issResolveFund(ix, strings.Join(g, " ")); d != nil {
+				return banner, d
+			}
+		}
+	}
 	// A sleeve or account code before the name: `2DCN Emerging Markets Value
 	// Fund`, `(ZW4X) Total Return Blackrock ACWI xUS Index` (John Hancock Funds
 	// II, JHVIT, GE Investments: the largest unmatched-heading blocks on run65).
@@ -2070,7 +2119,14 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			// The head may still carry a brand or code: `PSF Jennison 20/20
 			// Focus Portfolio - Value` (Prudential Series Fund). The other
 			// rules run on it; the head has no dash of its own, so this ends.
-			if !strings.Contains(head, "- ") {
+			// ... but never when the head is the REGISTRANT's own name and
+			// nothing else: `LEGG MASON PARTNERS INVESTMENT FUNDS, INC. - LEGG
+			// MASON PARTNERS MULTIPLE DISCIPLINE FUNDS GLOBAL - BALANCED ALL CAP
+			// GROWTH AND VALUE FUND` put S000008861 on 4,495 rows of three other
+			// portfolios, because `partners investment` is a pair only the
+			// Investment Grade Bond Fund carries. A registrant naming itself
+			// names no series; the tail is where the fund is.
+			if !strings.Contains(head, "- ") && !issRegistrantOwnWords(head, registrantKey) {
 				if _, d := issResolveFund(ix, strings.TrimSpace(head)); d != nil {
 					return banner, d
 				}
@@ -2479,6 +2535,46 @@ func issColonRegistrantPrefix(banner, registrantKey string) (string, bool) {
 	return issRegistrantPrefixAt(banner, registrantKey, ':')
 }
 
+// issRegistrantOwnWords reports a heading fragment built entirely from the
+// registrant's own name tokens, which therefore names no series of its own.
+func issRegistrantOwnWords(s, registrantKey string) bool {
+	reg := map[string]bool{}
+	for _, t := range strings.Fields(registrantKey) {
+		reg[strings.Trim(t, ".,")] = true
+	}
+	f := strings.Fields(normalizeSeriesName(s))
+	if len(reg) == 0 || len(f) == 0 {
+		return false
+	}
+	for _, t := range f {
+		if !reg[strings.Trim(t, ".,")] {
+			return false
+		}
+	}
+	return true
+}
+
+// issRegistrantInitialism reports whether tok is the initials of the
+// registrant's own leading tokens, in order and with none skipped: `ml` for
+// `merrill lynch variable series funds inc`. Two letters at least, and the
+// initialism may not consume the whole registrant name.
+func issRegistrantInitialism(tok, registrantKey string) bool {
+	tok = strings.ToLower(tok)
+	if len(tok) < 2 {
+		return false
+	}
+	reg := strings.Fields(registrantKey)
+	if len(tok) >= len(reg) {
+		return false
+	}
+	for i := 0; i < len(tok); i++ {
+		if reg[i] == "" || reg[i][0] != tok[i] {
+			return false
+		}
+	}
+	return true
+}
+
 func issRegistrantPrefixAt(banner, registrantKey string, sep rune) (string, bool) {
 	regToks := make(map[string]bool)
 	for _, t := range strings.Fields(registrantKey) {
@@ -2497,11 +2593,22 @@ func issRegistrantPrefixAt(banner, registrantKey string, sep rune) (string, bool
 			continue
 		}
 		ok := true
-		for _, t := range f {
-			if !regToks[strings.Trim(t, ".,")] {
-				ok = false
-				break
+		for j, t := range f {
+			t = strings.Trim(t, ".,")
+			if regToks[t] {
+				continue
 			}
+			// The registrant's own leading tokens INITIALISED: `ML VARIABLE
+			// SERIES FUNDS, INC.:` for `Merrill Lynch Variable Series Funds Inc`
+			// (355916, 7,368 rows with no series). Only the head token may be
+			// the initialism, and every remaining token is still the
+			// registrant's own, so this never cuts a prefix the registrant does
+			// not spell.
+			if j == 0 && issRegistrantInitialism(t, registrantKey) {
+				continue
+			}
+			ok = false
+			break
 		}
 		if ok {
 			return rest, true
@@ -2746,6 +2853,10 @@ const (
 	// rule would supply the swapped noun and the wrong type word that the
 	// refuse-to-guess rules exist to withhold.
 	issDistinctivePairMinPool = 6
+	// The floor the SHORTER word of a pair must clear. The pair as a whole
+	// still needs one word of issDistinctiveTokenMin, so `managed core` counts
+	// and a pair of two short words does not.
+	issDistinctivePairTokenMin = 4
 )
 
 // issDistinctiveTokenDecl reads a heading printing the fund's name at the time
@@ -2845,7 +2956,15 @@ func issDistinctivePairDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 	seen := map[string]bool{}
 	for i := 0; i+1 < len(toks); i++ {
 		pair := toks[i] + " " + toks[i+1]
-		if len(toks[i]) < issDistinctiveTokenMin || len(toks[i+1]) < issDistinctiveTokenMin || seen[pair] {
+		// A pair is at least as discriminating as two separate tokens, so the
+		// length floor binds on ONE of its words rather than both: `managed
+		// core` reaches `Janus Adviser INTECH Risk-Managed Core Fund`
+		// (S000010562) where `core` alone never could.
+		short, long := len(toks[i]), len(toks[i+1])
+		if short > long {
+			short, long = long, short
+		}
+		if short < issDistinctivePairTokenMin || long < issDistinctiveTokenMin || seen[pair] {
 			continue
 		}
 		seen[pair] = true
@@ -3070,6 +3189,49 @@ func issFundSeparator(line string) (string, bool) {
 	return strings.TrimSpace(line[lead : n-trail]), true
 }
 
+// issThinBannerRule reads a rule that spends FEWER than issBannerMinEquals on
+// its padding because the name inside it nearly fills the 80 columns:
+//
+//	===== LEGG MASON PARTNERS INVESTMENT FUNDS, INC. - LEGG MASON PARTNERS ====
+//	= MULTIPLE DISCIPLINE FUNDS GLOBAL - BALANCED ALL CAP GROWTH AND VALUE FUND ==
+//
+// (Legg Mason Partners Investment Funds 2006). Read only as the CONTINUATION of
+// a line that already cleared the standalone threshold, never as a banner of its
+// own, so an ordinary sentence opening and closing on '=' still cannot become a
+// heading -- and the truncated first line, which names the registrant and the
+// brand and no series, no longer stands as the whole fund.
+func issThinBannerRule(line string) (string, bool) {
+	n := len(line)
+	if n == 0 || line[0] != '=' || line[n-1] != '=' {
+		return "", false
+	}
+	lead := 0
+	for lead < n && line[lead] == '=' {
+		lead++
+	}
+	if lead == n {
+		return "", false
+	}
+	trail := 0
+	for trail < n-lead && line[n-1-trail] == '=' {
+		trail++
+	}
+	name := strings.TrimSpace(line[lead : n-trail])
+	return name, name != ""
+}
+
+// issThinBannerContinuation reports lines[i] as a thin continuation of the
+// banner rule directly above it.
+func issThinBannerContinuation(lines []string, i int) (string, bool) {
+	if i < 1 {
+		return "", false
+	}
+	if prior, ok := issFundSeparator(strings.TrimSpace(lines[i-1])); !ok || prior == "" {
+		return "", false
+	}
+	return issThinBannerRule(strings.TrimSpace(lines[i]))
+}
+
 // issBannerWithTail reads a banner rule that carries the first issuer's name after
 // its closing '=' run, `=== Praxis Growth Index Fund ===   ABBOTT LABORATORIES`:
 // the rule up to the last '=' must be a banner with a name, and the tail is
@@ -3110,6 +3272,9 @@ func issBannerContinues(lines []string, i int) bool {
 		return false
 	}
 	name, ok := issFundSeparator(strings.TrimSpace(lines[i]))
+	if !ok {
+		name, ok = issThinBannerContinuation(lines, i)
+	}
 	if !ok && strings.TrimSpace(lines[i]) == "" && i+1 < len(lines) {
 		// one blank line between the rules (an HTML block gap); two is a break
 		name, ok = issFundSeparator(strings.TrimSpace(lines[i+1]))

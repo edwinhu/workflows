@@ -1,0 +1,39 @@
+		COMPANY CONFORMED NAME:			PROSHARES TRUST
+		CENTRAL INDEX KEY:			0001174610
+<SERIES>
+<OWNER-CIK>0001174610
+<SERIES-ID>S000037031
+<SERIES-NAME>ProShares UltraPro Short Financial Select Sector
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000113860
+<CLASS-CONTRACT-NAME>ProShares UltraPro Short Financial Select Sector
+<CLASS-CONTRACT-TICKER-SYMBOL>FINZ
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001174610
+<SERIES-ID>S000037318
+<SERIES-NAME>ProShares Merger ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000115055
+<CLASS-CONTRACT-NAME>ProShares Merger ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>MRGR
+</CLASS-CONTRACT>
+</SERIES>
+<TEXT>
+
+=============================== ProShares Merger ===============================
+
+
+ACTELION LTD.
+
+Ticker:       ATLN           Security ID:  H0032X135
+Meeting Date: APR 05, 2017   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Accept Financial Statements and         For       For          Management
+      Statutory Reports
+1.2   Approve Remuneration Report             For       For          Management
+2     Approve Allocation of Income and        For       For          Management
+      Omission of Dividends
