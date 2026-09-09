@@ -970,6 +970,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	flush()
 
 	issFillBlankIdentity(rows, blankIDRows)
+	issResidualEliminate(rows, seriesIx)
 
 	// A ZERO-ROW CLAIM IS NOT A RESULT. Measured 2026-08-31, this layout claimed
 	// 3,722 filings and read nothing out of any of them, and each was recorded as
@@ -992,6 +993,69 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		return nil, errLayoutDeclined
 	}
 	return rows, nil
+}
+
+// issResidualEliminate stamps the ONE heading a filing leaves unresolved when
+// the filing's own arithmetic leaves no other answer: every other heading
+// resolved, each to a DIFFERENT declared series, and exactly one declared series
+// is left over. AXP Variable Portfolio Managed Series Inc prints two banners and
+// declares two ids; the Diversified Equity Income banner resolves, and the
+// remaining banner (`AXP VARIABLE PORTFOLIO - MANAGED FUND`) names the series
+// the dictionary spells only under its successor name `RiverSource Variable
+// Portfolio Balanced Fund` -- a rename sharing no distinctive word, so no
+// name-based rung can reach it (1,761 of 2,999 rows).
+//
+// This is the only rung that stamps without name evidence, so it is confined to
+// the case where the choice is forced: two or more declared series, at least one
+// resolved heading, exactly one unresolved heading, and exactly one unclaimed
+// series. Any second unresolved heading or second unclaimed series is a guess
+// between them, and refuses.
+func issResidualEliminate(rows []VoteRow, ix *issSeriesIndex) {
+	if len(ix.decls) < 2 {
+		return
+	}
+	claimed := make(map[string]bool)
+	byFund := make(map[string]string)
+	unresolved := ""
+	for _, r := range rows {
+		if r.FundName == "" {
+			return
+		}
+		if r.SeriesID == "" {
+			if unresolved != "" && unresolved != r.FundName {
+				return
+			}
+			unresolved = r.FundName
+			continue
+		}
+		if prev, seen := byFund[r.FundName]; seen && prev != r.SeriesID {
+			return
+		}
+		byFund[r.FundName] = r.SeriesID
+		claimed[r.SeriesID] = true
+	}
+	if unresolved == "" || len(byFund) == 0 || len(byFund) != len(claimed) {
+		return
+	}
+	var left *SeriesDecl
+	for i := range ix.decls {
+		if claimed[ix.decls[i].SeriesID] {
+			continue
+		}
+		if left != nil {
+			return
+		}
+		left = &ix.decls[i]
+	}
+	if left == nil {
+		return
+	}
+	for i := range rows {
+		if rows[i].SeriesID == "" {
+			rows[i].SeriesID = left.SeriesID
+			rows[i].ClassIDs = strings.Join(left.ClassIDs, MultiValueSep)
+		}
+	}
 }
 
 // issFillBlankIdentity fills the ticker and CUSIP of the rows a BLANK identity
@@ -2211,7 +2275,73 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			return banner, alt
 		}
 	}
+	// The geography printed as a NOUN where the declared name inflects it as an
+	// adjective: `GAM EUROPE FUND` for a declared `GAM European Equity Fund`
+	// (GAM Funds Inc 2005, 1,763 rows with no series). `GAM EUROPEAN FUND`
+	// already resolves through the dropped-`Equity` rung, so the inflection is
+	// the sole blocker. One token only, and the retried key must resolve; an
+	// ambiguous retry still refuses.
+	if d := issGeographyInflectionDecl(ix, key); d != nil {
+		return banner, d
+	}
+	// A token the heading INSERTS before the terminal type word, which the
+	// trailing-type-word rung above never reaches: `GAMERICA CAPITAL FUND` for
+	// a declared `GAMerica Fund` (353 rows). Exactly one internal token is
+	// dropped, the result must be an exact declared name, and two different
+	// drops naming two different series refuse.
+	if d := issInternalTokenDropDecl(ix, key); d != nil {
+		return banner, d
+	}
 	return banner, nil
+}
+
+// issGeographyInflectionDecl retries the key with one geography noun replaced by
+// its adjective form. Confined to the observed inflections; the retry goes back
+// through the whole chain, so an ambiguous retry still stamps nothing.
+func issGeographyInflectionDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	inflect := map[string]string{"europe": "european", "asia": "asian", "america": "american"}
+	f := strings.Fields(key)
+	var out *SeriesDecl
+	for i, t := range f {
+		adj, ok := inflect[t]
+		if !ok {
+			continue
+		}
+		alt := append(append([]string{}, f[:i]...), append([]string{adj}, f[i+1:]...)...)
+		_, d := issResolveFund(ix, strings.Join(alt, " "))
+		if d == nil {
+			continue
+		}
+		if out != nil && out.SeriesID != d.SeriesID {
+			return nil
+		}
+		out = d
+	}
+	return out
+}
+
+// issInternalTokenDropDecl drops exactly one token that is neither the first nor
+// the last of the key and retries the exact index. The first token carries the
+// brand and the last the type word, so neither is ever cut here; two drops
+// naming different series are a refusal.
+func issInternalTokenDropDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	f := strings.Fields(key)
+	if len(f) < 3 {
+		return nil
+	}
+	var out *SeriesDecl
+	for i := 1; i < len(f)-1; i++ {
+		alt := append(append([]string{}, f[:i]...), f[i+1:]...)
+		d, _ := lookupSeriesEntry(ix.byName, strings.Join(alt, " "))
+		if d == nil {
+			continue
+		}
+		if out != nil && out.SeriesID != d.SeriesID {
+			return nil
+		}
+		out = d
+	}
+	return out
 }
 
 // issHyphenGluedRegistrantPrefix cuts a hyphen-glued prefix built entirely from

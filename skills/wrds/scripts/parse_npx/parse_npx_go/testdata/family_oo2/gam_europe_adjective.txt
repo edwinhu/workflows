@@ -1,0 +1,29 @@
+		COMPANY CONFORMED NAME:			GAM FUNDS INC
+		CENTRAL INDEX KEY:			0000749155
+<TEXT>
+
+
+
+=============================== GAM EUROPE FUND ================================
+
+
+ABB LTD. ZUERICH
+
+Ticker:                      Security ID:  H0010V101
+Meeting Date: MAY 18, 2004   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Receive Financial Statements and          None      Did Not    Management
+      Statutory Reports                                   Vote
+2     Accept Financial Statements and Statutory For       Did Not    Management
+      Reports                                             Vote
+3     Approve Discharge of Board and Senior     For       Did Not    Management
+      Management                                          Vote
+4     Approve Allocation of Income and Omission For       Did Not    Management
+      of Dividends                                        Vote
+5     Reelect Roger Agnelli, Juergen Dormann,   For       Did Not    Management
+      Louis Hughes, Hans Maerki, Michel de                Vote
+      Rosen, Michael Treschow, Bernd Voss, and
+      Jacob Wallenberg as Directors
+6     Ratify Ernst & Young AG as Auditors       For       Did Not    Management
