@@ -1817,6 +1817,14 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			return banner, idx[strings.TrimSuffix(key, " portfolio")+" fund"]
 		}
 	}
+	// Salomon's first banner is garbled three ways at once (SALMON for
+	// SALOMON, BROTHERS dropped, a stray trailing EQUITY). Audited alias to
+	// the one Balanced series the registrant declares; no general rule drops
+	// a trailing word before a near-miss brand.
+	if registrantKey == "salomon brothers series funds inc" &&
+		normalizeSeriesName(banner) == "salmon balanced fund equity" {
+		return banner, idx["salomon brothers balanced fund"]
+	}
 	// A type word the heading adds and the declared name lacks: `PGIM Ultra
 	// Short Bond ETF Fund` for `PGIM Ultra Short Bond ETF` (PGIM ETF Trust,
 	// 67k rows with no fund). Exact after dropping the last word.
@@ -2014,6 +2022,17 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 				return banner, d
 			}
 		}
+		// The same compact reading as above, after the brand comes off:
+		// `SUMMIT S&P MID CAP 400 INDEX PORTFOLIO` for a declared `S&P Midcap
+		// 400 Index Portfolio` (Summit Mutual Funds, 867 rows). Collisions
+		// were recorded as nil by put and still refuse.
+		restCompact := strings.ReplaceAll(rest, " ", "")
+		if d, seen := ix.byCompact[restCompact]; seen && d != nil {
+			return banner, d
+		}
+		if d, seen := ix.lessLeadCompact[restCompact]; seen && d != nil {
+			return banner, d
+		}
 	}
 	// The registrant's FULL name where the declared names carry only its
 	// leading tokens: `State Farm Variable Product Trust Small Cap Equity
@@ -2153,12 +2172,31 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			return banner, alt
 		}
 	}
+	// The same prefix cut where the filing's own separator is a colon.
+	if rest, ok := issColonRegistrantPrefix(banner, registrantKey); ok {
+		if _, alt := issResolveFund(ix, rest); alt != nil {
+			return banner, alt
+		}
+	}
 	return banner, nil
 }
 
 // issHyphenGluedRegistrantPrefix cuts a hyphen-glued prefix built entirely from
 // the registrant's own tokens, returning the remainder.
 func issHyphenGluedRegistrantPrefix(banner, registrantKey string) (string, bool) {
+	return issRegistrantPrefixAt(banner, registrantKey, '-')
+}
+
+// issColonRegistrantPrefix is the same cut where the filing separates the
+// registrant from the fund with a colon: `MERCURY MASTER TRUST: MERRILL LYNCH
+// MASTER INTERNATIONAL PORTFOL` for a declared `Merrill Lynch Master
+// International Portfolio` (S000002289, 1,414 rows). The remainder goes back
+// through the whole chain, so the banner-width truncation is read there.
+func issColonRegistrantPrefix(banner, registrantKey string) (string, bool) {
+	return issRegistrantPrefixAt(banner, registrantKey, ':')
+}
+
+func issRegistrantPrefixAt(banner, registrantKey string, sep rune) (string, bool) {
 	regToks := make(map[string]bool)
 	for _, t := range strings.Fields(registrantKey) {
 		regToks[strings.Trim(t, ".,")] = true
@@ -2167,7 +2205,7 @@ func issHyphenGluedRegistrantPrefix(banner, registrantKey string) (string, bool)
 		return "", false
 	}
 	for i, r := range banner {
-		if r != '-' {
+		if r != sep {
 			continue
 		}
 		head, rest := strings.TrimSpace(banner[:i]), strings.TrimSpace(banner[i+1:])

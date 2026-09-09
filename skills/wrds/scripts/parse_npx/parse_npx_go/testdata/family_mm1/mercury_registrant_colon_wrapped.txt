@@ -1,0 +1,43 @@
+		COMPANY CONFORMED NAME:			MERCURY MASTER TRUST /DE/
+		CENTRAL INDEX KEY:			0001062805
+<TEXT>
+=========== MERCURY MASTER TRUST: MERRILL LYNCH MASTER INTERNATIONAL ===========
+===========                         PORTFOL                          ===========
+
+
+ADVANCED INFO SERVICE PCL
+
+Ticker:       AVIFY          Security ID:  Y0014U183
+Meeting Date: APR 23, 2004   Meeting Type: Annual
+Record Date:  APR 5, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Open Meeting                              None      None       Management
+2     Approve Minutes of Previous AGM           For       For        Management
+3     Accept Report on Company Performance in   For       For        Management
+      2003
+4     Accept Financial Statements and Statutory For       For        Management
+      Reports
+5     Elect Directors and Fix Their             For       For        Management
+      Remuneration
+6     Approve Auditors and Authorize Board to   For       For        Management
+      Fix Their Remuneration
+7     Approve Allocation of Income and          For       For        Management
+      Dividends
+8     Approve Issuance of Nine Million Units of For       For        Management
+      Warrants to Directors, Employees, and
+      Advisors of the Company Under the ESOP
+      Grant III
+9     Approve the Issuance of Nine Million      For       For        Management
+      Shares Reserved Exclusively for the
+      Conversion of Warrants Under the ESOP
+      Grant III
+10    Approve Issuance of Warrants to           For       For        Management
+      Directors, Employees and Advisors
+      Exceeding Five Percent of the Total
+      Issuance Under the ESOP Grant III
+11    Approve Issuance of 125,591 Shares        For       For        Management
+      Reserved Exclusively for the Conversion
+      of Warrants Under ESOP Grant I & II
+12    Other Business                            For       Against    Management
+
