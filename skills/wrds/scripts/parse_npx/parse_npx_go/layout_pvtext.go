@@ -140,7 +140,7 @@ func parsePVText(text string, meta FilingMeta) ([]VoteRow, error) {
 			inTable, haveMtg, pendingIssuer, continuationRow = false, false, false, -1
 			continue
 		}
-		if line := strings.TrimSpace(lines[i]); line != "" && i+1 < len(lines) && strings.TrimSpace(lines[i+1]) == "" {
+		if line := strings.TrimSpace(lines[i]); line != "" && i+1 < len(lines) && pvTextHeadingTerminator(lines[i+1]) {
 			if _, d := issResolveFund(seriesIx, line); d != nil {
 				fund, fundSeries, bareAccount = line, d.SeriesID, true
 				inTable, haveMtg, pendingIssuer, continuationRow = false, false, false, -1
@@ -822,6 +822,19 @@ func pvTextVote(s string) bool {
 // `Mtg Date/Type | Company/Ballot Issues | Security | Mgmt Rec | Vote Cast`
 // fixed-width layout under other sub-advisors, and a layout that never closes
 // would run on and emit rows from a format it was never written for.
+// pvTextHeadingTerminator reports whether a line closes off the line above it as
+// a bare fund heading. A blank line is the common form; Hillman Capital's 2004
+// filing underlines each heading with a dashed rule (`- ---------------`)
+// instead, which disqualified both of its headings and left all 729 rows without
+// a series.
+func pvTextHeadingTerminator(line string) bool {
+	t := strings.TrimSpace(line)
+	if t == "" {
+		return true
+	}
+	return strings.Trim(t, "- ") == "" && strings.Contains(t, "--")
+}
+
 func pvTextPageFurniture(line string) bool {
 	if line == "<PAGE>" || line == "\f" {
 		return true

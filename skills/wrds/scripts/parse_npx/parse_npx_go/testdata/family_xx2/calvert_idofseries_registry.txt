@@ -1,0 +1,101 @@
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Morgan Stanley ETF Trust
+		CENTRAL INDEX KEY:			0001676326
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>primary_doc.xml
+<TEXT>
+<XML>
+<?xml version="1.0" encoding="UTF-8"?>
+<edgarSubmission xmlns="http://www.sec.gov/edgar/npx" xmlns:com="http://www.sec.gov/edgar/common">
+  <headerData>
+    <submissionType>N-PX</submissionType>
+    <filerInfo>
+      <registrantType>RMIC</registrantType>
+      <liveTestFlag>LIVE</liveTestFlag>
+      <filer>
+        <issuerCredentials>
+          <cik>0001676326</cik>
+          <ccc>XXXXXXXX</ccc>
+        </issuerCredentials>
+      </filer>
+      <flags>
+        <overrideInternetFlag>false</overrideInternetFlag>
+        <confirmingCopyFlag>false</confirmingCopyFlag>
+      </flags>
+      <investmentCompanyType>N-1A</investmentCompanyType>
+      <periodOfReport>06/30/2024</periodOfReport>
+    </filerInfo>
+    <seriesClass>
+      <reportSeriesClass>
+        <rptIncludeAllSeriesFlag>true</rptIncludeAllSeriesFlag>
+      </reportSeriesClass>
+    </seriesClass>
+  </headerData>
+  <formData>
+    <coverPage>
+      <yearOrQuarter>YEAR</yearOrQuarter>
+      <reportCalendarYear>2024</reportCalendarYear>
+      <reportingPerson>
+        <name>Morgan Stanley ETF Trust</name>
+        <phoneNumber>800-548-7786</phoneNumber>
+        <address>
+          <com:street1>1585 Broadway</com:street1>
+          <com:city>New York</com:city>
+          <com:stateOrCountry>NY</com:stateOrCountry>
+          <com:zipCode>10019</com:zipCode>
+        </address>
+      </reportingPerson>
+      <agentForService>
+        <name>Mary E. Mullin, Esq.</name>
+        <address>
+          <com:street1>1585 Broadway</com:street1>
+          <com:city>New York</com:city>
+          <com:stateOrCountry>NY</com:stateOrCountry>
+          <com:zipCode>10019</com:zipCode>
+        </address>
+      </agentForService>
+      <reportInfo>
+        <reportType>FUND VOTING REPORT</reportType>
+      </reportInfo>
+      <fileNumber>811-23820</fileNumber>
+      <explanatoryInformation>
+        <explanatoryChoice>Y</explanatoryChoice>
+        <explanatoryNotes>Effective March 22, 2024, Morgan Stanley Institutional Fund Trust - Core Plus Fixed Income Portfolio name was changed Eaton Vance Total Return Bond ETF.  Effective June 14, 2024, Morgan Stanley Institutional Fund Trust - Short Duration Income Portfolio name was changed Eaton Vance Short Duration Income ETF.  Effective March 20, 2024, Morgan Stanley Institutional Fund Trust - Short Municipal Income Portfolio name was changed Eaton Vance Short Duration Municipal Income ETF.</explanatoryNotes>
+      </explanatoryInformation>
+    </coverPage>
+    <summaryPage>
+      <otherIncludedManagersCount>0</otherIncludedManagersCount>
+    </summaryPage>
+    <seriesPage>
+      <seriesCount>15</seriesCount>
+      <seriesDetails>
+        <seriesReports>
+          <idOfSeries>S000077958</idOfSeries>
+          <nameOfSeries>Calvert International Responsible Index ETF</nameOfSeries>
+          <leiOfSeries>549300S98HJ47LAXEL28</leiOfSeries>
+        </seriesReports>
+        <seriesReports>
+          <idOfSeries>S000077959</idOfSeries>
+          <nameOfSeries>Calvert US Large-Cap Core Responsible Index ETF</nameOfSeries>
+          <leiOfSeries>5493007V0QHGZDCX4V94</leiOfSeries>
+        </seriesReports>
+      </seriesDetails>
+    </seriesPage>
+  </formData>
+</edgarSubmission>
+</XML>
+</TEXT>
+</DOCUMENT>
+<DOCUMENT>
+<TYPE>PROXY VOTING RECORD
+<SEQUENCE>2
+<FILENAME>ProxyVotingTable.xml
+<TEXT>
+<XML>
+<?xml version="1.0" ?><inf:proxyVoteTable xmlns:inf="http://www.sec.gov/edgar/document/npxproxy/informationtable"><inf:proxyTable><inf:issuerName>LONGi Green Energy Technology Co., Ltd.</inf:issuerName><inf:cusip>Y9727F102</inf:cusip><inf:isin>CNE100001FR6</inf:isin><inf:meetingDate>07/07/2023</inf:meetingDate><inf:voteDescription>Approve Issuance of GDR Based on New Domestic A-shares and Listing on Swiss Stock Exchange</inf:voteDescription><inf:voteCategories><inf:voteCategory><inf:categoryType>CAPITAL STRUCTURE</inf:categoryType></inf:voteCategory></inf:voteCategories><inf:voteSource>ISSUER</inf:voteSource><inf:sharesVoted>2911350.000000</inf:sharesVoted><inf:sharesOnLoan>0</inf:sharesOnLoan><inf:vote><inf:voteRecord><inf:howVoted>FOR</inf:howVoted><inf:sharesVoted>2911350.000000</inf:sharesVoted><inf:managementRecommendation>FOR</inf:managementRecommendation></inf:voteRecord></inf:vote></inf:proxyTable><inf:proxyTable><inf:issuerName>LONGi Green Energy Technology Co., Ltd.</inf:issuerName><inf:cusip>Y9727F102</inf:cusip><inf:isin>CNE100001FR6</inf:isin><inf:meetingDate>07/07/2023</inf:meetingDate><inf:voteDescription>Approve Demonstration Analysis Report in Connection to Issuance of GDR Based on New Domestic A-shares and Listing on Swiss Stock Exchange</inf:voteDescription><inf:voteCategories><inf:voteCategory><inf:categoryType>CAPITAL STRUCTURE</inf:categoryType></inf:voteCategory></inf:voteCategories><inf:voteSource>ISSUER</inf:voteSource><inf:sharesVoted>2911350.000000</inf:sharesVoted><inf:sharesOnLoan>0</inf:sharesOnLoan><inf:vote><inf:voteRecord><inf:howVoted>FOR</inf:howVoted><inf:sharesVoted>2911350.000000</inf:sharesVoted><inf:managementRecommendation>FOR</inf:managementRecommendation></inf:voteRecord></inf:vote></inf:proxyTable></inf:proxyVoteTable>
+</XML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

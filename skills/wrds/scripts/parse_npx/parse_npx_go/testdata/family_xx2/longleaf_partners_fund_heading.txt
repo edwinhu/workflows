@@ -1,0 +1,221 @@
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			LONGLEAF PARTNERS FUNDS TRUST
+		CENTRAL INDEX KEY:			0000806636
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>g97023nvpx.htm
+<DESCRIPTION>LONGLEAF PARTNERS FUNDS TRUST
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE>LONGLEAF PARTNERS FUNDS TRUST</TITLE>
+</HEAD>
+<BODY bgcolor="#FFFFFF">
+<!-- PAGEBREAK -->
+
+<DIV align="left" style="font-size: 10pt; margin-top: 12pt"><B>Longleaf Partners Fund</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>For the Period July&nbsp;1, 2004 &#151; June&nbsp;30, 2005</B>
+</DIV>
+
+<DIV align="center">
+<TABLE style="font-size: 10pt" cellspacing="0" border="0" cellpadding="0" width="100%">
+<!-- Begin Table Head -->
+<TR valign="bottom">
+    <TD width="10%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="6%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="1%">&nbsp;</TD>
+    <TD width="3%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="6%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="36%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="8%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="6%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="6%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="6%">&nbsp;</TD>
+</TR>
+<TR style="font-size: 8pt" valign="bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Ticker</B></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Meeting</B></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Fund&#146;s</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>For or Against</B></TD>
+</TR>
+<TR style="font-size: 8pt" valign="bottom">
+    <TD nowrap align="left"><B>Issuer of Security</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Symbol</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center" colspan="3"><B>CUSIP</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Date</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left"><B>Matter Voted</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Proposed By</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Vote Cast</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Vote</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Management</B></TD>
+</TR>
+
+<!-- End Table Head -->
+<!-- Begin Table Body -->
+<TR style="font-size: 1px">
+    <TD colspan="19" valign="top" align="left" style="border-top: 1px solid #000000">&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+
+<TD align="center" valign="top" nowrap><DIV style="margin-left:0px; text-indent:-0px">Aon Corp.
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">AOC
+</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="right" valign="top">&nbsp;</TD>
+    <TD align="right" valign="top">37389103</TD>
+    <TD nowrap valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">05/20/05
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Elect Director Patrick G. Ryan
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Management
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For</TD>
+</TR>
+<TR valign="bottom">
+    <TD align="center" valign="top"><DIV style="margin-left:0px; text-indent:-0px">&nbsp;
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="right" valign="top">&nbsp;</TD>
+    <TD align="right" valign="top">&nbsp;</TD>
+    <TD valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Elect Director Gregory C. Case
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Management
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For</TD>
+</TR>
+<TR valign="bottom">
+    <TD align="center" valign="top"><DIV style="margin-left:0px; text-indent:-0px">&nbsp;
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="right" valign="top">&nbsp;</TD>
+    <TD align="right" valign="top">&nbsp;</TD>
+    <TD valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Elect Director Edgar D. Jannotta
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Management
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For</TD>
+</TR>
+<TR valign="bottom">
+    <TD align="center" valign="top"><DIV style="margin-left:0px; text-indent:-0px">&nbsp;
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="right" valign="top">&nbsp;</TD>
+    <TD align="right" valign="top">&nbsp;</TD>
+    <TD valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Elect Director Jan Kalff
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Management
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For</TD>
+</TR>
+<TR valign="bottom">
+    <TD align="center" valign="top"><DIV style="margin-left:0px; text-indent:-0px">&nbsp;
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="right" valign="top">&nbsp;</TD>
+    <TD align="right" valign="top">&nbsp;</TD>
+    <TD valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Elect Director Lester B. Knight
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Management
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+</TABLE>
