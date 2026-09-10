@@ -7,7 +7,7 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanM
 
 # writing — a document, run through craft with a computed grammar and citation gate
 
-The lifecycle is [craft](${CLAUDE_PLUGIN_ROOT}/skills/craft/SKILL.md). Read it and follow it.
+The lifecycle is [craft](${CLAUDE_SKILL_DIR}/../craft/SKILL.md). Read it and follow it.
 This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lenses,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
 craft's mechanics.
@@ -67,7 +67,7 @@ the venue decides the length, and the length decides the section count.
 Craft's remaining axes are taken as craft states them, with two domain bindings: craft axis 4
 (observable success criteria) is answered by the four mechanical checks below — `GRAMMAR`, `CITE`,
 `CLAIM` and `PROSE-HARD`, defined in
-[`references/writing-checks.md`](${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md)
+[`references/writing-checks.md`](${CLAUDE_SKILL_DIR}/references/writing-checks.md)
 — whose command strings become `mechanicalChecks` verbatim; craft axis 6 (third-party review) is
 answered **not opted in**, so no `thirdParty` key is passed.
 
@@ -152,7 +152,7 @@ did not make and must now argue with.
 
 Main chat, in order:
 
-1. **Publish** `${CLAUDE_PLUGIN_ROOT}/skills/writing/assets/bench.html` with the `Artifact` tool,
+1. **Publish** `${CLAUDE_SKILL_DIR}/assets/bench.html` with the `Artifact` tool,
    `capabilities: {"db": {}, "sample": {}}`. Persona agents hold no `Artifact` tool, so this is
    main-chat work by construction, not a delegation you forgot to make.
 2. **Seed it** — `write_db` to collection `plan`, doc `bench`: the CLARIFY answers as `intent`
@@ -216,7 +216,7 @@ uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_receipt.py \
 ```
 
 The three commands, quoted exactly as
-[`references/writing-checks.md`](${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md)
+[`references/writing-checks.md`](${CLAUDE_SKILL_DIR}/references/writing-checks.md)
 defines them — one per project for GRAMMAR and PROSE-HARD, one **per section** for CITE+CLAIM:
 
 ```
@@ -241,16 +241,16 @@ uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_prose_gate.p
 `0` = no hard-severity span; `1` = blocked; `2` = gate defect (missing or unrunnable engine,
 unparseable output). Soft findings print as advisory and never set the exit code. `<domain>` is the
 plan's `Domain:`. The wrapper invokes
-`${CLAUDE_PLUGIN_ROOT}/scripts/prose-audit.py` **in place** — never forked, never modified,
+`${CLAUDE_SKILL_DIR}/../../scripts/prose-audit.py` **in place** — never forked, never modified,
 that tree is read-only — under its own `uv run --with lxml --with pyyaml python3`, so this command
 line does not carry those flags and must not gain them. **Never wire the engine's own exit code to
 the gate:** it ends in `sys.exit(worst)` and so conflates hard with soft, which would block a run on
 advisory puffery.
 
 One worked in-tree fixture project, `fixtures/clean/`, is what every check runs against; it is
-described at [`fixtures/README.md`](${CLAUDE_PLUGIN_ROOT}/skills/writing/fixtures/README.md).
+described at [`fixtures/README.md`](${CLAUDE_SKILL_DIR}/fixtures/README.md).
 The broken variants are **generated, not stored**:
-[`scripts/writing_flip_test.py`](${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_flip_test.py)
+[`scripts/writing_flip_test.py`](${CLAUDE_SKILL_DIR}/scripts/writing_flip_test.py)
 copies the clean fixture once per check, applies exactly one defect, and asserts the check exits 0 on
 clean, non-zero on the break, **and that the failure names its own subject** — the last of those
 because exit-code-only assertions let a check pass while exercising a different dimension entirely.
