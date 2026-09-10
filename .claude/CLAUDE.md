@@ -26,16 +26,22 @@
 
 ## Path Variables in Skills
 
-**Skill content** (SKILL.md body): Only `${CLAUDE_SKILL_DIR}`, `${CLAUDE_SESSION_ID}`, `$ARGUMENTS` are substituted.
-**Hook commands**: `${CLAUDE_PLUGIN_ROOT}`, `$CLAUDE_PROJECT_DIR`, `${CLAUDE_PLUGIN_DATA}` are substituted.
+**Both `${CLAUDE_PLUGIN_ROOT}` and `${CLAUDE_SKILL_DIR}` are substituted in SKILL.md content**, in
+plain prose as well as in bash blocks — verified 2026-09-09 by invoking `docx-typst` and reading
+what the harness delivered. `${CLAUDE_SESSION_ID}` and `$ARGUMENTS` are substituted too.
+Hook commands get `${CLAUDE_PLUGIN_ROOT}`, `$CLAUDE_PROJECT_DIR` and `${CLAUDE_PLUGIN_DATA}`;
+`${CLAUDE_SKILL_DIR}` means nothing there.
 
-| Context | Use | Example |
-|---------|-----|---------|
-| Skill content (top-level) | `${CLAUDE_SKILL_DIR}/../..` | `!`cat ${CLAUDE_SKILL_DIR}/../../references/file.md`` |
-| Hook command | `${CLAUDE_PLUGIN_ROOT}` | `bun ${CLAUDE_PLUGIN_ROOT}/hooks/lint-check.ts` |
-| Internal skill (Read-loaded) | `${CLAUDE_PLUGIN_ROOT}` convention | Claude infers from context |
+Choose by what you are pointing AT, not by where the line sits:
 
-**`${CLAUDE_PLUGIN_ROOT}` does NOT work in skill content — use `${CLAUDE_SKILL_DIR}` instead.**
+| Pointing at | Use |
+|---|---|
+| A file bundled with THIS skill (`scripts/`, `references/`, `assets/`, `fixtures/`) | `${CLAUDE_SKILL_DIR}/...` |
+| A sibling skill, or plugin-root `scripts/`, `hooks/`, `agents/` | `${CLAUDE_PLUGIN_ROOT}/...` |
+| Anything, from a hook command | `${CLAUDE_PLUGIN_ROOT}/...` |
+
+`${CLAUDE_SKILL_DIR}` is the skill's own subdirectory, never the plugin root, so reaching a sibling
+means climbing `../..` — that climb is the signal you wanted `${CLAUDE_PLUGIN_ROOT}`.
 
 **Key insights:**
 - If the skill description contains process summary, Claude follows the short description instead of reading the detailed flowchart. Keep descriptions trigger-only.
