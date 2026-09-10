@@ -1,0 +1,1137 @@
+<title>The Writing Bench</title>
+<style>
+:root{
+  --bg:#faf9f7; --panel:#fff; --ink:#1a1917; --muted:#6b6560; --faint:#938c85;
+  --line:#e3ded7; --line-strong:#cec7bd;
+  --accent:#8a4b2a; --accent-soft:#f3e7de;
+  --you:#2f6f4f; --you-soft:#e4f0e9;
+  --claude:#6a4fa3; --claude-soft:#ece6f7;
+  --agreed:#1f6feb; --agreed-soft:#e3edfd;
+  --warn:#a8501a; --warn-soft:#fbeade;
+  --scaffold:#8a8177; --scaffold-soft:#efece7;
+  --radius:10px;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --bg:#171614; --panel:#201e1b; --ink:#eae5df; --muted:#a29a91; --faint:#7d756c;
+  --line:#332f2b; --line-strong:#48423b;
+  --accent:#d99a6a; --accent-soft:#3a2c21;
+  --you:#7fc8a0; --you-soft:#1e3229;
+  --claude:#b49ce0; --claude-soft:#2b2340;
+  --agreed:#6fa8f5; --agreed-soft:#1c2942;
+  --warn:#e0a06a; --warn-soft:#3a2a1c;
+  --scaffold:#8a8177; --scaffold-soft:#2a2724;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#171614; --panel:#201e1b; --ink:#eae5df; --muted:#a29a91; --faint:#7d756c;
+  --line:#332f2b; --line-strong:#48423b;
+  --accent:#d99a6a; --accent-soft:#3a2c21;
+  --you:#7fc8a0; --you-soft:#1e3229;
+  --claude:#b49ce0; --claude-soft:#2b2340;
+  --agreed:#6fa8f5; --agreed-soft:#1c2942;
+  --warn:#e0a06a; --warn-soft:#3a2a1c;
+  --scaffold:#8a8177; --scaffold-soft:#2a2724;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+textarea,input,select{font:inherit;color:inherit}
+select,option{background:var(--bg);color:var(--ink)}
+
+.shell{display:grid;grid-template-columns:minmax(0,1fr) 360px;min-height:100vh}
+@media (max-width:1000px){.shell{grid-template-columns:minmax(0,1fr)}
+  .rail{border-left:0;border-top:1px solid var(--line);position:static!important;height:auto!important}}
+
+header.top{grid-column:1/-1;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:14px 26px;border-bottom:1px solid var(--line);background:var(--panel);
+  position:sticky;top:0;z-index:20}
+.brand{font-family:var(--serif);font-size:19px;letter-spacing:-.02em}
+.brand em{font-style:italic;color:var(--muted)}
+.projname{font-family:var(--mono);font-size:12px;color:var(--muted);
+  border:1px solid var(--line);border-radius:6px;padding:3px 8px;background:var(--bg)}
+.spacer{flex:1}
+.peers{display:flex;align-items:center}
+.peer{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+  font-size:11px;font-weight:700;color:#fff;border:2px solid var(--panel);margin-left:-7px;font-family:var(--mono)}
+.peer:first-child{margin-left:0}
+.btn{border:1px solid var(--line-strong);border-radius:7px;padding:5px 11px;font-size:13px;
+  background:var(--panel);transition:background .12s,border-color .12s}
+.btn:hover{background:var(--accent-soft);border-color:var(--accent)}
+.btn.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.sm{padding:3px 8px;font-size:12px}
+
+main{padding:30px 30px 150px;max-width:860px;margin:0 auto;width:100%;min-width:0}
+section.block{margin-bottom:40px}
+.blockhead{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;
+  padding-bottom:7px;border-bottom:1px solid var(--line)}
+.blockhead h2{font-family:var(--serif);font-size:21px}
+.blockhead .n{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.blocknote{font-size:13px;color:var(--muted);margin:0 0 14px;max-width:64ch}
+
+.field{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;align-items:start;
+  padding:7px 0;border-bottom:1px dashed var(--line)}
+.field:last-child{border-bottom:0}
+.field label{font-family:var(--mono);font-size:11px;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--muted);padding-top:6px}
+.ed{width:100%;background:transparent;border:1px solid transparent;border-radius:6px;
+  padding:5px 7px;resize:none;overflow:hidden;line-height:1.5;min-height:32px}
+.ed:hover{border-color:var(--line)}
+.ed:focus{outline:0;border-color:var(--accent);background:var(--panel)}
+.ed.serif{font-family:var(--serif);font-size:16px}
+select.ed{appearance:auto;min-height:auto;padding:5px 7px;background:var(--bg);
+  color:var(--ink);border-color:var(--line);max-width:220px}
+
+.card{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);
+  padding:11px 13px;margin-bottom:9px;position:relative}
+.card.sel{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.cardtop{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.cid{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:600}
+.chip{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;
+  padding:2px 6px;border-radius:20px;border:1px solid;white-space:nowrap}
+.chip.you{color:var(--you);border-color:var(--you);background:var(--you-soft)}
+.chip.claude{color:var(--claude);border-color:var(--claude);background:var(--claude-soft)}
+.chip.agreed{color:var(--agreed);border-color:var(--agreed);background:var(--agreed-soft)}
+.chip.scaffold{color:var(--scaffold);border-color:var(--scaffold);background:var(--scaffold-soft)}
+.chip.open{color:var(--warn);border-color:var(--warn);background:var(--warn-soft)}
+.cardacts{margin-left:auto;display:flex;gap:4px;opacity:0;transition:opacity .12s}
+.card:hover .cardacts,.card.sel .cardacts{opacity:1}
+.iact{font-size:12px;color:var(--muted);padding:2px 6px;border-radius:5px;border:1px solid transparent}
+.iact:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.iact.danger:hover{background:var(--warn-soft);color:var(--warn);border-color:var(--warn)}
+.cardmeta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:6px;font-size:12px;color:var(--muted)}
+.cardmeta select{font-size:12px;background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:2px 5px;max-width:260px}
+.addrow{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+
+/* ---------------- outliner ---------------- */
+.outline{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);
+  padding:6px 8px}
+.row{display:flex;align-items:flex-start;gap:6px;padding:2px 4px;border-radius:6px;
+  position:relative;border:1px solid transparent}
+.row:hover{background:var(--bg)}
+.row.sel{background:var(--accent-soft);border-color:var(--accent)}
+.row.drag{opacity:.35}
+.row.dropafter{box-shadow:0 2px 0 0 var(--accent)}
+.row.dropbefore{box-shadow:0 -2px 0 0 var(--accent)}
+.grip{cursor:grab;color:var(--faint);font-size:12px;padding:6px 2px 0;flex:0 0 auto;
+  user-select:none;letter-spacing:-2px}
+.grip:active{cursor:grabbing}
+.tw{flex:0 0 14px;padding-top:5px;font-size:10px;color:var(--faint);text-align:center;cursor:pointer}
+.tw.none{visibility:hidden}
+.num{flex:0 0 auto;font-family:var(--mono);font-size:11px;color:var(--muted);
+  padding-top:7px;min-width:38px;text-align:right;font-weight:600}
+.row.d0 .num{color:var(--accent)}
+.rtext{flex:1;min-width:0}
+.rtext textarea{width:100%;background:transparent;border:1px solid transparent;border-radius:5px;
+  padding:4px 6px;resize:none;overflow:hidden;line-height:1.45;min-height:28px}
+.rtext textarea:focus{outline:0;border-color:var(--accent);background:var(--bg)}
+.row.d0 .rtext textarea{font-family:var(--serif);font-size:17px;font-weight:600}
+.row.d1 .rtext textarea{font-family:var(--serif);font-size:15px}
+.row.d2 .rtext textarea,.row.d3 .rtext textarea,.row.d4 .rtext textarea{font-size:14px}
+.rmeta{flex:0 0 auto;display:flex;align-items:center;gap:4px;padding-top:4px}
+.kidcount{font-family:var(--mono);font-size:10px;color:var(--faint);
+  border:1px solid var(--line);border-radius:20px;padding:1px 6px}
+.srcpin{font-family:var(--mono);font-size:10px;background:var(--bg);border:1px solid var(--line);
+  border-radius:5px;padding:2px 4px;max-width:130px;color:var(--muted)}
+.srcpin.missing{color:var(--warn);border-color:var(--warn);background:var(--warn-soft)}
+.rowacts{display:flex;gap:2px;opacity:0;transition:opacity .12s}
+.row:hover .rowacts,.row.sel .rowacts{opacity:1}
+.cl{font-family:var(--mono);font-size:10px;color:var(--agreed);border:1px solid var(--agreed);
+  background:var(--agreed-soft);border-radius:20px;padding:1px 5px}
+.dot{width:6px;height:6px;border-radius:50%;flex:0 0 6px;margin-top:11px;background:var(--line-strong)}
+.dot.claude{background:var(--claude)} .dot.agreed{background:var(--agreed)}
+.dot.scaffold{background:var(--scaffold)} .dot.you{background:var(--you)}
+.depthbar{display:flex;gap:4px;align-items:center;margin-left:auto}
+.hint{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:9px;line-height:1.7}
+.hint kbd{border:1px solid var(--line-strong);border-radius:4px;padding:0 4px;background:var(--bg)}
+.scaffolds{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 2px}
+.sc{border:1px solid var(--line-strong);border-radius:9px;padding:9px 12px;text-align:left;
+  background:var(--panel);max-width:250px}
+.sc:hover{border-color:var(--accent);background:var(--accent-soft)}
+.sc b{display:block;font-size:13.5px;margin-bottom:2px}
+.sc span{font-size:11.5px;color:var(--muted);line-height:1.4;display:block}
+
+/* ---------------- rail ---------------- */
+.rail{border-left:1px solid var(--line);background:var(--panel);position:sticky;top:57px;
+  height:calc(100vh - 57px);display:flex;flex-direction:column;min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);flex:0 0 auto}
+.tab{flex:1;padding:9px 6px;font-size:12px;font-family:var(--mono);text-transform:uppercase;
+  letter-spacing:.05em;color:var(--muted);border-bottom:2px solid transparent}
+.tab.on{color:var(--ink);border-bottom-color:var(--accent)}
+.tabbody{flex:1;overflow-y:auto;padding:14px;min-height:0}
+.tabbody[hidden]{display:none}
+.chk{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.chk .mk{font-family:var(--mono);font-weight:700;flex:0 0 16px}
+.chk.ok .mk{color:var(--you)} .chk.no .mk{color:var(--warn)}
+.chk .d{color:var(--muted);font-size:12px;display:block;margin-top:2px}
+.readysum{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line);
+  border-radius:7px;padding:8px 10px;margin-bottom:12px;background:var(--bg)}
+.chat{display:flex;flex-direction:column;height:100%}
+.msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:11px;padding-bottom:10px;min-height:0}
+.msg{font-size:13.5px;line-height:1.55;white-space:pre-wrap;word-wrap:break-word}
+.msg .who{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--faint);display:block;margin-bottom:3px}
+.msg.u{background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:8px 10px}
+.msg.c{border-left:2px solid var(--claude);padding-left:10px}
+.composer{flex:0 0 auto;border-top:1px solid var(--line);padding-top:10px}
+.composer textarea{width:100%;min-height:60px;background:var(--bg);border:1px solid var(--line);
+  border-radius:8px;padding:8px;resize:vertical;line-height:1.45;font-size:13.5px}
+.composer textarea:focus{outline:0;border-color:var(--accent)}
+.scope{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:7px}
+.scope b{color:var(--accent);font-weight:600}
+.quick{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.quick button{font-size:11.5px;border:1px solid var(--line);border-radius:20px;padding:3px 9px;color:var(--muted)}
+.quick button:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.prop{border:1px solid var(--claude);background:var(--claude-soft);border-radius:9px;padding:10px;margin-bottom:9px}
+.prop .ph{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--claude);margin-bottom:5px}
+.prop .pt{font-size:13.5px;line-height:1.5;margin-bottom:8px;white-space:pre-wrap}
+.prop .pa{display:flex;gap:6px;flex-wrap:wrap}
+.prop .pa .btn{font-size:12px;padding:3px 9px;background:var(--panel)}
+.empty{color:var(--faint);font-size:13px;font-style:italic;padding:10px 0}
+.off{border:1px solid var(--warn);background:var(--warn-soft);color:var(--warn);border-radius:8px;
+  padding:9px 11px;font-size:12.5px;margin-bottom:12px}
+.livecursor{font-size:11px;font-family:var(--mono);color:var(--muted);padding:2px 0}
+footer.compilebar{position:fixed;bottom:0;left:0;right:360px;background:var(--panel);
+  border-top:1px solid var(--line);padding:10px 26px;display:flex;align-items:center;gap:12px;z-index:15}
+@media (max-width:1000px){footer.compilebar{right:0;position:static}}
+.compilebar .st{font-family:var(--mono);font-size:12px;color:var(--muted)}
+</style>
+
+<div class="shell">
+  <header class="top">
+    <div class="brand">The <em>Bench</em></div>
+    <div class="projname" id="projname">unbound project</div>
+    <div class="spacer"></div>
+    <button class="btn sm" id="themebtn" title="Toggle theme">◑</button>
+  </header>
+
+  <main>
+    <div id="offline"></div>
+
+    <section class="block">
+      <div class="blockhead"><h2>The Brief</h2><span class="n">§1 · settled in the interview</span>
+        <div class="depthbar"><button class="btn sm" id="editbrief">edit</button></div></div>
+      <p class="blocknote">Answers from the clarify interview, before the bench opened. Everything below answers to these — change one here and the outline underneath may stop making sense.</p>
+      <div id="briefsummary"></div>
+      <div id="intent" hidden></div>
+    </section>
+
+    <section class="block">
+      <div class="blockhead"><h2>Sources on hand</h2><span class="n">§2 · from the librarian</span></div>
+      <p class="blocknote">What was actually fetched before outlining started. You pin bullets to these keys as you outline — a key with no artifact is a document nobody opened, and the outline cannot lean on it.</p>
+      <div id="sources"></div>
+      <div class="addrow"><button class="btn sm" id="addsource">+ Source</button>
+        <button class="btn sm" id="togglesrcmeta">bibliography path…</button></div>
+      <div id="sourcemeta" hidden style="margin-top:10px"></div>
+    </section>
+
+    <section class="block">
+      <div class="blockhead">
+        <h2>Outline</h2><span class="n">§3 · the table of contents, top down</span>
+        <div class="depthbar">
+          <span class="n">show</span>
+          <button class="btn sm" data-depth="1">I</button>
+          <button class="btn sm" data-depth="2">I.A</button>
+          <button class="btn sm" data-depth="3">I.A.1</button>
+          <button class="btn sm" data-depth="9">all</button>
+        </div>
+      </div>
+      <p class="blocknote">Build it top down. Get the Parts right at <b>I</b>, then drop to <b>I.A</b> and say what each Part does, then <b>I.A.1</b> for the moves inside a section. Bullets indent and reorder like an outliner — the order here is the document's order.</p>
+      <div id="scaffolds"></div>
+      <div class="outline" id="outline"></div>
+      <div class="hint">
+        <kbd>Enter</kbd> new bullet · <kbd>Tab</kbd> indent · <kbd>⇧Tab</kbd> outdent ·
+        <kbd>⌥↑</kbd>/<kbd>⌥↓</kbd> move · <kbd>⌫</kbd> on empty deletes · drag the handle to reparent
+      </div>
+      <div class="addrow">
+        <button class="btn sm" id="addtop">+ Part</button>
+        <button class="btn sm" id="claudestruct">Ask Claude for the Part structure</button>
+        <button class="btn sm" id="claudelevel2">Expand every Part into sections</button>
+        <button class="btn sm" id="claudecounters">Attack the thesis</button>
+      </div>
+    </section>
+
+
+  </main>
+
+  <aside class="rail">
+    <div class="tabs">
+      <button class="tab on" data-t="chat">Claude</button>
+      <button class="tab" data-t="ready">Readiness</button>
+    </div>
+    <div class="tabbody" id="t-chat">
+      <div class="chat">
+        <div class="scope" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <span id="scope">Scope: <b>whole plan</b></span>
+        </div>
+        <div class="msgs" id="msgs"></div>
+        <div class="composer">
+          <textarea id="ask" placeholder="Argue with me about the outline…  (⌘/Ctrl+Enter to send)"></textarea>
+          <div class="addrow" style="margin-top:6px">
+            <button class="btn sm" id="asksend">Ask Claude</button>
+            <button class="btn sm" id="notesend" title="Leave a note for the Claude Code session — it reads this thread from the terminal. Costs nothing.">Note to the session</button>
+          </div>
+          <div class="quick" id="quick"></div>
+        </div>
+      </div>
+    </div>
+    <div class="tabbody" id="t-ready" hidden>
+      <div class="readysum" id="readysum">—</div><div id="checks"></div>
+    </div>
+  </aside>
+
+  <footer class="compilebar">
+    <span class="st" id="cstat">—</span>
+    <div class="spacer"></div>
+    <button class="btn" id="copymd">Copy outline</button>
+    <button class="btn" id="copyjson">Copy plan JSON</button>
+  </footer>
+</div>
+
+<script>
+/* ============================ state ============================ */
+const S = {
+  intent:{thesis:"",audience:"",purpose:"",hook:"",scope:"",domain:"general",genre:""},
+  srcmeta:{bibliography:"",notebook:"none",notebookUrl:"none"},
+  outline:[], claims:[], counters:[], sources:[],
+  maxDepth:9, sel:null, focusId:null,
+  msgs:[], props:[], me:"co-author",
+};
+let db=null, sample=null;
+const uid=()=>Math.random().toString(36).slice(2,9);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const byId=(a,id)=>a.find(x=>x.id===id);
+
+/* ============================ tree helpers ============================ */
+function walk(nodes,fn,depth=0,parent=null){
+  nodes.forEach((n,i)=>{ fn(n,depth,parent,i,nodes); walk(n.children||[],fn,depth+1,n); });
+}
+function flat(visibleOnly){
+  const out=[];
+  (function rec(nodes,depth,path){
+    nodes.forEach((n,i)=>{
+      const label=numLabel(depth,i), full=path?path+"."+label:label;
+      out.push({n,depth,index:i,siblings:nodes,label,full});
+      if(depth+1<=S.maxDepth-1 || !visibleOnly){
+        if(!(visibleOnly&&n.collapsed)) rec(n.children||[],depth+1,full);
+      }
+    });
+  })(S.outline,0,"");
+  return out;
+}
+function allFlat(){ const sv=S.maxDepth; S.maxDepth=99; const r=flat(false); S.maxDepth=sv; return r; }
+const ROMAN=["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"];
+const ALPHA="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const roman=n=>ROMAN[n]||String(n+1);
+function numLabel(depth,i){
+  if(depth===0) return roman(i);
+  if(depth===1) return ALPHA[i]||String(i+1);
+  if(depth===2) return String(i+1);
+  if(depth===3) return (ALPHA[i]||"z").toLowerCase();
+  return "("+(i+1)+")";
+}
+function locate(id){
+  let hit=null;
+  (function rec(nodes,depth,parent){
+    nodes.forEach((n,i)=>{ if(n.id===id) hit={n,depth,parent,index:i,siblings:nodes};
+      rec(n.children||[],depth+1,n); });
+  })(S.outline,0,null);
+  return hit;
+}
+function inSubtree(root,id){
+  let f=false; walk([root],n=>{if(n.id===id)f=true;}); return f;
+}
+function removeNode(id){
+  const L=locate(id); if(!L) return null;
+  L.siblings.splice(L.index,1); return L.n;
+}
+function newNode(text,status){ return {id:uid(),text:text||"",status:status||"you",source:"",collapsed:false,children:[]}; }
+
+/* ============================ persistence ============================ */
+const DOC="plan/bench";
+const CHAT="plan/chat";
+let saveT=null, dirty=false, loaded=false;
+function snapshot(){return {intent:S.intent,srcmeta:S.srcmeta,outline:S.outline,
+  sources:S.sources,rev:Date.now()};}
+function save(){
+  // Never write before the first read settles — an early autosave would
+  // overwrite the stored document with this page's empty defaults.
+  if(!loaded){ paintCompile(); return; }
+  dirty=true; paintCompile(); clearTimeout(saveT);
+  saveT=setTimeout(async()=>{
+    if(!db){dirty=false;paintCompile();return;}
+    try{
+      const snap=snapshot();
+      if(!snap.outline.length && !String(snap.intent.thesis||"").trim()){
+        const cur=await db.doc(DOC).get();          // guard against writing an empty doc over a full one
+        const d=cur.exists?cur.data:null;
+        if(d && ((d.outline||[]).length || String((d.intent||{}).thesis||"").trim())){
+          adopt(d); loaded=true; renderAll();
+          console.warn("refused to overwrite a non-empty bench with an empty one");
+          dirty=false; paintCompile(); return;
+        }
+      }
+      await db.doc(DOC).set(snap); dirty=false; }
+    catch(e){ console.warn("save",e&&e.code); }
+    paintCompile();
+  },700);
+}
+let chatT=null;
+function saveChat(){
+  if(!db||!loaded) return;
+  clearTimeout(chatT);
+  chatT=setTimeout(async()=>{
+    try{ await db.doc(CHAT).set({msgs:S.msgs.slice(-60),props:S.props,rev:Date.now()}); }
+    catch(e){ console.warn("chat save",e&&e.code); }
+  },500);
+}
+function adoptChat(d){
+  if(!d) return;
+  if(Array.isArray(d.msgs)) S.msgs=d.msgs;
+  if(Array.isArray(d.props)) S.props=d.props;
+  renderChat();
+}
+function adopt(d){
+  if(!d||typeof d!=="object") return;
+  if(d.intent) Object.assign(S.intent,d.intent);
+  if(d.srcmeta) Object.assign(S.srcmeta,d.srcmeta);
+  if(Array.isArray(d.sources)) S.sources=d.sources;
+  if(Array.isArray(d.outline)) S.outline=d.outline;
+  else if(Array.isArray(d.sections)){          // migrate the old sections+beats shape
+    S.outline=d.sections.map(s=>({id:s.id||uid(),text:s.name||"",status:s.status||"you",
+      source:"",collapsed:false,
+      children:(s.beats||[]).map(b=>({id:b.id||uid(),text:b.text||"",status:b.status||"you",
+        source:b.source||"",collapsed:false,children:[]}))}));
+  }
+  walk(S.outline,n=>{ n.children=n.children||[]; n.status=n.status||"you"; n.source=n.source||"";
+    n.kind=n.kind||""; });
+  // legacy: a separate claims/counters registry becomes marks on the tree, or loose bullets
+  (d.claims||[]).forEach(c=>{
+    const L=c.node?locate(c.node):null;
+    if(L){L.n.kind="claim"; L.n.cid=c.cid||L.n.cid||nextClaimId();
+          if(!L.n.text) L.n.text=c.text||"";}
+    else if(String(c.text||"").trim()){
+      const n=newNode(c.text,c.status||"you"); n.kind="claim"; n.cid=c.cid||nextClaimId();
+      orphans().children.push(n);}
+  });
+  (d.counters||[]).forEach(c=>{
+    const L=c.node?locate(c.node):null;
+    if(L) L.n.kind="counter";
+    else if(String(c.text||"").trim()){
+      const n=newNode(c.text,c.status||"you"); n.kind="counter"; orphans().children.push(n);}
+  });
+}
+
+/* ============================ scaffolds ============================ */
+const SCAFFOLDS={
+  "lawrev-doctrinal":{name:"Law review — doctrinal",
+    why:"Background, the analytical move, then what follows for policy.",
+    parts:[["Introduction",[]],
+      ["Background and Motivation",["The legal and institutional setting","How the current account gets it wrong","Why this matters now"]],
+      ["The Analytical Move",["The framework","Applying it to the hard cases","What the framework predicts"]],
+      ["Policy Implications",["What the framework recommends","Objections and limits"]],
+      ["Conclusion",[]]]},
+  "lawrev-empirical":{name:"Law review — empirical",
+    why:"Same spine, with an evidence Part before policy.",
+    parts:[["Introduction",[]],
+      ["Background and Motivation",["The legal and institutional setting","The existing account and its gaps"]],
+      ["Theory and Predictions",["The framework","Testable predictions"]],
+      ["Evidence",["Data and setting","Method","Results","Robustness and what the data cannot settle"]],
+      ["Policy Implications",["What follows for the rules","Objections and limits"]],
+      ["Conclusion",[]]]},
+  "econ":{name:"Finance / accounting paper",
+    why:"The journal-submission spine.",
+    parts:[["Introduction",[]],
+      ["Institutional Background and Related Literature",[]],
+      ["Data and Sample",["Sources","Sample construction","Summary statistics"]],
+      ["Empirical Strategy",["Specification","Identification"]],
+      ["Results",["Main results","Cross-sectional tests","Robustness"]],
+      ["Conclusion",[]]]},
+  "amicus":{name:"Amicus brief",
+    why:"Interest, summary, then argument Parts whose headings are assertions.",
+    heads:"In a brief the argument headings ARE the claims — write each as a full-sentence assertion the court could adopt verbatim, not a topic label. Mark them as claims.",
+    parts:[["Interest of Amici Curiae",[]],
+      ["Summary of Argument",[]],
+      ["The decision below rests on a mistaken premise",
+        ["What the court below assumed","Why the assumption does not hold","What follows for the question presented"]],
+      ["The correct rule follows from the statute and the economics",
+        ["The text and structure","The economic logic","Application to this case"]],
+      ["The contrary rule would produce consequences the Court should avoid",
+        ["Who bears the cost","Why the market will not correct it"]],
+      ["Conclusion",[]]]},
+  "expert":{name:"Expert report",
+    why:"Rule 26: qualifications, assignment, opinions, and the basis for each.",
+    heads:"Each numbered Opinion is a standalone sentence you would defend on cross — mark it as a claim, and pin every bullet beneath it to the material it rests on. Rule 26(a)(2)(B) requires a COMPLETE statement of each opinion and its basis; a bullet with no pinned source is an opinion with no disclosed basis.",
+    parts:[["Qualifications",["Background and expertise","Publications (last 10 years)","Prior testimony (last 4 years)","Compensation"]],
+      ["Assignment",["The questions I was asked to address","What I was not asked to address"]],
+      ["Summary of Opinions",[]],
+      ["Materials Considered",["Documents and data produced","Public and academic sources","Anything relied on but not produced"]],
+      ["Background",["The parties and the transaction","How this market works"]],
+      ["Opinion 1",["The opinion","Method","Facts and data it rests on","Why the alternative explanation does not hold"]],
+      ["Opinion 2",["The opinion","Method","Facts and data it rests on"]],
+      ["Limitations and Reservation",["What the data cannot settle","Reservation to supplement"]]]},
+  "comment":{name:"Comment letter",
+    why:"Short, addressed to a rulemaking.",
+    parts:[["Summary of Position",[]],
+      ["The Proposal and Its Stated Rationale",[]],
+      ["Why the Rationale Does Not Hold",["Analytical problem","Evidentiary problem"]],
+      ["Recommendation",[]]]},
+  "memo":{name:"Memo / white paper",
+    why:"Bottom line first.",
+    parts:[["Bottom Line",[]],["Background",[]],["Analysis",[]],["Recommendation",[]]]},
+};
+function renderScaffolds(){
+  const el=document.getElementById("scaffolds");
+  if(!S.outline.length){
+    el.innerHTML='<p class="blocknote" style="margin-bottom:8px">Start from a genre skeleton, or write your own Parts. A seeded Part is marked <span class="chip scaffold">template</span> until you edit it — template text never compiles into the plan.</p>'
+     +'<div class="scaffolds">'+Object.entries(SCAFFOLDS).map(([k,v])=>
+       `<button class="sc" data-scaf="${k}"><b>${esc(v.name)}</b><span>${esc(v.why)}</span></button>`).join("")+'</div>';
+    el.querySelectorAll("[data-scaf]").forEach(n=>n.addEventListener("click",()=>seedScaffold(n.dataset.scaf)));
+    return;
+  }
+  const g=SCAFFOLDS[S.intent.genre];
+  el.innerHTML=(g&&g.heads?`<div class="off" style="border-color:var(--line-strong);color:var(--muted);background:var(--bg);margin-bottom:10px">${esc(g.heads)}</div>`:"")
+   +`<div class="cardmeta" style="margin:0 0 10px">
+      <span class="n">skeleton</span>
+      <select id="switchscaf">
+        <option value="">${esc(g?g.name:"— custom —")}</option>
+        ${Object.entries(SCAFFOLDS).filter(([k])=>k!==S.intent.genre)
+          .map(([k,v])=>`<option value="${k}">switch to: ${esc(v.name)}</option>`).join("")}
+      </select>
+      <span class="n">switching adds the Parts you are missing — it never deletes your work</span>
+    </div>`;
+  const sw=document.getElementById("switchscaf");
+  sw.addEventListener("change",()=>{ if(sw.value) diffScaffold(sw.value); sw.value=""; });
+}
+/* Switching genre merges: propose only the Parts the new skeleton has that you do not. */
+const norm=s=>String(s||"").toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
+const STOP=new Set(["the","and","of","a","an","for","to","its","this","what"]);
+function titleMatch(a,b){
+  const x=norm(a), y=norm(b);
+  if(!x||!y) return false;
+  if(x===y||x.includes(y)||y.includes(x)) return true;
+  const wx=new Set(x.split(" ").filter(w=>w.length>2&&!STOP.has(w)));
+  const wy=x===y?wx:new Set(y.split(" ").filter(w=>w.length>2&&!STOP.has(w)));
+  let hits=0; wy.forEach(w=>{if(wx.has(w))hits++;});
+  return hits>=2;
+}
+function diffScaffold(k){
+  const sc=SCAFFOLDS[k]; if(!sc) return;
+  const have=S.outline.map(n=>n.text);
+  const missing=sc.parts.filter(([t])=>!have.some(h=>titleMatch(h,t)));
+  const extra=S.outline.filter(n=>n.text&&!sc.parts.some(([t])=>titleMatch(n.text,t)));
+  S.intent.genre=k;
+  if(k.startsWith("lawrev")) S.intent.domain="legal"; else if(k==="econ") S.intent.domain="econ";
+  save(); renderAll();
+  if(!missing.length){
+    pushMsg("c",`Switched to ${sc.name}. Your outline already covers every Part that skeleton has${extra.length?`, plus ${extra.length} of your own`:""} — nothing to add.`);
+    return;
+  }
+  pushMsg("c",`Switched to ${sc.name}. It has ${missing.length} Part${missing.length===1?"":"s"} your outline is missing — accept the ones you want, at the position the skeleton puts them. Nothing of yours is touched.${extra.length?`\n\nParts you have that this skeleton does not: ${extra.map(n=>n.text).join(", ")}. Those stay.`:""}`);
+  missing.forEach(([t,kids])=>{
+    const at=sc.parts.findIndex(p=>p[0]===t);
+    addProp({title:"Add Part — "+t,
+      text:(kids.length?kids.join(" · "):"(no sections seeded)"),
+      op:{type:"addPart",title:t,kids,after:sc.parts.slice(0,at).map(x=>x[0]),status:"scaffold"}});
+  });
+  renderChat();
+}
+function seedScaffold(k){
+  const sc=SCAFFOLDS[k]; if(!sc) return;
+  S.outline=sc.parts.map(([t,kids])=>{
+    const p=newNode(t,"scaffold");
+    p.children=kids.map(c=>newNode(c,"scaffold"));
+    return p;});
+  S.intent.genre=k;
+  if(k.startsWith("lawrev")) S.intent.domain="legal";
+  else if(k==="econ") S.intent.domain="econ";
+  S.maxDepth=2; save(); renderAll();
+}
+
+/* ============================ intent ============================ */
+const FIELDS=[["thesis","Thesis","The single claim the document argues"],
+  ["audience","Audience","Who reads it, what they already accept"],
+  ["purpose","Purpose","The decision, submission or venue it serves"],
+  ["hook","Hook","Why a reader stays past the first paragraph"],
+  ["scope","Scope","Length, format, deadline, and what it covers"]];
+function renderBrief(){
+  const el=document.getElementById("briefsummary");
+  const set=FIELDS.filter(([k])=>String(S.intent[k]||"").trim());
+  if(!set.length){
+    el.innerHTML='<div class="off">No brief yet. The clarify interview happens in the terminal, before this bench opens — its answers get written here. You can fill it by hand with <b>edit</b>, but that is the fallback, not the path.</div>';
+    return;}
+  const g=SCAFFOLDS[S.intent.genre];
+  el.innerHTML='<div class="card">'
+    +set.map(([k,l])=>`<div class="field"><label>${l}</label><div style="padding:5px 7px;font-family:var(--serif);font-size:16px">${esc(S.intent[k])}</div></div>`).join("")
+    +`<div class="cardmeta" style="margin-top:9px">
+        <span class="chip ${S.intent.genre?"agreed":"open"}">${esc(g?g.name:"genre unset")}</span>
+        <span class="chip ${S.intent.domain==="general"?"open":"agreed"}">domain: ${esc(S.intent.domain)}</span>
+      </div></div>`
+    +(S.intent.domain==="general"&&/law review|article/i.test(S.intent.purpose+" "+S.intent.scope)
+      ? '<div class="off" style="margin-top:10px">Purpose reads like a law review article but Domain is <b>general</b>. Domain picks the register the drafter loads and the gate grades against — set it to <b>legal</b>.</div>':"");
+}
+function renderIntent(){
+  const el=document.getElementById("intent");
+  el.innerHTML=FIELDS.map(([k,l,ph])=>
+    `<div class="field"><label>${l}</label><textarea class="ed serif" data-int="${k}" placeholder="${esc(ph)}">${esc(S.intent[k])}</textarea></div>`).join("")
+   +`<div class="field"><label>Genre</label><select class="ed" data-int="genre">
+        <option value="">— unset —</option>
+        ${Object.entries(SCAFFOLDS).map(([k,v])=>`<option value="${k}"${S.intent.genre===k?" selected":""}>${esc(v.name)}</option>`).join("")}
+      </select></div>`
+   +`<div class="field"><label>Domain</label><select class="ed" data-int="domain">
+        ${["general","legal","econ"].map(d=>`<option value="${d}"${S.intent.domain===d?" selected":""}>${d}</option>`).join("")}
+      </select>
+      </div>`
+   +(S.intent.domain==="general"&&/law review|article/i.test(S.intent.purpose+" "+S.intent.scope)
+      ? '<div class="off" style="margin-top:10px">Purpose reads like a law review article but Domain is <b>general</b>. Domain picks the register the drafter loads and the gate grades against — set it to <b>legal</b>.</div>' : "");
+  el.querySelectorAll("[data-int]").forEach(n=>{
+    autosize(n);
+    n.addEventListener(n.tagName==="SELECT"?"change":"input",()=>{
+      S.intent[n.dataset.int]=n.value; autosize(n); save(); paintReady();
+      if(n.dataset.int==="domain"||n.dataset.int==="genre") renderIntent();});
+    n.addEventListener("focus",()=>setScope("intent",null,"Writing Intent"));
+  });
+}
+
+/* ============================ outliner ============================ */
+function renderOutline(){
+  document.querySelectorAll("[data-depth]").forEach(b=>
+    b.classList.toggle("on", +b.dataset.depth===S.maxDepth));
+  renderScaffolds();
+  const el=document.getElementById("outline");
+  const rows=flat(true);
+  if(!rows.length){el.innerHTML='<div class="empty">Nothing yet. Pick a skeleton above, or add a Part.</div>';return;}
+  el.innerHTML=rows.map(r=>{
+    const n=r.n, kids=(n.children||[]).length;
+    const hidden = kids && (n.collapsed || r.depth+1>S.maxDepth-1);
+    const keys=S.sources.map(x=>x.key).filter(Boolean);
+    const bad=n.source&&!keys.includes(n.source);
+    const isLeaf=!kids;
+    return `<div class="row d${Math.min(r.depth,4)}${S.sel&&S.sel.id===n.id?" sel":""}"
+        data-row="${n.id}" style="margin-left:${r.depth*22}px" draggable="false">
+      <span class="grip" data-grip="${n.id}" title="Drag to move">⠿</span>
+      <span class="tw${kids?"":" none"}" data-tw="${n.id}">${n.collapsed?"▶":"▼"}</span>
+      <span class="num">${esc(r.full)}</span>
+      <span class="dot ${n.status}"></span>
+      <span class="rtext"><textarea data-nt="${n.id}" rows="1"
+        placeholder="${r.depth===0?"Part title":r.depth===1?"What this section does":"One move the prose makes"}">${esc(n.text)}</textarea></span>
+      <span class="rmeta">
+        ${n.kind==="claim"?`<span class="cl">${esc(n.cid||"claim")}</span>`:""}
+        ${n.kind==="counter"?'<span class="chip open">objection</span>':""}
+        ${hidden?`<span class="kidcount">${kids}</span>`:""}
+        ${isLeaf&&r.depth>=1?`<select class="srcpin${(!n.source||bad)?" missing":""}" data-ns="${n.id}">
+            <option value="">unpinned</option>
+            ${keys.map(k=>`<option value="${esc(k)}"${n.source===k?" selected":""}>${esc(k)}</option>`).join("")}
+          </select>`:""}
+        <span class="rowacts">
+          <button class="iact" data-kind="${n.id}" title="Mark as a claim the document argues, or an objection it must meet">${n.kind==="claim"?"claim":n.kind==="counter"?"obj":"mark"}</button>
+          <button class="iact" data-expand="${n.id}" title="Ask Claude to expand this">↳ expand</button>
+          ${n.status!=="agreed"?`<button class="iact" data-nag="${n.id}" title="Agree">✓</button>`:""}
+          <button class="iact danger" data-ndel="${n.id}" title="Delete">×</button>
+        </span></span>
+    </div>`;}).join("");
+  wireOutline(el);
+  if(S.focusId){
+    const ta=el.querySelector(`[data-nt="${S.focusId}"]`);
+    if(ta){ta.focus(); const v=ta.value; ta.setSelectionRange(v.length,v.length);}
+    S.focusId=null;
+  }
+}
+function wireOutline(el){
+  el.querySelectorAll("[data-nt]").forEach(ta=>{
+    autosize(ta);
+    ta.addEventListener("input",()=>{
+      const L=locate(ta.dataset.nt); if(!L)return;
+      L.n.text=ta.value; if(L.n.status==="scaffold"||L.n.status==="claude") L.n.status="you";
+      autosize(ta); save(); paintReady();});
+    ta.addEventListener("focus",()=>{
+      const L=locate(ta.dataset.nt);
+      setScope("node",ta.dataset.nt,(L&&L.n.text)||"bullet");
+      el.querySelectorAll(".row").forEach(r=>r.classList.toggle("sel",r.dataset.row===ta.dataset.nt));});
+    ta.addEventListener("keydown",e=>onKey(e,ta.dataset.nt));
+  });
+  el.querySelectorAll("[data-tw]").forEach(n=>n.addEventListener("click",()=>{
+    const L=locate(n.dataset.tw); L.n.collapsed=!L.n.collapsed; save(); renderOutline();}));
+  el.querySelectorAll("[data-ns]").forEach(n=>n.addEventListener("change",()=>{
+    locate(n.dataset.ns).n.source=n.value; save(); renderOutline(); paintReady();}));
+  el.querySelectorAll("[data-kind]").forEach(n=>n.addEventListener("click",()=>{
+    const L=locate(n.dataset.kind); if(!L)return;
+    L.n.kind = L.n.kind==="claim" ? "counter" : L.n.kind==="counter" ? "" : "claim";
+    if(L.n.kind==="claim"&&!L.n.cid) L.n.cid=nextClaimId();
+    save(); renderOutline(); paintReady();}));
+  el.querySelectorAll("[data-nag]").forEach(n=>n.addEventListener("click",()=>{
+    locate(n.dataset.nag).n.status="agreed"; save(); renderOutline(); paintReady();}));
+  el.querySelectorAll("[data-ndel]").forEach(n=>n.addEventListener("click",()=>{
+    const id=n.dataset.ndel;
+    removeNode(id); save(); renderAll();}));
+  el.querySelectorAll("[data-expand]").forEach(n=>n.addEventListener("click",()=>{
+    const L=locate(n.dataset.expand); setScope("node",L.n.id,L.n.text||"bullet"); proposeChildren(L);}));
+
+  /* drag to reparent */
+  el.querySelectorAll("[data-grip]").forEach(g=>{
+    const row=g.closest(".row");
+    g.addEventListener("mousedown",()=>{row.draggable=true;});
+    row.addEventListener("dragstart",e=>{
+      dragId=row.dataset.row; row.classList.add("drag");
+      e.dataTransfer.effectAllowed="move"; try{e.dataTransfer.setData("text/plain",dragId);}catch(_){}});
+    row.addEventListener("dragend",()=>{row.draggable=false;row.classList.remove("drag");clearDrop();});
+  });
+  el.querySelectorAll(".row").forEach(row=>{
+    row.addEventListener("dragover",e=>{
+      if(!dragId||row.dataset.row===dragId) return;
+      e.preventDefault(); clearDrop();
+      const r=row.getBoundingClientRect();
+      dropAfter = (e.clientY - r.top) > r.height/2;
+      dropId=row.dataset.row;
+      row.classList.add(dropAfter?"dropafter":"dropbefore");});
+    row.addEventListener("drop",e=>{e.preventDefault(); doDrop();});
+  });
+}
+let dragId=null, dropId=null, dropAfter=false;
+function clearDrop(){document.querySelectorAll(".row").forEach(r=>r.classList.remove("dropafter","dropbefore"));}
+function doDrop(){
+  if(!dragId||!dropId){dragId=null;return;}
+  const src=locate(dragId), tgt=locate(dropId);
+  if(src&&tgt&&!inSubtree(src.n,dropId)){
+    const node=removeNode(dragId);
+    const t=locate(dropId);
+    t.siblings.splice(t.index+(dropAfter?1:0),0,node);
+    save();
+  }
+  dragId=null;dropId=null;clearDrop();renderAll();
+}
+function onKey(e,id){
+  const L=locate(id); if(!L) return;
+  if(e.key==="Enter"&&!e.shiftKey&&!e.metaKey&&!e.ctrlKey){
+    e.preventDefault();
+    const n=newNode("","you");
+    // a node with children gets the new bullet as its first child; otherwise next sibling
+    if((L.n.children||[]).length && !L.n.collapsed){ L.n.children.unshift(n); }
+    else L.siblings.splice(L.index+1,0,n);
+    S.focusId=n.id; save(); renderOutline(); return;
+  }
+  if(e.key==="Tab"){
+    e.preventDefault();
+    if(e.shiftKey){                                  // outdent
+      if(!L.parent) return;
+      const P=locate(L.parent.id);
+      const node=removeNode(id);
+      P.siblings.splice(P.index+1,0,node);
+    }else{                                           // indent under previous sibling
+      if(L.index===0) return;
+      const prev=L.siblings[L.index-1];
+      const node=removeNode(id);
+      prev.children=prev.children||[]; prev.collapsed=false; prev.children.push(node);
+      if(S.maxDepth<9) S.maxDepth=Math.max(S.maxDepth,depthOf(id)+1);
+    }
+    S.focusId=id; save(); renderOutline(); return;
+  }
+  if(e.altKey&&(e.key==="ArrowUp"||e.key==="ArrowDown")){
+    e.preventDefault();
+    const d=e.key==="ArrowUp"?-1:1, j=L.index+d;
+    if(j<0||j>=L.siblings.length) return;
+    L.siblings.splice(L.index,1); L.siblings.splice(j,0,L.n);
+    S.focusId=id; save(); renderOutline(); return;
+  }
+  if(e.key==="Backspace"&&!L.n.text&&!(L.n.children||[]).length){
+    e.preventDefault();
+    const rows=flat(true); const i=rows.findIndex(r=>r.n.id===id);
+    const prev=i>0?rows[i-1].n:null;
+    removeNode(id); if(prev) S.focusId=prev.id;
+    save(); renderOutline(); return;
+  }
+  if((e.key==="ArrowUp"||e.key==="ArrowDown")&&!e.altKey){
+    const rows=flat(true); const i=rows.findIndex(r=>r.n.id===id);
+    const j=e.key==="ArrowUp"?i-1:i+1;
+    if(j>=0&&j<rows.length){e.preventDefault();S.focusId=rows[j].n.id;renderOutline();}
+  }
+}
+function orphans(){
+  let o=S.outline.find(n=>n.holding);
+  if(!o){o=newNode("Unplaced — drag these into the outline","you");o.holding=true;S.outline.push(o);}
+  o.children=o.children||[]; return o;
+}
+function depthOf(id){const L=locate(id);return L?L.depth:0;}
+function outlineMd(){
+  return allFlat().map(r=>"  ".repeat(r.depth)+r.full+". "+(r.n.text||"(untitled)")
+    +(r.n.source?"  ["+r.n.source+"]":"")).join("\n");
+}
+/* ============================ marks / sources ============================ */
+function marked(kind){return allFlat().filter(r=>r.n.kind===kind);}
+function nextClaimId(){let n=1;const u=new Set();
+  walk(S.outline,x=>{if(x.cid)u.add(x.cid);});
+  while(u.has("CLAIM-"+String(n).padStart(2,"0")))n++;return "CLAIM-"+String(n).padStart(2,"0");}
+function chip(st){return st==="agreed"?'<span class="chip agreed">✓ agreed</span>'
+  :st==="claude"?'<span class="chip claude">◆ claude — unaccepted</span>'
+  :st==="scaffold"?'<span class="chip scaffold">template</span>'
+  :'<span class="chip you">✎ you</span>';}
+function renderSources(){
+  const m=document.getElementById("sourcemeta");
+  m.innerHTML=[["bibliography","Bibliography","project-relative .bib path the CITE check resolves against"],
+    ["notebook","Notebook","or 'none'"],["notebookUrl","Notebook URL","or 'none'"]]
+    .map(([k,l,ph])=>`<div class="field"><label>${l}</label><textarea class="ed" data-sm="${k}" placeholder="${esc(ph)}">${esc(S.srcmeta[k])}</textarea></div>`).join("");
+  m.querySelectorAll("[data-sm]").forEach(n=>{autosize(n);
+    n.addEventListener("input",()=>{S.srcmeta[n.dataset.sm]=n.value;autosize(n);save();paintReady();});});
+  const el=document.getElementById("sources");
+  if(!S.sources.length){el.innerHTML='<div class="empty">No sources yet. The librarian fills this — a key typed from memory is not a source.</div>';return;}
+  el.innerHTML=S.sources.map(s=>`<div class="card">
+    <div class="cardtop"><span class="cid">${esc(s.key||"(no key)")}</span>
+      ${s.artifact?'<span class="chip agreed">✓ artifact on disk</span>':'<span class="chip open">no artifact</span>'}
+      <div class="cardacts"><button class="iact danger" data-delsrc="${s.id}">delete</button></div></div>
+    <div class="field"><label>Key</label><textarea class="ed" data-sk="${s.id}" placeholder="bibtex key">${esc(s.key)}</textarea></div>
+    <div class="field"><label>Cite</label><textarea class="ed" data-sc="${s.id}" placeholder="full citation">${esc(s.cite)}</textarea></div>
+    <div class="field"><label>Artifact</label><textarea class="ed" data-sa="${s.id}" placeholder="references/… path, blank if not yet fetched">${esc(s.artifact)}</textarea></div></div>`).join("");
+  el.querySelectorAll("textarea").forEach(n=>{autosize(n);
+    n.addEventListener("input",()=>{
+      const f=n.dataset.sk?"key":n.dataset.sc?"cite":"artifact";
+      const id=n.dataset.sk||n.dataset.sc||n.dataset.sa;
+      byId(S.sources,id)[f]=n.value.trim();autosize(n);save();paintReady();});
+    n.addEventListener("blur",()=>renderOutline());});
+  el.querySelectorAll("[data-delsrc]").forEach(n=>n.addEventListener("click",()=>{
+    S.sources=S.sources.filter(s=>s.id!==n.dataset.delsrc);save();renderSources();renderOutline();paintReady();}));
+}
+
+/* ============================ readiness ============================ */
+function checks(){
+  const out=[], ne=v=>String(v||"").trim().length>0;
+  const parts=S.outline, all=allFlat();
+  const leaves=all.filter(r=>!(r.n.children||[]).length);
+  out.push({ok:FIELDS.every(([k])=>ne(S.intent[k])),t:"Writing Intent complete",
+    d:"Thesis, Audience, Purpose, Hook and Scope — the parser refuses an empty value."});
+  out.push({ok:parts.length>=2&&parts.every(p=>ne(p.text)),t:"Level 1 — the Parts exist",
+    d:parts.length?`${parts.length} Part${parts.length===1?"":"s"}: ${parts.map(p=>p.text||"(untitled)").join(" · ")}`:"No Parts yet."});
+  const bare=parts.filter(p=>!(p.children||[]).length&&!/introduction|conclusion|bottom line|summary/i.test(p.text));
+  out.push({ok:parts.length>0&&!bare.length,t:"Level 2 — every Part is broken out",
+    d:bare.length?`Still a heading only: ${bare.map(p=>p.text||"(untitled)").join(", ")}.`:"Each substantive Part says what it does."});
+  const claims=marked("claim"), objs=marked("counter");
+  out.push({ok:claims.length>0,t:"Something is marked as a claim",
+    d:claims.length?`${claims.length} claim${claims.length===1?"":"s"}: ${claims.map(r=>r.n.cid).join(", ")}`:"Mark the bullets that assert something the document must defend."});
+  const claimless=parts.filter(p=>!claims.some(r=>inSubtree(p,r.n.id)) && !/introduction|conclusion/i.test(p.text));
+  out.push({ok:parts.length>0&&!claimless.length,t:"No Part argues nothing",
+    d:claimless.length?`Carries no claim: ${claimless.map(p=>p.text||"(untitled)").join(", ")}.`:"Every substantive Part carries a claim."});
+  // In a brief or an expert report the heading IS the claim; in an article it is a bullet inside a Part.
+  const headsAreClaims=["amicus","expert","comment"].includes(S.intent.genre);
+  if(headsAreClaims){
+    out.push({ok:claims.some(r=>r.depth===0),t:"Argument headings are marked as claims",
+      d:claims.some(r=>r.depth===0)
+        ?"The reader who scans only your headings gets the argument."
+        :"No Part heading is marked. In this genre the headings carry the argument — mark them."});
+  }else{
+    const shallow=claims.filter(r=>r.depth===0);
+    out.push({ok:!shallow.length,t:"Claims sit inside a Part, not on one",
+      d:shallow.length?`Marked at level 1: ${shallow.map(r=>r.n.text||"(untitled)").join(", ")}. A whole Part is not one claim.`:"Each claim is a bullet within a Part."});
+  }
+  const unpinned=leaves.filter(r=>r.depth>=1&&!r.n.source);
+  out.push({ok:leaves.length>0&&!unpinned.length,t:"Every leaf pins a source",
+    d:unpinned.length?`${unpinned.length} unpinned. A leaf with no source is a claim written anyway.`:"Nothing is asserted without a source behind it."});
+  const ghost=S.sources.filter(s=>s.key&&!s.artifact);
+  out.push({ok:S.sources.length>0&&!ghost.length,t:"Every source has an artifact",
+    d:ghost.length?`No file yet: ${ghost.map(s=>s.key).join(", ")}. Recall is not a source.`:"Each key resolves to a file on disk."});
+  out.push({ok:ne(S.srcmeta.bibliography),t:"Bibliography path set",d:"The file every CITE check resolves keys against."});
+  out.push({ok:objs.length>0,t:"The document meets an objection",
+    d:objs.length?`${objs.length} marked, each already in the outline where it gets answered.`:"Nothing marked as an objection — the COUNTER check will find nothing."});
+  const un=all.filter(r=>r.n.status==="scaffold"||r.n.status==="claude").length;
+  out.push({ok:!un,t:"Nothing unaccepted is left standing",
+    d:un?`${un} item${un===1?"":"s"} still template or unaccepted. Only text you accepted compiles into the plan.`:"Everything here is text you accepted."});
+  return out;
+}
+function paintReady(){
+  const cs=checks(),ok=cs.filter(c=>c.ok).length;
+  document.getElementById("readysum").textContent=`${ok} / ${cs.length} ready`+(ok===cs.length?"  —  compile it":"  —  not yet a plan");
+  document.getElementById("checks").innerHTML=cs.map(c=>
+    `<div class="chk ${c.ok?"ok":"no"}"><span class="mk">${c.ok?"✓":"○"}</span><span><b>${esc(c.t)}</b><span class="d">${esc(c.d)}</span></span></div>`).join("");
+  paintCompile();
+}
+function paintCompile(){
+  const cs=checks(),ok=cs.filter(c=>c.ok).length,all=allFlat();
+  document.getElementById("cstat").textContent=(dirty?"saving… · ":"saved · ")+
+    `${ok}/${cs.length} gate checks green · ${S.outline.length} parts · ${all.length} bullets · ${marked("claim").length} claims`;
+}
+
+/* ============================ Claude ============================ */
+function setScope(kind,id,label){S.sel={kind,id,label};
+  document.getElementById("scope").innerHTML="Scope: <b>"+esc((label||"whole plan").slice(0,48))+"</b>";
+  renderQuick();}
+function planContext(){
+  const nm=id=>{const L=locate(id);return L?L.n.text:"(unassigned)";};
+  return ["THESIS: "+(S.intent.thesis||"(not set)"),
+    "AUDIENCE: "+(S.intent.audience||"(not set)"),
+    "PURPOSE: "+(S.intent.purpose||"(not set)"),
+    "SCOPE: "+(S.intent.scope||"(not set)"),
+    "GENRE: "+(SCAFFOLDS[S.intent.genre]?SCAFFOLDS[S.intent.genre].name:"(unset)"),
+    "DOMAIN: "+S.intent.domain,"",
+    "OUTLINE:",outlineMd()||"  (empty)","",
+    "CLAIMS MARKED IN THE OUTLINE:",...marked("claim").map(r=>`  ${r.n.cid} @ ${r.full}: ${r.n.text}`),
+    "","OBJECTIONS MARKED IN THE OUTLINE:",...marked("counter").map(r=>`  - @ ${r.full}: ${r.n.text}`),
+    "","SOURCES AVAILABLE:",...S.sources.map(s=>`  ${s.key}: ${s.cite}${s.artifact?"":"  (NO ARTIFACT ON DISK)"}`),
+  ].join("\n");
+}
+const HOUSE=`You are the co-author at a shared writing bench. The human is a law-and-finance academic.
+Be concrete and brief; never flatter; never restate their point back to them; disagree when you have
+grounds and say why. Never invent a citation — reference only the sources listed. If something has no
+source behind it, say so rather than writing around it. No bold-lead sentences, no em-dash tricolons,
+no "it's not just X, it's Y". Plain declarative prose.`;
+/* Proposals are declarative so co-authors see the same cards. */
+function applyOp(op){
+  if(!op) return;
+  if(op.type==="addPart"){
+    const p=newNode(op.title,op.status||"claude");
+    p.children=(op.kids||[]).map(c=>newNode(c,op.status||"claude"));
+    let idx=S.outline.length;
+    if(Array.isArray(op.after)&&op.after.length){
+      for(let i=op.after.length-1;i>=0;i--){
+        const j=S.outline.findIndex(n=>titleMatch(n.text,op.after[i]));
+        if(j>=0){idx=j+1;break;}
+      }
+    }
+    S.outline.splice(idx,0,p);
+    if(S.maxDepth<2)S.maxDepth=2;
+  }
+  else if(op.type==="addChild"){
+    const t=locate(op.parentId); if(!t) return;
+    const n=newNode(op.text,"claude"); n.source=op.source||"";
+    t.n.children=t.n.children||[]; t.n.children.push(n); t.n.collapsed=false;
+    if(S.maxDepth<t.depth+2)S.maxDepth=t.depth+2;
+  }
+  else if(op.type==="addOrphan"){
+    const n=newNode(op.text,"claude"); n.kind=op.kind||"";
+    if(n.kind==="claim") n.cid=nextClaimId();
+    orphans().children.push(n);
+  }
+  else if(op.type==="setText"){
+    const t=locate(op.nodeId); if(!t) return;
+    t.n.text=op.text; t.n.status="claude";
+  }
+  save(); renderAll();
+}
+function addProp(p){ S.props.push({id:uid(),author:S.me,...p}); saveChat(); renderChat(); }
+function pushMsg(who,text){S.msgs.push({who,text,author:S.me,ts:Date.now()});saveChat();renderChat();}
+function renderChat(){
+  const el=document.getElementById("msgs");
+  el.innerHTML=S.props.map(p=>`<div class="prop"><div class="ph">${esc(p.title)}</div><div class="pt">${esc(p.text)}</div><div class="pa"><button class="btn sm" data-acc="${p.id}">Accept</button><button class="btn sm" data-rej="${p.id}">Reject</button></div></div>`).join("")
+   +(S.props.length>1?`<div class="pa" style="margin-bottom:10px"><button class="btn sm" id="accall">Accept all ${S.props.length}</button><button class="btn sm" id="rejall">Reject all</button></div>`:"")
+   +S.msgs.map(m=>`<div class="msg ${m.who==="c"?"c":"u"}"><span class="who">${m.who==="c"?"claude":m.who==="note"?"note to the session":"you"}</span>${esc(m.text.trim())}</div>`).join("");
+  el.querySelectorAll("[data-acc]").forEach(n=>n.addEventListener("click",()=>{
+    const p=S.props.find(x=>x.id===n.dataset.acc); if(p) applyOp(p.op);
+    S.props=S.props.filter(x=>x.id!==n.dataset.acc);saveChat();renderChat();}));
+  el.querySelectorAll("[data-rej]").forEach(n=>n.addEventListener("click",()=>{
+    S.props=S.props.filter(x=>x.id!==n.dataset.rej);saveChat();renderChat();}));
+  const aa=document.getElementById("accall");
+  if(aa)aa.onclick=()=>{S.props.slice().forEach(p=>applyOp(p.op));S.props=[];saveChat();renderChat();};
+  const ra=document.getElementById("rejall");
+  if(ra)ra.onclick=()=>{S.props=[];saveChat();renderChat();};
+  el.scrollTop=el.scrollHeight;
+}
+async function callClaude(instr,json){
+  if(!sample){pushMsg("c","Claude is not available in this view.");return null;}
+  const input=HOUSE+"\n\nCURRENT PLAN STATE:\n"+planContext()+"\n\nTASK:\n"+instr;
+  try{return await (json?sample.json(input,{modelTier:"complex"}):sample(input,{modelTier:"default"}));}
+  catch(e){pushMsg("c","("+((e&&e.code)||"failed")+")");return null;}
+}
+async function askClaude(instr){
+  pushMsg("u",instr);
+  const i=S.msgs.push({who:"c",text:"Thinking…"})-1;renderChat();
+  if(!sample){S.msgs[i].text="Claude is not available in this view.";renderChat();return;}
+  try{
+    const r=await sample(HOUSE+"\n\nCURRENT PLAN STATE:\n"+planContext()+"\n\nTASK:\n"+instr,
+      {modelTier:"default",onText:({text})=>{S.msgs[i].text=text;renderChat();}});
+    S.msgs[i].text=(r&&r.text)||S.msgs[i].text;
+  }catch(e){S.msgs[i].text="("+((e&&e.code)||"failed")+")";}
+  saveChat(); renderChat();
+}
+function proposeText(instr,title,op){
+  pushMsg("u",title);
+  callClaude(instr).then(r=>{if(!r)return;const t=(r.text||"").trim();
+    addProp({title,text:t,op:Object.assign({},op,{text:t})});S.msgs.pop();renderChat();});
+}
+async function proposeStructure(){
+  pushMsg("u","Propose the Part structure");
+  const g=SCAFFOLDS[S.intent.genre];
+  const r=await callClaude(
+`Propose the level-1 Part structure — the table of contents at its top level only. ${g?`The genre is ${g.name}, whose usual spine is: ${g.parts.map(p=>p[0]).join(" / ")}. Depart from it only where this thesis demands it, and say so.`:""}${g&&g.heads?`\nHEADING CONVENTION: ${g.heads}`:""}
+Each Part is a title plus one clause saying what it does. 4-6 Parts.
+Reply as JSON: {"parts":[{"title":"...","does":"one clause"}]}`,true);
+  if(!r||!r.parts)return; S.msgs.pop();
+  r.parts.forEach(p=>addProp({title:"Part — "+p.title,text:p.does||"",
+    op:{type:"addPart",title:p.title,kids:[],after:null,status:"claude"}}));
+  renderChat();
+}
+async function proposeChildren(L){
+  const path=allFlat().find(r=>r.n.id===L.n.id);
+  pushMsg("u","Expand "+(path?path.full+". ":"")+(L.n.text||"bullet"));
+  const kids=(L.n.children||[]).map(c=>c.text).filter(Boolean);
+  const r=await callClaude(
+`Expand the outline node "${L.n.text}" (at ${path?path.full:"?"}) one level down — the sub-bullets directly under it, in order, nothing deeper.
+${kids.length?`It already has: ${kids.join("; ")}. Propose only what is MISSING, and say if one of the existing ones should be cut.`:""}
+${L.depth===0?"These are the sections of a Part: each says what that section does."
+             :"These are the moves the prose makes, in order."}
+Pin each to a source key from the list above, or null when nothing on hand supports it — never invent a key.
+Reply as JSON: {"children":[{"text":"...","source":"key-or-null"}]}`,true);
+  if(!r||!r.children)return; S.msgs.pop();
+  const keys=new Set(S.sources.map(x=>x.key));
+  r.children.forEach(c=>addProp({
+    title:"↳ under "+(L.n.text||"bullet")+(c.source&&keys.has(c.source)?" · "+c.source:""),
+    text:c.text,
+    op:{type:"addChild",parentId:L.n.id,text:c.text,source:keys.has(c.source)?c.source:""}}));
+  renderChat();
+}
+async function proposeLevel2(){
+  if(!S.outline.length){pushMsg("c","Add the Parts first — level 2 answers to level 1.");return;}
+  pushMsg("u","Expand every Part into sections");
+  const r=await callClaude(
+`For EACH level-1 Part in the outline, propose the sections directly under it — level 2 only, nothing deeper.
+A section is a title plus the work it does. Skip Parts named Introduction or Conclusion.
+Reply as JSON: {"parts":[{"part":"<exact existing Part title>","sections":[{"text":"..."}]}]}`,true);
+  if(!r||!r.parts)return; S.msgs.pop();
+  r.parts.forEach(p=>{
+    const tgt=S.outline.find(o=>o.text.trim().toLowerCase()===String(p.part||"").trim().toLowerCase());
+    if(!tgt)return;
+    (p.sections||[]).forEach(s=>addProp({title:"↳ under "+tgt.text,text:s.text,
+      op:{type:"addChild",parentId:tgt.id,text:s.text,source:""}}));});
+  renderChat();
+}
+async function proposeClaims(){
+  pushMsg("u","Candidate claims");
+  const r=await callClaude(
+`Propose 4-6 candidate claims this document could argue. Each must be falsifiable, not a topic.
+Mark any the listed sources cannot support.
+Reply as JSON: {"claims":[{"text":"...","supported":true|false,"why":"one clause"}]}`,true);
+  if(!r||!r.claims)return; S.msgs.pop();
+  r.claims.forEach(c=>addProp({
+    title:"Candidate claim"+(c.supported?"":" — UNSUPPORTED by your sources"),
+    text:c.text+(c.why?"\n\n· "+c.why:""),
+    op:{type:"addOrphan",text:c.text,kind:"claim"}}));
+  renderChat();
+}
+async function proposeCounters(){
+  pushMsg("u","Attack the thesis");
+  const r=await callClaude(
+`Attack the thesis. The 3-4 objections a hostile expert reader raises first, each worded the way it
+would be put to the author's face. Reply as JSON: {"objections":[{"text":"..."}]}`,true);
+  if(!r||!r.objections)return; S.msgs.pop();
+  r.objections.forEach(o=>addProp({title:"Objection",text:o.text,
+    op:{type:"addOrphan",text:o.text,kind:"counter"}}));
+  renderChat();
+}
+const QUICKS={
+  none:[["Is the structure right?","Judge the outline's level-1 Parts only. Does this spine carry the thesis? Name the Part that is doing no work, or the one that is missing."],
+        ["What is missing?","Read the plan as a hostile referee. Name the one thing most likely to sink it, and nothing else."],
+        ["Where am I overclaiming?","Name every claim the listed sources do not support. Quote the claim id. If none, say so."]],
+  node:[["Does this earn its place?","Judge whether this node does work its siblings do not. Be willing to say cut it."],
+        ["Is it in the right position?","Judge this node's placement in the outline order. Would a reader meet it too early or too late?"],
+        ["What goes under it?","List, briefly, what a reader expects to find under this heading that is not there yet."],
+        ["Push back on it","State the strongest objection a hostile expert reader would raise against this bullet, in two or three sentences. Do not soften it and do not offer a fix."],
+        ["What would prove it wrong?","State the evidence that would falsify what this bullet asserts. If it asserts nothing falsifiable, say so."]],
+
+  intent:[["Sharpen the thesis","Rewrite the thesis as one sentence that commits to something falsifiable. Reply with the sentence alone."],
+          ["Who is this really for?","Judge whether audience and purpose are consistent with the thesis and scope."]],
+};
+function renderQuick(){
+  const k=(S.sel&&QUICKS[S.sel.kind])?S.sel.kind:"none";
+  document.getElementById("quick").innerHTML=QUICKS[k].map((q,i)=>`<button data-q="${k}|${i}">${esc(q[0])}</button>`).join("");
+  document.getElementById("quick").querySelectorAll("[data-q]").forEach(n=>n.addEventListener("click",()=>{
+    const [kk,i]=n.dataset.q.split("|"); let instr=QUICKS[kk][+i][1];
+    if(kk==="node"&&S.sel){const L=locate(S.sel.id);const p=allFlat().find(r=>r.n.id===S.sel.id);
+      if(L)instr=`Regarding outline node ${p?p.full:""}. "${L.n.text}": `+instr;}
+    askClaude(instr);}));
+}
+
+/* ============================ misc ============================ */
+function autosize(n){if(n.tagName!=="TEXTAREA")return;n.style.height="auto";n.style.height=n.scrollHeight+"px";}
+function renderAll(){renderBrief();renderIntent();renderOutline();renderSources();paintReady();renderQuick();}
+document.getElementById("editbrief").onclick=()=>{
+  const p=document.getElementById("intent"), s=document.getElementById("briefsummary");
+  p.hidden=!p.hidden; s.hidden=!p.hidden;
+  document.getElementById("editbrief").textContent=p.hidden?"edit":"done";
+  if(p.hidden) renderBrief();};
+document.getElementById("togglesrcmeta").onclick=()=>{
+  const m=document.getElementById("sourcemeta"); m.hidden=!m.hidden;};
+
+document.querySelectorAll("[data-depth]").forEach(b=>b.onclick=()=>{
+  S.maxDepth=+b.dataset.depth; renderOutline();});
+document.getElementById("addtop").onclick=()=>{
+  const n=newNode("","you");S.outline.push(n);S.focusId=n.id;save();renderAll();};
+document.getElementById("claudestruct").onclick=()=>{setScope("intent",null,"whole plan");proposeStructure();};
+document.getElementById("claudelevel2").onclick=()=>{setScope("intent",null,"whole plan");proposeLevel2();};
+document.getElementById("claudecounters").onclick=()=>{setScope("intent",null,"whole plan");proposeCounters();};
+document.getElementById("addsource").onclick=()=>{
+  S.sources.push({id:uid(),key:"",cite:"",artifact:""});save();renderSources();paintReady();};
+document.getElementById("copyjson").onclick=()=>copy(JSON.stringify(snapshot(),null,2),"copyjson","Copy plan JSON");
+document.getElementById("copymd").onclick=()=>copy(outlineMd(),"copymd","Copy outline");
+function copy(t,id,label){navigator.clipboard&&navigator.clipboard.writeText(t);
+  const b=document.getElementById(id);b.textContent="Copied";setTimeout(()=>b.textContent=label,1400);}
+document.getElementById("themebtn").onclick=()=>{
+  const r=document.documentElement,c=r.getAttribute("data-theme");
+  r.setAttribute("data-theme",c==="dark"?"light":c==="light"?"dark":
+    (matchMedia("(prefers-color-scheme: dark)").matches?"light":"dark"));};
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x===t));
+  ["chat","ready"].forEach(k=>document.getElementById("t-"+k).hidden=(k!==t.dataset.t));});
+function sendAsk(){const t=document.getElementById("ask");const v=t.value.trim();
+  if(!v)return;t.value="";askClaude(v);}
+function sendNote(){const t=document.getElementById("ask");const v=t.value.trim();
+  if(!v)return;t.value="";S.msgs.push({who:"note",text:v,author:S.me,ts:Date.now()});saveChat();renderChat();}
+document.getElementById("asksend").onclick=sendAsk;
+document.getElementById("notesend").onclick=sendNote;
+document.getElementById("ask").addEventListener("keydown",e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key==="Enter"){e.preventDefault();sendAsk();}});
+
+/* ============================ boot ============================ */
+/* Prefer the platform's identity when it is granted; the manual field is the documented
+   fallback for when `user` is undeclared or id() is null. */
+(async()=>{
+  let u=null; try{ u=await claude.use("user"); }catch(_){ u=null; }
+  if(!u) return;
+  let name=null;
+  try{
+    for(const k of ["name","displayName","profile","id"]){
+      const v=u[k]; if(!v) continue;
+      const got=typeof v==="function" ? await v() : v;
+      if(!got) continue;
+      name = typeof got==="string" ? got : (got.name||got.displayName||got.email||got.id||null);
+      if(name) break;
+    }
+  }catch(_){ name=null; }
+  if(!name) return;
+  S.me=String(name); renderChat();
+})();
+renderAll();
+
+(async()=>{
+  try{db=await claude.use("db");}catch(e){db=null;}
+  if(db){
+    try{
+      const s=await db.doc(DOC).get(); if(s.exists) adopt(s.data);
+      loaded=true; renderAll();
+      db.doc(DOC).onSnapshot(s2=>{
+        if(!s2.exists||s2.hasPendingWrites)return;
+        const a=document.activeElement;
+        if(a&&(a.tagName==="TEXTAREA"||a.tagName==="INPUT"))return;
+        adopt(s2.data);renderAll();
+      },e=>console.warn("snap",e&&e.code));
+      const cs=await db.doc(CHAT).get(); if(cs.exists) adoptChat(cs.data);
+      db.doc(CHAT).onSnapshot(c=>{
+        if(!c.exists||c.hasPendingWrites) return;
+        const a=document.activeElement;
+        if(a&&a.id==="ask") return;
+        adoptChat(c.data);
+      },e=>console.warn("chatsnap",e&&e.code));
+    }catch(e){console.warn("db",e&&e.code); loaded=true;}
+  }else{
+    document.getElementById("offline").innerHTML=
+      '<div class="off">Shared storage is unavailable in this view — edits stay in this tab only. Copy the plan JSON before closing.</div>';
+    loaded=true;
+  }
+  try{sample=await claude.use("sample");}catch(e){sample=null;}
+  pushMsg("c",sample
+    ? "Bench is live. Work top down: get the Parts right at level I, then drop to I.A.\n\nSelect a bullet and the quick prompts follow it. I propose, you accept — nothing I write reaches the compiled plan until you press Accept."
+    : "Claude is not available in this view. The bench still works as a shared outliner; the proposal buttons will do nothing.");
+})();
+</script>
