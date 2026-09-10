@@ -23,7 +23,9 @@ codes.
 
 Main chat clarifies, plans and dispatches. It does not write the document. It never creates or edits
 a file under the writing project's `drafts/`, `outlines/` or `references/` — not by Write/Edit, and
-not by Bash (`cat >`, a heredoc, `sed -i`, `tee`). Drafting runs in a dispatched agent. Craft's
+not by Bash (`cat >`, a heredoc, `sed -i`, `tee`). The one exception is
+`writing_bench_compile.py` under Phase 2 Path A, which is a compiler, not an author. Drafting runs in
+a dispatched agent. Craft's
 dispatch is already structural and its judges are pinned to `Explore`, so this is a rule on you, not
 a hook — a skill-frontmatter hook is measured not to reach dispatched agents, so there is nothing to
 attach it to.
@@ -54,6 +56,10 @@ remember is a claim about a document nobody opened; source gathering goes throug
 | Deliverables | The outline files, the draft files, and the assembled document |
 | Evidence | What makes each section credible: a pinned source, a quoted authority, or user judgment |
 | Review surfaces | What the user will actually read at Phase 5 |
+| Planning surface | `bench` (default) or `plan file` — where the outline gets authored |
+
+`bench` is the recommended answer and Phase 2's default path; `plan file` is the escape hatch for a
+document short enough that an artifact is overhead.
 
 Ask in one `AskUserQuestion` call when answers are independent. Ask cascading questions separately:
 the venue decides the length, and the length decides the section count.
@@ -75,6 +81,10 @@ source area the librarian could not fill is a planned evidence task, not a claim
 Craft's Phase 2. The plan must be written in the **required plan grammar** below, because
 `scripts/writing_section_index.py` **parses it** and is the only canonical grammar parser — there is
 no LLM discovery fallback and no second reader. A heading it cannot find is a section nothing checks.
+
+That grammar is the **contract both planning surfaces satisfy**. Path A (bench) reaches it through a
+compiler; Path B (plan file) reaches it by writing the plan. Either way ExitPlanMode approves a plan
+the parser accepts, and nothing downstream can tell which path produced it.
 
 ### The required plan grammar
 
@@ -129,6 +139,55 @@ Three further domain requirements on the plan:
   approved plan is already the generated plan the parser authenticates. Craft honours whatever the
   setting says (default `.claude/plans`), so read the configured value rather than assuming this
   one. **Never copy the plan.**
+
+### Path A — bench (default)
+
+<EXTREMELY-IMPORTANT>
+**THE OUTLINE IS THE USER'S, NOT YOURS. Claude PROPOSES; only text the user ACCEPTS compiles.**
+
+Authoring both the outline and the detailed outline yourself, and reducing the user to approving at
+ExitPlanMode, is what this path exists to end. It is not faster — it hands the user an argument they
+did not make and must now argue with.
+</EXTREMELY-IMPORTANT>
+
+Main chat, in order:
+
+1. **Publish** `${CLAUDE_PLUGIN_ROOT}/skills/writing/assets/bench.html` with the `Artifact` tool,
+   `capabilities: {"db": {}, "sample": {}}`. Persona agents hold no `Artifact` tool, so this is
+   main-chat work by construction, not a delegation you forgot to make.
+2. **Seed it** — `write_db` to collection `plan`, doc `bench`: the CLARIFY answers as `intent`
+   (`thesis`, `audience`, `purpose`, `hook`, `scope`, `domain`, `genre`), the librarian's returned
+   sources as `sources` `[{id, key, cite, artifact}]`, and `srcmeta.bibliography`. **The user never
+   retypes the interview into the bench.**
+3. **Hand over the URL and STOP.** The user outlines level 1, then level 2; Claude proposes in-page;
+   the user accepts. This is a real wait for a human — not a poll, not a loop, not a timeout.
+4. **On the user's go-ahead**, `read_db` the doc to a file and compile:
+
+   ```bash
+   uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_bench_compile.py \
+     --bench <file> --project <proj> --slug <slug>
+   ```
+
+   A non-zero exit is **not a failure to work around**. It names the unaccepted nodes, unpinned
+   sources or missing artifacts by outline position; the answer is to tell the user what to fix in
+   the bench and wait again.
+5. **Verify and approve** — `writing_section_index.py` exits 0 for the project, then ExitPlanMode on
+   the **compiled** plan.
+
+The bench URL is recorded as a `Bench URL:` line in the body of
+`<proj>/.planning/ACTIVE_WORKFLOW.md` — the existing file, never a new one. `writing_receipt.py`
+rewrites that file, so re-append the line after the receipt shim runs.
+
+### Path B — plan file
+
+Write the plan in the grammar above and approve it at ExitPlanMode. Unchanged.
+
+### The Write-surface rule, reconciled
+
+Main chat never **authors** outline or draft prose. Running
+`writing_bench_compile.py` — a deterministic compiler emitting the user's own accepted outline — is
+not authoring, and it is the **only** sanctioned main-chat write under `outlines/`. Prose is still
+written only by dispatched agents.
 
 ## Phase 3 — GOAL
 
@@ -234,6 +293,15 @@ Omitting it silently runs the user's codex request on claude.
   // plan's Domain: field names one of those, alongside writing-checks.md, which is unconditional on
   // every row. The raw style guides are NOT loaded for drafting: the register supersedes them and
   // overrides three of their rules.
+  // PATH A (bench): the outline files already exist and are the USER'S WORK. The row drafts
+  // AGAINST them and writes drafts/<Section>.md ONLY.
+  //   work: "Expand <proj>/outlines/<Section>.md — the user's accepted outline, which you must NOT
+  //          edit or 'improve' — into <proj>/drafts/<Section>.md, carrying the claims the Claim →
+  //          Section Map assigns this section and citing only bibliography keys its outline pinned.
+  //          If the draft needs a beat the outline does not have, STOP and raise it; never add one
+  //          silently. DRAFT FRONTMATTER CONTRACT — as below."
+  //   writablePaths: ["<proj>/drafts/<Section>.md"]
+  // PATH B (plan file): the row below, which writes both files.
   tasks: [
     { id: "T1",
       name: "Section: <Section>",
@@ -315,7 +383,8 @@ Omitting it silently runs the user's codex request on claude.
     "DRAFT FRONTMATTER CONTRACT — every draft OPENS with YAML frontmatter carrying `implements: [CLAIM-NN, ...]`, exactly matching the claim set the plan's Claim → Section Map assigns that section, and `plan_hash: <craft's current plan hash>`. writing_gate_probe.py enforces both and fails the section otherwise; a draft with prose above its frontmatter has no frontmatter at all.",
     "Every command naming a draft QUOTES that path. Section names carry spaces and parentheses, and an unquoted path dies in bash before python runs — and a probe's cmd is run verbatim, with no corrected re-run.",
     "A section absent from the plan's ## Section Outputs is one nothing will check and cannot be claimed as drafted.",
-    "The document is written by dispatched agents. Main chat writes nothing under the project's drafts/, outlines/ or references/, by any tool including Bash heredocs.",
+    "The document is written by dispatched agents. Main chat writes nothing under the project's drafts/, outlines/ or references/, by any tool including Bash heredocs — the sole exception being writing_bench_compile.py, a compiler emitting the user's own accepted outline.",
+    "In bench mode the outlines/ files are the USER'S accepted work. A drafting row writes drafts/<Section>.md only; a draft needing a beat the outline does not have is raised, never silently added.",
     "Standing writing doer authority — every drafting task loads ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md plus ${CLAUDE_PLUGIN_ROOT}/skills/writing-general/SKILL.md, which is the base register for every Domain, and — when the plan's Domain: field is legal or econ — ${CLAUDE_PLUGIN_ROOT}/skills/writing-legal/SKILL.md or ${CLAUDE_PLUGIN_ROOT}/skills/writing-econ/SKILL.md alongside it. The domain files carry only what is additional to the base and are useless without it; Domain: general loads the base alone. It loads the raw style guides — volokh-distilled.md, formatting.md, economical-writing-full.md, elements-of-style.md — NOT AT ALL for drafting, because the register is those guides already filtered through 14.29M sentences and it overrides three of their rules as register mistakes, so loading both puts the drafter under contradictory instructions.",
     "Rules: writing-checks.md defines all eight checks; writing-anchored-numbers.md, writing-citation-tense.md, writing-no-bold-lead.md, writing-outline-sync.md, writing-topic-sentences.md, writing-shortjournal.md and writing-stop-triggers.md are the prose constraints; claim-id-traceability.md and the six cite-fidelity-*.md files govern claim ids and sourcing. All under ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/.",
   ].join("\n"),
@@ -353,6 +422,11 @@ evidence for that conversation, not human acceptance.
 
 | Situation | Wrong move | Right move |
 |---|---|---|
+| Getting CLARIFY answers and sources into the bench | ask the user to retype the interview | `write_db` them as `intent`, `sources` and `srcmeta.bibliography` — the user never re-enters what they already told you |
+| `writing_bench_compile.py` exits 1 | hand-edit the bench JSON to flip nodes to accepted | that forges the user's acceptance — report the named nodes and wait for them to accept in the bench |
+| A drafter needing a beat the outline lacks | add it to `outlines/<Section>.md` | the outline is the user's work — stop and raise it; a drafting row's `writablePaths` is `drafts/` only in bench mode |
+| Returning to the bench later in the run | publish a second bench artifact | republish the URL recorded in `.planning/ACTIVE_WORKFLOW.md` — a second artifact is a second, divergent outline |
+| A coauthor who should see the bench | send them the URL | a `db` artifact is organization-internal; on a personal account a second signed-in account gets "Page not found" (verified) — export the compiled plan instead |
 | Needing a source | cite what you remember | recall is not a source — dispatch `workflows:librarian` and make it leave a real artifact under `references/` |
 | The plan's location | copy craft's plan into `.planning/` | set `plansDirectory` to `./.planning` so craft's plan already IS the parsed one; a copy drifts from what the user approved |
 | Naming the plan file | `PLAN.md` | the parser rejects that basename as legacy — use the slug plan mode wrote |
