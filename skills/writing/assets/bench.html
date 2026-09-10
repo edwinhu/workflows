@@ -357,6 +357,8 @@ function newNode(text,status){ return {id:uid(),text:text||"",status:status||"yo
 /* ============================ persistence ============================ */
 const DOC="plan/bench";
 const CHAT="plan/chat";
+// The runtime exposes a snapshot's payload as a method; older shapes used a property.
+const snapData = s => (s && typeof s.data === "function") ? s.data() : (s ? s.data : null);
 let saveT=null, dirty=false, loaded=false;
 function snapshot(){return {intent:S.intent,srcmeta:S.srcmeta,outline:S.outline,
   sources:S.sources,rev:Date.now()};}
@@ -371,7 +373,7 @@ function save(){
       const snap=snapshot();
       if(!snap.outline.length && !String(snap.intent.thesis||"").trim()){
         const cur=await db.doc(DOC).get();          // guard against writing an empty doc over a full one
-        const d=cur.exists?cur.data:null;
+        const d=cur.exists?snapData(cur):null;
         if(d && ((d.outline||[]).length || String((d.intent||{}).thesis||"").trim())){
           adopt(d); loaded=true; renderAll();
           console.warn("refused to overwrite a non-empty bench with an empty one");
@@ -1108,20 +1110,20 @@ renderAll();
   try{db=await claude.use("db");}catch(e){db=null;}
   if(db){
     try{
-      const s=await db.doc(DOC).get(); if(s.exists) adopt(s.data);
+      const s=await db.doc(DOC).get(); if(s.exists) adopt(snapData(s));
       loaded=true; renderAll();
       db.doc(DOC).onSnapshot(s2=>{
         if(!s2.exists||s2.hasPendingWrites)return;
         const a=document.activeElement;
         if(a&&(a.tagName==="TEXTAREA"||a.tagName==="INPUT"))return;
-        adopt(s2.data);renderAll();
+        adopt(snapData(s2));renderAll();
       },e=>console.warn("snap",e&&e.code));
-      const cs=await db.doc(CHAT).get(); if(cs.exists) adoptChat(cs.data);
+      const cs=await db.doc(CHAT).get(); if(cs.exists) adoptChat(snapData(cs));
       db.doc(CHAT).onSnapshot(c=>{
         if(!c.exists||c.hasPendingWrites) return;
         const a=document.activeElement;
         if(a&&a.id==="ask") return;
-        adoptChat(c.data);
+        adoptChat(snapData(c));
       },e=>console.warn("chatsnap",e&&e.code));
     }catch(e){console.warn("db",e&&e.code); loaded=true;}
   }else{
