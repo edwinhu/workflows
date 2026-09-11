@@ -16,11 +16,16 @@ import {
   restoreFromManifest,
   updateManifest,
   computeSourceHash,
+  computeFileContentHash,
   loadStoreState,
   saveStoreState,
   createOrReuseStore,
   deleteStore,
   importToStore,
+  computeKeyHashes,
+  diffKeyHashes,
+  listStoreDocuments,
+  syncStore,
   type ClassifyResult,
   type Status,
   type BibEntry,
@@ -1078,6 +1083,70 @@ describe("File Search Store CRUD", () => {
 
     expect(hash2keys).not.toBe(hash3keys); // different bibkeys
     expect(hash2keys).toBe(hashDiffOrder); // order-independent (sorted)
+  });
+
+  it("computeSourceHash changes when file CONTENT changes at the same path", async () => {
+    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+    const dir = "/tmp/cite-check-content-hash-test";
+    rmSync(dir, { recursive: true, force: true });
+    mkdirSync(dir, { recursive: true });
+    const pdfPath = join(dir, "Chinco2024-bt.pdf");
+    try {
+      const bibMap = new Map<string, BibEntry>([
+        ["Chinco2024-bt", { bibkey: "Chinco2024-bt", filePath: pdfPath }],
+      ]);
+
+      // Accepted manuscript
+      writeFileSync(pdfPath, "%PDF-1.4 accepted manuscript, 63 pages\n");
+      const hashBefore = computeSourceHash(bibMap, ["Chinco2024-bt"]);
+
+      // Same bibkey, same path, different document
+      writeFileSync(pdfPath, "%PDF-1.4 published JFE article, 22 pages\n");
+      const hashAfter = computeSourceHash(bibMap, ["Chinco2024-bt"]);
+
+      expect(hashAfter).not.toBe(hashBefore);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("computeSourceHash is stable across calls for unchanged file content", async () => {
+    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+    const dir = "/tmp/cite-check-content-hash-stable-test";
+    rmSync(dir, { recursive: true, force: true });
+    mkdirSync(dir, { recursive: true });
+    const pdfPath = join(dir, "a.pdf");
+    try {
+      writeFileSync(pdfPath, "%PDF-1.4 stable bytes\n");
+      const bibMap = new Map<string, BibEntry>([
+        ["Alpha2024-aa", { bibkey: "Alpha2024-aa", filePath: pdfPath }],
+      ]);
+
+      expect(computeSourceHash(bibMap, ["Alpha2024-aa"]))
+        .toBe(computeSourceHash(bibMap, ["Alpha2024-aa"]));
+
+      // Rewriting identical bytes (new mtime) must NOT invalidate the store
+      writeFileSync(pdfPath, "%PDF-1.4 stable bytes\n");
+      expect(computeSourceHash(bibMap, ["Alpha2024-aa"]))
+        .toBe(computeSourceHash(bibMap, ["Alpha2024-aa"]));
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("computeSourceHash does not throw for a missing or empty file path", () => {
+    const bibMap = new Map<string, BibEntry>([
+      ["Gone2024-zz", { bibkey: "Gone2024-zz", filePath: "/tmp/definitely-not-here-9f3a.pdf" }],
+      ["NoFile2024-yy", { bibkey: "NoFile2024-yy" }],
+    ]);
+    const hash = computeSourceHash(bibMap, ["Gone2024-zz", "NoFile2024-yy"]);
+    expect(hash.length).toBe(64);
+    expect(hash).toBe(computeSourceHash(bibMap, ["Gone2024-zz", "NoFile2024-yy"]));
+  });
+
+  it("computeFileContentHash returns sentinels rather than throwing", () => {
+    expect(computeFileContentHash("")).toBe("<none>");
+    expect(computeFileContentHash("/tmp/definitely-not-here-9f3a.pdf")).toBe("<missing>");
   });
 
   it("loadStoreState returns null for missing file", () => {
@@ -2290,3 +2359,400 @@ void _bibEntry;
 void _bibEntryFull;
 void _fsBatchReq;
 void _fsBatchResult;
+
+// ---------------------------------------------------------------------------
+// Per-file (surgical) store invalidation
+// ---------------------------------------------------------------------------
+
+interface MockCalls {
+  create: any[];
+  deleteStore: any[];
+  deleteDoc: any[];
+  upload: any[];
+  list: any[];
+}
+
+/** Build a mock @google/genai client whose store holds `docs`, paginated at
+ *  `pageSize`. Uploads append to the store so delete-then-import is observable. */
+function makeStoreMock(
+  docs: Array<{ name: string; bibkey: string }>,
+  opts?: { pageSize?: number; uploadFails?: string[]; listThrows?: boolean; deleteDocThrows?: boolean },
+) {
+  const pageSize = opts?.pageSize ?? 20;
+  const calls: MockCalls = { create: [], deleteStore: [], deleteDoc: [], upload: [], list: [] };
+  const live = [...docs];
+
+  const client = {
+    fileSearchStores: {
+      create: async (o: any) => { calls.create.push(o); return { name: "fileSearchStores/rebuilt-999" }; },
+      delete: async (o: any) => { calls.deleteStore.push(o); },
+      uploadToFileSearchStore: async (o: any) => {
+        calls.upload.push(o);
+        const bibkey = o.config?.displayName;
+        if (opts?.uploadFails?.includes(bibkey)) throw new Error(`upload refused for ${bibkey}`);
+        live.push({ name: `fileSearchStores/s/documents/new-${bibkey}`, bibkey });
+        return { done: true };
+      },
+      documents: {
+        list: async (o: any) => {
+          calls.list.push(o);
+          if (opts?.listThrows) throw new Error("PERMISSION_DENIED listing documents");
+          const snapshot = [...live].map((d) => ({
+            name: d.name,
+            displayName: "d98ctytgehwv", // store-assigned random id, never the bibkey
+            customMetadata: [{ key: "bibkey", stringValue: d.bibkey }],
+          }));
+          let idx = 0;
+          const pager: any = {
+            page: snapshot.slice(0, pageSize),
+            hasNextPage: () => (idx + 1) * pageSize < snapshot.length,
+            nextPage: async () => { idx++; return snapshot.slice(idx * pageSize, (idx + 1) * pageSize); },
+          };
+          return pager;
+        },
+        delete: async (o: any) => {
+          calls.deleteDoc.push(o);
+          if (opts?.deleteDocThrows) throw new Error("FAILED_PRECONDITION deleting document");
+          const i = live.findIndex((d) => d.name === o.name);
+          if (i >= 0) live.splice(i, 1);
+        },
+      },
+    },
+    operations: { get: async (o: any) => ({ ...o.operation, done: true }) },
+  };
+  return { client, calls, live };
+}
+
+describe("per-file store invalidation", () => {
+  const tmpDir = "/tmp/cite-check-surgical-test";
+  let statePath = "";
+
+  /** Write three real source files and return the bibMap over them. */
+  async function fixture(contents?: Record<string, string>) {
+    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+    rmSync(tmpDir, { recursive: true, force: true });
+    mkdirSync(tmpDir, { recursive: true });
+    statePath = join(tmpDir, ".cite-check-store.json");
+    const bibMap = new Map<string, BibEntry>();
+    const bodies = contents ?? { Alpha: "alpha v1", Beta: "beta v1", Gamma: "gamma v1" };
+    for (const [key, body] of Object.entries(bodies)) {
+      const p = join(tmpDir, `${key}.pdf`);
+      writeFileSync(p, `%PDF-1.4 ${body}\n`);
+      bibMap.set(key, { bibkey: key, filePath: p, fileRelPath: `${key}.pdf`, author: key, year: "2024" });
+    }
+    return bibMap;
+  }
+
+  /** Seed state as if a prior run imported exactly `keys`. */
+  function seedState(bibMap: Map<string, BibEntry>, keys: string[], storeName = "fileSearchStores/live-1") {
+    saveStoreState(statePath, {
+      storeName,
+      sourceHash: computeSourceHash(bibMap, keys),
+      importedBibkeys: keys,
+      createdAt: Date.now() - 60_000,
+      keyHashes: computeKeyHashes(bibMap, keys),
+    });
+  }
+
+  const seededDocs = (keys: string[]) =>
+    keys.map((k) => ({ name: `fileSearchStores/live-1/documents/doc-${k}`, bibkey: k }));
+
+  afterEach(async () => {
+    const { rmSync } = await import("node:fs");
+    try { rmSync(tmpDir, { recursive: true, force: true }); } catch {}
+  });
+
+  it("diffKeyHashes classifies unchanged / changed / added / removed", () => {
+    const diff = diffKeyHashes(
+      { A: "h1", B: "h2", C: "h3" },
+      { A: "h1", B: "CHANGED", D: "h4" },
+    );
+    expect(diff.unchanged).toEqual(["A"]);
+    expect(diff.changed).toEqual(["B"]);
+    expect(diff.added).toEqual(["D"]);
+    expect(diff.removed).toEqual(["C"]);
+  });
+
+  it("one source changes at the same path: only that key is deleted and re-imported", async () => {
+    const { writeFileSync } = await import("node:fs");
+    const bibMap = await fixture();
+    const keys = ["Alpha", "Beta", "Gamma"];
+    seedState(bibMap, keys);
+
+    // Preprint swapped for the published version — same path, same bibkey.
+    writeFileSync(join(tmpDir, "Beta.pdf"), "%PDF-1.4 beta PUBLISHED VERSION\n");
+
+    const { client, calls } = makeStoreMock(seededDocs(keys));
+    __setGeminiClientForTesting(client as any);
+
+    const result = await syncStore({ statePath, bibMap, citedBibkeys: keys, bibDirs: [tmpDir], _pollIntervalMs: 1 });
+
+    expect(result.mode).toBe("surgical");
+    expect(result.storeName).toBe("fileSearchStores/live-1");
+    expect(result.deletedKeys).toEqual(["Beta"]);
+    expect(result.importedKeys).toEqual(["Beta"]);
+
+    // Exactly one delete, for Beta's document — Alpha and Gamma untouched.
+    expect(calls.deleteDoc.length).toBe(1);
+    expect(calls.deleteDoc[0].name).toBe("fileSearchStores/live-1/documents/doc-Beta");
+    // Exactly one import, for Beta.
+    expect(calls.upload.length).toBe(1);
+    expect(calls.upload[0].config.displayName).toBe("Beta");
+    expect(calls.upload[0].fileSearchStoreName).toBe("fileSearchStores/live-1");
+    // The store itself was never recreated.
+    expect(calls.create.length).toBe(0);
+    expect(calls.deleteStore.length).toBe(0);
+
+    expect(result.importedBibkeys.sort()).toEqual(["Alpha", "Beta", "Gamma"]);
+    const saved = loadStoreState(statePath)!;
+    expect(saved.keyHashes!.Beta).toBe(computeKeyHashes(bibMap, ["Beta"]).Beta);
+    expect(saved.storeName).toBe("fileSearchStores/live-1");
+  });
+
+  it("a key added is imported and nothing is deleted", async () => {
+    const bibMap = await fixture();
+    seedState(bibMap, ["Alpha", "Beta"]);
+
+    const { client, calls } = makeStoreMock(seededDocs(["Alpha", "Beta"]));
+    __setGeminiClientForTesting(client as any);
+
+    const result = await syncStore({
+      statePath, bibMap, citedBibkeys: ["Alpha", "Beta", "Gamma"], bibDirs: [tmpDir], _pollIntervalMs: 1,
+    });
+
+    expect(result.mode).toBe("surgical");
+    expect(result.deletedKeys).toEqual([]);
+    expect(result.importedKeys).toEqual(["Gamma"]);
+    expect(calls.deleteDoc.length).toBe(0);
+    expect(calls.list.length).toBe(0); // no lookup needed when nothing is deleted
+    expect(calls.upload.length).toBe(1);
+    expect(calls.upload[0].config.displayName).toBe("Gamma");
+    expect(result.importedBibkeys.sort()).toEqual(["Alpha", "Beta", "Gamma"]);
+  });
+
+  it("a key removed has its document deleted and nothing is imported", async () => {
+    const bibMap = await fixture();
+    const keys = ["Alpha", "Beta", "Gamma"];
+    seedState(bibMap, keys);
+
+    const { client, calls } = makeStoreMock(seededDocs(keys));
+    __setGeminiClientForTesting(client as any);
+
+    const result = await syncStore({
+      statePath, bibMap, citedBibkeys: ["Alpha", "Beta"], bibDirs: [tmpDir], _pollIntervalMs: 1,
+    });
+
+    expect(result.mode).toBe("surgical");
+    expect(result.deletedKeys).toEqual(["Gamma"]);
+    expect(result.importedKeys).toEqual([]);
+    expect(calls.deleteDoc.length).toBe(1);
+    expect(calls.deleteDoc[0].name).toBe("fileSearchStores/live-1/documents/doc-Gamma");
+    expect(calls.upload.length).toBe(0);
+    expect(result.importedBibkeys.sort()).toEqual(["Alpha", "Beta"]);
+    expect(loadStoreState(statePath)!.keyHashes!.Gamma).toBeUndefined();
+  });
+
+  it("nothing changed: no delete, no import, no list", async () => {
+    const bibMap = await fixture();
+    const keys = ["Alpha", "Beta", "Gamma"];
+    seedState(bibMap, keys);
+
+    const { client, calls } = makeStoreMock(seededDocs(keys));
+    __setGeminiClientForTesting(client as any);
+
+    const result = await syncStore({ statePath, bibMap, citedBibkeys: keys, bibDirs: [tmpDir], _pollIntervalMs: 1 });
+
+    expect(result.mode).toBe("reuse");
+    expect(result.isNew).toBe(false);
+    expect(calls.deleteDoc.length).toBe(0);
+    expect(calls.upload.length).toBe(0);
+    expect(calls.list.length).toBe(0);
+    expect(calls.create.length).toBe(0);
+    expect(calls.deleteStore.length).toBe(0);
+    expect(result.importedBibkeys).toEqual(keys);
+  });
+
+  it("old-shape state (no per-key map) forces one full rebuild and is rewritten in the new shape", async () => {
+    const bibMap = await fixture();
+    const keys = ["Alpha", "Beta", "Gamma"];
+    // Exactly what the pre-surgical code wrote: no keyHashes field.
+    saveStoreState(statePath, {
+      storeName: "fileSearchStores/old-shape-1",
+      sourceHash: computeSourceHash(bibMap, keys),
+      importedBibkeys: keys,
+      createdAt: Date.now() - 60_000,
+    });
+    expect(loadStoreState(statePath)!.keyHashes).toBeUndefined();
+
+    const { client, calls } = makeStoreMock(seededDocs(keys));
+    __setGeminiClientForTesting(client as any);
+
+    const result = await syncStore({ statePath, bibMap, citedBibkeys: keys, bibDirs: [tmpDir], _pollIntervalMs: 1 });
+
+    expect(result.mode).toBe("rebuild");
+    expect(result.isNew).toBe(true);
+    expect(result.reason).toContain("per-key hashes");
+    expect(calls.deleteStore[0].name).toBe("fileSearchStores/old-shape-1");
+    expect(calls.create.length).toBe(1);
+    expect(calls.upload.length).toBe(3); // everything re-imported
+
+    const saved = loadStoreState(statePath)!;
+    expect(saved.storeName).toBe("fileSearchStores/rebuilt-999");
+    expect(saved.keyHashes).toBeDefined();
+    expect(Object.keys(saved.keyHashes!).sort()).toEqual(keys);
+
+    // A second run over the same sources now reuses — the migration is one-time.
+    const second = makeStoreMock(seededDocs(keys));
+    __setGeminiClientForTesting(second.client as any);
+    const again = await syncStore({ statePath, bibMap, citedBibkeys: keys, bibDirs: [tmpDir], _pollIntervalMs: 1 });
+    expect(again.mode).toBe("reuse");
+  });
+
+  it("document lookup that cannot find an expected key falls back to a full rebuild, loudly", async () => {
+    const { writeFileSync } = await import("node:fs");
+    const bibMap = await fixture();
+    const keys = ["Alpha", "Beta", "Gamma"];
+    seedState(bibMap, keys);
+    writeFileSync(join(tmpDir, "Beta.pdf"), "%PDF-1.4 beta v2\n");
+
+    // The store has Alpha and Gamma, but Beta's document is gone — state and
+    // store disagree, so the store cannot be reasoned about.
+    const { client, calls } = makeStoreMock(seededDocs(["Alpha", "Gamma"]));
+    __setGeminiClientForTesting(client as any);
+
+    const logged: string[] = [];
+    const origWrite = process.stderr.write.bind(process.stderr);
+    (process.stderr as any).write = (chunk: any) => { logged.push(String(chunk)); return true; };
+    let result;
+    try {
+      result = await syncStore({ statePath, bibMap, citedBibkeys: keys, bibDirs: [tmpDir], _pollIntervalMs: 1 });
+    } finally {
+      (process.stderr as any).write = origWrite;
+    }
+
+    expect(result!.mode).toBe("rebuild");
+    expect(result!.reason).toContain("Beta");
+    expect(calls.deleteDoc.length).toBe(0); // never partially mutate before falling back
+    expect(calls.deleteStore[0].name).toBe("fileSearchStores/live-1");
+    expect(calls.create.length).toBe(1);
+    expect(calls.upload.length).toBe(3);
+
+    const loud = logged.join("");
+    expect(loud).toContain("FULL REBUILD");
+    expect(loud).toContain("Beta");
+  });
+
+  it("a failed document delete falls back to a full rebuild", async () => {
+    const { writeFileSync } = await import("node:fs");
+    const bibMap = await fixture();
+    const keys = ["Alpha", "Beta", "Gamma"];
+    seedState(bibMap, keys);
+    writeFileSync(join(tmpDir, "Beta.pdf"), "%PDF-1.4 beta v2\n");
+
+    const { client, calls } = makeStoreMock(seededDocs(keys), { deleteDocThrows: true });
+    __setGeminiClientForTesting(client as any);
+
+    const result = await syncStore({ statePath, bibMap, citedBibkeys: keys, bibDirs: [tmpDir], _pollIntervalMs: 1 });
+
+    expect(result.mode).toBe("rebuild");
+    expect(result.reason).toContain("delete failed");
+    expect(calls.create.length).toBe(1);
+  });
+
+  it("documents.list paginated across multiple pages: all pages are searched", async () => {
+    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+    rmSync(tmpDir, { recursive: true, force: true });
+    mkdirSync(tmpDir, { recursive: true });
+    statePath = join(tmpDir, ".cite-check-store.json");
+
+    // 25 sources, pageSize 10 -> three pages. The target sits on the last page.
+    const keys: string[] = [];
+    const bibMap = new Map<string, BibEntry>();
+    for (let i = 0; i < 25; i++) {
+      const key = `Src${String(i).padStart(2, "0")}`;
+      const p = join(tmpDir, `${key}.pdf`);
+      writeFileSync(p, `%PDF-1.4 ${key} v1\n`);
+      bibMap.set(key, { bibkey: key, filePath: p, fileRelPath: `${key}.pdf` });
+      keys.push(key);
+    }
+    seedState(bibMap, keys);
+    writeFileSync(join(tmpDir, "Src24.pdf"), "%PDF-1.4 Src24 v2\n");
+
+    const { client, calls } = makeStoreMock(seededDocs(keys), { pageSize: 10 });
+    __setGeminiClientForTesting(client as any);
+
+    const result = await syncStore({ statePath, bibMap, citedBibkeys: keys, bibDirs: [tmpDir], _pollIntervalMs: 1 });
+
+    // Found on page 3 — a single-page read would have forced a rebuild.
+    expect(result.mode).toBe("surgical");
+    expect(result.deletedKeys).toEqual(["Src24"]);
+    expect(calls.deleteDoc[0].name).toBe("fileSearchStores/live-1/documents/doc-Src24");
+    expect(calls.upload.length).toBe(1);
+  });
+
+  it("listStoreDocuments reads every page and keys documents by customMetadata bibkey", async () => {
+    const keys = Array.from({ length: 23 }, (_, i) => `K${i}`);
+    const { client } = makeStoreMock(seededDocs(keys), { pageSize: 10 });
+    __setGeminiClientForTesting(client as any);
+
+    const docs = await listStoreDocuments("fileSearchStores/live-1");
+
+    expect(docs.length).toBe(23);
+    expect(docs.map((d) => d.bibkey)).toEqual(keys);
+    // displayName is the store's random id, so identity must not come from it
+    expect(docs.every((d) => d.bibkey !== "d98ctytgehwv")).toBe(true);
+  });
+
+  it("a delete that succeeds followed by a failed import leaves the key OUT of importedBibkeys", async () => {
+    const { writeFileSync } = await import("node:fs");
+    const bibMap = await fixture();
+    const keys = ["Alpha", "Beta", "Gamma"];
+    seedState(bibMap, keys);
+    writeFileSync(join(tmpDir, "Beta.pdf"), "%PDF-1.4 beta v2\n");
+
+    const { client, calls } = makeStoreMock(seededDocs(keys), { uploadFails: ["Beta"] });
+    __setGeminiClientForTesting(client as any);
+
+    const result = await syncStore({ statePath, bibMap, citedBibkeys: keys, bibDirs: [tmpDir], _pollIntervalMs: 1 });
+
+    expect(result.mode).toBe("surgical");
+    expect(calls.deleteDoc.length).toBe(1);
+    expect(result.importedKeys).toEqual([]);
+    // Beta is absent -> reported NOT_IN_STORE rather than verified against stale bytes
+    expect(result.importedBibkeys.sort()).toEqual(["Alpha", "Gamma"]);
+    expect(loadStoreState(statePath)!.importedBibkeys.sort()).toEqual(["Alpha", "Gamma"]);
+  });
+
+  it("no prior state on disk rebuilds from scratch", async () => {
+    const bibMap = await fixture();
+    const { client, calls } = makeStoreMock([]);
+    __setGeminiClientForTesting(client as any);
+
+    const result = await syncStore({
+      statePath, bibMap, citedBibkeys: ["Alpha", "Beta", "Gamma"], bibDirs: [tmpDir], _pollIntervalMs: 1,
+    });
+
+    expect(result.mode).toBe("rebuild");
+    expect(result.reason).toContain("no prior store state");
+    expect(calls.deleteStore.length).toBe(0); // nothing to delete
+    expect(calls.create.length).toBe(1);
+    expect(calls.upload.length).toBe(3);
+  });
+
+  it("documents.list failing falls back to a full rebuild", async () => {
+    const { writeFileSync } = await import("node:fs");
+    const bibMap = await fixture();
+    const keys = ["Alpha", "Beta", "Gamma"];
+    seedState(bibMap, keys);
+    writeFileSync(join(tmpDir, "Beta.pdf"), "%PDF-1.4 beta v2\n");
+
+    const { client, calls } = makeStoreMock(seededDocs(keys), { listThrows: true });
+    __setGeminiClientForTesting(client as any);
+
+    const result = await syncStore({ statePath, bibMap, citedBibkeys: keys, bibDirs: [tmpDir], _pollIntervalMs: 1 });
+
+    expect(result.mode).toBe("rebuild");
+    expect(result.reason).toContain("documents.list failed");
+    expect(calls.create.length).toBe(1);
+  });
+});

@@ -93,7 +93,13 @@ When multiple `--bib` files are provided, file paths are resolved across all bib
 
 1. **Extract citations** from markdown using pandoc `[@bibkey]` syntax
 2. **Parse bib file** to map bibkeys to PDF file paths via `file` fields
-3. **Create or reuse a File Search Store** — PDFs for cited bibkeys are imported into a persistent Gemini File Search store with bibkey metadata. Google Drive FUSE paths are copied locally via `rclone` to avoid EDEADLK deadlocks. Stores persist across runs (no 48h TTL); if cited sources have not changed, the existing store is reused without re-uploading.
+3. **Sync the File Search Store, per file** — PDFs for cited bibkeys are imported into a persistent Gemini File Search store with bibkey metadata. Google Drive FUSE paths are copied locally via `rclone` to avoid EDEADLK deadlocks. Stores persist across runs (no 48h TTL). "Changed" means the SHA-256 of the **bytes** of a cited source differs — not just its bibkey or path — so swapping a PDF at the same path under the same bibkey (a working paper replaced by the published version) invalidates it. A missing or unreadable source hashes to a `<missing>` sentinel rather than erroring; coverage is reported separately.
+
+   State (`.cite-check-store.json`, in the drafts directory) records a **per-bibkey** hash, so invalidation is surgical rather than whole-store: one swapped PDF among 46 re-imports one document, not 46. The run takes one of three paths and always logs which and why on stderr:
+
+   - `[store] REUSE` — no cited source changed; zero API calls.
+   - `[store] SURGICAL` — changed and removed keys have their document deleted, then changed and added keys are imported. Delete comes first, so a failed import leaves the key **absent** from the store and it reports NOT_IN_STORE rather than being verified against stale bytes. Documents are located by paginating `documents.list` and matching `customMetadata.bibkey` — never `displayName`, which the store replaces with a random id on import.
+   - `[store] FULL REBUILD` — the store is deleted and everything re-imported. This is the fallback for anything that leaves the store's contents unknowable: no prior state, state written before per-key hashes existed (a one-time migration), a `documents.list` failure, a key the state claims was imported but no document carries, or a failed delete. A silent partial update is the failure mode this guards against, so the reason is always printed.
 4. **Query Gemini** with structured prompts for each citation, using the `fileSearch` tool with metadata filtering to scope each query to the relevant source documents
 5. **Classify** each citation as SUPPORTED / PARTIAL / UNSUPPORTED / NOT_IN_STORE / ERROR
 6. **Verify grounding** — for SUPPORTED/PARTIAL results, extract source PDF text via `pymupdf4llm` and run token-level LCS alignment to confirm the passage Gemini quoted actually exists in the source. Ungrounded passages are flagged `[UNGROUNDED]` in the report.
