@@ -38,12 +38,9 @@ import {
   saveManifest,
   restoreFromManifest,
   updateManifest,
-  createOrReuseStore,
-  importToStore,
+  syncStore,
   queryCitationFileSearch,
   submitBatchFileSearch,
-  saveStoreState,
-  loadStoreState,
   type Status,
   type BibEntry,
   type FileRef,
@@ -564,55 +561,28 @@ export async function cmdCiteCheck(
           }
         }
 
-        const storeResult = await createOrReuseStore({
+        // Surgical sync: only sources whose bytes changed are re-imported.
+        // syncStore logs which path it took (reuse / surgical / rebuild) and why.
+        const syncResult = await syncStore({
           statePath: storeStatePath,
           bibMap,
           citedBibkeys,
+          bibDirs,
+          resolvedPaths: resolvedPathsMap,
           debug,
         });
-        storeName = storeResult.storeName;
+        storeName = syncResult.storeName;
+        process.stderr.write(
+          `[cite-check] store ${syncResult.mode} (${syncResult.reason}): ` +
+          `${syncResult.importedBibkeys.length}/${citedBibkeys.length} sources in store\n`,
+        );
 
-        if (storeResult.isNew) {
-          // Import all cited files to the new store
-          process.stderr.write(
-            `[cite-check] importing ${citedBibkeys.length} sources to store...\n`,
-          );
-          const importResult = await importToStore({
-            storeName,
-            bibMap,
-            citedBibkeys,
-            bibDirs,
-            resolvedPaths: resolvedPathsMap,
-            debug,
-          });
-          process.stderr.write(
-            `[cite-check] imported ${importResult.imported}, ${importResult.skipped} skipped, ${importResult.missing} missing\n`,
-          );
-
-          // Replace importableBibkeys with ACTUAL imported bibkeys
-          importableBibkeys.clear();
-          for (const bk of importResult.importedBibkeys) {
-            importableBibkeys.add(bk);
-          }
-
-          // Update store state with actual imported bibkeys
-          const currentState = loadStoreState(storeStatePath);
-          if (currentState) {
-            currentState.importedBibkeys = importResult.importedBibkeys;
-            saveStoreState(storeStatePath, currentState);
-          }
-        } else {
-          process.stderr.write(
-            `[cite-check] reusing existing store (sources unchanged)\n`,
-          );
-          // Reusing existing store -- load imported bibkeys from state
-          const state = loadStoreState(storeStatePath);
-          if (state?.importedBibkeys) {
-            importableBibkeys.clear();
-            for (const bk of state.importedBibkeys) {
-              importableBibkeys.add(bk);
-            }
-          }
+        // The sync result is the authority on what is actually in the store —
+        // a key whose delete succeeded but whose import failed is absent here,
+        // and so reports NOT_IN_STORE rather than silently stale.
+        importableBibkeys.clear();
+        for (const bk of syncResult.importedBibkeys) {
+          importableBibkeys.add(bk);
         }
       }
     } catch (err) {

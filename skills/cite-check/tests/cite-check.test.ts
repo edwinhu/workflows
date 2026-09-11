@@ -842,7 +842,7 @@ describe("cmdCiteCheck File Search Store pipeline", () => {
     );
 
     // Pre-populate store state with matching hash
-    const { computeSourceHash } = await import("../gemini");
+    const { computeSourceHash, computeKeyHashes } = await import("../gemini");
     const bibMap = new Map([["Hu2024-bm", {
       bibkey: "Hu2024-bm",
       filePath: join(tmpBase, "pdfs/paper.pdf"),
@@ -856,6 +856,7 @@ describe("cmdCiteCheck File Search Store pipeline", () => {
       sourceHash: hash,
       importedBibkeys: ["Hu2024-bm"],
       createdAt: Date.now(),
+      keyHashes: computeKeyHashes(bibMap, ["Hu2024-bm"]),
     }));
 
     let storeCreated = false;
@@ -1205,7 +1206,7 @@ describe("cmdCiteCheck File Search Store pipeline", () => {
 
     // Pre-populate store state: only SuccessKey was actually imported
     // (FailedKey timed out on previous run)
-    const { computeSourceHash } = await import("../gemini");
+    const { computeSourceHash, computeKeyHashes } = await import("../gemini");
     const bibMap = new Map([
       ["SuccessKey2024-aa", {
         bibkey: "SuccessKey2024-aa",
@@ -1226,6 +1227,7 @@ describe("cmdCiteCheck File Search Store pipeline", () => {
       sourceHash: hash,
       importedBibkeys: ["SuccessKey2024-aa"], // Only success - failed not included
       createdAt: Date.now(),
+      keyHashes: computeKeyHashes(bibMap, ["SuccessKey2024-aa", "FailedKey2024-bb"]),
     }));
 
     const successGroupKey = `${join(tmpBase, "drafts", "draft.md")}:1:Success claim.`;

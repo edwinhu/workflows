@@ -138,22 +138,75 @@ export function updateManifest(
 /** On-disk store state file (replaces Manifest). */
 export interface StoreState {
   storeName: string;       // e.g. "fileSearchStores/abc-123"
-  sourceHash: string;      // SHA-256 of sorted bibkeys + file paths
+  sourceHash: string;      // SHA-256 of sorted bibkeys + file paths + file content hashes
   importedBibkeys: string[]; // bibkeys successfully imported
   createdAt: number;       // epoch ms
+  /** bibkey -> per-key content hash. Absent on state written before per-file
+   *  invalidation shipped; that absence forces one full rebuild. */
+  keyHashes?: Record<string, string>;
+}
+
+/** SHA-256 of a file's bytes, or a sentinel when the file is absent or unreadable.
+ * A source can legitimately be missing — coverage is reported separately — so this
+ * never throws; it returns a deterministic marker instead. */
+export function computeFileContentHash(filePath: string): string {
+  if (!filePath) return "<none>";
+  try {
+    return createHash("sha256").update(readFileSync(filePath)).digest("hex");
+  } catch {
+    return "<missing>";
+  }
 }
 
 /** Compute a hash of the cited sources for store invalidation.
- * Hash includes sorted bibkeys and their file paths. */
+ * Hash includes sorted bibkeys, their file paths, and a content hash of each file.
+ * Content — not mtime or size — is the invalidation key: mtime false-positives on a
+ * fresh copy or checkout, and a same-size replacement slips past a size check. */
 export function computeSourceHash(bibMap: Map<string, BibEntry>, citedBibkeys: string[]): string {
   const sorted = [...citedBibkeys].sort();
-  const parts: string[] = [];
-  for (const bibkey of sorted) {
-    const entry = bibMap.get(bibkey);
-    const filePath = entry?.filePath ?? "";
-    parts.push(`${bibkey}:${filePath}`);
-  }
+  const perKey = computeKeyHashes(bibMap, citedBibkeys);
+  const parts = sorted.map((bibkey) => perKey[bibkey]);
   return createHash("sha256").update(parts.join("\n")).digest("hex");
+}
+
+/** Per-bibkey content hash for each cited source.
+ * The whole-store `sourceHash` is a hash over exactly these strings, so the two
+ * can never disagree about whether a source changed. */
+export function computeKeyHashes(
+  bibMap: Map<string, BibEntry>,
+  citedBibkeys: string[],
+): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const bibkey of new Set(citedBibkeys)) {
+    const filePath = bibMap.get(bibkey)?.filePath ?? "";
+    out[bibkey] = `${bibkey}:${filePath}:${computeFileContentHash(filePath)}`;
+  }
+  return out;
+}
+
+/** Classification of each bibkey against the previously recorded per-key hashes. */
+export interface KeyDiff {
+  unchanged: string[];
+  changed: string[];
+  added: string[];
+  removed: string[];
+}
+
+/** Compare current per-key hashes against the stored ones. */
+export function diffKeyHashes(
+  previous: Record<string, string>,
+  current: Record<string, string>,
+): KeyDiff {
+  const diff: KeyDiff = { unchanged: [], changed: [], added: [], removed: [] };
+  for (const key of Object.keys(current).sort()) {
+    if (!(key in previous)) diff.added.push(key);
+    else if (previous[key] !== current[key]) diff.changed.push(key);
+    else diff.unchanged.push(key);
+  }
+  for (const key of Object.keys(previous).sort()) {
+    if (!(key in current)) diff.removed.push(key);
+  }
+  return diff;
 }
 
 /** Load store state from disk. Returns null if missing or invalid. */
@@ -225,10 +278,17 @@ export async function createOrReuseStore(opts: {
     sourceHash: currentHash,
     importedBibkeys: [],
     createdAt: Date.now(),
+    keyHashes: computeKeyHashes(bibMap, citedBibkeys),
   };
   saveStoreState(statePath, newState);
 
   return { storeName, isNew: true };
+}
+
+/** A document as it exists in a File Search Store, keyed by its bibkey metadata. */
+export interface StoreDocument {
+  name: string;     // e.g. "fileSearchStores/abc/documents/xyz"
+  bibkey: string;   // from customMetadata; "" when the document carries none
 }
 
 /** Internal type for the fileSearchStores API surface (create/delete/upload). */
@@ -237,10 +297,50 @@ interface FileSearchClient {
     create: (opts: Record<string, unknown>) => Promise<{ name: string }>;
     delete: (opts: Record<string, unknown>) => Promise<void>;
     uploadToFileSearchStore: (opts: Record<string, unknown>) => Promise<{ done?: boolean; name?: string; [k: string]: unknown }>;
+    documents: {
+      list: (opts: Record<string, unknown>) => Promise<DocumentPager>;
+      get?: (opts: Record<string, unknown>) => Promise<unknown>;
+      delete: (opts: Record<string, unknown>) => Promise<void>;
+    };
   };
   operations: {
     get: (opts: { operation: unknown; config?: unknown }) => Promise<{ done?: boolean; name?: string; [k: string]: unknown }>;
   };
+}
+
+/** The SDK Pager surface we rely on. The async iterator stops after page 1, so
+ *  pagination goes through hasNextPage()/nextPage() instead. */
+interface DocumentPager {
+  page: Array<Record<string, unknown>>;
+  hasNextPage: () => boolean;
+  nextPage: () => Promise<Array<Record<string, unknown>>>;
+}
+
+/**
+ * List every document in a store, across all pages.
+ *
+ * Identity comes from `customMetadata.bibkey`, never `displayName` — the store
+ * assigns a random id as displayName after import.
+ */
+export async function listStoreDocuments(storeName: string): Promise<StoreDocument[]> {
+  const client = getClient() as unknown as FileSearchClient;
+  const pager = await client.fileSearchStores.documents.list({
+    parent: storeName,
+    config: { pageSize: 20 },
+  });
+
+  const docs: StoreDocument[] = [];
+  let page = pager.page;
+  while (true) {
+    for (const doc of page ?? []) {
+      const meta = doc.customMetadata as Array<Record<string, unknown>> | undefined;
+      const bibkey = meta?.find((m) => m.key === "bibkey")?.stringValue as string | undefined;
+      docs.push({ name: (doc.name as string) ?? "", bibkey: bibkey ?? "" });
+    }
+    if (!pager.hasNextPage()) break;
+    page = await pager.nextPage();
+  }
+  return docs;
 }
 
 /**
@@ -380,6 +480,218 @@ export async function importToStore(opts: {
   }
 
   return { imported, skipped, missing, importedBibkeys: successfulBibkeys };
+}
+
+// ---------------------------------------------------------------------------
+// Per-file (surgical) store invalidation
+// ---------------------------------------------------------------------------
+
+/** Which path a sync run took, and what it did. */
+export interface SyncStoreResult {
+  storeName: string;
+  /** true when the store was created fresh this run (rebuild path). */
+  isNew: boolean;
+  mode: "reuse" | "surgical" | "rebuild";
+  /** Human-readable justification for the mode; also written to stderr. */
+  reason: string;
+  /** bibkeys believed present in the store after this run. */
+  importedBibkeys: string[];
+  deletedKeys: string[];
+  importedKeys: string[];
+}
+
+function logStore(msg: string): void {
+  process.stderr.write(`[store] ${msg}\n`);
+}
+
+/**
+ * Bring a File Search Store in line with the cited sources, replacing only the
+ * documents whose content actually changed.
+ *
+ * Three paths, and which one ran is always logged:
+ *   reuse    — nothing changed; no API calls
+ *   surgical — delete-then-import only the changed/added/removed keys
+ *   rebuild  — delete the whole store and re-import everything
+ *
+ * Rebuild is the fallback for anything that leaves the store's contents
+ * unknowable: no prior state, state written before per-key hashes existed, a
+ * document the state claims was imported but that `documents.list` cannot find,
+ * or a failed delete. A partial update that silently dropped a source would read
+ * as NOT_IN_STORE downstream — safe, but it must be visible rather than inferred.
+ */
+export async function syncStore(opts: {
+  statePath: string;
+  bibMap: Map<string, BibEntry>;
+  citedBibkeys: string[];
+  bibDirs?: string[];
+  resolvedPaths?: Map<string, string>;
+  debug?: boolean;
+  _pollIntervalMs?: number;
+}): Promise<SyncStoreResult> {
+  const { statePath, bibMap, citedBibkeys, bibDirs, resolvedPaths, debug, _pollIntervalMs } = opts;
+  const currentHashes = computeKeyHashes(bibMap, citedBibkeys);
+  const currentHash = computeSourceHash(bibMap, citedBibkeys);
+  const existing = loadStoreState(statePath);
+
+  const rebuild = async (reason: string): Promise<SyncStoreResult> => {
+    logStore(`FULL REBUILD: ${reason}`);
+    if (existing?.storeName) {
+      await deleteStore(existing.storeName);
+    }
+    const client = getClient() as unknown as FileSearchClient;
+    const store = await client.fileSearchStores.create({
+      config: { displayName: `cite-check-${Date.now()}` },
+    });
+    const storeName = store.name;
+    logStore(`created new store: ${storeName}`);
+
+    const result = await importToStore({
+      storeName, bibMap, citedBibkeys, bibDirs, resolvedPaths, debug, _pollIntervalMs,
+    });
+    logStore(
+      `rebuild imported ${result.imported}, ${result.missing} missing ` +
+      `(of ${citedBibkeys.length} cited)`,
+    );
+
+    saveStoreState(statePath, {
+      storeName,
+      sourceHash: currentHash,
+      importedBibkeys: result.importedBibkeys,
+      createdAt: Date.now(),
+      keyHashes: currentHashes,
+    });
+
+    return {
+      storeName,
+      isNew: true,
+      mode: "rebuild",
+      reason,
+      importedBibkeys: result.importedBibkeys,
+      deletedKeys: [],
+      importedKeys: result.importedBibkeys,
+    };
+  };
+
+  if (!existing) return rebuild("no prior store state on disk");
+  if (!existing.keyHashes || typeof existing.keyHashes !== "object") {
+    return rebuild("store state has no per-key hashes (written by an older version)");
+  }
+
+  const diff = diffKeyHashes(existing.keyHashes, currentHashes);
+  if (diff.changed.length === 0 && diff.added.length === 0 && diff.removed.length === 0) {
+    logStore(`REUSE: all ${diff.unchanged.length} cited sources unchanged — ${existing.storeName}`);
+    return {
+      storeName: existing.storeName,
+      isNew: false,
+      mode: "reuse",
+      reason: "all cited sources unchanged",
+      importedBibkeys: existing.importedBibkeys ?? [],
+      deletedKeys: [],
+      importedKeys: [],
+    };
+  }
+
+  const toDelete = [...diff.changed, ...diff.removed];
+  const toImport = [...diff.changed, ...diff.added];
+  logStore(
+    `SURGICAL: ${diff.unchanged.length} unchanged, ${diff.changed.length} changed ` +
+    `(${diff.changed.join(", ") || "-"}), ${diff.added.length} added ` +
+    `(${diff.added.join(", ") || "-"}), ${diff.removed.length} removed ` +
+    `(${diff.removed.join(", ") || "-"})`,
+  );
+
+  const alreadyImported = new Set(existing.importedBibkeys ?? []);
+  // Only keys the state claims are in the store need a document to exist.
+  const mustFind = toDelete.filter((k) => alreadyImported.has(k));
+
+  let byBibkey = new Map<string, string[]>();
+  if (mustFind.length > 0) {
+    try {
+      const docs = await listStoreDocuments(existing.storeName);
+      byBibkey = new Map();
+      for (const doc of docs) {
+        if (!doc.bibkey) continue;
+        const list = byBibkey.get(doc.bibkey) ?? [];
+        list.push(doc.name);
+        byBibkey.set(doc.bibkey, list);
+      }
+      logStore(`listed ${docs.length} documents in ${existing.storeName}`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return rebuild(`documents.list failed on ${existing.storeName}: ${msg}`);
+    }
+
+    const notFound = mustFind.filter((k) => !byBibkey.has(k));
+    if (notFound.length > 0) {
+      return rebuild(
+        `store state claims ${notFound.join(", ")} imported, but no document ` +
+        `carries that bibkey — store contents cannot be reasoned about`,
+      );
+    }
+  }
+
+  // Delete first, so a subsequent import failure leaves the key ABSENT (which
+  // surfaces as NOT_IN_STORE) rather than stale.
+  const client = getClient() as unknown as FileSearchClient;
+  const deletedKeys: string[] = [];
+  for (const bibkey of mustFind) {
+    for (const docName of byBibkey.get(bibkey) ?? []) {
+      try {
+        await client.fileSearchStores.documents.delete({ name: docName, config: { force: true } });
+        logStore(`deleted document ${docName} (${bibkey})`);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return rebuild(`delete failed for ${bibkey} (${docName}): ${msg}`);
+      }
+    }
+    deletedKeys.push(bibkey);
+  }
+
+  // Survivors: everything the state had, minus what we just removed.
+  const surviving = (existing.importedBibkeys ?? []).filter(
+    (k) => !toDelete.includes(k) && currentHashes[k] !== undefined,
+  );
+
+  let importedKeys: string[] = [];
+  if (toImport.length > 0) {
+    const result = await importToStore({
+      storeName: existing.storeName,
+      bibMap,
+      citedBibkeys: toImport,
+      bibDirs,
+      resolvedPaths,
+      debug,
+      _pollIntervalMs,
+    });
+    importedKeys = result.importedBibkeys;
+    const failed = toImport.filter((k) => !importedKeys.includes(k));
+    logStore(
+      `surgical imported ${importedKeys.length}/${toImport.length}` +
+      (failed.length > 0
+        ? ` — NOT in store, will report NOT_IN_STORE: ${failed.join(", ")}`
+        : ""),
+    );
+  }
+
+  const importedBibkeys = [...new Set([...surviving, ...importedKeys])];
+
+  saveStoreState(statePath, {
+    storeName: existing.storeName,
+    sourceHash: currentHash,
+    importedBibkeys,
+    createdAt: existing.createdAt,
+    keyHashes: currentHashes,
+  });
+
+  return {
+    storeName: existing.storeName,
+    isNew: false,
+    mode: "surgical",
+    reason: `${diff.changed.length} changed, ${diff.added.length} added, ${diff.removed.length} removed`,
+    importedBibkeys,
+    deletedKeys,
+    importedKeys,
+  };
 }
 
 // ---------------------------------------------------------------------------
