@@ -915,3 +915,50 @@ test('a lens carries no effort key — there is deliberately no lensEffort dial'
   const opts = await dispatchOpts({ ...baseArgs, tasks: one, reviewLenses: [{ key: 'alpha', prompt: 'p', refs: [] }] })
   expect('effort' in opts.get('lens:alpha')).toBe(false)
 })
+
+// ---------------------------------------------------------------- per-lens model and effort
+// A lens may override lensModel so one run can mix providers — cheap lenses on a small model,
+// expensive ones on a large one. Effort resolves the same way but has no global to fall back to.
+const lens = (over: any = {}) => ({ key: 'alpha', prompt: 'p', refs: [], ...over })
+
+test("a lens's own model wins over lensModel", async () => {
+  const opts = await dispatchOpts({
+    ...baseArgs, tasks: one, lensModel: 'sonnet', reviewLenses: [lens({ model: 'haiku' })],
+  })
+  expect(opts.get('lens:alpha').model).toBe('haiku')
+})
+
+test('a lens with no model of its own falls back to lensModel', async () => {
+  const opts = await dispatchOpts({
+    ...baseArgs, tasks: one, lensModel: 'sonnet', reviewLenses: [lens()],
+  })
+  expect(opts.get('lens:alpha').model).toBe('sonnet')
+})
+
+test('with neither a lens model nor lensModel, the model key is omitted and the leg inherits', async () => {
+  const opts = await dispatchOpts({ ...baseArgs, tasks: one, reviewLenses: [lens()] })
+  expect('model' in opts.get('lens:alpha')).toBe(false)
+})
+
+test("a lens's own effort reaches the leg", async () => {
+  const opts = await dispatchOpts({ ...baseArgs, tasks: one, reviewLenses: [lens({ effort: 'xhigh' })] })
+  expect(opts.get('lens:alpha').effort).toBe('xhigh')
+})
+
+test('a lens with no effort of its own omits the key — there is no global lensEffort to fall back to', async () => {
+  const opts = await dispatchOpts({
+    ...baseArgs, tasks: one, lensModel: 'sonnet', reviewLenses: [lens()],
+  })
+  expect('effort' in opts.get('lens:alpha')).toBe(false)
+})
+
+test('per-lens model and effort resolve independently — one lens may carry either alone', async () => {
+  const opts = await dispatchOpts({
+    ...baseArgs, tasks: one, lensModel: 'sonnet',
+    reviewLenses: [lens({ key: 'cheap', model: 'haiku' }), lens({ key: 'deep', effort: 'xhigh' })],
+  })
+  expect(opts.get('lens:cheap').model).toBe('haiku')
+  expect('effort' in opts.get('lens:cheap')).toBe(false)
+  expect(opts.get('lens:deep').model).toBe('sonnet')
+  expect(opts.get('lens:deep').effort).toBe('xhigh')
+})

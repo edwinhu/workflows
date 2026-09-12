@@ -587,7 +587,11 @@ const runLensLeg = async lenses => {
         '',
         'Rules: modify nothing; cite files/lines; report findings only for this lens; an empty findings list is a valid answer.',
       ].join('\n'),
-      { label: `lens:${lens.key}`, phase: 'Verify', schema: LENS_SCHEMA, ...agentTypeOpt(reviewAgentType(lens.agentType)), ...optIf("model", lensModel) }
+      // Per-lens model and effort. A lens's own value wins over lensModel so one run can mix
+      // providers — cheap lenses on a small model, expensive ones on a large one. Effort resolves
+      // the same way but has no global to fall back to: there is deliberately no lensEffort.
+      { label: `lens:${lens.key}`, phase: 'Verify', schema: LENS_SCHEMA, ...agentTypeOpt(reviewAgentType(lens.agentType)),
+        ...optIf('model', lens.model || lensModel), ...optIf('effort', lens.effort) }
     ).then(review => {
       // A null result is an agent that never reported. An object with findings: [] is a lens that
       // ran and found nothing — only the first is recorded as dead.
