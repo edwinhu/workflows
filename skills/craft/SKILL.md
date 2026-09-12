@@ -2,7 +2,7 @@
 name: craft
 description: "Use when the user says \"craft this\", \"run a craft loop\", \"do this properly\", \"take this through clarify plan and verify\", \"run it through the gate\", \"/craft\", or hands over a substantial change that has no domain workflow of its own and should be planned, approved and independently verified before it lands. NEGATIVE ROUTING: a code change or bug fix is /dev; a dataset, table, figure or number is /ds; long-form prose is /writing; a talk built from a research paper is /workshop; lecture notes or course slides are teaching:notes and teaching:slides; a skill, workflow or plugin in this repo is skill-creator, workflow-creator or plugin-creator. Each of those is this loop plus a domain gate, and craft is only the fallback when none of them fits."
 argument-hint: 'the task to run through the loop'
-allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
+allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor, PushNotification]
 ---
 
 # craft — clarify → plan → goal → workflow → human review
@@ -390,6 +390,12 @@ both terminal states: result written, and process gone without one. Then call `c
 it fires. Fall back to the loop across turns only where Monitor is unavailable — Bedrock, Vertex,
 Foundry, or `DISABLE_TELEMETRY`/`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` set. A Monitor dies with
 the session; the detached run does not, so `/goal` remains the notifier that survives a restart.
+
+**When `craft-result.sh` returns the verdict, send a `PushNotification` carrying the OUTCOME** —
+"elide gate PASS, 33pp, both readings", never "the run finished". A run is a deliverable and takes
+up to an hour, so the user has probably walked away; a notification that only reports completion
+makes them come back to ask what happened, which is the thing it was supposed to save them. Here
+only — not at dispatch, not at round boundaries.
 
 `farm.sh` exits 2 on a malformed call (`--workflow` without `--out`, an `--args` file that is not
 readable JSON) and non-zero when `--out` came back missing or not a JSON object. `craft-result.sh`
