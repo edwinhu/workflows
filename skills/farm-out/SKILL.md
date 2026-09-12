@@ -51,6 +51,18 @@ missing. Never relay a delegated summary you did not verify.
 **2. Every delegated prompt carries the anti-simulation clause.** The runners
 append it automatically. Do not hand-roll a delegation that skips it.
 
+## A dispatch you will not wait on arms a Monitor
+
+**Before the turn ends, arm a `Monitor` on that row's `--expect` path** (`persistent: true`,
+command `test -s <expect>`). Every row already carries `--expect`, so the command is derived, not
+invented. Nothing else can arm it — a script makes no tool calls, a hook only returns text, and the
+sealed personas hold no `Monitor` — so an unarmed background row finishes silently and whatever you
+chained after it never happens. Measured 2026-09-10: nine backgrounded dispatches in one session,
+four unmonitored, and all four surfaced only because the user asked.
+
+**The Monitor wakes YOU, not the user.** A row is a STEP, usually a small one. Do not send a
+notification when one finishes.
+
 ## Pick the shape first: sealed worker, or orchestrator
 
 `--agent <name>` runs the delegation AS one of your agents — its real system prompt,
