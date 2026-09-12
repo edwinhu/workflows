@@ -167,7 +167,7 @@ claim() {
 # temp file so tool_use events can be counted -- 0 tool calls on a work task is
 # a fabrication smell, the same signal the old SDK runner read off its stream.
 run_one() {
-  local label="$1" prompt="$2" agent="$3"; shift 3
+  local label="$1" prompt="$2" agent="$3" model="$4"; shift 4
   local expects=("$@") log err rc text calls models missing stderr_tail
   log=$(mktemp -t farm-out.XXXXXX.jsonl)
   err=$(mktemp -t farm-out.XXXXXX.err)
@@ -201,6 +201,9 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
   # that used to fight this lives in main-thread-guard.sh now, and a hook can read FARM_OUT_CHILD.
   local -a cmd=("$WRAPPER" -p "${prompt}${ANTI_SIM}" --output-format stream-json --verbose)
   [ -n "$agent" ] && cmd+=(--agent "$agent")
+  # Per-row model override. Absent leaves the wrapper's own default -- which is what every
+  # existing caller gets, since no row carried one until now.
+  [ -n "$model" ] && cmd+=(--model "$model")
   # Keep stderr: a provider that dies (proxy down, model rejected, auth stale) writes
   # there and nowhere else, and discarding it leaves only a bare exit code to debug.
   ( cd "$CWD" && "${cmd[@]}" ) > "$log" 2>"$err"
@@ -243,6 +246,7 @@ if [ -n "$TASKS" ]; then
     [ "$p" != "null" ] || refuse "--tasks $TASKS: task $i has no string \"prompt\""
     l=$(jq -r ".[$i].label // \"task-$i\"" "$TASKS")
     a=$(jq -r ".[$i].agent // \"\"" "$TASKS"); [ "$a" = "null" ] && a=""
+    m=$(jq -r ".[$i].model // \"\"" "$TASKS"); [ "$m" = "null" ] && m=""
     # enc() cannot save a newline: it would split the record, and a forged DONE line inside a
     # label is indistinguishable from a real verdict to every reader of this stream.
     #
@@ -258,8 +262,12 @@ if [ -n "$TASKS" ]; then
       *[$'\n\r\t']*|*[$'\001'-$'\010']*)
         refuse "task $i agent contains a control character; not allowed in the event stream" ;;
     esac
+    case "$m" in
+      *[$'\n\r\t']*|*[$'\001'-$'\010']*)
+        refuse "task $i model contains a control character; not allowed in the event stream" ;;
+    esac
     mapfile -t e < <(jq -r ".[$i].expect // [] | if type==\"array\" then .[] else . end" "$TASKS")
-    run_one "$l" "$p" "$a" "${e[@]:-}" > "$dir/$i.json" &
+    run_one "$l" "$p" "$a" "$m" "${e[@]:-}" > "$dir/$i.json" &
   done
   wait
   out=$(jq -s '.' "$dir"/*.json); rm -rf "$dir"
@@ -275,7 +283,7 @@ $(cat "$ARGSFILE")"
 CRITICAL — Workflow returns IMMEDIATELY with a task id and then keeps running in the background. If you end your turn at that point the session exits and the entire run is destroyed. You MUST NOT end your turn until the workflow has actually returned. It may take 20-60 minutes.
 After calling Workflow, stay alive by polling: run \`sleep 120\` via Bash, then check whether it finished (ToolSearch for \"select:TaskList,TaskGet,TaskOutput\" and use those, or read the workflow transcript directory named in the Workflow result). Repeat for as long as it takes. Never emit a final text message while the workflow is still running.
 
-When it returns, write the returned object to $OUT as a single JSON document using the Write tool — verbatim, no commentary, no summarising. If Workflow throws, write {\"error\": \"<exact error text>\"} to that same path. Do not retry with invented arguments." "" "${EXPECT[@]:-}" "$OUT")
+When it returns, write the returned object to $OUT as a single JSON document using the Write tool — verbatim, no commentary, no summarising. If Workflow throws, write {\"error\": \"<exact error text>\"} to that same path. Do not retry with invented arguments." "" "" "${EXPECT[@]:-}" "$OUT")
   # Non-empty is not structured: a child that wrote its summary would pass the artifact
   # check and hand prose to the caller as the workflow's return value.
   if printf '%s' "$out" | jq -e '.ok' >/dev/null 2>&1; then
