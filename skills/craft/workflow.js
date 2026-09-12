@@ -297,6 +297,16 @@ const verifierModel = args.verifierModel === undefined ? 'sonnet' : (args.verifi
 // rather than a cheaper one. Implementers write the artifact the whole gate then judges.
 const implementerModel = args.implementerModel || null
 const lensModel = args.lensModel || null
+// Per-leg reasoning effort, same shape as refuterEffort: null omits the key and inherits the session
+// default. Implementers write the artifact the whole gate then judges, and xhigh is the documented
+// level for long-horizon agentic coding. Verifiers judge ONE task against ONE criterion with the
+// evidence handed to them — bounded like refutation, so they sit where refuters sit. The scored leg
+// reports COUNT FIELDS and the JS computes the composite; the third-party leg only shells out to an
+// external CLI and parses its output. Neither has a judgement to downgrade.
+const implementerEffort = args.implementerEffort === undefined ? 'xhigh' : (args.implementerEffort || null)
+const verifierEffort = args.verifierEffort === undefined ? 'medium' : (args.verifierEffort || null)
+const scoredEffort = args.scoredEffort === undefined ? 'low' : (args.scoredEffort || null)
+const thirdPartyEffort = args.thirdPartyEffort === undefined ? 'low' : (args.thirdPartyEffort || null)
 const optIf = (k, v) => (v ? { [k]: v } : {})
 
 // Fail closed on a dead lens. A lens agent that returns null contributes zero findings, which is
@@ -747,7 +757,7 @@ for (const wave of IMPLEMENT_WAVES) {
       '- A separate verifier will judge the files themselves without seeing this report — your report cannot substitute for the work.',
       '- If blocked, set done=false and list blockers; do not loosen the acceptance to pass.',
     ].join('\n'),
-    { label: `implement:${t.id}`, phase: 'Implement', schema: IMPL_SCHEMA, ...agentTypeOpt(implementerAgentType), ...optIf('model', implementerModel) }
+    { label: `implement:${t.id}`, phase: 'Implement', schema: IMPL_SCHEMA, ...agentTypeOpt(implementerAgentType), ...optIf('model', implementerModel), ...optIf('effort', implementerEffort) }
   )
   const record = r || { id: t.id, done: false, changedFiles: [], evidence: '', blockers: ['agent died or was skipped'] }
   let red = null
@@ -801,7 +811,7 @@ const verifyLeg = async () => {
         '- Modify nothing. Run read-only checks/commands and paste their VERBATIM output as evidence.',
         '- pass=true only if the acceptance is demonstrably met. Ambiguity fails.',
       ].join('\n'),
-      { label: `verify:${t.id}`, phase: 'Verify', schema: VERIFY_SCHEMA, ...agentTypeOpt(verifierAgentType), ...optIf('model', verifierModel) }
+      { label: `verify:${t.id}`, phase: 'Verify', schema: VERIFY_SCHEMA, ...agentTypeOpt(verifierAgentType), ...optIf('model', verifierModel), ...optIf('effort', verifierEffort) }
     )
   ))
   const verified = perTask.map((v, i) => v || { id: activeTasks[i].id, pass: false, evidence: '', failures: ['verifier died or was skipped'] })
@@ -909,7 +919,7 @@ const scoredLeg = async () => {
         '- Change nothing.',
       ].join('\n'),
       { label: `scored:${check.key}:${item}`, phase: 'Mechanical', schema: check.schema, ...optIf('model', probeModel),
-        ...agentTypeOpt(reviewAgentType(check.agentType)) }
+        ...optIf('effort', scoredEffort), ...agentTypeOpt(reviewAgentType(check.agentType)) }
     )
   ))
   return {
@@ -945,7 +955,7 @@ const thirdPartyLeg = async () => {
         '- Never invent findings the CLI did not produce. An empty findings list from a clean reviewed run is a valid answer.',
       ].join('\n'),
       { label: `third-party:${model}`, phase: 'Third-party', schema: THIRD_PARTY_SCHEMA, ...optIf('model', probeModel),
-        ...agentTypeOpt(reviewAgentType()) }
+        ...optIf('effort', thirdPartyEffort), ...agentTypeOpt(reviewAgentType()) }
     ).then(r => r || { model, status: 'unavailable', findings: [], raw: 'runner agent died or was skipped' })
   ))
   return results.filter(Boolean)
