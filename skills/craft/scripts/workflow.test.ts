@@ -855,3 +855,63 @@ test('nothing dispatched still mentions planHash — the field is gone, not alia
   expect(prompts.size).toBeGreaterThan(0)
   for (const [, p] of prompts) expect(p).not.toContain('planHash')
 })
+
+// ---------------------------------------------------------------- per-leg effort dials
+// Each dial has three states and all three are asserted: absent takes the leg's default, null omits
+// the key so the leg inherits the session default, and an explicit value wins. The two probes pinned
+// at low and the absence of a lens dial are asserted too — those are decisions, not omissions.
+
+// The harness reports labels and prompts, not opts, so the opts are captured here.
+const dispatchOpts = async (args: any, reply: any = replies()) => {
+  const opts = new Map<string, any>()
+  await run(args, (label: string, prompt: string, o: any) => { opts.set(label, o); return reply(label, prompt, o) })
+  return opts
+}
+// One run that dispatches all four dialable legs: implement, verify, scored and third-party.
+const allLegs = (over: any = {}) => ({
+  ...baseArgs, tasks: one, thirdParty: ['codex'], scoredChecks: [scoredCheck()], ...over,
+})
+const DIALED = ['implement:T1', 'verify:T1', 'scored:slides:L1', 'third-party:codex']
+
+test('each dialable leg carries its default effort when the arg is absent', async () => {
+  const opts = await dispatchOpts(allLegs(), scoredReplies())
+  for (const label of DIALED) expect(opts.has(label)).toBe(true)
+  expect(opts.get('implement:T1').effort).toBe('xhigh')
+  expect(opts.get('verify:T1').effort).toBe('medium')
+  expect(opts.get('scored:slides:L1').effort).toBe('low')
+  expect(opts.get('third-party:codex').effort).toBe('low')
+})
+
+test('null on a dial omits the effort key entirely — the leg inherits the session default', async () => {
+  const opts = await dispatchOpts(allLegs({
+    implementerEffort: null, verifierEffort: null, scoredEffort: null, thirdPartyEffort: null,
+  }), scoredReplies())
+  // `in`, not `=== undefined`: an explicit `effort: undefined` is still a key the dispatcher reads.
+  for (const label of DIALED) expect('effort' in opts.get(label)).toBe(false)
+})
+
+test('an explicit effort overrides the default on every dial', async () => {
+  const opts = await dispatchOpts(allLegs({
+    implementerEffort: 'low', verifierEffort: 'xhigh', scoredEffort: 'high', thirdPartyEffort: 'medium',
+  }), scoredReplies())
+  expect(opts.get('implement:T1').effort).toBe('low')
+  expect(opts.get('verify:T1').effort).toBe('xhigh')
+  expect(opts.get('scored:slides:L1').effort).toBe('high')
+  expect(opts.get('third-party:codex').effort).toBe('medium')
+})
+
+test('the red and mechanical probes stay pinned at low — no dial reaches them', async () => {
+  const opts = await dispatchOpts({
+    ...baseArgs, tasks: [task({ redCommand: 'pytest x' })],
+    mechanicalChecks: [{ name: 'tests', cmd: 'bun test' }],
+    implementerEffort: 'xhigh', verifierEffort: 'xhigh', scoredEffort: 'xhigh', thirdPartyEffort: 'xhigh',
+  })
+  expect(opts.get('red:before:T1').effort).toBe('low')
+  expect(opts.get('red:after:T1').effort).toBe('low')
+  expect(opts.get('mechanical:tests').effort).toBe('low')
+})
+
+test('a lens carries no effort key — there is deliberately no lensEffort dial', async () => {
+  const opts = await dispatchOpts({ ...baseArgs, tasks: one, reviewLenses: [{ key: 'alpha', prompt: 'p', refs: [] }] })
+  expect('effort' in opts.get('lens:alpha')).toBe(false)
+})
