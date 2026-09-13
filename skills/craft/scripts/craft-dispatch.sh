@@ -14,8 +14,10 @@
 #   craft-dispatch.sh --no-suite-lint  skip only the suite-lint report; keep every gate
 #   craft-dispatch.sh --run-dir DIR    put args/result/log under DIR/<run-id> instead of $PWD/.craft/
 #   craft-dispatch.sh --provider claude|codex|gemini  the whole spine's provider (default claude)
-#   craft-dispatch.sh --loops N        after dispatching, RUN the continuation loop (craft-loop.sh)
-#                                      instead of printing it. Defaults to the args maxRounds value,
+#   craft-dispatch.sh --loops N        after dispatching, run the continuation loop (craft-loop.sh)
+#                                      DETACHED instead of printing it: this script returns at once,
+#                                      the loop logs to <run-dir>/loop.log and leaves its exit code
+#                                      in <run-dir>/loop.exit. Defaults to the args maxRounds value,
 #                                      or 3. 0 keeps the printed wait loop and exits 0.
 #   craft-dispatch.sh --red-probe ARGS run the red-gate probe on an args.json and exit 0/3 (reused
 #                                      by craft-redispatch.sh so there is one implementation)
@@ -810,10 +812,18 @@ PY
   case "$loops" in ''|*[!0-9]*) loops=6 ;; esac
 fi
 
-# Above zero the loop is EXECUTED rather than printed; zero is the printed wait loop, unchanged.
+# Above zero the loop is LAUNCHED DETACHED rather than printed, because a foreground loop turns a
+# caller's 600 s Bash-tool cap into a SIGKILL of the whole run; zero is the printed wait loop.
 if [ "$loops" -gt 0 ]; then
-  exec bash "$SKILL/scripts/craft-loop.sh" \
-    --run-dir "$R" --plan "$plan" --loops "$loops" --provider "$provider"
+  setsid nohup bash -c '
+    bash "$1" --run-dir "$2" --plan "$3" --loops "$4" --provider "$5"
+    echo $? > "$2/loop.exit"
+  ' _ "$SKILL/scripts/craft-loop.sh" "$R" "$plan" "$loops" "$provider" \
+    > "$R/loop.log" 2>&1 < /dev/null &
+  loop_pid=$!
+  disown "$loop_pid" 2> /dev/null || disown 2> /dev/null || :
+  echo "loop: detached (pid $loop_pid), log: $R/loop.log — exit code lands in $R/loop.exit"
+  exit 0
 fi
 
 cat <<EOF

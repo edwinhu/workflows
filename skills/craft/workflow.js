@@ -691,8 +691,9 @@ const redProbe = (t, when) => agent(
   ].join('\n'),
   { label: `red:${when}:${t.id}`, phase: 'Implement', effort: 'low', schema: MECHANICAL_SCHEMA, ...optIf('model', probeModel),
     ...agentTypeOpt(READ_ONLY_AGENT_TYPE) }
+// The agent's own id is not evidence — this leg was dispatched for a known task, so stamp it.
 ).then(r => (r && Number.isFinite(r.exitCode)
-  ? r
+  ? { ...r, name: t.id }
   : { name: t.id, exitCode: -1, output: r ? 'probe reported no integer exitCode' : 'probe agent died or was skipped' }))
 
 // Fail closed on an absent probe: -1 on either side is `red-unproven`, never a pass (gate-laws L4).
@@ -763,7 +764,8 @@ for (const wave of IMPLEMENT_WAVES) {
     ].join('\n'),
     { label: `implement:${t.id}`, phase: 'Implement', schema: IMPL_SCHEMA, ...agentTypeOpt(implementerAgentType), ...optIf('model', implementerModel), ...optIf('effort', implementerEffort) }
   )
-  const record = r || { id: t.id, done: false, changedFiles: [], evidence: '', blockers: ['agent died or was skipped'] }
+  // The agent's own id is not evidence — this leg was dispatched for a known task, so stamp it.
+  const record = r ? { ...r, id: t.id } : { id: t.id, done: false, changedFiles: [], evidence: '', blockers: ['agent died or was skipped'] }
   let red = null
   if (isRedGated(t)) {
     // Adjudicated AFTER dispatch, like the contract it ports: a failed verdict fails the task rather
@@ -818,7 +820,10 @@ const verifyLeg = async () => {
       { label: `verify:${t.id}`, phase: 'Verify', schema: VERIFY_SCHEMA, ...agentTypeOpt(verifierAgentType), ...optIf('model', verifierModel), ...optIf('effort', verifierEffort) }
     )
   ))
-  const verified = perTask.map((v, i) => v || { id: activeTasks[i].id, pass: false, evidence: '', failures: ['verifier died or was skipped'] })
+  // The agent's own id is not evidence — this leg was dispatched for a known task, so stamp it.
+  const verified = perTask.map((v, i) => (v
+    ? { ...v, id: activeTasks[i].id }
+    : { id: activeTasks[i].id, pass: false, evidence: '', failures: ['verifier died or was skipped'] }))
 
   // whole-deliverable lenses, each finding adversarially refuted as soon as its lens completes.
   return { verified, ...(await runLensLeg(reviewLenses)) }

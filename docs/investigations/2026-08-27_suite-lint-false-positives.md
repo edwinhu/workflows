@@ -13,14 +13,14 @@ argue with a specific row.
 | rule id | raw findings | false positives | true positives |
 |---|---|---|---|
 | positive-match-failure-vocabulary | 24 | 23 | 1 |
-| single-distinct-literal | 186 | 186 | 0 |
-| existence-only-artifact | 0 | 0 | 0 |
-| injected-key-never-varied | 39 | 39 | 0 |
+| single-distinct-literal | 193 | 193 | 0 |
+| existence-only-artifact | 1 | 1 | 0 |
+| injected-key-never-varied | 43 | 43 | 0 |
 
-Unparseable files: 0 of 218 linted. Every file the walker reached was extracted; nothing was dropped
+Unparseable files: 0 of 232 linted. Every file the walker reached was extracted; nothing was dropped
 silently, and no count above is understated by a skipped file.
 
-One finding in 249 survives inspection.
+One finding in 261 survives inspection.
 
 ## Method
 
@@ -37,18 +37,23 @@ The same numbers are obtainable from the module API, which is what the accompany
 bun -e 'import {lintCorpus} from "./skills/craft/scripts/suite-lint.ts"; console.log(lintCorpus(process.cwd()).counts)'
 ```
 
-**Sample.** The tree at commit `4e7f28a9` with the working tree of this run in place, with the
-hardened guard, the widened catastrophic-pattern classifier and the pair-cost budget of task H1
-delivered and its suite green (40 pass, 0 fail). 216 test files were linted, in both dialects,
-producing 247 findings across 122 files. Output is deterministic — sorted paths, no wall clock — so a
+**Refreshed 2026-09-12.** Re-executed from scratch because the corpus moved: the craft dispatch and
+gate suites were edited that day (`skills/craft/scripts/craft-dispatch-loops.test.ts` and
+`skills/craft/scripts/workflow.test.ts`), which shifted cited lines and changed three of the four raw
+counts. Every number and every `file:line` below comes from that run.
+
+**Sample.** The tree as of the 2026-09-12 refresh, with the working trees of the sessions then in
+flight in place. 232 test files were linted, in both dialects, producing 261 findings across 127
+files. Output is deterministic — sorted paths, no wall clock — so a
 re-run over the same tree reproduces the counts exactly. If the tree has moved since, the raw counts
 will move with it; recompute before disputing them. This measurement was taken last, after every
 other task in the run had settled, precisely because the lint's own suites are inside the corpus and
 every fixture they gain changes the totals.
 
 **The counts moved while this run was in flight, and the mechanism is worth stating.** Earlier
-versions of this document recorded 184 and then 183 `single-distinct-literal` findings. Both numbers
-were correct when taken and both are wrong now, and neither moved because a rule changed. The corpus
+versions of this document recorded 184, then 183, then 185 `single-distinct-literal` findings, and the
+2026-09-12 refresh records 193. Every one of those numbers was correct when taken and all but the last
+are wrong now, and none moved because a rule changed. The corpus
 contains the lint's own suite, and `skills/craft/scripts/suite-lint.test.ts` kept growing as task H1's
 red gate demanded more of it. The two findings that account for the move to 185 are both in that file
 and both name H1's work directly. `skills/craft/scripts/suite-lint.test.ts:438` flags
@@ -66,8 +71,8 @@ corpus instead of trusting the table.
 snapshots of this same repository (`scratch/ds-skill-eval/iteration-1/prior-workflows/`,
 `scratch/python-suite-head/`, `scratch/python-suite-pre-port/`). The walker lints them because they
 are in the tree, so many findings appear three or four times over near-identical copies of one file.
-Of the 247 findings, 129 are in `scratch/`. Deduplicated to the working tree, the raw counts are
-15 / 77 / 0 / 26 rather than 24 / 185 / 0 / 38. The table reports what the tool reports; the FP
+Of the 261 findings, 129 are in `scratch/`. Deduplicated to the working tree, the raw counts are
+15 / 85 / 1 / 31 rather than 24 / 193 / 1 / 43. The table reports what the tool reports; the FP
 verdicts below were reached on the distinct files and then carried to their copies, which are
 byte-comparable at the cited lines.
 
@@ -78,7 +83,7 @@ behaviours", "nothing varies this key") is false of the actual file. The judgeme
 the cited line and its surrounding test, not from the finding's own message. Every FP verdict below
 names the mechanism that produced it, so a reader can check the claim against one line of source.
 
-For `single-distinct-literal`, whose 185 findings are too many to quote individually, the procedure
+For `single-distinct-literal`, whose 193 findings are too many to quote individually, the procedure
 was applied to all of them and the source was read in full for every finding whose flagged callee is
 a project-local function rather than a host or standard-library one — `recordDispatch`, `amend`,
 `run`, `carriedIds`, `withHook`, `hooksJson`, `runFarm`, `runProseAudit`, `_audit`, `uploadFile`,
@@ -126,9 +131,9 @@ same mechanism produces `skills/workflow-creator/scripts/wc-probe.test.ts:261`,
 about 150 lines away at line 682; `tests/public-extension-contract.test.ts:161`, where the assertion
 is `toContain("specHash")` and the matched literal is a prose table cell at line 47 that happens to
 contain the word; and the three cite-check findings
-`skills/cite-check/tests/cite-check.test.ts:1174`, `skills/cite-check/tests/cite-check.test.ts:1178`
-and `skills/cite-check/tests/cite-check.test.ts:1255`, where the matched literal is the input draft
-`'Success claim [@SuccessKey2024-aa]. Failure claim [@FailedKey2024-bb].'` at line 1132 and the
+`skills/cite-check/tests/cite-check.test.ts:1175`, `skills/cite-check/tests/cite-check.test.ts:1179`
+and `skills/cite-check/tests/cite-check.test.ts:1257`, where the matched literal is the input draft
+`'Success claim [@SuccessKey2024-aa]. Failure claim [@FailedKey2024-bb].'` at line 1133 and the
 assertion is on the generated report. The nine `scratch/` copies of those three cite-check findings
 inherit the same verdict.
 
@@ -143,11 +148,11 @@ not.
 
 ## single-distinct-literal
 
-Raw 185, false positives 185, no true positives.
+Raw 193, false positives 193, no true positives.
 
 The rule's premise is that if every literal argument to a repeatedly-called function is the same
 value, no input in the file distinguishes the behaviours the tests claim differ. On this corpus that
-premise held in none of the 185 cases, for three reasons.
+premise held in none of the 193 cases, for three reasons.
 
 **The varying input is not a literal (the dominant case).**
 `skills/craft/scripts/craft-amend.test.ts:127` is `amend(f, '--apply')`, one of five calls passing the
@@ -181,8 +186,8 @@ misses that the variation is the presence of a second argument.
 asks for, where the fixture hook command is held identical and the second fixture adds the missing
 file. The rule penalises the control.
 
-**The literal is an incidental constant of a host callee.** Across the corpus, 37 findings flag the
-encoding argument of `readFileSync`, 14 the separator of `split`, 13 the index of a regex `group()`,
+**The literal is an incidental constant of a host callee.** Across the corpus, 40 findings flag the
+encoding argument of `readFileSync`, 15 the separator of `split`, 13 the index of a regex `group()`,
 11 the argument of `replace`, 10 of `slice`, 8 each of `join` and `execFileSync`, and so on down
 through `stringify`, `createHash`, `digest` and `sys.exit`. None of these is a value under test;
 varying them would break the test rather than strengthen it.
@@ -199,26 +204,40 @@ the same callee.
 
 ## existence-only-artifact
 
-Raw 0, false positives 0.
+Raw 1, false positives 1, no true positives.
 
-The rule produced no findings on this corpus, so it contributes nothing to the false-positive count.
-That is a fact about this repository at this commit, not evidence that the rule is inert: it fires on
-its fixtures in `suite-lint.test.ts` and `suite-lint-python.test.ts`, which is what establishes it can
-fire at all. A zero here should be read as "no artifact assertion in this tree is existence-only",
-which is a plausible state for a repo whose suites mostly assert on parsed output.
+The single finding is `tests/goal-send-drain.test.ts:59`:
+
+```
+drainLog: existsSync(`${q}.log`) ? readFileSync(`${q}.log`, 'utf8') : ''
+```
+
+That line is not an assertion. It is the last field of the object returned by the file's `runDrain`
+helper, and the `existsSync` is a read guard: absent the drain log, the helper hands back `''` rather
+than throwing, so the failure surfaces at the assertion instead of in the fixture. The artifact's
+*contents* are asserted twice, at line 85 (`expect(drainLog).toContain('EXECUTED')`) and line 92
+(`expect(drainLog).toContain('UNCONFIRMED')`) — the two states the drain is supposed to distinguish.
+The rule's premise, that the only thing the suite knows about the artifact is that it exists, is false
+of this file. The mechanism is that the rule scores an `existsSync` reference without noticing that
+the guarded read flows into a variable the assertions consume.
+
+Earlier versions of this document recorded 0 here, and that zero was read at the time as "no artifact
+assertion in this tree is existence-only". The rule did not change; the corpus gained this file. One
+finding is also below the two-citation evidence floor `suite-lint-report.test.ts` imposes on any rule
+that fired, which is a property of the corpus at this refresh rather than of the verdict above.
 
 ## injected-key-never-varied
 
-Raw 38, false positives 38, no true positives.
+Raw 43, false positives 43, no true positives.
 
 Three mechanisms, and the first is an extraction defect rather than a rule-design one.
 
 **A ternary parsed as a key-value pair (8 findings).**
 `skills/craft/scripts/converge-check.test.ts:44` contains `verdict: r.blocking === 0 ? 'PASS' : 'FAIL'`
 and is reported as the key `PASS` with the value `'FAIL'`. There is no such key. The same misparse
-produces the `PASS: 'FAIL'` findings at `skills/craft/scripts/craft-dispatch-loops.test.ts:37`,
+produces the `PASS: 'FAIL'` findings at `skills/craft/scripts/craft-dispatch-loops.test.ts:40`,
 `skills/craft/scripts/craft-loop.test.ts:31` and `skills/craft/scripts/craft-result.test.ts:654`, and
-the `ACTIVE: "PROCESSING"` finding at `skills/cite-check/tests/gemini.test.ts:98`
+the `ACTIVE: "PROCESSING"` finding at `skills/cite-check/tests/gemini.test.ts:103`
 (`state: getCalls >= 2 ? "ACTIVE" : "PROCESSING"`) together with its three `scratch/` copies. The
 gemini case is doubly wrong: that line exists precisely to vary the state across polls.
 
@@ -230,13 +249,17 @@ comment sentence, "THE DIRECTORY STATES THE SCOPE: `agents/` is auto-discovered�
 deliberately does **not** read `git show HEAD:`, reported as the key `HEAD` — a finding produced by
 the very sentence documenting the absence of the thing.
 
-**Harness plumbing, correctly held constant (26 findings).** The remainder are environment keys a test
+**Harness plumbing, correctly held constant (31 findings).** The remainder are environment keys a test
 sets to configure its own harness rather than to exercise a branch: `CRAFT_DISPATCH_DRYRUN: '1'` (at
 `skills/craft/scripts/plan-lint.test.ts:382`,
-`skills/craft/scripts/craft-dispatch-loops.test.ts:176`), `CRAFT_GOAL_PRINT: '1'` at
+`skills/craft/scripts/craft-dispatch-loops.test.ts:237`), `CRAFT_GOAL_PRINT: '1'` at
 `skills/craft/scripts/craft-dispatch.test.ts:88`, `CLAUDE_CODE_SESSION_ID: ''`
-at `skills/craft/scripts/craft-goal-resend.test.ts:78`, `CRAFT_LOOP_POLL` and `CRAFT_NO_SCOPE`,
-`CRAFT_FARM: '/bin/false'`, `CRAFT_REDISPATCH_DRYRUN`, `PATH` and `FARM_OUT_CHILD` (three files each),
+at `skills/craft/scripts/craft-goal-resend.test.ts:78`, `CRAFT_FARM: '/bin/false'` at
+`skills/craft/scripts/craft-loop.test.ts:86`, `CRAFT_REDISPATCH_DRYRUN: '1'` at
+`skills/craft/scripts/craft-redispatch.test.ts:225`, `PATH` (four files) and `FARM_OUT_CHILD` (two),
+the seven `GOAL_SEND_*` timing and retry knobs at `tests/goal-send-drain.test.ts:52` and the two
+lines below it, `HERDR_PANE_ID`
+at `tests/self-send-transport.test.ts:49`,
 `CRAFT_SUITE_LINT_TIMEOUT: '2'` at `skills/craft/scripts/suite-lint-dispatch.test.ts:178`, and the
 `GATE_STATUS`, `GATE_BLOCKED_TOOLS` and `GATE_REQUIRE_FIELDS` of the `scratch/` guard suites. A
 dry-run switch has one meaningful value; the varying input is what the harness then feeds the script.
