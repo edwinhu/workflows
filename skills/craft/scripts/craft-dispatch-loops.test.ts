@@ -1,5 +1,8 @@
 /**
- * craft-dispatch.sh --loops N executes the continuation loop instead of printing it.
+ * craft-dispatch.sh --loops N launches the continuation loop DETACHED instead of printing it, so
+ * the caller's shell is never the loop's parent — a foreground loop turns a 600 s Bash-tool cap
+ * into a SIGKILL of the run. The loop's own exit code therefore reaches the caller through
+ * <run-dir>/loop.exit rather than through this script's status, which is 0 once the hand-off is made.
  *
  * The backward-compatibility half matters as much as the feature: --loops 0 must be today's
  * behaviour to the byte (the heredoc prints, the script exits 0), and the two paths that return
@@ -10,7 +13,7 @@
  */
 import { describe, expect, test, afterAll } from 'bun:test'
 import { execFileSync } from 'node:child_process'
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync, chmodSync, existsSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync, chmodSync, existsSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -31,7 +34,7 @@ function script(dir: string, name: string, body: string) {
  * the case needs to the --out path it was handed, which is exactly the contract the real runner has
  * with craft — so the loop under test polls a real file written by a real detached process.
  */
-function stubFarm(dir: string, pass: boolean) {
+function stubFarm(dir: string, pass: boolean, delaySec = 0) {
   const verdict = JSON.stringify({
     overallPass: pass,
     verdict: pass ? 'PASS' : 'FAIL',
@@ -46,6 +49,7 @@ function stubFarm(dir: string, pass: boolean) {
     'out=""',
     'while [ $# -gt 0 ]; do case "$1" in --out) out="$2"; shift 2 ;; *) shift ;; esac; done',
     '[ -n "$out" ] || exit 2',
+    `sleep ${delaySec}`,
     `cat > "$out" <<'VERDICT'`,
     verdict,
     'VERDICT',
@@ -97,6 +101,25 @@ function dispatch(f: { dir: string; plan: string }, env: Record<string, string>,
 }
 
 const HEREDOC = /Monitor it \(persistent, no deadline\)/
+const DETACHED = /^loop: detached \(pid \d+\), log: .*\/loop\.log — exit code lands in .*\/loop\.exit$/m
+
+/**
+ * Block until the detached loop records its status, then return it. The loop is deliberately NOT a
+ * child of this process, so there is nothing to wait(2) on — loop.exit is the whole channel, and a
+ * test that did not read it would be asserting the hand-off and not the outcome.
+ */
+function loopExit(runDir: string, timeoutMs = 120_000): string {
+  const p = join(runDir, 'loop.exit')
+  const deadline = Date.now() + timeoutMs
+  while (Date.now() < deadline) {
+    if (existsSync(p)) {
+      const v = readFileSync(p, 'utf8').trim()
+      if (v !== '') return v
+    }
+    execFileSync('sleep', ['0.2'])
+  }
+  throw new Error(`loop.exit never appeared under ${runDir}`)
+}
 
 describe('--loops 0 is today\'s behaviour, unchanged', () => {
   test('the wait heredoc still prints and the script still exits 0', () => {
@@ -118,30 +141,68 @@ describe('the default when --loops is omitted is the plan\'s maxRounds', () => {
     const f = fixture({ maxRounds: 1 })
     const r = dispatch(f, { CRAFT_FARM: stubFarm(f.dir, false) })   // no --loops at all
     expect(r.out).not.toMatch(HEREDOC)
-    expect(r.code).toBe(6)          // the cap from maxRounds: 1 was reached with the gate failing
+    expect(r.out).toMatch(DETACHED)
+    expect(r.code).toBe(0)                    // the hand-off succeeded; the verdict is the loop's
+    expect(loopExit(f.runDir)).toBe('6')      // the cap from maxRounds: 1 reached with the gate failing
   })
 
   test('a plan with no maxRounds falls back to 3 rather than to zero or to unbounded', () => {
     const f = fixture()
     const r = dispatch(f, { CRAFT_FARM: stubFarm(f.dir, true) })    // no --loops at all
     expect(r.out).not.toMatch(HEREDOC)
+    expect(r.out).toMatch(DETACHED)
     expect(r.code).toBe(0)
+    expect(loopExit(f.runDir)).toBe('0')
   })
 })
 
-describe('--loops N > 0 hands off to the driver instead of printing', () => {
-  test('the heredoc is NOT printed and the run reaches craft-loop.sh, which returns the PASS verdict', () => {
+describe('--loops N > 0 hands the driver off DETACHED instead of printing', () => {
+  test('the heredoc is NOT printed, the script returns at once, and the detached loop reaches the PASS verdict', () => {
     const f = fixture()
     const r = dispatch(f, { CRAFT_FARM: stubFarm(f.dir, true) }, '--loops', '2')
     expect(r.out).not.toMatch(HEREDOC)
+    expect(r.out).toMatch(DETACHED)
     expect(r.code).toBe(0)
+    expect(loopExit(f.runDir)).toBe('0')
+    expect(existsSync(join(f.runDir, 'result.json'))).toBe(true)
+    expect(existsSync(join(f.runDir, 'loop.log'))).toBe(true)
+  })
+
+  /**
+   * The defect this change exists for, reproduced: a Bash-tool timeout SIGKILLs the caller's whole
+   * process group. The dispatching shell is put in its own session here so that kill is exactly
+   * that one; the loop must survive it, which it can only do by being in a session of its own.
+   */
+  test('SIGKILLing the caller\'s entire process group leaves the loop running to its verdict', () => {
+    const f = fixture()
+    const log = join(f.dir, 'caller.log')
+    const pgid = execFileSync('bash', ['-c',
+      `setsid bash -c 'bash "$0" --loops 1 "$1" > "$2" 2>&1' "$1" "$2" "$3" & echo $!`,
+      '_', SCRIPT, f.plan, log,
+    ], {
+      encoding: 'utf8',
+      cwd: f.dir,
+      env: { ...process.env, CLAUDE_CODE_SESSION_ID: '', CRAFT_LOOP_POLL: '1', CRAFT_NO_SCOPE: '1',
+             CRAFT_FARM: stubFarm(f.dir, true, 4) },
+    }).trim()
+
+    const deadline = Date.now() + 120_000
+    while (Date.now() < deadline) {
+      if (existsSync(log) && DETACHED.test(readFileSync(log, 'utf8'))) break
+      execFileSync('sleep', ['0.2'])
+    }
+    expect(readFileSync(log, 'utf8')).toMatch(DETACHED)
+
+    execFileSync('bash', ['-c', `kill -KILL -${pgid} 2>/dev/null; :`])
+    expect(loopExit(f.runDir)).toBe('0')
     expect(existsSync(join(f.runDir, 'result.json'))).toBe(true)
   })
 
-  test('a failing gate at the loop cap surfaces the driver\'s halt code, not a bare 0', () => {
+  test('a failing gate at the loop cap surfaces the driver\'s halt code in loop.exit, not a bare 0', () => {
     const f = fixture()
     const r = dispatch(f, { CRAFT_FARM: stubFarm(f.dir, false) }, '--loops', '1')
-    expect(r.code).toBe(6)
+    expect(r.code).toBe(0)
+    expect(loopExit(f.runDir)).toBe('6')
   })
 })
 

@@ -123,8 +123,11 @@ describe('the report measures what the gating decision needs', () => {
       const section = nextHeading < 0 ? rest : rest.slice(0, nextHeading)
       const cited = (section.match(/[A-Za-z0-9_.\/-]+\/[A-Za-z0-9_.-]+\.(?:test\.ts|py):\d+/g) ?? [])
         .filter(c => byRule.get(id)!.has(c))
+      // Two citations, or every finding there is: a rule that fired once in the whole corpus
+      // (existence-only-artifact, 2026-09-12) can show its work with exactly one.
+      const need = Math.min(2, byRule.get(id)!.size)
       expect(`${id} verified citations: ${new Set(cited).size}`)
-        .toBe(`${id} verified citations: ${Math.max(2, new Set(cited).size)}`)
+        .toBe(`${id} verified citations: ${Math.max(need, new Set(cited).size)}`)
     }
   })
 

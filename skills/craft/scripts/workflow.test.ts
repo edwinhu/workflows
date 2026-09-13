@@ -115,6 +115,32 @@ test('no redCommand dispatches no probes and emits no red keys — existing call
   expect(result.overallPass).toBe(true)
 })
 
+// ---------------------------------------------------------------- the leg's task, not the agent's claim
+
+test('verifier that mis-reports its id is still attributed to its task', async () => {
+  const { result } = await run({ ...baseArgs, tasks: one },
+    replies({ verify: { T1: { id: 'T1-verify', pass: true, evidence: 'e', failures: [] } } }))
+  expect(result.verified[0].id).toBe('T1')
+  expect(result.tasksThatFlagged).toEqual([])
+  expect(result.overallPass).toBe(true)
+})
+
+test('implementer that mis-reports its id is still attributed to its task', async () => {
+  const { result } = await run({ ...baseArgs, tasks: one },
+    replies({ impl: { T1: { id: 'wrong', done: true, changedFiles: ['x'], evidence: 'e' } } }))
+  expect(result.implemented[0].id).toBe('T1')
+  expect(result.tasksThatFlagged).toEqual([])
+  expect(result.overallPass).toBe(true)
+})
+
+test('stamping the id does not turn a verifier failure into a pass', async () => {
+  const { result } = await run({ ...baseArgs, tasks: one },
+    replies({ verify: { T1: { id: 'T1-verify', pass: false, evidence: 'e', failures: ['nope'] } } }))
+  expect(result.verified[0].id).toBe('T1')
+  expect(result.tasksThatFlagged).toEqual(['T1'])
+  expect(result.overallPass).toBe(false)
+})
+
 // ---------------------------------------------------------------- dead agents fail closed
 
 test('a dead implementer flags its task', async () => {
