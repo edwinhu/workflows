@@ -74,15 +74,18 @@ _SOFT_VIOLATIONS = [
     (r'\b(important|key|notable|significant)\s+feature\b',
      "S&W §V: 'X feature' — hackneyed; describe it specifically"),
 
-    # "However" as first word of sentence
-    (r'^\s*However,\s', "S&W §V: 'However,' at sentence start — move to mid-sentence"),
+    # `However,` at sentence start DELETED. writing-general/SKILL.md:123 drops it — 6,666/M in
+    # finance, 1.08% vs 1.01% across the two registers: "Fine. Vary it, do not ban it."
 
     # "Etc." in academic writing
     (r'\betc\.\s*$|\betc\.,', "S&W §V: 'etc.' — complete the list or use 'such as'"),
 
-    # Passive voice proxy (soft warn)
-    (r'\b(is|are|was|were|been|being)\s+(being\s+)?\w+ed\b',
-     "S&W Rule 10: possible passive voice — prefer active where the actor matters"),
+    # Passive voice DELETED. writing-general/SKILL.md:54-56, writing-legal:75 and :83, and
+    # writing-econ:90 all record the measurement that refutes it as a register claim: 7.91% law vs
+    # 8.55% finance, both registers using it steadily and deliberately. Strunk's active-voice rule
+    # survives as a question ("who did this?"), which is a reading judgement and not a regex. This
+    # was also the broadest pattern in any of these tables — it fired on `is based`, `was decided`,
+    # `are required` — and it was bound to writing-general, i.e. to all three registers at once.
 ]
 
 

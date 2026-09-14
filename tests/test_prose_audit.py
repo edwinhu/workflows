@@ -102,7 +102,7 @@ def test_unrelated_findings_on_one_line_stay_separate():
     res = _audit("tics.md")
     line3 = [s for s in res["spans"] if s["line"] == 3]
     assert len(line3) == 2, line3
-    assert {s["quote"] for s in line3} == {"stands as a testament to", "plays a vital role"}
+    assert {s["quote"] for s in line3} == {"stands as a testament to", "nestled"}
 
 
 def test_cluster_diction_columns_are_line_relative(tmp_path):
@@ -140,7 +140,11 @@ _ARTIFACTS = [
     ("citeturn0search0", "hard"),
     ("oaicite", "hard"),
     ("stands as a testament", "hard"),   # sev4 scored tic
-    ("plays a vital role", "soft"),
+    # `plays a vital role` was here at soft. It is REJECTED in tics.yaml at 122 hits / 21.94/M —
+    # the bare form is human prose and only `plays a pivotal role in shaping` cleared the gate — so
+    # the row asserted the defect. `nestled` replaces it: same table, same severity, gate-clean at
+    # 0.2/M in diction.yaml.
+    ("nestled", "soft"),
     ("Despite these challenges", "soft"),
 ]
 

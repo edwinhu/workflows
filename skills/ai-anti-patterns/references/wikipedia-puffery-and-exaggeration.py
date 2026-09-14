@@ -23,22 +23,27 @@ SEVERITY = "soft"  # warn — puffery phrases can appear in legitimate academic 
 # `stands as a`/`it is important to note` → already here and there, respectively) and the entries
 # it had that this table lacked were merged in below, marked `[ex-ai-smell]`.
 _PUFFERY_PATTERNS = [
-    (r'\b(stands|serves)\s+as\b', "puffery: 'stands/serves as'"),
+    # `stands as` narrowed off the bare copula: `serves as` is REJECTED in tics.yaml at 786 hits /
+    # 141.35/M, the highest-rate rejection in the file after the caveat openers, and the bare
+    # `stands as` carried it. What the gated table ships is `stands as a testament to`
+    # (scored-tics-patterns.py), and the `is a testament/reminder` line below covers the rest.
+    (r'\bstands\s+as\s+a\s+(testament|reminder|beacon|symbol)\b', "puffery: 'stands as a testament'"),
     (r'\bis\s+a\s+(testament|reminder)\b', "puffery: 'is a testament/reminder'"),
-    # `central` came from writing-ai-smell-puffery; the rest were already here.
-    (r'\bplays\s+a\s+(vital|significant|crucial|pivotal|key|central)\s+role\b', "puffery: 'plays a X role'"),
-    # [ex-ai-smell] The de-hedging siblings of 'it is important to note' (which lives in
-    # wikipedia-promotional-language.py). Kept because a reader meets all three interchangeably.
+    # `plays a crucial/vital/key role` (bare) DELETED — tics.yaml rejects it at 122 hits / 21.94/M.
+    # Only the narrowed `plays a pivotal role in shaping` passed the gate, and it ships from there.
+    # [ex-ai-smell] The de-hedging siblings of 'it is important to note', which was itself deleted
+    # from wikipedia-promotional-language.py as corpus-rejected. These two are not: they carry no
+    # `rejected:` entry and stay until one is measured.
     (r'\bit\s+is\s+worth\s+noting\b', "puffery: 'it is worth noting'"),
     (r'\bit\s+should\s+be\s+noted\s+that\b', "puffery: 'it should be noted that'"),
-    # [ex-ai-smell] `delves into`. NOTE THE TENSION, because it is worth keeping visible: the
-    # scored-tic corpus gate REJECTED the bare form (real authors write it) and kept only the
-    # narrowed 'delve into the intricacies of'. This entry survives the merge as a SOFT flag so
-    # the ai-smell family's coverage is not silently lost; if it false-positives in practice,
-    # delete this line rather than weakening the scored table.
-    (r'\bdelves?\s+into\b', "puffery: 'delves into'"),
-    (r'\b(underscores?|highlights?|emphasizes?|showcases?)\s+(its|the)\s+(importance|significance)\b',
-     "puffery: 'underscores its importance'"),
+    # `delves into` (bare) DELETED. The comment that stood here named the tension — the corpus gate
+    # REJECTED the bare form at 65 hits / 11.69/M and kept only `delve into the intricacies of` —
+    # and elected to keep firing anyway, with the escape clause "if it false-positives in practice,
+    # delete this line rather than weakening the scored table." It does; this is that deletion.
+    # `underscores/highlights the importance` narrowed: `underscores the importance` is REJECTED in
+    # tics.yaml at 5.93/M. The other three verbs carry no such measurement.
+    (r'\b(highlights?|emphasizes?|showcases?)\s+(its|the)\s+(importance|significance)\b',
+     "puffery: 'highlights its importance'"),
     (r'\b(reflects?|symboliz(es?|ing))\s+(the\s+)?(broader|wider)\b', "puffery: 'reflects broader'"),
     (r'\b(enduring|lasting)\s+(impact|legacy|influence|contribution)\b', "puffery: 'enduring/lasting impact'"),
     (r'\bindelible\s+(mark|impact|legacy)\b', "puffery: 'indelible mark'"),

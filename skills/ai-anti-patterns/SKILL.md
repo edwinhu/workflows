@@ -31,7 +31,7 @@ Start with the most objective indicators:
 | 1 | ChatGPT Artifacts | `turn0search0`, `oaicite`, `contentReference` |
 | 2 | Citation Problems | Hallucinated DOIs, dead links, non-existent sources |
 | 3 | Prompt Refusals | "As an AI language model...", "I hope this helps" |
-| 4 | Puffery | "stands as", "plays a vital role", "rich tapestry" |
+| 4 | Puffery | "stands as a testament to", "rich tapestry", "nestled" |
 | 5 | Structure | Section summaries, "Despite challenges", rule of three |
 
 ## Critical Patterns to Avoid
@@ -54,13 +54,21 @@ These patterns are unambiguous AI artifacts:
 
 ### HIGH Severity (Strong Revision Recommended)
 
-**Puffery and Exaggeration:**
-- "stands as" (a testament/example/beacon)
-- "plays a vital/crucial/pivotal role"
+**THE SHIPPED LIST IS `~/.claude/skills/ai-tic/linter/tics.yaml`, NOT THIS TABLE.** That file holds
+both halves — the tics that cleared the ~0-human-rate gate against 14,294,148 sentences, and a
+`rejected:` block naming the phrases that did not, so they are not re-proposed. Six phrases were
+listed here as AI tells while sitting in that `rejected:` block: `serves as` (141.35/M),
+`it is important to note that` (44.42/M), `plays a crucial/vital/key role` bare (21.94/M),
+`delve into` bare (11.69/M), `underscores the importance` (5.93/M), and `Of course,` (386.94/M).
+They are gone from the tables below and from every executable table in the repo. This is the same
+correction the User-Voice section thirty lines down already made for a different list — *"Keep
+these as voice preferences if you like them … Do not present them as AI detection."* — applied to
+this one. To check a phrase, run `/ai-tic <phrase>`; do not add a row here.
+
+**Puffery and Exaggeration** (those that cleared the gate):
+- "stands as a testament to"
 - "rich tapestry of"
 - "nestled in/among"
-- "it's important to note that"
-- "delves into"
 - "the landscape of"
 
 **Promotional Language:**
@@ -132,10 +140,8 @@ and refuses to add anything over the eligibility gate.
 | AI Pattern | Human Alternative |
 |------------|-------------------|
 | "stands as a testament to" | "shows" or "demonstrates" |
-| "plays a vital role in" | "affects" or just state the effect |
 | "rich tapestry of" | describe specifically what it contains |
 | "nestled in the heart of" | "in" or "located in" |
-| "delves into" | "examines" or "covers" |
 
 ### For Structure
 
@@ -144,7 +150,6 @@ and refuses to add anything over the eligibility gate.
 | Section summary of heading | Start with substance, not meta-commentary |
 | "Despite challenges..." | State the reality directly without formula |
 | Exactly three examples | Use the number that fits: 2, 4, 5, or just 1 |
-| "It's important to note" | Just state the important thing |
 
 ### For False Precision
 

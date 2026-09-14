@@ -41,7 +41,11 @@ _LONG_SYNONYMS = [
     (r'\bin\s+the\s+event\s+that\b', "Volokh: 'in the event that' → 'if'"),
     (r'\bwith\s+respect\s+to\b|\bwith\s+regard\s+(to|for)\b',
      "Volokh: 'with respect/regard to' → 'about', 'regarding', or restructure"),
-    (r'\bpursuant\s+to\b', "Volokh: 'pursuant to' — legalese; use 'under' or 'following'"),
+    # `pursuant to` DELETED. writing-legal/SKILL.md:82 drops it under `### Dropped`: 837/M in the
+    # law corpus, 26× the finance rate — the legal register itself, not legalese to be purged.
+    # prose-audit.py binds this table to --style legal, so the rule fired only on the register that
+    # dropped it. "Where this file and that guide disagree, this file controls"
+    # (writing-legal/SKILL.md:55) is now true of this line.
     (r'\bnotwithstanding\s+(the\s+)?(foregoing|above)\b',
      "Volokh: 'notwithstanding the foregoing' — legalese; rewrite directly"),
 ]
@@ -88,8 +92,8 @@ _INTRO_CLAUSES = [
     (r'\bit\s+(should|must|need)\s+be\s+(mentioned|noted|emphasized|stressed)\s+that\b',
      "Volokh: 'it should be mentioned that' — delete and state the point directly"),
     (r'\bin\s+having\s+\w+ed\b', "Volokh: introductory clause 'In having X-ed' — delete"),
-    (r'\bit\s+is\s+(important|necessary|essential|critical)\s+to\s+(note|remember|recognize|acknowledge)\b',
-     "Volokh: 'it is important to note' — delete; make the sentence do the work"),
+    # `it is important to note` DELETED — tics.yaml rejects it at 247 hits / 44.42/M. The
+    # `it should/must/need be noted that` entry above carries no such measurement and stays.
 ]
 
 

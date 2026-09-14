@@ -207,16 +207,18 @@ def test_hook_scopes_to_edited_lines(tmp_path):
     drafts = tmp_path / "drafts"
     drafts.mkdir()
     f = drafts / "d.md"
-    # AI tell on line 1 (untouched) and line 4 (edited) — both phrases the
-    # ai-anti-patterns tables actually catch.
+    # AI tell on line 1 (untouched) and line 4 (edited) — both phrases the ai-anti-patterns tables
+    # actually catch. Line 4 was `It is important to note …` until that phrase was deleted from
+    # both tables carrying it (tics.yaml rejects it at 44.42/M); the test's subject is edited-line
+    # SCOPING, so it needs any phrase that still fires, not that one.
     f.write_text(
         "This is the rich tapestry of antitrust law.\n"
         "\n"
         "Neutral sentence.\n"
-        "It is important to note the edited claim here.\n"
+        "The ruling stands as a testament to the edited claim here.\n"
     )
     ctx = _run_hook(f, tool_name="Edit",
-                    new_string="It is important to note the edited claim here.")
+                    new_string="The ruling stands as a testament to the edited claim here.")
     assert ctx is not None
     assert "d.md:4" in ctx, ctx
     assert "d.md:1" not in ctx, ctx
@@ -228,17 +230,22 @@ def test_hook_no_double_report_puffery(tmp_path):
     drafts = tmp_path / "drafts"
     drafts.mkdir()
     f = drafts / "d.md"
-    f.write_text("It is important to note this point.\n")
+    # `It is important to note this point.` was the probe until that phrase was deleted from both
+    # tables carrying it (tics.yaml rejects it at 247 hits / 44.42/M). `rich tapestry` is the
+    # better probe for this test anyway: it is still encoded TWICE — scored-tics-patterns.py and
+    # wikipedia-promotional-language.py — so the one-bullet assertion below is exercising a real
+    # collapse rather than a phrase only one table ever matched.
+    f.write_text("The record is a rich tapestry of incentives.\n")
     ctx = _run_hook(f)
     assert ctx is not None
-    assert "it is important to note" in ctx.lower(), ctx
+    assert "tapestry" in ctx.lower(), ctx
     # The retired granular constraint and its labels are gone entirely.
     assert "puffery:important-to-note" not in ctx, ctx
     assert "writing-ai-smell" not in ctx, ctx
     # And nothing is reported twice.
     bullets = [ln for ln in ctx.splitlines() if ln.strip().startswith("•")]
     assert len(bullets) == len(set(bullets)), bullets
-    assert sum("important to note" in b for b in bullets) == 1, bullets
+    assert sum("tapestry" in b for b in bullets) == 1, bullets
 
 
 def test_hook_flags_imperative_scene_setting_opener(tmp_path):

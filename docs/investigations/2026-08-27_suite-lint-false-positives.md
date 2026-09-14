@@ -244,7 +244,7 @@ gemini case is doubly wrong: that line exists precisely to vary the state across
 **Prose and comments read as configuration (4 findings).** `tests/agent-contract.test.mjs:18` is a
 comment sentence, "THE DIRECTORY STATES THE SCOPE: `agents/` is auto-discovered…", reported as the key
 `SCOPE`. `tests/bluebook-cites.test.ts:59` is a comment quoting a DOI, reported as `URL`.
-`tests/test_prose_audit.py:746` is a fixture comment containing the word "CHANGED:". And
+`tests/test_prose_audit.py:750` is a fixture comment containing the word "CHANGED:". And
 `skills/craft/scripts/dev-lens-contract.test.ts:12` is a header comment explaining that the suite
 deliberately does **not** read `git show HEAD:`, reported as the key `HEAD` — a finding produced by
 the very sentence documenting the absence of the thing.

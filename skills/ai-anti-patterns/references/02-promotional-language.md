@@ -1,5 +1,11 @@
 # Promotional Language
 
+> **Corpus standing.** Wikipedia's text, imported unedited. `it's important to
+> note/remember/consider` (the second "Words to watch" row below) measured 247 hits / 44.42/M in
+> 14,294,148 sentences of human law and finance scholarship, carries a `rejected:` entry in
+> `~/.claude/skills/ai-tic/linter/tics.yaml`, and this plugin no longer flags it. The rest of this
+> chapter's list is enforced as `wikipedia-promotional`.
+
 ## Promotional language
 
 |  | Words to watch: ***rich/vibrant tapestry*, *artistic/cultural/literary/media/etc. landscape*, *boasts a*, *continues to captivate*, *groundbreaking*, *intricate*, *stunning natural beauty*, *enduring/lasting legacy*, *nestled*, *in the heart of*...** |

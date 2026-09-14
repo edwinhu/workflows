@@ -1,5 +1,14 @@
 # Puffery and Exaggeration
 
+> **Corpus standing.** This chapter is Wikipedia's text, imported unedited. Four phrases in the
+> "Words to watch" list below were measured against 14,294,148 sentences of human law and finance
+> scholarship and came back as normal human prose — `serves as` (141.35/M), `plays a
+> crucial/vital/key role` bare (21.94/M), `delve into` bare (11.69/M), `underscores the importance`
+> (5.93/M). They carry `rejected:` entries in `~/.claude/skills/ai-tic/linter/tics.yaml` and this
+> plugin no longer flags them; `stands as a testament to` and the narrowed `plays a pivotal role in
+> shaping` did pass and still ship. Read the list as Wikipedia's, not as this repo's rule set —
+> `tics.yaml` is the rule set.
+
 ## "Stands as" / "serves as"
 
 |  | Words to watch: ***stands/serves as / is a testament/reminder*, *plays a vital/significant/crucial role*, *underscores/highlights its importance/significance*, *reflects broader*, *symbolizing its ongoing*, *enduring/lasting impact*, *key turning point*, *indelible mark*, *deeply rooted*, *profound heritage*, *steadfast dedication*...** |
