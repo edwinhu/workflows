@@ -4,10 +4,12 @@ Call sites pass a ROLE, never an id. Roles exist because the plugin's Gemini cal
 different jobs and a single global default would silently promote every cheap batch job onto a
 reasoning model:
 
-    bulk       cheap high-volume batch / per-item work
-    judgment   reasoning where accuracy matters
-    pro        the few sites that need a pro model
-    vision     multimodal extraction from one file (OCR, charts, tables)
+    bulk                cheap high-volume batch / per-item work
+    judgment            reasoning where accuracy matters
+    pro                 the few sites that need a pro model
+    vision              multimodal extraction from one file (OCR, charts, tables)
+    vision_antigravity  the same job through the `agy` CLI, whose ids carry a reasoning
+                        suffix and are not interchangeable with the API ids
 
 Resolution order, highest wins:
 
@@ -25,11 +27,16 @@ Usage:
     from gemini_models import resolve_model, stamp
     model = resolve_model('bulk', args.model)     # args.model default MUST be None
     payload = {**stamp(model), 'findings': ...}
+
+Shell call sites use the CLI form so they read this same table rather than hardcoding an id:
+
+    python3 scripts/lib/gemini_models.py vision_antigravity
 """
 from __future__ import annotations
 
 import json
 import os
+import sys
 from pathlib import Path
 
 _TABLE_PATH = Path(__file__).resolve().parent / "gemini-models.json"
@@ -70,3 +77,24 @@ def stamp(model: str) -> dict[str, str]:
     traced back to the model that produced it.
     """
     return {"model": model}
+
+
+def _main(argv: list[str]) -> int:
+    """`gemini_models.py <role>` — print one resolved id, for shell call sites.
+
+    One implementation serves Python and bash. Failure is loud and stdout stays empty, so a
+    caller that forgets to check the status substitutes nothing rather than a plausible id.
+    """
+    if len(argv) != 1:
+        print(f"usage: gemini_models.py <role>; roles: {', '.join(ROLES)}", file=sys.stderr)
+        return 2
+    try:
+        print(resolve_model(argv[0]))
+    except KeyError as exc:
+        print(exc.args[0], file=sys.stderr)
+        return 2
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(_main(sys.argv[1:]))

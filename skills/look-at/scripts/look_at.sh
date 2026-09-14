@@ -2,6 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+GEMINI_MODELS="$(cd "$SCRIPT_DIR/../../.." && pwd)/scripts/lib/gemini_models.py"
 
 usage() {
   cat <<'EOF'
@@ -26,13 +27,15 @@ Backends:
   claude   claude-code -p (CLIProxyAPI wrapper over the pooled Claude OAuth
            accounts, NOT plain `claude`). Unmetered. Reads images and PDFs
            natively — prefer it for PDFs, which agy must rasterize first.
-  agy      agy -p (Antigravity CLI). DEFAULT, on gemini-3.7-flash-high —
-           Gemini via Antigravity OAuth, unmetered. Reads images, PDFs and
-           video natively. No audio: those auto-route to api.
+  agy      agy -p (Antigravity CLI). DEFAULT, on the 'vision_antigravity'
+           role in scripts/lib/gemini-models.json — Gemini via Antigravity
+           OAuth, unmetered. Reads images, PDFs and video natively. No audio:
+           those auto-route to api.
   codex    codex exec (attaches the image with -i, no read tool needed).
            PDFs are rasterized and every page attached.
   copilot  GitHub Copilot CLI (GPT-5.4). PDFs are rasterized first.
-  api      Python google-genai SDK on gemini-3.7-flash at thinking_level=high.
+  api      Python google-genai SDK on the 'vision' role in
+           scripts/lib/gemini-models.json, at thinking_level=high.
            METERED — spends GOOGLE_API_KEY. Audio routes here automatically
            because no unmetered backend handles it; otherwise opt-in.
 EOF
@@ -127,8 +130,21 @@ run_copilot() {
 }
 
 run_agy() {
-  # Gemini 3.7 Flash at high reasoning, via Antigravity OAuth. Unmetered.
-  local model="${MODEL:-gemini-3.7-flash-high}"
+  # Gemini Flash at high reasoning, via Antigravity OAuth. Unmetered. The default
+  # comes from the 'vision_antigravity' role, NOT 'vision': agy's ids spell the
+  # reasoning level into the name and the API's do not, so the two namespaces are
+  # not interchangeable. MODEL stays the cross-backend explicit override.
+  local model="$MODEL"
+  if [[ -z "$model" ]]; then
+    model="$(python3 "$GEMINI_MODELS" vision_antigravity || true)"
+    # Empty is checked as well as the exit status: a bare `--model ""` would reach
+    # agy as a silent fallback to whatever its own default happens to be.
+    [[ -n "$model" ]] || {
+      echo "Error: could not resolve the 'vision_antigravity' model from $GEMINI_MODELS." >&2
+      echo "Pass --model explicitly, or repair the resolver." >&2
+      return 1
+    }
+  fi
   if $VERBOSE; then echo "[look-at] backend=agy model=$model" >&2; fi
   # agy reads PDFs and video natively through its Read tool -- verified
   # 2026-08-23 on a 2-page PDF and a 3s mp4, both correct. No rasterization,
