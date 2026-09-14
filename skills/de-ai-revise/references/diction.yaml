@@ -1,3 +1,9 @@
+# THIS FILE IS THE ONE HOME. `scripts/prose-audit.py` loads it from here (DICTION_YAML) and nothing
+# else loads a diction table. A byte-identical copy sits at ~/.claude/skills/ai-tic/linter/, in the
+# dotfiles repo, with no emitter and no reader: nothing under ai-tic/ references diction.yaml at
+# all. Unlike tics.yaml -> scored-tics-patterns.py, the two are not generator and output; they agree
+# by luck and nothing would report it if they stopped. Edit here; the other copy is to be deleted.
+#
 # Diction dictionary — fancy AI word -> plain alternative, TIERED BY
 # EMPIRICAL RATE in the combined law+finance+accounting corpus (14,294,148 sentences).
 # Source mappings: github.com/conorbronsdon/avoid-ai-writing (their tiers were

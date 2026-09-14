@@ -5,7 +5,7 @@ ONE entry point over ALL five pattern systems, emitting ONE span list with stabl
 
   A  scored AI-tics   skills/ai-anti-patterns/references/scored-tics-patterns.py   (system `scored-tic`)
   B  wikipedia-*      skills/ai-anti-patterns/references/wikipedia-*.py            (system `wikipedia-*`)
-  D  domain style     skills/writing-{general,legal,econ}/references/*.py          (system `writing-*`)
+  D  domain style     skills/writing/references/{strunk,mccloskey,volokh}*.py      (system `writing-*`)
   E  tiered diction   skills/de-ai-revise/references/diction.yaml                  (system `diction`)
   +  stylometrics     skills/ai-anti-patterns/scripts/style_metrics.py --lint      (system `style`)
   +  US-register spelling and paragraph/section em-dash density                    (`spelling`, `em-dash`)
@@ -209,7 +209,7 @@ def _compile_table(path: Path, attr: str, ignore_case: bool):
 def load_pattern_systems(style: str | None = None) -> list[tuple[str, str, str, re.Pattern]]:
     """(system, label, severity, compiled) for every regex table in scope.
 
-    `style` gates the domain guides the way prose-lint and check-all already gate them:
+    `style` gates the domain guides the way check-all already gates them:
     writing-general always, writing-legal for legal, writing-econ for econ.
     """
     out: list[tuple[str, str, str, re.Pattern]] = []

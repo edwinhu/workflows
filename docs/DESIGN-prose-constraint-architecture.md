@@ -335,9 +335,11 @@ The investigation above is preserved as written; this section records where the 
 moved. The five pattern systems and the four loaders are unchanged. What changed is who calls them.
 
 **Three consumers were retired with the beat spine.** `hooks/writing-mechanical-gate.ts`,
-`hooks/mechanical-floor-gate.ts` and `workflows/writing-verify.js` no longer exist. The live
-consumers of `check-all.py` are now `hooks/writing-prose-check.ts` and the workshop skill's own
-`workshop-deck.py`. Under craft, the mechanical floor is not a PreToolUse gate at all: it is the
+`hooks/mechanical-floor-gate.ts` and `workflows/writing-verify.js` no longer exist. `check-all.py`
+now has exactly ONE live consumer, `hooks/writing-prose-check.ts`. (`workshop-deck.py` is not a
+second one: `skills/workshop/scripts/workshop-deck.py:57-62` runs the typst skill's
+`run-constraints.py`, a different checker over a different directory.) Under craft, the mechanical
+floor is not a PreToolUse gate at all: it is the
 `mechanicalChecks` list in the plan's `craft:dispatch` block, executed at baseline by
 `plan-preflight.ts` before dispatch and again by `workflow.js` in the gate. A check that cannot run
 (exit 127) refuses the dispatch rather than being discovered a round later.
@@ -346,9 +348,11 @@ consumers of `check-all.py` are now `hooks/writing-prose-check.ts` and the works
 `mccloskey-economical-writing.py` and `volokh-distilled.py` were in `writing-general`,
 `writing-econ` and `writing-legal`; they are now all in `skills/writing/references/`. Domain gating
 therefore could no longer key on the skill directory, so `check-all.py` gained `DOMAIN_FILE_MAP`
-and gates by filename instead — Volokh for `legal`, McCloskey for `econ`. `prose-audit.py` and
-`prose-lint.py` keep their own `_DOMAIN_TABLES` gating, which was already per-table and needed only
-a path change. The regression this prevents is concrete and was observed during the migration: with
+and gates by filename instead — Volokh for `legal`, McCloskey for `econ`. `prose-audit.py` keeps its
+own `_DOMAIN_TABLES` gating, which was already per-table and needed only a path change. (The
+retired `prose-lint.py` was described here as keeping the same gating; it never had a
+`_DOMAIN_TABLES` at all, which is a reason not to have revived it.) The regression this prevents is
+concrete and was observed during the migration: with
 the directory-keyed filter inert, a general-register draft got Volokh findings on top of the
 wikipedia-promotional finding for the same span.
 
