@@ -514,7 +514,9 @@ const refuteFinding = (f, { key, header, extra = [], refs, agentType, labelPrefi
     '',
     ...extra,
     'Try hard to show the finding is wrong, already handled, or out of the plan\'s scope. Modify nothing.',
-    'Default: if the evidence is ambiguous either way, refuted=true (the finding does not survive).',
+    'EVIDENCE BEATS ARGUMENT. If a command would settle it — a build, a checker, a test — RUN IT and quote the output in your reason. Reasoning about what that command WOULD report, where you could have run it, is not a refutation: return refuted=false.',
+    'Refuting on SCOPE does not deny the defect. State in your reason whether the finding is factually true, so a true finding raised by the wrong lens is visible rather than discarded.',
+    'Default: if the evidence is ambiguous either way, refuted=true (the finding does not survive) — UNLESS the finding names a file and line and you ran no command, where ambiguity means the work was not done: refuted=false.',
   ].join('\n'),
   {
     label: `${labelPrefix}:${key}`, phase: 'Verify', schema: REFUTE_SCHEMA,
