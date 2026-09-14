@@ -13,6 +13,7 @@ import { spawnSync } from "node:child_process";
 import { homedir } from "node:os";
 import { createHash } from "node:crypto";
 import type { GroundingChunk } from "./grounding.js";
+import { resolveModel } from "../../scripts/lib/gemini-models.ts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -698,7 +699,11 @@ export async function syncStore(opts: {
 // Constants
 // ---------------------------------------------------------------------------
 
-export const DEFAULT_MODEL = "gemini-3.1-flash-lite-preview";
+/**
+ * Citation verification is per-cite reasoning where a wrong call costs the user a real
+ * correction, so it takes the 'judgment' role — not 'bulk'.
+ */
+export const DEFAULT_MODEL = resolveModel("judgment");
 
 // ---------------------------------------------------------------------------
 // Client factory with test seam

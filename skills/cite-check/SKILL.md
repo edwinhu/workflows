@@ -65,7 +65,7 @@ bun cite-check.ts \
 | `--limit <n>` | No | all | Check only first N citations (smoke test) |
 | `--dry-run` | No | false | Print prompts without querying |
 | `--sequential` | No | false | Run queries one-at-a-time instead of Batch API (default: batch) |
-| `--retry-model <model>` | No | `gemini-3.1-pro-preview` | Retry UNSUPPORTED results with a stronger model |
+| `--retry-model <model>` | No | the `pro` role | Retry UNSUPPORTED results with a stronger model |
 | `--audit` | No | false | Audit source availability without querying (checks Paperpile PDFs) |
 | `--debug` | No | false | Verbose logging |
 

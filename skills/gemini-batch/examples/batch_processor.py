@@ -5,10 +5,8 @@ This module provides a production-ready GeminiBatchProcessor class for end-to-en
 batch processing of documents (PDFs, images) with Google's Gemini models.
 
 Example:
-    processor = GeminiBatchProcessor(
-        bucket_name="my-batch-bucket",
-        model="gemini-2.0-flash-lite"
-    )
+    # model defaults to the 'bulk' role in scripts/lib/gemini-models.json
+    processor = GeminiBatchProcessor(bucket_name="my-batch-bucket")
 
     results = processor.run_pipeline(
         input_dir="./documents",
@@ -21,6 +19,7 @@ from __future__ import annotations
 
 import os
 import json
+import sys
 import time
 import hashlib
 import re
@@ -31,6 +30,9 @@ from typing import Iterator, Optional
 import google.generativeai as genai
 from google.cloud import storage
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts" / "lib"))
+from gemini_models import resolve_model
+
 
 class GeminiBatchProcessor:
     """End-to-end batch processing for documents."""
@@ -38,18 +40,18 @@ class GeminiBatchProcessor:
     def __init__(
         self,
         bucket_name: str,
-        model: str = "gemini-2.0-flash-lite",
+        model: str = None,
         api_key: str = None
     ):
         """Initialize processor.
 
         Args:
             bucket_name: GCS bucket in us-central1
-            model: Gemini model to use
+            model: Gemini model override; None resolves the 'bulk' role
             api_key: Google API key (or set GOOGLE_API_KEY env var)
         """
         self.bucket_name = bucket_name
-        self.model = model
+        self.model = resolve_model("bulk", model)
 
         # Configure API
         api_key = api_key or os.environ.get("GOOGLE_API_KEY")
@@ -160,7 +162,9 @@ class GeminiBatchProcessor:
                 }
             },
             "metadata": {
-                "request_id": request_id
+                "request_id": request_id,
+                # Stamp the resolved model so a result is traceable to what produced it.
+                "model": self.model
             }
         }
 
@@ -455,6 +459,7 @@ class GeminiBatchProcessor:
 
         return {
             "job_name": job.name,
+            "model": self.model,
             "status": "completed",
             "files_count": len(files),
             "success_count": success_count,
@@ -464,10 +469,7 @@ class GeminiBatchProcessor:
 
 # Example usage
 if __name__ == "__main__":
-    processor = GeminiBatchProcessor(
-        bucket_name="my-batch-bucket",
-        model="gemini-2.0-flash-lite"
-    )
+    processor = GeminiBatchProcessor(bucket_name="my-batch-bucket")
 
     prompt = """
     Extract the following information from this document as JSON:

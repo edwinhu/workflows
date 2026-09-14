@@ -13,10 +13,14 @@ Based on real-world icon matching use case.
 
 import os
 import json
+import sys
 import time
 from pathlib import Path
 from google.cloud import storage
 import google.generativeai as genai
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts" / "lib"))
+from gemini_models import resolve_model
 
 
 def upload_images_to_gcs(
@@ -122,7 +126,7 @@ def submit_vertex_batch_job(
     jsonl_path: str,
     bucket_name: str,
     project_id: str,
-    model: str = "gemini-2.5-flash-lite"
+    model: str | None = None
 ) -> genai.types.BatchJob:
     """Submit batch job via Vertex AI.
 
@@ -130,11 +134,14 @@ def submit_vertex_batch_job(
         jsonl_path: Local JSONL file path
         bucket_name: GCS bucket name
         project_id: GCP project ID
-        model: Gemini model name
+        model: Gemini model override; None resolves the 'bulk' role — icon
+            classification is cheap high-volume work, not dense-document reading
 
     Returns:
         BatchJob object
     """
+    model = resolve_model("bulk", model)
+
     # CRITICAL: vertexai=True requires ADC (gcloud auth application-default login)
     client = genai.Client(
         vertexai=True,
@@ -310,7 +317,7 @@ def main():
     BUCKET_NAME = "your-batch-bucket"  # Must be in us-central1
     PROJECT_ID = "your-project-id"
     LOCAL_ICONS_DIR = "./icons"
-    MODEL = "gemini-2.5-flash-lite"
+    MODEL = resolve_model("bulk")
 
     # Vision analysis prompt
     PROMPT = """
@@ -374,7 +381,8 @@ def main():
     # Save results
     output_path = "./icon_analysis_results.json"
     with open(output_path, 'w') as f:
-        json.dump(all_results, f, indent=2)
+        # Stamp the resolved model so a result is traceable to what produced it.
+        json.dump({"model": MODEL, "results": all_results}, f, indent=2)
     print(f"\nResults saved to: {output_path}")
 
     # Show sample

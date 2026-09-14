@@ -12,15 +12,19 @@ Usage:
 """
 
 import os
+import sys
 from pathlib import Path
 
 # Import from local module or install as package
 from batch_processor import GeminiBatchProcessor
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts" / "lib"))
+from gemini_models import resolve_model
+
 # Configuration
 CONFIG = {
     "bucket": "your-bucket-name",
-    "model": "gemini-2.0-flash-lite",
+    "model": resolve_model("bulk"),
     "input_dir": "./data/input",
     "output_dir": "./data/output",
 }
