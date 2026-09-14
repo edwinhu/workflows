@@ -1,6 +1,6 @@
 # The Fixture Draft
 
-This reform stands as a testament to careful planning, and disclosure plays a vital role in it.
+This reform stands as a testament to careful planning, and the exception is nestled in the schedule.
 
 The record is a rich tapestry of incentives that the committee never untangled.
 
@@ -12,7 +12,7 @@ The staff cited the release citeturn0search0 and again at :contentReference[oaic
 
 The court recognised the harm and analysed the behaviour of the parties.[^fn]
 
-The underpinning of the rule is that the trustee acted pursuant to the agreement.
+The underpinning of the rule is that the trustee acted in order to honour the agreement.
 
 Sentence with a footnote that must never be scored.^[This is a rich tapestry of citations [@smith2019].]
 

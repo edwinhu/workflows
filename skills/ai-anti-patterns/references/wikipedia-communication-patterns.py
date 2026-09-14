@@ -51,7 +51,10 @@ _HARD_PATTERNS = [
 
 _SOFT_PATTERNS = [
     # Collaborative communication
-    (r'^\s*(Certainly|Of\s+course|Absolutely|Sure)[!,.]', "chatbot opener: 'Certainly!'"),
+    # `Of course` dropped from the alternation: tics.yaml rejects the caveat opener at 5,531 hits /
+    # 386.94/M, and writing-general/SKILL.md vindicates it by name as the commonest such opener in
+    # the corpus (523.7/M law, 299.9/M finance). It is where a caveat naturally goes.
+    (r'^\s*(Certainly|Absolutely|Sure)[!,.]', "chatbot opener: 'Certainly!'"),
     (r"\bYou'?re\s+absolutely\s+right\b", "chatbot agreement: 'You're absolutely right'"),
     (r'\bhere\s+is\s+a\s+(detailed?|comprehensive|brief|quick)\b', "chatbot framing: 'here is a detailed'"),
     (r'\bmore\s+detailed?\s+breakdown\b', "chatbot offer: 'more detailed breakdown'"),

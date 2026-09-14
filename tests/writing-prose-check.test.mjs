@@ -215,7 +215,11 @@ const DECK_BODY =
     '\n' +
     'The organisation of the statute --- its structure, its defaults --- is what the court reads.\n' +
     '\n' +
-    'Records were reviewed by the committee before the vote was taken.\n')
+    // The writing-* trigger, and the only reason the deck assertions below are not vacuous. It was
+    // a passive construction until the Strunk passive pattern was deleted as refuted by the corpus
+    // (7.91% law vs 8.55% finance — not a register marker); `the fact that` is S&W Rule 13 and
+    // still ships.
+    'The committee noted the fact that records were kept before the vote.\n')
   const ctx = runHook({ tool_name: 'Write', tool_input: { file_path: letter } }, d)
   ok('a non-deck .typ still reports the em-dash system', ctx.includes('em_dash'), JSON.stringify(ctx))
   ok('a non-deck .typ still reports the writing-* systems', ctx.includes('writing-'), JSON.stringify(ctx))

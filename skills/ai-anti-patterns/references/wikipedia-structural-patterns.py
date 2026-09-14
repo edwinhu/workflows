@@ -41,7 +41,9 @@ _STRUCTURAL_PATTERNS = [
      "structure: 'Despite X, Y' concessive opener — AI paragraph formula; lead with the point"),
     # [ex-ai-smell] Filler transitions at the left margin. Volokh prefers these cut; law review
     # prose uses them legitimately, which is why the whole module is SEVERITY = soft.
-    (r'^(Furthermore|Moreover|Additionally|In\s+addition|That\s+said|With\s+that\s+said)[,:]',
+    # `That said,` dropped from the alternation: tics.yaml rejects it at 24.70/M. The surviving
+    # four carry no `rejected:` entry.
+    (r'^(Furthermore|Moreover|Additionally|In\s+addition|With\s+that\s+said)[,:]',
      "structure: filler transition opener ('Furthermore,' / 'Moreover,' / 'Additionally,') — cut it or name the actual connection"),
     # Negative parallelism / antithesis flourishes — match BOTH contracted
     # ('it's') and uncontracted ('it is') forms. The uncontracted variant is
@@ -133,7 +135,9 @@ _STRUCTURAL_PATTERNS = [
     (r'\bhave\s+been\s+described\s+as\b',
      "structure: passive vague attribution 'have been described as' — by whom?"),
     # AI conversation openers that bleed into prose
-    (r'^\s*(Certainly|Of\s+course|Absolutely|Definitely)[!,.]',
+    # `Of course` dropped here too — same rejection (tics.yaml, 386.94/M). See the sibling entry in
+    # wikipedia-communication-patterns.py, which encodes the same rule with a different alternation.
+    (r'^\s*(Certainly|Absolutely|Definitely)[!,.]',
      "structure: chatbot opener at start of paragraph"),
     # Imperative scene-setting opener — the LLM-default way to introduce an
     # example ("Consider the X", "Take the X", "Picture this", "Imagine…").

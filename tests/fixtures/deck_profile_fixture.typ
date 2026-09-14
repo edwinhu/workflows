@@ -6,5 +6,5 @@
 
   - The organisation of the statute --- its structure, its defaults, and its carve-outs --- is what the court reads.
 
-  - Records were reviewed by the committee before the vote was taken.
+  - The committee noted the fact that records were kept before the vote.
 ]

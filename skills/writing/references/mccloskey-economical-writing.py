@@ -23,14 +23,16 @@ _VAGUE_NOUNS = [
     (r'\b\w+\s+process\b', "McCloskey: 'X process' — delete 'process' (e.g., 'transition process' → 'transition')"),
     (r'\bthe\s+structure\s+of\b', "McCloskey: 'the structure of' — often meaningless; be specific"),
     (r'\bindividuals\b', "McCloskey: 'individuals' → 'people'"),
-    (r'\bagents\b(?!\s+(of|for|in\s+(the|a)\s+agency))',
-     "McCloskey: 'agents' (as generic people) → 'people'"),
+    # `agents` DELETED. writing-econ/SKILL.md:87 drops it under `### Dropped`: 1,728/M in the
+    # finance corpus, where it names the modelled decision-maker — `people` is a different claim,
+    # so the rule rewrote the model rather than the prose. This table is bound to --style econ.
 ]
 
 # Pretentious verbs
 _PRETENTIOUS_VERBS = [
     (r'\bimplement\b', "McCloskey: 'implement' — Washingtonese; use 'carry out', 'apply', 'do'"),
-    (r'\bhypothesize\b', "McCloskey: 'hypothesize' — barbarian jargon; use 'suppose' or 'expect'"),
+    # `hypothesize` DELETED. writing-econ/SKILL.md:88 drops it: 683/M in finance, naming a specific
+    # move in an empirical paper with no plain-English synonym that keeps the meaning.
     (r'\bfinalize\b', "McCloskey: 'finalize' — boardroom talk; use 'finish' or 'complete'"),
     (r'\bcomprises?\b', "McCloskey: 'comprise' — fancy talk; use 'includes' or 'consists of'"),
     (r'\btry\s+and\b', "McCloskey: 'try and' → 'try to'"),

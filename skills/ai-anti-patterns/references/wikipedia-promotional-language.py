@@ -48,8 +48,9 @@ _PROMOTIONAL_PATTERNS = [
     # sentences of human law + finance prose.
     (r'\bnestled\b', "promotional: 'nestled'"),
     (r'\bin\s+the\s+heart\s+of\b', "promotional: 'in the heart of'"),
-    (r'\b(it\s*\'?s?|it\s+is)\s+important\s+to\s+(note|remember|consider|acknowledge)\b',
-     "promotional/AI marker: 'it is important to note'"),
+    # `it is important to note` DELETED — tics.yaml rejects it at 247 hits / 44.42/M in 14.3M
+    # sentences of human law and finance scholarship. It was encoded twice (here and in
+    # volokh-distilled.py:91); both are gone.
     (r'\bmay\s+vary\s+(depending|based)\b', "promotional: generic hedge 'may vary'"),
     (r'\bthriving\s+(community|hub|center|ecosystem)\b', "promotional: 'thriving community'"),
     (r'\bdynamic\s+(hub|community|center|landscape|environment)\b', "promotional: 'dynamic hub'"),
