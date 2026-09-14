@@ -26,7 +26,9 @@ EZproxy first). Cookies needed at each hop:
 The Third Iron public discovery API requires a static API key the user
 doesn't have, so use the Chrome/CDP path:
 
-1. Make sure Chrome is running with CDP on port 9250.
+1. Make sure a browser is running with CDP on :9250 (automation profile) or
+   :9222 (everyday browser).  `resolve_pdf.py` takes the first reachable of
+   `--cdp-port`, `$PAPERPILE_CDP_PORT`, 9250, 9222.
 2. Navigate to: `https://search.lib.virginia.edu/?q=any+search`
 3. Open any article result. The "View full text" button (LibKey) has an href
    like `https://libkey.io/libraries/NNNN/openurl?...`.
@@ -78,18 +80,18 @@ Confirmed unwhitelisted (2026-04):
 - **SSRN** (`10.2139/ssrn.*`) — no proxy needed; route SSRN-direct instead
 
 The resolver detects this page via the `proxy1.library.virginia.edu/menu` URL
-marker in `_dia_fetch_pdf` and fails fast so the chain falls through to:
+marker in `_browser_fetch_pdf` and fails fast so the chain falls through to:
 
-1. **OpenAthens / publisher SSO** (`resolve_openathens`) — navigate Dia
+1. **OpenAthens / publisher SSO** (`resolve_openathens`) — navigate the browser
    straight to `https://doi.org/<doi>`. Most major publishers (Elsevier,
    Wiley, Springer, OUP, Taylor & Francis, Cambridge) support
    institutional SSO directly on the landing page; cached UVA
    NetBadge / cert-keychain ACL credentials are picked up silently.
 2. **Virgo article search** (`resolve_virgo`) — for no-DOI sources (older
-   law reviews not in CrossRef), drive Dia to UVA's article-search results
+   law reviews not in CrossRef), drive the browser to UVA's article-search results
    and let the publisher PDF detector find a direct link from there.
 
-Pre-requisite for OpenAthens-direct: the user's keychain ACL must let Dia
+Pre-requisite for OpenAthens-direct: the browser's certificate store must let it
 present the institutional client cert without prompting (otherwise SSO
 falls back to the regular NetBadge web flow).
 
@@ -102,7 +104,7 @@ Direct PDF download: `https://papers.ssrn.com/sol3/Delivery.cfm/{id}.pdf?abstrac
 
 SSRN does NOT require auth for most papers (publishing authors waive paywall),
 but rate-limits aggressive scraping. Including a session cookie from a logged-in
-SSRN session in Dia is recommended:
+SSRN session in the browser is recommended:
 
 - Domain: `papers.ssrn.com` and `ssrn.com`
 - Cookies: `JSESSIONID`, `SSRN_*` — the script picks these up via `scholar`'s
@@ -118,7 +120,7 @@ Verified 2026-04-24 against `proxy.library.virginia.edu`:
 - The proxy appears to require the EZproxy JS challenge cookie (`ezproxy`)
   to even respond to `/login`. That cookie is set by client-side JS the
   first time a real browser hits the host.
-- Workaround: drive Dia via `mcp__chrome-devtools__navigate_page` to the
+- Workaround: drive the browser via `mcp__chrome-devtools__navigate_page` to the
   EZproxy URL, let the browser handle the JS challenge + NetBadge SSO, then
   use `mcp__chrome-devtools__evaluate_script` to read the final PDF blob (or
   let the browser save it and `mv` from `~/Downloads/`).
@@ -142,7 +144,7 @@ inside the resolver's HTTP layer; it needs a browser-driven hop.
   rate-limited per IP.
 
 If a fetch fails with `paywall page` or `HTTP 302 → login`, the answer is
-almost always: re-open Dia, log in to NetBadge / NYU, then re-run.
+almost always: re-open the browser, log in to NetBadge / NYU, then re-run.
 
 ## Configuration (edit these)
 
@@ -156,20 +158,17 @@ default_output_dir = /tmp/paperpile-resolve
 
 ## Session-persistence stack
 
-Three pieces keep the institutional session warm across Dia restarts and the
-30-min EZproxy idle timeout:
+Three pieces keep the institutional session warm across browser restarts and
+the 30-min EZproxy idle timeout:
 
-1. **launchd KeepAlive for Chrome CDP** — dedicated Chrome instance at `~/.config/chrome-cdp`
-   with `--remote-debugging-port=9250 --remote-allow-origins=*`
-   if it exits. The plist is *not* auto-bootstrapped; explicit boot:
-
-   ```bash
-   launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.dia.cdp.plist
-   # Unload:
-   launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.dia.cdp.plist
-   ```
-
-   Logs: `/tmp/dia-cdp.out.log`, `/tmp/dia-cdp.err.log`.
+1. **A browser on CDP** — the dedicated automation profile at
+   `~/.config/chrome-cdp` launched with
+   `--remote-debugging-port=9250 --remote-allow-origins=*`, kept alive by a
+   supervisor (launchd/systemd user unit). This is why **9250** is tried first.
+   When that profile is not running, the everyday browser on **9222** is tried
+   next — and it is usually the one actually logged into NetBadge, so a
+   resolution that fails on 9250 often succeeds with `--cdp-port 9222`.
+   `$PAPERPILE_CDP_PORT` sets a per-shell default; `--cdp-port` beats it.
 
 2. **Warmup cron** — `scripts/warmup.sh` runs `resolve_pdf.py --login-only`
    every 25 min via user crontab to defeat the 30-min UVA NetBadge idle
@@ -185,7 +184,7 @@ Three pieces keep the institutional session warm across Dia restarts and the
    `/tmp/librarian-warmup.log`.
 
 3. **Cookie hydration on startup** — `resolve_pdf.py` calls
-   `hydrate_cookies()` early in `main()` (when `--via-dia` is set) to push
+   `hydrate_cookies()` early in `main()` (when `--via-browser` is set) to push
    snapshotted cookies from `~/.claude-work/skills/paperpile/cookies/`
-   back into Dia via `Network.setCookies`, so a fresh Dia restart can reuse
+   back into the browser via `Network.setCookies`, so a fresh browser restart can reuse
    the prior session without re-driving NetBadge SSO.

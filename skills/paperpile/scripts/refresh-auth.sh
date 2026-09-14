@@ -2,9 +2,10 @@
 # Refresh `paperpile` CLI auth by pulling cookies from the logged-in browser
 # over CDP — no manual Cookie-Editor export needed.
 #
-# Usage: refresh-auth-from-dia.sh [CDP_PORT]   (default 9222)
-# Prereq: the browser is on CDP (port 9222) and logged into Paperpile.
-#         macOS: Dia. Linux: Chromium. Same port either way.
+# Usage: refresh-auth.sh [CDP_PORT]
+#        Port order: the argument, then $PAPERPILE_CDP_PORT, then 9222 (the
+#        everyday browser, which is normally the one logged into Paperpile).
+# Prereq: the browser is on that CDP port and logged into Paperpile.
 #
 # Flips the path of least resistance: when `paperpile auth` fails, this is the
 # one command to run — there is never a reason to drive the Paperpile web UI.
@@ -21,11 +22,11 @@
 # so it cannot wedge and needs no particular tab open.
 set -euo pipefail
 
-PORT="${1:-9222}"
+PORT="${1:-${PAPERPILE_CDP_PORT:-9222}}"
 BASE="http://localhost:${PORT}"
 
 if ! curl -sf --connect-timeout 2 "${BASE}/json/version" >/dev/null; then
-  echo "error: no CDP browser on :${PORT} (Dia on macOS, Chromium on Linux)." >&2
+  echo "error: no CDP browser on :${PORT} (9250 = automation profile, 9222 = everyday browser)." >&2
   echo "       Bring it up (browser-automation skill) and retry." >&2
   exit 1
 fi
