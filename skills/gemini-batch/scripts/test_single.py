@@ -16,21 +16,27 @@ Example:
 
 import os
 import sys
+from pathlib import Path
 
 import google.generativeai as genai
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts" / "lib"))
+from gemini_models import resolve_model
 
-def test_single_request(gcs_uri: str, prompt: str, model: str = "gemini-2.0-flash-lite") -> str:
+
+def test_single_request(gcs_uri: str, prompt: str, model: str | None = None) -> str:
     """Test extraction on single file before batch.
 
     Args:
         gcs_uri: GCS URI of document (gs://bucket/path/file.pdf)
         prompt: Extraction prompt
-        model: Model to use
+        model: Model override; None resolves the 'bulk' role — this probe must run on the
+            SAME model the batch will use, or it validates nothing.
 
     Returns:
         Response text from model
     """
+    model = resolve_model("bulk", model)
     api_key = os.environ.get("GOOGLE_API_KEY")
     if not api_key:
         raise ValueError("GOOGLE_API_KEY environment variable not set")
@@ -71,7 +77,7 @@ def main():
 
     gcs_uri = sys.argv[1]
     prompt = sys.argv[2]
-    model = sys.argv[3] if len(sys.argv) > 3 else "gemini-2.0-flash-lite"
+    model = sys.argv[3] if len(sys.argv) > 3 else None
 
     if not gcs_uri.startswith("gs://"):
         print(f"Error: URI must start with 'gs://' (got: {gcs_uri})")

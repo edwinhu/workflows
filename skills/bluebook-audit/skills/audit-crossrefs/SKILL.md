@@ -96,7 +96,7 @@ uv run --with lxml --with google-genai --with google-cloud-storage python3 \
   --docx <path> --grep --batch --apply --location global
 
 # LLM-only paths (skip grep — coverage-risky for --gemini):
-uv run … --docx <path> --batch --model gemini-3.1-flash-lite-preview --apply
+uv run … --docx <path> --batch --apply   # --model overrides the resolved role
 uv run … --docx <path> --gemini --apply
 ```
 
@@ -128,7 +128,7 @@ uv run --with lxml --with google-genai --with google-cloud-storage python3 \
   --docx <path> --out references/sources.bib
 ```
 
-Walks the docx footnotes, splits multi-cite footnotes on `;`, sends each first-cite candidate to a Vertex AI Batch job (one independent request per citation; `gemini-3.1-flash-lite-preview` default). Emits BibTeX entries with bibkey conventions `firstauthorlastYEAR` for academic works and short slugs (`gao2017`, `crs2024`, `secReg2020`) for institutional sources.
+Walks the docx footnotes, splits multi-cite footnotes on `;`, sends each first-cite candidate to a Vertex AI Batch job (one independent request per citation; the `bulk` role by default). Emits BibTeX entries with bibkey conventions `firstauthorlastYEAR` for academic works and short slugs (`gao2017`, `crs2024`, `secReg2020`) for institutional sources.
 
 Each entry includes `note = {fnN}` linking back to the source footnote.
 

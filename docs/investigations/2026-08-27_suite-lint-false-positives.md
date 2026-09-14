@@ -237,7 +237,7 @@ Three mechanisms, and the first is an extraction defect rather than a rule-desig
 and is reported as the key `PASS` with the value `'FAIL'`. There is no such key. The same misparse
 produces the `PASS: 'FAIL'` findings at `skills/craft/scripts/craft-dispatch-loops.test.ts:40`,
 `skills/craft/scripts/craft-loop.test.ts:31` and `skills/craft/scripts/craft-result.test.ts:654`, and
-the `ACTIVE: "PROCESSING"` finding at `skills/cite-check/tests/gemini.test.ts:103`
+the `ACTIVE: "PROCESSING"` finding at `skills/cite-check/tests/gemini.test.ts:109`
 (`state: getCalls >= 2 ? "ACTIVE" : "PROCESSING"`) together with its three `scratch/` copies. The
 gemini case is doubly wrong: that line exists precisely to vary the state across polls.
 

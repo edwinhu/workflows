@@ -29,6 +29,7 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { isAbsolute, dirname, join, resolve } from "node:path";
+import { resolveModel } from "../../scripts/lib/gemini-models.ts";
 import {
   uploadCitedFiles,
   parseBibFile,
@@ -41,6 +42,7 @@ import {
   syncStore,
   queryCitationFileSearch,
   submitBatchFileSearch,
+  DEFAULT_MODEL,
   type Status,
   type BibEntry,
   type FileRef,
@@ -284,6 +286,8 @@ function renderReport(
     fileCount: number;
     citationCount: number;
     draftsDir: string;
+    model: string;
+    retryModel: string;
   },
 ): string {
   const counts: Record<Status, number> = {
@@ -307,6 +311,9 @@ function renderReport(
   lines.push("# Citation Review");
   lines.push("");
   lines.push(`Generated: ${new Date().toISOString()}`);
+  // Stamp the resolved models: a finding below is only traceable if the report says
+  // which model produced it.
+  lines.push(`Model: ${meta.model} (retry: ${meta.retryModel})`);
   lines.push(
     `Drafts scanned: ${meta.fileCount} files, ${meta.citationCount} citations`,
   );
@@ -391,9 +398,11 @@ export async function cmdCiteCheck(
   );
   const dryRun = !!flags["dry-run"];
   const debug = !!flags.debug;
-  const retryModel = typeof flags["retry-model"] === "string"
-    ? flags["retry-model"]
-    : "gemini-3.1-pro-preview";
+  // The retry leg escalates an UNSUPPORTED verdict, so it takes the 'pro' role.
+  const retryModel = resolveModel(
+    "pro",
+    typeof flags["retry-model"] === "string" ? flags["retry-model"] : undefined,
+  );
   const limit = (() => {
     const v = flags.limit;
     if (typeof v === "string") {
@@ -920,6 +929,8 @@ export async function cmdCiteCheck(
     fileCount: files.length,
     citationCount: allCites.length,
     draftsDir,
+    model: DEFAULT_MODEL,
+    retryModel,
   });
 
   try {

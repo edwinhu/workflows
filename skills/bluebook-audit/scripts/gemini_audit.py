@@ -14,12 +14,16 @@ import argparse
 import asyncio
 import json
 import os
+import sys
 import zipfile
 from pathlib import Path
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from lxml import etree
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts" / "lib"))
+from gemini_models import resolve_model
 
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 
@@ -182,7 +186,10 @@ async def audit_footnote(api_key, model, fn_num, formatted_text, semaphore):
 
     if "error" in result:
         print(f"  ERROR FN {fn_num}: {result['error']}")
-        return {"fn_num": fn_num, "issues": [], "severity": "error", "error": result["error"]}
+        return {"fn_num": fn_num, "issues": [], "severity": "error", "error": result["error"],
+                "model": model}
+    # Stamp the model on every record so a finding is traceable to what produced it.
+    result["model"] = model
     return result
 
 
@@ -192,7 +199,8 @@ async def main():
     parser.add_argument("--output", help="Output JSON path (default: scratch/gemini_audit.json)")
     parser.add_argument("--subset", help="Comma-separated footnote IDs to audit (default: all)")
     parser.add_argument("--concurrency", type=int, default=10, help="Max concurrent Gemini calls")
-    parser.add_argument("--model", default="gemini-2.5-flash", help="Gemini model name")
+    parser.add_argument("--model", default=None,
+                        help="Gemini model override. Default: the 'judgment' role — see scripts/lib/gemini-models.json")
     parser.add_argument("--extract-only", action="store_true", help="Only extract formatted footnotes as JSON (skip Gemini audit)")
     args = parser.parse_args()
 
@@ -232,12 +240,13 @@ async def main():
     print(f"\nSample FN {sample_fn}:")
     print(f"  {footnotes[sample_fn][:200]}")
 
-    print(f"\nAuditing {len(footnotes)} footnotes via Gemini ({args.model})...")
+    model = resolve_model("judgment", args.model)
+    print(f"\nAuditing {len(footnotes)} footnotes via Gemini ({model})...")
     semaphore = asyncio.Semaphore(args.concurrency)
 
     tasks = []
     for fn_num, text in sorted(footnotes.items()):
-        tasks.append(audit_footnote(api_key, args.model, fn_num, text, semaphore))
+        tasks.append(audit_footnote(api_key, model, fn_num, text, semaphore))
 
     results = await asyncio.gather(*tasks)
 

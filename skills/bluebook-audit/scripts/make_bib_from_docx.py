@@ -20,7 +20,7 @@ Conventions (matches writing-setup SKILL):
     • Institutional bibkeys: gao<year>, crs<year>, secReg<year>, etc.
     • Entry types: @article, @book, @incollection, @misc (cases/statutes/
       regulations/news/letters/hearings), @unpublished (NBER/SSRN/ECGI)
-    • Model default: gemini-3.1-flash-lite-preview (cheapest & fastest)
+    • Model: the 'bulk' role from scripts/lib/gemini-models.json (--model overrides)
     • Location: us-central1 (Vertex Batch requirement)
 
 Requires:
@@ -34,12 +34,15 @@ import argparse
 import io
 import json
 import re
+import sys
 import time
 import zipfile
 from pathlib import Path
 
 from lxml import etree
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / 'scripts' / 'lib'))
+from gemini_models import resolve_model
 
 W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
 
@@ -175,8 +178,13 @@ SCHEMA = {
 }
 
 
-def submit_batch(cites: list[dict], project: str, bucket: str, location: str, model: str, out_dir: Path) -> list[dict]:
-    """Build JSONL, upload to GCS, submit Vertex Batch, poll, download, parse."""
+def submit_batch(cites: list[dict], project: str, bucket: str, location: str, model: str | None, out_dir: Path) -> list[dict]:
+    """Build JSONL, upload to GCS, submit Vertex Batch, poll, download, parse.
+
+    `model` is an override; when None the 'bulk' role is resolved (one cheap batch
+    request per citation).
+    """
+    model = resolve_model('bulk', model)
     from google import genai
     from google.cloud import storage
 
@@ -262,7 +270,7 @@ def _sanitize_bibkey(k: str) -> str:
     return out or 'entry'
 
 
-def render_bib(records: list[dict]) -> str:
+def render_bib(records: list[dict], model: str) -> str:
     seen: set[str] = set()
     out: list[str] = []
     for r in records:
@@ -301,6 +309,7 @@ def render_bib(records: list[dict]) -> str:
 
     header = (
         "% Auto-extracted from docx footnotes via Gemini Vertex Batch.\n"
+        f"% model = {model}\n"
         "% Each entry's `note = {fnN}` field points back to the source footnote.\n"
         "% This file is the canonical bibliography — edit in place; do not regenerate.\n\n"
     )
@@ -316,8 +325,8 @@ def main():
     ap.add_argument('--project', default='activist-defense-nal')
     ap.add_argument('--bucket', default='nal-batch-extraction')
     ap.add_argument('--location', default='us-central1')
-    ap.add_argument('--model', default='gemini-3.1-flash-lite-preview',
-                    help="Default: latest flash-lite preview (cheapest, fast).")
+    ap.add_argument('--model', default=None,
+                    help="Gemini model override. Default: the 'bulk' role — see scripts/lib/gemini-models.json")
     ap.add_argument('--scratch-dir', default=None,
                     help="Where to write JSONL + predictions (default: <docx-dir>/scratch).")
     ap.add_argument('--bio-count', type=int, default=3,
@@ -355,11 +364,12 @@ def main():
         return
 
     scratch = Path(args.scratch_dir) if args.scratch_dir else (Path(args.docx).parent / 'scratch')
-    records = submit_batch(cites, args.project, args.bucket, args.location, args.model, scratch)
-    print(f"\nExtracted {len(records)} bib records from {len(cites)} candidates")
+    model = resolve_model('bulk', args.model)
+    records = submit_batch(cites, args.project, args.bucket, args.location, model, scratch)
+    print(f"\nExtracted {len(records)} bib records from {len(cites)} candidates (model={model})")
 
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
-    Path(args.out).write_text(render_bib(records))
+    Path(args.out).write_text(render_bib(records, model))
     print(f"Wrote {args.out}")
 
 

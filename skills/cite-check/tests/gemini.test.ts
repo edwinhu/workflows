@@ -1,6 +1,8 @@
 import { describe, expect, it, afterEach } from "bun:test";
 import { join } from "node:path";
+import { resolveModel } from "../../../scripts/lib/gemini-models.ts";
 import {
+  DEFAULT_MODEL,
   __setGeminiClientForTesting,
   uploadFile,
   uploadCitedFiles,
@@ -36,6 +38,10 @@ import {
   type ManifestEntry,
   type StoreState,
 } from "../gemini";
+
+// The retry leg must resolve to something OTHER than DEFAULT_MODEL for the retry
+// assertions to mean anything; 'pro' is the role the CLI actually escalates to.
+const RETRY_MODEL = resolveModel("pro");
 
 afterEach(() => {
   __setGeminiClientForTesting(null);
@@ -695,7 +701,7 @@ describe("queryCitation", () => {
     expect(result.classification.status).toBe("ERROR");
   });
 
-  it("uses default model gemini-3.1-flash-lite-preview", async () => {
+  it("uses the resolved default model", async () => {
     const calls: any[] = [];
     const mockClient = {
       models: {
@@ -710,7 +716,7 @@ describe("queryCitation", () => {
     __setGeminiClientForTesting(mockClient as any);
 
     await queryCitation([], "test");
-    expect(calls[0].model).toBe("gemini-3.1-flash-lite-preview");
+    expect(calls[0].model).toBe(DEFAULT_MODEL);
   });
 
   it("works with empty fileRefs array", async () => {
@@ -775,11 +781,11 @@ describe("queryCitation", () => {
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    const result = await queryCitation([], "test", { retryModel: "gemini-2.5-flash" });
+    const result = await queryCitation([], "test", { retryModel: RETRY_MODEL });
 
     expect(calls.length).toBe(2);
-    expect(calls[0].model).toBe("gemini-3.1-flash-lite-preview"); // primary
-    expect(calls[1].model).toBe("gemini-2.5-flash"); // retry
+    expect(calls[0].model).toBe(DEFAULT_MODEL); // primary
+    expect(calls[1].model).toBe(RETRY_MODEL); // retry
     expect(result.classification.status).toBe("SUPPORTED");
     expect(result.classification.supporting_passage).toBe("found it");
   });
@@ -794,7 +800,7 @@ describe("queryCitation", () => {
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    const result = await queryCitation([], "test", { retryModel: "gemini-2.5-flash" });
+    const result = await queryCitation([], "test", { retryModel: RETRY_MODEL });
     expect(result.classification.status).toBe("UNSUPPORTED");
   });
 
@@ -830,7 +836,7 @@ describe("queryCitation", () => {
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    const result = await queryCitation([], "test", { retryModel: "gemini-2.5-flash" });
+    const result = await queryCitation([], "test", { retryModel: RETRY_MODEL });
     expect(callCount).toBe(1); // no retry for SUPPORTED
     expect(result.classification.status).toBe("SUPPORTED");
   });
@@ -1726,12 +1732,12 @@ describe("queryCitationFileSearch", () => {
       storeName: "fileSearchStores/store-retry",
       bibkeys: ["Hu2024-bm"],
       prompt: "test prompt",
-      retryModel: "gemini-2.5-flash",
+      retryModel: RETRY_MODEL,
     });
 
     expect(calls.length).toBe(2);
-    expect(calls[0].model).toBe("gemini-3.1-flash-lite-preview"); // primary default
-    expect(calls[1].model).toBe("gemini-2.5-flash"); // retry model
+    expect(calls[0].model).toBe(DEFAULT_MODEL); // primary default
+    expect(calls[1].model).toBe(RETRY_MODEL); // retry model
     expect(result.classification.status).toBe("SUPPORTED");
     expect(result.classification.supporting_passage).toBe("found it");
     expect(result.groundingChunks).toHaveLength(1);
@@ -2249,7 +2255,7 @@ describe("submitBatchFileSearch", () => {
         { key: "q2", bibkeys: ["B"], prompt: "claim 2" },
         { key: "q3", bibkeys: ["C"], prompt: "claim 3" },
       ],
-      { storeName: "fileSearchStores/store-retry-unsupported", retryModel: "gemini-2.5-pro" },
+      { storeName: "fileSearchStores/store-retry-unsupported", retryModel: RETRY_MODEL },
     );
 
     // q1: SUPPORTED from batch (no retry needed)
@@ -2269,8 +2275,8 @@ describe("submitBatchFileSearch", () => {
     // Only 2 retry calls (for q2 and q3, not q1)
     expect(generateCalls.length).toBe(2);
     // Retry calls should use the retry model
-    expect(generateCalls[0].model).toBe("gemini-2.5-pro");
-    expect(generateCalls[1].model).toBe("gemini-2.5-pro");
+    expect(generateCalls[0].model).toBe(RETRY_MODEL);
+    expect(generateCalls[1].model).toBe(RETRY_MODEL);
   });
 
   it("does not retry UNSUPPORTED when retryModel is not set", async () => {

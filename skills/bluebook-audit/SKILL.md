@@ -60,7 +60,7 @@ Skipping footnotes is NOT HELPFUL — missed errors go to publication and embarr
 
 **NEVER send plain text to Gemini for typeface auditing. Always include formatting markup.**
 
-Plain text produces 10-20x false positives because Gemini cannot see what is already italic/small caps/roman. Inline markup (`*italic*`, `[SC]small caps[/SC]`) reduces false positives from ~400 to ~20 for a 239-footnote document.
+Plain text produces 10-20x false positives because Gemini cannot see what is already italic/small caps/roman. Inline markup (`*italic*`, `[SC]small caps[/SC]`) reduces false positives from ~400 to ~20 for a 239-footnote document — measured on gemini-2.5-flash, so on the current `judgment` role it is an estimate, not a measurement.
 </EXTREMELY-IMPORTANT>
 
 <EXTREMELY-IMPORTANT>

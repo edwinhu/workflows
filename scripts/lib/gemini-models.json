@@ -1,0 +1,15 @@
+{
+  "_comment": "Single source of truth for Gemini model selection. Read by scripts/lib/gemini_models.py and scripts/lib/gemini-models.ts. Verified against https://ai.google.dev/gemini-api/docs/models.md.txt and the deprecations page on 2026-09-13.",
+  "roles": {
+    "bulk": "gemini-3.1-flash-lite",
+    "judgment": "gemini-3.1-flash-lite",
+    "pro": "gemini-3.1-pro-preview",
+    "vision": "gemini-3.7-flash"
+  },
+  "notes": {
+    "bulk": "Cheap high-volume batch / per-item work. gemini-3.1-flash-lite is stable; shutdown 2027-05-07.",
+    "judgment": "Reasoning where accuracy matters but volume is still per-item. Same id as bulk today; separate role so the two can diverge without a sweep.",
+    "pro": "The few sites that need a pro model. gemini-3.1-pro-preview has no announced shutdown date and is the current pro id.",
+    "vision": "Multimodal extraction from a single file (OCR, charts, tables, video). Kept on a full flash model because flash-lite regresses on dense-document reading."
+  }
+}

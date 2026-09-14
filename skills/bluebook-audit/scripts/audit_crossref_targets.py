@@ -40,6 +40,9 @@ from pathlib import Path
 
 from lxml import etree
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / 'scripts' / 'lib'))
+from gemini_models import resolve_model
+
 W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
 
 BM_PREFIX = r"_Ref_(?:corrfn|fn)\d+"
@@ -451,7 +454,7 @@ def gemini_batch_retarget(
     gcs_bucket: str,
     project: str,
     location: str = 'us-central1',
-    model: str = 'gemini-3.1-flash-lite-preview',
+    model: str | None = None,
     poll_interval: int = 30,
     timeout_sec: int = 3600,
 ) -> dict[tuple[int, str, str], int]:
@@ -461,7 +464,11 @@ def gemini_batch_retarget(
     reference gets its OWN prompt, so the model cannot skim a long batched
     context — coverage is guaranteed.
     Returns {(source_fn, surnames, bookmark): target_fn_id}.
+
+    `model` is an override; when None the 'bulk' role is resolved (one cheap
+    request per reference, thousands of them).
     """
+    model = resolve_model('bulk', model)
     try:
         from google import genai
         from google.cloud import storage
@@ -588,12 +595,16 @@ def gemini_batch_retarget(
     return out
 
 
-def gemini_retarget(suspicious: list[dict], fn_index: list[dict], model: str = 'gemini-3.1-flash-lite-preview') -> dict[tuple[int, str, str], int]:
+def gemini_retarget(suspicious: list[dict], fn_index: list[dict], model: str | None = None) -> dict[tuple[int, str, str], int]:
     """Ask Gemini for the correct target fn_id for each (source_fn, surnames, bookmark) triple.
 
     Returns {(source_fn, surnames_raw, bookmark): new_target_fn_id}.
     Uses a single batched call with structured JSON output.
+
+    `model` is an override; when None the 'judgment' role is resolved — this is the
+    accuracy-sensitive path over the small suspicious set, not the bulk sweep.
     """
+    model = resolve_model('judgment', model)
     try:
         from google import genai
         from google.genai import types
@@ -838,8 +849,9 @@ def main():
     ap.add_argument('--batch', action='store_true', help="Submit each reference as an independent Vertex AI Batch request — production-grade coverage")
     ap.add_argument('--apply', action='store_true', help="Re-point bookmarks in the DOCX (requires --gemini, --batch, or --remap)")
     ap.add_argument('--remap', default=None, help="JSON file with {bookmark: fn_id} to apply (skip Gemini)")
-    ap.add_argument('--model', default='gemini-3.1-flash-lite-preview',
-                    help="Gemini model. Default: latest flash-lite preview (cheapest, fast).")
+    ap.add_argument('--model', default=None,
+                    help="Gemini model override. Default: resolved per role "
+                         "('bulk' for --batch, 'judgment' for --gemini) — see scripts/lib/gemini-models.json.")
     ap.add_argument('--gcs-bucket', default=os.environ.get('GEMINI_BATCH_BUCKET', 'nal-batch-extraction'),
                     help="GCS bucket for --batch (default: nal-batch-extraction or $GEMINI_BATCH_BUCKET)")
     ap.add_argument('--project', default=os.environ.get('GOOGLE_CLOUD_PROJECT', 'activist-defense-nal'),
@@ -907,13 +919,14 @@ def main():
     elif args.batch and pool:
         fn_index = build_fn_index_for_gemini(fns)
         n_unique = len({(f.get('source','').replace('fn',''), f['surnames_raw'], f['bookmark']) for f in pool})
-        print(f"Submitting {n_unique} independent Vertex AI Batch requests (model={args.model})…")
+        resolved_model = resolve_model('bulk', args.model)
+        print(f"Submitting {n_unique} independent Vertex AI Batch requests (model={resolved_model})…")
         remap_llm = gemini_batch_retarget(
             pool, fn_index, out_dir,
             gcs_bucket=args.gcs_bucket,
             project=args.project,
             location=args.location,
-            model=args.model,
+            model=resolved_model,
         )
         # Merge grep_unique (high-trust) + LLM proposals (lower-trust)
         merged = type('RemapDict', (dict,), {})()
@@ -926,6 +939,7 @@ def main():
         merged._reasoning = getattr(remap_llm, '_reasoning', {})
         remap = merged
         (out_dir / 'crossref_remap.json').write_text(json.dumps({
+            'model': resolved_model,
             'remap': {json.dumps(list(k)): v for k, v in remap.items()},
             'confidence': {json.dumps(list(k)): c for k, c in merged._confidence.items()},
             'reasoning': {json.dumps(list(k)): r for k, r in merged._reasoning.items()},
@@ -933,8 +947,9 @@ def main():
     elif args.gemini and pool:
         fn_index = build_fn_index_for_gemini(fns)
         unique_triples = len({(f.get('source','').replace('fn',''), f['surnames_raw'], f['bookmark']) for f in pool})
-        print(f"Asking Gemini ({args.model}) about {unique_triples} unique (fn, surnames, bookmark) triples — single batched call…")
-        remap_llm = gemini_retarget(pool, fn_index, model=args.model)
+        resolved_model = resolve_model('judgment', args.model)
+        print(f"Asking Gemini ({resolved_model}) about {unique_triples} unique (fn, surnames, bookmark) triples — single batched call…")
+        remap_llm = gemini_retarget(pool, fn_index, model=resolved_model)
         merged = type('RemapDict', (dict,), {})()
         merged.update(grep_unique)
         for k, v in remap_llm.items():
@@ -944,6 +959,7 @@ def main():
         merged._confidence.update(getattr(remap_llm, '_confidence', {}))
         remap = merged
         (out_dir / 'crossref_remap.json').write_text(json.dumps({
+            'model': resolved_model,
             'remap': {json.dumps(list(k)): v for k, v in remap.items()},
             'confidence': {json.dumps(list(k)): c for k, c in merged._confidence.items()},
         }, indent=2))

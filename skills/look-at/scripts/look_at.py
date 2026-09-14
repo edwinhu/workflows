@@ -46,6 +46,9 @@ except ImportError:
     print("provision the inline PEP 723 dependencies automatically.", file=sys.stderr)
     sys.exit(1)
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts" / "lib"))
+from gemini_models import resolve_model
+
 
 def infer_mime_type(file_path: str) -> str:
     """Infer MIME type from file extension.
@@ -146,7 +149,7 @@ def _resolve_api_key() -> str | None:
 def analyze_file(
     file_path: str,
     goal: str,
-    model: str = "gemini-3.7-flash",
+    model: str | None = None,
     agentic: bool = False,
     verbose: bool = False
 ) -> str:
@@ -155,7 +158,7 @@ def analyze_file(
     Args:
         file_path: Path to the local file to analyze
         goal: Specific information to extract from the file
-        model: Gemini model to use (default: gemini-3.7-flash)
+        model: Gemini model override; None resolves the 'vision' role
         agentic: Enable code execution for better visual reasoning
         verbose: Whether to print debug information
 
@@ -174,6 +177,8 @@ def analyze_file(
             "GEMINI_API_KEY, or GEMINI_API_KEY_FILE"
         )
 
+    model = resolve_model("vision", model)
+
     file_path = os.path.abspath(file_path)
     if not os.path.exists(file_path):
         raise ValueError(f"File not found: {file_path}")
@@ -185,10 +190,13 @@ def analyze_file(
     # Infer MIME type
     mime_type = infer_mime_type(file_path)
 
+    # Stamp the resolved model unconditionally. stdout is the extraction itself and must stay
+    # parseable, so the provenance line goes to stderr — but it is never suppressed.
+    print(f"Model: {model}", file=sys.stderr)
+
     if verbose:
         print(f"Analyzing file: {file_path}", file=sys.stderr)
         print(f"MIME type: {mime_type}", file=sys.stderr)
-        print(f"Model: {model}", file=sys.stderr)
         print(f"Goal: {goal}", file=sys.stderr)
         print("-" * 50, file=sys.stderr)
 
@@ -218,7 +226,7 @@ If the requested information is not found, clearly state what is missing."""
 
     try:
         # thinking_level lives on ThinkingConfig, not GenerateContentConfig.
-        # "high" is the top level gemini-3.7-flash accepts (low/medium/high).
+        # "high" is the top level the flash line accepts (low/medium/high).
         config = types.GenerateContentConfig(
             thinking_config=types.ThinkingConfig(thinking_level="high"),
             tools=[types.Tool(code_execution=types.ToolCodeExecution())] if agentic else None,
@@ -281,8 +289,8 @@ Environment (checked in order):
 
     parser.add_argument(
         "--model", "-m",
-        default="gemini-3.7-flash",
-        help="Gemini model to use (default: gemini-3.7-flash)"
+        default=None,
+        help="Gemini model override (default: the 'vision' role in scripts/lib/gemini-models.json)"
     )
 
     parser.add_argument(

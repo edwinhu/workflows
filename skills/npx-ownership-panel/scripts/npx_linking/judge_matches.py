@@ -30,7 +30,7 @@ funds ISS did tag and re-matching them -- put the same bands 20 points higher
 are modern, well-formed, and 69% match exactly. Trust the judged numbers for the
 untagged population; the control flatters it.
 
-COST: $1.55 for 18,975 pairs on gemini-3.5-flash-lite batch (6.74M input +
+COST: $1.55 for 18,975 pairs on a flash-lite batch (6.74M input +
 0.43M output tokens). Judging everything is cheaper than reasoning about a
 sample.
 
@@ -48,7 +48,12 @@ import pathlib
 import sys
 from collections import defaultdict
 
-MODEL = "gemini-3.5-flash-lite"
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[4] / "scripts" / "lib"))
+from gemini_models import resolve_model
+
+#: A judge whose accuracy was gate-tested (8/8 on a mixed set) before any batch went out,
+#: so it takes the 'judgment' role even though the volume is bulk-shaped.
+MODEL = resolve_model("judgment")
 
 #: thinking_level MINIMAL is load-bearing: Gemini 3.x defaults to HIGH, and an
 #: unpinned batch returns empty content on MAX_TOKENS with no useful error.
@@ -132,14 +137,17 @@ def submit(out_dir: str) -> None:
             config={"display_name": f"npx-match-judge-{p.stem}"})
         jobs[p.name] = job.name
         print(f"{p.name} -> {job.name} [{job.state}]")
-    (pathlib.Path(out_dir) / "jobs.json").write_text(json.dumps(jobs, indent=2))
+    (pathlib.Path(out_dir) / "jobs.json").write_text(
+        json.dumps({"model": MODEL, "jobs": jobs}, indent=2))
 
 
 def collect(out_dir: str, pairs_csv: str) -> None:
     from google import genai
 
     client = genai.Client()
-    jobs = json.loads((pathlib.Path(out_dir) / "jobs.json").read_text())
+    manifest = json.loads((pathlib.Path(out_dir) / "jobs.json").read_text())
+    jobs = manifest["jobs"]
+    print(f"judged by {manifest['model']}")
     verdicts, bad = {}, 0
     for name in jobs.values():
         job = client.batches.get(name=name)
@@ -173,12 +181,13 @@ def collect(out_dir: str, pairs_csv: str) -> None:
     rej = pathlib.Path(out_dir) / "rejected.csv"
     with rej.open("w", newline="") as fh:
         w = csv.writer(fh)
-        w.writerow(["fundid", "iss_fundname", "sec_name", "score", "vote_rows"])
+        # `model` is stamped per row: a rejected link must be traceable to the judge.
+        w.writerow(["fundid", "iss_fundname", "sec_name", "score", "vote_rows", "model"])
         for k, v in verdicts.items():
             if v == "different" and k in pairs:
                 r = pairs[k]
                 w.writerow([k, r["iss_fundname"], r["sec_name"], r["score"],
-                            r["vote_rows"]])
+                            r["vote_rows"], manifest["model"]])
     print(f"wrote {rej} -- DROP these links from the crosswalk")
 
 
