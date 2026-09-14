@@ -19,10 +19,14 @@ If the CLI fails, it is almost always stale auth — refresh cookies (below), do
 
 - `paperpile` binary at `~/.local/bin/paperpile` (Bun-compiled from `~/projects/paperpile-cli`)
 - Valid auth cookies. If `paperpile auth` fails, **refresh them automatically** (no manual
-  Cookie-Editor export needed): `${CLAUDE_SKILL_DIR}/scripts/refresh-auth-from-dia.sh` pulls the
-  cookies from the logged-in browser over CDP (:9222 — Dia on macOS, Chromium on Linux),
-  imports them, and verifies.
-- For PDF resolution: Chrome running with CDP on port 9250 (dedicated instance at `~/.config/chrome-cdp`)
+  Cookie-Editor export needed): `${CLAUDE_SKILL_DIR}/scripts/refresh-auth.sh` pulls the
+  cookies from the logged-in browser over CDP (:9222 by default — the everyday browser,
+  Chromium on Linux), imports them, and verifies.
+- For PDF resolution: a browser on CDP. `resolve_pdf.py` takes the first REACHABLE port from,
+  in order, `--cdp-port`, `$PAPERPILE_CDP_PORT`, **:9250** (the dedicated automation profile at
+  `~/.config/chrome-cdp`) and **:9222** (the everyday browser). The everyday browser is often the
+  one actually logged in, so it is tried rather than assumed absent — pass `--cdp-port 9222` to
+  force it.
 
 ## Library Management
 
@@ -108,7 +112,7 @@ UCLA L. Rev., Yale J. on Reg., Yale L.J., Harv. L. Rev., Stan. L. Rev., Colum. L
 - **Law review citations** with volume+page+known journal handle skip CrossRef entirely (unreliable for HeinOnline-only journals) and construct metadata from parsed citation fields
 - **Paperpile's PDF crawler runs in the browser extension**, not server-side -- neither POST /api/library nor POST /api/sync triggers it. PDF resolution is always active (CDP or HTTP).
 - **Guru title search** works for finance/econ journals but returns 0 for law reviews (HeinOnline-only)
-- **Shibboleth cookies** (`shibidp.its.virginia.edu`) are now snapshotted -- EZproxy re-auth is transparent across Dia restarts
+- **Shibboleth cookies** (`shibidp.its.virginia.edu`) are now snapshotted -- EZproxy re-auth is transparent across browser restarts
 
 ## Edit Metadata
 
@@ -163,9 +167,39 @@ published (it regresses the journal/volume/page citation).
 | Need | Command |
 |------|---------|
 | Poll for PDF attachment | `${CLAUDE_SKILL_DIR}/scripts/poll_attachment.sh <item_id>` |
-| Warm up proxy session | `${CLAUDE_SKILL_DIR}/scripts/warmup.sh` |
+| Warm up proxy session | `${CLAUDE_SKILL_DIR}/scripts/warmup.sh [CDP_PORT]` |
+| Refresh Paperpile auth | `${CLAUDE_SKILL_DIR}/scripts/refresh-auth.sh [CDP_PORT]` |
+| Resolve a DOI to a PDF | `${CLAUDE_SKILL_DIR}/scripts/resolve_pdf.py --doi <DOI> --out <DIR> --via-browser` |
+| Fetch the PUBLISHED version, not the library copy | `${CLAUDE_SKILL_DIR}/scripts/resolve_pdf.py <BIBKEY> --skip-paperpile --via-browser` |
+
+`--skip-paperpile` bypasses BOTH Paperpile steps (`paperpile-api` and the synced `paperpile` dir)
+and goes straight to the institutional chain. Use it whenever the goal is the version of record:
+the library's own copy is often the SSRN preprint being replaced, and it short-circuits the chain
+before any publisher is tried.
+
+Both Paperpile steps are gated on a **title-similarity floor of 0.75** (`difflib.SequenceMatcher`
+over normalised lowercase titles) against the bib entry's title. A first-author collision on an
+unrelated paper logs `best match '<title>' scored <x> < 0.75` and falls through to the next
+resolver instead of returning a wrong-title PDF.
 
 `warmup.sh` auto-clicks the NetBadge cert login via CDP. Runs every 25 min via launchd (`com.paperpile.warmup.plist`).
+
+### CDP port
+
+`resolve_pdf.py` and `warmup.sh` both resolve the port at runtime, taking the first that answers
+`GET http://127.0.0.1:<port>/json/version`:
+
+1. `--cdp-port N` (resolve_pdf.py) or the first positional argument (warmup.sh)
+2. `$PAPERPILE_CDP_PORT`
+3. **9250** — the dedicated automation profile (`~/.config/chrome-cdp`)
+4. **9222** — the everyday browser
+
+Nothing is hardcoded to 9250 any more: when the automation profile is down, the everyday browser
+is used, and it is usually the one already logged into NetBadge and Paperpile. Failure messages
+name the ports actually tried.
+
+`--via-browser` is the flag that turns on CDP driving in `resolve_pdf.py`. `--via-dia` still works
+as a deprecated, hidden alias for old callers; do not write it in new commands.
 
 ## WRDS SOCKS Tunnel (preferred for PDF acquisition)
 
@@ -201,8 +235,8 @@ Paperpile (this skill) → cite-check (upload PDFs to Gemini)
 - Cache: `~/.claude-work/skills/paperpile/cache/paperpile-index.json`
 - Paperpile All Papers: `~/Library/CloudStorage/GoogleDrive-eddyhu@gmail.com/My Drive/resources/Paperpile/All Papers/`
 - Cookies expire (~30 days for Paperpile, ~8-12h for Shibboleth hard expiry). To refresh, run
-  `${CLAUDE_SKILL_DIR}/scripts/refresh-auth-from-dia.sh` — it extracts the live cookies from the
-  logged-in browser via CDP (:9222 — Dia on macOS, Chromium on Linux) and `paperpile auth import`s
+  `${CLAUDE_SKILL_DIR}/scripts/refresh-auth.sh` — it extracts the live cookies from the
+  logged-in browser via CDP (:9222 by default; pass a port argument to override) and `paperpile auth import`s
   them (no Cookie-Editor export). Requires being logged into Paperpile in that browser; if not, log
   in there first.
 
@@ -210,10 +244,10 @@ Paperpile (this skill) → cite-check (upload PDFs to Gemini)
 
 | Action | Why Wrong | Do Instead |
 |--------|-----------|------------|
-| About to drive the Paperpile **web app** (app.paperpile.com) via browser automation — CDP clicks, the Add → "Paste references" dialog, filling React forms | The `paperpile` CLI does every library op over HTTP. The web UI is slower and its React forms silently reject synthetic input (you'll wrestle a textarea that never registers). This is the #1 trap — reaching for the browser when a one-word CLI command exists. | Use the CLI (`paperpile add <doi\|url\|pdf>`). If it errors on auth, run `scripts/refresh-auth-from-dia.sh`, then retry. |
+| About to drive the Paperpile **web app** (app.paperpile.com) via browser automation — CDP clicks, the Add → "Paste references" dialog, filling React forms | The `paperpile` CLI does every library op over HTTP. The web UI is slower and its React forms silently reject synthetic input (you'll wrestle a textarea that never registers). This is the #1 trap — reaching for the browser when a one-word CLI command exists. | Use the CLI (`paperpile add <doi\|url\|pdf>`). If it errors on auth, run `scripts/refresh-auth.sh`, then retry. |
 | Using `--force` without user approval | Adds DOI stubs without metadata -- clutters library | Ask user before adding DOIs without Guru data. URLs and PDFs don't need `--force` |
 | Running `trash --confirm` without showing dry run | Destructive, cannot be undone | Run without `--confirm` first |
 | Skipping `paperpile index` before search | Stale results from cached index | Run `paperpile index --refresh` first |
 | Calling Paperpile API directly | Skips auth, cookies, error handling | Always use the CLI |
 | Using `curl` to fetch a DOI URL | Publisher returns HTML paywall, not PDF | Use `paperpile find-and-add --doi` |
-| Running find-and-add without Chrome on :9250 | CDP PDF fallbacks will fail | Check `curl -sf http://localhost:9250/json/version` first |
+| Running find-and-add with no browser on CDP | CDP PDF fallbacks will fail | Check both ports: `curl -sf http://127.0.0.1:9250/json/version \|\| curl -sf http://127.0.0.1:9222/json/version`. Either one is enough — the resolver takes the first that answers. |

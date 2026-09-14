@@ -110,7 +110,7 @@ proxied request lands on NetBadge SSO.
 This makes `find-and-add`'s HeinOnline path fail with a misleading error
 (`no TOC entry for page NNN`) that looks like a lookup problem and is actually
 an authentication problem. Installing the cert, or logging in interactively at
-:9250, is a USER action. The NYU route above sidesteps it entirely.
+:9250 (or :9222, whichever the resolver picks up), is a USER action. The NYU route above sidesteps it entirely.
 
 ## Key technical findings
 
@@ -122,7 +122,7 @@ an authentication problem. Installing the cert, or logging in interactively at
 - **JSTOR T&C uses `<terms-and-conditions-pharos-button>`** — a custom web component
   with shadow DOM; must click `shadowRoot.querySelector('button')`
 - **Headless Chrome is detected** by JSTOR (Access Check / reCAPTCHA) — use headed mode
-- **Dia ignores system SOCKS proxy** — must launch Chrome separately with `--proxy-server`
+- **The CDP browser ignores the system SOCKS proxy** — must launch Chrome separately with `--proxy-server`
 - **Only Penn/WRDS has IP-based publisher access** — both UVA (`128.143.x.x`) and
   NYU (`128.122.x.x` via rjds) require EZproxy/Shibboleth. Penn registers its
   entire IP range; most universities don't

@@ -7,25 +7,38 @@
 resolve_pdf.py — bib citation key → local PDF via institutional access.
 
 Usage:
-    resolve_pdf.py <BIBKEY> [--bib PATH] [--doi DOI] [--out DIR] [--via-dia] [--try-libkey]
-    resolve_pdf.py --doi <DOI> [--out DIR] [--via-dia]
+    resolve_pdf.py <BIBKEY> [--bib PATH] [--doi DOI] [--out DIR] [--via-browser] [--try-libkey]
+    resolve_pdf.py <BIBKEY> --skip-paperpile --via-browser     # published version of record
+    resolve_pdf.py --doi <DOI> [--out DIR] [--via-browser]
+
+The Paperpile steps run first (paperpile-api, then the synced paperpile dir), and
+both are gated on a title-similarity floor of 0.75 against the bib entry's title —
+a first-author collision on an unrelated paper declines and falls through to the
+next resolver rather than returning the wrong PDF. `--skip-paperpile` bypasses
+BOTH steps: use it when the goal is the PUBLISHED version of record, since the
+library copy is often the very preprint being replaced.
 
 Resolver chain (each step tried in order, first valid PDF wins):
     1. (opt-in) LibKey openurl    — only if --try-libkey is passed
-    2. UVA EZproxy → publisher    — needs NetBadge cookie (or --via-dia)
-    3. OpenAthens / publisher SSO — direct doi.org → publisher (--via-dia only)
-    4. NYU EZproxy → publisher    — needs NetID  cookie (or --via-dia)
+    2. UVA EZproxy → publisher    — needs NetBadge cookie (or --via-browser)
+    3. OpenAthens / publisher SSO — direct doi.org → publisher (--via-browser only)
+    4. NYU EZproxy → publisher    — needs NetID  cookie (or --via-browser)
     5. SSRN direct                — if entry has SSRN id (auto-derived from
                                     10.2139/ssrn.<id> DOIs)
     6. Virgo article search       — last-ditch fallback when no DOI is known
-                                    (e.g. older law reviews; --via-dia only)
+                                    (e.g. older law reviews; --via-browser only)
 
-`--via-dia` drives Chrome over CDP at port 9250 for the
-institutional steps, automatically handling JS challenges and SSO redirects
-that block headless HTTP clients. After a successful Chrome fetch the script
-snapshots the relevant cookies into ~/.claude-work/skills/paperpile/cookies/
-so subsequent runs in the session can re-use them without re-driving the
-browser.
+`--via-browser` drives the browser over CDP for the institutional steps,
+automatically handling JS challenges and SSO redirects that block headless
+HTTP clients. After a successful browser fetch the script snapshots the
+relevant cookies into ~/.claude-work/skills/paperpile/cookies/ so subsequent
+runs in the session can re-use them without re-driving the browser.
+(`--via-dia` is a deprecated alias kept working for old callers.)
+
+CDP port: the first REACHABLE port from, in order, `--cdp-port`,
+$PAPERPILE_CDP_PORT, 9250 (the automation profile), 9222 (the everyday
+browser). The everyday browser is often the one that is actually logged in,
+so it is tried rather than assumed absent.
 
 If a bib entry lacks a DOI, the script does a CrossRef title lookup and
 *writes the resolved DOI back into the bib file* so subsequent runs skip
@@ -43,6 +56,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import base64
+import difflib
 import json
 import os
 import re
@@ -254,7 +268,7 @@ def paperpile_api_index(force: bool = False) -> dict | None:
 
     cookie = _paperpile_cookie_header()
     if not cookie:
-        log("[paperpile-api] no plack_session cookie — visit app.paperpile.com in Dia first")
+        log("[paperpile-api] no plack_session cookie — visit app.paperpile.com in the browser first")
         return None
 
     headers = [
@@ -320,6 +334,29 @@ def is_real_pdf(path: Path) -> bool:
         return f.read(5) == b"%PDF-"
 
 
+# A Paperpile-synced filename is "Author et al. 2015 - Real Title.pdf"; strip the
+# author/year prefix before comparing, or it dilutes the similarity ratio.
+_PP_FILENAME_PREFIX = re.compile(r"^.*?\b(?:19|20)\d{2}[a-z]?\s*-\s*")
+
+TITLE_MATCH_FLOOR = 0.75
+
+
+def _norm_title(s: str) -> str:
+    return " ".join(re.sub(r"[^a-z0-9]+", " ", (s or "").lower()).split())
+
+
+def title_similarity(a: str, b: str) -> float:
+    """difflib ratio of two normalised lowercase titles, 0.0–1.0."""
+    na, nb = _norm_title(a), _norm_title(b)
+    if not na or not nb:
+        return 0.0
+    return difflib.SequenceMatcher(None, na, nb).ratio()
+
+
+def filename_title(stem: str) -> str:
+    return _PP_FILENAME_PREFIX.sub("", stem, count=1) or stem
+
+
 def resolve_paperpile(entry: "BibEntry | None", out: Path) -> tuple[bool, str]:
     """Look up the PDF in the user's local Paperpile-synced library.
 
@@ -378,6 +415,11 @@ def resolve_paperpile(entry: "BibEntry | None", out: Path) -> tuple[bool, str]:
 
     candidates.sort(key=score, reverse=True)
     chosen = candidates[0]
+    # Never hand back a PDF whose title is not the entry's title.
+    sim = title_similarity(entry.title, filename_title(chosen.stem))
+    if sim < TITLE_MATCH_FLOOR:
+        return False, (f"best match '{filename_title(chosen.stem)[:60]}' "
+                       f"scored {sim:.2f} < {TITLE_MATCH_FLOOR}")
     if not is_real_pdf(chosen):
         return False, f"matched file not a valid PDF: {chosen.name}"
 
@@ -385,12 +427,12 @@ def resolve_paperpile(entry: "BibEntry | None", out: Path) -> tuple[bool, str]:
     return True, f"ok {out} (paperpile: {chosen.name})"
 
 
-def resolve_paperpile_api(entry: "BibEntry | None", out: Path, via_dia: bool) -> tuple[bool, str]:
-    """Match bib entry → Paperpile library → gdrive_id → Drive download via Dia."""
+def resolve_paperpile_api(entry: "BibEntry | None", out: Path, via_browser: bool) -> tuple[bool, str]:
+    """Match bib entry → Paperpile library → gdrive_id → Drive download via the browser."""
     if entry is None or not entry.title:
         return False, "no entry/title"
-    if not via_dia:
-        return False, "paperpile-api requires --via-dia for Drive download"
+    if not via_browser:
+        return False, "paperpile-api requires --via-browser for Drive download"
 
     index = paperpile_api_index()
     if index is None:
@@ -448,6 +490,13 @@ def resolve_paperpile_api(entry: "BibEntry | None", out: Path, via_dia: bool) ->
     if score < 1 and not (entry.doi and best.get("doi") == entry.doi):
         return False, f"best match score {score} too low for '{best.get('title','')[:60]}'"
 
+    # The token/year score above tolerates a first-author collision on an unrelated
+    # paper; require the titles themselves to agree before returning a PDF.
+    sim = title_similarity(entry.title, best.get("title") or "")
+    if sim < TITLE_MATCH_FLOOR:
+        return False, (f"best match '{(best.get('title') or '')[:60]}' "
+                       f"scored {sim:.2f} < {TITLE_MATCH_FLOOR}")
+
     # Find PDF attachment for this item
     item_id = best["_id"]
     atts = [
@@ -466,15 +515,15 @@ def resolve_paperpile_api(entry: "BibEntry | None", out: Path, via_dia: bool) ->
     # Drive a navigation to the URL; the browser will save to ~/Downloads/
     # Use a similar pattern to manual_hop — navigate then poll ~/Downloads.
     if not cdp_alive():
-        return False, "Chrome CDP not on :9250"
+        return False, f"Chrome CDP not reachable on {cdp_ports_desc()}"
 
     # Open + navigate
     new_tab = subprocess.run(
-        ["curl", "-sf", "-X", "PUT", f"{CDP_URL}/json/new"],
+        ["curl", "-sf", "-X", "PUT", f"{cdp_url()}/json/new"],
         capture_output=True, text=True, timeout=8,
     )
     if new_tab.returncode != 0:
-        return False, "could not open Dia tab"
+        return False, "could not open the browser tab"
     tab = json.loads(new_tab.stdout)
 
     async def go():
@@ -541,21 +590,71 @@ def scholar_download(url: str, out: Path) -> tuple[bool, str]:
 
 
 # ---------------------------------------------------------------------------
-# CDP / Dia driving (--via-dia)
+# CDP / browser driving (--via-browser)
 # ---------------------------------------------------------------------------
 
-CDP_URL = "http://localhost:9250"
+# Port order: the --cdp-port flag, then $PAPERPILE_CDP_PORT, then the
+# automation profile (9250), then the everyday browser (9222). The first
+# port that answers /json/version wins.
+CDP_DEFAULT_PORTS = (9250, 9222)
+
+_cdp_flag_port: int | None = None
+_cdp_resolved: str | None = None
 
 
-def cdp_alive() -> bool:
+def set_cdp_port(port: int | None) -> None:
+    """Record the --cdp-port flag and discard any cached resolution."""
+    global _cdp_flag_port, _cdp_resolved
+    _cdp_flag_port = port
+    _cdp_resolved = None
+
+
+def cdp_ports() -> list[int]:
+    ports: list[int] = []
+    if _cdp_flag_port:
+        ports.append(_cdp_flag_port)
+    env = os.environ.get("PAPERPILE_CDP_PORT", "").strip()
+    if env.isdigit():
+        ports.append(int(env))
+    ports.extend(CDP_DEFAULT_PORTS)
+    return list(dict.fromkeys(ports))  # dedupe, order preserved
+
+
+def cdp_ports_desc() -> str:
+    """Human-readable list of the ports actually tried, for error messages."""
+    return ", ".join(f":{p}" for p in cdp_ports())
+
+
+def _port_reachable(port: int) -> bool:
     try:
         r = subprocess.run(
-            ["curl", "-sf", "--connect-timeout", "2", f"{CDP_URL}/json/version"],
+            ["curl", "-sf", "--connect-timeout", "2",
+             f"http://127.0.0.1:{port}/json/version"],
             capture_output=True, text=True, timeout=4,
         )
         return r.returncode == 0
     except Exception:
         return False
+
+
+def cdp_resolve() -> str | None:
+    """First reachable CDP base URL, or None if no candidate port answers."""
+    global _cdp_resolved
+    if _cdp_resolved is not None:
+        return _cdp_resolved
+    for port in cdp_ports():
+        if _port_reachable(port):
+            _cdp_resolved = f"http://127.0.0.1:{port}"
+            return _cdp_resolved
+    return None
+
+
+def cdp_url() -> str:
+    return cdp_resolve() or f"http://127.0.0.1:{cdp_ports()[0]}"
+
+
+def cdp_alive() -> bool:
+    return cdp_resolve() is not None
 
 
 async def _extract_publisher_pdf_url(call) -> str | None:
@@ -624,8 +723,8 @@ async def _extract_publisher_pdf_url(call) -> str | None:
         return None
 
 
-async def _dia_fetch_pdf(url: str, out: Path, timeout_s: int = 60) -> tuple[bool, str]:
-    """Open `url` in a fresh Dia tab; capture the PDF response body.
+async def _browser_fetch_pdf(url: str, out: Path, timeout_s: int = 60) -> tuple[bool, str]:
+    """Open `url` in a fresh browser tab; capture the PDF response body.
 
     Strategy: enable Network domain, navigate, watch for any response with
     mimeType `application/pdf` (or url ending `.pdf`), then call
@@ -638,11 +737,11 @@ async def _dia_fetch_pdf(url: str, out: Path, timeout_s: int = 60) -> tuple[bool
 
     # Open a fresh tab (about:blank); we'll Page.navigate explicitly.
     new_tab = subprocess.run(
-        ["curl", "-sf", "-X", "PUT", f"{CDP_URL}/json/new"],
+        ["curl", "-sf", "-X", "PUT", f"{cdp_url()}/json/new"],
         capture_output=True, text=True, timeout=8,
     )
     if new_tab.returncode != 0:
-        return False, f"could not open new Dia tab via CDP ({new_tab.stderr.strip()})"
+        return False, f"could not open new browser tab via CDP ({new_tab.stderr.strip()})"
     target = json.loads(new_tab.stdout)
     ws_url = target["webSocketDebuggerUrl"]
     target_id = target["id"]
@@ -765,7 +864,7 @@ async def _dia_fetch_pdf(url: str, out: Path, timeout_s: int = 60) -> tuple[bool
                                 pdf_bytes = data.encode("latin-1")
                             if pdf_bytes[:5] == b"%PDF-":
                                 out.write_bytes(pdf_bytes)
-                                return True, f"ok {out} (via dia, {len(pdf_bytes)} bytes)"
+                                return True, f"ok {out} (via browser, {len(pdf_bytes)} bytes)"
                             diag_log.append(f"PDF body was HTML interstitial ({pdf_bytes[:15]!r}) — listening for next pdf response")
                             pdf_request_id = None  # allow next pdf response to capture
                             html_interstitial_count += 1
@@ -797,7 +896,7 @@ async def _dia_fetch_pdf(url: str, out: Path, timeout_s: int = 60) -> tuple[bool
                             "login.nyu.edu",
                         )
                         if any(m in nav_url for m in login_markers):
-                            return False, f"redirected to SSO login: {nav_url[:80]} (need to log in via Dia)"
+                            return False, f"redirected to SSO login: {nav_url[:80]} (need to log in via the browser)"
                         # EZproxy "Not Authorized" landing page — the proxy
                         # doesn't whitelist this destination (e.g. Elsevier,
                         # SSRN). Fail fast so the chain falls through to
@@ -811,33 +910,33 @@ async def _dia_fetch_pdf(url: str, out: Path, timeout_s: int = 60) -> tuple[bool
         # Close the tab we opened
         try:
             subprocess.run(
-                ["curl", "-sf", f"{CDP_URL}/json/close/{target_id}"],
+                ["curl", "-sf", f"{cdp_url()}/json/close/{target_id}"],
                 capture_output=True, timeout=4,
             )
         except Exception:
             pass
 
 
-def dia_fetch_pdf(url: str, out: Path) -> tuple[bool, str]:
+def browser_fetch_pdf(url: str, out: Path) -> tuple[bool, str]:
     if not cdp_alive():
-        return False, "Chrome CDP not reachable on :9250"
+        return False, f"Chrome CDP not reachable on {cdp_ports_desc()}"
     try:
-        return asyncio.run(_dia_fetch_pdf(url, out))
+        return asyncio.run(_browser_fetch_pdf(url, out))
     except Exception as e:
-        return False, f"dia driver error: {e}"
+        return False, f"browser driver error: {e}"
 
 
 def manual_hop(url: str, out: Path, timeout_s: int = 120) -> tuple[bool, str]:
-    """Open URL in Dia, wait for user to drop the PDF at `out`."""
+    """Open URL in the browser, wait for user to drop the PDF at `out`."""
     if not cdp_alive():
-        return False, "Chrome CDP not on :9250"
+        return False, f"Chrome CDP not reachable on {cdp_ports_desc()}"
     # Open the URL in a fresh tab
     r = subprocess.run(
-        ["curl", "-sf", "-X", "PUT", f"{CDP_URL}/json/new"],
+        ["curl", "-sf", "-X", "PUT", f"{cdp_url()}/json/new"],
         capture_output=True, text=True, timeout=8,
     )
     if r.returncode != 0:
-        return False, f"could not open Dia tab"
+        return False, f"could not open the browser tab"
     tab = json.loads(r.stdout)
     async def go():
         import websockets
@@ -850,7 +949,7 @@ def manual_hop(url: str, out: Path, timeout_s: int = 120) -> tuple[bool, str]:
         asyncio.run(go())
     except Exception as e:
         return False, f"navigate error: {e}"
-    log(f"[manual] Dia opened to {url}")
+    log(f"[manual] browser opened to {url}")
     log(f"[manual] Click \"Download PDF\" — file expected at {out}. Watching {timeout_s}s...")
     deadline = time.time() + timeout_s
     while time.time() < deadline:
@@ -902,7 +1001,7 @@ DOMAINS_OF_INTEREST = (
 async def _snapshot_cookies() -> int:
     import websockets
     targets = subprocess.run(
-        ["curl", "-sf", f"{CDP_URL}/json"],
+        ["curl", "-sf", f"{cdp_url()}/json"],
         capture_output=True, text=True, timeout=4,
     )
     if targets.returncode != 0:
@@ -951,7 +1050,7 @@ async def _hydrate_cookies() -> int:
         return 0
     import websockets
     targets = subprocess.run(
-        ["curl", "-sf", f"{CDP_URL}/json"],
+        ["curl", "-sf", f"{cdp_url()}/json"],
         capture_output=True, text=True, timeout=4,
     )
     if targets.returncode != 0:
@@ -1002,29 +1101,29 @@ def hydrate_cookies() -> int:
 # Resolvers
 # ---------------------------------------------------------------------------
 
-def resolve_libkey(doi: str, library_id: str, out: Path, via_dia: bool) -> tuple[bool, str]:
+def resolve_libkey(doi: str, library_id: str, out: Path, via_browser: bool) -> tuple[bool, str]:
     if not library_id or library_id == "TODO" or not library_id.isdigit():
         return False, "uva_libkey_id not configured (see references/proxy_urls.md)"
     url = f"https://libkey.io/libraries/{library_id}/openurl?genre=article&doi={doi}"
-    return (dia_fetch_pdf(url, out) if via_dia else scholar_download(url, out))
+    return (browser_fetch_pdf(url, out) if via_browser else scholar_download(url, out))
 
 
-def resolve_ezproxy(doi: str, host: str, out: Path, via_dia: bool) -> tuple[bool, str]:
+def resolve_ezproxy(doi: str, host: str, out: Path, via_browser: bool) -> tuple[bool, str]:
     if not host:
         return False, "ezproxy host not configured"
     target = f"https://doi.org/{doi}"
     url = f"https://{host}/login?url={urllib.parse.quote(target, safe=':/')}"
-    return (dia_fetch_pdf(url, out) if via_dia else scholar_download(url, out))
+    return (browser_fetch_pdf(url, out) if via_browser else scholar_download(url, out))
 
 
-def resolve_ssrn(ssrn_id: str, out: Path, via_dia: bool) -> tuple[bool, str]:
+def resolve_ssrn(ssrn_id: str, out: Path, via_browser: bool) -> tuple[bool, str]:
     if not ssrn_id:
         return False, "no SSRN id"
     url = (
         f"https://papers.ssrn.com/sol3/Delivery.cfm/{ssrn_id}.pdf"
         f"?abstractid={ssrn_id}&mirid=1"
     )
-    fetch = dia_fetch_pdf if via_dia else scholar_download
+    fetch = browser_fetch_pdf if via_browser else scholar_download
     ok, diag = fetch(url, out)
     if ok:
         return ok, diag
@@ -1039,7 +1138,7 @@ def extract_ssrn_id_from_doi(doi: str) -> str | None:
 
 # Publishers that support OpenAthens / institutional SSO directly on the
 # publisher landing page. When EZproxy returns "Not Authorized" for these
-# destinations, navigating Dia straight to doi.org lets the publisher's
+# destinations, navigating the browser straight to doi.org lets the publisher's
 # own SSO redirect pick up cached UVA cookies.
 OPENATHENS_DOI_PREFIXES = (
     "10.1016/",   # Elsevier ScienceDirect
@@ -1052,32 +1151,32 @@ OPENATHENS_DOI_PREFIXES = (
 )
 
 
-def resolve_openathens(doi: str, out: Path, via_dia: bool) -> tuple[bool, str]:
-    """Direct publisher SSO: navigate Dia to doi.org and let the publisher's
+def resolve_openathens(doi: str, out: Path, via_browser: bool) -> tuple[bool, str]:
+    """Direct publisher SSO: navigate the browser to doi.org and let the publisher's
     own institutional SSO (OpenAthens) take over using cached UVA cookies.
     No proxy involvement — bypasses EZproxy "Not Authorized" pages.
     """
-    if not via_dia:
-        return False, "openathens requires --via-dia (publisher SSO needs browser)"
+    if not via_browser:
+        return False, "openathens requires --via-browser (publisher SSO needs browser)"
     if not doi:
         return False, "no DOI"
     if not any(doi.startswith(p) for p in OPENATHENS_DOI_PREFIXES):
         return False, f"DOI prefix not in OpenAthens publisher list: {doi[:20]}"
     # Just go to doi.org; the browser will follow redirects to the publisher
     # and any institutional SSO will reuse cached UVA cookies/cert.
-    return dia_fetch_pdf(f"https://doi.org/{doi}", out)
+    return browser_fetch_pdf(f"https://doi.org/{doi}", out)
 
 
-def resolve_virgo(title: str, out: Path, via_dia: bool) -> tuple[bool, str]:
-    """Last-ditch fallback for no-DOI law reviews: drive Dia to UVA's Virgo
+def resolve_virgo(title: str, out: Path, via_browser: bool) -> tuple[bool, str]:
+    """Last-ditch fallback for no-DOI law reviews: drive the browser to UVA's Virgo
     article-search results and let _extract_publisher_pdf_url discover a
     direct PDF link on the landing page.
     """
-    if not via_dia or not title:
-        return False, "virgo fallback requires --via-dia and a title"
+    if not via_browser or not title:
+        return False, "virgo fallback requires --via-browser and a title"
     q = urllib.parse.quote(title)
     url = f"https://search.lib.virginia.edu/search?mode=advanced&q=keyword:{{{q}}}&pool=articles"
-    return dia_fetch_pdf(url, out)
+    return browser_fetch_pdf(url, out)
 
 
 # ---------------------------------------------------------------------------
@@ -1104,30 +1203,41 @@ def main() -> int:
     ap.add_argument("--ssrn-id", help="SSRN id override")
     ap.add_argument("--out", type=Path, help="output dir")
     ap.add_argument("--prefer-ssrn", action="store_true")
+    ap.add_argument("--skip-paperpile", action="store_true",
+                    help="bypass both Paperpile steps (paperpile-api and paperpile-dir) and go "
+                         "straight to the institutional chain — use when you want the PUBLISHED "
+                         "version of record rather than the library's own copy (often a preprint)")
     ap.add_argument("--try-libkey", action="store_true",
                     help="include LibKey openurl in chain (default off; UVA isn't a Third Iron customer)")
-    ap.add_argument("--via-dia", action="store_true",
-                    help="drive Dia via CDP for institutional fetches (handles SSO/JS challenges)")
+    ap.add_argument("--via-browser", dest="via_browser", action="store_true",
+                    help="drive the browser via CDP for institutional fetches (handles SSO/JS challenges)")
+    # Deprecated alias: old callers still pass --via-dia.
+    ap.add_argument("--via-dia", dest="via_browser", action="store_true",
+                    help=argparse.SUPPRESS)
+    ap.add_argument("--cdp-port", type=int, default=None,
+                    help="CDP port to try first; otherwise $PAPERPILE_CDP_PORT, "
+                         "then :9250 (automation profile), then :9222 (everyday browser)")
     ap.add_argument("--no-writeback", action="store_true",
                     help="skip writing resolved DOI back into bib file")
     ap.add_argument("--login-only", action="store_true",
-                    help="open NetBadge/NetID warmup pages in Dia and exit (no PDF fetch)")
+                    help="open NetBadge/NetID warmup pages in the browser and exit (no PDF fetch)")
     ap.add_argument("--manual-hop", action="store_true",
-                    help="open the URL in Dia and wait for the user to manually click Download (escape hatch for Cloudflare-walled sources like SSRN)")
+                    help="open the URL in the browser and wait for the user to manually click Download (escape hatch for Cloudflare-walled sources like SSRN)")
     args = ap.parse_args()
+    set_cdp_port(args.cdp_port)
 
     cfg = load_config()
 
     if args.login_only:
         if not cdp_alive():
-            die("Chrome CDP not on :9250", code=1)
+            die(f"Chrome CDP not reachable on {cdp_ports_desc()}", code=1)
         warmup_urls = [
             f"https://{cfg.get('uva_ezproxy_host', '')}/login?url=https://www.virginia.edu/",
             f"https://{cfg.get('nyu_ezproxy_host', '')}/login?url=https://www.nyu.edu/",
         ]
         for u in warmup_urls:
             r = subprocess.run(
-                ["curl", "-sf", "-X", "PUT", f"{CDP_URL}/json/new"],
+                ["curl", "-sf", "-X", "PUT", f"{cdp_url()}/json/new"],
                 capture_output=True, text=True, timeout=8,
             )
             tab = json.loads(r.stdout)
@@ -1142,7 +1252,7 @@ def main() -> int:
                 log(f"[warmup] opened {u}")
             except Exception as e:
                 log(f"[warmup] {u}: {e}")
-        log("[warmup] log in via Dia, then re-run without --login-only")
+        log("[warmup] log in via the browser, then re-run without --login-only")
         return 0
 
     if not args.bibkey and not args.doi:
@@ -1187,10 +1297,10 @@ def main() -> int:
         stem = f"ssrn-{ssrn_id}"
     out_path = out_dir / f"{stem}.pdf"
 
-    if args.via_dia and cdp_alive():
+    if args.via_browser and cdp_alive():
         n = hydrate_cookies()
         if n:
-            log(f"[cookies] hydrated {n} cookies into Dia from {COOKIE_DIR}")
+            log(f"[cookies] hydrated {n} cookies into the browser from {COOKIE_DIR}")
 
     if args.manual_hop:
         # Choose target URL
@@ -1215,27 +1325,29 @@ def main() -> int:
         return 3
 
     chain: list[tuple[str, Callable[[], tuple[bool, str]]]] = []
-    if entry:
-        chain.append(("paperpile-api", lambda: resolve_paperpile_api(entry, out_path, args.via_dia)))
+    if entry and not args.skip_paperpile:
+        chain.append(("paperpile-api", lambda: resolve_paperpile_api(entry, out_path, args.via_browser)))
         chain.append(("paperpile", lambda: resolve_paperpile(entry, out_path)))
+    elif entry and args.skip_paperpile:
+        log("[chain] --skip-paperpile: skipping paperpile-api and paperpile-dir")
     if args.prefer_ssrn and ssrn_id:
-        chain.append(("ssrn", lambda: resolve_ssrn(ssrn_id, out_path, args.via_dia)))
+        chain.append(("ssrn", lambda: resolve_ssrn(ssrn_id, out_path, args.via_browser)))
     if doi:
         if args.try_libkey:
             chain.append(("libkey", lambda: resolve_libkey(
-                doi, cfg.get("uva_libkey_id", ""), out_path, args.via_dia)))
+                doi, cfg.get("uva_libkey_id", ""), out_path, args.via_browser)))
         chain.append(("uva", lambda: resolve_ezproxy(
-            doi, cfg.get("uva_ezproxy_host", ""), out_path, args.via_dia)))
+            doi, cfg.get("uva_ezproxy_host", ""), out_path, args.via_browser)))
         chain.append(("openathens", lambda: resolve_openathens(
-            doi, out_path, args.via_dia)))
+            doi, out_path, args.via_browser)))
         chain.append(("nyu", lambda: resolve_ezproxy(
-            doi, cfg.get("nyu_ezproxy_host", ""), out_path, args.via_dia)))
+            doi, cfg.get("nyu_ezproxy_host", ""), out_path, args.via_browser)))
     if ssrn_id and not args.prefer_ssrn:
-        chain.append(("ssrn", lambda: resolve_ssrn(ssrn_id, out_path, args.via_dia)))
+        chain.append(("ssrn", lambda: resolve_ssrn(ssrn_id, out_path, args.via_browser)))
     # Virgo fallback for no-DOI law reviews (older journals not in CrossRef).
     if not doi and entry and entry.title:
         chain.append(("virgo", lambda: resolve_virgo(
-            entry.title, out_path, args.via_dia)))
+            entry.title, out_path, args.via_browser)))
 
     success = False
     for name, fn in chain:
@@ -1246,7 +1358,7 @@ def main() -> int:
             print(out_path.resolve())
             break
 
-    # Always snapshot cookies if Dia is up — even on failure (a partial SSO
+    # Always snapshot cookies if the browser is up — even on failure (a partial SSO
     # may still be useful next call) and on success (refreshes the snapshot).
     if cdp_alive():
         n = snapshot_cookies()

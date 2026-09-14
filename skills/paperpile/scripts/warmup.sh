@@ -1,20 +1,38 @@
 #!/usr/bin/env bash
-# Refresh UVA institutional sessions by hitting proxied URLs via Chrome CDP (:9250).
+# Refresh UVA institutional sessions by hitting proxied URLs through the
+# browser over CDP.
 # Warms up: EZproxy + HeinOnline (via WAYFless SSO).
 # If SSO expired, auto-clicks "Log in with your digital certificate".
-# Hammerspoon cert-autoaccept handles the macOS keychain dialog.
+#
+# Usage: warmup.sh [CDP_PORT]
+#        Port order: the argument, then $PAPERPILE_CDP_PORT, then 9250 (the
+#        automation profile), then 9222 (the everyday browser). The first port
+#        that answers /json/version wins.
 #
 # launchd: com.paperpile.warmup.plist (every 25 min)
 
 set -euo pipefail
 
-CDP=http://localhost:9250
+CDP_CANDIDATES=()
+[ $# -ge 1 ] && CDP_CANDIDATES+=("$1")
+[ -n "${PAPERPILE_CDP_PORT:-}" ] && CDP_CANDIDATES+=("$PAPERPILE_CDP_PORT")
+CDP_CANDIDATES+=(9250 9222)
 
-BROWSER_WS=$(curl -sf --connect-timeout 2 "$CDP/json/version" | python3 -c "import json,sys; print(json.load(sys.stdin)['webSocketDebuggerUrl'])" 2>/dev/null) || true
+CDP_PORT=""
+BROWSER_WS=""
+for p in "${CDP_CANDIDATES[@]}"; do
+  ws=$(curl -sf --connect-timeout 2 "http://localhost:${p}/json/version" \
+       | python3 -c "import json,sys; print(json.load(sys.stdin)['webSocketDebuggerUrl'])" 2>/dev/null) || true
+  if [ -n "$ws" ]; then CDP_PORT="$p"; BROWSER_WS="$ws"; break; fi
+done
+
 if [ -z "$BROWSER_WS" ]; then
-  echo "[warmup] Chrome CDP not on :9250" >&2
+  echo "[warmup] no CDP browser on any of: ${CDP_CANDIDATES[*]}" >&2
   exit 1
 fi
+
+CDP="http://localhost:${CDP_PORT}"
+echo "[warmup] using CDP on :${CDP_PORT}"
 
 # Create a background tab via browser WS (PUT /json/new steals focus)
 create_bg_tab() {
@@ -43,7 +61,7 @@ warmup_url() {
 
   local TAB_ID
   TAB_ID=$(create_bg_tab) || { echo "[$label] failed to open tab"; return 1; }
-  local WS_URL="ws://localhost:${CDP_PORT:-9250}/devtools/page/$TAB_ID"
+  local WS_URL="ws://localhost:${CDP_PORT}/devtools/page/$TAB_ID"
 
   bun -e "
 const ws = new WebSocket('$WS_URL');
@@ -100,7 +118,7 @@ warmup_url "ezproxy" "https://proxy1.library.virginia.edu/login?url=https://www.
 # 2. Clear stale OpenAthens state_ cookies (they accumulate and cause HTTP 431)
 echo "[warmup] === Clear OpenAthens cookies ==="
 OA_TAB_ID=$(create_bg_tab 2>/dev/null) || true
-OA_WS="ws://localhost:${CDP_PORT:-9250}/devtools/page/$OA_TAB_ID"
+OA_WS="ws://localhost:${CDP_PORT}/devtools/page/$OA_TAB_ID"
 if [ -n "$OA_TAB_ID" ]; then
   bun -e "
 const ws = new WebSocket('$OA_WS');
