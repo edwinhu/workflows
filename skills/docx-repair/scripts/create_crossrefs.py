@@ -30,10 +30,16 @@ from lxml import etree
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 XML_SPACE = "{http://www.w3.org/XML/1998/namespace}space"
 
+# Matching is case-insensitive: Bluebook capitalizes the signal at the start of a
+# citation sentence ("Supra note 4."), and those references must convert too.
+# Only the digit groups are ever rewritten — the matched word stays in its
+# original run text — so the source capitalization survives verbatim.
 # Match range: "supra/infra notes 209-210" or "209–210"
-RANGE_PAT = re.compile(r"(?:supra|infra)\s+notes?\s+(\d+)\s*[-\u2013]\s*(\d+)")
+RANGE_PAT = re.compile(
+    r"(?:supra|infra)\s+notes?\s+(\d+)\s*[-\u2013]\s*(\d+)", re.IGNORECASE
+)
 # Match single: "supra/infra note 42"
-SINGLE_PAT = re.compile(r"(?:supra|infra)\s+notes?\s+(\d+)")
+SINGLE_PAT = re.compile(r"(?:supra|infra)\s+notes?\s+(\d+)", re.IGNORECASE)
 
 
 # ── Helpers ─────────────────────────────────────────────────────────────
