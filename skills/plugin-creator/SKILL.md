@@ -39,6 +39,25 @@ Before drafting, identify constraints that should be **mechanically enforced** r
 
 **The principle:** if a constraint is mechanically checkable, enforce it with a hook. If it requires judgment, keep it as prompt text.
 
+### Step 1c: Run the Checker-Shape Probe
+
+```bash
+bun ${CLAUDE_SKILL_DIR}/scripts/cc-probe.ts --target <plugin-dir>
+```
+
+Exit 0 clean, 1 findings, 2 argument error, 3 the probe crashed — 2 and 3 are not the same, and neither is a pass. Re-run it after Step 3 and before final validation.
+
+| Output | Do |
+|---|---|
+| `I1` two engines in one domain | delete one, or make it spawn the other |
+| `I2` two lenses quoting one literal | one lens owns the claim, the other routes to it |
+| `I3` engine with no live caller | wire it or delete it |
+| `I4` computed path does not resolve | fix the level count — it is inert now |
+| `I5` suppression entry matches no label | repoint or delete it; whatever it covered is reported twice |
+| `I6` lens prompt quotes a decided rule | narrow the lens to the undecidable residue, point it at the table through `refs` |
+| advisory `I7` | the pattern fires on a phrase the corpus recorded as human — check it through `ai-tic` before shipping |
+| `NOT CHECKED` note | a check that did not run. Establish it or state it; never read it as a pass |
+
 ### Step 2: Invoke the Built-in Plugin Creator
 
 Use the Skill tool to invoke the built-in plugin creator:
