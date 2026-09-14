@@ -27,20 +27,36 @@ CONSTRAINT = "writing-no-bold-lead"
 APPLIES_TO = ["writing-draft", "writing-verify", "writing-revise"]
 SEVERITY = "hard"
 
-PROSE_AUDIT = Path(__file__).resolve().parents[2] / "scripts" / "prose-audit.py"
+# parents[3] — this file is <repo>/skills/writing/references/, so three levels up is the repo root.
+# Every sibling module in this directory counts the same way; `parents[2]` resolved to
+# <repo>/skills/scripts/prose-audit.py and made the constraint inert from v6.0.0.
+PROSE_AUDIT = Path(__file__).resolve().parents[3] / "scripts" / "prose-audit.py"
 _LABEL = "emphasis·bold-lead"
 
 
 def _bold_leads(path: Path) -> list[tuple[int, str]]:
-    """[(line, bold label text)] for one file, via the audit. Any failure yields nothing: a
-    constraint that cannot run must not manufacture violations."""
+    """[(line, bold label text)] for one file, via the audit.
+
+    A FAILURE HERE RAISES. It must not manufacture violations — but it must not be silent either.
+    `except Exception: return []` is what turned a broken engine path into `passed` for two minor
+    versions: check() returned [], check-all.py filed a SEVERITY="hard" constraint under passed, and
+    a reader auditing "is bold-lead enforced?" saw a clean pass. check-all.py:229-237 puts a raised
+    exception under `errors`, which is neither `passed` nor a fabricated `failed`, and which makes
+    its own exit non-zero. That is the only honest report of "the checker could not be reached".
+    """
+    if not PROSE_AUDIT.is_file():
+        raise FileNotFoundError(
+            f"{CONSTRAINT}: prose-audit.py not found at {PROSE_AUDIT} — this constraint delegates "
+            f"to it entirely and cannot be evaluated without it")
+    proc = subprocess.run(
+        [sys.executable, str(PROSE_AUDIT), "--json", str(path)],
+        capture_output=True, text=True, timeout=120, check=False)
     try:
-        proc = subprocess.run(
-            [sys.executable, str(PROSE_AUDIT), "--json", str(path)],
-            capture_output=True, text=True, timeout=120, check=False)
         payload = json.loads(proc.stdout)
-    except Exception:
-        return []
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(
+            f"{CONSTRAINT}: prose-audit.py returned unparseable output for {path} "
+            f"(exit {proc.returncode}): {(proc.stderr or proc.stdout)[:400]}") from exc
     out = []
     for span in payload.get("spans", []):
         if any(lab.startswith(_LABEL) for lab in span.get("labels", [])):
