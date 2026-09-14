@@ -11,8 +11,9 @@
 #   exits 0, which is the dangerous direction: a suite that is never executed and never complains.
 #   So `tests/bash-mutation-matrix.test.mjs`, `tests/implementer-identity-contract.test.mjs`,
 #   `tests/lineage-contract.test.mjs`, `tests/session-flag-key.test.ts` and their siblings were
-#   reachable only by being typed out by hand, and `scripts/check-all.sh` globs `checks/check-*.py`
-#   only, so nothing repo-wide touched them.
+#   reachable only by being typed out by hand, and the shell runner that existed then globbed
+#   `scripts/checks/check-*.py` only, so nothing repo-wide touched them. (That runner,
+#   `scripts/check-all.sh`, has since been deleted — it had no caller either.)
 #
 #   The header then CLAIMED to run every suite while globbing `tests/*.test.{ts,mjs,js}` only, which
 #   silently skipped the 20 Python suites in the same directory — the same "asserts coverage it does

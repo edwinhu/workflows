@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Tests for the prose-lint writing hook + Typst (.typ) prose extraction.
+"""Tests for hooks/writing-prose-check.ts + Typst (.typ) prose extraction.
+
+Named `test_prose_lint_hook.py` until `scripts/prose-lint.py` was deleted; it never invoked that
+script, and the name outlived it by two minor versions.
 
 Covers (per the v5.42.0 design):
   - .typ markup stripping (prose_extract._iter_typ_lines)
@@ -8,8 +11,8 @@ Covers (per the v5.42.0 design):
   - edited-line scoping (only violations on touched lines are reported)
   - no double-reporting (ONE span per violation, whatever tables matched it)
 
-Run with:  python3 -m pytest tests/test_prose_lint_hook.py
-       or:  python3 tests/test_prose_lint_hook.py
+Run with:  python3 -m pytest tests/test_writing_prose_hook.py
+       or:  python3 tests/test_writing_prose_hook.py
 """
 from __future__ import annotations
 
@@ -183,7 +186,7 @@ def test_hook_lints_typ_letter(tmp_path):
                  "This article delves into the rich tapestry of the law.\n")
     ctx = _run_hook(f)
     # The hook reports the SYSTEM that produced each span (scored-tic, wikipedia-promotional, …)
-    # rather than the old prose-lint category bucket.
+    # rather than a category bucket.
     assert ctx is not None and "letter.typ:2" in ctx and "rich/vibrant tapestry" in ctx, ctx
 
 
@@ -204,8 +207,8 @@ def test_hook_scopes_to_edited_lines(tmp_path):
     drafts = tmp_path / "drafts"
     drafts.mkdir()
     f = drafts / "d.md"
-    # AI tell on line 1 (untouched) and line 4 (edited) — both phrases that
-    # prose-lint's ai-anti-patterns table actually catches.
+    # AI tell on line 1 (untouched) and line 4 (edited) — both phrases the
+    # ai-anti-patterns tables actually catch.
     f.write_text(
         "This is the rich tapestry of antitrust law.\n"
         "\n"

@@ -11,12 +11,12 @@
  *   2. references/constraints/check-all.py — STRUCTURAL constraints only (bold-lead,
  *      topic-sentences, anchored-numbers, outline-sync): real logic, not regex over prose.
  *
- * WHY THAT SPLIT IS NOW A PREFIX RULE AND NOT A NAMED SET. This hook used to run prose-lint AND
- * check-all and suppress the overlap with `PROSE_LINT_SUPERSEDES`, a hand-maintained set of three
- * constraint names. It named the wrong three: the wikipedia-* tables are in BOTH engines and were
+ * WHY check-all's PROSE MODULES ARE SUPPRESSED HERE. This hook used to run a second prose engine
+ * beside check-all and suppress the overlap with `PROSE_LINT_SUPERSEDES`, a hand-maintained set of
+ * three constraint names. It named the wrong three: the wikipedia-* tables were in both engines and
  * in neither's supersede list, so every AI-tell inside an edited range was reported to the model
- * twice. The set is gone. check-all's prose modules are skipped by the directory they live in,
- * which cannot fall out of date as tables are added. See
+ * twice. The second engine is gone; what remains is the suppression list below, which is the whole
+ * of the split and is verified by tests/prose-engine-wiring.test.ts. See
  * docs/DESIGN-prose-constraint-architecture.md.
  *
  * Neither engine is reimplemented here: both are the same Python scripts, spawned from the same
