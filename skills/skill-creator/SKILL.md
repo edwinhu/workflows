@@ -42,6 +42,8 @@ Before drafting, identify what should be **mechanically enforced** rather than p
 | Scoped hooks (Pre/PostToolUse) | Each tool call | Pass/fail gate | Mechanically checkable constraints |
 | SessionStart hook (`once: true`) | Session start | Value written to a file | Expensive computations (API calls, index builds) |
 
+Adding a `reviewLenses` entry or a checker script? Run `bun ${CLAUDE_PLUGIN_ROOT}/skills/plugin-creator/scripts/cc-probe.ts --target <plugin-dir>` afterwards — it computes whether the new lens or engine is a second one in its domain, and whether the old one still works.
+
 #### `${CLAUDE_SKILL_DIR}` — Script Path References
 
 Use directly in Bash command templates — substituted at skill load time to the full absolute path:
