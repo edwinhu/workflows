@@ -41,15 +41,24 @@ const PROSE_AUDIT = join(PLUGIN_ROOT, "scripts", "prose-audit.py");
 const PY = ["uv", "run", "--with", "lxml", "--with", "pyyaml", "python3"];
 
 /** check-all constraint families that prose-audit.py already owns. A check-all entry name is
- *  `constraints/<stem>` or `skills/<skill>/references/<stem>`, so a directory prefix is enough. */
-/*  `constraints/writing-no-bold-lead` is named explicitly rather than by directory: it is the one
- *  entry under `constraints/` that now DELEGATES to prose-audit.py (as `emphasis·bold-lead`), so
- *  leaving it in would report the same span from both engines — the exact double-reporting the
- *  prefix rule below exists to end. Its siblings under `constraints/` are structural and stay. */
-const PROSE_ENGINE_PREFIXES = [
+ *  `constraints/<stem>` or `skills/<skill>/references/<stem>`.
+ *
+ *  A DIRECTORY PREFIX IS NOT ENOUGH UNDER `skills/writing/references/`. That directory holds two
+ *  kinds of module: the three style guides prose-audit.py loads as tables (Strunk, Volokh,
+ *  McCloskey) plus `writing-no-bold-lead`, which delegates to the audit outright — and four
+ *  STRUCTURAL constraints (`writing-topic-sentences`, `writing-anchored-numbers`,
+ *  `writing-outline-sync`, `writing-shortjournal`) that prose-audit.py does not own and that MUST
+ *  keep reporting. `"skills/writing/"` would silence all eight, so the four prose entries are named
+ *  in full. A new prose table under that directory has to be added here by hand; cc-probe's I5 is
+ *  what catches a name that goes stale, which is how the `"skills/writing-"` entry below — correct
+ *  until v6.0.0 moved the guides from `skills/writing-{general,legal,econ}/references/` into
+ *  `skills/writing/references/` — was found still matching nothing. */
+export const PROSE_ENGINE_PREFIXES = [
   "skills/ai-anti-patterns/",
-  "skills/writing-",
-  "constraints/writing-no-bold-lead",
+  "skills/writing/references/strunk-elements-of-style",
+  "skills/writing/references/volokh-distilled",
+  "skills/writing/references/mccloskey-economical-writing",
+  "skills/writing/references/writing-no-bold-lead",
 ];
 
 const _DECK_MARKERS = ["touying", "polylux", "#slide("];
