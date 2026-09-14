@@ -7,7 +7,7 @@ user-invocable: false
 
 # Look At - Multimodal File Analysis
 
-Multi-backend vision router for images, PDFs, video, diagrams and other media. Defaults to `agy -p` on `gemini-3.7-flash-high` — Gemini via Antigravity OAuth, unmetered — which reads images, PDFs and video natively. Audio auto-routes to the metered `api` backend, the only one that handles it. Three further unmetered CLI backends (`claude-code -p`, `codex exec`, Copilot on GPT-5.4) give independent second opinions.
+Multi-backend vision router for images, PDFs, video, diagrams and other media. Defaults to `agy -p` on the `vision_antigravity` role in `scripts/lib/gemini-models.json` — Gemini via Antigravity OAuth, unmetered — which reads images, PDFs and video natively. Audio auto-routes to the metered `api` backend, the only one that handles it. Three further unmetered CLI backends (`claude-code -p`, `codex exec`, Copilot on GPT-5.4) give independent second opinions.
 
 ## Tool Selection Enforcement
 
@@ -53,7 +53,7 @@ Multi-backend vision router for images, PDFs, video, diagrams and other media. D
 ## How It Works
 
 1. Provide a file path and a specific goal (what to extract)
-2. `look_at.sh` routes to the selected backend (`agy` / `gemini-3.7-flash-high` by default)
+2. `look_at.sh` routes to the selected backend (`agy` by default)
 3. The backend analyzes the file and extracts requested information
 4. Only the relevant extracted information is returned (saves context tokens)
 
@@ -66,7 +66,7 @@ description: "look-at: [goal text]"
 ```
 
 ```bash
-# Default (agy — gemini-3.7-flash-high via Antigravity OAuth, unmetered)
+# Default (agy — Gemini via Antigravity OAuth, unmetered)
 "${CLAUDE_SKILL_DIR}/scripts/look_at.sh" \
     --file "/path/to/file.pdf" \
     --goal "Extract the title and date from this document"
@@ -106,10 +106,10 @@ description: "look-at: [goal text]"
 | Backend | CLI | Model | Cost | Best For |
 |---------|-----|-------|------|----------|
 | `claude` | `claude-code -p` | `claude-opus-5[1m]` unless `--model` | Pooled OAuth via CLIProxyAPI | Unmetered second opinion from a different family |
-| `agy` (default) | `agy -p` | `gemini-3.7-flash-high` unless `--model` | Antigravity OAuth — unmetered | Images, PDFs **and video**, all read natively. No audio |
+| `agy` (default) | `agy -p` | role `vision_antigravity` unless `--model` | Antigravity OAuth — unmetered | Images, PDFs **and video**, all read natively. No audio |
 | `codex` | `codex exec` | Codex default | Subscription | Attaches the image with `-i`, so it needs no read tool at all |
 | `copilot` | `copilot -p` | GPT-5.4 | Copilot subscription | Fourth opinion. PDFs rasterized first |
-| `api` | `look_at.py` | `gemini-3.7-flash`, `thinking_level=high` | **Metered — your `GOOGLE_API_KEY`** | **Audio auto-routes here** — no unmetered backend handles it. Not in `--consensus` |
+| `api` | `look_at.py` | role `vision`, `thinking_level=high` | **Metered — your `GOOGLE_API_KEY`** | **Audio auto-routes here** — no unmetered backend handles it. Not in `--consensus` |
 
 **`claude`, not `claude-code`, is the backend *name*; `claude-code` is the binary it runs.** Plain
 `claude` would bill this session's own account — `claude-code` routes through CLIProxyAPI to the
@@ -164,7 +164,9 @@ These apply to `--backend api`, which is metered. The `claude` backend takes `--
 | `gemini-3.1-pro-preview` | Maximum vision capability, hardest extractions | Slower | $2.00/1M |
 | `gemini-3-pro-preview` | Highest accuracy required | Medium | Medium |
 
-**Default is `gemini-3.7-flash` at `thinking_level=high`** (the value in `look_at.py`).
+**The default is the `vision` role in `scripts/lib/gemini-models.json`, at `thinking_level=high`**;
+the `agy` backend uses `vision_antigravity`, whose ids carry a reasoning suffix and are not
+interchangeable with the API ids above. `python3 scripts/lib/gemini_models.py <role>` prints either.
 
 ## Agentic Vision Mode (`api` backend only)
 

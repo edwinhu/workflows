@@ -8,6 +8,8 @@
  *     judgment   reasoning where accuracy matters
  *     pro        the few sites that need a pro model
  *     vision     multimodal extraction from one file
+ *     vision_antigravity
+ *                the same job through the `agy` CLI, whose ids carry a reasoning suffix
  *
  * Resolution order, highest wins:
  *   1. `override`            — the script's --model flag
@@ -20,7 +22,12 @@
  */
 import table from "./gemini-models.json" with { type: "json" };
 
-export type GeminiRole = "bulk" | "judgment" | "pro" | "vision";
+export type GeminiRole =
+  | "bulk"
+  | "judgment"
+  | "pro"
+  | "vision"
+  | "vision_antigravity";
 
 export const ROLE_MODELS: Record<GeminiRole, string> = table.roles as Record<
   GeminiRole,
