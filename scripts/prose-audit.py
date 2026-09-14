@@ -155,11 +155,17 @@ _DECK_OFF_PREFIXES = ("writing-",)
 # stop; the label is the finer grain the split actually needs.
 _DECK_OFF_LABELS = ("style·em_dash",)
 
+# THE MIRROR CONCEPT, and the asymmetry is the register itself: a deck-only system makes a claim
+# that is only TRUE on a slide. "The answer:" is an unremarkable lead-in in a memo and a defect on
+# a slide, so `full` and `de-ai` must never see this system — `full` enabling everything is a
+# guarantee about the systems that hold everywhere, not about every system that exists.
+_DECK_ONLY_SYSTEMS = frozenset({"slide-register"})
+
 
 def system_enabled(system: str, profile: str = "full") -> bool:
-    """Does `system` run under `profile`? `full` runs everything (frozen behaviour)."""
+    """Does `system` run under `profile`? `full` runs every system that is not deck-only."""
     if profile != "deck":
-        return True
+        return system not in _DECK_ONLY_SYSTEMS
     return system not in _DECK_OFF_SYSTEMS and not system.startswith(_DECK_OFF_PREFIXES)
 
 
@@ -970,6 +976,94 @@ def _hard_wrap_hits(text: str) -> list[dict]:
     return hits
 
 
+# ── slide register (DECK ONLY) ───────────────────────────────────────────────
+# The decidable subset of the craft lens `prose-register`: bullets that ANNOUNCE what follows, or
+# that talk about the deck and the room, instead of stating the thing. The judgement half stays in
+# the lens — there is deliberately no heuristic here for "does this line carry a fact".
+#
+# THE PRECISION IS BAD AND THAT IS THE DESIGN CONSTRAINT. Measured on a real deck
+# (areas/colloquium/slides/04-tornetta/01.typ) AFTER its 13 true positives had already been removed:
+#
+#   deictic opener   1 hit,  0 true positives
+#   colon-only lead  6 hits, ~2 true positives
+#   deck/room talk   2 hits, ~1-2 true positives
+#
+# As shipped these rules produce 10 hits on that same cleaned deck (5 announce, 4 room-talk,
+# 1 deictic) — one of them a pincite label, `- At *448:`, which is the shape of the error.
+#
+# So every rule here is SOFT, and none may ever be `hard`. `hard` in this script means "no false
+# positives, indefensible in a shipped draft" and is the only severity that may block a gate; these
+# do not qualify and must not claim to.
+#
+# `//` LINE COMMENTS ARE EXEMPT. Provenance and instructor scaffolding legitimately live there —
+# the teaching decks store them in comments on purpose — so a finding inside one is a false
+# positive by construction. prose_extract._iter_typ_lines already drops those lines, so every
+# table-driven system is exempt already; this system reads the raw masked text (it needs the `-`
+# marker and real columns, both of which the extractor strips), so it does the same blanking
+# itself. Scoped HERE rather than in extract_lines on purpose: masking there would also change what
+# the em-dash, emoji and stylometric systems see on `.typ` input, which is a `full`-profile change.
+_SR_BULLET = re.compile(r"^(\s*)-\s+(\S.*)$")
+# ONLY a line whose first non-whitespace characters are `//`. Stripping `//` mid-line would break
+# `https://example.com` and Typst division alike.
+_SR_COMMENT = re.compile(r"^\s*//")
+# `the class` is DELIBERATELY ABSENT: in a corporations deck it is a share class far more often
+# than it is the room. Only the self-referential determiners and a numbered class earn a hit.
+_SR_ROOM_TALK = [
+    re.compile(r"\bfor the room\b", re.IGNORECASE),
+    re.compile(r"\bthis (?:class|deck|lecture|slide|session)\b", re.IGNORECASE),
+    re.compile(r"\bthese slides\b", re.IGNORECASE),
+    re.compile(r"\bclass(?:es)?\s+\d+\b", re.IGNORECASE),
+    re.compile(r"\b(?:is|are) the (?:next|last|previous|following)\b[^.]*?\bslides?\b",
+               re.IGNORECASE),
+    re.compile(r"\bas we (?:saw|did|covered|discussed)\b", re.IGNORECASE),
+]
+# A bullet that is nothing but a colon-terminated frame: the colon closes the line, so whatever the
+# frame promised is not on it. The word cap is what makes it a FRAME rather than "any bullet that
+# ends in a colon" — a long quoted sentence closing with a colon carries its own content, and
+# without the cap this fired 11 times on the already-cleaned reference deck instead of 6.
+_SR_ANNOUNCE_MAX_WORDS = 10
+_SR_ANNOUNCE = re.compile(
+    rf"^(?=(?:\S+\s+){{1,{_SR_ANNOUNCE_MAX_WORDS - 1}}}\S+$)[^:]*:$")
+_SR_DEICTIC = re.compile(r"^(?:This|That|These|Those)\s+(?:is|are)\s+the\b")
+# Trailing Typst markup a bullet can legitimately end with, stripped before the colon test so
+# `- The answer:#footnote[…]` is judged on its prose.
+_SR_TRAILING = re.compile(r"(?:\s|\*|_|\]|\)|#\w+)+$")
+
+
+def _slide_register_hits(text: str) -> list[dict]:
+    """Register findings on Typst list items, with real line/column anchoring."""
+    hits: list[dict] = []
+    for i, line in enumerate(text.split("\n"), 1):
+        if _SR_COMMENT.match(line):
+            continue
+        m = _SR_BULLET.match(line)
+        if not m:
+            continue
+        content = m.group(2).rstrip()
+        col = m.start(2) + 1
+        context = line.strip()[:160]
+        for rx in _SR_ROOM_TALK:
+            hit = rx.search(content)
+            if hit:
+                hits.append({"line": i, "col": col + hit.start(), "end": col + hit.end(),
+                             "label": f"slide-register·room-talk: {hit.group(0)!r} addresses the "
+                                      f"room or the deck — the slide should state the thing",
+                             "quote": hit.group(0), "context": context})
+                break
+        bare = _SR_TRAILING.sub("", content) or content
+        if _SR_ANNOUNCE.match(bare):
+            hits.append({"line": i, "col": col, "end": col + len(content),
+                         "label": "slide-register·announce: the whole bullet is a colon-terminated "
+                                  "lead-in — nothing substantive follows the colon",
+                         "quote": content, "context": context})
+        if _SR_DEICTIC.match(content):
+            hits.append({"line": i, "col": col, "end": col + len(content),
+                         "label": "slide-register·deictic: the bullet opens by pointing at itself "
+                                  "rather than naming its subject",
+                         "quote": content[:80], "context": context})
+    return hits
+
+
 # ── the audit ────────────────────────────────────────────────────────────────
 def _collapse(raw: list[dict]) -> list[dict]:
     """Collapse overlapping hits into one span per (line, overlapping column range).
@@ -1125,6 +1219,12 @@ def audit_document(path: Path, style: str | None = None, mask: bool = True,
     if masked_text is not None and not is_fixed_width_source(path, masked_text):
         for hit in _hard_wrap_hits(masked_text):
             add(hit["line"], 0, 0, "formatting", hit["label"], SOFT, hit["quote"], hit["quote"])
+
+    # --- slide register; deck profile only, gated at `add()` like every other system ---
+    if masked_text is not None and path.suffix.lower() == ".typ":
+        for hit in _slide_register_hits(masked_text):
+            add(hit["line"], hit["col"], hit["end"], "slide-register", hit["label"], SOFT,
+                hit["quote"], hit["context"])
 
     # --- emphasis (bold/italic markup) and emojis; text formats only ---
     for hit in _emphasis_hits(emphasis_spans, words):

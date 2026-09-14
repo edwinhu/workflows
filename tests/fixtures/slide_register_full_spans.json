@@ -1,0 +1,34 @@
+[
+  {
+    "id": "S001",
+    "line": 19,
+    "col": 0,
+    "system": "style",
+    "systems": [
+      "style"
+    ],
+    "labels": [
+      "style·nominalization: Heavy nominalization 'organisation' — prefer a plain verb/short Anglo-Saxon form."
+    ],
+    "severity": "soft",
+    "quote": "…sses 2 and 3.    - The organisation of the record is at https://example.com for the exhibits.…",
+    "context": "…sses 2 and 3.    - The organisation of the record is at https://example.com for the exhibits.…",
+    "replace_with": ""
+  },
+  {
+    "id": "S002",
+    "line": 19,
+    "col": 5,
+    "system": "spelling",
+    "systems": [
+      "spelling"
+    ],
+    "labels": [
+      "spelling·british·organisation"
+    ],
+    "severity": "soft",
+    "quote": "organisation",
+    "context": "The organisation of the record is at https://example.com for the exhibits.",
+    "replace_with": "organization"
+  }
+]
