@@ -9,7 +9,14 @@ nothing.  Rejecting every tracked change still leaves ~25 touched paragraphs.
 This rebuilds those edits as real tracked changes by comparing against a
 baseline, so they can be reviewed one at a time in Word or LibreOffice.
 
-TWO OUTPUTS, AND WHY
+TWO ENGINES
+
+  word-remote - Application.CompareDocuments in the Windows guest, over SSH.
+                Prefer it whenever a guest exists.
+  soffice     - .uno:CompareDocuments in headless LibreOffice.  The fallback
+                when there is no guest, and the default.
+
+ONE OUTPUT UNDER word-remote, TWO UNDER soffice
 
 LibreOffice's CompareDocuments does NOT diff footnote-internal text.  On a
 footnote-heavy document that is the dangerous failure, not a cosmetic one: the
@@ -17,7 +24,7 @@ body redline silently carries the BASELINE's footnotes and so presents every
 footnote edit (in one case including a broken `ttps://` URL the coauthor had
 fixed) as though nothing had changed.
 
-So two files are produced:
+So the soffice engine produces two files:
 
   1. body      - CompareDocuments output.  Authoritative for body prose only.
   2. footnotes - every footnote lifted into an ordinary body paragraph, then
@@ -26,14 +33,20 @@ So two files are produced:
                  shows real edits instead of the numbering shift that follows
                  an inserted footnote.
 
+Word diffs footnotes natively (`CompareFootnotes`), so the word-remote engine
+emits ONE redline and the split does not apply.  The lifted-footnote file is a
+workaround for the soffice engine, not a feature of the tool.
+
 CAVEAT INHERITED FROM THE DOCX
 
 pandoc/text extraction flattens Word NOTEREF fields to cached display text, so
 `supra note N` renumbering appears as an edit.  Those are not real edits.  See
-the caller's own notes on NOTEREF caching.
+the caller's own notes on NOTEREF caching.  The word-remote engine sets
+`CompareFields=$false` and so suppresses them; the price is that a
+cross-reference retargeted to a genuinely different footnote does not show.
 
 USAGE
-    python make_redline.py BASELINE.docx REVISED.docx OUTDIR
+    python make_redline.py BASELINE.docx REVISED.docx OUTDIR [--engine ENGINE]
 """
 
 import argparse
@@ -227,6 +240,52 @@ def relabel(path, label):
     return total
 
 
+# --------------------------------------------------------------- word-remote ---
+_WORD_COMPARE_SCRIPT = (
+    Path.home() / ".local/share/word-render/word_compare_remote.sh")
+
+
+def find_word_compare_remote():
+    """Path to the word-compare transport, or None if the kit isn't installed.
+
+    Mirrors ``doc_render.find_word_remote()``: env var, then the path the
+    `programs.wordRender` nix module deploys, then PATH. It does NOT probe the
+    guest over SSH — that can hang on a suspended VM. A down guest surfaces as a
+    compare error, which is right for an explicit engine: explicit engines raise
+    rather than fall back.
+    """
+    env = os.environ.get("WORD_COMPARE_REMOTE")
+    if env and Path(env).is_file():
+        return env
+    if _WORD_COMPARE_SCRIPT.is_file():
+        return str(_WORD_COMPARE_SCRIPT)
+    return shutil.which("word-compare")
+
+
+def compare_word_remote(baseline, revised, dest, stats):
+    """One redline through Word in the Windows guest. Footnotes included."""
+    script = find_word_compare_remote()
+    if script is None:
+        raise RuntimeError(
+            "--engine word-remote: word_compare_remote.sh not found "
+            "(set WORD_COMPARE_REMOTE, or deploy programs.wordRender)")
+    proc = subprocess.run(
+        [script, str(baseline), str(revised), str(dest), str(stats)],
+        capture_output=True, text=True, check=False)
+    if proc.returncode != 0 or not Path(dest).exists():
+        tail = (proc.stderr or proc.stdout or "").strip().splitlines()
+        hint = ""
+        if "did not complete" in (proc.stderr or ""):
+            hint = " — is the guest booted?"
+        raise RuntimeError(
+            f"word-remote compare failed (exit {proc.returncode}){hint}: "
+            + " | ".join(tail[-3:]))
+    return dict(
+        line.split("=", 1)
+        for line in Path(stats).read_text().splitlines() if "=" in line
+    ) if Path(stats).exists() else {}
+
+
 # --------------------------------------------------------------------- main ---
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
@@ -236,10 +295,30 @@ def main():
     ap.add_argument("outdir")
     ap.add_argument("--label", default="Redline vs baseline",
                     help="author name stamped on every generated revision")
+    ap.add_argument("--engine", choices=("soffice", "word-remote"),
+                    default="soffice",
+                    help="soffice (default, two outputs) or word-remote "
+                         "(one output, footnotes diffed natively)")
     args = ap.parse_args()
 
     out = Path(args.outdir)
     out.mkdir(parents=True, exist_ok=True)
+
+    if args.engine == "word-remote":
+        redline = out / "redline.docx"
+        stats = out / "redline.stats.txt"
+        counts = compare_word_remote(args.baseline, args.revised, redline, stats)
+        total = counts.get("TOTAL_REVISIONS", "?")
+        fn = (int(counts.get("FOOTNOTE_STORY_INSERTIONS", 0))
+              + int(counts.get("FOOTNOTE_STORY_DELETIONS", 0)))
+        print(f"redline: {total} changes -> {redline}")
+        print(f"  footnote-story revisions: {fn} (Word diffs footnotes, so "
+              f"ONE file is the whole redline)")
+        print(f"  stats -> {stats}")
+        print(f"  relabelled {relabel(redline, args.label)} revisions "
+              f"in {redline.name}")
+        return
+
     profile = os.environ.get("CLAUDE_JOB_DIR", "/tmp") + "/lo_redline"
     _clear_locks(out, Path(args.baseline).parent, Path(args.revised).parent)
 
