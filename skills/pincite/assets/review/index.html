@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pincite review</title>
+<style>
+:root {
+  --bg: #fbfaf7; --panel: #fff; --ink: #1c1a17; --dim: #6b6660;
+  --line: #ddd8d0; --accent: #8a4b1e; --ok: #2f6b3a; --warn: #9a6b00;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  display: grid; grid-template-columns: 330px 1fr; font: 15px/1.5 Georgia, serif;
+  background: var(--bg); color: var(--ink);
+}
+kbd {
+  font: 11px ui-monospace, monospace; border: 1px solid var(--line);
+  border-bottom-width: 2px; border-radius: 3px; padding: 0 4px; background: #fff;
+}
+/* ------------------------------------------------------------- left list */
+#side { display: flex; flex-direction: column; border-right: 1px solid var(--line); min-height: 0; }
+#side header { padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--panel); }
+#side h1 { font-size: 15px; margin: 0 0 6px; }
+#q { width: 100%; padding: 5px 7px; font: 13px ui-monospace, monospace;
+     border: 1px solid var(--line); border-radius: 4px; }
+#filters { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
+#filters button {
+  font: 11px/1 system-ui, sans-serif; padding: 5px 7px; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--dim);
+}
+#filters button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+#progress { margin-top: 7px; font: 12px system-ui, sans-serif; color: var(--dim); }
+#progress b { color: var(--ink); }
+/* Always visible, and outside #detail so a re-render can never blank it. The
+   text is persist.js's own string, verbatim — never a tick this page invented. */
+#disk { margin-top: 7px; padding: 5px 7px; border-radius: 4px;
+        font: 12px system-ui, sans-serif; border: 1px solid var(--line);
+        background: #fff3f0; color: #a3301b; }
+#disk[data-ok="1"] { background: #eef6ef; color: var(--ok); border-color: #cde0d0; }
+#disk[data-ok="pending"] { background: #fff; color: var(--dim); }
+#list { overflow-y: auto; flex: 1; }
+.item {
+  padding: 7px 12px; border-bottom: 1px solid #eee9e1; cursor: pointer;
+  font: 13px system-ui, sans-serif; display: flex; gap: 7px; align-items: baseline;
+}
+.item:hover { background: #f3efe8; }
+.item[aria-selected="true"] { background: #e9e2d6; box-shadow: inset 3px 0 0 var(--accent); }
+.item .fn { color: var(--dim); font: 11px ui-monospace, monospace; min-width: 34px; }
+.item .key { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item .occ { color: var(--dim); font-size: 11px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.dot.pinned { background: var(--ok); }
+.dot.unresolved { background: #c44; }
+.dot.general { background: var(--warn); }
+.item .done { font-size: 11px; color: var(--accent); font-weight: bold; }
+/* ------------------------------------------------------------ right pane */
+#main { display: grid; grid-template-rows: auto 1fr; min-width: 0; min-height: 0; }
+#detail { padding: 12px 16px; overflow-y: auto; max-height: 52vh; background: var(--panel);
+          border-bottom: 1px solid var(--line); }
+#detail h2 { font-size: 16px; margin: 0 0 8px; }
+#detail h2 small { color: var(--dim); font: 12px ui-monospace, monospace; }
+.block { margin: 0 0 10px; }
+.label { font: 11px system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase;
+         color: var(--dim); margin-bottom: 2px; }
+.claim { font-style: italic; }
+.fnote { background: #f6f2ea; border-left: 3px solid var(--line); padding: 7px 10px; }
+.sc { font-variant: small-caps; }
+.ref { color: var(--dim); }
+.ref.site { background: #ffe9a8; color: var(--ink); font-weight: bold; padding: 0 3px;
+            outline: 1px solid #d9b23c; }
+.meta { font: 12px system-ui, sans-serif; color: var(--dim); }
+.pill { display: inline-block; font: 11px system-ui, sans-serif; padding: 1px 6px;
+        border-radius: 999px; border: 1px solid var(--line); margin-right: 5px; }
+#form { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 4px; }
+#pin { flex: 1; min-width: 180px; padding: 6px 8px; font: 14px ui-monospace, monospace;
+       border: 1px solid var(--line); border-radius: 4px; }
+#form button { padding: 6px 12px; font: 13px system-ui, sans-serif; cursor: pointer;
+               border: 1px solid var(--line); border-radius: 4px; background: #fff; }
+#form button.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+#note { width: 100%; padding: 5px 8px; font: 13px system-ui, sans-serif;
+        border: 1px solid var(--line); border-radius: 4px; }
+#saved { font: 12px system-ui, sans-serif; color: var(--ok); min-height: 1.2em; }
+#keys { font: 11px system-ui, sans-serif; color: var(--dim); margin-top: 6px; }
+#pdfwrap { min-height: 0; background: #33302c; }
+#pdf { width: 100%; height: 100%; border: 0; }
+#nopdf { color: #ddd; padding: 24px; font: 14px system-ui, sans-serif; }
+#nopdf b { color: #fff; }
+</style>
+</head>
+<body>
+<div id="side">
+  <header>
+    <h1>Pincite review <span id="count" class="meta"></span></h1>
+    <input id="q" placeholder="search citekey / footnote no." autocomplete="off">
+    <div id="filters">
+      <button data-f="all" aria-pressed="true">all</button>
+      <button data-f="unresolved" aria-pressed="false">unresolved</button>
+      <button data-f="pinned" aria-pressed="false">pinned</button>
+      <button data-f="general" aria-pressed="false">general</button>
+      <button data-f="untouched" aria-pressed="false">untouched</button>
+      <button data-f="touched" aria-pressed="false">decided</button>
+    </div>
+    <div id="progress"></div>
+    <div id="disk" data-ok="pending">starting…</div>
+  </header>
+  <div id="list" role="listbox" aria-label="citation sites"></div>
+</div>
+
+<div id="main">
+  <div id="detail"><p class="meta">loading…</p></div>
+  <div id="pdfwrap"><div id="nopdf">no site selected</div></div>
+</div>
+
+<script type="module">
+'use strict';
+// Served from the REPO ROOT, so the PDFs under paper/references/ resolve from /.
+const ROOT = location.pathname.replace(/\/scratch\/review\/[^/]*$/, '');
+// serve.py writes POSTs to <root>/pincites.json and nowhere else.
+const DISK_URL = ROOT + '/pincites.json';
+// Namespaced by the served path, so two manuscripts on the same host do not
+// share one set of decisions.
+const LSKEY = 'pincite-review-v1:' + (ROOT || '/');
+
+let ROWS = [];
+let view = [];
+let sel = 0;
+let filter = 'all';
+let decisions = {};              // id -> {action, pin, note, at}
+
+const id = r => `${r.fn}|${r.citekey}|${r.occurrence}`;
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const state = r => r.current_pin ? 'pinned'
+                 : (r.decision === 'general' ? 'general' : 'unresolved');
+
+// The key was once per-manuscript ('opv-pincite-review-v1'). Adopt whatever the
+// old key still holds, so a renamed key never reads as a session's work vanishing.
+const LEGACY = ['opv-pincite-review-v1'];
+
+let persister = null;
+
+function setDisk(msg, ok) {
+  const box = document.getElementById('disk');
+  if (!box) return;
+  box.textContent = msg;                       // persist.js's string, verbatim
+  box.setAttribute('data-ok', ok === true ? '1' : ok === null ? 'pending' : '0');
+}
+
+// pincites.json on disk is exactly what Export produces and exactly what
+// `pincite apply --from` consumes: a flat list of decisions.
+function rows() {
+  return ROWS.filter(r => decisions[id(r)]).map(r => {
+    const d = decisions[id(r)];
+    return {fn: r.fn, citekey: r.citekey, occurrence: r.occurrence,
+            action: d.action, pin: d.pin || '', note: d.note || ''};
+  });
+}
+
+// Accepts either shape: the flat list pincites.json carries, or the keyed map
+// older localStorage entries hold.
+function toDecisions(payload) {
+  if (Array.isArray(payload)) {
+    const out = {};
+    for (const d of payload) {
+      if (!d || d.fn == null || !d.citekey) continue;
+      const k = `${d.fn}|${d.citekey}|${d.occurrence == null ? 1 : d.occurrence}`;
+      out[k] = {fn: d.fn, citekey: d.citekey, occurrence: d.occurrence == null ? 1 : d.occurrence,
+                action: d.action || 'set', pin: d.pin || '', note: d.note || ''};
+    }
+    return out;
+  }
+  return payload && typeof payload === 'object' ? payload : {};
+}
+
+function loadLocal() {
+  for (const k of [LSKEY, ...LEGACY]) {
+    try {
+      const got = toDecisions(JSON.parse(localStorage.getItem(k)));
+      if (Object.keys(got).length) return got;
+    } catch (e) { /* a corrupt entry is not a reason to lose the next one */ }
+  }
+  return {};
+}
+
+// The file is the shared truth; localStorage is the crash layer for one sitting.
+// So pincites.json wins when it can be read, and the status line says plainly
+// which of the two the page is showing.
+async function reconcile() {
+  let res = null;
+  try {
+    res = await fetch(DISK_URL, {cache: 'no-store'});
+  } catch (e) {
+    decisions = loadLocal();
+    setDisk('NOT read from disk — showing the browser copy (server unreachable)', false);
+    return;
+  }
+  if (res.status === 404) {
+    decisions = loadLocal();
+    setDisk('no pincites.json on disk yet — it is written on the first edit', null);
+    return;
+  }
+  if (!res.ok) {
+    decisions = loadLocal();
+    setDisk(`NOT read from disk — showing the browser copy (server error ${res.status})`, false);
+    return;
+  }
+  try {
+    decisions = toDecisions(await res.json());
+    setDisk(`loaded ${Object.keys(decisions).length} decisions from pincites.json`, true);
+  } catch (e) {
+    decisions = loadLocal();
+    setDisk('NOT read from disk — showing the browser copy (pincites.json is unreadable)', false);
+  }
+}
+
+// Every mutation lands here: typing, keep/set/skip, a note. No Save button.
+function persist() {
+  if (persister) { persister.save(rows()); return; }
+  try { localStorage.setItem(LSKEY, JSON.stringify(rows())); } catch (e) { /* quota */ }
+}
+
+// The pincite is FREE TEXT — `1279`, `1279--81`, `55,086` and `(manuscript at 66)`
+// are all real values in this manuscript, and the author is the authority on
+// citation form. The only normalisation is trimming, and dropping a leading
+// `, at ` so applying cannot produce `, at , at 66`.
+function normPin(s) {
+  return String(s == null ? '' : s).trim().replace(/^,\s*at\s+/i, '').trim();
+}
+
+// ------------------------------------------------------------------- list
+function applyFilter() {
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  view = ROWS.filter(r => {
+    if (q && !(r.citekey.toLowerCase().includes(q) || String(r.fn).includes(q))) return false;
+    if (filter === 'all') return true;
+    if (filter === 'touched') return !!decisions[id(r)];
+    if (filter === 'untouched') return !decisions[id(r)];
+    return state(r) === filter;
+  });
+  if (sel >= view.length) sel = Math.max(0, view.length - 1);
+  renderList();
+  renderDetail();
+}
+
+function renderList() {
+  const box = document.getElementById('list');
+  box.innerHTML = view.map((r, i) => {
+    const d = decisions[id(r)];
+    return `<div class="item" role="option" data-i="${i}" aria-selected="${i === sel}">
+      <span class="dot ${state(r)}" title="${state(r)}"></span>
+      <span class="fn">fn ${r.fn}</span>
+      <span class="key">${esc(r.citekey)}${r.occurrence > 1
+        ? `<span class="occ"> #${r.occurrence}</span>` : ''}</span>
+      ${d ? `<span class="done">${esc(d.action)}</span>` : ''}
+    </div>`;
+  }).join('') || '<p class="meta" style="padding:12px">nothing matches</p>';
+  const cur = box.querySelector('[aria-selected="true"]');
+  if (cur) cur.scrollIntoView({block: 'nearest'});
+  const touched = Object.keys(decisions).length;
+  document.getElementById('count').textContent = `${view.length}/${ROWS.length}`;
+  document.getElementById('progress').innerHTML =
+    `<b>${touched}</b> of ${ROWS.length} decided &middot; ` +
+    `${ROWS.filter(r => state(r) === 'unresolved').length} unresolved &middot; ` +
+    `${ROWS.filter(r => r.current_pin).length} already pinned`;
+}
+
+// ----------------------------------------------------------------- detail
+function renderDetail() {
+  const box = document.getElementById('detail');
+  const r = view[sel];
+  if (!r) { box.innerHTML = '<p class="meta">nothing selected</p>';
+            showPdf(null); return; }
+  const d = decisions[id(r)] || {};
+  const pdfline = r.pdf
+    ? `<span class="pill">pdf p.${r.pdf_page || '?'}${r.printed_page
+        ? ` = printed ${r.printed_page}` : ''}</span>
+       <span class="pill">offset ${r.offset_k == null ? '—' : r.offset_k}
+        via ${r.offset_route || 'none'}</span>
+       <span class="pill">${esc(r.printed_page_source || 'no page source')}</span>`
+    : `<span class="pill" style="border-color:#c44;color:#c44">no PDF in the bib for
+        <code>${esc(r.citekey)}</code></span>`;
+  box.innerHTML = `
+    <h2>fn ${r.fn} &middot; ${esc(r.citekey)}
+        <small>occurrence ${r.occurrence}${r.signal ? ' · signal “' + esc(r.signal) + '”' : ''}</small></h2>
+    <div class="block"><div class="label">claim</div>
+      <div class="claim">${esc(r.claim)}</div></div>
+    <div class="block"><div class="label">footnote ${r.fn} — this site highlighted</div>
+      <div class="fnote">${r.footnote_html}</div></div>
+    <div class="block meta">
+      <span class="pill">${r.current_pin
+        ? 'current pin: <b>' + esc(r.current_pin) + '</b>'
+        : (r.pin_no_comma ? 'loose pin: ' + esc(r.pin_no_comma) : 'no pin')}</span>
+      ${r.decision ? `<span class="pill">classifier: <b>${esc(r.decision)}</b></span>` : ''}
+      ${pdfline}
+    </div>
+    ${r.reason ? `<div class="block"><div class="label">classifier reason</div>
+      <div class="meta">${esc(r.reason)}</div></div>` : ''}
+    ${!r.pdf_page && r.pdf && r.offset_reason
+      ? `<div class="block meta">page not derived — ${esc(r.offset_reason)}</div>` : ''}
+    <div class="block">
+      <div class="label">pincite</div>
+      <div id="form">
+        <input id="pin" placeholder="e.g. at 1256" value="${esc(d.pin || r.current_pin || '')}">
+        <button id="bkeep">Keep</button>
+        <button id="bset" class="primary">Set</button>
+        <button id="bskip">Skip</button>
+      </div>
+      <div style="margin-top:6px"><input id="note" placeholder="note (optional, kept with Skip)"
+        value="${esc(d.note || '')}"></div>
+      <div id="saved">${d.action ? `recorded: ${esc(d.action)}${d.pin ? ' “' + esc(d.pin) + '”' : ''}` : ''}</div>
+      <div id="keys"><kbd>j</kbd>/<kbd>k</kbd> or <kbd>↑</kbd><kbd>↓</kbd> move &middot;
+        <kbd>Enter</kbd> commit (Set when the box is edited, otherwise Keep) &middot;
+        <kbd>s</kbd> skip &middot; <kbd>/</kbd> search &middot; <kbd>e</kbd> export &middot;
+        <kbd>Esc</kbd> leave the text box</div>
+    </div>`;
+  document.getElementById('bkeep').onclick = () => commit('keep');
+  document.getElementById('bset').onclick = () => commit('set');
+  document.getElementById('bskip').onclick = () => commit('skip');
+  document.getElementById('pin').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); commit('set'); }
+    if (e.key === 'Escape') e.target.blur();
+  });
+  // Typing IS a mutation: the draft reaches disk on its own, debounced, so a
+  // reviewer who types a page and moves on has not lost it.
+  document.getElementById('pin').addEventListener('input', () => draft());
+  document.getElementById('note').addEventListener('input', () => draft());
+  document.getElementById('note').addEventListener('keydown', e => {
+    if (e.key === 'Escape') e.target.blur();
+  });
+  showPdf(r);
+}
+
+function showPdf(r) {
+  const wrap = document.getElementById('pdfwrap');
+  if (!r || !r.pdf) {
+    wrap.innerHTML = `<div id="nopdf">${r
+      ? `<b>No PDF on disk for <code>${esc(r.citekey)}</code>.</b><br>
+         The bib entry carries no <code>file</code> field, so this site has to be
+         pinned from the source in hand.`
+      : 'no site selected'}</div>`;
+    return;
+  }
+  const url = ROOT + '/' + r.pdf.split('/').map(encodeURIComponent).join('/') +
+              (r.pdf_page ? '#page=' + r.pdf_page : '');
+  wrap.innerHTML = `<iframe id="pdf" src="${esc(url)}" title="source PDF"></iframe>`;
+}
+
+// ---------------------------------------------------------------- actions
+// A keystroke in the pincite or note box, recorded and saved without advancing.
+// Typing a page number IS setting one, so an untouched row becomes a `set`.
+function draft() {
+  const r = view[sel];
+  if (!r) return;
+  const pin = normPin((document.getElementById('pin') || {}).value);
+  const note = ((document.getElementById('note') || {}).value || '').trim();
+  const prev = decisions[id(r)];
+  if (!prev && !pin && !note) return;
+  decisions[id(r)] = {
+    fn: r.fn, citekey: r.citekey, occurrence: r.occurrence,
+    action: prev ? prev.action : 'set',
+    pin, note, at: new Date().toISOString()
+  };
+  persist();
+  renderList();
+}
+
+function commit(action) {
+  const r = view[sel];
+  if (!r) return;
+  const pin = normPin(document.getElementById('pin').value);
+  const note = (document.getElementById('note').value || '').trim();
+  decisions[id(r)] = {
+    fn: r.fn, citekey: r.citekey, occurrence: r.occurrence,
+    action,
+    pin: action === 'skip' ? '' : (action === 'keep' ? (r.current_pin || pin) : pin),
+    note, at: new Date().toISOString()
+  };
+  persist();
+  const saved = document.getElementById('saved');
+  if (saved) saved.textContent = `recorded: ${action}` + (pin ? ` “${pin}”` : '');
+  renderList();
+  move(1);
+}
+
+function move(delta) {
+  if (!view.length) return;
+  sel = Math.min(view.length - 1, Math.max(0, sel + delta));
+  renderList();
+  renderDetail();
+}
+
+// The fallback path: under plain `python3 -m http.server` the POST 404s and this
+// download is the only way the decisions reach disk.
+function exportJson() {
+  const out = rows();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(out, null, 1) + '\n'],
+                                        {type: 'application/json'}));
+  a.download = 'pincites.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ------------------------------------------------------------------ wiring
+document.getElementById('list').addEventListener('click', e => {
+  const it = e.target.closest('.item');
+  if (!it) return;
+  sel = +it.dataset.i; renderList(); renderDetail();
+});
+document.getElementById('q').addEventListener('input', () => { sel = 0; applyFilter(); });
+document.getElementById('q').addEventListener('keydown', e => {
+  if (e.key === 'Escape') e.target.blur();
+});
+document.querySelectorAll('#filters button').forEach(b => {
+  b.onclick = () => {
+    filter = b.dataset.f; sel = 0;
+    document.querySelectorAll('#filters button').forEach(
+      x => x.setAttribute('aria-pressed', String(x === b)));
+    applyFilter();
+  };
+});
+document.addEventListener('keydown', e => {
+  const t = e.target.tagName;
+  if (t === 'INPUT' || t === 'TEXTAREA') return;
+  if (e.key === 'j' || e.key === 'ArrowDown') { e.preventDefault(); move(1); }
+  else if (e.key === 'k' || e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
+  else if (e.key === 'Enter') {
+    e.preventDefault();
+    const r = view[sel];
+    const typed = (document.getElementById('pin') || {}).value || '';
+    commit(r && typed.trim() === (r.current_pin || '').trim() && r.current_pin
+      ? 'keep' : (typed.trim() ? 'set' : 'skip'));
+  }
+  else if (e.key === 's') { e.preventDefault(); commit('skip'); }
+  else if (e.key === 'e') { e.preventDefault(); exportJson(); }
+  else if (e.key === '/') { e.preventDefault(); document.getElementById('q').focus(); }
+});
+
+(async function boot() {
+  const bar = document.createElement('button');
+  bar.textContent = 'Export pincites.json';
+  bar.style.cssText = 'margin-top:7px;width:100%;padding:6px;font:12px system-ui,sans-serif;' +
+                      'cursor:pointer;border:1px solid var(--line);border-radius:4px;background:#fff';
+  bar.onclick = exportJson;
+  document.querySelector('#side header').appendChild(bar);
+
+  try {
+    const mod = await import('./persist.js');
+    persister = mod.createPersister({
+      fetch: (u, i) => fetch(u, i),
+      storage: localStorage,
+      onStatus: s => setDisk(s, /^saved/i.test(s) ? true : /^saving/i.test(s) ? null : false),
+      url: DISK_URL,
+      key: LSKEY,
+    });
+  } catch (e) {
+    setDisk('NOT SAVED to disk — persist.js did not load; use Export', false);
+  }
+
+  await reconcile();
+  window.addEventListener('beforeunload', () => { if (persister) persister.flush(); });
+
+  fetch('../review-data.json', {cache: 'no-store'})
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(data => { ROWS = data; applyFilter(); })
+    .catch(err => {
+      document.getElementById('detail').innerHTML =
+        `<p class="meta">could not load review-data.json: ${esc(err.message)}.<br>
+         Build it with <code>review_build.py --root &lt;repo&gt;</code>, then serve the
+         REPO ROOT — <code>serve.py 8765 &lt;repo&gt;</code> — and open
+         <code>http://localhost:8765/scratch/review/index.html</code>. Serving
+         <code>scratch/review/</code> itself leaves the PDFs unreachable.</p>`;
+    });
+})();
+</script>
+</body>
+</html>

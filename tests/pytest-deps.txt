@@ -7,3 +7,4 @@ pandas
 polars
 scikit-learn
 sparse_dot_topn
+pyarrow

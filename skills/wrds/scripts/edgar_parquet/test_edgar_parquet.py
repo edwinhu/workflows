@@ -1,3 +1,8 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["pytest", "pyarrow"]
+# ///
 """Red suite for the canonical EDGAR record-table parquet converter.
 
 Authored with the plan, before dispatch. No task may edit this file.

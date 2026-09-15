@@ -1,0 +1,18 @@
+# Test suites that are STANDALONE SCRIPTS, not pytest collections — run with `uv run --script`,
+# one path per line. Each declares its own dependencies in a PEP 723 block, because a generic gate
+# cannot know what one script imports.
+#
+# They were run by nothing until 2026-09-15. Three did not even declare their imports, so they
+# could only ever run in a shell that already happened to have numpy, pandas or pyarrow.
+#
+# NOT listed, and why:
+#   skills/gemini-batch/scripts/test_single.py     a live Gemini API call
+#   skills/wrds/scripts/test_connection.py         WRDS PostgreSQL credentials
+#   skills/lseg-data/scripts/test_connection.py    LSEG Data Library credentials
+skills/bmll/scripts/test_bmll_impact.py
+skills/bmll/scripts/test_bmll_scripts.py
+skills/ds/scripts/ds_dq_test.py
+skills/pincite/tests/test_page_offset.py
+skills/writing/scripts/writing_flip_test.py
+skills/writing/scripts/writing_gate_probe_test.py
+skills/writing/scripts/writing_receipt_test.py
