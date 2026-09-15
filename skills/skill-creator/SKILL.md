@@ -97,8 +97,8 @@ Bangs run a shell command at skill load time and inline the stdout into the prom
 
 | Use Case | Example |
 |----------|---------|
-| Auto-load a reference file | `<bang>`cat ${CLAUDE_SKILL_DIR}/references/constraints.md`` |
-| Run a script whose OUTPUT is the context | `<bang>`${CLAUDE_SKILL_DIR}/scripts/rules-for slides,notes`` |
+| Auto-load a reference file | `<bang>`cat ${CLAUDE_SKILL_DIR}/references/<your-file>.md`` |
+| Run a script whose OUTPUT is the context | `<bang>`<the skill's own scripts dir>/<your-script> <args>`` |
 
 Those two are the whole point: `references/*.md` and `scripts/*.{py,ts,sh}` sitting beside the skill. A bang earns its place when the content must be COMPUTED — an index that must match a corpus, a count, a live status. Static prose belongs in the file.
 
@@ -130,7 +130,7 @@ the two files it needs, not thirty. Pair it with one line of prose, since conten
 happen at load time (there is no query yet):
 
 > The names and headings are the index; for a subject none of them carries,
-> `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+> `grep -il <term>` over this skill's own `references/` directory.
 
 **Why a script and not a one-liner.** The extraction is fiddly and every wrong version is silent: a
 shebang, a PEP 723 `/// script` block, `set -euo pipefail` and a lint pragma are each line 1 of a
