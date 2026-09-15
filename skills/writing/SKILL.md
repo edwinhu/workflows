@@ -379,6 +379,7 @@ Omitting it silently runs the user's codex request on claude.
   ],
 
   authorityExtra: [
+    "THE WRITING CONSTRAINT CORPUS IS NOT IN YOUR REFS. Its rules are `${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/` — read the ones governing what you are about to write. Their executable twins run in the gate whether or not you read them, so the gate is the verdict and this is how you avoid earning one.",
     "IRON LAW OF WRITING PLANNING — ask before you draft, and gather sources before you claim. Training-data recall is NOT a source: every citation resolves to a real artifact under the project's references/ and to a key in the Source Plan Bibliography.",
     "IRON LAW OF WRITING VERIFICATION — no check result without the runner's own output. A mechanical check reported from reading the plan or the draft is the model certifying its own work. Every COMPUTED result is an exit code observed on this run.",
     "Never report GRAMMAR, CITE, CLAIM or PROSE-HARD from reading the code, and never report COVER, FIDELITY, TRANSITION or COUNTER as PASS — those four are MODEL-EVALUATED judgements and are reported as such, with the evidence read.",
