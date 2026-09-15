@@ -157,10 +157,10 @@ Omitting it silently runs the user's codex request on claude.
 
   // The TARGET project's own commands, collected at CLARIFY. Nothing generic — a check that does
   // not run this repo's suite gates nothing.
+  // ONE entry point; three lose one silently. Undeclared legs say so; none is exit 2.
   mechanicalChecks: [
-    { name: "tests", cmd: "<the project's full test command>" },
-    { name: "lint",  cmd: "<the project's lint command>" },
-    { name: "build", cmd: "<the project's build command>" },
+    { name: "dev",
+      cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/dev/scripts/check.sh --project-dir <projectDir> --test-cmd \"<the project's test command>\" [--lint-cmd \"<lint>\"] [--build-cmd \"<build>\"]" },
   ],
 
   // Judged BEFORE any implementer is dispatched; a surviving critical|major returns FAIL having
