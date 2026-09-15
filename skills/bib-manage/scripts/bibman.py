@@ -209,25 +209,32 @@ def replace_field(chunk, name, value):
     return new if n else chunk
 
 
-def insert_file(text, ent, relpath):
-    """Return `text` with `file = {relpath}` added to one entry.
+def append_field(chunk, name, value):
+    """Return one entry's chunk with `name = {value}` appended as a new field.
 
     Additive by construction: the entry's existing bytes are untouched except
     for a comma appended to what was the last field. Anything that rewrote the
     entry would reformat 197 entries the user did not ask to have reformatted,
     and the diff would be unreviewable."""
-    s, e = ent['span']
-    chunk = text[s:e]
     close = chunk.rfind('\n}')
     head, tail = chunk[:close], chunk[close:]
     stripped = head.rstrip()
-    if not stripped.endswith(','):
-        head = stripped + ','
-    else:
-        head = stripped
+    head = stripped if stripped.endswith(',') else stripped + ','
     indent = re.search(r'\n(\s+)\w+\s*=', chunk)
     pad = indent.group(1) if indent else '  '
-    return text[:s] + head + f'\n{pad}file = {{{relpath}}}' + tail + text[e:]
+    return head + f'\n{pad}{name} = {{{value}}}' + tail
+
+
+def set_field(chunk, name, value):
+    """Rewrite `name` in place if the entry has it, else append it."""
+    new = replace_field(chunk, name, value)
+    return new if new != chunk else append_field(chunk, name, value)
+
+
+def insert_file(text, ent, relpath):
+    """Return `text` with `file = {relpath}` added to one entry."""
+    s, e = ent['span']
+    return text[:s] + append_field(text[s:e], 'file', relpath) + text[e:]
 
 
 # ------------------------------------------------------------------- audit
@@ -509,6 +516,51 @@ def crossref(query, mailto, rows=5):
             time.sleep(2 ** attempt)
 
 
+def crossref_query(f):
+    """The bibliographic query string for one entry's fields.
+
+    Title alone returns the SSRN PREPRINT DOI (10.2139/ssrn.*) -- that happened
+    on 6 of 7 test entries. Journal, volume and pages are what pull the
+    published record into the result set."""
+    return ' '.join(x for x in (f.get('title', ''), f.get('journal', ''),
+                                f.get('volume', ''), f.get('pages', ''),
+                                f.get('year', '')) if x)
+
+
+def crossref_pick(ent, mailto, rows=5):
+    """(item, rejected) -- the one Crossref record verified against this entry.
+
+    The acceptance test is the whole of this function's value and is shared by
+    `doi` and `reconcile`: the record's START PAGE must equal the bib's, and
+    its volume must not contradict the bib's. An entry with no start page to
+    check against therefore never accepts anything, which is what keeps a
+    `@misc` press release from being handed an article's journal and volume.
+
+    `@article` only, because that is the only entry type whose `pages` is an
+    article's start page. A pincite is shaped exactly like a page range --
+    `easterbrook1991` holds `66-67` -- so nothing in the VALUE can tell them
+    apart, and reading that 66 as a start page accepted an unrelated Crossref
+    record (`10.1111/j.1468-0319.1991.tb00155.x`, titled "Discussion Papers")
+    that happened to begin on page 66, which would have overwritten the title
+    of a book. The entry TYPE is what separates them, and `range_blocked`
+    already says so."""
+    f = ent['f']
+    if ent['type'] != 'article':
+        return None, []
+    want = start_page(f.get('pages', ''))
+    items = crossref(crossref_query(f), mailto, rows=rows)
+    rejected = []
+    for it in items or []:
+        vol = (it.get('volume') or '').strip()
+        ok_page = want is not None and start_page(it.get('page', '')) == want
+        ok_vol = not f.get('volume') or not vol or vol == f['volume']
+        if ok_page and ok_vol:
+            return it, rejected
+        rejected.append((it.get('DOI', ''), it.get('page', '-'), vol,
+                         (it.get('title') or [''])[0][:60]))
+    return None, rejected
+
+
 def range_blocked(ent):
     """Why this entry may never be given a page range, or None if it may.
 
@@ -559,29 +611,12 @@ def cmd_doi(a, bib, pdf_dir, fedreg_dir):
         blocked = range_blocked(e)
         if blocked and f.get('pages'):
             range_skips.append((e['key'], f['pages'], blocked))
-        # Title alone returns the SSRN PREPRINT DOI (10.2139/ssrn.*) -- that
-        # happened on 6 of 7 test entries. Journal, volume and pages are what
-        # pull the published record into the result set.
-        q = ' '.join(x for x in (f.get('title', ''), f.get('journal', ''),
-                                 f.get('volume', ''), f.get('pages', ''),
-                                 f.get('year', '')) if x)
         try:
-            items = crossref(q, a.mailto)
+            item, rejected = crossref_pick(e, a.mailto)
         except Exception as ex:
             print(f"  {e['key']:<28} QUERY FAILED {type(ex).__name__}: {ex}")
             continue
-        pick, rejected = None, []
-        for it in items or []:
-            doi = it.get('DOI', '')
-            got = start_page(it.get('page', ''))
-            vol = (it.get('volume') or '').strip()
-            ok_page = want is not None and got == want
-            ok_vol = not f.get('volume') or not vol or vol == f['volume']
-            if ok_page and ok_vol:
-                pick = (doi, it)
-                break
-            rejected.append((doi, it.get('page', '-'), vol,
-                             (it.get('title') or [''])[0][:60]))
+        pick = (item.get('DOI', ''), item) if item else None
         if pick:
             found[e['key']] = pick[0]
             print(f"  {e['key']:<28} {pick[0]}")
@@ -643,6 +678,418 @@ def cmd_doi(a, bib, pdf_dir, fedreg_dir):
     return 0
 
 
+# --------------------------------------------------------------- reconcile
+
+# PRECEDENCE, and it is the whole of this command's judgement:
+#
+#     Paperpile  >  Crossref  >  the existing extracted value
+#
+# Paperpile is the curated library and wins outright. Crossref is
+# publisher-deposited and beats an extraction. The value already in the bib is
+# the WEAKEST source -- on a bibliography whose header reads "Auto-extracted
+# from sources.md via Gemini Vertex Batch", every field was written by a model
+# reading a markdown list, and no entry carries a DOI. Either stronger source
+# may overwrite it, but NEVER silently: every change is printed as
+# `citekey.field: old -> new  [source]`, and --dry-run writes nothing.
+#
+# Implemented as source ORDER, not as a merge: an entry confidently matched in
+# Paperpile is never queried against Crossref, so the stronger source cannot be
+# contradicted by the weaker one.
+PRECEDENCE = ('paperpile', 'crossref')
+
+RECONCILE_FIELDS = ('author', 'title', 'journal', 'volume', 'pages',
+                    'year', 'doi', 'publisher')
+
+# `file` is NOT in that tuple and must never be added to it: the local PDF
+# mapping belongs to `link`, which owns both the matcher and its thresholds.
+
+# Fields only an @article may be given. A `@misc` press release has no journal
+# and no volume; handing it one because a Crossref record happened to carry
+# them is inventing a citation, and this guard is the reason a @misc entry
+# cannot gain either.
+ARTICLE_ONLY = ('journal', 'volume', 'pages')
+
+PP_INDEX = pathlib.Path.home() / '.claude-work/skills/paperpile/cache/paperpile-index.json'
+
+# A CONFIDENT Paperpile match, and nothing looser is accepted:
+#   * first-author surname equal, and
+#   * |bib year - library year| <= 1  (a working paper and its published
+#     version differ by a year; two years apart is two papers), and
+#   * title similarity >= PP_TITLE_SAME when the years agree, >= PP_TITLE_NEAR
+#     when they differ -- the same asymmetry `link` uses, and for the same
+#     reason: with the year corroborating, the title may be looser; without it,
+#     only the title separates two papers by one author.
+# Two candidates that both clear the bar within PP_TIE of each other are
+# AMBIGUOUS: reported, never picked.
+PP_TITLE_SAME, PP_TITLE_NEAR, PP_TIE = 0.90, 0.95, 0.02
+
+# An entry with NO author (114 of the 197 here are @misc press releases and SEC
+# releases) has no surname to corroborate with, so the title must carry the
+# match alone and must be near-exact -- AND its year must match EXACTLY. A
+# document with no author is a release, a statute or a press item with a fixed
+# date; there is no working-paper-to-published drift to allow a year of slack
+# for, and allowing one matched `secproxyadvice2019` (the SEC's own 2019
+# release, 84 Fed. Reg. 66,518) to a 2020 COMMENT LETTER about it, whose title
+# is the release's title with `RE: ` in front -- 0.98 similarity, a different
+# document, and a proposal to rewrite both title and year.
+PP_TITLE_NOAUTHOR = 0.97
+
+# `10.2139/ssrn.<id>` is the PREPRINT's DOI and `SSRN Electron. J.` is its
+# placeholder journal. Both are correct for a genuine working paper and are
+# REGRESSIONS on an entry that already names the journal it was published in --
+# `choi2009` (S. Cal. L. Rev. 82:649) and `bebchuk2019a` (B.U. L. Rev. 99:721)
+# are both published articles whose Paperpile record is the SSRN version. The
+# skill already knows a title query returns the SSRN preprint; this is the same
+# fact reaching the library rather than Crossref.
+SSRN_DOI = re.compile(r'^10\.2139/ssrn\.', re.I)
+SSRN_JOURNAL = re.compile(r'^ssrn\s+electron', re.I)
+PUBLISHED_ONLY = ('journal', 'volume', 'pages', 'year', 'publisher', 'doi')
+
+
+def caps_only(author):
+    """Is this author string SHOUTED? The ` and ` separators are lowercase, so
+    `str.isupper()` on the whole string is always False and never fires."""
+    names = re.sub(r'\s+and\s+', ' ', author or '')
+    return bool(re.search(r'[A-Za-z]', names)) and names.isupper()
+
+# A given name that is one letter is an INITIAL. Paperpile stores `J Fisch`
+# where the bib holds `Jill E. Fisch`, and Crossref answered `VICENTE CUÑAT`
+# in full caps for `Vicente Cuñat`. Precedence orders sources by reliability;
+# it does not authorise trading a fuller rendering of a name for a thinner one.
+def initials_only(author):
+    names = [n.strip() for n in re.split(r'\s+and\s+', author or '') if n.strip()]
+    given = [t for n in names for t in n.split()[:-1]]
+    return bool(given) and all(len(t.strip('.')) == 1 for t in given)
+
+
+def pp_load(path):
+    """[record] from the paperpile CLI's index cache, or None if absent."""
+    if not path.exists():
+        return None
+    return json.loads(path.read_text()).get('library') or []
+
+
+def pp_search(query, rows=8):
+    """Top candidates from `paperpile search --json`.
+
+    The CLI's scorer is the skill's own search -- this reads its ranking rather
+    than reimplementing it, and joins on `_id` to the index cache for the
+    fields the search output omits (journal, volume, pages, doi, publisher)."""
+    import subprocess
+    try:
+        r = subprocess.run(['paperpile', 'search', query, '--json'],
+                           capture_output=True, text=True, timeout=120)
+    except (OSError, subprocess.SubprocessError) as ex:
+        raise RuntimeError(f'paperpile search failed: {ex}')
+    if r.returncode != 0:
+        raise RuntimeError(f'paperpile search exited {r.returncode}: '
+                           f'{r.stderr.strip()[:200]}')
+    try:
+        return (json.loads(r.stdout) or [])[:rows]
+    except json.JSONDecodeError:
+        return []
+
+
+def pp_surname(rec):
+    au = rec.get('author') or []
+    return (au[0].get('last', '') if au else '').strip().lower()
+
+
+def pp_year(rec):
+    return str(((rec.get('published') or {}).get('year') or '')).strip()
+
+
+def pp_authors(rec):
+    """`First Last and First Last`, the shape this bibliography already uses."""
+    out = []
+    for a in rec.get('author') or []:
+        nm = ' '.join(x for x in (a.get('first', '').strip(),
+                                  a.get('last', '').strip()) if x)
+        if nm:
+            out.append(nm)
+    return ' and '.join(out)
+
+
+def pp_fields(rec):
+    """Paperpile record -> the reconcilable fields, blanks dropped."""
+    out = {'author': pp_authors(rec), 'title': (rec.get('title') or '').strip(),
+           'journal': (rec.get('journal') or '').strip(),
+           'volume': (rec.get('volume') or '').strip(),
+           'pages': (rec.get('pages') or '').strip(), 'year': pp_year(rec),
+           'doi': (rec.get('doi') or '').strip(),
+           'publisher': (rec.get('publisher') or '').strip()}
+    return {k: v for k, v in out.items() if v}
+
+
+def cr_fields(item):
+    """Crossref record -> the same fields.
+
+    `short-container-title` is preferred over `container-title` because the bib
+    spells journals as abbreviations; the full masthead name would be a change
+    of register dressed up as a correction."""
+    au = []
+    for a in item.get('author') or []:
+        nm = ' '.join(x for x in ((a.get('given') or '').strip(),
+                                  (a.get('family') or '').strip()) if x)
+        if nm:
+            au.append(nm)
+    short = (item.get('short-container-title') or [])
+    full = (item.get('container-title') or [])
+    yr = ''
+    parts = ((item.get('issued') or {}).get('date-parts') or [[]])[0]
+    if parts:
+        yr = str(parts[0])
+    out = {'author': ' and '.join(au),
+           'title': ((item.get('title') or [''])[0] or '').strip(),
+           'journal': (short[0] if short else (full[0] if full else '')).strip(),
+           'volume': (item.get('volume') or '').strip(),
+           'pages': (item.get('page') or '').strip(), 'year': yr,
+           'doi': (item.get('DOI') or '').strip(),
+           'publisher': (item.get('publisher') or '').strip()}
+    return {k: v for k, v in out.items() if v}
+
+
+def pp_match(ent, cands, by_id):
+    """(record, score, note) for a confident match, else (None, score, why).
+
+    Never picks between two plausible candidates -- an ambiguous pair is
+    reported, because a wrong Paperpile match rewrites author, title, journal
+    and DOI at once, which is far worse than an entry left alone."""
+    f = ent['f']
+    bt, bsur = norm_title(f.get('title', '')), surname(f.get('author', ''))
+    byr = (f.get('year') or '').strip()
+    if not bt:
+        return None, 0.0, 'entry has no title to match on'
+    scored = []
+    for c in cands:
+        rec = by_id.get(c.get('_id'))
+        if not rec or not (rec.get('title') or '').strip():
+            continue
+        score = difflib.SequenceMatcher(None, bt, norm_title(rec['title']),
+                                        autojunk=False).ratio()
+        ryr = pp_year(rec)
+        try:
+            dy = abs(int(byr) - int(ryr)) if byr and ryr else None
+        except ValueError:
+            dy = None
+        if bsur:
+            if pp_surname(rec) != bsur:
+                continue
+            if dy is None or dy > 1:
+                continue
+            need = PP_TITLE_SAME if dy == 0 else PP_TITLE_NEAR
+        else:
+            # No author to corroborate: the title carries the match alone, and
+            # the year must be EXACT -- see PP_TITLE_NOAUTHOR.
+            if dy != 0:
+                continue
+            need = PP_TITLE_NOAUTHOR
+        if score >= need:
+            scored.append((score, need, rec))
+    if not scored:
+        near = max((difflib.SequenceMatcher(
+            None, bt, norm_title((by_id.get(c.get('_id')) or {}).get('title', '')),
+            autojunk=False).ratio() for c in cands), default=0.0)
+        return None, near, f'no confident match (best title similarity {near:.2f})'
+    scored.sort(key=lambda r: -r[0])
+    if len(scored) > 1 and scored[0][0] - scored[1][0] < PP_TIE:
+        return None, scored[0][0], (
+            f'AMBIGUOUS: {scored[0][2].get("citekey")} {scored[0][0]:.2f} vs '
+            f'{scored[1][2].get("citekey")} {scored[1][0]:.2f}')
+    s, need, rec = scored[0]
+    return rec, s, f'{rec.get("citekey")} title {s:.2f} (>= {need:.2f})'
+
+
+def field_blocked(ent, name, old, new, src_fields=None):
+    """Why `name` may not be set to `new` on this entry, or None if it may.
+
+    Every branch protects a value that is already right, or refuses to invent
+    one the entry has no basis for. `src_fields` is the whole candidate record,
+    because whether one field may be taken can depend on another -- an SSRN DOI
+    disqualifies the journal that came with it."""
+    src_fields = src_fields or {}
+    if name == 'file':
+        return 'file belongs to `link`, not to reconcile'
+    if name in ARTICLE_ONLY and ent['type'] != 'article':
+        return f'@{ent["type"]} may not be given a {name}'
+    if not new:
+        return 'source has no value'
+    if name in PUBLISHED_ONLY:
+        bibj = (ent['f'].get('journal') or '').strip()
+        preprint = (SSRN_DOI.match(src_fields.get('doi', ''))
+                    or SSRN_JOURNAL.match(src_fields.get('journal', '')))
+        if bibj and not SSRN_JOURNAL.match(bibj) and preprint:
+            return ('source record is the SSRN preprint; the entry already '
+                    f'names {bibj}')
+    if name == 'author' and old:
+        if initials_only(new) and not initials_only(old):
+            return 'source gives initials only'
+        if caps_only(new) and not caps_only(old):
+            return 'source gives the name in full caps'
+    if name == 'pages':
+        pages = (old or '').strip()
+        if ARTICLE_NUMBER.match(pages):
+            return 'Elsevier article number, not a page'
+        if pages and not BARE_PAGE.match(pages):
+            # `66-67`, `849, 851--52` -- a Bluebook PINCITE, not a bad page
+            # range. Precedence does not authorise replacing one kind of value
+            # with another, so this is reported as a conflict and left alone.
+            return 'pages holds a Bluebook pincite, not an article span'
+        got = page_range(new)
+        if pages and got and got[0] != int(pages):
+            return f'source range starts at {got[0]}, bib says {pages}'
+        if pages and not got:
+            return f'source pages {new!r} is not a range'
+    return None
+
+
+def cmd_reconcile(a, bib, pdf_dir, fedreg_dir):
+    text = bib.read_text()
+    ents = entries(text)
+    keys_before = [e['key'] for e in ents]
+
+    lib = pp_load(pathlib.Path(a.pp_index).expanduser() if a.pp_index else PP_INDEX)
+    if lib is None:
+        print(f"WARNING: no Paperpile index at "
+              f"{a.pp_index or PP_INDEX}; every entry falls through to Crossref."
+              f"\n         Run `paperpile index --refresh` to populate it.\n")
+        lib, by_id = [], {}
+    else:
+        by_id = {r['_id']: r for r in lib if r.get('_id')}
+        print(f"paperpile index: {len(lib)} records\n")
+
+    fields = [f for f in RECONCILE_FIELDS
+              if not a.fields or f in a.fields]
+    todo = [e for e in ents if not a.only or e['key'] in a.only]
+    print(f"{len(ents)} entries, reconciling {len(todo)}; "
+          f"fields: {', '.join(fields)}\n")
+
+    changes = []      # (key, field, old, new, source)
+    conflicts = []    # (key, field, old, offered, source, why)
+    covered = {'paperpile': [], 'crossref': [], 'none': []}
+    ambiguous, errors = [], []
+
+    for e in todo:
+        f, key = e['f'], e['key']
+        rec, src, note = None, None, ''
+        if by_id:
+            q = ' '.join(x for x in (f.get('title', ''),
+                                     surname(f.get('author', '')),
+                                     f.get('year', '')) if x)
+            try:
+                rec, _score, note = pp_match(e, pp_search(q), by_id)
+            except RuntimeError as ex:
+                errors.append((key, str(ex)))
+                note = str(ex)
+        if rec is not None:
+            src, new = 'paperpile', pp_fields(rec)
+            covered['paperpile'].append(key)
+        else:
+            if note.startswith('AMBIGUOUS'):
+                ambiguous.append((key, note))
+            # Paperpile has no record: fall back to the Crossref lookup `doi`
+            # already does, acceptance test and all.
+            try:
+                item, _rej = crossref_pick(e, a.mailto)
+            except Exception as ex:
+                errors.append((key, f'crossref: {type(ex).__name__}: {ex}'))
+                item = None
+            if item is not None:
+                src, new = 'crossref', cr_fields(item)
+                covered['crossref'].append(key)
+                note = f'{item.get("DOI")} page {item.get("page")} == bib ' \
+                       f'{f.get("pages")}'
+            else:
+                covered['none'].append(key)
+                new = {}
+
+        # Every pincite-bearing `pages` is reported, whether or not a source
+        # offered a competing span: the field is in a state where precedence
+        # cannot apply, and saying so is the point.
+        pages = (f.get('pages') or '').strip()
+        if pages and not BARE_PAGE.match(pages) and not ARTICLE_NUMBER.match(pages):
+            conflicts.append((key, 'pages', pages, new.get('pages', ''),
+                              src or '-',
+                              'pages holds a Bluebook pincite, not an article span'))
+
+        for name in fields:
+            if name not in new:
+                continue
+            old, val = (f.get(name) or '').strip(), new[name].strip()
+            why = field_blocked(e, name, old, val, new)
+            if why:
+                if old and norm_title(old) != norm_title(val) and name != 'pages':
+                    conflicts.append((key, name, old, val, src, why))
+                continue
+            if old and norm_title(old) == norm_title(val):
+                continue          # same value, different punctuation -- no churn
+            changes.append((key, name, old, val, src))
+
+    print(f"COVERAGE   paperpile {len(covered['paperpile'])}  "
+          f"crossref {len(covered['crossref'])}  "
+          f"neither {len(covered['none'])}")
+    print(f"CHANGES    {len(changes)} proposed across "
+          f"{len({c[0] for c in changes})} entries")
+    print(f"CONFLICTS  {len(conflicts)} reported, values unchanged\n")
+
+    if changes:
+        print("PROPOSED CHANGES")
+        for key, name, old, val, src in changes:
+            print(f"  {key}.{name}: {old or '(absent)'} -> {val}  [{src}]")
+    if conflicts:
+        print("\nCONFLICTS -- reported, NOT applied")
+        for key, name, old, offered, src, why in conflicts:
+            print(f"  {key}.{name}: {old} kept; {src} offers "
+                  f"{offered or '(nothing)'}\n      {why}")
+    if ambiguous:
+        print(f"\nAMBIGUOUS PAPERPILE MATCHES ({len(ambiguous)}) -- none picked")
+        for key, note in ambiguous:
+            print(f"  {key:<28} {note}")
+    if covered['none']:
+        print(f"\nNO SOURCE ({len(covered['none'])}) -- neither Paperpile nor "
+              f"Crossref had a verified record")
+        for key in covered['none']:
+            print(f"  {key}")
+    if errors:
+        print(f"\nERRORS ({len(errors)})")
+        for key, msg in errors:
+            print(f"  {key:<28} {msg}")
+
+    if a.dry_run:
+        print(f"\n--dry-run: {len(changes)} changes, nothing written")
+        return 0
+    if not changes:
+        print("\nnothing to write")
+        return 0
+
+    by_key = {e['key']: e for e in ents}
+    per_entry = {}
+    for key, name, _old, val, _src in changes:
+        per_entry.setdefault(key, []).append((name, val))
+    for key in sorted(per_entry, key=lambda k: by_key[k]['span'][0], reverse=True):
+        s, en = by_key[key]['span']
+        chunk = text[s:en]
+        for name, val in per_entry[key]:
+            chunk = set_field(chunk, name, val)
+        text = text[:s] + chunk + text[en:]
+
+    if a.backup:
+        shutil.copy2(bib, str(bib) + '.bak')
+    bib.write_text(text)
+
+    # The citekey set is load-bearing: the manuscript references entries by key
+    # through `#ref(<key>)` and resolve_refs.py resolves supra numbers through
+    # them, so a renamed or dropped key silently breaks the paper. Nothing above
+    # touches a key -- this re-reads what was written and proves it.
+    after = [e['key'] for e in entries(bib.read_text())]
+    if after != keys_before:
+        sys.exit(f'FATAL: citekeys changed ({len(keys_before)} -> {len(after)}); '
+                 f'restore from {bib}.bak')
+    print(f"\nwrote {len(changes)} field changes into {bib}")
+    print(f"citekeys unchanged: {len(after)} entries, identical set and order")
+    return 0
+
+
 # ------------------------------------------------------------------ fedreg
 
 FR_CITE = re.compile(r'(\d+)\s+Fed\.\s*Reg\.\s*~?\s*([\d,]+)')
@@ -701,7 +1148,8 @@ def main():
         prog='bibman.py',
         description='Own the bibliography: link entries to PDFs, check the PDF '
                     'is the version of record, backfill DOIs, fetch Fed. Reg.')
-    ap.add_argument('cmd', choices=['audit', 'link', 'version', 'doi', 'fedreg'])
+    ap.add_argument('cmd', choices=['audit', 'link', 'version', 'doi',
+                                    'reconcile', 'fedreg'])
     ap.add_argument('--root', default='.', help='manuscript repo root (default: cwd)')
     ap.add_argument('--bib', help=f"bibliography (default: {DEFAULTS['bib']})")
     ap.add_argument('--pdf-dir', help=f"source PDFs (default: {DEFAULTS['pdf_dir']})")
@@ -712,7 +1160,12 @@ def main():
     ap.add_argument('--backup', action='store_true',
                     help='write <bib>.bak before modifying the bibliography')
     ap.add_argument('--only', default='',
-                    help='comma-separated citekeys to restrict version/doi to')
+                    help='comma-separated citekeys to restrict version/doi/reconcile to')
+    ap.add_argument('--fields', default='',
+                    help='reconcile: comma-separated subset of '
+                         + ','.join(RECONCILE_FIELDS) + ' (default: all)')
+    ap.add_argument('--pp-index', default='',
+                    help=f'reconcile: paperpile index cache (default: {PP_INDEX})')
     ap.add_argument('--limit', type=int, default=0, help='doi: stop after N entries')
     ap.add_argument('--force', action='store_true', help='fedreg: refetch what exists')
     ap.add_argument('--strict', action='store_true',
@@ -729,6 +1182,11 @@ def main():
     pdf_dir = pick(a.pdf_dir, 'pdf_dir')
     fedreg_dir = pick(a.fedreg_dir, 'fedreg_dir')
     a.only = {x.strip() for x in a.only.split(',') if x.strip()}
+    a.fields = {x.strip() for x in a.fields.split(',') if x.strip()}
+    bad = a.fields - set(RECONCILE_FIELDS)
+    if bad:
+        sys.exit(f"--fields: not reconcilable: {', '.join(sorted(bad))} "
+                 f"(choose from {', '.join(RECONCILE_FIELDS)})")
 
     if not bib.exists():
         sys.exit(f"no bibliography at {bib} (pass --bib)")
@@ -744,7 +1202,8 @@ def main():
             PIN = _load_pincite()
 
     return {'audit': cmd_audit, 'link': cmd_link, 'version': cmd_version,
-            'doi': cmd_doi, 'fedreg': cmd_fedreg}[a.cmd](a, bib, pdf_dir, fedreg_dir)
+            'doi': cmd_doi, 'reconcile': cmd_reconcile,
+            'fedreg': cmd_fedreg}[a.cmd](a, bib, pdf_dir, fedreg_dir)
 
 
 if __name__ == '__main__':
