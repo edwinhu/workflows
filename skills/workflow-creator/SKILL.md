@@ -431,7 +431,7 @@ its own `skills:` frontmatter, never through `refs`:
 
 | audience | delivery |
 |---|---|
-| the orchestrator (the generated skill) | a bang over its own `references/` at load |
+| the orchestrator (the generated skill) | a bang at load — glob its `references/`, or grep a corpus by scope |
 | implementer agents | `tasks[].refs` |
 | judging agents — lenses and their refuters | `reviewLenses[].refs` |
 | everyone, for a short rule | `authorityExtra` |
@@ -462,9 +462,16 @@ and nothing else — correctly local, whatever their frontmatter says. Placement
 currently arbitrary in BOTH directions, and neither direction is fixed by a rule about what kind of
 document a file is.
 
-**Discovery is computed either way, never listed.** A hand-written list of a directory falls behind
-the moment someone adds a file and nothing shows it — 16 reference files across 10 skills are named
-by no SKILL.md today. A skill lists its own with a bang:
+**BOTH are a bang; the bang is the only thing that computes at load.** Grep and glob are not
+alternatives to it, they are what it RUNS — grep the field when a subset is meaningful, glob the
+directory when it is not. Never a hand-written list either way: one falls behind the moment someone
+adds a file and nothing shows it, which is why 16 reference files across 10 skills are named by no
+SKILL.md today.
+
+A bang reaches an orchestrator skill and nothing else — see the delivery table above for the other
+three audiences. `refs` names one artefact; a bang discovers a set.
+
+A skill lists its own references like this:
 
 ```
 !`n=0; for f in ${CLAUDE_SKILL_DIR}/references/*.md; do [ -e "$f" ] || continue; case "$(basename "$f")" in _*) continue;; esac; printf -- "- %s — %s\n" "$(basename "$f")" "$(sed -n "s/^# //p" "$f" | head -1)"; n=$((n+1)); done; [ "$n" -gt 0 ] || { echo "!! no references found — this skill names references it cannot see"; exit 2; }`
