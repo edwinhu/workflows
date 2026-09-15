@@ -173,6 +173,9 @@ describe('--loops N > 0 hands the driver off DETACHED instead of printing', () =
    * process group. The dispatching shell is put in its own session here so that kill is exactly
    * that one; the loop must survive it, which it can only do by being in a session of its own.
    */
+  // 130s, not bun's default 5s: this test polls to its OWN 120s deadline while a detached
+  // process group runs to a verdict. It finished inside 5s when run alone and was killed at
+  // 5000ms under the full parallel suite — patience, not the assertion, was what was wrong.
   test('SIGKILLing the caller\'s entire process group leaves the loop running to its verdict', () => {
     const f = fixture()
     const log = join(f.dir, 'caller.log')
@@ -196,7 +199,7 @@ describe('--loops N > 0 hands the driver off DETACHED instead of printing', () =
     execFileSync('bash', ['-c', `kill -KILL -${pgid} 2>/dev/null; :`])
     expect(loopExit(f.runDir)).toBe('0')
     expect(existsSync(join(f.runDir, 'result.json'))).toBe(true)
-  })
+  }, 130_000)
 
   test('a failing gate at the loop cap surfaces the driver\'s halt code in loop.exit, not a bare 0', () => {
     const f = fixture()

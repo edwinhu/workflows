@@ -1,6 +1,6 @@
 ---
 name: pincite
-description: "ALWAYS use when a law review manuscript's footnotes need page numbers, or when a page number already in one looks wrong — 'add pincites', 'pincite this draft', 'the editors want pin cites', 'my footnotes have no page cites', 'fill in the at-page for these cites', 'find the page that supports this claim', 'check my pincites', 'what page does this source say that'. STATUS: 'how many footnotes still need pincites', 'which cites are still missing page numbers', 'what's left to pincite', 'how many pin-cites are left'. WRONG PIN: 'the page number is wrong', 'this pin is off by a page', 'this pincite points at preprint pagination', 'why did this cite land on the wrong page'. Use proactively before any law review submission whose footnotes carry bare cites. NEGATIVE ROUTING: whether a PDF is the version of record, a preprint or proof, or the wrong document entirely is bib-manage — hand off rather than pinning against it, even mid-run; whether a cited source exists or says anything at all is source-verify; Bluebook FORM of a citation is bluebook or bluebook-audit; archiving URLs is permacc."
+description: "ALWAYS use when a law review manuscript's footnotes need page numbers, or when a page number already in one looks wrong — 'add pincites', 'pincite this draft', 'the editors want pin cites', 'my footnotes have no page cites', 'fill in the at-page for these cites', 'find the page that supports this claim', 'check my pincites', 'what page does this source say that'. HAND REVIEW: 'review my pincites by hand', 'show me each footnote with its PDF', 'let me enter the page numbers myself', 'apply the pincites I entered'. STATUS: 'how many footnotes still need pincites', 'which cites are still missing page numbers', 'what's left to pincite', 'how many pin-cites are left'. WRONG PIN: 'the page number is wrong', 'this pin is off by a page', 'this pincite points at preprint pagination', 'why did this cite land on the wrong page'. Use proactively before any law review submission whose footnotes carry bare cites. NEGATIVE ROUTING: whether a PDF is the version of record, a preprint or proof, or the wrong document entirely is bib-manage — hand off rather than pinning against it, even mid-run; whether a cited source exists or says anything at all is source-verify; Bluebook FORM of a citation is bluebook or bluebook-audit; archiving URLs is permacc."
 ---
 
 # Pincite
@@ -20,6 +20,17 @@ verify      re-find the quote in the PDF, derive the printed page from the
             document's own numbering, compare
 report      the CONFIRMED pincites, ready to paste — plus a separate
             CONFLICTS section for rows that ALREADY carry a pin
+```
+
+And a hand-review loop for what the model could not settle:
+
+```
+review_build.py  one row per citation SITE → <root>/scratch/review-data.json,
+                 plus the page copied to <root>/scratch/review/index.html: each
+                 footnote with THIS site marked, beside its PDF opened at the
+                 best-guess page
+apply            the page's pincites.json export → the manuscript. `set` inserts
+                 `, at N`; `keep` and `skip` edit nothing. DRY RUN by default
 ```
 
 ## Kinds
@@ -96,6 +107,32 @@ python3 "$P" verify    --root . --state scratch/pincite.json
 python3 "$P" report    --root . --state scratch/pincite.json
 ```
 
+### Hand review
+
+```bash
+python3 "${CLAUDE_SKILL_DIR}/scripts/review_build.py" --root .
+python3 "${CLAUDE_SKILL_DIR}/assets/review/serve.py" 8765 .   # the REPO ROOT, or the PDFs 404
+# http://localhost:8765/scratch/review/index.html — every edit autosaves to
+# <root>/pincites.json; `e` still exports it if the status line says NOT SAVED.
+
+python3 "$P" apply --root . --from pincites.json             # dry run
+python3 "$P" apply --root . --from pincites.json --confirm   # writes
+```
+
+Both `scratch/percite-classified.json` and `scratch/pincite.json` are optional
+inputs to the build: without them there is no decision column and the
+best-guess page is the bibliography's start page. `review-data.json` and
+`scratch/review/index.html` are OUTPUT — overwritten every build, never edited
+in place.
+
+`apply` identifies a site by `(fn, citekey, occurrence)`, asserts its match
+string occurs exactly once inside that footnote's own span, and refuses the
+WHOLE run if any assertion fails. It records every decision — `set`, `keep` and
+`skip` alike — in the existing `scratch/percite-classified.json`, marking a
+hand-entered pin `"source": "author"` with the author's page as
+`verified_page`. That record is what a provenance gate traces; a pin applied
+without it traces to nothing and should fail.
+
 Every path is a flag, so the tool works on any manuscript: `--body`, `--bib`,
 `--pdf-dir`, `--fedreg-dir`. `--bio-offset` (default 3) is how many leading
 author-identification footnotes render as `*`, `†`, `‡` and take no Arabic
@@ -116,6 +153,9 @@ python3 "${CLAUDE_SKILL_DIR}/tests/test_page_offset.py" [--corpus /path/to/repo]
 It asserts 11 measured offsets against real PDFs and exits non-zero on a real
 failure; with no corpus it skips and exits 0. The fixtures are paywalled and are
 not vendored here.
+
+`apply` has its own suite, which needs no corpus — every fixture is built
+inline: `cd "${CLAUDE_SKILL_DIR}" && uvx --with pytest pytest` (no system pytest here).
 
 ## Facts
 

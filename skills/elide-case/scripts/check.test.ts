@@ -691,7 +691,20 @@ ${scopeSection([
   describe("the strays leg decides widows, orphans, stranded headings and runts", () => {
     const PAGEBREAKS = path.join(import.meta.dir, "check-page-breaks.py");
     const MAKE = path.join(FIXTURES, "make-pagebreak-fixture.py");
-    const RUNTS = path.join(import.meta.dir, "..", "..", "..", "scripts", "check-widows.py");
+    // The runt checker is CANONICAL, in the typst plugin, and is resolved the way check.sh
+    // resolves it. This named `<plugin>/scripts/check-widows.py` — the pre-split script that did
+    // widows, orphans and runts together, and that exists in no plugin since typst separated them
+    // into widows.py / orphans.py / runts.py. The test failed for years-old naming, not for a
+    // defect, and nothing ran it to say so: skills/*/scripts/ was in no gate.
+    const RUNTS = (() => {
+      const r = spawnSync("typst-constraints", ["--dir"], { encoding: "utf8" });
+      if (r.status === 0 && r.stdout.trim()) return path.join(r.stdout.trim(), "runts.py");
+      for (const c of [`${process.env.HOME}/.claude/skills/typst/constraints`,
+                       `${process.env.HOME}/projects/typst/constraints`]) {
+        if (existsSync(path.join(c, "runts.py"))) return path.join(c, "runts.py");
+      }
+      throw new Error("the typst plugin was not found — runts.py cannot run, which is not the same as its passing");
+    })();
 
     /** An interpreter that can import pymupdf, resolved the way the checker resolves it. */
     function pymupdfPython(): string | null {

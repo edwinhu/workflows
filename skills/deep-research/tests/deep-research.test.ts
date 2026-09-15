@@ -354,7 +354,11 @@ describe("project structure (DR-09, DR-10, DR-11, DR-12)", () => {
   });
 
   it("DR-10: agents/librarian.md references deep-research skill", () => {
-    const librarianPath = resolve(skillDir, "../../agents/librarian.md");
+    // user-agents/, not agents/. A plugin's agents/ is the LOWEST-priority agent location and
+    // its files get scoped identifiers (plugin:name), so anything routing by bare name lives in
+    // user-agents/ and is linked into ~/.claude/agents/. librarian moved there; this test kept
+    // asserting the old path, and no gate ran it.
+    const librarianPath = resolve(skillDir, "../../user-agents/librarian.md");
     expect(existsSync(librarianPath)).toBe(true);
     const content = readFileSync(librarianPath, "utf-8");
     expect(content).toMatch(/deep-research/);

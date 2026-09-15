@@ -13,14 +13,14 @@ argue with a specific row.
 | rule id | raw findings | false positives | true positives |
 |---|---|---|---|
 | positive-match-failure-vocabulary | 26 | 23 | 3 |
-| single-distinct-literal | 202 | 193 | 9 |
+| single-distinct-literal | 204 | 193 | 11 |
 | existence-only-artifact | 1 | 1 | 0 |
 | injected-key-never-varied | 43 | 43 | 0 |
 
 **The raw column is re-measured; the false-positive column is NOT.** Re-measured 2026-09-15 against
 a corpus that has grown from 232 files as this repo gained test suites. The false-positive counts
 are the ones this investigation actually audited, in August, over the findings that existed then —
-so the eleven newer findings (nine `single-distinct-literal`, two
+so the thirteen newer findings (eleven `single-distinct-literal`, two
 `positive-match-failure-vocabulary`) sit in the true-positive column by arithmetic, NOT by
 judgement. Nobody has read them. Do not cite that column as evidence about them.
 
@@ -259,7 +259,7 @@ the very sentence documenting the absence of the thing.
 **Harness plumbing, correctly held constant (31 findings).** The remainder are environment keys a test
 sets to configure its own harness rather than to exercise a branch: `CRAFT_DISPATCH_DRYRUN: '1'` (at
 `skills/work/scripts/plan-lint.test.ts:386`,
-`skills/work/scripts/work-dispatch-loops.test.ts:237`), `CRAFT_GOAL_PRINT: '1'` at
+`skills/work/scripts/work-dispatch-loops.test.ts:240`), `CRAFT_GOAL_PRINT: '1'` at
 `skills/work/scripts/work-dispatch.test.ts:92`, `CLAUDE_CODE_SESSION_ID: ''`
 at `skills/work/scripts/work-goal-resend.test.ts:78`, `CRAFT_FARM: '/bin/false'` at
 `skills/work/scripts/work-loop.test.ts:86`, `CRAFT_REDISPATCH_DRYRUN: '1'` at
