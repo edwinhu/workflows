@@ -489,11 +489,9 @@ search belongs at USE time:
 > The names are the index. For a subject no name carries, grep the bodies:
 > `grep -il <term> <the references dir>/*.md`.
 
-A skill lists its own references like this:
-
-```
-!`n=0; for f in ${CLAUDE_SKILL_DIR}/references/*.md; do [ -e "$f" ] || continue; case "$(basename "$f")" in _*) continue;; esac; printf -- "- %s — %s\n" "$(basename "$f")" "$(sed -n "s/^# //p" "$f" | head -1)"; sed -n "s/^## //p" "$f" | paste -sd "|" - | sed "s/|/ · /g;s/^/    /"; n=$((n+1)); done; [ "$n" -gt 0 ] || { echo "!! no references found — this skill names references it cannot see"; exit 2; }`
-```
+A skill lists its own `references/` AND its own `scripts/` at load with one line —
+`!`${CLAUDE_PLUGIN_ROOT}/scripts/skill-toc ${CLAUDE_SKILL_DIR}``. See `skill-creator`, *The two
+TOCs*, for what it renders and why it is a script. Do not hand-write either list.
 
 **THREE THINGS WILL BITE, all measured; `references/bang-reach.md` has the evidence.** A bang runs
 only in an INVOKED file — a SKILL.md or a slash command — and is dead text in an agent definition
