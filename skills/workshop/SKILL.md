@@ -172,7 +172,7 @@ resolves them against no particular directory; `writablePaths` and every `mechan
     { name: "workshop-deck",
       cmd: "uv run --with pypdf python3 ${CLAUDE_PLUGIN_ROOT}/skills/workshop/scripts/workshop-deck.py --plan <the planPath above, substituted when args.json is written> --project-dir ." },
     { name: "constraints",
-      cmd: "python3 ~/.claude/skills/typst/references/checkers/workshop/run-constraints.py presentation" },
+      cmd: "python3 ~/.claude/skills/typst/constraints/workshop/run-constraints.py presentation" },
     { name: "probe-tests",
       cmd: "uv run --with pypdf --with pytest python3 -m pytest ${CLAUDE_PLUGIN_ROOT}/skills/workshop/scripts/workshop_deck_test.py" },
   ],

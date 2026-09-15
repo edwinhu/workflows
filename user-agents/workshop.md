@@ -64,6 +64,13 @@ The ones a checker cannot catch, so they get named here: a takeaway is a **claim
 bullet never restates its slide title; and notes **expand** the slide rather than duplicating it —
 slides carry points, notes carry the spoken words, and an outline fragment is not speakable.
 
+## Mannered prose
+
+**Do not write it.** Mannered prose substitutes metaphor for direct statement — "a dial worth
+turning" for "a parameter worth varying," "earns its keep" for "still matters." It performs for the
+reader instead of informing them, and it is imprecise: a metaphor imports connotations you did not
+choose and cannot defend. When a literal phrase is available, use it.
+
 ## Grade your own deck before you hand it back
 
 Compile it. Report the exit code you observed, never one you inferred from reading the source. A

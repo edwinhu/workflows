@@ -37,7 +37,7 @@ Every main result table (regression output, summary statistics for key findings,
 Named for Terrence Hendershott, who insists that every table deserves a figure.
 
 **Preferred tools:**
-- **Python:** `great_tables` for tables, `pyobsplot` for figures. Matplotlib/seaborn are acceptable fallbacks.
+- **Python:** `great_tables` for tables, `pyobsplot` for figures because it renders SVG natively. Matplotlib/seaborn are acceptable fallbacks, under the vector rule in A5 (`ds-chart-typography.md`), which governs figure format.
 - **R:** `gt` for tables, `ggplot2` for figures.
 
 ## Examples
