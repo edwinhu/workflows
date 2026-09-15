@@ -24,7 +24,11 @@ import re
 import sys
 from pathlib import Path
 
-_repo_root = Path(__file__).parent.parent.parent  # workflows/
+# `.resolve()` first, and TWO parents, not three: this file is <plugin>/constraints/, so three
+# levels up is the directory ABOVE the plugin and skills_dir never existed. Layer 2 — every
+# skills/*/constraints/*.py — therefore discovered nothing from the day it was written, and a
+# loop that runs zero modules reports exactly like a loop whose modules all passed.
+_repo_root = Path(__file__).resolve().parent.parent  # <plugin>/
 _plugin_constraints_dir = Path(__file__).parent
 
 DOMAIN_SKILL_MAP = {
