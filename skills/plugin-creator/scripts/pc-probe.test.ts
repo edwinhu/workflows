@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
 /**
- * cc-probe.test.ts — the checker-shape probe's own suite.
+ * pc-probe.test.ts — the checker-shape probe's own suite.
  *
- *   bun test ${CLAUDE_PLUGIN_ROOT}/skills/plugin-creator/scripts/cc-probe.test.ts
+ *   bun test ${CLAUDE_PLUGIN_ROOT}/skills/plugin-creator/scripts/pc-probe.test.ts
  *
  * One fixture per invariant, each modelled on the REAL defect that invariant is named after (see
- * cc-probe.ts's header for the citations). Plus the two fixtures that matter most: a CLEAN one, so
+ * pc-probe.ts's header for the citations). Plus the two fixtures that matter most: a CLEAN one, so
  * the probe can be shown not to fire on correct structure, and an UNRESOLVABLE one, so I7 is shown
  * reporting could-not-run rather than passing.
  *
@@ -15,18 +15,18 @@
  */
 
 import { describe, expect, test } from 'bun:test'
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 
-import * as CcProbe from './cc-probe.ts'
+import * as CcProbe from './pc-probe.ts'
 
 const probe: any = CcProbe
 
 const SELF_DIR = import.meta.dir
 
 function fixture(files: Record<string, string>): string {
-  const dir = mkdtempSync(join(tmpdir(), 'cc-probe-test-'))
+  const dir = mkdtempSync(join(tmpdir(), 'pc-probe-test-'))
   for (const [rel, content] of Object.entries(files)) {
     const full = join(dir, rel)
     mkdirSync(dirname(full), { recursive: true })
@@ -37,7 +37,7 @@ function fixture(files: Record<string, string>): string {
 
 /** Run the CLI out-of-process so the test covers main()/argv, not just runProbe(). */
 function cli(args: string[]): { code: number; out: string; err: string } {
-  const r = Bun.spawnSync(['bun', join(SELF_DIR, 'cc-probe.ts'), ...args])
+  const r = Bun.spawnSync(['bun', join(SELF_DIR, 'pc-probe.ts'), ...args])
   return { code: r.exitCode, out: r.stdout.toString(), err: r.stderr.toString() }
 }
 
@@ -179,11 +179,11 @@ describe('I1 — at most one deterministic engine per domain', () => {
       'skills/writing/SKILL.md': skillMd('writing'),
       'skills/writing/references/a.py': tableModule('no-bold-lead', ['    (r"^\\*\\*", "bold lead"),']),
       'constraints/b.py': tableModule('no-bold-lead', ['    (r"^\\*\\*", "bold lead"),']),
-      'scripts/check-all.py': 'APPLIES_TO_ATTR = "APPLIES_TO"\nSEVERITY_ATTR = "SEVERITY"\n',
+      'scripts/run-constraints.py': 'APPLIES_TO_ATTR = "APPLIES_TO"\nSEVERITY_ATTR = "SEVERITY"\n',
       'hooks/hooks.json': JSON.stringify({
         hooks: {
           PostToolUse: [
-            { matcher: 'Edit', hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/scripts/check-all.py' }] },
+            { matcher: 'Edit', hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/scripts/run-constraints.py' }] },
           ],
         },
       }),
@@ -261,7 +261,7 @@ describe('I3 — every engine has at least one live caller', () => {
       'plugin.json': PLUGIN_JSON,
       'skills/writing/SKILL.md': skillMd('writing'),
       'skills/writing/references/topic-sentences.py': tableModule('topic-sentences', ['    (r"\\bfoo\\b", "foo"),']),
-      'constraints/check-all.py': [
+      'constraints/run-constraints.py': [
         'from pathlib import Path',
         'def run(root):',
         '    for py in sorted(Path(root).glob("*/references/*.py")):',
@@ -275,7 +275,7 @@ describe('I3 — every engine has at least one live caller', () => {
           PostToolUse: [
             {
               matcher: 'Edit',
-              hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/constraints/check-all.py' }],
+              hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/constraints/run-constraints.py' }],
             },
           ],
         },
@@ -617,4 +617,81 @@ describe('the documented exit-code contract', () => {
     expect(Array.isArray(parsed.unresolvedRefs)).toBe(true)
     expect(Array.isArray(parsed.engines)).toBe(true)
   })
+})
+
+// A runner that globs a checker directory and dispatches on a callable `check` is as live as one
+// that reads APPLIES_TO. Keying I3 on APPLIES_TO alone reported all 36 of typst's checkers as
+// uncalled while run-constraints.py was importing and running every one of them.
+test('a glob-and-dispatch-on-check runner registers contract modules', () => {
+  const d = mkdtempSync(join(tmpdir(), 'pc-probe-glob-'))
+  try {
+    mkdirSync(join(d, 'constraints'), { recursive: true })
+    writeFileSync(join(d, 'constraints', 'run-constraints.py'),
+      'import glob\nfor f in glob.glob("constraints/*.py"):\n    mod.check(f)\n')
+    writeFileSync(join(d, 'constraints', 'spacing.py'),
+      'CONSTRAINT = "spacing"\nSEVERITY = "hard"\nAPPLIES_TO = ["slides"]\ndef check(p):\n    return []\n')
+    const r = probe.runProbe(d)
+    expect(r.findings.filter(f => f.rule.startsWith('I3'))).toEqual([])
+  } finally { rmSync(d, { recursive: true, force: true }) }
+})
+
+test('with NO runner at all, a contract module is still reported uncalled', () => {
+  const d = mkdtempSync(join(tmpdir(), 'pc-probe-norunner-'))
+  try {
+    mkdirSync(join(d, 'constraints'), { recursive: true })
+    writeFileSync(join(d, 'constraints', 'spacing.py'),
+      'CONSTRAINT = "spacing"\nSEVERITY = "hard"\nAPPLIES_TO = ["slides"]\ndef check(p):\n    return []\n')
+    const r = probe.runProbe(d)
+    expect(r.findings.filter(f => f.rule.startsWith('I3')).length).toBe(1)
+  } finally { rmSync(d, { recursive: true, force: true }) }
+})
+
+test('an English possessive is not a quote delimiter', () => {
+  // `plan's task table and each task's writablePaths` yielded "s task table and each task".
+  const lits = probe.quotedLiterals("did edits stay inside the plan's task table and each task's writablePaths?")
+  expect(lits.some((l: string) => l.startsWith('s task table'))).toBe(false)
+})
+
+test('a heading or a path is shared vocabulary, not a claim', () => {
+  expect(probe.quotedLiterals('cite the `## Lectures In Scope` table')).toEqual([])
+  expect(probe.quotedLiterals('read `skills/notes/references/checks.md` first')).toEqual([])
+  // A shipped pattern still counts — the defect this rule is named for.
+  expect(probe.quotedLiterals("flag a bullet like 'The answer: it depends'")).toContain('The answer: it depends')
+})
+
+test('identical prompts over different refs are FAN-OUT, not rival lenses', () => {
+  const d = mkdtempSync(join(tmpdir(), 'pc-probe-fanout-'))
+  try {
+    const lens = (k: string, ref: string) =>
+      `    { key: "${k}", agentType: "Explore", refs: ["${ref}"], prompt: "Judge it; flag a bullet like 'The answer: it depends'." },\n`
+    mkdirSync(join(d, 'skills', 'exams'), { recursive: true })
+    writeFileSync(join(d, 'skills', 'exams', 'SKILL.md'),
+      '---\nname: exams\ndescription: x\n---\n\n```js\nWorkflow({\n  reviewLenses: [\n' +
+      lens('sf-01', 'q/01.typ') + lens('sf-02', 'q/02.typ') + '  ],\n})\n```\n')
+    expect(probe.runProbe(d).findings.filter((f: any) => f.rule.startsWith('I2'))).toEqual([])
+    // The same two lenses over the SAME refs are rivals again.
+    writeFileSync(join(d, 'skills', 'exams', 'SKILL.md'),
+      '---\nname: exams\ndescription: x\n---\n\n```js\nWorkflow({\n  reviewLenses: [\n' +
+      lens('sf-01', 'q/01.typ') + lens('sf-02', 'q/01.typ') + '  ],\n})\n```\n')
+    expect(probe.runProbe(d).findings.filter((f: any) => f.rule.startsWith('I2')).length).toBe(1)
+  } finally { rmSync(d, { recursive: true, force: true }) }
+})
+
+test('a list of bare directory prefixes is a PATH suppression, not a label one', () => {
+  // validate-skill-paths.ts's USER_PROJECT_PREFIXES. Matching no label is correct for it, so I5
+  // must not ask — otherwise it can only decline, leaving a NOT CHECKED that never resolves.
+  const src = 'const USER_PROJECT_PREFIXES = [".planning/", "drafts/", "src/"]\n'
+  expect(probe.suppressionEntries(src)).toEqual([])
+})
+
+test('a list of label prefixes is STILL read as a label suppression', () => {
+  // The I5 defect this rule is named for: entries that name rules, not directories.
+  const src = 'const SUPPRESS_PREFIXES = ["skills/writing-", "skills/slides-"]\n'
+  expect(probe.suppressionEntries(src).map((e: any) => e.entry))
+    .toEqual(['skills/writing-', 'skills/slides-'])
+})
+
+test('a mixed list is not exempted — one label entry keeps the whole list in scope', () => {
+  const src = 'const IGNORE_PREFIXES = [".planning/", "skills/writing-"]\n'
+  expect(probe.suppressionEntries(src).length).toBe(2)
 })

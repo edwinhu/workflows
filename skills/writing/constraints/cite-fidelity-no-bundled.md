@@ -1,9 +1,6 @@
 ---
 name: cite-fidelity-no-bundled
-description: A single sentence must not bundle three or more distinct [@bibkey] references — bundled cites promote topic-tag citing where one of the keys is plausibly wrong.
 applies-to: [writing-draft, writing-revise]
-type: constraint
-check: cite-fidelity-lint:bundled-cites
 ---
 
 # No three-or-more cite bundles in one sentence

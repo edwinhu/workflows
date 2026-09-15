@@ -40,7 +40,7 @@ function fixture(opts: { redCommand?: string; suites?: Record<string, string> } 
   scratch.push(dir)
   mkdirSync(join(dir, 'src'), { recursive: true })
   script(dir, 'check.sh', 'echo "1 failed, 0 passed"\nexit 1')
-  script(dir, 'mech.sh', 'echo "0 failed, 3 passed"\nexit 0')
+  script(dir, 'read-verdict.sh', 'echo "0 failed, 3 passed"\nexit 0')
   for (const [rel, body] of Object.entries(opts.suites ?? {})) {
     mkdirSync(dirname(join(dir, rel)), { recursive: true })
     writeFileSync(join(dir, rel), body)
@@ -54,7 +54,7 @@ function fixture(opts: { redCommand?: string; suites?: Record<string, string> } 
       redCommand: opts.redCommand ?? 'bash scripts/check.sh',
       acceptance: '`bash scripts/check.sh` exits 0',
     }],
-    mechanicalChecks: [{ name: 'tests', cmd: 'bash scripts/mech.sh' }],
+    mechanicalChecks: [{ name: 'tests', cmd: 'bash scripts/read-verdict.sh' }],
     reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' }],
   }
   writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +

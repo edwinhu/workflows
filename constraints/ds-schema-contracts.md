@@ -1,6 +1,5 @@
 ---
 name: schema-contracts
-description: Every transformation has input/output schema contracts — schema changes are R4
 applies-to: [ds-delegate]
 ---
 

@@ -3222,7 +3222,7 @@ describe('D35 — P12: a craft-args fence dispatches through work-dispatch.sh', 
 
   // A script named inside a fence is a mechanicalChecks command, not a claim about the dispatch.
   test('(a) says nothing about a script named only inside a fence', () => {
-    const fence = argsFence(1, ['gate']).replace('cmd: "true"', 'cmd: "bash mech-all.sh"')
+    const fence = argsFence(1, ['gate']).replace('cmd: "true"', 'cmd: "bash check-slides.sh"')
     const dir = fixture({ 'SKILL.md': `${skillMd('mech', 'Craft owns the invocation.')}\n${fence}\n` })
     expect(rulesOf(dir, 'P12')).toEqual([])
   })
@@ -3353,7 +3353,7 @@ const argsFenceWithTasks = (opts: {
           '  ],',
         ]),
     '  mechanicalChecks: [',
-    `    { name: "mech", cmd: "bash mech-all.sh ${specs}" },`,
+    `    { name: "mech", cmd: "bash check-slides.sh ${specs}" },`,
     '  ],',
     ...(scoredIds.length
       ? [
@@ -3512,5 +3512,35 @@ describe('D36 — P13: every enumerated instance has a task row', () => {
 
   test('P13 draws nothing on the notes skill, whose every lecture has a task chain', () => {
     expect(rulesOf(join(dirname(SKILL_DIR), 'notes'), 'P13')).toEqual([])
+  })
+})
+
+// P13 — the constraint loader is called by its ONE name, the way every gate is check.sh.
+describe('P13 one loader entry point', () => {
+  const run = (text: string) => probe.checkLoaderEntryPoint('SKILL.md', text, [])
+
+  test('the entry-point name is clean', () => {
+    expect(run('!`${CLAUDE_PLUGIN_ROOT}/scripts/load-constraints ds --index`\n')).toEqual([])
+  })
+
+  test('naming the implementation file is a finding', () => {
+    const f = run('!`bun ${CLAUDE_PLUGIN_ROOT}/scripts/load-constraints.ts ds`\n')
+    expect(f.length).toBe(1)
+    expect(f[0].detail).toContain('implementation file')
+  })
+
+  test('the pre-rename name is a finding', () => {
+    expect(run('!`${CLAUDE_SKILL_DIR}/../../scripts/rules-for slides`\n').length).toBe(1)
+  })
+
+  test('a hand-rolled $HOME resolver is a finding', () => {
+    const text = '!`for d in "$HOME/.claude/skills/somedomain"; do [ -x "$d/scripts/rules-for" ] && exec "$d/scripts/rules-for" kindA; done`\n'
+    expect(run(text).length).toBe(1)
+  })
+
+  test('a declared exemption silences it', () => {
+    const text = '<!-- wc-probe: ignore-loader-entry-point -->\n!`bun scripts/load-constraints.ts ds`\n'
+    const ex = probe.parseExemptions ? probe.parseExemptions('SKILL.md', text) : []
+    expect(probe.checkLoaderEntryPoint('SKILL.md', text, ex).length).toBe(0)
   })
 })

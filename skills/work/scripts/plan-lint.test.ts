@@ -627,7 +627,7 @@ test('a command in prose that no field runs is flagged', () => {
     '## Verification',
     '',
     '```bash',
-    'bash scripts/mech-all.sh --target notes | tee /tmp/mech.log',
+    'bash scripts/check-slides.sh --target notes | tee /tmp/mech.log',
     '```',
   ].join('\n')
   expect(rules(parseMarkdown(md))).toContain('prose-command')
@@ -637,12 +637,12 @@ test('the same prose command IS run by an acceptance — nothing to report', () 
   const md = [
     '| id | name | work | writablePaths | acceptance | redCommand |',
     '| --- | --- | --- | --- | --- | --- |',
-    '| T1 | one | do it | src/ | `bash scripts/mech-all.sh --target notes` exits 0 | `bash scripts/check.sh` |',
+    '| T1 | one | do it | src/ | `bash scripts/check-slides.sh --target notes` exits 0 | `bash scripts/check.sh` |',
     '',
     '## Verification',
     '',
     '```bash',
-    'bash scripts/mech-all.sh --target notes',
+    'bash scripts/check-slides.sh --target notes',
     '```',
   ].join('\n')
   expect(rules(parseMarkdown(md))).not.toContain('prose-command')
@@ -688,7 +688,7 @@ test('a bare script path WITH an argument in prose is still a stated command', (
     '## Verification',
     '',
     '```bash',
-    'scripts/mech-all.sh --target notes',
+    'scripts/check-slides.sh --target notes',
     '```',
   ].join('\n')
   const f = lint(parseMarkdown(md)).filter(x => x.rule === 'prose-command')

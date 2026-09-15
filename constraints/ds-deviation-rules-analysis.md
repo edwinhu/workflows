@@ -1,6 +1,5 @@
 ---
 name: deviation-rules-analysis
-description: Analysis-specific deviation rules — R4 gate for methodology changes after seeing results
 applies-to: [ds-delegate]
 ---
 

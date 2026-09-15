@@ -1,6 +1,5 @@
 ---
 name: ds-engineering-constraints
-description: Data-engineering (pipeline/ETL) constraints for ds engineering work
 applies-to: [ds]
 ---
 
@@ -8,7 +7,7 @@ applies-to: [ds]
 
 Role-specific behavioral rules for data engineering tasks (pipelines, ETL, transformations). Each constraint is self-contained in its own file under `${CLAUDE_PLUGIN_ROOT}/constraints/`.
 
-**Complements (not replaces):** `${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-common-constraints.md` — load both for engineering tasks.
+**Complements (not replaces):** `${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-common-constraints.md` — load both for engineering tasks.
 
 ---
 

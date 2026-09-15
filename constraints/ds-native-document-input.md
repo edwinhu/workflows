@@ -1,6 +1,5 @@
 ---
 name: ds-native-document-input
-description: Send documents to a multimodal model in their native format — never pre-extract text
 applies-to: [ds]
 ---
 

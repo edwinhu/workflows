@@ -13,9 +13,9 @@ What this file still owns, and why it is not simply deleted: the `CONSTRAINT`/`A
 `SEVERITY` contract and the `drafts/<file>:<line>: …` violation shape that the deterministic
 mechanical floor is defined in terms of. The hook gate that once consumed it was retired with the
 beat spine (docs/DESIGN-prose-constraint-architecture.md); the contract outlived it because
-check-all.py auto-discovers on it.
+run-constraints.py auto-discovers on it.
 
-COST: one `prose-audit.py` subprocess per draft, inside check-all.py. That is the price of having
+COST: one `prose-audit.py` subprocess per draft, inside run-constraints.py. That is the price of having
 the rule live in exactly one place; a project with many drafts pays it linearly.
 """
 import json
@@ -27,7 +27,7 @@ CONSTRAINT = "writing-no-bold-lead"
 APPLIES_TO = ["writing-draft", "writing-verify", "writing-revise"]
 SEVERITY = "hard"
 
-# parents[3] — this file is <repo>/skills/writing/references/, so three levels up is the repo root.
+# parents[3] — this file is <repo>/skills/writing/constraints/, so three levels up is the repo root.
 # Every sibling module in this directory counts the same way; `parents[2]` resolved to
 # <repo>/skills/scripts/prose-audit.py and made the constraint inert from v6.0.0.
 PROSE_AUDIT = Path(__file__).resolve().parents[3] / "scripts" / "prose-audit.py"
@@ -39,8 +39,8 @@ def _bold_leads(path: Path) -> list[tuple[int, str]]:
 
     A FAILURE HERE RAISES. It must not manufacture violations — but it must not be silent either.
     `except Exception: return []` is what turned a broken engine path into `passed` for two minor
-    versions: check() returned [], check-all.py filed a SEVERITY="hard" constraint under passed, and
-    a reader auditing "is bold-lead enforced?" saw a clean pass. check-all.py:229-237 puts a raised
+    versions: check() returned [], run-constraints.py filed a SEVERITY="hard" constraint under passed, and
+    a reader auditing "is bold-lead enforced?" saw a clean pass. run-constraints.py:229-237 puts a raised
     exception under `errors`, which is neither `passed` nor a fabricated `failed`, and which makes
     its own exit non-zero. That is the only honest report of "the checker could not be reached".
     """

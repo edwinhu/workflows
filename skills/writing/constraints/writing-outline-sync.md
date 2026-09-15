@@ -1,8 +1,6 @@
 ---
 name: writing-outline-sync
-description: OUTLINE.md section structure and Preview/Restatement numbers should match drafts/; framing is phase-aware (OUTLINE canonical during setup/outline/draft; drafts canonical during review/revise)
 applies-to: [writing-draft, writing-verify, writing-revise]
-severity: soft
 ---
 
 ## Rule

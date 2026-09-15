@@ -101,6 +101,13 @@ about; and craft re-runs a claimed mechanical pass in a shell (`work-result.sh`)
 affordable for one command and not for N. **P10** refuses a second `mechanicalChecks` entry; a
 genuine exception is declared with `<!-- wc-probe: ignore-entry-point -->`.
 
+**And it reaches its constraints by ONE name.** A plugin shipping a constraint corpus exposes
+`scripts/load-constraints <scope>[,<scope>] [--index|--full]` — index by default, because the prose
+for one scope is 38,524 bytes against 1,386 and a load-time bang pays that on every invocation.
+Calling the implementation file (`load-constraints.py`, `load-constraints.ts`) or an older name
+couples every caller to a language choice; `wc-probe`'s P13 refuses those. Cross-plugin, the corpus
+is reached through `bin/` on PATH (`typst-rules`), never through a hand-rolled `$HOME` resolver.
+
 **A generated workflow declares its own check entry point.** `check.sh` gates workflow *artifacts* —
 probe, parity, node-check, probe suite — and is not a generated workflow's domain gate. A workflow
 whose domain has a toolchain (build, test, lint, render) ships one entry point of its own, collects

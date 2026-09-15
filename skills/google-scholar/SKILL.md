@@ -7,6 +7,9 @@ user-invocable: false
 
 # Google Scholar CLI (scholar)
 
+**What this skill carries** — grep `references/` for any subject the names below miss:
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
+
 Search Google Scholar for academic papers via the `scholar` command-line tool.
 
 **Requires:** `scholar` on PATH (`~/.local/bin/scholar` → `~/projects/google-scholar-cli/scholar`)
@@ -253,6 +256,6 @@ User asks: "find papers on corporate disclosure"
 2. **Scholar is for discovery** — Use it to find new papers, not to read them
 3. **Always use `--json`** when results will be processed programmatically
 4. **Use `--bibtex` when presenting papers** — It provides verified author, journal, year, and abstract fields
-5. **Cross-reference the trusted-journal list** — Always check results against `references/trusted-journals.local.md`
+5. **Cross-reference the trusted-journal list** — Always check results against `${CLAUDE_PLUGIN_ROOT}/references/trusted-journals.local.md`
 6. **Auth required** — If search fails with auth errors, re-run `scholar auth`
 7. **Rate limits** — Google Scholar may rate-limit; space out rapid queries

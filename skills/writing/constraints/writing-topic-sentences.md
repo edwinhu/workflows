@@ -1,6 +1,5 @@
 ---
 name: writing-topic-sentences
-description: Topic sentences must state substance — no meta-commentary or throat-clearing openers
 applies-to: [writing-draft, writing-verify, writing-revise]
 ---
 

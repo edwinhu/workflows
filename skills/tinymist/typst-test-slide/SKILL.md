@@ -5,6 +5,9 @@ description: "This skill should be used when the user asks to 'test a slide', 'i
 
 # Typst Test Slide - Isolate and Render a Single Slide
 
+**What this skill carries** — grep `references/` for any subject the names below miss:
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
+
 Renders a single Typst slide in isolation for debugging or visual verification. This is a recipe, not a workflow.
 
 ## Why This Exists

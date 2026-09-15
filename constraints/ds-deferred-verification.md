@@ -1,6 +1,5 @@
 ---
 name: deferred-verification
-description: Planning to verify "later" which means never — verify after EVERY step
 applies-to: [ds, ds-fix, ds-implement, ds-delegate]
 ---
 

@@ -1,6 +1,5 @@
 ---
 name: ds-network-politeness
-description: A concurrent network client must state its computed request rate against the target's documented ceiling, name quota vs rate limit, and never describe an unexecuted fallback transport as required
 applies-to: [ds]
 ---
 

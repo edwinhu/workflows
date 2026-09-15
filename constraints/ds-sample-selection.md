@@ -1,6 +1,5 @@
 ---
 name: sample-selection
-description: Every sample restriction must be documented and justified — undocumented restrictions are hidden assumptions
 applies-to: [ds-delegate]
 ---
 

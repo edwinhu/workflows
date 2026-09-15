@@ -5,6 +5,12 @@ description: "This skill should be used when the user asks to 'create a skill', 
 
 # Skill Creator (with Superpowers Enforcement)
 
+**What this skill carries** — grep `references/` for any subject the names below miss:
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
+
+**Shared references this plugin ships** — the plugin-root corpus, indexed so an added document needs no edit here; grep it for any subject the names miss:
+!`r=${CLAUDE_PLUGIN_ROOT}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$r" refs; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$r" refs; echo "(shared-reference index unavailable: the plugin-root references/ are NOT listed here)"`
+
 This skill wraps the built-in `skill-creator:skill-creator` with enforcement pattern awareness from the superpowers framework. It adds an enforcement audit layer to the skill-creator's draft-test-iterate loop.
 
 **A path-validation hook runs on your edits.** `hooks/validate-skill-paths.ts` is registered on `PostToolUse Edit|Write` in `hooks/hooks.json`; it reports any `${CLAUDE_SKILL_DIR}` / `${CLAUDE_PLUGIN_ROOT}` reference resolving to a file that does not exist. It is non-blocking — read what it says. `hooks/plugin-validate.ts` is **not registered** (its only finding here is a constant symlink warning); run `claude plugin validate` by hand if you need it.
@@ -76,7 +82,13 @@ Before drafting, identify what should be **mechanically enforced** rather than p
 | Scoped hooks (Pre/PostToolUse) | Each tool call | Pass/fail gate | Mechanically checkable constraints |
 | SessionStart hook (`once: true`) | Session start | Value written to a file | Expensive computations (API calls, index builds) |
 
-Adding a `reviewLenses` entry or a checker script? Run `bun ${CLAUDE_PLUGIN_ROOT}/skills/plugin-creator/scripts/cc-probe.ts --target <plugin-dir>` afterwards — it computes whether the new lens or engine is a second one in its domain, and whether the old one still works.
+**After editing any SKILL.md, run the skill-shape probe over the plugin:**
+`bun ${CLAUDE_PLUGIN_ROOT}/skills/skill-creator/scripts/sc-probe.ts --target <plugin-dir>`. It computes
+every rule this file states that a string can settle — the TOC bang on every skill, the four ways a bang
+aborts a load, a path the prose cannot resolve from the skill's own base directory, and a constraint key
+no loader reads. `bin/plugin-audit` runs it, so a finding fails the audit rather than waiting for a reader.
+
+Adding a `reviewLenses` entry or a checker script? Run `bun ${CLAUDE_PLUGIN_ROOT}/skills/plugin-creator/scripts/pc-probe.ts --target <plugin-dir>` afterwards — it computes whether the new lens or engine is a second one in its domain, and whether the old one still works.
 
 #### `${CLAUDE_SKILL_DIR}` — Script Path References
 
@@ -103,7 +115,7 @@ Bangs run a shell command at skill load time and inline the stdout into the prom
 
 Those two are the whole point: `references/*.md` and `scripts/*.{py,ts,sh}` sitting beside the skill. A bang earns its place when the content must be COMPUTED — an index that must match a corpus, a count, a live status. Static prose belongs in the file.
 
-**A bang fires in a file that is INVOKED, and is dead text in one INJECTED as ambient context.** It expands in `SKILL.md` loaded via `Skill()` and in `.claude/commands/*.md`. It does NOT expand in an agent `.md`, in `CLAUDE.md` at either tier, or in a skill reached by `Read()` — silently, with no error, whatever the upstream docs say. Measured; see `references/bang-reach.md` for the table and the failure modes (non-zero exit aborts the invocation; a denied permission rule aborts it with no prompt).
+**A bang fires in a file that is INVOKED, and is dead text in one INJECTED as ambient context.** It expands in `SKILL.md` loaded via `Skill()` and in `.claude/commands/*.md`. It does NOT expand in an agent `.md`, in `CLAUDE.md` at either tier, or in a skill reached by `Read()` — silently, with no error, whatever the upstream docs say. Measured; see `${CLAUDE_PLUGIN_ROOT}/references/bang-reach.md` for the table and the failure modes (non-zero exit aborts the invocation; a denied permission rule aborts it with no prompt).
 
 #### The two TOCs — a skill's own `references/` and `scripts/`
 
@@ -184,7 +196,7 @@ hooks:
           once: true
 ```
 
-Then instruct the skill to read from `.planning/CACHED_VALUE`. **Do NOT use for path resolution** (`${CLAUDE_SKILL_DIR}`) or content injection (bangs) — those are free at load time. See `references/sessionstart-caching.md`.
+Then instruct the skill to read from `.planning/CACHED_VALUE`. **Do NOT use for path resolution** (`${CLAUDE_SKILL_DIR}`) or content injection (bangs) — those are free at load time. See `${CLAUDE_PLUGIN_ROOT}/references/sessionstart-caching.md`.
 
 **The principle:** if a constraint is mechanically checkable, enforce it with a hook. If it requires judgment or motivation, keep it as prompt text. Hooks cost zero tokens and can't be rationalized away.
 
@@ -295,7 +307,7 @@ During the eval loop, watch for enforcement iteration signals (see "Enforcement 
 
 ## References
 
-- **Enforcement checklist**: `references/enforcement-checklist.md` (in plugin root) — Full 12-pattern reference with templates. Discover via: `${CLAUDE_SKILL_DIR}/../../references/enforcement-checklist.md`
-- **Description patterns**: `references/skill-description-patterns.md` (in plugin root) — The three description shapes (standalone / user-triggered, workflow-phase / orchestrator-triggered, internal-only) with templates and a migration guide for reclassifying an existing skill. Discover via: `${CLAUDE_SKILL_DIR}/../../references/skill-description-patterns.md`
+- **Enforcement checklist**: `${CLAUDE_PLUGIN_ROOT}/references/enforcement-checklist.md` (in plugin root) — Full 12-pattern reference with templates. Discover via: `${CLAUDE_SKILL_DIR}/../../references/enforcement-checklist.md`
+- **Description patterns**: `${CLAUDE_PLUGIN_ROOT}/references/skill-description-patterns.md` (in plugin root) — The three description shapes (standalone / user-triggered, workflow-phase / orchestrator-triggered, internal-only) with templates and a migration guide for reclassifying an existing skill. Discover via: `${CLAUDE_SKILL_DIR}/../../references/skill-description-patterns.md`
 - **Philosophy**: `PHILOSOPHY.md` (in plugin root) — Three pillars (phased decomposition, deterministic gates, adversarial review). Discover via: `${CLAUDE_SKILL_DIR}/../../PHILOSOPHY.md`
 - **Built-in skill-creator**: Handles the eval loop (draft → test → grade → iterate → description optimization)

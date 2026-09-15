@@ -201,7 +201,7 @@ does not cover.
   not in `RECONCILE_FIELDS` and is refused by name in `field_blocked` — the PDF
   mapping belongs to `link`, which owns the matcher and its thresholds. The keys
   are load-bearing for something outside this repo: `paper/typst/opv-body.typ`
-  references entries through `#ref(<key>)` and `scripts/resolve_refs.py` resolves
+  references entries through `#ref(<key>)` and that project's `scripts/resolve_refs.py` resolves
   supra numbers through them, so a renamed key silently breaks the manuscript.
   After writing, the file is re-parsed and the key LIST compared to what it was;
   a mismatch exits non-zero pointing at the `.bak`.

@@ -59,7 +59,7 @@ their own computed gate.
 | `/workflow-creator` | designs, repairs and audits workflows themselves |
 
 Plan review is **computed and happens before dispatch**: `plan-lint.ts` over the built args and
-`plan-preflight.ts` executing their commands at baseline, enforced by `craft-dispatch.sh` while the
+`plan-preflight.ts` executing their commands at baseline, enforced by `work-dispatch.sh` while the
 run is still armed. No agent reads the plan markdown looking for defects.
 
 ### Document Formats
@@ -130,12 +130,12 @@ These skills have `user-invocable: false` — Claude loads them automatically wh
 ### Utilities
 `farm-out`, `look-at`, `visual-verify`, `visual-mockup`, `data-context`, `continuous-learning`, `pattern-capture`, `ai-anti-patterns`, `obsidian-organize`, `pptx-render`, `headline-card`
 
-`farm-out` is the dispatcher craft runs its agents through — `craft-dispatch.sh` uses the sibling copy
+`farm-out` is the dispatcher craft runs its agents through — `work-dispatch.sh` uses the sibling copy
 by default, so the plugin dispatches without an outside install. It fetches its own SDK on first run.
 
 ### Internal Workflow Phases
 
-None. The craft spine has no sub-skills: the phases are beats inside `skills/craft/workflow.js`,
+None. The craft spine has no sub-skills: the phases are beats inside `skills/work/workflow.js`,
 dispatched as agents, so there is nothing to invoke by name and nothing to keep in sync.
 
 ---
@@ -158,7 +158,7 @@ registers user-scoped (bare name, `hooks:` honoured) via a symlink into `~/.clau
 | `writing-econ` | Finance and accounting journal prose | user | source-first `PreToolUse` guard |
 | `writing-reviewer` | Read-only prose grading against the preloaded register and the tic table | user | — |
 
-The craft spine's per-beat verifiers are still dispatched from `skills/craft/workflow.js` with the
+The craft spine's per-beat verifiers are still dispatched from `skills/work/workflow.js` with the
 prompt the run needs, so no agent file exists for them. Implementers are the exception: `/ds`,
 `/writing` and `/workshop` each set `implementerAgentType` to the matching agent above, and the
 teaching plugin sets it to its own `lecture-impl`. `/dev` and `/workflow-creator` deliberately leave
@@ -200,7 +200,7 @@ reviewers exist because grading against a constraint set needs a body this repo 
 built-in judge's prompt is predefined, so the modules it grades against have to reach it as task
 `refs` rather than as anything the lens can skip — and no exam reviewer exists because a prompt
 covers it. Constraint prose itself is never a skill: it has one canonical home under
-`references/constraints/` (Typst modules under `~/.claude/skills/typst/references/constraints/`),
+`constraints/` (Typst modules under `~/.claude/skills/typst/constraints/`),
 reaches dispatched agents as `refs`, and reaches interactive ones through the `typst:typst` bang
 line. The same test explains the two workflows that set no implementer override: `/dev` and
 `/workflow-creator` produce code and workflow definitions, where the software-engineering framing is
@@ -217,7 +217,7 @@ tool path a persona session needs.
 
 ## Workflow lifecycle architecture
 
-Every workflow runs the same loop, in `skills/craft/workflow.js`. The plan's `<!-- craft:dispatch -->`
+Every workflow runs the same loop, in `skills/work/workflow.js`. The plan's `<!-- craft:dispatch -->`
 block is the sole authority and its canonical `specHash` is verified by each dispatched agent; the
 gate is computed in JS from raw counts, fails closed on a dead agent, and returns the selector that
 drives the fix loop. A domain workflow contributes its own mechanical checks and review lenses — it

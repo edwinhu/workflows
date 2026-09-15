@@ -1,6 +1,5 @@
 ---
 name: visualization-integrity
-description: Charts must not mislead — no truncated axes, no dual-axis tricks, no 3D distortion
 applies-to: [ds-delegate]
 ---
 

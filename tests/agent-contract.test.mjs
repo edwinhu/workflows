@@ -321,8 +321,8 @@ function values(fm, key) {
   // The four source aggregates stay put — other things read them.
   for (const f of ['ds-common-constraints', 'ds-common-conventions',
                    'ds-analysis-constraints', 'ds-engineering-constraints']) {
-    ok(`skills/ds/references/${f}.md is still in place`,
-       existsSync(join(SKILLS, 'ds', 'references', `${f}.md`)))
+    ok(`skills/ds/constraints/${f}.md is still in place`,
+       existsSync(join(SKILLS, 'ds', 'constraints', `${f}.md`)))
   }
 
   const doer = agentPath('ds')

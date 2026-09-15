@@ -1,6 +1,5 @@
 ---
 name: ds-common-constraints
-description: Common deterministic constraints index for the ds workflow
 applies-to: [ds]
 ---
 
@@ -8,7 +7,7 @@ applies-to: [ds]
 
 Deterministic rules for the DS workflow. Each constraint can be verified by a script returning pass/fail. Self-contained files under `${CLAUDE_PLUGIN_ROOT}/constraints/`.
 
-**See also:** `${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-common-conventions.md` for judgment-based behavioral guidance (V1-V9).
+**See also:** `${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-common-conventions.md` for judgment-based behavioral guidance (V1-V9).
 
 After reading this index, load the specific constraint files your task needs.
 

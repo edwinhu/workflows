@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test } from "bun:test";
 import { mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { resolveDependencyCapability } from "../workflows/lib/capability-resolver";
+import { resolveDependencyCapability } from "../scripts/lib/capability-resolver";
 
 const temporaryRoots: string[] = [];
 

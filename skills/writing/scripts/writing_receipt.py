@@ -2,7 +2,7 @@
 """Derive the writing workflow's on-disk approval artifacts from craft's approvals.
 
 `writing_section_index.py` refuses to parse anything without a well-formed
-`<proj>/.planning/.state/review.json`, and `check-all.py` scopes itself from
+`<proj>/.planning/.state/review.json`, and `run-constraints.py` scopes itself from
 `<proj>/.planning/ACTIVE_WORKFLOW.md` — with no such file `_applies` returns True
 unconditionally and every `ds-*`/`dev-*`/`typst-*` hard constraint runs on a writing
 project. This shim writes both.
@@ -207,7 +207,7 @@ def build_receipt(
 
 
 def active_workflow_text(style: str) -> str:
-    return f"---\nworkflow: writing\nstyle: {style}\n---\n\nScoping marker for check-all.py — written by writing_receipt.py from craft's approved plan.\n"
+    return f"---\nworkflow: writing\nstyle: {style}\n---\n\nScoping marker for run-constraints.py — written by writing_receipt.py from craft's approved plan.\n"
 
 
 def write_artifacts(project: Path, receipt: dict, style: str) -> tuple[Path, Path]:

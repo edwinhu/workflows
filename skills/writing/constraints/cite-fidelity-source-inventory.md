@@ -1,8 +1,6 @@
 ---
 name: cite-fidelity-source-inventory
-description: After ACTIVE_WORKFLOW.md exists with an nlm_notebook, build references/source_summaries.md so drafting can disambiguate same-author works.
 applies-to: [writing-setup]
-type: convention
 ---
 
 # Source inventory before drafting

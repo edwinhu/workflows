@@ -1,6 +1,6 @@
 #!/usr/bin/env -S uv run python3
 """
-Tests for constraints/check-all.py APPLIES_TO scoping (D-w-8 / the documented gotcha:
+Tests for constraints/run-constraints.py APPLIES_TO scoping (D-w-8 / the documented gotcha:
 check-all previously IGNORED APPLIES_TO and ran every constraint on every project → writing's
 authoring-lint constraints fired on workshop decks, keeping constraintsPassed permanently false).
 
@@ -19,7 +19,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-CHECK_ALL = ROOT / "references" / "constraints" / "check-all.py"
+CHECK_ALL = ROOT / "references" / "constraints" / "run-constraints.py"
 PASS = 0
 FAIL = 0
 

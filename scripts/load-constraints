@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# load-constraints <scope>[,<scope>...] [--dir DIR] [--index]
+#
+# THE one constraint-loading entry point for this plugin, the same way check.sh is THE one gate.
+# The implementation stays in load-constraints.ts: it is the published `constraint-loader`
+# capability and two suites import its functions, so the module path is a contract. This file is
+# the name every CALLER uses, so a language change never reaches a caller.
+# NAME COLLISION, deliberate and load-bearing: this file is extensionless, so an extensionless
+# `import "../scripts/load-constraints"` resolves HERE and dies on line 2 as a syntax error rather
+# than importing the module. Module importers must name `load-constraints.ts` explicitly — which is
+# also what the published `constraint-loader` capability records.
+set -uo pipefail
+command -v bun >/dev/null 2>&1 || { echo "load-constraints: bun is not on PATH — NO constraint was loaded, which is not an empty corpus" >&2; exit 2; }
+exec bun "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/load-constraints.ts" "$@"

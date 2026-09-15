@@ -85,7 +85,7 @@ The pattern:
 
 Why instructions fail: context pressure causes the main chat to shortcut past "mandatory" steps. The agent that skips the gate is the same agent reading the instruction not to skip. Why artifacts work: the check is in the PREREQUISITES section, read before any work starts — binary pass/fail, no rationalization possible.
 
-**Hook-enforced gates (strongest):** Even artifact checks in instructional text can be compressed away during context compaction or rationalized past ("the file probably exists"). The strongest enforcement is a skill-scoped PreToolUse hook that blocks code-modifying tools until the current receipt has authenticated the generated plan and independent review. Claude Code fires the hook on every tool call — no escape, no rationalization, no context dependency. The craft spine spends that enforcement budget differently: the gate is a program, not a hook — `craft-dispatch.sh` refuses to arm a run whose plan fails `plan-lint.ts`, and every dispatched agent re-verifies the plan's `specHash` before acting. A hook cannot be compressed away, but neither can a dispatch that never happened.
+**Hook-enforced gates (strongest):** Even artifact checks in instructional text can be compressed away during context compaction or rationalized past ("the file probably exists"). The strongest enforcement is a skill-scoped PreToolUse hook that blocks code-modifying tools until the current receipt has authenticated the generated plan and independent review. Claude Code fires the hook on every tool call — no escape, no rationalization, no context dependency. The craft spine spends that enforcement budget differently: the gate is a program, not a hook — `work-dispatch.sh` refuses to arm a run whose plan fails `plan-lint.ts`, and every dispatched agent re-verifies the plan's `specHash` before acting. A hook cannot be compressed away, but neither can a dispatch that never happened.
 
 **The enforcement gradient for gates:** hook-enforced > artifact check in instructions > advisory text. Design for hook-enforced; fall back to artifact checks only when hooks cannot express the constraint.
 
@@ -109,10 +109,10 @@ Enforcement rules split into two categories with fundamentally different natures
 
 Both are necessary. Constraints catch what's mechanically checkable. Conventions guide what isn't. A workflow with only constraints has no taste. A workflow with only conventions has no teeth.
 
-**Co-located architecture:** Constraints live as paired files — `foo.md` (the rule) + `foo.py` (the check script) — in the same `constraints/` directory. Conventions are `foo.md` files without a paired script. An auto-discovering runner (`check-all.py`) globs all `*.py` files and executes them — no manual wiring, no registration. Adding a check script = automatically tested.
+**Co-located architecture:** Constraints live as paired files — `foo.md` (the rule) + `foo.py` (the check script) — in the same `constraints/` directory. Conventions are `foo.md` files without a paired script. An auto-discovering runner (`run-constraints.py`) globs all `*.py` files and executes them — no manual wiring, no registration. Adding a check script = automatically tested.
 
 **Two-leg verification:** The verification stage runs both legs:
-1. **Constraint checks** — `check-all.py` runs all check scripts. Hard block on any failure.
+1. **Constraint checks** — `run-constraints.py` runs all check scripts. Hard block on any failure.
 2. **Convention scoring** — A reviewer subagent scores work against loaded conventions. Soft block below threshold.
 
 Neither leg alone is sufficient. Constraint checks without convention scoring miss qualitative issues. Convention scoring without constraint checks relies entirely on prompt compliance.
@@ -181,7 +181,7 @@ constraints/
 ├── no-agent-resume.md       ← constraint rule
 ├── no-agent-resume.py       ← check script (auto-discovered)
 ├── match-codebase-style.md  ← convention (no .py = judgment-based)
-└── check-all.py             ← runner: globs *.py, runs all checks
+└── run-constraints.py             ← runner: globs *.py, runs all checks
     ↑ runs                        ↑ loads
     │                             │
 entry verification            midpoint audit
@@ -209,7 +209,7 @@ Shared constraints (the section above) address only one layer. Any enforcement c
 ### Deterministic Execution: A Program, Not an Interpretation
 
 > **v6.0.0:** the compiler is gone — there is no `spec → plan → run.js` compile step and no
-> `workflows/templates/`. What replaced it is the same idea one level up: `skills/craft/workflow.js`
+> `workflows/templates/`. What replaced it is the same idea one level up: `skills/work/workflow.js`
 > IS the program. The plan supplies data (tasks, commands, lenses); the schedule, the fix loop and
 > the gate are code that reads it. The findings below survived the change intact, because they were
 > about determinism and honesty, not about code generation.
@@ -232,7 +232,7 @@ Shared constraints (the section above) address only one layer. Any enforcement c
 
 **Born-canonical producers.** Tolerance in the parser is a back-compat shim, not the primary defense. The real fix is upstream: the phase that *emits* the plan emits it in the canonical format, so the parser rarely needs to tolerate anything and the guard can be strict. One format spec, shared by the emitter, the parser, and the guard.
 
-This is the *why*; the *how* — the dispatch step, the gate contract, the fix-loop selector — lives in `skills/craft/SKILL.md` and `skills/craft/workflow.js`. The throughline: **keep judgment with the human and the review layer; keep the machine deterministic, honest, and dumb.**
+This is the *why*; the *how* — the dispatch step, the gate contract, the fix-loop selector — lives in `skills/work/SKILL.md` and `skills/work/workflow.js`. The throughline: **keep judgment with the human and the review layer; keep the machine deterministic, honest, and dumb.**
 
 ### Lifecycle mechanisms are shared; policies are not
 
@@ -246,7 +246,7 @@ skills to *invoke* them, so the invocation drifted even where the mechanism did 
 
 The craft spine is where this landed: one loop, one authority (the plan's `craft:dispatch` spec and
 its hash), and per-domain contribution limited to mechanical checks and review lenses. A domain does
-not get its own lifecycle — see `skills/craft/SKILL.md`.
+not get its own lifecycle — see `skills/work/SKILL.md`.
 
 ## 5. Enforcement and Its Limits
 

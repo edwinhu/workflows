@@ -8,7 +8,7 @@
     {
       "name": "capability-resolver",
       "contractVersion": 1,
-      "implementation": "workflows/lib/capability-resolver.ts"
+      "implementation": "scripts/lib/capability-resolver.ts"
     },
     {
       "name": "constraint-loader",

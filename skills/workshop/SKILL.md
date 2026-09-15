@@ -16,7 +16,7 @@ lists them; a rule reaches this skill because its own `applies-to:` names a kind
 nothing else. (Absence of the plugin degrades this index but does not bypass a gate:
 `run-constraints.py` fails closed on its own.)
 
-!`for d in "$HOME/.claude/skills/typst" "$HOME/projects/typst"; do [ -x "$d/scripts/rules-for" ] && exec "$d/scripts/rules-for" slides,notes,workshop; done; echo "!! typst plugin not found — the constraint index is EMPTY, and a deck graded against no corpus is not a deck that passed."
+!`k=slides,notes,workshop; command -v typst-rules >/dev/null 2>&1 && exec typst-rules "$k"; r=$HOME/.claude/skills/typst/scripts/load-constraints; [ -x "$r" ] && exec "$r" "$k"; r=$HOME/projects/typst/scripts/load-constraints; [ -x "$r" ] && exec "$r" "$k"; echo "(typst corpus unavailable: NO Typst rule is listed here — a deck graded against no corpus is not a deck that passed. Install the typst plugin, or start a new session so its bin/ reaches PATH)"`
 
 The lifecycle is [craft](${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md). Read it and follow it.
 This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lenses,

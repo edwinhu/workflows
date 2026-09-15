@@ -1,6 +1,5 @@
 ---
 name: error-handling
-description: Pipeline errors must be loud, not silent — no catch-and-ignore, no silent coercion, no undocumented drops
 applies-to: [ds-delegate]
 ---
 

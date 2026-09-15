@@ -1,6 +1,5 @@
 ---
 name: writing-stop-triggers
-description: Common rationalizations that cause main chat to bypass writing workflow structure
 applies-to: [writing-draft, writing-verify, writing-revise]
 ---
 

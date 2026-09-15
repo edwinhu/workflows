@@ -6,6 +6,9 @@ user-invocable: false
 
 # Source Verification
 
+**What this skill carries** — grep `references/` for any subject the names below miss:
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
+
 Verify that citations in a manuscript are real, accurate, and that quoted text actually appears in the source. Operates as a domain-specific audit-fix-loop: extract citations, run checks, score, fix, re-check. (See the `audit-fix-loop` skill for the canonical doctrine — auditor≠fixer, substrate-gate, anti-grind; this skill's substrate is citation/quote resolution.)
 
 **Announce:** "Using source-verify to check citations against Paperpile and source documents."

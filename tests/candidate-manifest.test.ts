@@ -8,7 +8,7 @@ import {
   digestCandidateManifest,
   parseCandidateManifest,
   serializeCandidateManifest,
-} from "../workflows/lib/candidate-manifest";
+} from "../scripts/lib/candidate-manifest";
 
 const roots: string[] = [];
 const sha256 = (bytes: Uint8Array) => createHash("sha256").update(bytes).digest("hex");

@@ -8,7 +8,10 @@ user-invocable: true
 
 # DOCX → PDF/PNG rendering
 
-Office docs → PDF/PNG go through the shared converter `scripts/doc_render.py`
+**What this skill carries** — grep `references/` for any subject the names below miss:
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
+
+Office docs → PDF/PNG go through the shared converter `${CLAUDE_PLUGIN_ROOT}/scripts/doc_render.py`
 (`convert()`), which picks the best engine and applies the right fixes. **Do not
 hand-roll `soffice`/`libreoffice` or lean on the generic `docx` skill's own
 export** — those skip the Word-fidelity path and the x2t kerning/table fixes.
@@ -94,7 +97,7 @@ Producer: `macOS … Quartz PDFContext` = Word; `LibreOffice …` = LibreOffice.
 
 > **Garamond documents on macOS need a one-time setup.** x2t mis-measures the
 > macOS (Monotype) Garamond *italic* face badly enough to cram every upright
-> Garamond run. `scripts/setup_garamond_render_override.py` writes a four-face
+> Garamond run. `${CLAUDE_PLUGIN_ROOT}/scripts/setup_garamond_render_override.py` writes a four-face
 > override to `~/.config/x2t-render-fonts/garamond/` — macOS Garamond for
 > regular/bold, EB Garamond for the slanted faces (`--all-eb` for the all-EB
 > variant) — then `rm -rf ~/.cache/x2t-docfonts` to re-stage. Full measurements:
@@ -198,9 +201,9 @@ matches families on name ID 1. The nix module ships a converted set.)
 A docx exported from Google Docs can carry OOXML package corruption (case-broken
 `customXML` part paths) that makes Word pop a "recover unreadable content" modal
 on open — fatal to a headless render. The Word path **auto-repairs** it via a
-preflight (`scripts/docx_repair.py`); you'll see `Word preflight — repaired
+preflight (`${CLAUDE_PLUGIN_ROOT}/scripts/docx_repair.py`); you'll see `Word preflight — repaired
 Google-export package …` on stderr. Repair a docx standalone with
-`python3 scripts/docx_repair.py in.docx [out.docx]`.
+`python3 ${CLAUDE_PLUGIN_ROOT}/scripts/docx_repair.py in.docx [out.docx]`.
 
 ## Related skills
 

@@ -10,7 +10,7 @@ import {
   type CapturedCandidate,
   type CandidateRepresentation,
   type CandidateState,
-} from "../workflows/lib/candidate-manifest";
+} from "./lib/candidate-manifest";
 
 export interface DenyRule {
   id: string;

@@ -12,6 +12,9 @@ user-invocable: false
 
 # PPTX Slide Inspector
 
+**What this skill carries** — grep `references/` for any subject the names below miss:
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
+
 Extracts content from PPTX slides using `python-pptx`. Primary use case: understanding what a PPTX slide contains (shapes, text, positions, images) for comparison against Typst slides, especially diagrams and visual items (VIS-* in content inventories).
 
 ## Prerequisites

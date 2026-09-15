@@ -1,6 +1,5 @@
 ---
 name: join-audits
-description: Every merge/join must produce diagnostic log — row counts, match rates, key uniqueness
 applies-to: [ds-delegate]
 ---
 

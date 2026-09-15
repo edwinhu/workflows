@@ -92,6 +92,6 @@ if __name__ == "__main__":
     if violations:
         for v in violations:
             print(f"WARN: {v}")
-        # Soft severity — exit 0 so check-all.py treats as advisory
+        # Soft severity — exit 0 so run-constraints.py treats as advisory
         sys.exit(0)
     print(f"PASS: {CONSTRAINT}")

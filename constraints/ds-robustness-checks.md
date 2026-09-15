@@ -1,6 +1,5 @@
 ---
 name: robustness-checks
-description: Additional robustness beyond spec curves — placebo tests, IV, RDD, bootstrap, leave-one-out
 applies-to: [ds-delegate]
 ---
 

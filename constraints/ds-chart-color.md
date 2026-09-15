@@ -1,6 +1,5 @@
 ---
 name: chart-color
-description: Colour encodes the kind of variable — categorical schemes for categories, ramps for order, one reserved accent, grey for absence
 applies-to: [ds-delegate]
 ---
 

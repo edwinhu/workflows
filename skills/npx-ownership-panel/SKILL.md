@@ -454,5 +454,5 @@ Two habits worth carrying over, both learned the expensive way here:
 
 ## See also
 
-`wrds` skill — connection patterns, `references/iss-voting.md` for the tables
-themselves, `references/postgres-vs-sas.md` for engine choice.
+`wrds` skill's references — connection patterns, `references/iss-voting.md` for the
+tables themselves, and that skill's `references/postgres-vs-sas.md` for engine choice.

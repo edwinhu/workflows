@@ -14,7 +14,7 @@ carries, `grep -il <term>` over this skill's own `references/` directory.
 
 
 
-Multi-backend vision router for images, PDFs, video, diagrams and other media. Defaults to `agy -p` on the `vision_antigravity` role in `scripts/lib/gemini-models.json` — Gemini via Antigravity OAuth, unmetered — which reads images, PDFs and video natively. Audio auto-routes to the metered `api` backend, the only one that handles it. Three further unmetered CLI backends (`claude-code -p`, `codex exec`, Copilot on GPT-5.4) give independent second opinions.
+Multi-backend vision router for images, PDFs, video, diagrams and other media. Defaults to `agy -p` on the `vision_antigravity` role in `${CLAUDE_PLUGIN_ROOT}/scripts/lib/gemini-models.json` — Gemini via Antigravity OAuth, unmetered — which reads images, PDFs and video natively. Audio auto-routes to the metered `api` backend, the only one that handles it. Three further unmetered CLI backends (`claude-code -p`, `codex exec`, Copilot on GPT-5.4) give independent second opinions.
 
 ## Tool Selection Enforcement
 
@@ -171,9 +171,9 @@ These apply to `--backend api`, which is metered. The `claude` backend takes `--
 | `gemini-3.1-pro-preview` | Maximum vision capability, hardest extractions | Slower | $2.00/1M |
 | `gemini-3-pro-preview` | Highest accuracy required | Medium | Medium |
 
-**The default is the `vision` role in `scripts/lib/gemini-models.json`, at `thinking_level=high`**;
+**The default is the `vision` role in `${CLAUDE_PLUGIN_ROOT}/scripts/lib/gemini-models.json`, at `thinking_level=high`**;
 the `agy` backend uses `vision_antigravity`, whose ids carry a reasoning suffix and are not
-interchangeable with the API ids above. `python3 scripts/lib/gemini_models.py <role>` prints either.
+interchangeable with the API ids above. `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/lib/gemini_models.py <role>` prints either.
 
 ## Agentic Vision Mode (`api` backend only)
 

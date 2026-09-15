@@ -263,7 +263,7 @@ v5.134.0 — see `docs/investigations/2026-08-05_emphasis-enforcement.md`.)
 | `references/10-citation-problems.md` | Hallucinated DOIs, dead links | **reference only** — covered better by `skills/cite-check` + `skills/source-verify` and the `cite-fidelity-*` constraints, which check citations against sources rather than pattern-matching them |
 | `references/11-meta-indicators.md` | Abrupt cutoffs, style discrepancies | **reference only** — judgement; lives in the `user-agents/writing-reviewer.md` rubric |
 
-Every named system is a `scripts/prose-audit.py` system, so a finding from it carries a span id.
+Every named system is a `${CLAUDE_PLUGIN_ROOT}/scripts/prose-audit.py` system, so a finding from it carries a span id.
 A chapter marked **reference only** produces no span, which by THE READER'S RULE means anything it
 surfaces is judgement, not a deterministic finding.
 
