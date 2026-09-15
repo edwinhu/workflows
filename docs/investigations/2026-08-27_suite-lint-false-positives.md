@@ -12,12 +12,19 @@ argue with a specific row.
 
 | rule id | raw findings | false positives | true positives |
 |---|---|---|---|
-| positive-match-failure-vocabulary | 24 | 23 | 1 |
-| single-distinct-literal | 193 | 193 | 0 |
+| positive-match-failure-vocabulary | 25 | 23 | 2 |
+| single-distinct-literal | 197 | 193 | 4 |
 | existence-only-artifact | 1 | 1 | 0 |
 | injected-key-never-varied | 43 | 43 | 0 |
 
-Unparseable files: 0 of 232 linted. Every file the walker reached was extracted; nothing was dropped
+**The raw column is re-measured; the false-positive column is NOT.** Re-measured 2026-09-15 against
+a corpus that grew from 232 files to 237 as this repo gained test suites. The false-positive counts
+are the ones this investigation actually audited, in August, over the findings that existed then —
+so the five newer findings (four `single-distinct-literal`, one
+`positive-match-failure-vocabulary`) sit in the true-positive column by arithmetic, NOT by
+judgement. Nobody has read them. Do not cite that column as evidence about them.
+
+Unparseable files: 0 of 237 linted. Every file the walker reached was extracted; nothing was dropped
 silently, and no count above is understated by a skipped file.
 
 One finding in 261 survives inspection.
@@ -110,7 +117,7 @@ matters. This is the exact run-2 defect shape and the rule earns its keep on it.
 The 23 false positives come from two mechanisms.
 
 **A paired negative assertion the rule cannot see (1 finding).**
-`skills/craft/scripts/converge-check.test.ts:93` asserts `toContain('CONVERGING')` and is immediately
+`skills/craft/scripts/converge-check.test.ts:97` asserts `toContain('CONVERGING')` and is immediately
 followed, on line 94, by `expect(r.stdout).not.toContain('NOT CONVERGING')`, which is precisely the
 repair the rule wants. The rule reads assertions one at a time and has no notion of a neighbouring
 assertion that neutralises the ambiguity, so a correctly written test scores the same as the
@@ -126,8 +133,8 @@ same mechanism produces `skills/workflow-creator/scripts/wc-probe.test.ts:261`,
 `skills/workflow-creator/scripts/wc-probe.test.ts:755`,
 `skills/workflow-creator/scripts/wc-probe.test.ts:3220` and
 `skills/workflow-creator/scripts/wc-probe.test.ts:3265`; both
-`skills/craft/scripts/craft-dispatch.test.ts:526` and
-`skills/craft/scripts/craft-dispatch.test.ts:537`, whose matched literal is a malformed-plan fixture
+`skills/craft/scripts/craft-dispatch.test.ts:530` and
+`skills/craft/scripts/craft-dispatch.test.ts:541`, whose matched literal is a malformed-plan fixture
 about 150 lines away at line 682; `tests/public-extension-contract.test.ts:161`, where the assertion
 is `toContain("specHash")` and the matched literal is a prose table cell at line 47 that happens to
 contain the word; and the three cite-check findings
@@ -233,7 +240,7 @@ Raw 43, false positives 43, no true positives.
 Three mechanisms, and the first is an extraction defect rather than a rule-design one.
 
 **A ternary parsed as a key-value pair (8 findings).**
-`skills/craft/scripts/converge-check.test.ts:44` contains `verdict: r.blocking === 0 ? 'PASS' : 'FAIL'`
+`skills/craft/scripts/converge-check.test.ts:48` contains `verdict: r.blocking === 0 ? 'PASS' : 'FAIL'`
 and is reported as the key `PASS` with the value `'FAIL'`. There is no such key. The same misparse
 produces the `PASS: 'FAIL'` findings at `skills/craft/scripts/craft-dispatch-loops.test.ts:40`,
 `skills/craft/scripts/craft-loop.test.ts:31` and `skills/craft/scripts/craft-result.test.ts:654`, and
@@ -251,9 +258,9 @@ the very sentence documenting the absence of the thing.
 
 **Harness plumbing, correctly held constant (31 findings).** The remainder are environment keys a test
 sets to configure its own harness rather than to exercise a branch: `CRAFT_DISPATCH_DRYRUN: '1'` (at
-`skills/craft/scripts/plan-lint.test.ts:382`,
+`skills/craft/scripts/plan-lint.test.ts:386`,
 `skills/craft/scripts/craft-dispatch-loops.test.ts:237`), `CRAFT_GOAL_PRINT: '1'` at
-`skills/craft/scripts/craft-dispatch.test.ts:88`, `CLAUDE_CODE_SESSION_ID: ''`
+`skills/craft/scripts/craft-dispatch.test.ts:92`, `CLAUDE_CODE_SESSION_ID: ''`
 at `skills/craft/scripts/craft-goal-resend.test.ts:78`, `CRAFT_FARM: '/bin/false'` at
 `skills/craft/scripts/craft-loop.test.ts:86`, `CRAFT_REDISPATCH_DRYRUN: '1'` at
 `skills/craft/scripts/craft-redispatch.test.ts:225`, `PATH` (four files) and `FARM_OUT_CHILD` (two),
