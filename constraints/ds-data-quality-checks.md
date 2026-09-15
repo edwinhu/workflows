@@ -1,6 +1,5 @@
 ---
 name: data-quality-checks
-description: Canonical DQ1-DQ6, COV, M1, R1 check definitions — load from ds-checks.md, never inline
 applies-to: [ds-fix, ds-implement, ds-delegate, ds-verify]
 ---
 

@@ -1,6 +1,5 @@
 ---
 name: ds-data-pull-profile
-description: Before native planning commits to a large external pull (≥50M rows, ≥500 MB estimated ship, or large/bulk/uncertain source), /ds profiles filtered raw versus aggregate/server-side paths so the choice is evidence-based.
 applies-to: [ds, ds-fix]
 ---
 

@@ -94,4 +94,25 @@ is computed.
   `allowed-tools` if the command is not already allowed.
 - **2-minute timeout**, stderr merged into stdout, output subject to the Bash tool's limits.
 - **Output is not rescanned**, so a bang cannot emit another bang.
-- `${CLAUDE_SKILL_DIR}` and friends are substituted AFTER the commands run.
+- **`${CLAUDE_SKILL_DIR}` is substituted BEFORE the command runs, into the command TEXT.** The bare
+  form `$CLAUDE_SKILL_DIR` is NOT — there is no shell variable of that name, so it expands to the
+  empty string and the script is handed nothing. Measured 2026-09-15 on claude@2.1.257: braced
+  echoed the real path, bare echoed `[]`. That empty argument is how a first attempt at the
+  degrading TOC bang passed `.` to `skill-toc`, which exited 2 and aborted 53 skill loads.
+
+## Where a written-out bang fires
+
+A bang in documentation EXECUTES, and the markdown around it mostly does not matter. Measured
+2026-09-15 on claude@2.1.257 by loading a probe skill carrying one bang per shape:
+
+| the bang sits in | fires? |
+|---|---|
+| a bare line, or mid-sentence | **yes** |
+| a ``` fenced block | **yes** |
+| a ~~~ fenced block | **yes** |
+| a four-space indented block | **yes** |
+| an inline code span, anywhere inside it | **no** |
+
+An inline code span is the only protection, which is the reverse of what the markdown suggests — a
+fenced example reads as the safe way to show one and is not. To document a bang, put it in an inline
+span, or write the placeholder `<bang>`. `sc-probe.ts` computes this.

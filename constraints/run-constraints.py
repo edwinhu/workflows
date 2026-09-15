@@ -1,14 +1,14 @@
 #!/usr/bin/env -S uv run --with lxml python3
-"""check-all.py — auto-discovers and runs all constraint checks.
+"""run-constraints.py — auto-discovers and runs all constraint checks.
 
 NOTE: invoked with `--with lxml` because several constraint scripts (ai-anti-patterns
 wikipedia-*, writing-general strunk, writing-legal volokh) import lxml. Without it they raise
 "lxml is required" and land in `errors` — i.e. those prose checks silently DON'T run. Callers that
-invoke this as `uv run python3 check-all.py` must also pass `--with lxml`.
+invoke this as `uv run python3 run-constraints.py` must also pass `--with lxml`.
 
 Discovers from two directories:
   - constraints/*.py       — plugin-wide constraints
-  - skills/*/references/*.py          — skill-local constraints (co-located with their .md pairs)
+  - skills/*/constraints/*.py         — skill-local constraints (co-located with their .md pairs)
 
 Domain filtering: reads {cwd}/.planning/ACTIVE_WORKFLOW.md for `style:` field.
   - writing-legal (Volokh)  → legal only
@@ -195,13 +195,15 @@ def main():
     md_stems, py_paths = _discover(_plugin_constraints_dir, exclude_names={"check-all"})
     _run_checks(md_stems, py_paths, "constraints", context, results, workflow)
 
-    # --- Layer 2: skill-local constraints (prefixed .py files in skills/*/references/) ---
-    # Skill reference .md files are long source documents (Strunk, McCloskey, etc.), not
-    # constraint definitions — so .py files here run unconditionally, no .md pairing required.
+    # --- Layer 2: skill-local constraints (skills/*/constraints/*.py) ---
+    # They lived in skills/*/references/ until that directory held BOTH the source guides
+    # (Strunk, McCloskey, Volokh) and the lints derived from them, which is why the prose-check
+    # hook needed per-file suppressions instead of a directory prefix. The guides stayed in
+    # references/; only the rules moved, so a directory prefix is sufficient again.
     # Domain filtering: writing-legal runs only for legal, writing-econ only for econ.
     skills_dir = _repo_root / "skills"
     if skills_dir.is_dir():
-        for skill_refs in sorted(skills_dir.glob("*/references")):
+        for skill_refs in sorted(skills_dir.glob("*/constraints")):
             skill_name = skill_refs.parent.name
             # Domain filter: skip domain-specific skills that don't match
             if domain and skill_name in DOMAIN_SKILL_MAP:
@@ -210,7 +212,7 @@ def main():
                     continue
             py_files = sorted(skill_refs.glob("*.py"))
             for py_path in py_files:
-                label = f"skills/{skill_name}/references/{py_path.stem}"
+                label = f"skills/{skill_name}/constraints/{py_path.stem}"
                 if py_path.stem in DOMAIN_FILE_MAP and domain not in DOMAIN_FILE_MAP[py_path.stem]:
                     results["skipped"].append(f"{label} (domain={domain})")
                     continue

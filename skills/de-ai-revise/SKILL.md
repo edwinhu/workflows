@@ -47,7 +47,7 @@ author's choice is the right one (see Preserve-Human below).
 was gated against a 14.3M-sentence law+finance corpus, so flags are AI defaults
 real scholars don't write — not generic "fancy word" lint.
 
-The scorers themselves now live in `scripts/prose-audit.py`, the plugin's single deterministic
+The scorers themselves now live in `${CLAUDE_PLUGIN_ROOT}/scripts/prose-audit.py`, the plugin's single deterministic
 prose audit, and `de_ai_audit.py` is a thin wrapper over its `--profile de-ai` view. The output
 shape below is unchanged and will stay that way — this skill needs the REWRITE view (a worklist of
 spans with plain replacements), which is a different shape from the audit's severity-ranked,
@@ -57,7 +57,7 @@ this profile is blind to.
 
 | Scorer | Catches | Remedy |
 |--------|---------|--------|
-| **Scored AI-tics** (`ai-anti-patterns/references/scored-tics-patterns.py`) | phrase/structure tics that passed the ~0-human-rate gate (`sev1-5`) | rewrite the construction; these have no honest use |
+| **Scored AI-tics** (`ai-anti-patterns/constraints/scored-tics-patterns.py`) | phrase/structure tics that passed the ~0-human-rate gate (`sev1-5`) | rewrite the construction; these have no honest use |
 | **Tiered diction** (`references/diction.yaml`) | fancy→plain words, tiered by corpus rate | `always_flag` → swap on sight; `cluster` → fix when 2+/para; `density` → vary at saturation; `dropped` → **never touch** (legal-normal) |
 | **British spelling** (`BRITISH` in `de_ai_audit.py`) | locale mismatch in US-register prose (`recognise`, `behaviour`, `whilst`, `labelled`) — LLMs emit these into US documents from mixed training corpora | swap for the US form; **drop the check for a UK-register document** |
 | **Stylometrics** (`ai-anti-patterns/scripts/style_metrics.py`) | rhythm/structure: `composite_human_likeness` 0-100, em-dash, metronomic runs, opener transitions, nominalization, false precision, burstiness/passive advisories | vary sentence length toward bursty; em-dash → semicolon/period; plainer Latinate→Anglo-Saxon; round a summarising figure to a fraction |
@@ -165,7 +165,7 @@ user's own published prose — uses them deliberately. Do NOT zero them out.
 
 ## When invoked inside the writing workflow
 
-- **/writing-verify** runs `scripts/prose-audit.py` on every draft before dispatching its prose
+- **/writing-verify** runs `${CLAUDE_PLUGIN_ROOT}/scripts/prose-audit.py` on every draft before dispatching its prose
   reviewers and INJECTS the resulting spans into their prompts as evidence — the reviewer is not
   asked to run a scorer, and a reviewer that cites none of the hard spans it was handed is
   recorded as unreliable. Those spans become AI-ism findings (advisory minors unless they cluster

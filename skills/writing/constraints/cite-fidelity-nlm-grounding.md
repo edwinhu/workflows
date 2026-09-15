@@ -1,8 +1,6 @@
 ---
 name: cite-fidelity-nlm-grounding
-description: When ACTIVE_WORKFLOW.md has an nlm_notebook, every new [@bibkey] should be preceded by a Stage 2 NLM evidence pull and a paste-ready nlm-quote comment.
 applies-to: [writing-draft, writing-revise]
-type: convention
 ---
 
 # Ask before you cite

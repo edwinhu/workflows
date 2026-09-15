@@ -17,7 +17,7 @@ every wiring claim below was produced by running the code, not by reading it.
 
 | # | System | Entries | Lives in |
 |---|---|---|---|
-| A | **scored-tics** — corpus-gated, `sev1-5` | 13 | `skills/ai-anti-patterns/references/scored-tics-patterns.py` |
+| A | **scored-tics** — corpus-gated, `sev1-5` | 13 | `skills/ai-anti-patterns/constraints/scored-tics-patterns.py` |
 | B | **wikipedia-\*** — six files, Wikipedia "Signs of AI writing" | 75 | `skills/ai-anti-patterns/references/wikipedia-*.py` |
 | C | **writing-ai-smell-\*** — four constraint pairs | 63 `re.compile` | `constraints/writing-ai-smell-{puffery,structure,artifacts,em-dash}.py` |
 | D | **domain style** — Strunk / Volokh / McCloskey | 75 | `skills/writing-{general,legal,econ}/references/*.py` |
@@ -32,13 +32,13 @@ human corpus) and the **numbered reference prose** `00-…12-…` (model-mediate
 |---|---|---|
 | `skills/de-ai-revise/scripts/de_ai_audit.py` | **A + E + stylometrics** | `writing-reviewer` agent (as a *suggested* Bash line), `de-ai-revise` SKILL |
 | `scripts/prose-lint.py` | **B + D** | `hooks/writing-prose-check.ts` |
-| `constraints/check-all.py` | **B + C + D** (auto-discovery) | `writing-prose-check.ts`, `writing-mechanical-gate.ts`, `mechanical-floor-gate.ts`, `workflows/workshop-verify.js` |
+| `constraints/run-constraints.py` | **B + C + D** (auto-discovery) | `writing-prose-check.ts`, `writing-mechanical-gate.ts`, `mechanical-floor-gate.ts`, `workflows/workshop-verify.js` |
 | `skills/ai-anti-patterns/scripts/screen.py` | **A + B** | nothing but `tests/test_prose_lint_hook.py` |
 
 ### 1.3 Corrections to the working trace
 
 **The wikipedia tables are not dormant. They are the most-run system in the plugin.**
-All six carry a `check()` and an `APPLIES_TO`, so `check-all.py`'s Layer-2 auto-discovery executes
+All six carry a `check()` and an `APPLIES_TO`, so `run-constraints.py`'s Layer-2 auto-discovery executes
 them on every writing project — *and* `prose-lint.py` loads the same six tables by explicit path.
 `screen.py` is a third, redundant loader, and *that* is what nothing but tests invokes. Verified on
 a tic-laden fixture: `prose-lint --only ai-anti-patterns` → 10 hits; `check-all` → 10 hits from the
@@ -224,7 +224,7 @@ Steps 1–3 are self-contained and land the de-duplication and the coverage fix 
 ## 5. Open question for the user — ANSWERED: block on hard
 
 **Severity semantics.** Resolved as proposed: block on `hard`, advisory on everything else.
-`check-all.py` now emits a `severity` per `failed[]` entry read from the constraint module's own
+`run-constraints.py` now emits a `severity` per `failed[]` entry read from the constraint module's own
 `SEVERITY`, and both `mechanical-floor-gate.ts` and `writing-mechanical-gate.ts` deny only when a
 hard entry exists, reporting soft ones in the allow payload as context. Before this, check-all
 threw the declared severity away and both gates blocked on any failure at all — so advisory
@@ -335,7 +335,7 @@ The investigation above is preserved as written; this section records where the 
 moved. The five pattern systems and the four loaders are unchanged. What changed is who calls them.
 
 **Three consumers were retired with the beat spine.** `hooks/writing-mechanical-gate.ts`,
-`hooks/mechanical-floor-gate.ts` and `workflows/writing-verify.js` no longer exist. `check-all.py`
+`hooks/mechanical-floor-gate.ts` and `workflows/writing-verify.js` no longer exist. `run-constraints.py`
 now has exactly ONE live consumer, `hooks/writing-prose-check.ts`. (`workshop-deck.py` is not a
 second one: `skills/workshop/scripts/workshop-deck.py:57-62` runs the typst skill's
 `run-constraints.py`, a different checker over a different directory.) Under craft, the mechanical
@@ -347,7 +347,7 @@ floor is not a PreToolUse gate at all: it is the
 **The three domain style guides moved into one skill.** `strunk-elements-of-style.py`,
 `mccloskey-economical-writing.py` and `volokh-distilled.py` were in `writing-general`,
 `writing-econ` and `writing-legal`; they are now all in `skills/writing/references/`. Domain gating
-therefore could no longer key on the skill directory, so `check-all.py` gained `DOMAIN_FILE_MAP`
+therefore could no longer key on the skill directory, so `run-constraints.py` gained `DOMAIN_FILE_MAP`
 and gates by filename instead — Volokh for `legal`, McCloskey for `econ`. `prose-audit.py` keeps its
 own `_DOMAIN_TABLES` gating, which was already per-table and needed only a path change. (The
 retired `prose-lint.py` was described here as keeping the same gating; it never had a
@@ -358,7 +358,7 @@ wikipedia-promotional finding for the same span.
 
 **Five authoring lints moved with them** — `writing-anchored-numbers`, `writing-no-bold-lead`,
 `writing-outline-sync`, `writing-shortjournal`, `writing-topic-sentences` — and are still picked up
-automatically, because `check-all.py` already globbed `skills/*/references/*.py`. A sixth,
+automatically, because `run-constraints.py` already globbed `skills/*/references/*.py`. A sixth,
 `writing-stop-triggers`, was deleted rather than moved: it checked that a constraint's `applies-to`
 frontmatter named a skill that called `load-constraints.ts`, and craft's skills do not call the
 loader, so the property it verified no longer exists.

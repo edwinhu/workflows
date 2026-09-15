@@ -1,9 +1,6 @@
 ---
 name: cite-fidelity-no-handtyped
-description: Footnote bodies must not contain hand-typed Bluebook citations (vol-LRev-page, italic-title-year, U.S.C. §, etc.) without a [@bibkey] reference — those bypass the bib and are unverifiable.
 applies-to: [writing-draft, writing-revise]
-type: constraint
-check: cite-fidelity-lint:hand-typed-cite
 ---
 
 # No hand-typed citations in footnote bodies

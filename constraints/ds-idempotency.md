@@ -1,6 +1,5 @@
 ---
 name: idempotency
-description: Running pipeline N times on same input must equal running it once — no append, no increment, no accumulate
 applies-to: [ds-delegate]
 ---
 

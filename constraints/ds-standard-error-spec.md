@@ -1,6 +1,5 @@
 ---
 name: standard-error-specification
-description: Wrong SEs invalidate every t-stat and p-value — match SE type to data structure
 applies-to: [ds-delegate]
 ---
 

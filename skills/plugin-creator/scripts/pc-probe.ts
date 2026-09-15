@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 /**
- * cc-probe.ts — deterministic CHECKER-SHAPE probe.
+ * pc-probe.ts — deterministic CHECKER-SHAPE probe.
  *
- * Usage:  bun cc-probe.ts --target <plugin-dir> [--corpus <tics.yaml>] [--json]
+ * Usage:  bun pc-probe.ts --target <plugin-dir> [--corpus <tics.yaml>] [--json]
  * Exit:   0 = no findings (or --help), 1 = findings, 2 = argument error, 3 = the probe crashed.
  *
  * 2 and 3 are separate because a caller must be able to tell "you invoked me wrong" from "I could
@@ -62,7 +62,7 @@
  *     names but never invokes it is NOT a caller.
  *     Defect: `scripts/prose-lint.py`, `ai-tic/linter/score.py`, `scripts/check-all.sh` — ~330 dead
  *     lines, one of which is named by a test file that never calls it.
- *     A contract module is REGISTERED BY ITS CONTRACT, not by a literal path: `check-all.py`
+ *     A contract module is REGISTERED BY ITS CONTRACT, not by a literal path: `run-constraints.py`
  *     auto-discovers on `APPLIES_TO`/`SEVERITY` by glob. So a contract module counts as called when
  *     the plugin holds a live discovery runner. If it holds none, they are all uncalled, which is
  *     the truth.
@@ -162,6 +162,8 @@ export interface Lens {
   line: number
   key: string
   prompt: string
+  /** The entry's `refs:` array, verbatim. Two lenses with different refs judge different SUBJECTS. */
+  refs: string
   /** Skill directory it lives in, relative to the target, or null. */
   skill: string | null
 }
@@ -500,12 +502,17 @@ export function parseLenses(file: string, text: string, target: string): Lens[] 
     const span = text.slice(start, end)
     const keys = [...span.matchAll(/\bkey\s*:\s*"([^"]*)"/g)].map(m => m[1])
     const prompts = [...span.matchAll(/\bprompt\s*:\s*"((?:\\.|[^"\\])*)"/g)]
+    // Positional, and only trusted when every entry carries one — a partial list would misalign
+    // refs with prompts and turn fan-out into duplication or the reverse.
+    const refsAll = [...span.matchAll(/\brefs\s*:\s*\[([^\]]*)\]/g)].map(m => m[1].replace(/\s+/g, ' ').trim())
+    const refs = refsAll.length === prompts.length ? refsAll : null
     for (let i = 0; i < prompts.length; i++) {
       out.push({
         file,
         line: lineOf(text, start + (prompts[i].index ?? 0)),
         key: keys[i] ?? `lens#${i + 1}`,
         prompt: prompts[i][1],
+        refs: refs ? refs[i] : '',
         skill,
       })
     }
@@ -575,7 +582,14 @@ export function parseHookRegistry(target: string): string[] {
  */
 export function pairedSpans(text: string, ch: string): string[] {
   const at: number[] = []
-  for (let i = 0; i < text.length; i++) if (text[i] === ch) at.push(i)
+  for (let i = 0; i < text.length; i++) {
+    if (text[i] !== ch) continue
+    // An English possessive or contraction is not a quote delimiter. Pairing them made
+    // `plan's task table and each task's writablePaths` yield the "literal"
+    // "s task table and each task", which two otherwise-unrelated lenses then shared.
+    if (ch === "'" && /[A-Za-z]/.test(text[i - 1] ?? '') && /[A-Za-z]/.test(text[i + 1] ?? '')) continue
+    at.push(i)
+  }
   const out: string[] = []
   for (let i = 0; i + 1 < at.length; i += 2) out.push(text.slice(at[i] + 1, at[i + 1]))
   return out
@@ -585,7 +599,12 @@ export function quotedLiterals(prompt: string): string[] {
   const out = new Set<string>()
   const add = (s: string) => {
     const t = s.trim()
-    if (t.length >= 8 && /\s/.test(t) && !/^[A-Z_]+$/.test(t)) out.add(t)
+    if (t.length < 8 || !/\s/.test(t) || /^[A-Z_]+$/.test(t)) return
+    // A markdown heading or a path is shared VOCABULARY, not a claim: teaching's notes and slides
+    // lenses both cite the plan's `## Lectures In Scope` table and judge entirely different things.
+    // The defect this rule is named for is a shipped PATTERN quoted twice, e.g. 'The answer:'.
+    if (/^#{1,6}\s/.test(t) || /^[.~/]?[\w.-]+\//.test(t)) return
+    out.add(t)
   }
   for (const s of pairedSpans(prompt, "'")) add(s)
   for (const s of pairedSpans(prompt, '`')) add(s)
@@ -601,12 +620,20 @@ export function suppressionEntries(text: string): { name: string; entry: string;
     const name = m[1]
     if (!/(SUPPRESS|EXEMPT|IGNORE|PREFIX)/i.test(name)) continue
     if (/(DIR|EXT|LANG)/i.test(name)) continue
+    const found: { name: string; entry: string; line: number }[] = []
     for (const e of m[2].matchAll(/(['"])((?:\\.|(?!\1)[^\\])*)\1/g)) {
       const entry = e[2]
       // Label-shaped only. A bare name is not a label suppression; see SCOPE in the header.
       if (!entry.includes('/')) continue
-      out.push({ name, entry, line: lineOf(text, (m.index ?? 0) + (e.index ?? 0)) })
+      found.push({ name, entry, line: lineOf(text, (m.index ?? 0) + (e.index ?? 0)) })
     }
+    // A list whose every entry is a bare DIRECTORY prefix suppresses paths, not labels — e.g.
+    // validate-skill-paths.ts's USER_PROJECT_PREFIXES (".planning/", "drafts/", …), which exist in
+    // the consumer's project and never name a rule this plugin emits. Matching no label is the
+    // CORRECT state for such a list, so I5 must not ask it the question at all; before this it
+    // could only decline, reporting one permanent NOT CHECKED that never went away.
+    if (found.length && found.every(f => f.entry.endsWith('/'))) continue
+    out.push(...found)
   }
   return out
 }
@@ -722,10 +749,15 @@ export function checkSingleEngine(
 export function checkSingleLens(lenses: readonly Lens[], target: string): Finding[] {
   // Grouped case-insensitively, REPORTED as written: a finding that renames the literal it found
   // costs the reader the grep that would confirm it.
+  //
+  // TWO LENSES MAKE ONE CLAIM TWICE ONLY IF THEY JUDGE THE SAME SUBJECT. Identical prompt text over
+  // DIFFERENT `refs` is FAN-OUT — one rule applied per subject, not a rival: exams dispatches
+  // source-fidelity-01/02/03, whose prompts differ only in a question number, over three separate
+  // question files. Cross-skill pairs stay in scope deliberately (the F1 defect was one).
   const byLiteral = new Map<string, { shown: string; lenses: Lens[] }>()
   for (const l of lenses) {
     for (const lit of quotedLiterals(l.prompt)) {
-      const key = lit.toLowerCase().replace(/\s+/g, ' ')
+      const key = `${l.refs}\u0000${lit.toLowerCase().replace(/\s+/g, ' ')}`
       const slot = byLiteral.get(key) ?? { shown: lit, lenses: [] }
       if (!slot.lenses.some(x => x.file === l.file && x.key === l.key)) slot.lenses.push(l)
       byLiteral.set(key, slot)
@@ -1045,8 +1077,18 @@ export function runProbe(target: string, opts: ProbeOptions = {}): ProbeResult {
 
   const delegates = (a: string, b: string) => (spawns.get(a)?.has(b) ?? false)
 
+  // A discovery runner ENUMERATES a checker directory and DISPATCHES on the module contract. Which
+  // contract member it keys on is the runner's choice: workflows' run-constraints.py reads APPLIES_TO,
+  // typst's globs constraints/*.py and dispatches on a callable `check`. Requiring APPLIES_TO
+  // specifically reported all 36 of typst's live checkers as uncalled — the runner was right there.
   const discoveryRunners = [...codeOf]
-    .filter(([f, code]) => !hasModuleContract(textOf.get(f) ?? '') && code.includes('APPLIES_TO'))
+    .filter(([f, code]) => {
+      if (hasModuleContract(textOf.get(f) ?? '')) return false
+      if (code.includes('APPLIES_TO')) return true
+      const enumerates = /\bglob\b|\biterdir\b|\breaddirSync\b|\breaddir\b|\bscandir\b|\blistdir\b/.test(code)
+      const dispatches = /\bSEVERITY\b|\bCONSTRAINT\b|["']check["']|\bcheck\(/.test(code)
+      return enumerates && dispatches
+    })
     .map(([f]) => f)
 
   // ---- labels a checker can emit (I5). Derived from where the checkers actually live.
@@ -1133,7 +1175,7 @@ export function findCorpus(root: string): string | null {
 export class ArgError extends Error {}
 export class HelpRequested extends Error {}
 
-export const USAGE = 'usage: cc-probe.ts --target <plugin-dir> [--corpus <tics.yaml>] [--json]'
+export const USAGE = 'usage: pc-probe.ts --target <plugin-dir> [--corpus <tics.yaml>] [--json]'
 
 export function parseArgs(argv: string[]): { target: string; json: boolean; corpus?: string | null } {
   let target: string | null = null
@@ -1187,7 +1229,7 @@ function tailLine(result: ProbeResult): string {
   const bits = [`${result.findings.length} finding(s)`]
   if (result.advisories.length) bits.push(`${result.advisories.length} advisory (does not gate)`)
   if (result.unresolvedRefs.length) bits.push(`${result.unresolvedRefs.length} NOT CHECKED`)
-  return `cc-probe: END — ${bits.join(', ')} | ${result.engines.length} engine(s), ${result.lenses.length} lens(es), ${result.tables.length} table(s)`
+  return `pc-probe: END — ${bits.join(', ')} | ${result.engines.length} engine(s), ${result.lenses.length} lens(es), ${result.tables.length} table(s)`
 }
 
 export function formatText(result: ProbeResult): string {
@@ -1195,8 +1237,8 @@ export function formatText(result: ProbeResult): string {
   const coverage = `${result.filesScanned} of ${result.filesEligible} eligible source files scanned`
   lines.push(
     result.findings.length === 0
-      ? `cc-probe: CLEAN — ${coverage} under ${result.target}`
-      : `cc-probe: ${result.findings.length} finding(s) — ${coverage} under ${result.target}`,
+      ? `pc-probe: CLEAN — ${coverage} under ${result.target}`
+      : `pc-probe: ${result.findings.length} finding(s) — ${coverage} under ${result.target}`,
   )
   lines.push(...notesFor(result))
   for (const f of result.findings) {
@@ -1220,7 +1262,7 @@ export function main(argv: string[], run: typeof runProbe = runProbe): number {
       console.log(e.message)
       return 0
     }
-    console.error(`cc-probe: ${(e as Error).message}`)
+    console.error(`pc-probe: ${(e as Error).message}`)
     return 2
   }
   let result: ProbeResult
@@ -1228,7 +1270,7 @@ export function main(argv: string[], run: typeof runProbe = runProbe): number {
     result = run(opts.target, opts.corpus === undefined ? {} : { corpus: opts.corpus })
   } catch (e) {
     // 3, not 2: the arguments were fine and the probe still did not run.
-    console.error(`cc-probe: failed to probe ${opts.target}: ${(e as Error).message}`)
+    console.error(`pc-probe: failed to probe ${opts.target}: ${(e as Error).message}`)
     return 3
   }
   if (opts.json) console.log(JSON.stringify(result, null, 2))

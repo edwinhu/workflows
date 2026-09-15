@@ -3,9 +3,9 @@
 
 ONE entry point over ALL five pattern systems, emitting ONE span list with stable ids:
 
-  A  scored AI-tics   skills/ai-anti-patterns/references/scored-tics-patterns.py   (system `scored-tic`)
-  B  wikipedia-*      skills/ai-anti-patterns/references/wikipedia-*.py            (system `wikipedia-*`)
-  D  domain style     skills/writing/references/{strunk,mccloskey,volokh}*.py      (system `writing-*`)
+  A  scored AI-tics   skills/ai-anti-patterns/constraints/scored-tics-patterns.py  (system `scored-tic`)
+  B  wikipedia-*      skills/ai-anti-patterns/constraints/wikipedia-*.py           (system `wikipedia-*`)
+  D  domain style     skills/writing/constraints/{strunk,mccloskey,volokh}*.py     (system `writing-*`)
   E  tiered diction   skills/de-ai-revise/references/diction.yaml                  (system `diction`)
   +  stylometrics     skills/ai-anti-patterns/scripts/style_metrics.py --lint      (system `style`)
   +  US-register spelling and paragraph/section em-dash density                    (`spelling`, `em-dash`)
@@ -63,7 +63,11 @@ from pathlib import Path
 WORKFLOWS_ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS_DIR = WORKFLOWS_ROOT / "scripts"
 SKILLS_DIR = WORKFLOWS_ROOT / "skills"
-AAP_REFS = SKILLS_DIR / "ai-anti-patterns" / "references"
+# The pattern TABLES are constraints and live in constraints/; the prose .md guides
+# stayed in references/. Built piece by piece, so a literal grep for
+# "skills/ai-anti-patterns/references" cannot see this line — which is how the move
+# broke it silently once already.
+AAP_REFS = SKILLS_DIR / "ai-anti-patterns" / "constraints"
 SCORED_TICS = AAP_REFS / "scored-tics-patterns.py"
 STYLE_LINT = SKILLS_DIR / "ai-anti-patterns" / "scripts" / "style_metrics.py"
 DICTION_YAML = SKILLS_DIR / "de-ai-revise" / "references" / "diction.yaml"
@@ -244,7 +248,7 @@ def load_pattern_systems(style: str | None = None) -> list[tuple[str, str, str, 
             continue
         if system == "writing-econ" and domain != "econ":
             continue
-        path = SKILLS_DIR / skill / "references" / filename
+        path = SKILLS_DIR / skill / "constraints" / filename
         if not path.exists():
             continue
         for rx, label in _compile_table(path, attr, True):

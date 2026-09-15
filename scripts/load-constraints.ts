@@ -3,7 +3,7 @@
  * Load constraint .md prose for a skill, filtered by applies-to frontmatter.
  * TypeScript port of load-constraints.py.
  *
- * Mirrors check-all.py's auto-discovery but for .md context injection.
+ * Mirrors run-constraints.py's auto-discovery but for .md context injection.
  * Globs constraints/*.md, parses applies-to, outputs matching content.
  *
  * Usage:
@@ -66,7 +66,7 @@ export function parseFrontmatter(text: string): [Meta, string] {
 /**
  * Check if a skill name matches the applies-to list.
  *
- * Matching is name-boundary aware, mirroring check-all.py's `_applies`:
+ * Matching is name-boundary aware, mirroring run-constraints.py's `_applies`:
  *   - "all"          -> matches everything
  *   - entry == skill -> exact match ("ds-plan" ⊃ ds-plan)
  *   - "ds-*"         -> family glob: the ds entry point AND every ds-<phase>
@@ -133,6 +133,13 @@ export function loadConstraints(options: LoadConstraintsOptions): ConstraintLoad
   const entries = readdirSync(canonicalRoot).filter((name) => name.endsWith(".md")).sort();
   const outputParts: string[] = [];
   const constraints: string[] = [];
+  // Every scope the corpus declares, so a refusal can name the alternatives instead of only
+  // reporting that the one asked for matched nothing.
+  const scopes = new Set<string>();
+  // A comma list is ONE query over several scopes — the shape `rules-for slides,notes` has always
+  // taken. Splitting here keeps all three tools answering the same argument.
+  const wanted = skillName.split(",").map((w) => w.trim()).filter(Boolean);
+  const indexRows: [string, string][] = [];
   let matched = 0;
   let skipped = 0;
 
@@ -148,13 +155,15 @@ export function loadConstraints(options: LoadConstraintsOptions): ConstraintLoad
     let appliesTo = meta["applies-to"] ?? [];
     if (typeof appliesTo === "string") appliesTo = [appliesTo];
     if (!appliesTo.length) appliesTo = ["all"];
+    for (const sc of appliesTo as string[]) scopes.add(sc);
 
-    if (skillMatches(appliesTo as string[], skillName)) {
+    if (wanted.some((w) => skillMatches(appliesTo as string[], w))) {
       const constraintName = (meta["name"] as string) || name.replace(/\.md$/, "");
       outputParts.push(`# Constraint: ${constraintName}`);
       outputParts.push(body.trim());
       outputParts.push("");
       constraints.push(name);
+      indexRows.push([constraintName, constraintPath]);
       matched++;
     } else {
       skipped++;
@@ -183,7 +192,11 @@ export function loadConstraints(options: LoadConstraintsOptions): ConstraintLoad
     }
   }
 
-  return { output, evidence };
+  const index = outputParts.length
+    ? `# Constraints for ${skillName} (${matched})\n\n` +
+      indexRows.sort().map(([n, f]) => `- **${n}**  \`${f}\``).join("\n")
+    : "";
+  return { output, evidence, scopes: [...scopes].sort(), index };
 }
 
 // CLI entry point. Guarded by import.meta.main so importing this module for its exported
@@ -204,16 +217,40 @@ if (!argv.length || argv[0] === "-h" || argv[0] === "--help") {
   process.exit(0);
 }
 
+// One argument shape across all three constraint tools: <scope> [--dir DIR] [--index].
 const skillName = argv[0];
-const constraintsDir = argv.length >= 3 && argv[1] === "--dir"
-  ? argv[2]
-  : resolve(import.meta.dir, "..", "constraints");
+let constraintsDir = "";
+// INDEX is the default in all three loaders: the prose for one scope is 38,524 bytes against 1,386
+// for the index, and a load-time injection is paid on every invocation. --full gives the bodies.
+let indexOnly = true;
+for (let i = 1; i < argv.length; i++) {
+  if (argv[i] === "--index") indexOnly = true;
+  else if (argv[i] === "--full") indexOnly = false;
+  else if (argv[i] === "--dir" && argv[i + 1]) constraintsDir = argv[++i];
+  else {
+    console.error(`Usage: load-constraints.ts <skill-name> [--dir <constraints-dir>] [--index|--full]`);
+    process.exit(2);
+  }
+}
+if (!constraintsDir) constraintsDir = resolve(import.meta.dir, "..", "constraints");
+// Exit 2 for every could-not-run, matching `rules-for` and teaching's loader. Neither of the codes
+// this used to return aborts a skill load: a bang tolerates exit 1, and exit 0 with an empty body
+// renders as "this skill has no constraints" — which is what a missing corpus looked like.
 try {
   const result = loadConstraints({ skillName, constraintsDir });
-  if (result.output) console.log(result.output);
-  else console.error(`# No constraints found for skill: ${skillName}`);
-} catch {
-  console.error(`Error: ${constraintsDir} not found`);
-  process.exit(1);
+  if (result.output) {
+    console.log(indexOnly ? result.index : result.output);
+  } else {
+    console.error(
+      `Error: no constraint is scoped to '${skillName}' — the scope names nothing, which is not ` +
+        `an empty corpus. Scopes in this corpus: ${result.scopes?.join(", ") || "(none declared)"}`,
+    );
+    process.exit(2);
+  }
+} catch (e) {
+  // Named, not swallowed: a bare catch reported "not found" for a permission error and a parse
+  // error alike, so the one cause the message states was often not the cause.
+  console.error(`Error: cannot read the constraint corpus at ${constraintsDir}: ${(e as Error).message}`);
+  process.exit(2);
 }
 }

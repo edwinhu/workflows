@@ -7,7 +7,7 @@
  *
  * Run: bun test tests/load-constraints-applies-to.test.ts
  */
-import { expect, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { parseFrontmatter, skillMatches } from "../scripts/load-constraints.ts";
@@ -33,9 +33,9 @@ const expectedDirectAggregate = [
 ].sort();
 
 const expectedAggregates = new Set([
-  "skills/ds/references/ds-analysis-constraints.md",
-  "skills/ds/references/ds-engineering-constraints.md",
-  "skills/ds/references/ds-common-conventions.md",
+  "skills/ds/constraints/ds-analysis-constraints.md",
+  "skills/ds/constraints/ds-engineering-constraints.md",
+  "skills/ds/constraints/ds-common-conventions.md",
 ]);
 const expectedTaskBriefs = ["skills/ds/SKILL.md"];
 
@@ -146,4 +146,42 @@ test("every shipped constraint reaches a loader-calling skill or exact aggregate
     }
   }
   expect(orphans).toEqual([]);
+});
+
+// THE LOADER CONTRACT, shared with typst's `rules-for` and teaching's load-constraints.py.
+// Exit 2 for every could-not-run. Neither code this used to return aborts a skill load: a bang
+// TOLERATES exit 1, and exit 0 with empty output renders as "this skill has no constraints" —
+// which is exactly what a corpus whose directory had moved looked like for months.
+describe("could-not-run is exit 2, never 1 and never 0", () => {
+  const LOADER = join(import.meta.dir, "..", "scripts", "load-constraints.ts");
+  const run = (args: string[]) =>
+    Bun.spawnSync(["bun", LOADER, ...args], { stdout: "pipe", stderr: "pipe" });
+
+  test("a corpus directory that does not exist is exit 2", () => {
+    const r = run(["ds", "--dir", "/nonexistent-corpus-xyz"]);
+    expect(r.exitCode).toBe(2);
+  });
+
+  test("a scope no constraint claims is exit 2, and names the scopes that exist", () => {
+    const r = run(["zzz-no-such-scope"]);
+    expect(r.exitCode).toBe(2);
+    const err = new TextDecoder().decode(r.stderr);
+    expect(err).toContain("names nothing");
+    expect(err).toContain("ds");
+  });
+
+  // INDEX is the default in all three loaders; --full gives the bodies. Both are pinned, because
+  // the default is what every load-time bang injects and its size is the reason it was chosen.
+  test("a scope that matches exits 0 and emits the INDEX by default", () => {
+    const r = run(["ds"]);
+    expect(r.exitCode).toBe(0);
+    expect(new TextDecoder().decode(r.stdout)).toContain("# Constraints for ds");
+  });
+
+  test("--full emits the prose, and it is the larger form by an order of magnitude", () => {
+    const idx = new TextDecoder().decode(run(["ds"]).stdout);
+    const full = new TextDecoder().decode(run(["ds", "--full"]).stdout);
+    expect(full).toContain("# Loaded");
+    expect(full.length).toBeGreaterThan(idx.length * 10);
+  });
 });

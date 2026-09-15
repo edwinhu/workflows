@@ -1,8 +1,6 @@
 ---
 name: cite-fidelity-section-gate
-description: Before writing-revise declares COMPLETE, every drafts/*.md must have a corresponding .planning/CITES-{section}.md with status PASSED — Stage 3 hard gate.
 applies-to: [writing-revise]
-type: convention
 ---
 
 # Stage 3 cite-check hard gate

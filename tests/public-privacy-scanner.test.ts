@@ -3,7 +3,7 @@ import { describe, expect, test } from "bun:test";
 import { mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { captureCandidate, digestCandidateManifest } from "../workflows/lib/candidate-manifest";
+import { captureCandidate, digestCandidateManifest } from "../scripts/lib/candidate-manifest";
 
 import {
   PrivacyPolicyError,

@@ -1,6 +1,5 @@
 ---
 name: p-hacking-prevention
-description: Specification must be locked BEFORE running regressions — post-hoc specification search invalidates inference
 applies-to: [ds-delegate]
 ---
 

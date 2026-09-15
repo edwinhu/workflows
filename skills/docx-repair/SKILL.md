@@ -90,7 +90,7 @@ by a cloud editor. Adjacent stages:
 
 - **Build** a styled `.docx` from markdown → `law-review-docx` (its `build_docx.py`
   chains this skill's footnote repair + NOTEREF conversion after the pandoc build).
-- **Render** to PDF/PNG → `docx-render` / `scripts/doc_render.py` (Word path composes
+- **Render** to PDF/PNG → `docx-render` / `${CLAUDE_PLUGIN_ROOT}/scripts/doc_render.py` (Word path composes
   Track A's `docx_repair.py` as a preflight automatically).
 - **Check cross-references before believing them.** `check_crossrefs.py` is the only
   pass that READS the target note: it verifies the short form names a source the

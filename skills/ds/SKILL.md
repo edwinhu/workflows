@@ -10,6 +10,9 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanM
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
+**DS constraints in force** — every rule scoped to this workflow, discovered from the corpus so a new one needs no edit here; read the ones your task touches:
+!`c=${CLAUDE_PLUGIN_ROOT}/scripts/load-constraints; [ -x "$c" ] && exec "$c" ds; echo "(constraint index unavailable: NO DS rule is listed here — the four named below are not the whole set)"`
+
 The lifecycle is [craft](${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md). Read it and follow it.
 This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lenses,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
@@ -182,10 +185,10 @@ Omitting it silently runs the user's codex request on claude.
       work: "<what to build>",
       writablePaths: ["<narrow>"],
       acceptance: "<the criterion the verifier checks>",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-common-constraints.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-common-conventions.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-analysis-constraints.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-engineering-constraints.md",
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-common-constraints.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-common-conventions.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-analysis-constraints.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-engineering-constraints.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/etl-enforcement.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/sql-patterns.md"] },
 
@@ -194,10 +197,10 @@ Omitting it silently runs the user's codex request on claude.
       work: "<what to build>",
       writablePaths: ["<narrow>"],
       acceptance: "<the criterion the verifier checks>",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-common-constraints.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-common-conventions.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-analysis-constraints.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-engineering-constraints.md",
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-common-constraints.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-common-conventions.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-analysis-constraints.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-engineering-constraints.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/verification-patterns.md"] },
   ],
 
@@ -249,10 +252,10 @@ Omitting it silently runs the user's codex request on claude.
     // this lens as refs, from their one canonical home.
     { key: "ds-constraints",
       agentType: "ds-reviewer",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-common-constraints.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-common-conventions.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-analysis-constraints.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-engineering-constraints.md"],
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-common-constraints.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-common-conventions.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-analysis-constraints.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-engineering-constraints.md"],
       prompt: "Grade the implemented code and outputs against the indexed constraints in your refs — C1-C6, V1-V9, A1-A6, E1-E7, read in full first — and against the two no regex reaches: every reported rate states its denominator, and the row-count chain traces input → transform → output. Grade only the constraints the task actually touches; an engineering constraint applied to a pure analysis task is a wrong finding that costs a round. Report every finding with the file, the line and the quoted code, naming the constraint id, and list every id you considered including those you judged satisfied. NEVER report a constraint judgement as a computation — it is MODEL-EVALUATED, with the evidence you actually read. Severity: `major` at minimum, `critical` where the defect invalidates the output's stated grain, universe or inference, never `minor`." },
   ],
 

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test } from "bun:test";
 import { chmodSync, mkdirSync, mkdtempSync, renameSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { captureWorktreePath, type CapturedWorktreePath } from "../workflows/lib/worktree-capture";
+import { captureWorktreePath, type CapturedWorktreePath } from "../scripts/lib/worktree-capture";
 
 const roots: string[] = [];
 function root(): string {

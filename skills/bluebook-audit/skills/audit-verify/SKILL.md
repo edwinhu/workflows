@@ -7,6 +7,9 @@ disable-model-invocation: true
 
 # Phase 5: Verify
 
+**What this skill carries** — grep `references/` for any subject the names below miss:
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
+
 Re-scan the corrected DOCX to confirm all fixes were applied and no new issues were introduced.
 
 ## What This Phase Does

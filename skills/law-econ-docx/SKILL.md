@@ -41,7 +41,7 @@ uv run python3 ${CLAUDE_SKILL_DIR}/scripts/build_le_docx.py PROJECT_DIR      # d
 | Flag | Effect |
 |------|--------|
 | `--acknowledgement "..."` | Injects the unnumbered `*` acknowledgment note. **JLE requires one**, placed before note 1. |
-| `--bibliography FILE` | Default: `references/sources.bib`, `references.bib`, or `sources.bib` beside the source. |
+| `--bibliography FILE` | Default, resolved in the document project: `references/sources.bib`, `references.bib`, or `sources.bib` beside the source. |
 | `--csl FILE` | Default: the vendored `assets/chicago-author-date.csl` (CMOS 18e author-date). |
 | `--spacing onehalf\|single` | **Internal circulation only.** Double is the JLE submission requirement and the default. |
 | `--pdf` | Renders via `doc_render.convert` after building. |
@@ -280,7 +280,7 @@ against its source, not the first one.
 
 IDENTIFY the output → RUN the render → READ the pages → VERIFY → CLAIM.
 
-1. Render: `python3 scripts/doc_render.py OUT.docx OUT.pdf` (`--renderer word`
+1. Render: `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/doc_render.py OUT.docx OUT.pdf` (`--renderer word`
    for anything a human reads — see the **docx-render** skill's Iron Law).
 2. Rasterize: `pdftoppm -r 110 -png OUT.pdf pg`.
 3. **Look at the pages** with the **visual-verify** skill. Check: body font is

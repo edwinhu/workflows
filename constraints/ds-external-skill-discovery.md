@@ -1,6 +1,5 @@
 ---
 name: ds-external-skill-discovery
-description: Before /ds commits native-plan work that uses another skill or data provider, discover its relevant references and examples, then record an ADOPT, PATCH, or GREENFIELD decision in the approved plan.
 applies-to: [ds, ds-fix]
 ---
 

@@ -43,7 +43,7 @@ Craft's Phase 1, on these axes.
 Prose written before the thesis is settled anchors the argument to whatever sentence came out first,
 and every later correction has to fight it. **Training-data recall is not a source.** A citation you
 remember is a claim about a document nobody opened; source gathering goes through the
-`workflows:librarian` agent and must materialise real artifacts under the writing project's
+`librarian` agent and must materialise real artifacts under the writing project's
 `references/`, with a bibliography file the gate can resolve keys against.
 </EXTREMELY-IMPORTANT>
 
@@ -75,7 +75,7 @@ Craft's remaining axes are taken as craft states them, with two domain bindings:
 answered **not opted in**, so no `thirdParty` key is passed.
 
 Then gather sources — **through the librarian, never from recall**. Dispatch the
-`workflows:librarian` agent for each source area the plan will rely on, and have it leave real files
+`librarian` agent for each source area the plan will rely on, and have it leave real files
 under the writing project's `references/` plus the bibliography entries the Source Plan will name. A
 source area the librarian could not fill is a planned evidence task, not a claim you write anyway.
 
@@ -315,9 +315,9 @@ Omitting it silently runs the user's codex request on claude.
       writablePaths: ["<proj>/outlines/<Section>.md", "<proj>/drafts/<Section>.md"],
       acceptance: "writing_section_index.py exits 0 for the project, writing_gate_probe.py exits 0 for this section's draft, and writing_prose_gate.py exits 0 for the project.",
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-outline-sync.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/references/claim-id-traceability.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-topic-sentences.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/writing-outline-sync.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/claim-id-traceability.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/writing-topic-sentences.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/writing-general/SKILL.md",
              // plus ONE of these, only when the plan's Domain: says so:
              // "${CLAUDE_PLUGIN_ROOT}/skills/writing-legal/SKILL.md"  (Domain: legal)
@@ -361,10 +361,10 @@ Omitting it silently runs the user's codex request on claude.
 
     { key: "source-fidelity",
       agentType: "Explore",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/references/cite-fidelity-no-handtyped.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/references/cite-fidelity-source-inventory.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/references/cite-fidelity-section-gate.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-citation-tense.md"],
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/cite-fidelity-no-handtyped.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/cite-fidelity-source-inventory.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/cite-fidelity-section-gate.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/writing-citation-tense.md"],
       prompt: "Judge only the sourcing, against the rules in the refs. Read them in full first. Findings: a bibliography entry that corresponds to no artifact under the project's references/ — a citation recalled from training data is a claim about a document nobody opened; a quotation or pin cite that the referenced artifact does not contain; a source cited in a section its outline never pinned; a citation whose tense misstates the authority's current standing. Severity: MAJOR at minimum, CRITICAL where an unsourced or misattributed citation carries a claim the thesis rests on." },
 
     // This lens does NOT pin Explore. Explore is a built-in agent with a predefined prompt no
@@ -431,7 +431,7 @@ evidence for that conversation, not human acceptance.
 | A drafter needing a beat the outline lacks | add it to `outlines/<Section>.md` | the outline is the user's work — stop and raise it; a drafting row's `writablePaths` is `drafts/` only in bench mode |
 | Returning to the bench later in the run | publish a second bench artifact | republish the URL recorded in `.planning/ACTIVE_WORKFLOW.md` — a second artifact is a second, divergent outline |
 | A coauthor who should see the bench | send them the URL | a `db` artifact is organization-internal; on a personal account a second signed-in account gets "Page not found" (verified) — export the compiled plan instead |
-| Needing a source | cite what you remember | recall is not a source — dispatch `workflows:librarian` and make it leave a real artifact under `references/` |
+| Needing a source | cite what you remember | recall is not a source — dispatch `librarian` and make it leave a real artifact under `references/` |
 | The plan's location | copy craft's plan into `.planning/` | set `plansDirectory` to `./.planning` so craft's plan already IS the parsed one; a copy drifts from what the user approved |
 | Naming the plan file | `PLAN.md` | the parser rejects that basename as legacy — use the slug plan mode wrote |
 | Building the task table | an outline row and a draft row per section | one row per section: outline and draft are the same row's work, and splitting them doubles the fan-out this port exists to collapse |

@@ -1,6 +1,5 @@
 ---
 name: table-figure-pairing
-description: Every main result table must have a companion figure that tells the same story visually (the "Hendershott" rule)
 applies-to: [ds-delegate]
 ---
 

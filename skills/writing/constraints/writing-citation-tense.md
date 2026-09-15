@@ -1,6 +1,5 @@
 ---
 name: writing-citation-tense
-description: Report scholarly arguments in the present tense; use the "Author (YEAR) argues that ..." form inline
 applies-to: [writing-draft, writing-verify, writing-revise]
 ---
 

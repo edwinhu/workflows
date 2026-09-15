@@ -3030,6 +3030,45 @@ export function craftArgsFences(text: string): CraftArgsFence[] {
 }
 
 /**
+ * P13 the constraint loader is called by its ONE name.
+ *
+ * Every plugin that ships a constraint corpus exposes exactly one entry point, `scripts/load-
+ * constraints`, the same way every workflow gate is `check.sh`. A SKILL.md reaching the corpus by
+ * any other spelling — the implementation file, an older name, a hand-rolled `$HOME` resolver —
+ * is a caller that a language change or a rename silently breaks.
+ *
+ * Named after what happened without it: three plugins grew three loader names (`rules-for`,
+ * `load-constraints.py`, `load-constraints.ts`), P10 governs the ARGS OBJECT rather than any
+ * filename, and nothing stated a loader rule at all — so the convergence held only while someone
+ * renamed by hand, and ten of ten workflows called no loader.
+ */
+export function checkLoaderEntryPoint(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
+  const findings: Finding[] = []
+  const BAD: [RegExp, string][] = [
+    [/scripts\/load-constraints\.(py|ts)\b/, 'the implementation file, not the entry point'],
+    [/\bscripts\/rules-for\b/, 'the pre-rename name'],
+    [/for d in "\$HOME[^"]*"[^;]*;\s*do[^;]*rules-for/, 'a hand-rolled $HOME resolver'],
+  ]
+  const lines = text.split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    for (const [re, why] of BAD) {
+      if (!re.test(lines[i])) continue
+      if (isExemptAt(exemptions, 'loader-entry-point', i + 1)) continue
+      findings.push({
+        rule: 'P13 one loader entry point',
+        severity: 'major',
+        file,
+        line: i + 1,
+        detail: `reaches the constraint corpus via ${why} — every caller uses \`scripts/load-constraints\`, which is the name that survives a language change`,
+        remedy: "call `scripts/load-constraints <scope>[,<scope>] [--index|--full]`, or declare the exception with <!-- wc-probe: ignore-loader-entry-point --> and say why",
+      })
+      break
+    }
+  }
+  return findings
+}
+
+/**
  * P10 one entry point — a craft args object declares ONE `mechanicalChecks` entry.
  *
  * A list of N commands loses one silently, and nothing reports a check it never knew about; one
@@ -3627,6 +3666,7 @@ export function runProbe(
       )
       // P10/P11 read RAW text: both are per-FENCE rules, and the code view keeps no fence boundary.
       findings.push(...checkSingleEntryPoint(file, text, fileExemptions))
+      findings.push(...checkLoaderEntryPoint(file, text, fileExemptions))
       findings.push(...checkLensSetParity(file, text))
       // P12 reads RAW text too: its fence half is per-fence, and its runner half is a claim the
       // file's PROSE makes, which the code view blanks.

@@ -6,6 +6,9 @@ user-invocable: true
 
 # marimo-serve
 
+**What this skill carries** — grep `references/` for any subject the names below miss:
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
+
 Runs one uvicorn process that auto-mounts every `*.py` notebook in a directory under `http://host:port/<mount>/<stem>`. Add or remove files — the URL list updates without restart. This is marimo's closest equivalent to "JupyterLab for many notebooks."
 
 **Default is read-only Run mode.** Pass `--edit` to launch `marimo edit DIRECTORY --watch` instead (full editor, saves on disk; picks up external `.py` edits without restart).

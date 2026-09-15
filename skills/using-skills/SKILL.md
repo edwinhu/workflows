@@ -59,7 +59,7 @@ on file dumps a subagent would have absorbed.
 | a talk built from a paper | `workshop` — grading a built deck → `workshop-reviewer` |
 | memo, article, chapter, comment letter | `writing` / `writing-legal` / `writing-econ` — grading → `writing-reviewer` |
 | the user's mail; their calendar, notes, tasks, chats | `email`; `assistant` |
-| the user's own library or the literature | `workflows:librarian` |
+| the user's own library or the literature | `librarian` |
 | several independent searches or sweeps | one `--tasks` row each — rows run in parallel |
 
 **Delegate through the `workflows:farm-out` skill**, which supersedes the `Agent` and `Workflow`
@@ -95,7 +95,7 @@ Order, and stop at the first that answers:
    paraphrase, but only when that MCP tool is in your toolset (persona agents do not have it) and
    its daemon is up. Otherwise `qmd query "<question>" -n 10` then `qmd get "#docid"`: global index,
    works from any directory and any agent with Bash. Answer from the note and cite it by path.
-2. **`workflows:librarian`** — the user's curated library and the academic literature: NotebookLM,
+2. **`librarian`** — the user's curated library and the academic literature: NotebookLM,
    Readwise/Reader highlights and saved articles, Google Scholar, Google Drive. Farm it out; main
    chat NEVER calls the `readwise` CLI directly.
 3. **The open web** — `WebSearch`, `WebFetch`, or the `deep-research` skill for a synthesized
@@ -152,7 +152,7 @@ Simplifying a skill's required pattern discards the reason it was loaded.
 | Pass a `.png`/`.pdf` to `Read` | look-at |
 | `WebSearch` a question in the user's own domains | search the wiki first, then `librarian` |
 | Answer a law/finance question straight from training data | the wiki holds the user's own view — check it |
-| Call the `readwise` CLI from main chat | farm out to `workflows:librarian` |
+| Call the `readwise` CLI from main chat | farm out to `librarian` |
 | Invoke `skill-creator:skill-creator` or `plugin-dev:*` directly | the `workflows:` wrapper — the built-ins have no validation hooks |
 | Do "X in a new/background session" directly or via `Agent` | `agent-spawn` is the transport; X goes in its prompt |
 | Relay a delegated agent's summary you did not verify | check the `--expect` artifact yourself |

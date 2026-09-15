@@ -1,6 +1,5 @@
 ---
 name: statistical-validity
-description: Every statistical claim must have correct test with documented assumptions
 applies-to: [ds-delegate]
 ---
 

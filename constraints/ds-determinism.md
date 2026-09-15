@@ -1,6 +1,5 @@
 ---
 name: determinism
-description: Every pipeline step must be deterministic — non-determinism is a bug, not a feature
 applies-to: [ds-delegate]
 ---
 

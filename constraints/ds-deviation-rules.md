@@ -1,6 +1,5 @@
 ---
 name: deviation-rules
-description: 4-rule system for unplanned discoveries — R1-R3 auto-fix, R4 STOP for user decision
 applies-to: [ds, ds-fix, ds-implement, ds-delegate]
 ---
 

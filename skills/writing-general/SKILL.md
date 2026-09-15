@@ -6,6 +6,9 @@ user-invocable: false
 
 # Writing register — the base
 
+**What this skill carries** — grep `references/` for any subject the names below miss:
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
+
 **This skill is the base every writing task loads.** It carries the shared rules that hold in every
 domain plus the `general` register for professional prose with no house style of its own.
 

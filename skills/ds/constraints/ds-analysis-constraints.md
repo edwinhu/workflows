@@ -1,6 +1,5 @@
 ---
 name: ds-analysis-constraints
-description: Data-analysis constraints for ds analysis work
 applies-to: [ds]
 ---
 
@@ -8,9 +7,9 @@ applies-to: [ds]
 
 Deterministic rules for data analysis tasks (statistical analysis, modeling, visualization). Each constraint can be verified by a script returning pass/fail. Self-contained files under `${CLAUDE_PLUGIN_ROOT}/constraints/`.
 
-**Complements (not replaces):** `${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-common-constraints.md` — load both for analysis tasks.
+**Complements (not replaces):** `${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-common-constraints.md` — load both for analysis tasks.
 
-**See also:** `${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-common-conventions.md` for judgment-based analysis guidance (V6: statistical validity, V7: p-hacking prevention, V8: sample selection, V9: deviation rules for analysis).
+**See also:** `${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-common-conventions.md` for judgment-based analysis guidance (V6: statistical validity, V7: p-hacking prevention, V8: sample selection, V9: deviation rules for analysis).
 
 ---
 

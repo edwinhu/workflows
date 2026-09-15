@@ -1,6 +1,5 @@
 ---
 name: sample-coverage
-description: Every DS native plan declares one canonical sample window, named task-specific sub-windows, and required-versus-actual source coverage with an explicit gap disposition before a source is used.
 applies-to: [ds, ds-implement, ds-accept, ds-delegate, ds-fix]
 ---
 

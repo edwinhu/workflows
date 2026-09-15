@@ -1,6 +1,5 @@
 ---
 name: assumption-over-evidence
-description: Treating assumptions as evidence — profile/verify fresh every time
 applies-to: [ds, ds-fix, ds-implement, ds-delegate]
 ---
 

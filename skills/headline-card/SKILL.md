@@ -6,6 +6,12 @@ description: "Use this skill when the user asks to add news headline cards, 'Las
 
 # Headline Cards for Typst Presentations
 
+**What this skill carries** — grep `references/` for any subject the names below miss:
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
+
+**Typst rules in force here** — read the one that governs what you are writing; they are independent:
+!`k=slides; command -v typst-rules >/dev/null 2>&1 && exec typst-rules "$k"; r=$HOME/.claude/skills/typst/scripts/load-constraints; [ -x "$r" ] && exec "$r" "$k"; r=$HOME/projects/typst/scripts/load-constraints; [ -x "$r" ] && exec "$r" "$k"; echo "(typst corpus unavailable: NO Typst rule is listed here — install the typst plugin, or start a new session so its bin/ reaches PATH)"`
+
 An editorial recreation of a newspaper clipping: **light** paper stock, the real
 masthead logo, a top rule carrying a category kicker and dateline, a serif
 headline with a Last-Week-Tonight yellow highlighter swipe over one phrase, and a

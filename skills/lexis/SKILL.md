@@ -5,6 +5,9 @@ description: "Use when the user says 'get this case from Lexis', 'pull it off Le
 
 # Lexis: not implemented
 
+**What this skill carries** — grep `references/` for any subject the names below miss:
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
+
 **There is no Lexis retrieval procedure here.** Nobody has driven the Lexis UI, so there are no
 measured selectors, endpoints or steps to follow.
 

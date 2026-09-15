@@ -1,8 +1,6 @@
 ---
 name: writing-shortjournal
-description: Every @article bib entry should carry a non-blank `shortjournal` field so Bluebook CSLs can render abbreviated journal names
 applies-to: [writing-draft, writing-verify, writing-revise]
-severity: soft
 ---
 
 ## Rule

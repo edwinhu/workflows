@@ -1,6 +1,5 @@
 ---
 name: post-subagent-boundary
-description: After an agent returns, the DS orchestrator verifies from returned reports, the approved PLAN, and project auto-memory — never by investigating source or data
 applies-to: [ds, ds-fix, ds-implement, ds-accept, ds-delegate]
 ---
 

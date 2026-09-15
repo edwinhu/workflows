@@ -1,6 +1,5 @@
 ---
 name: ds-escape-patterns
-description: Four observed escape patterns where the DS orchestrator breaks its role — verification rationalization, silent topic change, urgency bypass, pre-delegation investigation
 applies-to: [ds, ds-fix, ds-implement, ds-accept, ds-delegate]
 ---
 

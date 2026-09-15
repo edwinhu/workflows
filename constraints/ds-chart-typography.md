@@ -1,6 +1,5 @@
 ---
 name: chart-typography
-description: Figures ship as vector; charts inherit the host document's type and palette — one theme, registered once, never per-chart styling
 applies-to: [ds-delegate]
 ---
 

@@ -1,6 +1,5 @@
 ---
 name: impatience-over-process
-description: Skipping process steps because "the user is waiting" — follow process, speed without correctness is malpractice
 applies-to: [ds, ds-fix, ds-implement, ds-accept, ds-delegate]
 ---
 

@@ -116,6 +116,6 @@ addendum was verified against. Flagging it as a known behavior instead, document
 - No version bump, no commit, no tag. Changes are in the working tree.
 - `skills/westlaw/` was already untracked before this session; `skills/lexis/` is likewise
   untracked. Neither has been staged.
-- No mechanical check run: this repo's `constraints/check-all.py` governs Typst course
+- No mechanical check run: this repo's `constraints/run-constraints.py` governs Typst course
   material, not SKILL.md files, and there is no linter for skill prose. The only executable
   verification available was the extractor run, pasted above in full.

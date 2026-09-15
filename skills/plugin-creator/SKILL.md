@@ -8,6 +8,9 @@ description: "This skill should be used when the user asks to 'create a plugin',
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
+**Shared references this plugin ships** — the plugin-root corpus, indexed so an added document needs no edit here; grep it for any subject the names miss:
+!`r=${CLAUDE_PLUGIN_ROOT}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$r" refs; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$r" refs; echo "(shared-reference index unavailable: the plugin-root references/ are NOT listed here)"`
+
 This skill wraps the built-in `plugin-dev:create-plugin` with enforcement pattern awareness from the superpowers framework. It adds an enforcement audit layer that the built-in version lacks.
 
 **`hooks/validate-skill-paths.ts` is registered** on `PostToolUse Edit|Write` and reports any `${CLAUDE_SKILL_DIR}` / `${CLAUDE_PLUGIN_ROOT}` reference that resolves to a missing file. `hooks/plugin-validate.ts` is **not registered** — its only finding on this repo is a constant symlink warning identical for 91 of 92 firing files. Run manifest validation by hand: `claude plugin validate <plugin-dir>`.
@@ -45,7 +48,7 @@ Before drafting, identify constraints that should be **mechanically enforced** r
 ### Step 1c: Run the Checker-Shape Probe
 
 ```bash
-bun ${CLAUDE_SKILL_DIR}/scripts/cc-probe.ts --target <plugin-dir>
+bun ${CLAUDE_SKILL_DIR}/scripts/pc-probe.ts --target <plugin-dir>
 ```
 
 Exit 0 clean, 1 findings, 2 argument error, 3 the probe crashed — 2 and 3 are not the same, and neither is a pass. Re-run it after Step 3 and before final validation.
@@ -119,7 +122,7 @@ During iteration, watch for enforcement iteration signals (see "Enforcement Iter
 
 ## References
 
-- **Enforcement checklist**: `references/enforcement-checklist.md` (loaded above via bang injection)
-- **Anti-patterns**: `references/creator-anti-patterns.md` (loaded above via bang injection)
-- **Philosophy**: `references/PHILOSOPHY.md`
+- **Enforcement checklist**: `${CLAUDE_PLUGIN_ROOT}/references/enforcement-checklist.md` (loaded above via bang injection)
+- **Anti-patterns**: `${CLAUDE_PLUGIN_ROOT}/references/creator-anti-patterns.md` (loaded above via bang injection)
+- **Philosophy**: `${CLAUDE_PLUGIN_ROOT}/PHILOSOPHY.md`
 - **Built-in plugin creator**: `plugin-dev:create-plugin`

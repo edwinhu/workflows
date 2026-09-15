@@ -8,7 +8,7 @@
  *
  * ONE PROSE ENGINE, ONE STRUCTURAL ENGINE:
  *   1. scripts/prose-audit.py — every prose/AI-tell pattern system, de-duplicated, span-id'd.
- *   2. constraints/check-all.py — STRUCTURAL constraints only (bold-lead,
+ *   2. constraints/run-constraints.py — STRUCTURAL constraints only (bold-lead,
  *      topic-sentences, anchored-numbers, outline-sync): real logic, not regex over prose.
  *
  * WHY check-all's PROSE MODULES ARE SUPPRESSED HERE. This hook used to run a second prose engine
@@ -32,7 +32,7 @@ import { authenticatedWritingPlan } from "./lib/writing-plan-context.ts";
 import { join, dirname } from "node:path";
 
 const PLUGIN_ROOT = dirname(import.meta.dir);
-const CHECK_ALL = join(PLUGIN_ROOT, "constraints", "check-all.py");
+const CHECK_ALL = join(PLUGIN_ROOT, "constraints", "run-constraints.py");
 const PROSE_AUDIT = join(PLUGIN_ROOT, "scripts", "prose-audit.py");
 
 // Both scripts declare their own dependencies in a `uv run --with …` shebang; spawning them
@@ -43,22 +43,22 @@ const PY = ["uv", "run", "--with", "lxml", "--with", "pyyaml", "python3"];
 /** check-all constraint families that prose-audit.py already owns. A check-all entry name is
  *  `constraints/<stem>` or `skills/<skill>/references/<stem>`.
  *
- *  A DIRECTORY PREFIX IS NOT ENOUGH UNDER `skills/writing/references/`. That directory holds two
+ *  A DIRECTORY PREFIX IS NOT ENOUGH UNDER `skills/writing/constraints/`. That directory holds two
  *  kinds of module: the three style guides prose-audit.py loads as tables (Strunk, Volokh,
  *  McCloskey) plus `writing-no-bold-lead`, which delegates to the audit outright — and four
  *  STRUCTURAL constraints (`writing-topic-sentences`, `writing-anchored-numbers`,
  *  `writing-outline-sync`, `writing-shortjournal`) that prose-audit.py does not own and that MUST
  *  keep reporting. `"skills/writing/"` would silence all eight, so the four prose entries are named
- *  in full. A new prose table under that directory has to be added here by hand; cc-probe's I5 is
+ *  in full. A new prose table under that directory has to be added here by hand; pc-probe's I5 is
  *  what catches a name that goes stale, which is how the `"skills/writing-"` entry below — correct
  *  until v6.0.0 moved the guides from `skills/writing-{general,legal,econ}/references/` into
- *  `skills/writing/references/` — was found still matching nothing. */
+ *  `skills/writing/constraints/` — was found still matching nothing. */
 export const PROSE_ENGINE_PREFIXES = [
   "skills/ai-anti-patterns/",
-  "skills/writing/references/strunk-elements-of-style",
-  "skills/writing/references/volokh-distilled",
-  "skills/writing/references/mccloskey-economical-writing",
-  "skills/writing/references/writing-no-bold-lead",
+  "skills/writing/constraints/strunk-elements-of-style",
+  "skills/writing/constraints/volokh-distilled",
+  "skills/writing/constraints/mccloskey-economical-writing",
+  "skills/writing/constraints/writing-no-bold-lead",
 ];
 
 const _DECK_MARKERS = ["touying", "polylux", "#slide("];

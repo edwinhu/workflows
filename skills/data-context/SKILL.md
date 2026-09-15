@@ -6,6 +6,9 @@ user-invocable: false
 
 # Data Context Extractor
 
+**What this skill carries** — grep `references/` for any subject the names below miss:
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
+
 Extract tribal knowledge about a dataset or database and generate a reusable data context skill.
 
 <EXTREMELY-IMPORTANT>

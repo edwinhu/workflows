@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test } from "bun:test";
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { loadConstraints } from "../scripts/load-constraints";
+import { loadConstraints } from "../scripts/load-constraints.ts";
 
 const temporaryRoots: string[] = [];
 

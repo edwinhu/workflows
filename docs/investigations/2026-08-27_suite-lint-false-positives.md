@@ -13,14 +13,14 @@ argue with a specific row.
 | rule id | raw findings | false positives | true positives |
 |---|---|---|---|
 | positive-match-failure-vocabulary | 25 | 23 | 2 |
-| single-distinct-literal | 197 | 193 | 4 |
+| single-distinct-literal | 198 | 193 | 5 |
 | existence-only-artifact | 1 | 1 | 0 |
 | injected-key-never-varied | 43 | 43 | 0 |
 
 **The raw column is re-measured; the false-positive column is NOT.** Re-measured 2026-09-15 against
-a corpus that grew from 232 files to 237 as this repo gained test suites. The false-positive counts
+a corpus that has grown from 232 files as this repo gained test suites. The false-positive counts
 are the ones this investigation actually audited, in August, over the findings that existed then —
-so the five newer findings (four `single-distinct-literal`, one
+so the six newer findings (five `single-distinct-literal`, one
 `positive-match-failure-vocabulary`) sit in the true-positive column by arithmetic, NOT by
 judgement. Nobody has read them. Do not cite that column as evidence about them.
 

@@ -1,6 +1,5 @@
 ---
 name: ds-common-conventions
-description: Common judgment-based conventions index for the ds workflow
 applies-to: [ds]
 ---
 

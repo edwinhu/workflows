@@ -1,9 +1,6 @@
 ---
 name: cite-fidelity-bibkey-in-nlm
-description: Every [@bibkey] in a draft must exist as a source title in the project's NLM notebook so it can be cite-checked.
 applies-to: [writing-draft, writing-revise]
-type: constraint
-check: cite-fidelity-lint:bibkey-not-in-nlm
 ---
 
 # Bibkey must exist in the NLM notebook
