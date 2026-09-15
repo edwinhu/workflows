@@ -19,7 +19,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-CHECK_ALL = ROOT / "references" / "constraints" / "run-constraints.py"
+CHECK_ALL = ROOT / "constraints" / "run-constraints.py"
 PASS = 0
 FAIL = 0
 
