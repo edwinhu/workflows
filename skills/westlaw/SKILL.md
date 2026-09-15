@@ -1,6 +1,6 @@
 ---
 name: westlaw
-description: "Use when the user says 'get this case from Westlaw', 'export the case as Word', 'download the opinion', 'pull 87 F.3d 536', 'I need the Westlaw version', 'get me the real text of this case', or 'the OCR is garbled, get the publisher text'. NEGATIVE ROUTING: excerpting an opinion already in hand into a course reading is teaching:elide-case; free case law with no subscription is workflows:courtlistener. This skill only retrieves and exports from Westlaw."
+description: "Use when the user says 'get this case from Westlaw', 'export the case as Word', 'download the opinion', 'pull 87 F.3d 536', 'I need the Westlaw version', 'get me the real text of this case', or 'the OCR is garbled, get the publisher text'. NEGATIVE ROUTING: excerpting an opinion already in hand into a course reading is workflows:elide-case; free case law with no subscription is workflows:courtlistener. This skill only retrieves and exports from Westlaw."
 ---
 
 # Westlaw: retrieve a case as publisher-keyed DOCX
@@ -9,7 +9,7 @@ description: "Use when the user says 'get this case from Westlaw', 'export the c
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
 Export an opinion from Westlaw Advantage as DOCX with star pagination, for use as the
-authoritative source text when excerpting. Feeds `teaching:elide-case`, whose first Iron Law
+authoritative source text when excerpting. Feeds `workflows:elide-case`, whose first Iron Law
 requires authentic reporter text.
 
 Everything below was measured 2026-09-09 in a live session against Westlaw Advantage, signed in as
@@ -261,7 +261,7 @@ cite — a legitimate source of record, not a stand-in for the bound volume.
 
 ## Related
 
-- `teaching:elide-case` — excerpting the retrieved opinion into a course reading
+- `workflows:elide-case` — excerpting the retrieved opinion into a course reading
 - `courtlistener` — free case law when no subscription text is required
 - `browser-automation` — owns the CDP port and tool prefix
 - `lexis` — deliberate stub; Lexis retrieval is not implemented, and it routes back here
