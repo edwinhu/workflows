@@ -8,3 +8,5 @@ polars
 scikit-learn
 sparse_dot_topn
 pyarrow
+pypdf
+pymupdf
