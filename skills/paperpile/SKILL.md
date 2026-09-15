@@ -7,6 +7,11 @@ user-invocable: false
 
 # Paperpile
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 Manage your Paperpile library and resolve citations to PDFs via the `paperpile` CLI.
 
 **CLI-first — this is the whole point of the skill.** Every library operation (add, search,

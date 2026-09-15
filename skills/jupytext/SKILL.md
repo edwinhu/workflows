@@ -4,6 +4,11 @@ description: ALWAYS use before touching a notebook as text or running one headle
 user-invocable: false
 ---
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 ## Contents
 
 - [Execution Enforcement](#execution-enforcement)

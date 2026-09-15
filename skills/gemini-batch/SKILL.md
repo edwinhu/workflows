@@ -7,6 +7,11 @@ user-invocable: false
 
 # Gemini Batch API Skill
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 Large-scale asynchronous document processing using Google's Gemini models.
 
 ## When to Use

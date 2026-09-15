@@ -7,6 +7,11 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanM
 
 # workshop — a talk, run through craft with a computed deck gate
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 **The Typst rules in scope for a deck, rendered from the corpus at load time.** Nothing here
 lists them; a rule reaches this skill because its own `applies-to:` names a kind a deck is —
 `slides`, `notes` or `workshop`. Adding a rule to that scope is an edit to the rule and

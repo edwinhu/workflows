@@ -7,6 +7,11 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanM
 
 # dev — a code change, run through craft with a test-first gate
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 The lifecycle is [craft](${CLAUDE_PLUGIN_ROOT}/skills/craft/SKILL.md). Read it and follow it.
 This file is a **delta**: it supplies the domain — the CLARIFY axes, the task-row shape, the lenses,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
@@ -91,7 +96,10 @@ trade-offs, and obtain an explicit choice. A sole viable option still needs its 
 
 ## Phase 2 — PLAN
 
-Craft's Phase 2. Three domain requirements on the table:
+Craft's Phase 2. The plan opens with frontmatter `workflow: dev` — required, so a context clear at
+approval resumes here and not in craft.
+
+Three domain requirements on the table:
 
 - **`redCommand` per implementation task** — one invocation, no shell operators, failing now for the
   intended missing behaviour and passing once the task is done. It goes in the plan's Run sizing

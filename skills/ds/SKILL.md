@@ -7,6 +7,11 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanM
 
 # ds — a data project, run through craft with a computed data-quality gate
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 The lifecycle is [craft](${CLAUDE_PLUGIN_ROOT}/skills/craft/SKILL.md). Read it and follow it.
 This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lenses,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
@@ -98,7 +103,10 @@ Four discovery rules run in this same planning step, each governed by its own co
 
 ## Phase 2 — PLAN
 
-Craft's Phase 2. Five domain requirements on the plan:
+Craft's Phase 2. The plan opens with frontmatter `workflow: ds` — required, so a context clear at
+approval resumes here and not in craft.
+
+Five domain requirements on the plan:
 
 - **The source/access strategy and the profile-derived risks.** The plan states how each source is
   reached, and the data-quality and scale risks the read-only profile actually surfaced. A risk found
@@ -244,7 +252,7 @@ Omitting it silently runs the user's codex request on claude.
              "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-common-conventions.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-analysis-constraints.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-engineering-constraints.md"],
-      prompt: "Grade the implemented code and outputs against the indexed constraints in your refs — C1-C6, V1-V9, A1-A6, E1-E6, read in full first — and against the two no regex reaches: every reported rate states its denominator, and the row-count chain traces input → transform → output. Grade only the constraints the task actually touches; an engineering constraint applied to a pure analysis task is a wrong finding that costs a round. Report every finding with the file, the line and the quoted code, naming the constraint id, and list every id you considered including those you judged satisfied. NEVER report a constraint judgement as a computation — it is MODEL-EVALUATED, with the evidence you actually read. Severity: `major` at minimum, `critical` where the defect invalidates the output's stated grain, universe or inference, never `minor`." },
+      prompt: "Grade the implemented code and outputs against the indexed constraints in your refs — C1-C6, V1-V9, A1-A6, E1-E7, read in full first — and against the two no regex reaches: every reported rate states its denominator, and the row-count chain traces input → transform → output. Grade only the constraints the task actually touches; an engineering constraint applied to a pure analysis task is a wrong finding that costs a round. Report every finding with the file, the line and the quoted code, naming the constraint id, and list every id you considered including those you judged satisfied. NEVER report a constraint judgement as a computation — it is MODEL-EVALUATED, with the evidence you actually read. Severity: `major` at minimum, `critical` where the defect invalidates the output's stated grain, universe or inference, never `minor`." },
   ],
 
   authorityExtra: [
@@ -254,7 +262,7 @@ Omitting it silently runs the user's codex request on claude.
     "DQ4 and DQ6 are `always N/A` from the runner, and `always N/A` is not a third kind of pass — the runner emits a line for them only because ENUM requires one, and an N/A never sets its non-zero exit. Both are dispositioned against task-local evidence, exactly like the MODEL-EVALUATED rows: the input → transform → output count chain for DQ4, the before/after shape for DQ6. Never read their N/A as `the runner checked this`.",
     "An artifact absent from the plan's ## Data Outputs table is one nothing will check and cannot be claimed as verified. Do not verify an output the table never declared.",
     "The analysis is done by dispatched agents. Main chat writes no .py, .ipynb, .R, .sas, .sql or .qmd file, by any tool.",
-    "Standing DS doer authority — every implementation task follows the indexed constraints in the four aggregates under ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/: ds-common-constraints.md (C1-C6), ds-common-conventions.md (V1-V9 — assumption-over-evidence, deferred verification, statistical validity, P-hacking prevention, sample-selection documentation), ds-analysis-constraints.md (A1-A6 — robustness checks, standard-error specification, visualization integrity, table-figure pairing, chart typography, chart colour) and ds-engineering-constraints.md (E1-E6 — determinism and seeds, schema contracts, join audits with row counts and match rates, idempotency, loud error handling, native document input), each indexing the self-contained files under ${CLAUDE_PLUGIN_ROOT}/references/constraints/. All four are named in every implementation task's refs, and refs are contractual reads, not a reading list: read all four in full before writing code. ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md stays a separate load.",
+    "Standing DS doer authority — every implementation task follows the indexed constraints in the four aggregates under ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/: ds-common-constraints.md (C1-C6), ds-common-conventions.md (V1-V9 — assumption-over-evidence, deferred verification, statistical validity, P-hacking prevention, sample-selection documentation), ds-analysis-constraints.md (A1-A6 — robustness checks, standard-error specification, visualization integrity, table-figure pairing, chart typography, chart colour) and ds-engineering-constraints.md (E1-E7 — determinism and seeds, schema contracts, join audits with row counts and match rates, idempotency, loud error handling, native document input, network politeness), each indexing the self-contained files under ${CLAUDE_PLUGIN_ROOT}/references/constraints/. All four are named in every implementation task's refs, and refs are contractual reads, not a reading list: read all four in full before writing code. ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md stays a separate load.",
     "Rules: ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md defines all thirteen checks; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/etl-enforcement.md governs pipelines; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/sql-patterns.md governs data pulls; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/verification-patterns.md governs evidence; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/competing-hypothesis.md governs debugging.",
   ].join("\n"),
 

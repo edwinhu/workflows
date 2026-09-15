@@ -5,9 +5,15 @@ description: 'Use when "query LSEG/Refinitiv", "fundamentals or market data from
 user-invocable: false
 ---
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 ## Contents
 
 - [Access Paths](#access-paths)
+- [MCP Connector](#mcp-connector--installed-entitled-to-nothing)
 - [Query Enforcement](#query-enforcement)
 - [Quick Start](#quick-start)
 - [Authentication](#authentication)
@@ -30,6 +36,7 @@ Pick the lowest-numbered path that can serve the request.
 | 1 | `lseg.data` Python library | anything it covers; batch and production work | RDP machine credentials | this file + `references/*` |
 | 2 | Token-lift → RDP REST from Python | the same data with **no machine credentials** — borrows the browser session | Workspace tab's `edp-token` | `references/workspace-web-cdp.md` |
 | 3 | In-page `fetch()` on the target origin | Workspace-internal endpoints only (SDC deal universes, FSCREEN) | browser cookies | `references/workspace-web-cdp.md` |
+| 4 | LSEG MCP connector (`mcp__claude_ai_LSEG__*`) | **nothing on this account** — every scope family is denied | LSEG-side SSO | this file, MCP Connector below |
 
 Path 1 remains preferred where it works — `pip install lseg-data` is available on every platform. Paths 2 and 3 exist because **some data is only reachable through the web client**, and because the token-lift avoids needing machine credentials at all.
 
@@ -51,6 +58,36 @@ df = w.datagrid_df(["AAPL.O"], ["TR.Revenue", "TR.Revenue.fperiod"],
 ```
 
 Requires Chromium on CDP port 9222 with a signed-in Workspace Web tab — see the `browser-automation` skill for the browser, and `references/workspace-web-cdp.md` for session setup.
+
+## MCP Connector — installed, entitled to nothing
+
+The LSEG connector for Claude registers ~50 `mcp__claude_ai_LSEG__*` tools. **On this account
+every one of them is refused.** Measured 2026-09-09, seven tools across seven distinct scope
+families, each a first call with valid arguments:
+
+| Tool | Denied scope |
+|---|---|
+| `entity_search` (`action='schema'`) | `search (API_ACCESS_CONTROL/MCP_DATA_ON)` |
+| `historical_pricing_summaries` | `ttsc_historical_pricing_summaries (API_ACCESS_CONTROL/MCP_DATA_ON)` |
+| `qa_company_fundamentals` | `qa (API_ACCESS_CONTROL/MCP_DATA_QA_ON)` |
+| `news_nl_search` | `news_ai (API_ACCESS_CONTROL/MCP_DATA_MRN_ON)` |
+| `transcripts` | `transcripts (API_ACCESS_CONTROL/MCP_DATA_TRANSCRIPTS_ON)` |
+| `fx_spot_price` | `fx_spot (LFA_API/EP_FXSPOTS)` |
+| `ixm_list_indexes` | `ixm (FTSER_MCP/FTSER_MCP)` |
+
+- **The connector's presence in the toolset is not access.** Denial arrives as a formatted
+  `🔒 Entitlement Error`, not an exception — cheap to probe, and it names the exact flag. Unlike
+  the datagrid failures above, this one is loud and honest.
+- **Do not route an LSEG request here.** Paths 1-3 are the working surfaces; a connector call
+  spends a round trip to learn nothing. Re-probe only after the user says entitlements changed.
+- **The denials are per-family toggles, and the flag names are the ask.** `MCP_DATA_ON`,
+  `MCP_DATA_QA_ON`, `MCP_DATA_MRN_ON`, `MCP_DATA_TRANSCRIPTS_ON` are separate switches on the
+  LSEG account. Enabling them is an account-side request to the LSEG rep, quoting the flag —
+  nothing in this repo can unblock it.
+- **`MCP_DATA_MRN_ON` is the one worth asking for.** News is `403 insufficient_scope` on the
+  platform session and unentitled on the lifted `edp-token` too, so it is the one content set
+  with no working path at all; the connector would be a new capability rather than a duplicate.
+  Everything else it offers — fundamentals, IBES, pricing, symbology — path 1 already serves.
 
 ## Query Enforcement
 
@@ -92,6 +129,7 @@ This is not negotiable. Skipping result inspection is NOT HELPFUL — the user b
 - Execute a query without validating field names and RIC suffixes first → STOP. The API will not error for you.
 - Return a dataframe without `.head()` or `.sample()` inspection → STOP. Handing over uninspected data gives the user undetected quality problems — unhelpful on its own terms.
 - Write a `session.desktop.workspace` config, or reference `/Applications/Refinitiv Workspace.app`, on Linux → STOP. There is no desktop session on this platform; the config will fail at connect time.
+- Reach for an `mcp__claude_ai_LSEG__*` tool → STOP. Every scope family is denied on this account; use path 1, 2 or 3.
 - Navigate or reload the user's signed-in Workspace tab → STOP. It destroys their layout and can drop the session that every CDP path depends on. Open your own tab instead.
 
 ### Data Validation Checklist

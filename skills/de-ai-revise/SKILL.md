@@ -6,6 +6,11 @@ allowed-tools: Read, Edit, Write, Bash, Grep, Glob
 
 # de-ai-revise — make prose read less AI-generated
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 A writing-**improvement** tool. It audits a draft with three corpus-validated
 scorers, then rewrites only the flagged spans so the prose reads less like an LLM
 wrote it — plainer diction, burstier rhythm, fewer machine tics — while leaving

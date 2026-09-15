@@ -1,10 +1,15 @@
 ---
 name: ai-anti-patterns
-description: ALWAYS load before finalizing ANY written prose, and whenever text is suspected of being machine-written - "does this sound like AI", "make this sound human", "clean up the AI-isms", "did a bot write this", "check this draft before I send it", "review this for AI tells", "this reads like ChatGPT", "is this student paper AI-generated", or before handing back any draft, memo, email, or article you wrote. Use proactively even if the user never mentions AI writing.
+description: ALWAYS load before finalizing ANY written prose, and whenever text is suspected of being machine-written - "does this sound like AI", "make this sound human", "clean up the AI-isms", "did a bot write this", "check this draft before I send it", "review this for AI tells", "this reads like ChatGPT", "review this for mannered prose", "is this too writerly", "is this student paper AI-generated", or before handing back any draft, memo, email, or article you wrote. Use proactively even if the user never mentions AI writing.
 user-invocable: false
 ---
 
 # AI Writing Anti-Patterns
+
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
 
 Field guide for detecting and revising AI-generated content indicators based on Wikipedia's "Signs of AI writing" guide.
 
@@ -33,6 +38,7 @@ Start with the most objective indicators:
 | 3 | Prompt Refusals | "As an AI language model...", "I hope this helps" |
 | 4 | Puffery | "stands as a testament to", "rich tapestry", "nestled" |
 | 5 | Structure | Section summaries, "Despite challenges", rule of three |
+| 6 | Mannered Prose | Metaphor where a literal phrase was available (see below) |
 
 ## Critical Patterns to Avoid
 
@@ -150,6 +156,62 @@ and refuses to add anything over the eligibility gate.
 | Section summary of heading | Start with substance, not meta-commentary |
 | "Despite challenges..." | State the reality directly without formula |
 | Exactly three examples | Use the number that fits: 2, 4, 5, or just 1 |
+
+### For Mannered Prose
+
+**Definition (Anthropic guidance — quoted, do not paraphrase):**
+
+> Mannered prose substitutes metaphor and flourish for direct statement. Instead of "a parameter
+> worth varying," the mannered writer produces "a dial worth turning." Instead of "this point still
+> matters," they write "this point earns its keep." The phrases exist to display the writer, not to
+> convey the idea, and readers can tell. That is why mannered prose irritates: it makes the reader
+> work harder so the writer can perform. It is also imprecise. Metaphors drag in connotations the
+> writer did not choose and cannot control. The fix is to say what you mean. When a literal phrase
+> is available, use it.
+
+The short form — **"Please remove all mannered prose"** — works on its own and is often enough.
+
+**The mechanism is metaphor-for-literal substitution.** That is narrower than "flourish" generally:
+the test is whether a literal phrase was available and passed over. "A dial worth turning" for "a
+parameter worth varying" is mannered; a long sentence is not, and an ornate one is *purple*, a
+different fault. Puffery inflates ("stands as a testament to"); mannered prose performs.
+
+**The imprecision is the load-bearing objection, not the irritation.** A metaphor imports
+connotations the writer did not choose: "the bar routed around the holding" implies coordinated
+evasion, where "lawyers filed the same claims as mootness-fee requests" makes no claim about
+motive. Revising for taste alone misses that the mannered version often asserts something the
+writer cannot support.
+
+**The revision, in order:**
+
+1. Replace every mannered phrase with the literal thing it avoided.
+2. Table each swap: the flourish, the plain version, and **the connotation it smuggled in**.
+3. Name the habit the writer repeats most.
+
+**The three constraints — violating any makes the pass worse than not running it:**
+
+- **Keep the meaning and the structure.** A diction pass, not a rewrite.
+- **Leave direct sentences untouched.** A sentence with no metaphor has nothing to swap.
+- **Don't shorten for its own sake.** Literalness is the goal, not brevity. A plain replacement
+  that runs longer than the flourish is still the right replacement.
+
+**Why the table is the deliverable, not just the edits.** The third column is the point. Listing
+swaps without naming what each smuggled in hides the substantive change. And naming the repeated
+habit matters more than any single swap: individual metaphors are cheap to fix and recur
+immediately, while the habit is the thing the writer can act on.
+
+**A related failure, one level up (supporting research, not the definition).** Density, not the
+device, is what makes rhetorical figures read as machine-written: *"The problem is not that LLMs
+use these techniques: it's that they're so robotically consistent in how they use them that it
+becomes an abuse… What the LLM lacks is not technical ability, but taste"* (Colin Gorrie, *Why
+ChatGPT writes like that*). The figures to watch are **antithesis** ("not X, but Y"),
+**tricolon**, **isocolon**, and unearned profundity. A balanced two-part closer at the end of
+every section is this failure, not metaphor substitution — so it is out of scope for the swap
+table above, and needs naming as a habit instead.
+
+**Model note.** Claude Fable 5.1 writes denser prose than Fable 5 — longer sentences, fewer
+paragraph breaks. Defining the anti-pattern in a user message (preferred) or the system prompt is
+the documented mitigation.
 
 ### For False Precision
 

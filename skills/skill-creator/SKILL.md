@@ -79,9 +79,10 @@ plus the SKILL.md body; nothing lists either folder. So anything the prose does 
 invisible — measured 2026-09-14, 16 of 219 reference files across 10 skills, and **48 of 156
 scripts**, a third of them.
 
-One line emits both — `skill-toc` lives in `workflows/bin/`, and Claude Code adds every enabled
+One line emits both — `skill-toc` lives in `plugin-utils/bin/`, and Claude Code adds every enabled
 plugin's `bin/` to the Bash tool's PATH, so it is callable as a bare command from ANY plugin's
-SKILL.md. `${CLAUDE_PLUGIN_ROOT}` would not reach it: that resolves to the calling plugin.
+SKILL.md. That PATH entry is the whole reason it can sit in a plugin none of its callers belong to.
+`${CLAUDE_PLUGIN_ROOT}` would not reach it: that resolves to the calling plugin.
 (Documented at code.claude.com/docs/en/plugins-reference — with the caveat that `bin/` cannot be
 included in plugins distributed through claude.ai organization settings.)
 
@@ -106,7 +107,7 @@ hiding it behind noise. 26 of 168 scripts in this plugin print it today.
 
 It exits 2 on an empty or missing directory. That is not fastidiousness: a bang command exiting 1
 is TOLERATED by the parser, so an empty listing loads the skill reading as "this skill has no
-references". `tests/skill-toc.test.ts` pins every case above.
+references". `plugin-utils/tests/skill-toc.test.ts` pins every case above.
 
 #### Scoped Hooks (PreToolUse / PostToolUse)
 

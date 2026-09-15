@@ -6,6 +6,11 @@ user-invocable: true
 
 # Law Review DOCX Export
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 Convert markdown drafts into a properly formatted Word document using the law review template via pandoc.
 
 **This is the ONLY correct way to build a law-review .docx — never hand-roll

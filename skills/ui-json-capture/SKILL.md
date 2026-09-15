@@ -5,6 +5,11 @@ description: "Use when the user asks to 'scrape Lex Machina', 'capture Bloomberg
 
 # Capturing paginated JSON from an authenticated research UI
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 Drive the user's logged-in browser over CDP, hook `XMLHttpRequest`, click through the result
 pages, and keep the JSON the page already received. No direct API calls, no credential handling,
 no fighting the export cap.

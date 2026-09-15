@@ -60,8 +60,32 @@ CONSTRAINT_RUNNER = Path(
         / "run-constraints.py",
     )
 )
-OVERFLOW_DRIVER = HERE / "checks" / "check-overflow.sh"
-VALIDATION_TYP = HERE / "validation.typ"
+
+# The overflow driver is owned by the typst plugin too; this skill holds no copy. Same shape as
+# CONSTRAINT_RUNNER above: env override first (so the contract suite can point the probe at a
+# scratch driver without touching the real one), then the plugin. A machine without the plugin has
+# no overflow check, and check_ovr says so as a FAIL rather than skipping the leg.
+TYPST_PLUGIN_ROOTS = (
+    Path.home() / ".claude" / "skills" / "typst",
+    Path.home() / "projects" / "typst",
+)
+
+
+def _resolve_overflow_driver() -> Path:
+    override = os.environ.get("WORKSHOP_OVERFLOW_DRIVER")
+    if override:
+        return Path(override)
+    candidates = [root / "scripts" / "checks" / "check-overflow.sh" for root in TYPST_PLUGIN_ROOTS]
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    return candidates[0]
+
+
+OVERFLOW_DRIVER = _resolve_overflow_driver()
+# The driver reads its own `$SCRIPT_DIR/../validation.typ`, so this must be the copy beside
+# whichever driver resolved -- resolving it a second time could name a file the driver never reads.
+VALIDATION_TYP = OVERFLOW_DRIVER.parent.parent / "validation.typ"
 
 # The matrix in references/workshop-checks.md, in matrix order. ENUM asserts that a line was
 # emitted for every ID here -- the whole point of computing ENUM rather than claiming it.
@@ -896,7 +920,7 @@ def compile_handout(deck_src: Path, root: Path, out_pdf: Path) -> tuple[bool, st
     widow, so that build measures a different property than WID specifies.
     """
     if not VALIDATION_TYP.is_file():
-        return False, f"vendored `validation.typ` is absent at `{VALIDATION_TYP}`"
+        return False, f"the typst plugin's `validation.typ` is absent at `{VALIDATION_TYP}`"
     slides_dir = deck_src.parent
     val_copy = slides_dir / ".workshop-widow-validation-tmp.typ"
     wrapper = slides_dir / ".workshop-widow-tmp.typ"
@@ -1045,24 +1069,33 @@ NO_METADATA = "No validation metadata found"
 def check_ovr(deck_src: Path) -> dict:
     """R2/R11: read the driver's exit code STRICTLY, then require it to have measured pages.
 
-    0 = no overflow, 1 = overflow, and ANYTHING ELSE -- 2, a timeout, a missing `typst`, a missing
-    vendored `validation.typ` -- is FAIL CLOSED. Exit 0 alone is insufficient: the driver prints
+    0 = no overflow, 1 = overflow, and ANYTHING ELSE -- 2, a timeout, a missing `typst`, an
+    unresolvable driver or `validation.typ` -- is FAIL CLOSED. Exit 0 alone is insufficient: the driver prints
     `No validation metadata found` and exits 0 having measured nothing, and `overflow.py` prints
     `Physical pages: 0` and exits 0 on empty input.
     """
     if not OVERFLOW_DRIVER.is_file():
-        return result("FAIL", f"vendored overflow driver is absent at `{OVERFLOW_DRIVER}`.")
+        return result(
+            "FAIL",
+            f"the typst plugin's overflow driver is absent at `{OVERFLOW_DRIVER}`: install the "
+            "typst plugin (~/.claude/skills/typst or ~/projects/typst) or set "
+            "WORKSHOP_OVERFLOW_DRIVER. No overflow check ran.",
+        )
     if not VALIDATION_TYP.is_file():
         return result(
             "FAIL",
-            f"vendored `validation.typ` is absent at `{VALIDATION_TYP}`; the driver exits 2 "
-            "without it and nothing would be measured.",
+            f"the typst plugin's `validation.typ` is absent at `{VALIDATION_TYP}`; the driver "
+            "exits 2 without it and nothing would be measured.",
         )
     if not deck_src.is_file():
         return result("FAIL", f"built deck `{deck_src}` is absent or is not a file.")
     try:
         proc = subprocess.run(
-            ["bash", str(OVERFLOW_DRIVER), str(deck_src)],
+            # A workshop deck is flat `#pagebreak()` + `===` with no touying slide mechanism, so
+            # the checker's presentation pass has no new-slide markers to find and nothing to be
+            # blind about. Only the deck's OWNER can say that -- no signal in the metadata tells
+            # "no mechanism" from "the marker query broke" -- so this probe declares it here.
+            ["bash", str(OVERFLOW_DRIVER), str(deck_src), "--flat-deck"],
             capture_output=True,
             text=True,
             timeout=SUBPROCESS_TIMEOUT,

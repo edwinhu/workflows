@@ -7,6 +7,11 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanM
 
 # craft — clarify → plan → goal → workflow → human review
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 A structured loop for tasks worth doing properly: clarify with the user, draft a plan they
 edit and approve, self-set a goal, run `workflow.js` — dispatched through farm-out — to implement
 and independently verify, then put the result in front of the human in tuicr. Human rejection
@@ -144,6 +149,10 @@ mechanical checks run, and the standing instruction that nothing may be written.
 be empty. Do **not** shortcut by hashing the artifact under audit instead: the AUTHORITY block tells
 every agent the hashed file is its *only authority*, so hashing the audited file would tell each lens
 that the thing it is judging is the standard it judges against.
+
+**A domain workflow's plan opens with YAML frontmatter `workflow: <name>`** (`dev`, `ds`, `writing`,
+`workshop`, or plugin-qualified like `teaching:notes`) — it is what the re-seeded `Implement the
+following plan:` prompt shows first, and what routes that session back to the owning skill.
 
 **Arm the run before calling ExitPlanMode.** The plan must carry a dispatch block — every
 `workflow.js` arg except `planPath`/`specHash`, which `craft-dispatch.sh` injects because a block
@@ -774,7 +783,7 @@ descope with the user rather than guessing a third time.
 | Tasks feel like they could run in parallel | fan out implementers yourself, or give each a worktree | declare `dependsOn` and let IMPLEMENT wave them — concurrent within a wave, and arg-validation refuses a wave whose `writablePaths` overlap, so safety is checked rather than trusted. Worktrees stay out: `workflow.js` cannot merge them (no filesystem), and a merge agent's silent slip reads as an implementer's omission |
 | A task reads a file another task writes | rely on `tasks[]` array order | array order is not a contract the script enforces — declare `dependsOn: ['<id>']`. An unknown id and a cycle both throw before dispatch; an edge to a task outside `onlyTasks` is treated as satisfied, since a prior run put its output on disk |
 | `goal-self-send.sh` exits non-zero | retry it, or stall the run | not fatal — proceed; the loop is written down, it just needs the user to prompt each step |
-| Session opens on `Implement the following plan:` | implement it in the main thread | the context was cleared at approval — this is Phase 4, not the work. `craft-dispatch.sh` needs nothing you lost. Same answer when an Edit is denied for an armed run |
+| Session opens on `Implement the following plan:` | implement it in the main thread | the context was cleared at approval — this is Phase 4, not the work. The plan's frontmatter `workflow:` names the skill to invoke first; then dispatch. `craft-dispatch.sh` needs nothing you lost. Same answer when an Edit is denied for an armed run |
 | Just self-sent the goal | dispatch Phase 4 in the same turn | stop — our own queued message can't be read until the turn ends; the `/goal` turn is Phase 4 |
 | Goal condition names a file check | `/goal the tests in the plan pass` | the evaluator reads only the transcript — phrase it as a verdict that gets printed |
 | Recon would flood the conversation | read every file into this context | scout with a subagent during CLARIFY/PLAN — graded work still goes through workflow.js |

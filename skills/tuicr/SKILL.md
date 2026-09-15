@@ -7,6 +7,11 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob]
 
 # tuicr — TUI Code Review
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 Review a PR (or the working tree, a commit range, or a file) with inline annotations in the tuicr
 TUI, then read the annotations back and address them. tuicr auto-detects the VCS. Unlike a one-way
 capture tool, tuicr **persists the review session to disk** and exposes it to agents both ways:
