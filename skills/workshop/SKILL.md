@@ -222,6 +222,7 @@ resolves them against no particular directory; `writablePaths` and every `mechan
   ],
 
   authorityExtra: [
+    "THE TYPST CORPUS IS ONE COMMAND AWAY, AND IS NOT IN YOUR REFS. Run `typst-rules slides,notes,workshop` for the index — every rule that governs a deck and its speaker notes, with an openable path — then read the ones your edit touches. It is on PATH because the harness puts every enabled plugin's bin/ there, so it needs no path and no plugin variable. Do NOT work from a paraphrase of these rules in a brief: a paraphrase is a lossy copy of a corpus that moves.",
     "IRON LAW OF WORKSHOP VERIFICATION — no check result without the probe's own output. A check reported from reading the deck, or an N/A justified by a reason the model composed, is the model certifying its own work. Every computed result is a line ${CLAUDE_PLUGIN_ROOT}/skills/workshop/scripts/workshop-deck.py emitted, quoted as emitted.",
     "Every computed check FAILS CLOSED. A missing tool, a missing file, an unreadable PDF, a malformed Slide Spec, an unparseable ## Source Inventory or ## Outputs and Verification, or a driver exit code the probe does not recognise is a FAIL — never a clean line, never a skip. A check that cannot fail is not a check.",
     "Never report FID, CONV or VIS as PASS. They are MODEL-EVALUATED judgements, reported as such with the evidence read. An N/A is not a third kind of pass: it carries a machine-generated reason and is still owed a disposition against task-local evidence.",
