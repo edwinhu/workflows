@@ -7,6 +7,14 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanM
 
 # workshop — a talk, run through craft with a computed deck gate
 
+**The Typst rules in scope for a deck, rendered from the corpus at load time.** Nothing here
+lists them; a rule reaches this skill because its own `applies-to:` names a kind a deck is —
+`slides`, `notes` or `workshop`. Adding a rule to that scope is an edit to the rule and
+nothing else. (Absence of the plugin degrades this index but does not bypass a gate:
+`run-constraints.py` fails closed on its own.)
+
+!`for d in "$HOME/.claude/skills/typst" "$HOME/projects/typst"; do [ -f "$d/scripts/rule-index.py" ] && exec python3 "$d/scripts/rule-index.py" --for slides,notes,workshop; done; echo "!! typst plugin not found — the constraint index is EMPTY, and a deck graded against no corpus is not a deck that passed."`
+
 The lifecycle is [craft](${CLAUDE_PLUGIN_ROOT}/skills/craft/SKILL.md). Read it and follow it.
 This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lenses,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
@@ -61,7 +69,10 @@ the F/T/R/A inventory the plan will declare. Building a slide is not planning ev
 
 ## Phase 2 — PLAN
 
-Craft's Phase 2. Four domain requirements on the plan:
+Craft's Phase 2. The plan opens with frontmatter `workflow: workshop` — required, so a context clear
+at approval resumes here and not in craft.
+
+Four domain requirements on the plan:
 
 - **The seven required H2 headings**, spelled exactly, in two classes:
   - **Probe-parsed, FAIL CLOSED when absent, empty or unparseable** — `## Source Paper`,
@@ -104,11 +115,11 @@ resolves them against no particular directory; `writablePaths` and every `mechan
 
   // One row per distinct `Section` value in the plan's ## Slide Spec, plus one assembler.
   // Every task carries refs, empty or not.
-  // The plan's table verbatim. Every task carries refs, empty or not. The fifteen Typst
-  // constraint modules are UNCONDITIONAL for any task that writes slides or notes — the
-  // vendored workshop-constraints skill used to guarantee that by preloading them, and since
-  // its removal (2026-09-01) refs are the only channel. A task row that names a subset gets
-  // a doer judged against rules it never read.
+  // The plan's table verbatim. Every task carries refs, empty or not. The Typst constraints
+  // are NOT among them: `implementerAgentType: "workshop"` names `typst:typst` in its own
+  // frontmatter, so every doer receives the whole computed index. Listing a subset here was
+  // the defect — the comment claimed fifteen modules were unconditional while the rows named
+  // four, and the corpus declares 20 for a workshop deck. refs carry task artefacts only.
   tasks: [
     { id: "section-1",
       name: "Section: <Section>",
@@ -118,10 +129,6 @@ resolves them against no particular directory; `writablePaths` and every `mechan
       acceptance: "Each of this section's Slide Spec rows has one slide whose `=== ` line matches its Slide cell under the normalized key, an uncommented `#inv(...)` call immediately after that line whose ID set EQUALS that row's Inventory cell in both directions, and one notes section under the same key; every emitted ID is declared whole-token in ## Source Inventory.",
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md",
-             "~/.claude/skills/typst/references/constraints/typst-slide-format.md",
-             "~/.claude/skills/typst/references/constraints/typst-formatting.md",
-             "~/.claude/skills/typst/references/constraints/typst-bullet-spacing.md",
-             "~/.claude/skills/typst/references/constraints/typst-teleprompter-notes.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/theme.typ"] },
     // ... one section-<n> row per remaining distinct Section value.
 
@@ -136,9 +143,6 @@ resolves them against no particular directory; `writablePaths` and every `mechan
       acceptance: "Both templates exist under the project's presentation/templates/ and the deck imports theme.typ project-relative; both sources compile with no stderr diagnostic; the deck's slide set and the Slide Spec's body rows correspond one-to-one under the normalized title key.",
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md",
-             "~/.claude/skills/typst/references/constraints/typst-section-hierarchy.md",
-             "~/.claude/skills/typst/references/constraints/typst-common-elements.md",
-             "~/.claude/skills/typst/references/constraints/typst-notes-structure.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/theme.typ",
              "${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/custom-outline.typ"] },
   ],
@@ -194,23 +198,8 @@ resolves them against no particular directory; `writablePaths` and every `mechan
 
     { key: "deck-convention",
       agentType: "Explore",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md",
-             "~/.claude/skills/typst/references/constraints/typst-bullet-spacing.md",
-             "~/.claude/skills/typst/references/constraints/typst-cetz-diagrams.md",
-             "~/.claude/skills/typst/references/constraints/typst-common-elements.md",
-             "~/.claude/skills/typst/references/constraints/typst-computed-values.md",
-             "~/.claude/skills/typst/references/constraints/typst-fletcher-diagrams.md",
-             "~/.claude/skills/typst/references/constraints/typst-formatting.md",
-             "~/.claude/skills/typst/references/constraints/typst-images.md",
-             "~/.claude/skills/typst/references/constraints/typst-label-bullet-spacing.md",
-             "~/.claude/skills/typst/references/constraints/typst-no-subtitle-echo.md",
-             "~/.claude/skills/typst/references/constraints/typst-notes-structure.md",
-             "~/.claude/skills/typst/references/constraints/typst-section-hierarchy.md",
-             "~/.claude/skills/typst/references/constraints/typst-slide-format.md",
-             "~/.claude/skills/typst/references/constraints/typst-sub-bullets.md",
-             "~/.claude/skills/typst/references/constraints/typst-tables.md",
-             "~/.claude/skills/typst/references/constraints/typst-teleprompter-notes.md"],
-      prompt: "You OWN check CONV, defined in the refs. Read them in full first, along with the built deck and notes and the plan's ## Audience, Venue, Duration, and Proportions and ## Slide Spec. CONV is MODEL-EVALUATED: report it as MODEL-EVALUATED with the evidence you actually read — never as PASS, and never as N/A, which is not a third kind of pass. Findings: a convention violation the 15 modules cannot catch — a takeaway that is not a claim, a bullet restating its title, notes duplicating the slide instead of expanding it. MAJOR min. Quote the offending text with a file:line." },
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md",],
+      prompt: "You OWN check CONV, defined in the refs. Read them in full first, along with the built deck and notes and the plan's ## Audience, Venue, Duration, and Proportions and ## Slide Spec. CONV is MODEL-EVALUATED: report it as MODEL-EVALUATED with the evidence you actually read — never as PASS, and never as N/A, which is not a third kind of pass. Findings: a convention violation the constraint modules cannot catch — a takeaway that is not a claim, a bullet restating its title, notes duplicating the slide instead of expanding it. MAJOR min. Quote the offending text with a file:line." },
 
     { key: "visual-integrity",
       agentType: "Explore",
@@ -221,26 +210,12 @@ resolves them against no particular directory; `writablePaths` and every `mechan
     // preloaded skill reaches, and it skips the CLAUDE.md hierarchy. workshop-reviewer's body is a
     // file this repo controls, and it is read-only by tools allowlist AND by
     // tests/agent-contract.test.mjs — the same structural property Explore is pinned for, in an
-    // agent whose prompt can be told what it is grading. The fifteen modules are not vendored into
+    // agent whose prompt can be told what it is grading. The modules are not vendored into
     // any skill: they reach this lens as refs, from their one canonical home.
     { key: "deck-constraints",
       agentType: "workshop-reviewer",
-      refs: ["~/.claude/skills/typst/references/constraints/typst-bullet-spacing.md",
-             "~/.claude/skills/typst/references/constraints/typst-cetz-diagrams.md",
-             "~/.claude/skills/typst/references/constraints/typst-common-elements.md",
-             "~/.claude/skills/typst/references/constraints/typst-computed-values.md",
-             "~/.claude/skills/typst/references/constraints/typst-fletcher-diagrams.md",
-             "~/.claude/skills/typst/references/constraints/typst-formatting.md",
-             "~/.claude/skills/typst/references/constraints/typst-images.md",
-             "~/.claude/skills/typst/references/constraints/typst-label-bullet-spacing.md",
-             "~/.claude/skills/typst/references/constraints/typst-no-subtitle-echo.md",
-             "~/.claude/skills/typst/references/constraints/typst-notes-structure.md",
-             "~/.claude/skills/typst/references/constraints/typst-section-hierarchy.md",
-             "~/.claude/skills/typst/references/constraints/typst-slide-format.md",
-             "~/.claude/skills/typst/references/constraints/typst-sub-bullets.md",
-             "~/.claude/skills/typst/references/constraints/typst-tables.md",
-             "~/.claude/skills/typst/references/constraints/typst-teleprompter-notes.md"],
-      prompt: "Grade the built slides.typ and notes.typ against the fifteen Typst modules named in your refs — read every one in full first — and ONLY on the judgement half no checker reaches: a takeaway that names a topic instead of asserting a claim, a bullet restating its own slide title, notes duplicating the slide instead of carrying the spoken words, outline fragments where speakable sentences belong, a section hierarchy the argument does not have, a table whose numbers are not traceable to the paper or whose synthesis is undocumented, and diagram legibility judged on the Typst SOURCE — clipped or overlapping labels, arrows through nodes, illegible sizing, a diagram contradicting its caption. Do NOT re-derive what run-constraints.py already computed. Report every finding with the quoted text and a file:line, naming the module, and list every module you considered including those you judged satisfied. NEVER report a module judgement as a computation and never as N/A — it is MODEL-EVALUATED, with the evidence you actually read. MAJOR min; CRITICAL where the deck asserts something its source does not support." },
+      refs: [],
+      prompt: "Grade the built slides.typ and notes.typ against the Typst constraint corpus indexed in your context by the typst:typst skill — never a count you carry, and never a subset — and ONLY on the judgement half no checker reaches: a takeaway that names a topic instead of asserting a claim, a bullet restating its own slide title, notes duplicating the slide instead of carrying the spoken words, outline fragments where speakable sentences belong, a section hierarchy the argument does not have, a table whose numbers are not traceable to the paper or whose synthesis is undocumented, and diagram legibility judged on the Typst SOURCE — clipped or overlapping labels, arrows through nodes, illegible sizing, a diagram contradicting its caption. Do NOT re-derive what run-constraints.py already computed. Report every finding with the quoted text and a file:line, naming the module, and list every module you considered including those you judged satisfied. NEVER report a module judgement as a computation and never as N/A — it is MODEL-EVALUATED, with the evidence you actually read. MAJOR min; CRITICAL where the deck asserts something its source does not support." },
   ],
 
   authorityExtra: [
@@ -253,8 +228,8 @@ resolves them against no particular directory; `writablePaths` and every `mechan
     "Craft runs a mechanicalCheck cmd VERBATIM, with the working directory at the project root. Every path in a cmd is therefore project-relative and literal; a placeholder shipped into a cmd targets a directory of that literal name, fails on every conforming run, and is therefore permanently waived.",
     "An artifact absent from the plan's ## Outputs and Verification is one nothing will check and cannot be claimed as verified. Do not verify an output that section never declared.",
     "The deck is built by dispatched agents. Main chat writes no .typ file, by any tool.",
-    "Standing workshop doer authority — the fifteen Typst modules under ~/.claude/skills/typst/references/constraints/ govern every deck and notes task: bullet spacing, label bullet spacing, sub-bullets, tables, images, CeTZ diagrams, Fletcher diagrams, formatting, slide format, section hierarchy, notes structure, teleprompter notes, computed values, common elements, no-subtitle-echo. They have one canonical home and are never copied into a skill. A task's refs are contractual reads, not a reading list: read in full every module your task's refs name before writing a slide. ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md stays a separate load.",
-    "Rules: ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md defines all eleven checks and which are computed; ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md defines the plan grammar the probe parses; the canonical Typst constraints under ~/.claude/skills/typst/references/constraints/ govern the source and are the checker's authority — the same files the tasks and lenses name as refs, and the same files the preloaded typst:typst skill's bang line indexes for an interactive session; the deck templates are ${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/theme.typ and ${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/custom-outline.typ.",
+    "Standing workshop doer authority — the Typst constraint corpus governs every deck and notes task. You already hold its index: your agent definition names the typst:typst skill, whose bang renders the index at load time from each rule's own frontmatter, so it is correct the moment a rule is added or retired. NEVER state how many modules there are; the index in your context IS the set. They have one canonical home and are never copied into a skill. A task's refs are contractual reads of task ARTEFACTS, not constraints: read in full every file your task's refs name before writing a slide. ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md stays a separate load.",
+    "Rules: ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md defines all eleven checks and which are computed; ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md defines the plan grammar the probe parses; the canonical Typst constraints under ~/.claude/skills/typst/references/constraints/ govern the source and are the checker's authority — indexed for every doer by the preloaded typst:typst skill's bang line, never copied into a task's refs; the deck templates are ${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/theme.typ and ${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/custom-outline.typ.",
   ].join("\n"),
 
   implementerAgentType: "workshop",   // the doer's own prompt replaces Claude Code's software-engineering one, which frames a talk as a codebase
@@ -291,8 +266,8 @@ notes. A clean deck gate is evidence for that conversation, not human acceptance
 | The deck verdict | let the generating agent report it | the generator cannot see the assumption it made in both places — the probe is a `mechanicalCheck` and the JS reads its exit code |
 | `FID`/`CONV`/`VIS` | report them as `PASS` | that presents a judgement as a computation — `MODEL-EVALUATED` with the evidence read |
 | A computed check reported clean with no tool installed | accept it | that is the defect this port exists to remove — a missing `typst` or `pypdf` is a FAIL, never a clean line |
-| Widows or overflow | add back upstream's `typst-widow-detection.py` or `typst-overflow.py` | both fail open; the probe owns `WID` and `OVR` natively, so 15 modules are vendored, not 17 |
-| A judgement that depends on the Typst modules | dispatch a built-in agent (`Explore`, `Plan`, `general-purpose`) | their prompts are predefined, no preloaded skill reaches them and they skip the CLAUDE.md hierarchy, so fifteen modules are graded from whatever got read — dispatch a custom agent whose body you control, like `workshop-reviewer` |
+| Widows or overflow | add back upstream's runt or overflow checker | both fail open; the probe owns `WID` and `OVR` natively, so those two rules are the probe's, not the corpus runner's |
+| A judgement that depends on the Typst modules | dispatch a built-in agent (`Explore`, `Plan`, `general-purpose`) | their prompts are predefined, no preloaded skill reaches them and they skip the CLAUDE.md hierarchy, so the corpus is graded from whatever got read — dispatch a custom agent whose body you control, like `workshop-reviewer` |
 | Handing a doer the Typst conventions | name the constraint paths in the task prompt's prose, or copy the modules into a skill | prose is discretionary and a copy is a second source of truth `tests/constraints-no-duplication.test.ts` fails on — put the canonical paths in the task's `refs`, which craft defines as reads the doer owes in full |
 | Section tasks and the assembler | rely on their order in `tasks[]` | the assembler reads what they write — give it `dependsOn` naming every section row |
 | Something craft does not obviously do | write a `workshop/workflow.js` | ask which craft parameter is missing — `mechanicalChecks` is what makes the deck probe the gate |

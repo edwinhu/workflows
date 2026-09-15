@@ -103,7 +103,9 @@ Every vendored module locates its own inputs by globbing `cwd` and `cwd/presenta
 inspected count is what distinguishes "checked and clean" from "checked nothing".
 
 `typst-widow-detection.py` and `typst-overflow.py` are **deliberately not vendored** — both fail
-open, and `WID`/`OVR` own those dimensions natively. 15 modules are vendored, not 17.
+open, and `WID`/`OVR` own those dimensions natively — the probe owns them, not the corpus runner.
+No count is written down here: the corpus is indexed at load time and a number in prose is a copy
+of it that nothing updates.
 
 ### SPEC: Slide Spec ↔ built deck, one-to-one, by title — computed
 
@@ -206,8 +208,8 @@ The threshold is fixed here, not left to the implementer: an unstated "short" gi
 implementers two different checks, and the laxest one never fires.
 
 **Build:** through the wrapper-plus-`--input handout=true` path the overflow driver uses
-(`scripts/checks/check-overflow.sh`), per `slide-spec-grammar.md`. The overlay-expanded build
-measures a different property.
+(the typst plugin's `scripts/checks/check-overflow.sh`), per `slide-spec-grammar.md`. The
+overlay-expanded build measures a different property.
 
 **Skip set and floor:** as specified in `slide-spec-grammar.md` — only the first page and
 section-divider pages are skippable, and the pages **actually scanned** must be at least the Slide
@@ -229,13 +231,18 @@ actually scanned, the pages skipped with their reason, and each offending page w
 
 ### OVR: Frame overflow — computed
 
-**Means:** zero slides overflow their frame, as determined by the vendored driver
-`scripts/checks/check-overflow.sh` and its `overflow.py`/`shared.py`/`validation.typ` parts.
+**Means:** zero slides overflow their frame, as determined by the typst plugin's
+`scripts/checks/check-overflow.sh` and its `overflow.py`/`shared.py`/`validation.typ` parts. Every
+Typst checker has exactly one copy, in that plugin; this skill vendors none of it. The driver is
+resolved from `WORKSHOP_OVERFLOW_DRIVER`, then `~/.claude/skills/typst`, then `~/projects/typst`,
+and `validation.typ` is the one beside whichever driver resolved. A machine without the plugin has
+no overflow check, and `OVR` says so as a FAIL naming the plugin — never a skip, never a clean line.
 
 **Evidence:** the driver's exit code, its captured output, and the physical page count it reports.
 
 **Reads the exit code strictly:** `0` = no overflow; `1` = overflow → FAIL; **anything else — `2`, a
-timeout, a missing `typst`, a missing vendored `validation.typ` — is FAIL CLOSED**, never clean.
+timeout, a missing `typst`, an unresolvable driver or `validation.typ` — is FAIL CLOSED**, never
+clean.
 
 **Non-vacuity (R11).** Exit 0 alone is insufficient. `OVR` FAILs when:
 
