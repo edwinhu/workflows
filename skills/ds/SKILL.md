@@ -205,10 +205,13 @@ Omitting it silently runs the user's codex request on claude.
   // itself. ds-dq is never conditional. tests and lint are the TARGET project's own commands,
   // collected at CLARIFY, and are included ONLY when the project has them — a probe runs cmd
   // verbatim, so an unsubstituted placeholder blocks the gate on a placeholder. Omit the entry.
+  // ONE entry point. These were three entries until 2026-09-15; a list of N independent
+  // commands loses one silently. The project's own test and lint commands are ARGUMENTS
+  // because this skill cannot know them — omit a flag and that leg reports "not declared",
+  // which is visible, where a dropped entry is not.
   mechanicalChecks: [
-    { name: "ds-dq", cmd: "uv run --with polars python3 ${CLAUDE_PLUGIN_ROOT}/skills/ds/scripts/ds-dq.py --plan <planPath> --project-dir <projectDir>" },
-    { name: "tests", cmd: "<the project's full test command — omit this entry when it has none>" },
-    { name: "lint",  cmd: "<the project's lint command — omit this entry when it has none>" },
+    { name: "ds",
+      cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/ds/scripts/check.sh --plan <planPath> --project-dir <projectDir> [--test-cmd \"<the project's test command>\"] [--lint-cmd \"<the project's lint command>\"]" },
   ],
 
   // Judged BEFORE any implementer is dispatched; a surviving critical|major returns FAIL having
