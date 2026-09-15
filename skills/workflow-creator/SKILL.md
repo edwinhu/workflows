@@ -102,7 +102,7 @@ whose domain has a toolchain (build, test, lint, render) ships one entry point o
 those legs behind it, and names *that* in its `mechanicalChecks`. The law binds the workflow being
 generated, not only its generator.
 
-**A constraint is enforced by a SCRIPT or by an AGENT WITH THE SKILL. There is no third shape.** A constraint module lives in a `references/constraints/*.md` directory, and that corpus is the one canonical home.
+**A constraint is enforced by a SCRIPT or by an AGENT WITH THE SKILL. There is no third shape.** Wherever a constraint lives — a shared `references/constraints/` corpus, or beside the single skill that consumes it — that location is its ONE canonical home. A copy per consumer is the vendoring defect; see *Frontmatter decides how a file is found* for which location a rule earns.
 
 **ONE FRONTMATTER KEY: `applies-to:`. Nothing else.** Scope is the only fact about a rule that no path already holds — the name is the filename, whether it is mechanised is whether `checkers/<name>.py` exists, and what it says is the body. Any other key is either a copy of one of those or metadata nothing reads, and both rot silently: measured 2026-09-14 in the typst corpus, `type:` sat in 17 of 21 files and `testable:` in 3, read by no code on any path, while `description:` had drifted from the rule beside it (a rule described as "table inset minimum 10pt" whose body leads with source-grounding) with no check able to see it. Lint the key set — a convention nothing computes is how `type:` got into 17 files and stayed.
 
@@ -436,34 +436,39 @@ its own `skills:` frontmatter, never through `refs`:
 | judging agents — lenses and their refuters | `reviewLenses[].refs` |
 | everyone, for a short rule | `authorityExtra` |
 
-### Two directories, and the first byte of a file says which
+### Frontmatter decides how a file is FOUND; consumers decide where it LIVES
 
-**A CONSTRAINT goes in the `references/constraints/` corpus. A REFERENCE DOCUMENT goes in
-`<skill>/references/`.** They are not two flavours of one thing:
+Two independent questions, and conflating them produces a taxonomy that moves files for nothing.
 
-| | constraint | reference document |
-|---|---|---|
-| is | a rule the work is GRADED against | how-to, API, patterns — knowledge, not policy |
-| carries | one frontmatter key, `applies-to:` | no frontmatter; a `# Heading` first line |
-| lives in | `references/constraints/` | `<skill>/references/` |
-| reaches an agent by | the agent naming the index skill in `skills:` | `refs`, or a Read at the phase that needs it |
-| found by | GREPPING the field — a scope needs a subset | GLOBBING the directory — you want all of it |
+**Found: does it carry `applies-to:`?** That is the whole test, and it splits cleanly — measured
+2026-09-14, 219 reference files across 37 skills divide 200/19 with no overlap, the 19 with
+frontmatter being exactly the 19 without a `# Heading` first line.
 
-Measured 2026-09-14: `skills/writing/references/` holds 14 files carrying `name`, `description`,
-`applies-to`, `type` and `severity`, and `skills/ds/references/` 4 more. They are constraints by
-every property, sitting where no corpus lint and no index can see them, because this section used
-to say "a generated workflow's rules live at `<generated-skill>/references/*.md`". Rules do not.
+| carries `applies-to:` | plain document |
+|---|---|
+| a rule the work is GRADED against, and a script may enforce | how-to, API, patterns — knowledge, not policy |
+| the set needs a SUBSET, so **grep the field** (`rules-for slides,notes`) | you want all of it, so **glob the directory** |
+| one key, nothing else — see above | no frontmatter; the `# Heading` is its label |
 
-**Discovery is computed, never listed.** A hand-written list of what is in a directory falls behind
-the moment someone adds a file and nothing shows it — measured the same day, 16 reference files
-across 10 skills were named by no SKILL.md at all, including both of `look-at`'s. So a skill lists
-its own references with a bang over the directory:
+**Lives: how many domains consume it?** One domain → beside its skill, in
+`<skill>/references/`. Several → a shared `references/constraints/` corpus, because the
+alternative is a copy per consumer, which is the vendoring defect.
+
+Measure before moving anything. Measured here: the typst corpus is consumed by `exams`, `notes`,
+`slides`, `typst` and `workshop` across three repos — genuinely shared, correctly central. The 30
+`ds-*` constraints sit in the central corpus and are consumed by `ds` alone. The 19 in
+`skills/writing/references/` and `skills/ds/references/` are consumed by the skill they sit beside
+and nothing else — correctly local, whatever their frontmatter says. Placement in this tree is
+currently arbitrary in BOTH directions, and neither direction is fixed by a rule about what kind of
+document a file is.
+
+**Discovery is computed either way, never listed.** A hand-written list of a directory falls behind
+the moment someone adds a file and nothing shows it — 16 reference files across 10 skills are named
+by no SKILL.md today. A skill lists its own with a bang:
 
 ```
 !`n=0; for f in ${CLAUDE_SKILL_DIR}/references/*.md; do [ -e "$f" ] || continue; case "$(basename "$f")" in _*) continue;; esac; printf -- "- %s — %s\n" "$(basename "$f")" "$(sed -n "s/^# //p" "$f" | head -1)"; n=$((n+1)); done; [ "$n" -gt 0 ] || { echo "!! no references found — this skill names references it cannot see"; exit 2; }`
 ```
-
-and a constraint corpus is queried by kind (`rules-for slides,notes` — see the typst plugin).
 
 **THREE THINGS WILL BITE, all measured; `references/bang-reach.md` has the evidence.** A bang runs
 only in an INVOKED file — a SKILL.md or a slash command — and is dead text in an agent definition
@@ -474,8 +479,8 @@ must be made to EXIT 2 — a search exiting 1 is tolerated, the bang renders not
 takes an empty list for a clean scope.
 
 `refs` is how a reference DOCUMENT reaches the agent that needs it instead of stopping at the
-orchestrator or being paraphrased into a prompt. Constraints never travel that way — see the two
-ranks above.
+orchestrator or being paraphrased into a prompt. Constraints never travel that way — a grader gets
+them from the index skill it names, so a `refs` copy is a second path to keep current.
 
 **Required declaration:** every task row and every lens in a plan this skill approves declares
 `refs`. An **empty list is allowed** — it states the task has no domain rules. An **absent key is
