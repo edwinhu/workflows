@@ -31,7 +31,10 @@ Two things, both of which live beside the skill:
 - **Auto-loading `references/*.md`** — `` !`cat ${CLAUDE_SKILL_DIR}/references/rules.md` `` beats a
   `Read()` instruction the model may skip, and beats pasting the content into `SKILL.md`, which
   then has two copies to keep in sync.
-- **Listing a directory** so an added file announces itself. A hand-written list of what is in
+- **Listing a directory** so an added file announces itself — and made to EXIT 2 when it finds
+  nothing, because a search exiting 1 is tolerated: the bang renders "(Bash completed with no
+  output)", the skill loads, and the reader takes an empty list for a clean scope. Measured: the
+  two exit codes are handled differently, `rg` exit 1 loads and exit 2 aborts. A hand-written list of what is in
   `references/` falls behind the moment someone adds one, and nothing shows it: measured
   2026-09-14, 16 reference files across 10 skills were named by no SKILL.md, including both of
   `look-at`'s. Where each entry carries a judgement the listing cannot compute (which module

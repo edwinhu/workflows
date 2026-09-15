@@ -425,18 +425,57 @@ single path: craft grew a read-only branch, so there is one domain note per bran
 
 ## Rules and references
 
-Four audiences need a generated workflow's domain rules, and each has its own delivery point:
+Four audiences need a generated workflow's REFERENCE DOCUMENTS, and each has its own delivery
+point. Constraints are not on this table — they reach an agent through the index skill it names in
+its own `skills:` frontmatter, never through `refs`:
 
 | audience | delivery |
 |---|---|
-| the orchestrator (the generated skill) | inject at load, or Read at the phase that needs it |
+| the orchestrator (the generated skill) | a bang over its own `references/` at load |
 | implementer agents | `tasks[].refs` |
 | judging agents — lenses and their refuters | `reviewLenses[].refs` |
 | everyone, for a short rule | `authorityExtra` |
 
-**Convention:** a generated workflow's rules live at `<generated-skill>/references/*.md`. Rules are
-files, and `refs` is how a file reaches the agent that needs it instead of stopping at the
-orchestrator or being paraphrased into a prompt.
+### Two directories, and the first byte of a file says which
+
+**A CONSTRAINT goes in the `references/constraints/` corpus. A REFERENCE DOCUMENT goes in
+`<skill>/references/`.** They are not two flavours of one thing:
+
+| | constraint | reference document |
+|---|---|---|
+| is | a rule the work is GRADED against | how-to, API, patterns — knowledge, not policy |
+| carries | one frontmatter key, `applies-to:` | no frontmatter; a `# Heading` first line |
+| lives in | `references/constraints/` | `<skill>/references/` |
+| reaches an agent by | the agent naming the index skill in `skills:` | `refs`, or a Read at the phase that needs it |
+| found by | GREPPING the field — a scope needs a subset | GLOBBING the directory — you want all of it |
+
+Measured 2026-09-14: `skills/writing/references/` holds 14 files carrying `name`, `description`,
+`applies-to`, `type` and `severity`, and `skills/ds/references/` 4 more. They are constraints by
+every property, sitting where no corpus lint and no index can see them, because this section used
+to say "a generated workflow's rules live at `<generated-skill>/references/*.md`". Rules do not.
+
+**Discovery is computed, never listed.** A hand-written list of what is in a directory falls behind
+the moment someone adds a file and nothing shows it — measured the same day, 16 reference files
+across 10 skills were named by no SKILL.md at all, including both of `look-at`'s. So a skill lists
+its own references with a bang over the directory:
+
+```
+!`n=0; for f in ${CLAUDE_SKILL_DIR}/references/*.md; do [ -e "$f" ] || continue; case "$(basename "$f")" in _*) continue;; esac; printf -- "- %s — %s\n" "$(basename "$f")" "$(sed -n "s/^# //p" "$f" | head -1)"; n=$((n+1)); done; [ "$n" -gt 0 ] || { echo "!! no references found — this skill names references it cannot see"; exit 2; }`
+```
+
+and a constraint corpus is queried by kind (`rules-for slides,notes` — see the typst plugin).
+
+**THREE THINGS WILL BITE, all measured; `references/bang-reach.md` has the evidence.** A bang runs
+only in an INVOKED file — a SKILL.md or a slash command — and is dead text in an agent definition
+or a CLAUDE.md, so a grader gets a computed set by naming the skill in `skills:`, never by a bang
+of its own. NO BACKTICK may appear inside the command, escaped or not: the parser truncates the
+span at the first one and bash dies on the fragment, aborting the whole load. And an empty result
+must be made to EXIT 2 — a search exiting 1 is tolerated, the bang renders nothing, and the reader
+takes an empty list for a clean scope.
+
+`refs` is how a reference DOCUMENT reaches the agent that needs it instead of stopping at the
+orchestrator or being paraphrased into a prompt. Constraints never travel that way — see the two
+ranks above.
 
 **Required declaration:** every task row and every lens in a plan this skill approves declares
 `refs`. An **empty list is allowed** — it states the task has no domain rules. An **absent key is
