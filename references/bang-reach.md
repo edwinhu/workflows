@@ -47,10 +47,20 @@ Two things, both of which live beside the skill:
 Anything else is better as a normal tool call. A bang is not a way to run work; it is a way to make
 a file's content computed rather than typed.
 
+## `skills:` frontmatter does not preload either
+
+An agent definition cannot compute, and naming a skill in its frontmatter does not fill the gap.
+Measured 2026-09-15 on 2.1.257, under `claude -p --agent` and under the farm-out proxy: an agent
+declaring `skills: [typst:typst]` reports the skill's content NOT PRESENT. What the frontmatter
+buys is the skill appearing in that agent's available-skills listing, name and description only —
+INVOCABLE, not loaded. An agent without the `Skill` tool therefore cannot reach it at all.
+
 ## The consequence for agents
 
-An agent definition cannot compute anything. A bang there does nothing, so an agent needing live
-context reaches it through a skill named in its `skills:` frontmatter — which is also why an agent
+An agent definition cannot compute anything, and per the section above it cannot be handed a
+computed set by frontmatter either. An agent that must have one either holds the `Skill` tool and
+is TOLD to invoke it, or reads the corpus itself, or has the index inlined into its prompt by the
+orchestrator. Which is also why an agent
 carrying a hand-written list of rules (`workshop-reviewer` said "the fifteen canonical constraint
 modules" while the corpus declared 21) cannot fix that in its own file. Name the skill whose index
 is computed.
