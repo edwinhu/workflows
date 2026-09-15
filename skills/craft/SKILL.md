@@ -326,6 +326,12 @@ no race, no ordering constraint.
 The args, annotated — write them to the args file as **plain JSON**, no comments, since the workflow
 `JSON.parse`s it:
 
+This fence is craft's ARGUMENT SCHEMA, not a workflow declaring its own gate.
+`mechanicalChecks: [{name, cmd}, ...]` documents the parameter craft ACCEPTS; craft is the
+engine that RUNS a workflow's checks and has none of its own to collapse, so P10 — which
+governs what a generated workflow declares — is declared away for this region only:
+
+<!-- wc-probe: ignore-entry-point:start -->
 ```js
 {
   projectDir, planPath: "<the path $PLAN resolved to in Phase 2>", specHash: "<64-hex>",
@@ -350,6 +356,7 @@ The args, annotated — write them to the args file as **plain JSON**, no commen
   scoredEffort: "low", thirdPartyEffort: "low",                   // optional; null omits the key and inherits
 }
 ```
+<!-- wc-probe: ignore-entry-point:end -->
 
 **Dispatch through farm-out, never the built-in `Workflow` tool** — the guard at
 `~/.claude/hooks/main-thread-guard.sh` denies it unconditionally, so an in-session call is
