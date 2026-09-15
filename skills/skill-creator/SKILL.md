@@ -31,6 +31,34 @@ This classification determines how much enforcement audit to apply after each dr
 
 !`cat ${CLAUDE_SKILL_DIR}/../../references/creator-anti-patterns.md`
 
+### Where a thing goes — the plugin root
+
+Claude Code auto-discovers these at a plugin root, no manifest needed (`plugins-reference.md`):
+`skills/` `commands/` `agents/` `workflows/` `output-styles/` `themes/` `monitors/` `hooks/` `bin/`.
+Everything else is a local convention, so the names below are ours and worth keeping uniform:
+
+| directory | holds | found by |
+|---|---|---|
+| `bin/` | cross-plugin entry points | **the harness puts it on PATH** — callable as a bare command from any plugin, which is the ONLY way one plugin reaches another's tooling; `${CLAUDE_PLUGIN_ROOT}` resolves to the CALLING plugin |
+| `constraints/` | rules that are scripts | the workflow's check runner; `typst-constraints` lists them |
+| `references/` | knowledge | `skill-toc`, or `typst-rules` for a scoped corpus |
+| `rules/` | always-on, path-globbed | the harness injects it; `install.sh` links it to `~/.claude/rules/` |
+| `skills/` | procedures | named in an agent's `skills:`, or invoked |
+| `scripts/` | the plugin's OWN tooling | not a rule, not knowledge, not reachable cross-plugin |
+
+Two caveats, both measured. `bin/` **cannot** be included in plugins distributed through claude.ai
+organization settings. And a plugin's `agents/` is the LOWEST-priority agent location and its files
+get scoped identifiers (`my-plugin:review:security`), so anything routing by bare name wants
+`~/.claude/agents/` instead — which is scanned recursively, with only the `name` field deciding
+identity.
+
+**Generic tooling belongs in `plugin-utils`, never in a leaf plugin.** `skill-toc` sat in
+`workflows/bin/` first; workflows already depends on typst, so the first typst skill wanting a TOC
+would have closed a cycle. **Do not add a `dependencies:` field to declare that** — doing so on
+2026-09-15 made all three plugins fail to load (`Unknown skill: typst:typst` in a fresh session)
+until the manifests were reverted. The marketplaces are not registered with Claude Code, and a
+dependency on one it does not know takes the depending plugin down rather than warning.
+
 ### Step 1b: Check for Mechanical Enforcement Opportunities
 
 Before drafting, identify what should be **mechanically enforced** rather than prompt-enforced. Four mechanisms are available, each resolving at a different time:
