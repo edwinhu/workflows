@@ -11,6 +11,7 @@ placing a nonce bang in each file and having a session quote its own instruction
 | agent `.md` (probed via `claude -p --agent`) | literal |
 | project `CLAUDE.md` | literal |
 | `~/.claude/CLAUDE.md` | literal |
+| `~/.claude/rules/*.md`, path-globbed into a matching session | literal |
 | a skill reached by `Read()` rather than `Skill()` | literal — it is a file being read, not loaded |
 
 `code.claude.com/docs/en/slash-commands.md` lists CLAUDE.md and agent files among the supported
