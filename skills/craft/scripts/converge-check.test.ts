@@ -1,4 +1,8 @@
 #!/usr/bin/env bun
+// <!-- wc-probe: ignore-refs -->
+// Fixtures below are executed, not declared: the task rows and lenses here are INPUT to
+// the linter under test, and several omit refs precisely so a test can assert the linter
+// catches that. Declaring refs on them would delete the case.
 /**
  * converge-check.test.ts — the computed convergence diagnosis.
  *

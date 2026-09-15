@@ -1,4 +1,8 @@
 #!/usr/bin/env bun
+// <!-- wc-probe: ignore-refs -->
+// Fixtures below are executed, not declared: the task rows and lenses here are INPUT to
+// the linter under test, and several omit refs precisely so a test can assert the linter
+// catches that. Declaring refs on them would delete the case.
 /**
  * plan-lint.test.ts — every TIER 1 rule, pinned to a minimal plan that exhibits it and one that
  * does not.

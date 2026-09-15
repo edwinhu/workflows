@@ -1,3 +1,7 @@
+// <!-- wc-probe: ignore-refs -->
+// Fixtures below are executed, not declared: the task rows and lenses here are INPUT to
+// the linter under test, and several omit refs precisely so a test can assert the linter
+// catches that. Declaring refs on them would delete the case.
 /**
  * craft-dispatch.sh executes every active task's `redCommand` BEFORE dispatching, and refuses a
  * probe that could not run or that already passes.

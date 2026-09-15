@@ -306,8 +306,9 @@ would deadlock. Do **not** dispatch Phase 4 in the same turn: the goal would be 
 already ran. Let the turn end; the `/goal` turn is Phase 4.
 
 **Exit 0 means submitted, not processed.** The script sends the paste and the Enter separately, then
-watches the pane's input line: a [swallowed Enter](../agent-spawn/references/prompt-delivery.md)
-leaves the text sitting there, so it retries — **bounded** at three presses over about five seconds,
+watches the pane's input line: a swallowed Enter (the `agent-spawn`
+skill's `references/prompt-delivery.md` has the mechanism; it is a dotfiles skill, so no relative
+path from here reaches it) leaves the text sitting there, so it retries — **bounded** at three presses over about five seconds,
 then exit 5 saying the text is still in the box. It refuses outright (exit 6) if the box is non-empty
 when it starts, the guard against pasting into a message the user is mid-way through typing.
 Transports are tried in order: our own herdr pane, then `agent-msg` for Remote-Control sessions.
