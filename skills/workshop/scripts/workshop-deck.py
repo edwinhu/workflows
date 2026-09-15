@@ -56,7 +56,7 @@ SKILL_ROOT = HERE.parent
 CONSTRAINT_RUNNER = Path(
     os.environ.get(
         "WORKSHOP_CONSTRAINT_RUNNER",
-        Path.home() / ".claude" / "skills" / "typst" / "references" / "checkers" / "workshop"
+        Path.home() / ".claude" / "skills" / "typst" / "constraints" / "workshop"
         / "run-constraints.py",
     )
 )
