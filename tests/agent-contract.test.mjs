@@ -727,7 +727,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 //
 // `~/.claude/skills/ai-tic/linter/tics.yaml` is the dictionary; `skills/ai-anti-patterns/` is the
 // only skill that carries it, and `scripts/tic-add.py` regenerates
-// `skills/ai-anti-patterns/references/scored-tics-patterns.py` from it. A SECOND hand-maintained
+// `skills/ai-anti-patterns/constraints/scored-tics-patterns.py` from it. A SECOND hand-maintained
 // copy in a register skill cannot be regenerated, so it drifts silently: a phrase validated through
 // `/ai-tic` reaches ai-anti-patterns and never reaches the register. That is not hypothetical — the
 // register's copy and the dictionary had already diverged when this check was written.

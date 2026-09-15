@@ -98,10 +98,10 @@ describe('I1 — at most one deterministic engine per domain', () => {
     const dir = fixture({
       'plugin.json': PLUGIN_JSON,
       'skills/writing/SKILL.md': skillMd('writing'),
-      'skills/writing/references/volokh.py': tableModule('volokh', ['    (r"\\bpursuant to\\b", "legalese"),']),
+      'skills/writing/constraints/volokh.py': tableModule('volokh', ['    (r"\\bpursuant to\\b", "legalese"),']),
       'scripts/prose-audit.py': [
         'from pathlib import Path',
-        'TABLES = [Path(__file__).parent.parent / "skills" / "writing" / "references" / "volokh.py"]',
+        'TABLES = [Path(__file__).parent.parent / "skills" / "writing" / "constraints" / "volokh.py"]',
         'ATTR = "_PATTERNS"',
         '',
         'if __name__ == "__main__":',
@@ -110,7 +110,7 @@ describe('I1 — at most one deterministic engine per domain', () => {
       ].join('\n'),
       'scripts/prose-lint.py': [
         'from pathlib import Path',
-        'TABLES = [Path(__file__).parent.parent / "skills" / "writing" / "references" / "volokh.py"]',
+        'TABLES = [Path(__file__).parent.parent / "skills" / "writing" / "constraints" / "volokh.py"]',
         'ATTR = "_PATTERNS"',
         '',
         'if __name__ == "__main__":',
@@ -139,10 +139,10 @@ describe('I1 — at most one deterministic engine per domain', () => {
     const dir = fixture({
       'plugin.json': PLUGIN_JSON,
       'skills/writing/SKILL.md': skillMd('writing'),
-      'skills/writing/references/volokh.py': tableModule('volokh', ['    (r"\\bpursuant to\\b", "legalese"),']),
+      'skills/writing/constraints/volokh.py': tableModule('volokh', ['    (r"\\bpursuant to\\b", "legalese"),']),
       'scripts/prose-audit.py': [
         'from pathlib import Path',
-        'TABLES = [Path(__file__).parent.parent / "skills" / "writing" / "references" / "volokh.py"]',
+        'TABLES = [Path(__file__).parent.parent / "skills" / "writing" / "constraints" / "volokh.py"]',
         'ATTR = "_PATTERNS"',
         '',
       ].join('\n'),
@@ -151,7 +151,7 @@ describe('I1 — at most one deterministic engine per domain', () => {
         'import subprocess',
         'from pathlib import Path',
         'ENGINE = Path(__file__).parent / "prose-audit.py"',
-        'TABLES = [Path(__file__).parent.parent / "skills" / "writing" / "references" / "volokh.py"]',
+        'TABLES = [Path(__file__).parent.parent / "skills" / "writing" / "constraints" / "volokh.py"]',
         'ATTR = "_PATTERNS"',
         'subprocess.run(["python3", str(ENGINE)])',
         '',
@@ -177,7 +177,7 @@ describe('I1 — at most one deterministic engine per domain', () => {
     const dir = fixture({
       'plugin.json': PLUGIN_JSON,
       'skills/writing/SKILL.md': skillMd('writing'),
-      'skills/writing/references/a.py': tableModule('no-bold-lead', ['    (r"^\\*\\*", "bold lead"),']),
+      'skills/writing/constraints/a.py': tableModule('no-bold-lead', ['    (r"^\\*\\*", "bold lead"),']),
       'constraints/b.py': tableModule('no-bold-lead', ['    (r"^\\*\\*", "bold lead"),']),
       'scripts/run-constraints.py': 'APPLIES_TO_ATTR = "APPLIES_TO"\nSEVERITY_ATTR = "SEVERITY"\n',
       'hooks/hooks.json': JSON.stringify({
@@ -260,7 +260,7 @@ describe('I3 — every engine has at least one live caller', () => {
     const dir = fixture({
       'plugin.json': PLUGIN_JSON,
       'skills/writing/SKILL.md': skillMd('writing'),
-      'skills/writing/references/topic-sentences.py': tableModule('topic-sentences', ['    (r"\\bfoo\\b", "foo"),']),
+      'skills/writing/constraints/topic-sentences.py': tableModule('topic-sentences', ['    (r"\\bfoo\\b", "foo"),']),
       'constraints/run-constraints.py': [
         'from pathlib import Path',
         'def run(root):',
@@ -288,7 +288,7 @@ describe('I3 — every engine has at least one live caller', () => {
 // ------------------------------------------------------------------ I4
 
 describe('I4 — a computed path literal must resolve', () => {
-  // Modelled on skills/writing/references/writing-no-bold-lead.py:30 — parents[2] where all ten
+  // Modelled on skills/writing/constraints/writing-no-bold-lead.py:30 — parents[2] where all ten
   // siblings use parents[3]. It resolves to a path that does not exist, the subprocess raises, a
   // bare except swallows it, and the constraint is filed under `passed`.
   test('parents[2] where the file needs parents[3] is a finding', () => {
@@ -296,7 +296,7 @@ describe('I4 — a computed path literal must resolve', () => {
       'plugin.json': PLUGIN_JSON,
       'scripts/prose-audit.py': 'CONSTRAINT = "prose-audit"\nSEVERITY = "soft"\n',
       'skills/writing/SKILL.md': skillMd('writing'),
-      'skills/writing/references/no-bold-lead.py': [
+      'skills/writing/constraints/no-bold-lead.py': [
         'from pathlib import Path',
         'CONSTRAINT = "no-bold-lead"',
         'APPLIES_TO = ["writing-draft"]',
@@ -312,7 +312,7 @@ describe('I4 — a computed path literal must resolve', () => {
           PostToolUse: [
             {
               matcher: 'Edit',
-              hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/no-bold-lead.py' }],
+              hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/no-bold-lead.py' }],
             },
           ],
         },
@@ -328,7 +328,7 @@ describe('I4 — a computed path literal must resolve', () => {
       'plugin.json': PLUGIN_JSON,
       'scripts/prose-audit.py': 'CONSTRAINT = "prose-audit"\nSEVERITY = "soft"\n',
       'skills/writing/SKILL.md': skillMd('writing'),
-      'skills/writing/references/no-bold-lead.py': [
+      'skills/writing/constraints/no-bold-lead.py': [
         'from pathlib import Path',
         'CONSTRAINT = "no-bold-lead"',
         'APPLIES_TO = ["writing-draft"]',
@@ -345,7 +345,7 @@ describe('I4 — a computed path literal must resolve', () => {
             {
               matcher: 'Edit',
               hooks: [
-                { type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/no-bold-lead.py' },
+                { type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/no-bold-lead.py' },
               ],
             },
           ],
@@ -360,15 +360,15 @@ describe('I4 — a computed path literal must resolve', () => {
 
 describe('I5 — a suppression entry must match at least one live label', () => {
   // Modelled on hooks/writing-prose-check.ts:49-53 — the tables moved from skills/writing-*/ to
-  // skills/writing/references/ (slash, not hyphen), so both surviving entries match nothing and
+  // skills/writing/constraints/ (slash, not hyphen), so both surviving entries match nothing and
   // Strunk/Volokh/McCloskey have been double-reported ever since.
   test('a prefix that matches no label is a finding, per entry', () => {
     const dir = fixture({
       'plugin.json': PLUGIN_JSON,
       'skills/writing/SKILL.md': skillMd('writing'),
-      'skills/writing/references/volokh.py': tableModule('volokh', ['    (r"\\bpursuant to\\b", "legalese"),']),
+      'skills/writing/constraints/volokh.py': tableModule('volokh', ['    (r"\\bpursuant to\\b", "legalese"),']),
       'skills/ai-anti-patterns/SKILL.md': skillMd('ai-anti-patterns'),
-      'skills/ai-anti-patterns/references/wikipedia-puffery.py': tableModule('wiki-puffery', ['    (r"\\brich tapestry\\b", "puffery"),']),
+      'skills/ai-anti-patterns/constraints/wikipedia-puffery.py': tableModule('wiki-puffery', ['    (r"\\brich tapestry\\b", "puffery"),']),
       'hooks/writing-prose-check.ts': [
         'const PROSE_ENGINE_PREFIXES = [',
         '  "skills/ai-anti-patterns/",',
@@ -463,7 +463,7 @@ describe('I7 — a shipped pattern may not carry a corpus-rejected phrase (ADVIS
     const dir = fixture({
       'plugin.json': PLUGIN_JSON,
       'skills/writing/SKILL.md': skillMd('writing'),
-      'skills/writing/references/promotional.py': tableModule('promotional', [
+      'skills/writing/constraints/promotional.py': tableModule('promotional', [
         '    (r"\\bit\\s+is\\s+important\\s+to\\s+(note|remember)\\b", "promotional marker"),',
       ]),
       'hooks/hooks.json': JSON.stringify({
@@ -471,7 +471,7 @@ describe('I7 — a shipped pattern may not carry a corpus-rejected phrase (ADVIS
           PostToolUse: [
             {
               matcher: 'Edit',
-              hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/promotional.py' }],
+              hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/promotional.py' }],
             },
           ],
         },
@@ -488,7 +488,7 @@ describe('I7 — a shipped pattern may not carry a corpus-rejected phrase (ADVIS
     const dir = fixture({
       'plugin.json': PLUGIN_JSON,
       'skills/writing/SKILL.md': skillMd('writing'),
-      'skills/writing/references/promotional.py': tableModule('promotional', [
+      'skills/writing/constraints/promotional.py': tableModule('promotional', [
         '    (r"\\bit\\s+is\\s+important\\s+to\\s+(note|remember)\\b", "promotional marker"),',
       ]),
       'hooks/hooks.json': JSON.stringify({
@@ -496,7 +496,7 @@ describe('I7 — a shipped pattern may not carry a corpus-rejected phrase (ADVIS
           PostToolUse: [
             {
               matcher: 'Edit',
-              hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/promotional.py' }],
+              hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/promotional.py' }],
             },
           ],
         },
@@ -521,20 +521,20 @@ describe('the clean fixture', () => {
       'skills/writing/SKILL.md': skillMd(
         'writing',
         '```js\nWorkflow({\n  reviewLenses: [\n' +
-          '    { key: "writing-judgement", agentType: "Explore", refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md"], prompt: "Judge only the checks no runner can settle, against the definitions in the refs." },\n' +
+          '    { key: "writing-judgement", agentType: "Explore", refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/writing-checks.md"], prompt: "Judge only the checks no runner can settle, against the definitions in the refs." },\n' +
           '  ],\n' +
           '  mechanicalChecks: [\n' +
           '    { name: "prose", cmd: "python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/prose-gate.py" },\n' +
           '  ],\n})\n```',
       ),
-      'skills/writing/references/writing-checks.md': '# checks\n',
-      'skills/writing/references/volokh.py': tableModule('volokh', ['    (r"\\bheretofore\\b", "legalese"),']),
+      'skills/writing/constraints/writing-checks.md': '# checks\n',
+      'skills/writing/constraints/volokh.py': tableModule('volokh', ['    (r"\\bheretofore\\b", "legalese"),']),
       'skills/writing/scripts/prose-gate.py': [
         'from pathlib import Path',
         'CONSTRAINT = "prose-gate"',
         'APPLIES_TO = ["writing-draft"]',
         'SEVERITY = "hard"',
-        'TABLE = Path(__file__).resolve().parents[1] / "references" / "volokh.py"',
+        'TABLE = Path(__file__).resolve().parents[1] / "constraints" / "volokh.py"',
         'ATTR = "_PATTERNS"',
         '',
         'def check(context):',
@@ -572,7 +572,7 @@ describe('the documented exit-code contract', () => {
     const dirty = fixture({
       'plugin.json': PLUGIN_JSON,
       'skills/writing/SKILL.md': skillMd('writing'),
-      'skills/writing/references/no-bold-lead.py': [
+      'skills/writing/constraints/no-bold-lead.py': [
         'from pathlib import Path',
         'CONSTRAINT = "no-bold-lead"',
         'APPLIES_TO = ["writing-draft"]',
@@ -588,7 +588,7 @@ describe('the documented exit-code contract', () => {
           PostToolUse: [
             {
               matcher: 'Edit',
-              hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/no-bold-lead.py' }],
+              hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/no-bold-lead.py' }],
             },
           ],
         },
