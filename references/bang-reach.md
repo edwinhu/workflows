@@ -17,6 +17,13 @@ placing a nonce bang in each file and having a session quote its own instruction
 types. On this version they are not; the doc is wrong and a bang written there is silently dead —
 no error, no placeholder, just backticks reaching the model.
 
+## Editing a SKILL.md mid-session proves nothing
+
+Skill bodies are snapshotted when the session starts. Edit a `SKILL.md` and re-invoke it in the
+same session and you get the PRE-EDIT body — a bang added that way appears neither expanded nor
+literal but absent, which reads exactly like the mechanism failing. Verify in a fresh session
+(`farm.sh --tasks` with a row that invokes the skill and quotes the line back).
+
 ## What this is for
 
 Two things, both of which live beside the skill:
