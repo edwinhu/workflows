@@ -373,7 +373,7 @@ def scratch_skill(tmp_path: Path) -> Path:
     `WORKSHOP_OVERFLOW_DRIVER` (see `probe`). No test may stub or delete the real ones.
 
     The typst copy keeps the plugin's own depths: the driver reads `$SCRIPT_DIR/../validation.typ`
-    and its `shared.py` reaches `_shared` at `<plugin>/references/checkers`, so a flattened copy
+    and its `shared.py` reaches `_shared` at `<plugin>/constraints`, so a flattened copy
     would leave a driver that cannot run for a reason no test is asserting.
     """
     dest = tmp_path / "skill"

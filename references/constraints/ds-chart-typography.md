@@ -1,6 +1,6 @@
 ---
 name: chart-typography
-description: Charts inherit the host document's type and palette — one theme, registered once, never per-chart styling
+description: Figures ship as vector; charts inherit the host document's type and palette — one theme, registered once, never per-chart styling
 applies-to: [ds-delegate]
 ---
 
@@ -15,10 +15,23 @@ typography and palette ONCE, as a registered theme, before any chart is built.
 | **Register a theme; never style chart by chart** | A chart added later silently keeps the library default. The failure is invisible to the author and obvious to the reader |
 | **Labels are written for a reader, in Title Case** — `factual_description` is a field name, `Factual Description` is a label | A raw identifier in an exhibit reads as unfinished work. The exception is quoted source language, which stays verbatim: title-casing a filer's words misquotes them |
 
-**Raster resolution follows the ART CLASS, not a single number.** 300 DPI is the standard
-for continuous-tone images and is the floor everywhere. Charts are line art with type —
-hard edges and small serif characters — which publishers hold to a higher bar (roughly 300
-halftone / 500 combination / 1000 line art). Derive the scale factor from the width the
+**Figures ship as VECTOR.** The artifact of record is the vector file; the PNG is the fallback
+for consumers that cannot draw it. `pyobsplot` is the Python default because it renders SVG
+natively (tables are A4, `ds-table-figure-pairing.md`).
+
+Matplotlib and seaborn stay acceptable fallbacks, and taking the fallback does not forfeit
+vector: such a script MUST `savefig` both `.svg` and `.png` at the SAME STEM. A lone `.png`
+is the failure this rule names.
+
+The same-stem `.svg` is what `${CLAUDE_PLUGIN_ROOT}/skills/law-review-docx/SKILL.md` consumes on
+its `svgBlip` path, matching PNG to SVG by CONTENT HASH because pandoc rewrites media to
+`rIdN.png` and the filename is gone by then. Two prohibitions from that skill hold here: never
+reference a bare `.svg` from markdown, and never convert SVG to EMF with LibreOffice.
+
+**The raster fallback's resolution follows the ART CLASS, not a single number.** 300 DPI is
+the standard for continuous-tone images and is the floor everywhere. Charts are line art with
+type — hard edges and small serif characters — which publishers hold to a higher bar (roughly
+300 halftone / 500 combination / 1000 line art). Derive the scale factor from the width the
 figure is PLACED at, never guess it, and assert the result:
 
 ```python
@@ -65,4 +78,5 @@ python3 ${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-chart-typography.py <fil
 ```
 
 Exits non-zero on: charts present with no theme registration; per-chart font or axis
-configuration; hex colours outside a single palette block.
+configuration; hex colours outside a single palette block; a matplotlib save of a `.png` with no
+`.svg` save at the same stem in the file.

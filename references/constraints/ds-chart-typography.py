@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-"""Lint chart typography: one registered theme, no per-chart styling, one palette.
+"""Lint chart typography: one registered theme, no per-chart styling, one palette, vector output.
 
 Decidable by construction — every finding is a line number, never a judgement about
 whether a chart "looks right". What it cannot see (does the font actually match the host
 document?) it does not pretend to check; that one is named in the .md and left to the eye.
+
+The vector check reads the SOURCE only: a matplotlib save of a `.png` stem with no `.svg`
+save of that stem anywhere in the file. It does not stat the filesystem for a sibling —
+save paths are routinely computed (f-strings, Path joins, variables), so a disk check would
+guess. pyobsplot files are exempt; their output is SVG already.
 
     python3 ds-chart-typography.py <file.py|file.ipynb|dir>
 """
@@ -22,6 +27,9 @@ THEME = re.compile(r"alt\.theme\.register|alt\.themes\.register|enable_theme|"
 PER_CHART = re.compile(r"\.configure_(axis|legend|title|text|mark|view)\s*\(|"
                        r"\b(labelFont|titleFont|fontFamily|fontname)\s*=|"
                        r"\bplt\.rc\(")
+PYOBSPLOT = re.compile(r"\bfrom\s+pyobsplot\b|\bimport\s+pyobsplot\b|\bPlot\.plot\s*\(")
+# A save whose target extension is a literal in the call: savefig("out/fig1.png"), .save(p / "fig1.svg").
+SAVE = re.compile(r"\b(?:savefig|save)\s*\([^)]*?[\"']([^\"']*?([\w.\-]+)\.(png|svg))[\"']")
 HEX = re.compile(r"#[0-9a-fA-F]{6}\b")
 # A palette block is where hex is allowed: a run of assignments near the top of a file.
 PALETTE_HINT = re.compile(r"^[A-Z][A-Z0-9_]{2,}\s*=\s*[\"']#[0-9a-fA-F]{6}[\"']")
@@ -57,6 +65,16 @@ def check(path: Path) -> list[str]:
             continue
         if PER_CHART.search(line):
             bad.append(f"{path}:{n}: per-chart styling overrides the theme — {line.strip()[:70]}")
+
+    if not PYOBSPLOT.search(body):
+        svg_stems = {m.group(2) for _, l in src for m in SAVE.finditer(l) if m.group(3) == "svg"}
+        for n, line in src:
+            if line.lstrip().startswith("#"):
+                continue
+            for m in SAVE.finditer(line):
+                if m.group(3) == "png" and m.group(2) not in svg_stems:
+                    bad.append(f"{path}:{n}: figure saved as .png with no .svg at the same stem "
+                               f"({m.group(2)}.svg) — the vector is the artifact of record")
 
     palette_lines = {n for n, l in src if PALETTE_HINT.match(l.strip())}
     loose = [(n, l) for n, l in src
