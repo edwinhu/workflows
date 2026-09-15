@@ -1078,7 +1078,7 @@ def check_ovr(deck_src: Path) -> dict:
         return result(
             "FAIL",
             f"the typst plugin's overflow driver is absent at `{OVERFLOW_DRIVER}`: install the "
-            "typst plugin (~/.claude/skills/typst or ~/projects/typst) or set "
+            "typst plugin, or set "
             "WORKSHOP_OVERFLOW_DRIVER. No overflow check ran.",
         )
     if not VALIDATION_TYP.is_file():

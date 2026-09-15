@@ -13,6 +13,7 @@
  *   `hook_input.get(...)` with an AttributeError — exit 1, empty stdout. A defensive port that
  *   returns 0 there would be "nicer" and WRONG; tests/golden/overflow-check.json pins exit 1.
  */
+import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { pyJson } from "./_gate_common.ts";
@@ -94,8 +95,19 @@ export function isOverflowTarget(slidesPath: string): boolean {
   return isTypDeck(slidesPath);
 }
 
-/** Path to the typst plugin's canonical check-overflow.sh. */
+/**
+ * Path to the typst plugin's canonical check-overflow.sh.
+ *
+ * ASKS the plugin rather than spelling its layout: `typst-plugin-root` is on PATH because
+ * Claude Code puts every enabled plugin's bin/ there, and it is the one place that knows
+ * where the tree sits — which moved twice in September, breaking every file that spelled
+ * it. The literal below is the fallback for a plain shell, where bin/ is not on PATH.
+ */
 export function typstPluginCheckScript(): string {
+  try {
+    const root = execFileSync("typst-plugin-root", [], { encoding: "utf8" }).trim();
+    if (root) return pathJoin(root, pathJoin("scripts", pathJoin("checks", "check-overflow.sh")));
+  } catch { /* not on PATH, or the plugin is absent: fall through */ }
   return pathJoin(expandUser("~/.claude/skills/typst"), pathJoin("scripts", pathJoin("checks", "check-overflow.sh")));
 }
 
