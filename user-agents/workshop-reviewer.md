@@ -37,14 +37,14 @@ it makes a skill INVOCABLE and does not preload one line of it. Glob the constra
 read what applies:
 
     Glob  ~/.claude/skills/typst/constraints/*.py     what is checked mechanically — do NOT re-derive it
-    Glob  ~/.claude/skills/typst/references/constraints/*.md   the rules you grade
+    Glob  ~/.claude/skills/typst/constraints/*.md   the rules you grade
 
 Never state how many modules there are. The count belongs to the directory you just globbed, and a
 number written here is a copy of the corpus that nothing updates — this file said "fifteen" while
 the corpus declared 20 for a workshop deck.
 
 **The modules have one canonical home,
-`~/.claude/skills/typst/references/constraints/`**, and the preloaded `typst:typst` skill's bang
+`~/.claude/skills/typst/constraints/`**, and the preloaded `typst:typst` skill's bang
 line lists every one with its absolute path: bullet spacing, label bullet spacing, sub-bullets,
 tables, images, CeTZ diagrams, Fletcher diagrams, formatting, slide format, section hierarchy,
 notes structure, teleprompter notes, computed values, common elements, no-subtitle-echo.

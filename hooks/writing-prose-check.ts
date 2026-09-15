@@ -8,7 +8,7 @@
  *
  * ONE PROSE ENGINE, ONE STRUCTURAL ENGINE:
  *   1. scripts/prose-audit.py — every prose/AI-tell pattern system, de-duplicated, span-id'd.
- *   2. references/constraints/check-all.py — STRUCTURAL constraints only (bold-lead,
+ *   2. constraints/check-all.py — STRUCTURAL constraints only (bold-lead,
  *      topic-sentences, anchored-numbers, outline-sync): real logic, not regex over prose.
  *
  * WHY check-all's PROSE MODULES ARE SUPPRESSED HERE. This hook used to run a second prose engine
@@ -32,7 +32,7 @@ import { authenticatedWritingPlan } from "./lib/writing-plan-context.ts";
 import { join, dirname } from "node:path";
 
 const PLUGIN_ROOT = dirname(import.meta.dir);
-const CHECK_ALL = join(PLUGIN_ROOT, "references", "constraints", "check-all.py");
+const CHECK_ALL = join(PLUGIN_ROOT, "constraints", "check-all.py");
 const PROSE_AUDIT = join(PLUGIN_ROOT, "scripts", "prose-audit.py");
 
 // Both scripts declare their own dependencies in a `uv run --with …` shebang; spawning them

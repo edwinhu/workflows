@@ -3,7 +3,7 @@
  *
  * Fires on Write/Edit. Detects two anti-patterns:
  * 1. Writing a .md file to references/ (not constraints/) that looks like bundled constraints
- * 2. Writing a .md file to references/constraints/ with 3+ ### rule headings (monolith)
+ * 2. Writing a .md file to constraints/ with 3+ ### rule headings (monolith)
  *
  * Non-blocking: reports as additional context so the agent can self-correct.
  *
@@ -70,7 +70,7 @@ if (!inConstraintsDir) {
   if ((stem.endsWith("-constraints") || stem.endsWith("-conventions")) && h3Count >= 3) {
     messages.push(
       `MONOLITH DETECTED: ${name} has ${h3Count} sections and looks like bundled constraints. ` +
-        `Split into individual .md files in references/constraints/ — one rule per file. ` +
+        `Split into individual .md files in constraints/ — one rule per file. ` +
         `See the atomic-constraints constraint for details.`,
     );
   }
