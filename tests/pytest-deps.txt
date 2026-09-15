@@ -1,0 +1,9 @@
+# Packages the python suite imports, one per line, read by plugin-audit's pytest leg.
+# Declared here rather than hardcoded in the audit: the repo knows what it imports, and a missing
+# one is a suite that COULD NOT COLLECT — which the gate reports as a failure, never as zero.
+lxml
+pyyaml
+pandas
+polars
+scikit-learn
+sparse_dot_topn

@@ -190,11 +190,24 @@ def test_hook_lints_typ_letter(tmp_path):
     assert ctx is not None and "letter.typ:2" in ctx and "rich/vibrant tapestry" in ctx, ctx
 
 
-def test_hook_skips_typ_deck(tmp_path):
+def test_hook_audits_a_typ_deck_under_the_DECK_profile(tmp_path):
+    """A deck is AUDITED, not skipped — under `deck`, which narrows the claims.
+
+    This asserted `is None` and named itself "skips". The hook deliberately abandoned that:
+    `&& !isTypDeck(abs)` was removed as a leak because it spent the predicate on CANDIDACY, so a
+    recognised deck was dropped before the audit and an unrecognised one was audited under `full`.
+    Candidacy is the suffix; the profile is chosen once, downstream. The test kept asserting the
+    behaviour the code had stopped having, and nothing ran it to say so.
+    """
     f = tmp_path / "talk.typ"
     f.write_text('#import "@preview/touying:0.5.0": *\n'
                  "This delves into the rich tapestry of slides.\n")
-    assert _run_hook(f) is None
+    out = _run_hook(f)
+    assert out is not None, "a .typ deck must be audited, not dropped before the audit"
+    assert "talk.typ" in out
+    # `deck` turns off the writing-* systems and diction; a finding from one of those here would
+    # mean the deck was audited under `full`, which is the other half of the same leak.
+    assert "[diction" not in out and "writing-" not in out, out
 
 
 def test_hook_skips_md_outside_drafts(tmp_path):
