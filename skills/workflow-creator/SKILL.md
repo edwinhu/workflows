@@ -436,31 +436,34 @@ its own `skills:` frontmatter, never through `refs`:
 | judging agents — lenses and their refuters | `reviewLenses[].refs` |
 | everyone, for a short rule | `authorityExtra` |
 
-### Frontmatter decides how a file is FOUND; consumers decide where it LIVES
+### Two kinds of markdown: CONSTRAINTS and REFERENCES
 
-Two independent questions, and conflating them produces a taxonomy that moves files for nothing.
+Every `.md` a workflow carries is one or the other, and which one decides everything downstream.
 
-**Found: does it carry `applies-to:`?** That is the whole test, and it splits cleanly — measured
-2026-09-14, 219 reference files across 37 skills divide 200/19 with no overlap, the 19 with
-frontmatter being exactly the 19 without a `# Heading` first line.
+| | **CONSTRAINT** | **REFERENCE** |
+|---|---|---|
+| is | a rule the work is GRADED against | knowledge the work draws on |
+| answers | "is this deck allowed to do that" | "how does this API behave" |
+| can be | violated — and a script may compute the violation | only wrong, and then you fix the file |
+| declares | `applies-to:` and nothing else | no frontmatter; a `# Heading` labels it |
+| is found by | **grepping the field** — a consumer needs its own subset | **a TOC** — every `## ` heading, because you want all of it |
+| reaches an agent by | the index skill named in that agent's `skills:` | `refs`, or a Read at the phase that needs it |
 
-| carries `applies-to:` | plain document |
-|---|---|
-| a rule the work is GRADED against, and a script may enforce | how-to, API, patterns — knowledge, not policy |
-| the set needs a SUBSET, so **grep the field** (`rules-for slides,notes`) | you want all of it, so **glob the directory** |
-| one key, nothing else — see above | no frontmatter; the `# Heading` is its label |
+The frontmatter is how a constraint DECLARES itself, not what makes it one — and the declaration
+tracks the type exactly: measured 2026-09-14, 219 files across 37 skills split 200/19, the 19
+carrying frontmatter being precisely the 19 without a `# Heading` first line.
 
-**Lives: how many domains consume it?** One domain → beside its skill, in
-`<skill>/references/`. Several → a shared `references/constraints/` corpus, because the
-alternative is a copy per consumer, which is the vendoring defect.
+**Location is a separate question, and does not follow from the type.** How many domains consume
+the file? One → beside its skill, in `<skill>/references/`. Several → a shared
+`references/constraints/` corpus, because the alternative is a copy per consumer, which is the
+vendoring defect.
 
-Measure before moving anything. Measured here: the typst corpus is consumed by `exams`, `notes`,
-`slides`, `typst` and `workshop` across three repos — genuinely shared, correctly central. The 30
-`ds-*` constraints sit in the central corpus and are consumed by `ds` alone. The 19 in
-`skills/writing/references/` and `skills/ds/references/` are consumed by the skill they sit beside
-and nothing else — correctly local, whatever their frontmatter says. Placement in this tree is
-currently arbitrary in BOTH directions, and neither direction is fixed by a rule about what kind of
-document a file is.
+Measure before moving anything. A constraint consumed by one skill belongs beside it: the typst
+corpus is read by `exams`, `notes`, `slides`, `typst` and `workshop` across three repos and is
+correctly central, while the 30 `ds-*` constraints sit in that same central corpus and are read by
+`ds` alone. The 19 constraints under `skills/writing/references/` and `skills/ds/references/` are
+read by the skill beside them and nothing else — correctly placed, though they are constraints and
+should be discovered as such.
 
 **BOTH are a bang; the bang is the only thing that computes at load.** Grep and glob are not
 alternatives to it, they are what it RUNS — grep the field when a subset is meaningful, glob the
@@ -471,11 +474,17 @@ SKILL.md today.
 A bang reaches an orchestrator skill and nothing else — see the delivery table above for the other
 three audiences. `refs` names one artefact; a bang discovers a set.
 
-**The listing is a table of contents, not the content** — one line per file against corpora of
-100–500 KB, measured at 0.3–0.8% of what it indexes. That IS the progressive disclosure: the agent
-reads the two files it needs instead of thirty. Pair it with the instruction grep cannot replace at
-load time, because at load there is no query yet — a plain document has no field to filter on, so
-the names are all a bang can offer and content search belongs at USE time:
+**Emit a real table of contents — every `## ` heading, not just the filename.** A filename routes
+badly and a heading routes well: `13f-scrape-performance.md` does not tell an agent the file
+answers "filings declared windows-1252 parsed to zero rows", and its heading does. Measured against
+the content it stands in for, the full TOC costs 1.9–2.5% (wrds 10 KB over 516 KB, ~2,500 tokens;
+writing 3 KB, ~740) where filenames alone cost 0.3–0.8%. Four times the size, and the difference is
+the whole routing value — the agent then reads the two files it needs instead of three speculative
+ones at 5,000 tokens each.
+
+Pair it with the instruction grep cannot replace at load time, because at load there is no query
+yet — a plain document has no field to filter on, so the TOC is all a bang can offer and content
+search belongs at USE time:
 
 > The names are the index. For a subject no name carries, grep the bodies:
 > `grep -il <term> <the references dir>/*.md`.
@@ -483,7 +492,7 @@ the names are all a bang can offer and content search belongs at USE time:
 A skill lists its own references like this:
 
 ```
-!`n=0; for f in ${CLAUDE_SKILL_DIR}/references/*.md; do [ -e "$f" ] || continue; case "$(basename "$f")" in _*) continue;; esac; printf -- "- %s — %s\n" "$(basename "$f")" "$(sed -n "s/^# //p" "$f" | head -1)"; n=$((n+1)); done; [ "$n" -gt 0 ] || { echo "!! no references found — this skill names references it cannot see"; exit 2; }`
+!`n=0; for f in ${CLAUDE_SKILL_DIR}/references/*.md; do [ -e "$f" ] || continue; case "$(basename "$f")" in _*) continue;; esac; printf -- "- %s — %s\n" "$(basename "$f")" "$(sed -n "s/^# //p" "$f" | head -1)"; sed -n "s/^## //p" "$f" | paste -sd "|" - | sed "s/|/ · /g;s/^/    /"; n=$((n+1)); done; [ "$n" -gt 0 ] || { echo "!! no references found — this skill names references it cannot see"; exit 2; }`
 ```
 
 **THREE THINGS WILL BITE, all measured; `references/bang-reach.md` has the evidence.** A bang runs
