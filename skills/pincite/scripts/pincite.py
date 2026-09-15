@@ -11,6 +11,13 @@ Four subcommands, run in order:
   verify      re-find each returned quote in the PDF and confirm the page
   report      the confirmed pincites, ready to paste
 
+...and one the author drives, after reviewing by hand on the page
+`review_build.py` writes:
+
+  apply       a pincites.json export -> the manuscript. `set` inserts `, at N`,
+              `keep` and `skip` edit nothing, all three are recorded. DRY RUN
+              unless --confirm.
+
 Every stage writes into ONE state file (--state, default scratch/pincite.json), so
 a rerun resumes rather than re-uploading.
 
@@ -42,6 +49,32 @@ MODEL = 'gemini-3.5-flash'
 # Author-identification footnotes render as *, dagger, double-dagger and take no
 # Arabic number, so the body sequence is offset by however many a journal uses.
 BIO = 3
+
+
+def configure(root, body=None, bib=None, pdf_dir=None, fedreg_dir=None,
+              bio_offset=None):
+    """Point every module global at ONE manuscript repo.
+
+    The globals are the tool's only notion of where a manuscript lives, so every
+    caller -- the CLI, review_build.py, a test fixture -- retargets them here
+    rather than assigning them one at a time and forgetting one."""
+    global ROOT, BODY, BIB, PDFDIR, FRDIR, BIO
+    ROOT = pathlib.Path(root).resolve()
+    pick = lambda flag, key: (pathlib.Path(flag).resolve() if flag
+                              else ROOT / DEFAULTS[key])
+    BODY, BIB = pick(body, 'body'), pick(bib, 'bib')
+    if not body and not BODY.exists():
+        # A manuscript names its body file after itself -- `opv-body.typ`. Take
+        # the one such file when there is exactly one, and never a generated
+        # `-resolved` sibling; anything else is the author's `--body` to settle.
+        found = [p for p in sorted(BODY.parent.glob('*body*.typ'))
+                 if 'resolved' not in p.name]
+        if len(found) == 1:
+            BODY = found[0]
+    PDFDIR, FRDIR = pick(pdf_dir, 'pdf_dir'), pick(fedreg_dir, 'fedreg_dir')
+    if bio_offset is not None:
+        BIO = bio_offset
+    return ROOT
 
 
 def thinking_level(model):
@@ -709,6 +742,220 @@ def verify(pdf, quote, claimed, bib_start=None, threshold=0.90, vision_key=None)
                 else f'model said {claimed}, quote sits on {actual}')
 
 
+# ------------------------------------------------- sites, and applying pins
+# A SITE is one `#ref(<key>)` inside a numbered footnote, and its IDENTITY is
+# (fn, citekey, occurrence) -- the nth time that citekey appears in that
+# footnote. NEVER a byte offset: every inserted `, at N` shifts every later
+# offset, so an offset-keyed decision is invalidated by the work it describes.
+
+SITE_RX = re.compile(r'#ref\(<([^>]+)>\)')
+# The Bluebook pin this tool writes, and the strict rule the gate reads.
+AT_TIGHT = re.compile(r'\s*,\s*at\s+\d')
+# The same page cite with its comma missing -- `supra note 8 at 1279`. Pinning
+# on top of one yields `at 12--13, at 5`, which reads as two pins.
+AT_LOOSE = re.compile(r'\s+at\s+\*?[\d,]+(?:\s*(?:--|–|-)\s*\d+)?')
+
+
+def footnote_spans(text):
+    """(fn, body_start, body_end) for every `#footnote[...]`, in file order."""
+    out, i, n = [], 0, 0
+    while True:
+        j = text.find('#footnote[', i)
+        if j < 0:
+            return out
+        k, depth = j + len('#footnote['), 1
+        while k < len(text) and depth:
+            if text[k] == '[':
+                depth += 1
+            elif text[k] == ']':
+                depth -= 1
+            k += 1
+        n += 1
+        out.append((n - BIO, j + len('#footnote['), k - 1))
+        i = k
+
+
+def sites(text):
+    """Every citation site, as dicts keyed by (fn, citekey, occurrence)."""
+    out = []
+    for fn, a, b in footnote_spans(text):
+        if fn < 1:
+            continue
+        body, seen = text[a:b], {}
+        for m in SITE_RX.finditer(body):
+            key = m.group(1)
+            seen[key] = seen.get(key, 0) + 1
+            tail = body[m.end():m.end() + 16]
+            pinned = bool(AT_TIGHT.match(tail))
+            loose = None if pinned else AT_LOOSE.match(tail)
+            out.append(dict(fn=fn, citekey=key, occurrence=seen[key],
+                            fn_start=a, fn_end=b,
+                            ref_start=a + m.start(), ref_end=a + m.end(),
+                            pinned=pinned,
+                            pin_no_comma=loose.group(0).strip() if loose else None))
+    return out
+
+
+PIN_HEAD = re.compile(r'^\s*(?:,\s*)?(?:at\s+)?', re.I)
+PIN_BODY = re.compile(r'^\*?\d[\d,]*(?:\s*(?:--|–|-)\s*\*?\d[\d,]*)?$')
+
+
+def normalize_pin(pin):
+    """`at 1256` / `, at 1256` / `1256` -> `1256`; anything else is refused."""
+    p = PIN_HEAD.sub('', str(pin or '')).strip().rstrip('.,;')
+    return p if PIN_BODY.match(p) else None
+
+
+def pin_page(pin):
+    """The integer page a pin names, for `verified_page`. A range gives its first."""
+    m = re.match(r'\*?(\d[\d,]*)', normalize_pin(pin) or '')
+    return int(m.group(1).replace(',', '')) if m else None
+
+
+def _author_row(dec, page, prior):
+    """The classified row an author decision leaves behind.
+
+    A hand-entered pin traces to no model verification, so `set` records the page
+    as the AUTHOR'S assertion: `source: author`, and a reason saying so. `source`
+    is the field that keeps the two provenances apart, and a report that shows an
+    author pin and a machine-verified one as the same thing is the defect it
+    exists to prevent -- so a row already carrying a model decision keeps its
+    decision, reason and source through a `keep` or a `skip`, which change no
+    page and assert none. Those record only what the author did."""
+    row = dict(prior) if prior else dict(
+        fn=dec['fn'], citekey=dec['citekey'], occurrence=dec['occurrence'])
+    note = (dec.get('note') or '').strip()
+    if dec['action'] == 'set':
+        row['decision'] = 'specific'
+        row['verified_page'] = page
+        row['reason'] = note or (
+            f'Author entered this pincite by hand during review and asserts the '
+            f'cited material is on page {page}. Not machine-verified.')
+        row['source'] = 'author'
+    elif not prior:
+        # No prior record: this row IS the author's, and the file's schema wants
+        # a decision and a reason on every row.
+        row['decision'] = 'specific' if dec['action'] == 'keep' else 'unresolvable'
+        if dec['action'] == 'keep' and page is not None:
+            row['verified_page'] = page
+        row['reason'] = note or (
+            'Author reviewed this site and let the existing pincite stand.'
+            if dec['action'] == 'keep' else
+            'Author reviewed this site and entered no pincite.')
+        row['source'] = 'author'
+    row['author_action'] = dec['action']
+    if note:
+        row['author_note'] = note
+    return row
+
+
+def apply_pincites(decisions, confirm=False, classified=None):
+    """Apply the review page's export into the manuscript configured by configure().
+
+    `set` inserts `, at <pin>` at its site; `keep` and `skip` edit nothing. All
+    three are recorded in scratch/percite-classified.json -- the run's existing
+    state file, not a new one -- so a hand-entered pin has a provenance record to
+    trace to instead of failing the gate that demands one.
+
+    Nothing is written unless `confirm`. A run that cannot satisfy every one of
+    its `set` edits writes NOTHING: a partial application leaves the manuscript
+    in a state no export describes."""
+    text = BODY.read_text()
+    by_id = {(s['fn'], s['citekey'], s['occurrence']): s for s in sites(text)}
+    classified = pathlib.Path(classified) if classified else \
+        ROOT / 'scratch/percite-classified.json'
+
+    errors, edits, records = [], [], []
+    seen = set()
+    for i, dec in enumerate(decisions):
+        try:
+            ident = (dec['fn'], dec['citekey'], int(dec.get('occurrence', 1)))
+        except (KeyError, TypeError, ValueError):
+            errors.append(f'decision {i}: missing fn/citekey/occurrence')
+            continue
+        dec = dict(dec, fn=ident[0], citekey=ident[1], occurrence=ident[2])
+        where = f'fn {ident[0]} <{ident[1]}> #{ident[2]}'
+        if dec.get('action') not in ('keep', 'set', 'skip'):
+            errors.append(f'{where}: action {dec.get("action")!r} is not keep/set/skip')
+            continue
+        site = by_id.get(ident)
+        if site is None:
+            errors.append(f'{where}: not a citation site in the manuscript')
+            continue
+        if ident in seen:
+            errors.append(f'{where}: decided twice in this export')
+            continue
+        seen.add(ident)
+
+        page = pin_page(dec.get('pin'))
+        if page is None and dec['action'] == 'keep':
+            # A `keep` with an empty pin box means "what is in the manuscript
+            # stands", so read the page out of the manuscript rather than
+            # recording a decision with no page at all.
+            m = re.match(r'\s*,\s*at\s+(\d[\d,]*)', text[site['ref_end']:site['ref_end'] + 16])
+            page = int(m.group(1).replace(',', '')) if m else None
+        if dec['action'] == 'set':
+            pin = normalize_pin(dec.get('pin'))
+            if not pin:
+                errors.append(f'{where}: set with no readable page ({dec.get("pin")!r})')
+                continue
+            if site['pinned']:
+                errors.append(f'{where}: already carries a pincite; pinning again '
+                              f'would double-pin')
+                continue
+            if site['pin_no_comma']:
+                errors.append(f'{where}: already carries `{site["pin_no_comma"]}`, a '
+                              f'page cite missing its comma; pinning would double-pin')
+                continue
+            # The match string is the site plus whatever punctuation closes it,
+            # and it must be UNIQUE inside this footnote's own span. Two sites a
+            # substitution cannot tell apart are two sites this tool refuses.
+            body = text[site['fn_start']:site['fn_end']]
+            tail = text[site['ref_end']:site['ref_end'] + 1]
+            match = f'#ref(<{ident[1]}>)' + (tail if tail in '.,;:' else '')
+            n = body.count(match)
+            if n != 1:
+                errors.append(f'{where}: {n} occurrences of {match!r} in the footnote '
+                              f'span, expected exactly 1')
+                continue
+            edits.append((site['ref_end'], f', at {pin}', where, match))
+        records.append((ident, dec, page))
+
+    if errors:
+        return dict(ok=False, dry_run=not confirm, errors=errors,
+                    edits=[], applied=0, recorded=0, wrote=False)
+
+    out = text
+    for at, ins, _where, _match in sorted(edits, reverse=True):
+        out = out[:at] + ins + out[at:]
+    if out.count('#footnote[') != text.count('#footnote['):
+        return dict(ok=False, dry_run=not confirm, applied=0, recorded=0, wrote=False,
+                    errors=['the edit changed the footnote count; refusing to write'],
+                    edits=[])
+
+    rows = []
+    if classified.exists():
+        rows = json.loads(classified.read_text())
+    index = {(r.get('fn'), r.get('citekey'), r.get('occurrence', 1)): i
+             for i, r in enumerate(rows)}
+    for ident, dec, page in records:
+        row = _author_row(dec, page, rows[index[ident]] if ident in index else None)
+        if ident in index:
+            rows[index[ident]] = row
+        else:
+            rows.append(row)
+
+    if confirm:
+        BODY.write_text(out)
+        classified.parent.mkdir(parents=True, exist_ok=True)
+        classified.write_text(json.dumps(rows, indent=1, ensure_ascii=False) + '\n',
+                              encoding='utf-8')
+    return dict(ok=True, dry_run=not confirm, errors=[], wrote=bool(confirm),
+                applied=len(edits), recorded=len(records),
+                edits=[dict(where=w, insert=i, match=m) for _a, i, w, m in edits],
+                classified=str(classified))
+
+
 # ------------------------------------------------------------------- main
 
 def load(p):
@@ -723,7 +970,8 @@ def save(p, st):
 def main():
     global ROOT, BODY, BIB, PDFDIR, FRDIR, BIO, MODEL
     ap = argparse.ArgumentParser()
-    ap.add_argument('cmd', choices=['candidates', 'triage', 'run', 'verify', 'report'])
+    ap.add_argument('cmd', choices=['candidates', 'triage', 'run', 'verify', 'report',
+                                    'apply'])
     ap.add_argument('--root', default='.', help='manuscript repo root (default: cwd)')
     ap.add_argument('--body', help=f"manuscript .typ (default: {DEFAULTS['body']})")
     ap.add_argument('--bib', help=f"bibliography (default: {DEFAULTS['bib']})")
@@ -737,18 +985,40 @@ def main():
     ap.add_argument('--only', default='', help='comma-separated footnote numbers')
     ap.add_argument('--workers', type=int, default=6)
     ap.add_argument('--redo', action='store_true', help='re-ask footnotes already answered')
+    ap.add_argument('--from', dest='from_', default=None,
+                    help="apply: the review page's pincites.json export")
+    ap.add_argument('--classified', default=None,
+                    help='apply: decision record (default <root>/scratch/percite-classified.json)')
+    ap.add_argument('--confirm', action='store_true',
+                    help='apply: actually write; without it the run is a dry run')
     ap.add_argument('--vision-fallback', action='store_true',
                     help='when the text route cannot read the numbering, read the folio '
                          'off two page IMAGES and corroborate (verify only; costs API calls)')
     a = ap.parse_args()
-    ROOT = pathlib.Path(a.root).resolve()
-    pick = lambda flag, key: pathlib.Path(flag).resolve() if flag else ROOT / DEFAULTS[key]
-    BODY, BIB = pick(a.body, 'body'), pick(a.bib, 'bib')
-    PDFDIR, FRDIR = pick(a.pdf_dir, 'pdf_dir'), pick(a.fedreg_dir, 'fedreg_dir')
-    BIO, MODEL = a.bio_offset, a.model
+    configure(a.root, a.body, a.bib, a.pdf_dir, a.fedreg_dir, a.bio_offset)
+    MODEL = a.model
     a.state = a.state or str(ROOT / 'scratch/pincite.json')
     if not BODY.exists():
         sys.exit(f"no manuscript at {BODY} (pass --body)")
+
+    if a.cmd == 'apply':
+        if not a.from_:
+            sys.exit('apply needs --from <pincites.json>')
+        decisions = json.loads(pathlib.Path(a.from_).read_text())
+        res = apply_pincites(decisions, confirm=a.confirm, classified=a.classified)
+        for e in res['errors']:
+            print(f'  {e}', file=sys.stderr)
+        if not res['ok']:
+            print(f"\nREFUSED — {len(res['errors'])} problem(s); nothing written",
+                  file=sys.stderr)
+            return 1
+        for e in res['edits']:
+            print(f"  {e['where']}: {e['match']} -> insert `{e['insert']}`")
+        print(f"\n{res['applied']} pin(s) to insert, {res['recorded']} decision(s) "
+              f"recorded in {res['classified']}")
+        print('WROTE' if res['wrote'] else 'DRY RUN — nothing written; pass --confirm')
+        return 0
+
     st = load(a.state)
 
     if a.cmd == 'candidates':
