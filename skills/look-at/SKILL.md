@@ -7,7 +7,8 @@ user-invocable: false
 
 # Look At - Multimodal File Analysis
 
-**Deeper references, listed from the directory so a new one needs no edit here:**
+**Deeper references, listed from the directory so a new one needs no edit here.** The names are
+the index; for a subject no name carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
 
 !`n=0; for f in ${CLAUDE_SKILL_DIR}/references/*.md; do [ -e "$f" ] || continue; case "$(basename "$f")" in _*) continue;; esac; printf -- "- %s — %s\n" "$(basename "$f")" "$(sed -n "s/^# //p" "$f" | head -1)"; n=$((n+1)); done; [ "$n" -gt 0 ] || { echo "!! no references found — this skill names references it cannot see"; exit 2; }`
 

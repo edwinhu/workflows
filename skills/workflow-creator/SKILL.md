@@ -471,6 +471,15 @@ SKILL.md today.
 A bang reaches an orchestrator skill and nothing else — see the delivery table above for the other
 three audiences. `refs` names one artefact; a bang discovers a set.
 
+**The listing is a table of contents, not the content** — one line per file against corpora of
+100–500 KB, measured at 0.3–0.8% of what it indexes. That IS the progressive disclosure: the agent
+reads the two files it needs instead of thirty. Pair it with the instruction grep cannot replace at
+load time, because at load there is no query yet — a plain document has no field to filter on, so
+the names are all a bang can offer and content search belongs at USE time:
+
+> The names are the index. For a subject no name carries, grep the bodies:
+> `grep -il <term> <the references dir>/*.md`.
+
 A skill lists its own references like this:
 
 ```
