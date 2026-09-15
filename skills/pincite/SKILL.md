@@ -5,9 +5,7 @@ description: "ALWAYS use when a law review manuscript's footnotes need page numb
 
 # Pincite
 
-**What this skill carries.** The names and headings are the index; for a subject none of
-them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
-
+**What this skill carries** — grep `references/` for any subject the names below miss:
 !`skill-toc ${CLAUDE_SKILL_DIR}`
 
 Supplies the page number for each footnote in a law review manuscript, and then

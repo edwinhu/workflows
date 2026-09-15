@@ -6,9 +6,7 @@ allowed-tools: Read, Edit, Write, Bash, Grep, Glob
 
 # de-ai-revise — make prose read less AI-generated
 
-**What this skill carries.** The names and headings are the index; for a subject none of
-them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
-
+**What this skill carries** — grep `references/` for any subject the names below miss:
 !`skill-toc ${CLAUDE_SKILL_DIR}`
 
 A writing-**improvement** tool. It audits a draft with three corpus-validated

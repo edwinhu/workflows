@@ -7,9 +7,7 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanM
 
 # craft — clarify → plan → goal → workflow → human review
 
-**What this skill carries.** The names and headings are the index; for a subject none of
-them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
-
+**What this skill carries** — grep `references/` for any subject the names below miss:
 !`skill-toc ${CLAUDE_SKILL_DIR}`
 
 A structured loop for tasks worth doing properly: clarify with the user, draft a plan they
