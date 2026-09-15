@@ -204,7 +204,7 @@ the end of this run's own work: `execFileSync('bun', …)` at lines 462 and 486,
 budget tests, flagged for the name of the interpreter. Those two tests differ in the fixture file they
 write — one unanchored pattern against a 400 KB literal, versus twenty guard-defeating patterns
 against twenty literals — and in their kill deadlines, 10 s and 20 s. Neither difference is a literal
-argument to `execFileSync`. `skills/bmll/scripts/test_bmll_impact.py:47` is the most instructive:
+argument to `execFileSync`. `skills/bmll/scripts/test_bmll_impact.py:54` is the most instructive:
 `np.allclose(pre, 0)` is flagged for the constant `0` while line 52 asserts `(post > 0).all()` on the
 same curve, so the file does distinguish the two behaviours — just not through a literal argument to
 the same callee.

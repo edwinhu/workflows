@@ -18,3 +18,4 @@ skills/pincite/tests/test_apply.py
 skills/pincite/tests/test_review_serve.py
 skills/writing/scripts/writing_bench_compile_test.py
 skills/writing/scripts/writing_section_index_test.py
+skills/wrds/scripts/edgar_parquet/test_edgar_parquet.py
