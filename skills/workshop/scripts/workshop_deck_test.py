@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["pypdf", "pytest"]
+# ///
+# Dependencies are declared HERE, not in whoever runs the suite. A generic gate cannot know
+# that this file needs pypdf, and guessing wrong is silent: run without it and 19 of 108
+# cases fail for a missing import, which reads exactly like 19 broken contracts.
 """Contract suite for ${CLAUDE_PLUGIN_ROOT}/skills/workshop/scripts/workshop-deck.py.
 
 WHY THIS EXISTS

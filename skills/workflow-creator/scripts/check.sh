@@ -103,7 +103,12 @@ else
     rc=0
     [ "${#suite[@]}" -gt 0 ] && { bun test "${suite[@]}" >&2 || rc=1; }
     [ "${#pysuite[@]}" -gt 0 ] && {
-      uv run --quiet --with pytest python3 -m pytest -q "${pysuite[@]}" >&2 || rc=1
+      # --script lets uv read each file's own PEP 723 dependency block: a generic gate
+      # cannot know a suite needs pypdf, and guessing wrong fails cases for a missing
+      # import, which reads as broken contracts rather than a misconfigured runner.
+      for pf in "${pysuite[@]}"; do
+        uv run --quiet --with pytest --script "$pf" -m pytest -q "$pf" >&2 || rc=1
+      done || rc=1
     }
     report probe-tests "$rc" "$(( ${#suite[@]} + ${#pysuite[@]} )) file(s)"
   fi

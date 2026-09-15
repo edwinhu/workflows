@@ -166,13 +166,13 @@ resolves them against no particular directory; `writablePaths` and every `mechan
   // property of this same object literal, not a lexical binding, so a template literal ships the
   // characters unresolved into a cmd craft runs VERBATIM.
   // probe-tests is the probe's own contract suite: a gate whose runner is untested is untested.
+  // ONE entry point. These were three separate entries until 2026-09-15; a list of N
+  // independent commands loses one silently, and craft re-runs a claimed mechanical pass
+  // in a shell, affordable for one command and not for three. check.sh runs all three
+  // legs, none short-circuiting, and its exit code IS the mechanical verdict.
   mechanicalChecks: [
-    { name: "workshop-deck",
-      cmd: "uv run --with pypdf python3 ${CLAUDE_PLUGIN_ROOT}/skills/workshop/scripts/workshop-deck.py --plan <the planPath above, substituted when args.json is written> --project-dir ." },
-    { name: "constraints",
-      cmd: "python3 ~/.claude/skills/typst/constraints/workshop/run-constraints.py presentation" },
-    { name: "probe-tests",
-      cmd: "uv run --with pypdf --with pytest python3 -m pytest ${CLAUDE_PLUGIN_ROOT}/skills/workshop/scripts/workshop_deck_test.py" },
+    { name: "deck",
+      cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/workshop/scripts/check.sh --plan <the planPath above, substituted when args.json is written> --project-dir ." },
   ],
 
   // Judged BEFORE any slide is generated; a surviving critical returns FAIL having built nothing.
