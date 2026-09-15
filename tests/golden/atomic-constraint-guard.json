@@ -132,7 +132,7 @@
         "references/style-constraints.md": "# Style\n\n### Rule one\ntext\n\n### Rule two\ntext\n\n### Rule three\ntext\n"
       },
       "tsExpected": {
-        "stdoutSha256": "199691918191cc320973ce9966883158601bf85640fe7fa6f5728fc32ede8d48",
+        "stdoutSha256": "ee043d67f8064147d944d39ff5c2a9ad36c460dd5a4e1bf03fcd8e485cd52196",
         "exit": 0,
         "fs": {}
       }
@@ -150,7 +150,7 @@
         "skills/writing/references/prose-conventions.md": "### A\nx\n### B\nx\n### C\nx\n### D\nx\n"
       },
       "tsExpected": {
-        "stdoutSha256": "006d3b9ced19b361e37c854afaa05eac8c80782352b459359ed26c3c031f3415",
+        "stdoutSha256": "dbe02cb05dc867d91f1f3e556470ce06183d6b71383f2920aa2217a375845ae7",
         "exit": 0,
         "fs": {}
       }
@@ -161,14 +161,14 @@
       "stdin": {
         "tool_name": "Write",
         "tool_input": {
-          "file_path": "references/constraints/no-emoji.md"
+          "file_path": "constraints/no-emoji.md"
         }
       },
       "fixture": {
-        "references/constraints/no-emoji.md": "### Rule\ntext\n### Rationale\ntext\n### Examples\ntext\n"
+        "constraints/no-emoji.md": "### Rule\ntext\n### Rationale\ntext\n### Examples\ntext\n"
       },
       "tsExpected": {
-        "stdoutSha256": "93fa7a146f9075487f107d0e7c8ae4f5c15ac6046454b0c3d5b05f9bcb5470ce",
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "exit": 0,
         "fs": {}
       }
@@ -179,11 +179,11 @@
       "stdin": {
         "tool_name": "Write",
         "tool_input": {
-          "file_path": "references/constraints/no-emoji.md"
+          "file_path": "constraints/no-emoji.md"
         }
       },
       "fixture": {
-        "references/constraints/no-emoji.md": "### Rule\ntext\n### Rationale\ntext\n"
+        "constraints/no-emoji.md": "### Rule\ntext\n### Rationale\ntext\n"
       },
       "tsExpected": {
         "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -197,11 +197,11 @@
       "stdin": {
         "tool_name": "Write",
         "tool_input": {
-          "file_path": "references/constraints/atomic-constraints.md"
+          "file_path": "constraints/atomic-constraints.md"
         }
       },
       "fixture": {
-        "references/constraints/atomic-constraints.md": "### Rule\ntext\n### Rationale\ntext\n### Examples\ntext\n"
+        "constraints/atomic-constraints.md": "### Rule\ntext\n### Rationale\ntext\n### Examples\ntext\n"
       },
       "tsExpected": {
         "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",

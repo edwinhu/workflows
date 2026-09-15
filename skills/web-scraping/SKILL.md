@@ -29,7 +29,7 @@ fetch, and how to prove the fallback you are relying on has ever run.
 <EXTREMELY-IMPORTANT>
 **NO CONCURRENT NETWORK CLIENT WITHOUT A COMPUTED EFFECTIVE REQUEST RATE AND THE TARGET'S
 DOCUMENTED CEILING, BOTH WRITTEN IN THE CODE.** This is constraint **E7** in the ds engineering
-set — `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-network-politeness.md` is the normative
+set — `${CLAUDE_SKILL_DIR}/../../constraints/ds-network-politeness.md` is the normative
 text; this skill is its vendor-facing half.
 
 `workers / sleep_seconds` is the policy. A worker count with no arithmetic beside it is not a tuning
@@ -160,7 +160,7 @@ Read on **2026-09-08**:
 
 Local:
 
-- `${CLAUDE_SKILL_DIR}/../../references/constraints/ds-network-politeness.md` — constraint E7, normative.
+- `${CLAUDE_SKILL_DIR}/../../constraints/ds-network-politeness.md` — constraint E7, normative.
 - `${CLAUDE_SKILL_DIR}/references/bright-data-api.md` — Bright Data API, auth, cost enforcement, endpoints.
 - `${CLAUDE_SKILL_DIR}/references/bright-data-webarchive-api.md` — Web Archive filters and parallel-poll harness.
 - `${CLAUDE_SKILL_DIR}/references/bright-data-datasets-catalog.md` — the 1,576-dataset marketplace.

@@ -19,7 +19,7 @@ every wiring claim below was produced by running the code, not by reading it.
 |---|---|---|---|
 | A | **scored-tics** — corpus-gated, `sev1-5` | 13 | `skills/ai-anti-patterns/references/scored-tics-patterns.py` |
 | B | **wikipedia-\*** — six files, Wikipedia "Signs of AI writing" | 75 | `skills/ai-anti-patterns/references/wikipedia-*.py` |
-| C | **writing-ai-smell-\*** — four constraint pairs | 63 `re.compile` | `references/constraints/writing-ai-smell-{puffery,structure,artifacts,em-dash}.py` |
+| C | **writing-ai-smell-\*** — four constraint pairs | 63 `re.compile` | `constraints/writing-ai-smell-{puffery,structure,artifacts,em-dash}.py` |
 | D | **domain style** — Strunk / Volokh / McCloskey | 75 | `skills/writing-{general,legal,econ}/references/*.py` |
 | E | **diction.yaml** — tiered fancy→plain | 12 always_flag / 29 cluster / 27 density / 26 dropped | `skills/de-ai-revise/references/diction.yaml` |
 
@@ -32,7 +32,7 @@ human corpus) and the **numbered reference prose** `00-…12-…` (model-mediate
 |---|---|---|
 | `skills/de-ai-revise/scripts/de_ai_audit.py` | **A + E + stylometrics** | `writing-reviewer` agent (as a *suggested* Bash line), `de-ai-revise` SKILL |
 | `scripts/prose-lint.py` | **B + D** | `hooks/writing-prose-check.ts` |
-| `references/constraints/check-all.py` | **B + C + D** (auto-discovery) | `writing-prose-check.ts`, `writing-mechanical-gate.ts`, `mechanical-floor-gate.ts`, `workflows/workshop-verify.js` |
+| `constraints/check-all.py` | **B + C + D** (auto-discovery) | `writing-prose-check.ts`, `writing-mechanical-gate.ts`, `mechanical-floor-gate.ts`, `workflows/workshop-verify.js` |
 | `skills/ai-anti-patterns/scripts/screen.py` | **A + B** | nothing but `tests/test_prose_lint_hook.py` |
 
 ### 1.3 Corrections to the working trace
@@ -151,14 +151,14 @@ superlatives, filler transitions, and artifacts. Keep the *better* implementatio
 self-contribution noun) is genuinely better than the wikipedia flat superlative match and should
 survive; the wikipedia hard-severity artifact tables are the ones the ai-smell family lacks.
 
-This answers the brief's question 3 directly: **yes, `references/constraints/` and the
+This answers the brief's question 3 directly: **yes, `constraints/` and the
 ai-anti-patterns references should be one system.** The boundary they currently draw is not
-semantic — it is an accident of which was written first. What `references/constraints/` should keep
+semantic — it is an accident of which was written first. What `constraints/` should keep
 is the checks that are *not* regex over prose: `writing-no-bold-lead`, `writing-topic-sentences`,
 `writing-outline-sync`, `writing-anchored-numbers`. Those are structural, they have real logic, and
 they belong in the gate.
 
-Net state-file / constraint-file effect: **-4 files** in `references/constraints/` (the ai-smell
+Net state-file / constraint-file effect: **-4 files** in `constraints/` (the ai-smell
 pairs), **-1** script (`screen.py`), **+1** script (`prose-audit.py`). The double-report bug and
 the `PROSE_LINT_SUPERSEDES` special case both dissolve rather than being patched.
 

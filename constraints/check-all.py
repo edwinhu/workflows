@@ -7,7 +7,7 @@ wikipedia-*, writing-general strunk, writing-legal volokh) import lxml. Without 
 invoke this as `uv run python3 check-all.py` must also pass `--with lxml`.
 
 Discovers from two directories:
-  - references/constraints/*.py       — plugin-wide constraints
+  - constraints/*.py       — plugin-wide constraints
   - skills/*/references/*.py          — skill-local constraints (co-located with their .md pairs)
 
 Domain filtering: reads {cwd}/.planning/ACTIVE_WORKFLOW.md for `style:` field.

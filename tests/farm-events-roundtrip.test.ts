@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { spawnSync, spawn } from 'node:child_process'
 
 const FARM = join(import.meta.dir, '..', 'skills', 'farm-out', 'scripts', 'farm.sh')
-const ALIVE = join(import.meta.dir, '..', 'skills', 'craft', 'scripts', 'farm-alive.sh')
+const ALIVE = join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'farm-alive.sh')
 
 // The real emitter feeding the real checker. Round one asserted each side against a fixture it
 // invented, so a normalisation mismatch between them was invisible by construction.

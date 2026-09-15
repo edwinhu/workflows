@@ -79,7 +79,7 @@ paths, and both produced output paths.
 
 ### CON: Vendored constraints, over files actually inspected — computed
 
-**Means:** `references/constraints/run-constraints.py`, invoked against the **resolved presentation
+**Means:** `constraints/run-constraints.py`, invoked against the **resolved presentation
 directory** (not the project root), reports for every co-located `typst-*.py` module an empty
 `failed[]`, an empty `errors[]`, an empty `skipped[]`, and a summed `inspected` count greater than
 zero.
@@ -303,7 +303,7 @@ expressible subset; the rest is judgement: a takeaway that is not a claim, a bul
 title, notes duplicating the slide instead of expanding it.
 
 **Evidence a lens reads:** the built deck and notes, the vendored `typst-*.md` constraint docs under
-`references/constraints/`, and the plan's Proportions and Slide Spec.
+`constraints/`, and the plan's Proportions and Slide Spec.
 
 ### VIS: Visual integrity — MODEL-EVALUATED
 

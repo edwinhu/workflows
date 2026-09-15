@@ -1,10 +1,10 @@
 #!/usr/bin/env -S uv run python3
-"""Constraint: ds-join-audits — every merge/join must produce diagnostic log."""
+"""Constraint: ds-idempotency — running pipeline N times must equal running it once."""
 import re
 import sys
 from pathlib import Path
 
-CONSTRAINT = "ds-join-audits"
+CONSTRAINT = "ds-idempotency"
 APPLIES_TO = ["ds-delegate"]
 SEVERITY = "hard"
 
@@ -18,7 +18,7 @@ def check(context):
         p for p in cwd.rglob("*.py")
         if not any(part in p.parts for part in [".planning", "scratch", "__pycache__", ".pixi"])
         and p.name != "check-all.py"
-        and "references/constraints" not in str(p)
+        and "constraints" not in str(p)
     ]
 
     for path in py_files:
@@ -29,17 +29,20 @@ def check(context):
 
         lines = source.splitlines()
         for i, line in enumerate(lines, start=1):
-            # Detect .merge( calls (DataFrame merge)
-            if re.search(r'\.merge\s*\(', line) or re.search(r'\bpd\.merge\s*\(', line):
-                # Check surrounding 5 lines before and after for print/logging
-                start = max(0, i - 6)
-                end = min(len(lines), i + 5)
-                context_block = "\n".join(lines[start:end])
-                if not re.search(r'\bprint\s*\(|logging\.\w+\s*\(|logger\.\w+\s*\(', context_block):
-                    violations.append(
-                        f"{path.relative_to(cwd)}:{i}: .merge() without diagnostic print — "
-                        "log row counts, match rates, key uniqueness"
-                    )
+            # to_sql with if_exists='append'
+            if re.search(r'if_exists\s*=\s*["\']append["\']', line):
+                violations.append(
+                    f"{path.relative_to(cwd)}:{i}: if_exists='append' — non-idempotent; "
+                    "use 'replace' or deduplicate"
+                )
+
+            # File opened in append mode: open(..., 'a') or open(..., "a")
+            # Match open( with 'a' or "a" as mode (2nd positional or mode= kwarg)
+            if re.search(r'\bopen\s*\([^)]*,\s*["\']a["\']', line):
+                violations.append(
+                    f"{path.relative_to(cwd)}:{i}: open() in append mode — "
+                    "non-idempotent; use write mode 'w'"
+                )
 
     return violations
 

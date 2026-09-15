@@ -85,18 +85,18 @@ Four discovery rules run in this same planning step, each governed by its own co
 
 - **Large sources.** If a source may be large (roughly 50M rows, 500 MB to ship, or described as
   bulk/large/uncertain), read
-  `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-data-pull-profile.md` and follow it. The
+  `${CLAUDE_PLUGIN_ROOT}/constraints/ds-data-pull-profile.md` and follow it. The
   profile must compare filtered raw and candidate aggregate/server-side paths before planning commits
   to one. Do not pull a full source merely to estimate it.
 - **External-skill discovery.** When the plan will use another skill or data provider, discover its
   relevant references and examples before choosing an approach: read
-  `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-external-skill-discovery.md` and follow it.
+  `${CLAUDE_PLUGIN_ROOT}/constraints/ds-external-skill-discovery.md` and follow it.
   Record the resulting ADOPT, PATCH, or GREENFIELD decision in the plan itself.
 - **Master datasets.** For multi-output work that shares a sample, read
-  `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-master-datasets.md`. Plan the minimal
+  `${CLAUDE_PLUGIN_ROOT}/constraints/ds-master-datasets.md`. Plan the minimal
   canonical analysis dataset(s), their grain and keys, and which planned outputs consume each one.
 - **Parameter transparency.** For analytic filters or tunable thresholds, read
-  `${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-parameter-transparency.md`; name one
+  `${CLAUDE_PLUGIN_ROOT}/constraints/ds-parameter-transparency.md`; name one
   configuration location, rationale, and treatment of convenience choices in the plan.
 
 ## Phase 2 — PLAN
@@ -263,7 +263,7 @@ Omitting it silently runs the user's codex request on claude.
     "DQ4 and DQ6 are `always N/A` from the runner, and `always N/A` is not a third kind of pass — the runner emits a line for them only because ENUM requires one, and an N/A never sets its non-zero exit. Both are dispositioned against task-local evidence, exactly like the MODEL-EVALUATED rows: the input → transform → output count chain for DQ4, the before/after shape for DQ6. Never read their N/A as `the runner checked this`.",
     "An artifact absent from the plan's ## Data Outputs table is one nothing will check and cannot be claimed as verified. Do not verify an output the table never declared.",
     "The analysis is done by dispatched agents. Main chat writes no .py, .ipynb, .R, .sas, .sql or .qmd file, by any tool.",
-    "Standing DS doer authority — every implementation task follows the indexed constraints in the four aggregates under ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/: ds-common-constraints.md (C1-C6), ds-common-conventions.md (V1-V9 — assumption-over-evidence, deferred verification, statistical validity, P-hacking prevention, sample-selection documentation), ds-analysis-constraints.md (A1-A6 — robustness checks, standard-error specification, visualization integrity, table-figure pairing, chart typography, chart colour) and ds-engineering-constraints.md (E1-E7 — determinism and seeds, schema contracts, join audits with row counts and match rates, idempotency, loud error handling, native document input, network politeness), each indexing the self-contained files under ${CLAUDE_PLUGIN_ROOT}/references/constraints/. All four are named in every implementation task's refs, and refs are contractual reads, not a reading list: read all four in full before writing code. ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md stays a separate load.",
+    "Standing DS doer authority — every implementation task follows the indexed constraints in the four aggregates under ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/: ds-common-constraints.md (C1-C6), ds-common-conventions.md (V1-V9 — assumption-over-evidence, deferred verification, statistical validity, P-hacking prevention, sample-selection documentation), ds-analysis-constraints.md (A1-A6 — robustness checks, standard-error specification, visualization integrity, table-figure pairing, chart typography, chart colour) and ds-engineering-constraints.md (E1-E7 — determinism and seeds, schema contracts, join audits with row counts and match rates, idempotency, loud error handling, native document input, network politeness), each indexing the self-contained files under ${CLAUDE_PLUGIN_ROOT}/constraints/. All four are named in every implementation task's refs, and refs are contractual reads, not a reading list: read all four in full before writing code. ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md stays a separate load.",
     "Rules: ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md defines all thirteen checks; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/etl-enforcement.md governs pipelines; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/sql-patterns.md governs data pulls; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/verification-patterns.md governs evidence; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/competing-hypothesis.md governs debugging.",
   ].join("\n"),
 

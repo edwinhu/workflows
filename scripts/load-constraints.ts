@@ -4,7 +4,7 @@
  * TypeScript port of load-constraints.py.
  *
  * Mirrors check-all.py's auto-discovery but for .md context injection.
- * Globs references/constraints/*.md, parses applies-to, outputs matching content.
+ * Globs constraints/*.md, parses applies-to, outputs matching content.
  *
  * Usage:
  *     bun scripts/load-constraints.ts workshop
@@ -207,7 +207,7 @@ if (!argv.length || argv[0] === "-h" || argv[0] === "--help") {
 const skillName = argv[0];
 const constraintsDir = argv.length >= 3 && argv[1] === "--dir"
   ? argv[2]
-  : resolve(import.meta.dir, "..", "references", "constraints");
+  : resolve(import.meta.dir, "..", "constraints");
 try {
   const result = loadConstraints({ skillName, constraintsDir });
   if (result.output) console.log(result.output);

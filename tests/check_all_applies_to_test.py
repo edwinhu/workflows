@@ -1,6 +1,6 @@
 #!/usr/bin/env -S uv run python3
 """
-Tests for references/constraints/check-all.py APPLIES_TO scoping (D-w-8 / the documented gotcha:
+Tests for constraints/check-all.py APPLIES_TO scoping (D-w-8 / the documented gotcha:
 check-all previously IGNORED APPLIES_TO and ran every constraint on every project → writing's
 authoring-lint constraints fired on workshop decks, keeping constraintsPassed permanently false).
 

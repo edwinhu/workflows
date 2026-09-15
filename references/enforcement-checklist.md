@@ -149,7 +149,7 @@ usually the *block* branch, which only a real payload reaches.
 └─────────────┘                         └─────────────┘
 ```
 
-**Example** (`skills/craft`):
+**Example** (`skills/work`):
 > CLARIFY → PLAN → GOAL → `workflow.js` (IMPLEMENT, then VERIFY ∥ MECHANICAL ∥ third-party) → JS gate → HUMAN REVIEW, with FAIL routing back into a re-dispatch scoped to `tasksThatFlagged`
 
 **Key insight:** The flowchart IS the spec. If the text and diagram disagree, the diagram wins.
@@ -177,8 +177,8 @@ usually the *block* branch, which only a real payload reaches.
 5. If clean, proceed.
 ```
 
-**Example** (`skills/craft`):
-> Per-task implement → verify → fix, with `maxRounds` (default 3) enforced by `craft-redispatch.sh`: the dispatch that would exceed it is refused with exit 4 and hands the run to human review
+**Example** (`skills/work`):
+> Per-task implement → verify → fix, with `maxRounds` (default 3) enforced by `work-redispatch.sh`: the dispatch that would exceed it is refused with exit 4 and hands the run to human review
 
 **Key insight:** Loops need iteration limits. Without limits, the agent can loop forever on edge cases.
 
@@ -217,9 +217,9 @@ Partial fixes to wrong-order work create worse outcomes than restarting.
 After completing this phase, discover and read the next phase:Read `${CLAUDE_SKILL_DIR}/../../TARGET/SKILL.md` and follow its instructions. Then follow its instructions immediately.
 ```
 
-**Example** (`skills/craft`):
-> The chain is not documented, it is executed: `craft-dispatch.sh` runs the plan hash, goal
-> composition and dispatch in one call, and `craft-pending.sh` answers "is a dispatch owed?" so a
+**Example** (`skills/work`):
+> The chain is not documented, it is executed: `work-dispatch.sh` runs the plan hash, goal
+> composition and dispatch in one call, and `work-pending.sh` answers "is a dispatch owed?" so a
 > session that lost its context can resume without re-deriving anything.
 
 **Key insight:** Without explicit chaining, the agent will "finish" a phase and wait for instructions
@@ -325,7 +325,7 @@ After completing task N, IMMEDIATELY start task N+1. Do NOT:
 Pausing between tasks is procrastination disguised as courtesy.
 ```
 
-**Example** (`skills/craft`):
+**Example** (`skills/work`):
 > The task graph is scheduled by `workflow.js`, so there is no between-task moment in which to pause: a ready task dispatches as soon as its dependencies land.
 
 **Key insight:** Every pause is an opportunity for the agent to lose context or for the user to accidentally derail the workflow.
@@ -361,7 +361,7 @@ A bad spec that survives into exploration means exploring the wrong areas.
 A bad plan that survives into implementation means building the wrong tasks.
 ```
 
-**Example** (`skills/craft`, plan → dispatch):
+**Example** (`skills/work`, plan → dispatch):
 > Before a run is armed, `plan-lint.ts` scores the built args and `plan-preflight.ts` executes every
 > `redCommand` and `mechanicalCheck` at baseline. A major or critical finding aborts with the run
 > still armed. No agent reads the plan markdown looking for defects.

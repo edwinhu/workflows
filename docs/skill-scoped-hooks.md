@@ -286,7 +286,7 @@ agent scoping and it is real.
 **Step 3 — Tier B, the repo-local authoring checkers.**
 `atomic-constraint-guard.ts` and `validate-skill-paths.ts` → `skills/skill-creator/SKILL.md` and
 `skills/plugin-creator/SKILL.md` frontmatter. These two are the best Tier B candidates in the whole
-inventory: their rules are about *this repo's* `references/constraints/` layout and `${CLAUDE_…}`
+inventory: their rules are about *this repo's* `constraints/` layout and `${CLAUDE_…}`
 placeholders, they only fire on `.md` under specific paths, they guard main-thread authoring work,
 and they are currently paid for by every session in every unrelated repo on the machine. Declaring
 them twice (skill-creator and plugin-creator) is fine — the registry is additive.

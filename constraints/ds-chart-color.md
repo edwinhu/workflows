@@ -69,7 +69,7 @@ is the whole ballgame.
 ## Verification
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-chart-color.py <file.py|dir>
+python3 ${CLAUDE_PLUGIN_ROOT}/constraints/ds-chart-color.py <file.py|dir>
 ```
 
 Exits non-zero on: a continuous scheme bound to a nominal field; red/green as the only two

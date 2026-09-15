@@ -1,5 +1,5 @@
 export const meta = {
-  name: 'craft',
+  name: 'work',
   description: 'Craft loop core: sequential plan-bound implementation, blind verification in parallel with advisory third-party review, JS-computed gate',
   whenToUse: 'Invoked by the craft skill after plan approval; never discovers authority — requires planPath + specHash + tasks as args.',
   phases: [

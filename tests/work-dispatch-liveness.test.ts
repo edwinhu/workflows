@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync, spawn } from 'node:child_process'
 
-const SCRIPTS = join(import.meta.dir, '..', 'skills', 'craft', 'scripts')
+const SCRIPTS = join(import.meta.dir, '..', 'skills', 'work', 'scripts')
 const ALIVE = join(SCRIPTS, 'farm-alive.sh')   // authored by T2
 const DISPATCH = join(SCRIPTS, 'work-dispatch.sh')
 

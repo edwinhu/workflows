@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 
-// A constraint module has exactly ONE canonical home: a `references/constraints/` directory.
+// A constraint module has exactly ONE canonical home: a `constraints/` directory.
 // Nothing may reproduce its body — a second copy is a source of truth that can drift, and the
 // copy is what agents actually read. See workflow-creator: constraints are never a top-level skill.
 
@@ -18,12 +18,12 @@ function typstRoot(): string {
 }
 
 const CANONICAL_ROOTS = [
-  join(REPO, "references", "constraints"),
+  join(REPO, "constraints"),
   // ASKED, not spelled: typst-plugin-root is on PATH and is the one place that knows the
   // layout, which moved twice in September. Both historical spellings stay beneath it so
   // this keeps working against an older install in a plain shell.
   resolve(typstRoot(), "constraints"),
-  resolve(typstRoot(), "references/constraints"),
+  resolve(typstRoot(), "constraints"),
 ];
 
 function stripFrontmatter(t: string): string {
@@ -66,7 +66,7 @@ describe("constraint modules have exactly one canonical copy", () => {
 
   test("no file under skills/ reproduces a canonical constraint body", () => {
     const files = skillFiles(join(REPO, "skills")).filter(
-      (f) => !CANONICAL_ROOTS.some((r) => f.startsWith(r)) && !f.includes("/references/constraints/"),
+      (f) => !CANONICAL_ROOTS.some((r) => f.startsWith(r)) && !f.includes("/constraints/"),
     );
     const offenders: string[] = [];
     for (const f of files) {

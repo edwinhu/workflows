@@ -370,7 +370,7 @@ function values(fm, key) {
 // ── workshop: the constraint skill, the doer, the reviewer, and its lens ────────────────────────
 {
   // Same rule as ds: the 15 typst modules have one canonical home under the typst plugin's
-  // references/constraints/, reached by refs and the bang-loader, never vendored into a skill.
+  // constraints/, reached by refs and the bang-loader, never vendored into a skill.
   const md = join(SKILLS, 'workshop-constraints', 'SKILL.md')
   ok('skills/workshop-constraints/ is gone (constraints are never a top-level skill)', !existsSync(md))
 

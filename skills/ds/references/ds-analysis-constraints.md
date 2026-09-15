@@ -6,7 +6,7 @@ applies-to: [ds]
 
 # DS Analysis Constraints
 
-Deterministic rules for data analysis tasks (statistical analysis, modeling, visualization). Each constraint can be verified by a script returning pass/fail. Self-contained files under `${CLAUDE_PLUGIN_ROOT}/references/constraints/`.
+Deterministic rules for data analysis tasks (statistical analysis, modeling, visualization). Each constraint can be verified by a script returning pass/fail. Self-contained files under `${CLAUDE_PLUGIN_ROOT}/constraints/`.
 
 **Complements (not replaces):** `${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-common-constraints.md` — load both for analysis tasks.
 
@@ -18,12 +18,12 @@ Deterministic rules for data analysis tasks (statistical analysis, modeling, vis
 
 | ID | Constraint | File | Description |
 |----|------------|------|-------------|
-| A1 | Robustness Checks | [ds-robustness-checks.md](${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-robustness-checks.md) | Beyond spec curves — placebo tests, IV, RDD, bootstrap, leave-one-out |
-| A2 | Standard Error Spec | [ds-standard-error-spec.md](${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-standard-error-spec.md) | Match SE type to data structure — wrong SEs invalidate all inference |
-| A3 | Visualization Integrity | [ds-visualization-integrity.md](${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-visualization-integrity.md) | Charts must not mislead — no truncated axes, dual-axis tricks, or 3D |
-| A4 | Table-Figure Pairing | [ds-table-figure-pairing.md](${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-table-figure-pairing.md) | Every main result table needs a companion figure (the "Hendershott" rule) |
-| A5 | Chart Typography | [ds-chart-typography.md](${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-chart-typography.md) | Charts inherit the host document's type and palette — one registered theme, never per-chart styling |
-| A6 | Chart Colour | [ds-chart-color.md](${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-chart-color.md) | Scheme matches the variable — categorical vs ramp, one reserved accent, grey for absence |
+| A1 | Robustness Checks | [ds-robustness-checks.md](${CLAUDE_PLUGIN_ROOT}/constraints/ds-robustness-checks.md) | Beyond spec curves — placebo tests, IV, RDD, bootstrap, leave-one-out |
+| A2 | Standard Error Spec | [ds-standard-error-spec.md](${CLAUDE_PLUGIN_ROOT}/constraints/ds-standard-error-spec.md) | Match SE type to data structure — wrong SEs invalidate all inference |
+| A3 | Visualization Integrity | [ds-visualization-integrity.md](${CLAUDE_PLUGIN_ROOT}/constraints/ds-visualization-integrity.md) | Charts must not mislead — no truncated axes, dual-axis tricks, or 3D |
+| A4 | Table-Figure Pairing | [ds-table-figure-pairing.md](${CLAUDE_PLUGIN_ROOT}/constraints/ds-table-figure-pairing.md) | Every main result table needs a companion figure (the "Hendershott" rule) |
+| A5 | Chart Typography | [ds-chart-typography.md](${CLAUDE_PLUGIN_ROOT}/constraints/ds-chart-typography.md) | Charts inherit the host document's type and palette — one registered theme, never per-chart styling |
+| A6 | Chart Colour | [ds-chart-color.md](${CLAUDE_PLUGIN_ROOT}/constraints/ds-chart-color.md) | Scheme matches the variable — categorical vs ramp, one reserved accent, grey for absence |
 
 ## Loading Guide
 

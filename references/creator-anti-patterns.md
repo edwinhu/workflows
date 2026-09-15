@@ -18,7 +18,7 @@ Real lessons from production. Read before writing your first draft.
 ```markdown
 # In skill content (SKILL.md) — use ${CLAUDE_SKILL_DIR} with relative navigation:
 # Bang-backtick injection (inlines file at load time):
-#   BANG + `cat ${CLAUDE_SKILL_DIR}/../../references/constraints.md`
+#   BANG + `cat ${CLAUDE_SKILL_DIR}/../../constraints.md`
 Read `${CLAUDE_SKILL_DIR}/../../skills/other-skill/SKILL.md` and follow its instructions.
 
 # In hook commands — ${CLAUDE_PLUGIN_ROOT} works:
