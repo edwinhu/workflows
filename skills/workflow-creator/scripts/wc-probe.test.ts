@@ -3186,8 +3186,8 @@ function repoFixture(files: Record<string, string>): string {
   return dir
 }
 
-describe('D35 — P12: a craft-args fence dispatches through craft-dispatch.sh', () => {
-  test('(a) naming a runner and never craft-dispatch.sh is a CRITICAL', () => {
+describe('D35 — P12: a craft-args fence dispatches through work-dispatch.sh', () => {
+  test('(a) naming a runner and never work-dispatch.sh is a CRITICAL', () => {
     const dir = fixture({
       'SKILL.md': `${skillMd('handrolled', 'Dispatch with `farm.sh` and the args file.')}\n${argsFence(1, ['gate'])}\n`,
     })
@@ -3197,7 +3197,7 @@ describe('D35 — P12: a craft-args fence dispatches through craft-dispatch.sh',
     expect(cli(['--target', dir]).code).toBe(1)
   })
 
-  // The rule is "hand-rolled instead of craft-dispatch.sh", not "the runner that happened to exist
+  // The rule is "hand-rolled instead of work-dispatch.sh", not "the runner that happened to exist
   // when it was written": keyed on a filename it retires itself silently at the next rename.
   test('(a) fires whatever the hand-rolled runner is called', () => {
     for (const runner of ['farm.sh', 'farm-legacy.ts', 'run-agents.mjs', 'dispatch-v2.js']) {
@@ -3236,8 +3236,8 @@ describe('D35 — P12: a craft-args fence dispatches through craft-dispatch.sh',
     expect(cli(['--target', dir]).code).toBe(0)
   })
 
-  test('(a) is clean when the file also names craft-dispatch.sh', () => {
-    const body = 'Dispatch through `craft-dispatch.sh`, never a hand-written `farm.sh` line.'
+  test('(a) is clean when the file also names work-dispatch.sh', () => {
+    const body = 'Dispatch through `work-dispatch.sh`, never a hand-written `farm.sh` line.'
     const dir = fixture({ 'SKILL.md': `${skillMd('routed', body)}\n${argsFence(1, ['gate'])}\n` })
     expect(rulesOf(dir, 'P12')).toEqual([])
     expect(cli(['--target', dir]).code).toBe(0)
@@ -3270,7 +3270,7 @@ describe('D35 — P12: a craft-args fence dispatches through craft-dispatch.sh',
 
   test('(b) a projectDir outside the containing repo with no --run-dir is a MAJOR', () => {
     const dir = repoFixture({
-      'SKILL.md': `${skillMd('foreign', 'Routed through `craft-dispatch.sh`.')}\n${argsFenceWithProjectDir('/home/user/areas/example')}\n`,
+      'SKILL.md': `${skillMd('foreign', 'Routed through `work-dispatch.sh`.')}\n${argsFenceWithProjectDir('/home/user/areas/example')}\n`,
     })
     const found = rulesOf(dir, 'P12').filter((f: any) => f.severity === 'major')
     expect(found.length).toBe(1)
@@ -3279,7 +3279,7 @@ describe('D35 — P12: a craft-args fence dispatches through craft-dispatch.sh',
   })
 
   test('(b) is clean when the file passes --run-dir somewhere', () => {
-    const body = ['Routed through `craft-dispatch.sh`.', '', '    --run-dir /home/user/.local/state/craft'].join('\n')
+    const body = ['Routed through `work-dispatch.sh`.', '', '    --run-dir /home/user/.local/state/craft'].join('\n')
     const dir = repoFixture({
       'SKILL.md': `${skillMd('rundir', body)}\n${argsFenceWithProjectDir('/home/user/areas/example')}\n`,
     })
@@ -3288,7 +3288,7 @@ describe('D35 — P12: a craft-args fence dispatches through craft-dispatch.sh',
   })
 
   test('(b) is clean when projectDir lies inside the containing repo', () => {
-    const dir = repoFixture({ 'SKILL.md': `${skillMd('own', 'Routed through `craft-dispatch.sh`.')}\n${argsFenceWithProjectDir('__DIR__')}\n` })
+    const dir = repoFixture({ 'SKILL.md': `${skillMd('own', 'Routed through `work-dispatch.sh`.')}\n${argsFenceWithProjectDir('__DIR__')}\n` })
     const p = join(dir, 'SKILL.md')
     writeFileSync(p, read(p).split('__DIR__').join(dir))
     expect(rulesOf(dir, 'P12')).toEqual([])
@@ -3296,14 +3296,14 @@ describe('D35 — P12: a craft-args fence dispatches through craft-dispatch.sh',
 
   test('(b) says nothing when no repository contains the file', () => {
     const dir = fixture({
-      'SKILL.md': `${skillMd('norepo', 'Routed through `craft-dispatch.sh`.')}\n${argsFenceWithProjectDir('/home/user/areas/example')}\n`,
+      'SKILL.md': `${skillMd('norepo', 'Routed through `work-dispatch.sh`.')}\n${argsFenceWithProjectDir('/home/user/areas/example')}\n`,
     })
     expect(rulesOf(dir, 'P12')).toEqual([])
   })
 
   test('(b) says nothing about a projectDir that is not an absolute literal', () => {
     const dir = repoFixture({
-      'SKILL.md': `${skillMd('template', 'Routed through `craft-dispatch.sh`.')}\n${argsFenceWithProjectDir('<proj>')}\n`,
+      'SKILL.md': `${skillMd('template', 'Routed through `work-dispatch.sh`.')}\n${argsFenceWithProjectDir('<proj>')}\n`,
     })
     expect(rulesOf(dir, 'P12')).toEqual([])
   })

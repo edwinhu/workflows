@@ -10,7 +10,7 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanM
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
-The lifecycle is [craft](${CLAUDE_PLUGIN_ROOT}/skills/craft/SKILL.md). Read it and follow it.
+The lifecycle is [craft](${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md). Read it and follow it.
 This file is a **delta**: it supplies the domain — the CLARIFY axes, the task-row shape, the lenses,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
 craft's mechanics.
@@ -120,17 +120,17 @@ Craft's Phase 3 unchanged.
 ## Phase 4 — the craft call
 
 The args go in the plan's `<!-- craft:dispatch -->` arming block, and the dispatch is **craft's own
-`craft-dispatch.sh`** — never a hand-written runner line. That script owns the TIER 1 plan-lint
+`work-dispatch.sh`** — never a hand-written runner line. That script owns the TIER 1 plan-lint
 gate, which refuses to dispatch on a `major`/`critical` plan finding and fails CLOSED on a verdict it
 cannot count; hand-rolling the invocation silently drops it. Craft owns the wait, the result handling
-and the return shape too, and `craft-result.sh` reads the verdict. This run's `projectDir` is the
+and the return shape too, and `work-result.sh` reads the verdict. This run's `projectDir` is the
 session repo, so craft's own run directory is already inside it and no `--run-dir` override applies.
 There is no built-in `Workflow` call — the guard at
 `~/.claude/hooks/main-thread-guard.sh` denies that tool outright.
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh   # armed plan; or pass one
-bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh --provider codex   # "run this through codex"
+bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-dispatch.sh   # armed plan; or pass one
+bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-dispatch.sh --provider codex   # "run this through codex"
 ```
 
 **Forward the provider.** A provider named in this skill's `$ARGUMENTS`, however it is spelled —

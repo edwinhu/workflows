@@ -264,22 +264,22 @@ because exit-code-only assertions let a check pass while exercising a different 
 ## Phase 4 — the craft call
 
 The args go in the plan's `<!-- craft:dispatch -->` arming block, and the dispatch is **craft's own
-`craft-dispatch.sh`** — never a hand-written runner line. That script owns the TIER 1 plan-lint
+`work-dispatch.sh`** — never a hand-written runner line. That script owns the TIER 1 plan-lint
 gate, which refuses to dispatch on a `major`/`critical` plan finding and fails CLOSED on a verdict it
 cannot count; hand-rolling the invocation silently drops it. Craft owns the `Monitor` wait, the
-result handling and the return shape too, and `craft-result.sh` reads the verdict. This run's
+result handling and the return shape too, and `work-result.sh` reads the verdict. This run's
 `projectDir` is the session repo, so craft's own run directory is already inside it and no
 `--run-dir` override applies. There is no built-in `Workflow` call — the guard at
 `~/.claude/hooks/main-thread-guard.sh` denies that tool outright.
 
-**Pass `$PLAN` explicitly.** Bare, `craft-dispatch.sh` resolves the armed plan through
-`craft-pending.sh`, which now reads `plansDirectory` — so a writing project's `./.planning` plan is
+**Pass `$PLAN` explicitly.** Bare, `work-dispatch.sh` resolves the armed plan through
+`work-pending.sh`, which now reads `plansDirectory` — so a writing project's `./.planning` plan is
 found. Naming the path still beats relying on that resolution when you already know it.
 
 ```bash
 PLAN=<proj>/.planning/<slug>.md
-bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh "$PLAN"
-bash ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh --provider codex "$PLAN"   # "run this through codex"
+bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-dispatch.sh "$PLAN"
+bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-dispatch.sh --provider codex "$PLAN"   # "run this through codex"
 ```
 
 **Forward the provider.** A provider named in this skill's `$ARGUMENTS`, however it is spelled —

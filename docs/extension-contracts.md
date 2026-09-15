@@ -33,7 +33,7 @@ Resolution succeeds only when the manifest and implementation are contained by t
 
 ### Craft spine runner
 
-`skills/craft/workflow.js` is a **Workflow script**, not an importable module: its top-level
+`skills/work/workflow.js` is a **Workflow script**, not an importable module: its top-level
 `phase()`, `agent()` and `args` exist only inside the Workflow runtime, so importing it throws by
 construction. What it owes a consumer instead is that it parses, and that its args contract and
 returned gate keys are stable within contract 1.
@@ -46,13 +46,13 @@ discovers planning authority: a missing or malformed arg throws before any agent
 The return is `{ overallPass, verdict, scoreTable, implemented, verified, findings, refutedFindings,
 reviews, tasksThatFlagged, carriedForward, domainRun }`. `overallPass` is computed in JS from raw
 counts, never asserted by an agent. Three invariants hold on every path and are covered by
-`skills/craft/scripts/workflow.test.ts`: a dead agent fails the run closed rather than being skipped;
+`skills/work/scripts/workflow.test.ts`: a dead agent fails the run closed rather than being skipped;
 `overallPass === false` implies a non-empty re-run selector; and `readOnly` dimensions report `n/a`
 rather than a vacuous pass.
 
-`skillRoot` is injected by `craft-dispatch.sh` so the prompts the runner builds name paths that
+`skillRoot` is injected by `work-dispatch.sh` so the prompts the runner builds name paths that
 resolve on the installing machine. A caller that builds args by hand and omits it gets
-`~/.claude/skills/workflows/skills/craft`.
+`~/.claude/skills/workflows/skills/work`.
 
 ## Compatibility
 

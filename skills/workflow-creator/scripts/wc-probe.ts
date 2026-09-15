@@ -3120,8 +3120,8 @@ export function repoRootOf(from: string): string | null {
 /**
  * P12 dispatch routing — a file that emits a craft-args fence dispatches craft the way craft says.
  *
- * (a) CRITICAL. The file names some OTHER runner script and never names `craft-dispatch.sh`.
- *     Hand-rolling that line drops everything craft-dispatch owns on the way in: TIER 1 `plan-lint`,
+ * (a) CRITICAL. The file names some OTHER runner script and never names `work-dispatch.sh`.
+ *     Hand-rolling that line drops everything work-dispatch owns on the way in: TIER 1 `plan-lint`,
  *     TIER 2 the `redCommand` probe, TIER 2b `plan-preflight`. None of those failures is visible
  *     afterwards — the run simply proceeds ungated — so the omission has to be caught in the text.
  *     Keyed on the SHAPE of a runner reference (any `<name>.sh|.ts|.mjs|.js`), never on one runner's
@@ -3182,7 +3182,7 @@ export function checkDispatchRouting(file: string, text: string, exemptions: rea
   const fences = craftArgsFences(text)
   if (!emitsCraftArgs(text)) return findings
 
-  const runner = !text.includes('craft-dispatch.sh') ? handRolledRunner(text) : null
+  const runner = !text.includes('work-dispatch.sh') ? handRolledRunner(text) : null
   if (runner) {
     const line = runner.line
     if (!isExemptAt(exemptions, 'dispatch', line)) {
@@ -3192,9 +3192,9 @@ export function checkDispatchRouting(file: string, text: string, exemptions: rea
         file,
         line,
         detail:
-          `this file emits a craft-args fence and names ${runner.name} as the dispatch, never craft-dispatch.sh, so the run skips the TIER 1 plan-lint gate, the TIER 2 redCommand probe and TIER 2b plan-preflight`,
+          `this file emits a craft-args fence and names ${runner.name} as the dispatch, never work-dispatch.sh, so the run skips the TIER 1 plan-lint gate, the TIER 2 redCommand probe and TIER 2b plan-preflight`,
         remedy:
-          'dispatch through ${CLAUDE_PLUGIN_ROOT}/skills/craft/scripts/craft-dispatch.sh and put the args in the plan\'s craft:dispatch arming block, or declare the exception with <!-- wc-probe: ignore-dispatch --> — a hand-written runner line reports nothing about the gates it never ran',
+          'dispatch through ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-dispatch.sh and put the args in the plan\'s craft:dispatch arming block, or declare the exception with <!-- wc-probe: ignore-dispatch --> — a hand-written runner line reports nothing about the gates it never ran',
       })
     }
   }
@@ -3214,7 +3214,7 @@ export function checkDispatchRouting(file: string, text: string, exemptions: rea
       line,
       detail: `this fence dispatches with projectDir "${pd}", outside the repository ${repo} that contains this file, and no --run-dir appears anywhere in it, so craft writes its args, result and log into a .craft/ inside that foreign tree`,
       remedy:
-        'pass --run-dir with an ABSOLUTE path outside the judged tree to craft-dispatch.sh, or declare the exception with <!-- wc-probe: ignore-dispatch -->',
+        'pass --run-dir with an ABSOLUTE path outside the judged tree to work-dispatch.sh, or declare the exception with <!-- wc-probe: ignore-dispatch -->',
     })
   }
   return findings

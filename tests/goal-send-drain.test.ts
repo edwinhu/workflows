@@ -19,7 +19,7 @@ import { join } from 'node:path'
  */
 
 const REPO = join(import.meta.dir, '..')
-const DRAIN = join(REPO, 'skills/craft/scripts/goal-send-drain.sh')
+const DRAIN = join(REPO, 'skills/work/scripts/goal-send-drain.sh')
 const SID = 'drain-test-session'
 
 function runDrain(lines: string[], opts: { focused?: boolean; executes?: boolean } = {}) {

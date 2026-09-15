@@ -315,7 +315,7 @@ export function buildInProgressSection(root: string = process.cwd()): string {
     }
   }
   lines.push(
-    "- The approved plan under the configured `plansDirectory` is the authority; craft-result.sh reads the verdict.",
+    "- The approved plan under the configured `plansDirectory` is the authority; work-result.sh reads the verdict.",
   );
   lines.push("");
   lines.push("**Read the full state files before taking action.** Do not ask the user to summarize — the context is in the files.");

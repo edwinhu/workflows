@@ -11,9 +11,9 @@ const rules = (t: string, unattended = false, brief = false) =>
   lint(t, unattended, brief).map((f) => f.rule)
 
 const COMPOSED =
-  'craft has returned PASS for /p/plan.md — `bash /s/craft-result.sh /r/result.json` exits 0 — ' +
+  'craft has returned PASS for /p/plan.md — `bash /s/work-result.sh /r/result.json` exits 0 — ' +
   'or the rounds field in /r/args.json reads 5 or more — `jq -r .rounds` it to check — or the run ' +
-  'has been going 480 minutes or more, which `bash /s/craft-elapsed.sh /r 480` prints and settles'
+  'has been going 480 minutes or more, which `bash /s/work-elapsed.sh /r 480` prints and settles'
 
 describe('the goal compose-goal.sh emits', () => {
   test('is clean, so the lint cannot be at war with the reference implementation', () => {
@@ -82,16 +82,16 @@ describe('the remaining rules', () => {
 describe('the rewrites in references/templates.md', () => {
   const REWRITES = [
     // 1 — npx-reconcile, with the FAIL branch pre-decided
-    'craft has returned PASS for .planning/npx-iss-reconciliation.md — `bash craft-result.sh ' +
+    'craft has returned PASS for .planning/npx-iss-reconciliation.md — `bash work-result.sh ' +
       'r/result.json` exits 0 — or the rounds field in r/args.json reads 6 or more — `jq -r .rounds` ' +
-      'it to check — or the run has been going 480 minutes or more, which `bash craft-elapsed.sh r ' +
+      'it to check — or the run has been going 480 minutes or more, which `bash work-elapsed.sh r ' +
       '480` prints and settles. On FAIL: read the surviving blocking findings, amend the plan, ' +
       're-dispatch — in that order, without asking.',
     // 2 — mail-bridge, with recon landing declared a middle rather than an end
     'the six parked ambiguous operations are settled and no new 504 on an idempotent verb parks — ' +
       '`bun test tests/ambiguous-settlement.test.ts` exits 0 — or the rounds field in ' +
       '.craft/a/args.json reads 4 or more — `jq -r .rounds` it to check — or the run has been going ' +
-      '300 minutes or more, which `bash craft-elapsed.sh .craft/a 300` prints and settles. Standing ' +
+      '300 minutes or more, which `bash work-elapsed.sh .craft/a 300` prints and settles. Standing ' +
       'authority: commit and push green work, bump the patch version, and plan the next round ' +
       'yourself. Recon landing is not a stopping point — write the plan and dispatch it in the same turn.',
   ]

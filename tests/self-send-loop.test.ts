@@ -13,7 +13,7 @@ import { join } from 'node:path'
  */
 
 const REPO = join(import.meta.dir, '..')
-const SEND = join(REPO, 'skills/craft/scripts/goal-self-send.sh')
+const SEND = join(REPO, 'skills/work/scripts/goal-self-send.sh')
 const UNREACHABLE = 'self-send-loop-test-not-a-real-session'
 
 const send = (arg: string) =>

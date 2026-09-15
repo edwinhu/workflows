@@ -57,11 +57,11 @@ Bash allowlist — so no timing claim is made here. See §6, experiment B.
 
 | Checker | Event · matcher | What it decides | Scoped today by | Owning rule |
 |---|---|---|---|---|
-| `main-thread-guard.sh` | PreToolUse · `Agent\|Task\|Workflow\|Edit\|Write\|NotebookEdit\|Bash`; **and** Stop | three policies: delegation routes through farm-out; mail composition belongs to `email`; a `farmOutOnly` project and an armed-undispatched craft run take no main-thread writes | `FARM_OUT_CHILD` env escape (`:65`); an ancestor walk for `.claude/plans` and `.claude-workflows.json`, stopping at `$HOME` (`:76-87`); `craft-pending.sh` exit code (`:96-107`) | `using-skills` Iron Law + `craft` Phase 3/4 — **session-wide invariant** |
+| `main-thread-guard.sh` | PreToolUse · `Agent\|Task\|Workflow\|Edit\|Write\|NotebookEdit\|Bash`; **and** Stop | three policies: delegation routes through farm-out; mail composition belongs to `email`; a `farmOutOnly` project and an armed-undispatched craft run take no main-thread writes | `FARM_OUT_CHILD` env escape (`:65`); an ancestor walk for `.claude/plans` and `.claude-workflows.json`, stopping at `$HOME` (`:76-87`); `work-pending.sh` exit code (`:96-107`) | `using-skills` Iron Law + `craft` Phase 3/4 — **session-wide invariant** |
 | `bash-allowlist.py` | *not a hook* — a library called by the above (`main-thread-guard.sh:232`) | is this Bash command read-only enough for the main thread | allowlist | same |
 | `outbound-send-guard.sh` | PreToolUse · `Bash` — **declared in agent frontmatter**, `~/.claude/agents/email.md:11-16` and `assistant.md:14` | an outbound send → `permissionDecision: ask` | **already agent-scoped** | `email` / `assistant` draft-by-default |
 | `herdr-agent-state.sh` | SessionStart · `*` (twice — duplicated entry) | records session state for Herdr | none | infrastructure |
-| `craft-goal-resend.sh` | SessionStart · `*` | re-seeds a craft goal after a context clear | craft state | `craft` / `goal-and-loop` |
+| `work-goal-resend.sh` | SessionStart · `*` | re-seeds a craft goal after a context clear | craft state | `craft` / `goal-and-loop` |
 | `farm-monitor-arm.sh` | PreToolUse · `Bash` | arms the farm-out run monitor | command shape | `farm-out` |
 | `assistant-projects-context.ts` | SessionStart | injects personal-productivity context | none | `assistant` |
 | `vault-flush.sh` | PreCompact, SessionEnd (`settings.local.json`) | flushes the Obsidian vault | none | `obsidian` |

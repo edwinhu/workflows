@@ -18,7 +18,7 @@ nothing else. (Absence of the plugin degrades this index but does not bypass a g
 
 !`for d in "$HOME/.claude/skills/typst" "$HOME/projects/typst"; do [ -x "$d/scripts/rules-for" ] && exec "$d/scripts/rules-for" slides,notes,workshop; done; echo "!! typst plugin not found — the constraint index is EMPTY, and a deck graded against no corpus is not a deck that passed."
 
-The lifecycle is [craft](${CLAUDE_PLUGIN_ROOT}/skills/craft/SKILL.md). Read it and follow it.
+The lifecycle is [craft](${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md). Read it and follow it.
 This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lenses,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
 craft's mechanics.

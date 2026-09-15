@@ -1,6 +1,6 @@
 ---
 name: goal-and-loop
-description: "Use when a session's stopping condition is being written or repaired — \"set the goal\", \"write the /goal line\", \"what should the goal be\", \"give it a goal before I go to bed\", \"write the brief for the spawned agent\", \"it stopped overnight\", \"it idled while I was asleep\", \"it asked me a question instead of continuing\", \"why did it stop\", \"is the goal actually set\", \"make it keep working\", \"run this unattended\", \"leave it running overnight\". Use proactively BEFORE handing work to any session that will outlive the user's attention — a spawned agent, a background job, a craft dispatch left running, or this session at night. NEGATIVE ROUTING: composing a craft run's own goal is craft-dispatch.sh, which calls compose-goal.sh and needs no help; spawning the session is agent-spawn; delegating a task to a subagent is farm-out. This skill owns the WORDING of the stopping condition, the standing authority that travels with it, and the proof that it actually landed."
+description: "Use when a session's stopping condition is being written or repaired — \"set the goal\", \"write the /goal line\", \"what should the goal be\", \"give it a goal before I go to bed\", \"write the brief for the spawned agent\", \"it stopped overnight\", \"it idled while I was asleep\", \"it asked me a question instead of continuing\", \"why did it stop\", \"is the goal actually set\", \"make it keep working\", \"run this unattended\", \"leave it running overnight\". Use proactively BEFORE handing work to any session that will outlive the user's attention — a spawned agent, a background job, a craft dispatch left running, or this session at night. NEGATIVE ROUTING: composing a craft run's own goal is work-dispatch.sh, which calls compose-goal.sh and needs no help; spawning the session is agent-spawn; delegating a task to a subagent is farm-out. This skill owns the WORDING of the stopping condition, the standing authority that travels with it, and the proof that it actually landed."
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob]
 ---
 
@@ -31,7 +31,7 @@ that command's output where its text should be.
 fine for `goal-lint.ts --file`, but interpolating it makes a compound command that no permission
 rule can allowlist, so auto mode blocks the whole send.
 
-**A craft dispatch raises both for you** — `craft-dispatch.sh` self-sends the composed goal and the
+**A craft dispatch raises both for you** — `work-dispatch.sh` self-sends the composed goal and the
 loop. Do not add a second loop; two crons means two ticks.
 
 <EXTREMELY-IMPORTANT>
@@ -44,7 +44,7 @@ Measured 2026-09-03 — a session already matching `Bash(bash ~/.claude/skills/w
 was denied with `[Tmux Self Drive] Sending input or goals to the agent's own session via self-send
 scripts`. Do not try to route around it; the workaround is itself the `Auto-Mode Bypass` pattern.
 
-`craft-dispatch.sh` does not notice. It calls `goal-self-send.sh` twice and treats a non-zero exit
+`work-dispatch.sh` does not notice. It calls `goal-self-send.sh` twice and treats a non-zero exit
 as "not fatal", so under auto mode a run proceeds with NEITHER a stopping condition NOR a heartbeat
 — the unattended idle this skill exists to prevent, arriving silently. A session that must raise its
 own goal therefore cannot run in auto mode: start it in another permission mode, or have the user
@@ -165,7 +165,7 @@ pause with extra steps.
 | Put "and the user has approved" in a goal | a session cannot close it by working — measured 18h | review after the goal, as a step it performs |
 | Write "or stop after N turns" | nothing counts turns | a counter file it can `cat`, and a wall clock |
 | Report "N of M rounds used" and stop at N | the budget was the authorization, not a ceiling on ambition | spend it, or say why the remainder is unusable |
-| Hand-write a goal for a craft run | `compose-goal.sh` already emits a conforming one | `craft-dispatch.sh` |
+| Hand-write a goal for a craft run | `compose-goal.sh` already emits a conforming one | `work-dispatch.sh` |
 
 ## References
 
