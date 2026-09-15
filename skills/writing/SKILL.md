@@ -328,16 +328,14 @@ Omitting it silently runs the user's codex request on claude.
 
   // The writing gate. GRAMMAR once for the project; CITE+CLAIM once per section (one probe settles
   // both); PROSE-HARD once for the project. Quoted byte-identically from references/writing-checks.md.
+  // ONE entry point. The cite-claim leg was one entry PER SECTION, written out by the
+  // plan — the purest form of what P10 refuses, since a plan that forgets a row drops
+  // that section's citation gate and nothing reports a check it never knew about.
+  // check.sh discovers the sections from drafts/ instead, so the set cannot disagree
+  // with what is on disk, and no sections at all is a refusal rather than a pass.
   mechanicalChecks: [
-    { name: "grammar",
-      cmd: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_section_index.py <proj>" },
-    // The draft path is QUOTED — section names carry spaces and parentheses, and an unquoted
-    // path dies in bash before python runs. A probe's cmd is verbatim; there is no re-run.
-    { name: "cite-claim-<Section>",
-      cmd: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_gate_probe.py \"<proj>/drafts/<Section>.md\" --bib \"<proj>/<bib>.bib\" --plan \"<proj>/.planning/<slug>.md\" --plan-hash <craft plan hash>" },
-    // ... one cite-claim-<Section> entry per row of ## Section Outputs.
-    { name: "prose",
-      cmd: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_prose_gate.py --project <proj> --style <domain>" },
+    { name: "writing",
+      cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/check.sh --project <proj> --bib \"<proj>/<bib>.bib\" --plan \"<proj>/.planning/<slug>.md\" --plan-hash <craft plan hash> --style <domain>" },
   ],
 
   // Judged BEFORE any drafter is dispatched; a surviving critical returns FAIL having written
