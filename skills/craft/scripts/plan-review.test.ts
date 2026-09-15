@@ -1,4 +1,8 @@
 #!/usr/bin/env bun
+// <!-- wc-probe: ignore-refs -->
+// Fixtures below are executed, not declared: the task rows and lenses here are INPUT to
+// the linter under test, and several omit refs precisely so a test can assert the linter
+// catches that. Declaring refs on them would delete the case.
 /**
  * plan-review.test.ts — the corpus the write-side-migration-r3 plan lenses produced by hand, plus
  * the guards that keep the judged layer from coming back.
