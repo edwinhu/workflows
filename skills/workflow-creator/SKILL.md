@@ -107,6 +107,20 @@ whose domain has a toolchain (build, test, lint, render) ships one entry point o
 those legs behind it, and names *that* in its `mechanicalChecks`. The law binds the workflow being
 generated, not only its generator.
 
+**THREE SHAPES, ONE DISCOVERY MECHANISM EACH. There is no fourth.**
+
+| the thing is | it is a | found by |
+|---|---|---|
+| a mechanical rule | **SCRIPT** in `constraints/` | the check runner, globbing that directory |
+| knowledge | **REFERENCE** `.md` | `skill-toc`, emitted by a bang at load |
+| a procedure | **SKILL** | named in an agent's `skills:`, or invoked |
+
+A rule no script can settle is usually the third, not a fourth: `typst-visual-verify.md` described a
+render-score-fix loop with a `>= 9.5` threshold that the `visual-verify` SKILL already implements,
+down to the number, and `typst-source-fidelity.md` duplicated `source-verify`. Both were markdown
+restating a procedure. Before writing a constraint doc for something a script cannot check, ask
+whether it is a skill that already exists.
+
 **A constraint is enforced by a SCRIPT or by an AGENT WITH THE SKILL. There is no third shape.** Wherever a constraint lives — a shared `references/constraints/` corpus, or beside the single skill that consumes it — that location is its ONE canonical home. A copy per consumer is the vendoring defect; see *Frontmatter decides how a file is found* for which location a rule earns.
 
 **ONE FRONTMATTER KEY: `applies-to:`. Nothing else.** Scope is the only fact about a rule that no path already holds — the name is the filename, whether it is mechanised is whether `checkers/<name>.py` exists, and what it says is the body. Any other key is either a copy of one of those or metadata nothing reads, and both rot silently: measured 2026-09-14 in the typst corpus, `type:` sat in 17 of 21 files and `testable:` in 3, read by no code on any path, while `description:` had drifted from the rule beside it (a rule described as "table inset minimum 10pt" whose body leads with source-grounding) with no check able to see it. Lint the key set — a convention nothing computes is how `type:` got into 17 files and stayed.
