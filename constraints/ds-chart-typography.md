@@ -74,7 +74,7 @@ impression an exhibit should leave.
 ## Verification
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/references/constraints/ds-chart-typography.py <file.py|dir>
+python3 ${CLAUDE_PLUGIN_ROOT}/constraints/ds-chart-typography.py <file.py|dir>
 ```
 
 Exits non-zero on: charts present with no theme registration; per-chart font or axis

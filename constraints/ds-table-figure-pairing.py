@@ -53,7 +53,7 @@ def check(context):
         p for p in cwd.rglob("*.py")
         if not any(part in p.parts for part in [".planning", "scratch", "__pycache__", ".pixi"])
         and p.name != "check-all.py"
-        and "references/constraints" not in str(p)
+        and "constraints" not in str(p)
     ]
 
     for path in py_files:

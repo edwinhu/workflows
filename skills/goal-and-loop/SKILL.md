@@ -18,7 +18,7 @@ goal runs when no turn is running. An unattended run needs both.
 Three commands, in this order. Do not hand-write the transport.
 
 ```bash
-S=${CLAUDE_SKILL_DIR}/../craft/scripts/goal-self-send.sh
+S=${CLAUDE_SKILL_DIR}/../work/scripts/goal-self-send.sh
 bash $S "/goal <the linted goal>"
 bash $S "/loop 30m Check the goal. If it is not met, take the next action now rather than proposing it."
 ```
@@ -171,6 +171,6 @@ pause with extra steps.
 
 - `references/templates.md` — the goal template, the unattended-brief template, and three real goals
   rewritten side by side.
-- `scripts/goal-verify.sh`, `../craft/scripts/goal-send-drain.sh` — the proof and the transport.
-- `../craft/scripts/compose-goal.sh` — the reference implementation; its header records why each
+- `scripts/goal-verify.sh`, `../work/scripts/goal-send-drain.sh` — the proof and the transport.
+- `../work/scripts/compose-goal.sh` — the reference implementation; its header records why each
   clause is worded as it is.

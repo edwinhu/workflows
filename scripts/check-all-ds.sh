@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Test runner: auto-discovers and runs all DS constraint check scripts.
-# Canonical source: references/constraints/ds-*.py (co-located with .md rules)
+# Canonical source: constraints/ds-*.py (co-located with .md rules)
 # Usage: ./scripts/check-all-ds.sh [optional: path to project directory]
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-CONSTRAINTS_DIR="$SCRIPT_DIR/../references/constraints"
+CONSTRAINTS_DIR="$SCRIPT_DIR/../constraints"
 PASS=0
 FAIL=0
 TOTAL=0

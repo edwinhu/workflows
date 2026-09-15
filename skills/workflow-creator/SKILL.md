@@ -513,7 +513,7 @@ the vendoring defect. Measured 2026-09-14: 5 of the 10 files at this plugin's ro
 or more skills and belong there; the other 5 have exactly one consumer and belong one level down.
 
 Measure before moving anything, and beware the half-migrated state: typst carries BOTH
-`constraints/` (29 scripts, correct) and `references/constraints/` (22 markdown, 14 of which merely
+`constraints/` (29 scripts, correct) and `constraints/` (22 markdown, 14 of which merely
 restate a script sitting beside them). That duplicate is the debt this rule exists to retire, not a
 second sanctioned location.
 

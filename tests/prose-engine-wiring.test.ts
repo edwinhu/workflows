@@ -13,11 +13,11 @@ import { PROSE_ENGINE_PREFIXES } from "../hooks/writing-prose-check.ts";
 
 const REPO = dirname(import.meta.dir);
 
-/** Every entry name `references/constraints/check-all.py` can put in its results, built the way it
+/** Every entry name `constraints/check-all.py` can put in its results, built the way it
  *  builds them: `constraints/<stem>` at :156 and `skills/<skill>/references/<stem>` at :213. */
 function checkAllLabels(): string[] {
   const labels: string[] = [];
-  for (const f of readdirSync(join(REPO, "references", "constraints"))) {
+  for (const f of readdirSync(join(REPO, "constraints"))) {
     if (f.endsWith(".py") && f !== "check-all.py") labels.push(`constraints/${f.slice(0, -3)}`);
   }
   for (const skill of readdirSync(join(REPO, "skills"))) {

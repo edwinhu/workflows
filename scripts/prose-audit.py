@@ -10,7 +10,7 @@ ONE entry point over ALL five pattern systems, emitting ONE span list with stabl
   +  stylometrics     skills/ai-anti-patterns/scripts/style_metrics.py --lint      (system `style`)
   +  US-register spelling and paragraph/section em-dash density                    (`spelling`, `em-dash`)
 
-System C — the four `references/constraints/writing-ai-smell-*` pairs — was ABSORBED INTO B
+System C — the four `constraints/writing-ai-smell-*` pairs — was ABSORBED INTO B
 (v5.127.0). It was the same system built twice; keeping both is what produced the double-reporting
 this script exists to end. Its one genuinely better implementation, the superlative
 self-attribution heuristic, survived the merge and now lives in wikipedia-promotional-language.py.
@@ -789,7 +789,7 @@ def _style_on_text(text: str, suffix: str = ".md") -> tuple[dict, dict]:
 
 
 # ── em-dash density (paragraph + section) ────────────────────────────────────
-# Absorbed from references/constraints/writing-ai-smell-em-dash.py, thresholds unchanged. It is
+# Absorbed from constraints/writing-ai-smell-em-dash.py, thresholds unchanged. It is
 # not a per-line regex, so it could not become a wikipedia table entry; it lives here instead.
 _EM_DASH = re.compile("—")
 _EM_DASH_COLON = re.compile(r"(?:—:|:—)")

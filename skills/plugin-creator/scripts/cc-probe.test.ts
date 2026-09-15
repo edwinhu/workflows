@@ -178,7 +178,7 @@ describe('I1 — at most one deterministic engine per domain', () => {
       'plugin.json': PLUGIN_JSON,
       'skills/writing/SKILL.md': skillMd('writing'),
       'skills/writing/references/a.py': tableModule('no-bold-lead', ['    (r"^\\*\\*", "bold lead"),']),
-      'references/constraints/b.py': tableModule('no-bold-lead', ['    (r"^\\*\\*", "bold lead"),']),
+      'constraints/b.py': tableModule('no-bold-lead', ['    (r"^\\*\\*", "bold lead"),']),
       'scripts/check-all.py': 'APPLIES_TO_ATTR = "APPLIES_TO"\nSEVERITY_ATTR = "SEVERITY"\n',
       'hooks/hooks.json': JSON.stringify({
         hooks: {
@@ -261,7 +261,7 @@ describe('I3 — every engine has at least one live caller', () => {
       'plugin.json': PLUGIN_JSON,
       'skills/writing/SKILL.md': skillMd('writing'),
       'skills/writing/references/topic-sentences.py': tableModule('topic-sentences', ['    (r"\\bfoo\\b", "foo"),']),
-      'references/constraints/check-all.py': [
+      'constraints/check-all.py': [
         'from pathlib import Path',
         'def run(root):',
         '    for py in sorted(Path(root).glob("*/references/*.py")):',
@@ -275,7 +275,7 @@ describe('I3 — every engine has at least one live caller', () => {
           PostToolUse: [
             {
               matcher: 'Edit',
-              hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/references/constraints/check-all.py' }],
+              hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/constraints/check-all.py' }],
             },
           ],
         },

@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
 const FARM = join(import.meta.dir, '..', 'skills', 'farm-out', 'scripts', 'farm.sh')
-const ALIVE = join(import.meta.dir, '..', 'skills', 'craft', 'scripts', 'farm-alive.sh')
+const ALIVE = join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'farm-alive.sh')
 
 // Blocking control characters is not enough: the record is space-delimited key=value, and a
 // label may legally contain spaces. `evil out=<victim> x` injects a second out= field INSIDE one

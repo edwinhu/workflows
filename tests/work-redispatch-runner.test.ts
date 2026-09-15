@@ -2,7 +2,7 @@ import { test, expect } from 'bun:test'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-const SRC = readFileSync(join(import.meta.dir, '..', 'skills', 'craft', 'scripts', 'work-redispatch.sh'), 'utf8')
+const SRC = readFileSync(join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'work-redispatch.sh'), 'utf8')
 
 // Assert on booleans, never on the file's text: a diff that dumps this script contains the
 // words "not found", which craft's red-probe classifier reads as a missing command.

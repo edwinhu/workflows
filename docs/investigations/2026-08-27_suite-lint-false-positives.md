@@ -34,19 +34,19 @@ One finding in 261 survives inspection.
 The tool was run over the whole repository from its root:
 
 ```
-bun skills/craft/scripts/suite-lint.ts --corpus /home/eh/projects/workflows
+bun skills/work/scripts/suite-lint.ts --corpus /home/eh/projects/workflows
 ```
 
 The same numbers are obtainable from the module API, which is what the accompanying suite
-`skills/craft/scripts/suite-lint-report.test.ts` does:
+`skills/work/scripts/suite-lint-report.test.ts` does:
 
 ```
-bun -e 'import {lintCorpus} from "./skills/craft/scripts/suite-lint.ts"; console.log(lintCorpus(process.cwd()).counts)'
+bun -e 'import {lintCorpus} from "./skills/work/scripts/suite-lint.ts"; console.log(lintCorpus(process.cwd()).counts)'
 ```
 
 **Refreshed 2026-09-12.** Re-executed from scratch because the corpus moved: the craft dispatch and
-gate suites were edited that day (`skills/craft/scripts/craft-dispatch-loops.test.ts` and
-`skills/craft/scripts/workflow.test.ts`), which shifted cited lines and changed three of the four raw
+gate suites were edited that day (`skills/work/scripts/work-dispatch-loops.test.ts` and
+`skills/work/scripts/workflow.test.ts`), which shifted cited lines and changed three of the four raw
 counts. Every number and every `file:line` below comes from that run.
 
 **Sample.** The tree as of the 2026-09-12 refresh, with the working trees of the sessions then in
@@ -61,11 +61,11 @@ every fixture they gain changes the totals.
 versions of this document recorded 184, then 183, then 185 `single-distinct-literal` findings, and the
 2026-09-12 refresh records 193. Every one of those numbers was correct when taken and all but the last
 are wrong now, and none moved because a rule changed. The corpus
-contains the lint's own suite, and `skills/craft/scripts/suite-lint.test.ts` kept growing as task H1's
+contains the lint's own suite, and `skills/work/scripts/suite-lint.test.ts` kept growing as task H1's
 red gate demanded more of it. The two findings that account for the move to 185 are both in that file
-and both name H1's work directly. `skills/craft/scripts/suite-lint.test.ts:438` flags
+and both name H1's work directly. `skills/work/scripts/suite-lint.test.ts:438` flags
 `isAffordablePair`, which is exported at `suite-lint.ts:564` and did not exist before H1, so no
-earlier run could have reported it. `skills/craft/scripts/suite-lint.test.ts:462` flags the
+earlier run could have reported it. `skills/work/scripts/suite-lint.test.ts:462` flags the
 `execFileSync('bun', …)` pair at lines 462 and 486 — the two out-of-process budget tests, which run
 `lintSource` in a child because a regression there hangs rather than fails. A stale line reference in
 the previous draft came from the same churn: line 459 held a `lintSource('many.test.ts', …)` call when
@@ -102,7 +102,7 @@ standard-library callee, which is definitionally not the input under test.
 
 Raw 24, false positives 23, one true positive.
 
-The one that survives is `skills/craft/scripts/craft-redispatch.test.ts:776`:
+The one that survives is `skills/work/scripts/work-redispatch.test.ts:776`:
 
 ```
 expect(r.out).toContain('CONVERGING')
@@ -117,7 +117,7 @@ matters. This is the exact run-2 defect shape and the rule earns its keep on it.
 The 23 false positives come from two mechanisms.
 
 **A paired negative assertion the rule cannot see (1 finding).**
-`skills/craft/scripts/converge-check.test.ts:97` asserts `toContain('CONVERGING')` and is immediately
+`skills/work/scripts/converge-check.test.ts:97` asserts `toContain('CONVERGING')` and is immediately
 followed, on line 94, by `expect(r.stdout).not.toContain('NOT CONVERGING')`, which is precisely the
 repair the rule wants. The rule reads assertions one at a time and has no notion of a neighbouring
 assertion that neutralises the ambiguity, so a correctly written test scores the same as the
@@ -133,8 +133,8 @@ same mechanism produces `skills/workflow-creator/scripts/wc-probe.test.ts:261`,
 `skills/workflow-creator/scripts/wc-probe.test.ts:755`,
 `skills/workflow-creator/scripts/wc-probe.test.ts:3220` and
 `skills/workflow-creator/scripts/wc-probe.test.ts:3265`; both
-`skills/craft/scripts/craft-dispatch.test.ts:530` and
-`skills/craft/scripts/craft-dispatch.test.ts:541`, whose matched literal is a malformed-plan fixture
+`skills/work/scripts/work-dispatch.test.ts:530` and
+`skills/work/scripts/work-dispatch.test.ts:541`, whose matched literal is a malformed-plan fixture
 about 150 lines away at line 682; `tests/public-extension-contract.test.ts:161`, where the assertion
 is `toContain("specHash")` and the matched literal is a prose table cell at line 47 that happens to
 contain the word; and the three cite-check findings
@@ -145,8 +145,8 @@ assertion is on the generated report. The nine `scratch/` copies of those three 
 inherit the same verdict.
 
 Two of the 22 deserve a separate note because they are self-reference:
-`skills/craft/scripts/suite-lint.test.ts:131` and
-`skills/craft/scripts/suite-lint-python.test.ts:98` are flagged for the lint's **own**
+`skills/work/scripts/suite-lint.test.ts:131` and
+`skills/work/scripts/suite-lint-python.test.ts:98` are flagged for the lint's **own**
 `/saved/i`-versus-`'plan NOT SAVED to disk'` fixture, which those suites embed as a string literal in
 order to prove the rule fires. Both cited lines are `expect(f.evidence).toMatch(/saved/i)` — the
 assertion that checks the finding, condemned by the fixture that produced it. A lint that runs over
@@ -162,19 +162,19 @@ value, no input in the file distinguishes the behaviours the tests claim differ.
 premise held in none of the 193 cases, for three reasons.
 
 **The varying input is not a literal (the dominant case).**
-`skills/craft/scripts/craft-amend.test.ts:127` is `amend(f, '--apply')`, one of five calls passing the
+`skills/work/scripts/work-amend.test.ts:127` is `amend(f, '--apply')`, one of five calls passing the
 same `'--apply'` (lines 127, 140, 155, 162, 202); that string is the mode under test and is constant
 on purpose, while the discriminating input is `f`, a fixture built from `ACCRETED_TASK` in one test
 and `ESCALATING_TASK` in another. Identically, `tests/farm-runner.test.ts:34` calls `runFarm('out.md',
 { writeRelative: 'out.md' })` while the paired test six lines below at line 40 calls
 `runFarm('out.md')` with no options — the whole point of the pair is the second argument, which the
-rule does not count. `skills/craft/scripts/craft-pending.test.ts:80` passes runId `'r'` across five
+rule does not count. `skills/work/scripts/work-pending.test.ts:80` passes runId `'r'` across five
 calls (lines 80, 101, 123, 159, 198) while varying the specHash and the directory. The rule sees
 literal arguments only, so any test that varies its input through a variable, a fixture builder, a
 temp path or an options object reads as undistinguished.
 
 The two findings this run added are the same shape, and they are worth naming because they are the
-lint indicting the very tests that hardened it. `skills/craft/scripts/suite-lint.test.ts:438` flags
+lint indicting the very tests that hardened it. `skills/work/scripts/suite-lint.test.ts:438` flags
 two `isAffordablePair('a*b', …)` calls, at lines 438 and 439, for sharing the pattern `'a*b'`. Holding
 the pattern fixed is the entire experiment: the claim under test is that one unanchored pattern flips
 from affordable to unaffordable as the subject grows, so the discriminating input is the numeric
@@ -199,7 +199,7 @@ encoding argument of `readFileSync`, 15 the separator of `split`, 13 the index o
 through `stringify`, `createHash`, `digest` and `sys.exit`. None of these is a value under test;
 varying them would break the test rather than strengthen it.
 `skills/cite-check/tests/cite-check.test.ts:814` is the plainest case — nine `readFileSync(…, 'utf-8')`
-calls, flagged for the encoding. `skills/craft/scripts/suite-lint.test.ts:462` is the same thing at
+calls, flagged for the encoding. `skills/work/scripts/suite-lint.test.ts:462` is the same thing at
 the end of this run's own work: `execFileSync('bun', …)` at lines 462 and 486, the two out-of-process
 budget tests, flagged for the name of the interpreter. Those two tests differ in the fixture file they
 write — one unanchored pattern against a 400 KB literal, versus twenty guard-defeating patterns
@@ -240,10 +240,10 @@ Raw 43, false positives 43, no true positives.
 Three mechanisms, and the first is an extraction defect rather than a rule-design one.
 
 **A ternary parsed as a key-value pair (8 findings).**
-`skills/craft/scripts/converge-check.test.ts:48` contains `verdict: r.blocking === 0 ? 'PASS' : 'FAIL'`
+`skills/work/scripts/converge-check.test.ts:48` contains `verdict: r.blocking === 0 ? 'PASS' : 'FAIL'`
 and is reported as the key `PASS` with the value `'FAIL'`. There is no such key. The same misparse
-produces the `PASS: 'FAIL'` findings at `skills/craft/scripts/craft-dispatch-loops.test.ts:40`,
-`skills/craft/scripts/craft-loop.test.ts:31` and `skills/craft/scripts/craft-result.test.ts:654`, and
+produces the `PASS: 'FAIL'` findings at `skills/work/scripts/work-dispatch-loops.test.ts:40`,
+`skills/work/scripts/work-loop.test.ts:31` and `skills/work/scripts/work-result.test.ts:654`, and
 the `ACTIVE: "PROCESSING"` finding at `skills/cite-check/tests/gemini.test.ts:109`
 (`state: getCalls >= 2 ? "ACTIVE" : "PROCESSING"`) together with its three `scratch/` copies. The
 gemini case is doubly wrong: that line exists precisely to vary the state across polls.
@@ -252,27 +252,27 @@ gemini case is doubly wrong: that line exists precisely to vary the state across
 comment sentence, "THE DIRECTORY STATES THE SCOPE: `agents/` is auto-discovered…", reported as the key
 `SCOPE`. `tests/bluebook-cites.test.ts:59` is a comment quoting a DOI, reported as `URL`.
 `tests/test_prose_audit.py:750` is a fixture comment containing the word "CHANGED:". And
-`skills/craft/scripts/dev-lens-contract.test.ts:12` is a header comment explaining that the suite
+`skills/work/scripts/dev-lens-contract.test.ts:12` is a header comment explaining that the suite
 deliberately does **not** read `git show HEAD:`, reported as the key `HEAD` — a finding produced by
 the very sentence documenting the absence of the thing.
 
 **Harness plumbing, correctly held constant (31 findings).** The remainder are environment keys a test
 sets to configure its own harness rather than to exercise a branch: `CRAFT_DISPATCH_DRYRUN: '1'` (at
-`skills/craft/scripts/plan-lint.test.ts:386`,
-`skills/craft/scripts/craft-dispatch-loops.test.ts:237`), `CRAFT_GOAL_PRINT: '1'` at
-`skills/craft/scripts/craft-dispatch.test.ts:92`, `CLAUDE_CODE_SESSION_ID: ''`
-at `skills/craft/scripts/craft-goal-resend.test.ts:78`, `CRAFT_FARM: '/bin/false'` at
-`skills/craft/scripts/craft-loop.test.ts:86`, `CRAFT_REDISPATCH_DRYRUN: '1'` at
-`skills/craft/scripts/craft-redispatch.test.ts:225`, `PATH` (four files) and `FARM_OUT_CHILD` (two),
+`skills/work/scripts/plan-lint.test.ts:386`,
+`skills/work/scripts/work-dispatch-loops.test.ts:237`), `CRAFT_GOAL_PRINT: '1'` at
+`skills/work/scripts/work-dispatch.test.ts:92`, `CLAUDE_CODE_SESSION_ID: ''`
+at `skills/work/scripts/work-goal-resend.test.ts:78`, `CRAFT_FARM: '/bin/false'` at
+`skills/work/scripts/work-loop.test.ts:86`, `CRAFT_REDISPATCH_DRYRUN: '1'` at
+`skills/work/scripts/work-redispatch.test.ts:225`, `PATH` (four files) and `FARM_OUT_CHILD` (two),
 the seven `GOAL_SEND_*` timing and retry knobs at `tests/goal-send-drain.test.ts:52` and the two
 lines below it, `HERDR_PANE_ID`
 at `tests/self-send-transport.test.ts:49`,
-`CRAFT_SUITE_LINT_TIMEOUT: '2'` at `skills/craft/scripts/suite-lint-dispatch.test.ts:178`, and the
+`CRAFT_SUITE_LINT_TIMEOUT: '2'` at `skills/work/scripts/suite-lint-dispatch.test.ts:178`, and the
 `GATE_STATUS`, `GATE_BLOCKED_TOOLS` and `GATE_REQUIRE_FIELDS` of the `scratch/` guard suites. A
 dry-run switch has one meaningful value; the varying input is what the harness then feeds the script.
 
 Two of these are worth calling out because they are the rule's own target shape, correctly handled by
-the test. `skills/craft/scripts/compose-goal.test.ts:142` sets `CRAFT_GOAL_MAX_HOURS: '2'` once, and
+the test. `skills/work/scripts/compose-goal.test.ts:142` sets `CRAFT_GOAL_MAX_HOURS: '2'` once, and
 the test directly above it exercises the unset default and asserts a different output
 (`/480 minutes or more/` versus `/120 minutes or more/`). The key **is** varied — across presence and
 absence, which the rule cannot count.

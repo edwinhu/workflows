@@ -13,7 +13,7 @@ import { join, resolve } from "node:path";
 import { parseFrontmatter, skillMatches } from "../scripts/load-constraints.ts";
 
 const ROOT = resolve(import.meta.dir, "..");
-const CONSTRAINTS = join(ROOT, "references", "constraints");
+const CONSTRAINTS = join(ROOT, "constraints");
 const FIXTURE = join(ROOT, "tests", "fixtures", "constraint-dispositions.json");
 
 const expectedDirectAggregate = [
@@ -65,7 +65,7 @@ function collectDirectReachability() {
       if (!/\.(md|ts|js|sh|py)$/.test(entry.name)) continue;
       let text: string;
       try { text = readFileSync(p, "utf8"); } catch { continue; }
-      for (const m of text.matchAll(/\$\{CLAUDE_PLUGIN_ROOT\}\/references\/constraints\/([a-z0-9-]+)\.md/g)) {
+      for (const m of text.matchAll(/\$\{CLAUDE_PLUGIN_ROOT\}\/constraints\/([a-z0-9-]+)\.md/g)) {
         readReached.add(m[1]);
       }
     }

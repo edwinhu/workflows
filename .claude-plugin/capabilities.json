@@ -18,7 +18,7 @@
     {
       "name": "craft-spine-runner",
       "contractVersion": 1,
-      "implementation": "skills/craft/workflow.js"
+      "implementation": "skills/work/workflow.js"
     }
   ]
 }
