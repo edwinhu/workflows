@@ -47,7 +47,7 @@ transfer is the failure you are meant to prevent — never pull a source to find
 ## Constraints
 
 The four indexes — C1-C6, V1-V9, A1-A6, E1-E7 — live in one canonical place: the individual files
-under `${CLAUDE_PLUGIN_ROOT}/references/constraints/`. Dispatched, the aggregates your task is
+under `${CLAUDE_PLUGIN_ROOT}/constraints/`. Dispatched, the aggregates your task is
 graded against arrive as `refs`, which are contractual reads, not suggestions — read every one in
 full before writing code. Interactive, open the files under that directory yourself. Follow the
 constraints your task touches.

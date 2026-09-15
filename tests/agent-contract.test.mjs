@@ -39,8 +39,10 @@ const SKILLS = join(ROOT, 'skills')
 // THE DIRECTORY STATES THE SCOPE — that is the whole point of the split, and it is why nothing
 // below carries a hardcoded roster or a named exception.
 //
-//   `agents/`      auto-discovered by Claude Code, registers plugin-scoped (`workflows:<name>`).
-//                  `hooks:`, `mcpServers:` and `permissionMode:` are IGNORED there.
+//   `agents/`      auto-discovered by Claude Code, registers plugin-scoped (`workflows:<name>`)
+//                  and is the LOWEST-priority agent location. `hooks:`, `mcpServers:` and
+//                  `permissionMode:` are IGNORED there. THIS PLUGIN SHIPS NONE: everything
+//                  that routes by bare name cannot see a namespaced agent.
 //   `user-agents/` NOT auto-discovered. It reaches Claude Code only through the symlink into
 //                  `~/.claude/agents/`, which registers the file user-level: BARE name, those
 //                  fields honoured. One discovery path, and the directory name says which.
@@ -159,8 +161,13 @@ function values(fm, key) {
 
 // ── THE LOAD-BEARING ONE: every preloaded skill resolves AND is preloadable ──
 {
-  ok('the plugin agents/ dir is not empty',
-     readdirSync(PLUGIN_AGENTS).filter(f => f.endsWith('.md')).length > 0)
+  // ONE TIER since 2026-09-15. agents/ held exactly one file, librarian, which registered
+  // as `workflows:librarian` -- namespaced, and the LOWEST-priority agent location per
+  // sub-agents.md. Everything that routes by bare name therefore could not reach it. It
+  // moved to user-agents/, so the plugin ships no plugin-scoped agent at all and the
+  // directory is gone; an empty agents/ would read as a tier that exists and holds nothing.
+  ok('the plugin ships no plugin-scoped agents — one discovery path, not two',
+     !existsSync(PLUGIN_AGENTS))
   ok('the user-agents/ dir is not empty',
      existsSync(SCOPED_AGENTS) && readdirSync(SCOPED_AGENTS).filter(f => f.endsWith('.md')).length > 0)
   let preloadsSeen = 0
@@ -1176,8 +1183,10 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 // directories of all three repos directly, so a dangling `skills:` entry is caught in the file the
 // author edits, whether or not the link that would surface it exists.
 {
+  // No join(ROOT, 'agents'): this plugin ships no plugin-scoped agent, and listing a
+  // directory that does not exist made the walk report a missing repo rather than a
+  // deliberate absence.
   const REPOS = [
-    join(ROOT, 'agents'),
     join(ROOT, 'user-agents'),
     join(homedir(), 'projects', 'teaching', 'user-agents'),
     join(homedir(), 'dotfiles', '.claude', 'agents'),
@@ -1220,7 +1229,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
       }
     }
   }
-  ok('all three repos shipping agents were walked', repos === REPOS.length, String(repos))
+  ok('every repo shipping agents was walked', repos === REPOS.length, String(repos))
   ok('preload entries were actually checked', entries >= 10, String(entries))
 
   // NON-VACUITY: the resolver must reject a name that is not there, and accept one that is.
