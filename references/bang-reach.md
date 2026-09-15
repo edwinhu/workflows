@@ -28,7 +28,7 @@ literal but absent, which reads exactly like the mechanism failing. Verify in a 
 
 Two things, both of which live beside the skill:
 
-- **Auto-loading `references/*.md`** — `` !`cat ${CLAUDE_SKILL_DIR}/references/rules.md` `` beats a
+- **Auto-loading `references/*.md`** — a bang that `cat`s a file from the skill's own `references/` directory beats a
   `Read()` instruction the model may skip, and beats pasting the content into `SKILL.md`, which
   then has two copies to keep in sync.
 - **Listing a directory** so an added file announces itself — and made to EXIT 2 when it finds

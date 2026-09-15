@@ -29,6 +29,8 @@ MARKET=.claude-plugin/marketplace.json
 CAPS=.claude-plugin/capabilities.json
 CONTRACT=tests/public-extension-contract.test.ts
 
+check_agrees() { [ "$(observed | awk '{print $NF}' | sort -u | wc -l)" -eq 1 ]; }
+
 current() { python3 -c "import json;print(json.load(open('$PLUGIN'))['version'])"; }
 
 # Every site, as (label, actual-value) pairs. Sourced from the files themselves so this
@@ -78,7 +80,18 @@ if ! [[ "$NEW" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   exit 2
 fi
 OLD="$(current)"
-[ "$OLD" = "$NEW" ] && { echo "already at $NEW" >&2; exit 2; }
+# "Already at X" is judged by whether ALL SIX agree, not by plugin.json alone. Reading one
+# site made the script refuse the very repair it exists to perform: plugin.json sat at
+# 6.23.0 while the other five stayed at 6.22.0, and every bump to 6.23.0 was turned away as
+# redundant. A version spread across six files needs all six to agree before "already" is
+# true of anything.
+if [ "$OLD" = "$NEW" ]; then
+  if observed | grep -q "MISMATCH\|$(printf '%s' "$NEW" | sed 's/[.]/\\./g')" && ! check_agrees; then
+    echo "plugin.json already reads $NEW but the other sites do not — repairing" >&2
+  else
+    echo "already at $NEW, and all six agree" >&2; exit 2
+  fi
+fi
 
 python3 - "$PLUGIN" "$MARKET" "$CAPS" "$CONTRACT" "$OLD" "$NEW" <<'PY'
 import json, re, sys
