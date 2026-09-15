@@ -85,7 +85,10 @@ if [ -z "$FARM" ]; then
   if [ -f "$SKILL/../farm-out/scripts/farm.sh" ]; then
     FARM="$SKILL/../farm-out/scripts/farm.sh"
   else
-    FARM="$HOME/.claude/skills/farm-out/scripts/farm.sh"
+    # farm-out is a skill INSIDE this plugin, so the installed path carries the plugin
+    # segment. The old fallback, $HOME/.claude/skills/farm-out/..., resolves nowhere and
+    # would have failed at exactly the moment the sibling lookup did.
+    FARM="$HOME/.claude/skills/workflows/skills/farm-out/scripts/farm.sh"
   fi
 fi
 
