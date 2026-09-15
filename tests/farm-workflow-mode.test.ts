@@ -6,7 +6,7 @@ import { spawnSync } from 'node:child_process'
 
 const FARM = join(import.meta.dir, '..', 'skills', 'farm-out', 'scripts', 'farm.sh')
 
-// --workflow is the ONLY mode craft-dispatch.sh and craft-redispatch.sh use. Every other test
+// --workflow is the ONLY mode work-dispatch.sh and work-redispatch.sh use. Every other test
 // in this repo drives --tasks, so the production path shipped unverified.
 function workflowRun() {
   const tmp = mkdtempSync(join(tmpdir(), 'wfmode-'))

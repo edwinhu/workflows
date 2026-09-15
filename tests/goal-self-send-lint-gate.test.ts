@@ -14,7 +14,7 @@ import { join } from 'node:path'
  */
 
 const REPO = join(import.meta.dir, '..')
-const SEND = join(REPO, 'skills/craft/scripts/goal-self-send.sh')
+const SEND = join(REPO, 'skills/work/scripts/goal-self-send.sh')
 const NO_SESSION = ''
 const UNREACHABLE_SESSION = 'goal-lint-gate-test-not-a-real-session'
 
@@ -76,7 +76,7 @@ describe('the goal-and-loop gate on self-send', () => {
 
   test('what compose-goal.sh emits passes silently — craft dispatches are untouched', () => {
     const composed = spawnSync(
-      join(REPO, 'skills/craft/scripts/compose-goal.sh'),
+      join(REPO, 'skills/work/scripts/compose-goal.sh'),
       ['/p/plan.md', '/tmp/r', '6', '0'],
       { encoding: 'utf8' },
     )

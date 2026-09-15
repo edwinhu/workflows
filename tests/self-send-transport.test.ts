@@ -23,7 +23,7 @@ import { join } from 'node:path'
  */
 
 const REPO = join(import.meta.dir, '..')
-const SEND = join(REPO, 'skills/craft/scripts/goal-self-send.sh')
+const SEND = join(REPO, 'skills/work/scripts/goal-self-send.sh')
 const SID = 'transport-test-session'
 
 function runWithStubHerdr(arg: string) {

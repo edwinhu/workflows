@@ -132,7 +132,7 @@ installed copy under `~/.claude/skills/workflows/` — that copy is overwritten 
 **This is a preference, not a fix.** The resolver honours `plansDirectory` at either tier and
 falls back to `.claude/plans` when it is unset, so unset is a working default and nothing is
 broken without it. Setting it at the **user** tier covers every project at once, which is
-usually what you want (`skills/craft/SKILL.md`).
+usually what you want (`skills/work/SKILL.md`).
 
 Read both tiers first:
 

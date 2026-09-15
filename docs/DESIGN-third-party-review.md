@@ -15,7 +15,7 @@ The opt-in is `"thirdParty": ["codex"]` or `["gemini"]` inside the plan's `craft
 `workflow.js` runs one runner agent per named model, in parallel with the review leg, after the
 per-task verifiers have passed. Each runner executes ONE external CLI over the working-tree changes,
 parses the result, and returns `{model, status, findings[], raw?}`. The invocation, diff scoping,
-timeout and parse rules live in `skills/craft/references/third-party.md` — one document, read by the
+timeout and parse rules live in `skills/work/references/third-party.md` — one document, read by the
 runner at dispatch time.
 
 ## Settled questions

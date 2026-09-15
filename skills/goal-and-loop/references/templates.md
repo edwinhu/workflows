@@ -19,7 +19,7 @@ Filled in, for an unattended night:
 `bash skills/wrds/scripts/parse_npx/measure.sh --xml-error-rate` prints a rate below 0.01 and
 exits 0 — or the rounds field in .craft/<run>/args.json reads 15 or more — `jq -r .rounds` it to
 check — or the run has been going 480 minutes or more, which
-`bash skills/craft/scripts/craft-elapsed.sh .craft/<run> 480` prints and settles. Standing
+`bash skills/work/scripts/work-elapsed.sh .craft/<run> 480` prints and settles. Standing
 authority: commit at each green round, pick the next defect yourself, re-dispatch without asking.
 When a round returns, take the next action rather than proposing it; the only terminal blockers are
 a missing credential, a dead grid, or an action that would touch production.
@@ -74,9 +74,9 @@ Rewrite:
 
 ```
 /goal craft has returned PASS for .planning/npx-iss-reconciliation.md —
-`bash skills/craft/scripts/craft-result.sh .craft/0827-npx-iss/result.json` exits 0 — or the rounds
+`bash skills/work/scripts/work-result.sh .craft/0827-npx-iss/result.json` exits 0 — or the rounds
 field in .craft/0827-npx-iss/args.json reads 6 or more — `jq -r .rounds` it to check — or the run
-has been going 480 minutes or more, which `bash skills/craft/scripts/craft-elapsed.sh
+has been going 480 minutes or more, which `bash skills/work/scripts/work-elapsed.sh
 .craft/0827-npx-iss 480` prints and settles. On FAIL: read the surviving blocking findings, amend
 the plan, re-dispatch — in that order, without asking.
 ```
@@ -97,7 +97,7 @@ Rewrite — set when the recon is dispatched, not after it lands:
 /goal the six parked ambiguous operations are settled and no new 504 on an idempotent verb parks —
 `bun test tests/ambiguous-settlement.test.ts` exits 0 — or the rounds field in
 .craft/0828-ambiguous-settlement/args.json reads 4 or more — `jq -r .rounds` it to check — or the
-run has been going 300 minutes or more, which `bash skills/craft/scripts/craft-elapsed.sh
+run has been going 300 minutes or more, which `bash skills/work/scripts/work-elapsed.sh
 .craft/0828-ambiguous-settlement 300` prints and settles. Standing authority: commit and push green
 work, bump the patch version, and plan the next round yourself. Recon landing is not a stopping
 point — write the plan and dispatch it in the same turn.
@@ -136,6 +136,6 @@ stopped at 01:42 with five hours of night left.
 
 ## What a conforming goal looks like when it is already right
 
-`skills/craft/scripts/compose-goal.sh` emits one for every craft run and passes the lint clean. Its
+`skills/work/scripts/compose-goal.sh` emits one for every craft run and passes the lint clean. Its
 header comment records why each clause is worded as it is — every one of them was added or removed
 in response to a measured stall. Read it before inventing a new clause.

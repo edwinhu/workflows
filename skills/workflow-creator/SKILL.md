@@ -16,7 +16,7 @@ hooks:
 # workflow-creator — a workflow is a set of parameters, not a program
 
 This skill designs workflows. It does not carry its own lifecycle: the lifecycle is
-[craft](${CLAUDE_PLUGIN_ROOT}/skills/craft/SKILL.md), and workflow-creator supplies the
+[craft](${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md), and workflow-creator supplies the
 domain — the CLARIFY axes, the lenses, the mechanical checks, the authority text.
 
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
@@ -33,7 +33,7 @@ anything else:
 
 ---
 
-!`cat ${CLAUDE_PLUGIN_ROOT}/skills/craft/SKILL.md`
+!`cat ${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md`
 
 ---
 
@@ -43,7 +43,7 @@ anything else:
 parameters to craft's `workflow.js`**. It does *not* ship a `workflow.js` of its own. The spine
 already exists; a new workflow is a task table, a set of lenses, a set of mechanical checks, the
 `refs` that carry its rules, and its `authorityExtra` — all passed to
-`${CLAUDE_PLUGIN_ROOT}/skills/craft/workflow.js`. That is the whole deliverable, and this skill
+`${CLAUDE_PLUGIN_ROOT}/skills/work/workflow.js`. That is the whole deliverable, and this skill
 is itself the worked example: it is a SKILL.md and nothing more.
 
 Emitting a `.js` per workflow is how one shared spine quietly becomes N spines, one delegation at a
@@ -97,7 +97,7 @@ and is now P1/P2/P4/P6.
 command whose exit code is the whole mechanical verdict —
 [`scripts/check.sh`](${CLAUDE_SKILL_DIR}/scripts/check.sh) here, one leg per check, none
 short-circuiting. A list of N commands drops one silently and nothing reports a check it never knew
-about; and craft re-runs a claimed mechanical pass in a shell (`craft-result.sh`), which is
+about; and craft re-runs a claimed mechanical pass in a shell (`work-result.sh`), which is
 affordable for one command and not for N. **P10** refuses a second `mechanicalChecks` entry; a
 genuine exception is declared with `<!-- wc-probe: ignore-entry-point -->`.
 
@@ -205,7 +205,7 @@ const args = {
 
     { key: "spine-fidelity",
       agentType: "Explore",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/craft/SKILL.md"],
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md"],
       prompt: "Judge whether the generated skill supplies parameters to craft's spine rather than re-deriving one. Findings: a second lifecycle re-implemented inside the skill instead of parameterizing the spine in the refs; a domain .js that duplicates what craft's workflow.js already does; an orchestrator doing work a dispatched agent should do; a phase named in the plan that no task, lens or mechanical check actually covers; a phase that runs but whose result reaches no gate; any of craft's five phases silently dropped. Severity: MAJOR at minimum, CRITICAL where a dropped phase leaves a gated dimension certified by nothing." },
   ],
 
@@ -222,7 +222,7 @@ Dispatch it the same way Phase 4 does; the built-in `Workflow` tool is denied by
 
 ```bash
 # Dispatch EXACTLY as craft's Phase 4 states it — detached via `setsid nohup`, absolute
-# --args/--out, then its wait loop, then craft-result.sh. Do not copy the command here:
+# --args/--out, then its wait loop, then work-result.sh. Do not copy the command here:
 # this file already carried a foreground, relative-path copy that craft's own rules
 # contradict, and a generator's examples become everyone's dispatch.
 ```
@@ -365,7 +365,7 @@ const args = {
 
     { key: "spine-fidelity",
       agentType: "Explore",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/craft/SKILL.md"],
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md"],
       prompt: "Judge whether the generated skill supplies parameters to craft's spine rather than re-deriving one. Findings: a second lifecycle re-implemented inside the skill instead of parameterizing the spine in the refs; a domain .js that duplicates what craft's workflow.js already does; an orchestrator doing work a dispatched agent should do; a phase named in the plan that no task, lens or mechanical check actually covers; a phase that runs but whose result reaches no gate; any of craft's five phases silently dropped. Severity: MAJOR at minimum, CRITICAL where a dropped phase leaves a gated dimension certified by nothing." },
 
     { key: "scope-fidelity",
@@ -376,7 +376,7 @@ const args = {
 
   authorityExtra: [
     "DOMAIN RULE — what you are building.",
-    "A workflow is a SKILL that supplies parameters to craft's workflow.js at ${CLAUDE_PLUGIN_ROOT}/skills/craft/workflow.js. It does NOT ship a workflow.js of its own. The deliverable is a task table, lenses, mechanicalChecks, refs and authorityExtra — passed to the existing spine. The skill does not do the work and does not compute the verdict; craft does both.",
+    "A workflow is a SKILL that supplies parameters to craft's workflow.js at ${CLAUDE_PLUGIN_ROOT}/skills/work/workflow.js. It does NOT ship a workflow.js of its own. The deliverable is a task table, lenses, mechanicalChecks, refs and authorityExtra — passed to the existing spine. The skill does not do the work and does not compute the verdict; craft does both.",
     "IRON LAW: if you find yourself wanting to write a workflow.js, craft is missing a PARAMETER. Ask which craft parameter would make the script unnecessary, and propose generalizing craft instead — that is how mechanicalChecks, refs, authorityExtra and the agentType overrides all came to exist. A parameter serves every future workflow; a private .js serves one and forks the spine. Only after that question genuinely answers 'none' — a true fan-out with its own gate over its own index — may a .js be written, and the plan must record which generalization was considered and why it did not fit.",
     "A domain workflow is referenced by {scriptPath: '<absolute path>'}, NEVER by bare name: a bare name resolves only through .claude/workflows/, so a script shipped alongside a skill is unreachable by its own meta.name.",
     "Enforcement in the generated artifact is structural where structure can carry it — a Workflow script has no Write tool — and a hook only where structure cannot.",
@@ -394,12 +394,12 @@ is dead on arrival. `farm.sh` sets `FARM_OUT_CHILD=1`, which is what lets its ch
 
 ```bash
 # Dispatch EXACTLY as craft's Phase 4 states it — detached via `setsid nohup`, absolute
-# --args/--out, then its wait loop, then craft-result.sh. Do not copy the command here:
+# --args/--out, then its wait loop, then work-result.sh. Do not copy the command here:
 # a foreground or relative-path copy contradicts craft's own rules and dies mid-run.
 ```
 
 `farm.sh` exits 2 on a malformed call and non-zero when `--out` came back missing or not a JSON
-object; `craft-result.sh` then refuses (exit 2) unless that object carries craft's **seven** required
+object; `work-result.sh` then refuses (exit 2) unless that object carries craft's **seven** required
 return keys — all three selectors included — at the right types, **and** re-runs every
 mechanical check the result claims, refusing when the shell's exit code disagrees with the claimed
 one. It adjudicates rather than validating shape: **its exit code is the verdict** — 0 pass, 1 fail,
@@ -867,7 +867,7 @@ run. Inferring it instead would mean guessing, and a wrong guess **fails silent*
 P10 and P11 judge what a craft-args fence *declares*; P12 judges how the file **dispatches** it. Two
 clauses, over any file emitting at least one fence:
 
-- **(a) CRITICAL** — the file names some *other* runner script and never names `craft-dispatch.sh`.
+- **(a) CRITICAL** — the file names some *other* runner script and never names `work-dispatch.sh`.
   That script is craft's entry point and owns the gates that run *before* the workflow does — TIER 1
   `plan-lint`, the TIER 2 `redCommand` probe, TIER 2b `plan-preflight`. A hand-rolled runner line
   skips all three, and the skip leaves no trace afterwards: the run simply proceeds ungated. Keyed
@@ -946,7 +946,7 @@ run, alongside `SKILL.md`'s `lens-set-differs scope-fidelity` declaration, which
 | Another deterministic check is needed | add a second `mechanicalChecks` entry beside the first | add a **leg to `check.sh`** — the entry point's exit code is the whole mechanical verdict, a check declared beside it is one nothing reports when it is dropped, and P10 refuses the second entry unless `<!-- wc-probe: ignore-entry-point -->` says why |
 | Generated workflow needs a lifecycle | write a second spine inside the skill | supply parameters to an existing spine; a skill that re-derives a lifecycle is the finding `spine-fidelity` looks for |
 | Referencing a domain workflow | by its `meta.name` | `{scriptPath: "<absolute path>"}` — a bare name resolves only through `.claude/workflows/` |
-| Dispatching craft (or any workflow script) | the built-in `Workflow` tool | the guard at `~/.claude/hooks/main-thread-guard.sh` denies `Workflow` unconditionally, so the call never runs — go through `farm.sh --workflow … --args … --out …` and validate the result file with `craft-result.sh`. Same guard denies `Agent` for non-allowlisted subagent types; `Explore` and `Plan` stay allowlisted |
+| Dispatching craft (or any workflow script) | the built-in `Workflow` tool | the guard at `~/.claude/hooks/main-thread-guard.sh` denies `Workflow` unconditionally, so the call never runs — go through `farm.sh --workflow … --args … --out …` and validate the result file with `work-result.sh`. Same guard denies `Agent` for non-allowlisted subagent types; `Explore` and `Plan` stay allowlisted |
 | Write-time guard needed on an implementer | reach for a `hooks:` guard before asking whether a `tools:` allowlist states the same restriction; or declare it in the generated SKILL.md frontmatter, in an agent file under `<skill>/agents/`, or in a PLUGIN-shipped agent's frontmatter | the SKILL.md hook was observed not to reach dispatched agents; `<skill>/agents/` is not a discovery location so nothing registers there; and `hooks:` is IGNORED for plugin-shipped agents, which registers an agent whose guard never fires — put it in an agent's frontmatter under `.claude/agents/` or `~/.claude/agents/` and thread it via `implementerAgentType`, or, inside a plugin, in that plugin's `hooks/hooks.json`. An allowlist PREVENTS the write and a hook only reacts to it, so a restriction expressible as `tools:` should never be a hook — a hook needs reach to work, an allowlist needs none |
 | Guard is in the agent's frontmatter, so the implementer will read what it prints | assume it prints and is read | a **blocking** guard (`exit 2` + stderr) is measured to reach the implementer verbatim; advisory output while exiting 0 is not — make the guard block, or have a `mechanicalCheck` re-derive the finding at gate time |
 | Hook command needs the skill directory | `CLAUDE_SKILL_DIR` in `hooks:` | it does not substitute there — absolute path. **P1 now refuses it**, because the hook silently never fires |
@@ -954,7 +954,7 @@ run, alongside `SKILL.md`'s `lens-set-differs scope-fidelity` declaration, which
 | Task or lens has no domain rules | omit `refs` | `refs: []` — absent is refused, empty is a statement |
 | A documented return shape drifts from the script | assume P5 caught it because the suite is green | P5 compares a SKILL.md's shape against the **script its `scriptPath` names** — check the `crossFileTargets` note to see which file the verdict was actually about |
 | A check needs suppressing | invent a rule name for the marker | only `all`/`hooks`/`paths`/`returns`/`workflow-refs`/`refs`/`entry-point`/`dispatch`/`task-coverage` are honoured; anything else is a `P9` finding, not a suppression. P11 has no `ignore-` form at all — declare the intended difference with `lens-set-differs <key>` |
-| A skill dispatches craft with its own hand-rolled runner line | copy the invocation into the SKILL.md | that skips the gates `craft-dispatch.sh` owns on the way in, and P12 refuses it |
+| A skill dispatches craft with its own hand-rolled runner line | copy the invocation into the SKILL.md | that skips the gates `work-dispatch.sh` owns on the way in, and P12 refuses it |
 | Gate says PASS and the probe was skipped | read `mechanicalRun: 0` as clean | nothing was checked; re-run with the checks present |
 | FAIL with an empty `tasksThatFlagged` | conclude there is nothing to fix | read `mechanicalThatFailed` **and** `lensesThatFlagged` too — the selector has three channels and only one of them owns tasks. A surviving lens finding re-runs the LENS, not a task. Only when all three are empty does an empty selector on a failing run mean re-run everything |
 | A generated gate field is filled in by the agent that did the work | ship it | pair it with a deterministic JS check or a separate low-effort probe — self-report is not a gate |

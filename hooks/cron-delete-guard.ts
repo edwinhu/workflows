@@ -7,7 +7,7 @@
  * the dispatch keeps going detached and nothing comes back for it. Measured 2026-09-14: deleted at
  * round 2 of 6 with the goal unmet, on the reasoning that the run had been halted.
  *
- * In flight is decided as craft-goal-resend.sh decides it -- a run directory holds args.json with
+ * In flight is decided as work-goal-resend.sh decides it -- a run directory holds args.json with
  * no non-empty result.json beside it. That is a property of the filesystem, not of anyone's belief
  * that the run is over, which is exactly where the judgement failed.
  */
@@ -71,7 +71,7 @@ deny(
     "The loop you are deleting is usually what drives that run to completion -- it is what " +
     "re-enters the session to read the verdict, fix what failed and redispatch. Deleting it now " +
     "strands the run: the dispatch keeps going detached and nothing comes back for it. Let the " +
-    "run finish (craft-result.sh exits 0, or the round cap or time ceiling is reached), then " +
+    "run finish (work-result.sh exits 0, or the round cap or time ceiling is reached), then " +
     "delete the loop. If you genuinely mean to abandon the run, set CRAFT_ALLOW_CRON_DELETE=1 " +
     "for the call and say so out loud.",
 );
