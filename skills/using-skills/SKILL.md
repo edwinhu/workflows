@@ -7,6 +7,11 @@ disable-model-invocation: true
 
 # Using Skills
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 **Route before you act.** Before the first tool call of a turn, decide which of these owns the
 task. The main thread's job is routing, not doing.
 
@@ -17,6 +22,7 @@ Read top to bottom; the first row that matches wins.
 | The task is | Route to | How |
 |---|---|---|
 | already-invoked skill (`<command-name>/dev</command-name>` in this turn) | it is **already loaded** | just follow it — never re-invoke |
+| the prompt opens `Implement the following plan:` and the plan's frontmatter has `workflow: <name>` | that skill | `Skill(skill="workflows:<name>")` (as written when plugin-qualified) FIRST — the context was cleared at approval; never craft, never inline |
 | anything "in a new / background / separate / companion session" | **agent-spawn** skill | it is the transport; the real task goes inside its prompt |
 | a feature, bug fix, or engineering change | `/dev` | `Skill(skill="dev")` |
 | data: build/merge/model/profile a dataset, a table, a figure, a number | `/ds` | `Skill(skill="ds")` |
@@ -85,10 +91,12 @@ and their own material is more current and more specific than your weights.
 
 Order, and stop at the first that answers:
 
-1. **The wiki** — `qmd query "<question>" -n 10`, then `qmd get "#docid"`. ~490 concept/QA articles
-   plus ~880 case notes in `~/notes`, covering con law, corporations, civ pro, contracts, evidence,
-   tax, securities, corporate governance and finance/econ. Works from any directory; the index is
-   global. Answer from the note and cite it by path.
+1. **The wiki** — ~490 concept/QA articles plus ~880 case notes in `~/notes`, covering con law,
+   corporations, civ pro, contracts, evidence, tax, securities, corporate governance and
+   finance/econ. Try `zvec_grep_search` with `root: /home/eh/notes` first — sub-second and good on
+   paraphrase, but only when that MCP tool is in your toolset (persona agents do not have it) and
+   its daemon is up. Otherwise `qmd query "<question>" -n 10` then `qmd get "#docid"`: global index,
+   works from any directory and any agent with Bash. Answer from the note and cite it by path.
 2. **`workflows:librarian`** — the user's curated library and the academic literature: NotebookLM,
    Readwise/Reader highlights and saved articles, Google Scholar, Google Drive. Farm it out; main
    chat NEVER calls the `readwise` CLI directly.
@@ -144,7 +152,7 @@ Simplifying a skill's required pattern discards the reason it was loaded.
 | Do a specialist's work inline because it "looks quick" | farm it out — the toolset restriction is the point |
 | Call `Agent` or `Workflow` directly | `farm.sh` (the guard hook will deny it anyway) |
 | Pass a `.png`/`.pdf` to `Read` | look-at |
-| `WebSearch` a question in the user's own domains | `qmd query` first, then `librarian` |
+| `WebSearch` a question in the user's own domains | search the wiki first, then `librarian` |
 | Answer a law/finance question straight from training data | the wiki holds the user's own view — check it |
 | Call the `readwise` CLI from main chat | farm out to `workflows:librarian` |
 | Invoke `skill-creator:skill-creator` or `plugin-dev:*` directly | the `workflows:` wrapper — the built-ins have no validation hooks |

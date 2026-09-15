@@ -7,6 +7,11 @@ user-invocable: false
 
 # NotebookLM CLI (nlm)
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 Manage Google NotebookLM notebooks, sources, notes, chat, and generated content (audio/video overviews, slide decks, apps, reports) via the `nlm` command-line tool.
 
 **Requires:** `nlm` on PATH (nix-managed, built from upstream `tmc/nlm`). Install/update via `cd ~/nix && nix run .#build-switch`.

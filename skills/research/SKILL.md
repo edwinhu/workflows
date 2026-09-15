@@ -7,6 +7,11 @@ user-invocable: false
 
 # Academic Literature Search
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 Multi-source academic search with deduplication, DOI resolution, and journal filtering.
 
 **Always read `${CLAUDE_PLUGIN_ROOT}/references/trusted-journals.local.md` before presenting results.**

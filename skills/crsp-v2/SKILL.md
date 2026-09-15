@@ -5,6 +5,11 @@ description: Use when "CRSP CIZ", "CRSP v2", "CRSP flat file format 2.0", "crsp.
 user-invocable: false
 ---
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 ## Contents
 
 - [Format Enforcement](#format-enforcement)

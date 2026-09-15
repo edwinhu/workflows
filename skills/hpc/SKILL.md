@@ -5,6 +5,11 @@ description: "Use when submitting jobs to UVA HPC (Rivanna/Afton), writing Slurm
 user-invocable: false
 ---
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 ## Contents
 
 - [When to Use What](#when-to-use-what)

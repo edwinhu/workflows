@@ -5,6 +5,11 @@ description: "ALWAYS use before building anything that joins proxy votes to owne
 
 # N-PX × Ownership Panel
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 Builds `out.pass_npx` — item-level ownership joined to each item's per-block
 observed For/Against/Abstain split — entirely on the WRDS grid.
 

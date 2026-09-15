@@ -4,6 +4,11 @@ description: "ALWAYS load before editing ANY .py file that contains @app.cell or
 user-invocable: false
 ---
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 ## Contents
 
 - [Editing and Verification Enforcement](#editing-and-verification-enforcement)

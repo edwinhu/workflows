@@ -319,13 +319,16 @@ def probe(root: Path, *, runner: Path = RUNNER, env: dict | None = None,
           args: tuple[str, ...] = ()) -> Report:
     """Run the probe as the gate runs it and parse the emitted check lines.
 
-    A scratch skill copy gets its own scratch constraint corpus: the real one belongs to the
-    typst plugin and no test may stub or delete it.
+    A scratch skill copy gets its own scratch constraint corpus AND its own scratch typst
+    plugin: both belong to the real typst plugin and no test may stub or delete those.
+    Both resolvers are pointed at the scratch copies here, so a test simulates absence by
+    removing a file from the scratch plugin rather than from the one the machine ships.
     """
     if runner != RUNNER:
         env = dict(os.environ if env is None else env)
         env["WORKSHOP_CONSTRAINT_RUNNER"] = str(
             runner.parent.parent / "constraints" / "run-constraints.py")
+        env["WORKSHOP_OVERFLOW_DRIVER"] = str(scratch_overflow_driver(runner.parent.parent))
     proc = subprocess.run(
         [sys.executable, str(runner), "--plan", str(root / "plan.md"),
          "--project-dir", str(root), *args],
@@ -357,27 +360,45 @@ def replace_section(text: str, heading: str, new_body: str) -> str:
     return new_text
 
 
+# The plugin the probe actually resolved, so a scratch copy of it is a copy of the real thing.
+TYPST_PLUGIN = workshop_deck.OVERFLOW_DRIVER.parent.parent.parent
+
+
 def scratch_skill(tmp_path: Path) -> Path:
     """A writable copy of the skill, so a part it reaches for can be removed or stubbed.
 
-    The constraint corpus lives in the typst plugin, not in this skill, so it is copied in
-    beside the scratch skill as `constraints/` and reached through
-    `WORKSHOP_CONSTRAINT_RUNNER` (see `probe`).
+    Neither the constraint corpus nor the overflow driver lives in this skill -- both belong to
+    the typst plugin, in one copy -- so both are copied in beside the scratch skill, as
+    `constraints/` and `typst/`, and reached through `WORKSHOP_CONSTRAINT_RUNNER` /
+    `WORKSHOP_OVERFLOW_DRIVER` (see `probe`). No test may stub or delete the real ones.
+
+    The typst copy keeps the plugin's own depths: the driver reads `$SCRIPT_DIR/../validation.typ`
+    and its `shared.py` reaches `_shared` at `<plugin>/references/checkers`, so a flattened copy
+    would leave a driver that cannot run for a reason no test is asserting.
     """
     dest = tmp_path / "skill"
+    ignore = shutil.ignore_patterns("__pycache__", "*.pyc")
     shutil.copytree(
         SKILL_ROOT, dest,
         ignore=shutil.ignore_patterns("fixtures", "__pycache__", "*.pyc", ".pytest_cache"),
     )
-    shutil.copytree(
-        CONSTRAINT_RUNNER.parent, dest / "constraints",
-        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
-    )
+    shutil.copytree(CONSTRAINT_RUNNER.parent, dest / "constraints", ignore=ignore)
+    shutil.copytree(TYPST_PLUGIN / "scripts", dest / "typst" / "scripts", ignore=ignore)
+    shutil.copytree(TYPST_PLUGIN / "references" / "checkers",
+                    dest / "typst" / "references" / "checkers", ignore=ignore)
     return dest
 
 
 def scratch_constraint_runner(skill: Path) -> Path:
     return skill / "constraints" / "run-constraints.py"
+
+
+def scratch_overflow_driver(skill: Path) -> Path:
+    return skill / "typst" / "scripts" / "checks" / "check-overflow.sh"
+
+
+def scratch_validation_typ(skill: Path) -> Path:
+    return skill / "typst" / "scripts" / "validation.typ"
 
 
 def scratch_runner(tmp_path: Path) -> Path:
@@ -445,8 +466,8 @@ def stub_constraint_runner(skill: Path, report: dict, *, exit_code: int = 1) -> 
 
 
 def stub_overflow_driver(skill: Path, output: str, *, exit_code: int = 0) -> None:
-    """Replace the vendored overflow driver with one replaying fixed output and a fixed status."""
-    driver = skill / "scripts" / "checks" / "check-overflow.sh"
+    """Replace the scratch overflow driver with one replaying fixed output and a fixed status."""
+    driver = scratch_overflow_driver(skill)
     driver.write_text(f"#!/bin/bash\ncat <<'EOF'\n{output}\nEOF\nexit {exit_code}\n", encoding="utf-8")
     driver.chmod(0o755)
 
@@ -1252,9 +1273,11 @@ def test_wid_fails_closed_when_the_handout_pdf_cannot_be_read(tmp_path: Path):
 
 def test_wid_fails_closed_when_the_vendored_validation_typ_is_absent(tmp_path: Path):
     # WID measures the HANDOUT build, through the wrapper the overflow driver uses. Without
-    # validation.typ there is no wrapper, so there is no measurement.
+    # validation.typ there is no wrapper, so there is no measurement. Simulated through the
+    # resolver: `validation.typ` is the one beside whichever driver resolved, so removing it
+    # from the scratch plugin is what an uninstalled/incomplete typst plugin looks like.
     skill = scratch_skill(tmp_path)
-    (skill / "scripts" / "validation.typ").unlink()
+    scratch_validation_typ(skill).unlink()
     report = probe(stage(tmp_path), runner=skill / "scripts" / "workshop-deck.py")
     assert report.status("WID") == "FAIL", report["WID"]
     assert "validation.typ` is absent" in report["WID"]["detail"]
@@ -1277,10 +1300,12 @@ def test_ovr_fails_when_the_driver_reports_overflow(tmp_path: Path):
 
 
 def test_ovr_fails_closed_when_the_driver_exits_two(tmp_path: Path):
-    # THE upstream defect reproduced exactly: check-overflow.sh exits 2 when its vendored
-    # validation.typ is missing, and typst-overflow.py called that clean.
+    # THE upstream defect reproduced exactly: check-overflow.sh exits 2 when the validation.typ
+    # beside it is missing, and typst-overflow.py called that clean. Driven through the resolver:
+    # WORKSHOP_OVERFLOW_DRIVER points into a scratch typst plugin, and the validation.typ beside
+    # that driver is removed.
     skill = scratch_skill(tmp_path)
-    (skill / "scripts" / "validation.typ").unlink()
+    scratch_validation_typ(skill).unlink()
     report = probe(stage(tmp_path), runner=skill / "scripts" / "workshop-deck.py")
     assert report.status("OVR") == "FAIL", report["OVR"]
     assert "validation.typ` is absent" in report["OVR"]["detail"]
@@ -1305,8 +1330,11 @@ def test_ovr_fails_closed_when_typst_is_unavailable(tmp_path: Path):
 
 
 def test_ovr_fails_closed_when_the_vendored_driver_is_absent(tmp_path: Path):
+    # There is no vendored driver any more: the skill resolves the typst plugin's single copy,
+    # so absence is simulated through the resolver -- WORKSHOP_OVERFLOW_DRIVER names a path in
+    # the scratch plugin and that path is removed. A machine without the typst plugin sees this.
     skill = scratch_skill(tmp_path)
-    (skill / "scripts" / "checks" / "check-overflow.sh").unlink()
+    scratch_overflow_driver(skill).unlink()
     report = probe(stage(tmp_path), runner=skill / "scripts" / "workshop-deck.py")
     assert report.status("OVR") == "FAIL", report["OVR"]
     assert "overflow driver is absent" in report["OVR"]["detail"]

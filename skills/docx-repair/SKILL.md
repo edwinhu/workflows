@@ -6,6 +6,11 @@ user-invocable: false
 
 # DOCX Repair (Google Docs / Word Online damage)
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 Cloud editors damage a `.docx` in **independent ways**. This skill is the front door for all of them; run only the track(s) you need.
 
 | Damage class | Symptom | Fix |

@@ -19,6 +19,11 @@ This skill designs workflows. It does not carry its own lifecycle: the lifecycle
 [craft](${CLAUDE_PLUGIN_ROOT}/skills/craft/SKILL.md), and workflow-creator supplies the
 domain — the CLARIFY axes, the lenses, the mechanical checks, the authority text.
 
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
+The names and headings are the index; for a subject none of them carries,
+`grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
 Craft's mechanics live in craft and are stated **once**. Everything below is a **delta** against
 them: where a phase has no domain variation, this file says so and adds nothing. Restating them
 here is how they drift — this file has already shipped a stale copy of craft's Phase 3 once.
@@ -432,7 +437,9 @@ single path: craft grew a read-only branch, so there is one domain note per bran
 
 Four audiences need a generated workflow's REFERENCE DOCUMENTS, and each has its own delivery
 point. Constraints are not on this table — they reach an agent through the index skill it names in
-its own `skills:` frontmatter, never through `refs`:
+its own `skills:` frontmatter, never through `refs`. That preload is UNPROVEN on 2.1.257 (see the
+Judgement bullet above and `references/bang-reach.md`); an agent with no `Skill` tool has no
+fallback when it does not land, so probe your own dispatch path before relying on it:
 
 | audience | delivery |
 |---|---|
@@ -494,14 +501,20 @@ search belongs at USE time:
 > The names are the index. For a subject no name carries, grep the bodies:
 > `grep -il <term> <the references dir>/*.md`.
 
-A skill lists its own `references/` AND its own `scripts/` at load with one line —
-`!`skill-toc ${CLAUDE_SKILL_DIR}``. See `skill-creator`, *The two
-TOCs*, for what it renders and why it is a script. Do not hand-write either list.
+A skill lists its own `references/` AND its own `scripts/` at load with one line:
+
+```
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+```
+
+`skill-toc` ships in `plugin-utils/bin/`, and Claude Code puts every enabled plugin's `bin/` on the
+Bash tool's PATH, so that bare command resolves from any plugin's SKILL.md. See `skill-creator`,
+*The two TOCs*, for what it renders and why it is a script. Do not hand-write either list.
 
 **THREE THINGS WILL BITE, all measured; `references/bang-reach.md` has the evidence.** A bang runs
 only in an INVOKED file — a SKILL.md or a slash command — and is dead text in an agent definition
-or a CLAUDE.md, so a grader gets a computed set by naming the skill in `skills:`, never by a bang
-of its own. NO BACKTICK may appear inside the command, escaped or not: the parser truncates the
+or a CLAUDE.md, so a grader never gets a computed set from a bang of its own — it names the skill
+in `skills:` and is TOLD to invoke it, or the orchestrator inlines the index into its prompt. NO BACKTICK may appear inside the command, escaped or not: the parser truncates the
 span at the first one and bash dies on the fragment, aborting the whole load. And an empty result
 must be made to EXIT 2 — a search exiting 1 is tolerated, the bang renders nothing, and the reader
 takes an empty list for a clean scope.

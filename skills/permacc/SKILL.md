@@ -5,6 +5,11 @@ description: "ALWAYS use when URLs in a manuscript need permanent archived copie
 
 # perma.cc
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 Archives a URL to a permanent, court-citable snapshot. The whole skill exists
 because **one HTTP 400 means three different things**, and the message names
 only the least likely one.

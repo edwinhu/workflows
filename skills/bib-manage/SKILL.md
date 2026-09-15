@@ -5,6 +5,11 @@ description: "ALWAYS use when a manuscript's BIBLIOGRAPHY is the thing being fix
 
 # Bib-manage
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 Owns the bibliography as an **index**: every entry pointing at the right PDF, and
 that PDF being the version of record.
 

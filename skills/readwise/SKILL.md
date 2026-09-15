@@ -9,6 +9,11 @@ user-invocable: false
 
 # Readwise
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 <EXTREMELY-IMPORTANT>
 ## IRON LAW: Main Chat NEVER Calls Readwise CLI
 

@@ -5,6 +5,11 @@ description: Use when "query WRDS", "pull SEC filings", "access Compustat/CRSP/E
 user-invocable: false
 ---
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 > **Building a proxy-voting panel?** Use the **`npx-ownership-panel`** skill, not
 > this one. It owns `risk.voteanalysis_npx` (238M rows / 329 GB), the ISS->CRSP
 > fund crosswalk, and the four-leg SGE pipeline that produces the analysis-ready

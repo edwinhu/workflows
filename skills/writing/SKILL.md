@@ -7,6 +7,11 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanM
 
 # writing — a document, run through craft with a computed grammar and citation gate
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 The lifecycle is [craft](${CLAUDE_SKILL_DIR}/../craft/SKILL.md). Read it and follow it.
 This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lenses,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
@@ -78,7 +83,10 @@ source area the librarian could not fill is a planned evidence task, not a claim
 
 ## Phase 2 — PLAN
 
-Craft's Phase 2. The plan must be written in the **required plan grammar** below, because
+Craft's Phase 2. The plan opens with frontmatter `workflow: writing` — required, so a context clear
+at approval resumes here and not in craft.
+
+The plan must be written in the **required plan grammar** below, because
 `scripts/writing_section_index.py` **parses it** and is the only canonical grammar parser — there is
 no LLM discovery fallback and no second reader. A heading it cannot find is a section nothing checks.
 

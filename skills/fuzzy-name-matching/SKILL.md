@@ -15,6 +15,11 @@ user-invocable: true
 
 # Fuzzy Name Matching
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 Fast many-to-many fuzzy entity matching: char n-gram TF-IDF + sparse top-k
 cosine similarity (the ING banks recipe). Scales to ~10⁵ × 10⁵ on a laptop
 in seconds, ~10⁶ × 10⁶ with chunking.

@@ -5,6 +5,11 @@ description: "Run ALL delegated agent work through the CLIProxyAPI wrappers. Use
 
 # farm-out
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 Delegation runs in a **separate process** on a CLIProxyAPI wrapper, not in this
 session. This session keeps its own auth, Remote Control, and connectors; the
 work runs on proxy models.

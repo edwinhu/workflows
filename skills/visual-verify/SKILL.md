@@ -5,6 +5,11 @@ description: "This skill should be used when the user asks to 'verify visual out
 user-invocable: false
 ---
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 **Announce:** "I'm using visual-verify to set up a render-vision-fix loop."
 
 <EXTREMELY-IMPORTANT>

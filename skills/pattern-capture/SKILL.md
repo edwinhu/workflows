@@ -6,6 +6,11 @@ user-invocable: false
 
 # Pattern Capture
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 Detect repetitive feedback across sessions and convert it into the right enforcement artifact — a memory entry, a validation hook, an enforcement pattern, or a standalone skill.
 
 ## The Problem This Solves

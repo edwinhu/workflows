@@ -6,6 +6,11 @@ user-invocable: true
 
 # Law & Economics DOCX Export
 
+**What this skill carries.** The names and headings are the index; for a subject none of
+them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+!`skill-toc ${CLAUDE_SKILL_DIR}`
+
 Build a submission-ready Word manuscript from markdown for the Chicago-style
 law-and-economics journals (JLE, JLS, JLEO, ALER) and for job market papers
 written for that audience.
