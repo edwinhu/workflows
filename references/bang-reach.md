@@ -47,13 +47,30 @@ Two things, both of which live beside the skill:
 Anything else is better as a normal tool call. A bang is not a way to run work; it is a way to make
 a file's content computed rather than typed.
 
-## `skills:` frontmatter does not preload either
+## `skills:` frontmatter — documented to preload, measured not to
 
-An agent definition cannot compute, and naming a skill in its frontmatter does not fill the gap.
-Measured 2026-09-15 on 2.1.257, under `claude -p --agent` and under the farm-out proxy: an agent
-declaring `skills: [typst:typst]` reports the skill's content NOT PRESENT. What the frontmatter
-buys is the skill appearing in that agent's available-skills listing, name and description only —
-INVOCABLE, not loaded. An agent without the `Skill` tool therefore cannot reach it at all.
+`code.claude.com/docs/en/sub-agents` says the field injects "the complete skill content into the
+subagent's context immediately at startup". On 2.1.257 it did not, in four probes:
+
+| dispatch | agent | `skills:` | result |
+|---|---|---|---|
+| `claude -p --agent` | `workshop-reviewer` | `typst:typst` | NOT PRESENT |
+| farm-out proxy | `workshop-reviewer` | `typst:typst` | NOT PRESENT |
+| `claude -p --agent` | throwaway | `typst` (bare) | NOT PRESENT |
+| `claude -p --agent` | throwaway | `typst:typst` | NOT PRESENT |
+
+Neither name form reaches it, so this is not the plugin-qualified spelling. The docs also say a
+missing or policy-disabled skill is "skipped silently", with a warning only in the debug log —
+`--debug` under `-p` emitted nothing, so the skip is not observable from here either way.
+
+**What is NOT established:** every probe went through the CLI `--agent` path, because the
+main-thread guard routes delegation to farm-out and farm-out shells out to the same CLI. The
+in-session `Agent` tool path is untested, and `farm.sh`'s own header already records an SDK-vs-CLI
+divergence in agent preloading. So the honest rule is not "the field does nothing" but: **do not
+assume a preload you have not seen in the dispatch path you actually use.** Ask the agent whether
+the content is present; it is one probe.
+
+An agent with no `Skill` tool has no fallback if the preload does not land.
 
 ## The consequence for agents
 
