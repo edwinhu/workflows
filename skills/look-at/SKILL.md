@@ -7,10 +7,12 @@ user-invocable: false
 
 # Look At - Multimodal File Analysis
 
-**Deeper references, listed from the directory so a new one needs no edit here.** The names are
-the index; for a subject no name carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+**What this skill carries.** The names and headings are the index; for a subject none of them
+carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
 
-!`n=0; for f in ${CLAUDE_SKILL_DIR}/references/*.md; do [ -e "$f" ] || continue; case "$(basename "$f")" in _*) continue;; esac; printf -- "- %s — %s\n" "$(basename "$f")" "$(sed -n "s/^# //p" "$f" | head -1)"; sed -n "s/^## //p" "$f" | paste -sd "|" - | sed "s/|/ · /g;s/^/    /"; n=$((n+1)); done; [ "$n" -gt 0 ] || { echo "!! no references found — this skill names references it cannot see"; exit 2; }`
+!`${CLAUDE_PLUGIN_ROOT}/scripts/skill-toc ${CLAUDE_SKILL_DIR}`
+
+
 
 Multi-backend vision router for images, PDFs, video, diagrams and other media. Defaults to `agy -p` on the `vision_antigravity` role in `scripts/lib/gemini-models.json` — Gemini via Antigravity OAuth, unmetered — which reads images, PDFs and video natively. Audio auto-routes to the metered `api` backend, the only one that handles it. Three further unmetered CLI backends (`claude-code -p`, `codex exec`, Copilot on GPT-5.4) give independent second opinions.
 

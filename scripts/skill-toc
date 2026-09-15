@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+"""Emit a markdown TOC of a skill's references/ and scripts/, for a SKILL.md bang line.
+
+A skill load injects the base DIRECTORY and the SKILL.md body — never the contents of
+either folder. So anything not named in the prose is invisible to the model: measured
+2026-09-14, 16 of 219 reference files and 48 of 156 scripts were named by no SKILL.md.
+
+    skill-toc <skill-dir> [refs|scripts]     both sections when the part is omitted
+
+References list every `## ` heading, because a filename routes badly and a heading routes
+well — `13f-scrape-performance.md` does not say it answers "filings declared windows-1252
+parsed to zero rows", and its heading does. Costs 1.9-2.5% of the bytes it indexes.
+
+Scripts list each file's real summary, which is not its first line: a shebang, a PEP 723
+`/// script` block, `set -euo pipefail` and a lint pragma are all line 1 somewhere in this
+tree. A file with none prints NO SUMMARY LINE rather than its first statement, so the TOC
+names what is undocumented instead of hiding it behind noise.
+
+Exit 2 when the directory is missing or holds nothing — a bang whose command exits 1 is
+TOLERATED by the parser, so an empty listing would load the skill reading as "this skill
+has no references".
+"""
+
+from __future__ import annotations
+
+import re
+import sys
+from pathlib import Path
+
+# A summary is prose in a COMMENT. Anything else on line 1 is machinery: a shebang, a
+# PEP 723 `# /// script` block, `set -euo pipefail`, a shellcheck pragma, or the first
+# statement of the program. Reading those back as a description is worse than admitting
+# the file is undocumented.
+COMMENT = re.compile(r'^\s*(#|//|/\*|\*|"""|\'\'\')')
+NOISE = re.compile(r"^(#!|\s*$)|///|shellcheck|eslint|ruff:|noqa|type:\s*ignore|"
+                   r"wc-probe|@ts-|coding[:=]|^\s*#\s*-\*-")
+STRIP = re.compile(r'^\s*(?:#+|//+|/\*+|\*+/?|"""|\'\'\')\s*')
+
+
+def summary(path: Path) -> str:
+    """The first prose line of the file's leading comment block, or ''.
+
+    Stops at the first line that is not a comment: a file whose header is code has no
+    summary, and inventing one from its first statement is how `set -euo pipefail` ends
+    up in a table of contents.
+    """
+    try:
+        head = path.read_text(encoding="utf-8", errors="ignore").splitlines()[:25]
+    except OSError:
+        return ""
+    in_pep723 = False
+    for raw in head:
+        # PEP 723 wraps dependency metadata in `# /// script` ... `# ///`, all of it
+        # comment-shaped. Its contents read as prose to any line-wise scan.
+        if re.match(r"^\s*#\s*///", raw):
+            in_pep723 = not in_pep723
+            continue
+        if in_pep723 or NOISE.search(raw):
+            continue
+        if not COMMENT.match(raw):
+            return ""          # reached code; the header block is over
+        line = STRIP.sub("", raw).strip().rstrip('"\'')
+        if len(line) > 3:
+            return line[:88]
+    return ""
+
+
+def refs(d: Path) -> list[str]:
+    out = []
+    for f in sorted(d.glob("*.md")):
+        if f.name.startswith("_"):
+            continue
+        text = f.read_text(encoding="utf-8", errors="ignore")
+        h1 = next((l[2:].strip() for l in text.splitlines() if l.startswith("# ")), "")
+        h2 = [l[3:].strip() for l in text.splitlines() if l.startswith("## ")]
+        out.append(f"- {f.name} — {h1}" if h1 else f"- {f.name}")
+        if h2:
+            out.append("    " + " · ".join(h2))
+    return out
+
+
+def scripts(d: Path) -> list[str]:
+    out = []
+    for f in sorted(d.iterdir()):
+        if not f.is_file() or f.name.startswith("_") or ".test." in f.name \
+                or f.suffix in (".json", ".pyc"):
+            continue
+        out.append(f"- {f.name} — {summary(f) or 'NO SUMMARY LINE'}")
+    return out
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) < 2:
+        print("usage: skill-toc <skill-dir> [refs|scripts]", file=sys.stderr)
+        return 2
+    base, want = Path(argv[1]), (argv[2] if len(argv) > 2 else "")
+    lines, looked = [], False
+    for part, fn, head in (("refs", refs, "**References**"), ("scripts", scripts, "**Scripts**")):
+        if want and want != part:
+            continue
+        d = base / ("references" if part == "refs" else "scripts")
+        if not d.is_dir():
+            continue
+        looked = True
+        body = fn(d)
+        if body:
+            lines += ([head, ""] if not want else []) + body + [""]
+    if not looked or not lines:
+        print(f"skill-toc: nothing to index under {base} — this skill names files it "
+              f"cannot see", file=sys.stderr)
+        return 2
+    print("\n".join(lines).rstrip())
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

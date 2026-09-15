@@ -71,6 +71,39 @@ Those two are the whole point: `references/*.md` and `scripts/*.{py,ts,sh}` sitt
 
 **A bang fires in a file that is INVOKED, and is dead text in one INJECTED as ambient context.** It expands in `SKILL.md` loaded via `Skill()` and in `.claude/commands/*.md`. It does NOT expand in an agent `.md`, in `CLAUDE.md` at either tier, or in a skill reached by `Read()` — silently, with no error, whatever the upstream docs say. Measured; see `references/bang-reach.md` for the table and the failure modes (non-zero exit aborts the invocation; a denied permission rule aborts it with no prompt).
 
+#### The two TOCs — a skill's own `references/` and `scripts/`
+
+**A skill IS a SKILL.md with a `references/` folder and a `scripts/` folder, and Claude is told the
+base DIRECTORY but never the contents.** A skill load injects `Base directory for this skill: <path>`
+plus the SKILL.md body; nothing lists either folder. So anything the prose does not name is
+invisible — measured 2026-09-14, 16 of 219 reference files across 10 skills, and **48 of 156
+scripts**, a third of them.
+
+One line emits both:
+
+```
+!`${CLAUDE_PLUGIN_ROOT}/scripts/skill-toc ${CLAUDE_SKILL_DIR}`
+```
+
+`scripts/skill-toc <skill-dir> [refs|scripts]` renders references with every `## ` heading — a
+filename routes badly and a heading routes well — and scripts with each file's real summary. Cost
+is 1.9–2.5% of the bytes indexed, which is what makes progressive disclosure work: the agent reads
+the two files it needs, not thirty. Pair it with one line of prose, since content search cannot
+happen at load time (there is no query yet):
+
+> The names and headings are the index; for a subject none of them carries,
+> `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+
+**Why a script and not a one-liner.** The extraction is fiddly and every wrong version is silent: a
+shebang, a PEP 723 `/// script` block, `set -euo pipefail` and a lint pragma are each line 1 of a
+real file here, and a sed pipeline reported all four as the summary. `skill-toc` requires a genuine
+comment block and prints `NO SUMMARY LINE` otherwise — naming what is undocumented rather than
+hiding it behind noise. 26 of 168 scripts in this plugin print it today.
+
+It exits 2 on an empty or missing directory. That is not fastidiousness: a bang command exiting 1
+is TOLERATED by the parser, so an empty listing loads the skill reading as "this skill has no
+references". `tests/skill-toc.test.ts` pins every case above.
+
 #### Scoped Hooks (PreToolUse / PostToolUse)
 
 Hooks in skill frontmatter fire only while the skill is active — automatically cleaned up when the skill finishes:
