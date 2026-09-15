@@ -7,9 +7,23 @@ import { join, resolve } from "node:path";
 // copy is what agents actually read. See workflow-creator: constraints are never a top-level skill.
 
 const REPO = resolve(import.meta.dir, "..");
+import { execFileSync } from "node:child_process"
+
+function typstRoot(): string {
+  try {
+    const r = execFileSync("typst-plugin-root", [], { encoding: "utf8" }).trim()
+    if (r) return r
+  } catch { /* absent: fall through */ }
+  return resolve(process.env.HOME!, ".claude/skills/typst")
+}
+
 const CANONICAL_ROOTS = [
   join(REPO, "references", "constraints"),
-  resolve(process.env.HOME!, ".claude/skills/typst/references/constraints"),
+  // ASKED, not spelled: typst-plugin-root is on PATH and is the one place that knows the
+  // layout, which moved twice in September. Both historical spellings stay beneath it so
+  // this keeps working against an older install in a plain shell.
+  resolve(typstRoot(), "constraints"),
+  resolve(typstRoot(), "references/constraints"),
 ];
 
 function stripFrontmatter(t: string): string {

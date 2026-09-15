@@ -9,7 +9,22 @@
 // Run: bun tests/overflow-check.test.mjs
 import { resolveTypTarget, isOverflowTarget, resolveCheckScript } from '../hooks/overflow-check.ts'
 const PLUGIN_ROOT = new URL('..', import.meta.url).pathname.replace(/\/$/, '')
-const TYPST_PLUGIN_SCRIPT = `${process.env.HOME}/.claude/skills/typst/scripts/checks/check-overflow.sh`
+import { execFileSync } from 'node:child_process'
+
+/**
+ * Where the typst plugin is, ASKED rather than spelled -- `typst-plugin-root` is on PATH
+ * because Claude Code puts every enabled plugin's bin/ there. The literal is the fallback
+ * for a plain shell where bin/ is not on PATH.
+ */
+function typstRoot() {
+  try {
+    const r = execFileSync('typst-plugin-root', [], { encoding: 'utf8' }).trim()
+    if (r) return r
+  } catch { /* absent: fall through */ }
+  return `${process.env.HOME}/.claude/skills/typst`
+}
+
+const TYPST_PLUGIN_SCRIPT = `${typstRoot()}/scripts/checks/check-overflow.sh`
 import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, dirname } from 'node:path'
