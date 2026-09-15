@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["polars", "pytest"]
+# ///
+# Dependencies are declared HERE, not in whoever runs the suite: a generic gate cannot know
+# what a suite imports, and guessing wrong fails cases on a missing module, which reads as
+# broken contracts rather than a misconfigured runner.
 """Contract suite for ${CLAUDE_PLUGIN_ROOT}/skills/ds/scripts/ds-dq.py.
 
 WHY THIS EXISTS
