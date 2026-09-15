@@ -70,13 +70,13 @@ ok('prose notes are not a target', isOverflowTarget(fixture('notes/09-disclosure
 
 // (d) SCRIPT RESOLUTION. The typst plugin is the single source for Typst tooling and its
 // check-overflow.sh carries fixes the workflows copy lacks (project-root discovery for a deck that
-// imports ../../templates/theme.typ). Prefer it; fall back to the vendored copy so the hook still
-// works where the typst plugin is not installed.
+// imports ../../templates/theme.typ). There is no longer a vendored copy to fall back to: one copy
+// of every checker lives in the typst plugin, and a machine without it has NO overflow check and
+// must be told so rather than handed a shorter run that reports clean.
 ok('prefers the typst plugin script when present',
    resolveCheckScript('/nonexistent-plugin-root', TYPST_PLUGIN_SCRIPT) === TYPST_PLUGIN_SCRIPT)
-ok('falls back to the vendored copy when the typst plugin is absent',
-   resolveCheckScript(PLUGIN_ROOT, '/nonexistent/typst/check-overflow.sh')
-     === `${PLUGIN_ROOT}/scripts/checks/check-overflow.sh`)
+ok('the typst plugin absent resolves to NOTHING, not to a local copy',
+   resolveCheckScript(PLUGIN_ROOT, '/nonexistent/typst/check-overflow.sh') === null)
 ok('returns null when neither exists',
    resolveCheckScript('/nonexistent-plugin-root', '/nonexistent/typst/check-overflow.sh') === null)
 
