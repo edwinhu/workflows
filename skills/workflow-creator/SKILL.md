@@ -490,7 +490,7 @@ search belongs at USE time:
 > `grep -il <term> <the references dir>/*.md`.
 
 A skill lists its own `references/` AND its own `scripts/` at load with one line —
-`!`${CLAUDE_PLUGIN_ROOT}/scripts/skill-toc ${CLAUDE_SKILL_DIR}``. See `skill-creator`, *The two
+`!`skill-toc ${CLAUDE_SKILL_DIR}``. See `skill-creator`, *The two
 TOCs*, for what it renders and why it is a script. Do not hand-write either list.
 
 **THREE THINGS WILL BITE, all measured; `references/bang-reach.md` has the evidence.** A bang runs

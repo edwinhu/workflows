@@ -10,7 +10,7 @@ user-invocable: false
 **What this skill carries.** The names and headings are the index; for a subject none of them
 carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
 
-!`${CLAUDE_PLUGIN_ROOT}/scripts/skill-toc ${CLAUDE_SKILL_DIR}`
+!`skill-toc ${CLAUDE_SKILL_DIR}`
 
 
 

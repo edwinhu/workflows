@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 
-const TOC = join(import.meta.dir, "..", "scripts", "skill-toc");
+const TOC = join(import.meta.dir, "..", "bin", "skill-toc");
 const run = (...a: string[]) => {
   const r = spawnSync("python3", [TOC, ...a], { encoding: "utf8" });
   return { code: r.status ?? -1, out: r.stdout + r.stderr };
