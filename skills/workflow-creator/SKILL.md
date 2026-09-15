@@ -126,7 +126,7 @@ whether it is a skill that already exists.
 **ONE FRONTMATTER KEY: `applies-to:`. Nothing else.** Scope is the only fact about a rule that no path already holds — the name is the filename, whether it is mechanised is whether `checkers/<name>.py` exists, and what it says is the body. Any other key is either a copy of one of those or metadata nothing reads, and both rot silently: measured 2026-09-14 in the typst corpus, `type:` sat in 17 of 21 files and `testable:` in 3, read by no code on any path, while `description:` had drifted from the rule beside it (a rule described as "table inset minimum 10pt" whose body leads with source-grounding) with no check able to see it. Lint the key set — a convention nothing computes is how `type:` got into 17 files and stayed.
 
 - **Mechanical** — rule `X.md` is checked by `checkers/X.py`, by CONVENTION: no field declares the mapping, so nothing can name a script that moved. The workflow's check entry point runs it, and the set is DERIVED from `applies-to:`, never listed per consumer.
-- **Judgement** — no checker exists at the rule's conventional name, and a grader agent judges it. Nothing declares that: the runner asks the filesystem, so a rule cannot claim to be mechanised while its checker is absent. **Getting the corpus INTO that grader is the hard part, and two of the three obvious routes do not work.** A `` !`cmd` `` in an agent definition is dead text. And `skills:` frontmatter is documented to preload the skill's full content but did **not** on 2.1.257 — four probes, both name forms, under `claude -p --agent` and the farm-out proxy, all NOT PRESENT (`references/bang-reach.md`). Treat a preload as unproven until you have asked that agent, in your own dispatch path, whether the content is there. So a grader reaches the corpus by exactly one of:
+- **Judgement** — no checker exists at the rule's conventional name, and a grader agent judges it. Nothing declares that: the runner asks the filesystem, so a rule cannot claim to be mechanised while its checker is absent. **Getting the corpus INTO that grader is the hard part, and two of the three obvious routes do not work.** A `` <bang>`cmd` `` in an agent definition is dead text. And `skills:` frontmatter is documented to preload the skill's full content but did **not** on 2.1.257 — four probes, both name forms, under `claude -p --agent` and the farm-out proxy, all NOT PRESENT (`references/bang-reach.md`). Treat a preload as unproven until you have asked that agent, in your own dispatch path, whether the content is there. So a grader reaches the corpus by exactly one of:
   - **invoking the skill**, if it holds the `Skill` tool — available, never automatic, so its prompt must say so;
   - **reading the corpus itself** with Read/Glob, which is all a read-only grader can do;
   - **the orchestrator inlining a computed index into the lens prompt**, since the orchestrator is a skill and a bang works there.
@@ -462,6 +462,11 @@ fallback when it does not land, so probe your own dispatch path before relying o
 | judging agents — lenses and their refuters | `reviewLenses[].refs` |
 | everyone, for a short rule | `authorityExtra` |
 
+**`<bang>` in this file means a literal `!` followed by a backtick.** Written out, it would RUN:
+the parser fires on that sequence at line start or after whitespace, and a fenced code block does
+not protect it — nor does inline code. Both creator skills were taken offline on 2026-09-15 by
+their own examples, one of which executed a placeholder named `cmd`.
+
 ### Two kinds of markdown: CONSTRAINTS and REFERENCES
 
 Every `.md` a workflow carries is one or the other, and which one decides everything downstream.
@@ -518,7 +523,7 @@ search belongs at USE time:
 A skill lists its own `references/` AND its own `scripts/` at load with one line:
 
 ```
-!`skill-toc ${CLAUDE_SKILL_DIR}`
+<bang>`skill-toc ${CLAUDE_SKILL_DIR}`
 ```
 
 `skill-toc` ships in `plugin-utils/bin/`, and Claude Code puts every enabled plugin's `bin/` on the

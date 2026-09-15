@@ -31,6 +31,11 @@ This classification determines how much enforcement audit to apply after each dr
 
 !`cat ${CLAUDE_SKILL_DIR}/../../references/creator-anti-patterns.md`
 
+**`<bang>` in this file means a literal `!` followed by a backtick.** Written out, it would RUN:
+the parser fires on that sequence at line start or after whitespace, and a fenced code block does
+not protect it — nor does inline code. Both creator skills were taken offline on 2026-09-15 by
+their own examples, one of which executed a placeholder named `cmd`.
+
 ### Where a thing goes — the plugin root
 
 Claude Code auto-discovers these at a plugin root, no manifest needed (`plugins-reference.md`):
@@ -66,7 +71,7 @@ Before drafting, identify what should be **mechanically enforced** rather than p
 | Mechanism | Resolves at | Gives you | Use for |
 |-----------|------------|-----------|---------|
 | `${CLAUDE_SKILL_DIR}` | Skill load | A path string | Script paths in Bash templates |
-| `!`command`` (bang) | Skill load | Command stdout as inline text | Injecting reference files, environment state |
+| `<bang>`command`` (bang) | Skill load | Command stdout as inline text | Injecting reference files, environment state |
 | Scoped hooks (Pre/PostToolUse) | Each tool call | Pass/fail gate | Mechanically checkable constraints |
 | SessionStart hook (`once: true`) | Session start | Value written to a file | Expensive computations (API calls, index builds) |
 
@@ -86,14 +91,14 @@ SCRIPT=$(${CLAUDE_SKILL_DIR}/scripts/my_script.py) && uv run python3 "$SCRIPT" -
 
 The `$()` indirection pattern is a common mistake. It tries to execute the script in a subshell and capture its stdout — but scripts require arguments and fail with no args, leaving the variable empty.
 
-#### Bang-Backtick Injection (`!`command``)
+#### Bang-Backtick Injection (`<bang>`command``)
 
 Bangs run a shell command at skill load time and inline the stdout into the prompt text. Use them to inject **content**, not paths:
 
 | Use Case | Example |
 |----------|---------|
-| Auto-load a reference file | `!`cat ${CLAUDE_SKILL_DIR}/references/constraints.md`` |
-| Run a script whose OUTPUT is the context | `!`${CLAUDE_SKILL_DIR}/scripts/rules-for slides,notes`` |
+| Auto-load a reference file | `<bang>`cat ${CLAUDE_SKILL_DIR}/references/constraints.md`` |
+| Run a script whose OUTPUT is the context | `<bang>`${CLAUDE_SKILL_DIR}/scripts/rules-for slides,notes`` |
 
 Those two are the whole point: `references/*.md` and `scripts/*.{py,ts,sh}` sitting beside the skill. A bang earns its place when the content must be COMPUTED — an index that must match a corpus, a count, a live status. Static prose belongs in the file.
 
@@ -115,7 +120,7 @@ SKILL.md. That PATH entry is the whole reason it can sit in a plugin none of its
 included in plugins distributed through claude.ai organization settings.)
 
 ```
-!`skill-toc ${CLAUDE_SKILL_DIR}`
+<bang>`skill-toc ${CLAUDE_SKILL_DIR}`
 ```
 
 `skill-toc <skill-dir> [refs|scripts]` renders references with every `## ` heading — a
