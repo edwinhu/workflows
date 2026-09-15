@@ -88,17 +88,24 @@ fi
 if [ ! -d "$TARGET/scripts" ]; then
   report probe-tests 0 "target ships no scripts/"
 else
-  suite=()
-  for f in "$TARGET"/scripts/*.test.ts; do
-    [ -e "$f" ] || continue
-    suite+=("$f")
+  # BOTH suite shapes. A workflow whose scripts are python ships pytest, and reading only
+  # *.test.ts reported workshop -- 108 pytest cases beside its scripts -- as untested
+  # machinery. The rule is unchanged: a scripts/ dir with no suite at all still FAILS.
+  suite=(); pysuite=()
+  for f in "$TARGET"/scripts/*.test.ts; do [ -e "$f" ] && suite+=("$f"); done
+  for f in "$TARGET"/scripts/*_test.py "$TARGET"/scripts/test_*.py; do
+    [ -e "$f" ] && pysuite+=("$f")
   done
-  if [ "${#suite[@]}" -eq 0 ]; then
-    echo "check.sh: $TARGET/scripts exists but ships no *.test.ts — a scripts dir with no suite is untested machinery" >&2
-    report probe-tests 1 "no *.test.ts under scripts/"
+  if [ "${#suite[@]}" -eq 0 ] && [ "${#pysuite[@]}" -eq 0 ]; then
+    echo "check.sh: $TARGET/scripts exists but ships no *.test.ts and no pytest file — a scripts dir with no suite is untested machinery" >&2
+    report probe-tests 1 "no suite under scripts/"
   else
-    bun test "${suite[@]}" >&2
-    report probe-tests $? "${#suite[@]} file(s)"
+    rc=0
+    [ "${#suite[@]}" -gt 0 ] && { bun test "${suite[@]}" >&2 || rc=1; }
+    [ "${#pysuite[@]}" -gt 0 ] && {
+      uv run --quiet --with pytest python3 -m pytest -q "${pysuite[@]}" >&2 || rc=1
+    }
+    report probe-tests "$rc" "$(( ${#suite[@]} + ${#pysuite[@]} )) file(s)"
   fi
 fi
 

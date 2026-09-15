@@ -384,8 +384,8 @@ def scratch_skill(tmp_path: Path) -> Path:
     )
     shutil.copytree(CONSTRAINT_RUNNER.parent, dest / "constraints", ignore=ignore)
     shutil.copytree(TYPST_PLUGIN / "scripts", dest / "typst" / "scripts", ignore=ignore)
-    shutil.copytree(TYPST_PLUGIN / "references" / "checkers",
-                    dest / "typst" / "references" / "checkers", ignore=ignore)
+    shutil.copytree(TYPST_PLUGIN / "constraints",
+                    dest / "typst" / "constraints", ignore=ignore)
     return dest
 
 
@@ -689,7 +689,7 @@ def test_con_fails_closed_when_the_vendored_runner_is_absent(tmp_path: Path):
 # ------------------------------------------------------------------------------------------------
 
 
-CONSTRAINT_RUNNER = (Path.home() / ".claude" / "skills" / "typst" / "references" / "checkers"
+CONSTRAINT_RUNNER = (Path.home() / ".claude" / "skills" / "typst" / "constraints"
                      / "workshop" / "run-constraints.py")
 
 
