@@ -1,0 +1,20 @@
+# Python suites that live OUTSIDE tests/ and are gated anyway, one path per line.
+#
+# A skill's tests belong beside the skill; that does not make them optional. These run in
+# plugin-audit's pytest leg alongside tests/.
+#
+# NOT listed, and why — each would need a credential or a live service, so gating them would make
+# the audit fail on a laptop with no VPN rather than on a defect:
+#   skills/wrds/scripts/test_connection.py         WRDS PostgreSQL
+#   skills/lseg-data/scripts/test_connection.py    LSEG Data Library
+#   skills/gemini-batch/scripts/test_single.py     Gemini API
+#
+# Also not listed: skills/workshop/scripts/workshop_deck_test.py. It fails 19 of 108 on a clean
+# tree in the WID and INV legs — a documented baseline, verified byte-identical against a worktree
+# before tonight's changes. Gating it would gate a known-red suite; its OVR legs are gated
+# separately by typst/scripts/workshop-ovr.sh, which asserts the leg COUNT.
+scripts/cite-fidelity/test_common.py
+skills/pincite/tests/test_apply.py
+skills/pincite/tests/test_review_serve.py
+skills/writing/scripts/writing_bench_compile_test.py
+skills/writing/scripts/writing_section_index_test.py
