@@ -79,13 +79,17 @@ plus the SKILL.md body; nothing lists either folder. So anything the prose does 
 invisible — measured 2026-09-14, 16 of 219 reference files across 10 skills, and **48 of 156
 scripts**, a third of them.
 
-One line emits both:
+One line emits both — `skill-toc` lives in `workflows/bin/`, and Claude Code adds every enabled
+plugin's `bin/` to the Bash tool's PATH, so it is callable as a bare command from ANY plugin's
+SKILL.md. `${CLAUDE_PLUGIN_ROOT}` would not reach it: that resolves to the calling plugin.
+(Documented at code.claude.com/docs/en/plugins-reference — with the caveat that `bin/` cannot be
+included in plugins distributed through claude.ai organization settings.)
 
 ```
-!`${CLAUDE_PLUGIN_ROOT}/scripts/skill-toc ${CLAUDE_SKILL_DIR}`
+!`skill-toc ${CLAUDE_SKILL_DIR}`
 ```
 
-`scripts/skill-toc <skill-dir> [refs|scripts]` renders references with every `## ` heading — a
+`skill-toc <skill-dir> [refs|scripts]` renders references with every `## ` heading — a
 filename routes badly and a heading routes well — and scripts with each file's real summary. Cost
 is 1.9–2.5% of the bytes indexed, which is what makes progressive disclosure work: the agent reads
 the two files it needs, not thirty. Pair it with one line of prose, since content search cannot
