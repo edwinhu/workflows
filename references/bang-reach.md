@@ -38,7 +38,7 @@ Two things, both of which live beside the skill:
   enforces it, say), the fix is a lint that fails on an unlisted file, not a bang.
 - **Running `scripts/*.{py,ts,sh}`** whose OUTPUT is the context — an index, a count, a live status.
   This is the case a static file cannot cover: `typst/skills/typst/SKILL.md` renders its constraint
-  index from `rule-index.py`, so a rule renamed minutes earlier is already correct in the index. A
+  index from `rules-for`, so a rule renamed minutes earlier is already correct in the index. A
   hand-written list of the same rules drifts, and nothing shows it.
 
 Anything else is better as a normal tool call. A bang is not a way to run work; it is a way to make
