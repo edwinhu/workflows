@@ -64,11 +64,12 @@ Bangs run a shell command at skill load time and inline the stdout into the prom
 
 | Use Case | Example |
 |----------|---------|
-| Inline reference files | `!`cat ${CLAUDE_SKILL_DIR}/../../references/constraints.md`` |
-| Environment detection | `!`if [ -f /.dockerenv ]; then echo "CONTAINER"; else echo "HOST"; fi`` |
-| Inject current state | `!`git branch --show-current`` |
+| Auto-load a reference file | `!`cat ${CLAUDE_SKILL_DIR}/references/constraints.md`` |
+| Run a script whose OUTPUT is the context | `!`python3 ${CLAUDE_SKILL_DIR}/scripts/rule-index.py`` |
 
-Bangs only work in **top-level skills** loaded via `Skill()`. Internal skills loaded via `Read()` should use direct `Read()` instructions.
+Those two are the whole point: `references/*.md` and `scripts/*.{py,ts,sh}` sitting beside the skill. A bang earns its place when the content must be COMPUTED — an index that must match a corpus, a count, a live status. Static prose belongs in the file.
+
+**A bang fires in a file that is INVOKED, and is dead text in one INJECTED as ambient context.** It expands in `SKILL.md` loaded via `Skill()` and in `.claude/commands/*.md`. It does NOT expand in an agent `.md`, in `CLAUDE.md` at either tier, or in a skill reached by `Read()` — silently, with no error, whatever the upstream docs say. Measured; see `references/bang-reach.md` for the table and the failure modes (non-zero exit aborts the invocation; a denied permission rule aborts it with no prompt).
 
 #### Scoped Hooks (PreToolUse / PostToolUse)
 
