@@ -6,7 +6,7 @@ description: "Run ALL delegated agent work through the CLIProxyAPI wrappers. Use
 # farm-out
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
-!`skill-toc ${CLAUDE_SKILL_DIR}`
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
 Delegation runs in a **separate process** on a CLIProxyAPI wrapper, not in this
 session. This session keeps its own auth, Remote Control, and connectors; the

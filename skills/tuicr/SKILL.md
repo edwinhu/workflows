@@ -8,7 +8,7 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob]
 # tuicr — TUI Code Review
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
-!`skill-toc ${CLAUDE_SKILL_DIR}`
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
 Review a PR (or the working tree, a commit range, or a file) with inline annotations in the tuicr
 TUI, then read the annotations back and address them. tuicr auto-detects the VCS. Unlike a one-way

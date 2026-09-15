@@ -6,7 +6,7 @@ description: "Use when the user says 'get this case from Westlaw', 'export the c
 # Westlaw: retrieve a case as publisher-keyed DOCX
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
-!`skill-toc ${CLAUDE_SKILL_DIR}`
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
 Export an opinion from Westlaw Advantage as DOCX with star pagination, for use as the
 authoritative source text when excerpting. Feeds `teaching:elide-case`, whose first Iron Law

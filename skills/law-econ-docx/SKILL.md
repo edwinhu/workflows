@@ -7,7 +7,7 @@ user-invocable: true
 # Law & Economics DOCX Export
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
-!`skill-toc ${CLAUDE_SKILL_DIR}`
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
 Build a submission-ready Word manuscript from markdown for the Chicago-style
 law-and-economics journals (JLE, JLS, JLEO, ALER) and for job market papers
