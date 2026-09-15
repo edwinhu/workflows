@@ -22,7 +22,7 @@ domain — the CLARIFY axes, the lenses, the mechanical checks, the authority te
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
 The names and headings are the index; for a subject none of them carries,
-`grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
+`grep -il <term>` over the skill's own `references/` directory.
 
 Craft's mechanics live in craft and are stated **once**. Everything below is a **delta** against
 them: where a phase has no domain variation, this file says so and adds nothing. Restating them

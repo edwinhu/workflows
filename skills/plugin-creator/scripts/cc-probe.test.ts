@@ -249,7 +249,7 @@ describe('I3 — every engine has at least one live caller', () => {
       // Backticked, because that is the form that fooled the probe: a design doc naming the engine
       // in an inline code span read as a live caller for the deadest file in the repo.
       'CHANGELOG.md': '- removed the `scripts/prose-lint.py` caller\n',
-      'docs/DESIGN.md': '| `scripts/prose-lint.py` | B + D | `hooks/prose-check.ts` |\n',
+      'docs/DESIGN.md': '| `scripts/prose-lint.py` | B + D | `hooks/writing-prose-check.ts` |\n',
     })
     const i3 = findingsFor(probe.runProbe(dir), 'I3')
     expect(i3.length).toBe(1)
@@ -369,7 +369,7 @@ describe('I5 — a suppression entry must match at least one live label', () => 
       'skills/writing/references/volokh.py': tableModule('volokh', ['    (r"\\bpursuant to\\b", "legalese"),']),
       'skills/ai-anti-patterns/SKILL.md': skillMd('ai-anti-patterns'),
       'skills/ai-anti-patterns/references/wikipedia-puffery.py': tableModule('wiki-puffery', ['    (r"\\brich tapestry\\b", "puffery"),']),
-      'hooks/prose-check.ts': [
+      'hooks/writing-prose-check.ts': [
         'const PROSE_ENGINE_PREFIXES = [',
         '  "skills/ai-anti-patterns/",',
         '  "skills/writing-",',
@@ -381,7 +381,7 @@ describe('I5 — a suppression entry must match at least one live label', () => 
       'hooks/hooks.json': JSON.stringify({
         hooks: {
           PostToolUse: [
-            { matcher: 'Edit', hooks: [{ type: 'command', command: 'bun ${CLAUDE_PLUGIN_ROOT}/hooks/prose-check.ts' }] },
+            { matcher: 'Edit', hooks: [{ type: 'command', command: 'bun ${CLAUDE_PLUGIN_ROOT}/hooks/writing-prose-check.ts' }] },
           ],
         },
       }),

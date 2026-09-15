@@ -39,7 +39,8 @@ their own examples, one of which executed a placeholder named `cmd`.
 ### Where a thing goes — the plugin root
 
 Claude Code auto-discovers these at a plugin root, no manifest needed (`plugins-reference.md`):
-`skills/` `commands/` `agents/` `workflows/` `output-styles/` `themes/` `monitors/` `hooks/` `bin/`.
+`skills/` `commands/` `agents/` `workflows/` `monitors/` `hooks/` `bin/` — plus two this repo
+deliberately does not use (see `README.md`'s *Why subagents*); `plugins-reference.md` has the full set.
 Everything else is a local convention, so the names below are ours and worth keeping uniform:
 
 | directory | holds | found by |
@@ -97,7 +98,7 @@ Bangs run a shell command at skill load time and inline the stdout into the prom
 
 | Use Case | Example |
 |----------|---------|
-| Auto-load a reference file | `<bang>`cat ${CLAUDE_SKILL_DIR}/references/<your-file>.md`` |
+| Auto-load a reference file | a bang that `cat`s one file from the skill's own `references/` |
 | Run a script whose OUTPUT is the context | `<bang>`<the skill's own scripts dir>/<your-script> <args>`` |
 
 Those two are the whole point: `references/*.md` and `scripts/*.{py,ts,sh}` sitting beside the skill. A bang earns its place when the content must be COMPUTED — an index that must match a corpus, a count, a live status. Static prose belongs in the file.

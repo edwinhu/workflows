@@ -98,7 +98,7 @@ export function isOverflowTarget(slidesPath: string): boolean {
 /**
  * Path to the typst plugin's canonical check-overflow.sh.
  *
- * ASKS the plugin rather than spelling its layout: `typst-plugin-root` is on PATH because
+ * ASKS the plugin rather than spelling its layout: the typst-plugin-root command is on PATH because
  * Claude Code puts every enabled plugin's bin/ there, and it is the one place that knows
  * where the tree sits — which moved twice in September, breaking every file that spelled
  * it. The literal below is the fallback for a plain shell, where bin/ is not on PATH.
