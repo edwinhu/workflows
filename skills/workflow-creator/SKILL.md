@@ -19,7 +19,7 @@ This skill designs workflows. It does not carry its own lifecycle: the lifecycle
 [craft](${CLAUDE_PLUGIN_ROOT}/skills/craft/SKILL.md), and workflow-creator supplies the
 domain — the CLARIFY axes, the lenses, the mechanical checks, the authority text.
 
-!`skill-toc ${CLAUDE_SKILL_DIR}`
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
 The names and headings are the index; for a subject none of them carries,
 `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.

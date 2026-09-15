@@ -7,7 +7,7 @@ user-invocable: true
 # Replication package
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
-!`skill-toc ${CLAUDE_SKILL_DIR}`
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
 A production is read by a lawyer on Windows, not by you on Linux. Everything below
 follows from that.

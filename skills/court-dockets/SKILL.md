@@ -6,7 +6,7 @@ description: This skill should be used when the user asks to "get the complaint 
 # Court dockets: retrieving filings from Lex Machina, Docket Alarm and Bloomberg Law
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
-!`skill-toc ${CLAUDE_SKILL_DIR}`
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
 Three commercial platforms, one job: turn a list of cases into a directory of PDFs plus a manifest
 you can defend. Verified end to end on 1,597 Delaware Chancery cases, 2026-08-30/31 — ~4,000

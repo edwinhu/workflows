@@ -6,7 +6,7 @@ description: "This skill should be used when the user asks to 'create a plugin',
 # Plugin Creator (with Superpowers Enforcement)
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
-!`skill-toc ${CLAUDE_SKILL_DIR}`
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
 This skill wraps the built-in `plugin-dev:create-plugin` with enforcement pattern awareness from the superpowers framework. It adds an enforcement audit layer that the built-in version lacks.
 

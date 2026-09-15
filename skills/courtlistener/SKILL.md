@@ -6,7 +6,7 @@ description: "Use when the user says 'CourtListener', 'Free Law Project', 'RECAP
 # CourtListener for empirical legal research
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
-!`skill-toc ${CLAUDE_SKILL_DIR}`
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
 Free Law Project's corpus. Three access routes with very different properties, and one
 distinction that people get wrong before they start.
