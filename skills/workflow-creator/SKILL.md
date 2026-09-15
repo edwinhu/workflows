@@ -121,7 +121,7 @@ down to the number, and `typst-source-fidelity.md` duplicated `source-verify`. B
 restating a procedure. Before writing a constraint doc for something a script cannot check, ask
 whether it is a skill that already exists.
 
-**A constraint is enforced by a SCRIPT or by an AGENT WITH THE SKILL. There is no third shape.** Wherever a constraint lives — a shared `references/constraints/` corpus, or beside the single skill that consumes it — that location is its ONE canonical home. A copy per consumer is the vendoring defect; see *Frontmatter decides how a file is found* for which location a rule earns.
+**A constraint is enforced by a SCRIPT or by an AGENT WITH THE SKILL. There is no third shape.** Its one canonical home is `constraints/` at the plugin root; a copy per consumer is the vendoring defect, and a consumer in another plugin reaches it through `bin/`, never through a path.
 
 **ONE FRONTMATTER KEY: `applies-to:`. Nothing else.** Scope is the only fact about a rule that no path already holds — the name is the filename, whether it is mechanised is whether `checkers/<name>.py` exists, and what it says is the body. Any other key is either a copy of one of those or metadata nothing reads, and both rot silently: measured 2026-09-14 in the typst corpus, `type:` sat in 17 of 21 files and `testable:` in 3, read by no code on any path, while `description:` had drifted from the rule beside it (a rule described as "table inset minimum 10pt" whose body leads with source-grounding) with no check able to see it. Lint the key set — a convention nothing computes is how `type:` got into 17 files and stayed.
 
@@ -467,6 +467,21 @@ the parser fires on that sequence at line start or after whitespace, and a fence
 not protect it — nor does inline code. Both creator skills were taken offline on 2026-09-15 by
 their own examples, one of which executed a placeholder named `cmd`.
 
+### The plugin root a generated workflow writes into
+
+`skill-creator`'s *Where a thing goes* has the full table and which names the harness owns. The
+four that decide where a workflow's own files land:
+
+| | |
+|---|---|
+| `constraints/` | its rules, as scripts — one directory per plugin, no second copy |
+| `references/` | knowledge read by 2+ of its skills; one-consumer knowledge goes in `<skill>/references/` |
+| `scripts/` | the workflow's own tooling, `check.sh` among it — not reachable from another plugin |
+| `bin/` | anything another plugin must call, because that is the ONLY cross-plugin reach |
+
+A workflow that needs a rule from elsewhere calls that plugin's `bin/` entry point. It does not
+reach across a path, and it does not copy the rule in.
+
 ### Two kinds of markdown: CONSTRAINTS and REFERENCES
 
 Every `.md` a workflow carries is one or the other, and which one decides everything downstream.
@@ -484,17 +499,23 @@ The frontmatter is how a constraint DECLARES itself, not what makes it one — a
 tracks the type exactly: measured 2026-09-14, 219 files across 37 skills split 200/19, the 19
 carrying frontmatter being precisely the 19 without a `# Heading` first line.
 
-**Location is a separate question, and does not follow from the type.** How many domains consume
-the file? One → beside its skill, in `<skill>/references/`. Several → a shared
-`references/constraints/` corpus, because the alternative is a copy per consumer, which is the
-vendoring defect.
+**Location follows from the type for a constraint, and from consumers for a reference.**
 
-Measure before moving anything. A constraint consumed by one skill belongs beside it: the typst
-corpus is read by `exams`, `notes`, `slides`, `typst` and `workshop` across three repos and is
-correctly central, while the 30 `ds-*` constraints sit in that same central corpus and are read by
-`ds` alone. The 19 constraints under `skills/writing/references/` and `skills/ds/references/` are
-read by the skill beside them and nothing else — correctly placed, though they are constraints and
-should be discovered as such.
+A CONSTRAINT is a script, so it lives in `constraints/` at the plugin root of whoever owns the
+rule — one directory per plugin, never a second copy, and reached from another plugin through a
+`bin/` entry point rather than a path (`typst-constraints --dir`). There is no such thing as a
+constraint that lives somewhere else: a rule no script can settle is not a constraint at all, it is
+a REFERENCE (knowledge a grader reads) or a SKILL (a procedure), and goes where those go.
+
+A REFERENCE goes where its consumers are. One domain → beside its skill, in `<skill>/references/`.
+Several → the plugin root's `references/`, because the alternative is a copy per consumer, which is
+the vendoring defect. Measured 2026-09-14: 5 of the 10 files at this plugin's root are read by two
+or more skills and belong there; the other 5 have exactly one consumer and belong one level down.
+
+Measure before moving anything, and beware the half-migrated state: typst carries BOTH
+`constraints/` (29 scripts, correct) and `references/constraints/` (22 markdown, 14 of which merely
+restate a script sitting beside them). That duplicate is the debt this rule exists to retire, not a
+second sanctioned location.
 
 **BOTH are a bang; the bang is the only thing that computes at load.** Grep and glob are not
 alternatives to it, they are what it RUNS — grep the field when a subset is meaningful, glob the
