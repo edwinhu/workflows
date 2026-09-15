@@ -13,7 +13,7 @@ lists them; a rule reaches this skill because its own `applies-to:` names a kind
 nothing else. (Absence of the plugin degrades this index but does not bypass a gate:
 `run-constraints.py` fails closed on its own.)
 
-!`for d in "$HOME/.claude/skills/typst" "$HOME/projects/typst"; do [ -f "$d/scripts/rule-index.py" ] && exec python3 "$d/scripts/rule-index.py" --for slides,notes,workshop; done; echo "!! typst plugin not found — the constraint index is EMPTY, and a deck graded against no corpus is not a deck that passed."`
+!`for d in "$HOME/.claude/skills/typst" "$HOME/projects/typst"; do [ -x "$d/scripts/rules-for" ] && exec "$d/scripts/rules-for" slides,notes,workshop; done; echo "!! typst plugin not found — the constraint index is EMPTY, and a deck graded against no corpus is not a deck that passed."
 
 The lifecycle is [craft](${CLAUDE_PLUGIN_ROOT}/skills/craft/SKILL.md). Read it and follow it.
 This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lenses,

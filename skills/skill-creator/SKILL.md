@@ -65,7 +65,7 @@ Bangs run a shell command at skill load time and inline the stdout into the prom
 | Use Case | Example |
 |----------|---------|
 | Auto-load a reference file | `!`cat ${CLAUDE_SKILL_DIR}/references/constraints.md`` |
-| Run a script whose OUTPUT is the context | `!`python3 ${CLAUDE_SKILL_DIR}/scripts/rule-index.py`` |
+| Run a script whose OUTPUT is the context | `!`${CLAUDE_SKILL_DIR}/scripts/rules-for slides,notes`` |
 
 Those two are the whole point: `references/*.md` and `scripts/*.{py,ts,sh}` sitting beside the skill. A bang earns its place when the content must be COMPUTED — an index that must match a corpus, a count, a live status. Static prose belongs in the file.
 
