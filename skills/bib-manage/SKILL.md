@@ -1,6 +1,6 @@
 ---
 name: bib-manage
-description: "ALWAYS use when a manuscript's BIBLIOGRAPHY is the thing being fixed, or when a cite's PDF turns out to be wrong — 'link my bib entries to the PDFs', 'which sources am I missing a PDF for', 'audit my sources.bib', 'my bib entry has no file field', 'fetch the Federal Register PDFs', 'why can't pincite find this source'. WRONG FILE: 'is this PDF the published version or the preprint', 'this PDF is a book review, not the book', 'the file field points at the wrong paper', 'the PDF doesn't match the citation'. PAGE RANGES: 'does my bib have page ranges', 'my bib only has start pages', 'backfill the page ranges', 'pull the pages from the DOI', 'add DOIs to my bibliography'. Use proactively before any pincite run — pincite resolves footnotes through `file = {...}` and silently skips entries that lack one. NEGATIVE ROUTING: the page number inside a footnote is pincite, but whether that footnote's PDF is the version of record or the wrong document is THIS skill, mid-pincite-run included; whether a cited source says what the footnote claims is source-verify; Bluebook FORM is bluebook or bluebook-audit; finding or downloading a paper is fetch-paper or paperpile."
+description: "ALWAYS use when a manuscript's BIBLIOGRAPHY is the thing being fixed, or when a cite's PDF turns out to be wrong — 'link my bib entries to the PDFs', 'which sources am I missing a PDF for', 'audit my sources.bib', 'my bib entry has no file field', 'fetch the Federal Register PDFs', 'why can't pincite find this source'. WRONG FILE: 'is this PDF the published version or the preprint', 'this PDF is a book review, not the book', 'the file field points at the wrong paper', 'the PDF doesn't match the citation'. METADATA: 'reconcile my bib against Paperpile', 'these entries were extracted by a model, check them', 'fix the metadata in sources.bib', 'my bib has no DOIs and the fields look wrong', 'pull the real author/journal/volume from my library', 'where did this bib entry's metadata come from'. PAGE RANGES: 'does my bib have page ranges', 'my bib only has start pages', 'backfill the page ranges', 'pull the pages from the DOI', 'add DOIs to my bibliography'. Use proactively before any pincite run — pincite resolves footnotes through `file = {...}` and silently skips entries that lack one. NEGATIVE ROUTING: the page number inside a footnote is pincite, but whether that footnote's PDF is the version of record or the wrong document is THIS skill, mid-pincite-run included; whether a cited source says what the footnote claims is source-verify; Bluebook FORM is bluebook or bluebook-audit; finding or downloading a paper is fetch-paper or paperpile."
 ---
 
 # Bib-manage
@@ -21,6 +21,9 @@ link     citekey -> PDF, written back as file = {...}
 version  is each entry's PDF the published version, or a preprint/proof?
 doi      backfill missing DOIs from Crossref, verified against the bib's pages,
          and the PAGE RANGE that same verified record already carries
+reconcile
+         rewrite the entry's OWN FIELDS from a better source:
+         Paperpile > Crossref > the extracted value. Never `file`, never a key
 fedreg   fetch the Federal Register PDFs the entries cite
 ```
 
@@ -34,6 +37,8 @@ python3 "$B" link    --root . --dry-run       # inspect the mapping first
 python3 "$B" link    --root . --backup        # then write
 python3 "$B" version --root .
 python3 "$B" doi     --root . --dry-run --only aggarwal2015
+python3 "$B" reconcile --root . --dry-run            # read the full set FIRST
+python3 "$B" reconcile --root . --backup --fields doi,pages
 python3 "$B" fedreg  --root . --dry-run
 ```
 
@@ -43,7 +48,12 @@ layout pincite uses, so the tool works on any manuscript. `--only` scopes
 `--backup` leaves a `.bak`; `--strict` makes `version` exit 1 on any entry that
 is not the version of record.
 
+`--fields` scopes `reconcile` to a subset of `author,title,journal,volume,pages,
+year,doi,publisher`; `--pp-index` points at the Paperpile CLI's index cache.
+
 `audit`, `link` and `version` never touch the network. `doi` and `fedreg` do.
+`reconcile` reads Paperpile locally and reaches Crossref only for what Paperpile
+does not cover.
 
 ## Facts
 
@@ -133,6 +143,66 @@ is not the version of record.
   keep the start-only path unchanged — on OPV that is still most of them, and
   all 77 verdicts were byte-identical before and after the backfill.
 
+- **`reconcile`'s precedence is Paperpile > Crossref > the extracted value, and
+  it is implemented as source ORDER, not a merge.** An entry confidently matched
+  in Paperpile is never queried against Crossref, so the stronger source cannot
+  be contradicted by the weaker one. On OPV — a bib whose header reads
+  `Auto-extracted from sources.md via Gemini Vertex Batch`, where every field was
+  written by a model reading a markdown list and no entry carried a DOI —
+  Paperpile covered **33** of 197, Crossref **24**, and **140** had neither.
+  Every change prints as `citekey.field: old -> new  [source]`; `--dry-run`
+  writes nothing and is byte-identical run to run.
+
+- **A CONFIDENT Paperpile match needs the surname, the year AND the title, and
+  an entry with no author needs the year EXACTLY.** Surname equal, |Δyear| ≤ 1,
+  title ≥ 0.90 same-year / ≥ 0.95 across a year — the same asymmetry `link`
+  uses. With NO author there is nothing to corroborate with, and 1.00-vs-0.97
+  is not enough: `secproxyadvice2019` (the SEC's own 2019 release, 84 Fed. Reg.
+  66,518) matched a **2020 COMMENT LETTER** about it at 0.98, whose title is the
+  release's title with `RE: ` in front. Requiring Δyear == 0 there kills it; a
+  document with no author has a fixed date and no working-paper drift to
+  forgive. Two candidates within 0.02 of each other are AMBIGUOUS — reported,
+  never picked, because a wrong library match rewrites author, title, journal
+  and DOI at once.
+
+- **Crossref's start-page verification is `@article` ONLY, because a pincite is
+  shaped exactly like a page range.** Nothing in the VALUE `66-67` says whether
+  it is pages 66 to 67 of an article or a Bluebook pincite into a book. Reading
+  `easterbrook1991`'s 66 as a start page made Crossref accept
+  `10.1111/j.1468-0319.1991.tb00155.x`, titled **"Discussion Papers"**, because
+  it happens to begin on page 66 — a proposal to overwrite the title of *The
+  Economic Structure of Corporate Law*. The entry TYPE is what separates them,
+  and `range_blocked` already said so. This guard lives in `crossref_pick`, so
+  `doi` gets it too.
+
+- **A Paperpile record can be the SSRN PREPRINT of a published article, and
+  taking its fields REGRESSES the citation.** `choi2009` (S. Cal. L. Rev. 82:649)
+  and `bebchuk2019a` (B.U. L. Rev. 99:721) are both published; both library
+  records carry `journal = SSRN Electron. J.` and a `10.2139/ssrn.*` DOI.
+  Precedence orders sources by reliability — it does not authorise replacing a
+  real journal name with a preprint server's placeholder. When the source record
+  is SSRN-shaped and the entry ALREADY names a journal, `journal`, `volume`,
+  `pages`, `year`, `publisher` and `doi` are all refused and reported. A genuine
+  working paper has no journal to protect, so it is unaffected.
+
+- **Precedence does not authorise a THINNER rendering of a name.** Paperpile
+  answered `J Fisch and A Hamdani and S D Solomon` for `fisch2019`'s
+  `Jill E. Fisch and Assaf Hamdani and Steven Davidoff Solomon`, and Crossref
+  answered `VICENTE CUÑAT and MIREIA GINE and MARIA GUADALUPE` for `Vicente
+  Cuñat and Mireia Giné and Maria Guadalupe` — initials for given names, and
+  full caps with the accents gone. Both are refused and reported. Note that
+  `str.isupper()` on the whole author string is ALWAYS False: the ` and `
+  separators are lowercase, so the test must run on the names alone.
+
+- **`reconcile` never touches `file` and never touches a citekey.** `file` is
+  not in `RECONCILE_FIELDS` and is refused by name in `field_blocked` — the PDF
+  mapping belongs to `link`, which owns the matcher and its thresholds. The keys
+  are load-bearing for something outside this repo: `paper/typst/opv-body.typ`
+  references entries through `#ref(<key>)` and `scripts/resolve_refs.py` resolves
+  supra numbers through them, so a renamed key silently breaks the manuscript.
+  After writing, the file is re-parsed and the key LIST compared to what it was;
+  a mismatch exits non-zero pointing at the `.bak`.
+
 - **federalregister.gov bot-blocks every request** and lands on
   unblock.federalregister.gov. Fetch from govinfo's link service,
   `https://www.govinfo.gov/link/fr/<vol>/<page>?link-type=pdf`, into
@@ -156,3 +226,8 @@ is not the version of record.
 | Trust a freshly fetched publisher PDF | It can be an advance-access proof paginated 1–N | Re-run `version` on anything fetched |
 | Use the SEC release PDF for a `Fed. Reg.` cite | Different pagination from the one the cite uses | `fedreg` via govinfo `link/fr/<vol>/<page>` |
 | Run `link` without `--dry-run` on a bib you have not inspected | It writes into 197 entries | `--dry-run` first, then `--backup` |
+| Run `reconcile` without reading the full `--dry-run` set | It rewrote 163 fields across 47 entries on OPV | Read every line, then `--backup`; `--fields` to scope |
+| Take a Paperpile record's `journal` when the entry already names one and the record is SSRN | `SSRN Electron. J.` over `B.U. L. Rev.` is a regression, not a correction | The SSRN guard; read the CONFLICTS list |
+| Accept a Paperpile match on a no-author entry a year apart | The SEC's 2019 release matched a 2020 comment letter at 0.98 | Δyear == 0 when there is no surname to corroborate |
+| Let Crossref verify a non-`@article` by its start page | `66-67` is a pincite, and "Discussion Papers" also starts on page 66 | `@article` only — the type is what separates them |
+| Add `file` to `RECONCILE_FIELDS` "since it is a field too" | The PDF mapping is `link`'s, matcher and thresholds included | Leave it; `field_blocked` refuses it by name |
