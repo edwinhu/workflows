@@ -5,9 +5,7 @@ description: "Use when the user says 'CourtListener', 'Free Law Project', 'RECAP
 
 # CourtListener for empirical legal research
 
-**What this skill carries.** The names and headings are the index; for a subject none of
-them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
-
+**What this skill carries** — grep `references/` for any subject the names below miss:
 !`skill-toc ${CLAUDE_SKILL_DIR}`
 
 Free Law Project's corpus. Three access routes with very different properties, and one

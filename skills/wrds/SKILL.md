@@ -5,9 +5,7 @@ description: Use when "query WRDS", "pull SEC filings", "access Compustat/CRSP/E
 user-invocable: false
 ---
 
-**What this skill carries.** The names and headings are the index; for a subject none of
-them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
-
+**What this skill carries** — grep `references/` for any subject the names below miss:
 !`skill-toc ${CLAUDE_SKILL_DIR}`
 
 > **Building a proxy-voting panel?** Use the **`npx-ownership-panel`** skill, not

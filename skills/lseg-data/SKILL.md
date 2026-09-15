@@ -5,9 +5,7 @@ description: 'Use when "query LSEG/Refinitiv", "fundamentals or market data from
 user-invocable: false
 ---
 
-**What this skill carries.** The names and headings are the index; for a subject none of
-them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
-
+**What this skill carries** — grep `references/` for any subject the names below miss:
 !`skill-toc ${CLAUDE_SKILL_DIR}`
 
 ## Contents

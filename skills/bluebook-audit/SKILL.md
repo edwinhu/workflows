@@ -6,9 +6,7 @@ user-invocable: false
 
 # Bluebook Footnote Audit Workflow
 
-**What this skill carries.** The names and headings are the index; for a subject none of
-them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
-
+**What this skill carries** — grep `references/` for any subject the names below miss:
 !`skill-toc ${CLAUDE_SKILL_DIR}`
 
 Systematic Bluebook 21st edition compliance audit for law review manuscripts in DOCX format.

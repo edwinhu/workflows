@@ -5,9 +5,7 @@ description: "Use when the user asks to 'scrape Lex Machina', 'capture Bloomberg
 
 # Capturing paginated JSON from an authenticated research UI
 
-**What this skill carries.** The names and headings are the index; for a subject none of
-them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
-
+**What this skill carries** — grep `references/` for any subject the names below miss:
 !`skill-toc ${CLAUDE_SKILL_DIR}`
 
 Drive the user's logged-in browser over CDP, hook `XMLHttpRequest`, click through the result

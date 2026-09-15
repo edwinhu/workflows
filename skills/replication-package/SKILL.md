@@ -6,9 +6,7 @@ user-invocable: true
 
 # Replication package
 
-**What this skill carries.** The names and headings are the index; for a subject none of
-them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
-
+**What this skill carries** — grep `references/` for any subject the names below miss:
 !`skill-toc ${CLAUDE_SKILL_DIR}`
 
 A production is read by a lawyer on Windows, not by you on Linux. Everything below

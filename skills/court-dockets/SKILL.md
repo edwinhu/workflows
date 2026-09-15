@@ -5,9 +5,7 @@ description: This skill should be used when the user asks to "get the complaint 
 
 # Court dockets: retrieving filings from Lex Machina, Docket Alarm and Bloomberg Law
 
-**What this skill carries.** The names and headings are the index; for a subject none of
-them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
-
+**What this skill carries** — grep `references/` for any subject the names below miss:
 !`skill-toc ${CLAUDE_SKILL_DIR}`
 
 Three commercial platforms, one job: turn a list of cases into a directory of PDFs plus a manifest

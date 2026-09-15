@@ -6,9 +6,7 @@ user-invocable: true
 
 # DOCX ↔ Typst Bridge
 
-**What this skill carries.** The names and headings are the index; for a subject none of
-them carries, `grep -il <term> ${CLAUDE_SKILL_DIR}/references/*.md`.
-
+**What this skill carries** — grep `references/` for any subject the names below miss:
 !`skill-toc ${CLAUDE_SKILL_DIR}`
 
 Typst source is the thing the repo keeps. Word is the thing coauthors edit. This skill
