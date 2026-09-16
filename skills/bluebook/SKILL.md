@@ -232,7 +232,9 @@ For detailed rules, consult:
 - **`references/abbreviations.md`** - Bluebook abbreviation tables
 - **`references/editions-21-to-22.md`** - What changed in the 22nd edition, from the publisher's preface plus rule-by-rule checks
 
-**All eight reference files are now checked against the rule text.**
+**Every reference file below is checked against the rule text.** `editions-21-to-22.md` is
+not in the table because it is the SOURCE that verification was done against, not a subject
+of it.
 
 | file | rules | status |
 |---|---|---|
@@ -245,10 +247,11 @@ For detailed rules, consult:
 | `abbreviations.md` | 10.2.2, 15.1(e), 16.1, T6 | rebuilt from 22e; T6 reproduced from the capture, table gaps flagged in place |
 | `audit-patterns.md` | cross-cutting (1, 4, 10, 12, 15-18, T6) | rebuilt from 22e; every check names its rule, untraceable checks marked in place |
 
-All six were then **adversarially re-verified** by separate agents against the same corpus, with
+Five were then **adversarially re-verified** by separate agents against the same corpus, with
 instructions to find errors rather than agree: `signals-parentheticals.md` and `short-forms.md`
 came back with **zero contradictions** (every imperative traced to a governing sentence);
-`cases.md`, `statutes.md` and `secondary-sources.md` each had defects, all now corrected. Reports:
+`cases.md`, `statutes.md` and `secondary-sources.md` each had defects, all now corrected.
+`quotations.md`, `abbreviations.md` and `audit-patterns.md` had no second pass. Reports:
 `scratch/bb22/verify/`.
 
 All eight were checked against subsection pages extracted verbatim from the official Bluebook
