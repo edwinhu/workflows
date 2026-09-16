@@ -57,10 +57,18 @@ while :; do
   KIND=$(printf '%s' "${CMD%% *}" | tr -d '/')
   # `agent wait` returning idle does not mean the pane is STILL idle when Enter lands -- a session
   # with a background job can start working in between, and then the line is queued as literal
-  # text. Measured 2026-09-03 on nport-join. So a /goal is re-attempted: setting the same goal
-  # twice is idempotent. A /loop is NOT -- two lines mean two crons -- so it gets one attempt.
-  ATTEMPTS=1
-  [ "$KIND" = "goal" ] && ATTEMPTS="${GOAL_SEND_ATTEMPTS:-4}"
+  # text. Measured 2026-09-03 on nport-join. So a send is re-attempted.
+  #
+  # A /loop USED TO GET ONE ATTEMPT, guarding against two lines becoming two crons. Measured
+  # across every session's log on 2026-09-16: /goal landed 127 times and missed 36 (78%), /loop
+  # landed 52 and missed 29 (64%). More than a third of every heartbeat ever raised was never
+  # armed, and unlike a goal nothing told the session -- goal-verify.sh covers only the goal.
+  #
+  # The guard was unnecessary. `confirmed` looks for the command's EXECUTION receipt
+  # (`<command-name>/loop</command-name>`), which Claude Code writes when the slash command runs;
+  # a cron exists only if it ran. So "unconfirmed after 150s of polling" IS evidence that no cron
+  # was created, and retrying on exactly that evidence cannot double one.
+  ATTEMPTS="${GOAL_SEND_ATTEMPTS:-4}"
   OK=0
   for attempt in $(seq 1 "$ATTEMPTS"); do
     herdr agent wait "$PANE" --until idle --until done --timeout "${GOAL_SEND_WAIT_MS:-900000}" \
@@ -100,8 +108,8 @@ while :; do
     echo "drain: /$KIND attempt $attempt of $ATTEMPTS did not confirm" >>"$LOG"
   done
 
-  # Pop either way. A resend is not safe to guess at — two /loop lines mean two crons — and
-  # goal-verify.sh is the check that tells the session the truth on its next turn.
+  # Pop either way once the attempts are spent; `.unconfirmed` is what carries the failure
+  # forward, and goal-verify.sh reads it so the session is TOLD rather than left to assume.
   tail -n +2 "$Q" > "$Q.tmp" && mv "$Q.tmp" "$Q"
   if [ "$OK" = 1 ]; then
     echo "drain: /$KIND EXECUTED on $PANE at $(date +%T)" >>"$LOG"

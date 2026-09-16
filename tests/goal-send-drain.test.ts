@@ -95,15 +95,29 @@ describe('delivery is not execution', () => {
     expect((calls.match(/pane send-text/g) || []).length).toBe(3)
   }, 30000)
 
-  test('a /loop is attempted ONCE even unconfirmed — two lines would be two crons', () => {
+  // A /loop USED to get one attempt, to stop two lines becoming two crons. Measured across
+  // every session's log on 2026-09-16: /goal landed 127 and missed 36, /loop landed 52 and
+  // missed 29 — a third of every heartbeat ever raised, with nothing to report it. The guard
+  // was unnecessary: `confirmed` looks for the command's EXECUTION receipt, and a cron exists
+  // only if the command executed, so "unconfirmed" is evidence that no cron was made.
+  //
+  // What still must hold is the thing one-attempt achieved: a CONFIRMED /loop is never sent
+  // twice. That is the assertion below, and it is the one that prevents two crons.
+  test('an unconfirmed /loop IS retried — no cron exists to duplicate', () => {
     const { calls } = runDrain(['/loop 30m tick'], { executes: false })
+    expect((calls.match(/pane send-text/g) || []).length).toBe(3)
+  }, 30000)
+
+  test('a CONFIRMED /loop is sent exactly once — this is what stops two crons', () => {
+    const { calls } = runDrain(['/loop 30m tick'], { executes: true })
     expect((calls.match(/pane send-text/g) || []).length).toBe(1)
   }, 30000)
 
-  test('an unconfirmed line is NOT resent — two /loop lines would mean two crons', () => {
-    const { queue } = runDrain(['/loop 30m tick'], { executes: false })
+  test('an unconfirmed /loop is recorded, because nothing else would say it never armed', () => {
+    const { queue, unconfirmed } = runDrain(['/loop 30m tick'], { executes: false })
     expect(queue.trim()).toBe('')
-  })
+    expect(unconfirmed).toContain('/loop 30m tick')
+  }, 30000)
 })
 
 describe('a command over 800 chars is chunked, because Claude Code pastes above that', () => {

@@ -44,8 +44,28 @@ for line in open(path, errors="replace"):
         state = ("set", txt, d.get("timestamp"))
     elif c.startswith("<local-command-stdout>No goal set") or c.startswith("<local-command-stdout>Goal cleared"):
         state = ("clear", "", d.get("timestamp"))
+# THE LOOP IS REPORTED WHATEVER THE GOAL DID. A /goal that fails to land is caught here on the
+# next turn; a /loop that fails was caught by nothing, and the drainer's record of it sat in a
+# file nothing read. Measured across every session 2026-09-16: 29 of 81 heartbeats never armed.
+# A goal without a heartbeat is the unattended idle this whole skill exists to prevent, so it is
+# named even when the goal itself is fine.
+def report_loop():
+    q = os.path.join(os.environ.get("TMPDIR", "/tmp"),
+                     f"herdr-goal-send-{os.environ.get('CLAUDE_CODE_SESSION_ID','')}.q")
+    try:
+        with open(q + ".unconfirmed") as fh:
+            loops = [l for l in fh if l.startswith("/loop")]
+    except OSError:
+        return
+    if loops:
+        print(f"  WARNING: {len(loops)} /loop send(s) never confirmed — this session may have NO "
+              f"HEARTBEAT. Nothing fires once it goes quiet. Check with the CronList tool; "
+              f"re-send if there is no job. Record: {q}.unconfirmed")
+
 if state and state[0] == "set":
-    if not quiet: print(f"goal ACTIVE (set {state[2]}): {state[1][:160]}")
+    if not quiet:
+        print(f"goal ACTIVE (set {state[2]}): {state[1][:160]}")
+        report_loop()
     sys.exit(0)
 if not quiet:
     print("NO GOAL SET" + (f" (last cleared {state[2]})" if state else " — this session has never had one"))
@@ -53,5 +73,6 @@ if not quiet:
     q = os.path.join(os.environ.get("TMPDIR", "/tmp"), f"herdr-goal-send-{os.environ.get('CLAUDE_CODE_SESSION_ID','')}.q")
     if os.path.exists(q) and os.path.getsize(q):
         print(f"  pending in queue (not yet delivered): {q}")
+    report_loop()
 sys.exit(1)
 PY
