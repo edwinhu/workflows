@@ -76,7 +76,11 @@ def main() -> int:
         print(__doc__)
         return 2
     t = Path(sys.argv[1])
-    files = ([p for p in t.rglob("*") if p.suffix in {".py", ".ipynb"}]
+    # See ds-chart-typography: a checker about charts is not a chart.
+    _PRUNE = {".planning", "scratch", "__pycache__", ".pixi", "worktrees", "node_modules",
+              "external", "vendor", "constraints"}
+    files = ([p for p in t.rglob("*")
+              if p.suffix in {".py", ".ipynb"} and not _PRUNE & set(p.parts)]
              if t.is_dir() else [t])
     found = [f for p in files for f in check(p)]
     for f in found:

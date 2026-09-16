@@ -90,7 +90,15 @@ def main() -> int:
         print(__doc__)
         return 2
     target = Path(sys.argv[1])
-    files = ([p for p in target.rglob("*") if p.suffix in {".py", ".ipynb"}]
+    # Another session's worktree, a vendored upstream and a build tree are not ours to judge;
+    # without this the walk reported the same finding twice, the duplicate naming a file on
+    # someone else's branch.
+    # `constraints` too: a checker ABOUT charts is not a file that draws one, and its own
+    # detection patterns are what make it look like a chart to itself.
+    _PRUNE = {".planning", "scratch", "__pycache__", ".pixi", "worktrees", "node_modules",
+              "external", "vendor", "constraints"}
+    files = ([p for p in target.rglob("*")
+              if p.suffix in {".py", ".ipynb"} and not _PRUNE & set(p.parts)]
              if target.is_dir() else [target])
     findings = [f for p in files for f in check(p)]
     for f in findings:

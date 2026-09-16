@@ -87,6 +87,7 @@ ax2.legend(loc='upper left', frameon=False, fontsize=10)
 
 fig.tight_layout()
 fig.savefig(OUTPUT_DIR / 'dealscan_annual_origination.png', bbox_inches='tight')
+fig.savefig(OUTPUT_DIR / 'dealscan_annual_origination.svg', bbox_inches='tight')
 plt.close()
 print(f"Saved: {OUTPUT_DIR / 'dealscan_annual_origination.png'}")
 
@@ -135,6 +136,7 @@ ax.legend(frameon=False, loc='upper left', fontsize=10)
 
 fig.tight_layout()
 fig.savefig(OUTPUT_DIR / 'dealscan_by_loan_type.png', bbox_inches='tight')
+fig.savefig(OUTPUT_DIR / 'dealscan_by_loan_type.svg', bbox_inches='tight')
 plt.close()
 print(f"Saved: {OUTPUT_DIR / 'dealscan_by_loan_type.png'}")
 
@@ -185,6 +187,7 @@ ax.legend(frameon=False, loc='upper left', fontsize=10)
 
 fig.tight_layout()
 fig.savefig(OUTPUT_DIR / 'dealscan_by_purpose.png', bbox_inches='tight')
+fig.savefig(OUTPUT_DIR / 'dealscan_by_purpose.svg', bbox_inches='tight')
 plt.close()
 print(f"Saved: {OUTPUT_DIR / 'dealscan_by_purpose.png'}")
 
@@ -230,6 +233,7 @@ ax.legend(frameon=False, loc='upper left', fontsize=10)
 
 fig.tight_layout()
 fig.savefig(OUTPUT_DIR / 'dealscan_market_segments.png', bbox_inches='tight')
+fig.savefig(OUTPUT_DIR / 'dealscan_market_segments.svg', bbox_inches='tight')
 plt.close()
 print(f"Saved: {OUTPUT_DIR / 'dealscan_market_segments.png'}")
 
@@ -281,6 +285,7 @@ ax.legend(frameon=False, loc='upper left', fontsize=10)
 
 fig.tight_layout()
 fig.savefig(OUTPUT_DIR / 'dealscan_distribution_method.png', bbox_inches='tight')
+fig.savefig(OUTPUT_DIR / 'dealscan_distribution_method.svg', bbox_inches='tight')
 plt.close()
 print(f"Saved: {OUTPUT_DIR / 'dealscan_distribution_method.png'}")
 
@@ -323,6 +328,7 @@ for bar, val in zip(bars, df_arr['volume_bn']):
 
 fig.tight_layout()
 fig.savefig(OUTPUT_DIR / 'dealscan_top_arrangers.png', bbox_inches='tight')
+fig.savefig(OUTPUT_DIR / 'dealscan_top_arrangers.svg', bbox_inches='tight')
 plt.close()
 print(f"Saved: {OUTPUT_DIR / 'dealscan_top_arrangers.png'}")
 
