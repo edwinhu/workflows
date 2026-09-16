@@ -13,7 +13,7 @@ argue with a specific row.
 | rule id | raw findings | false positives | true positives |
 |---|---|---|---|
 | positive-match-failure-vocabulary | 26 | 23 | 3 |
-| single-distinct-literal | 207 | 193 | 14 |
+| single-distinct-literal | 209 | 193 | 16 |
 | existence-only-artifact | 1 | 1 | 0 |
 | injected-key-never-varied | 44 | 44 | 0 |
 
@@ -24,9 +24,9 @@ the findings that existed then — so twelve newer findings (eleven `single-dist
 `positive-match-failure-vocabulary`) sit in the true-positive column by arithmetic, NOT by
 judgement. Nobody has read them. Do not cite that column as evidence about them.
 
-Four more findings arrived on 2026-09-16 with the loop-tick, teardown, ds-waiver and pursue
-tests — one `positive-match-failure-vocabulary`, three `single-distinct-literal`, none audited,
-all in the true-positive column by arithmetic like the rest.
+Six more findings arrived on 2026-09-16 with the loop-tick, teardown, ds-waiver, until and
+ds-schema tests — one `positive-match-failure-vocabulary`, five `single-distinct-literal`, none
+audited, all in the true-positive column by arithmetic like the rest.
 
 Two rows moved on 2026-09-15 when elide-case's strays leg was rewired to the canonical checkers,
 and both were read:
@@ -40,7 +40,7 @@ and both were read:
   asserts the leg then reports each canonical checker as unmeasured. An implementation ignoring the
   injected `PATH` fails it.
 
-Unparseable files: 0 of 247 linted. Every file the walker reached was extracted; nothing was dropped
+Unparseable files: 0 of 249 linted. Every file the walker reached was extracted; nothing was dropped
 silently, and no count above is understated by a skipped file.
 
 Of the 261 findings this investigation audited in August, one survived inspection. The
