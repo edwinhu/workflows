@@ -6,6 +6,9 @@
 # could only ever run in a shell that already happened to have numpy, pandas or pyarrow.
 #
 # NOT listed, and why:
+#   external/*_test.py                            vendored upstream (anthropic-skills); its
+#                                                 suites are that repo's to run, and gating
+#                                                 them here would fail our audit on their bug
 #   skills/gemini-batch/scripts/test_single.py     a live Gemini API call
 #   skills/wrds/scripts/test_connection.py         WRDS PostgreSQL credentials
 #   skills/lseg-data/scripts/test_connection.py    LSEG Data Library credentials
@@ -14,5 +17,6 @@ skills/bmll/scripts/test_bmll_scripts.py
 skills/ds/scripts/ds_dq_test.py
 skills/pincite/tests/test_page_offset.py
 skills/writing/scripts/writing_flip_test.py
+skills/writing/scripts/writing_prose_gate_test.py
 skills/writing/scripts/writing_gate_probe_test.py
 skills/writing/scripts/writing_receipt_test.py
