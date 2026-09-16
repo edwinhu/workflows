@@ -58,8 +58,15 @@ MODEL = resolve_model("judgment")
 #: thinking_level MINIMAL is load-bearing: Gemini 3.x defaults to HIGH, and an
 #: unpinned batch returns empty content on MAX_TOKENS with no useful error.
 #: Measured: 0 truncated responses over 18,975 requests, 0 thinking tokens.
+#: `seed` is BEST EFFORT, not a guarantee — the SDK's own wording is "the model makes a best
+#: effort to provide the same response for repeated requests". temperature=0 already removes
+#: the sampling randomness this controls, so the seed is the belt to that braces: it costs
+#: nothing and makes a re-run of the same pairs far likelier to reproduce. Do NOT read it as a
+#: promise of determinism; these judgements feed a linking panel, so the panel's provenance is
+#: the saved OUTPUT, not the ability to regenerate it.
 GENERATION_CONFIG = {
     "temperature": 0,
+    "seed": 20260916,
     "response_mime_type": "application/json",
     "thinking_config": {"thinking_level": "MINIMAL"},
 }
