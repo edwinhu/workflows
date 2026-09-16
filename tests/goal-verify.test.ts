@@ -19,13 +19,20 @@ const REPO = join(import.meta.dir, '..')
 const VERIFY = join(REPO, 'skills/goal-and-loop/scripts/goal-verify.sh')
 const SID = 'verify-test-session'
 
-function verify(records: unknown[]) {
+function verify(records: unknown[], unconfirmed?: string) {
   const home = mkdtempSync(join(tmpdir(), 'gv-'))
   const dir = join(home, '.claude', 'projects', 'proj')
   mkdirSync(dir, { recursive: true })
   writeFileSync(join(dir, `${SID}.jsonl`), records.map(r => JSON.stringify(r)).join('\n') + '\n')
+  // The drainer's record of sends that never confirmed, which is the only evidence available
+  // to a script that a heartbeat was queued and never armed.
+  const tmp = mkdtempSync(join(tmpdir(), 'gvq-'))
+  if (unconfirmed !== undefined) {
+    writeFileSync(join(tmp, `herdr-goal-send-${SID}.q.unconfirmed`), unconfirmed)
+  }
   return spawnSync('bash', [VERIFY, '--session', SID], {
-    encoding: 'utf8', env: { ...process.env, HOME: home },
+    encoding: 'utf8',
+    env: { ...process.env, HOME: home, TMPDIR: tmp, CLAUDE_CODE_SESSION_ID: SID },
   })
 }
 
@@ -95,5 +102,37 @@ describe('a cleared goal is not an active one', () => {
       goalCleared('2026-09-01T12:00:00Z'),
     ])
     expect(r.status).toBe(1)
+  })
+})
+
+
+// THE LOOP IS REPORTED WHATEVER THE GOAL DID. A /goal that misses is caught here; a /loop that
+// missed was caught by nothing, and the drainer's record sat in a file nothing read. Measured
+// across every session on 2026-09-16: 29 of 81 heartbeats never armed.
+describe('an unconfirmed /loop is reported, so a session is never silently without a heartbeat', () => {
+  const ts = '2026-09-16T04:00:00.000Z'
+
+  test('it warns even when the goal itself is ACTIVE', () => {
+    const r = verify([goalSet('do the thing', ts)], '/loop 30m tick\n')
+    expect(r.status).toBe(0)               // the goal is fine...
+    expect(r.stdout).toContain('NO HEARTBEAT')  // ...and the heartbeat is not
+    expect(r.stdout).toContain('CronList')      // names the only tool that settles it
+  })
+
+  test('it warns when no goal is set either', () => {
+    const r = verify([], '/loop 30m tick\n')
+    expect(r.status).toBe(1)
+    expect(r.stdout).toContain('NO HEARTBEAT')
+  })
+
+  test('it stays quiet when no /loop failed', () => {
+    const r = verify([goalSet('do the thing', ts)], '/goal something else\n')
+    expect(r.stdout).not.toContain('NO HEARTBEAT')
+  })
+
+  test('it stays quiet when there is no record at all', () => {
+    const r = verify([goalSet('do the thing', ts)])
+    expect(r.status).toBe(0)
+    expect(r.stdout).not.toContain('NO HEARTBEAT')
   })
 })

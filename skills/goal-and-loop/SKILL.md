@@ -63,6 +63,19 @@ bash ${CLAUDE_SKILL_DIR}/scripts/goal-verify.sh    # 0 = active (prints it), 1 =
 Exit 1 means no goal is set whatever the send reported. Re-send, or hand the user the `/goal` line
 and say plainly that it is not active.
 
+**It reports the LOOP too, whatever the goal did.** A `/loop` that fails to land was caught by
+nothing until 2026-09-16 — the drainer wrote it to `<queue>.unconfirmed` and no one read that
+file. Measured across every session's log that day: `/goal` landed 127 times and missed 36;
+`/loop` landed 52 and missed **29**. More than a third of every heartbeat ever raised was never
+armed, and the session was never told. `goal-verify.sh` now names it, and a `/loop` gets the same
+four attempts a `/goal` does — the old one-attempt rule guarded against two crons, but
+`confirmed` looks for the command's EXECUTION receipt, so "unconfirmed" is itself evidence that
+no cron exists.
+
+**Only the `CronList` tool proves a loop is armed.** `goal-verify.sh` reads the drainer's record,
+which says a send did not confirm; it cannot see a cron. When it warns, call `CronList`. No job
+means no heartbeat.
+
 <EXTREMELY-IMPORTANT>
 **Never report a goal as set on the strength of a send's exit code, and never treat one you only
 wrote down as binding.** Measured 2026-09-02: four self-sends across three sessions all reported
@@ -158,6 +171,7 @@ pause with extra steps.
 | Switch the drainer to `herdr agent prompt` | it pastes, and a paste is never parsed as a slash command | `pane send-text` + `send-keys enter` |
 | Treat a delivery receipt as proof the goal is set | delivery is not execution; only an executed command writes a `<command-name>` record | `goal-verify.sh` |
 | Leave a session running overnight on a goal alone | nothing in a goal runs once the session is quiet | add `/loop 30m`, `CronDelete` when it closes |
+| Report a heartbeat as armed because the `/loop` send exited 0 | the send only queues, and 29 of 81 never landed — the same trap as the goal, with no check | `goal-verify.sh` warns; `CronList` settles it |
 | Write "has returned a verdict" / "the report exists" | milestone: true while the objective is unmet | name PASS, or the number the work must reach |
 | End a turn with a question mark under an open goal | at 02:00 that is a five-hour pause | answer it in one line and act |
 | Write "when done or blocked, notify and stop" | every difficulty becomes terminal | enumerate the terminal blockers; the rest is the next task |
