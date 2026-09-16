@@ -25,6 +25,11 @@ import argparse
 import gzip
 from pathlib import Path
 
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 import pandas as pd
 
 COLS = ["filepath", "accession", "form_type", "filed_date", "cik",
@@ -38,6 +43,7 @@ def load_scan_outputs(scan_dir: Path) -> pd.DataFrame:
         with gzip.open(f, "rt") as fh:
             df = pd.read_csv(fh, sep="\t", header=None, names=COLS,
                              dtype={"cik": "string", "filed_date": "string"})
+            check_schema(df, COLS, name="scan TSV", exact=True)
         frames.append(df)
     out = pd.concat(frames, ignore_index=True)
     out["year"] = out["filed_date"].str.slice(0, 4).astype(int)
@@ -93,6 +99,7 @@ def load_npx_frame(wrds_user: str | None) -> pd.DataFrame:
         FROM risk.voteanalysis_npx
         WHERE fundcik IS NOT NULL
     """, conn)
+    check_schema(df, ["cik", "year"], name="NPX vote years", exact=True)
     conn.close()
     df["cik"] = pd.to_numeric(df["cik"], errors="coerce")
     _n0 = len(df)
@@ -119,6 +126,7 @@ def load_cik_to_mgmt_cd(wrds_user: str | None) -> pd.DataFrame:
         JOIN crsp_q_mutualfunds.fund_hdr h USING (crsp_fundno)
         WHERE m.comp_cik IS NOT NULL AND h.mgmt_cd IS NOT NULL
     """, conn)
+    check_schema(df, ["cik", "mgmt_cd"], name="CIK -> management company", exact=True)
     conn.close()
     df["cik"] = df["cik"].astype(int)
     return df.drop_duplicates(["cik", "mgmt_cd"]).reset_index(drop=True)

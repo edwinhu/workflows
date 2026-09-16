@@ -51,6 +51,11 @@ import sys
 import time
 from pathlib import Path
 
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 import pandas as pd
 import polars as pl
 
@@ -134,6 +139,7 @@ def main() -> None:
     df = pd.read_sql(
         SHORTINT_QUERY, conn, params={"start": args.start, "end": args.end}
     )
+    check_schema(df, ["permno", "datadate", "shortint"], name="short interest", exact=True)
     conn.close()
     print(f"[si] {len(df):,} raw semi-monthly rows ({time.time() - t0:.1f}s)")
 
@@ -197,12 +203,15 @@ def main() -> None:
         crsp = pl.read_parquet(crsp_cache).select(
             ["permno", "qdate_int", "TSO", "cfacshr"]
         )
+        check_schema(crsp, ["permno", "qdate_int", "TSO", "cfacshr"],
+                     name="CRSP cache (selected)", exact=True)
         src = "leg-2 cache"
     else:
         cdf = pd.read_sql(
             TSO_CHECK_QUERY, wrds_pull.connect(user=args.user),
             params={"start": args.start, "end": args.end},
         )
+        check_schema(cdf, ["permno", "date", "shrout", "cfacshr"], name="TSO check", exact=True)
         crsp = (
             pl.from_pandas(cdf)
             .with_columns(
