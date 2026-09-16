@@ -58,6 +58,12 @@ update; without --kept this stage refuses to write.
 from __future__ import annotations
 
 import argparse
+
+# One column contract per load. check_schema works unchanged on polars — same len() and
+# .columns — and fails AT the read naming what was missing and what arrived.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
 import csv
 import re
 import sys
@@ -171,6 +177,9 @@ def load_vocabulary(sec_tsv: Path, header_tsvs: list[Path]):
     sec = pl.read_csv(sec_tsv, separator="\t", has_header=False, quote_char=None,
                       new_columns=["cik", "series_id", "series_name"],
                       truncate_ragged_lines=True, ignore_errors=True)
+    # new_columns= renames POSITIONALLY and truncate_ragged_lines hides a short row, so a file
+    # with two columns would silently mislabel them. exact=True is the contract here.
+    check_schema(sec, ["cik", "series_id", "series_name"], name="SEC series TSV", exact=True)
     ingest(sec["series_id"].to_list(), sec["series_name"].to_list())
     n_sec = len(vocab)
 
@@ -180,6 +189,7 @@ def load_vocabulary(sec_tsv: Path, header_tsvs: list[Path]):
         h = pl.read_csv(src, separator="\t", quote_char=None,
                         columns=["series_id", "series_name"],
                         truncate_ragged_lines=True, ignore_errors=True)
+        check_schema(h, ["series_id", "series_name"], name="40-Act header scan", exact=True)
         ingest(h["series_id"].to_list(), h["series_name"].to_list())
 
     print(f"SEC vintages          : {n_sec:,} distinct names")
@@ -280,13 +290,16 @@ def update_in_place(kept_csv: Path) -> None:
     altered, no non-registrant gains a link. Asserted, not asserted-to.
     """
     base = pl.read_parquet(NPX_CRSP_LINK)
+    check_schema(base, ["iss_nonregistrant", "n_vote_rows", "seriesid"], name="npx_crsp_link")
     BASE_COLS, N = base.columns, base.height
 
     kept = pl.read_csv(kept_csv).with_columns(
         fundid=pl.col("fundid").cast(pl.Float64),
         series_ids=pl.col("series_ids").cast(pl.Utf8),
     )
+    check_schema(kept, ["fundid", "series_ids"], name="kept.csv")
     cikmap = pl.read_parquet(CRSP_CIK_MAP)
+    check_schema(cikmap, ["series_cik", "crsp_fundno"], name="CRSP cik map")
     sid2fno = (cikmap.filter(pl.col("series_cik").is_not_null()
                              & pl.col("crsp_fundno").is_not_null())
                .select(series_ids=pl.col("series_cik").cast(pl.Utf8),
@@ -296,6 +309,7 @@ def update_in_place(kept_csv: Path) -> None:
           .select(new_fundno="crsp_fundno", new_flag="index_fund_flag",
                   new_tna="tna_latest")
           .unique(subset=["new_fundno"]))
+    check_schema(fs, ["new_fundno", "new_flag", "new_tna"], name="fund summary (selected)")
     # A fundno filled here must carry its wficn too -- wficn is how S12 holdings
     # reach a fund, so a link without one is invisible downstream. Same declared
     # tie-break as the main builder: 341 fundnos map to >1 wficn, and sorting
@@ -304,6 +318,7 @@ def update_in_place(kept_csv: Path) -> None:
           .sort(["crsp_fundno", "wficn"])
           .unique(subset=["crsp_fundno"], keep="first", maintain_order=True)
           .select(new_fundno="crsp_fundno", new_wficn="wficn"))
+    check_schema(mf, ["new_fundno", "new_wficn"], name="mflink1 (selected)")
     add = (kept.join(sid2fno, on="series_ids", how="inner")
                .join(fs, on="new_fundno", how="left")
                .join(mf, on="new_fundno", how="left")
@@ -403,6 +418,7 @@ def main() -> None:
                  "or --kept to apply")
 
     base = pl.read_parquet(NPX_CRSP_LINK)
+    check_schema(base, ["iss_nonregistrant", "n_vote_rows", "seriesid"], name="npx_crsp_link")
     MF = int(base.filter(~pl.col("iss_nonregistrant"))["n_vote_rows"].sum())
     residue = base.filter(~pl.col("iss_nonregistrant")
                           & pl.col("seriesid").is_null()
