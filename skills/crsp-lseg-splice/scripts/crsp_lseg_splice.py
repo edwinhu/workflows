@@ -31,7 +31,7 @@ from pathlib import Path
 # The column contract for every load in this file. ds_schema ships with the ds skill;
 # check_schema fails AT the load, naming what was missing and what arrived, rather than
 # three transforms later with a KeyError naming one column.
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "ds" / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "ds" / "scripts"))
 from ds_schema import check_schema  # noqa: E402
 
 import numpy as np
