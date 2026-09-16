@@ -302,6 +302,9 @@ export function gitChangedRanges(path: string): Range[] {
   } catch { return [WHOLE_FILE]; }
 }
 
+/** How recently a file must have changed to count as written by the command that just ran. */
+const RECENT_WRITE_MS = 120_000;
+
 function bashTouchedProseFile(cwd: string): string {
   try {
     const r = Bun.spawnSync(["git", "-C", cwd, "status", "--porcelain", "--untracked-files=all"],
@@ -325,8 +328,18 @@ function bashTouchedProseFile(cwd: string): string {
       if (!isDraftMd && !isTyp) continue;
       try { cands.push({ path: abs, mtime: statSync(abs).mtimeMs }); } catch { /* deleted */ }
     }
-    cands.sort((a, b) => b.mtime - a.mtime);
-    return cands[0]?.path ?? "";
+    // ONLY A FILE THIS COMMAND PLAUSIBLY WROTE. Without a recency bound the newest DIRTY prose
+    // file wins even when nothing touched it, so once the files a session is working on are
+    // committed, the survivor is whatever long-standing uncommitted draft sits in the tree --
+    // re-reported, whole, after every Bash call. gitChangedRanges' own comment names that
+    // outcome ("which is how a hook earns being ignored"); its untracked branch returns
+    // WHOLE_FILE, so an untracked draft defeats the guard entirely. Measured 2026-09-16: a
+    // two-day-old untracked addendum reported all ~50 findings on every command for hours.
+    // A file a command just wrote has an mtime of about now.
+    const cutoff = Date.now() - RECENT_WRITE_MS;
+    const fresh = cands.filter((c) => c.mtime >= cutoff);
+    fresh.sort((a, b) => b.mtime - a.mtime);
+    return fresh[0]?.path ?? "";
   } catch { return ""; }
 }
 

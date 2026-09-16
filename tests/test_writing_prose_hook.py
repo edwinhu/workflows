@@ -19,8 +19,10 @@ from __future__ import annotations
 import importlib.util
 import hashlib
 import json
+import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -384,6 +386,58 @@ def test_hook_flags_findings_carry_implications(tmp_path):
     # the full-corpus-cleared (i.e. genuinely human) siblings must NOT be flagged
     assert "d.md:3" not in ctx, ctx
     assert "d.md:5" not in ctx, ctx
+
+
+def _run_bash_hook(cwd: Path):
+    """Drive the hook's Bash branch, which names no file and asks git which prose file moved."""
+    payload = {"tool_name": "Bash", "cwd": str(cwd),
+               "tool_input": {"command": "true"}}
+    proc = subprocess.run(
+        ["bun", str(HOOK_PATH)],
+        input=json.dumps(payload), capture_output=True, text=True, timeout=60,
+    )
+    out = proc.stdout.strip()
+    if not out:
+        return None
+    return json.loads(out)["hookSpecificOutput"]["additionalContext"]
+
+
+def _bash_repo(tmp_path: Path) -> Path:
+    """A real git repo holding one untracked, non-deck .typ with an obvious AI tell.
+
+    Untracked matters: gitChangedRanges returns WHOLE_FILE for a file git cannot diff, so this is
+    the case where nothing downstream narrows what gets reported.
+    """
+    repo = tmp_path / "repo"
+    (repo / "drafts").mkdir(parents=True)
+    subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
+    (repo / "letter.typ").write_text(
+        "#set page(margin: 1in)\n"
+        "This article delves into the rich tapestry of the law.\n"
+    )
+    return repo
+
+
+def test_hook_bash_reports_a_prose_file_the_command_just_wrote(tmp_path):
+    """mtime ≈ now: this is the file the command plausibly wrote, so it is still audited."""
+    repo = _bash_repo(tmp_path)
+    ctx = _run_bash_hook(repo)
+    assert ctx is not None, "a freshly written prose file must still be picked up on Bash"
+    assert "letter.typ:2" in ctx, ctx
+    assert "rich/vibrant tapestry" in ctx, ctx
+
+
+def test_hook_bash_ignores_a_dirty_prose_file_with_an_old_mtime(tmp_path):
+    """Same repo, same violation — only the mtime differs.
+
+    Without a recency bound the newest DIRTY prose file wins whether or not anything touched it, so
+    a long-standing untracked draft is re-reported whole after every single Bash command. Paired
+    with the test above: a filter that is always-true or always-false fails exactly one of them.
+    """
+    repo = _bash_repo(tmp_path)
+    two_days_ago = time.time() - 2 * 24 * 60 * 60
+    os.utime(repo / "letter.typ", (two_days_ago, two_days_ago))
+    assert _run_bash_hook(repo) is None
 
 
 def test_hook_flags_gap_statement_cliche(tmp_path):
