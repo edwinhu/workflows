@@ -1,6 +1,7 @@
 #!/usr/bin/env -S uv run python3
 """Constraint: ds-standard-error-spec — match SE type to data structure."""
 import re
+import os
 import sys
 from pathlib import Path
 
@@ -66,7 +67,15 @@ def check(context):
 
 
 if __name__ == "__main__":
-    violations = check({"cwd": sys.argv[1] if len(sys.argv) > 1 else "."})
+    _cwd = sys.argv[1] if len(sys.argv) > 1 else "."
+    violations = check({"cwd": _cwd})
+    # A finding the rule does not fit is closed by a REASON on the line, never by weakening the
+    # rule. Waived findings are counted here so they stay visible: _ds_waivers.py says why.
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from _ds_waivers import partition  # noqa: E402
+    violations, _waived = partition(violations, _cwd, CONSTRAINT)
+    if _waived:
+        print(f"WAIVED: {len(_waived)} finding(s) with a stated reason")
     if violations:
         for v in violations:
             print(f"FAIL: {v}")

@@ -327,7 +327,7 @@ def _font_family_index(merged: Path) -> dict:
             blob = json.loads(cache.read_text())
             if blob.get("sig") == sig:
                 return {k: [merged / n for n in v] for k, v in blob["idx"].items()}
-        except Exception:
+        except Exception:  # ds-error-handling: the cache is an optimisation; an unreadable one must rebuild, not crash the render
             pass
     idx: dict = {}
 
@@ -349,7 +349,7 @@ def _font_family_index(merged: Path) -> dict:
     try:
         cache.parent.mkdir(parents=True, exist_ok=True)
         cache.write_text(json.dumps({"sig": sig, "idx": idx}))
-    except Exception:
+    except Exception:  # ds-error-handling: failing to WRITE the cache must not fail the render it was only speeding up
         pass
     return {k: [merged / n for n in v] for k, v in idx.items()}
 
@@ -547,7 +547,7 @@ def _doc_focused_dir(src: Path) -> "Path | None":
             if not staged:
                 try:
                     shutil.copyfile(target, dest)
-                except Exception:
+                except Exception:  # ds-error-handling: an optional font asset; the caller checks whether anything landed and falls back
                     pass
     return out if any(out.iterdir()) else None
 
@@ -1179,7 +1179,7 @@ def _run_word_via_cmux(src: Path, dst: Path, timeout: int,
         if surface:
             try:
                 _cmux(cli, "close-surface", "--surface", surface, timeout=10)
-            except Exception:
+            except Exception:  # ds-error-handling: teardown inside finally — raising here would mask the real error being handled
                 pass
         shutil.rmtree(work, ignore_errors=True)
 
