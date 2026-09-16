@@ -318,7 +318,7 @@ test('S5 is an advisory and does not gate', () => {
 })
 
 test('checkProseCounts sees a spelled-out number too', () => {
-  expect(checkProseCounts('f.md', 'there are fifteen rules').length).toBe(1)
+  expect(checkProseCounts('f.md', 'the corpus holds fifteen modules').length).toBe(1)
 })
 
 // S5 reported that a number EXISTS, which made every hit a manual check: 34 advisories over
@@ -326,10 +326,31 @@ test('checkProseCounts sees a spelled-out number too', () => {
 // the guesswork where the filesystem can answer.
 
 test('a singular is prose about a design, not a corpus tally', () => {
-  expect(checkProseCounts('f.md', 'one rule governs this')).toEqual([])
+  expect(checkProseCounts('f.md', 'one module ships here')).toEqual([])
   expect(checkProseCounts('f.md', 'One skill owns it')).toEqual([])
   // ...and the plural on the same noun still fires.
-  expect(checkProseCounts('f.md', 'three rules govern this').length).toBe(1)
+  expect(checkProseCounts('f.md', 'it ships three modules').length).toBe(1)
+})
+
+// THE FILESYSTEM HAS TO BE ABLE TO ANSWER, or the advisory has no remedy to offer. Measured
+// 2026-09-16: 21 advisories remained after two narrowings and NOT ONE was a wrong count — every
+// one was a heading over the list it counted, a back-reference to that list, a historical note,
+// or already correct. These are the three shapes that produced them.
+test('a heading introducing its own list is not a corpus count', () => {
+  expect(checkProseCounts('f.md', '## Two rules that are not optional')).toEqual([])
+  expect(checkProseCounts('f.md', '### the ordering, in three modules')).toEqual([])
+})
+
+test('a back-reference points at this document, not at a directory', () => {
+  expect(checkProseCounts('f.md', 'the cost the four modules above pay for it')).toEqual([])
+  expect(checkProseCounts('f.md', 'three modules declared in the block')).toEqual([])
+})
+
+test('`rules` and `lenses` name design facts no directory holds', () => {
+  expect(checkProseCounts('f.md', 'it ships three rules')).toEqual([])
+  expect(checkProseCounts('f.md', 'the gate runs four lenses')).toEqual([])
+  // ...while a noun the filesystem CAN answer still fires.
+  expect(checkProseCounts('f.md', 'it ships three modules').length).toBe(1)
 })
 
 test('a dated measurement is a record, not a claim about the tree today', () => {
