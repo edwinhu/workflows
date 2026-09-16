@@ -22,6 +22,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 
+import sys
+from pathlib import Path
+
+# One column contract per load. ds_schema ships with the ds skill; check_schema fails AT
+# the read, naming what was missing and what arrived.
+# Found by SEARCHING upward, not by counting parents: the depth differs per file and I got
+# it wrong twice — check-no-orphan-imports.sh caught both.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 # Chart style
 plt.rcParams.update({
     'font.family': 'serif',
@@ -61,6 +72,7 @@ WHERE meetingdate BETWEEN '2003-01-01' AND '2024-12-31'
                       'Proxy Contest', 'Proxy Contest (M&A)')
 """
 votes = pd.read_sql(vote_query, conn, parse_dates=['meetingdate', 'recorddate'])
+check_schema(votes, ['cusip', 'companyid', 'meetingid', 'meetingdate', 'ticker', 'voteresult', 'votedfor', 'votedagainst', 'tso'], name="ISS votes")
 print(f"Vote results: {len(votes):,} items across {votes['meetingid'].nunique():,} meetings")
 
 # %%
@@ -121,6 +133,7 @@ WHERE ncusip IS NOT NULL AND ncusip != ''
 ORDER BY SUBSTR(ncusip, 1, 6), namedt DESC
 """
 cusip_map = pd.read_sql(cusip_link_q, conn)
+check_schema(cusip_map, ['cusip6', 'permno'], name="cusip6->permno")
 
 votes['cusip6'] = votes['cusip'].str[:6]
 votes = votes.merge(cusip_map, on='cusip6', how='left')
@@ -138,6 +151,7 @@ if unmatched.any():
     ORDER BY ticker, namedt DESC
     """
     ticker_map = pd.read_sql(ticker_link_q, conn)
+    check_schema(ticker_map, ['ticker', 'permno'], name="ticker->permno")
     ticker_map = ticker_map.rename(columns={'permno': 'permno_ticker'})
 
     votes = votes.merge(ticker_map, on='ticker', how='left')
@@ -170,6 +184,7 @@ FROM tfn.s34type1
 GROUP BY mgrno, rdate
 """
 vintage = pd.read_sql(vintage_q, conn, parse_dates=['rdate', 'fdate'])
+check_schema(vintage, ['mgrno', 'rdate', 'fdate'], name="13F vintage")
 print(f"Manager-quarter observations: {len(vintage):,}")
 
 # %%
@@ -185,6 +200,7 @@ INNER JOIN (
 WHERE t3.shares > 0
 """
 holdings = pd.read_sql(holdings_q, conn, parse_dates=['rdate', 'fdate'])
+check_schema(holdings, ['mgrno', 'rdate', 'cusip', 'shares', 'fdate'], name="13F holdings")
 print(f"Raw 13-F holdings: {len(holdings):,}")
 
 # %%
@@ -223,6 +239,7 @@ WHERE date >= '2000-01-01' AND cfacshr IS NOT NULL
 ORDER BY permno, DATE_TRUNC('quarter', date), date DESC
 """
 cfac = pd.read_sql(cfac_q2, conn, parse_dates=['qtr'])
+check_schema(cfac, ['permno', 'qtr', 'cfacshr', 'tso_crsp'], name="CRSP cfac")
 print(f"CRSP quarterly adjustment factors: {len(cfac):,}")
 
 # %%
@@ -304,6 +321,7 @@ FROM s12_funds sf
 LEFT JOIN crsp_style cs ON sf.wficn = cs.wficn
 """
 mf_raw = pd.read_sql(mf_query, conn, parse_dates=['fdate'])
+check_schema(mf_raw, ['fdate', 'cusip', 'shares', 'wficn', 'index_fund_flag', 'fund_name'], name="S12 mutual funds")
 print(f"S12 fund-stock holdings (2020-2024): {len(mf_raw):,}")
 
 # Dedup by (wficn, fdate, cusip) BEFORE aggregation. If you skip this, a wficn

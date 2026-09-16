@@ -31,7 +31,10 @@ from pathlib import Path
 # The column contract for every load in this file. ds_schema ships with the ds skill;
 # check_schema fails AT the load, naming what was missing and what arrived, rather than
 # three transforms later with a KeyError naming one column.
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "ds" / "scripts"))
+# Found by SEARCHING upward, not by counting parents: the depth differs per file and I got
+# it wrong twice — check-no-orphan-imports.sh caught both.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
 from ds_schema import check_schema  # noqa: E402
 
 import numpy as np
