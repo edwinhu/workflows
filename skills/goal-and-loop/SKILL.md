@@ -124,7 +124,7 @@ If the session may commit, push, pick round-2 scope, choose between two branches
 spend the rest of its round budget — the goal says so, in one sentence, up front.
 </EXTREMELY-IMPORTANT>
 
-## The four parts
+## The five parts
 
 | | |
 |---|---|
@@ -132,6 +132,7 @@ spend the rest of its round budget — the goal says so, in one sentence, up fro
 | **2. CHECK** | the backticked command whose exit code settles it, so running it is evidence rather than a claim. A goal settled by re-reading the conversation gets reasoned out of. |
 | **3. ESCAPES** | a work counter AND a wall clock, both readable by the session. A counter stops a *losing* run, a clock stops a *stuck* one. The clock must outlast `maxRounds × a round` — craft's 6 and 720 min are the defaults to borrow. |
 | **4. AUTHORITY** | what it may decide alone, plus the SHORT list of what genuinely stops it — a missing credential, a dead network, an irreversible or outward-facing action. **Everything not on that list is the next task, difficulty included.** |
+| **5. TEARDOWN** | `When this goal closes, cancel the run loop with CronDelete — it is a cron and does not stop on its own.` Verbatim, and not optional: a cron outlives the goal, `CronDelete` is a model tool with no CLI, and no hook fires on goal completion — so the goal text is the only thing present when it closes. `compose-goal.sh` emits this; a hand-written goal has to carry it too. |
 
 ## Lint it before you send it
 

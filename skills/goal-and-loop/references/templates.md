@@ -5,8 +5,20 @@
 ```
 /goal <END STATE, with the number> — `<CHECK>` exits 0 — or <COUNTER> reads <N> or more —
 `<how to read it>` it to check — or the run has been going <MINUTES> minutes or more, which
-`<script>` prints and settles. <STANDING AUTHORITY>. <CONTINUATION>.
+`<script>` prints and settles. <STANDING AUTHORITY>. <CONTINUATION>. When this goal closes,
+cancel the run loop with CronDelete — it is a cron and does not stop on its own.
 ```
+
+**The teardown clause is not optional, and it is the one a hand-written goal keeps losing.**
+`compose-goal.sh` emits it on every dispatched goal, so a craft run carries it and a goal typed
+from this template did not. Measured 2026-09-16: a goal written straight from the four parts
+closed on its own condition and left a 30-minute cron running, which then re-ran the satisfied
+check twice more before a human noticed.
+
+It has to sit in the GOAL because nothing else can carry it. `CronDelete` is a model tool; there
+is no cron CLI, a session-scoped cron lives in memory rather than on disk, and no hook event fires
+on goal completion — so no shell, and no `Stop` hook, can cancel one. The only thing present at
+the moment a goal closes is the session reading its own goal text.
 
 **Single-quote it on the command line.** The template is backticked, so double quotes hand every
 `<CHECK>` to the shell to run before `goal-self-send.sh` sees the string — and the goal then
