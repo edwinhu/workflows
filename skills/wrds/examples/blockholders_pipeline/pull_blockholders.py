@@ -34,9 +34,17 @@ import pandas as pd
 # Make src importable when invoked as a script
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src import wrds_pull
-from src.blockholders import aggregate as agg
-from src.blockholders.parser import parse_filing
+try:
+    from src import wrds_pull
+except ModuleNotFoundError as e:  # noqa: E402
+    raise SystemExit(
+        "This script needs src/wrds_pull.py, which lives in YOUR project rather than in this "
+        "plugin — it is the database handle, and `scp scripts/*` leaves it behind. Copy src/ "
+        "alongside these scripts, or point PYTHONPATH at it. Nothing was queried."
+    ) from e
+
+from src import aggregate as agg
+from src.parser import parse_filing
 
 
 FORM_TYPES = ("SC 13D", "SC 13D/A", "SC 13G", "SC 13G/A")
