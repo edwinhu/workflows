@@ -78,6 +78,8 @@ def fix_hq_suspects(df: pd.DataFrame) -> pd.DataFrame:
     stats = pd.concat([modal, modal_pct, modal_n], axis=1).reset_index()
 
     df = df.merge(stats, on="cik", how="left")
+    print(f"  df x stats (left): {len(df):,} rows, "
+          f"{df[stats.columns[-1]].notna().mean():.1%} matched")
 
     # Override HQ-suspect when modal is strong (>=80%) and based on 3+ clean obs
     suspect = (
@@ -126,6 +128,8 @@ def fix_modal_outliers(df: pd.DataFrame) -> pd.DataFrame:
     # Only CIKs that are unanimous in all clean observations AND have 5+ obs
     unanimous = stats[(stats["n_unique"] == 1) & (stats["n_obs"] >= 5)]
     df = df.merge(unanimous[["cik", "modal"]], on="cik", how="left")
+    print(f"  df x unanimous (left): {len(df):,} rows, "
+          f"{df['modal'].notna().mean():.1%} matched")
     fix = (
         df["modal"].notna()
         & (df["modal"] != "")

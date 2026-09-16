@@ -225,6 +225,10 @@ def build_class_master(long: pd.DataFrame) -> pd.DataFrame:
         n_years=("file_year", "nunique"),
     )
     master = canon.merge(span, on="class_id", validate="one_to_one")
+    # `validate=` enforces key uniqueness and says nothing about rows LOST. A one_to_one join
+    # that silently drops a class is the failure worth seeing, so the counts are printed.
+    print(f"  class master: canon {len(canon):,} x span {len(span):,} -> {len(master):,} "
+          f"({len(master) / max(len(canon), 1):.1%} of canon retained)")
     cols = [
         "class_id",
         "series_id",
@@ -350,6 +354,10 @@ def build_series_master(long: pd.DataFrame, class_master: pd.DataFrame) -> pd.Da
         .merge(n_classes, on="series_id", how="left", validate="one_to_one")
         .merge(tickers, on="series_id", how="left", validate="one_to_one")
     )
+    # Left joins cannot drop rows, so a count below canon means the inner join with span did.
+    print(f"  series master: canon {len(canon):,} x span {len(span):,} -> {len(out):,} "
+          f"({len(out) / max(len(canon), 1):.1%} of canon retained); "
+          f"tickers matched {out['tickers'].notna().sum():,}")
     # Series whose every class is ticker-less (variable-annuity portfolios,
     # institutional-only share classes) merge to NA; give them an empty list.
     # `v is None or v is pd.NA` does not catch a float NaN, which is what a
