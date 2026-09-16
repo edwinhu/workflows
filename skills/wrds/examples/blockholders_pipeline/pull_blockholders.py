@@ -87,7 +87,12 @@ def query_13f_flags(start_year: int, end_year: int) -> pd.DataFrame:
     conn.close()
     df["cik_int"] = pd.to_numeric(df["cik"].str.lstrip("0").replace("", "0"),
                                    errors="coerce").astype("Int64")
-    return df.dropna(subset=["cik_int"])
+    _n0 = len(df)
+    out = df.dropna(subset=["cik_int"])
+    if len(out) != _n0:
+        print(f"  dropped {_n0 - len(out):,} of {_n0:,} filings ({1 - len(out) / _n0:.1%}) "
+              "whose cik is not numeric")
+    return out
 
 
 # ---------------------------------------------------------------------------

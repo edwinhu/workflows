@@ -42,11 +42,21 @@ def main() -> None:
     if missing:
         sys.exit(f"{args.src} lacks {missing}; has {list(df.columns)}")
 
+    _fundid = pd.to_numeric(df[args.key], errors="coerce")
+    if (_bad_key := int(_fundid.isna().sum())):
+        print(f"  {_bad_key:,} of {len(df):,} rows have a non-numeric {args.key} "
+              "(kept as NA, not dropped)", file=sys.stderr)
+    # Both coercions are named before the frame is built, so each can report what it could not
+    # parse. Inside the literal there is nowhere to say it.
+    _has_w = bool(args.weight and args.weight in df.columns)
+    _tna_w = pd.to_numeric(df[args.weight], errors="coerce") if _has_w else pd.NA
+    if _has_w and (_bad_w := int(_tna_w.isna().sum())):
+        print(f"  {_bad_w:,} of {len(df):,} rows have a non-numeric {args.weight} "
+              "(tna_w empty for those rows)", file=sys.stderr)
     out = pd.DataFrame({
-        "fundid": pd.to_numeric(df[args.key], errors="coerce"),
+        "fundid": _fundid,
         "block": df[args.group].astype("string").fillna("__nogroup__").str.strip(),
-        "tna_w": (pd.to_numeric(df[args.weight], errors="coerce")
-                  if args.weight and args.weight in df.columns else pd.NA),
+        "tna_w": _tna_w,
     })
 
     if args.weight and args.weight not in df.columns:

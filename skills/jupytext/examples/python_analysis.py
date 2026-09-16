@@ -53,9 +53,14 @@ df.info()
 # Clean column names
 df.columns = df.columns.str.lower().str.replace(' ', '_')
 
-# Handle missing values
+# Handle missing values — and SAY how many, because a silent drop is how a broken upstream
+# parse looks exactly like a smaller sample.
+_n0 = len(df)
 df = df.dropna(subset=['id'])  # Required columns
+print(f"dropped {_n0 - len(df):,} of {_n0:,} rows ({1 - len(df) / _n0:.1%}) with no id")
+_filled = df['optional_col'].isna().sum() if 'optional_col' in df.columns else 0
 df = df.fillna({'optional_col': 0})  # Default values
+print(f"filled {_filled:,} missing optional_col with 0")
 
 # Type conversions
 if 'date' in df.columns:
