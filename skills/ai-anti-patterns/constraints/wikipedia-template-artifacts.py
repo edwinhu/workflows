@@ -23,7 +23,13 @@ _PLACEHOLDER_PATTERNS = [
     # SEVERITY = "hard" — which, since check-all started reporting severity and the gates started
     # denying on it (v5.127.0), means an ordinary link in a draft could BLOCK a phase. Hard is the
     # class that is supposed to have no false positives; a link is not an unfilled placeholder.
-    (r'\[[A-Z][a-zA-Z\s\']+\](?!\()', "placeholder: '[Name]'-style unfilled bracket"),
+    #
+    # `(?<![\w)\]#])` EXCLUDES A MARKUP CALL'S ARGUMENT. Typst writes `#emph[Howey]`,
+    # `#smallcaps[Securities Regulation]`, `#text(14pt)[LAW8016]` — the bracket holds content,
+    # not a blank. Same class of false positive as the link, same cost: hard severity blocks a
+    # phase. A placeholder never follows an identifier or a closing paren.
+    (r'(?<![\w)\]#])\[[A-Z][a-zA-Z\s\']+\](?!\()',
+     "placeholder: '[Name]'-style unfilled bracket"),
     (r'\[(describe|insert|add|enter|specify|include|provide|replace|your\s+\w+)[^\]]+\]',
      "placeholder: instructional bracket placeholder"),
     # Placeholder dates
