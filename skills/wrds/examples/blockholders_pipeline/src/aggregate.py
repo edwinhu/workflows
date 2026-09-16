@@ -36,6 +36,7 @@ import numpy as np
 
 
 def _parse_date(s: pd.Series) -> pd.Series:
+    # ds-error-handling: pure helper — it coerces and returns; the caller's dropna reports the loss
     return pd.to_datetime(s, format="%Y%m%d", errors="coerce")
 
 
@@ -66,6 +67,7 @@ def assign_year(filings: pd.DataFrame) -> pd.DataFrame:
 
 
 def _to_int_cik(s: pd.Series) -> pd.Series:
+    # ds-error-handling: pure helper as _parse_date — coerces and returns, the caller reports the loss
     return pd.to_numeric(s.str.lstrip("0").replace("", "0"), errors="coerce").astype("Int64")
 
 
@@ -250,8 +252,14 @@ def find_blocks(company_cik: int, insider_df: pd.DataFrame,
         o = o.rename(columns={"TrDate": "date"})
         o = o[o["Security"] == "Common Stock"]
 
+    # coerce + dropna is where rows leave without a trace: an unparseable date becomes NaT and
+    # the dropna removes it. Report the loss, or a bad vintage looks like a small sample.
+    _n0 = len(o)
     o["date"] = pd.to_datetime(o["date"], errors="coerce")
     o = o.dropna(subset=["date", "Num_Own", "blockholder_CIK"])
+    if len(o) != _n0:
+        print(f"  dropped {_n0 - len(o):,} of {_n0:,} rows ({1 - len(o) / _n0:.1%}) "
+              "with unparseable date / Num_Own / blockholder_CIK")
     if o.empty:
         return pd.DataFrame(
             columns=["company_CIK", "blockholder_CIK", "blockholder_name",
@@ -259,8 +267,12 @@ def find_blocks(company_cik: int, insider_df: pd.DataFrame,
         )
 
     o["year_month"] = o["date"].values.astype("datetime64[M]")
+    _n0 = len(o)
     o["Num_Own"] = pd.to_numeric(o["Num_Own"], errors="coerce")
     o = o.dropna(subset=["Num_Own"])
+    if len(o) != _n0:
+        print(f"  dropped {_n0 - len(o):,} of {_n0:,} rows ({1 - len(o) / _n0:.1%}) "
+              "with a non-numeric Num_Own")
 
     shrout = crsp_msf
     if "cik" in shrout.columns:
@@ -300,6 +312,9 @@ def find_blocks(company_cik: int, insider_df: pd.DataFrame,
     g["company_CIK"] = company_cik
     g["blockholder_CIK"] = pd.to_numeric(g["blockholder_CIK"], errors="coerce") \
                               .astype("Int64")
+    # Int64 keeps the NA, so a non-numeric CIK travels into the join as a null key.
+    if (_bad := g["blockholder_CIK"].isna().sum()):
+        print(f"  {_bad:,} of {len(g):,} rows have a non-numeric blockholder_CIK (kept as NA)")
     return g[["company_CIK", "blockholder_CIK", "blockholder_name",
               "year", "position"]]
 
@@ -348,7 +363,11 @@ def compute_insider_addon(
     tr = tr_insider.copy()
     tr["cusip6"] = tr["cusip6"].astype(str)
     tr["company_CIK"] = tr["cusip6"].map(cusip_map)
+    _n0 = len(tr)
     tr = tr.dropna(subset=["company_CIK"])
+    if len(tr) != _n0:
+        print(f"  dropped {_n0 - len(tr):,} of {_n0:,} insider rows "
+              f"({1 - len(tr) / _n0:.1%}) whose cusip6 is not in the CRSP map")
     tr["company_CIK"] = tr["company_CIK"].astype(int)
 
     # Pre-index shrout by cik for fast subset
@@ -451,8 +470,12 @@ def insider_addon_from_ownership(
         o = own.copy()
         o.columns = OWN_DISP_COLUMNS[: len(o.columns)]
         o = o[o["Security"] == "Common Stock"].copy()
+        _n0 = len(o)
         o["date"] = pd.to_datetime(o["TrDate"], errors="coerce")
         o = o.dropna(subset=["date"])
+        if len(o) != _n0:
+            print(f"  dropped {_n0 - len(o):,} of {_n0:,} rows ({1 - len(o) / _n0:.1%}) "
+                  "with an unparseable TrDate")
         o["year_month"] = o["date"].values.astype("datetime64[M]")
         o["Num_Own"] = pd.to_numeric(o["Num_Own"], errors="coerce")
 
