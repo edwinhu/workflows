@@ -743,7 +743,7 @@ gs=$?
 # `status` 44 times. This is that prompt, on a cron the model cannot cancel. Failure is
 # informational exactly as for the goal — a run without a heartbeat is the old status quo, not a
 # broken dispatch. The goal carries the CronDelete teardown, because no shell can cancel a cron.
-LOOP_LINE="/loop ${CRAFT_LOOP_INTERVAL:-30m} Check the goal. If it is not met, take the next action now rather than proposing it."
+LOOP_LINE="/loop ${CRAFT_LOOP_INTERVAL:-30m} Run the goal's CHECK and report its exit code — judge from the command, not from the conversation. If it fails, take the next action now rather than proposing it. If it passes, spend the remaining budget: hunt for work the goal did not name — an ungated checker, a suite nothing runs, a vendored copy, a count that has drifted — fix the largest one within your standing authority and say in one line why you picked it. When the budget is spent or nothing is left, clear the goal and cancel this loop with CronDelete."
 bash "$SKILL/scripts/goal-self-send.sh" "$LOOP_LINE"
 ls_rc=$?
 [ $ls_rc -eq 0 ] || echo "loop self-send exited $ls_rc — not fatal; the run has a goal but no heartbeat." >&2
