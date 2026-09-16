@@ -64,23 +64,26 @@ df_annual = pd.read_sql(annual_q, conn)
 print(df_annual.to_string())
 
 # %%
-fig, ax1 = plt.subplots(figsize=(12, 6))
-ax2 = ax1.twinx()
+# TWO PANELS, NOT TWIN AXES. Count and dollar volume share only the x-axis; on twin y-axes
+# their apparent co-movement is an artifact of two independently chosen scales, and sliding
+# either scale invents or destroys the correlation the reader sees. Sharing x keeps every
+# comparison this chart can honestly support.
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 7), sharex=True,
+                               gridspec_kw={'height_ratios': [1, 1]})
 
 ax1.bar(df_annual['year'], df_annual['n_facilities'], color='#4472C4', alpha=0.7, label='Facility Count')
 ax2.plot(df_annual['year'], df_annual['volume_bn'], color='#C00000', linewidth=2.5,
          marker='o', markersize=4, label='Dollar Volume ($Bn)')
 
-ax1.set_xlabel('Year')
+ax2.set_xlabel('Year')
 ax1.set_ylabel('Number of Facilities', color='#4472C4')
 ax2.set_ylabel('Dollar Volume ($Bn)', color='#C00000')
 ax1.set_title('DealScan: Annual US Syndicated Loan Origination (1990–2020)', fontweight='bold', fontsize=13)
 ax2.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'${x:,.0f}'))
 ax1.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'{x:,.0f}'))
 
-lines1, labels1 = ax1.get_legend_handles_labels()
-lines2, labels2 = ax2.get_legend_handles_labels()
-ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left', frameon=False, fontsize=10)
+ax1.legend(loc='upper left', frameon=False, fontsize=10)
+ax2.legend(loc='upper left', frameon=False, fontsize=10)
 
 fig.tight_layout()
 fig.savefig(OUTPUT_DIR / 'dealscan_annual_origination.png', bbox_inches='tight')
