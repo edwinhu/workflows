@@ -1,0 +1,29 @@
+[workspace]
+authors = ["edwinhu <eddyhu@gmail.com>"]
+channels = ["conda-forge"]
+description = "Claude Code plugin: skills, hooks and constraint checkers"
+name = "workflows"
+platforms = ["linux-64", "osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+test = "pytest tests/"
+
+[dependencies]
+# Test-only. Every one of these was previously passed ad hoc as `uv run --with X`,
+# which is why `pytest tests/` aborted collection and the suite read as broken:
+# pyyaml and lxml for prose-audit's diction table and .docx reader, pandas and
+# polars for the ds and npx-linking suites.
+python = "3.12.*"
+pytest = ">=8,<10"
+pyyaml = ">=6,<7"
+lxml = ">=5,<7"
+pandas = ">=2,<4"
+polars = ">=1,<2"
+scikit-learn = ">=1.5,<2"
+
+[pypi-dependencies]
+# conda-forge tops out at sparse_dot_topn 0.3.1 (py311, linux-64 only), and 0.3.1
+# exports awesome_cossim_topn rather than the sp_matmul_topn that matching.py imports.
+# 1.x is pypi-only. ~/areas/secreg/pixi.toml pins it the same way.
+sparse-dot-topn = ">=1.2.0, <2"
