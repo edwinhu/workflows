@@ -21,6 +21,11 @@ import re
 import shutil
 from pathlib import Path
 
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -100,6 +105,8 @@ def build_volkova_lookup(panel: pd.DataFrame) -> pd.DataFrame:
 def main():
     print(f"Loading add-on from {ADDON.name}")
     addon = pd.read_parquet(ADDON)
+    check_schema(addon, ["company_CIK", "blockholder_CIK", "blockholder_name"],
+                 name="13D/G add-on")
     addon["company_CIK"] = addon["company_CIK"].astype("int64")
     addon["blockholder_CIK"] = addon["blockholder_CIK"].astype("int64")
     addon["norm_name"] = addon["blockholder_name"].map(normalize_name)
@@ -108,11 +115,13 @@ def main():
 
     print(f"\nLoading Form 4 bridge from {FORM4.name}")
     form4 = pd.read_parquet(FORM4)
+    check_schema(form4, ["personid"], name="Form 4 bridge")
     f4_lookup = build_form4_lookup(form4)
     print(f"  Form 4 lookup size: {len(f4_lookup):,} (issuer, norm_name) pairs")
 
     print(f"\nLoading prebridge panel from {PREBRIDGE.name}")
     pre = pd.read_parquet(PREBRIDGE)
+    check_schema(pre, ["year"], name="pre-bridge panel")
     pre["company_CIK"] = pre["company_CIK"].astype("int64")
     pre["blockholder_CIK"] = pre["blockholder_CIK"].astype("int64")
     print(f"  prebridge rows: {len(pre):,}")
@@ -264,6 +273,7 @@ def main():
     # Tag prior add-on rows in prebridge by personid membership and DROP them.
     # (They were added by the same pipeline with blockholder_CIK = personid.)
     tr = pd.read_parquet(TR)
+    check_schema(tr, ["personid"], name="TR filings")
     personids = set(tr["personid"].dropna().astype("int64"))
     print(f"\n  TR personid universe: {len(personids):,}")
     prior_addon_mask = (

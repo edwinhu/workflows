@@ -75,6 +75,11 @@ import re
 import sys
 from pathlib import Path
 
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "cit"))
 
 import numpy as np  # noqa: E402
@@ -222,6 +227,7 @@ for lab, g in [("GAP A (seriesid present)", gap_a), ("GAP B (no seriesid)", gap_
           f"({100 * r / TOTAL_ROWS:.2f}% of the panel)")
 
 cikmap = pl.read_parquet(CRSP_CIK_MAP)
+check_schema(cikmap, ["crsp_fundno", "series_cik"], name="CRSP cik map")
 in_map = gap_a.join(cikmap.filter(pl.col("series_cik").is_not_null())
                     .select(seriesid="series_cik").unique(), on="seriesid", how="semi")
 print(f"\nof Gap A's seriesIds, present in crsp_cik_map: {in_map.height:,} / {gap_a.height:,}")
@@ -230,6 +236,7 @@ print("  -> `crsp_cik_map` is a DEAD END for Gap A. This tier does not repair "
 
 # Gap B: the brief asked whether any Gap B fundid carries a seriesid elsewhere.
 l2 = pl.read_parquet(FUNDID_SERIESID).select("fundid", l2_seriesid="seriesid")
+check_schema(l2, ["fundid", "l2_seriesid"], name="fundid->seriesid", exact=True)
 gb = gap_b.join(l2, on="fundid", how="left")
 n_gb = gb.filter(pl.col("l2_seriesid").is_not_null()).height
 print(f"\nGap B fundids carrying a seriesid in fundid_seriesid.parquet: {n_gb:,}")
@@ -238,13 +245,16 @@ print("  (L3 nulls `seriesid` on npx_crsp_link only for ISS non-registrants, "
       "not assumed.)")
 
 fs = pl.read_parquet(FUND_SUMMARY2)
+check_schema(fs, ["crsp_fundno"], name="fund summary (class grain)")
 snl = pl.read_parquet(SEC_SERIES_NAMES_LONG)
+check_schema(snl, ["series_id", "series_name"], name="SEC series names (long)")
 # A crsp_fundno can carry more than one wficn in MFLINK1 (measured: 341 of
 # 49,975). `keep="first"` with no sort picks by row order — an undefined
 # choice on the linking critical path. Sorted so the pick is STATED.
 mflink = (pl.read_parquet(MFLINK1)
           .sort(["crsp_fundno", "wficn"])
           .unique(subset=["crsp_fundno"], keep="first", maintain_order=True))
+check_schema(mflink, ["crsp_fundno", "wficn"], name="mflink1 (deduped)")
 print(f"\nfund_summary2 (CLASS grain)        : {fs.height:,} crsp_fundnos")
 print(f"sec_series_names_long              : {snl.height:,} rows")
 
