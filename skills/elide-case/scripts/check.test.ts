@@ -46,9 +46,26 @@ function run(args: string[]) {
 }
 
 /** Verbatim argv, so the fail-closed default itself can be tested. */
-function runRaw(args: string[]) {
-  const r = spawnSync("bash", [CHECK, ...args], { encoding: "utf8", timeout: 300_000 });
+function runRaw(args: string[], env?: Record<string, string>) {
+  // MERGE, never replace: a bare env dict loses PATH, and check.sh needs `typst`
+  // on it — the compile leg would then fail for the wrong reason and the leg under
+  // test would never be reached.
+  const r = spawnSync("bash", [CHECK, ...args], {
+    encoding: "utf8",
+    timeout: 300_000,
+    env: env ? { ...process.env, ...env } : process.env,
+  });
   return { code: r.status, out: `${r.stdout ?? ""}${r.stderr ?? ""}` };
+}
+
+/**
+ * The stray-line sub-checks that RAN, by name. These tests ask which classes were
+ * measured, not how they came out — so the set is what they assert. A pattern like
+ * /SUB runt: (PASS|FAIL)/ would answer the same question while also passing on a
+ * failure it did not mean to allow, which is what the suite linter flags.
+ */
+function subChecks(out: string): string[] {
+  return [...out.matchAll(/^\s*SUB ([a-z-]+):/gm)].map(m => m[1]);
 }
 
 /** Lines announcing a leg's verdict, e.g. "LEG compile: PASS — ...". */
@@ -689,26 +706,37 @@ ${scopeSection([
   // sweep, both all-clean), so a Typst-compiled fixture would assert nothing about the
   // checker. Drawing the lines makes the defect stated rather than hoped for.
   describe("the strays leg decides widows, orphans, stranded headings and runts", () => {
-    const PAGEBREAKS = path.join(import.meta.dir, "check-page-breaks.py");
+    const STRANDED = path.join(import.meta.dir, "check-stranded-headings.py");
     const MAKE = path.join(FIXTURES, "make-pagebreak-fixture.py");
     // The runt checker is CANONICAL, in the typst plugin, and is resolved the way check.sh
     // resolves it. This named `<plugin>/scripts/check-widows.py` — the pre-split script that did
     // widows, orphans and runts together, and that exists in no plugin since typst separated them
     // into widows.py / orphans.py / runts.py. The test failed for years-old naming, not for a
     // defect, and nothing ran it to say so: skills/*/scripts/ was in no gate.
-    const RUNTS = (() => {
+    const CANON = (() => {
       const r = spawnSync("typst-constraints", ["--dir"], { encoding: "utf8" });
-      if (r.status === 0 && r.stdout.trim()) return path.join(r.stdout.trim(), "runts.py");
+      if (r.status === 0 && r.stdout.trim()) return r.stdout.trim();
       for (const c of [`${process.env.HOME}/.claude/skills/typst/constraints`,
                        `${process.env.HOME}/projects/typst/constraints`]) {
-        if (existsSync(path.join(c, "runts.py"))) return path.join(c, "runts.py");
+        if (existsSync(path.join(c, "runts.py"))) return c;
       }
-      throw new Error("the typst plugin was not found — runts.py cannot run, which is not the same as its passing");
+      throw new Error("the typst plugin was not found — the canonical checkers cannot run, which is not the same as their passing");
     })();
+    const RUNTS = path.join(CANON, "runts.py");
+
+    /** Any canonical checker, run the way check.sh runs it. */
+    function checkCanon(name: string, pdf: string) {
+      const py = pymupdfPython() ?? "python3";
+      const r = spawnSync(py, [path.join(CANON, name), pdf, "--prose"], {
+        encoding: "utf8",
+        timeout: 300_000,
+      });
+      return { code: r.status, out: `${r.stdout ?? ""}${r.stderr ?? ""}` };
+    }
 
     /** An interpreter that can import pymupdf, resolved the way the checker resolves it. */
     function pymupdfPython(): string | null {
-      const r = spawnSync("python3", [PAGEBREAKS, ROOT, "--which-python"], {
+      const r = spawnSync("python3", [STRANDED, ROOT, "--which-python"], {
         encoding: "utf8",
         timeout: 300_000,
       });
@@ -726,7 +754,7 @@ ${scopeSection([
     }
 
     function checkPdf(pdf: string) {
-      const r = spawnSync("python3", [PAGEBREAKS, pdf], {
+      const r = spawnSync("python3", [STRANDED, pdf], {
         encoding: "utf8",
         timeout: 300_000,
       });
@@ -769,80 +797,57 @@ ${scopeSection([
       expect(out).not.toContain("widow/orphan(s)");
     }, 300_000);
 
-    // ---- the refusal. FAIL-FIRST: on ragged-right input the checker used to
-    // render widow/orphan verdicts anyway, and on the real Tornetta addendum
-    // three of its four findings were false positives.
-    test("below the flush-right floor the checker REFUSES rather than emitting verdicts", () => {
+    // ---- ragged-right prose now gets an ANSWER, not a refusal. FAIL-FIRST: the
+    // local detector rested on justified body text, so on ragged-right input it
+    // REFUSED (exit 3) — and three of the four real addenda are ragged right, so
+    // nobody judged widows or orphans on them. The canonical checkers take the
+    // paragraph boundary from the vertical gap, which needs no such premise.
+    test("ragged-right prose is judged, not refused", () => {
       const pdf = makePdf("ragged");
       if (!pdf) return;
-      const { code, out } = checkPdf(pdf);
-      expect(out).toContain("REFUSED widow/orphan");
-      expect(out).toContain("NON-ANSWER, not a clean bill");
-      // A refusal is neither a verdict nor a pass.
-      expect(out).not.toContain("PASS page-breaks");
-      expect(out).not.toMatch(/^\s*widow at the top of page/m);
-      expect(out).not.toMatch(/^\s*orphan at the foot of page/m);
-      expect(code).toBe(3); // deliberately not 0
+      for (const name of ["widows.py", "orphans.py"]) {
+        const { code, out } = checkCanon(name, pdf);
+        expect([0, 1]).toContain(code); // a verdict, not a non-answer
+        expect(out).not.toContain("REFUSED");
+      }
+      // ...and the local script renders no widow/orphan verdict at all any more.
+      const { out } = checkPdf(pdf);
+      expect(out).not.toContain("widow");
+      expect(out).not.toContain("orphan");
     }, 300_000);
 
     // The stranded-heading check is bold-and-short, not flush-right, so it is
-    // geometry-independent and must survive the refusal. On the real addendum it
-    // was the one genuine finding of four.
-    test("the stranded-heading check keeps running through the refusal", () => {
+    // geometry-independent — which is why this class stayed local when widow and
+    // orphan went canonical. On the real Tornetta addendum it was the one genuine
+    // finding of the four the old checker reported.
+    test("a heading stranded at the foot of ragged-right prose is still found", () => {
       const pdf = makePdf("ragged-heading");
       if (!pdf) return;
       const { code, out } = checkPdf(pdf);
-      expect(out).toContain("REFUSED widow/orphan");
       expect(out).toContain("stranded-heading at the foot of page 1");
       expect(code).toBe(1);
     }, 300_000);
 
-    // The refusal is a DECIDABLE condition over a measured quantity, not a mood: the
-    // same PDF is refused at the shipped floor and judged when the floor is lowered
-    // below its measured flush-right fraction. FAIL-FIRST: nothing measured it before.
-    function geometryOf(pdf: string, floor: string) {
-      const py = pymupdfPython() ?? "python3";
-      const r = spawnSync(py, [PAGEBREAKS, pdf, "--json", "--min-flush-frac", floor], {
-        encoding: "utf8",
-        timeout: 300_000,
-      });
-      return JSON.parse(`${r.stdout}`).geometry;
-    }
-
-    test("the refusal turns on a measured fraction, not on a guess", () => {
-      const pdf = makePdf("ragged");
-      if (!pdf) return;
-      expect(geometryOf(pdf, "0.60").flush_frac).toBeLessThan(0.6);
-      expect(geometryOf(pdf, "0.60").widow_orphan_judged).toBe(false);
-      expect(geometryOf(pdf, "0.0").widow_orphan_judged).toBe(true);
-      // ...and a justified fixture is above the floor, so the refusal is not universal.
-      const clean = makePdf("clean");
-      if (clean) {
-        expect(geometryOf(clean, "0.60").flush_frac).toBeGreaterThanOrEqual(0.6);
-        expect(geometryOf(clean, "0.60").widow_orphan_judged).toBe(true);
-      }
-    }, 300_000);
-
-    test("a PDF with a known orphan FAILS and names the page", () => {
+    // The two detection classes are canonical, so this asserts they FIND the
+    // defect the fixture states — not which script holds them.
+    test("a PDF with a known orphan is caught by the canonical checker", () => {
       const pdf = makePdf("orphan");
       if (!pdf) {
         // Never a silent skip: say the check did not run.
         console.warn("SKIPPED: no interpreter with pymupdf; set ELIDE_PYTHON");
         return;
       }
-      const { code, out } = checkPdf(pdf);
-      expect(out).toContain("orphan at the foot of page 1");
+      const { code, out } = checkCanon("orphans.py", pdf);
       expect(out).toContain("ORPHANED first line");
-      expect(code).not.toBe(0);
+      expect(code).toBe(1);
     }, 300_000);
 
-    test("a PDF with a known widow FAILS and names the page", () => {
+    test("a PDF with a known widow is caught by the canonical checker", () => {
       const pdf = makePdf("widow");
       if (!pdf) return;
-      const { code, out } = checkPdf(pdf);
-      expect(out).toContain("widow at the top of page 2");
+      const { code, out } = checkCanon("widows.py", pdf);
       expect(out).toContain("WIDOWED last line.");
-      expect(code).not.toBe(0);
+      expect(code).toBe(1);
     }, 300_000);
 
     test("a heading stranded at the foot of a page FAILS", () => {
@@ -850,21 +855,24 @@ ${scopeSection([
       if (!pdf) return;
       const { code, out } = checkPdf(pdf);
       expect(out).toContain("stranded-heading at the foot of page 1");
-      expect(code).not.toBe(0);
+      expect(code).toBe(1);
     }, 300_000);
 
     test("a clean PDF passes, so the failures above are not the checker crying wolf", () => {
       const pdf = makePdf("clean");
       if (!pdf) return;
       const { code, out } = checkPdf(pdf);
-      expect(out).toContain("PASS page-breaks");
+      expect(out).toContain("PASS stranded-headings");
       expect(code).toBe(0);
+      for (const name of ["widows.py", "orphans.py"]) {
+        expect(checkCanon(name, pdf).code).toBe(0);
+      }
     }, 300_000);
 
     // The fix vocabulary is layout-only, and the checker says so on every failure:
-    // rewording the court's text to close a widow would defeat the verbatim gate.
+    // rewording the court's text to close a defect would defeat the verbatim gate.
     test("a failure states that the fix is layout, never the court's words", () => {
-      const pdf = makePdf("widow");
+      const pdf = makePdf("stranded-heading");
       if (!pdf) return;
       const { out } = checkPdf(pdf);
       expect(out).toContain("FIX BY LAYOUT ONLY");
@@ -883,14 +891,40 @@ ${scopeSection([
     // FAIL-CLOSED, for the RUNT sub-check specifically. A new sub-check whose absence
     // passes is a defect class enforced by nothing. Naming no flag must RUN it, and
     // report it under its own name beside — not merged into — the widow/orphan verdict.
-    test("naming no strays flag runs the RUNT sub-check under its own name", () => {
+    test("naming no strays flag runs all four sub-checks under their own names", () => {
       const typ = fixture("runt-default", [3], "", { calibrate: false });
       const { out } = runRaw(["--addendum", typ, "--no-plan", "--no-target"]);
-      expect(out).toMatch(/^\s*SUB runt: (PASS|FAIL)/m);
-      expect(out).toMatch(/^\s*SUB widow\/orphan/m);
+      // Four classes, four verdicts. One going unmeasured must never be absorbed
+      // into another's: that is how the runt class stayed invisible while the leg
+      // called a 20-runt document clean.
+      expect(subChecks(out).sort()).toEqual(["orphan", "runt", "stranded-heading", "widow"]);
     }, 300_000);
 
-    test("--no-strays waives the RUNT sub-check too, and says so", () => {
+    // FAIL-CLOSED on the canonical checkers themselves. They live in another plugin,
+    // so "not installed" is a real state — and a leg that skipped them quietly would
+    // report clean having measured nothing, which is the failure this whole split
+    // exists to end.
+    test("a canonical checker that cannot be found FAILS the leg, naming it", () => {
+      const typ = fixture("canon-missing", [3]);
+      // Shadow `typst-constraints` with a stub that refuses, rather than emptying
+      // PATH — check.sh needs `typst` on it to reach this leg at all.
+      const shadow = path.join(ROOT, "shadow-bin");
+      fs.mkdirSync(shadow, { recursive: true });
+      fs.writeFileSync(path.join(shadow, "typst-constraints"), "#!/bin/sh\nexit 1\n");
+      fs.chmodSync(path.join(shadow, "typst-constraints"), 0o755);
+      const { code, out } = runRaw(["--addendum", typ, "--no-plan", "--no-target"], {
+        TYPST_CHECKERS_DIR: path.join(ROOT, "no-such-constraints-dir"),
+        PATH: `${shadow}:${process.env.PATH}`,
+        HOME: path.join(ROOT, "no-such-home"),
+      });
+      expect(out).toContain("nothing checked widows");
+      expect(out).toContain("nothing checked orphans");
+      expect(out).toContain("nothing checked runts");
+      expect(legs(out).strays).toBe("FAIL");
+      expect(code).not.toBe(0);
+    }, 300_000);
+
+    test("--no-strays waives the canonical sub-checks too, and says so", () => {
       const typ = fixture("runt-waived", [3]);
       const { out } = runRaw(["--addendum", typ, "--no-plan", "--no-target", "--no-strays"]);
       expect(out).toContain("NOBODY IS CHECKING PAGE BREAKS OR RUNTS");
@@ -920,28 +954,16 @@ ${scopeSection([
       return typ;
     }
 
-    // A refusal must not read as a pass ANYWHERE, and the summary line is where that
-    // discipline is easiest to lose. FAIL-FIRST: there was no refusal to report.
-    test("a refused widow/orphan verdict never reads as a pass in the summary", () => {
-      const typ = raggedFixture("strays-refusal");
+    // The end of the refusal, asserted through the leg rather than the script. The
+    // real addenda are set ragged right — three of four — and under the old local
+    // detector that meant nobody judged widows or orphans on them. Every class now
+    // returns a verdict on exactly that input.
+    test("a ragged-right addendum gets a verdict on every class, not a refusal", () => {
+      const typ = raggedFixture("strays-ragged");
       const { out } = runRaw(["--addendum", typ, "--no-plan", "--no-target"]);
-      expect(out).toContain("REFUSED widow/orphan");
-      expect(out).toContain("SUB widow/orphan: NOT JUDGED");
-      // The verdict line carries the non-answer whichever way the leg went, so the
-      // summary can never be read as certifying widows and orphans nobody judged.
-      expect(out).toMatch(
-        /(WIDOW\/ORPHAN NOT JUDGED|strays=\w+\(widow\/orphan NOT-JUDGED\)|REFUSED to judge on unjustified text)/,
-      );
-      expect(out).not.toContain("LEG strays: PASS — no widow, orphan, stranded heading or runt");
-    }, 300_000);
-
-    // The two sub-checks must not share a gate: runts are exactly the defect that
-    // ragged-right prose HAS, so they keep running when widow/orphan refuses itself.
-    test("the runt sub-check still runs when the widow/orphan verdict refuses itself", () => {
-      const typ = raggedFixture("strays-both");
-      const { out } = runRaw(["--addendum", typ, "--no-plan", "--no-target"]);
-      expect(out).toContain("SUB widow/orphan: NOT JUDGED");
-      expect(out).toMatch(/^\s*SUB runt: (PASS|FAIL)/m);
+      expect(out).not.toContain("NOT JUDGED");
+      expect(out).not.toContain("REFUSED");
+      expect(subChecks(out).sort()).toEqual(["orphan", "runt", "stranded-heading", "widow"]);
     }, 300_000);
 
     test("--no-strays waives the leg loudly and never claims stray lines hold", () => {

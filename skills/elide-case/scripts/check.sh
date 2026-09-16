@@ -4,9 +4,13 @@
 #   compile   — typst builds the addendum
 #   quotes    — check-quotes.py once per reading, captions DERIVED from the .typ
 #   addendum  — check-addendum.py: arity, table truth vs the PDF, per-reading length
-#   strays    — the stray-line family, each defect under ITS OWN name:
-#                 check-page-breaks.py    widow, orphan, stranded heading (page boundaries)
-#                 runts.py --prose runt (one word alone on a paragraph's last line)
+#   strays    — the stray-line family, each defect under ITS OWN name and its own exit code:
+#                 widows.py --prose   widow  (a paragraph's last line alone at a page top)
+#                 orphans.py --prose  orphan (a paragraph's first line alone at a page foot)
+#                 runts.py --prose    runt   (one word alone on a paragraph's last line)
+#                 check-stranded-headings.py  a heading at a page foot, its text overleaf
+#               The first three are canonical, in the typst plugin, in one copy. Only the
+#               fourth is this skill's own.
 # Every leg runs; the exit code is 0 only when all of them passed.
 #
 # Usage: check.sh --addendum <typ> [--pdf <pdf>] [--docs <dir>]
@@ -61,11 +65,11 @@
 # real prose their findings are disjoint. Reporting all of them as "widows" is what let the
 # runt class go unmeasured while the leg called a 20-runt document clean.
 #
-# THE RUNT SUB-CHECK HAS ITS OWN EXIT CODE AND RUNS EVEN WHEN THE WIDOW/ORPHAN VERDICT
-# REFUSES ITSELF. check-page-breaks.py exits 3 when the document is too ragged-right for
-# widow/orphan detection to mean anything; runts are precisely the defect ragged-right prose
-# HAS, so the two must not share a gate. A refusal is reported as NOT JUDGED and never as a
-# PASS.
+# EACH SUB-CHECK HAS ITS OWN EXIT CODE, so one class going unmeasured can never be absorbed
+# into another's verdict. A checker that cannot be found or cannot run is a FAIL naming it,
+# never a silent shorter run — the local widow/orphan detector used to REFUSE on ragged-right
+# prose (three of the four real addenda), which is a non-answer the canonical checkers do not
+# need: they take paragraph boundaries from the vertical gap, not the right margin.
 #
 # Source mapping stays auditable: every reading prints the file it was checked against
 # and whether that mapping was DERIVED from the caption, DECLARED in the .typ via
@@ -765,7 +769,6 @@ fi
 # fix by deleting a word, which is why the verbatim gate matters more here, not less.
 echo "--- leg strays"
 fail_widows=0
-strays_refused=0
 if [[ $WIDOWS -eq 1 && $NO_WIDOWS -eq 1 ]]; then
   fail_widows=1
   echo "LEG strays: FAIL — --strays and --no-strays are contradictory; pass at most one"
@@ -777,70 +780,62 @@ elif [[ $fail_compile -ne 0 || ! -s "$PDF" ]]; then
   fail_widows=1
   echo "LEG strays: FAIL — there is no compiled PDF to inspect, so page breaks and runts were not checked"
 else
-  # --- sub-check: widow / orphan / stranded heading
-  w_out="$(python3 "$SCRIPTS_DIR/check-page-breaks.py" "$PDF" 2>&1)"
-  w_rc=$?
-  printf '%s\n' "$w_out" | sed 's/^/  /'
-  case $w_rc in
-    0) echo "  SUB widow/orphan/stranded-heading: PASS — none at any page boundary" ;;
-    3) strays_refused=1
-       echo "  SUB widow/orphan: NOT JUDGED — the document is not justified, so the check REFUSED"
-       echo "    rather than guess. Stranded headings were checked and none were found." ;;
-    *) fail_widows=1
-       echo "  SUB widow/orphan/stranded-heading: FAIL — at least one page-level defect" ;;
-  esac
-  # A refusal that still found a stranded heading exits 1, so say the widow/orphan half
-  # was not judged rather than let the FAIL imply it was.
-  if [[ $w_rc -eq 1 ]] && printf '%s' "$w_out" | grep -q '^REFUSED widow/orphan'; then
-    strays_refused=1
-    echo "  SUB widow/orphan: NOT JUDGED — refused above; the FAIL is the stranded heading alone"
-  fi
-
-  # --- sub-check: runt. Its own exit code, and it runs whatever the above did.
-  # runts.py needs pymupdf and, unlike check-page-breaks.py, does not re-exec to
-  # find it, so borrow that script's resolver rather than assume the ambient python3.
-  # The checker is canonical and lives in the typst plugin; there is no local copy.
-  RUNT_PY=""
+  # --- resolve the canonical checkers ONCE. widows, orphans and runts are the typst
+  # plugin's, in one copy; only stranded-heading is this skill's own. None of the three
+  # re-execs to find pymupdf, so borrow the local script's resolver for an interpreter.
+  # A checker that cannot be found is a FAIL: nothing checked that class.
+  CANON_DIR=""
   # ASK the plugin; the list below is the plain-shell fallback, not a second source of truth.
   if command -v typst-constraints >/dev/null 2>&1; then
-    _d="$(typst-constraints --dir 2>/dev/null)" && [[ -f "$_d/runts.py" ]] && RUNT_PY="$_d/runts.py"
+    CANON_DIR="$(typst-constraints --dir 2>/dev/null)" || CANON_DIR=""
   fi
-  if [[ -z "$RUNT_PY" ]]; then
+  if [[ -z "$CANON_DIR" || ! -d "$CANON_DIR" ]]; then
     for cand in "${TYPST_CHECKERS_DIR:-}" "$HOME/.claude/skills/typst/constraints"; do
-      [[ -n "$cand" && -f "$cand/runts.py" ]] && { RUNT_PY="$cand/runts.py"; break; }
+      [[ -n "$cand" && -d "$cand" ]] && { CANON_DIR="$cand"; break; }
     done
   fi
-  if [[ -z "$RUNT_PY" ]]; then
-    fail_widows=1
-    echo "  SUB runt: FAIL — runts.py not found (TYPST_CHECKERS_DIR, or the typst plugin); nothing checked runts"
-    r_rc=126
-  else
-    PYEXE="$(python3 "$SCRIPTS_DIR/check-page-breaks.py" "$PDF" --which-python 2>/dev/null)"
-    [[ -x "$PYEXE" ]] || PYEXE=python3
-    r_out="$("$PYEXE" "$RUNT_PY" "$PDF" --prose 2>&1)"
-    r_rc=$?
-  fi
-  [[ -n "${r_out:-}" ]] && printf '%s\n' "$r_out" | grep -v 'API is deprecated' | sed 's/^/  /'
-  if [[ $r_rc -eq 126 ]]; then
-    : # already reported
-  elif [[ $r_rc -eq 0 ]]; then
-    echo "  SUB runt: PASS — no paragraph ends on a single stranded word"
-  elif [[ $r_rc -eq 1 ]]; then
-    fail_widows=1
-    echo "  SUB runt: FAIL — at least one paragraph ends on a single stranded word"
-    echo "    FIX BY LAYOUT ONLY — the measure, spacing, hyphenation or the line break."
-    echo "    Deleting a word visibly closes a runt, and that is exactly what the verbatim gate forbids."
-  else
-    fail_widows=1
-    echo "  SUB runt: FAIL — the runt checker could not run (exit $r_rc); a check that did not run is not a pass"
-  fi
+  PYEXE="$(python3 "$SCRIPTS_DIR/check-stranded-headings.py" "$PDF" --which-python 2>/dev/null)"
+  [[ -x "$PYEXE" ]] || PYEXE=python3
+
+  # --- sub-check: stranded heading. This skill's own class; needs no justified text.
+  h_out="$(python3 "$SCRIPTS_DIR/check-stranded-headings.py" "$PDF" 2>&1)"
+  h_rc=$?
+  printf '%s\n' "$h_out" | grep -v 'API is deprecated' | sed 's/^/  /'
+  case $h_rc in
+    0) echo "  SUB stranded-heading: PASS — no heading left at a page foot" ;;
+    1) fail_widows=1
+       echo "  SUB stranded-heading: FAIL — a heading sits at a page foot with its text overleaf" ;;
+    *) fail_widows=1
+       echo "  SUB stranded-heading: FAIL — the checker could not run (exit $h_rc); a check that did not run is not a pass" ;;
+  esac
+
+  # --- sub-checks: widow, orphan, runt. Each canonical, each its own exit code, so one
+  # class going unmeasured can never be absorbed into another's verdict.
+  for _c in "widows:widow:a paragraph's last line sits alone at a page top" \
+            "orphans:orphan:a paragraph's first line sits alone at a page foot" \
+            "runts:runt:a paragraph ends on a single stranded word"; do
+    _file="${_c%%:*}.py"; _rest="${_c#*:}"; _name="${_rest%%:*}"; _what="${_rest#*:}"
+    if [[ -z "$CANON_DIR" || ! -f "$CANON_DIR/$_file" ]]; then
+      fail_widows=1
+      echo "  SUB $_name: FAIL — $_file not found (TYPST_CHECKERS_DIR, or the typst plugin); nothing checked ${_name}s"
+      continue
+    fi
+    c_out="$("$PYEXE" "$CANON_DIR/$_file" "$PDF" --prose 2>&1)"
+    c_rc=$?
+    printf '%s\n' "$c_out" | grep -v 'API is deprecated' | sed 's/^/  /'
+    case $c_rc in
+      0) echo "  SUB $_name: PASS" ;;
+      1) fail_widows=1
+         echo "  SUB $_name: FAIL — $_what"
+         echo "    FIX BY LAYOUT ONLY — spacing, the measure, or where the page breaks."
+         echo "    Deleting a word visibly closes one, and that is what the verbatim gate forbids." ;;
+      *) fail_widows=1
+         echo "  SUB $_name: FAIL — the checker could not run (exit $c_rc); a check that did not run is not a pass" ;;
+    esac
+  done
 
   if [[ $fail_widows -eq 0 ]]; then
-    if [[ $strays_refused -eq 1 ]]; then
-      echo "LEG strays: PASS — no stranded heading and no runt; WIDOW/ORPHAN NOT JUDGED (input is not justified)"
-    else
-      echo "LEG strays: PASS — no widow, orphan, stranded heading or runt"
-    fi
+    echo "LEG strays: PASS — no widow, orphan, stranded heading or runt"
   else
     echo "LEG strays: FAIL — at least one widow, orphan, stranded heading or runt"
   fi
@@ -860,12 +855,6 @@ if [[ $((fail_plan + fail_compile + fail_quotes + fail_addendum + fail_widows)) 
     [[ -n "$waived" ]] && waived="$waived, and stray lines, which --no-strays waived" \
       || waived="stray lines, which --no-strays waived"
   fi
-  # A refusal is not a waiver and not a pass. It gets its own clause so the summary
-  # line cannot be read as certifying widows and orphans nobody judged.
-  if [[ $strays_refused -eq 1 ]]; then
-    [[ -n "$waived" ]] && waived="$waived, and widow/orphan, which the checker REFUSED to judge on unjustified text" \
-      || waived="widow/orphan, which the checker REFUSED to judge on unjustified text"
-  fi
   if [[ -n "$waived" ]]; then
     echo "PASS: every leg passed — EXCEPT $waived"
   else
@@ -874,6 +863,5 @@ if [[ $((fail_plan + fail_compile + fail_quotes + fail_addendum + fail_widows)) 
   exit 0
 fi
 strays_verdict=$([[ $NO_WIDOWS -eq 1 && $WIDOWS -eq 0 ]] && echo NOT-CHECKED || v $fail_widows)
-[[ $strays_refused -eq 1 ]] && strays_verdict="$strays_verdict(widow/orphan NOT-JUDGED)"
 echo "FAIL: plan=$([[ $NO_PLAN -eq 1 && -z "$PLAN" ]] && echo NOT-CHECKED || v $fail_plan) compile=$(v $fail_compile) quotes=$(v $fail_quotes) addendum=$(v $fail_addendum) strays=$strays_verdict"
 exit 1

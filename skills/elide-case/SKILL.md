@@ -219,8 +219,8 @@ added.
 
   // ── The deterministic floor: ONE entry point, whose exit code IS the mechanical verdict. ──
   // Five legs — the plan's interview answers, typst compile, check-quotes.py per derived caption,
-  // check-addendum.py --target, and check-page-breaks.py for page-level widows/orphans/stranded
-  // headings — none short-circuiting. A second entry here would spread the
+  // check-addendum.py --target, and the strays leg (canonical widows.py/orphans.py/runts.py
+  // plus check-stranded-headings.py) — none short-circuiting. A second entry here would spread the
   // verdict over two commands and lose one silently; P10 refuses it.
   // The plan leg FAILS CLOSED: pass `--plan <md>` on a real run or `--no-plan` on a fixture run,
   // and passing neither is a FAIL naming the missing flag. `--plan` also carries the plan's

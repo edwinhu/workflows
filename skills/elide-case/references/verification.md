@@ -18,7 +18,8 @@ flag of a pair is a FAIL that names the missing one.
 | `typst compile` | the addendum builds at all |
 | `check-quotes.py`, once per caption | every retained sentence is verbatim in `docs/*.txt` |
 | `check-addendum.py --target` | arity, table truth against the PDF, per-reading length |
-| `check-page-breaks.py` | page-level orphan, widow and stranded heading in the compiled PDF |
+| `widows.py`, `orphans.py`, `runts.py` --prose | the canonical stray-line checkers, from the typst plugin |
+| `check-stranded-headings.py` | a heading at a page foot with its text overleaf — this skill's own class |
 
 **The widows leg is the one leg that is ON BY DEFAULT**, and that is its fail-closed form:
 naming no flag RUNS it, so its absence cannot read as a pass. `--no-widows` is the loud
