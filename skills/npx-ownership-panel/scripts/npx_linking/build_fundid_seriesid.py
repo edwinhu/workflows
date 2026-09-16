@@ -85,6 +85,11 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "cit"))
+# ds_schema ships with the ds skill. Found by searching upward rather than counting parents,
+# which is position-dependent and which I got wrong twice today.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
 
 import numpy as np
 import polars as pl
@@ -368,9 +373,13 @@ print(
 rule("SEC name corpus")
 
 long = pl.read_parquet(SEC_SERIES_NAMES_LONG)
+check_schema(long, ["series_id", "cik", "entity_name", "series_name"],
+             name="SEC series names (long)")
 smaster = pl.read_parquet(SEC_SERIES_MASTER_SERIES).select(
     "series_id", "year_first_seen", "year_last_seen", "n_years"
 )
+check_schema(smaster, ["series_id", "year_first_seen", "year_last_seen", "n_years"],
+             name="SEC series master", exact=True)
 
 series_side = long.select(
     "series_id", "cik", "entity_name",
@@ -510,8 +519,13 @@ cand = token_guard(cand)
 rule("CRSP name corpus (fund_summary2 + crsp_cik_map)")
 
 cikmap = pl.read_parquet(CRSP_CIK_MAP).select("crsp_fundno", "series_cik").unique()
+check_schema(cikmap, ["crsp_fundno", "series_cik"], name="CRSP cik map", exact=True)
+# Named before the chain so the contract sits AT the read: the chain below runs past the
+# window in which a check could still be about this load.
+_fund_summary = pl.read_parquet(FUND_SUMMARY2)
+check_schema(_fund_summary, ["crsp_fundno", "fund_name"], name="fund summary")
 fsum = (
-    pl.read_parquet(FUND_SUMMARY2)
+    _fund_summary
     .filter(pl.col("fund_name").is_not_null())
     .join(cikmap, on="crsp_fundno", how="left")
     .with_columns(
@@ -523,6 +537,8 @@ fsum = (
         mgmt_norm=norm("mgmt_name").fill_null("") + " " + norm("fund_name"),
     )
 )
+check_schema(fsum, ["crsp_fundno", "fund_name", "series_cik"],
+             name="fund summary + cikmap")
 print(f"fund_summary2 rows with a fund_name    : {fsum.height:,} "
       f"({fsum['crsp_fundno'].n_unique():,} crsp_fundno)")
 print(f"  of which carry a series_cik          : {fsum['series_cik'].is_not_null().sum():,}")
@@ -851,9 +867,13 @@ sid2fundno = (
     .filter(pl.col("series_cik").is_not_null())
     .select(seriesid="series_cik", crsp_fundno="crsp_fundno")
 )
+check_schema(sid2fundno, ["seriesid", "crsp_fundno"],
+             name="series_cik -> fundno", exact=True)
 fundno_tna = (
     pl.read_parquet(FUND_SUMMARY2).select("crsp_fundno", "tna_latest", "index_fund_flag")
 )
+check_schema(fundno_tna, ["crsp_fundno", "tna_latest", "index_fund_flag"],
+             name="fundno TNA", exact=True)
 # TNA of a series = sum over its share classes
 series_tna = (
     sid2fundno.join(fundno_tna, on="crsp_fundno", how="left")
