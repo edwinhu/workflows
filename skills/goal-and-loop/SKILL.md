@@ -20,7 +20,7 @@ Three commands, in this order. Do not hand-write the transport.
 ```bash
 S=${CLAUDE_SKILL_DIR}/../work/scripts/goal-self-send.sh
 bash $S "/goal <the linted goal>"
-bash $S "/loop 30m Check the goal. If it is not met, take the next action now rather than proposing it."
+bash $S "/loop 30m Run the goal's CHECK and report its exit code — judge from the command, not from the conversation. If it fails, take the next action now rather than proposing it. If it passes, spend the remaining budget: hunt for work the goal did not name — an ungated checker, a suite nothing runs, a vendored copy, a count that has drifted — fix the largest one within your standing authority and say in one line why you picked it. When the budget is spent or nothing is left, clear the goal and cancel this loop with CronDelete."
 ```
 
 Pass the goal as **one single-quoted argument**. The template is backticked, so double quotes hand
