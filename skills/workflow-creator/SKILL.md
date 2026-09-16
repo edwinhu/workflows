@@ -133,7 +133,7 @@ whether it is a skill that already exists.
 **ONE FRONTMATTER KEY: `applies-to:`. Nothing else.** Scope is the only fact about a rule that no path already holds — the name is the filename, whether it is mechanised is whether `checkers/<name>.py` exists, and what it says is the body. Any other key is either a copy of one of those or metadata nothing reads, and both rot silently: measured 2026-09-14 in the typst corpus, `type:` sat in 17 of 21 files and `testable:` in 3, read by no code on any path, while `description:` had drifted from the rule beside it (a rule described as "table inset minimum 10pt" whose body leads with source-grounding) with no check able to see it. Lint the key set — a convention nothing computes is how `type:` got into 17 files and stayed.
 
 - **Mechanical** — rule `X.md` is checked by `checkers/X.py`, by CONVENTION: no field declares the mapping, so nothing can name a script that moved. The workflow's check entry point runs it, and the set is DERIVED from `applies-to:`, never listed per consumer.
-- **Judgement** — no checker exists at the rule's conventional name, and a grader agent judges it. Nothing declares that: the runner asks the filesystem, so a rule cannot claim to be mechanised while its checker is absent. **Getting the corpus INTO that grader is the hard part, and two of the three obvious routes do not work.** A `` <bang>`cmd` `` in an agent definition is dead text. And `skills:` frontmatter is documented to preload the skill's full content but did **not** on 2.1.257 — four probes, both name forms, under `claude -p --agent` and the farm-out proxy, all NOT PRESENT (`references/bang-reach.md`). Treat a preload as unproven until you have asked that agent, in your own dispatch path, whether the content is there. So a grader reaches the corpus by exactly one of:
+- **Judgement** — no checker exists at the rule's conventional name, and a grader agent judges it. Nothing declares that: the runner asks the filesystem, so a rule cannot claim to be mechanised while its checker is absent. **Getting the corpus INTO that grader is the hard part, and two of the three obvious routes do not work.** A `` <bang>`cmd` `` in an agent definition is dead text. And `skills:` frontmatter is documented to preload the skill's full content but did **not** on 2.1.257 — four probes, both name forms, under `claude -p --agent` and the farm-out proxy, all NOT PRESENT (`${CLAUDE_PLUGIN_ROOT}/references/bang-reach.md`). Treat a preload as unproven until you have asked that agent, in your own dispatch path, whether the content is there. So a grader reaches the corpus by exactly one of:
   - **invoking the skill**, if it holds the `Skill` tool — available, never automatic, so its prompt must say so;
   - **reading the corpus itself** with Read/Glob, which is all a read-only grader can do;
   - **the orchestrator inlining a computed index into the lens prompt**, since the orchestrator is a skill and a bang works there.
@@ -459,7 +459,7 @@ single path: craft grew a read-only branch, so there is one domain note per bran
 Four audiences need a generated workflow's REFERENCE DOCUMENTS, and each has its own delivery
 point. Constraints are not on this table — they reach an agent through the index skill it names in
 its own `skills:` frontmatter, never through `refs`. That preload is UNPROVEN on 2.1.257 (see the
-Judgement bullet above and `references/bang-reach.md`); an agent with no `Skill` tool has no
+Judgement bullet above and `${CLAUDE_PLUGIN_ROOT}/references/bang-reach.md`); an agent with no `Skill` tool has no
 fallback when it does not land, so probe your own dispatch path before relying on it:
 
 | audience | delivery |
@@ -558,7 +558,7 @@ A skill lists its own `references/` AND its own `scripts/` at load with one line
 Bash tool's PATH, so that bare command resolves from any plugin's SKILL.md. See `skill-creator`,
 *The two TOCs*, for what it renders and why it is a script. Do not hand-write either list.
 
-**THREE THINGS WILL BITE, all measured; `references/bang-reach.md` has the evidence.** A bang runs
+**THREE THINGS WILL BITE, all measured; `${CLAUDE_PLUGIN_ROOT}/references/bang-reach.md` has the evidence.** A bang runs
 only in an INVOKED file — a SKILL.md or a slash command — and is dead text in an agent definition
 or a CLAUDE.md, so a grader never gets a computed set from a bang of its own — it names the skill
 in `skills:` and is TOLD to invoke it, or the orchestrator inlines the index into its prompt. NO BACKTICK may appear inside the command, escaped or not: the parser truncates the

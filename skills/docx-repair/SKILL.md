@@ -13,7 +13,7 @@ Cloud editors damage a `.docx` in **independent ways**. This skill is the front 
 
 | Damage class | Symptom | Fix |
 |---|---|---|
-| **A. Package / OOXML wiring** | Word pops "recover unreadable content?" or refuses to open; LibreOffice won't load; phantom blank page | `scripts/docx_repair.py` (plugin root) — [references/package-repair.md](${CLAUDE_PLUGIN_ROOT}/skills/docx-repair/references/package-repair.md) |
+| **A. Package / OOXML wiring** | Word pops "recover unreadable content?" or refuses to open; LibreOffice won't load; phantom blank page | `${CLAUDE_PLUGIN_ROOT}/scripts/docx_repair.py` (plugin root) — [references/package-repair.md](${CLAUDE_PLUGIN_ROOT}/skills/docx-repair/references/package-repair.md) |
 | **B. Footnote & cross-reference markup** | Bios show `1,2,3` not `*,†,‡`; numbering starts wrong; "supra note N" points to the wrong footnote; missing separator line | the footnote scripts — [references/footnote-procedure.md](${CLAUDE_PLUGIN_ROOT}/skills/docx-repair/references/footnote-procedure.md) |
 | **B1. Cross-references aimed at the wrong source** | `Lin, supra note 130` where note 130 is a different work; `Rebuttal Report, supra note 22` where 22 defines the deposition; a short form surviving a renumber that moved its target | `check_crossrefs.py <file.docx>` — read-only, exit 1 on any problem |
 | **C. Document content (boxes + headings + cruft)** | Visible **boxes** around freshly-edited text; heading-looking lines not styled as headings; same-style headings rendering differently; blank heading lines; bloated XML full of all-zero rsids, no-op shading, explicit `b=0`/`i=0`/`u=none`, redundant black color & default fonts | `fix_footnotes.py`'s document.xml passes — [references/content-cleanup.md](${CLAUDE_PLUGIN_ROOT}/skills/docx-repair/references/content-cleanup.md) |
@@ -32,7 +32,7 @@ All procedural detail lives in `references/`. Read only what the job needs.
 - [references/package-repair.md](${CLAUDE_PLUGIN_ROOT}/skills/docx-repair/references/package-repair.md)
   — **Track A.** The two concrete Google Docs export defects (case-mismatched
   `customXML`/`customXml` OPC part references; leftover `<w:evenAndOddHeaders/>`),
-  and the CLI + Python API for `scripts/docx_repair.py` at plugin root.
+  and the CLI + Python API for `${CLAUDE_PLUGIN_ROOT}/scripts/docx_repair.py`.
   **Read when** Word calls the file corrupt, refuses to open it, or shows a
   phantom blank page — or before handing back a repaired file rather than a PDF.
 
