@@ -634,19 +634,95 @@ export function checkConstraintDocs(files: readonly string[], allowed: Set<strin
   return findings
 }
 
-const WORD_NUM = 'one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty'
-const COUNT_RE = new RegExp(`\\b(\\d{1,3}|${WORD_NUM})\\s+(constraints?|rules?|checkers?|modules?|references?|skills?|lenses)\\b`, 'gi')
+const WORD_NUM: Record<string, number> = {
+  one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
+  eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16,
+  seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20,
+}
+const COUNT_RE = new RegExp(
+  `\\b(\\d{1,3}|${Object.keys(WORD_NUM).join('|')})\\s+(constraints?|rules?|checkers?|modules?|references?|skills?|lenses)\\b`,
+  'gi',
+)
+/** A line carrying an ISO date is a dated MEASUREMENT — a record of what was true then. */
+const DATED_RE = /\d{4}-\d{2}-\d{2}/
 
+function numberOf(tok: string): number | null {
+  const n = /^\d+$/.test(tok) ? Number(tok) : WORD_NUM[tok.toLowerCase()]
+  return Number.isFinite(n) ? (n as number) : null
+}
+
+/**
+ * Numbers in prose that the filesystem already answers.
+ *
+ * Reporting that a number EXISTS makes every hit a manual check, and on this corpus that was
+ * 34 advisories of which one was wrong — a signal that trains you to skip it. So where the
+ * count is decidable the probe DECIDES it and fires only on a mismatch; everything else it
+ * says plainly it has not verified.
+ *
+ * Two kinds never fire:
+ *   - a singular ("one rule", "One skill") is prose about a design, not a corpus tally
+ *   - a line carrying an ISO date is a dated measurement, true when written and not a claim
+ *     about the tree as it stands
+ */
 export function checkProseCounts(file: string, body: string): Advisory[] {
   const out: Advisory[] = []
+  const lines = body.split('\n')
   let m: RegExpExecArray | null
   COUNT_RE.lastIndex = 0
   while ((m = COUNT_RE.exec(body)) !== null) {
+    const line = lineOf(body, m.index)
+    if (DATED_RE.test(lines[line - 1] ?? '')) continue
+    const n = numberOf(m[1])
+    if (n === null || n === 1) continue
+
+    // `N reference(s)` in a SKILL.md is countable from that skill's own directory — UNLESS the
+    // sentence says otherwise. "16 reference files across 10 skills" is a corpus-wide tally, and
+    // comparing it to this skill's own references/ reports a drift that is the probe's error.
+    const after = body.slice(m.index + m[0].length, m.index + m[0].length + 40)
+    if (/^\s*(files?\s+)?(across|in|under|over|among)\b/i.test(after)) {
+      out.push({
+        rule: 'S5 a corpus count written in prose (unverified)',
+        file,
+        line,
+        detail: `"${m[0]}" — a count spanning more than this skill, so its own directory cannot settle it`,
+      })
+      continue
+    }
+    if (/^references?$/i.test(m[2])) {
+      const dir = join(dirname(file), 'references')
+      let actual: number | null = null
+      try {
+        actual = readdirSync(dir).filter(f => f.endsWith('.md')).length
+      } catch {
+        actual = null
+      }
+      if (actual === null) {
+        // No references/ beside this file, so the number counts something else. Report it
+        // unverified — dropping it here would be the probe deciding silently that a claim it
+        // could not check is fine.
+        out.push({
+          rule: 'S5 a corpus count written in prose (unverified)',
+          file,
+          line,
+          detail: `"${m[0]}" — there is no references/ beside this file, so this counts something the probe cannot reach`,
+        })
+        continue
+      }
+      if (actual === n) continue // computed and correct — nothing to report
+      out.push({
+        rule: 'S5 a prose count disagrees with the corpus',
+        file,
+        line,
+        detail: `"${m[0]}" — ${dir} holds ${actual}. The number is a second representation of a fact the filesystem already holds, and this one has drifted`,
+      })
+      continue
+    }
+
     out.push({
-      rule: 'S5 a corpus count written in prose',
+      rule: 'S5 a corpus count written in prose (unverified)',
       file,
-      line: lineOf(body, m.index),
-      detail: `"${m[0]}" — a number in prose is a second representation of a fact the filesystem already holds, and it drifts on the next addition (rules/typst.md claimed 22 over a corpus of 21)`,
+      line,
+      detail: `"${m[0]}" — a number in prose is a second representation of a fact something else already holds, and it drifts on the next addition (rules/typst.md claimed 22 over a corpus of 21). This probe cannot count "${m[2]}" for you`,
     })
   }
   return out

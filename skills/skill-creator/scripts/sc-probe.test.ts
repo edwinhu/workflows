@@ -287,6 +287,61 @@ test('checkProseCounts sees a spelled-out number too', () => {
   expect(checkProseCounts('f.md', 'there are fifteen rules').length).toBe(1)
 })
 
+// S5 reported that a number EXISTS, which made every hit a manual check: 34 advisories over
+// this corpus, one of them wrong. These pin the narrowing, and the computed leg that replaced
+// the guesswork where the filesystem can answer.
+
+test('a singular is prose about a design, not a corpus tally', () => {
+  expect(checkProseCounts('f.md', 'one rule governs this')).toEqual([])
+  expect(checkProseCounts('f.md', 'One skill owns it')).toEqual([])
+  // ...and the plural on the same noun still fires.
+  expect(checkProseCounts('f.md', 'three rules govern this').length).toBe(1)
+})
+
+test('a dated measurement is a record, not a claim about the tree today', () => {
+  expect(checkProseCounts('f.md', 'measured 2026-09-14, 219 references across it')).toEqual([])
+  expect(checkProseCounts('f.md', 'there are 219 references')).not.toEqual([])
+})
+
+test('a reference count is COUNTED, and silence means it was right', () => {
+  const d = mkdtempSync(join(tmpdir(), 'sc-s5-'))
+  try {
+    mkdirSync(join(d, 'references'))
+    for (const n of ['a.md', 'b.md', 'c.md']) writeFileSync(join(d, 'references', n), 'x')
+    const md = join(d, 'SKILL.md')
+    // Correct: computed, agrees, says nothing.
+    expect(checkProseCounts(md, 'This skill has three references.')).toEqual([])
+    // Wrong: computed, disagrees, and BOTH numbers are in the message so it is actionable.
+    const bad = checkProseCounts(md, 'This skill has eight references.')
+    expect(bad.length).toBe(1)
+    expect(bad[0].rule).toContain('disagrees with the corpus')
+    expect(bad[0].detail).toContain('holds 3')
+  } finally { rmSync(d, { recursive: true, force: true }) }
+})
+
+test('a tally spanning more skills is not compared against one skill directory', () => {
+  const d = mkdtempSync(join(tmpdir(), 'sc-s5x-'))
+  try {
+    mkdirSync(join(d, 'references'))
+    writeFileSync(join(d, 'references', 'a.md'), 'x')
+    const r = checkProseCounts(join(d, 'SKILL.md'), '16 reference files across 10 skills are named by none')
+    // Reported as unverified — never as a drift, which would be the probe's own error.
+    expect(r.every(a => !a.rule.includes('disagrees'))).toBe(true)
+  } finally { rmSync(d, { recursive: true, force: true }) }
+})
+
+test('a skill with no references/ is reported unverified, not silently dropped', () => {
+  const d = mkdtempSync(join(tmpdir(), 'sc-s5n-'))
+  try {
+    const r = checkProseCounts(join(d, 'SKILL.md'), 'the corpus holds eight references')
+    // Not compared against a directory that does not exist...
+    expect(r.every(a => !a.rule.includes('disagrees'))).toBe(true)
+    // ...and not swallowed either: a claim the probe could not check is still a claim.
+    expect(r.length).toBe(1)
+    expect(r[0].detail).toContain('cannot reach')
+  } finally { rmSync(d, { recursive: true, force: true }) }
+})
+
 // ---------------------------------------------------------------- symlinks and coverage
 
 test('a symlinked skill directory is NOT CHECKED, not silently skipped', () => {
