@@ -39,7 +39,7 @@ def test_polars_seed_is_seeded(tmp_path):
 
 
 def test_stdlib_random_seed_above_the_call_is_seeded(tmp_path):
-    assert _check(tmp_path, "import random\nrandom.seed(7)\nx = random.sample(r, 5)\n") == []
+    assert _check(tmp_path, "import random\nrandom.seed(7)\nx = random.sample(r, 5)\n") == []  # ds-determinism: fixture: the seed is inside a string literal, so the preceding char is the n of \n
 
 
 def test_a_seed_a_few_lines_above_still_counts(tmp_path):
@@ -49,7 +49,7 @@ def test_a_seed_a_few_lines_above_still_counts(tmp_path):
 # ---- and what must still fire --------------------------------------------------------------
 
 def test_an_unseeded_sample_is_still_a_finding(tmp_path):
-    v = _check(tmp_path, "d = df.sample(n=5)\n")
+    v = _check(tmp_path, "d = df.sample(n=5)\n")  # ds-determinism: fixture: this sample MUST be unseeded — it is what proves the rule still fires
     assert len(v) == 1 and "non-deterministic" in v[0]
 
 
