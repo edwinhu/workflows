@@ -327,6 +327,8 @@ def step_splice(out: Path) -> pd.DataFrame:
               .agg(p0=("dlyprc", "last"), cap0=("dlycap", "last"),
                    last_dt=("date", "last")).reset_index())
     p0 = p0[p0.last_dt == asof].merge(anchor, on="permno", how="left")
+    print(f"  p0 x anchor (left): {len(p0):,} permnos, "
+          f"{p0['lseg_anchor'].notna().mean():.1%} with an LSEG anchor")
     # crsp_price / lseg_price on the SAME day. ~1.0 means the two agree; anything
     # else is LSEG's back-adjustment for a corporate action after the cutoff, or a
     # bad link that survived the venue screen. Reported by step_coverage.
@@ -335,6 +337,8 @@ def step_splice(out: Path) -> pd.DataFrame:
     gap = gap[gap.date > asof].dropna(subset=["ret"])
     gap = gap.merge(p0[["permno", "p0", "cap0", "lseg_anchor", "adj_ratio"]],
                     on="permno", how="inner").sort_values(["permno", "date"])
+    print(f"  gap x p0 (inner): -> {len(gap):,} rows, "
+          f"{gap['permno'].nunique():,} permnos")
     gap["dlyprc"] = gap.groupby("permno", group_keys=False).apply(
         rebuild_price, include_groups=False)
     # Market cap moves with the PRICE relative, not the total return -- chaining it

@@ -48,6 +48,10 @@ def compare(ours: pd.DataFrame, theirs: pd.DataFrame) -> dict:
     on = ["mgmt_cd", "year"]
     merged = ours.merge(theirs, on=on, how="outer", suffixes=("_us", "_them"),
                         indicator=True)
+    _side = merged["_merge"].value_counts()
+    print(f"  ours x theirs (outer): {len(merged):,} rows — "
+          f"both {_side.get('both', 0):,}, ours only {_side.get('left_only', 0):,}, "
+          f"theirs only {_side.get('right_only', 0):,}")
     for col, _ in ADVISORS:
         merged[f"{col}_us"] = merged[f"{col}_us"].fillna(0).astype(int)
         merged[f"{col}_them"] = merged[f"{col}_them"].fillna(0).astype(int)

@@ -59,7 +59,13 @@ def aggregate_cik_year(df: pd.DataFrame) -> pd.DataFrame:
             row[f"{c}_src"] = hits.iloc[0] if len(hits) else ""
         src_rows.append(row)
     src = pd.DataFrame(src_rows)
-    return g.merge(src, on=["cik", "year"], how="left")
+    # Named rather than returned inline, so the join can be reported: a left join cannot lose a
+    # row of `g`, and what is worth seeing is how many found a source accession.
+    out = g.merge(src, on=["cik", "year"], how="left")
+    _src_cols = [c for c in out.columns if c.endswith("_src")]
+    print(f"  g x src (left): {len(out):,} rows, "
+          f"{(out[_src_cols] != '').any(axis=1).mean():.1%} with a source accession")
+    return out
 
 
 def _pg_connect(wrds_user: str | None):

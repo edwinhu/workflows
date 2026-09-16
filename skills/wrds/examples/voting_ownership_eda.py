@@ -230,6 +230,7 @@ print(f"CRSP quarterly adjustment factors: {len(cfac):,}")
 # rdate in S34 is the quarter-end report date.
 holdings['qtr'] = holdings['rdate'].dt.to_period('Q').dt.to_timestamp()
 holdings = holdings.merge(cfac, on=['permno', 'qtr'], how='inner')
+print(f"  holdings x cfac (inner): -> {len(holdings):,} rows")
 
 # Adjusted shares: shares * (current cfacshr / report-date cfacshr).
 # Since both are same quarter, this mainly handles intra-quarter splits.
@@ -330,10 +331,13 @@ print(f"Index funds: {mf_raw['is_index'].sum():,} / {len(mf_raw):,} "
 # Map to PERMNO and adjust shares
 mf_raw['cusip6'] = mf_raw['cusip'].str[:6]
 mf_raw = mf_raw.merge(cusip_map, on='cusip6', how='inner')
+print(f"  mf_raw x cusip_map (inner): -> {len(mf_raw):,} rows, "
+      f"{mf_raw['permno'].nunique():,} permnos")
 mf_raw['permno'] = mf_raw['permno'].astype(int)
 
 mf_raw['qtr'] = mf_raw['fdate'].dt.to_period('Q').dt.to_timestamp()
 mf_raw = mf_raw.merge(cfac[['permno', 'qtr', 'tso_crsp']], on=['permno', 'qtr'], how='inner')
+print(f"  mf_raw x cfac (inner): -> {len(mf_raw):,} rows")
 mf_raw['shares_adj'] = mf_raw['shares']  # S12 reports actual shares (not in 1000s)
 
 # %%

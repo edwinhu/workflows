@@ -273,6 +273,7 @@ def find_blocks(company_cik: int, insider_df: pd.DataFrame,
         )
 
     merged = o.merge(shrout, on="year_month", how="inner")
+    print(f"  o x shrout (inner): {len(o):,} -> {len(merged):,} rows")
     if merged.empty:
         return pd.DataFrame(
             columns=["company_CIK", "blockholder_CIK", "blockholder_name",
@@ -456,6 +457,7 @@ def insider_addon_from_ownership(
         o["Num_Own"] = pd.to_numeric(o["Num_Own"], errors="coerce")
 
         merged = o.merge(tmp, on="year_month", how="inner")
+        print(f"  o x tmp (inner): {len(o):,} -> {len(merged):,} rows")
         merged["prc_own"] = 100 * merged["Num_Own"] / (1000 * merged["SHROUT"])
         merged["max_prc"] = merged.groupby("blockholder_CIK")["prc_own"] \
                                    .transform("max")
