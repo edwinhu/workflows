@@ -35,7 +35,15 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from src import wrds_pull
+try:
+    from src import wrds_pull
+except ModuleNotFoundError as e:  # noqa: E402
+    raise SystemExit(
+        "This script needs src/wrds_pull.py, which lives in YOUR project rather than in this "
+        "plugin — it is the database handle, and `scp scripts/*` leaves it behind. Copy src/ "
+        "alongside these scripts, or point PYTHONPATH at it. Nothing was queried."
+    ) from e
+
 
 
 COLS = ["fdate", "formtype", "personid", "owner", "cname",

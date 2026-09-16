@@ -26,7 +26,15 @@ import pandas as pd
 
 PROJ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJ))
-from src.wrds_pull import connect as wrds_connect  # noqa: E402
+try:
+    from src.wrds_pull import connect as wrds_connect  # noqa: E402
+except ModuleNotFoundError as e:  # noqa: E402
+    raise SystemExit(
+        "This script needs src/wrds_pull.py, which lives in YOUR project rather than in this "
+        "plugin — it is the database handle, and `scp scripts/*` leaves it behind. Copy src/ "
+        "alongside these scripts, or point PYTHONPATH at it. Nothing was queried."
+    ) from e
+
 
 TR = PROJ / "data/processed/tr_insider_all.parquet"
 ADDON = PROJ / "data/processed/insider_addon_2019_2024.parquet"
