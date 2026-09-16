@@ -86,12 +86,24 @@ ESCAPES=$(printf 'the rounds field in %s/args.json reads %s or more — `jq -r .
 # goal is the one text it re-reads every turn. Without this the loop keeps ticking after PASS.
 TEARDOWN='When this goal closes, cancel the run loop with CronDelete — it is a cron and does not stop on its own.'
 
+# STANDING AUTHORITY and CONTINUATION — G10 and G11, and they were MISSING until 2026-09-16.
+# The chokepoint linted without --unattended, so the two rules that exist to stop an unattended
+# session going idle never ran on the goal every dispatch raises. Measured that day: the composed
+# goal fails both when the flag IS passed.
+#
+# Without the continuation clause a run stops at its FIRST stopping point rather than its ceiling.
+# That is the whole difference between a session that spends its budget and one that reports a
+# verdict and goes quiet with hours left, which is what a human then has to notice and restart.
+AUTHORITY='You may decide alone, without asking: whether to re-dispatch, which findings to fix first, and whether to commit what is green (with explicit paths; never push).'
+CONTINUATION='A FAIL is not a stopping point: fix and re-dispatch in the same turn. When the stated scope closes and budget remains, pick the largest open item you found while working, say in one line why you picked it, and start it. Report at the ceiling, not at the first stopping point.'
+
 if [ "$READONLY" = 1 ]; then
     # An audit produces a diagnosis, not a pass: its gate legitimately FAILs and that is the outcome.
-    printf '/goal workflow.js has returned a verdict for %s, or %s\n' "$PLAN" "$ESCAPES"
+    printf '/goal workflow.js has returned a verdict for %s, or %s. %s %s %s\n' \
+        "$PLAN" "$ESCAPES" "$AUTHORITY" "$CONTINUATION" "$TEARDOWN"
 else
     # The run has produced a verdict work-result.sh can read. That is the terminal MACHINE event;
     # what to do about it — including opening review — is Phase 5's business, not the goal's.
-    printf '/goal craft has returned PASS for %s — `bash %s/scripts/work-result.sh %s/result.json` exits 0 — or %s. %s\n' \
-        "$PLAN" "$SKILL_DIR" "$RUN_DIR" "$ESCAPES" "$TEARDOWN"
+    printf '/goal craft has returned PASS for %s — `bash %s/scripts/work-result.sh %s/result.json` exits 0 — or %s. %s %s %s\n' \
+        "$PLAN" "$SKILL_DIR" "$RUN_DIR" "$ESCAPES" "$AUTHORITY" "$CONTINUATION" "$TEARDOWN"
 fi

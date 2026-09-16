@@ -17,7 +17,7 @@
 # a milestone verb, a clause only a human can close, turn counting, "done or blocked" — refuses the
 # send with exit 8 and names the skill to read. Majors and minors warn and go through. Measured
 # 2026-08-27/28: three sessions idled 14h43m overnight on goals with exactly these defects.
-# `compose-goal.sh` output passes clean, so craft dispatches are untouched. `--no-lint` overrides.
+# `compose-goal.sh` output passes clean UNDER --unattended, which is how this lints — see below.
 #
 # Exit codes (all verified by execution against a stubbed herdr/agent-msg):
 #   0  submitted (input box cleared after Enter), or agent-msg accepted it as user input
@@ -55,7 +55,12 @@ esac
 # lint is not a reason to block a send, so absence passes.
 GW_LINT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../goal-and-loop/scripts" 2>/dev/null && pwd)/goal-lint.ts"
 if [ "$NOLINT" = 0 ] && [ "$CMD" != "/goal clear" ] && [ "${CMD#/goal }" != "$CMD" ] && [ -f "$GW_LINT" ] && command -v bun >/dev/null 2>&1; then
-  GW_OUT=$(bun "$GW_LINT" "${CMD:6}" 2>/dev/null); GW_CODE=$?
+  # --unattended, ALWAYS. A self-sent goal is unattended BY DEFINITION — driving your own
+  # session is what you do when no human will answer. Without the flag, G10 (standing authority)
+  # and G11 (continuation) never run, and those are the two rules that exist to stop an
+  # unattended session going idle. Measured 2026-09-16: the goal every craft dispatch raises
+  # failed both, and this chokepoint reported it clean.
+  GW_OUT=$(bun "$GW_LINT" "${CMD:6}" --unattended 2>/dev/null); GW_CODE=$?
   if [ "$GW_CODE" = 1 ]; then
     if printf '%s' "$GW_OUT" | grep -q '^\[CRITICAL\]'; then
       printf '%s\n' "$GW_OUT" >&2
