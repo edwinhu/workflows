@@ -49,3 +49,5 @@ docs/investigations/
 # high-frequency — it belongs in a temp dir, and never in a commit.
 .craft/
 
+# pixi environment (see pixi.toml)
+.pixi/
