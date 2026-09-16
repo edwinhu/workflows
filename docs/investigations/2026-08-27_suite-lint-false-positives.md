@@ -227,7 +227,7 @@ the same callee.
 
 Raw 1, false positives 1, no true positives.
 
-The single finding is `tests/goal-send-drain.test.ts:59`:
+The single finding is `tests/goal-send-drain.test.ts:62`:
 
 ```
 drainLog: existsSync(`${q}.log`) ? readFileSync(`${q}.log`, 'utf8') : ''
@@ -236,7 +236,7 @@ drainLog: existsSync(`${q}.log`) ? readFileSync(`${q}.log`, 'utf8') : ''
 That line is not an assertion. It is the last field of the object returned by the file's `runDrain`
 helper, and the `existsSync` is a read guard: absent the drain log, the helper hands back `''` rather
 than throwing, so the failure surfaces at the assertion instead of in the fixture. The artifact's
-*contents* are asserted twice, at line 85 (`expect(drainLog).toContain('EXECUTED')`) and line 92
+*contents* are asserted twice, at line 88 (`expect(drainLog).toContain('EXECUTED')`) and line 95
 (`expect(drainLog).toContain('UNCONFIRMED')`) — the two states the drain is supposed to distinguish.
 The rule's premise, that the only thing the suite knows about the artifact is that it exists, is false
 of this file. The mechanism is that the rule scores an `existsSync` reference without noticing that
@@ -278,7 +278,7 @@ sets to configure its own harness rather than to exercise a branch: `CRAFT_DISPA
 at `skills/work/scripts/work-goal-resend.test.ts:78`, `CRAFT_FARM: '/bin/false'` at
 `skills/work/scripts/work-loop.test.ts:86`, `CRAFT_REDISPATCH_DRYRUN: '1'` at
 `skills/work/scripts/work-redispatch.test.ts:225`, `PATH` (four files) and `FARM_OUT_CHILD` (two),
-the seven `GOAL_SEND_*` timing and retry knobs at `tests/goal-send-drain.test.ts:52` and the two
+the seven `GOAL_SEND_*` timing and retry knobs at `tests/goal-send-drain.test.ts:54` and the three
 lines below it, `HERDR_PANE_ID`
 at `tests/self-send-transport.test.ts:49`,
 `CRAFT_SUITE_LINT_TIMEOUT: '2'` at `skills/work/scripts/suite-lint-dispatch.test.ts:178`, and the
