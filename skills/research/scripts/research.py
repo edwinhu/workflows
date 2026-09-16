@@ -23,9 +23,10 @@ import json
 import re
 import subprocess
 import sys
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 from urllib.error import URLError
 
 BIB_PATH = Path.home() / "Library/CloudStorage/GoogleDrive-eddyhu@gmail.com/My Drive/resources/My Library.bib"
@@ -367,11 +368,30 @@ def deduplicate(papers: list[dict]) -> list[dict]:
 # Step 3: CrossRef DOI resolution (parallel)
 # ---------------------------------------------------------------------------
 
+# RATE DISCIPLINE, against api.crossref.org.
+#
+# CrossRef publishes NO documented ceiling. Its own guidance is only "pay attention to the
+# http status code and back off if you start seeing 429 statuses"
+# (https://www.crossref.org/documentation/retrieve-metadata/rest-api/tips-for-using-the-crossref-rest-api/),
+# and the same page notes they have had to block users who misuse the APIs. With no published
+# limit to size against, this holds at the conservative default rather than guessing.
+#
+# What it faces is a RATE LIMIT (429s), not a daily quota, so concurrency makes it worse.
+# EFFECTIVE_RPS = workers / sleep_seconds = 2 / 2.0 = 1.0 req/s.
+CROSSREF_WORKERS = 2
+CROSSREF_SLEEP_SECONDS = 2.0
+EFFECTIVE_RPS = CROSSREF_WORKERS / CROSSREF_SLEEP_SECONDS
+
+
 def resolve_doi(doi: str) -> "str | None":
     """Return the resolved journal name from CrossRef, or None."""
     try:
+        time.sleep(CROSSREF_SLEEP_SECONDS)
         url = f"https://api.crossref.org/works/{doi}"
-        with urlopen(url, timeout=10) as resp:
+        # Identify the caller. CrossRef asks that heavy users be identifiable so they can be
+        # contacted rather than blocked.
+        req = Request(url, headers={"User-Agent": "workflows-research/1.0 (+contact via repo)"})
+        with urlopen(req, timeout=10) as resp:
             data = json.loads(resp.read())
         ct = data.get("message", {}).get("container-title", [])
         journal = ct[0] if ct else None
@@ -392,7 +412,7 @@ def resolve_ssrn_dois(papers: list[dict]) -> list[dict]:
     if not to_resolve:
         return papers
 
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    with ThreadPoolExecutor(max_workers=CROSSREF_WORKERS) as executor:
         futures = {
             executor.submit(resolve_doi, p["doi"]): i
             for i, p in to_resolve

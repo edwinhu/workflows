@@ -1115,6 +1115,22 @@ def main():
                 return r['fn'], dict(supported='ERROR', page='', quote='', note=f"{type(e).__name__}: {str(e)[:180]}")
 
         by = {r['fn']: r for r in rows}
+        # RATE DISCIPLINE, against the Gemini API.
+        #
+        # The documented ceiling is https://ai.google.dev/gemini-api/docs/rate-limits — in RPM, TPM and
+        # RPD, and applied PER PROJECT, not per API key. The numeric ceiling depends on the
+        # usage tier and is published only in that project's AI Studio dashboard, so no honest
+        # constant can live here; check the dashboard for the tier this key belongs to.
+        #
+        # This faces BOTH kinds at once, which is why concurrency is capped rather than tuned.
+        # RPM/TPM are a RATE LIMIT: more workers make it worse, and per-project scope means a
+        # second pincite run on the same project adds to the same bucket. RPD is a QUOTA: a
+        # fixed daily cap that concurrency neither helps nor hurts.
+        #
+        # EFFECTIVE_RPS = workers / seconds-per-request. At the default 6 workers, one request
+        # per worker-second is 6 req/s; retries back off at 3 * 2**attempt seconds (line ~427),
+        # which lowers the sustained rate under pressure rather than raising it.
+        EFFECTIVE_RPS = a.workers / 1.0
         with cf.ThreadPoolExecutor(a.workers) as ex:
             for fn, ans in ex.map(work, want):
                 by[fn]['answer'] = ans
