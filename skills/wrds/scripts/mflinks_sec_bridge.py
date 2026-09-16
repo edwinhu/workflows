@@ -121,7 +121,10 @@ def load_sec_series(path):
     sc.columns = [str(c).strip() for c in sc.columns]
     sid = next(c for c in sc.columns if c.lower() in ("series id", "series_id"))
     snm = next(c for c in sc.columns if c.lower() in ("series name", "series_name"))
+    _n0 = len(sc)
     ser = sc.dropna(subset=[sid]).groupby(sid)[snm].first().reset_index()
+    print(f"  series file: {_n0:,} rows -> {len(ser):,} unique series "
+          f"({sc[sid].isna().sum():,} dropped for a missing series id)")
     ser.columns = ["series_id", "series_name"]
     return ser
 
@@ -136,14 +139,19 @@ def load_aliases(xlsx, date, s12, m2):
     x = pd.read_excel(xlsx, sheet_name="Export Worksheet", dtype=str)
     for c in ("START_DATE", "END_DATE"):
         x[c] = pd.to_datetime(x[c], format="%d-%b-%y", errors="coerce")
+        print(f"  {c}: {x[c].isna().sum():,} of {len(x):,} unparseable as %d-%b-%y")
     x["FUNDNO"] = pd.to_numeric(x.FUNDNO, errors="coerce")
+    print(f"  FUNDNO: {x.FUNDNO.isna().sum():,} of {len(x):,} non-numeric")
     d = pd.Timestamp(date)
     cur = x[(x.START_DATE <= d) & (x.END_DATE >= d)]
     al = pd.concat([
         cur[["FUNDNO", "FUNDNAME"]].rename(columns={"FUNDNO": "fundno", "FUNDNAME": "name"}),
         m2.rename(columns={"fundname_full": "name"}),
         s12[["fundno", "fundname"]].rename(columns={"fundname": "name"}),
-    ]).dropna()
+    ])
+    _n0 = len(al)
+    al = al.dropna()
+    print(f"  alias pool: {_n0:,} -> {len(al):,} rows ({_n0 - len(al):,} missing a fundno or name)")
     al = al[al.fundno.isin(s12.fundno)].copy()
     al["n"] = [norm(s) for s in al.name]
     return al[al.n.str.len() >= 6].drop_duplicates(["fundno", "n"])
@@ -178,10 +186,16 @@ def main():
              .merge(pm[["crsp_fundno", "crsp_portno"]], on="crsp_fundno")
              .groupby("series_cik").crsp_portno.apply(set).to_dict())
     in_crsp = set(ck.series_cik.dropna())
+    print(f"  CRSP-linked series CIKs: {len(in_crsp):,} "
+          f"({ck.series_cik.isna().sum():,} rows had none)")
 
     R = (pd.DataFrame({"n": [norm(s) for s in ser.series_name], "key": ser.series_id})
            .query("n.str.len() >= 6")
            .groupby("n").key.apply(lambda s: set(s.dropna())).reset_index())
+    # The dropna is per group and inside the lambda, so the loss only shows in aggregate:
+    # names shorter than 6 chars were already filtered, and a key can be missing entirely.
+    print(f"  match table: {len(R):,} normalised names, "
+          f"{sum(len(k) for k in R.key):,} series ids")
 
     m = top1(al.n.tolist(), R.n.tolist(), thr=0.5)
     m = m.assign(fundno=al.fundno.values[m.li], key=R.key.values[m.ri])

@@ -271,7 +271,11 @@ def _long_hist(H: pd.DataFrame) -> pd.DataFrame:
     lg["date"] = pd.to_datetime(lg.date)
     for c in ("TRDPRC_1", "ACVOL_UNS"):
         lg[c] = pd.to_numeric(lg[c], errors="coerce")
-    return lg.dropna(subset=["TRDPRC_1"], how="all")
+        print(f"  {c}: {lg[c].isna().sum():,} of {len(lg):,} non-numeric")
+    _n0 = len(lg)
+    out = lg.dropna(subset=["TRDPRC_1"], how="all")
+    print(f"  LSEG history: {_n0:,} -> {len(out):,} rows ({_n0 - len(out):,} with no price)")
+    return out
 
 
 def rebuild_price(g: pd.DataFrame) -> pd.Series:
@@ -301,9 +305,13 @@ def step_splice(out: Path) -> pd.DataFrame:
                             "Date": "date"}))
     R["date"] = pd.to_datetime(R.date).dt.tz_localize(None).dt.normalize()
     R["ret"] = pd.to_numeric(R.ret, errors="coerce") / 100.0   # percent -> decimal
+    print(f"  returns: {R.ret.isna().sum():,} of {len(R):,} non-numeric")
 
+    _n0 = int(link.usable.sum())
     key = link.loc[link.usable, ["permno", "RIC", "ticker", "issuernm",
                                  "link_status"]].dropna(subset=["RIC"])
+    print(f"  usable links: {_n0:,} -> {len(key):,} with a RIC "
+          f"({_n0 - len(key):,} usable but unmapped)")
     # INNER join on the price series, not left. TR.TotalReturn1D is calendar-padded:
     # it returns the SAME number of days for every instrument (std 0.0 across the
     # universe), including instruments that delisted mid-gap. Keeping a return with
@@ -320,8 +328,11 @@ def step_splice(out: Path) -> pd.DataFrame:
     # The anchor: LSEG's own quote on the CRSP cutoff date, before that day is
     # dropped from the gap. Everything level-based is expressed relative to it, so
     # LSEG's adjustment basis cancels instead of leaking into the panel.
-    anchor = (gap[gap.date == asof].dropna(subset=["lseg_prc"])
+    _asof_rows = gap[gap.date == asof]
+    anchor = (_asof_rows.dropna(subset=["lseg_prc"])
                  .groupby("permno").lseg_prc.last().rename("lseg_anchor"))
+    print(f"  anchor at {asof}: {len(anchor):,} permnos priced "
+          f"({_asof_rows.lseg_prc.isna().sum():,} of {len(_asof_rows):,} rows unpriced)")
 
     p0 = (crsp.sort_values("date").groupby("permno")
               .agg(p0=("dlyprc", "last"), cap0=("dlycap", "last"),
