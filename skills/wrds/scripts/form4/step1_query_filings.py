@@ -23,6 +23,11 @@ import os
 import sys
 from pathlib import Path
 
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 import pandas as pd
 
 # ---------------------------------------------------------------------------
@@ -69,17 +74,20 @@ def fname_to_rclone_path(fname: str) -> str:
 def main():
     print(f"Loading add-on personids from {ADDON.name}")
     addon = pd.read_parquet(ADDON)
+    check_schema(addon, ["blockholder_CIK"], name="add-on personids")
     pids = set(addon["blockholder_CIK"].astype("int64"))
     print(f"  unique personids: {len(pids):,}")
 
     print(f"Loading TR filings")
     tr = pd.read_parquet(TR)
+    check_schema(tr, ["personid", "cusip6"], name="TR filings")
     tr = tr[tr["personid"].isin(pids)].copy()
     cusip6_set = set(tr["cusip6"].dropna().unique())
     print(f"  cusip6s involved: {len(cusip6_set):,}")
 
     print(f"Resolving cusip6 → issuer CIK")
     cmap = pd.read_parquet(CUSIP_MAP)[["cusip6", "cik"]].drop_duplicates("cusip6")
+    check_schema(cmap, ["cusip6", "cik"], name="cusip6->cik", exact=True)
     ciks = sorted(
         {int(c) for c in cmap[cmap["cusip6"].isin(cusip6_set)]["cik"].dropna().unique()}
     )
@@ -101,6 +109,8 @@ def main():
     forms = pd.read_sql(
         sql, conn, params={"ciks": ciks, "min_d": min_d, "max_d": max_d}
     )
+    check_schema(forms, ["cik", "accession", "form", "fdate", "fname", "fsize"],
+                 name="wrds_forms", exact=True)
     conn.close()
     print(f"  total Form 3/4/5 filings: {len(forms):,}")
     print(f"  total fsize: {forms['fsize'].sum() / 1e9:.2f} GB")

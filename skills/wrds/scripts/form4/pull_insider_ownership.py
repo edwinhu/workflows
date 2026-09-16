@@ -33,6 +33,11 @@ import time
 import os
 from pathlib import Path
 
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 import pandas as pd
 
 # ---------------------------------------------------------------------------
@@ -74,6 +79,7 @@ def build_cusip6_universe() -> list[str]:
     votes_path = Path("data/processed/votes.parquet")
     if votes_path.exists():
         votes = pd.read_parquet(votes_path, columns=["cusip"])
+        check_schema(votes, ["cusip"], name="votes (cusip only)", exact=True)
         _add = set(votes["cusip"].dropna().astype(str).str[:6])
         print(f"  votes: {len(_add):,} cusip6 from {len(votes):,} rows "
               f"({votes['cusip'].isna().sum():,} had none)")
@@ -85,6 +91,7 @@ def build_cusip6_universe() -> list[str]:
     parsed = Path("data/raw/blockholders/2024/parsed.parquet")
     if parsed.exists():
         p = pd.read_parquet(parsed, columns=["cusip6"])
+        check_schema(p, ["cusip6"], name="13D/G parse (cusip6 only)", exact=True)
         _add = set(p["cusip6"].dropna().astype(str).str[:6])
         print(f"  13D/G parse: {len(_add):,} cusip6 from {len(p):,} rows "
               f"({p['cusip6'].isna().sum():,} had none)")
@@ -107,6 +114,8 @@ def pull_year(conn, year: int, cusip6_list: list[str]) -> pd.DataFrame:
           AND cusip6 = ANY(%(cusips)s)
     """
     df = pd.read_sql(sql, conn, params={"yr": year, "cusips": cusip6_list})
+    check_schema(df, ['fdate', 'formtype', 'personid', 'owner', 'cname', 'cusip6', 'trandate', 'sharesheld', 'shares_adj', 'acqdisp', 'sectitle'],
+                 name="TR insiders (year)")
     return df
 
 
@@ -138,6 +147,7 @@ def main():
         path = out / f"tr_insider_{yr}.parquet"
         if path.exists():
             df = pd.read_parquet(path)
+            check_schema(df, ['fdate', 'formtype', 'personid', 'owner', 'cname', 'cusip6', 'trandate', 'sharesheld', 'shares_adj', 'acqdisp', 'sectitle'], name="TR insiders (cached year)")
             print(f"  [{yr}] cached {len(df):,} rows")
             all_chunks.append(df)
             continue
@@ -152,6 +162,7 @@ def main():
                   AND EXTRACT(YEAR FROM fdate) = %(yr)s
             """
             df = pd.read_sql(sql, conn, params={"yr": yr})
+            check_schema(df, ['fdate', 'formtype', 'personid', 'owner', 'cname', 'cusip6', 'trandate', 'sharesheld', 'shares_adj', 'acqdisp', 'sectitle'], name="TR insiders (pulled year)")
         else:
             df = pull_year(conn, yr, cusips)
         df.to_parquet(path, index=False)
