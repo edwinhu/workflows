@@ -71,11 +71,11 @@ describe('the CronDelete teardown', () => {
   })
 
   test('the hand-written template carries the SAME sentence', () => {
-    expect(read('skills/goal-and-loop/references/templates.md')).toContain(CLAUSE)
+    expect(read('skills/until/references/templates.md')).toContain(CLAUSE)
   })
 
   test('it is one of the numbered parts, not buried in prose', () => {
-    const skill = read('skills/goal-and-loop/SKILL.md')
+    const skill = read('skills/until/SKILL.md')
     expect(skill).toContain('TEARDOWN')
     expect(skill).toContain(CLAUSE)
     // The parts table says how many parts there are; a stale count is how a part gets skipped.
@@ -102,7 +102,7 @@ describe('the loop tick text', () => {
   })
 
   test('the skill documents the SAME sentence', () => {
-    expect(read('skills/goal-and-loop/SKILL.md')).toContain(TICK!)
+    expect(read('skills/until/SKILL.md')).toContain(TICK!)
   })
 
   test('it runs the check rather than re-reading the conversation', () => {

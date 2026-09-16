@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
 const REPO = join(import.meta.dir, '..')
-import { lint } from '../skills/goal-and-loop/scripts/goal-lint'
+import { lint } from '../skills/until/scripts/goal-lint'
 
 /**
  * The corpus is the three goals that actually stalled on the night of 2026-08-27/28, plus the goal
