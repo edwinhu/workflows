@@ -28,6 +28,12 @@ import sys
 import time
 from pathlib import Path
 
+# The column contract for every load in this file. ds_schema ships with the ds skill;
+# check_schema fails AT the load, naming what was missing and what arrived, rather than
+# three transforms later with a KeyError naming one column.
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 import numpy as np
 import pandas as pd
 import psycopg2
@@ -127,6 +133,8 @@ def step_universe(out: Path, user: str, start: str) -> pd.DataFrame:
     print(f"[universe] CRSP CIZ last date = {asof.date()}")
     with _pg(user) as c:
         u = pd.read_sql(UNIV_SQL, c, params={"asof": asof.date()})
+        check_schema(u, ["permno", "permco", "cusip9", "cusip8", "ticker", "issuernm",
+                         "securitytype", "sharetype", "usincflg"], name="CRSP universe")
         print(f"[universe] common-stock securities on {asof.date()}: {len(u):,}")
         permnos = u.permno.astype(int).tolist()
         panel = pd.read_sql(PANEL_SQL, c,
@@ -159,6 +167,7 @@ def step_map(out: Path, chunk: int = 200) -> pd.DataFrame:
     from lseg.data.content import symbol_conversion as sc
 
     u = pd.read_parquet(out / "universe.parquet")
+    check_schema(u, ["permno", "ticker", "issuernm"], name="universe.parquet")
     cus = u.cusip9.dropna().unique().tolist()
     print(f"[map] cusip9 to resolve: {len(cus):,}")
     frames = []
@@ -228,6 +237,7 @@ def step_pull(out: Path, end: str | None = None,
     start = asof.date().isoformat()
     end = end or (pd.Timestamp.today() - pd.Timedelta(days=1)).date().isoformat()
     link = pd.read_parquet(out / "link.parquet")
+    check_schema(link, ["permno", "RIC", "usable"], name="link.parquet")
     rics = link.loc[link.usable, "RIC"].dropna().unique().tolist()
     print(f"[pull] gap {start} .. {end}  RICs={len(rics):,}")
 
@@ -298,6 +308,7 @@ def rebuild_price(g: pd.DataFrame) -> pd.Series:
 def step_splice(out: Path) -> pd.DataFrame:
     asof = pd.Timestamp((out / "asof.txt").read_text().strip())
     link = pd.read_parquet(out / "link.parquet")
+    check_schema(link, ["permno", "RIC", "usable"], name="link.parquet")
     crsp = pd.read_parquet(out / "crsp_panel.parquet")
     H = _long_hist(pd.read_parquet(out / "lseg_hist.parquet"))
     R = (pd.read_parquet(out / "lseg_ret.parquet")
@@ -381,6 +392,7 @@ def step_coverage(out: Path) -> pd.DataFrame:
     """Coverage against the CRSP-at-cutoff denominator, plus a seam sanity check."""
     asof = pd.Timestamp((out / "asof.txt").read_text().strip())
     link = pd.read_parquet(out / "link.parquet")
+    check_schema(link, ["permno", "RIC", "usable"], name="link.parquet")
     panel = pd.read_parquet(out / "panel_spliced.parquet")
     gap = panel[panel.source == "LSEG"]
     n = len(link)
