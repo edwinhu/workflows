@@ -123,6 +123,11 @@ Run: python scripts/linking/build_npx_crsp_link_gap.py
 import sys
 from pathlib import Path
 
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "cit"))
 
 import numpy as np
@@ -327,6 +332,7 @@ print(f"  vote rows                        : {gap['n_vote_rows'].sum():,} "
       f"({gap['n_vote_rows'].sum() / TOTAL_ROWS:.2%} of the panel)")
 
 cikmap = pl.read_parquet(CRSP_CIK_MAP)
+check_schema(cikmap, ["crsp_fundno", "series_cik"], name="CRSP cik map")
 in_map = gap.join(
     cikmap.filter(pl.col("series_cik").is_not_null())
     .select(seriesid="series_cik").unique(), on="seriesid", how="semi")
@@ -335,13 +341,17 @@ print(f"  of those seriesIds, present in crsp_cik_map: {in_map.height:,} "
 
 fund = pl.read_parquet(FUNDID_SERIESID).select(
     "fundid", "institutionid", "first_year", "last_year")
+check_schema(fund, ["fundid", "institutionid", "first_year", "last_year"],
+             name="fundid->seriesid", exact=True)
 fs = pl.read_parquet(FUND_SUMMARY2)
+check_schema(fs, ["crsp_fundno"], name="fund summary")
 # A crsp_fundno can carry more than one wficn in MFLINK1 (measured: 341 of
 # 49,975). `keep="first"` with no sort picks by row order — an undefined
 # choice on the linking critical path. Sorted so the pick is STATED.
 mflink = (pl.read_parquet(MFLINK1)
           .sort(["crsp_fundno", "wficn"])
           .unique(subset=["crsp_fundno"], keep="first", maintain_order=True))
+check_schema(mflink, ["crsp_fundno", "wficn"], name="mflink1 (deduped)")
 print(f"\nfund_summary2 (CLASS grain)        : {fs.height:,} crsp_fundnos")
 
 # ---------------------------------------------------------------------------

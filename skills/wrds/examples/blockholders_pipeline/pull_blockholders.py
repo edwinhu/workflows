@@ -71,6 +71,8 @@ def query_forms_metadata(start: str, end: str) -> pd.DataFrame:
         ORDER BY fdate
     """
     df = pd.read_sql(sql, conn, params=(start, end))
+    check_schema(df, ["fdate", "cik", "coname", "form", "accession", "fname"],
+                 name="SEC forms metadata", exact=True)
     conn.close()
     return df
 
@@ -190,6 +192,8 @@ def main():
     meta_path = wd / "metadata.parquet"
     if meta_path.exists():
         meta = pd.read_parquet(meta_path)
+        check_schema(meta, ["fdate", "cik", "form", "accession", "fname"],
+                     name="metadata.parquet (cached)")
         print(f"[meta] loaded cached {len(meta)} filings")
     else:
         print(f"[meta] querying {args.start} to {args.end}...")
@@ -215,6 +219,7 @@ def main():
     parsed_path = wd / "parsed.parquet"
     if args.skip_parse and parsed_path.exists():
         parsed = pd.read_parquet(parsed_path)
+        check_schema(parsed, ["cusip6"], name="parsed.parquet (cached)")
         print(f"[parse] loaded cached {len(parsed)} rows")
     else:
         parsed = parse_all(paths, workers=args.workers)
