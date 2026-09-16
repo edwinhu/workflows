@@ -21,7 +21,7 @@
  * INERT unless armed. The state file is per session, so this fires for exactly one session
  * rather than every session in the project.
  *
- *   arm:     pursue-arm.sh '<check command>' [--rounds N] [--minutes M]
+ *   arm:     until-arm.sh '<check command>' [--rounds N] [--minutes M]
  *   disarm:  rm the state file (the path is printed on every block)
  */
 
@@ -39,7 +39,7 @@ interface State {
 }
 
 export function statePath(session: string): string {
-  return join(process.env.TMPDIR || tmpdir(), `pursue-${session}.json`)
+  return join(process.env.TMPDIR || tmpdir(), `until-${session}.json`)
 }
 
 /** What the hook decides, separated from the IO so it can be tested. */
@@ -98,12 +98,12 @@ function main(): void {
 
   if (d.action === 'pass') {
     rmSync(path, { force: true })
-    process.stderr.write(`pursue: \`${s.check}\` exits 0 — objective met, hold released.\n`)
+    process.stderr.write(`until: \`${s.check}\` exits 0 — objective met, hold released.\n`)
     process.exit(0)
   }
   if (d.action === 'expired') {
     rmSync(path, { force: true })
-    process.stderr.write(`pursue: ${d.reason}. Hold released UNMET — say so.\n`)
+    process.stderr.write(`until: ${d.reason}. Hold released UNMET — say so.\n`)
     process.exit(0)
   }
 

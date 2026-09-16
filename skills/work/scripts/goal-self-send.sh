@@ -13,7 +13,7 @@
 #        goal-self-send.sh "/loop 30m <tick prompt>"   — the heartbeat; never linted
 #
 # THE GOAL IS LINTED BEFORE IT IS SENT. This is the one chokepoint every goal passes through, so it
-# is where `skills/goal-and-loop` is enforced rather than merely available: a CRITICAL finding —
+# is where `skills/until` is enforced rather than merely available: a CRITICAL finding —
 # a milestone verb, a clause only a human can close, turn counting, "done or blocked" — refuses the
 # send with exit 8 and names the skill to read. Majors and minors warn and go through. Measured
 # 2026-08-27/28: three sessions idled 14h43m overnight on goals with exactly these defects.
@@ -50,10 +50,10 @@ case "$CMD" in
   *) echo "goal-self-send: argument must be '/goal <text>', '/goal clear' or '/loop <interval> <text>'" >&2; exit 2 ;;
 esac
 
-# ---- the goal-and-loop gate ------------------------------------------------------------------
+# ---- the until gate ------------------------------------------------------------------
 # Nothing here reaches the network or the session; it reads the string. A missing bun or a missing
 # lint is not a reason to block a send, so absence passes.
-GW_LINT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../goal-and-loop/scripts" 2>/dev/null && pwd)/goal-lint.ts"
+GW_LINT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../until/scripts" 2>/dev/null && pwd)/goal-lint.ts"
 if [ "$NOLINT" = 0 ] && [ "$CMD" != "/goal clear" ] && [ "${CMD#/goal }" != "$CMD" ] && [ -f "$GW_LINT" ] && command -v bun >/dev/null 2>&1; then
   # --unattended, ALWAYS. A self-sent goal is unattended BY DEFINITION — driving your own
   # session is what you do when no human will answer. Without the flag, G10 (standing authority)
@@ -69,13 +69,13 @@ if [ "$NOLINT" = 0 ] && [ "$CMD" != "/goal clear" ] && [ "${CMD#/goal }" != "$CM
 goal-self-send: REFUSED — this goal carries a critical defect and nothing was sent.
 
 A goal is the only thing between an unattended session and an idle terminal. Read
-  $(cd "$(dirname "${BASH_SOURCE[0]}")/../../goal-and-loop" && pwd)/SKILL.md
+  $(cd "$(dirname "${BASH_SOURCE[0]}")/../../until" && pwd)/SKILL.md
 rewrite the goal, and send it again. Override with --no-lint if you have a reason.
 EOF
       exit 8
     fi
     printf '%s\n' "$GW_OUT" >&2
-    echo "goal-self-send: sending anyway (no critical findings) — see skills/goal-and-loop/SKILL.md" >&2
+    echo "goal-self-send: sending anyway (no critical findings) — see skills/until/SKILL.md" >&2
   fi
 fi
 

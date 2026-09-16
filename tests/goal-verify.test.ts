@@ -16,7 +16,7 @@ import { join } from 'node:path'
  */
 
 const REPO = join(import.meta.dir, '..')
-const VERIFY = join(REPO, 'skills/goal-and-loop/scripts/goal-verify.sh')
+const VERIFY = join(REPO, 'skills/until/scripts/goal-verify.sh')
 const SID = 'verify-test-session'
 
 function verify(records: unknown[], unconfirmed?: string) {

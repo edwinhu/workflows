@@ -294,7 +294,7 @@ duplication and derivability, and neither is measured in percentages. A share-of
 happily delete rows 3 and 4, which are the rows carrying the enforcement.
 </EXTREMELY-IMPORTANT>
 
-- Measured 2026-09-01 on `goal-and-loop` (191 lines): a volume-based read proposed cutting
+- Measured 2026-09-01 on `until` (191 lines): a volume-based read proposed cutting
   ~400 words because 31% of the file was retrospective. The trim test found one true duplicate
   and one bloated row — **-126 words, every rule intact**. The rows the volume argument would
   also have taken were the incidents behind lint rules G2 and G9.
