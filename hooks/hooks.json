@@ -107,6 +107,10 @@
             "type": "command",
             "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/session-end.ts",
             "async": true
+          },
+          {
+            "type": "command",
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/pursue.ts"
           }
         ]
       }
