@@ -229,6 +229,40 @@ test('S3: a body naming a path that is not on disk is a finding; an existing one
   } finally { rmSync(d, { recursive: true, force: true }) }
 })
 
+// WHO the prose hands a path to decides whether there is anything to fix. Silencing the
+// unfixable case is only safe if the fixable one still fires, so both are pinned.
+
+test('S3: a path handed to ANOTHER SKILL is still reported — it can be written', () => {
+  const d = skillTree()
+  try {
+    writeSkill(d, 'reach', "# R\n\nUse the `wrds` skill's `references/tfn-ownership.md` for D5.\n")
+    const r = runProbe(d)
+    const a = r.advisories.filter(x => x.rule.startsWith('S3'))
+    expect(a.length).toBe(1)
+    expect(a[0].detail).toContain('references/tfn-ownership.md')
+  } finally { rmSync(d, { recursive: true, force: true }) }
+})
+
+test("S3: a convention in the READER'S OWN project is not reported — no path exists to write", () => {
+  const d = skillTree()
+  try {
+    writeSkill(d, 'conv', '# C\n\nResolved in the document project: `references/sources.bib`.\n')
+    const r = runProbe(d)
+    expect(r.advisories.filter(x => x.rule.startsWith('S3'))).toEqual([])
+    expect(r.findings.filter(x => x.rule.startsWith('S3'))).toEqual([])
+  } finally { rmSync(d, { recursive: true, force: true }) }
+})
+
+test('S3: a line naming BOTH a skill and a project is reported, not silenced', () => {
+  const d = skillTree()
+  try {
+    writeSkill(d, 'both',
+      "# B\n\nThe `agent-spawn` skill's `references/prompt-delivery.md`, not this project's.\n")
+    const r = runProbe(d)
+    expect(r.advisories.filter(x => x.rule.startsWith('S3')).length).toBe(1)
+  } finally { rmSync(d, { recursive: true, force: true }) }
+})
+
 test('S3: a glob or a placeholder is not judged', () => {
   const d = skillTree()
   try {

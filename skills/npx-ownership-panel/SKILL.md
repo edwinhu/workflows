@@ -132,7 +132,7 @@ preflight imports them before submitting anything, so a missing package fails in
 one second instead of thirty minutes into a grid run.
 
 For S12 data-quality controls (the 2017Q4 feed change, coverage end, the MFLINKS
-gap) use the `wrds` skill's `references/tfn-ownership.md` **D5**, and the detectors
+gap) use the `wrds` skill's `${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/tfn-ownership.md` **D5**, and the detectors
 in `skills/wrds/scripts/ownership_dq.py`. Deliberately not duplicated here.
 
 ### The linking chain is vendored, not reimplemented
@@ -454,5 +454,5 @@ Two habits worth carrying over, both learned the expensive way here:
 
 ## See also
 
-`wrds` skill's references — connection patterns, `references/iss-voting.md` for the
-tables themselves, and that skill's `references/postgres-vs-sas.md` for engine choice.
+`wrds` skill's references — connection patterns, `${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/iss-voting.md` for the
+tables themselves, and that skill's `${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/postgres-vs-sas.md` for engine choice.

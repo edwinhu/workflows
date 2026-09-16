@@ -492,15 +492,28 @@ export function checkPathRefs(
     seen.add(rel)
     const abs = resolve(skill.dir, rel)
     if (existsSync(abs)) continue
-    // A path the prose hands to SOMEONE ELSE — another skill's references, or the user's own
-    // project — is not this skill's to own, and whether it exists is not decidable from here. Said
-    // on the advisory channel rather than dropped, because the reader still cannot open it.
+    // A path the prose hands to SOMEONE ELSE is not this skill's to own. WHO it is handed to
+    // decides whether there is anything to fix, and the two cases are not the same defect:
+    //
+    //   ANOTHER SKILL — fixable, and worth saying. The file is somewhere real, so the path can
+    //     be written `${CLAUDE_PLUGIN_ROOT}/skills/<other>/…` (or absolutely, for another
+    //     plugin) and the reader can then open it. Three npx-ownership-panel references into
+    //     the `wrds` skill were fixed exactly this way.
+    //   THE READER'S OWN PROJECT — not fixable, and not a defect. `references/sources.bib` in
+    //     "resolved in the document project" names a CONVENTION in whatever directory the
+    //     reader is working in. No path exists to write, so an advisory there is noise of the
+    //     kind that teaches people to skip the whole rule.
+    //
     // Scoped to the whole LINE, not a window before the path: a table cell puts the qualifier
     // after the default value it qualifies.
     const lineStart = body.lastIndexOf('\n', m.index) + 1
     const lineEnd = body.indexOf('\n', m.index)
     const line = body.slice(lineStart, lineEnd === -1 ? body.length : lineEnd)
-    if (/\bskill'?s\b|`[a-z0-9-]+`\s+skill\b|\bproject'?s?\b|\boutside this repo\b|\bbeside the source\b/i.test(line)) {
+    const readersOwnProject =
+      /\b(this|that|the document|the user'?s|your|a) project'?s?\b|\boutside this repo\b|\bbeside the source\b/i
+    const anotherSkill = /\bskill'?s\b|`[a-z0-9-]+`\s+skill\b/i
+    if (readersOwnProject.test(line) && !anotherSkill.test(line)) continue
+    if (anotherSkill.test(line) || readersOwnProject.test(line)) {
       elsewhere.push({
         rule: 'S3 the body names a path belonging to another skill or the user\'s project',
         file: skill.skillMd,
