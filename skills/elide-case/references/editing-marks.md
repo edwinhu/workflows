@@ -225,10 +225,13 @@ or `declared`. Read that block — it is how the mapping stays auditable instead
 
 `check-quotes.py` proves the words match the reporter and proves nothing about how Typst
 set them. A verbatim-perfect excerpt can still put a paragraph's last line alone at the top
-of a page, so `check.sh`'s `widows` leg (`scripts/check-page-breaks.py`) decides three
-page-boundary defects: an **orphan** (a paragraph's first line alone at the foot of a
-page), a **widow** (its last line alone at the top of the next), and a **stranded heading**
-(a caption or section heading at the foot of a page with its text beginning overleaf).
+of a page, so `check.sh`'s `strays` leg decides four defects, each under its own name and
+its own exit code: an **orphan** (a paragraph's first line alone at the foot of a page), a
+**widow** (its last line alone at the top of the next), a **runt** (one word alone on a
+paragraph's last line), and a **stranded heading** (a caption or section heading at the
+foot of a page with its text beginning overleaf). The first three are the typst plugin's
+canonical checkers, in one copy; only the stranded heading is this skill's own, because it
+is the one class that needs no justified-text premise.
 
 **The fix vocabulary is layout-only: spacing, or where the page breaks.** Never add, cut or
 reword the court's text to close a widow. Rewording to improve a page break is the first

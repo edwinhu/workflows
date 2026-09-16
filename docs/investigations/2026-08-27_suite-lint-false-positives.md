@@ -12,22 +12,36 @@ argue with a specific row.
 
 | rule id | raw findings | false positives | true positives |
 |---|---|---|---|
-| positive-match-failure-vocabulary | 26 | 23 | 3 |
+| positive-match-failure-vocabulary | 25 | 23 | 2 |
 | single-distinct-literal | 204 | 193 | 11 |
 | existence-only-artifact | 1 | 1 | 0 |
-| injected-key-never-varied | 43 | 43 | 0 |
+| injected-key-never-varied | 44 | 44 | 0 |
 
-**The raw column is re-measured; the false-positive column is NOT.** Re-measured 2026-09-15 against
-a corpus that has grown from 232 files as this repo gained test suites. The false-positive counts
-are the ones this investigation actually audited, in August, over the findings that existed then —
-so the thirteen newer findings (eleven `single-distinct-literal`, two
+**The raw column is re-measured; the false-positive column is audited only where this note says
+so.** Re-measured 2026-09-15 against a corpus that has grown from 232 files as this repo gained test
+suites. The false-positive counts are otherwise the ones this investigation audited in August, over
+the findings that existed then — so twelve newer findings (eleven `single-distinct-literal`, one
 `positive-match-failure-vocabulary`) sit in the true-positive column by arithmetic, NOT by
 judgement. Nobody has read them. Do not cite that column as evidence about them.
 
-Unparseable files: 0 of 237 linted. Every file the walker reached was extracted; nothing was dropped
+Two rows moved on 2026-09-15 when elide-case's strays leg was rewired to the canonical checkers,
+and both were read:
+
+- `positive-match-failure-vocabulary` lost one, 26 to 25, and it was a TRUE positive.
+  `expect(out).toMatch(/SUB runt: (PASS|FAIL)/)` asked whether the sub-check ran and passed either
+  way, so the rule was right. The replacement collects the sub-check names and asserts the set.
+- `injected-key-never-varied` gained one, 43 to 44, and it is a FALSE positive, so the
+  false-positive column moves with it. The suite injects `PATH` in one literal, which is what the
+  rule measures; that literal shadows `typst-constraints` with a stub that refuses, and the test
+  asserts the leg then reports each canonical checker as unmeasured. An implementation ignoring the
+  injected `PATH` fails it.
+
+Unparseable files: 0 of 243 linted. Every file the walker reached was extracted; nothing was dropped
 silently, and no count above is understated by a skipped file.
 
-One finding in 261 survives inspection.
+Of the 261 findings this investigation audited in August, one survived inspection. The
+2026-09-15 reading above adds one more false positive and no true positive, so that number
+still stands; the twelve unaudited findings are not in it.
 
 ## Method
 
