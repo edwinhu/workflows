@@ -142,6 +142,8 @@ def step_universe(out: Path, user: str, start: str) -> pd.DataFrame:
         permnos = u.permno.astype(int).tolist()
         panel = pd.read_sql(PANEL_SQL, c,
                             params={"p": permnos, "s": start, "e": asof.date()})
+        check_schema(panel, ["permno", "date", "dlyprc", "dlyret", "dlycap", "dlyvol"],
+                     name="CRSP daily panel", exact=True)
     panel["date"] = pd.to_datetime(panel.date)
     print(f"[universe] CRSP panel rows {start}..{asof.date()}: {len(panel):,}")
     if u.cusip9.isna().any():
@@ -313,10 +315,15 @@ def step_splice(out: Path) -> pd.DataFrame:
     link = pd.read_parquet(out / "link.parquet")
     check_schema(link, ["permno", "RIC", "usable"], name="link.parquet")
     crsp = pd.read_parquet(out / "crsp_panel.parquet")
+    check_schema(crsp, ["permno", "date", "dlyprc"], name="crsp_panel.parquet")
+    # The read is wrapped, so the contract is on what _long_hist PRODUCES — the stacked
+    # long form its callers index by.
     H = _long_hist(pd.read_parquet(out / "lseg_hist.parquet"))
+    check_schema(H, ["RIC", "date", "TRDPRC_1", "ACVOL_UNS"], name="lseg_hist (long)")
     R = (pd.read_parquet(out / "lseg_ret.parquet")
            .rename(columns={"Instrument": "RIC", "Daily Total Return": "ret",
                             "Date": "date"}))
+    check_schema(R, ["RIC", "date", "ret"], name="lseg_ret.parquet")
     R["date"] = pd.to_datetime(R.date).dt.tz_localize(None).dt.normalize()
     R["ret"] = pd.to_numeric(R.ret, errors="coerce") / 100.0   # percent -> decimal
     print(f"  returns: {R.ret.isna().sum():,} of {len(R):,} non-numeric")
@@ -397,6 +404,7 @@ def step_coverage(out: Path) -> pd.DataFrame:
     link = pd.read_parquet(out / "link.parquet")
     check_schema(link, ["permno", "RIC", "usable"], name="link.parquet")
     panel = pd.read_parquet(out / "panel_spliced.parquet")
+    check_schema(panel, ["permno", "date"], name="panel_spliced.parquet")
     gap = panel[panel.source == "LSEG"]
     n = len(link)
 
