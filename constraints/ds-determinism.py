@@ -18,7 +18,7 @@ def check(context):
     # Find all Python files (skip .planning/, scratch/, tests/)
     py_files = [
         p for p in cwd.rglob("*.py")
-        if not any(part in p.parts for part in [".planning", "scratch", "__pycache__", ".pixi", "worktrees", "node_modules"])
+        if not any(part in p.parts for part in [".planning", "scratch", "__pycache__", ".pixi", "worktrees", "node_modules", "external"])
         and p.name != "run-constraints.py"
         and "constraints" not in str(p)
     ]

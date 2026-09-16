@@ -80,7 +80,7 @@ def docket_entries(s, case_id):
         try:
             d = json.loads(cache.read_text())
             return d["entries"], d["total"]
-        except Exception:
+        except Exception:  # ds-error-handling: the cache is an optimisation; an unreadable one is re-fetched, not fatal
             pass
     entries, start = [], 0
     while True:
