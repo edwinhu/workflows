@@ -96,6 +96,20 @@ def _(enhanced, mo, pl):
         # Prepare data for plotting
         plot_data = enhanced.select(["date", "value", "category"]).to_pandas()
 
+        # ONE REGISTERED THEME, not styling repeated per chart. Registered once and enabled,
+        # every chart in the notebook inherits it — including the next one someone adds, which
+        # is the case per-chart styling silently gets wrong.
+        @alt.theme.register("workflows", enable=True)
+        def _workflows_theme():
+            return {
+                "config": {
+                    "view": {"continuousWidth": 600, "continuousHeight": 300},
+                    "axis": {"labelFontSize": 11, "titleFontSize": 12, "grid": False},
+                    "legend": {"labelFontSize": 11, "titleFontSize": 12},
+                    "line": {"strokeWidth": 2},
+                }
+            }
+
         chart = (
             alt.Chart(plot_data)
             .mark_line()
@@ -104,7 +118,6 @@ def _(enhanced, mo, pl):
                 y="value:Q",
                 color="category:N",
             )
-            .properties(width=600, height=300)
         )
 
         mo.ui.altair_chart(chart)
