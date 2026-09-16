@@ -1,4 +1,10 @@
 import { describe, expect, test } from 'bun:test'
+import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { spawnSync } from 'node:child_process'
+
+const REPO = join(import.meta.dir, '..')
 import { lint } from '../skills/goal-and-loop/scripts/goal-lint'
 
 /**
@@ -10,10 +16,20 @@ import { lint } from '../skills/goal-and-loop/scripts/goal-lint'
 const rules = (t: string, unattended = false, brief = false) =>
   lint(t, unattended, brief).map((f) => f.rule)
 
-const COMPOSED =
-  'craft has returned PASS for /p/plan.md — `bash /s/work-result.sh /r/result.json` exits 0 — ' +
-  'or the rounds field in /r/args.json reads 5 or more — `jq -r .rounds` it to check — or the run ' +
-  'has been going 480 minutes or more, which `bash /s/work-elapsed.sh /r 480` prints and settles'
+// DERIVED by running compose-goal.sh, never transcribed. A hardcoded copy drifted from the
+// script it claimed to represent: on 2026-09-16 the real emitted goal had gained nothing while
+// this fixture still described it, and the suite below asserted the MISSING authority and
+// continuation as expected behaviour.
+const COMPOSED = (() => {
+  const d = mkdtempSync(join(tmpdir(), 'gl-'))
+  mkdirSync(join(d, 'run'), { recursive: true })
+  writeFileSync(join(d, 'plan.md'), '# P\n\n<!-- craft:dispatch\n{"runId":"x","args":{}}\n-->\n')
+  const r = spawnSync('bash',
+    [join(REPO, 'skills/work/scripts/compose-goal.sh'), join(d, 'plan.md'), join(d, 'run'), '6', '0'],
+    { encoding: 'utf8' })
+  if (r.status !== 0) throw new Error(`compose-goal.sh exited ${r.status} — the reference goal could not be built, which is not the same as its being clean`)
+  return r.stdout.trim().replace(/^\/goal /, '')
+})()
 
 describe('the goal compose-goal.sh emits', () => {
   test('is clean, so the lint cannot be at war with the reference implementation', () => {
@@ -45,11 +61,35 @@ describe('the three goals that stalled', () => {
     )
   })
 
+  // THE REFERENCE GOAL MUST BE CLEAN UNATTENDED, because that is the only way it is ever used:
+  // a self-sent goal is unattended by definition. Until 2026-09-16 it failed both rules and
+  // goal-self-send.sh linted without the flag, so nothing said so.
+  test('is clean UNATTENDED too — the only mode a self-send runs in', () => {
+    expect(rules(COMPOSED, true)).toEqual([])
+  })
+
+  test('it carries the teardown, which no shell or hook can perform', () => {
+    expect(COMPOSED).toContain('CronDelete')
+  })
+
   test('an unattended goal with no standing authority and no continuation is flagged', () => {
     // mail-bridge held three green commits overnight because nothing said it could push.
-    const r = rules(COMPOSED, true)
+    const bare = 'x is 0 — `c` exits 0 — or the rounds counter file reads 6, `cat f` it to ' +
+                 'check — or the run has been going 720 minutes or more, which `s` prints.'
+    const r = rules(bare, true)
     expect(r).toContain('G10')
     expect(r).toContain('G11')
+  })
+
+  // The phrase that let a goal with NO continuation pass: the recommended terminal-blockers
+  // sentence ends "Everything else is the next task, difficulty included", which is about not
+  // filing a difficulty as a blocker and says nothing about budget.
+  test('a terminal-blockers sentence does not count as a continuation clause', () => {
+    const blockersOnly =
+      'x is 0 — `c` exits 0 — or the rounds counter file reads 6, `cat f` it to check — or the ' +
+      'run has been going 720 minutes or more, which `s` prints. You may commit. TERMINAL ' +
+      'BLOCKERS: a dead network. Everything else is the next task, difficulty included.'
+    expect(rules(blockersOnly, true)).toContain('G11')
   })
 })
 

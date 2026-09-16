@@ -58,9 +58,20 @@ const DONE_OR_BLOCKED = /\b(when|if)\s+(you (are|'re) )?(done|finished|complete)
 const AUTHORITY =
   /\b(standing authority|pre[- ]?authoriz|without asking|do not ask|don'?t ask|may commit|you may (commit|push|decide|choose|pick)|decide (it |this )?yourself|your call|no need to ask)\b/i
 
-/** A continuation clause: what happens to the remaining budget when a sub-run closes. */
+/**
+ * A continuation clause: what happens to the REMAINING BUDGET when the stated scope closes.
+ *
+ * `next( task| item| defect)` used to count on its own and it is the wrong test — the terminal
+ * blockers clause the template recommends ends "Everything else is the next task, difficulty
+ * included", which is about not filing a difficulty as a blocker and says nothing about budget.
+ * Measured 2026-09-16: a goal with no continuation at all passed G11 on that phrase, then closed
+ * at its first stopping point with 2 rounds and 400 minutes unspent.
+ *
+ * So "next" now counts only when it is about what happens NEXT rather than what is not a blocker:
+ * take/start/pick the next thing, or the budget language, or an explicit FAIL-is-not-terminal.
+ */
 const CONTINUATION =
-  /\b(keep (going|working)|continue until|next( task| item| defect)|then (move|go|proceed) (on )?to|do not stop|don'?t stop|until the (budget|ceiling|rounds?)|spend the (remaining|rest)|re-?dispatch|report at the ceiling)\b|\bon (a )?FAIL\b|\bnot a stopping point\b|\bin the same turn\b/i
+  /\b(keep (going|working)|continue until|(take|start|pick|begin) (on )?the next|next action|then (move|go|proceed) (on )?to|do not stop|don'?t stop|until the (budget|ceiling|rounds?)|spend the (remaining|rest)|budget remains|largest (open|remaining)|re-?dispatch|report at the ceiling)\b|\bon (a )?FAIL\b|\bnot a stopping point\b|\bin the same turn\b/i
 
 /**
  * `isBrief` = the text is a multi-paragraph brief rather than a one-line goal. A brief may
