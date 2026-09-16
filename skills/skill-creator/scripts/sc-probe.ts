@@ -652,12 +652,26 @@ const WORD_NUM: Record<string, number> = {
   eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16,
   seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20,
 }
+// `[ \t]+`, never `\s+`: a count and its noun are on ONE line. "went from 75\npoints and ship"
+// is two sentences, and \s+ read it as "75 points".
 const COUNT_RE = new RegExp(
-  `\\b(\\d{1,3}|${Object.keys(WORD_NUM).join('|')})\\s+(constraints?|rules?|checkers?|modules?|references?|skills?|lenses)\\b`,
+  `\\b(\\d{1,3}|${Object.keys(WORD_NUM).join('|')})[ \\t]+(constraints?|rules?|checkers?|modules?|references?|skills?|lenses)\\b`,
   'gi',
 )
 /** A line carrying an ISO date is a dated MEASUREMENT — a record of what was true then. */
 const DATED_RE = /\d{4}-\d{2}-\d{2}/
+
+/**
+ * A count that INTRODUCES or REFERS BACK TO this document's own content, not the filesystem.
+ *
+ * "## Two rules that are not optional" is a heading over the two rules; "the four lenses above"
+ * points at a list the reader just read; "three lenses declared above" the same. A reader
+ * verifies these by looking up, and no filesystem answer exists. Measured 2026-09-16: all 21
+ * remaining advisories were one of these, a historical note, or already correct — zero were a
+ * wrong count.
+ */
+const SELF_REFERENTIAL =
+  /^\s*#{1,6}\s|\b(above|below|declared|following|listed|here)\b|[:—][*_\s]*$/i
 
 function numberOf(tok: string): number | null {
   const n = /^\d+$/.test(tok) ? Number(tok) : WORD_NUM[tok.toLowerCase()]
@@ -683,10 +697,15 @@ export function checkProseCounts(file: string, body: string): Advisory[] {
   let m: RegExpExecArray | null
   COUNT_RE.lastIndex = 0
   while ((m = COUNT_RE.exec(body)) !== null) {
-    const line = lineOf(body, m.index)
-    if (DATED_RE.test(lines[line - 1] ?? '')) continue
+    const line_ = lineOf(body, m.index)
+    if (DATED_RE.test(lines[line_ - 1] ?? '')) continue
     const n = numberOf(m[1])
     if (n === null || n === 1) continue
+    const lineText = lines[line_ - 1] ?? ''
+    if (SELF_REFERENTIAL.test(lineText)) continue
+    // `rules` and `lenses` name design facts, always stated beside the list they count — never
+    // a directory. The filesystem cannot answer them, so an advisory has no remedy to offer.
+    if (/^(rules?|lenses)$/i.test(m[2])) continue
 
     // `N reference(s)` in a SKILL.md is countable from that skill's own directory — UNLESS the
     // sentence says otherwise. "16 reference files across 10 skills" is a corpus-wide tally, and
@@ -696,7 +715,7 @@ export function checkProseCounts(file: string, body: string): Advisory[] {
       out.push({
         rule: 'S5 a corpus count written in prose (unverified)',
         file,
-        line,
+        line: line_,
         detail: `"${m[0]}" — a count spanning more than this skill, so its own directory cannot settle it`,
       })
       continue
@@ -716,7 +735,7 @@ export function checkProseCounts(file: string, body: string): Advisory[] {
         out.push({
           rule: 'S5 a corpus count written in prose (unverified)',
           file,
-          line,
+          line: line_,
           detail: `"${m[0]}" — there is no references/ beside this file, so this counts something the probe cannot reach`,
         })
         continue
@@ -725,7 +744,7 @@ export function checkProseCounts(file: string, body: string): Advisory[] {
       out.push({
         rule: 'S5 a prose count disagrees with the corpus',
         file,
-        line,
+        line: line_,
         detail: `"${m[0]}" — ${dir} holds ${actual}. The number is a second representation of a fact the filesystem already holds, and this one has drifted`,
       })
       continue
@@ -734,7 +753,7 @@ export function checkProseCounts(file: string, body: string): Advisory[] {
     out.push({
       rule: 'S5 a corpus count written in prose (unverified)',
       file,
-      line,
+      line: line_,
       detail: `"${m[0]}" — a number in prose is a second representation of a fact something else already holds, and it drifts on the next addition (rules/typst.md claimed 22 over a corpus of 21). This probe cannot count "${m[2]}" for you`,
     })
   }
