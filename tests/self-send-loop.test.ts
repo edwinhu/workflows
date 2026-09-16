@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test'
+import { readFileSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { join } from 'node:path'
 
@@ -50,5 +51,34 @@ describe('goal-self-send accepts a /loop line', () => {
     const r = send('/loop 30m keep working')
     expect(r.status).not.toBe(8)
     expect(r.status).not.toBe(REJECTED)
+  })
+})
+
+// THE TEARDOWN CLAUSE LIVES IN TWO PLACES AND MUST BE THE SAME SENTENCE. compose-goal.sh emits
+// it on every dispatched goal; the skill's template is what a hand-written goal copies. On
+// 2026-09-16 only the first had it, so a goal typed from the four parts closed on its own
+// condition and left a 30-minute cron re-running a satisfied check.
+//
+// It cannot live anywhere else: CronDelete is a model tool with no CLI, a session cron is in
+// memory rather than on disk, and no hook event fires on goal completion — so no shell and no
+// Stop hook can cancel one. The goal text is the only thing present when a goal closes.
+describe('the CronDelete teardown', () => {
+  const read = (p: string) => readFileSync(join(REPO, p), 'utf8')
+  const CLAUSE = 'cancel the run loop with CronDelete — it is a cron and does not stop on its own'
+
+  test('compose-goal.sh emits it', () => {
+    expect(read('skills/work/scripts/compose-goal.sh')).toContain(CLAUSE)
+  })
+
+  test('the hand-written template carries the SAME sentence', () => {
+    expect(read('skills/goal-and-loop/references/templates.md')).toContain(CLAUSE)
+  })
+
+  test('it is one of the numbered parts, not buried in prose', () => {
+    const skill = read('skills/goal-and-loop/SKILL.md')
+    expect(skill).toContain('TEARDOWN')
+    expect(skill).toContain(CLAUSE)
+    // The parts table says how many parts there are; a stale count is how a part gets skipped.
+    expect(skill).toContain('## The five parts')
   })
 })
