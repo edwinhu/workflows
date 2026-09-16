@@ -74,7 +74,10 @@ def build_cusip6_universe() -> list[str]:
     votes_path = Path("data/processed/votes.parquet")
     if votes_path.exists():
         votes = pd.read_parquet(votes_path, columns=["cusip"])
-        cusips |= set(votes["cusip"].dropna().astype(str).str[:6])
+        _add = set(votes["cusip"].dropna().astype(str).str[:6])
+        print(f"  votes: {len(_add):,} cusip6 from {len(votes):,} rows "
+              f"({votes['cusip'].isna().sum():,} had none)")
+        cusips |= _add
 
     # Intentionally skip cusip_map (40K issuers, most have no vote coverage).
     # We only want issuers in the cf universe + the 2024 13D/G parse.
@@ -82,7 +85,10 @@ def build_cusip6_universe() -> list[str]:
     parsed = Path("data/raw/blockholders/2024/parsed.parquet")
     if parsed.exists():
         p = pd.read_parquet(parsed, columns=["cusip6"])
-        cusips |= set(p["cusip6"].dropna().astype(str).str[:6])
+        _add = set(p["cusip6"].dropna().astype(str).str[:6])
+        print(f"  13D/G parse: {len(_add):,} cusip6 from {len(p):,} rows "
+              f"({p['cusip6'].isna().sum():,} had none)")
+        cusips |= _add
 
     cusips = {c for c in cusips if c and len(c) == 6}
     return sorted(cusips)

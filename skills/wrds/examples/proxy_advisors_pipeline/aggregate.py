@@ -95,7 +95,11 @@ def load_npx_frame(wrds_user: str | None) -> pd.DataFrame:
     """, conn)
     conn.close()
     df["cik"] = pd.to_numeric(df["cik"], errors="coerce")
+    _n0 = len(df)
     df = df.dropna(subset=["cik"])
+    if len(df) != _n0:
+        print(f"  dropped {_n0 - len(df):,} of {_n0:,} rows ({1 - len(df) / _n0:.1%}) "
+              "with a non-numeric cik")
     df["cik"] = df["cik"].astype(int)
     return df
 

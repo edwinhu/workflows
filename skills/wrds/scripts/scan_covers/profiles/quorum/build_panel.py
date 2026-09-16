@@ -63,6 +63,10 @@ def main() -> None:
             f"quorum column did not split into 3 parts (got {parts.shape[1]}). "
             "Expected 'threshold|confidence|match_text' from extractQuorum.")
     scan["threshold"] = pd.to_numeric(parts[0], errors="coerce")
+    if (_bad := int(scan["threshold"].isna().sum())):
+        _eg = parts[0][scan["threshold"].isna()].dropna().astype(str).head(3).tolist()
+        print(f"  threshold: {_bad:,} of {len(scan):,} unparseable"
+              + (f"; e.g. {_eg}" if _eg else " (all blank)"))
     scan["confidence"] = parts[1]
     scan["match_text"] = parts[2]
 
