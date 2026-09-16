@@ -113,6 +113,15 @@ while :; do
   tail -n +2 "$Q" > "$Q.tmp" && mv "$Q.tmp" "$Q"
   if [ "$OK" = 1 ]; then
     echo "drain: /$KIND EXECUTED on $PANE at $(date +%T)" >>"$LOG"
+    # A superseded failure must stop being reported. `.unconfirmed` is append-only and
+    # goal-verify.sh reads it, so without this the warning fires forever once a session has
+    # ever missed a send — and a warning that cannot clear is one people learn to skip, which
+    # is the whole reason the original failure went unnoticed. Drop the lines this send just
+    # made false.
+    if [ -s "$Q.unconfirmed" ]; then
+      grep -Fxv "$CMD" "$Q.unconfirmed" > "$Q.unconfirmed.tmp" 2>/dev/null || :
+      mv "$Q.unconfirmed.tmp" "$Q.unconfirmed" 2>/dev/null || :
+    fi
   else
     echo "drain: /$KIND UNCONFIRMED on $PANE at $(date +%T) — it may have landed as literal text" >>"$LOG"
     printf '%s\n' "$CMD" >> "$Q.unconfirmed"

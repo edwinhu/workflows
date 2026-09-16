@@ -22,11 +22,14 @@ const REPO = join(import.meta.dir, '..')
 const DRAIN = join(REPO, 'skills/work/scripts/goal-send-drain.sh')
 const SID = 'drain-test-session'
 
-function runDrain(lines: string[], opts: { focused?: boolean; executes?: boolean } = {}) {
+function runDrain(lines: string[],
+                 opts: { focused?: boolean; executes?: boolean; seedUnconfirmed?: string } = {}) {
   const home = mkdtempSync(join(tmpdir(), 'drain-'))
   const log = join(home, 'calls.log')
   const q = join(home, `herdr-goal-send-${SID}.q`)
   writeFileSync(q, lines.join('\n') + (lines.length ? '\n' : ''))
+  // A record of earlier sends that never confirmed, as the drainer would have left it.
+  if (opts.seedUnconfirmed !== undefined) writeFileSync(`${q}.unconfirmed`, opts.seedUnconfirmed)
 
   // The transcript Claude Code would write. `executes: false` = the line landed as literal text.
   const proj = join(home, '.claude', 'projects', 'p')
@@ -111,6 +114,19 @@ describe('delivery is not execution', () => {
   test('a CONFIRMED /loop is sent exactly once — this is what stops two crons', () => {
     const { calls } = runDrain(['/loop 30m tick'], { executes: true })
     expect((calls.match(/pane send-text/g) || []).length).toBe(1)
+  }, 30000)
+
+  // `.unconfirmed` is append-only and goal-verify.sh reads it, so a superseded failure would
+  // warn forever — and a warning that cannot clear is one people learn to skip, which is how
+  // the original miss went unnoticed for weeks.
+  test('a successful send clears its own earlier failure from the record', () => {
+    const r = runDrain(['/loop 30m tick'], {
+      executes: true,
+      seedUnconfirmed: '/loop 30m tick\n/goal something else\n',
+    })
+    expect(r.unconfirmed).not.toContain('/loop 30m tick')
+    // ...and leaves every OTHER unresolved failure alone.
+    expect(r.unconfirmed).toContain('/goal something else')
   }, 30000)
 
   test('an unconfirmed /loop is recorded, because nothing else would say it never armed', () => {
