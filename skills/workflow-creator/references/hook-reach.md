@@ -223,3 +223,33 @@ suspect when a hook "does not fire".
 The installed copies (`~/.claude/skills/wc-hook-reach-probe`, `~/.claude/agents/wc-hook-reach-probe.md`)
 were removed after the experiment; both were symlinks into `/tmp/wc-hook-reach/`, so the apparatus
 above is intact.
+
+
+## This skill's own validate-on-write hook, confirmed the same way
+
+Moved here from SKILL.md on 2026-09-16: it is the EVIDENCE that the hook fires and
+what it printed, which a reader needs once and an agent re-reads on every invocation.
+
+**This skill's own validate-on-write hook was then confirmed the same way.** With
+`~/.claude/skills/workflows/skills/workflow-creator` symlinked into place and this skill invoked in a fresh session,
+a real `Write` of a scratch `SKILL.md` carrying a deliberately broken skill-dir reference produced,
+from that session's transcript (`attachment.type: "hook_success"`,
+`hookName: "PostToolUse:Write"`, `exitCode: 0`):
+
+```
+workflow-creator validate-on-write: 1 finding(s) in /tmp/wc-hook-probe/SKILL.md
+  [critical] P2 path-resolution (line 9): "${SKILL_DIR_TOKEN}/references/definitely-not-here.md" resolves to /tmp/wc-hook-probe/references/definitely-not-here.md, which does not exist
+    remedy: fix the path or create the file — a reference that does not resolve fails only at the moment it is needed
+  (advisory — the write was not blocked)
+```
+
+(One edit to that transcript excerpt: the literal skill-dir placeholder token is shown here as
+`${SKILL_DIR_TOKEN}`. Spelled out with its real name, this very file would trip its own P2 check.
+Nothing else in the excerpt is altered.)
+
+**Provenance of that excerpt, exactly.** It was read out of the *driver session's own transcript*,
+from the `hook_success` attachment the harness records there. That is the orchestrator-side record.
+It establishes that the hook fired and what the hook process printed — and nothing more. It is not
+a record of what the writing model received, because the transcript attachment is written whether or
+not anything reached the model. No cell of the experiment captured the writing agent's side; a later
+run did, for the blocking form only (below).
