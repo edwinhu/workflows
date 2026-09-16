@@ -78,9 +78,16 @@ def main() -> None:
             f"{len(IND_COLS)}. extractIndependence's layout changed.")
     for i, c in enumerate(IND_COLS):
         scan[c] = parts[i]
-    scan["n_indep"] = pd.to_numeric(scan["n_indep"], errors="coerce").fillna(0).astype(int)
-    scan["n_board"] = pd.to_numeric(scan["n_board"], errors="coerce").fillna(0).astype(int)
-    scan["n_directors"] = pd.to_numeric(scan["n_directors"], errors="coerce").fillna(0).astype(int)
+    # coerce + fillna(0) drops no ROWS, which is why it is quieter and worse than a dropna: a
+    # board size that failed to parse becomes a board of ZERO and is then averaged with real
+    # ones. Count them, because nothing downstream can tell 0-because-unparsed from 0-because-0.
+    for _c in ("n_indep", "n_board", "n_directors"):
+        _num = pd.to_numeric(scan[_c], errors="coerce")
+        if (_bad := int(_num.isna().sum())):
+            _sample = scan.loc[_num.isna(), _c].dropna().astype(str).head(3).tolist()
+            print(f"  {_c}: {_bad:,} of {len(scan):,} unparseable -> 0"
+                  + (f"; e.g. {_sample}" if _sample else " (all blank)"))
+        scan[_c] = _num.fillna(0).astype(int)
 
     # E3: join audit -- rows in, rows out, match rate.
     n_in = len(scan)

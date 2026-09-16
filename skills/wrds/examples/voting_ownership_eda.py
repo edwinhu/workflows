@@ -436,8 +436,11 @@ print(summary.round(2).to_string())
 
 # %%
 # 7a. Histogram of voter turnout
+_turnout = merged['turnout'].dropna()
+print(f"  turnout histogram: n={len(_turnout):,} of {len(merged):,} "
+      f"({merged['turnout'].isna().sum():,} items have no turnout)")
 fig, ax = plt.subplots(figsize=(10, 6))
-ax.hist(merged['turnout'].dropna(), bins=50, color='#4472C4', alpha=0.85, edgecolor='white')
+ax.hist(_turnout, bins=50, color='#4472C4', alpha=0.85, edgecolor='white')
 ax.set_xlabel('Voter Turnout (%)')
 ax.set_ylabel('Number of Agenda Items')
 ax.set_title('Distribution of Shareholder Meeting Turnout (2003-2024)', fontweight='bold')
@@ -449,6 +452,8 @@ plt.show()
 
 # %%
 # 7b. Time series of mean passive ownership share (requires MF data, so 2020-2024)
+print(f"  passive-share series: n={merged['passive_pct'].notna().sum():,} of {len(merged):,} "
+      "(MF coverage starts 2020)")
 ts = (merged.dropna(subset=['passive_pct'])
       .assign(year=lambda d: d['meetingdate'].dt.year)
       .groupby('year')['passive_pct']
@@ -468,10 +473,11 @@ else:
 
 # %%
 # 7c. Scatter: passive ownership vs. turnout
-subset = merged.dropna(subset=['passive_pct', 'turnout']).sample(
-    n=min(5000, len(merged.dropna(subset=['passive_pct', 'turnout']))),
-    random_state=42
-)
+# Dropped once, not twice: the second dropna computed the same frame only to measure it.
+_both = merged.dropna(subset=['passive_pct', 'turnout'])
+print(f"  scatter pool: n={len(_both):,} of {len(merged):,} with both measures; "
+      f"plotting {min(5000, len(_both)):,}")
+subset = _both.sample(n=min(5000, len(_both)), random_state=42)
 
 fig, ax = plt.subplots(figsize=(10, 6))
 ax.scatter(subset['passive_pct'], subset['turnout'],
