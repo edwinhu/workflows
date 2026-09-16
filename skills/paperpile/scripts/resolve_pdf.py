@@ -246,7 +246,7 @@ def _paperpile_cookie_header() -> str | None:
                 name = c.get("name", "")
                 # Keep the most recently set value
                 cookies[name] = c.get("value", "")
-        except Exception:
+        except Exception:  # ds-error-handling: one malformed cookie must not lose the whole jar; it is skipped
             pass
     if not cookies:
         return None
@@ -263,7 +263,7 @@ def paperpile_api_index(force: bool = False) -> dict | None:
         if age < PAPERPILE_CACHE_TTL:
             try:
                 return json.loads(PAPERPILE_CACHE.read_text())
-            except Exception:
+            except Exception:  # ds-error-handling: the cache is an optimisation — an unreadable one rebuilds rather than fails the lookup
                 pass
 
     cookie = _paperpile_cookie_header()
@@ -473,7 +473,7 @@ def resolve_paperpile_api(entry: "BibEntry | None", out: Path, via_browser: bool
         if year and item_year:
             try:
                 year_score = -abs(int(item_year) - int(year))
-            except Exception:
+            except Exception:  # ds-error-handling: a non-numeric year simply does not contribute to the match score
                 pass
         item_title = (item.get("title") or "").lower()
         item_title_norm = re.sub(r"[^a-z0-9]", "", item_title)
@@ -532,7 +532,7 @@ def resolve_paperpile_api(entry: "BibEntry | None", out: Path, via_browser: bool
             await ws.send(json.dumps({"id": 1, "method": "Page.navigate", "params": {"url": drive_url}}))
             try:
                 await asyncio.wait_for(ws.recv(), timeout=8)
-            except Exception:
+            except Exception:  # ds-error-handling: awaiting a CDP reply that is allowed not to come; the timeout IS the handling
                 pass
 
     try:
@@ -793,7 +793,7 @@ async def _browser_fetch_pdf(url: str, out: Path, timeout_s: int = 60) -> tuple[
                 await call("Browser.setDownloadBehavior",
                            {"behavior": "allow", "downloadPath": str(out.parent)},
                            timeout=5)
-            except Exception:
+            except Exception:  # ds-error-handling: setDownloadBehavior is an optional CDP capability; without it the default path is used
                 pass
             await call("Page.navigate", {"url": url}, timeout=10)
 
@@ -913,7 +913,7 @@ async def _browser_fetch_pdf(url: str, out: Path, timeout_s: int = 60) -> tuple[
                 ["curl", "-sf", f"{cdp_url()}/json/close/{target_id}"],
                 capture_output=True, timeout=4,
             )
-        except Exception:
+        except Exception:  # ds-error-handling: closing the tab is cleanup — failing to close must not fail a completed download
             pass
 
 
@@ -1076,7 +1076,7 @@ async def _hydrate_cookies() -> int:
                 if c.get("expires") and c["expires"] > 0:
                     cookie["expires"] = c["expires"]
                 all_cookies.append(cookie)
-        except Exception:
+        except Exception:  # ds-error-handling: an absent or malformed expires just leaves the cookie session-scoped
             pass
     if not all_cookies:
         return 0

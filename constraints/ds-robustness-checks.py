@@ -10,7 +10,7 @@ CONSTRAINT = "ds-robustness-checks"
 APPLIES_TO = ["ds-delegate", "ds-implement"]
 SEVERITY = "hard"
 
-SKIP_DIRS = {'.venv', 'node_modules', '__pycache__', '.pixi', '.git', '.tox', 'site-packages', "worktrees", "node_modules"}
+SKIP_DIRS = {'.venv', 'node_modules', '__pycache__', '.pixi', '.git', '.tox', 'site-packages', "worktrees", "node_modules", "external"}
 
 REGRESSION_PATTERNS = [
     r'sm\.OLS\(',

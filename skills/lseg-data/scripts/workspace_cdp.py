@@ -262,7 +262,7 @@ def close_origin_tabs():
             urllib.request.urlopen(
                 f"http://localhost:{PORT}/json/close/{tab_id}", timeout=10).read()
             closed += 1
-        except Exception:  # noqa: BLE001  - tab already gone
+        except Exception:  # noqa: BLE001  - tab already gone  # ds-error-handling: closing a browser tab is cleanup; failing to close loses nothing the caller needs
             pass
     _tab_cache.clear()
     return closed

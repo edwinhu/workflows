@@ -251,7 +251,7 @@ If the requested information is not found, clearly state what is missing."""
         # Try to clean up even on error
         try:
             client.files.delete(name=uploaded_file.name)
-        except:
+        except:  # ds-error-handling: cleanup on an error path — raising here would replace the real error with this one
             pass
         raise e
 

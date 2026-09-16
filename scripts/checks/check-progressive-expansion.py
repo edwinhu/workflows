@@ -62,13 +62,20 @@ def main():
     active_wf = planning / 'ACTIVE_WORKFLOW.md'
     review = planning / 'REVIEW.md'
     if active_wf.exists():
+        # NOT `except: pass`. This is a CHECKER: swallowing the read makes an unreadable
+        # ACTIVE_WORKFLOW.md report no violation, which is a check that could not run wearing
+        # the face of one that passed — the exact failure this file exists to catch elsewhere.
         try:
             content = active_wf.read_text()
+        except OSError as e:
+            violations.append(
+                f"FAIL: {active_wf} could not be read ({e}) — the revise-phase check DID NOT "
+                "RUN. Do not read this as a clean result."
+            )
+        else:
             if 'phase: revise' in content.lower() or 'phase: revision' in content.lower():
                 if not review.exists():
                     violations.append(f"FAIL: Revise phase active but {review} does not exist — NO REVISION WITHOUT REVIEW.md")
-        except Exception:
-            pass
 
     if violations:
         for v in violations:

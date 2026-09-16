@@ -59,7 +59,7 @@ def test_connection():
         print("     or the browser path: python3 workspace_cdp.py token")
         try:
             ld.close_session()
-        except:
+        except:  # ds-error-handling: closing a session while already reporting a failure must not mask that failure
             pass
         return False
 
