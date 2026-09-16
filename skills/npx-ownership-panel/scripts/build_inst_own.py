@@ -30,6 +30,11 @@ import sys
 import time
 from pathlib import Path
 
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 # DETERMINISM: pin polars to one thread BEFORE importing it.
 #
 # Multi-threaded float summation reduces partial sums in whatever order the
@@ -251,6 +256,8 @@ def pull_crsp_monthly(user: str, start: str, end: str) -> pl.DataFrame:
     t0 = time.time()
     conn = wrds_pull.connect(user=user)
     df = pd.read_sql(CRSP_MONTHLY_QUERY, conn, params={"start": start, "end": end})
+    check_schema(df, ["permno", "date", "prc", "shrout", "cfacpr", "cfacshr"],
+                 name="CRSP monthly")
     df["crsp_src"] = "msf_v2"
     conn.close()
     obs_max = pd.to_datetime(df["date"]).max()
@@ -432,6 +439,7 @@ def pull_cusip8_permno_map(user: str) -> pl.DataFrame:
     t0 = time.time()
     conn = wrds_pull.connect(user=user)
     df = pd.read_sql(CUSIP8_PERMNO_QUERY, conn)
+    check_schema(df, ["ncusip", "permno", "namedt", "nameendt"], name="cusip8->permno")
     conn.close()
     names_max = pd.to_datetime(df["nameendt"]).max()
     print(f"[cusip] {len(df):,} CIZ name windows to {names_max.date()} "
@@ -1350,6 +1358,7 @@ def add_net_of_lending(panel: pl.DataFrame) -> pl.DataFrame:
         return panel
 
     si = pl.read_parquet(SHORTINT_CACHE).select(["permno", "rdate", "shortint"])
+    check_schema(si, ["permno", "rdate", "shortint"], name="short interest cache", exact=True)
     panel = panel.join(si, on=["permno", "rdate"], how="left")
     panel = panel.with_columns(
         pl.col("shortint").is_null().alias("si_missing"),
@@ -1447,11 +1456,14 @@ def main():
     if args.no_pull and CRSP_CACHE.exists() and CUSIP_MAP_CACHE.exists():
         print(f"[crsp] loading cached {CRSP_CACHE}")
         crsp_m = pl.read_parquet(CRSP_CACHE)
+        check_schema(crsp_m, ["permno", "date", "prc", "shrout", "cfacpr", "cfacshr"],
+                     name="CRSP monthly cache")
         # --no-pull accepted whatever cache happened to be on disk, with no
         # check that it covered all four quarters or the requested date range.
         # That is how a March/December-only cache survived into the panel.
         _assert_all_quarters(crsp_m)
         cusip_map = pl.read_parquet(CUSIP_MAP_CACHE)
+        check_schema(cusip_map, ["ncusip", "permno"], name="cusip map cache")
     else:
         crsp_m = pull_crsp_monthly(args.user, crsp_start, crsp_end)
         cusip_map = pull_cusip8_permno_map(args.user)
@@ -1460,6 +1472,7 @@ def main():
     cusip6_map_path = PROC / "cusip_map.parquet"
     if cusip6_map_path.exists():
         cusip6_map = pl.read_parquet(cusip6_map_path)
+        check_schema(cusip6_map, ["cusip6"], name="cusip6 map")
         print(f"[cusip6] loaded {len(cusip6_map):,} cusip6→permno fallback mappings")
     else:
         # Derive from cusip8 map: take first permno per cusip6
