@@ -242,6 +242,18 @@ async def main():
 
     model = resolve_model("judgment", args.model)
     print(f"\nAuditing {len(footnotes)} footnotes via Gemini ({model})...")
+    # RATE DISCIPLINE, against the Gemini API.
+    #
+    # The documented ceiling is https://ai.google.dev/gemini-api/docs/rate-limits — RPM, TPM and
+    # RPD, applied PER PROJECT rather than per API key. The numeric value is tier-dependent and
+    # published only in that project's AI Studio dashboard, so no honest constant belongs here.
+    #
+    # This faces BOTH at once. RPM/TPM are a RATE LIMIT that concurrency makes worse, and the
+    # per-project scope means a second audit running against the same project shares the bucket.
+    # RPD is a QUOTA: a fixed daily cap concurrency neither helps nor hurts.
+    #
+    # EFFECTIVE_RPS = concurrency / seconds-per-request; the semaphore is the cap.
+    EFFECTIVE_RPS = args.concurrency / 1.0
     semaphore = asyncio.Semaphore(args.concurrency)
 
     tasks = []
