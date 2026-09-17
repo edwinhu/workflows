@@ -3,10 +3,11 @@
  * Stop hook: hold the session on an objective until a COMMAND says it is met.
  *
  * This is what `/goal` does, done by running the check rather than reading the transcript —
- * and without a transport. `goal-self-send.sh` only QUEUES; its drainer needs the pane IDLE to
- * type into, so a session running back-to-back checks never provides a window and the goal
- * never lands. Measured 2026-09-16: `/goal` sat undelivered for hours while the session worked,
- * and `goal-verify.sh` correctly reported NO GOAL SET the whole time.
+ * and without a transport. The self-send this replaced only QUEUED; its drainer needed the pane
+ * IDLE to type into, so a session running back-to-back checks never provided a window and the goal
+ * never landed. Measured 2026-09-16: `/goal` landed 127 times and missed 36, `/loop` landed 52 and
+ * missed 29, and a `/goal` sat undelivered for hours while the session worked. The transport and
+ * its drainer were deleted; this hook and `CronCreate` are what replaced them.
  *
  * The three things that make a Stop hook safe rather than a trap, all copied from
  * ~/.claude/hooks/main-thread-guard.sh, which has been doing this in production:

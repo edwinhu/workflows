@@ -13,9 +13,9 @@ argue with a specific row.
 | rule id | audited corpus | raw findings | false positives | true positives |
 |---|---|---|---|---|
 | positive-match-failure-vocabulary | 15 | 26 | 23 | 3 |
-| single-distinct-literal | 44 | 208 | 191 | 17 |
-| existence-only-artifact | 1 | 1 | 1 | 0 |
-| injected-key-never-varied | 27 | 44 | 44 | 0 |
+| single-distinct-literal | 42 | 208 | 191 | 17 |
+| existence-only-artifact | 0 | 0 | 0 | 0 |
+| injected-key-never-varied | 18 | 44 | 44 | 0 |
 
 **The audited-corpus column is the one this repository's suite pins, and the only one re-executed on
 every run.** The *audited corpus* is the 26 files this investigation actually read and cites by
@@ -249,27 +249,19 @@ the same callee.
 
 ## existence-only-artifact
 
-Raw 1, false positives 1, no true positives.
+Raw 0, no findings of either sign.
 
-The single finding is `tests/goal-send-drain.test.ts:62`:
+The rule fires nowhere in this tree. Its one historical finding was a read guard rather than an
+assertion — the last field of a helper's return, where an `existsSync` chose `''` over throwing so
+that the failure would surface at the assertion instead of in the fixture, while the artifact's
+*contents* were asserted twice further down. The mechanism was that the rule scored an `existsSync`
+reference without noticing that the guarded read flows into a variable the assertions consume. That
+file was `tests/goal-send-drain.test.ts`, deleted 2026-09-17 with the `/goal` self-send transport it
+exercised, so the finding is gone with its subject rather than fixed.
 
-```
-drainLog: existsSync(`${q}.log`) ? readFileSync(`${q}.log`, 'utf8') : ''
-```
-
-That line is not an assertion. It is the last field of the object returned by the file's `runDrain`
-helper, and the `existsSync` is a read guard: absent the drain log, the helper hands back `''` rather
-than throwing, so the failure surfaces at the assertion instead of in the fixture. The artifact's
-*contents* are asserted twice, at line 88 (`expect(drainLog).toContain('EXECUTED')`) and line 95
-(`expect(drainLog).toContain('UNCONFIRMED')`) — the two states the drain is supposed to distinguish.
-The rule's premise, that the only thing the suite knows about the artifact is that it exists, is false
-of this file. The mechanism is that the rule scores an `existsSync` reference without noticing that
-the guarded read flows into a variable the assertions consume.
-
-Earlier versions of this document recorded 0 here, and that zero was read at the time as "no artifact
-assertion in this tree is existence-only". The rule did not change; the corpus gained this file. One
-finding is also below the two-citation evidence floor `suite-lint-report.test.ts` imposes on any rule
-that fired, which is a property of the corpus at this refresh rather than of the verdict above.
+This count has moved 0 → 1 → 0 across three refreshes without the rule changing once: what moved
+each time was which files the corpus held. That is the case for pinning the AUDITED CORPUS rather
+than the whole-tree total, which is what `suite-lint-report.test.ts` now does.
 
 ## injected-key-never-varied
 
@@ -302,9 +294,6 @@ sets to configure its own harness rather than to exercise a branch: `CRAFT_DISPA
 at `skills/work/scripts/work-goal-resend.test.ts:78`, `CRAFT_FARM: '/bin/false'` at
 `skills/work/scripts/work-loop.test.ts:86`, `CRAFT_REDISPATCH_DRYRUN: '1'` at
 `skills/work/scripts/work-redispatch.test.ts:225`, `PATH` (four files) and `FARM_OUT_CHILD` (two),
-the seven `GOAL_SEND_*` timing and retry knobs at `tests/goal-send-drain.test.ts:54` and the three
-lines below it, `HERDR_PANE_ID`
-at `tests/self-send-transport.test.ts:49`,
 `CRAFT_SUITE_LINT_TIMEOUT: '2'` at `skills/work/scripts/suite-lint-dispatch.test.ts:178`, and the
 `GATE_STATUS`, `GATE_BLOCKED_TOOLS` and `GATE_REQUIRE_FIELDS` of the `scratch/` guard suites. A
 dry-run switch has one meaningful value; the varying input is what the harness then feeds the script.
