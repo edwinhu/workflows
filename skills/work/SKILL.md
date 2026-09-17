@@ -35,7 +35,8 @@ built args and `plan-preflight.ts` executing their commands at baseline, enforce
 
 Everything lives in this skill directory — `workflow.js`, `references/third-party.md`,
 `scripts/work-dispatch.sh` (Phase 3+4 in one call), `scripts/work-pending.sh` (is a dispatch
-owed?), `scripts/goal-self-send.sh`, `scripts/human-review-gate.sh`, `scripts/work-result.sh`.
+owed?), `scripts/goal-self-send.sh` and `scripts/goal-verify.sh` (the send, and the proof it
+landed), `scripts/human-review-gate.sh`, `scripts/work-result.sh`.
 Nothing here depends on any plugin.
 
 **The gate has a test suite; run it after touching `workflow.js`** — `node --check` proves only that

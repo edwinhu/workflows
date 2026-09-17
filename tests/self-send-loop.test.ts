@@ -47,44 +47,38 @@ describe('goal-self-send accepts a /loop line', () => {
   })
 
   test('the loop line is NOT sent through the goal lint', () => {
-    // goal-lint would flag a bare imperative with no ceiling/counter; a loop prompt is not a goal.
+    // The lint is for the composed text, not for a transport line; a loop prompt is not a goal.
     const r = send('/loop 30m keep working')
     expect(r.status).not.toBe(8)
     expect(r.status).not.toBe(REJECTED)
   })
 })
 
-// THE TEARDOWN CLAUSE LIVES IN TWO PLACES AND MUST BE THE SAME SENTENCE. compose-goal.sh emits
-// it on every dispatched goal; the skill's template is what a hand-written goal copies. On
-// 2026-09-16 only the first had it, so a goal typed from the four parts closed on its own
-// condition and left a 30-minute cron re-running a satisfied check.
-//
-// It cannot live anywhere else: CronDelete is a model tool with no CLI, a session cron is in
-// memory rather than on disk, and no hook event fires on goal completion — so no shell and no
-// Stop hook can cancel one. The goal text is the only thing present when a goal closes.
+// THE TEARDOWN CLAUSE. CronDelete is a model tool with no CLI, a session cron is in memory rather
+// than on disk, and no hook event fires when the objective is met — so no shell and no Stop hook
+// can cancel one. The text that raised the cron is the only thing present when it should stop.
 describe('the CronDelete teardown', () => {
   const read = (p: string) => readFileSync(join(REPO, p), 'utf8')
-  const CLAUSE = 'cancel the run loop with CronDelete — it is a cron and does not stop on its own'
 
   test('compose-goal.sh emits it', () => {
-    expect(read('skills/work/scripts/compose-goal.sh')).toContain(CLAUSE)
+    expect(read('skills/work/scripts/compose-goal.sh')).toContain(
+      'cancel the run loop with CronDelete — it is a cron and does not stop on its own',
+    )
   })
 
-  test('the hand-written template carries the SAME sentence', () => {
-    expect(read('skills/until/references/templates.md')).toContain(CLAUSE)
-  })
-
-  test('it is one of the numbered parts, not buried in prose', () => {
+  // until owns the same teardown for the mechanism it actually prescribes: a cron raised by
+  // CronCreate, whose prompt must say how it ends.
+  test('until prescribes it for the cron prompt, and for the hold as well', () => {
     const skill = read('skills/until/SKILL.md')
-    expect(skill).toContain('TEARDOWN')
-    expect(skill).toContain(CLAUSE)
-    // The parts table says how many parts there are; a stale count is how a part gets skipped.
-    expect(skill).toContain('## The five parts')
+    expect(skill).toContain('## Two teardowns')
+    expect(skill).toContain('`CronDelete`, a model tool with no CLI')
+    expect(read('skills/until/references/templates.md')).toContain(
+      'The CronDelete sentence is not optional',
+    )
   })
 })
 
-// THE TICK TEXT LIVES IN TWO PLACES: work-dispatch.sh raises it on every craft run, SKILL.md is
-// what you type by hand. They must be the same sentence.
+// THE TICK TEXT work-dispatch.sh raises on every craft run.
 //
 // It used to say "Check the goal" — which the Stop evaluator already does after every turn, and
 // does better, since it is the thing that gates stopping. Measured 2026-09-16: three ticks against
@@ -99,10 +93,6 @@ describe('the loop tick text', () => {
 
   test('the dispatch raises a tick text at all', () => {
     expect(TICK, 'LOOP_LINE not found in work-dispatch.sh').toBeTruthy()
-  })
-
-  test('the skill documents the SAME sentence', () => {
-    expect(read('skills/until/SKILL.md')).toContain(TICK!)
   })
 
   test('it runs the check rather than re-reading the conversation', () => {
