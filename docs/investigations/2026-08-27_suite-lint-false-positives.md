@@ -13,7 +13,7 @@ argue with a specific row.
 | rule id | raw findings | false positives | true positives |
 |---|---|---|---|
 | positive-match-failure-vocabulary | 26 | 23 | 3 |
-| single-distinct-literal | 209 | 193 | 16 |
+| single-distinct-literal | 207 | 191 | 16 |
 | existence-only-artifact | 1 | 1 | 0 |
 | injected-key-never-varied | 44 | 44 | 0 |
 
@@ -40,7 +40,14 @@ and both were read:
   asserts the leg then reports each canonical checker as unmeasured. An implementation ignoring the
   injected `PATH` fails it.
 
-Unparseable files: 0 of 249 linted. Every file the walker reached was extracted; nothing was dropped
+`single-distinct-literal` lost two on 2026-09-16 when `tests/workflow_return_shape_test.py` was
+deleted — a return-shape lint that globbed a `workflows/` directory removed when that script became
+`skills/work/workflow.js`, so it scanned an empty set and returned 0. Both of its findings were READ
+before the row moved, and both were FALSE positives: `text.find("\n", i)` and `mm.group(1)` are
+scanner internals in a file the walker admitted on its `_test.py` name alone, not assertions whose
+literal could have been varied. Raw 209 to 207, false positives 193 to 191, true positives unmoved.
+
+Unparseable files: 0 of 253 linted. Every file the walker reached was extracted; nothing was dropped
 silently, and no count above is understated by a skipped file.
 
 Of the 261 findings this investigation audited in August, one survived inspection. The
