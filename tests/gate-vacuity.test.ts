@@ -1,0 +1,234 @@
+import { test, expect } from "bun:test";
+import {
+  existsSync,
+  cpSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import { basename, dirname, join, resolve } from "node:path";
+import { spawn } from "node:child_process";
+
+const ROOT = dirname(import.meta.dir);
+const CHECK = join(ROOT, "skills/workflow-creator/scripts/check.sh");
+const AUDIT = "/home/eh/projects/plugin-utils/bin/workflow-audit";
+
+// THE GATE-VACUITY CONTRACT. `workflow-audit` reports "workflows failing their own gate: 0 of 10".
+// That is ten observations of PASSING and no evidence any of the ten CAN fail. A gate that returns
+// a constant 0 produces exactly the same line, and this repo has shipped that failure repeatedly:
+// 15 typst checkers and 28 workflows checkers that printed PASS over whatever directory the caller
+// stood in; a pollev hook reading a `TOOL_INPUT` env var that appears 0 times in the harness binary
+// and exited 0 on every real event; `ds-join-audits` accepting `print("done, have a nice day")` as
+// proof a merge logged its row counts. Passing is not evidence of measuring.
+//
+// METHOD -- the preferred one in full, for all ten. For each workflow W:
+//
+//   1. Build a THROWAWAY PLUGIN ROOT in $TMPDIR that resolves `${CLAUDE_PLUGIN_ROOT}` exactly as
+//      W's real plugin root does: every top-level entry and every SIBLING skill is symlinked (the
+//      probe walks only --target, so a sibling need only exist for path resolution), and W itself
+//      is COPIED so it can be perturbed. Verified below: for eight of the ten the scaffolded copy
+//      reproduces the real tree's verdict exactly (check.sh exit 0, all four legs 0).
+//   2. Assert the unperturbed copy's wc-probe leg exits 0 and names neither injected rule. This is
+//      the control: without it, a gate that fails on everything would "pass" this test.
+//   3. Inject ONE violation of ONE rule the gate claims to enforce, and assert the gate now returns
+//      a FAILING verdict that NAMES that rule.
+//
+// Two independent injections per workflow, so the result does not rest on one rule's code path:
+//
+//   P3 frontmatter    -- an undocumented key in SKILL.md's frontmatter (`DOCUMENTED_FRONTMATTER_KEYS`
+//                        in wc-probe.ts). A key the harness silently ignores.
+//   P2 path-resolution -- a `${CLAUDE_PLUGIN_ROOT}/...` reference in SKILL.md to a file that does
+//                        not exist. A reference the agent cannot Read.
+//
+// No workflow got the weaker leg-count/exit-2 treatment. All ten are proven behaviourally.
+//
+// NEGATIVE CONTROL, run once by hand rather than shipped (it would double the runtime): this file
+// with `check.sh` replaced by a stub that prints four `exit=0` legs and returns 0 fails with
+// "dev: injecting a P3 frontmatter violation did not fail the wc-probe leg". A vacuous gate cannot
+// satisfy this test.
+//
+// ONE CAVEAT, stated rather than papered over: `work` and `workflow-creator` ship suites that are
+// PATH-SENSITIVE -- their own scripts/*.test.ts assert against repo-absolute layout, so in a
+// scaffolded copy the `probe-tests` leg fails for reasons unrelated to the injection, and check.sh's
+// overall exit is already non-zero at baseline. For those two the failing-verdict assertion is made
+// on the WC-PROBE LEG (exit 0 -> exit 1, rule named), which is the leg that judges the workflow;
+// `parity` takes no target at all, and `node-check`/`probe-tests` are structural. Every other
+// workflow is asserted on BOTH the wc-probe leg and check.sh's overall exit code.
+
+// -- Population ---------------------------------------------------------------
+// The ten targets, read from `workflow-audit` itself rather than hand-copied, so a workflow added
+// to the audit tomorrow is asserted the day it lands. A hand-kept list that drifts from the audit
+// is the same vacuity one level up: this file would keep reporting 10-of-10 over nine.
+function auditTargets(): string[] {
+  const src = readFileSync(AUDIT, "utf8");
+  const m = /^LIST=(?:"([\s\S]*?)")$/m.exec(src);
+  if (!m) throw new Error(`${AUDIT}: could not find the LIST= assignment this test reads its population from`);
+  const wf = /^WF=(\S+)$/m.exec(src);
+  if (!wf) throw new Error(`${AUDIT}: could not find the WF= assignment`);
+  return m[1]
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((t) => t.replace(/\$WF|\$\{WF\}/g, wf[1]));
+}
+
+const TARGETS = auditTargets();
+
+test("the population is the audit's own ten targets", () => {
+  expect(TARGETS.length).toBe(10);
+  expect(TARGETS.map((t) => basename(t)).sort()).toEqual(
+    [
+      "dev",
+      "ds",
+      "exams",
+      "notes",
+      "skill-creator",
+      "slides",
+      "workflow-creator",
+      "workshop",
+      "work",
+      "writing",
+    ].sort(),
+  );
+});
+
+// `work` and `workflow-creator` ship path-sensitive suites; see the CAVEAT above. Named here so the
+// exemption is declared in one place and a reader can count it.
+const LEG_ONLY = new Set(["work", "workflow-creator"]);
+
+// -- Scaffold -----------------------------------------------------------------
+
+/** Build the throwaway plugin root and return the path of the copied skill under test. */
+function scaffold(skillDir: string, root: string): string {
+  const pluginRoot = resolve(skillDir, "..", "..");
+  const name = basename(skillDir);
+  mkdirSync(join(root, "skills"), { recursive: true });
+  for (const e of readdirSync(pluginRoot).concat([".claude-plugin"])) {
+    if (e === "skills") continue;
+    const src = join(pluginRoot, e);
+    if (!existsSync(src)) continue;
+    if (existsSync(join(root, e))) continue;
+    symlinkSync(src, join(root, e));
+  }
+  for (const e of readdirSync(join(pluginRoot, "skills"))) {
+    if (e === name) continue;
+    symlinkSync(join(pluginRoot, "skills", e), join(root, "skills", e));
+  }
+  // dereference: the real tree delivers files by symlink in places, and a copy of a link is not a
+  // file the perturbation can edit.
+  cpSync(skillDir, join(root, "skills", name), { recursive: true, dereference: true });
+  return join(root, "skills", name);
+}
+
+interface GateRun {
+  code: number;
+  out: string;
+  /** Rule names of the FINDINGS reported, from wc-probe's `[severity] <rule>` header lines. */
+  findingRules: string[];
+  /** Exit code printed for one leg, or null when the leg printed no line at all. */
+  leg(name: string): number | null;
+}
+
+// Async, and every gate run a workflow needs is launched at once: check.sh runs the TARGET's own
+// scripts/ suite as its probe-tests leg, so a serial sweep pays for `work`'s 23 test files three
+// times over and the whole file took ~9 minutes. The three runs touch three disjoint scaffolds.
+async function runGate(target: string): Promise<GateRun> {
+  const r = await new Promise<{ status: number; stdout: string; stderr: string }>((res, rej) => {
+    const p = spawn("bash", [CHECK, "--target", target], { timeout: 600_000 });
+    let stdout = "";
+    let stderr = "";
+    p.stdout.on("data", (d: string | Uint8Array) => (stdout += d));
+    p.stderr.on("data", (d: string | Uint8Array) => (stderr += d));
+    p.on("error", rej);
+    p.on("close", (status: number | null) => res({ status: status ?? -1, stdout, stderr }));
+  });
+  const out = `${r.stdout ?? ""}\n${r.stderr ?? ""}`;
+  // Findings ONLY, not any line mentioning a rule name. The `parity` leg prints its own fixture
+  // verdicts (`unregistered.md: gate=P3 frontmatter`) on every single run, so a substring search
+  // over the whole transcript reports every rule as present at baseline -- which is a control that
+  // can never hold, i.e. this test failing vacuously in the opposite direction.
+  const findingRules = [...out.matchAll(/^\[(?:critical|major|minor)\] (.+)$/gm)].map((m) => m[1].trim());
+  return {
+    code: r.status ?? -1,
+    out,
+    findingRules,
+    leg(name: string) {
+      const m = new RegExp(`^leg ${name} exit=(\\d+)`, "m").exec(r.stdout ?? "");
+      return m ? Number(m[1]) : null;
+    },
+  };
+}
+
+/** Add an undocumented key to SKILL.md's frontmatter. Violates P3 and nothing else. */
+function injectP3(fixture: string): void {
+  const p = join(fixture, "SKILL.md");
+  const t = readFileSync(p, "utf8");
+  const close = t.indexOf("\n---", 3);
+  if (close === -1) throw new Error(`${p}: no closing frontmatter fence to inject into`);
+  writeFileSync(p, `${t.slice(0, close)}\nwc-vacuity-probe-key: injected${t.slice(close)}`);
+}
+
+/** Append a plugin-root reference to a file that does not exist. Violates P2 and nothing else. */
+function injectP2(fixture: string): void {
+  const p = join(fixture, "SKILL.md");
+  writeFileSync(
+    p,
+    `${readFileSync(p, "utf8")}\nSee \${CLAUDE_PLUGIN_ROOT}/skills/${basename(fixture)}/references/wc-vacuity-absent.md for details.\n`,
+  );
+}
+
+const INJECTIONS = [
+  { rule: "P3 frontmatter", inject: injectP3 },
+  { rule: "P2 path-resolution", inject: injectP2 },
+] as const;
+
+// -- The assertion ------------------------------------------------------------
+
+for (const target of TARGETS) {
+  const name = basename(target);
+
+  test(
+    `${name}: its gate can return a FAILING verdict`,
+    async () => {
+      // A missing target is a HARD failure, never a skip. A workflow silently dropped from this
+      // sweep is the vacuity the sweep exists to detect, arriving by the other door.
+      expect(existsSync(target), `${target} does not exist, so its gate was never exercised`).toBe(true);
+
+      const tmp = mkdtempSync(join(tmpdir(), `gate-vacuity-${name}-`));
+      try {
+        const [base, ...injected] = await Promise.all([
+          runGate(scaffold(target, join(tmp, "base"))),
+          ...INJECTIONS.map(({ inject }, i) => {
+            const fixture = scaffold(target, join(tmp, `inj${i}`));
+            inject(fixture);
+            return runGate(fixture);
+          }),
+        ]);
+
+        // -- control: the unperturbed copy passes the leg and reports neither rule --
+        expect(base.leg("wc-probe"), `${name}: the wc-probe leg printed no line at all`).toBe(0);
+        for (const { rule } of INJECTIONS) {
+          expect(base.findingRules, `${name}: the unperturbed copy already reports ${rule}`).not.toContain(rule);
+        }
+        if (!LEG_ONLY.has(name)) {
+          expect(base.code, `${name}: the scaffolded copy does not reproduce the real tree's PASS`).toBe(0);
+        }
+
+        // -- each injection flips the verdict and names its rule --
+        for (const [i, { rule }] of INJECTIONS.entries()) {
+          const run = injected[i];
+          expect(run.leg("wc-probe"), `${name}: injecting a ${rule} violation did not fail the wc-probe leg`).toBe(1);
+          expect(run.findingRules, `${name}: the failing verdict does not name ${rule}`).toContain(rule);
+          expect(run.code, `${name}: check.sh returned a passing verdict over a ${rule} violation`).not.toBe(0);
+        }
+      } finally {
+        rmSync(tmp, { recursive: true, force: true });
+      }
+    },
+    900_000,
+  );
+}
