@@ -45,7 +45,7 @@ footnote whose source is on disk is `pdf` whatever its prose looks like.
 | `pdf` | the Gemini pipeline — `run`, `verify`, `report` |
 | `legislative` | hearings, GAO, CRS — fetchable from govinfo as a PDF, then re-run `candidates` |
 | `case` | **out of scope**: needs Westlaw/Lexis STAR PAGINATION, which no PDF yields. Flag and stop |
-| `book` | **stub**: needs a scan |
+| `book` | `scripts/gbooks.py` — Google Books' print pagination, off a VERBATIM quote. See Books |
 | `web` | nothing to fetch — the perma.cc link IS the pin; a paragraph cite only if the journal asks |
 | `statute` | nothing to fetch — the section number IS the pin |
 | `regulation` | nothing to fetch — the section or Fed. Reg. page IS the pin (a Fed. Reg. PDF in `--fedreg-dir` resolves and becomes `pdf`) |
@@ -156,6 +156,53 @@ not vendored here.
 
 `apply` has its own suite, which needs no corpus — every fixture is built
 inline: `cd "${CLAUDE_SKILL_DIR}" && uvx --with pytest pytest` (no system pytest here).
+
+## Books
+
+A book has no PDF, so no offset route reaches it. Google Books indexes the print
+pagination of the edition IT scanned, and `scripts/gbooks.py` reads a page off it.
+
+```bash
+G="${CLAUDE_SKILL_DIR}/scripts/gbooks.py"
+python3 "$G" volume --volume-id <VOL>                        # edition record
+python3 "$G" page   --volume-id <VOL> --quote "<verbatim>"   # or --isbn / --title
+python3 "$G" calibrate --pins pins.json --volume-id <VOL>
+```
+
+**The input is a VERBATIM quote, never the claim.** This searches a text index; a
+manuscript's paraphrase matches nothing. A Kindle highlight already IS the right
+input — a verbatim quote with the book attached — so Readwise is the feeder:
+
+```bash
+python3 "$G" highlight --highlights hl.json --location 1874 --volume-id <VOL>
+python3 "$G" calibrate-highlights --highlights hl.json --pins pins.json --volume-id <VOL>
+```
+
+**The `librarian` agent runs `readwise` and writes `hl.json`; this skill only ever
+reads it** — never shell out to `readwise` from here or from the main thread.
+
+Readwise's stored text carries its own artifacts, so the key is built, not taken:
+em dashes flattened to hyphens (`three people-Monks`), spaces lost at line breaks
+(`office onM Street`), and ~20 of one book's 92 records truncated mid-sentence
+with a trailing `…`. `search_key` normalises, steps the window around the
+artifacts, and strips the truncation — and **reports it as `evidence: prefix`,
+which is weaker than a full sentence** because the page is the prefix's, not the
+whole highlight's. `calibrate_highlights` counts those as `weak`.
+
+Keep quotes to **4–8 words**. The scan hyphenates across line breaks
+(`consid- erations`), so a long quote spanning one silently fails to match while
+its tail fragment finds the page.
+
+`calibrate` is the gate and it is computed, not judged: re-find quotes whose pages
+are already trusted. `reproduces` → the book's new pages are usable; `offset` →
+a different printing, and k IS the finding; `inconsistent` → unusable, and it says
+so; `blocked` → no answer either way, which is never a pass. A page inside a cited
+range (`145--48` → 148) is a match, not a three-page miss.
+
+Google refuses scripted clients on both hosts, so the transport drives the real
+browser over CDP (9250, then 9222) and throttles to `REQUEST_GAP`. A burst of
+searches costs the whole host its Google access for an hour — the user's own
+browsing included.
 
 ## Facts
 
@@ -301,4 +348,9 @@ inline: `cd "${CLAUDE_SKILL_DIR}" && uvx --with pytest pytest` (no system pytest
 | Trust a page from a PDF paginated 1–N | Preprint — the published pages differ | Nothing: `page_offset` now checks the bib start itself (Elsevier article-number journals excepted) |
 | Loosen the offset threshold to rescue a refused footnote | A weak-and-WRONG offset looks identical from inside the vote count; choi2009's garbage was 600 pages off | Corroborate against the bib's start page — and run `tests/test_page_offset.py`, which fails if 23 or 30 is ever accepted |
 | Take a folio a vision read returns | It is one unverified number, the thing this tool exists to refuse | Two pages, advancing in lockstep, corroborated against the bib start — what `--vision-fallback` already does |
+| Search Google Books with the manuscript's CLAIM | It is a paraphrase; the index holds the book's own words. Keyword queries return *a* page, not *the* page — on the first book that produced a 37-page "offset" that was pure query noise | Search a 4–8 word verbatim quote, and read the returned snippet before believing the page |
+| Read a Google "no results" page as "not in the book" | The rate-limit interstitial has no results in it either, so a block reads as a clean negative | `is_blocked()` — a blocked lookup reports `blocked`, and `calibrate` refuses to rule |
+| Pin a book whose calibration came back `inconsistent` | Google paginates the printing it scanned, not necessarily the cited one | Report it as unpinnable; do not average the deltas |
+| Match a block marker against raw HTML | A healthy SERP ships the script that DETECTS a `/sorry` redirect, so every good page reads as `blocked` | `is_blocked` matches rendered text, and `/sorry` only as an href |
+| Call `readwise` to feed this route | Standing rule, and the CLI is not on the main thread's allowlist | Have the `librarian` agent write the dump; pass it in with `--highlights` |
 | Hand-edit the state file to "fix" a page | The next `candidates` re-parse drops answers whose PDF or claim changed, so the edit is silently lost or silently kept stale | Fix the resolution or the bib, then `--redo` |

@@ -971,7 +971,7 @@ def main():
     global ROOT, BODY, BIB, PDFDIR, FRDIR, BIO, MODEL
     ap = argparse.ArgumentParser()
     ap.add_argument('cmd', choices=['candidates', 'triage', 'run', 'verify', 'report',
-                                    'apply'])
+                                    'apply', 'book'])
     ap.add_argument('--root', default='.', help='manuscript repo root (default: cwd)')
     ap.add_argument('--body', help=f"manuscript .typ (default: {DEFAULTS['body']})")
     ap.add_argument('--bib', help=f"bibliography (default: {DEFAULTS['bib']})")
@@ -991,10 +991,49 @@ def main():
                     help='apply: decision record (default <root>/scratch/percite-classified.json)')
     ap.add_argument('--confirm', action='store_true',
                     help='apply: actually write; without it the run is a dry run')
+    ap.add_argument('--quote', help='book: the VERBATIM quote to find (4-8 words)')
+    ap.add_argument('--volume-id', help='book: Google Books volume id')
+    ap.add_argument('--isbn', help='book: resolve the volume by ISBN')
+    ap.add_argument('--title', help='book: resolve the volume by title')
+    ap.add_argument('--author', help='book: narrow --title')
+    ap.add_argument('--pins', help='book: calibrate against [{quote, expected_page}]')
+    ap.add_argument('--highlights',
+                    help='book: JSON dump of Readwise highlights from a `librarian` run')
+    ap.add_argument('--location', type=int, help='book: pick the highlight by Kindle location')
     ap.add_argument('--vision-fallback', action='store_true',
                     help='when the text route cannot read the numbering, read the folio '
                          'off two page IMAGES and corroborate (verify only; costs API calls)')
     a = ap.parse_args()
+
+    if a.cmd == 'book':
+        # The BOOK route needs no manuscript, no bib and no PDF -- only a quote
+        # and a volume -- so it dispatches before the layout is configured.
+        sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+        import gbooks
+        vol = dict(volume_id=a.volume_id, isbn=a.isbn, title=a.title, author=a.author)
+        spec = json.loads(pathlib.Path(a.pins).read_text()) if a.pins else None
+        lib = gbooks.load_highlights(a.highlights) if a.highlights else None
+        if spec and lib is not None:
+            known = [{'highlight': gbooks.pick_highlight(lib, location=p.get('location'),
+                                                highlight_id=p.get('id')),
+                      'expected_page': p.get('expected_page')} for p in spec]
+            out = gbooks.calibrate_highlights(known, **vol)
+            ok = out['verdict'] in ('reproduces', 'offset')
+        elif spec:
+            out = gbooks.calibrate(spec, **vol)
+            ok = out['verdict'] in ('reproduces', 'offset')
+        elif lib is not None and a.location is not None:
+            out = gbooks.highlight_page(gbooks.pick_highlight(lib, location=a.location), **vol)
+            ok = out['page'] is not None
+        elif a.quote:
+            out = gbooks.book_page(a.quote, **vol)
+            ok = out['page'] is not None
+        else:
+            sys.exit('book needs --quote (a VERBATIM quote), or --highlights with '
+                     '--location, or --pins to calibrate')
+        print(json.dumps(out, indent=1, ensure_ascii=False))
+        return 0 if ok else 1
+
     configure(a.root, a.body, a.bib, a.pdf_dir, a.fedreg_dir, a.bio_offset)
     MODEL = a.model
     a.state = a.state or str(ROOT / 'scratch/pincite.json')
