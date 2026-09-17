@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Arm the until Stop hook on THIS session: hold the turn until a command exits 0.
 #
-# This is the half of until that needs no transport. `goal-self-send.sh` queues a
-# /goal and a drainer types it when the pane goes idle — and a session working back-to-back
-# never goes idle, so the goal never lands. Writing a state file has no such window.
+# No transport: a state file is written here and read by hooks/until.ts on every Stop. Anything
+# that has to be TYPED into the session instead needs the pane idle, and a session working
+# back-to-back never goes idle, so it never lands.
 #
 #   until-arm.sh '<check command>' [--rounds N] [--minutes M]
 #   until-arm.sh --status | --disarm

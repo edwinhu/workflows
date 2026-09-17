@@ -34,7 +34,7 @@ describe('the until gate on self-send', () => {
     // The exact goal that closed on a hard FAIL in npx-reconcile, 2026-08-27. Cost: 4h10m.
     const r = send('/goal craft has returned a verdict for .planning/npx-iss-reconciliation.md')
     expect(r.code).toBe(8)
-    expect(r.err).toContain('[CRITICAL] G1')
+    expect(r.err).toContain('[CRITICAL] C1')
     expect(r.err).toContain('skills/until/SKILL.md')
     // Refused before any transport: no identification error was ever printed.
     expect(r.err).not.toContain('CLAUDE_CODE_SESSION_ID unset')
@@ -43,13 +43,13 @@ describe('the until gate on self-send', () => {
   test('the refusal is the same with a session id present — the gate runs before identification', () => {
     const r = send('/goal craft has returned a verdict for plan.md', { sid: UNREACHABLE_SESSION })
     expect(r.code).toBe(8)
-    expect(r.err).toContain('[CRITICAL] G1')
+    expect(r.err).toContain('[CRITICAL] C1')
   })
 
   test('a human-only clause is refused too', () => {
     const r = send('/goal the tuicr gate has returned approved on the plan')
     expect(r.code).toBe(8)
-    expect(r.err).toContain('G2')
+    expect(r.err).toContain('C2')
   })
 
   test('--no-lint sends the same goal anyway', () => {

@@ -1,56 +1,53 @@
-# Goal and brief templates, and the three rewrites
+# Check, cron-prompt and brief templates, and the three rewrites
 
-## The goal template
-
-```
-/goal <END STATE, with the number> — `<CHECK>` exits 0 — or <COUNTER> reads <N> or more —
-`<how to read it>` it to check — or the run has been going <MINUTES> minutes or more, which
-`<script>` prints and settles. <STANDING AUTHORITY>. <CONTINUATION>. When this goal closes,
-cancel the run loop with CronDelete — it is a cron and does not stop on its own.
-```
-
-**The teardown clause is not optional, and it is the one a hand-written goal keeps losing.**
-`compose-goal.sh` emits it on every dispatched goal, so a craft run carries it and a goal typed
-from this template did not. Measured 2026-09-16: a goal written straight from the four parts
-closed on its own condition and left a 30-minute cron running, which then re-ran the satisfied
-check twice more before a human noticed.
-
-It has to sit in the GOAL because nothing else can carry it. `CronDelete` is a model tool; there
-is no cron CLI, a session-scoped cron lives in memory rather than on disk, and no hook event fires
-on goal completion — so no shell, and no `Stop` hook, can cancel one. The only thing present at
-the moment a goal closes is the session reading its own goal text.
-
-**Single-quote it on the command line.** The template is backticked, so double quotes hand every
-`<CHECK>` to the shell to run before `goal-self-send.sh` sees the string — and the goal then
-carries that command's output where its text should be, undetectably.
-
-Filled in, for an unattended night:
-
-```
-/goal parse_status=error is under 1% of XML-era filings measured on the full corpus —
-`bash skills/wrds/scripts/parse_npx/measure.sh --xml-error-rate` prints a rate below 0.01 and
-exits 0 — or the rounds field in .craft/<run>/args.json reads 15 or more — `jq -r .rounds` it to
-check — or the run has been going 480 minutes or more, which
-`bash skills/work/scripts/work-elapsed.sh .craft/<run> 480` prints and settles. Standing
-authority: commit at each green round, pick the next defect yourself, re-dispatch without asking.
-When a round returns, take the next action rather than proposing it; the only terminal blockers are
-a missing credential, a dead grid, or an action that would touch production.
-```
-
-Verify before setting it:
+## The check command
 
 ```bash
-bun skills/until/scripts/goal-lint.ts "<that text>" --unattended
+bash ${CLAUDE_SKILL_DIR}/scripts/until-arm.sh '<CHECK>' --rounds <N> --minutes <M>
+```
+
+`<CHECK>` is the objective. One clause per claim, red at the moment you arm it, runnable in this
+session's cwd, no apostrophes. Filled in, for an unattended night:
+
+```bash
+bash skills/until/scripts/until-arm.sh \
+  'bash skills/wrds/scripts/parse_npx/measure.sh --xml-error-rate-below 0.01' \
+  --rounds 15 --minutes 480
+```
+
+The two ceilings are flags because the hook enforces them. Do not also write them into prose: two
+ceilings that can disagree is a bug, and the prose one is the bug.
+
+## The cron prompt
+
+```
+Run `<CHECK>` and report its exit code — judge from the command, not from the conversation. If it
+fails, take the next action now rather than proposing it. If it passes, spend the remaining budget:
+hunt for work the check does not cover, fix the largest one and say in one line why you picked it.
+Standing authority: <what it may decide alone>. The only terminal blockers are <the complete list>;
+everything else is the next task, difficulty included. When the budget is spent, end this heartbeat
+with CronDelete.
+```
+
+**The CronDelete sentence is not optional.** A cron outlives the work, `CronDelete` is a model tool
+with no CLI, a session-scoped cron lives in memory rather than on disk, and no hook event fires when
+the objective is met — so nothing but this text is present at the moment it should stop. Measured
+2026-09-16: a heartbeat raised without it re-ran a satisfied check twice more before a human noticed.
+
+Lint it:
+
+```bash
+bun skills/until/scripts/cron-prompt-lint.ts "<that text>"
 ```
 
 ## The unattended-brief template
 
-A brief given to a spawned agent is a goal with prose around it, and it fails the same ways. The
-four sections below are the ones the failing briefs were missing.
+A brief given to a spawned agent is a cron prompt with prose around it, and it fails the same ways.
+The four sections below are the ones the failing briefs were missing.
 
 ```markdown
 ## What done looks like
-<the number, with its denominator, that someone could dispute>
+<the command that settles it, and the number it must print>
 
 ## Standing authority
 You may <commit / push / re-dispatch / choose scope / spend the round budget> without asking.
@@ -71,51 +68,46 @@ defect, and — having no list of what counts as a blocker — filed the difficu
 
 ## The three rewrites
 
-### 1. `npx-reconcile` — the milestone goal
+### 1. `npx-reconcile` — the milestone objective
 
-Was:
+Was: hold until `craft has returned a verdict for .planning/npx-iss-reconciliation.md`.
 
-```
-/goal craft has returned a verdict for .planning/npx-iss-reconciliation.md
-```
-
-Closed on `overallPass=false`, 0 of 5 tasks implemented, 20 blocking findings. The session then
+It closed on `overallPass=false`, 0 of 5 tasks implemented, 20 blocking findings. The session then
 asked whether to amend and re-dispatch or read the findings first, and slept 4h10m.
 
-Rewrite:
+Rewrite — the verdict file, read for PASS rather than for existence:
 
+```bash
+bash skills/until/scripts/until-arm.sh \
+  'bash skills/work/scripts/work-result.sh .craft/0827-npx-iss/result.json' \
+  --rounds 6 --minutes 480
 ```
-/goal craft has returned PASS for .planning/npx-iss-reconciliation.md —
-`bash skills/work/scripts/work-result.sh .craft/0827-npx-iss/result.json` exits 0 — or the rounds
-field in .craft/0827-npx-iss/args.json reads 6 or more — `jq -r .rounds` it to check — or the run
-has been going 480 minutes or more, which `bash skills/work/scripts/work-elapsed.sh
-.craft/0827-npx-iss 480` prints and settles. On FAIL: read the surviving blocking findings, amend
-the plan, re-dispatch — in that order, without asking.
-```
+
+with the cron prompt carrying: *on FAIL, read the surviving blocking findings, amend the plan,
+re-dispatch — in that order, without asking.*
 
 Would have bought: the four hours, plus the round-2 amendment the session had already written out
 in full (promote `run3/converted/` rather than re-parse; declare the partitioned directory rather
 than a single file).
 
-### 2. `mail-bridge` — no goal at all at the moment of stopping
+### 2. `mail-bridge` — nothing armed at the moment of stopping
 
-The previous goal had closed when its run returned a verdict. The session finished a recon, wrote
+The previous hold had released when its run returned a verdict. The session finished a recon, wrote
 "Writing the plan now", and ended the turn. 5h26m later a human typed `status` and got two
 questions: push three green commits, and how far to take a fix already diagnosed to the line.
 
-Rewrite — set when the recon is dispatched, not after it lands:
+Rewrite — armed when the recon is dispatched, not after it lands:
 
-```
-/goal the six parked ambiguous operations are settled and no new 504 on an idempotent verb parks —
-`bun test tests/ambiguous-settlement.test.ts` exits 0 — or the rounds field in
-.craft/0828-ambiguous-settlement/args.json reads 4 or more — `jq -r .rounds` it to check — or the
-run has been going 300 minutes or more, which `bash skills/work/scripts/work-elapsed.sh
-.craft/0828-ambiguous-settlement 300` prints and settles. Standing authority: commit and push green
-work, bump the patch version, and plan the next round yourself. Recon landing is not a stopping
-point — write the plan and dispatch it in the same turn.
+```bash
+bash skills/until/scripts/until-arm.sh \
+  'bun test tests/ambiguous-settlement.test.ts' --rounds 4 --minutes 300
 ```
 
-The last sentence is the whole fix. The session did not lack information; it lacked an instruction
+with the cron prompt carrying: *standing authority — commit and push green work, bump the patch
+version, plan the next round yourself. A recon landing is not a stopping point: write the plan and
+dispatch it in the same turn.*
+
+That last sentence is the whole fix. The session did not lack information; it lacked an instruction
 that the recon's arrival was a middle, not an end.
 
 ### 3. `npx-iss-reconcile` — the brief with a blocked-clause
@@ -128,7 +120,7 @@ When done or blocked, notify the session that spawned you by running: herdr agen
 
 Rewrite:
 
-```
+```markdown
 ## Standing authority
 Commit each green round on this branch. Do not push, do not switch branches. Choose the next defect
 yourself and start it without asking.
@@ -145,9 +137,3 @@ and fix it under the same gate. Report at the ceiling.
 
 The session used 5 of 15 rounds, had scoped the next defect to 288 filings and 57,967 rows, and
 stopped at 01:42 with five hours of night left.
-
-## What a conforming goal looks like when it is already right
-
-`skills/work/scripts/compose-goal.sh` emits one for every craft run and passes the lint clean. Its
-header comment records why each clause is worded as it is — every one of them was added or removed
-in response to a measured stall. Read it before inventing a new clause.
