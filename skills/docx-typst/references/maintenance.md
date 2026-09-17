@@ -1,7 +1,7 @@
 # Verifying a change to this skill
 
 ```bash
-./scripts/check-tests.sh docx_typst
+uv run --with pytest python3 -m pytest tests/docx_typst_test.py -q
 ```
 
 `tests/docx_typst_test.py` pins the pandoc behaviors this skill rests on — the fixed

@@ -53,3 +53,4 @@ merged = prices.merge(fundamentals, on='ticker')
 - `result.duplicated()` across all columns reports ZERO on join fan-out — fanned rows differ in the joined columns, so only `duplicated(subset=key)` reveals it. Reporting "no duplicates" from the all-columns check is a false clean signal, not a verification.
 - "The merge worked fine" without printed numbers is an unverified claim — show the counts. Pre-join key checks don't substitute: the fan-out happens at the join, so post-join diagnostics catch what pre-checks miss.
 - A row count that increased after a join is a many-to-many signature until proven otherwise.
+- The checker accepts a log only if it states a quantity (`len()`, `.shape`, `rows`/`matched`/`merged`) AND names a variable from the merge statement or one derived from it in the window. Until 2026-09-16 any `print()` within ±5 lines passed, so `print("done")` closed a merge finding.

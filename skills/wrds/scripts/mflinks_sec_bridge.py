@@ -220,17 +220,24 @@ def main():
                        for k in best.key]
     best["series_absent_from_crsp"] = [not (k & in_crsp) for k in best.key]
 
-    print("\nthr    FPR    pos_acc  amb_resolved  amb_rate  implied_prec  combined_prec")
+    print("\nthr    FPR    pos_acc  amb_resolved  amb_rate  implied_prec  combined_prec  "
+          "matched/accepted")
     for t in (0.85, 0.90, 0.95):
         sel = best[best.score >= t]
         x = u[["fundno", "grp"]].merge(sel, on="fundno")
+        # Inner join. An accepted fundno absent from the universe disappears here, and
+        # every rate below is a share of x — so the loss must not be silent.
+        if len(x) != len(sel):
+            print(f"  [t={t:.2f}] join dropped {len(sel) - len(x):,} of {len(sel):,} "
+                  f"accepted fundnos not present in the {len(u):,}-fund universe")
         p = x[x.grp == "pos_us_bridged"]
         ok = sum(1 for f, ps in zip(p.fundno, p.portnos) if ps & truth.get(f, set()))
         acc = ok / max(len(p), 1)
         amb = int((x.grp == "amb_us").sum()); ar = amb / n["amb_us"]
         fpr = (x.grp == "neg_nonus").sum() / n["neg_nonus"]
         ip = 1 - fpr / max(ar, 1e-9)
-        print(f"{t:.2f}  {fpr:6.4f}  {acc:7.3f}  {amb:12d}  {ar:8.3f}  {ip:12.3f}  {acc*max(ip,0):13.3f}")
+        print(f"{t:.2f}  {fpr:6.4f}  {acc:7.3f}  {amb:12d}  {ar:8.3f}  {ip:12.3f}  "
+              f"{acc*max(ip,0):13.3f}  {len(x):,}/{len(sel):,}")
 
     acc_sel = best[(best.score >= a.accept)].copy()
     resolved = acc_sel[[bool(p) for p in acc_sel.portnos]]

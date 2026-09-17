@@ -14,6 +14,8 @@ Pipeline errors must be loud, not silent. Every error, coercion, or data drop mu
 | Silent type conversion | Explicit conversion with assertion |
 | `dropna()` without logging | Log dropped row count and reason |
 
+The `coerce` and `dropna` checkers accept a log only if it states a quantity (`len()`, `.shape`, `dropped`/`coerced`/`rows`) AND names a variable from the operation's statement or one derived from it in the window — a neighbouring `print()` is proximity, not a diagnostic.
+
 ## Rationale
 
 **Why this exists** — Silent error handling is not robustness — it's data loss with extra steps. Every silently dropped row is a result the user will never know they lost. Every silently coerced value is a lie in the output.

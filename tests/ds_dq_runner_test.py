@@ -12,7 +12,8 @@ WHY THIS EXISTS
     MODEL-EVALUATED and must NEVER come back as PASS. A runner that presented a judgement as a
     computation would recreate, one layer down, the self-certification the whole beat removes.
 
-    Collected by pytest (this file defines `def test_` functions) -- see scripts/check-tests.sh.
+    Collected by pytest (this file defines `def test_` functions), so plugin-audit's python leg
+    runs it with the whole of tests/.
         uv run --with polars,pytest python3 -m pytest tests/ds_dq_runner_test.py -q
 """
 

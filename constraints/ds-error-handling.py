@@ -5,6 +5,9 @@ import os
 import sys
 from pathlib import Path
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _ds_logging import reports_operation, statement_text  # noqa: E402
+
 CONSTRAINT = "ds-error-handling"
 APPLIES_TO = ["ds-delegate"]
 SEVERITY = "hard"
@@ -51,7 +54,9 @@ def check(context):
                 start = max(0, i - 4)
                 end = min(len(lines), i + 4)
                 context_block = "\n".join(lines[start:end])
-                if not re.search(r'\bprint\s*\(|logging\.\w+|logger\.\w+', context_block):
+                # The log must report THIS coercion: a quantity linked by a name from the
+                # coercing line. A neighbouring print says nothing about what was coerced.
+                if not reports_operation(context_block, statement_text(lines, i - 1)):
                     violations.append(
                         f"{path.relative_to(cwd)}:{i}: errors='coerce' without logging — "
                         "log count and sample of coerced values"
@@ -62,7 +67,9 @@ def check(context):
                 start = max(0, i - 4)
                 end = min(len(lines), i + 4)
                 context_block = "\n".join(lines[start:end])
-                if not re.search(r'\bprint\s*\(|logging\.\w+|logger\.\w+', context_block):
+                # The log must report THIS drop: a row-count quantity linked by a name from
+                # the dropping line. "How many rows dropped" is the whole point of the rule.
+                if not reports_operation(context_block, statement_text(lines, i - 1)):
                     violations.append(
                         f"{path.relative_to(cwd)}:{i}: .dropna() without logging — "
                         "log how many rows dropped and why"

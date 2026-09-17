@@ -186,8 +186,13 @@ def step_map(out: Path, chunk: int = 200) -> pd.DataFrame:
             frames.append(r.data.df)
             print(f"  {min(i+chunk,len(cus))}/{len(cus)}", flush=True)
     m = pd.concat(frames).reset_index().rename(columns={"index": "cusip9"})
+    _n0 = len(u)
     u = u.merge(m[["cusip9", "RIC", "TickerSymbol", "IssueISIN"]],
                 on="cusip9", how="left")
+    # A duplicated cusip9 in the symbology response would fan the universe out here,
+    # and every coverage number downstream is a share of this row count.
+    print(f"[map] cusip9->RIC merge: {_n0:,} -> {len(u):,} rows, "
+          f"{u.RIC.notna().sum():,} matched ({u.RIC.notna().mean():.1%})")
 
     u["ric_suffix"] = u.RIC.fillna("").map(lambda r: r.split(".", 1)[1] if "." in r else "")
     # A '^' encodes a delisting stamp: AAAA.O^C26 delisted in month C (=March) 2026.

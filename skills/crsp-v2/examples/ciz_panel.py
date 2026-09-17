@@ -175,6 +175,8 @@ def main() -> None:
     # own weight and biases the portfolio return upward.
     cap = "mthprevcap" if args.freq == "monthly" else "dlyprevcap"
     g = df.dropna(subset=[ret, cap]).astype({ret: float, cap: float})
+    print(f"[vw] dropped {len(df) - len(g):,} of {len(df):,} rows "
+          f"missing {ret} or {cap}; {len(g):,} remain")
     vw = g.groupby(date).apply(
         lambda x: (x[ret] * x[cap]).sum() / x[cap].sum(), include_groups=False
     )
