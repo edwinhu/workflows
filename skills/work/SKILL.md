@@ -35,8 +35,8 @@ built args and `plan-preflight.ts` executing their commands at baseline, enforce
 
 Everything lives in this skill directory — `workflow.js`, `references/third-party.md`,
 `scripts/work-dispatch.sh` (Phase 3+4 in one call), `scripts/work-pending.sh` (is a dispatch
-owed?), `scripts/goal-self-send.sh` and `scripts/goal-verify.sh` (the send, and the proof it
-landed), `scripts/human-review-gate.sh`, `scripts/work-result.sh`.
+owed?), `scripts/compose-goal.sh` (the objective, and the ceiling the hold is armed with),
+`scripts/human-review-gate.sh`, `scripts/work-result.sh`.
 Nothing here depends on any plugin.
 
 **The gate has a test suite; run it after touching `workflow.js`** — `node --check` proves only that
@@ -222,18 +222,19 @@ around it explains but never binds. Nothing re-derives it: the agents re-run `--
 and stop on mismatch, so an amended spec halts the run instead of silently changing the contract,
 while fixing a typo in the rationale costs nothing.
 
-## Phase 3 — GOAL
+## Phase 3 — HOLD + HEARTBEAT
 
-**Self-send a `/goal`.** No file — the plan holds the success criteria and it's what's hashed.
-What `/goal` adds is mechanical: after each turn a separate evaluator model checks the condition,
-and if it doesn't hold **the session starts another turn instead of returning control to the user**.
-That is what runs craft's outer loop (gate FAIL → fix → re-run; tuicr findings → fix → re-review)
-without the user prompting each step. `workflow.js` can't do this — it returns a verdict once.
+**Arm a hold, not a goal.** No file holds the success criteria — the plan does, and it is what's
+hashed. What the hold adds is mechanical: `hooks/until.ts` RUNS a check on every Stop, and while it
+exits non-zero **the session starts another turn instead of returning control to the user**. That is
+what runs craft's outer loop (gate FAIL → fix → re-run; tuicr findings → fix → re-review) without
+the user prompting each step. `workflow.js` can't do this — it returns a verdict once.
 
 **`work-dispatch.sh` does Phase 3 and Phase 4 in one call** — it reads the armed plan's dispatch
-block, injects `planPath`/`specHash`, writes `args.json`, self-sends the goal below, and starts
-`workflow.js` detached. Run it and skip to the Monitor; the rest of these two phases is what it
-does and why, and what to check when it reports something odd:
+block, injects `planPath`/`specHash`, writes `args.json`, arms the hold, prints the `CronCreate`
+call that arms the heartbeat, and starts `workflow.js` detached. Run it, **make the `CronCreate`
+call it prints**, then skip to the Monitor; the rest of these two phases is what it does and why,
+and what to check when it reports something odd:
 
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-dispatch.sh                    # armed plan; or pass one
@@ -275,52 +276,60 @@ a `redCommand` is refused `red-not-red`, omitting it is refused `redcommand-miss
 `redDisposition` instead; both scripts echo `red: N gated, M dispositioned` with each disposition,
 beside the wave graph.
 
-```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/goal-self-send.sh \
-  '/goal workflow.js has returned PASS for .claude/plans/<slug>.md at its current hash, and the tuicr gate has returned approved, or stop after N turns'
-```
+### Phase 3 arms TWO halves, and `work-dispatch.sh` can only arm one of them
+
+**A DISPATCH THAT ENDS WITH A HOLD AND NO HEARTBEAT IS NOT DISPATCHED.** It is the unattended idle
+this mechanism exists to prevent, and it is the likelier of the two failures because the half the
+script cannot arm is the half a model has to notice.
+
+| half | what it does | who arms it |
+|---|---|---|
+| **HOLD** | `hooks/until.ts` re-runs the check on every Stop and blocks the stop until it exits 0 | `work-dispatch.sh`, by writing a state file — **no action needed from you** |
+| **HEARTBEAT** | a cron tick that starts a turn in a session that has already gone quiet | **you, with the `CronCreate` tool**, in the dispatch turn |
+
+`CronCreate` is a model tool. There is no cron CLI, and a session-scoped cron lives in memory rather
+than in `.claude/scheduled_tasks.json`, so no shell can raise one — which is why this script used to
+self-send a `/loop` into its own pane instead. That transport is gone: it queued a line a detached
+drainer typed only when the pane went IDLE, and a session working back-to-back never goes idle.
+Measured 2026-09-16: `/goal` landed 127 times and missed 36, `/loop` landed 52 and missed 29.
+
+So `work-dispatch.sh` **prints** the `CronCreate` call, with the exact cron expression and the exact
+prompt text, as the last thing on every path that dispatches. **Make that call before your next
+action, and report the job id it returns.** If `CronCreate` is unavailable, say so in one line —
+never proceed as though the heartbeat were armed.
+
+Nothing is typed into this session and nothing is queued, so there is no send to verify, no transport
+to fall back to, and no ordering constraint against Phase 4.
+
+**The hold's check is `work-result.sh`, normalised to 0/1.** Before the run returns there is no
+`result.json` and `work-result.sh` exits 2, which `until-arm.sh` correctly refuses as could-not-run
+rather than a verdict; the dispatch wraps it so the absent verdict reads as RED instead. A writing
+run's hold closes on PASS alone; a `readOnly` run's closes on either verdict, because an audit's gate
+legitimately FAILs and a PASS-conditioned hold would drive at an outcome the run is forbidden to
+produce. The two escapes the objective states as prose — the round counter and the wall clock — are
+also `--rounds` and `--minutes` on the armed hold, enforced by the hook rather than re-adjudicated.
+
+`bash ${CLAUDE_PLUGIN_ROOT}/skills/until/scripts/until-arm.sh --status` settles whether the hold is
+live. **`CronList` — the tool, not a shell — settles whether the heartbeat is.** Check both.
 
 **Name the plan by PATH, never by a fixed sha256.** A pinned digest self-invalidates the first time
 the FAIL loop does what this file prescribes: fix, **amend the plan, re-hash**, re-dispatch. The run
 then PASSes against a hash the condition does not name, and the evaluator correctly reports the goal
 unmet on finished work. The path is stable; the hash is the thing the loop is expected to change.
 
-**Write the condition so the transcript can prove it.** The evaluator judges only what has been
-surfaced in the conversation — it runs no commands and reads no files. "The acceptance criteria
-hold" is unjudgeable; "the gate returned PASS and tuicr returned approved" is judgeable, because
-both verdicts get printed. Include a turn clause to bound the run.
+**Write the objective so a COMMAND settles it.** The hold runs the check; nothing reads the
+conversation to decide whether the run is done. "The acceptance criteria hold" is unrunnable; a
+`work-result.sh` exit code is the whole verdict. `compose-goal.sh` composes that text, and the
+dispatch reuses it verbatim as the heartbeat's tick prompt — the one string present when a tick
+fires into an otherwise empty session, which is why it carries the standing authority, the
+continuation rule and the `CronDelete` teardown as well as the check.
 
-**On a `readOnly` run the condition must not name PASS.** Phrase it as *"workflow.js has returned a
-verdict for `<planPath>` and the tuicr gate has returned approved"* — satisfied by either
-verdict. A PASS-conditioned goal would keep starting turns driving toward an outcome the run is
-forbidden to produce, because the only way to turn an audit's FAIL into a PASS is to fix what it
-found, and a read-only run writes nothing.
+The hold **self-clears**: `hooks/until.ts` removes the state file the moment the check exits 0, so
+the normal ending needs no teardown. The heartbeat does not — a cron outlives the work and only
+`CronDelete` cancels it. That asymmetry is why the tick text ends with the teardown instruction.
 
-Two mechanics worth knowing: setting a goal **starts a turn immediately** (that turn is Phase 4),
-and only one goal can be active per session.
-
-**Send it as the last action of the turn, then stop.** The message lands in *our own* input queue
-and cannot be processed until this turn ends — so there is nothing to wait for, and blocking on it
-would deadlock. Do **not** dispatch Phase 4 in the same turn: the goal would be set after the gate
-already ran. Let the turn end; the `/goal` turn is Phase 4.
-
-**Exit 0 means submitted, not processed.** The script sends the paste and the Enter separately, then
-watches the pane's input line: a swallowed Enter (the `agent-spawn` skill's
-`~/.claude/skills/agent-spawn/references/prompt-delivery.md` has the mechanism; it is a
-dotfiles skill, so no path relative to this plugin reaches it) leaves the text sitting there, so it retries — **bounded** at three presses over about five seconds,
-then exit 5 saying the text is still in the box. It refuses outright (exit 6) if the box is non-empty
-when it starts, the guard against pasting into a message the user is mid-way through typing.
-Transports are tried in order: our own herdr pane, then `agent-msg` for Remote-Control sessions.
-Refusals are fail-closed — every non-zero path exits **before** anything is sent, except the two
-"send attempted and failed" cases (exit 5).
-
-Whether the queued line is *acted on* is unknowable from here — that needs the turn to end. Exit
-non-zero (no transport, or the Enter never took) is **not fatal**: the loop is written down here,
-it just needs the user to prompt each step. Clear on final approval:
-`goal-self-send.sh '/goal clear'`.
-
-If any of this is in the way, print the `/goal …` line and let the user submit it. One keystroke,
-no race, no ordering constraint.
+Phase 4 dispatches **in the same turn**, immediately after the hold is armed and the `CronCreate`
+call is made. There is no queued message to wait out.
 
 ## Phase 4 — workflow.js
 
@@ -405,7 +414,7 @@ runs 20-60. Pass the loop body as Monitor's `command` with `persistent: true` (n
 both terminal states: result written, and process gone without one. Then call `work-result.sh` when
 it fires. Fall back to the loop across turns only where Monitor is unavailable — Bedrock, Vertex,
 Foundry, or `DISABLE_TELEMETRY`/`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` set. A Monitor dies with
-the session; the detached run does not, so `/goal` remains the notifier that survives a restart.
+the session; the detached run does not, so the hold and its heartbeat remain what survives a restart.
 
 **When `work-result.sh` returns the verdict, send a `PushNotification` carrying the OUTCOME** —
 "elide gate PASS, 33pp, both readings", never "the run finished". A run is a deliverable and takes
@@ -789,10 +798,11 @@ descope with the user rather than guessing a third time.
 | Sizing not in the approved plan | pick lenses/checks at dispatch time | it shapes the gate — put it in the plan, re-hash, then dispatch |
 | Tasks feel like they could run in parallel | fan out implementers yourself, or give each a worktree | declare `dependsOn` and let IMPLEMENT wave them — concurrent within a wave, and arg-validation refuses a wave whose `writablePaths` overlap, so safety is checked rather than trusted. Worktrees stay out: `workflow.js` cannot merge them (no filesystem), and a merge agent's silent slip reads as an implementer's omission |
 | A task reads a file another task writes | rely on `tasks[]` array order | array order is not a contract the script enforces — declare `dependsOn: ['<id>']`. An unknown id and a cycle both throw before dispatch; an edge to a task outside `onlyTasks` is treated as satisfied, since a prior run put its output on disk |
-| `goal-self-send.sh` exits non-zero | retry it, or stall the run | not fatal — proceed; the loop is written down, it just needs the user to prompt each step |
+| `until-arm.sh` exits non-zero at dispatch | proceed as though the hold were armed | it is NOT armed — this session stops at its first stopping point. Read the reason it printed (already green, or no session id) and fix it before walking away |
+| Dispatch printed the `CronCreate` block | scroll past it; the hold covers it | the hold cannot restart a session that has gone quiet. Call `CronCreate` this turn and report the job id; `CronList` is what proves it |
+| About to self-send a `/goal` or `/loop` into this session | any transport — herdr, agent-msg, a drainer | none of them land: a typed send needs the pane IDLE and a dispatching session never is. `until-arm.sh` writes a file and `CronCreate` is a tool call; both land inside the turn |
 | Session opens on `Implement the following plan:` | implement it in the main thread | the context was cleared at approval — this is Phase 4, not the work. The plan's frontmatter `workflow:` names the skill to invoke first; then dispatch. `work-dispatch.sh` needs nothing you lost. Same answer when an Edit is denied for an armed run |
-| Just self-sent the goal | dispatch Phase 4 in the same turn | stop — our own queued message can't be read until the turn ends; the `/goal` turn is Phase 4 |
-| Goal condition names a file check | `/goal the tests in the plan pass` | the evaluator reads only the transcript — phrase it as a verdict that gets printed |
+| Hold's check is a claim, not a command | "the tests in the plan pass" | the hook RUNS the check — give it a command whose exit code is the verdict, and `until-arm.sh` refuses one that is already green or cannot run |
 | Recon would flood the conversation | read every file into this context | scout with a subagent during CLARIFY/PLAN — graded work still goes through workflow.js |
 | One small task, workflow feels heavy | dispatch a lone subagent and accept its report | still workflow.js with one task — a self-report is not a verification |
 | Tasks look like they need to talk to each other | reach for agent teams | **On a run that writes, no teams** — for the mechanical reason given under *IMPLEMENT runs in waves* above, not as a style preference. Tasks needing to talk means the plan under-specifies the boundary; fix the task table, re-hash. **The ban does not apply to `readOnly`**, where nothing writes and a team is the default (CLARIFY axis 7); see *Where the agent team lives* |

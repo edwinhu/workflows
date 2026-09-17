@@ -38,14 +38,6 @@ set -euo pipefail
 
 die() { printf 'compose-goal: %s\n' "$1" >&2; exit 2; }
 
-[ $# -eq 4 ] || die "usage: compose-goal.sh <plan.md> <run-dir> <max-rounds> <readOnly:0|1>"
-PLAN=$1; RUN_DIR=$2; ROUNDS=$3; READONLY=$4
-
-case "$ROUNDS" in
-  ''|*[!0-9]*) die "max-rounds must be a whole number, got: $ROUNDS" ;;
-esac
-case "$READONLY" in 0|1) ;; *) die "readOnly must be 0 or 1, got: $READONLY" ;; esac
-
 # The wall-clock ceiling the goal may not outlive. Overridable, never absent: a goal with no time
 # bound is one an unattended session cannot close by working.
 # It must outlast a ROUND, not a human's attention span. Measured 2026-08-27 in this repo: round 1
@@ -65,6 +57,21 @@ MAX_MINUTES="${CRAFT_GOAL_MAX_MINUTES:-${_hours_as_min:-720}}"
 case "$MAX_MINUTES" in
   ''|*[!0-9]*) die "CRAFT_GOAL_MAX_MINUTES must be a whole number of minutes, got: $MAX_MINUTES" ;;
 esac
+
+# `--minutes` prints that ceiling and nothing else, for the caller that ARMS it rather than states
+# it: `until-arm.sh --minutes`. The hook enforces the number; the clause below states it. Reading
+# both from here is what stops the armed hold and the stated clause naming different ceilings —
+# the same drift this file's header records between the default here and work-elapsed.sh's.
+if [ "${1-}" = "--minutes" ]; then printf '%s\n' "$MAX_MINUTES"; exit 0; fi
+
+[ $# -eq 4 ] || die "usage: compose-goal.sh <plan.md> <run-dir> <max-rounds> <readOnly:0|1>"
+PLAN=$1; RUN_DIR=$2; ROUNDS=$3; READONLY=$4
+
+case "$ROUNDS" in
+  ''|*[!0-9]*) die "max-rounds must be a whole number, got: $ROUNDS" ;;
+esac
+case "$READONLY" in 0|1) ;; *) die "readOnly must be 0 or 1, got: $READONLY" ;; esac
+
 SKILL_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 
 # THE CEILING TRAVELS WITH THE CLAUSE. work-elapsed.sh carries its own default too, and the two

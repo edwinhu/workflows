@@ -95,23 +95,19 @@ The loop is done when ALL of these hold:
 
 ### Invocation
 
-Set a `/goal` whose condition gates on the **enumerable defect substrate** — fused labels and BLOCKING visual defects — not the 0-10 aesthetic score (an LLM vision score is noisy and won't stably hit 9.5; chasing it is a treadmill). Run the loop body (render → vision → fix) inside each turn. The evaluator reads the defect findings from the transcript.
+Arm a **hold** whose check gates on the **enumerable defect substrate** — fused labels and BLOCKING visual defects — not the 0-10 aesthetic score (an LLM vision score is noisy and won't stably hit 9.5; chasing it is a treadmill). Run the loop body (render → vision → fix) inside each turn.
 
-```
-/goal Visual Task N [TASK NAME] is complete when the rendered output at
-[OUTPUT PATH] has ZERO BLOCKING defects (clipping, overlap, illegible text,
-wrong connections) and the pdftotext pre-screen finds no fused labels
-(diagrams only), per SCORES.md. The look-at 0-10 score is advisory, not the
-gate. Stop after 5 turns.
-```
-
-**Getting it set** — you cannot `Skill(goal)` (it is a built-in UI command), and printing the line is a no-op (slash commands dispatch only on the user input path). Only the top-level session may run:
+The check must be a COMMAND whose exit code is the verdict, because `hooks/until.ts` runs it on every Stop. The pre-screen is already one; write the BLOCKING-defect count to SCORES.md as you go and let the check read it:
 
 ```bash
-bash ${CLAUDE_SKILL_DIR}/../work/scripts/goal-self-send.sh '/goal <condition>'
+bash ${CLAUDE_SKILL_DIR}/../until/scripts/until-arm.sh \
+  'grep -q "^BLOCKING: 0$" SCORES.md && ! pdftotext -layout OUTPUT.pdf - | grep -qE "FUSED"' \
+  --rounds 5 --minutes 120
 ```
 
-Proceed only if the helper exits 0 (`goal-self-send: delivered via …`) or the user explicitly confirms activation. Otherwise hand the literal condition to the user and STOP. A spawned agent returns that literal command to its caller without running the helper. Once active, each subsequent turn fires automatically until zero BLOCKING defects remain (not until an aesthetic score crosses a bar). With no active goal there is no loop at all — one pass, no gate. After the terminal PASS, clear it with `bash ${CLAUDE_SKILL_DIR}/../work/scripts/goal-self-send.sh '/goal clear'`. Proceed only after that command exits 0 or the user explicitly confirms the goal is cleared; otherwise print `/goal clear` and stop.
+`until-arm.sh` writes a session-scoped state file — no transport, nothing typed, so it lands inside the turn that runs it. It **refuses a check that already exits 0** (a hold on a met objective holds nothing) and one that exits above 1 (could-not-run, which would hold forever on a broken command), so a successful arm is itself proof the check is live and red. `--rounds` and `--minutes` are the ceilings, enforced by the hook rather than restated as prose; do not write "stop after 5 turns" into the check — nothing in the harness counts turns.
+
+The hold **self-clears**: the hook removes the state file the moment the check exits 0, so the terminal PASS needs no teardown. `bash ${CLAUDE_SKILL_DIR}/../until/scripts/until-arm.sh --status` settles whether it is armed; `--disarm` releases it early. With no hold armed there is no loop at all — one pass, no gate. A spawned agent cannot arm the caller's session: it returns the literal `until-arm.sh` line to its caller.
 
 ### Score Tracking
 
