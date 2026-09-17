@@ -31,8 +31,14 @@ the fuzzy tiers exist to serve.
 from __future__ import annotations
 
 import argparse
+import sys
 import time
 from pathlib import Path
+
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
 
 import pandas as pd
 import psycopg2
@@ -150,6 +156,9 @@ def main() -> None:
         df = pd.read_sql(sql, conn,
                          params={"start": f"{args.start_year}-01-01",
                                  "end": f"{args.end_year}-12-31"})
+        check_schema(df, ["fundid", "institutionid", "fundname_modal", "institutionname_modal",
+                          "fundcik", "seriesid", "n_seriesid_variants", "first_vote_year",
+                          "last_vote_year", "n_vote_rows"], name="ISS N-PX funds", exact=True)
     finally:
         conn.close()
 

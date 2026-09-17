@@ -17,8 +17,17 @@ def _():
 @app.cell
 def _(pl):
     """Load data from file or URL."""
+    import sys
+    from pathlib import Path
+
+    # ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+    sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                               if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+    from ds_schema import check_schema  # noqa: E402
+
     # Replace with actual data source
     df = pl.read_csv("data.csv")
+    check_schema(df, ["date", "value", "category"], name="data.csv")
 
     # Alternative: create sample data for testing
     # df = pl.DataFrame({

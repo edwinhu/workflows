@@ -38,6 +38,11 @@ import os
 import sys
 from pathlib import Path
 
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                            if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 import polars as pl
 
 HERE = Path(__file__).resolve().parent
@@ -87,6 +92,11 @@ def main() -> int:
         return 2
 
     d = pl.read_parquet(src)
+    check_schema(
+        d,
+        ["permno", "rdate", "io_total", "io_total_net", "numowners", "tso", "me"],
+        name="leg 2 inst_own panel",
+    )
     # Report the panel's OWN shape, before the working column is added — `rd` is
     # ours, and printing 23 where the panel has 22 puts a wrong number in a log
     # that exists to be trusted.

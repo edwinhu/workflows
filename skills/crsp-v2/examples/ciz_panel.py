@@ -33,6 +33,13 @@ from __future__ import annotations
 import argparse
 import getpass
 import os
+import sys
+from pathlib import Path
+
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                            if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
 
 import pandas as pd
 import psycopg2
@@ -120,6 +127,15 @@ WHERE d.dlycaldt BETWEEN %(start)s AND %(end)s
 ORDER BY d.permno, d.dlycaldt
 """
 
+# The SELECT lists above, verbatim and in order (aliases, not source names, for the
+# two index columns). Both selects are explicit, so the frame cannot be wider.
+MONTHLY_COLS = ["permno", "mthcaldt", "mthprc", "mthprcflg", "mthret", "mthretx",
+                "mthcap", "mthprevcap", "mthvol", "mthcompflg", "ticker", "issuernm",
+                "vwretd", "vwretx"]
+DAILY_COLS = ["permno", "dlycaldt", "dlyprc", "dlyprcflg", "dlyret", "dlyretx",
+              "dlycap", "dlyprevcap", "dlyvol", "dlydelflg", "ticker", "issuernm",
+              "vwretd", "vwretx"]
+
 
 def pull(freq: str, start: str, end: str, user: str | None = None) -> pd.DataFrame:
     """Run the panel query. `user` must be the WRDS username, not the OS one --
@@ -131,7 +147,9 @@ def pull(freq: str, start: str, end: str, user: str | None = None) -> pd.DataFra
     with psycopg2.connect(
         host=HOST, port=PORT, database=DATABASE, user=user, sslmode="require"
     ) as conn:
-        return pd.read_sql(sql, conn, params=params)
+        df = pd.read_sql(sql, conn, params=params)
+    expected = MONTHLY_COLS if freq == "monthly" else DAILY_COLS
+    return check_schema(df, expected, name=f"CRSP CIZ {freq} panel", exact=True)
 
 
 def main() -> None:

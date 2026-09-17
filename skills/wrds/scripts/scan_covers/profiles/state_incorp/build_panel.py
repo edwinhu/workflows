@@ -15,9 +15,15 @@ Usage:
 """
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
-import numpy as np
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                            if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
+import numpy as np  # noqa: E402
 import pandas as pd
 
 HERE = Path(__file__).parent
@@ -152,6 +158,8 @@ def main():
         "fiscal_year": int, "state": str, "hq_state": str,
         "confidence": str, "match_text": str,
     }).fillna({"state": "", "hq_state": "", "match_text": ""})
+    check_schema(df, ["cik", "fdate", "fiscal_year", "state", "hq_state",
+                      "confidence"], name="state_incorp_raw.tsv")
     print(f"Loaded {len(df):,} rows from {src.name}")
 
     # Filter to rows where we found a state

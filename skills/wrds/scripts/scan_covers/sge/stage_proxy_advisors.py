@@ -27,7 +27,12 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pandas as pd
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                            if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
+import pandas as pd  # noqa: E402
 
 _MIRROR = Path.home() / "projects" / "mirror"
 if _MIRROR.exists():
@@ -66,8 +71,12 @@ def step_metadata(start: int, end: int, filelist_dir: Path, years_file: Path,
     """
     print(f"[sql] querying {start}..{end}")
     df = pd.read_sql(sql, conn, params=(f"{start}-01-01", f"{end}-12-31"))
+    check_schema(df, ["fname", "year"], name="wrdssec_all.forms 485BPOS/APOS metadata",
+                 exact=True)
     conn.close()
+    _before = len(df)
     df = df.dropna(subset=["fname", "year"])
+    print(f"[sql] dropped {_before - len(df):,} of {_before:,} row(s) missing fname/year")
     df["year"] = df["year"].astype(int)
     df["accession"] = df["fname"].str.rsplit("/", n=1).str[-1]
     # 485 filings can be cross-referenced under multiple CIKs (series/class

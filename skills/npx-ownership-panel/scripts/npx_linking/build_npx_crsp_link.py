@@ -56,6 +56,11 @@ import re
 import sys
 from pathlib import Path
 
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "cit"))
 
 import numpy as np
@@ -184,6 +189,7 @@ print(f"  index_fund_flag D/B/E            : "
       f"{fs['index_fund_flag'].value_counts().sort('count', descending=True).to_dicts()}")
 
 cikmap = pl.read_parquet(CRSP_CIK_MAP)
+check_schema(cikmap, ["series_cik", "crsp_fundno"], name="crsp_cik_map")
 # Dedup on the join key BEFORE merging so a fundid can never fan out.
 sid2fno = (
     cikmap.filter(pl.col("series_cik").is_not_null())
@@ -207,6 +213,7 @@ print(f"\ncrsp_cik_map                       : {cikmap.height:,} rows, "
 # instead of silent. The remaining question, which wficn is correct for those 341,
 # is a domain question for MFLINK and is flagged, not guessed.
 _mf_raw = pl.read_parquet(MFLINK1)
+check_schema(_mf_raw, ["crsp_fundno", "wficn"], name="mflink1", exact=True)
 _mf_amb = int(
     _mf_raw.group_by("crsp_fundno").agg(pl.col("wficn").n_unique().alias("k"))
     .filter(pl.col("k") > 1).height
@@ -303,7 +310,7 @@ print(f"\nfundids linked                     : {t1.height:,}")
 rule("tier via_ticker — seriesId -> SEC class ticker -> CRSP ticker")
 
 sec_tick = (
-    pl.read_parquet(SEC_SERIES_MASTER)
+    pl.read_parquet(SEC_SERIES_MASTER, columns=["series_id", "class_ticker"])
     .select("series_id", ticker=pl.col("class_ticker").str.to_uppercase().str.strip_chars())
     .filter(pl.col("ticker").str.len_chars() >= 3)
     .unique()

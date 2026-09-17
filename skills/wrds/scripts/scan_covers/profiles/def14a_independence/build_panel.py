@@ -19,9 +19,15 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
-import pandas as pd
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                            if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
+import pandas as pd  # noqa: E402
 
 SCAN_COLS = ["filepath", "accession", "form_type", "filed_date", "cik",
              "company_name", "n_directors", "slate", "indep"]
@@ -67,7 +73,9 @@ def main() -> None:
     # defensive: with header inference the first filing becomes column labels.
     scan = pd.read_csv(args.scan, sep="\t", header=None, names=SCAN_COLS,
                        dtype=str).fillna("")
+    check_schema(scan, SCAN_COLS, name="def14a_independence scan TSV", exact=True)
     idx = pd.read_csv(args.index, sep="\t", dtype=str).fillna("")
+    check_schema(idx, ["path", "meeting_year"], name="stage.py indep index TSV")
     print(f"[scan]  {len(scan):,} rows")
     print(f"[index] {len(idx):,} staged filings")
 

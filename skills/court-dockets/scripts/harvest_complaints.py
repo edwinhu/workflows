@@ -16,6 +16,11 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 import polars as pl
 import requests
 
@@ -182,7 +187,11 @@ def main():
     args = ap.parse_args()
 
     PDF_DIR.mkdir(parents=True, exist_ok=True)
-    cases = (pl.read_parquet(PANEL).filter(pl.col("pop_220"))
+    panel = pl.read_parquet(PANEL)
+    check_schema(panel, ["pop_220", "case_id", "case_number", "ca_number", "title",
+                         "filed_on", "docket_count", "case_subtype"],
+                 name="chancery case panel")
+    cases = (panel.filter(pl.col("pop_220"))
              .select("case_id", "case_number", "ca_number", "title",
                      "filed_on", "docket_count", "case_subtype")
              .sort("filed_on").to_dicts())

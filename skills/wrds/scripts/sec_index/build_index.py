@@ -29,6 +29,11 @@ import sys
 import time
 from pathlib import Path
 
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 WRDS = os.environ.get("WRDS_HOST", "wrds")
 
 # PATHS. No user or institution is baked in. The remote scratch root is derived
@@ -140,6 +145,7 @@ def concat_to_parquet(files: list[Path]) -> None:
             schema_overrides={"filed_date": pl.Utf8, "cik": pl.Utf8},
             truncate_ragged_lines=True,
         )
+        check_schema(df, cols, name=f"scan TSV {f.name}", exact=True, quiet=True)
         frames.append(df)
     full = pl.concat(frames, how="vertical_relaxed")
     PARQUET_PATH.parent.mkdir(parents=True, exist_ok=True)

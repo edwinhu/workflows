@@ -18,7 +18,13 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
+import sys
 from pathlib import Path
+
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                            if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
 
 # Chart style
 plt.rcParams.update({
@@ -61,6 +67,12 @@ GROUP BY year
 ORDER BY year
 """
 df_annual = pd.read_sql(annual_q, conn)
+check_schema(
+    df_annual,
+    ['year', 'n_facilities', 'volume_bn', 'avg_size_mm', 'avg_maturity_months'],
+    name='DealScan annual origination',
+    exact=True,
+)
 print(df_annual.to_string())
 
 # %%
@@ -310,6 +322,12 @@ ORDER BY volume_bn DESC
 LIMIT 20
 """
 df_arr = pd.read_sql(arranger_q, conn)
+check_schema(
+    df_arr,
+    ['arranger', 'n_facilities', 'volume_bn'],
+    name='DealScan top lead arrangers',
+    exact=True,
+)
 
 fig, ax = plt.subplots(figsize=(12, 7))
 bars = ax.barh(range(len(df_arr)), df_arr['volume_bn'], color='#4472C4', alpha=0.85)

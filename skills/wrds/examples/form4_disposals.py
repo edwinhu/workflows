@@ -17,9 +17,15 @@ import psycopg2
 import pandas as pd
 import numpy as np
 import logging
-from pathlib import Path
+import sys
 from datetime import datetime
 from typing import Dict, List, Tuple
+from pathlib import Path
+
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                            if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
 
 # Configure logging
 logging.basicConfig(
@@ -64,6 +70,11 @@ def load_peer_companies(peer_csv_path: str = "data/processed/compensation/svb_is
     logger.info("Loading ISS peer company data...")
 
     df = pd.read_csv(peer_csv_path)
+    check_schema(
+        df,
+        ["fiscalyear", "peerticker", "peername", "peercik"],
+        name="ISS Incentive Lab peer designations",
+    )
 
     # Filter for 2020-2021 (most relevant years)
     df_filtered = df[df['fiscalyear'].isin([2020.0, 2021.0])].copy()
@@ -157,6 +168,14 @@ def get_company_insider_disposals(ticker: str, company_name: str,
 
     try:
         df = pd.read_sql(query, conn)
+        check_schema(
+            df,
+            ["ticker", "filing_date", "transaction_date", "insider_name", "insider_role",
+             "trans_code", "acqdisp", "trans_shares", "price_per_share", "shares_held",
+             "direct_indirect", "company_name"],
+            name=f"Form 4 disposals for {ticker}",
+            exact=True,
+        )
 
         if not df.empty:
             # Filter for executive officers AND directors

@@ -50,7 +50,7 @@ DEFAULT_PRECISION = 12
 def _load(path: Path) -> pl.DataFrame:
     p = str(path)
     if p.endswith((".parquet", ".pq")):
-        return pl.read_parquet(p)
+        return pl.read_parquet(p)  # ds-schema-contracts: schema-agnostic by design — the columns ARE the payload being hashed, so naming any would be fabricating a contract this tool exists to discover
     if p.endswith((".csv", ".csv.gz", ".txt")):
         try:
             return pl.read_csv(p)

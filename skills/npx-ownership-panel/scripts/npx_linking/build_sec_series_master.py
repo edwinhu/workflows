@@ -55,8 +55,14 @@ Usage
 from __future__ import annotations
 
 import re
+import sys
 import unicodedata
 from pathlib import Path
+
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
 
 import pandas as pd
 
@@ -447,6 +453,8 @@ def main() -> None:
     hdr_path = OUT / "header_series_names.parquet"
     if hdr_path.exists():
         header_names = pd.read_parquet(hdr_path)
+        check_schema(header_names, ["series_id", "series_name", "file_year"],
+                     name="header series names")
         print(f"header vocabulary: {len(header_names):,} (series, name, year) "
               f"rows from {hdr_path.name}")
     name_variants = build_name_variants(long, header_names)
