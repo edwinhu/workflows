@@ -7,6 +7,14 @@ hooks:
   PostToolUse:
     # Not widened to Bash — a Bash payload carries `command`, not the `file_path` this hook reads,
     # so the matcher alone would fire and validate nothing; the gate re-derives every check here.
+    #
+    # SKILL-SCOPED ON PURPOSE — do not "fix" this to agent scope. A skill hook reaches the main
+    # session's writes only (hook-reach.md Cell A, re-measured 2.1.257 2026-09-17), and
+    # farmOutOnly denies the main thread everything BUT `*.md` (main-thread-guard.sh fo_exempt,
+    # measured). SKILL.md and agent `.md` — this checker's primary targets — are exactly the class
+    # still written here, so the reach farmOutOnly removes is the reach this hook never needed.
+    # Its `.ts`/`hooks.json` rows do lose the main thread; P2 there is carried by the plugin-wide
+    # hooks/validate-skill-paths.ts and by wc-probe at gate time, so no rule is left unenforced.
     - matcher: "Write|Edit"
       hooks:
         - type: command
