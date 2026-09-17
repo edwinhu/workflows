@@ -12,7 +12,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 
 const ROOT = dirname(import.meta.dir);
 const CHECK = join(ROOT, "skills/workflow-creator/scripts/check.sh");
@@ -64,8 +64,21 @@ const AUDIT = "/home/eh/projects/plugin-utils/bin/workflow-audit";
 // The ten targets, read from `workflow-audit` itself rather than hand-copied, so a workflow added
 // to the audit tomorrow is asserted the day it lands. A hand-kept list that drifts from the audit
 // is the same vacuity one level up: this file would keep reporting 10-of-10 over nine.
+// Read the COMMITTED workflow-audit, not the working copy. The population is a committed fact,
+// and reading the file on disk couples this verdict to whether someone in another repo happens to
+// have it open: measured 2026-09-17, a row editing five plugin-utils binaries turned every test
+// here red for the minutes it held them. A dirty neighbour is not a failing gate.
+function auditSource(): string {
+  const r = spawnSync("git", ["-C", dirname(dirname(AUDIT)), "show", `HEAD:bin/${basename(AUDIT)}`],
+                      { encoding: "utf8" });
+  if (r.status === 0 && r.stdout.trim()) return r.stdout;
+  // Fail CLOSED and say which: an unreadable population is could-not-run, never an empty one.
+  throw new Error(
+    `cannot read the committed ${AUDIT} (git exit ${r.status}); refusing to derive a population from an unknown state`);
+}
+
 function auditTargets(): string[] {
-  const src = readFileSync(AUDIT, "utf8");
+  const src = auditSource();
   const m = /^LIST=(?:"([\s\S]*?)")$/m.exec(src);
   if (!m) throw new Error(`${AUDIT}: could not find the LIST= assignment this test reads its population from`);
   const wf = /^WF=(\S+)$/m.exec(src);
