@@ -188,7 +188,14 @@ def _run_checks(md_stems, py_paths, directory_label, context, results, workflow=
 
 
 def main():
-    cwd = sys.argv[1] if len(sys.argv) > 1 else "."
+    if len(sys.argv) < 2:
+        # Zero args used to mean cwd="." — the runner then reported over whatever directory the
+        # caller happened to stand in, and exited 1 ("violations found") when it found nothing.
+        print("COULD-NOT-RUN: run-constraints was given no project directory — nothing was checked",
+              file=sys.stderr)
+        print(f"Usage: python3 {sys.argv[0]} <project-dir>", file=sys.stderr)
+        sys.exit(2)
+    cwd = sys.argv[1]
     context = {"cwd": cwd}
     results = {"passed": [], "failed": [], "conventions": [], "errors": [], "skipped": []}
 

@@ -266,7 +266,11 @@ def check(context: dict) -> list[str]:
 
 
 if __name__ == "__main__":
-    vs = check({"cwd": sys.argv[1] if len(sys.argv) > 1 else "."})
+    if len(sys.argv) < 2:
+        print(f"COULD-NOT-RUN: {CONSTRAINT} was given no draft directory — nothing was checked", file=sys.stderr)
+        print(f"Usage: python3 {sys.argv[0]} <draft-dir>", file=sys.stderr)
+        sys.exit(2)
+    vs = check({"cwd": sys.argv[1]})
     if vs:
         for v in vs:
             print(f"WARN: {v}")

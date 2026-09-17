@@ -89,7 +89,11 @@ def check(context: dict) -> list[str]:
 
 
 if __name__ == "__main__":
-    cwd = sys.argv[1] if len(sys.argv) > 1 else "."
+    if len(sys.argv) < 2:
+        print(f"COULD-NOT-RUN: {CONSTRAINT} was given no project directory — nothing was checked", file=sys.stderr)
+        print(f"Usage: python3 {sys.argv[0]} <project-dir>", file=sys.stderr)
+        sys.exit(2)
+    cwd = sys.argv[1]
     vs = check({"cwd": cwd})
     if vs:
         for v in vs:

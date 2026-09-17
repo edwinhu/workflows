@@ -67,7 +67,11 @@ def check(context):
 
 
 if __name__ == "__main__":
-    _cwd = sys.argv[1] if len(sys.argv) > 1 else "."
+    if len(sys.argv) < 2:
+        print(f"COULD-NOT-RUN: {CONSTRAINT} was given no project directory — nothing was checked", file=sys.stderr)
+        print(f"Usage: python3 {sys.argv[0]} <project-dir>", file=sys.stderr)
+        sys.exit(2)
+    _cwd = sys.argv[1]
     violations = check({"cwd": _cwd})
     # A finding the rule does not fit is closed by a REASON on the line, never by weakening the
     # rule. Waived findings are counted here so they stay visible: _ds_waivers.py says why.
