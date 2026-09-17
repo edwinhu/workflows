@@ -35,7 +35,13 @@
 # %%
 import pandas as pd
 import numpy as np
+import sys
 from pathlib import Path
+
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
 
 # Create output directories
 Path("pipeline/").mkdir(exist_ok=True)
@@ -133,11 +139,13 @@ stata_results = Path("results/stata_estimates.csv")
 # Aggregate results (run after R and Stata steps complete)
 if r_results.exists():
     r_coef = pd.read_parquet(r_results)
+    check_schema(r_coef, ["term", "estimate"], name="R coefficients")
     print("R Results:")
     print(r_coef)
 
 if stata_results.exists():
     stata_est = pd.read_csv(stata_results)
+    check_schema(stata_est, ["variable", "coef"], name="Stata estimates")
     print("\nStata Results:")
     print(stata_est)
 

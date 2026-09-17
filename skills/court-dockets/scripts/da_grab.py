@@ -10,6 +10,11 @@ import argparse, os, random, sys, time
 from datetime import datetime, timezone
 from pathlib import Path
 
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 import polars as pl
 import requests
 
@@ -28,7 +33,9 @@ ap.add_argument("--limit", type=int, default=None)
 a = ap.parse_args()
 
 OUT.mkdir(parents=True, exist_ok=True)
-rows = pl.read_parquet("data/raw/da_docket_metadata.parquet").to_dicts()
+meta = pl.read_parquet("data/raw/da_docket_metadata.parquet")
+check_schema(meta, ["ca_number", "complaint_doc_id", "resolved_url"], name="DA docket metadata")
+rows = meta.to_dicts()
 if a.limit:
     rows = rows[:a.limit]
 

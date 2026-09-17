@@ -29,6 +29,11 @@ import sys
 import time
 from pathlib import Path
 
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 import pandas as pd
 
 # Make src importable when invoked as a script
@@ -86,6 +91,7 @@ def query_13f_flags(start_year: int, end_year: int) -> pd.DataFrame:
           AND fdate BETWEEN %s AND %s
     """
     df = pd.read_sql(sql, conn, params=(f"{start_year}-01-01", f"{end_year}-12-31"))
+    check_schema(df, ["cik", "year"], name="13F filer (cik, year) pairs", exact=True)
     conn.close()
     df["cik_int"] = pd.to_numeric(df["cik"].str.lstrip("0").replace("", "0"),
                                    errors="coerce").astype("Int64")

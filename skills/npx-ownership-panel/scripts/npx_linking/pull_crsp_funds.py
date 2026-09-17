@@ -34,8 +34,14 @@ double-counts. See build_npx_crsp_link.py, which splits it.
 from __future__ import annotations
 
 import argparse
+import sys
 import time
 from pathlib import Path
+
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
 
 import pandas as pd
 import psycopg2
@@ -100,6 +106,11 @@ def main() -> None:
     conn = connect(args.user)
     try:
         df = pd.read_sql(CRSP_SQL, conn)
+        check_schema(df, ["crsp_fundno", "crsp_portno", "series_cik", "contract_cik",
+                          "comp_cik", "fund_name", "ticker", "mgmt_name", "mgmt_cd",
+                          "index_fund_flag", "tna_latest", "tna_latest_dt", "summary_caldt",
+                          "et_flag", "crsp_obj_cd", "lipper_class_name", "first_offer_dt",
+                          "end_dt", "dead_flag"], name="CRSP fund universe", exact=True)
     finally:
         conn.close()
 

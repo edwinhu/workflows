@@ -22,7 +22,14 @@ https://www.sec.gov/files/investment/data/other/investment-company-series-and-cl
 Fetch them with a DECLARING User-Agent (name + email) — a spoofed browser UA 403s.
 See the `sec-fetch` skill.
 """
-import argparse, re, warnings
+import argparse, re, sys, warnings
+from pathlib import Path
+
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 import numpy as np, pandas as pd, psycopg2
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sparse_dot_topn import sp_matmul_topn
@@ -93,17 +100,24 @@ def load_wrds(date, user):
     s12 = (q(f"select fundno, fdate, country, fundname from tfn.s12type1 "
              f"where rdate='{date}'")
            .sort_values("fdate").drop_duplicates("fundno", keep="last"))
+    check_schema(s12, ["fundno", "fdate", "country", "fundname"],
+                 name="tfn.s12type1", exact=True)
     bridge = q(f"""select distinct l2.fundno, p.crsp_portno
         from mfl.mflink2 l2
         join mfl.mflink1 l1 on l1.wficn = l2.wficn
         join crsp_q_mutualfunds.portnomap p on p.crsp_fundno = l1.crsp_fundno
         where l2.rdate='{date}' and l2.wficn is not null""")
+    check_schema(bridge, ["fundno", "crsp_portno"], name="MFLINKS bridge", exact=True)
     m2 = q(f"select fundno, fundname_full from mfl.mflink2 "
            f"where rdate='{date}'").drop_duplicates("fundno")
+    check_schema(m2, ["fundno", "fundname_full"], name="mfl.mflink2 names", exact=True)
     # portnomap MUST be date-restricted: crsp_cik_map carries no date bounds
     pm = q(f"""select crsp_fundno, crsp_portno, fund_name
         from crsp_q_mutualfunds.portnomap where begdt<='{date}' and enddt>='{date}'""")
+    check_schema(pm, ["crsp_fundno", "crsp_portno", "fund_name"],
+                 name="crsp portnomap", exact=True)
     ck = q("select crsp_fundno, series_cik from crsp_q_mutualfunds.crsp_cik_map")
+    check_schema(ck, ["crsp_fundno", "series_cik"], name="crsp_cik_map", exact=True)
     ck["series_cik"] = ck.series_cik.str.strip()
     return s12, bridge, m2, pm, ck
 
@@ -137,6 +151,8 @@ def load_aliases(xlsx, date, s12, m2):
     'correct' it backwards.
     """
     x = pd.read_excel(xlsx, sheet_name="Export Worksheet", dtype=str)
+    check_schema(x, ["FUNDNO", "FUNDNAME", "START_DATE", "END_DATE"],
+                 name="S12 names xlsx (Export Worksheet)")
     for c in ("START_DATE", "END_DATE"):
         x[c] = pd.to_datetime(x[c], format="%d-%b-%y", errors="coerce")
         print(f"  {c}: {x[c].isna().sum():,} of {len(x):,} unparseable as %d-%b-%y")

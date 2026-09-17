@@ -6,6 +6,12 @@ Alarm serves a durable path. Serial and paced -- these are subscription accounts
 import random, subprocess, sys, time
 from datetime import datetime, timezone
 from pathlib import Path
+
+# ds_schema ships with the ds skill; the directory is SEARCHED for, not counted to.
+sys.path.insert(0, str(next(_q for _q in Path(__file__).resolve().parents
+                           if (_q / "ds" / "scripts").is_dir()) / "ds" / "scripts"))
+from ds_schema import check_schema  # noqa: E402
+
 import polars as pl, requests
 
 sys.path.insert(0, "scripts")
@@ -29,7 +35,10 @@ def sess(host):
 
 def main():
     delay = float(sys.argv[1]) if len(sys.argv) > 1 else 2.5
-    plan = pl.read_parquet("data/processed/opinion_plan.parquet").to_dicts()
+    plan_df = pl.read_parquet("data/processed/opinion_plan.parquet")
+    check_schema(plan_df, ["ca_number", "source", "document_id", "title", "file_id"],
+                 name="opinion plan")
+    plan = plan_df.to_dicts()
     lex = sess("law.lexmachina.com")
     da = None
     rows = []

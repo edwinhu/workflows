@@ -65,23 +65,56 @@ __all__ = [
     "build_coverage", "COVERAGE_LONG", "COVERAGE_BY_YEAR", "COVERAGE_BY_TIER",
     "parity_report",
     "load_link", "load_fundid_seriesid", "load_sec_series_master",
+    "LINK_COLUMNS", "FUNDID_SERIESID_COLUMNS", "SEC_SERIES_MASTER_COLUMNS",
 ]
+
+
+# The columns each processed file is written with, taken from the writer's own final
+# `.select`/`cols` list — not from prose, so the two cannot drift apart.
+LINK_COLUMNS = [
+    "fundid", "seriesid", "crsp_fundno", "wficn", "index_fund_flag", "tna_latest",
+    "block", "block_source", "in_institutional", "match_tier", "crsp_match_tier",
+    "crsp_match_score", "iss_nonregistrant", "n_vote_rows", "n_crsp_classes",
+    "fundname_modal", "institutionname_modal",
+]
+FUNDID_SERIESID_COLUMNS = [
+    "fundid", "seriesid", "match_tier", "match_score", "n_vote_rows", "first_year",
+    "last_year", "fundname_modal", "institutionid", "institutionname_modal",
+    "iss_fundcik", "iss_nonregistrant", "n_seriesid", "crsp_fundno", "tna_latest",
+]
+SEC_SERIES_MASTER_COLUMNS = {
+    "series": ["series_id", "cik", "entity_name", "series_name", "n_classes", "tickers",
+               "year_first_seen", "year_last_seen", "n_years"],
+    "class": ["class_id", "series_id", "cik", "entity_name", "series_name", "class_name",
+              "class_ticker", "year_first_seen"],
+    "names": ["series_id", "series_name", "class_id", "class_name", "class_ticker",
+              "cik", "entity_name", "file_year"],
+}
+
+
+def _require_schema(df, expected, name):
+    """The whole-file contract. A `columns=` caller subsets on purpose and polars
+    enforces that list itself, raising ColumnNotFoundError on a name that is absent."""
+    missing = [c for c in expected if c not in df.columns]
+    if missing:
+        raise KeyError(f"{name}: missing {missing}. Got {len(df.columns)}: {list(df.columns)}")
+    return df
 
 
 def load_link(columns=None):
     """`data/processed/npx_crsp_link.parquet` — one row per ISS `fundid`.
 
-    Columns: `fundid, seriesid, crsp_fundno, wficn, index_fund_flag,
-    tna_latest, block, block_source, in_institutional, match_tier,
-    crsp_match_tier, crsp_match_score, iss_nonregistrant, n_vote_rows,
-    n_crsp_classes, fundname_modal, institutionname_modal`.
+    Columns: `LINK_COLUMNS`.
     """
-    return pl.read_parquet(cfg.NPX_CRSP_LINK, columns=columns)
+    df = pl.read_parquet(cfg.NPX_CRSP_LINK, columns=columns)
+    return df if columns is not None else _require_schema(df, LINK_COLUMNS, "npx_crsp_link")
 
 
 def load_fundid_seriesid(columns=None):
     """`data/processed/fundid_seriesid.parquet` — the L2 seriesId resolution."""
-    return pl.read_parquet(cfg.FUNDID_SERIESID, columns=columns)
+    df = pl.read_parquet(cfg.FUNDID_SERIESID, columns=columns)
+    return df if columns is not None else _require_schema(
+        df, FUNDID_SERIESID_COLUMNS, "fundid_seriesid")
 
 
 def load_sec_series_master(grain="series", columns=None):
@@ -89,4 +122,6 @@ def load_sec_series_master(grain="series", columns=None):
     path = {"series": cfg.SEC_SERIES_MASTER_SERIES,
             "class": cfg.SEC_SERIES_MASTER,
             "names": cfg.SEC_SERIES_NAMES_LONG}[grain]
-    return pl.read_parquet(path, columns=columns)
+    df = pl.read_parquet(path, columns=columns)
+    return df if columns is not None else _require_schema(
+        df, SEC_SERIES_MASTER_COLUMNS[grain], f"sec_series_master[{grain}]")

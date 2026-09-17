@@ -33,6 +33,26 @@ SCHEMA_CHECK_PATTERNS = [
 ]
 
 
+# `read_parquet(columns=["a", "b"])` IS the contract, enforced by the reader itself: a named
+# column that is absent raises ColumnNotFoundError (polars) / ArrowInvalid (pandas, pyarrow),
+# verified 2026-09-16. A variable (`columns=columns`) or an empty list asserts nothing.
+LITERAL_COLUMNS = re.compile(r"""columns\s*=\s*\[\s*["']""")
+
+
+def statement(lines, i):
+    """The full source of the statement starting at 0-based line `i`, by bracket balance."""
+    depth = 0
+    for k in range(i, min(i + 40, len(lines))):
+        for ch in lines[k]:
+            if ch in "([{":
+                depth += 1
+            elif ch in ")]}":
+                depth -= 1
+        if depth <= 0:
+            return "\n".join(lines[i:k + 1])
+    return lines[i]
+
+
 def check(context):
     """Returns list of violations. Empty list = pass."""
     cwd = Path(context.get("cwd", "."))
@@ -55,6 +75,8 @@ def check(context):
         for i, line in enumerate(lines, start=1):
             if any(re.search(pat, line) for pat in DATA_LOAD_PATTERNS):
                 # Check 10 lines after load for schema validation
+                if LITERAL_COLUMNS.search(statement(lines, i - 1)):
+                    continue
                 end = min(len(lines), i + 10)
                 post_load = "\n".join(lines[i:end])
                 if not any(re.search(pat, post_load) for pat in SCHEMA_CHECK_PATTERNS):
