@@ -11,9 +11,18 @@
  * This suite runs the corpus mode itself and compares, so the document cannot drift from the tool:
  * a stale report fails here rather than being believed.
  *
+ * WHAT IS PINNED, AND WHY IT IS NOT THE WHOLE-TREE TOTAL
+ * The report's raw column counts every suite file in the repository, so it moves when any unrelated
+ * test file is added — it was hand-corrected three times in a fortnight, each correction a commit
+ * editing a document so a suite would pass, none of it evidence about the lint. Pinned here instead
+ * is the AUDITED CORPUS: the per-rule counts over exactly the files this investigation read and
+ * cites. That set is invariant under repo growth and moves only when the lint's behaviour over those
+ * files moves, which is the regression worth catching. The raw column survives as a dated snapshot,
+ * held honest by arithmetic (audited <= raw, fp + tp = raw) rather than by recomputation.
+ *
  * THE REPORT CONTRACT
- *   - one markdown table, one row per rule id, with a header cell matching /raw/i and one matching
- *     /false positive/i; both cells on every row are integers
+ *   - one markdown table, one row per rule id, with header cells matching /audited corpus/i, /raw/i
+ *     and /false positive/i; every such cell on every row is an integer
  *   - a line naming the unparseable-file count
  *   - a Method section carrying the exact command, so the number can be re-run by someone who
  *     disputes it
@@ -48,11 +57,26 @@ function measurement(text: string) {
   const t = tableRows(text).find(t =>
     t.header.some(h => /raw/i.test(h)) && t.header.some(h => /false.positive/i.test(h)))
   expect(t).toBeDefined()
+  const audited = t!.header.findIndex(h => /audited.corpus/i.test(h))
+  expect(audited).toBeGreaterThan(-1)
   return {
+    audited,
     raw: t!.header.findIndex(h => /raw/i.test(h)),
     fp: t!.header.findIndex(h => /false.positive/i.test(h)),
     rows: t!.rows,
   }
+}
+
+const CITE = /[A-Za-z0-9_.\/-]+\/[A-Za-z0-9_.-]+\.(?:test\.ts|py):\d+/g
+const fileOf = (where: string) => where.replace(/:\d+$/, '')
+
+/**
+ * The audited corpus: the files this report cites by `file:line`, which is the set it actually read.
+ * Deriving it from the document rather than recording it separately keeps one fact in one place —
+ * a checked-in file list would be a second thing to drift.
+ */
+function auditedFiles(text: string): Set<string> {
+  return new Set((text.match(CITE) ?? []).map(fileOf))
 }
 
 describe('the report measures what the gating decision needs', () => {
@@ -64,14 +88,47 @@ describe('the report measures what the gating decision needs', () => {
     }
   })
 
-  test('the raw counts equal a FRESHLY EXECUTED corpus run over this repository', async () => {
+  test('the AUDITED-CORPUS counts equal a freshly executed run over the files this report read', async () => {
+    // The pinned measurement, and the reason it is not the whole-repository total. A whole-tree
+    // count moves when ANY suite file is added anywhere in the repo, so it was hand-corrected
+    // repeatedly for reasons having nothing to do with the lint — a document edited to make a test
+    // pass is not evidence. The audited corpus is the file set this investigation actually read and
+    // cites, so it is invariant under repo growth and moves only when the LINT's behaviour over
+    // those files moves: a rule that stops firing drops to 0, a rule that fires wider goes up.
     const { lintCorpus, RULE_IDS } = await mod()
     const fresh = lintCorpus(REPO)
-    const { raw, rows } = measurement(md())
+    const files = auditedFiles(md())
+    expect(files.size).toBeGreaterThan(0)
+    const counts = Object.fromEntries(RULE_IDS.map((id: string) => [id, 0])) as Record<string, number>
+    for (const f of fresh.findings as any[]) {
+      if (files.has(fileOf(String(f.where)))) counts[f.rule]++
+    }
+    const { audited, rows } = measurement(md())
     for (const id of RULE_IDS) {
       const row = rows.find(r => r.cells.some(c => c.includes(id)))!
-      expect(`${id}: ${row.cells[raw]}`).toBe(`${id}: ${fresh.counts[id]}`)
+      expect(`${id}: ${row.cells[audited]}`).toBe(`${id}: ${counts[id]}`)
     }
+  })
+
+  test('the whole-repo raw column cannot be smaller than the audited corpus it contains', () => {
+    // The raw column is an unpinned snapshot; this is the arithmetic that keeps it from being free.
+    const { audited, raw, rows } = measurement(md())
+    for (const r of rows) {
+      expect(r.cells[raw]).toMatch(/^\d+$/)
+      expect(Number(r.cells[audited])).toBeLessThanOrEqual(Number(r.cells[raw]))
+    }
+  })
+
+  test('the one true positive this report found by reading still fires, under its own rule', async () => {
+    // The FP measurement's whole point is which findings survived inspection. Exactly one did, and
+    // a rule change that silently stopped reporting it would gut the report while leaving every
+    // count plausible.
+    const { lintCorpus } = await mod()
+    const fresh = lintCorpus(REPO)
+    const tp = fresh.findings.find((f: any) =>
+      String(f.where) === 'skills/work/scripts/work-redispatch.test.ts:776')
+    expect(tp?.rule).toBe('positive-match-failure-vocabulary')
+    expect(md()).toContain('skills/work/scripts/work-redispatch.test.ts:776')
   })
 
   test('every rule carries a stated false-positive count, an integer no larger than its raw count', () => {
@@ -100,7 +157,7 @@ describe('the report measures what the gating decision needs', () => {
     // column by recomputation. Here the evidence itself has to survive re-execution.
     const { lintCorpus } = await mod()
     const real = new Set(lintCorpus(REPO).findings.map((f: any) => String(f.where)))
-    const cited = [...new Set((md().match(/[A-Za-z0-9_.\/-]+\/[A-Za-z0-9_.-]+\.(?:test\.ts|py):\d+/g) ?? []))]
+    const cited = [...new Set(md().match(CITE) ?? [])]
     expect(cited.length).toBeGreaterThan(0)
     const invented = cited.filter(c => !real.has(c))
     expect(invented).toEqual([])
@@ -121,8 +178,12 @@ describe('the report measures what the gating decision needs', () => {
       const rest = text.slice(start + 3)
       const nextHeading = rest.indexOf('\n## ')
       const section = nextHeading < 0 ? rest : rest.slice(0, nextHeading)
-      const cited = (section.match(/[A-Za-z0-9_.\/-]+\/[A-Za-z0-9_.-]+\.(?:test\.ts|py):\d+/g) ?? [])
-        .filter(c => byRule.get(id)!.has(c))
+      const all = [...new Set(section.match(CITE) ?? [])]
+      // Attribution, not just existence: a citation in this rule's section must be a finding THIS
+      // rule reports. Filtering the mismatches away instead would let a rule's evidence quietly
+      // become another rule's findings while the section still looked populated.
+      expect(`${id} misattributed: ${all.filter(c => !byRule.get(id)!.has(c))}`).toBe(`${id} misattributed: `)
+      const cited = all.filter(c => byRule.get(id)!.has(c))
       // Two citations, or every finding there is: a rule that fired once in the whole corpus
       // (existence-only-artifact, 2026-09-12) can show its work with exactly one.
       const need = Math.min(2, byRule.get(id)!.size)

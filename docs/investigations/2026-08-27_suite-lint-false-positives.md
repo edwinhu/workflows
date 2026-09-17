@@ -10,19 +10,32 @@ argue with a specific row.
 
 ## Result
 
-| rule id | raw findings | false positives | true positives |
-|---|---|---|---|
-| positive-match-failure-vocabulary | 26 | 23 | 3 |
-| single-distinct-literal | 207 | 191 | 16 |
-| existence-only-artifact | 1 | 1 | 0 |
-| injected-key-never-varied | 44 | 44 | 0 |
+| rule id | audited corpus | raw findings | false positives | true positives |
+|---|---|---|---|---|
+| positive-match-failure-vocabulary | 15 | 26 | 23 | 3 |
+| single-distinct-literal | 44 | 208 | 191 | 17 |
+| existence-only-artifact | 1 | 1 | 1 | 0 |
+| injected-key-never-varied | 27 | 44 | 44 | 0 |
 
-**The raw column is re-measured; the false-positive column is audited only where this note says
-so.** Re-measured 2026-09-15 against a corpus that has grown from 232 files as this repo gained test
-suites. The false-positive counts are otherwise the ones this investigation audited in August, over
-the findings that existed then — so twelve newer findings (eleven `single-distinct-literal`, one
-`positive-match-failure-vocabulary`) sit in the true-positive column by arithmetic, NOT by
-judgement. Nobody has read them. Do not cite that column as evidence about them.
+**The audited-corpus column is the one this repository's suite pins, and the only one re-executed on
+every run.** The *audited corpus* is the 26 files this investigation actually read and cites by
+`file:line` below. `suite-lint-report.test.ts` re-runs the lint and requires these four counts back
+exactly, so a rule that stops firing, fires wider, or reclassifies a file the investigation examined
+turns the suite red.
+
+**The raw column is a whole-repository snapshot, as of 2026-09-17, and is deliberately NOT pinned.**
+It counts every suite file in the tree, so it moved every time this repo gained an unrelated test
+file — three hand-corrections in a fortnight, each a commit editing a document to make a suite pass,
+none of them evidence about the lint. What that column supports is the arithmetic below it
+(`false positives + true positives = raw`, and `audited corpus ≤ raw`), which the suite does check.
+Recompute it with the Method command before quoting it; do not expect the figure printed here to
+match a tree that has moved.
+
+**The false-positive column is audited only where this note says so.** Those counts are the ones
+this investigation reached in August, over the findings that existed then — so the newer findings
+(`single-distinct-literal` and `positive-match-failure-vocabulary`) sit in the true-positive column
+by arithmetic, NOT by judgement. Nobody has read them. Do not cite that column as evidence about
+them.
 
 Six more findings arrived on 2026-09-16 with the loop-tick, teardown, ds-waiver, until and
 ds-schema tests — one `positive-match-failure-vocabulary`, five `single-distinct-literal`, none
@@ -41,7 +54,7 @@ and both were read:
   injected `PATH` fails it.
 
 `single-distinct-literal` lost two on 2026-09-16 when `tests/workflow_return_shape_test.py` was
-deleted — a return-shape lint that globbed a `workflows/` directory removed when that script became
+deleted (a whole-repository movement, of the kind the raw column no longer pins) — a return-shape lint that globbed a `workflows/` directory removed when that script became
 `skills/work/workflow.js`, so it scanned an empty set and returned 0. Both of its findings were READ
 before the row moved, and both were FALSE positives: `text.find("\n", i)` and `mm.group(1)` are
 scanner internals in a file the walker admitted on its `_test.py` name alone, not assertions whose
@@ -309,9 +322,14 @@ so the occurrence count is one.
 
 Every verdict above is anchored to a file and line. To contest one, open that line and answer the
 rule's own question: would the assertion still pass if the behaviour it names were wrong? To contest
-the totals, re-run the command in Method over the same tree and compare `counts` against the table —
-`suite-lint-report.test.ts` performs exactly that comparison, and additionally re-executes the corpus
-to confirm that every `path:line` cited in this document is a finding the tool really reports, so a
-stale citation fails the suite rather than being believed. That assertion is not decorative: it has
-now caught drift three separate times, twice from edits landing while the run was still in flight,
-on documents whose prose was otherwise still accurate.
+the totals, re-run the command in Method over the same tree; the raw column is a snapshot and will
+have moved if the tree has.
+
+What `suite-lint-report.test.ts` re-executes, and therefore what cannot silently rot, is narrower and
+firmer than a whole-tree total: the audited-corpus counts above, reproduced exactly; every
+`path:line` cited in this document, confirmed to be a finding the tool really reports **under the
+rule in whose section it is cited**; and the one true positive this investigation found by reading,
+`skills/work/scripts/work-redispatch.test.ts:776`, confirmed still to fire under
+`positive-match-failure-vocabulary`. That re-execution is not decorative: it has caught drift three
+separate times, twice from edits landing while a run was still in flight, on documents whose prose
+was otherwise still accurate.
