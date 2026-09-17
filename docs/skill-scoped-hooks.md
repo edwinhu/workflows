@@ -362,3 +362,25 @@ is itself the one-line fix that unblocks it.
 
 Do not run Experiment A and the migration in the same session. The measurement is the deliverable;
 the migration is what the measurement decides.
+
+---
+
+## 7. Settled 2026-09-17 — the three frontmatter declarations, under `farmOutOnly`
+
+Measured on `2.1.257`, not reasoned. Only **two** skills ever declared a frontmatter hook:
+`skill-creator` declares none (its path check is the plugin-wide `hooks/validate-skill-paths.ts`,
+Tier C, and `SKILL.md:16` already says so).
+
+1. **Cell A reproduces.** A fresh headless session invoked a scratch skill carrying a `PostToolUse`
+   `Write|Edit` hook, dispatched a general-purpose subagent to Write, then wrote itself. The log
+   holds exactly one entry — the main session's own `file_path`. The subagent's write produced none.
+2. **`farmOutOnly` denies everything but `*.md`.** `main-thread-guard.sh`'s `fo_exempt` was fed
+   synthetic payloads against a clean farmOutOnly project: `SKILL.md` → allow; `.py`, `.json`,
+   `.ts`, `hooks/hooks.json` → deny. So a skill hook whose target is markdown keeps its whole reach;
+   one whose target is anything else in-project loses all of it.
+3. **Dispositions.** `workflow-creator` stays skill-scoped — reason recorded in its own frontmatter.
+   `pollev-poll-creator`'s `check_scenario_coverage.py` moved to `user-agents/{lecture-impl,teaching}.md`.
+   It was also dead for a second, scope-independent reason: it read a `TOOL_INPUT` **environment
+   variable**, a string that appears **0 times** in the 2.1.257 binary (`CLAUDE_PROJECT_DIR`: 27).
+   Fed a real PostToolUse payload it printed nothing and exited 0. It now reads stdin, and a
+   malformed event exits 1 with stderr instead of a silent 0 that reads like "checked, clean".
