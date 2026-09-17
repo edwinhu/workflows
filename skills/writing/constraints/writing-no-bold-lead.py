@@ -84,7 +84,11 @@ def check(context):
 
 
 if __name__ == "__main__":
-    violations = check({"cwd": sys.argv[1] if len(sys.argv) > 1 else "."})
+    if len(sys.argv) < 2:
+        print(f"COULD-NOT-RUN: {CONSTRAINT} was given no draft directory — nothing was checked", file=sys.stderr)
+        print(f"Usage: python3 {sys.argv[0]} <draft-dir>", file=sys.stderr)
+        sys.exit(2)
+    violations = check({"cwd": sys.argv[1]})
     if violations:
         for v in violations:
             print(f"FAIL: {v}")

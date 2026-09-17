@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Test runner: auto-discovers and runs all DS constraint check scripts.
 # Canonical source: constraints/ds-*.py (co-located with .md rules)
-# Usage: ./scripts/check-all-ds.sh [optional: path to project directory]
+# Usage: ./scripts/check-all-ds.sh <path to project directory>
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONSTRAINTS_DIR="$SCRIPT_DIR/../constraints"
@@ -9,7 +9,14 @@ PASS=0
 FAIL=0
 TOTAL=0
 
-PROJECT_DIR="${1:-.}"
+# A BARE RUN USED TO DEFAULT TO ".", so a caller that forgot its argument got a PASS summary over
+# whatever directory it happened to stand in. Could-not-run is exit 2, never 0 and never 1.
+if [ $# -lt 1 ]; then
+    echo "COULD-NOT-RUN: check-all-ds was given no project directory — nothing was checked" >&2
+    echo "Usage: bash $0 <project-dir>" >&2
+    exit 2
+fi
+PROJECT_DIR="$1"
 
 echo "=== DS Workflow Constraint Checks ==="
 echo "Project directory: $(cd "$PROJECT_DIR" && pwd)"
