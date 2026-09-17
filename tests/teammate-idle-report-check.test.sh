@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Self-contained regression tests for teammate-idle-report-check.sh.
 #
-# Run directly (scripts/check-tests.sh globs only *.test.{ts,mjs,js} and *.py, so
-# this suite is not auto-discovered):
+# Gated by tests/shell-suites.test.ts, which globs *.test.sh and checks each exit code.
+# Run directly while working on it:
 #
 #     tests/teammate-idle-report-check.test.sh
 #

@@ -1,4 +1,8 @@
 #!/usr/bin/env -S uv run python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["lxml"]
+# ///
 """Regression: a law-review paper with NO author acknowledgements must NOT get a `*` author
 footnote (and the footnote-repair must NOT assume 3 bios). Root cause of the tender-paper bug:
 build_docx auto-filled a LOREM placeholder acknowledgement → a spurious `*` footnote that

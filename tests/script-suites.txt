@@ -12,6 +12,12 @@
 #   skills/gemini-batch/scripts/test_single.py     a live Gemini API call
 #   skills/wrds/scripts/test_connection.py         WRDS PostgreSQL credentials
 #   skills/lseg-data/scripts/test_connection.py    LSEG Data Library credentials
+#
+# The three under tests/ are pytest-ignored (pytest.ini) because they sys.exit() at module scope,
+# which aborts collection for the whole session; they are standalone scripts and run here instead.
+tests/ownership_dq_test.py
+tests/test_de_ai_footnote_masking.py
+tests/test_law_review_footnote_symbols.py
 skills/bmll/scripts/test_bmll_impact.py
 skills/bmll/scripts/test_bmll_scripts.py
 skills/ds/scripts/ds_dq_test.py

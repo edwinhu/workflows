@@ -198,8 +198,8 @@ function main(hookInput: Record<string, unknown>): never {
 // GUARDED, SO THE FILE CAN BE IMPORTED. Unguarded, module scope read stdin and called
 // `process.exit(0)` on import — so a test that imported `resolveTypTarget` exited silently before
 // its first assertion and reported success by printing nothing. That is the same silent-zero shape
-// `scripts/check-tests.sh` was written to prevent, arriving through the import path instead of the
-// runner. A hook has to be loadable to be testable.
+// `tests/standalone-suite-exit-codes.test.ts` guards against, arriving through the import path
+// instead of the runner. A hook has to be loadable to be testable.
 if (import.meta.main) {
   let payload: unknown;
   try {

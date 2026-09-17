@@ -1,4 +1,8 @@
 #!/usr/bin/env -S uv run --with pyyaml python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["pyyaml"]
+# ///
 """Tests for de_ai_audit.py footnote masking — findings must never land inside a footnote
 (pandoc inline ^[...] or markdown [^id]: definitions), since footnotes/citations are off-limits
 to a de-AI rewrite. Run: uv run --with pyyaml python3 tests/test_de_ai_footnote_masking.py"""

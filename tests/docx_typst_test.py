@@ -1,6 +1,6 @@
 """Contract tests for the docx <-> typst bridge (skills/docx-typst).
 
-Run: ./scripts/check-tests.sh docx_typst
+Run: uv run --with pytest python3 -m pytest tests/docx_typst_test.py -q
 
 WHAT THIS SUITE IS PROVING
 

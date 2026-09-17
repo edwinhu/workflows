@@ -5,6 +5,9 @@ import os
 import sys
 from pathlib import Path
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _ds_logging import reports_operation, statement_text  # noqa: E402
+
 CONSTRAINT = "ds-join-audits"
 APPLIES_TO = ["ds-delegate"]
 SEVERITY = "hard"
@@ -32,11 +35,13 @@ def check(context):
         for i, line in enumerate(lines, start=1):
             # Detect .merge( calls (DataFrame merge)
             if re.search(r'\.merge\s*\(', line) or re.search(r'\bpd\.merge\s*\(', line):
-                # Check surrounding 5 lines before and after for print/logging
+                # Surrounding 5 lines before and after. The log must REPORT THIS MERGE:
+                # a quantity (len()/.shape/row/match words) linked by a name from the
+                # merge's own line. Any-print-nearby was proximity, not a diagnostic.
                 start = max(0, i - 6)
                 end = min(len(lines), i + 5)
                 context_block = "\n".join(lines[start:end])
-                if not re.search(r'\bprint\s*\(|logging\.\w+\s*\(|logger\.\w+\s*\(', context_block):
+                if not reports_operation(context_block, statement_text(lines, i - 1)):
                     violations.append(
                         f"{path.relative_to(cwd)}:{i}: .merge() without diagnostic print — "
                         "log row counts, match rates, key uniqueness"
