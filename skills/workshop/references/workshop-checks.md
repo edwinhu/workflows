@@ -208,7 +208,7 @@ The threshold is fixed here, not left to the implementer: an unstated "short" gi
 implementers two different checks, and the laxest one never fires.
 
 **Build:** through the wrapper-plus-`--input handout=true` path the overflow driver uses
-(the typst plugin's `scripts/checks/check-overflow.sh`), per `slide-spec-grammar.md`. The
+(the typst plugin's `scripts/check-overflow.sh`), per `slide-spec-grammar.md`. The
 overlay-expanded build measures a different property.
 
 **Skip set and floor:** as specified in `slide-spec-grammar.md` — only the first page and
@@ -232,7 +232,7 @@ actually scanned, the pages skipped with their reason, and each offending page w
 ### OVR: Frame overflow — computed
 
 **Means:** zero slides overflow their frame, as determined by the typst plugin's
-`scripts/checks/check-overflow.sh` and its `overflow.py`/`shared.py`/`validation.typ` parts. Every
+`scripts/check-overflow.sh` and its `constraints/slides/overflow.py`, `constraints/slides/shared.py` and `scripts/validation.typ` parts. Every
 Typst checker has exactly one copy, in that plugin; this skill vendors none of it. The driver is
 resolved from `WORKSHOP_OVERFLOW_DRIVER`, then `~/.claude/skills/typst`, then `~/projects/typst`,
 and `validation.typ` is the one beside whichever driver resolved. A machine without the plugin has
