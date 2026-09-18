@@ -1,4 +1,4 @@
-import { test, expect } from "bun:test";
+import { test, expect, afterAll } from "bun:test";
 import {
   existsSync,
   cpSync,
@@ -7,6 +7,7 @@ import {
   readFileSync,
   readdirSync,
   rmSync,
+  statSync,
   symlinkSync,
   writeFileSync,
 } from "node:fs";
@@ -120,18 +121,38 @@ const LEG_ONLY = new Set(["work", "workflow-creator"]);
 
 // -- Scaffold -----------------------------------------------------------------
 
-/** Does this plugin-root entry hold a discovery runner, i.e. a `run-*.py` that globs beside itself? */
-function holdsDiscoveryRunner(dir: string): boolean {
+/** Submodule paths, read from .gitmodules: another repo delivered into this tree. */
+function submodulePaths(pluginRoot: string): Set<string> {
+  const f = join(pluginRoot, ".gitmodules");
+  if (!existsSync(f)) return new Set();
+  return new Set(
+    readFileSync(f, "utf8").split("\n")
+      .map((l) => l.trim().match(/^path\s*=\s*(\S+)$/)?.[1])
+      .filter((x): x is string => Boolean(x)),
+  );
+}
+
+/** Is this plugin-root entry a real directory of the plugin's own code, which must be COPIED?
+ *  A probe or runner anchors on its own `__file__` and skips symlinks, so through a link it
+ *  anchors in the REAL tree and the scaffold stops standing in. Measured twice: a symlinked
+ *  `constraints/` made teaching/exams' runner refuse the scaffolded dir (exit 2 against a real
+ *  tree exiting 0), and a symlinked `scripts/` hid workflows' load-constraints from sc-probe's
+ *  keysSomethingReads, collapsing its allowed-key set and flagging four correct ds/writing files.
+ *  Dot-directories (caches, worktrees, .pixi -- 2.3 GB in workflows), `scratch` and submodules
+ *  are symlinked: no probe reads them, and copying them is what makes this unaffordable. */
+function mustCopy(pluginRoot: string, name: string, submodules: Set<string>): boolean {
+  if (name.startsWith(".") || name === "scratch" || submodules.has(name)) return false;
   try {
-    return readdirSync(dir).some((f) => f.startsWith("run-") && f.endsWith(".py"));
+    return statSync(join(pluginRoot, name)).isDirectory();
   } catch {
-    return false; // not a directory, or unreadable: symlinking it is the existing behaviour
+    return false;
   }
 }
 
 /** Build the throwaway plugin root and return the path of the copied skill under test. */
 function scaffold(skillDir: string, root: string): string {
   const pluginRoot = resolve(skillDir, "..", "..");
+  const submodules = submodulePaths(pluginRoot);
   const name = basename(skillDir);
   mkdirSync(join(root, "skills"), { recursive: true });
   for (const e of readdirSync(pluginRoot).concat([".claude-plugin"])) {
@@ -146,7 +167,7 @@ function scaffold(skillDir: string, root: string): string {
     // verdict the real tree returns. Measured 2026-09-18 on teaching/exams: symlinked, the gate's
     // probe-tests leg exited 1 against a real tree exiting 0; copied, both exit 0.
     // Derived from the property, not a name: any top-level dir holding a `run-*.py`.
-    if (holdsDiscoveryRunner(src)) cpSync(src, join(root, e), { recursive: true, dereference: true });
+    if (mustCopy(pluginRoot, e, submodules)) cpSync(src, join(root, e), { recursive: true, dereference: true });
     else symlinkSync(src, join(root, e));
   }
   for (const e of readdirSync(join(pluginRoot, "skills"))) {
@@ -223,6 +244,57 @@ const INJECTIONS = [
 
 // -- The assertion ------------------------------------------------------------
 
+// -- All ten targets run CONCURRENTLY -------------------------------------------------------
+// bun executes the tests in a file one after another, so a test-per-target ran ten sequential
+// batches of four gate runs: 262s of the suite's 315s. The work is independent -- separate
+// scaffolds, separate temp dirs -- so it is started once, here, and each test awaits its own
+// slice. One test per target is kept so a failure still names the workflow.
+//
+// POOLED, not all forty at once: each gate run spawns six legs and several of those spawn their
+// own `bun test`, so an unbounded fan-out thrashes the machine and the timings stop meaning
+// anything. Four targets in flight is sixteen concurrent gate runs.
+const POOL = 4;
+
+interface TargetRuns { base: GateRun; real: GateRun | null; injected: GateRun[]; tmp: string }
+
+async function runTarget(target: string): Promise<TargetRuns> {
+  const name = basename(target);
+  const tmp = mkdtempSync(join(tmpdir(), `gate-vacuity-${name}-`));
+  const [base, real, ...injected] = await Promise.all([
+    runGate(scaffold(target, join(tmp, "base"))),
+    // The real tree, unperturbed. Launched alongside the rest, so fidelity costs wall clock only
+    // where the scaffold and the real tree could actually disagree.
+    LEG_ONLY.has(name) ? Promise.resolve(null) : runGate(target),
+    ...INJECTIONS.map(({ inject }, i) => {
+      const fixture = scaffold(target, join(tmp, `inj${i}`));
+      inject(fixture);
+      return runGate(fixture);
+    }),
+  ]);
+  return { base, real, injected, tmp };
+}
+
+async function runAll(): Promise<Map<string, TargetRuns>> {
+  const out = new Map<string, TargetRuns>();
+  const queue = [...TARGETS];
+  const worker = async () => {
+    for (;;) {
+      const t = queue.shift();
+      if (!t) return;
+      out.set(basename(t), await runTarget(t));
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(POOL, TARGETS.length) }, worker));
+  return out;
+}
+
+// Started at module load, so the first test awaits work already in flight.
+const ALL = runAll();
+
+afterAll(async () => {
+  for (const { tmp } of (await ALL).values()) rmSync(tmp, { recursive: true, force: true });
+});
+
 for (const target of TARGETS) {
   const name = basename(target);
 
@@ -233,41 +305,28 @@ for (const target of TARGETS) {
       // sweep is the vacuity the sweep exists to detect, arriving by the other door.
       expect(existsSync(target), `${target} does not exist, so its gate was never exercised`).toBe(true);
 
-      const tmp = mkdtempSync(join(tmpdir(), `gate-vacuity-${name}-`));
-      try {
-        const [base, real, ...injected] = await Promise.all([
-          runGate(scaffold(target, join(tmp, "base"))),
-          // The real tree, unperturbed. Launched alongside the rest, so fidelity costs wall clock
-          // only where the scaffold and the real tree could actually disagree.
-          LEG_ONLY.has(name) ? Promise.resolve(null) : runGate(target),
-          ...INJECTIONS.map(({ inject }, i) => {
-            const fixture = scaffold(target, join(tmp, `inj${i}`));
-            inject(fixture);
-            return runGate(fixture);
-          }),
-        ]);
+      const runs = (await ALL).get(name);
+      expect(runs, `${name}: no gate run was recorded, so nothing was exercised`).toBeDefined();
+      const { base, real, injected } = runs!;
 
-        // -- control: the unperturbed copy passes the leg and reports neither rule --
-        expect(base.leg("wc-probe"), `${name}: the wc-probe leg printed no line at all`).toBe(0);
-        for (const { rule } of INJECTIONS) {
-          expect(base.findingRules, `${name}: the unperturbed copy already reports ${rule}`).not.toContain(rule);
-        }
-        if (real) {
-          expect(
-            base.code,
-            `${name}: the scaffolded copy's verdict (${base.code}) differs from the real tree's (${real.code}), so the injections below are made against a stand-in that does not stand in`,
-          ).toBe(real.code);
-        }
+      // -- control: the unperturbed copy passes the leg and reports neither rule --
+      expect(base.leg("wc-probe"), `${name}: the wc-probe leg printed no line at all`).toBe(0);
+      for (const { rule } of INJECTIONS) {
+        expect(base.findingRules, `${name}: the unperturbed copy already reports ${rule}`).not.toContain(rule);
+      }
+      if (real) {
+        expect(
+          base.code,
+          `${name}: the scaffolded copy's verdict (${base.code}) differs from the real tree's (${real.code}), so the injections below are made against a stand-in that does not stand in`,
+        ).toBe(real.code);
+      }
 
-        // -- each injection flips the verdict and names its rule --
-        for (const [i, { rule }] of INJECTIONS.entries()) {
-          const run = injected[i];
-          expect(run.leg("wc-probe"), `${name}: injecting a ${rule} violation did not fail the wc-probe leg`).toBe(1);
-          expect(run.findingRules, `${name}: the failing verdict does not name ${rule}`).toContain(rule);
-          expect(run.code, `${name}: check.sh returned a passing verdict over a ${rule} violation`).not.toBe(0);
-        }
-      } finally {
-        rmSync(tmp, { recursive: true, force: true });
+      // -- each injection flips the verdict and names its rule --
+      for (const [i, { rule }] of INJECTIONS.entries()) {
+        const run = injected[i];
+        expect(run.leg("wc-probe"), `${name}: injecting a ${rule} violation did not fail the wc-probe leg`).toBe(1);
+        expect(run.findingRules, `${name}: the failing verdict does not name ${rule}`).toContain(rule);
+        expect(run.code, `${name}: check.sh returned a passing verdict over a ${rule} violation`).not.toBe(0);
       }
     },
     900_000,

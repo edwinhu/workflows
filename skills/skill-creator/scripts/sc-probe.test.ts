@@ -304,6 +304,46 @@ test('S4 runs over a plugin root, finding constraints/ wherever it sits', () => 
   } finally { rmSync(d, { recursive: true, force: true }) }
 })
 
+// THE SPLIT. Rules moved from `constraints/` to `rules/`, and for a day S4/S5 enumerated the old
+// name only: 0 constraint docs across all four plugins while typst held 20, workflows 48,
+// teaching 14 -- CLEAN over nothing. These three hold the repaired shape.
+
+test('S4 enumerates rules/ as well as constraints/', () => {
+  const d = skillTree()
+  try {
+    mkdirSync(join(d, 'rules'), { recursive: true })
+    writeFileSync(join(d, 'rules', 'shared.md'), '---\napplies-to: [a]\ntestable: true\n---\n')
+    const r = runProbe(d)
+    expect(r.constraintDocs).toBe(1)
+    expect(r.findings.some(x => x.detail.includes('`testable:`'))).toBe(true)
+  } finally { rmSync(d, { recursive: true, force: true }) }
+})
+
+test('a rule under skills/<skill>/rules/ is LOCAL, so it needs no applies-to:', () => {
+  const d = skillTree()
+  try {
+    mkdirSync(join(d, 'skills', 'demo', 'rules'), { recursive: true })
+    writeFileSync(join(d, 'skills', 'demo', 'SKILL.md'), '# D\n')
+    writeFileSync(join(d, 'skills', 'demo', 'rules', 'local.md'), '---\n---\n\nRule.\n')
+    const r = runProbe(d)
+    expect(r.constraintDocs).toBe(1)
+    expect(r.findings.filter(x => x.rule.startsWith('S4 shared'))).toEqual([])
+  } finally { rmSync(d, { recursive: true, force: true }) }
+})
+
+test('paths: declares scope for the install tier, and S4 still fires when neither key is there', () => {
+  const d = skillTree()
+  try {
+    mkdirSync(join(d, 'rules'), { recursive: true })
+    writeFileSync(join(d, 'rules', 'always-on.md'), '---\npaths: ["**/*.typ"]\n---\n\nRule.\n')
+    writeFileSync(join(d, 'rules', 'unscoped.md'), '---\n---\n\nRule.\n')
+    const r = runProbe(d)
+    const shared = r.findings.filter(x => x.rule.startsWith('S4 shared'))
+    expect(shared.length).toBe(1)
+    expect(shared[0].file).toContain('unscoped.md')
+  } finally { rmSync(d, { recursive: true, force: true }) }
+})
+
 // ---------------------------------------------------------------- S5 (advisory)
 
 test('S5 is an advisory and does not gate', () => {

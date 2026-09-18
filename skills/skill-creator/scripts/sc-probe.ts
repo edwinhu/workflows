@@ -622,8 +622,14 @@ export function checkConstraintDocs(files: readonly string[], allowed: Set<strin
     const keys = frontmatterKeys(text)
     const names = keys.map(k => k.key)
     // Only a SHARED corpus needs the scope declared; a skill-local one is scoped by its path.
-    const shared = !/[/\\]skills[/\\][^/\\]+[/\\]constraints[/\\]/.test(f)
-    if (shared && !names.includes('applies-to')) {
+    // BOTH corpus names, matching what findConstraintDirs enumerates: `skills/<skill>/rules/` is
+    // as local as `skills/<skill>/constraints/`, and testing one name called teaching's 13
+    // skill-local exam rules shared.
+    const shared = !/[/\\]skills[/\\][^/\\]+[/\\](rules|constraints)[/\\]/.test(f)
+    // Scope is declared by EITHER key. `rules/` holds two tiers: `applies-to:` names the scopes a
+    // grader loads, `paths:` names the globs install.sh links into ~/.claude/rules/. Both say which
+    // files the rule governs, which is the whole of what S4 asks.
+    if (shared && !names.includes('applies-to') && !names.includes('paths')) {
       findings.push({
         rule: 'S4 shared constraint declares no applies-to:',
         severity: 'major',
@@ -763,7 +769,8 @@ export function checkProseCounts(file: string, body: string): Advisory[] {
 // ---------------------------------------------------------------- the probe
 
 export interface ProbeOptions {
-  /** Directories holding constraint docs, relative to the target. Default: every `constraints/`. */
+  /** Directories holding constraint docs, relative to the target. Default: every `rules/` and
+   *  `constraints/`. */
   constraintDirs?: string[]
 }
 
@@ -778,7 +785,12 @@ function findConstraintDirs(target: string, out: string[] = [], depth = 0): stri
   for (const e of entries) {
     if (!e.isDirectory() || e.isSymbolicLink() || SKIP_DIRS.has(e.name)) continue
     const full = join(target, e.name)
-    if (e.name === 'constraints') out.push(full)
+    // BOTH names. The rules/constraints split moved every rule .md out of `constraints/` into
+    // `rules/`, so enumerating one name examined 0 docs across all four plugins while typst held
+    // 20 rules, workflows 48 and teaching 14 -- S4 and S5 reported CLEAN over nothing. Measured
+    // 2026-09-18 with one fixture file: 2 findings under `constraints/`, 0 under `rules/`,
+    // identical bytes. `constraints/` stays enumerated so a straggler .md there is still judged.
+    if (e.name === 'rules' || e.name === 'constraints') out.push(full)
     else findConstraintDirs(full, out, depth + 1)
   }
   return out
