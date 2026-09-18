@@ -32,7 +32,12 @@ const AUDIT = "/home/eh/projects/plugin-utils/bin/workflow-audit";
 //      W's real plugin root does: every top-level entry and every SIBLING skill is symlinked (the
 //      probe walks only --target, so a sibling need only exist for path resolution), and W itself
 //      is COPIED so it can be perturbed. Verified below: for eight of the ten the scaffolded copy
-//      reproduces the real tree's verdict exactly (check.sh exit 0, all four legs 0).
+//      reproduces the real tree's verdict exactly — compared against a gate run on the REAL target,
+//      not against a hardcoded 0. The scaffold is a stand-in, so what it must reproduce is whatever
+//      the real tree says. Hardcoding 0 asserted something stronger AND weaker at once: it went red
+//      when a workflow's plugin legitimately went red (teaching's three, the day check.sh grew its
+//      pc-probe leg), and it would have stayed green if a scaffold passed while the real tree failed
+//      — which is the direction that actually makes the injections meaningless.
 //   2. Assert the unperturbed copy's wc-probe leg exits 0 and names neither injected rule. This is
 //      the control: without it, a gate that fails on everything would "pass" this test.
 //   3. Inject ONE violation of ONE rule the gate claims to enforce, and assert the gate now returns
@@ -48,7 +53,7 @@ const AUDIT = "/home/eh/projects/plugin-utils/bin/workflow-audit";
 // No workflow got the weaker leg-count/exit-2 treatment. All ten are proven behaviourally.
 //
 // NEGATIVE CONTROL, run once by hand rather than shipped (it would double the runtime): this file
-// with `check.sh` replaced by a stub that prints four `exit=0` legs and returns 0 fails with
+// with `check.sh` replaced by a stub that prints six `exit=0` legs and returns 0 fails with
 // "dev: injecting a P3 frontmatter violation did not fail the wc-probe leg". A vacuous gate cannot
 // satisfy this test.
 //
@@ -213,8 +218,11 @@ for (const target of TARGETS) {
 
       const tmp = mkdtempSync(join(tmpdir(), `gate-vacuity-${name}-`));
       try {
-        const [base, ...injected] = await Promise.all([
+        const [base, real, ...injected] = await Promise.all([
           runGate(scaffold(target, join(tmp, "base"))),
+          // The real tree, unperturbed. Launched alongside the rest, so fidelity costs wall clock
+          // only where the scaffold and the real tree could actually disagree.
+          LEG_ONLY.has(name) ? Promise.resolve(null) : runGate(target),
           ...INJECTIONS.map(({ inject }, i) => {
             const fixture = scaffold(target, join(tmp, `inj${i}`));
             inject(fixture);
@@ -227,8 +235,11 @@ for (const target of TARGETS) {
         for (const { rule } of INJECTIONS) {
           expect(base.findingRules, `${name}: the unperturbed copy already reports ${rule}`).not.toContain(rule);
         }
-        if (!LEG_ONLY.has(name)) {
-          expect(base.code, `${name}: the scaffolded copy does not reproduce the real tree's PASS`).toBe(0);
+        if (real) {
+          expect(
+            base.code,
+            `${name}: the scaffolded copy's verdict (${base.code}) differs from the real tree's (${real.code}), so the injections below are made against a stand-in that does not stand in`,
+          ).toBe(real.code);
         }
 
         // -- each injection flips the verdict and names its rule --
