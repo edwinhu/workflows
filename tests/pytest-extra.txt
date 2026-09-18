@@ -5,9 +5,11 @@
 #
 # NOT listed, and why — each would need a credential or a live service, so gating them would make
 # the audit fail on a laptop with no VPN rather than on a defect:
-#   skills/wrds/scripts/test_connection.py         WRDS PostgreSQL
-#   skills/lseg-data/scripts/test_connection.py    LSEG Data Library
-#   skills/gemini-batch/scripts/test_single.py     Gemini API
+# The form is machine-readable so tests/suite-coverage.test.ts can check it: a suite outside
+# tests/ must be named above or declared here, and a new one is red the day it lands.
+# not-gated: skills/wrds/scripts/test_connection.py -- needs a live WRDS PostgreSQL session
+# not-gated: skills/lseg-data/scripts/test_connection.py -- needs a live LSEG Data Library session
+# not-gated: skills/gemini-batch/scripts/test_single.py -- needs Gemini API credentials
 #
 # workshop_deck_test.py IS listed. It was documented for months as failing "19 of 108 on a clean
 # tree in the WID and INV legs" — a plan scoped work around that number and told implementers it
