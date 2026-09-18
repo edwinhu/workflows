@@ -98,6 +98,57 @@
  *     does not gate — advisories are their own channel and are excluded from the exit code, because
  *     a pattern's corpus standing is a claim about the world, not about the plugin's shape.
  *
+ * I8  A rule has ONE representation. A `<stem>.md` beside a `<stem>.py` in the same checker
+ *     directory (the corpus writes the markdown as `typst-<stem>.md`, so that prefix is allowed) is
+ *     a rule stated twice: the script decides it, and the prose is the copy that rots.
+ *     Defect: `typst/constraints` carries 23 `.md` and 28 `.py`, of which 14 are PAIRS — the debt
+ *     `skills/workflow-creator/SKILL.md` already names. A checker needs no parallel `.md`; it runs.
+ *     A rule may legitimately explain WHY while the checker decides WHETHER, and whether a body
+ *     "merely restates" is not decidable — so the PAIR is flagged and the rationale case is
+ *     DECLARED, never guessed. See EXEMPTIONS below.
+ *
+ * I9  A checker is REACHABLE. A `.py` exposing the checker contract that sits outside every
+ *     discovery runner's enumerated directory runs only because someone wrote its name down, and is
+ *     one rename from silence with nothing to report it.
+ *     Decided from the two halves this probe already builds — `discoveryRunners` and the directories
+ *     each one globs — never from the literal name `constraints/`, which is a convention in two
+ *     plugins and the definition in neither.
+ *     Two silences, both deliberate: with NO discovery runner at all, I9 says nothing (I3 already
+ *     reports every contract module as uncalled, and one fact twice is one fact plus noise); and a
+ *     CLI-shaped checker named in a runner's own exclusion list — typst's
+ *     `CLI_CHECKERS = ("runts", "widows", "orphans", "section-hierarchy")` — is excluded from the
+ *     import path on purpose, so it is read FROM the runner, not hardcoded here.
+ *
+ * I10 Every rule in a checker directory is SCOPED. A `.md` there with no `applies-to:` frontmatter
+ *     is in scope for zero workflows and indistinguishable from one nobody scoped.
+ *     `scripts/load-constraints.ts` already refuses this at load time; I10 makes it repo-wide and
+ *     visible BEFORE load, where a file that no workflow will ever select still looks live.
+ *
+ * ---------------------------------------------------------------------------------------------
+ * RULE vs CONSTRAINT — the distinction I8, I9 and I10 make decidable
+ *
+ *   a RULE is markdown. No script can settle it; a model reads it and judges.
+ *   a CONSTRAINT is code. A script decides it, and its finding IS the statement.
+ *
+ * They are never the same rule in two forms. Three skills document that distinction; until I8-I10
+ * nothing decided it, so the corpus drifted into 14 pairs while the doctrine read as enforced.
+ *
+ * ---------------------------------------------------------------------------------------------
+ * EXEMPTIONS
+ *
+ * One rule is exemptable — `two-representations` — because retiring a paired `.md` can delete the
+ * only written rationale for a checker, and the probe cannot read a body and tell rationale from
+ * restatement. The grammar is wc-probe's, in this probe's namespace, and a marker must be the WHOLE
+ * trimmed line (optionally behind a `//`, `#` or `*` comment lead-in):
+ *
+ *     <!-- pc-probe: ignore-two-representations -->
+ *
+ * In Markdown a marker inside a fenced or indented block is an EXAMPLE, not a declaration — else a
+ * file documenting this syntax exempts itself. A marker naming a rule nothing honours is a FINDING
+ * (I11), never a silent no-op. Every exemption applied is carried in `ProbeResult.exemptions` and
+ * printed as a SUPPRESSED note on EVERY run, in both output modes: a suppressed check nobody can see
+ * is indistinguishable from a check that passed.
+ *
  * ---------------------------------------------------------------------------------------------
  * SCOPE, STATED SO THE SILENCES ARE NOT MISTAKEN FOR PASSES
  *
@@ -107,6 +158,13 @@
  *   Cross-plugin lens/table pairs are out of reach and are not claimed.
  * - I5 reads only LABEL-SHAPED entries: a string containing `/`. `SKIP_DIRS`-style lists of bare
  *   names are not label suppressions and are left alone.
+ * - I8/I9/I10 judge a CHECKER DIRECTORY, derived as: a directory holding at least one `.py` that
+ *   exposes the checker contract, or a directory some discovery runner globs. A dir the probe
+ *   cannot derive is not judged, and is not claimed to be clean.
+ * - The checker contract is a module-level `def check(<one parameter>)` or an `APPLIES_TO`
+ *   declaration. ONE parameter is exact, not conservative: both runners in the corpus call
+ *   `mod.check(context)` / `mod.check(filepath)` with a single positional, and a two-parameter
+ *   `def check(path, verbose=False)` in a CLI script is an internal helper no runner dispatches to.
  */
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
@@ -177,6 +235,19 @@ export interface PatternTable {
   skill: string | null
 }
 
+/**
+ * A DECLARED suppression of one rule, file-scoped.
+ *
+ * Only `two-representations` is honoured (`KNOWN_EXEMPTION_RULES`); anything else is a finding under
+ * I11. Region scope is deliberately not offered: I8's subject is a PAIR of files, not a line range,
+ * so a region marker would name a span no predicate consults.
+ */
+export interface Exemption {
+  rule: string
+  file: string
+  line: number
+}
+
 export interface ProbeResult {
   target: string
   findings: Finding[]
@@ -186,6 +257,12 @@ export interface ProbeResult {
   engines: Engine[]
   lenses: Lens[]
   tables: PatternTable[]
+  /** Every exemption applied. Printed on every run, in both modes. */
+  exemptions: Exemption[]
+  /** Checker directories, relative to the target — what I8 and I10 were judged over. */
+  checkerDirs: string[]
+  /** Directories some discovery runner globs, relative to the target — what I9 was judged against. */
+  enumeratedDirs: string[]
   /** The corpus dictionary actually read, or null when none was reachable. */
   corpus: string | null
   filesEligible: number
@@ -690,6 +767,210 @@ export function parseRejectedPhrases(yaml: string): string[] {
   return [...out]
 }
 
+// ---------------------------------------------------------------- exemptions
+
+/**
+ * The marker grammar. Whole trimmed line only — substring matching would make this very file exempt
+ * the moment it spelled the marker out, which is the undeclared suppression the mechanism exists to
+ * prevent. The rule-name alphabet is WIDER than the legal names on purpose: a name that never parses
+ * is invisible in both channels, so anything name-shaped is parsed here and rejected by I11.
+ */
+const EXEMPT_LINE_RE = /^(?:\/\/|#|\*)?\s*<!--\s*pc-probe:\s*ignore-([A-Za-z0-9][A-Za-z0-9_.-]*)\s*-->$/
+
+const FENCE_RE = /^(\s*)(`{3,}|~{3,})\s*(\S*)/
+
+/**
+ * The rules a marker may name — the set actually HONOURED, not the set that exists. A name outside
+ * it suppresses nothing while reading exactly like a suppression that works.
+ */
+export const KNOWN_EXEMPTION_RULES: readonly string[] = ['two-representations']
+
+/** The 1-based lines of `text` on which a declaration COUNTS. In Markdown, a marker inside a fenced
+ *  or four-space-indented block is an example, not a declaration. */
+export function declarableLines(file: string, text: string): number[] {
+  const lines = text.split('\n')
+  const markdown = MARKDOWN_EXT_RE.test(file)
+  const out: number[] = []
+  let fence: string | null = null
+  for (let i = 0; i < lines.length; i++) {
+    if (markdown) {
+      const f = FENCE_RE.exec(lines[i])
+      if (fence === null) {
+        if (f) {
+          fence = f[2]
+          continue
+        }
+      } else {
+        if (f && f[2][0] === fence[0] && f[2].length >= fence.length && f[3] === '') fence = null
+        continue
+      }
+      if (/^ {4}|^\t/.test(lines[i])) continue
+    }
+    out.push(i + 1)
+  }
+  return out
+}
+
+export function parseExemptions(file: string, text: string): Exemption[] {
+  const lines = text.split('\n')
+  const out: Exemption[] = []
+  for (const lineNo of declarableLines(file, text)) {
+    const m = EXEMPT_LINE_RE.exec(lines[lineNo - 1].trim())
+    if (m) out.push({ rule: m[1], file, line: lineNo })
+  }
+  return out
+}
+
+/** I11: a marker naming a rule nothing honours is a finding, not a suppression. */
+export function checkExemptionVocabulary(exemptions: readonly Exemption[]): Finding[] {
+  return exemptions
+    .filter(e => !KNOWN_EXEMPTION_RULES.includes(e.rule))
+    .map(e => ({
+      rule: 'I11 exemption vocabulary',
+      severity: 'major' as const,
+      file: e.file,
+      line: e.line,
+      detail: `the marker "ignore-${e.rule}" names a rule no predicate honours, so it suppresses nothing`,
+      remedy: `use one of: ${KNOWN_EXEMPTION_RULES.join(', ')} — a marker that reads as a suppression and is not one hides a failing check twice over`,
+    }))
+}
+
+// ---------------------------------------------------------------- checker shape
+
+/**
+ * Does this module expose the checker contract a discovery runner dispatches on?
+ *
+ * A module-level `def check(<one parameter>)`, or an `APPLIES_TO` declaration (the key workflows'
+ * `run-constraints.py` reads), or the full check-all contract. See SCOPE for why one parameter.
+ */
+export function hasCheckerContract(text: string): boolean {
+  if (hasModuleContract(text)) return true
+  if (/^\s*APPLIES_TO\s*(?::[^=\n]*)?=/m.test(text)) return true
+  return /^def\s+check\s*\(\s*[A-Za-z_]\w*(?:\s*:[^,()=]*)?\s*\)/m.test(text)
+}
+
+/** Does this markdown carry an `applies-to:` key in its FRONTMATTER (not merely in its body)? */
+export function hasAppliesTo(text: string): boolean {
+  if (!/^---\s*\n/.test(text)) return false
+  const end = text.indexOf('\n---', 3)
+  if (end === -1) return false
+  return /^applies-to\s*:/m.test(text.slice(0, end))
+}
+
+/**
+ * Directory anchors a runner computes from `__file__`, by variable name.
+ *
+ * `constraints_dir = os.path.dirname(os.path.abspath(__file__))`, `_plugin_constraints_dir =
+ * Path(__file__).parent`, `_repo_root = Path(__file__).resolve().parent.parent` and the one level of
+ * indirection the corpus needs, `skills_dir = _repo_root / "skills"`. Nothing else: a glob whose
+ * anchor this probe cannot follow yields no enumerated directory, which can only ADD an I9 finding a
+ * human dismisses — never hide one.
+ */
+export function globAnchors(runner: string, code: string): Map<string, string> {
+  const self = dirname(runner)
+  const out = new Map<string, string>([['__self__', self]])
+  for (const m of code.matchAll(/^\s*([A-Za-z_]\w*)\s*=\s*os\.path\.dirname\(\s*(?:os\.path\.abspath\(\s*)?__file__/gm)) {
+    out.set(m[1], self)
+  }
+  for (const m of code.matchAll(
+    /^\s*([A-Za-z_]\w*)\s*=\s*Path\(\s*__file__\s*\)((?:\s*\.\s*(?:resolve\(\)|absolute\(\)|parents\[\d+\]|parent))+)((?:\s*\/\s*(?:"[^"]*"|'[^']*'))*)/gm,
+  )) {
+    let up = 0
+    for (const step of m[2].matchAll(/parents\[(\d+)\]|parent\b/g)) up += step[1] ? Number(step[1]) + 1 : 1
+    let base = runner
+    for (let i = 0; i < up; i++) base = dirname(base)
+    const segs = [...m[3].matchAll(/["']([^"']*)["']/g)].map(s => s[1])
+    out.set(m[1], resolve(base, ...segs))
+  }
+  // One level of indirection: `NAME = OTHER / "seg"`, resolved against the anchors above.
+  for (const m of code.matchAll(/^\s*([A-Za-z_]\w*)\s*=\s*([A-Za-z_]\w*)\s*((?:\/\s*(?:"[^"]*"|'[^']*')\s*)+)/gm)) {
+    const base = out.get(m[2])
+    if (!base) continue
+    const segs = [...m[3].matchAll(/["']([^"']*)["']/g)].map(s => s[1])
+    out.set(m[1], resolve(base, ...segs))
+  }
+  return out
+}
+
+/** Existing directories matching `segments` (each possibly holding `*`) under `base`. */
+function expandDirs(base: string, segments: string[]): string[] {
+  if (segments.length === 0) return existsSync(base) && statSync(base).isDirectory() ? [base] : []
+  const [head, ...rest] = segments
+  if (!head || head === '.') return expandDirs(base, rest)
+  if (!head.includes('*')) return expandDirs(join(base, head), rest)
+  const quoted = head.split('*').map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+  const re = new RegExp('^' + quoted.join('[^/]*') + '$')
+  let entries: string[]
+  try {
+    entries = readdirSync(base)
+  } catch {
+    return []
+  }
+  const out: string[] = []
+  for (const e of entries) if (re.test(e)) out.push(...expandDirs(join(base, e), rest))
+  return out
+}
+
+/**
+ * The directories `runner` ENUMERATES, derived from its glob patterns and its `__file__` anchors.
+ *
+ * A pattern with no directory part (`*.py`) is anchored at the runner's own directory — that is
+ * where `glob.glob(os.path.join(constraints_dir, "*.py"))` points. A pattern that names directories
+ * (a star segment followed by `constraints`) is tried against every anchor and kept where it
+ * expands to a real directory.
+ */
+export function enumeratedDirsOf(runner: string, code: string, extraAnchors: readonly string[] = []): string[] {
+  const anchors = globAnchors(runner, code)
+  // A cwd-relative pattern — `glob.glob("constraints/*.py")` — is anchored wherever the runner is
+  // invoked from, which this process cannot know. The plugin root is the plausible cwd, and counting
+  // its expansion as enumerated can only SILENCE an I9, never invent one.
+  for (const a of extraAnchors) anchors.set(`__extra:${a}`, a)
+  const self = dirname(runner)
+  const out = new Set<string>()
+  for (const m of code.matchAll(/["']([^"'\n]*\*[^"'\n]*)["']/g)) {
+    const pattern = m[1]
+    if (pattern.startsWith('/') || pattern.includes('**')) continue
+    const segs = pattern.split('/').filter(s => s !== '')
+    if (segs.length === 0) continue
+    // A trailing `*.ext` names FILES; the directory enumerated is what precedes it.
+    const last = segs[segs.length - 1]
+    const dirSegs = /\.[A-Za-z0-9]+$/.test(last) ? segs.slice(0, -1) : segs
+    // A directory part that is nothing but wildcards (`*`, `*/*`) IDENTIFIES no directory, so it is
+    // read only against the runner's own — a runner globbing `*` in its own directory. Cross-
+    // producting it with every anchor expanded the plugin root into all 23 of its top-level
+    // directories, which then read as checker directories and drew 25 I10 findings on correct prose.
+    const named = dirSegs.some(s => s.replace(/\*/g, '') !== '')
+    const bases = dirSegs.length === 0 || !named ? [self] : [...anchors.values()]
+    // Filtered through SKIP_DIRS: a `__pycache__` the walk never scans is not a checker directory,
+    // and reporting one as enumerated would describe coverage the probe does not have.
+    for (const b of bases) for (const d of expandDirs(b, dirSegs)) if (!SKIP_DIRS.has(basename(d))) out.add(d)
+  }
+  return [...out]
+}
+
+/**
+ * Module stems a runner deliberately keeps OUT of its import path.
+ *
+ * typst names them in `CLI_CHECKERS`; workflows passes `exclude_names={"check-all"}`. Read from the
+ * runner because the list is the runner's, and a hardcoded copy here would go stale silently — the
+ * exact failure I5 is named after.
+ */
+export function runnerExclusions(code: string): string[] {
+  const out = new Set<string>()
+  const take = (body: string) => {
+    for (const s of body.matchAll(/(['"])((?:\\.|(?!\1)[^\\])*)\1/g)) {
+      const v = s[2].trim()
+      if (v) out.add(v.replace(/\.py$/, ''))
+    }
+  }
+  for (const m of code.matchAll(/^\s*([A-Za-z_]\w*)\s*(?::[^=\n]*)?=\s*[[({]([^\])}]*)[\])}]/gm)) {
+    if (!/(CLI|EXCLUDE|EXCLUDED|SKIP|EXEMPT|IGNORE|NOT_)/i.test(m[1])) continue
+    take(m[2])
+  }
+  for (const m of code.matchAll(/exclude_names\s*=\s*[[({]([^\])}]*)[\])}]/g)) take(m[1])
+  return [...out]
+}
+
 // ---------------------------------------------------------------- predicates
 
 /** I1(a): two modules declaring the same CONSTRAINT. I1(b): two checkers over one pattern table. */
@@ -956,6 +1237,110 @@ export function checkCorpusRejected(
   return out
 }
 
+/**
+ * I8: a `<stem>.md` beside a `<stem>.py` in one checker directory — a rule stated twice.
+ *
+ * The corpus writes the markdown as `typst-<stem>.md`, so that prefix is stripped before pairing.
+ * The finding points at the `.md`, because the script is what decides the rule and the prose is the
+ * copy that rots. A declared `two-representations` exemption in EITHER member suppresses it, and is
+ * recorded in `applied` so the CLI can print it.
+ */
+export function checkTwoRepresentations(
+  checkerDirs: readonly string[],
+  filesByDir: Map<string, string[]>,
+  exemptionsOf: Map<string, Exemption[]>,
+  target: string,
+  applied: Exemption[] = [],
+): Finding[] {
+  const findings: Finding[] = []
+  for (const dir of [...checkerDirs].sort()) {
+    const files = filesByDir.get(dir) ?? []
+    const py = new Map<string, string>()
+    for (const f of files) if (extname(f) === '.py') py.set(basename(f, '.py'), f)
+    for (const f of files.slice().sort()) {
+      if (!MARKDOWN_EXT_RE.test(f)) continue
+      const stem = basename(f).replace(MARKDOWN_EXT_RE, '')
+      const script = py.get(stem) ?? py.get(stem.replace(/^typst-/, ''))
+      if (!script) continue
+      const exempt = [...(exemptionsOf.get(f) ?? []), ...(exemptionsOf.get(script) ?? [])].filter(
+        e => e.rule === 'two-representations',
+      )
+      if (exempt.length) {
+        applied.push(...exempt)
+        continue
+      }
+      findings.push({
+        rule: 'I8 one rule, one representation',
+        severity: 'major',
+        file: f,
+        detail: `${relative(target, f)} states in prose what ${relative(target, script)} decides in code — one rule, two representations`,
+        remedy:
+          'a CONSTRAINT is code and needs no parallel .md; delete the markdown, or, if it carries the only written rationale for the checker, declare that with a pc-probe ignore-two-representations marker naming why',
+      })
+    }
+  }
+  return findings
+}
+
+/**
+ * I9: a checker outside every discovery runner's enumerated directory.
+ *
+ * Silent when there is no discovery runner at all — I3 already reports those modules as uncalled —
+ * and silent on a stem some runner's own exclusion list names, which is a CLI checker held out of
+ * the import path on purpose.
+ */
+export function checkCheckerReach(
+  contractFiles: readonly string[],
+  enumerated: readonly string[],
+  exclusions: readonly string[],
+  runnerCount: number,
+  target: string,
+): Finding[] {
+  if (runnerCount === 0) return []
+  const dirs = new Set(enumerated)
+  const excluded = new Set(exclusions)
+  const findings: Finding[] = []
+  for (const f of [...contractFiles].sort()) {
+    if (dirs.has(dirname(f))) continue
+    if (excluded.has(basename(f, '.py'))) continue
+    findings.push({
+      rule: 'I9 a checker must be reachable',
+      severity: 'major',
+      file: f,
+      detail: `${relative(target, f)} exposes the checker contract and sits outside every directory this plugin's ${runnerCount} discovery runner(s) enumerate — nothing discovers it`,
+      remedy:
+        'move it into an enumerated checker directory, or widen the runner that should find it. A checker reached only because someone wrote its name down is one rename from silence, with nothing to report the silence',
+    })
+  }
+  return findings
+}
+
+/** I10: a rule in a checker directory with no `applies-to:` frontmatter is scoped to nothing. */
+export function checkRuleScope(
+  checkerDirs: readonly string[],
+  filesByDir: Map<string, string[]>,
+  textOf: Map<string, string>,
+  target: string,
+): Finding[] {
+  const findings: Finding[] = []
+  for (const dir of [...checkerDirs].sort()) {
+    for (const f of (filesByDir.get(dir) ?? []).slice().sort()) {
+      if (!MARKDOWN_EXT_RE.test(f)) continue
+      const text = textOf.get(f)
+      if (text === undefined || hasAppliesTo(text)) continue
+      findings.push({
+        rule: 'I10 a rule must declare its scope',
+        severity: 'major',
+        file: f,
+        detail: `${relative(target, f)} sits in a checker directory and declares no applies-to: frontmatter, so it is in scope for zero workflows`,
+        remedy:
+          'add applies-to: naming the workflows it governs, or move it out of the checker directory. load-constraints refuses it at load time; here it still reads as a live rule',
+      })
+    }
+  }
+  return findings
+}
+
 /** The Python-regex constructs JS does not share, rewritten where the rewrite is exact. */
 export function translatePyRegex(src: string): string {
   return src
@@ -1118,6 +1503,44 @@ export function runProbe(target: string, opts: ProbeOptions = {}): ProbeResult {
   findings.push(...checkSuppressionLists(suppress, [...labels], unresolvedRefs))
   findings.push(...checkLensLiteralInTable(lenses, tables, textOf, root))
 
+  // ---- I8/I9/I10: the RULE vs CONSTRAINT distinction, over derived checker directories
+  const exemptions: Exemption[] = []
+  const exemptionsOf = new Map<string, Exemption[]>()
+  for (const [f, text] of textOf) {
+    const es = parseExemptions(f, text)
+    if (es.length) exemptionsOf.set(f, es)
+  }
+  findings.push(...checkExemptionVocabulary([...exemptionsOf.values()].flat()))
+
+  // TWO sets, and the difference is load-bearing. `enumerated` includes the directories a
+  // cwd-relative glob would reach if the runner were invoked from the plugin root — an ASSUMPTION,
+  // used only to keep I9 quiet where the probe cannot know the cwd. `derived` holds only what a
+  // runner computes from its own `__file__`, and that is what I8 and I10 call a checker directory:
+  // an assumed cwd must never promote a prose directory into one.
+  const enumerated = new Set<string>()
+  const derived = new Set<string>()
+  const exclusions = new Set<string>()
+  for (const r of discoveryRunners) {
+    const code = codeOf.get(r) ?? ''
+    for (const d of enumeratedDirsOf(r, code, [root])) enumerated.add(d)
+    for (const d of enumeratedDirsOf(r, code)) derived.add(d)
+    for (const x of runnerExclusions(code)) exclusions.add(x)
+  }
+  const contractFiles = [...textOf]
+    .filter(([f, text]) => extname(f) === '.py' && !isTestFile(f) && hasCheckerContract(text))
+    .map(([f]) => f)
+  const filesByDir = new Map<string, string[]>()
+  for (const f of all) {
+    const d = dirname(f)
+    filesByDir.set(d, [...(filesByDir.get(d) ?? []), f])
+  }
+  const checkerDirs = new Set<string>(contractFiles.map(f => dirname(f)))
+  for (const d of derived) if (filesByDir.has(d)) checkerDirs.add(d)
+
+  findings.push(...checkTwoRepresentations([...checkerDirs], filesByDir, exemptionsOf, root, exemptions))
+  findings.push(...checkCheckerReach(contractFiles, [...enumerated], [...exclusions], discoveryRunners.length, root))
+  findings.push(...checkRuleScope([...checkerDirs], filesByDir, textOf, root))
+
   // ---- I7, advisory, and loud when it cannot run
   let corpus: string | null = null
   const advisories: Advisory[] = []
@@ -1154,6 +1577,9 @@ export function runProbe(target: string, opts: ProbeOptions = {}): ProbeResult {
     engines,
     lenses,
     tables,
+    exemptions,
+    checkerDirs: [...checkerDirs].map(d => relative(root, d) || '.').sort(),
+    enumeratedDirs: [...enumerated].map(d => relative(root, d) || '.').sort(),
     corpus,
     filesEligible: eligible.length,
     filesScanned: textOf.size,
@@ -1214,6 +1640,11 @@ export function parseArgs(argv: string[]): { target: string; json: boolean; corp
 
 function notesFor(result: ProbeResult): string[] {
   const lines: string[] = []
+  // Every applied exemption, on every run: a suppressed check nobody can see is indistinguishable
+  // from a check that passed.
+  for (const e of result.exemptions) {
+    lines.push(`  note: SUPPRESSED rule "${e.rule}" by a declared exemption at ${e.file}:${e.line}`)
+  }
   for (const u of result.unresolvedRefs) {
     lines.push(`  note: rule "${u.rule}" NOT CHECKED for ${JSON.stringify(u.token)} in ${u.file}${u.line ? `:${u.line}` : ''} — ${u.reason}`)
   }
@@ -1229,6 +1660,7 @@ function tailLine(result: ProbeResult): string {
   const bits = [`${result.findings.length} finding(s)`]
   if (result.advisories.length) bits.push(`${result.advisories.length} advisory (does not gate)`)
   if (result.unresolvedRefs.length) bits.push(`${result.unresolvedRefs.length} NOT CHECKED`)
+  if (result.exemptions.length) bits.push(`${result.exemptions.length} SUPPRESSED`)
   return `pc-probe: END — ${bits.join(', ')} | ${result.engines.length} engine(s), ${result.lenses.length} lens(es), ${result.tables.length} table(s)`
 }
 
