@@ -133,9 +133,16 @@ CLEAN_FINAL_LINE = "The estimate is stable across every specification."
 
 
 def break_con_banned_package(root: Path) -> None:
-    """Name a banned package: two vendored constraint modules ban `cetz-plot` outright."""
+    """IMPORT a banned package: `cetz-plot-ban` forbids it outright (cetz version conflict).
+
+    The import is live source, not a comment. This planted `// charting via cetz-plot was
+    considered and rejected` until 2026-09-17, and the constraint module it targeted matched raw
+    lines, so a comment saying the package had been REJECTED was reported as a violation. The
+    canonical checker reads live_lines and does not fire on a comment -- correctly, so the fixture
+    now plants what the rule is actually about.
+    """
     substitute(deck_src(root), "#let inv(..ids) = none",
-               "// charting via cetz-plot was considered and rejected\n#let inv(..ids) = none")
+               '#import "@preview/cetz-plot:0.1.0"\n#let inv(..ids) = none')
 
 
 def break_cmp_uncompilable_notes(root: Path) -> None:
@@ -368,7 +375,7 @@ def replace_section(text: str, heading: str, new_body: str) -> str:
 
 
 # The plugin the probe actually resolved, so a scratch copy of it is a copy of the real thing.
-TYPST_PLUGIN = workshop_deck.OVERFLOW_DRIVER.parent.parent.parent
+TYPST_PLUGIN = workshop_deck.OVERFLOW_DRIVER.parent.parent
 
 
 def scratch_skill(tmp_path: Path) -> Path:
@@ -401,7 +408,7 @@ def scratch_constraint_runner(skill: Path) -> Path:
 
 
 def scratch_overflow_driver(skill: Path) -> Path:
-    return skill / "typst" / "scripts" / "checks" / "check-overflow.sh"
+    return skill / "typst" / "scripts" / "check-overflow.sh"
 
 
 def scratch_validation_typ(skill: Path) -> Path:
@@ -574,7 +581,7 @@ def test_con_fails_on_a_hard_constraint_violation(tmp_path: Path):
     break_con_banned_package(root)
     report = probe(root)
     assert report.status("CON") == "FAIL", report["CON"]
-    assert "typst-cetz-diagrams" in report["CON"]["detail"]
+    assert "cetz-plot-ban" in report["CON"]["detail"]
     assert "hard" in report["CON"]["detail"]
     assert report.code == 1
 
@@ -587,7 +594,7 @@ def test_con_reads_the_runners_json_rather_than_treating_exit_1_as_a_crash(tmp_p
     report = probe(root)
     assert "exit=1" in report["CON"]["evidence"], report["CON"]
     assert "inspected_total=" in report["CON"]["evidence"]
-    assert "typst-cetz-diagrams" in report["CON"]["evidence"]
+    assert "cetz-plot-ban" in report["CON"]["evidence"]
     assert "could not run" not in report["CON"]["detail"]
 
 
@@ -721,20 +728,22 @@ def test_run_constraints_exits_one_on_a_hard_violation(tmp_path: Path):
     code, report = run_constraints(root / "presentation")
     assert code == 1, report
     names = [f["name"] for f in report["failed"]]
-    # Two vendored modules ban cetz-plot, so the banned line trips both; the contract under test is
-    # the exit status beside a populated failed[], not which modules caught it.
-    assert "typst-cetz-diagrams" in names, report["failed"]
+    # `cetz-plot-ban` is the one owner of the ban; the contract under test is the exit status
+    # beside a populated failed[], not which module caught it.
+    assert "cetz-plot-ban" in names, report["failed"]
     assert all(f["severity"] == "hard" for f in report["failed"]), report["failed"]
     assert report["inspected_total"] > 0, report
 
 
-def test_run_constraints_exits_one_when_nothing_was_inspected(tmp_path: Path):
-    # Every vendored module globs its own inputs and returns [] when it finds none, so an empty
-    # tree reads exactly like a clean deck. Exit 0 here would be a check that cannot fail.
+def test_run_constraints_exits_two_when_nothing_was_inspected(tmp_path: Path):
+    # An empty tree reads exactly like a clean deck unless the runner says otherwise, so exit 0
+    # here would be a check that cannot fail. It is 2 rather than 1: a check that COULD NOT RUN is
+    # not a check that found violations, and every caller here reads 1 as "violations found".
+    # (This pinned 1 until the runner stopped globbing its own inputs and started naming them.)
     empty = tmp_path / "empty"
     empty.mkdir()
     code, report = run_constraints(empty)
-    assert code == 1, report
+    assert code == 2, report
     assert report["inspected_total"] == 0, report
     assert report["failed"] == [] and report["errors"] == [], report
 

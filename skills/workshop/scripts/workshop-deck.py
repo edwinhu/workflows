@@ -75,7 +75,7 @@ def _resolve_overflow_driver() -> Path:
     override = os.environ.get("WORKSHOP_OVERFLOW_DRIVER")
     if override:
         return Path(override)
-    candidates = [root / "scripts" / "checks" / "check-overflow.sh" for root in TYPST_PLUGIN_ROOTS]
+    candidates = [root / "scripts" / "check-overflow.sh" for root in TYPST_PLUGIN_ROOTS]
     for candidate in candidates:
         if candidate.is_file():
             return candidate
@@ -83,9 +83,9 @@ def _resolve_overflow_driver() -> Path:
 
 
 OVERFLOW_DRIVER = _resolve_overflow_driver()
-# The driver reads its own `$SCRIPT_DIR/../validation.typ`, so this must be the copy beside
+# The driver reads its own `$SCRIPT_DIR/validation.typ`, so this must be the copy beside
 # whichever driver resolved -- resolving it a second time could name a file the driver never reads.
-VALIDATION_TYP = OVERFLOW_DRIVER.parent.parent / "validation.typ"
+VALIDATION_TYP = OVERFLOW_DRIVER.parent / "validation.typ"
 
 # The matrix in references/workshop-checks.md, in matrix order. ENUM asserts that a line was
 # emitted for every ID here -- the whole point of computing ENUM rather than claiming it.
