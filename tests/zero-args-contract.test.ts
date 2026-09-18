@@ -25,15 +25,19 @@ const ROOT = dirname(import.meta.dir);
 // Why these six and not `skills/*/scripts/`: the per-skill scripts directories are domain
 // tooling -- WRDS ETL, docx builders, PDF extraction, batch submitters -- whose exit codes are
 // "the tool ran", not "the corpus is clean". The constraint directories plus scripts/checks are
-// where a bare exit 0 is read by a gate as PASS. `skills/ds/constraints/` holds only .md today
-// and contributes nothing; it is listed so a .py dropped there is swept on arrival.
+// where a bare exit 0 is read by a gate as PASS. The per-skill constraint directories are
+// DISCOVERED rather than listed: `skills/ds/constraints/` was on the list only so that a .py
+// dropped there would be swept on arrival, and it held nothing but .md, so the rules/constraints
+// split deleted the directory and with it a named entry that then failed as a missing dir.
+// Discovery keeps the arrival guarantee for every skill at once, including ones not yet written.
 const CHECKER_DIRS = [
   "constraints",
   "scripts",
   "scripts/checks",
-  "skills/ai-anti-patterns/constraints",
-  "skills/ds/constraints",
-  "skills/writing/constraints",
+  ...readdirSync(join(ROOT, "skills"), { withFileTypes: true })
+    .filter((e) => e.isDirectory() && existsSync(join(ROOT, "skills", e.name, "constraints")))
+    .map((e) => `skills/${e.name}/constraints`)
+    .sort(),
 ];
 
 // -- Exclusions ---------------------------------------------------------------

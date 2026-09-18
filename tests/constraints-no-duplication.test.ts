@@ -17,12 +17,14 @@ function typstRoot(): string {
   return resolve(process.env.HOME!, ".claude/skills/typst")
 }
 
+// The bodies compared here are PROSE, so they live in rules/. constraints/ is code now and a
+// duplication check over it would be comparing checkers, which is vendor-lint's job.
 const CANONICAL_ROOTS = [
-  join(REPO, "constraints"),
+  join(REPO, "rules"),
   // ASKED, not spelled: typst-plugin-root is on PATH and is the one place that knows the
-  // layout, which moved twice in September. Both historical spellings stay beneath it so
-  // this keeps working against an older install in a plain shell.
-  resolve(typstRoot(), "constraints"),
+  // layout, which moved twice in September. The pre-split spelling stays beneath it so this
+  // keeps working against an older install in a plain shell.
+  resolve(typstRoot(), "rules"),
   resolve(typstRoot(), "constraints"),
 ];
 

@@ -699,6 +699,92 @@ describe('I9 — a checker must be reachable', () => {
   })
 })
 
+describe('I12 — the rules/constraints split is physical', () => {
+  // RED for each of the three findings, then GREEN for the shape that resolves it.
+
+  test('a stem in BOTH rules/ and constraints/ of one base is a finding', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'rules/tables.md': RULE_MD,
+    })
+    const i12 = findingsFor(probe.runProbe(dir), 'I12')
+    expect(i12.length).toBe(1)
+    expect(i12[0].file.endsWith(join('rules', 'tables.md'))).toBe(true)
+    expect(i12[0].severity).toBe('major')
+  })
+
+  test('renaming the rule to the judgement it carries clears it', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'rules/table-grounding.md': RULE_MD,
+    })
+    expect(findingsFor(probe.runProbe(dir), 'I12').length).toBe(0)
+  })
+
+  test('a .md under constraints/ is a finding', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'constraints/DROPPED.md': '# a merge record, not a rule\n',
+    })
+    const i12 = findingsFor(probe.runProbe(dir), 'I12')
+    expect(i12.length).toBe(1)
+    expect(i12[0].file.endsWith(join('constraints', 'DROPPED.md'))).toBe(true)
+  })
+
+  test('a .py under rules/ is a finding', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'rules/widows.py': checkerModule('widows'),
+    })
+    const i12 = findingsFor(probe.runProbe(dir), 'I12')
+    expect(i12.length).toBe(1)
+    expect(i12[0].file.endsWith(join('rules', 'widows.py'))).toBe(true)
+  })
+
+  test('the clean split — prose in rules/, code in constraints/, no shared stem — is silent', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'rules/source-fidelity.md': RULE_MD,
+    })
+    expect(findingsFor(probe.runProbe(dir), 'I12').length).toBe(0)
+  })
+
+  // The collision is per BASE. A skill's rules/ and the plugin root's constraints/ are different
+  // corpora; pairing across them would flag a rule that has no checker at all.
+  test('the same stem under a SKILL rules/ and the root constraints/ is not a collision', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'skills/writing/rules/tables.md': RULE_MD,
+    })
+    expect(findingsFor(probe.runProbe(dir), 'I12').length).toBe(0)
+  })
+
+  test('but a stem in both halves of a SKILL is caught at that level too', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'skills/writing/constraints/shortjournal.py': checkerModule('shortjournal'),
+      'skills/writing/rules/shortjournal.md': RULE_MD,
+    })
+    const i12 = findingsFor(probe.runProbe(dir), 'I12')
+    expect(i12.length).toBe(1)
+    expect(i12[0].file.endsWith(join('writing', 'rules', 'shortjournal.md'))).toBe(true)
+  })
+})
+
 describe('I10 — a rule must declare its scope', () => {
   test('a .md in a checker directory with no applies-to frontmatter is a finding', () => {
     const dir = fixture({
@@ -753,7 +839,7 @@ describe('the clean fixture', () => {
       'skills/writing/SKILL.md': skillMd(
         'writing',
         '```js\nWorkflow({\n  reviewLenses: [\n' +
-          '    { key: "writing-judgement", agentType: "Explore", refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/writing-checks.md"], prompt: "Judge only the checks no runner can settle, against the definitions in the refs." },\n' +
+          '    { key: "writing-judgement", agentType: "Explore", refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/writing-checks.md"], prompt: "Judge only the checks no runner can settle, against the definitions in the refs." },\n' +
           '  ],\n' +
           '  mechanicalChecks: [\n' +
           '    { name: "prose", cmd: "python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/prose-gate.py" },\n' +
@@ -761,7 +847,9 @@ describe('the clean fixture', () => {
       ),
       // Scoped, because I10 judges every .md in a checker directory: an unscoped rule beside a
       // checker is in scope for zero workflows, so this fixture was not clean once I10 existed.
-      'skills/writing/constraints/writing-checks.md': '---\napplies-to: [writing-draft]\n---\n\n# checks\n',
+      // In rules/, not constraints/, because I12 judges the directory: prose in a directory a
+      // runner globs for code is a finding regardless of how well it is scoped.
+      'skills/writing/rules/writing-checks.md': '---\napplies-to: [writing-draft]\n---\n\n# checks\n',
       'skills/writing/constraints/volokh.py': tableModule('volokh', ['    (r"\\bheretofore\\b", "legalese"),']),
       'skills/writing/scripts/prose-gate.py': [
         'from pathlib import Path',

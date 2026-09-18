@@ -1,7 +1,9 @@
 ---
-name: join-audits
+name: ds-join-diagnostics
 applies-to: [ds-delegate]
 ---
+
+**What a script already decides:** `constraints/ds-join-audits.py` decides that a join is accompanied by a diagnostic log. What the numbers in that log MEAN — the severity table below, and which of them stops the run — is this rule.
 
 ## Rule
 

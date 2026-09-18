@@ -157,10 +157,10 @@ For the judgement calls no regex reaches (which tells have decayed, rhythm, burs
 `{PLUGIN_ROOT}/skills/ai-anti-patterns/references/12-economist-2026-corpus-study.md`.
 
 Two structural constraints, neither of which is a regex over prose:
-`{PLUGIN_ROOT}/constraints/writing-no-bold-lead.md` — read it for the *rationale* and
+`{PLUGIN_ROOT}/skills/writing/rules/writing-inline-headers.md` — read it for the *rationale* and
 the acceptable alternatives; the detection is deterministic now (`emphasis·bold-lead`), so cite
 the span rather than re-scanning — and
-`{PLUGIN_ROOT}/constraints/writing-topic-sentences.md`, which stays entirely yours.
+`{PLUGIN_ROOT}/skills/writing/rules/writing-topic-sentence-craft.md`, which stays entirely yours.
 
 ## Step 3: Grade Every Paragraph
 

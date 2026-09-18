@@ -161,7 +161,7 @@ df.head()
 
 ### COV: Sample-Period Coverage
 
-Verify every windowed data source (raw pull, cache, intermediate, master) covers the Required window of every task that reads it. This catches the silent-truncation trap: a source pulled for one task's window and reused by a task with a *wider* window, leaving the uncovered span with zero data — a truncated series still produces plausible numbers, so nothing fails loudly. Definition and gate: constraint C6 (`${CLAUDE_PLUGIN_ROOT}/constraints/ds-sample-coverage.md`).
+Verify every windowed data source (raw pull, cache, intermediate, master) covers the Required window of every task that reads it. This catches the silent-truncation trap: a source pulled for one task's window and reused by a task with a *wider* window, leaving the uncovered span with zero data — a truncated series still produces plausible numbers, so nothing fails loudly. Definition and gate: constraint C6 (`${CLAUDE_PLUGIN_ROOT}/rules/ds-sample-coverage.md`).
 
 ```python
 # required = (start, end) for THIS source = union of the sub-windows named by every approved

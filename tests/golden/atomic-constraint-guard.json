@@ -161,11 +161,11 @@
       "stdin": {
         "tool_name": "Write",
         "tool_input": {
-          "file_path": "constraints/no-emoji.md"
+          "file_path": "rules/no-emoji.md"
         }
       },
       "fixture": {
-        "constraints/no-emoji.md": "### Rule\ntext\n### Rationale\ntext\n### Examples\ntext\n"
+        "rules/no-emoji.md": "### Rule\ntext\n### Rationale\ntext\n### Examples\ntext\n"
       },
       "tsExpected": {
         "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -179,11 +179,11 @@
       "stdin": {
         "tool_name": "Write",
         "tool_input": {
-          "file_path": "constraints/no-emoji.md"
+          "file_path": "rules/no-emoji.md"
         }
       },
       "fixture": {
-        "constraints/no-emoji.md": "### Rule\ntext\n### Rationale\ntext\n"
+        "rules/no-emoji.md": "### Rule\ntext\n### Rationale\ntext\n"
       },
       "tsExpected": {
         "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -197,11 +197,11 @@
       "stdin": {
         "tool_name": "Write",
         "tool_input": {
-          "file_path": "constraints/atomic-constraints.md"
+          "file_path": "rules/atomic-constraints.md"
         }
       },
       "fixture": {
-        "constraints/atomic-constraints.md": "### Rule\ntext\n### Rationale\ntext\n### Examples\ntext\n"
+        "rules/atomic-constraints.md": "### Rule\ntext\n### Rationale\ntext\n### Examples\ntext\n"
       },
       "tsExpected": {
         "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",

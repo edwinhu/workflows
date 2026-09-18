@@ -1,7 +1,9 @@
 ---
-name: idempotency
+name: ds-rerun-equivalence
 applies-to: [ds-delegate]
 ---
+
+**What a script already decides:** `constraints/ds-idempotency.py` decides the syntactic markers of a non-idempotent write. Whether running the pipeline twice actually yields one result is this rule.
 
 ## Rule
 

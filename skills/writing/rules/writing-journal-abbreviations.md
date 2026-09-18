@@ -1,7 +1,9 @@
 ---
-name: writing-shortjournal
+name: writing-journal-abbreviations
 applies-to: [writing-draft, writing-verify, writing-revise]
 ---
+
+**What a script already decides:** `constraints/writing-shortjournal.py` decides that an `@article` entry has a non-blank `shortjournal`, with the working-paper exemptions. What the abbreviation should BE is this rule.
 
 ## Rule
 

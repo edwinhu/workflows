@@ -1,7 +1,9 @@
 ---
-name: chart-typography
+name: ds-chart-type-system
 applies-to: [ds-delegate]
 ---
+
+**What a script already decides:** `constraints/ds-chart-typography.py` decides the registered theme, per-chart styling, the single palette and vector output. Whether the font matches the host document it cannot see, and that is this rule.
 
 ## Rule
 
