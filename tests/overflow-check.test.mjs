@@ -24,7 +24,7 @@ function typstRoot() {
   return `${process.env.HOME}/.claude/skills/typst`
 }
 
-const TYPST_PLUGIN_SCRIPT = `${typstRoot()}/scripts/checks/check-overflow.sh`
+const TYPST_PLUGIN_SCRIPT = `${typstRoot()}/scripts/check-overflow.sh`
 import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, dirname } from 'node:path'
