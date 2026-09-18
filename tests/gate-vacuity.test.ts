@@ -120,6 +120,15 @@ const LEG_ONLY = new Set(["work", "workflow-creator"]);
 
 // -- Scaffold -----------------------------------------------------------------
 
+/** Does this plugin-root entry hold a discovery runner, i.e. a `run-*.py` that globs beside itself? */
+function holdsDiscoveryRunner(dir: string): boolean {
+  try {
+    return readdirSync(dir).some((f) => f.startsWith("run-") && f.endsWith(".py"));
+  } catch {
+    return false; // not a directory, or unreadable: symlinking it is the existing behaviour
+  }
+}
+
 /** Build the throwaway plugin root and return the path of the copied skill under test. */
 function scaffold(skillDir: string, root: string): string {
   const pluginRoot = resolve(skillDir, "..", "..");
@@ -130,7 +139,15 @@ function scaffold(skillDir: string, root: string): string {
     const src = join(pluginRoot, e);
     if (!existsSync(src)) continue;
     if (existsSync(join(root, e))) continue;
-    symlinkSync(src, join(root, e));
+    // A directory holding a discovery runner is COPIED, never symlinked. Such a runner anchors the
+    // set it will dispatch at its own `__file__` and refuses a directory outside that set, so
+    // through a symlink it anchors in the REAL tree, does not discover the scaffolded skill's
+    // constraints dir, and correctly exits 2 -- a refusal the scaffold provoked rather than the
+    // verdict the real tree returns. Measured 2026-09-18 on teaching/exams: symlinked, the gate's
+    // probe-tests leg exited 1 against a real tree exiting 0; copied, both exit 0.
+    // Derived from the property, not a name: any top-level dir holding a `run-*.py`.
+    if (holdsDiscoveryRunner(src)) cpSync(src, join(root, e), { recursive: true, dereference: true });
+    else symlinkSync(src, join(root, e));
   }
   for (const e of readdirSync(join(pluginRoot, "skills"))) {
     if (e === name) continue;
