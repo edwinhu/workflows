@@ -62,7 +62,12 @@ Exit 0 clean, 1 findings, 2 argument error, 3 the probe crashed — 2 and 3 are 
 | `I5` suppression entry matches no label | repoint or delete it; whatever it covered is reported twice |
 | `I6` lens prompt quotes a decided rule | narrow the lens to the undecidable residue, point it at the table through `refs` |
 | advisory `I7` | the pattern fires on a phrase the corpus recorded as human — check it through `ai-tic` before shipping |
+| `I8` a `<stem>.md` beside a `<stem>.py` | a RULE is markdown a model judges; a CONSTRAINT is code that decides. Never the same rule in two forms — retire the prose, or declare `<!-- pc-probe: ignore-two-representations -->` when it carries the checker's only written rationale |
+| `I9` checker outside every enumerated directory | move it under a directory a discovery runner globs, or widen the runner. Named-only reach is one rename from silence |
+| `I10` rule with no `applies-to:` | scope it, or move it out of the checker directory — unscoped, it governs zero workflows |
+| `I11` unknown exemption marker | fix the name; it suppresses nothing while reading as a suppression |
 | `NOT CHECKED` note | a check that did not run. Establish it or state it; never read it as a pass |
+| `SUPPRESSED` note | a declared exemption was applied. Every one prints on every run |
 
 ### Step 2: Invoke the Built-in Plugin Creator
 

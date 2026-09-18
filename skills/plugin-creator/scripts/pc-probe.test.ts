@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, test } from 'bun:test'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 
@@ -512,6 +512,238 @@ describe('I7 — a shipped pattern may not carry a corpus-rejected phrase (ADVIS
   })
 })
 
+// ------------------------------------------------------------------ I8/I9/I10
+
+/** A contract module a discovery runner dispatches on: module-level `check` of ONE parameter. */
+const checkerModule = (stem: string) =>
+  ['"""A fixture checker."""', `CONSTRAINT = "${stem}"`, 'APPLIES_TO = ["slides"]', 'SEVERITY = "hard"', '', 'def check(context):', '    return []', ''].join('\n')
+
+/** typst's run-constraints.py in miniature: globs its OWN directory, dispatches on `check`. */
+const runnerModule = (extra = '') =>
+  [
+    'import glob, os',
+    'constraints_dir = os.path.dirname(os.path.abspath(__file__))',
+    extra,
+    'for path in sorted(glob.glob(os.path.join(constraints_dir, "*.py"))):',
+    '    mod = load(path)',
+    '    mod.check({})',
+    '',
+  ].join('\n')
+
+const RULE_MD = ['---', 'applies-to: [slides]', '---', '', '## Rule', '', 'Tables must carry inset: 10pt.', ''].join('\n')
+
+describe('I8 — one rule, one representation', () => {
+  // The measured debt: typst/constraints carries 14 <stem>.md / <stem>.py pairs, the markdown
+  // written as `typst-<stem>.md`.
+  test('a <stem>.md beside a <stem>.py in a checker directory is a finding', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'constraints/typst-tables.md': RULE_MD,
+    })
+    const i8 = findingsFor(probe.runProbe(dir), 'I8')
+    expect(i8.length).toBe(1)
+    expect(i8[0].file.endsWith(join('constraints', 'typst-tables.md'))).toBe(true)
+    expect(i8[0].severity).toBe('major')
+    expect(i8[0].detail).toContain('tables.py')
+  })
+
+  test('a checker with no parallel .md draws nothing', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+    })
+    expect(findingsFor(probe.runProbe(dir), 'I8').length).toBe(0)
+  })
+
+  test('a markdown-only rule is judgement, not a pair', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'constraints/typst-source-fidelity.md': RULE_MD,
+    })
+    expect(findingsFor(probe.runProbe(dir), 'I8').length).toBe(0)
+  })
+
+  // The caveat: a rule may explain WHY while the checker decides WHETHER, and no predicate can read
+  // a body and tell rationale from restatement. So it is DECLARED — and the declaration is printed.
+  test('a declared exemption suppresses the pair and is reported on every run', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'constraints/typst-tables.md': RULE_MD + '\n<!-- pc-probe: ignore-two-representations -->\n',
+    })
+    const result = probe.runProbe(dir)
+    expect(findingsFor(result, 'I8').length).toBe(0)
+    expect(result.exemptions.length).toBe(1)
+    expect(result.exemptions[0].rule).toBe('two-representations')
+    expect(probe.formatText(result)).toContain('SUPPRESSED')
+  })
+
+  test('a marker inside a fence documents the syntax; it does not apply it', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'constraints/typst-tables.md': RULE_MD + '\n```md\n<!-- pc-probe: ignore-two-representations -->\n```\n',
+    })
+    const result = probe.runProbe(dir)
+    expect(result.exemptions.length).toBe(0)
+    expect(findingsFor(result, 'I8').length).toBe(1)
+  })
+
+  test('I11 — a marker naming an unhonoured rule is a finding, not a suppression', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'constraints/typst-tables.md': RULE_MD + '\n<!-- pc-probe: ignore-two-represenations -->\n',
+    })
+    const result = probe.runProbe(dir)
+    expect(findingsFor(result, 'I8').length).toBe(1)
+    const i11 = findingsFor(result, 'I11')
+    expect(i11.length).toBe(1)
+    expect(i11[0].detail).toContain('ignore-two-represenations')
+  })
+})
+
+describe('I9 — a checker must be reachable', () => {
+  test('a contract module outside every enumerated directory is a finding', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      // Reached only because check-variety.sh writes its name down.
+      'scripts/checks/geom-variety.py': checkerModule('geom-variety'),
+      'scripts/checks/check-variety.sh': '#!/usr/bin/env bash\npython3 "$(dirname "$0")/geom-variety.py" "$@"\n',
+    })
+    const i9 = findingsFor(probe.runProbe(dir), 'I9')
+    expect(i9.length).toBe(1)
+    expect(i9[0].file.endsWith(join('scripts', 'checks', 'geom-variety.py'))).toBe(true)
+    expect(i9[0].severity).toBe('major')
+  })
+
+  test('the same module inside the enumerated directory draws nothing', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'constraints/geom-variety.py': checkerModule('geom-variety'),
+    })
+    expect(findingsFor(probe.runProbe(dir), 'I9').length).toBe(0)
+  })
+
+  // typst's CLI_CHECKERS: excluded from the import path on purpose. Read from the RUNNER, because a
+  // copy of that list here is the stale-suppression defect I5 is named after.
+  test('a CLI checker named in the runner\'s own exclusion list is not a finding', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule('CLI_CHECKERS = ("runts", "widows", "orphans", "section-hierarchy")'),
+      'constraints/tables.py': checkerModule('tables'),
+      'scripts/runts.py': checkerModule('runts'),
+    })
+    expect(findingsFor(probe.runProbe(dir), 'I9').length).toBe(0)
+  })
+
+  test('a two-parameter def check() in a CLI script is an internal helper, not a contract', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'scripts/check_crossrefs.py': 'def check(path: str, verbose: bool = False) -> int:\n    return 0\n',
+    })
+    expect(findingsFor(probe.runProbe(dir), 'I9').length).toBe(0)
+  })
+
+  test('with NO discovery runner, I9 is silent — I3 already reports it uncalled', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'scripts/checks/geom-variety.py': checkerModule('geom-variety'),
+    })
+    const result = probe.runProbe(dir)
+    expect(findingsFor(result, 'I9').length).toBe(0)
+    expect(findingsFor(result, 'I3').length).toBe(1)
+  })
+
+  test('the directories a runner enumerates are derived, not keyed on the name constraints/', () => {
+    const d = mkdtempSync(join(tmpdir(), 'pc-probe-enum-'))
+    try {
+      mkdirSync(join(d, 'rules'), { recursive: true })
+      mkdirSync(join(d, 'skills', 'ds', 'rules'), { recursive: true })
+      const runner = join(d, 'rules', 'run.py')
+      writeFileSync(
+        runner,
+        [
+          'from pathlib import Path',
+          '_here = Path(__file__).parent',
+          '_root = Path(__file__).resolve().parent.parent',
+          'skills_dir = _root / "skills"',
+          'for p in _here.glob("*.py"):',
+          '    load(p).check({})',
+          'for d in skills_dir.glob("*/rules"):',
+          '    for p in d.glob("*.py"):',
+          '        load(p).check({})',
+          '',
+        ].join('\n'),
+      )
+      const dirs = probe.enumeratedDirsOf(runner, readFileSync(runner, 'utf8'))
+      expect(dirs).toContain(join(d, 'rules'))
+      expect(dirs).toContain(join(d, 'skills', 'ds', 'rules'))
+    } finally {
+      rmSync(d, { recursive: true, force: true })
+    }
+  })
+})
+
+describe('I10 — a rule must declare its scope', () => {
+  test('a .md in a checker directory with no applies-to frontmatter is a finding', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'constraints/DROPPED.md': '# Dropped and rewritten content\n\nA merge record, not a rule.\n',
+    })
+    const i10 = findingsFor(probe.runProbe(dir), 'I10')
+    expect(i10.length).toBe(1)
+    expect(i10[0].file.endsWith(join('constraints', 'DROPPED.md'))).toBe(true)
+    expect(i10[0].severity).toBe('major')
+  })
+
+  test('the same file with applies-to frontmatter draws nothing', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'constraints/notes-structure.md': RULE_MD,
+    })
+    expect(findingsFor(probe.runProbe(dir), 'I10').length).toBe(0)
+  })
+
+  test('applies-to in the BODY is not a scope declaration', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'constraints/notes-structure.md': '# rule\n\nSee applies-to: [slides] in a sibling.\n',
+    })
+    expect(findingsFor(probe.runProbe(dir), 'I10').length).toBe(1)
+  })
+
+  test('a .md outside every checker directory is not in scope for I10', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'docs/DESIGN.md': '# design\n\nprose\n',
+    })
+    expect(findingsFor(probe.runProbe(dir), 'I10').length).toBe(0)
+  })
+})
+
 // ------------------------------------------------------------------ clean
 
 describe('the clean fixture', () => {
@@ -527,7 +759,9 @@ describe('the clean fixture', () => {
           '    { name: "prose", cmd: "python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/prose-gate.py" },\n' +
           '  ],\n})\n```',
       ),
-      'skills/writing/constraints/writing-checks.md': '# checks\n',
+      // Scoped, because I10 judges every .md in a checker directory: an unscoped rule beside a
+      // checker is in scope for zero workflows, so this fixture was not clean once I10 existed.
+      'skills/writing/constraints/writing-checks.md': '---\napplies-to: [writing-draft]\n---\n\n# checks\n',
       'skills/writing/constraints/volokh.py': tableModule('volokh', ['    (r"\\bheretofore\\b", "legalese"),']),
       'skills/writing/scripts/prose-gate.py': [
         'from pathlib import Path',
