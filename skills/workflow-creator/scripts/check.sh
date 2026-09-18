@@ -178,15 +178,38 @@ else
     report probe-tests 1 "no suite under scripts/"
   else
     rc=0
-    [ "${#suite[@]}" -gt 0 ] && { bun test "${suite[@]}" >&2 || rc=1; }
-    [ "${#pysuite[@]}" -gt 0 ] && {
+    # SHARDED. bun runs the files handed to one process one after another, so a suite whose cases
+    # spawn subprocesses adds up: `work` is 23 files and 136s, of which five dispatcher files are
+    # 121s. The files are independent, so they go to SHARDS run concurrently. Measured 2026-09-18
+    # on `work`: 136s sequential, 80s across four shards — the floor is its longest single file.
+    # Scheduling only. A shard's non-zero exit is rc=1 exactly as one process's was, because
+    # changing a verdict while changing a schedule is how a speedup quietly becomes a weakening.
+    SHARDS="${CHECK_SHARDS:-4}"
+    pids=()
+    if [ "${#suite[@]}" -gt 0 ]; then
+      n=${#suite[@]}
+      [ "$SHARDS" -gt "$n" ] && SHARDS=$n
+      i=0
+      while [ "$i" -lt "$SHARDS" ]; do
+        shard=(); j=$i
+        while [ "$j" -lt "$n" ]; do shard+=("${suite[$j]}"); j=$(( j + SHARDS )); done
+        bun test "${shard[@]}" >&2 &
+        pids+=($!)
+        i=$(( i + 1 ))
+      done
+    fi
+    if [ "${#pysuite[@]}" -gt 0 ]; then
       # --script lets uv read each file's own PEP 723 dependency block: a generic gate
       # cannot know a suite needs pypdf, and guessing wrong fails cases for a missing
       # import, which reads as broken contracts rather than a misconfigured runner.
       for pf in "${pysuite[@]}"; do
-        uv run --quiet --with pytest --script "$pf" -m pytest -q "$pf" >&2 || rc=1
-      done || rc=1
-    }
+        uv run --quiet --with pytest --script "$pf" -m pytest -q "$pf" >&2 &
+        pids+=($!)
+      done
+    fi
+    # Every child is waited on individually: `wait` with no argument discards the statuses, which
+    # would turn a failing suite into a passing leg.
+    for pid in "${pids[@]}"; do wait "$pid" || rc=1; done
     report probe-tests "$rc" "$(( ${#suite[@]} + ${#pysuite[@]} )) file(s)"
   fi
 fi
