@@ -1322,6 +1322,73 @@ export function checkCheckerReach(
   return findings
 }
 
+/**
+ * I13: two rules may not govern one checker's subject at one scope without one naming the other.
+ *
+ * Every duplicate predicate above matches by STEM, and the split resolved its 14 pairs by RENAMING
+ * the rules that survived — so the shape that still ships is two differently-named rules over one
+ * subject, which no stem comparison can see. Measured 2026-09-18 in typst: `title-register.md` and
+ * `pedagogical-subtitles.md`, both `applies-to: [slides]`, both opening on `genre-lint.py`, one
+ * saying the register is a house choice and either is correct, the other that the subtitle is
+ * always an assertion. A model loading both for one deck is handed a contradiction.
+ *
+ * The subject is identified by the checker a rule NAMES — the corpus convention is that a rule
+ * beside a checker opens by saying what that script already decides, so the citation is the rule's
+ * own declaration of what it is about. The escape is equally explicit: one rule mentioning the
+ * other's filename is a deferral, and a general rule with a named instance is not a duplicate.
+ *
+ * ADVISORY, and the reason is measured rather than cautious. Co-citation is not co-subject: one
+ * checker often decides several things, so `cite-fidelity-lint.py` correctly carries three rules
+ * over three of its aspects, and `genre-lint.py` carries one rule about the title slot and another
+ * about the kicker beneath it. Blocking on this reported all four as duplicates, three of them
+ * wrongly. What the predicate can see is that two rules meet at one scope over one script; whether
+ * they CONTRADICT is the judgement it hands back, so it names the pair and gates nothing.
+ */
+export function checkRuleOverlap(files: readonly string[], textOf: Map<string, string>, target: string): Advisory[] {
+  // (scope, checker) -> rules citing it
+  const groups = new Map<string, { file: string; scopes: string[]; text: string }[]>()
+  for (const f of [...files].sort()) {
+    if (!MARKDOWN_EXT_RE.test(f) || basename(dirname(f)) !== 'rules') continue
+    const text = textOf.get(f)
+    if (text === undefined) continue
+    const end = text.indexOf('\n---', 3)
+    const fm = end === -1 ? '' : text.slice(0, end)
+    const scopes = (/^applies-to\s*:\s*\[([^\]]*)\]/m.exec(fm)?.[1] ?? '')
+      .split(',').map(x => x.trim()).filter(Boolean)
+    if (scopes.length === 0) continue // I10 already reports an unscoped rule
+    // Checkers named in the body, by filename, and only ones this plugin ACTUALLY SHIPS: the
+    // pattern otherwise matches a placeholder in prose, which paired two ds chart rules on the
+    // strength of both writing "file.py" in an example.
+    const shipped = new Set(files.filter(x => extname(x) === '.py').map(x => basename(x)))
+    const cited = new Set([...text.matchAll(/([A-Za-z0-9_-]+\.py)\b/g)].map(m => m[1]).filter(n => shipped.has(n)))
+    for (const scope of scopes) {
+      for (const checker of cited) {
+        const key = `${scope}\u0000${checker}`
+        groups.set(key, [...(groups.get(key) ?? []), { file: f, scopes, text }])
+      }
+    }
+  }
+  const out: Advisory[] = []
+  const reported = new Set<string>()
+  for (const [key, list] of [...groups].sort()) {
+    if (list.length < 2) continue
+    const [scope, checker] = key.split('\u0000')
+    // A deferral in EITHER direction settles the group: one rule naming another's file is the
+    // general-rule-plus-named-instance shape, which is how a corpus is supposed to narrow.
+    const defers = list.some(a => list.some(b => a.file !== b.file && a.text.includes(basename(b.file))))
+    if (defers) continue
+    const sig = list.map(l => l.file).sort().join('|')
+    if (reported.has(sig)) continue // one finding per colliding SET, not per checker they share
+    reported.add(sig)
+    out.push({
+      rule: 'I13 one subject, one rule (advisory)',
+      file: list[1].file,
+      detail: `${list.map(l => relative(target, l.file)).join(' and ')} are both scoped ${JSON.stringify(scope)} and both name ${checker}, and neither names the other. Check they do not contradict; if one narrows the other, have it say so by naming ${basename(list[0].file)}`,
+    })
+  }
+  return out
+}
+
 /** I10: a rule in a checker directory with no `applies-to:` frontmatter is scoped to nothing. */
 export function checkRuleScope(
   checkerDirs: readonly string[],
@@ -1631,10 +1698,11 @@ export function runProbe(target: string, opts: ProbeOptions = {}): ProbeResult {
   // rules/ directory holds no code for a runner to derive itself from, so deriving it would
   // make the invariant invisible on exactly the corpus it governs.
   findings.push(...checkSplitInvariant(all, root))
+  const ruleOverlap = checkRuleOverlap(all, textOf, root)
 
   // ---- I7, advisory, and loud when it cannot run
   let corpus: string | null = null
-  const advisories: Advisory[] = []
+  const advisories: Advisory[] = [...ruleOverlap]
   const wanted = opts.corpus === undefined ? findCorpus(root) : opts.corpus
   if (wanted && existsSync(wanted)) corpus = resolve(wanted)
   if (corpus === null) {

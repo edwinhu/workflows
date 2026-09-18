@@ -699,6 +699,59 @@ describe('I9 — a checker must be reachable', () => {
   })
 })
 
+describe('I13 — one subject, one rule (advisory)', () => {
+  const RULE = (body: string) => `---\napplies-to: [slides]\n---\n\n${body}\n`
+  const advs = (dir: string) =>
+    (probe.runProbe(dir).advisories ?? []).filter((a: any) => a.rule.startsWith('I13'))
+
+  test('two rules at one scope naming one shipped checker, neither deferring', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/genre-lint.py': checkerModule('genre'),
+      'rules/title-register.md': RULE('`constraints/genre-lint.py` decides shape. Either register is correct.'),
+      'rules/pedagogical-subtitles.md': RULE('`constraints/genre-lint.py` decides shape. Always an assertion.'),
+    })
+    const a = advs(dir)
+    expect(a.length).toBe(1)
+    expect(a[0].detail).toContain('genre-lint.py')
+    // ADVISORY: it names the pair and gates nothing.
+    expect(findingsFor(probe.runProbe(dir), 'I13').length).toBe(0)
+  })
+
+  test('the narrower rule naming the other is a deferral, not a duplicate', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/genre-lint.py': checkerModule('genre'),
+      'rules/title-register.md': RULE('`constraints/genre-lint.py` decides shape. Either register is correct.'),
+      'rules/pedagogical-subtitles.md': RULE('`constraints/genre-lint.py` decides shape. This narrows title-register.md for teaching.'),
+    })
+    expect(advs(dir).length).toBe(0)
+  })
+
+  test('different scopes do not meet', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/genre-lint.py': checkerModule('genre'),
+      'rules/title-register.md': RULE('`constraints/genre-lint.py` decides shape.'),
+      'rules/subtitles.md': `---\napplies-to: [notes]\n---\n\n\`constraints/genre-lint.py\` decides shape.\n`,
+    })
+    expect(advs(dir).length).toBe(0)
+  })
+
+  test('a .py name the plugin does not ship is a placeholder, not a subject', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'rules/a.md': RULE('Write the path as file.py in the header.'),
+      'rules/b.md': RULE('Name the script file.py when you call it.'),
+    })
+    expect(advs(dir).length).toBe(0)
+  })
+})
+
 describe('I12 — the rules/constraints split is physical', () => {
   // RED for each of the three findings, then GREEN for the shape that resolves it.
 
