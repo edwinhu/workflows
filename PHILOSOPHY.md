@@ -374,16 +374,22 @@ Dev is the most mature workflow because it has had the most gradient updates —
 
 Most enforcement starts as a convention — someone notices a failure mode and writes a rule: "don't inline check definitions." The rule works when the agent reads it. It fails when the context window is full, the rule gets compressed, or the agent rationalizes around it.
 
-**Graduation** is the moment someone figures out how to test the convention mechanically. The convention "don't inline check definitions" graduates to a constraint when you write a script that greps for inlined definitions and returns pass/fail. Adding the `.py` file next to the existing `.md` file is the graduation ceremony — no file moves, no directory changes, just a new paired script.
+**Graduation** is the moment someone figures out how to test the convention mechanically. The convention "don't inline check definitions" graduates to a constraint when you write a script that greps for inlined definitions and returns pass/fail.
+
+Graduation **retires the prose**. It is not a pairing: the checker runs and its finding IS the statement, so a rule file beside it is a second record of one fact and the agent reads whichever went stale. What the code cannot say — why the rule exists, what a fix looks like — moves into the checker's module docstring, where it is read by whoever edits the check.
 
 ```
 Before graduation:
-  constraints/no-inline-checks.md       ← convention (judgment-based)
+  rules/no-inline-checks.md             ← convention (judgment-based)
 
 After graduation:
-  constraints/no-inline-checks.md       ← constraint rule (unchanged)
-  constraints/no-inline-checks.py       ← check script (new, auto-discovered)
+  constraints/no-inline-checks.py       ← check script (auto-discovered); the rule is gone,
+                                          its rationale now in the module docstring
 ```
+
+A **partial** graduation is the common case and does not retire the rule: the script settles one half (an unseeded `.sample()`) while four other sources of the same failure stay judgement. Then the rule keeps living in `rules/`, renamed for the judgement it carries rather than the subject it shares with the checker, and opens by naming what the checker decides. Two names, two jurisdictions, and neither claims the other's ground.
+
+`pc-probe`'s I12 decides this: sibling `rules/` and `constraints/` directories may not share a stem, `constraints/` holds no `.md`, `rules/` holds no `.py`.
 
 Not every convention can graduate. "Use active voice" requires judgment. "Match the codebase's existing patterns" requires reading and interpreting. These stay as conventions — and that's fine. The goal isn't to eliminate conventions but to graduate every one that *can* be tested.
 

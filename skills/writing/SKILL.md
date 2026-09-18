@@ -315,9 +315,9 @@ Omitting it silently runs the user's codex request on claude.
       writablePaths: ["<proj>/outlines/<Section>.md", "<proj>/drafts/<Section>.md"],
       acceptance: "writing_section_index.py exits 0 for the project, writing_gate_probe.py exits 0 for this section's draft, and writing_prose_gate.py exits 0 for the project.",
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/writing-outline-sync.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/claim-id-traceability.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/writing-topic-sentences.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/writing-outline-canonicality.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/claim-id-traceability.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/writing-topic-sentence-craft.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/writing-general/SKILL.md",
              // plus ONE of these, only when the plan's Domain: says so:
              // "${CLAUDE_PLUGIN_ROOT}/skills/writing-legal/SKILL.md"  (Domain: legal)
@@ -361,10 +361,10 @@ Omitting it silently runs the user's codex request on claude.
 
     { key: "source-fidelity",
       agentType: "Explore",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/cite-fidelity-no-handtyped.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/cite-fidelity-source-inventory.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/cite-fidelity-section-gate.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/writing-citation-tense.md"],
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/cite-fidelity-no-handtyped.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/cite-fidelity-source-inventory.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/cite-fidelity-section-gate.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/writing-citation-tense.md"],
       prompt: "Judge only the sourcing, against the rules in the refs. Read them in full first. Findings: a bibliography entry that corresponds to no artifact under the project's references/ — a citation recalled from training data is a claim about a document nobody opened; a quotation or pin cite that the referenced artifact does not contain; a source cited in a section its outline never pinned; a citation whose tense misstates the authority's current standing. Severity: MAJOR at minimum, CRITICAL where an unsourced or misattributed citation carries a claim the thesis rests on." },
 
     // This lens does NOT pin Explore. Explore is a built-in agent with a predefined prompt no

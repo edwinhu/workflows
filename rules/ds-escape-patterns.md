@@ -1,5 +1,5 @@
 ---
-name: ds-escape-patterns
+name: escape-patterns
 applies-to: [ds, ds-fix, ds-implement, ds-accept, ds-delegate]
 ---
 

@@ -13,29 +13,29 @@ import { join, resolve } from "node:path";
 import { parseFrontmatter, skillMatches } from "../scripts/load-constraints.ts";
 
 const ROOT = resolve(import.meta.dir, "..");
-const CONSTRAINTS = join(ROOT, "constraints");
+const CONSTRAINTS = join(ROOT, "rules");
 const FIXTURE = join(ROOT, "tests", "fixtures", "constraint-dispositions.json");
 
 const expectedDirectAggregate = [
-  "ds-determinism.md",
+  "ds-nondeterminism-sources.md",
   "ds-deviation-rules-analysis.md",
-  "ds-error-handling.md",
-  "ds-idempotency.md",
-  "ds-join-audits.md",
+  "ds-failure-loudness.md",
+  "ds-rerun-equivalence.md",
+  "ds-join-diagnostics.md",
   "ds-p-hacking-prevention.md",
-  "ds-robustness-checks.md",
+  "ds-robustness-menu.md",
   "ds-sample-selection.md",
-  "ds-schema-contracts.md",
-  "ds-standard-error-spec.md",
+  "ds-boundary-contracts.md",
+  "ds-se-matching.md",
   "ds-statistical-validity.md",
-  "ds-table-figure-pairing.md",
-  "ds-visualization-integrity.md",
+  "ds-companion-figures.md",
+  "ds-misleading-charts.md",
 ].sort();
 
 const expectedAggregates = new Set([
-  "skills/ds/constraints/ds-analysis-constraints.md",
-  "skills/ds/constraints/ds-engineering-constraints.md",
-  "skills/ds/constraints/ds-common-conventions.md",
+  "skills/ds/rules/ds-analysis-constraints.md",
+  "skills/ds/rules/ds-engineering-constraints.md",
+  "skills/ds/rules/ds-common-conventions.md",
 ]);
 const expectedTaskBriefs = ["skills/ds/SKILL.md"];
 
@@ -65,7 +65,7 @@ function collectDirectReachability() {
       if (!/\.(md|ts|js|sh|py)$/.test(entry.name)) continue;
       let text: string;
       try { text = readFileSync(p, "utf8"); } catch { continue; }
-      for (const m of text.matchAll(/\$\{CLAUDE_PLUGIN_ROOT\}\/constraints\/([a-z0-9-]+)\.md/g)) {
+      for (const m of text.matchAll(/\$\{CLAUDE_PLUGIN_ROOT\}\/rules\/([a-z0-9-]+)\.md/g)) {
         readReached.add(m[1]);
       }
     }
@@ -114,7 +114,7 @@ test("the closed orphan disposition is exact, current, and delivered through nam
     const aggregatePath = join(ROOT, entry.aggregate);
     expect(existsSync(atomicPath), `${entry.constraint} must remain current`).toBe(true);
     expect(existsSync(aggregatePath), `${entry.aggregate} must exist`).toBe(true);
-    expect(readFileSync(aggregatePath, "utf8")).toContain(`constraints/${entry.constraint}`);
+    expect(readFileSync(aggregatePath, "utf8")).toContain(`rules/${entry.constraint}`);
 
     for (const taskBrief of entry.taskBriefs) {
       const taskBriefPath = join(ROOT, taskBrief);

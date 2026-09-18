@@ -4,7 +4,8 @@
  * TypeScript port of load-constraints.py.
  *
  * Mirrors run-constraints.py's auto-discovery but for .md context injection.
- * Globs constraints/*.md, parses applies-to, outputs matching content.
+ * Globs rules/*.md, parses applies-to, outputs matching content. constraints/ is code a
+ * runner enumerates and holds no prose to load.
  *
  * Usage:
  *     bun scripts/load-constraints.ts workshop
@@ -232,7 +233,7 @@ for (let i = 1; i < argv.length; i++) {
     process.exit(2);
   }
 }
-if (!constraintsDir) constraintsDir = resolve(import.meta.dir, "..", "constraints");
+if (!constraintsDir) constraintsDir = resolve(import.meta.dir, "..", "rules");
 // Exit 2 for every could-not-run, matching `rules-for` and teaching's loader. Neither of the codes
 // this used to return aborts a skill load: a bang tolerates exit 1, and exit 0 with an empty body
 // renders as "this skill has no constraints" — which is what a missing corpus looked like.

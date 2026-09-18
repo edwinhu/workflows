@@ -1,7 +1,9 @@
 ---
-name: standard-error-specification
+name: ds-se-matching
 applies-to: [ds-delegate]
 ---
+
+**What a script already decides:** `constraints/ds-standard-error-spec.py` decides that an SE specification is stated. Whether it MATCHES the data structure — the table below — is this rule.
 
 ## Rule
 

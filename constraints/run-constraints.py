@@ -130,15 +130,24 @@ def import_check(py_path):
 
 
 def _discover(directory, exclude_names=None):
-    """Return (md_stems, py_stems, py_paths) for a directory."""
+    """Return (selected_stems, py_paths) for a directory of CHECKERS.
+
+    THE SELECTION IS THE CHECKERS THEMSELVES. It used to be the `.md` files sitting beside
+    them — `{p.stem for p in directory.glob("*.md")}` — which meant a rule file was load-bearing
+    for whether its checker ran at all. Under the rules/constraints split there are no `.md`
+    files here, and that glob would have silently selected NOTHING: Layer 1 would report a clean
+    run having executed zero checks. Measured across the move, both expressions name the same 14
+    checkers, so this is the same selection stated in terms of the thing it is actually about.
+
+    `_`-prefixed modules are shared helpers, not checkers, and are excluded by name.
+    """
     exclude_names = exclude_names or set()
-    md_stems = {p.stem for p in directory.glob("*.md")}
     py_paths = {
         p.stem: p
         for p in directory.glob("*.py")
-        if p.stem not in exclude_names
+        if p.stem not in exclude_names and not p.name.startswith("_")
     }
-    return md_stems, py_paths
+    return set(py_paths), py_paths
 
 
 def _severity(mod) -> str:
@@ -184,7 +193,22 @@ def _run_checks(md_stems, py_paths, directory_label, context, results, workflow=
             except Exception as e:
                 results["errors"].append({"name": qualified, "error": str(e)})
         else:
-            results["conventions"].append(qualified)
+            # Unreachable while the selection IS py_paths; kept because _run_checks is also
+            # called for the skill layer, and a stem with no module must never pass silently.
+            results["errors"].append({"name": qualified, "error": "no checker module"})
+
+
+def _conventions(rules_dir, label):
+    """Rules nothing executes — the judgement half, reported so a reader knows it exists.
+
+    This list used to fall out of Layer 1: a `.md` in constraints/ with no `.py` beside it was a
+    convention. The split made that a directory rather than an absence, so it is read from the
+    directory. An absent rules/ is NOT an empty one and says so.
+    """
+    if not rules_dir.is_dir():
+        return [(f"COULD-NOT-READ {label}: no rules/ directory — the judgement half of "
+                 f"the corpus is not absent, it is unreadable")]
+    return [f"{label}/{p.stem}" for p in sorted(rules_dir.glob("*.md"))]
 
 
 def main():
@@ -203,8 +227,15 @@ def main():
     workflow = _detect_workflow(cwd)
 
     # --- Layer 1: plugin-wide constraints (now APPLIES_TO-scoped to the detected workflow) ---
-    md_stems, py_paths = _discover(_plugin_constraints_dir, exclude_names={"check-all"})
+    # `run-constraints` is the runner, not a checker; it only stopped selecting itself by
+    # accident before, because no `run-constraints.md` sat beside it.
+    md_stems, py_paths = _discover(_plugin_constraints_dir,
+                                   exclude_names={"check-all", "run-constraints"})
     _run_checks(md_stems, py_paths, "constraints", context, results, workflow)
+    results["conventions"].extend(_conventions(_repo_root / "rules", "rules"))
+    for skill_rules in sorted((_repo_root / "skills").glob("*/rules")):
+        results["conventions"].extend(
+            _conventions(skill_rules, f"skills/{skill_rules.parent.name}/rules"))
 
     # --- Layer 2: skill-local constraints (skills/*/constraints/*.py) ---
     # They lived in skills/*/references/ until that directory held BOTH the source guides

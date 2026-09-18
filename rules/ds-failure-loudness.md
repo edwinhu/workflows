@@ -1,7 +1,9 @@
 ---
-name: error-handling
+name: ds-failure-loudness
 applies-to: [ds-delegate]
 ---
+
+**What a script already decides:** `constraints/ds-error-handling.py` decides the syntactic cases — a bare `except`, a swallowed error. Whether a handled error is reported loudly enough to act on is this rule.
 
 ## Rule
 

@@ -318,11 +318,15 @@ function values(fm, key) {
   const md = join(SKILLS, 'ds-constraints', 'SKILL.md')
   ok('skills/ds-constraints/ is gone (constraints are never a top-level skill)', !existsSync(md))
 
-  // The four source aggregates stay put — other things read them.
+  // The four source aggregates stay put — other things read them. They are prose nothing
+  // executes, so the rules/constraints split moved the directory under them; the assertion is
+  // that they still EXIST and that the old path is gone, not that one path string survived.
   for (const f of ['ds-common-constraints', 'ds-common-conventions',
                    'ds-analysis-constraints', 'ds-engineering-constraints']) {
-    ok(`skills/ds/constraints/${f}.md is still in place`,
-       existsSync(join(SKILLS, 'ds', 'constraints', `${f}.md`)))
+    ok(`skills/ds/rules/${f}.md is still in place`,
+       existsSync(join(SKILLS, 'ds', 'rules', `${f}.md`)))
+    ok(`skills/ds/constraints/${f}.md is gone (prose does not live in constraints/)`,
+       !existsSync(join(SKILLS, 'ds', 'constraints', `${f}.md`)))
   }
 
   const doer = agentPath('ds')
@@ -365,7 +369,7 @@ function values(fm, key) {
      /verifierAgentType:\s*"Explore"/.test(sbody))
   // The doer authority names the preloadable skill, not the four discretionary paths.
   ok('ds doer authority does NOT point at the deleted ds-constraints skill',
-     !sbody.includes('skills/ds-constraints/SKILL.md'))
+     !sbody.includes('skills/ds-rules/SKILL.md'))
   for (const gone of ['references/ds-common-constraints.md', 'references/ds-common-conventions.md',
                       'references/ds-analysis-constraints.md', 'references/ds-engineering-constraints.md']) {
     ok(`ds authorityExtra no longer hands doers ${gone} by path`,
@@ -415,7 +419,7 @@ function values(fm, key) {
   ok('skills/workshop/SKILL.md still pins verifierAgentType: Explore',
      /verifierAgentType:\s*"Explore"/.test(sbody))
   ok('workshop doer authority does NOT point at the deleted workshop-constraints skill',
-     !sbody.includes('skills/workshop-constraints/SKILL.md'))
+     !sbody.includes('skills/workshop-rules/SKILL.md'))
 }
 
 // ── Every agentType any skill names must resolve ────────────────────────────────────────────────

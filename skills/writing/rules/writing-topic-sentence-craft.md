@@ -1,7 +1,9 @@
 ---
-name: writing-topic-sentences
+name: writing-topic-sentence-craft
 applies-to: [writing-draft, writing-verify, writing-revise]
 ---
+
+**What a script already decides:** `constraints/writing-topic-sentences.py` flags meta-commentary openings by heuristic. What a topic sentence should carry instead is this rule.
 
 ## Rule
 

@@ -1,8 +1,8 @@
 [
   {
-    "constraint": "ds-determinism.md",
+    "constraint": "ds-nondeterminism-sources.md",
     "disposition": "direct-aggregate",
-    "aggregate": "skills/ds/constraints/ds-engineering-constraints.md",
+    "aggregate": "skills/ds/rules/ds-engineering-constraints.md",
     "taskBriefs": [
       "skills/ds/SKILL.md"
     ]
@@ -10,31 +10,31 @@
   {
     "constraint": "ds-deviation-rules-analysis.md",
     "disposition": "direct-aggregate",
-    "aggregate": "skills/ds/constraints/ds-common-conventions.md",
+    "aggregate": "skills/ds/rules/ds-common-conventions.md",
     "taskBriefs": [
       "skills/ds/SKILL.md"
     ]
   },
   {
-    "constraint": "ds-error-handling.md",
+    "constraint": "ds-failure-loudness.md",
     "disposition": "direct-aggregate",
-    "aggregate": "skills/ds/constraints/ds-engineering-constraints.md",
+    "aggregate": "skills/ds/rules/ds-engineering-constraints.md",
     "taskBriefs": [
       "skills/ds/SKILL.md"
     ]
   },
   {
-    "constraint": "ds-idempotency.md",
+    "constraint": "ds-rerun-equivalence.md",
     "disposition": "direct-aggregate",
-    "aggregate": "skills/ds/constraints/ds-engineering-constraints.md",
+    "aggregate": "skills/ds/rules/ds-engineering-constraints.md",
     "taskBriefs": [
       "skills/ds/SKILL.md"
     ]
   },
   {
-    "constraint": "ds-join-audits.md",
+    "constraint": "ds-join-diagnostics.md",
     "disposition": "direct-aggregate",
-    "aggregate": "skills/ds/constraints/ds-engineering-constraints.md",
+    "aggregate": "skills/ds/rules/ds-engineering-constraints.md",
     "taskBriefs": [
       "skills/ds/SKILL.md"
     ]
@@ -42,15 +42,15 @@
   {
     "constraint": "ds-p-hacking-prevention.md",
     "disposition": "direct-aggregate",
-    "aggregate": "skills/ds/constraints/ds-common-conventions.md",
+    "aggregate": "skills/ds/rules/ds-common-conventions.md",
     "taskBriefs": [
       "skills/ds/SKILL.md"
     ]
   },
   {
-    "constraint": "ds-robustness-checks.md",
+    "constraint": "ds-robustness-menu.md",
     "disposition": "direct-aggregate",
-    "aggregate": "skills/ds/constraints/ds-analysis-constraints.md",
+    "aggregate": "skills/ds/rules/ds-analysis-constraints.md",
     "taskBriefs": [
       "skills/ds/SKILL.md"
     ]
@@ -58,23 +58,23 @@
   {
     "constraint": "ds-sample-selection.md",
     "disposition": "direct-aggregate",
-    "aggregate": "skills/ds/constraints/ds-common-conventions.md",
+    "aggregate": "skills/ds/rules/ds-common-conventions.md",
     "taskBriefs": [
       "skills/ds/SKILL.md"
     ]
   },
   {
-    "constraint": "ds-schema-contracts.md",
+    "constraint": "ds-boundary-contracts.md",
     "disposition": "direct-aggregate",
-    "aggregate": "skills/ds/constraints/ds-engineering-constraints.md",
+    "aggregate": "skills/ds/rules/ds-engineering-constraints.md",
     "taskBriefs": [
       "skills/ds/SKILL.md"
     ]
   },
   {
-    "constraint": "ds-standard-error-spec.md",
+    "constraint": "ds-se-matching.md",
     "disposition": "direct-aggregate",
-    "aggregate": "skills/ds/constraints/ds-analysis-constraints.md",
+    "aggregate": "skills/ds/rules/ds-analysis-constraints.md",
     "taskBriefs": [
       "skills/ds/SKILL.md"
     ]
@@ -82,23 +82,23 @@
   {
     "constraint": "ds-statistical-validity.md",
     "disposition": "direct-aggregate",
-    "aggregate": "skills/ds/constraints/ds-common-conventions.md",
+    "aggregate": "skills/ds/rules/ds-common-conventions.md",
     "taskBriefs": [
       "skills/ds/SKILL.md"
     ]
   },
   {
-    "constraint": "ds-table-figure-pairing.md",
+    "constraint": "ds-companion-figures.md",
     "disposition": "direct-aggregate",
-    "aggregate": "skills/ds/constraints/ds-analysis-constraints.md",
+    "aggregate": "skills/ds/rules/ds-analysis-constraints.md",
     "taskBriefs": [
       "skills/ds/SKILL.md"
     ]
   },
   {
-    "constraint": "ds-visualization-integrity.md",
+    "constraint": "ds-misleading-charts.md",
     "disposition": "direct-aggregate",
-    "aggregate": "skills/ds/constraints/ds-analysis-constraints.md",
+    "aggregate": "skills/ds/rules/ds-analysis-constraints.md",
     "taskBriefs": [
       "skills/ds/SKILL.md"
     ]

@@ -88,18 +88,18 @@ Four discovery rules run in this same planning step, each governed by its own co
 
 - **Large sources.** If a source may be large (roughly 50M rows, 500 MB to ship, or described as
   bulk/large/uncertain), read
-  `${CLAUDE_PLUGIN_ROOT}/constraints/ds-data-pull-profile.md` and follow it. The
+  `${CLAUDE_PLUGIN_ROOT}/rules/ds-pull-sizing-decision.md` and follow it. The
   profile must compare filtered raw and candidate aggregate/server-side paths before planning commits
   to one. Do not pull a full source merely to estimate it.
 - **External-skill discovery.** When the plan will use another skill or data provider, discover its
   relevant references and examples before choosing an approach: read
-  `${CLAUDE_PLUGIN_ROOT}/constraints/ds-external-skill-discovery.md` and follow it.
+  `${CLAUDE_PLUGIN_ROOT}/rules/ds-external-skill-decision.md` and follow it.
   Record the resulting ADOPT, PATCH, or GREENFIELD decision in the plan itself.
 - **Master datasets.** For multi-output work that shares a sample, read
-  `${CLAUDE_PLUGIN_ROOT}/constraints/ds-master-datasets.md`. Plan the minimal
+  `${CLAUDE_PLUGIN_ROOT}/rules/ds-master-datasets.md`. Plan the minimal
   canonical analysis dataset(s), their grain and keys, and which planned outputs consume each one.
 - **Parameter transparency.** For analytic filters or tunable thresholds, read
-  `${CLAUDE_PLUGIN_ROOT}/constraints/ds-parameter-transparency.md`; name one
+  `${CLAUDE_PLUGIN_ROOT}/rules/ds-parameter-transparency.md`; name one
   configuration location, rationale, and treatment of convenience choices in the plan.
 
 ## Phase 2 — PLAN
@@ -185,10 +185,10 @@ Omitting it silently runs the user's codex request on claude.
       work: "<what to build>",
       writablePaths: ["<narrow>"],
       acceptance: "<the criterion the verifier checks>",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-common-constraints.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-common-conventions.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-analysis-constraints.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-engineering-constraints.md",
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-common-constraints.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-common-conventions.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-analysis-constraints.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-engineering-constraints.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/etl-enforcement.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/sql-patterns.md"] },
 
@@ -197,10 +197,10 @@ Omitting it silently runs the user's codex request on claude.
       work: "<what to build>",
       writablePaths: ["<narrow>"],
       acceptance: "<the criterion the verifier checks>",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-common-constraints.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-common-conventions.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-analysis-constraints.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-engineering-constraints.md",
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-common-constraints.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-common-conventions.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-analysis-constraints.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-engineering-constraints.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/verification-patterns.md"] },
   ],
 
@@ -252,10 +252,10 @@ Omitting it silently runs the user's codex request on claude.
     // this lens as refs, from their one canonical home.
     { key: "ds-constraints",
       agentType: "ds-reviewer",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-common-constraints.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-common-conventions.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-analysis-constraints.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/constraints/ds-engineering-constraints.md"],
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-common-constraints.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-common-conventions.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-analysis-constraints.md",
+             "${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-engineering-constraints.md"],
       prompt: "Grade the implemented code and outputs against the indexed constraints in your refs — C1-C6, V1-V9, A1-A6, E1-E7, read in full first — and against the two no regex reaches: every reported rate states its denominator, and the row-count chain traces input → transform → output. Grade only the constraints the task actually touches; an engineering constraint applied to a pure analysis task is a wrong finding that costs a round. Report every finding with the file, the line and the quoted code, naming the constraint id, and list every id you considered including those you judged satisfied. NEVER report a constraint judgement as a computation — it is MODEL-EVALUATED, with the evidence you actually read. Severity: `major` at minimum, `critical` where the defect invalidates the output's stated grain, universe or inference, never `minor`." },
   ],
 

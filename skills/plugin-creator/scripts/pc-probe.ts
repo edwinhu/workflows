@@ -124,8 +124,15 @@
  *     `scripts/load-constraints.ts` already refuses this at load time; I10 makes it repo-wide and
  *     visible BEFORE load, where a file that no workflow will ever select still looks live.
  *
+ * I12 The rules/constraints split is PHYSICAL. Sibling `rules/` and `constraints/` directories of
+ *     one base may not share a stem; `constraints/` holds no `.md`; `rules/` holds no `.py`.
+ *     I8 pairs files SIDE BY SIDE in one directory, so the moment a corpus splits into two the
+ *     pairs leave its jurisdiction and it reads clean over a corpus still stating each rule twice.
+ *     I12 is what survives the split. Judged per base, so a skill's rules/ never collides with the
+ *     plugin root's constraints/.
+ *
  * ---------------------------------------------------------------------------------------------
- * RULE vs CONSTRAINT — the distinction I8, I9 and I10 make decidable
+ * RULE vs CONSTRAINT — the distinction I8, I9, I10 and I12 make decidable
  *
  *   a RULE is markdown. No script can settle it; a model reads it and judges.
  *   a CONSTRAINT is code. A script decides it, and its finding IS the statement.
@@ -1341,6 +1348,86 @@ export function checkRuleScope(
   return findings
 }
 
+/**
+ * I12: the rules/constraints split is PHYSICAL, not conventional.
+ *
+ * Three findings, all decidable from the filesystem alone:
+ *
+ *   a. a stem present in BOTH `<base>/rules/` and `<base>/constraints/` — the invariant. Sibling
+ *      directories of one base, so a plugin root and each skill are judged separately and a
+ *      `skills/exams/rules/x.md` never collides with a root `constraints/x.py`.
+ *   b. a `.md` under `constraints/` — prose in a directory a runner globs for code.
+ *   c. a `.py` under `rules/` — code in a directory nothing executes.
+ *
+ * The invariant I8 could not carry: I8 pairs files SIDE BY SIDE in one checker directory, so the
+ * moment the corpus splits into two directories every pair leaves its jurisdiction and I8 reads
+ * clean over a corpus that still states each rule twice. This is why the split had to be made
+ * physical rather than remembered — a convention with nothing computing it is how the 14 pairs
+ * accumulated while the doctrine read as enforced.
+ *
+ * A rule that shares a SUBJECT with a checker settling only part of it is not two representations;
+ * it is named for the judgement it carries and says what the checker decides. That rename is what
+ * clears (a), and it is a rename, not a deletion — the prose survives.
+ */
+export function checkSplitInvariant(
+  files: readonly string[],
+  target: string,
+): Finding[] {
+  const rules = new Map<string, Map<string, string>>() // base -> stem -> path
+  const consts = new Map<string, Map<string, string>>()
+  const findings: Finding[] = []
+
+  for (const f of [...files].sort()) {
+    const d = dirname(f)
+    const kind = basename(d)
+    if (kind !== 'rules' && kind !== 'constraints') continue
+    const base = dirname(d)
+    const stem = basename(f).replace(/\.(md|markdown|py)$/i, '')
+    const bucket = kind === 'rules' ? rules : consts
+    if (!bucket.has(base)) bucket.set(base, new Map())
+    if (kind === 'rules' && MARKDOWN_EXT_RE.test(f)) bucket.get(base)!.set(stem, f)
+    if (kind === 'constraints' && extname(f) === '.py') bucket.get(base)!.set(stem, f)
+
+    if (kind === 'constraints' && MARKDOWN_EXT_RE.test(f)) {
+      findings.push({
+        rule: 'I12 the split is physical',
+        severity: 'major',
+        file: f,
+        detail: `${relative(target, f)} is prose in a constraints/ directory — a runner globs that directory for code, and nothing there reads markdown`,
+        remedy:
+          'move it to the sibling rules/ directory if it is a rule a model must judge, or out of both if it is a record rather than a rule',
+      })
+    }
+    if (kind === 'rules' && extname(f) === '.py') {
+      findings.push({
+        rule: 'I12 the split is physical',
+        severity: 'major',
+        file: f,
+        detail: `${relative(target, f)} is code in a rules/ directory — nothing globs rules/ for execution, so this checker runs for nobody`,
+        remedy: 'move it to the sibling constraints/ directory, where a runner enumerates it',
+      })
+    }
+  }
+
+  for (const [base, stems] of [...rules].sort((a, b) => (a[0] < b[0] ? -1 : 1))) {
+    const beside = consts.get(base)
+    if (!beside) continue
+    for (const [stem, mdPath] of [...stems].sort((a, b) => (a[0] < b[0] ? -1 : 1))) {
+      const pyPath = beside.get(stem)
+      if (!pyPath) continue
+      findings.push({
+        rule: 'I12 the split is physical',
+        severity: 'major',
+        file: mdPath,
+        detail: `${relative(target, mdPath)} and ${relative(target, pyPath)} share a stem — one fact in two representations, and the agent reads whichever one went stale`,
+        remedy:
+          'a constraint needs no rule: the checker runs and its finding IS the statement. Delete the prose, or re-home its rationale in the checker\'s module docstring. If the prose is really about something the checker does NOT decide, name it for that judgement and open it by saying what the checker covers',
+      })
+    }
+  }
+  return findings
+}
+
 /** The Python-regex constructs JS does not share, rewritten where the rewrite is exact. */
 export function translatePyRegex(src: string): string {
   return src
@@ -1540,6 +1627,10 @@ export function runProbe(target: string, opts: ProbeOptions = {}): ProbeResult {
   findings.push(...checkTwoRepresentations([...checkerDirs], filesByDir, exemptionsOf, root, exemptions))
   findings.push(...checkCheckerReach(contractFiles, [...enumerated], [...exclusions], discoveryRunners.length, root))
   findings.push(...checkRuleScope([...checkerDirs], filesByDir, textOf, root))
+  // I12 judges DIRECTORY NAMES, not derived checker directories: the whole point is that a
+  // rules/ directory holds no code for a runner to derive itself from, so deriving it would
+  // make the invariant invisible on exactly the corpus it governs.
+  findings.push(...checkSplitInvariant(all, root))
 
   // ---- I7, advisory, and loud when it cannot run
   let corpus: string | null = null

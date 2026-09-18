@@ -1,5 +1,5 @@
 ---
-name: ds-native-document-input
+name: native-document-input
 applies-to: [ds]
 ---
 
