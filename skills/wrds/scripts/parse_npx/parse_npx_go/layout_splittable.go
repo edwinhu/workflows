@@ -58,6 +58,7 @@ var spRoles = map[string]string{
 	"TICKER SYMBOL":              spTicker,
 	"SECURITY ID":                spCUSIP,
 	"PROVIDER SECURITY ID":       spCUSIP,
+	"PRIMARY SECURITY ID":        spCUSIP,
 	"MEETING TYPE":               spMeetingType,
 	"MEETING DATE":               spMeetingDate,
 	"RECORD DATE":                spRecordDate,
@@ -327,9 +328,125 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 	flush()
 
 	if len(rows) == 0 {
+		// The same ISS institutional-account export printed as FIXED-WIDTH TEXT
+		// inside <PRE>, with no <TABLE> of its own for the loop above to open
+		// (Lincoln Variable Insurance Products Trust, 150 MB over four filings).
+		rows = spInstitutionalPreRows(raw, seriesIdx, resolved)
+	}
+
+	if len(rows) == 0 {
 		return nil, errLayoutDeclined
 	}
 	return rows, nil
+}
+
+// spInstitutionalPreRows reads the institutional-account report when it is laid
+// out as plain fixed-width text rather than as parallel <TABLE>s. There is one
+// table per block and it carries the whole vote, so no positional join across
+// tables is needed; what has to be read instead is the block's own furniture.
+//
+//	Institutional Account Name   LVIP BlackRock Dividend Value Managed Volatility
+//	Fund
+//	Institutional Account Number (All)
+//
+//	                       Primary                   Proposal          Vote
+//	Company Name  Ticker  Security ID  Meeting Date  Number  ...  Instruction
+//	------------  ------  -----------  ------------  ------  ---  -----------
+//	Alcon Inc.                                       Accept Financial Statements
+//	               ALC    H01301128     06-May-20  1  and Statutory Reports  For
+//
+// The block is keyed on the dashed rule under the stacked column labels, the
+// fund comes from the `Institutional Account Name` label INCLUDING the tail it
+// wraps onto the line below, and a ballot whose issuer is printed on its own
+// line is joined to the row beneath it by spGroupRows' own wrap handling.
+func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]string) []VoteRow {
+	var (
+		rows     []VoteRow
+		ctx      spContext
+		header   []string
+		spans    []spSpan
+		labels   []string
+		body     []string
+		lastBare string
+		fundTail bool
+	)
+	flush := func() {
+		if len(spans) > 0 && len(body) > 0 {
+			rows = append(rows, spGroupRows([]spTable{{labels: labels, spans: spans, body: body}},
+				seriesIdx, resolved, ctx)...)
+		}
+		spans, labels, body, header = nil, nil, nil, nil
+	}
+
+	for _, rawLine := range spLines(raw) {
+		line := string(rawLine)
+		trimmed := strings.TrimSpace(line)
+
+		// A tag line ends the block: the body of one <PRE> never runs into the
+		// next, and the SGML header above the first one is not a table.
+		if strings.HasPrefix(trimmed, "<") {
+			flush()
+			fundTail = false
+			continue
+		}
+		if spans != nil {
+			if trimmed == "" {
+				flush()
+				continue
+			}
+			body = append(body, line)
+			continue
+		}
+		if r := spRuleSpans(line); r != nil {
+			block := spTrailingBlock(header)
+			if l := spLabels(block, r); spHasVote(l) {
+				spans, labels = r, l
+				continue
+			}
+			header = nil
+			continue
+		}
+
+		if name, ok := spInstitutionalAccountName(line); ok {
+			ctx = spContext{fund: name, page: ctx.page}
+			if ctx.page == "" {
+				ctx.page = lastBare
+			}
+			fundTail = name != ""
+			header = append(header, line)
+			continue
+		}
+		// The account name wraps onto the line below whenever it is wider than
+		// the label's own column. Only a lone word run continues it: anything
+		// carrying a second column is already the next piece of furniture.
+		if fundTail {
+			if trimmed != "" && len(spTextRuns(line)) == 1 && !strings.Contains(trimmed, ":") {
+				ctx.fund = strings.TrimSpace(ctx.fund + " " + trimmed)
+				header = append(header, line)
+				continue
+			}
+			fundTail = false
+		}
+		if trimmed != "" && len(spTextRuns(line)) == 1 && !strings.Contains(trimmed, ":") {
+			lastBare = trimmed
+		}
+		header = append(header, line)
+	}
+	flush()
+	return rows
+}
+
+// spInstitutionalAccountName reads the `Institutional Account Name  <name>`
+// label line, whose value starts on the same line. It carries no colon, so
+// lvPairs never sees it, and the `Institutional Account Number` line beside it
+// must not be read as one.
+func spInstitutionalAccountName(line string) (string, bool) {
+	const label = "INSTITUTIONAL ACCOUNT NAME"
+	t := strings.TrimSpace(line)
+	if len(t) < len(label) || !strings.EqualFold(t[:len(label)], label) {
+		return "", false
+	}
+	return strings.TrimSpace(t[len(label):]), true
 }
 
 // spAppend adds one finished table to the open group, flushing first when the
