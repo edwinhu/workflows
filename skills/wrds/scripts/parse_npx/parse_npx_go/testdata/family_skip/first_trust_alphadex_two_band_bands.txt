@@ -1,0 +1,47 @@
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			FIRST TRUST EXCHANGE-TRADED ALPHADEX FUND
+		CENTRAL INDEX KEY:			0001383496
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>adex_npx.txt
+<DESCRIPTION>VOTING SUMMARY
+<TEXT>
+Item 1.  Proxy Voting Record
+
+--------------------------------------------------------------------------------
+First Trust Large Cap Core AlphaDEX(R) Fund
+--------------------------------------------------------------------------------
+<TABLE>
+<CAPTION>
+<S>                <C>                                                                        <C>           <C>           <C>
+MEETING DATE       COMPANY                                                                    TICKER        SECURITY ID
+07/10/12           The Coca-Cola Company                                                      KO            191216100
+
+ITEM NUMBER        AGENDA ITEM                                                                MGMT REC      VOTE CAST     PROPONENT
+1                  Approve Stock Split                                                        For           For           Mgmt
+
+MEETING DATE       COMPANY                                                                    TICKER        SECURITY ID
+07/12/12           Yahoo! Inc.                                                                YHOO          984332106
+
+ITEM NUMBER        AGENDA ITEM                                                                MGMT REC      VOTE CAST     PROPONENT
+1                  Elect Director Alfred J. Amoroso                                           For           For           Mgmt
+2                  Elect Director John D. Hayes                                               For           For           Mgmt
+3                  Elect Director Susan M. James                                              For           For           Mgmt
+4                  Elect Director David W. Kenny                                              For           For           Mgmt
+5                  Elect Director Peter Liguori                                               For           For           Mgmt
+6                  Elect Director Daniel S. Loeb                                              For           For           Mgmt
+7                  Elect Director Thomas J. McInerney                                         For           For           Mgmt
+8                  Elect Director Brad D. Smith                                               For           For           Mgmt
+9                  Elect Director Maynard G. Webb, Jr.                                        For           For           Mgmt
+10                 Elect Director Harry J. Wilson                                             For           For           Mgmt
+11                 Elect Director Michael J. Wolf                                             For           For           Mgmt
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
