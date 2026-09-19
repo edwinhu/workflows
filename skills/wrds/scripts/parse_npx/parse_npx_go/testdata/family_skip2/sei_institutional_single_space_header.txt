@@ -1,0 +1,28 @@
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SEI INSTITUTIONAL INVESTMENTS TRUST
+		CENTRAL INDEX KEY:			0000939934
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>siitnpx.txt
+<TEXT>
+
+<PAGE>
+<TABLE>
+<CAPTION>
+
+
+
+                              CORE FIXED INCOME FUND
+ PROPOSAL                                            PROPOSED BY MGT. POSITION     REGISTRANT VOTED
+<S>                                                         <C>         <C>               <C>
+EVERGREEN FUNDS
+ CUSIP: 300250602
+ Meeting Date: 3/12/2009  Meeting Type: Special
+ 1. Approve Investment Advisory Agreement                Management     For          Voted - For
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
