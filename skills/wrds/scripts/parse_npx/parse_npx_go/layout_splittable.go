@@ -65,7 +65,9 @@ var spRoles = map[string]string{
 	"SHARES VOTED":               spShares,
 	"PROPONENT":                  spProponent,
 	"PROPOSAL NUMBER":            spItem,
+	"ITEM NUMBER":                spItem,
 	"PROPOSAL TEXT":              spDescription,
+	"PROPOSAL":                   spDescription,
 	"PROPOSAL CODE CATEGORY":     spCategory,
 	"MANAGEMENT RECOMMENDATION":  spMgmtRec,
 	"VOTE INSTRUCTION":           spVote,
@@ -141,11 +143,14 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 		sawType   bool
 		seriesIdx = seriesByName(meta.SeriesDecls)
 		resolved  = map[string]string{}
+		ctx       spContext
+		groupCtx  spContext
+		lastBare  string
 	)
 
 	flush := func() {
 		if len(group) > 0 {
-			rows = append(rows, spGroupRows(group, seriesIdx, resolved)...)
+			rows = append(rows, spGroupRows(group, seriesIdx, resolved, groupCtx)...)
 			group = nil
 		}
 	}
@@ -156,6 +161,9 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 		if cur == nil {
 			switch {
 			case bytes.EqualFold(trimmed, []byte("<TABLE>")):
+				if len(group) == 0 {
+					groupCtx = ctx
+				}
 				cur, header, haveRule, sawType = &spTable{}, nil, false, false
 			case len(trimmed) == 0:
 				// A blank line separates the tables of one group as readily as it
@@ -168,6 +176,14 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 				// stays open across unrelated content is how this parser produced
 				// 148,521 bogus rows once already.
 				flush()
+				// The ISS institutional-account report prints the whole identity
+				// of a meeting OUTSIDE the table, as LABEL: VALUE pairs under a
+				// bare issuer heading, and its table carries only the proposal
+				// columns. Reading the pairs here is what lets that filing keep
+				// its issuer, fund, security id and meeting date; a filing whose
+				// tables carry those columns themselves is unaffected, because
+				// the context only fills a field the columns left empty.
+				lastBare = spReadContext(string(trimmed), &ctx, lastBare)
 			}
 			continue
 		}
@@ -256,8 +272,47 @@ func spParallel(group []spTable, t spTable) bool {
 	return true
 }
 
+// spContext is the identity a report prints BETWEEN its tables rather than in
+// them: the issuer heading and the LABEL: VALUE pairs under it.
+type spContext struct {
+	fund    string
+	issuer  string
+	ticker  string
+	cusip   string
+	mtgDate string
+}
+
+// spReadContext folds one out-of-table line into the running context and returns
+// the new bare-line candidate. The ISSUER is the bare line printed directly above
+// the account name, which is the only thing that marks it as a heading; a line
+// with a colon is a pair, and a rule or a page marker is furniture.
+func spReadContext(line string, ctx *spContext, lastBare string) string {
+	if strings.HasPrefix(line, "<") || strings.Trim(line, "- ") == "" {
+		return lastBare
+	}
+	pairs := lvPairs(icrCells(line))
+	if len(pairs) == 0 {
+		return line
+	}
+	for _, p := range pairs {
+		switch {
+		case p.label == "INSTITUTIONAL ACCOUNT NAME":
+			// The first pair of a block: everything the previous block left is
+			// stale, and the heading above this line is the issuer.
+			*ctx = spContext{fund: p.value, issuer: lastBare}
+		case p.label == "TICKER":
+			ctx.ticker = p.value
+		case p.label == "MEETING DATE":
+			ctx.mtgDate = htmlDate(p.value)
+		case strings.HasPrefix(p.label, "SECURITY ID"):
+			ctx.cusip = p.value
+		}
+	}
+	return lastBare
+}
+
 // spGroupRows joins one page group's parallel tables into votes.
-func spGroupRows(group []spTable, seriesIdx map[string]*SeriesDecl, resolved map[string]string) []VoteRow {
+func spGroupRows(group []spTable, seriesIdx map[string]*SeriesDecl, resolved map[string]string, ctx spContext) []VoteRow {
 	// role -> (table, column). First occurrence wins, so a label repeated across a
 	// group that slipped the parallel test cannot silently override the first.
 	type at struct{ table, col int }
@@ -352,6 +407,23 @@ func spGroupRows(group []spTable, seriesIdx map[string]*SeriesDecl, resolved map
 		for role := range pending {
 			delete(pending, role)
 		}
+		// Context fills only what the columns left empty, so a filing whose
+		// tables carry their own identity is read exactly as before.
+		if row.FundName == "" {
+			row.FundName = ctx.fund
+		}
+		if row.IssuerName == "" {
+			row.IssuerName = ctx.issuer
+		}
+		if row.Ticker == "" {
+			row.Ticker = ctx.ticker
+		}
+		if row.CUSIP == "" {
+			row.CUSIP = icrCUSIP(ctx.cusip)
+		}
+		if row.MeetingDate == "" {
+			row.MeetingDate = ctx.mtgDate
+		}
 		// A row with no vote in the vote cell is table furniture -- a spacer or a
 		// subtotal -- and emitting it would record a vote the filing never cast.
 		if row.HowVoted == "" || (row.ItemSeq == "" && row.VoteDescription == "") {
@@ -390,6 +462,14 @@ func spLines(raw []byte) [][]byte {
 // span per dash run. A line of anything but dashes and spaces is not a rule, and
 // a single run is a horizontal divider rather than a column layout.
 func spRuleSpans(line string) []spSpan {
+	// EDGAR escapes a line that begins with a dash by printing `- ` in front of
+	// it, so the ISS institutional-account report draws its rule as
+	// `- ------  ------`. The escape is two characters wide and sits over the
+	// first column, so filling it keeps every span at the offset the header
+	// words are laid out on; stripping it would shift them.
+	if strings.HasPrefix(line, "- -") {
+		line = "--" + line[2:]
+	}
 	var spans []spSpan
 	start := -1
 	for i := 0; i <= len(line); i++ {

@@ -2633,7 +2633,15 @@ func htmlCanonLabel(s string) string {
 			b.WriteByte(' ')
 		}
 	}
-	return htmlFlat(b.String())
+	out := htmlFlat(b.String())
+	// Vericimetry and its siblings glue the item-number sign to the next column
+	// name, printing one cell `#PROPOSAL` where the grammar has `# | Proposal`.
+	// A bare `#` is still the item column, so only strip the sign when a name
+	// follows it.
+	if len(out) > 1 && out[0] == '#' {
+		out = htmlFlat(out[1:])
+	}
+	return out
 }
 
 // htmlSplitCamel inserts a space at every lower-to-upper transition and before
