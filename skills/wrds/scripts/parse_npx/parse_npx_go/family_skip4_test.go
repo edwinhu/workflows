@@ -99,4 +99,3 @@ func TestFamilySkip4LincolnISSInstitutionalPreText(t *testing.T) {
 		t.Fatalf("found %d of the 2 Alcon Inc. proposals in %d parsed", seen, len(rows))
 	}
 }
-
