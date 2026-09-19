@@ -361,19 +361,31 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 // line is joined to the row beneath it by spGroupRows' own wrap handling.
 func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]string) []VoteRow {
 	var (
-		rows     []VoteRow
-		ctx      spContext
-		header   []string
-		spans    []spSpan
-		labels   []string
-		body     []string
-		lastBare string
-		fundTail bool
+		rows       []VoteRow
+		ctx        spContext
+		header     []string
+		spans      []spSpan
+		labels     []string
+		body       []string
+		prevLabels []string
+		lastBare   string
+		fundTail   bool
 	)
 	flush := func() {
-		if len(spans) > 0 && len(body) > 0 {
+		switch {
+		case len(spans) > 0 && len(body) > 0:
 			rows = append(rows, spGroupRows([]spTable{{labels: labels, spans: spans, body: body}},
 				seriesIdx, resolved, ctx)...)
+			prevLabels = labels
+		case spans == nil && len(prevLabels) > 0:
+			// A page after a break: bare ballot lines under no header of their
+			// own, read on the labels and the fund the preceding page carried.
+			if cont := spContinuationSpans(header, len(prevLabels)); cont != nil {
+				cl := make([]string, len(cont))
+				copy(cl, prevLabels)
+				rows = append(rows, spGroupRows([]spTable{{labels: cl, spans: cont, body: header}},
+					seriesIdx, resolved, ctx)...)
+			}
 		}
 		spans, labels, body, header = nil, nil, nil, nil
 	}
@@ -434,6 +446,59 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 	}
 	flush()
 	return rows
+}
+
+// spContinuationSpans cuts a headerless page's columns out of its own body. The
+// ISS institutional export is paginated and only a fund's FIRST page repeats the
+// stacked labels over their rule; the pages after it print bare ballot lines in a
+// narrower geometry, with the spilled `Vote Against Management` column printed
+// inline rather than as its own panel. Such a page is read on the preceding
+// block's labels, so it has to be a page of ballots -- it must print a meeting
+// date -- and it has to cut into at least as many columns as there are labels.
+// The trailing extras are the spilled panel; they stay as columns so that their
+// text cannot be folded into the last labelled one, but the caller leaves them
+// unlabelled, which is what drops them.
+func spContinuationSpans(lines []string, want int) []spSpan {
+	if want < 2 || !spHasBallotDate(lines) {
+		return nil
+	}
+	spans := spHeaderSpans(lines)
+	if len(spans) < want || len(spans) > want+2 {
+		return nil
+	}
+	return spans
+}
+
+// spHasBallotDate reports whether any line prints a `06-May-20` meeting date,
+// which is what separates a continuation page of ballots from the spilled
+// single-column panel or any other page of prose.
+func spHasBallotDate(lines []string) bool {
+	digits := func(s string) bool {
+		for i := 0; i < len(s); i++ {
+			if s[i] < '0' || s[i] > '9' {
+				return false
+			}
+		}
+		return true
+	}
+	alpha := func(s string) bool {
+		for i := 0; i < len(s); i++ {
+			c := s[i] | 0x20
+			if c < 'a' || c > 'z' {
+				return false
+			}
+		}
+		return true
+	}
+	for _, l := range lines {
+		for i := 0; i+9 <= len(l); i++ {
+			if l[i+2] == '-' && l[i+6] == '-' &&
+				digits(l[i:i+2]) && alpha(l[i+3:i+6]) && digits(l[i+7:i+9]) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // spInstitutionalAccountName reads the `Institutional Account Name  <name>`
