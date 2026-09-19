@@ -75,10 +75,13 @@ var spRoles = map[string]string{
 	"PROPOSAL TYPE":             spProponent,
 	"PROPOSAL CODE CATEGORY":    spCategory,
 	"MANAGEMENT RECOMMENDATION": spMgmtRec,
-	"VOTE INSTRUCTION":          spVote,
-	"VOTING INSTRUCTION":        spVote,
-	"VOTE CAST":                 spVote,
-	"HOW VOTED":                 spVote,
+	// The banner-stripped Investment Company Report spells the recommended
+	// vote `RV` and prints it beside `Vote Cast`.
+	"RV":                 spMgmtRec,
+	"VOTE INSTRUCTION":   spVote,
+	"VOTING INSTRUCTION": spVote,
+	"VOTE CAST":          spVote,
+	"HOW VOTED":          spVote,
 }
 
 const (
@@ -134,8 +137,26 @@ func spIsProxyEdgeText(text string) bool {
 		containsAnyFolded(text, []string{"investment company report"})
 }
 
+// spIsVoteGroupText is the third signature of this family: the same Broadridge
+// fixed-width Investment Company Report with the vendor banner stripped, so
+// neither `ProxyEdge -` nor `Investment Company Report` is printed anywhere.
+// What it does still print is the block delimiter this reader already keys on,
+// `Vote Group:`, above the rule-cut `Proposal Number` column header. Both are
+// required: `Vote Group:` alone also appears in reports another layout claims.
+func spIsVoteGroupText(text string) bool {
+	return containsAnyFolded(text, []string{"vote group:"}) &&
+		containsAnyFolded(text, []string{"proposal number"})
+}
+
+// spIsTextReport reports whether the document is one of the two fixed-width
+// Broadridge text reports, which are read through the stacked-header path
+// rather than the rule-cut one.
+func spIsTextReport(text string) bool {
+	return spIsProxyEdgeText(text) || spIsVoteGroupText(text)
+}
+
 func matchSplitTable(head string) bool {
-	return containsAnyFolded(head, spSignatures) || spIsProxyEdgeText(head)
+	return containsAnyFolded(head, spSignatures) || spIsTextReport(head)
 }
 
 // spSpan is one column as the table's own rule line draws it.
@@ -202,7 +223,7 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 		ctx       spContext
 		groupCtx  spContext
 		lastBare  string
-		proxyEdge = spIsProxyEdgeText(string(raw))
+		proxyEdge = spIsTextReport(string(raw))
 	)
 
 	flush := func() {
@@ -371,6 +392,10 @@ type spContext struct {
 // the account name, which is the only thing that marks it as a heading; a line
 // with a colon is a pair, and a rule or a page marker is furniture.
 func spReadContext(line string, ctx *spContext, lastBare string) string {
+	if fund, ok := spAccountFund(line); ok {
+		ctx.fund = fund
+		return lastBare
+	}
 	if strings.HasPrefix(line, "<") || strings.Trim(line, "- ") == "" {
 		if strings.Contains(line, "----") && lastBare != "" {
 			ctx.page = lastBare
@@ -400,6 +425,22 @@ func spReadContext(line string, ctx *spContext, lastBare string) string {
 		}
 	}
 	return lastBare
+}
+
+// spAccountFund reads the `Account -  <name>` banner the banner-stripped
+// Investment Company Report prints above every page's meetings. It carries no
+// colon, so lvPairs never sees it.
+func spAccountFund(line string) (string, bool) {
+	t := strings.TrimSpace(line)
+	const prefix = "ACCOUNT -"
+	if len(t) <= len(prefix) || !strings.EqualFold(t[:len(prefix)], prefix) {
+		return "", false
+	}
+	name := strings.TrimSpace(t[len(prefix):])
+	if name == "" || strings.Contains(name, ":") {
+		return "", false
+	}
+	return name, true
 }
 
 // spIsPlainRule recognises the single unbroken dashed rule the ProxyEdge text
@@ -512,6 +553,10 @@ func spHasVote(labels []string) bool {
 // label:value pairs the schema has no full CUSIP for, and a six-character
 // issuer number is not a link key.
 func spReadProxyEdgeHeading(line string, ctx, groupCtx *spContext) {
+	if fund, ok := spAccountFund(line); ok {
+		ctx.fund = fund
+		return
+	}
 	cells := icrCells(strings.TrimSpace(line))
 	if len(cells) < 2 || !strings.Contains(cells[len(cells)-1], "Meeting Date:") {
 		return
@@ -530,6 +575,16 @@ func spReadProxyEdgeHeading(line string, ctx, groupCtx *spContext) {
 	if len(cells) > 2 {
 		if t := strings.TrimSpace(cells[1]); t != "" && !strings.Contains(t, ":") {
 			ctx.ticker = t
+		}
+	}
+	if ctx.ticker == "" {
+		// The banner-stripped template LABELS the ticker (`Ticker:  CNC`)
+		// instead of printing it bare in the second column.
+		for _, p := range lvPairs(cells[1:]) {
+			if p.label == "TICKER" && p.value != "" {
+				ctx.ticker = p.value
+				break
+			}
 		}
 	}
 	fund := groupCtx.fund

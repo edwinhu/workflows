@@ -70,6 +70,19 @@ const (
 	htmlHeaderMaxCells = 20
 )
 
+// htmlHeaderWideMaxCells / htmlHeaderWideLabelMaxLen govern the band above
+// htmlHeaderMaxCells. The ISS institutional export is an ordinary grid of 21 to
+// 24 labelled columns (Ranger Funds 2020 prints 21, Johnson Mutual Funds 2011
+// prints 24), and the cap refused it for its WIDTH alone even though every
+// synonym it needs is already mapped. The cap guards against mistaking a wide
+// prose block for a header, so past 20 the ceiling becomes conditional on the
+// thing it was really protecting: every label must be SHORT. The longest label
+// of that export is `Institutional Account Name`, 26 bytes.
+const (
+	htmlHeaderWideMaxCells    = 24
+	htmlHeaderWideLabelMaxLen = 32
+)
+
 // htmlTableNilSentinels are affirmative no-vote statements seen in the SEC's
 // lettered Item 1 table. They are checked only in a short governed row and only
 // when no content-bearing row follows it, so a no-vote block cannot erase a real
@@ -1387,7 +1400,26 @@ func htmlHeaderFragmentOver(cells, below []string) bool {
 		}
 		labels++
 	}
+	if labels == 1 {
+		// ONE label is enough only when it NAMES THE VOTE: the ISS `Vote
+		// Summary Report` prints `Vote` in the last column of an otherwise
+		// empty row over `Proponent | Mgmt Rec | Instruction` (TD Asset
+		// Management 2012), and the join is the only way the vote column is
+		// ever named. Any other lone label is an identity heading the stacked
+		// readers below must keep.
+		return htmlSingleVoteLabel(cells)
+	}
 	return labels >= 2 && labels <= htmlHeaderMaxCells
+}
+
+// htmlSingleVoteLabel reports a row whose only label maps to the vote column.
+func htmlSingleVoteLabel(cells []string) bool {
+	m := htmlMapFields(cells)
+	if len(m) != 1 {
+		return false
+	}
+	_, ok := m[htmlFieldVote]
+	return ok
 }
 
 // htmlHeaderMapping accepts a row only when its shape passes every value and
@@ -1635,10 +1667,15 @@ func htmlAdoptUnlabelledDesc(cells []string, mapping map[string]int, feed *htmlR
 		if claimed[idx] || htmlFlat(c) != "" {
 			continue
 		}
-		seen, textual := 0, true
+		seen, textual, ended := 0, true, false
 		for i := 0; i < htmlHeaderLookahead && textual; i++ {
 			row, ok := feed.peek(i)
 			if !ok {
+				// The document ends here. As in htmlHasTableBelow, the
+				// three-row witness exists to tell a description column from a
+				// label column in the MIDDLE of a document; with no rows left
+				// there is nothing further to disambiguate.
+				ended = true
 				break
 			}
 			if _, _, isHeader := htmlHeaderShape(row.cells); isHeader {
@@ -1657,7 +1694,7 @@ func htmlAdoptUnlabelledDesc(cells []string, mapping map[string]int, feed *htmlR
 			}
 			seen++
 		}
-		if textual && seen >= htmlHeaderConfirm {
+		if textual && (seen >= htmlHeaderConfirm || (ended && seen > 0)) {
 			if chosen >= 0 {
 				return false
 			}
@@ -1730,6 +1767,7 @@ const htmlItemMaxLen = 8
 // from what the main pass accepts.
 func htmlHeaderShape(cells []string) (map[string]int, string, bool) {
 	labels := 0
+	allShort := true
 	for i, c := range cells {
 		flat := htmlFlat(c)
 		if flat == "" {
@@ -1755,8 +1793,14 @@ func htmlHeaderShape(cells []string) (map[string]int, string, bool) {
 			return nil, "", false
 		}
 		labels++
+		if len(valueText) > htmlHeaderWideLabelMaxLen {
+			allShort = false
+		}
 	}
-	if labels < htmlHeaderMinCells || labels > htmlHeaderMaxCells {
+	if labels < htmlHeaderMinCells {
+		return nil, "", false
+	}
+	if labels > htmlHeaderMaxCells && (labels > htmlHeaderWideMaxCells || !allShort) {
 		return nil, "", false
 	}
 
