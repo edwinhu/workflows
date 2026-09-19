@@ -4882,13 +4882,18 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 
 	vote := at(htmlFieldVote)
 	votedFlag := ""
+	blankVote := false
 	if vote == "" {
 		// An unvoted agenda item under a `Voted | Vote` header: the flag says
 		// NO and the vote cell is empty. The row is real; the vote is blank.
 		if f := at(htmlFieldVotedFlag); f != "" && htmlIsYesNo(f) {
 			votedFlag = f
 		} else {
-			return VoteRow{}, false
+			// No flag column to appeal to (Cornerstone 2013 prints no `Ballot
+			// Status`, and stops printing the vote part-way through a meeting
+			// while keeping the row). The row's own completeness decides:
+			// both an item number and a description, checked below.
+			blankVote = true
 		}
 	}
 	// A label in the vote column (`Period:`, `Company Name`) is a cover or
@@ -4925,6 +4930,13 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 		item = leadingItem
 	}
 	if item == "" && desc == "" {
+		return VoteRow{}, false
+	}
+	// A row whose vote cell is blank with no flag column to explain it is kept
+	// only when it is unmistakably an agenda row: an item number AND a
+	// description. The vote stays blank -- the filing prints it nowhere and the
+	// neighbouring `Mgmt Rec` / `For / Against Mgmt` cells only imply it.
+	if blankVote && (item == "" || desc == "" || !htmlIsItemNumber(item)) {
 		return VoteRow{}, false
 	}
 
