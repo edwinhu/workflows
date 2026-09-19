@@ -1,0 +1,58 @@
+<SEC-DOCUMENT>0001206774-04-001363.txt : 20040902
+<SEC-HEADER>0001206774-04-001363.hdr.sgml : 20040902
+<ACCEPTANCE-DATETIME>20040902174623
+ACCESSION NUMBER:		0001206774-04-001363
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040902
+DATE AS OF CHANGE:		20040902
+EFFECTIVENESS DATE:		20040902
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			MANUFACTURERS INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000756913
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0630
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>mi031_0000756913.txt
+<DESCRIPTION>FORM N-PX/AMENDMENT
+<TEXT>
+<TABLE>
+<S>    <C>                                                            <C>        <C>        <C>
+2A01 MIT Emerging Small Company Trust
+
+- --------------------------------------------------------------------------------------------------------
+FORTUNE BRANDS, INC.                                                           Agenda: 932103942
+      CUSIP: 349631101                        Meeting Type: Annual
+     Ticker: FO                               Meeting Date: 4/27/2004            ISIN:
+                                                                                            For/Against
+Proposal                                                              Type       Vote        Management
+- --------------------------------------------------------------------------------------------------------
+01     ANNE M. TATLOCK                                                 Mgmt      Withheld        Against
+       NORMAN H. WESLEY                                                Mgmt      Withheld        Against
+02     RATIFY THE APPOINTMENT OF                                       Mgmt         For            For
+       PRICEWATERHOUSECOOPERS LLP AS
+       INDEPENDENT AUDITORS FOR 2004.
+03     STOCKHOLDER PROPOSAL ENTITLED                                    Shr         For          Against
+       SHAREHOLDER VOTE ON POISON PILLS TO
+       ADOPT THE FOLLOWING RESOLUTION:  THE
+- --------------------------------------------------------------------------------------------------------
+FRANKLIN RESOURCES, INC.                                                       Agenda: 932075698
+      CUSIP: 354613101                        Meeting Type: Annual
+     Ticker: BEN                              Meeting Date: 1/29/2004            ISIN:
+                                                                                            For/Against
+Proposal                                                              Type       Vote        Management
+- --------------------------------------------------------------------------------------------------------
+01     ROBERT D. JOFFE                                                 Mgmt         For            For
+       CHARLES CROCKER                                                 Mgmt         For            For
+       HARMON E. BURNS                                                 Mgmt         For            For
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
