@@ -1,0 +1,79 @@
+		COMPANY CONFORMED NAME:			CARILLON SERIES TRUST
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>carillon_npx.htm
+<DESCRIPTION>ANNUAL REPORT OF PROXY VOTING
+<TEXT>
+        <table cellspacing="0" cellpadding="0" id="z2a85ddc64f1d40ef9c531c34113a0638" style="font-family: 'Times New Roman', Times, serif; font-size: 10pt; width: 100%; border-collapse: collapse; text-align: left; color: #000000;">
+
+            <tr>
+              <td style="width: 12.67%; vertical-align: top;">
+                <div style="text-align: center; color: #000000; font-weight: bold;">Fund Name</div>
+              </td>
+              <td style="width: 5.88%; vertical-align: top;">
+                <div style="color: #000000; font-weight: bold;">CUSIP</div>
+              </td>
+              <td style="width: 5.07%; vertical-align: top;">
+                <div style="color: #000000; font-weight: bold;">Symbol</div>
+              </td>
+              <td style="width: 10.82%; vertical-align: top;">
+                <div style="text-align: center; color: #000000; font-weight: bold;">Issuer/Company Name</div>
+              </td>
+              <td style="width: 6.1%; vertical-align: top;">
+                <div style="text-align: center; color: #000000; font-weight: bold;">Meeting Date</div>
+              </td>
+              <td style="width: 27.09%; vertical-align: top;">
+                <div style="text-align: center; color: #000000; font-weight: bold;">Issue</div>
+              </td>
+              <td style="width: 7.95%; vertical-align: top;">
+                <div style="text-align: center; color: #000000; font-weight: bold;">Was this a Shareholder, Mgmt, or Issuer proposal?</div>
+              </td>
+              <td style="width: 7.94%; vertical-align: top;">
+                <div style="text-align: center; color: #000000; font-weight: bold;">Did the Fund Vote?</div>
+              </td>
+              <td style="width: 9.88%; vertical-align: top;">
+                <div style="text-align: center; color: #000000; font-weight: bold;">How the Fund cast its vote</div>
+              </td>
+              <td style="width: 6.61%; vertical-align: top;">
+                <div style="text-align: center; color: #000000; font-weight: bold;">Was the Fund vote "with" or "against" Management recommendation</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 12.67%; vertical-align: top;">
+                <div style="color: #000000;">Carillon / ClariVest Capital Appreciation Fund</div>
+              </td>
+              <td style="width: 5.88%; vertical-align: top;">
+                <div style="color: #000000;">981558109</div>
+              </td>
+              <td style="width: 5.07%; vertical-align: top;">
+                <div style="color: #000000;">WP</div>
+              </td>
+              <td style="width: 10.82%; vertical-align: top;">
+                <div style="color: #000000;">Worldpay, Inc.</div>
+              </td>
+              <td style="width: 6.1%; vertical-align: top;">
+                <div style="color: #000000;">&#160;24-Jul-19</div>
+              </td>
+              <td style="width: 27.09%; vertical-align: top;">
+                <div style="color: #000000;">Approve Merger Agreement</div>
+              </td>
+              <td style="width: 7.95%; vertical-align: top;">
+                <div style="color: #000000;">Management</div>
+              </td>
+              <td style="width: 7.94%; vertical-align: top;">
+                <div style="text-align: center; color: #000000;">Yes</div>
+              </td>
+              <td style="width: 9.88%; vertical-align: top;">
+                <div style="text-align: center; color: #000000;">For</div>
+              </td>
+              <td style="width: 6.61%; vertical-align: top;">
+                <div style="text-align: center; color: #000000;">With</div>
+              </td>
+            </tr>
+        </table>
+</html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

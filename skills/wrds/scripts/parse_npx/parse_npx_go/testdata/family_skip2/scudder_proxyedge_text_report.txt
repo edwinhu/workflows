@@ -1,0 +1,43 @@
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SCUDDER INVESTMENT PORTFOLIOS
+		CENTRAL INDEX KEY:			0000906619
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx-allfunds.txt
+<DESCRIPTION>N-PX FILINGS
+<TEXT>
+
+<PAGE>
+
+ProxyEdge -  Investment Company Report                   Report Date: 07/22/2004
+Meeting Date Range: 07/01/2003 to 06/30/2004
+Selected Accounts: Asset Mgmt Port II
+
+<TABLE>
+<CAPTION>
+- ------------------------------------------------------------------------------------------------------------------------------------
+NVIDIA CORPORATION                                                              NVDA                 Annual Meeting Date: 07/10/2003
+Issuer: 67066G                                 ISIN:
+SEDOL:
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+ Proposal                                                                       Proposal             Vote             Against
+ Number   Proposal                                                              Type                 Cast              Mgmt.
+- ------------------------------------------------------------------------------------------------------------------------------------
+<S>     <C>    <C>    <C>    <C>    <C>    <C>
+
+   01     DIRECTOR                                                              Management            For               No
+
+   02     TO RATIFY THE SELECTION OF KPMG LLP AS NVIDIA                         Management            For               No
+          S INDEPENDENT AUDITORS FOR THE FISCAL YEAR ENDING
+          JANUARY 25, 2004.
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
