@@ -1,0 +1,43 @@
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Vanguard Personalized Indexing Management, LLC
+		CENTRAL INDEX KEY:			0001767306
+		ORGANIZATION NAME:           	
+		IRS NUMBER:				231945930
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1934 Act
+		SEC FILE NUMBER:	028-20247
+		FILM NUMBER:		241219517
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>PROXY VOTING RECORD
+<SEQUENCE>2
+<FILENAME>FormN-PX_ProxyVoteTable.xml
+<DESCRIPTION>PROXY VOTE TABLE FOR VANGUARD PERSONALIZED INDEXING MANAGEMENT, LLC (403)
+<TEXT>
+<XML>
+<?xml version="1.0" ?><edgarSubmission xmlns="http://www.sec.gov/edgar/npx" xmlns:com="http://www.sec.gov/edgar/common"><headerData><submissionType>N-PX</submissionType><filerInfo><registrantType>IM</registrantType><liveTestFlag>LIVE</liveTestFlag><filer><issuerCredentials><cik>0001767306</cik><ccc>t$dfaqm8</ccc></issuerCredentials></filer><contact><contactName>Graham Harris</contactName><contactPhoneNumber>610-503-7291</contactPhoneNumber><contactEmailAddress>graham_harris@vanguard.com</contactEmailAddress></contact><flags><overrideInternetFlag>false</overrideInternetFlag><confirmingCopyFlag>false</confirmingCopyFlag></flags><periodOfReport>06/30/2024</periodOfReport></filerInfo></headerData><formData><coverPage><yearOrQuarter>YEAR</yearOrQuarter><reportCalendarYear>2024</reportCalendarYear><reportingPerson><name>Vanguard Personalized Indexing Management, LLC</name><phoneNumber>844-317-5190</phoneNumber><address><com:street1>1611 Telegraph Avenue</com:street1><com:street2>Suite 1100</com:street2><com:city>Oakland</com:city><com:stateOrCountry>CA</com:stateOrCountry><com:zipCode>94612</com:zipCode></address></reportingPerson><reportInfo><reportType>INSTITUTIONAL MANAGER VOTING REPORT</reportType></reportInfo><fileNumber>028-20247</fileNumber><explanatoryInformation><explanatoryChoice>N</explanatoryChoice></explanatoryInformation></coverPage><summaryPage><otherIncludedManagersCount>0</otherIncludedManagersCount></summaryPage><signaturePage><reportingPerson>Vanguard Personalized Indexing Management, LLC</reportingPerson><txSignature>Marc Stewart</txSignature><txPrintedSignature>Marc Stewart</txPrintedSignature><txTitle>Chief Compliance Officer</txTitle><txAsOfDate>07/22/2024</txAsOfDate></signaturePage></formData><documents><com:document><com:conformedName>ProxyVotingTable.xml</com:conformedName><com:conformedDocumentType>PROXY VOTING RECORD</com:conformedDocumentType><com:contents>PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxpbmY6cHJveHlWb3RlVGFibGUgeG1sbnM6aW5mPSJodHRw
+Oi8vd3d3LnNlYy5nb3YvZWRnYXIvZG9jdW1lbnQvbnB4cHJveHkvaW5mb3JtYXRpb250YWJsZSI+
+PGluZjpwcm94eVRhYmxlPjxpbmY6aXNzdWVyTmFtZT5Tbm93Zmxha2UgSW5jLjwvaW5mOmlzc3Vl
+ck5hbWU+PGluZjpjdXNpcD44MzM0NDUxMDk8L2luZjpjdXNpcD48aW5mOmlzaW4+VVM4MzM0NDUx
+MDk4PC9pbmY6aXNpbj48aW5mOm1lZXRpbmdEYXRlPjA3LzA1LzIwMjM8L2luZjptZWV0aW5nRGF0
+ZT48aW5mOnZvdGVEZXNjcmlwdGlvbj5UbyBhcHByb3ZlLCBvbiBhbiBhZHZpc29yeSBiYXNpcywg
+dGhlIGNvbXBlbnNhdGlvbiBvZiBvdXIgbmFtZWQgZXhlY3V0aXZlIG9mZmljZXJzLjwvaW5mOnZv
+dGVEZXNjcmlwdGlvbj48aW5mOnZvdGVDYXRlZ29yaWVzPjxpbmY6dm90ZUNhdGVnb3J5PjxpbmY6
+Y2F0ZWdvcnlUeXBlPlNFQ1RJT04gMTRBIFNBWS1PTi1QQVkgVk9URVM8L2luZjpjYXRlZ29yeVR5
+cGU+PC9pbmY6dm90ZUNhdGVnb3J5PjwvaW5mOnZvdGVDYXRlZ29yaWVzPjxpbmY6c2hhcmVzVm90
+ZWQ+MTA2NTAuMDAwMDAwPC9pbmY6c2hhcmVzVm90ZWQ+PGluZjpzaGFyZXNPbkxvYW4+MDwvaW5m
+OnNoYXJlc09uTG9hbj48aW5mOnZvdGU+PGluZjp2b3RlUmVjb3JkPjxpbmY6aG93Vm90ZWQ+Rk9S
+PC9pbmY6aG93Vm90ZWQ+PGluZjpzaGFyZXNWb3RlZD4xMDY1MC4wMDAwMDA8L2luZjpzaGFyZXNW
+b3RlZD48aW5mOm1hbmFnZW1lbnRSZWNvbW1lbmRhdGlvbj5GT1I8L2luZjptYW5hZ2VtZW50UmVj
+b21tZW5kYXRpb24+PC9pbmY6dm90ZVJlY29yZD48L2luZjp2b3RlPjwvaW5mOnByb3h5VGFibGU+
+b3RlVGFibGU+</com:contents></com:document></documents></edgarSubmission>
+</XML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

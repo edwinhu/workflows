@@ -1,0 +1,73 @@
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			EAGLE SERIES TRUST
+		CENTRAL INDEX KEY:			0000897111
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07470
+		FILM NUMBER:		161832240
+<SERIES>
+<OWNER-CIK>0000897111
+<SERIES-ID>S000039949
+<SERIES-NAME>Eagle International Stock Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000123871
+<CLASS-CONTRACT-NAME>A
+<CLASS-CONTRACT-TICKER-SYMBOL>EISAX
+</CLASS-CONTRACT>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>eglseries_npx.htm
+<DESCRIPTION>ANNUAL REPORT OF PROXY VOTING
+<TEXT>
+<table id="43815e4a06884692a79491a4f9e72287" style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; BORDER-COLLAPSE: collapse; WIDTH: 100%" cellspacing="0" cellpadding="3" border="0">
+<tr>
+<td style="VERTICAL-ALIGN: top; WIDTH: 14.52%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left">Name (Eagle Fund Name)</div>
+</td>
+<td style="VERTICAL-ALIGN: top; WIDTH: 5.84%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left">Cusip</div>
+</td>
+<td style="VERTICAL-ALIGN: top; WIDTH: 5.57%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left">Symbol</div>
+</td>
+<td style="VERTICAL-ALIGN: top; WIDTH: 19.63%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left">Description (Company Name)</div>
+</td>
+<td style="VERTICAL-ALIGN: top; WIDTH: 13.79%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left">Meeting Date</div>
+</td>
+<td style="VERTICAL-ALIGN: top; WIDTH: 41.19%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left">Issue (What Issue was voted on?)</div>
+</td>
+</tr>
+
+<tr>
+<td style="VERTICAL-ALIGN: top; WIDTH: 14.52%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">Eagle International Stock Fund</div>
+</td>
+<td style="VERTICAL-ALIGN: top; WIDTH: 5.84%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">H9725B102</div>
+</td>
+<td style="VERTICAL-ALIGN: top; WIDTH: 5.57%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">YPSN</div>
+</td>
+<td style="VERTICAL-ALIGN: top; WIDTH: 19.63%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">Ypsomed Holding AG</div>
+</td>
+<td style="VERTICAL-ALIGN: top; WIDTH: 13.79%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">7/1/2015</div>
+</td>
+<td style="VERTICAL-ALIGN: top; WIDTH: 41.19%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">Accept Financial Statements and Statutory Reports</div>
+</td>
+</tr>
+</table>
