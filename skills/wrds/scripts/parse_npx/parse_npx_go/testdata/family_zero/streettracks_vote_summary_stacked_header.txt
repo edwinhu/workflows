@@ -1,0 +1,50 @@
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			STREETTRACKS SERIES TRUST
+		CENTRAL INDEX KEY:			0001064642
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08839
+		FILM NUMBER:		041006985
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>b51670stnvpx.txt
+<DESCRIPTION>STREETTRACKS SERIES TRUST
+<TEXT>
+<PAGE>
+
+Item 1.
+
+                               VOTE SUMMARY REPORT
+                           Jul 01, 2003 - Jun 30, 2004
+
+STREETTRACKS MORGAN STANLEY TECHNOLOGY INDEX FUND - J920
+
+<TABLE>
+<CAPTION>
+Mtg               Company/                                   Mgmt         Vote        Record                      Shares
+Date/Type         Ballot Issues                  Security    Rec          Cast        Date         Prpnent        Voted
+- ------------------------------------------------------------------------------------------------------------------------
+<S>               <C>                            <C>         <C>          <C>         <C>          <C>            <C>
+02/05/04 - A      ACCENTURE LTD BERMUDA *ACN*    G1150G111                            12/08/03                    27,183
+
+                  1       Appoint Dennis F. Hightower,       For          For                      Mgmt
+                          William L. Kimsey, Robert I.
+                          Lipp, and Wulf von Schimmelmann
+                          as Directors
+
+                  2       Approve KPMG LLP as Independent    For          For                      Mgmt
+                          Auditors and Authorize Board to
+                          Fix Their Remuneration
+
+                  3       Transact Other Business            None         None                     Mgmt
+                          (Non-Voting)
+
+</TABLE>
