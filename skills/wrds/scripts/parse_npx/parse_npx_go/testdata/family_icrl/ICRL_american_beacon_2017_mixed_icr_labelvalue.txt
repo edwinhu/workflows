@@ -1,0 +1,79 @@
+<SEC-DOCUMENT>0000809593-17-000064.txt : 20170831
+<SEC-HEADER>0000809593-17-000064.hdr.sgml : 20170831
+<ACCEPTANCE-DATETIME>20170831164037
+ACCESSION NUMBER:		0000809593-17-000064
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20170831
+FILED AS OF DATE:		20170831
+DATE AS OF CHANGE:		20170831
+EFFECTIVENESS DATE:		20170831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			AMERICAN BEACON FUNDS
+		CENTRAL INDEX KEY:			0000809593
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000809593
+<SERIES-ID>S000000718
+<SERIES-NAME>American Beacon Balanced Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000809593
+<SERIES-ID>S000042128
+<SERIES-NAME>American Beacon Acadian Emerging Markets Managed Volatility Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000809593
+<SERIES-ID>S000051599
+<SERIES-NAME>American Beacon Bridgeway Large Cap Growth Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>abf2017.txt
+<TEXT>
+<PAGE>
+
+Fund Name: American Beacon Acadian Emerging Markets Managed Volatility Fund
+________________________________________________________________________________
+Aboitiz Power Corporation
+Ticker     Security ID:             Meeting Date          Meeting Status
+AP         CINS Y0005M109           05/15/2017            Voted
+Meeting Type                        Country of Trade
+Annual                              Philippines
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Approve Minutes of       Mgmt       For        For        For
+            Previous
+            Stockholders' Meeting
+            Held Last May 16,
+            2016
+
+2          Approve 2016 Annual      Mgmt       For        For        For
+            Report and Financial
+            Statements
+<PAGE>
+
+Fund Name: American Beacon Bridgeway Large Cap Growth Fund
+_____________________________________________________________________________
+ACCENTURE PLC
+
+Ticker:       ACN            Security ID:  G1151C101
+Meeting Date: FEB 10, 2017   Meeting Type: Annual
+Record Date:  DEC 12, 2016
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Jaime Ardila             For       For          Management
+1b    Elect Director Charles H. Giancarlo     For       For          Management
+1c    Elect Director Herbert Hainer           For       For          Management
+1d    Elect Director William L. Kimsey        For       For          Management
+</TEXT>
+</DOCUMENT>
