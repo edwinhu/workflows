@@ -213,19 +213,17 @@ func parseAgenda(text string, meta FilingMeta) ([]VoteRow, error) {
 		// A line carrying no label is the page's fund banner, which the next rule
 		// adopts. Royce prints it as two cells -- the fund on the left, the
 		// registrant on the right -- but Manufacturers prints ONE, the account
-		// code glued to the name by a single space, so one cell counts too. A
-		// one-cell candidate must start at column 0: the wrapped continuation of
-		// a proposal description is indented under its item, and adopting one
-		// would file the rest of the page under a fragment of a proposal.
-		// Royce prints the banner as two cells -- the fund on the left, the
-		// registrant on the right -- but Manufacturers prints ONE, the account
 		// code glued to the name by a single space (`2A01 MIT Emerging Small
-		// Company Trust`), which icrCells does not split. A one-cell line counts
-		// only OUTSIDE a proposal table: inside one every wrapped description
-		// continuation is a one-cell line too, and adopting one would file the
-		// rest of the page under a fragment of a proposal.
+		// Company Trust`), which icrCells does not split. A banner is printed at
+		// column 0 ABOVE the page's first column header, never inside a proposal
+		// table: inside one every line is a wrapped continuation of a
+		// description, indented under its item, and adopting one would file the
+		// rest of the page under a fragment of a proposal. The cell count does
+		// not separate the two -- a continuation carrying an internal run of two
+		// or more spaces comes back as two cells -- so the open block does, for
+		// every cell count alike.
 		_, isVote := agVoteRow(cells)
-		banner := len(cells) >= 2 || (len(cells) == 1 && !blockSeen)
+		banner := len(cells) >= 1 && !blockSeen
 		// A proposal row the vote reader declined is not a fund heading. On a
 		// contested or consent ballot the vendor prints the Type column and stops,
 		// so the row is too short for agVoteRow and only the first proposal of a
