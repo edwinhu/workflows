@@ -1,0 +1,223 @@
+package main
+
+import (
+	"strings"
+)
+
+// The ISS `VOTE SUMMARY REPORT` is a fixed-width text grammar wrapped in EDGAR's
+// <TABLE>/<CAPTION>/<S>/<C> pseudo-markup, one section per fund per page
+// (streetTRACKS Series Trust 2004 prints 1,096 of them in 2.9 MB). Its column
+// header is STACKED over two physical lines --
+//
+//	Mtg               Company/                                   Mgmt         Vote        Record                      Shares
+//	Date/Type         Ballot Issues                  Security    Rec          Cast        Date         Prpnent        Voted
+//
+// -- so no single line carries `Vote Cast` or `Mgt Rec` and neither
+// hasISSColumnHeader nor hasVoteTableVocabulary can see it. The two lines
+// together are the signature and the column ruler alike.
+//
+// The layout reads the RAW bytes: normalization caps a run of spaces at
+// columnGapWidth and drops leading indentation, which is the whole of this
+// grammar's column structure.
+
+// matchVoteSummary keys on the LOWER of the two header lines, which is the one
+// that carries the grammar's distinctive names together. The upper line alone
+// ("Mtg Company/ Mgmt Vote Record Shares") is ordinary vocabulary; the lower one
+// names the ballot column and the proponent, and no other legacy grammar in the
+// corpus prints `Ballot Issues` and `Prpnent` on one line.
+func matchVoteSummary(head string) bool {
+	for _, line := range strings.Split(strings.ToUpper(head), "\n") {
+		if strings.Contains(line, "BALLOT ISSUES") && strings.Contains(line, "PRPNENT") &&
+			strings.Contains(line, "CAST") {
+			return true
+		}
+	}
+	return false
+}
+
+// voteSummaryColumns returns the column starts a stacked header pair defines, or
+// nil when the two lines are not one. A start is a position at which either line
+// begins a token AND both lines are blank in the two columns before it: that is
+// what separates a real column boundary from the second word of a wrapped label
+// (`Issues` in `Ballot Issues`, which begins one space after `Ballot` ends).
+func voteSummaryColumns(top, bottom string) []int {
+	up, low := strings.ToUpper(top), strings.ToUpper(bottom)
+	if !strings.Contains(low, "BALLOT ISSUES") || !strings.Contains(low, "PRPNENT") ||
+		!strings.Contains(low, "CAST") || !strings.Contains(up, "MGMT") {
+		return nil
+	}
+	blank := func(s string, i int) bool { return i < 0 || i >= len(s) || s[i] == ' ' }
+	var cols []int
+	seen := map[int]bool{}
+	for i := 0; i < len(top) || i < len(bottom); i++ {
+		starts := (i < len(top) && top[i] != ' ' && blank(top, i-1)) ||
+			(i < len(bottom) && bottom[i] != ' ' && blank(bottom, i-1))
+		if !starts || seen[i] {
+			continue
+		}
+		if i > 0 && !(blank(top, i-1) && blank(top, i-2) && blank(bottom, i-1) && blank(bottom, i-2)) {
+			continue
+		}
+		seen[i] = true
+		cols = append(cols, i)
+	}
+	if len(cols) < 5 {
+		return nil
+	}
+	return cols
+}
+
+// voteSummaryFields names each column from the two header lines joined over that
+// column's span, so a sibling filing printing one column more or fewer is read by
+// what its header says rather than by position.
+type voteSummaryFields struct {
+	mtg, ballot, security, mgmtRec, vote, by int
+}
+
+func voteSummaryFieldsOf(cols []int, top, bottom string) (voteSummaryFields, bool) {
+	f := voteSummaryFields{-1, -1, -1, -1, -1, -1}
+	for k := range cols {
+		label := strings.ToUpper(strings.TrimSpace(
+			voteSummaryCell(top, cols, k) + " " + voteSummaryCell(bottom, cols, k)))
+		switch {
+		case strings.Contains(label, "DATE/TYPE"):
+			f.mtg = k
+		case strings.Contains(label, "BALLOT"):
+			f.ballot = k
+		case strings.Contains(label, "SECURITY"):
+			f.security = k
+		case strings.Contains(label, "MGMT") && strings.Contains(label, "REC"):
+			f.mgmtRec = k
+		case strings.Contains(label, "VOTE") && strings.Contains(label, "CAST"):
+			f.vote = k
+		case strings.Contains(label, "PRPNENT"), strings.Contains(label, "PROPONENT"):
+			f.by = k
+		}
+	}
+	return f, f.mtg >= 0 && f.ballot >= 0 && f.vote >= 0
+}
+
+// voteSummaryCell cuts one column out of a line. The last column runs to the end
+// of the line; a line shorter than the column start has nothing in it.
+func voteSummaryCell(line string, cols []int, k int) string {
+	if k >= len(cols) || cols[k] >= len(line) {
+		return ""
+	}
+	end := len(line)
+	if k+1 < len(cols) && cols[k+1] < end {
+		end = cols[k+1]
+	}
+	return strings.TrimSpace(line[cols[k]:end])
+}
+
+// parseVoteSummaryRaw walks the sections of one filing. A section opens with the
+// fund banner -- the last text line before the header pair, carried verbatim
+// including the registrant's internal account code (`... INDEX FUND - J920`) --
+// and holds meeting lines, each followed by its numbered proposals and their
+// wrapped description continuations.
+func parseVoteSummaryRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
+	lines := strings.Split(strings.ReplaceAll(string(raw), "\r\n", "\n"), "\n")
+
+	var (
+		out     []VoteRow
+		cols    []int
+		fields  voteSummaryFields
+		fund    string
+		last    string
+		issuer  string
+		cusip   string
+		mtgDate string
+		pending *VoteRow
+	)
+	flush := func() {
+		if pending != nil {
+			out = append(out, *pending)
+			pending = nil
+		}
+	}
+
+	for i := 0; i < len(lines); i++ {
+		line := strings.TrimRight(lines[i], "\r")
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" {
+			continue
+		}
+		if strings.HasPrefix(trimmed, "<") {
+			if strings.EqualFold(trimmed, "</TABLE>") {
+				flush()
+				cols = nil
+			}
+			continue
+		}
+		if i+1 < len(lines) {
+			if c := voteSummaryColumns(line, strings.TrimRight(lines[i+1], "\r")); c != nil {
+				if f, ok := voteSummaryFieldsOf(c, line, lines[i+1]); ok {
+					flush()
+					cols, fields, fund = c, f, last
+					issuer, cusip, mtgDate = "", "", ""
+					i++
+					continue
+				}
+			}
+		}
+		if cols == nil {
+			last = trimmed
+			continue
+		}
+		// The rule line under the header, and any page furniture, carry text in
+		// the first column that is not a meeting date.
+		if v := voteSummaryCell(line, cols, fields.mtg); v != "" {
+			date := xmlDate(strings.Fields(v)[0])
+			if date == "" {
+				continue
+			}
+			flush()
+			mtgDate = date
+			issuer = voteSummaryCell(line, cols, fields.ballot)
+			if fields.security >= 0 {
+				cusip = voteSummaryCell(line, cols, fields.security)
+			}
+			continue
+		}
+		ballot := voteSummaryCell(line, cols, fields.ballot)
+		if ballot == "" || mtgDate == "" {
+			continue
+		}
+		item, desc := "", ballot
+		if f := strings.Fields(ballot); htmlIsItemNumber(f[0]) {
+			item = f[0]
+			desc = strings.TrimSpace(ballot[len(f[0]):])
+		}
+		if item == "" {
+			// A wrapped description line: the proposal's own text, printed in
+			// the ballot column with every other column empty.
+			if pending != nil {
+				pending.VoteDescription = strings.TrimSpace(pending.VoteDescription + " " + desc)
+			}
+			continue
+		}
+		flush()
+		row := VoteRow{
+			FundName:        fund,
+			IssuerName:      issuer,
+			CUSIP:           cusip,
+			MeetingDate:     mtgDate,
+			ItemSeq:         item,
+			VoteDescription: desc,
+			HowVoted:        voteSummaryCell(line, cols, fields.vote),
+		}
+		if fields.mgmtRec >= 0 {
+			row.ManagementRecommendation = voteSummaryCell(line, cols, fields.mgmtRec)
+		}
+		if fields.by >= 0 {
+			row.VoteSource = voteSummaryCell(line, cols, fields.by)
+		}
+		pending = &row
+	}
+	flush()
+
+	if len(out) == 0 {
+		return nil, errLayoutDeclined
+	}
+	return out, nil
+}

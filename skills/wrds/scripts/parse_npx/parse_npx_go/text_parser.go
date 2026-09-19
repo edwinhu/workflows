@@ -75,6 +75,14 @@ var layoutRegistry = []layoutEntry{
 		Match: matchBroadridge,
 		Parse: parseBroadridge,
 	},
+	// The ISS vote-summary grammar is fixed-width TEXT inside EDGAR's <TABLE>
+	// pseudo-markup, so it reads the raw bytes; normalization would collapse the
+	// column runs it is laid out on.
+	{
+		Name:     "votesummary",
+		Match:    matchVoteSummary,
+		ParseRaw: parseVoteSummaryRaw,
+	},
 	// htmltable follows every named layout: it is the generic fallback for the
 	// unclaimed HTML-table residue, and it offers itself to every body the named
 	// layouts declined. Ahead of any of them it would steal filings whose vendor

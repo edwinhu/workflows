@@ -799,6 +799,14 @@ func htmlPrintsNoVoteTable(raw []byte) bool {
 		if !closing {
 			switch name {
 			case "table":
+				// A BARE `<TABLE>` is EDGAR's fixed-width TEXT convention --
+				// `<TABLE>`/`<CAPTION>`/`<S>`/`<C>`, no cell tags anywhere in
+				// that era -- not a cell-less HTML table. Reading it as one
+				// answered an HTML question of a body carrying no HTML and
+				// recorded 18 filings that print real vote tables as
+				// ok/cover-page. Attributes, or a <tr>, are the evidence.
+				sawTable = sawTable || end > after
+			case "tr":
 				sawTable = true
 			case "td", "th":
 				return false
@@ -1487,7 +1495,7 @@ func htmlShiftToFilledNeighbour(mapping map[string]int, arity int, feed *htmlRow
 	// sits on its own grid and is read by shape, and a proposal row prints
 	// nothing under those labels (the CUSIP label's column holds the
 	// proposals in Kiewit 2007).
-	identity := map[string]bool{htmlFieldIssuer: true, htmlFieldCUSIP: true, htmlFieldISIN: true, htmlFieldTicker: true, htmlFieldMtgDate: true, htmlFieldFund: true}
+	identity := map[string]bool{htmlFieldIssuer: true, htmlFieldCUSIP: true, htmlFieldCUSIPPrinted: true, htmlFieldISIN: true, htmlFieldTicker: true, htmlFieldMtgDate: true, htmlFieldFund: true}
 	claimed := make(map[int]bool, len(mapping))
 	for f, i := range mapping {
 		if !identity[f] {
@@ -1756,7 +1764,7 @@ func htmlHeaderShape(cells []string) (map[string]int, string, bool) {
 	if len(mapping) < 3 {
 		return nil, "", false
 	}
-	if _, ok := mapping[htmlFieldVote]; !ok {
+	if _, ok := mapping[htmlFieldVote]; !ok && !htmlIdentityItemHeader(mapping) {
 		return nil, "", false
 	}
 	if _, ok := mapping[htmlFieldDesc]; !ok {
@@ -1767,7 +1775,26 @@ func htmlHeaderShape(cells []string) (map[string]int, string, bool) {
 			return nil, "", false
 		}
 	}
+	if i, ok := mapping[htmlFieldCUSIP]; ok && i < len(cells) &&
+		strings.HasPrefix(htmlCanonLabel(cells[i]), "CUSIP") {
+		mapping[htmlFieldCUSIPPrinted] = i
+	}
 	return mapping, htmlHeaderKey(cells), true
+}
+
+// htmlIdentityItemHeader reports a header that names the issuer, the security,
+// the meeting and what was voted on. A filing printing all four is an
+// item-level vote table whether or not it prints a vote column at all (Eagle
+// Series Trust 2016 prints none in 4.8 MB), and its rows carry an empty
+// how_voted rather than a guessed one -- the same shape family CORN's
+// blank-vote-cell rows already take.
+func htmlIdentityItemHeader(mapping map[string]int) bool {
+	for _, f := range []string{htmlFieldIssuer, htmlFieldCUSIP, htmlFieldMtgDate, htmlFieldDesc} {
+		if _, ok := mapping[f]; !ok {
+			return false
+		}
+	}
+	return true
 }
 
 // htmlHeaderKey renders a candidate row as the tuple two occurrences must agree
@@ -1875,7 +1902,13 @@ func htmlHasTableBelow(arity int, feed *htmlRowFeed) (found, crossed bool) {
 	for i := 0; i < htmlHeaderLookahead; i++ {
 		row, ok := feed.peek(i)
 		if !ok {
-			break
+			// The document ends here. The three-row witness exists to tell a
+			// label-like row in the MIDDLE of a document from a real header;
+			// with no rows left there is nothing further to disambiguate, so
+			// every row the table did print counts. Rows on the far side of a
+			// </table> do NOT: a mapping that has to cross a boundary to find
+			// its rows is the one case the witness exists to refuse.
+			return seen > 0 && !crossed, false
 		}
 		if row.newTable {
 			// Rows of the NEXT table are not this header's table -- unless this
@@ -2155,6 +2188,11 @@ const (
 	// keeps an unvoted agenda item (flag NO, vote cell empty) from reading as
 	// table furniture.
 	htmlFieldVotedFlag = "votedflag"
+	// htmlFieldCUSIPPrinted marks the CUSIP column of a header that NAMES it
+	// CUSIP, as against one labelled `Security ID`. It is not a column of its
+	// own: it records which claim the header made about the column it shares
+	// with htmlFieldCUSIP, so a short id can be kept as printed there.
+	htmlFieldCUSIPPrinted = "cusipprinted"
 )
 
 // htmlSynonyms is the canonical label vocabulary, keyed by schema field. Labels
@@ -2169,6 +2207,11 @@ var htmlSynonyms = map[string][]string{
 		"PROPOSAL", "PROPOSALS", "DESCRIPTION", "MATTER", "MATTERS",
 		"BALLOT ISSUE", "BALLOT ISSUES", "AGENDA", "ITEM DESC", "ITEM DESCRIPTION",
 		"PROPOSAL DESCRIPTION", "MEETING AGENDA",
+		// Eagle Series Trust decorates its column names with a parenthetical
+		// gloss. The gloss carries the word VOTED, which the word-sequence
+		// fallback reads as the vote column; the exact phrase claims the
+		// description before that can happen.
+		"ISSUE WHAT ISSUE WAS VOTED ON",
 		// "PROPOSAL TYPE" is the description column of the 81-filing
 		// `Proposal Type | Voted? | Vote | For/Agnst Mgmt` shape, which prints
 		// no other column naming what was voted on. Reading it as the PROPOSER
@@ -2178,6 +2221,9 @@ var htmlSynonyms = map[string][]string{
 	htmlFieldBy: {
 		"PROPOSED BY", "PROPONENT", "PRPNENT", "SPONSOR", "AUTHOR",
 		"PROPOSAL TYPE MGMT OR SHLDR",
+		// The SEC's Item 1(d) wording; it carries MATTER, which the
+		// word-sequence fallback otherwise reads as the description.
+		"WHO PROPOSED MATTER ISSUER / SHAREHOLDER",
 	},
 	htmlFieldMgmtRec: {
 		"MGT REC", "MGMT REC", "MGMT RECO", "MANAGEMENT REC", "MANAGEMENT RECOMMENDATION",
@@ -2192,6 +2238,14 @@ var htmlSynonyms = map[string][]string{
 	htmlFieldVote: {
 		"VOTE CAST", "VOTES CAST", "REGISTRANT VOTED", "FUND VOTE", "HOW VOTED",
 		"VOTE", "CAST", "VOTED", "VOTE CASTS", "VOTE INSTRUCTION", "HOW VOTE WAS CAST",
+		// The SEC's own Item 1(e) column wording, printed verbatim as the header
+		// by filers who copy the form (ETFis Series Trust 2015, Van Wagoner
+		// Funds 2008). At 96 bytes it is longer than htmlLabelMaxLen, so it is
+		// listed here as an exact phrase: that both maps the column and makes
+		// htmlIsHeaderWord exempt it from the length ceiling. The second entry
+		// is 40|86 Series Trust's printing of the same sentence, typo included.
+		"FUND S VOTE FOR OR AGAINST PROPOSAL OR ABSTAIN FOR OR WITHHOLD REGARDING ELECTION OF DIRECTORS",
+		"FUND S VOTE FOR OR AGAINST OR ABSTAIN FOR OF WITHHOLD REGARDING ELECTION OF DIRECTORS",
 	},
 	htmlFieldVsMgmt: {
 		"FOR/AGAINST MANAGEMENT", "FOR/AGNST MGMT", "FOR/ AGNST MGMT", "WITH MGMT",
@@ -2251,6 +2305,10 @@ var htmlSynonyms = map[string][]string{
 		// Meeting Data | ...` (PFM Multi-Manager Series Trust 2023). Exact
 		// only: `Fund Name` and `Director Name` are other labels.
 		"NAME",
+		// The SEC's Item 1(a) wording. It ends in SECURITY, which the
+		// word-sequence fallback reads as the CUSIP column, so the exact phrase
+		// has to claim it first.
+		"ISSUER OF PORTFOLIO SECURITY",
 	},
 }
 
@@ -4888,6 +4946,12 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 		// NO and the vote cell is empty. The row is real; the vote is blank.
 		if f := at(htmlFieldVotedFlag); f != "" && htmlIsYesNo(f) {
 			votedFlag = f
+		} else if _, mapped := mapping[htmlFieldVote]; !mapped {
+			// The header names no vote column at all (Eagle Series Trust 2016
+			// prints none in 4.8 MB of item records). The vote is not a cell
+			// this row left empty, it is a column the filing never printed, so
+			// the row stands on its identity and its proposal with how_voted
+			// empty rather than guessed.
 		} else {
 			// No flag column to appeal to (Cornerstone 2013 prints no `Ballot
 			// Status`, and stops printing the vote part-way through a meeting
@@ -4967,6 +5031,16 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 		}
 		if isin != "" && r.ISIN == "" {
 			r.ISIN = isin
+		}
+	}
+	// A column the header names CUSIP prints the identifier the filing means to
+	// publish. When it prints eight digits, WHICH leading zero a spreadsheet
+	// dropped is not printed anywhere, so the link key stands as filed rather
+	// than padded on a guess. A column labelled only `Security ID` carries no
+	// such claim and keeps htmlSecurityID's reconstruction.
+	if _, verbatim := mapping[htmlFieldCUSIPPrinted]; verbatim {
+		if v := htmlFlat(at(htmlFieldCUSIP)); len(v) == 8 && htmlIsNumeric(v) {
+			r.CUSIP = v
 		}
 	}
 	if v := htmlValueOrEmpty(at(htmlFieldTicker)); v != "" {
