@@ -813,7 +813,11 @@ func pvTextVote(s string) bool {
 	case "WHOLD", "AGAINST", "WITHHOLD", "REFER", "SPLIT", "UNVOTED":
 		return true
 	}
-	return false
+	// A fund of funds votes one security several ways at one meeting and the
+	// whole tally is printed in the vote column: `SPLIT 96% FOR 4% WITHHELD`.
+	// That is a vote, spelled long, and this is the validator the how_voted
+	// invariant reaches for every layout that has no validator of its own.
+	return brCompoundSplitVote(s)
 }
 
 // pvTextPageFurniture reports whether a line is pagination rather than report

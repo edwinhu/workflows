@@ -1752,7 +1752,7 @@ func brNormalizeItem(item string) string {
 // is blank on the 8,993 CMMT and Non-Voting rows. The uncertain field is left
 // empty and the row is still emitted.
 func brPeelColumns(rest string, hasType bool, maxVote int) (body, typ, vote, forAgnst string) {
-	toks := strings.Fields(rest)
+	toks := brUnglueTrailingCell(strings.Fields(rest))
 
 	var cells []string // right to left
 	votes := 0
@@ -1806,12 +1806,109 @@ func brPeelCell(toks []string) (cell string, remaining []string, isType, ok bool
 		key := strings.ToLower(strings.Trim(candidate, ".,;:"))
 		switch {
 		case brVoteVocabulary[key]:
-			return candidate, toks[:len(toks)-n], false, true
+			start := brExtendSplitCell(toks, len(toks)-n)
+			return strings.Join(toks[start:], " "), toks[:start], false, true
 		case brTypeVocabulary[key]:
 			return candidate, toks[:len(toks)-n], true, true
 		}
 	}
 	return "", toks, false, false
+}
+
+// brPercentToken reports whether tok is a bare percentage ('96%', '1%'), the
+// tally that a compound vote cell prints between its vocabulary words.
+func brPercentToken(tok string) bool {
+	if len(tok) < 2 || !strings.HasSuffix(tok, "%") {
+		return false
+	}
+	for _, r := range tok[:len(tok)-1] {
+		if (r < '0' || r > '9') && r != '.' {
+			return false
+		}
+	}
+	return true
+}
+
+// brExtendSplitCell widens a peeled vote cell leftwards across the `NN% Word`
+// pairs of a COMPOUND vote, returning the index the cell now starts at.
+//
+// A fund of funds votes one security several ways at one meeting, so broadridge
+// prints the whole tally in the Proposal Vote column rather than a single
+// vocabulary word: `Split 96% For 4% Withheld`. Peeling only the trailing word
+// reports `Withheld` -- which is not what the row says, the fund voted 96% For
+// -- and leaves `Split 96% For 4%` glued into the proposal text.
+//
+// The walk consumes only whole `NN% <vocabulary word>` pairs, plus a leading
+// vocabulary word ('Split') once no pair remains, so ordinary prose ending in a
+// vote word cannot be absorbed.
+func brExtendSplitCell(toks []string, start int) int {
+	for start >= 2 && brPercentToken(toks[start-1]) {
+		key := strings.ToLower(strings.Trim(toks[start-2], ".,;:"))
+		if !brVoteVocabulary[key] {
+			break
+		}
+		start -= 2
+	}
+	return start
+}
+
+// brCompoundSplitVote reports whether s is a whole compound vote cell --
+// `Split 96% For 4% Withheld` -- rather than a single vocabulary word. It is the
+// validity half of brExtendSplitCell: a cell this layout emits verbatim is a
+// vote value, and the how_voted invariant consults the parsers' own validators
+// rather than a mirrored list.
+func brCompoundSplitVote(s string) bool {
+	toks := strings.Fields(s)
+	if len(toks) < 3 || len(toks)%2 == 0 {
+		return false
+	}
+	for i, tok := range toks {
+		if i%2 == 1 {
+			if !brPercentToken(tok) {
+				return false
+			}
+			continue
+		}
+		if !brVoteVocabulary[strings.ToLower(strings.Trim(tok, ".,;:"))] {
+			return false
+		}
+	}
+	return true
+}
+
+// brUnglueTrailingCell splits a final token that two columns ran together. The
+// Proposal Vote cell of a compound vote can be one character wider than its
+// column, so its last word abuts the For/Against Management cell with no space
+// and the filing prints `AbstainSplit` -- a token in no vocabulary, against
+// which the whole-word peel matches nothing at all and the entire vote cell is
+// left in the proposal text.
+//
+// The split is taken only when it is UNAMBIGUOUS: exactly one cut point yields
+// two vote-vocabulary words. Capitalization comes from the filing's own bytes.
+func brUnglueTrailingCell(toks []string) []string {
+	if len(toks) == 0 {
+		return toks
+	}
+	last := toks[len(toks)-1]
+	lower := strings.ToLower(strings.Trim(last, ".,;:"))
+	if len(lower) != len(last) || brVoteVocabulary[lower] || brTypeVocabulary[lower] {
+		return toks
+	}
+	cut := -1
+	for i := 2; i <= len(lower)-2; i++ {
+		if brVoteVocabulary[lower[:i]] && brVoteVocabulary[lower[i:]] {
+			if cut >= 0 {
+				return toks
+			}
+			cut = i
+		}
+	}
+	if cut < 0 {
+		return toks
+	}
+	out := make([]string, 0, len(toks)+1)
+	out = append(out, toks[:len(toks)-1]...)
+	return append(out, last[:cut], last[cut:])
 }
 
 // brIssuerName strips the trailing "Agenda Number: 932152666" that the modern
