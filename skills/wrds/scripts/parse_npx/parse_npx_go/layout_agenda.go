@@ -226,8 +226,13 @@ func parseAgenda(text string, meta FilingMeta) ([]VoteRow, error) {
 		// rest of the page under a fragment of a proposal.
 		_, isVote := agVoteRow(cells)
 		banner := len(cells) >= 2 || (len(cells) == 1 && !blockSeen)
-		// A proposal row the vote reader declined is not a fund heading.
-		if !isVote && banner && !(blockSeen && icrItem(cells[0])) {
+		// A proposal row the vote reader declined is not a fund heading. On a
+		// contested or consent ballot the vendor prints the Type column and stops,
+		// so the row is too short for agVoteRow and only the first proposal of a
+		// slate carries an item number; a candidate whose LAST cell names the Type
+		// column belongs to the open block's table whatever its cell count.
+		inTable := blockSeen && (icrItem(cells[0]) || agProponent(cells[len(cells)-1]))
+		if !isVote && banner && !inTable {
 			heading = strings.TrimSpace(cells[0])
 		}
 	}
