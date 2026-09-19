@@ -1,0 +1,158 @@
+ACCESSION NUMBER:		0001398344-13-003763
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20130630
+FILED AS OF DATE:		20130813
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CORNERSTONE TOTAL RETURN FUND INC
+		CENTRAL INDEX KEY:			0000033934
+		IRS NUMBER:				132727013
+		STATE OF INCORPORATION:			NY
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-02363
+		FILM NUMBER:		131031538
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fp0007698_npx.htm
+<TEXT>
+<body bgcolor="#ffffff" style="DISPLAY: inline; FONT-FAMILY: Times New Roman; FONT-SIZE: 11pt">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: Times New Roman; FONT-SIZE: 11pt">FORM N-PX</font></div>
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: Times New Roman; FONT-SIZE: 11pt">ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT</font></div>
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: Times New Roman; FONT-SIZE: 11pt">ITEM 1. PROXY VOTING RECORD.</font></div>
+<table cellpadding="2" cellspacing="0" width="100%" style="FONT-FAMILY: times new roman; FONT-SIZE: 10pt; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">
+<tr>
+<td align="left" valign="bottom" width="15%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Company Name</font></div>
+</td>
+<td valign="bottom" width="6%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Ticker</font></div>
+</td>
+<td valign="bottom" width="8%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt; FONT-WEIGHT: bold">CUSIP</font></div>
+</td>
+<td valign="bottom" width="8%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Meeting Date</font></div>
+</td>
+<td valign="bottom" width="6%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Proposal Number</font></div>
+</td>
+<td align="left" valign="bottom" width="25%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Proposal Description</font></div>
+</td>
+<td valign="bottom" width="9%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Proponent</font></div>
+</td>
+<td valign="bottom" width="11%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Mgmt Recommendation</font></div>
+</td>
+<td valign="bottom" width="6%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Vote Cast</font></div>
+</td>
+<td valign="bottom" width="6%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt; FONT-WEIGHT: bold">For / Against Mgmt</font></div>
+</td>
+</tr><tr bgcolor="gainsboro">
+<td align="left" valign="bottom" width="15%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Allstate Corporation (The)</font></div>
+</td>
+<td valign="bottom" width="6%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">ALL</font></div>
+</td>
+<td valign="bottom" width="8%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">020002101</font></div>
+</td>
+<td valign="bottom" width="8%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">5/21/2013</font></div>
+</td>
+<td valign="bottom" width="6%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">3</font></div>
+</td>
+<td align="left" valign="bottom" width="25%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Elect Kermit R. Crawford</font></div>
+</td>
+<td valign="bottom" width="9%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Management</font></div>
+</td>
+<td valign="bottom" width="11%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td valign="bottom" width="6%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td valign="bottom" width="6%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+</tr><tr bgcolor="white">
+<td align="left" valign="bottom" width="15%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Allstate Corporation (The)</font></div>
+</td>
+<td valign="bottom" width="6%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">ALL</font></div>
+</td>
+<td valign="bottom" width="8%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">020002101</font></div>
+</td>
+<td valign="bottom" width="8%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">5/21/2013</font></div>
+</td>
+<td valign="bottom" width="6%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">4</font></div>
+</td>
+<td align="left" valign="bottom" width="25%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Elect Jack M. Greenberg</font></div>
+</td>
+<td valign="bottom" width="9%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Management</font></div>
+</td>
+<td valign="bottom" width="11%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td valign="bottom" width="6%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td valign="bottom" width="6%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+</tr><tr bgcolor="gainsboro">
+<td align="left" valign="bottom" width="15%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Allstate Corporation (The)</font></div>
+</td>
+<td valign="bottom" width="6%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">ALL</font></div>
+</td>
+<td valign="bottom" width="8%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">020002101</font></div>
+</td>
+<td valign="bottom" width="8%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">5/21/2013</font></div>
+</td>
+<td valign="bottom" width="6%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">5</font></div>
+</td>
+<td align="left" valign="bottom" width="25%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Elect Herbert L. Henkel</font></div>
+</td>
+<td valign="bottom" width="9%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Management</font></div>
+</td>
+<td valign="bottom" width="11%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="6%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+</tr></table>
+</body>
+</html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
