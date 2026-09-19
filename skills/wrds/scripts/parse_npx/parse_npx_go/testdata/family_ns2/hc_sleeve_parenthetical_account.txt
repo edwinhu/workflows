@@ -1,0 +1,64 @@
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			HC CAPITAL TRUST
+		CENTRAL INDEX KEY:			0000934563
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000009380
+<SERIES-NAME>The Small Capitalization - Mid Capitalization Equity Portfolio
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000022549
+<SERIES-NAME>The Institutional Small Capitalization - Mid Capitalization Equity Portfolio
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d406766dnpx.txt
+<DESCRIPTION>HC CAPITAL TRUST
+<TEXT>
+<TABLE>
+<CAPTION>
+                               Institutional
+                               Account                                                      Provider
+Institutional Account Name     Number         Company Name                 Ticker  Country  Security ID  Meeting Type
+--------------------------     -------------  ---------------------------- ------  -------  -----------  ------------
+<S>                            <C>            <C>                          <C>     <C>      <C>          <C>
+HC Capital Trust - The Small
+Capitalization Equity
+Portfolio (Russell 2000
+Passive Growth Sleeve)          unassigned    Outerwall Inc.               OUTR     USA     690070107      Annual
+</TABLE>
+<TABLE>
+<CAPTION>
+
+                                                                      Votable   Proposal
+Institutional Account Name     Meeting Date  Record Date  Proponent   Proposal  Number    Proposal Text
+--------------------------     ------------  -----------  ----------- --------  --------  ---------------------------------
+<S>                            <C>           <C>          <C>         <C>       <C>       <C>
+HC Capital Trust - The Small
+Capitalization Equity
+Portfolio (Russell 2000
+Passive Growth Sleeve)          07-Jul-16    26-May-16    Management    Yes       1A      Elect Director Nora M. Denzel
+</TABLE>
+<TABLE>
+<CAPTION>
+
+                               Management      Vote
+Institutional Account Name     Recommendation  Instruction  Voted
+--------------------------     --------------  -----------  -----
+<S>                            <C>             <C>          <C>
+HC Capital Trust - The Small
+Capitalization Equity
+Portfolio (Russell 2000
+Passive Growth Sleeve)              For         For         Yes
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

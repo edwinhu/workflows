@@ -1,0 +1,63 @@
+<SEC-DOCUMENT>0001206774-04-001363.txt : 20040902
+<SEC-HEADER>0001206774-04-001363.hdr.sgml : 20040902
+<ACCEPTANCE-DATETIME>20040902174623
+ACCESSION NUMBER:		0001206774-04-001363
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040902
+DATE AS OF CHANGE:		20040902
+EFFECTIVENESS DATE:		20040902
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			MANUFACTURERS INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000756913
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0630
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>mi031_0000756913.txt
+<DESCRIPTION>FORM N-PX/AMENDMENT
+<TEXT>
+<TABLE>
+<S>    <C>                                                            <C>        <C>        <C>
+2A01 MIT Emerging Small Company Trust
+
+- --------------------------------------------------------------------------------------------------------
+ABX AIR, INC.                                                                  Agenda: 932135038
+- --------------------------------------------------------------------------------------------------------
+CARLISLE COMPANIES INCORPORATED                                                Agenda: 932108601
+      CUSIP: 142339100                        Meeting Type: Contested Consent
+     Ticker: CSL                              Meeting Date: 4/20/2004            ISIN:
+                                                                                            For/Against
+Proposal                                                              Type       Vote        Management
+- --------------------------------------------------------------------------------------------------------
+01     DONALD G. CALDER                                                Mgmt
+       ROBIN S. CALLAHAN                                               Mgmt
+       ERIBERTO R. SCOCIMARA                                           Mgmt
+02     APPROVE THE COMPANY S AMENDED AND                               Mgmt
+       RESTATED EXECUTIVE INCENTIVE PROGRAM.
+03     APPROVE THE COMPANY S SENIOR                                    Mgmt
+       MANAGEMENT INCENTIVE COMPENSATION PLAN.
+
+<PAGE>
+
+- --------------------------------------------------------------------------------------------------------
+CIMAREX ENERGY CO.                                                             Agenda: 932119337
+      CUSIP: 171798101                        Meeting Type: Annual
+     Ticker: XEC                              Meeting Date: 5/19/2004            ISIN:
+                                                                                            For/Against
+Proposal                                                              Type       Vote        Management
+- --------------------------------------------------------------------------------------------------------
+01     CORTLANDT S. DIETLER                                            Mgmt         For            For
+       HANS HELMERICH                                                  Mgmt         For            For
+       L.F. ROONEY, III                                                Mgmt         For            For
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
