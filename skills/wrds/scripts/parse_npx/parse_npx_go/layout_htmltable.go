@@ -1537,7 +1537,10 @@ func htmlHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHeaderRep
 	if !ok {
 		return nil, false, false, false
 	}
-	if _, has := mapping[htmlFieldDesc]; !has && !htmlAdoptUnlabelledDesc(cells, mapping, feed) {
+	// The prose lead cell htmlHeaderShape dropped is dropped here too: the
+	// column under it is unlabelled, which is what lets the ballots' own
+	// description be adopted into it.
+	if _, has := mapping[htmlFieldDesc]; !has && !htmlAdoptUnlabelledDesc(htmlDropProseLeadCell(cells), mapping, feed) {
 		return nil, false, false, false
 	}
 	below, crossed := htmlHasTableBelow(len(cells), feed)
@@ -1737,13 +1740,21 @@ func htmlAdoptUnlabelledItem(cells []string, mapping map[string]int, feed *htmlR
 		if claimed[i] || htmlFlat(c) != "" {
 			continue
 		}
+		// A blank header column the rows beneath never number is a SPACER, not
+		// a candidate: the ISS Vote Summary Report lays a one-character spacer
+		// cell between every pair of real columns, so demanding a single blank
+		// column outright would refuse a grid that names its item plainly.
+		if !htmlItemColumnConfirmed(i, len(cells), feed) {
+			continue
+		}
 		if idx >= 0 {
-			// Two blank columns: which one is the item is a guess.
+			// Two columns both printing item numbers: which one is the item is
+			// a guess.
 			return
 		}
 		idx = i
 	}
-	if idx < 0 || !htmlItemColumnConfirmed(idx, len(cells), feed) {
+	if idx < 0 {
 		return
 	}
 	mapping[htmlFieldItem] = idx
@@ -1811,10 +1822,14 @@ func htmlAdoptUnlabelledDesc(cells []string, mapping map[string]int, feed *htmlR
 // htmlItemColumnConfirmed reports whether every comparable row under the header
 // prints an item number at idx, over at least htmlHeaderConfirm rows.
 func htmlItemColumnConfirmed(idx, arity int, feed *htmlRowFeed) bool {
-	seen, crossed := 0, false
+	seen, crossed, ended := 0, false, false
 	for i := 0; i < htmlHeaderLookahead; i++ {
 		row, ok := feed.peek(i)
 		if !ok {
+			// The document ends here, as in htmlAdoptUnlabelledDesc: the
+			// three-row witness disambiguates a column in the MIDDLE of a
+			// document, and there is nothing further to disambiguate.
+			ended = true
 			break
 		}
 		if row.newTable {
@@ -1826,6 +1841,11 @@ func htmlItemColumnConfirmed(idx, arity int, feed *htmlRowFeed) bool {
 		if !htmlComparableArity(len(row.cells), arity) {
 			continue
 		}
+		// A wholly empty row is the vendor's vertical spacer, not a row that
+		// declines to number its item.
+		if htmlFilledCells(row.cells) == 0 {
+			continue
+		}
 		if idx >= len(row.cells) || !htmlIsItemNumber(htmlFlat(row.cells[idx])) {
 			return false
 		}
@@ -1834,7 +1854,7 @@ func htmlItemColumnConfirmed(idx, arity int, feed *htmlRowFeed) bool {
 			return true
 		}
 	}
-	return false
+	return ended && seen > 0
 }
 
 // htmlIsItemNumber recognises the printed forms of a ballot item number -- "1",
@@ -1866,6 +1886,66 @@ const htmlItemMaxLen = 8
 // exactly these tests to every row of the document and must not be able to drift
 // from what the main pass accepts.
 func htmlHeaderShape(cells []string) (map[string]int, string, bool) {
+	// The ISS `Vote Summary Report` opens its ballot header with a COLSPAN cell
+	// of prose (`Voting Policy: Waddell & Reed     Ballot Count: 1`, Waddell &
+	// Reed Advisors Funds 2012, 39.2 MB and zero rows) over an ordinary row of
+	// short mapped labels. A row like that is read on those labels with the
+	// prose cell DROPPED rather than refused whole. Dropping it is what makes
+	// the column beneath it unlabelled, so the description the ballots print
+	// there can be adopted; keeping it named the column after a sentence and
+	// left the table with no description at all. The cell keeps its slot, so
+	// every other column's index is unchanged.
+	if _, prose := htmlProseLeadCell(cells); prose {
+		if mapping, key, ok := htmlHeaderShapeStrict(htmlDropProseLeadCell(cells)); ok {
+			return mapping, key, true
+		}
+	}
+	return htmlHeaderShapeStrict(cells)
+}
+
+// htmlProseLeadCell returns the index of a leading cell that is a sentence
+// rather than a column label: the FIRST filled cell, when it runs to several
+// words carrying a colon or past the width a label is ever printed at AND names
+// no field of its own. A cell the mapping reads is a label however long it is,
+// so an issuer column spelled out in full is never dropped.
+// htmlDropProseLeadCell returns the header row with its prose lead cell blanked,
+// or the row unchanged when it has none. The cell keeps its slot so that every
+// mapped column's index still refers to the same column.
+func htmlDropProseLeadCell(cells []string) []string {
+	i, ok := htmlProseLeadCell(cells)
+	if !ok {
+		return cells
+	}
+	trimmed := make([]string, len(cells))
+	copy(trimmed, cells)
+	trimmed[i] = ""
+	return trimmed
+}
+
+func htmlProseLeadCell(cells []string) (int, bool) {
+	for i, c := range cells {
+		flat := htmlFlat(c)
+		if flat == "" {
+			continue
+		}
+		if htmlIsNumeric(flat) || htmlIsHeaderWord(flat) {
+			return 0, false
+		}
+		if len(strings.Fields(flat)) < 3 ||
+			(!strings.Contains(flat, ":") && len(flat) <= htmlHeaderWideLabelMaxLen) {
+			return 0, false
+		}
+		for _, at := range htmlMapFields(cells) {
+			if at == i {
+				return 0, false
+			}
+		}
+		return i, true
+	}
+	return 0, false
+}
+
+func htmlHeaderShapeStrict(cells []string) (map[string]int, string, bool) {
 	labels := 0
 	allShort := true
 	for i, c := range cells {
