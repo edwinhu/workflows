@@ -174,6 +174,21 @@ func icrIdentity(cells []string) (icrMeeting, bool) {
 		if i >= 1 {
 			m.securityID = cells[i-1]
 		}
+		// One vintage prints TWO spaces between the scheme label and its value
+		// (`ADTN  CUSIP  00738A106  05/04/2011`), so the Security ID column
+		// arrives as two cells and the label lands where the ticker belongs.
+		// Measured 2026-09-19 on 0000709364-11-000021: 1,312 of 1,902 meetings
+		// carried the literal string CUSIP in the ticker column, while that
+		// filing's CINS blocks, which print one space, kept their tickers.
+		// Rejoining is safe because the label vocabulary is closed and the cell
+		// must be the label ALONE -- no ticker is ever the string CUSIP.
+		if i >= 2 && icrSchemeLabel(cells[i-2]) && icrBareID(m.securityID) {
+			m.securityID = cells[i-2] + " " + m.securityID
+			if i >= 3 {
+				m.ticker = cells[i-3]
+			}
+			return m, true
+		}
 		if i >= 2 {
 			m.ticker = cells[i-2]
 		} else if i == 1 && pvTextTicker(m.securityID) && icrCUSIP(m.securityID) == "" && icrISIN(m.securityID) == "" {
@@ -184,6 +199,31 @@ func icrIdentity(cells []string) (icrMeeting, bool) {
 		return m, true
 	}
 	return icrMeeting{}, false
+}
+
+// icrSchemeLabel reports whether a cell is a Security ID scheme word standing
+// alone. The vocabulary is closed on purpose.
+func icrSchemeLabel(s string) bool {
+	switch strings.ToUpper(strings.TrimRight(strings.TrimSpace(s), ":")) {
+	case "CUSIP", "CINS", "ISIN", "SEDOL":
+		return true
+	}
+	return false
+}
+
+// icrBareID reports whether a cell is an identifier value with no scheme word
+// of its own: a single alphanumeric token of identifier length.
+func icrBareID(s string) bool {
+	if len(s) < 6 || len(s) > 12 {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if !(c >= '0' && c <= '9') && !isASCIILetter(c) {
+			return false
+		}
+	}
+	return true
 }
 
 // icrItem reports whether a cell is an item number: digits, optionally with
