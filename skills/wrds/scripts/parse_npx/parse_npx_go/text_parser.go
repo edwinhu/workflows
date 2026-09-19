@@ -502,6 +502,11 @@ func parseText(body []byte, meta FilingMeta) *ParseResult {
 			res.Meta.Layout = ""
 			continue
 		}
+		// A mixed document prints more than one grammar. The winner read its own;
+		// the icr blocks it stepped over are read here, once each.
+		if entry.Name != "icr" {
+			rows = icrSupplement(rows, text, res.Meta)
+		}
 		// The filing may state, in its own words, that a declared series cast no
 		// vote at all. When that leaves exactly ONE series able to have voted, the
 		// rows whose heading named nothing belong to it.
