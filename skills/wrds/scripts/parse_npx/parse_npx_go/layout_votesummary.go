@@ -110,6 +110,27 @@ func voteSummaryCell(line string, cols []int, k int) string {
 	return strings.TrimSpace(line[cols[k]:end])
 }
 
+// vsStripAccountCode drops the registrant's internal account code from the tail
+// of a fund banner (`... INDEX FUND - J920`). The code names an account, never a
+// series, so it is noise to the index; a banner that carries none is returned
+// unchanged.
+func vsStripAccountCode(name string) string {
+	i := strings.LastIndex(name, " - ")
+	if i < 0 {
+		return name
+	}
+	code := name[i+3:]
+	if len(code) < 2 || (code[0] != 'J' && code[0] != 'j') {
+		return name
+	}
+	for _, r := range code[1:] {
+		if r < '0' || r > '9' {
+			return name
+		}
+	}
+	return strings.TrimSpace(name[:i])
+}
+
 // parseVoteSummaryRaw walks the sections of one filing. A section opens with the
 // fund banner -- the last text line before the header pair, carried verbatim
 // including the registrant's internal account code (`... INDEX FUND - J920`) --
@@ -118,16 +139,44 @@ func voteSummaryCell(line string, cols []int, k int) string {
 func parseVoteSummaryRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 	lines := strings.Split(strings.ReplaceAll(string(raw), "\r\n", "\n"), "\n")
 
+	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	issFormerKeys(seriesIx, meta.FormerNames)
+	dict := cikDict.exactFallback(meta)
+	resolved := map[string]string{}
+	// The banner is carried verbatim, account code and all; the code is the
+	// registrant's own and names no series, so it is dropped before the name is
+	// offered to the index.
+	resolve := func(name string) string {
+		if id, seen := resolved[name]; seen {
+			return id
+		}
+		id := icrResolveFundShared(seriesIx, name)
+		if id == "" {
+			id = htmlDictionaryFund(seriesIx, dict, name)
+		}
+		if id == "" {
+			if bare := vsStripAccountCode(name); bare != name {
+				id = icrResolveFundShared(seriesIx, bare)
+				if id == "" {
+					id = htmlDictionaryFund(seriesIx, dict, bare)
+				}
+			}
+		}
+		resolved[name] = id
+		return id
+	}
+
 	var (
-		out     []VoteRow
-		cols    []int
-		fields  voteSummaryFields
-		fund    string
-		last    string
-		issuer  string
-		cusip   string
-		mtgDate string
-		pending *VoteRow
+		out        []VoteRow
+		cols       []int
+		fields     voteSummaryFields
+		fund       string
+		fundSeries string
+		last       string
+		issuer     string
+		cusip      string
+		mtgDate    string
+		pending    *VoteRow
 	)
 	flush := func() {
 		if pending != nil {
@@ -154,6 +203,7 @@ func parseVoteSummaryRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, erro
 				if f, ok := voteSummaryFieldsOf(c, line, lines[i+1]); ok {
 					flush()
 					cols, fields, fund = c, f, last
+					fundSeries = resolve(fund)
 					issuer, cusip, mtgDate = "", "", ""
 					i++
 					continue
@@ -199,6 +249,7 @@ func parseVoteSummaryRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, erro
 		flush()
 		row := VoteRow{
 			FundName:        fund,
+			SeriesID:        fundSeries,
 			IssuerName:      issuer,
 			CUSIP:           cusip,
 			MeetingDate:     mtgDate,

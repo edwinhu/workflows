@@ -34,7 +34,7 @@ import "strings"
 
 // agProponents is the Type column's vocabulary. It is what anchors a row, so it
 // stays closed.
-var agProponents = []string{"MGMT", "SHLDR", "MANAGEMENT", "SHAREHOLDER", "SHRHLDR", "ISSUER"}
+var agProponents = []string{"MGMT", "SHLDR", "SHR", "MANAGEMENT", "SHAREHOLDER", "SHRHLDR", "ISSUER"}
 
 func agProponent(s string) bool {
 	up := strings.ToUpper(strings.TrimSpace(s))
@@ -124,6 +124,7 @@ func parseAgenda(text string, meta FilingMeta) ([]VoteRow, error) {
 		mtgDate    string
 		mtgType    string
 		inBlock    bool
+		blockSeen  bool
 	)
 
 	for _, raw := range lines {
@@ -142,6 +143,7 @@ func parseAgenda(text string, meta FilingMeta) ([]VoteRow, error) {
 					fundSeries = htmlDictionaryFund(seriesIx, dict, fund)
 				}
 				heading = ""
+				blockSeen = false
 			}
 			// The rule is drawn UNDER the column header as well as between
 			// blocks, so it never closes a block: only a line outside the
@@ -149,11 +151,19 @@ func parseAgenda(text string, meta FilingMeta) ([]VoteRow, error) {
 			continue
 		}
 		if strings.HasPrefix(line, "<") {
+			// A fresh table opens a fresh page, and the fund banner is the first
+			// text on it.
+			if up := strings.ToUpper(line); strings.HasPrefix(up, "<TABLE") || strings.HasPrefix(up, "<S>") {
+				blockSeen = false
+			}
 			continue
 		}
 		cells := icrCells(line)
 		if agColumnHeader(cells) {
-			inBlock = true
+			inBlock, blockSeen = true, true
+			// The `For/Against` fragment stacked above this line belongs to the
+			// last column, not to a fund.
+			heading = ""
 			continue
 		}
 		if inBlock {
@@ -200,9 +210,24 @@ func parseAgenda(text string, meta FilingMeta) ([]VoteRow, error) {
 				continue
 			}
 		}
-		// A two-cell line carrying no label is the page's fund banner, which the
-		// next rule adopts.
-		if _, isVote := agVoteRow(cells); !isVote && len(cells) >= 2 {
+		// A line carrying no label is the page's fund banner, which the next rule
+		// adopts. Royce prints it as two cells -- the fund on the left, the
+		// registrant on the right -- but Manufacturers prints ONE, the account
+		// code glued to the name by a single space, so one cell counts too. A
+		// one-cell candidate must start at column 0: the wrapped continuation of
+		// a proposal description is indented under its item, and adopting one
+		// would file the rest of the page under a fragment of a proposal.
+		// Royce prints the banner as two cells -- the fund on the left, the
+		// registrant on the right -- but Manufacturers prints ONE, the account
+		// code glued to the name by a single space (`2A01 MIT Emerging Small
+		// Company Trust`), which icrCells does not split. A one-cell line counts
+		// only OUTSIDE a proposal table: inside one every wrapped description
+		// continuation is a one-cell line too, and adopting one would file the
+		// rest of the page under a fragment of a proposal.
+		_, isVote := agVoteRow(cells)
+		banner := len(cells) >= 2 || (len(cells) == 1 && !blockSeen)
+		// A proposal row the vote reader declined is not a fund heading.
+		if !isVote && banner && !(blockSeen && icrItem(cells[0])) {
 			heading = strings.TrimSpace(cells[0])
 		}
 	}

@@ -152,6 +152,31 @@ type spTable struct {
 	body   []string
 }
 
+// spIndex is the shared fund-name chain this layout resolves an institutional
+// account name through: the ISS series index over the header's declarations,
+// then the CIK dictionary for the names the header does not declare. The bare
+// seriesByName map this layout used before is exact match plus a leading-token
+// walk and nothing else, which refuses an account name spelled as the fund's
+// FORMER name (`SPDR DJ Wilshire Total Market ETF` for S000006973) and every
+// vendor typo the brand rungs absorb.
+type spIndex struct {
+	ix   *issSeriesIndex
+	dict *dictFallback
+}
+
+func spSeriesIndex(meta FilingMeta) *spIndex {
+	ix := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	issFormerKeys(ix, meta.FormerNames)
+	return &spIndex{ix: ix, dict: cikDict.exactFallback(meta)}
+}
+
+func (s *spIndex) resolve(name string) string {
+	if id := icrResolveFundShared(s.ix, name); id != "" {
+		return id
+	}
+	return htmlDictionaryFund(s.ix, s.dict, name)
+}
+
 func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 	var (
 		rows      []VoteRow
@@ -160,7 +185,7 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 		header    []string
 		haveRule  bool
 		sawType   bool
-		seriesIdx = seriesByName(meta.SeriesDecls)
+		seriesIdx = spSeriesIndex(meta)
 		resolved  = map[string]string{}
 		ctx       spContext
 		groupCtx  spContext
@@ -314,7 +339,14 @@ func spParallel(group []spTable, t spTable) bool {
 // spContext is the identity a report prints BETWEEN its tables rather than in
 // them: the issuer heading and the LABEL: VALUE pairs under it.
 type spContext struct {
-	fund    string
+	fund string
+	// page is the bare heading the report prints above the page's first rule --
+	// the section's own fund banner. The institutional account name below it is
+	// an ACCOUNT label and is routinely the fund's former spelling (`SPDR DJ
+	// Wilshire Total Market ETF` under a banner reading `SPDR DOW JONES TOTAL
+	// MARKET ETF (FORMERLY SPDR DJ WILSHIRE TOTAL MARKET ETF)`), which no index
+	// declares. The banner is the filing's own evidence for the same section.
+	page    string
 	issuer  string
 	ticker  string
 	cusip   string
@@ -328,6 +360,9 @@ type spContext struct {
 // with a colon is a pair, and a rule or a page marker is furniture.
 func spReadContext(line string, ctx *spContext, lastBare string) string {
 	if strings.HasPrefix(line, "<") || strings.Trim(line, "- ") == "" {
+		if strings.Contains(line, "----") && lastBare != "" {
+			ctx.page = lastBare
+		}
 		return lastBare
 	}
 	pairs := lvPairs(icrCells(line))
@@ -339,7 +374,7 @@ func spReadContext(line string, ctx *spContext, lastBare string) string {
 		case p.label == "INSTITUTIONAL ACCOUNT NAME":
 			// The first pair of a block: everything the previous block left is
 			// stale, and the heading above this line is the issuer.
-			*ctx = spContext{fund: p.value, issuer: lastBare}
+			*ctx = spContext{fund: p.value, page: ctx.page, issuer: lastBare}
 		case p.label == "TICKER":
 			ctx.ticker = p.value
 		case p.label == "MEETING DATE":
@@ -495,7 +530,7 @@ func spReadProxyEdgeHeading(line string, ctx, groupCtx *spContext) {
 }
 
 // spGroupRows joins one page group's parallel tables into votes.
-func spGroupRows(group []spTable, seriesIdx map[string]*SeriesDecl, resolved map[string]string, ctx spContext) []VoteRow {
+func spGroupRows(group []spTable, seriesIdx *spIndex, resolved map[string]string, ctx spContext) []VoteRow {
 	// role -> (table, column). First occurrence wins, so a label repeated across a
 	// group that slipped the parallel test cannot silently override the first.
 	type at struct{ table, col int }
@@ -618,8 +653,19 @@ func spGroupRows(group []spTable, seriesIdx map[string]*SeriesDecl, resolved map
 		if row.FundName != "" {
 			id, seen := resolved[row.FundName]
 			if !seen {
-				id = icrResolveFund(seriesIdx, row.FundName)
+				id = seriesIdx.resolve(row.FundName)
 				resolved[row.FundName] = id
+			}
+			// An account label the index does not declare falls back to the
+			// section's own printed banner, and only when that banner itself
+			// resolves exactly through the same chain.
+			if id == "" && ctx.page != "" {
+				pid, pseen := resolved[ctx.page]
+				if !pseen {
+					pid = seriesIdx.resolve(ctx.page)
+					resolved[ctx.page] = pid
+				}
+				id = pid
 			}
 			row.SeriesID = id
 		}
