@@ -156,8 +156,46 @@ func spIsTextReport(text string) bool {
 	return spIsProxyEdgeText(text) || spIsVoteGroupText(text)
 }
 
+// spSECFormLabel is the bottom line of the SEC's own Form N-PX stacked column
+// header, the only line of the nine that carries the short labels.
+const spSECFormLabel = "Issuer of Portfolio Security"
+
+// spIsSECFormPre is the fourth signature of this family: the SEC's own Form
+// N-PX column wording printed as a fixed-width table inside <PRE>, with the
+// stacked header's bottom label line sitting directly over its dashed rule.
+//
+// The wording alone is NOT the signature. `Issuer of Portfolio Security` is the
+// Form's own instruction text and is printed as prose on the cover page of
+// filings other layouts read, and it also heads the single-column spill panel
+// this template prints for the column too wide to fit. Both are excluded by
+// requiring the label line to cut at least four columns AND to be followed by a
+// rule drawing at least four.
+func spIsSECFormPre(text string) bool {
+	if !containsAnyFolded(text, []string{"issuer of portfolio security"}) {
+		return false
+	}
+	lines := strings.Split(text, "\n")
+	for i, l := range lines {
+		line := strings.TrimRight(l, "\r")
+		if !strings.HasPrefix(line, spSECFormLabel) || len(spTextRuns(line)) < 4 {
+			continue
+		}
+		for j := i + 1; j < len(lines) && j <= i+2; j++ {
+			next := strings.TrimRight(lines[j], "\r")
+			if strings.TrimSpace(next) == "" {
+				continue
+			}
+			if len(spRuleSpans(next)) >= 4 {
+				return true
+			}
+			break
+		}
+	}
+	return false
+}
+
 func matchSplitTable(head string) bool {
-	return containsAnyFolded(head, spSignatures) || spIsTextReport(head)
+	return containsAnyFolded(head, spSignatures) || spIsTextReport(head) || spIsSECFormPre(head)
 }
 
 // spSpan is one column as the table's own rule line draws it.
@@ -368,6 +406,7 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 		labels     []string
 		body       []string
 		prevLabels []string
+		pendLabels []string
 		lastBare   string
 		fundTail   bool
 	)
@@ -410,15 +449,57 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 			continue
 		}
 		if r := spRuleSpans(line); r != nil {
-			block := spTrailingBlock(header)
-			if l := spLabels(block, r); spHasVote(l) {
+			block := spLabelBlock(header)
+			l := spLabels(block, r)
+			switch {
+			case spHasVote(l):
+				if joined := spJoinSpill(pendLabels, l); joined != nil {
+					// The spill panel of a table whose main panel was too wide
+					// to print the vote. Its own lines RESTATE the main panel's
+					// ballots keyed on the issuer alone, so reading them would
+					// emit phantom rows; what it is kept for is its labels,
+					// which complete the geometry the pages after the break
+					// print inline.
+					prevLabels, pendLabels = joined, nil
+					header = nil
+					continue
+				}
 				spans, labels = r, l
-				continue
+			case spIsMainPanel(l):
+				// A main panel carrying no vote column: no row of it can be
+				// emitted, but it is the left half of the geometry above.
+				pendLabels = l
+				header = nil
+			default:
+				header = nil
 			}
-			header = nil
 			continue
 		}
 
+		// The SEC's own Form N-PX template names the fund in a per-fund preamble
+		// above the stacked header rather than in an institutional-account
+		// banner, and the value wraps onto the line below.
+		if name, ok := spSeriesPreambleName(line); ok {
+			if name == "" {
+				// The label is printed with no value: the fund is the bare
+				// banner line the template prints above the preamble.
+				name = lastBare
+			}
+			// The column geometry is redrawn per fund, so the previous fund's
+			// labels must not describe this one's continuation pages. The
+			// preamble is REPRINTED at a page break inside one fund, though, and
+			// dropping the labels there would blind every page after the first.
+			// The comparison is a PREFIX one because the value wraps: the label
+			// line of a reprinted preamble carries only the head of the name
+			// the previous one was joined out of.
+			if name == "" || !strings.HasPrefix(strings.ToUpper(ctx.fund), strings.ToUpper(name)) {
+				prevLabels, pendLabels = nil, nil
+			}
+			ctx = spContext{fund: name, page: lastBare}
+			fundTail = name != ""
+			header = append(header, line)
+			continue
+		}
 		if name, ok := spInstitutionalAccountName(line); ok {
 			ctx = spContext{fund: name, page: ctx.page}
 			if ctx.page == "" {
@@ -446,6 +527,58 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 	}
 	flush()
 	return rows
+}
+
+// spLabelBlock is spTrailingBlock with one extra cut: a panel whose rows the
+// reader refused leaves its BALLOTS in the header buffer, and the SEC Form
+// N-PX template prints the next panel's stacked labels directly under the last
+// of them with no blank line between. Everything at or above the last ballot
+// line is therefore body, not label.
+func spLabelBlock(header []string) []string {
+	block := spTrailingBlock(header)
+	for i := len(block) - 1; i >= 0; i-- {
+		if spHasBallotDate(block[i : i+1]) {
+			return block[i+1:]
+		}
+	}
+	return block
+}
+
+// spIsMainPanel reports whether a set of labels is the LEFT half of a table the
+// SEC Form N-PX template split because it was wider than the page: it names the
+// issuer and the matter voted on, and it stops short of the vote.
+func spIsMainPanel(labels []string) bool {
+	var issuer, desc bool
+	for _, l := range labels {
+		switch spRoleFor(l) {
+		case spIssuer:
+			issuer = true
+		case spDescription:
+			desc = true
+		}
+	}
+	return issuer && desc
+}
+
+// spJoinSpill completes a split table's geometry. The template prints the
+// columns that did not fit as a second panel under its own rule, repeating the
+// issuer as the key; the pages after the page break print all of them inline on
+// one line instead. Joining the main panel's labels to the spill's -- minus the
+// repeated key -- is what names the vote column on those pages.
+//
+// It returns nil unless there really is a pending main panel and this really is
+// its spill: both keyed on the issuer, and a spill that adds columns rather
+// than restating the whole table. The key is compared by ROLE, not by text --
+// the main panel folds the neighbouring `Symbol` into its own label where the
+// spill, having no ticker column, does not.
+func spJoinSpill(main, spill []string) []string {
+	if len(main) < 4 || len(spill) < 2 || spIsMainPanel(spill) ||
+		spRoleFor(main[0]) != spIssuer || spRoleFor(spill[0]) != spIssuer {
+		return nil
+	}
+	out := make([]string, 0, len(main)+len(spill)-1)
+	out = append(out, main...)
+	return append(out, spill[1:]...)
 }
 
 // spContinuationSpans cuts a headerless page's columns out of its own body. The
@@ -497,6 +630,41 @@ func spHasBallotDate(lines []string) bool {
 				return true
 			}
 		}
+		// The same template also prints `2020/07/13` and `7/14/2020`, and a
+		// page of those is as much a page of ballots as a page of `06-May-20`.
+		if spHasSlashDate(l) {
+			return true
+		}
+	}
+	return false
+}
+
+// spHasSlashDate reports whether a line prints a numeric slash date -- either
+// order, either width. A reporting period (`07/01/2020 - 06/30/2021`) prints
+// one too, which is why this is only ever asked of a line already known to be
+// inside a table's body.
+func spHasSlashDate(l string) bool {
+	run := func(i int) int {
+		n := 0
+		for ; i+n < len(l) && l[i+n] >= '0' && l[i+n] <= '9'; n++ {
+		}
+		return n
+	}
+	for i := 0; i < len(l); i++ {
+		if l[i] < '0' || l[i] > '9' || (i > 0 && l[i-1] >= '0' && l[i-1] <= '9') {
+			continue
+		}
+		a := run(i)
+		if a < 1 || a > 4 || i+a >= len(l) || l[i+a] != '/' {
+			continue
+		}
+		b := run(i + a + 1)
+		if b < 1 || b > 2 || i+a+1+b >= len(l) || l[i+a+1+b] != '/' {
+			continue
+		}
+		if c := run(i + a + b + 2); c >= 2 && c <= 4 {
+			return true
+		}
 	}
 	return false
 }
@@ -512,6 +680,23 @@ func spInstitutionalAccountName(line string) (string, bool) {
 		return "", false
 	}
 	return strings.TrimSpace(t[len(label):]), true
+}
+
+// spSeriesPreambleName reads the `NAME OF SERIES (AS APPLICABLE): <name>` line
+// of the SEC Form N-PX per-fund preamble. The value is routinely prefixed with
+// a run of underscores -- the fill rule of the paper form, printed literally --
+// and wraps onto the line below when it is longer than the line.
+func spSeriesPreambleName(line string) (string, bool) {
+	const label = "NAME OF SERIES"
+	t := strings.TrimSpace(line)
+	if len(t) < len(label) || !strings.EqualFold(t[:len(label)], label) {
+		return "", false
+	}
+	i := strings.Index(t, ":")
+	if i < 0 {
+		return "", false
+	}
+	return strings.TrimSpace(strings.TrimLeft(strings.TrimSpace(t[i+1:]), "_")), true
 }
 
 // spAppend adds one finished table to the open group, flushing first when the
@@ -719,9 +904,51 @@ func spTextRuns(line string) []spSpan {
 	return out
 }
 
+// spSECFormRoles are the SEC's own Form N-PX column headings, matched by PREFIX
+// rather than exactly. The heading is stacked over nine lines and spLabels folds
+// it top to bottom, so the full label carries the whole wrapped sentence --
+// `FUND'S VOTE FOR OR AGAINST PROPOSAL, OR ABSTAIN; FOR OR WITHHOLD REGARDING
+// ELECTION OF DIRECTORS` -- and the wrap points differ between the wide first
+// page and the narrower continuation pages. The opening words are what is
+// stable.
+//
+// `WHETHER FUND CAST VOTE ON MATTER` is deliberately absent: it holds Yes/No,
+// not a vote, and mapping it would file a ballot-status flag as how_voted.
+var spSECFormRoles = []struct{ prefix, role string }{
+	// `Issuer of Portfolio Security` is itself stacked over two lines, and where
+	// the column beside it is narrow the second line runs into its neighbour's
+	// text a single space away, so spFields files `Portfolio Security` under
+	// THAT column and this one is left reading `ISSUER OF`.
+	{"ISSUER OF", spIssuer},
+	// `Symbol` sits on the bottom label line one single space after
+	// `Issuer of Portfolio Security`, so spFields reads the two as one run and
+	// files `Symbol` under the issuer column's label. The ticker column is left
+	// holding only the two lines stacked above it.
+	{"EXCHANGE TICKER", spTicker},
+	{"CUSIP", spCUSIP},
+	{"SHAREHOLDER MEETING DATE", spMeetingDate},
+	{"SUMMARY OF MATTER VOTED ON", spDescription},
+	{"WHO PROPOSED MATTER", spProponent},
+	{"FUND'S VOTE", spVote},
+}
+
+// spRoleFor is the label-to-role lookup: the exact vendor table above first,
+// then the SEC's own stacked wording by prefix.
+func spRoleFor(label string) string {
+	if role, ok := spRoles[label]; ok {
+		return role
+	}
+	for _, r := range spSECFormRoles {
+		if strings.HasPrefix(label, r.prefix) {
+			return r.role
+		}
+	}
+	return ""
+}
+
 func spHasVote(labels []string) bool {
 	for _, l := range labels {
-		if spRoles[l] == spVote {
+		if spRoleFor(l) == spVote {
 			return true
 		}
 	}
@@ -786,8 +1013,8 @@ func spGroupRows(group []spTable, seriesIdx *spIndex, resolved map[string]string
 	where := map[string]at{}
 	for ti, t := range group {
 		for ci, label := range t.labels {
-			role, ok := spRoles[label]
-			if !ok {
+			role := spRoleFor(label)
+			if role == "" {
 				continue
 			}
 			if _, seen := where[role]; !seen {
