@@ -2217,6 +2217,8 @@ var htmlSynonyms = map[string][]string{
 		// no other column naming what was voted on. Reading it as the PROPOSER
 		// left that shape one field short of the header test and skipped all 81.
 		"PROPOSAL TYPE",
+		// The SEC's Item 1(c) wording (Carillon Series Trust 2020).
+		"ISSUE",
 	},
 	htmlFieldBy: {
 		"PROPOSED BY", "PROPONENT", "PRPNENT", "SPONSOR", "AUTHOR",
@@ -2224,6 +2226,8 @@ var htmlSynonyms = map[string][]string{
 		// The SEC's Item 1(d) wording; it carries MATTER, which the
 		// word-sequence fallback otherwise reads as the description.
 		"WHO PROPOSED MATTER ISSUER / SHAREHOLDER",
+		// The same question as Carillon Series Trust 2020 spells it.
+		"WAS THIS A SHAREHOLDER MGMT OR ISSUER PROPOSAL",
 	},
 	htmlFieldMgmtRec: {
 		"MGT REC", "MGMT REC", "MGMT RECO", "MANAGEMENT REC", "MANAGEMENT RECOMMENDATION",
@@ -2238,6 +2242,8 @@ var htmlSynonyms = map[string][]string{
 	htmlFieldVote: {
 		"VOTE CAST", "VOTES CAST", "REGISTRANT VOTED", "FUND VOTE", "HOW VOTED",
 		"VOTE", "CAST", "VOTED", "VOTE CASTS", "VOTE INSTRUCTION", "HOW VOTE WAS CAST",
+		// Item 1(e) as Carillon Series Trust 2020 spells it.
+		"HOW THE FUND CAST ITS VOTE",
 		// The SEC's own Item 1(e) column wording, printed verbatim as the header
 		// by filers who copy the form (ETFis Series Trust 2015, Van Wagoner
 		// Funds 2008). At 96 bytes it is longer than htmlLabelMaxLen, so it is
@@ -2309,6 +2315,8 @@ var htmlSynonyms = map[string][]string{
 		// word-sequence fallback reads as the CUSIP column, so the exact phrase
 		// has to claim it first.
 		"ISSUER OF PORTFOLIO SECURITY",
+		// Item 1(a) as Carillon Series Trust 2020 spells it.
+		"ISSUER/COMPANY NAME",
 	},
 }
 
