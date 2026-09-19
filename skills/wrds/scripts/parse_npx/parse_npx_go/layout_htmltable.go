@@ -187,6 +187,18 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		}
 		cells := row.cells
 
+		// One ballot printed over two <tr>s: the upper carries the item and the
+		// proposal, the lower the nominee and the vote words (Dominion Funds
+		// 2010). Emitting both halves would file a vote-less parent row beside
+		// the real one, so the halves are read as the one row they are.
+		if mapping != nil && len(cells) == headerArity {
+			if below, exists := feed.peek(0); exists && !below.newTable &&
+				htmlSplitBallotRows(cells, below.cells, mapping) {
+				cells = htmlMergeBallotRows(cells, below.cells, mapping)
+				_, _ = feed.next()
+			}
+		}
+
 		// Once the filing has stated that this block held no votes, any later row
 		// carrying two values is enough to withdraw that conclusion. It may be a
 		// second fund's compact table; returning skip is safer than recording those
@@ -1317,8 +1329,18 @@ func htmlSplitHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHead
 	bestDepth := 0
 	for depth := 0; depth < htmlSplitHeaderMaxRows-1; depth++ {
 		next, exists := feed.peek(depth)
-		if !exists || next.newTable || !htmlHeaderFragment(next.cells) {
+		if !exists || next.newTable {
 			break
+		}
+		if !htmlHeaderFragment(next.cells) {
+			// A lone continuation cell is folded in only while the header still
+			// needs it: once the rows read so far are header-shaped on their own,
+			// the lone cell below is the block's first value -- the fund cell of
+			// a `Portfolio Name` column, or an issuer heading.
+			if _, _, headerLike := htmlHeaderShape(joined); headerLike ||
+				!htmlHeaderTailFragment(joined, next.cells) {
+				break
+			}
 		}
 		fragment := next.cells
 		// Security[Symbol] spans both header rows; the lower row omits it.
@@ -1410,6 +1432,84 @@ func htmlHeaderFragmentOver(cells, below []string) bool {
 		return htmlSingleVoteLabel(cells)
 	}
 	return labels >= 2 && labels <= htmlHeaderMaxCells
+}
+
+// htmlSplitBallotRows reports the two halves of ONE ballot the filer split over
+// two rows: the upper prints the item and no vote at all, the lower prints the
+// vote and no item, and neither fills a column the other filled except the
+// proposal, where the upper names the matter and the lower the nominee. A row
+// that carries its own vote, or one that repeats a column of the row above, is
+// a ballot of its own and is never merged.
+func htmlSplitBallotRows(parent, child []string, mapping map[string]int) bool {
+	vote, hasVote := mapping[htmlFieldVote]
+	item, hasItem := mapping[htmlFieldItem]
+	desc, hasDesc := mapping[htmlFieldDesc]
+	if !hasVote || !hasItem || !hasDesc || len(child) != len(parent) {
+		return false
+	}
+	if htmlFlat(parent[vote]) != "" || htmlFlat(child[vote]) == "" {
+		return false
+	}
+	if htmlFlat(parent[item]) == "" || htmlFlat(child[item]) != "" {
+		return false
+	}
+	if htmlFlat(parent[desc]) == "" || htmlFlat(child[desc]) == "" {
+		return false
+	}
+	for i := range parent {
+		if i == desc {
+			continue
+		}
+		if htmlFlat(parent[i]) != "" && htmlFlat(child[i]) != "" {
+			return false
+		}
+	}
+	return true
+}
+
+// htmlMergeBallotRows folds the lower half of a split ballot into the upper: a
+// column the upper left empty takes the lower's value, and the proposal keeps
+// both pieces in the order printed.
+func htmlMergeBallotRows(parent, child []string, mapping map[string]int) []string {
+	out := make([]string, len(parent))
+	copy(out, parent)
+	desc, hasDesc := mapping[htmlFieldDesc]
+	for i := range out {
+		if hasDesc && i == desc {
+			out[i] = parent[i] + "\n" + child[i]
+			continue
+		}
+		if htmlFlat(out[i]) == "" {
+			out[i] = child[i]
+		}
+	}
+	return out
+}
+
+// htmlHeaderTailFragment reports the lower piece of a header whose ONE non-empty
+// cell continues a label already open in its own column: `For/Against` over
+// `Management` (Dominion Funds 2010, the ProxyEdge word-vote grid). A row with a
+// single label is otherwise an identity heading, so it is folded into the header
+// only where the column above it already carries a label of this header.
+func htmlHeaderTailFragment(open, cells []string) bool {
+	if len(cells) != len(open) {
+		return false
+	}
+	found := false
+	for i, c := range cells {
+		flat := htmlFlat(c)
+		if flat == "" {
+			continue
+		}
+		if found || htmlFlat(open[i]) == "" {
+			return false
+		}
+		if htmlIsNumeric(flat) || htmlLooksLikeValueLimit(flat, htmlLabelMaxLen) {
+			return false
+		}
+		found = true
+	}
+	return found
 }
 
 // htmlSingleVoteLabel reports a row whose only label maps to the vote column.

@@ -95,6 +95,32 @@ func peNonBlank(text string) []string {
 	return out
 }
 
+// peWholeCell reports, for each line peNonBlank returned, whether it stood
+// alone between the blank lines the markup leaves around a cell. A run of two
+// or more adjacent lines is ONE cell the vendor hard-wrapped over source lines
+// (American National 2009 prints item 8's description as three), not one cell
+// per line, so neither the head nor the tail of such a run names anything.
+func peWholeCell(text string) []bool {
+	var out []bool
+	run := 0
+	end := func() {
+		if run == 1 {
+			out[len(out)-1] = true
+		}
+		run = 0
+	}
+	for _, l := range strings.Split(text, "\n") {
+		if strings.TrimSpace(l) == "" {
+			end()
+			continue
+		}
+		out = append(out, false)
+		run++
+	}
+	end()
+	return out
+}
+
 // peHeader is one header band: its labels, one per logical column, and the
 // number of physical lines they were read from. The two differ when the vendor
 // wrapped a label across two cells.
@@ -202,6 +228,16 @@ func peFundName(s string) bool {
 	return false
 }
 
+// peItemCell reports that line i is a bare item number printed under a header
+// band -- the cell that opens a ballot row, whatever follows it.
+func peItemCell(lines []string, i int, labels []string) bool {
+	if labels == nil || i < 0 {
+		return false
+	}
+	_, ok := peCount(lines[i])
+	return ok
+}
+
 // peIdentityLabel reports a line that opens a ballot's identity block.
 func peIdentityLabel(line string) bool {
 	if !strings.HasSuffix(line, ":") {
@@ -217,6 +253,7 @@ func peIdentityLabel(line string) bool {
 
 func parseProxyEdge(text string, meta FilingMeta) ([]VoteRow, error) {
 	lines := peNonBlank(text)
+	whole := peWholeCell(text)
 	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
 	issFormerKeys(seriesIx, meta.FormerNames)
 	dict := cikDict.exactFallback(meta)
@@ -287,7 +324,10 @@ func parseProxyEdge(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 		// A bare heading. The vendor prints the fund above its ballots and the
 		// issuer above each one, with nothing to mark either.
-		if peFundName(line) {
+		// Only a whole cell can be a heading, and never the cell that follows
+		// an item number under an open band: that pair is a ballot row whose
+		// description peVoteRow refused, not a fund the vendor printed.
+		if whole[i] && !peItemCell(lines, i-1, labels) && peFundName(line) {
 			fund = line
 			fundSeries = icrResolveFundShared(seriesIx, line)
 			if fundSeries == "" {
