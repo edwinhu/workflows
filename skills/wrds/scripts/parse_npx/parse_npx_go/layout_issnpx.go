@@ -1721,6 +1721,47 @@ func issCutMedialParenthetical(name string) (string, bool) {
 	return head + " " + tail, true
 }
 
+// issParenGroupCuts returns the banner with ONE balanced `(...)` group removed,
+// once per group it carries, leftmost first. A group that opens and never
+// closes is not a group, and a cut that leaves nothing on either side of the
+// removed group is not returned: the remainder has to be a name the chain can
+// read, not a fragment.
+func issParenGroupCuts(banner string) []string {
+	s := strings.TrimSpace(banner)
+	if !strings.ContainsAny(s, "()") {
+		return nil
+	}
+	var cuts []string
+	depth, open := 0, -1
+	for i := 0; i < len(s); i++ {
+		switch s[i] {
+		case '(':
+			if depth == 0 {
+				open = i
+			}
+			depth++
+		case ')':
+			if depth == 0 {
+				continue
+			}
+			depth--
+			if depth > 0 || open <= 0 {
+				continue
+			}
+			head, tail := strings.TrimSpace(s[:open]), strings.TrimSpace(s[i+1:])
+			if head == "" {
+				continue
+			}
+			if tail == "" {
+				cuts = append(cuts, head)
+				continue
+			}
+			cuts = append(cuts, head+" "+tail)
+		}
+	}
+	return cuts
+}
+
 // issClassMarker reports a declared name whose trailing parenthetical is a share
 // class marker rather than a sleeve or a former name: one to three letters or
 // digits, or the word CLASS followed by one (`(A)`, `(I)`, `(R6)`, `(CLASS A)`).
@@ -2328,6 +2369,21 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 			return banner, d
 		}
 	}
+	// A balanced parenthetical ANYWHERE in the banner, not only at its end:
+	// `AST JP Morgan Tactical Preservation Portfolio (FKA AST Goldman Sachs
+	// Multi Asset Portfolio) - Subadviser: Goldman Sachs Asset Management,
+	// L.P.` for a declared `AST J.P. Morgan Tactical Preservation Portfolio`
+	// (S000002009, Advanced Series Trust 2021, 14,521 rows with no series).
+	// The trailing rung below never sees it because the sub-adviser clause
+	// follows it. One group comes off at a time and the remainder goes back
+	// through the whole chain, so a banner carrying several groups peels them
+	// one by one; the chain refuses a collision, so a cut that makes the
+	// remainder ambiguous still stamps nothing.
+	for _, cut := range issParenGroupCuts(banner) {
+		if _, d := issResolveFund(ix, cut); d != nil {
+			return banner, d
+		}
+	}
 	// Infix FKA separates the current name from a former name, not a second
 	// series. Admit only the exact current name, with an optional terminal Fund.
 	if current, former, ok := strings.Cut(normalizeSeriesName(banner), " fka "); ok && current != "" && former != "" {
@@ -2532,6 +2588,27 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	if issStripRegistrantPrefix {
 		if d := lookupSeriesStrippingRegistrant(idx, banner, registrantKey); d != nil {
 			return banner, d
+		}
+		// The registrant's INITIALS and its own words in ONE leading run:
+		// `SVS II Scudder Large Cap Value Portfolio` for a registrant named
+		// SCUDDER VARIABLE SERIES II (13,457 rows with no series), and
+		// `Scudder VIT Equity 500 Index` on its sibling. The strip above cuts
+		// the registrant name whole and the brand rungs cut one initialism or
+		// one word, so a banner printing both keeps half the run and resolves
+		// to nothing. Every token of the run must be the registrant's own word
+		// or its initialism, two tokens at least, and what remains must still
+		// be a name of its own; the remainder then goes back through the whole
+		// chain, including the type-token rung, because the account name adds
+		// a `Portfolio` the dictionary spells `VIP`.
+		if rest, ok := issCutInitialsAndWordRun(normalizeSeriesName(banner), registrantKey); ok {
+			if _, d := issResolveFund(ix, rest); d != nil {
+				return banner, d
+			}
+			if stem, typed := issDropTypeWord(rest); typed && stem != "" {
+				if _, d := issResolveFund(ix, stem); d != nil {
+					return banner, d
+				}
+			}
 		}
 		// The registrant's FORMER conformed names, which the SGML header also
 		// declares: John Hancock Variable Insurance Trust 2012 still heads
@@ -3745,6 +3822,43 @@ func issRegistrantInitialism(tok, registrantKey string) bool {
 		}
 	}
 	return true
+}
+
+// issCutInitialsAndWordRun deletes a leading run made of the registrant's own
+// INITIALISM and its own words together -- `svs ii scudder` for `scudder
+// variable series ii`. key and registrantKey are already normalised.
+//
+// The initialism is what makes the run the registrant's: a run of plain
+// registrant words alone is `john hancock trust` on a John Hancock Variable
+// Insurance Trust heading, which names the registrant's FORMER self and may be
+// cut only once the header declares that former name, and `state street` on a
+// State Street heading, whose remainder differs from a declared name by a noun.
+// Both are specified to stamp nothing. So the run must carry at least one
+// initialism AND at least one of the registrant's own words, and must leave two
+// tokens behind.
+func issCutInitialsAndWordRun(key, registrantKey string) (string, bool) {
+	regToks := issRegistrantTokens(registrantKey)
+	if len(regToks) == 0 {
+		return "", false
+	}
+	toks := strings.Fields(key)
+	n, acronyms, words := 0, 0, 0
+	for ; n < len(toks); n++ {
+		switch {
+		case issRegistrantInitialism(toks[n], registrantKey):
+			acronyms++
+		case regToks[toks[n]]:
+			words++
+		default:
+		}
+		if acronyms+words != n+1 {
+			break
+		}
+	}
+	if acronyms == 0 || words == 0 || len(toks)-n < 2 {
+		return "", false
+	}
+	return strings.Join(toks[n:], " "), true
 }
 
 func issRegistrantPrefixAt(banner, registrantKey string, sep rune) (string, bool) {
