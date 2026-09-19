@@ -1,0 +1,72 @@
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			TD Asset Management USA Funds Inc.
+		CENTRAL INDEX KEY:			0000949881
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000949881
+<SERIES-ID>S000025212
+<SERIES-NAME>TDAM Global Sustainability Fund
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>v318181_npx.htm
+<TEXT>
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">Report was run from: 7/1/11 to 6/30/12</P>
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">Institution Account(s): TDAM USA Global Sustainability Fund</P>
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><B>Tesco plc</B></P>
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 10pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 7%; text-autospace: none; font-weight: bold; text-align: center">Ticker</TD>
+    <TD STYLE="width: 15%; text-autospace: none; font-weight: bold; text-align: center">Meeting Date</TD>
+    <TD STYLE="width: 15%; text-autospace: none; font-weight: bold; text-align: center">Country</TD>
+    <TD STYLE="width: 15%; text-autospace: none; font-weight: bold; text-align: center">Security ID</TD>
+    <TD STYLE="width: 15%; text-autospace: none; font-weight: bold; text-align: left">Meeting Type</TD>
+    <TD STYLE="width: 33%; text-autospace: none; font-weight: bold; text-align: left">Record Date</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="text-autospace: none; text-align: center">TSCO</TD>
+    <TD STYLE="text-autospace: none; text-align: center">01&#45;Jul&#45;11</TD>
+    <TD STYLE="text-autospace: none; text-align: center">United Kingdom</TD>
+    <TD STYLE="text-autospace: none; text-align: center">G87621101</TD>
+    <TD STYLE="text-autospace: none; text-align: left">Annual</TD>
+    <TD STYLE="text-autospace: none; text-align: left">&nbsp;&nbsp;29&#45;Jun&#45;11</TD></TR>
+</TABLE>
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 10pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 25%; text-autospace: none"><B>CUSIP: </B> G87621101</TD>
+    <TD STYLE="width: 25%; text-autospace: none"><B>ISIN: </B> GB0008847096</TD>
+    <TD STYLE="width: 40%; text-autospace: none"><B>SEDOL: </B> 0884709</TD></TR>
+</TABLE>
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 10pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 5%; text-autospace: none">&nbsp;</TD>
+    <TD STYLE="width: 65%; text-autospace: none">&nbsp;</TD>
+    <TD STYLE="width: 10%; text-autospace: none">&nbsp;</TD>
+    <TD STYLE="width: 10%; text-autospace: none">&nbsp;</TD>
+    <TD STYLE="width: 10%; text-autospace: none">Vote</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="text-autospace: none">&nbsp;</TD>
+    <TD STYLE="text-autospace: none">&nbsp;</TD>
+    <TD STYLE="text-autospace: none">Proponent</TD>
+    <TD STYLE="text-autospace: none">Mgmt Rec</TD>
+    <TD STYLE="text-autospace: none">Instruction</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="text-autospace: none">&nbsp;</TD>
+    <TD STYLE="text-autospace: none">&nbsp;</TD>
+    <TD STYLE="text-autospace: none">&nbsp;</TD>
+    <TD STYLE="text-autospace: none">&nbsp;</TD>
+    <TD STYLE="text-autospace: none">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="text-autospace: none">1</TD>
+    <TD STYLE="text-autospace: none">Accept Financial Statements and Statutory Reports</TD>
+    <TD STYLE="text-autospace: none">Mgmt</TD>
+    <TD STYLE="text-autospace: none">For</TD>
+    <TD STYLE="text-autospace: none">For</TD></TR>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

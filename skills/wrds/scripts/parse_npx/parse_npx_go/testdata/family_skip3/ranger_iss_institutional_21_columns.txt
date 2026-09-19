@@ -1,0 +1,75 @@
+<ACCEPTANCE-DATETIME>20200831162527
+ACCESSION NUMBER:		0001162044-20-000929
+CONFORMED SUBMISSION TYPE:	N-PX
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			RANGER FUNDS INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0001524348
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001524348
+<SERIES-ID>S000033849
+<SERIES-NAME>RANGER SMALL CAP FUND
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>rangernpx202008.htm
+<TEXT>
+<TABLE borderColor=#97313e cellSpacing=1 width="95%" bgColor=#97313e border=0>
+  <TR><BR>
+    <TD width="2%"></TD>
+    <TD width="123%"><FONT face=verdana,sans-serif color=white
+      size=2>Ranger Small Cap Fund</FONT></TD></TR></BODY></TABLE><BR><BR><BR>
+<TABLE style="margin-top:0px; font-size:10pt" cellpadding=0 cellspacing=0><TR height=0 style="font-size:0"><TD width=73.333 /><TD width=141.4 /><TD width=130.067 /><TD width=73.333 /><TD width=220.8 /><TD width=73.333 /><TD width=86.733 /><TD width=97.133 /><TD width=77.8 /><TD width=73.333 /><TD width=73.333 /><TD width=73.333 /><TD width=73.333 /><TD width=84.467 /><TD width=73.333 /><TD width=73.333 /><TD width=496.933 /><TD width=91.733 /><TD width=8.533 /><TD width=8.533 /><TD width=8.533 /></TR>
+<TR><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Location ID</B></P>
+</TD><TD style="margin-top:0px" valign=top width=141.4><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Location Name</B></P>
+</TD><TD style="margin-top:0px" valign=top width=130.067><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Institutional Account Name</B></P>
+</TD><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Custodian</B></P>
+</TD><TD style="margin-top:0px" valign=top width=220.8><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Company Name</B></P>
+</TD><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Ticker</B></P>
+</TD><TD style="margin-top:0px" valign=top width=86.733><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Country</B></P>
+</TD><TD style="margin-top:0px" valign=top width=97.133><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Primary Security ID</B></P>
+</TD><TD style="margin-top:0px" valign=top width=77.8><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Provider Security ID</B></P>
+</TD><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Meeting Type</B></P>
+</TD><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Meeting Date</B></P>
+</TD><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Record Date</B></P>
+</TD><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Shares Voted</B></P>
+</TD><TD style="margin-top:0px" valign=top width=84.467><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Proponent</B></P>
+</TD><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Votable Proposal </B></P>
+</TD><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Proposal Number</B></P>
+</TD><TD style="margin-top:0px" valign=top width=496.933><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Proposal Text</B></P>
+</TD><TD style="margin-top:0px" valign=top width=91.733><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Management Recommendation</B></P>
+</TD><TD style="margin-top:0px" valign=top width=8.533><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Vote Instruction</B></P>
+</TD><TD style="margin-top:0px" valign=top width=8.533><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Voted</B></P>
+</TD><TD style="margin-top:0px" valign=top width=8.533><P style="margin:0px; font-family:Arial; font-size:9pt"><B>Vote Against Management</B></P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt">4292 </P>
+</TD><TD style="margin-top:0px" valign=top width=141.4><P style="margin:0px; font-family:Arial; font-size:9pt">RANGER INVESTMENTS</P>
+</TD><TD style="margin-top:0px" valign=top width=130.067><P style="margin:0px; font-family:Arial; font-size:9pt">Ranger Small Cap Fund</P>
+</TD><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt">U.S. BANK</P>
+</TD><TD style="margin-top:0px" valign=top width=220.8><P style="margin:0px; font-family:Arial; font-size:9pt">Skyline Champion Corporation</P>
+</TD><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt">SKY</P>
+</TD><TD style="margin-top:0px" valign=top width=86.733><P style="margin:0px; font-family:Arial; font-size:9pt">USA</P>
+</TD><TD style="margin-top:0px" valign=top width=97.133><P style="margin:0px; font-family:Arial; font-size:9pt">830830105</P>
+</TD><TD style="margin-top:0px" valign=top width=77.8><P style="margin:0px; font-family:Arial; font-size:9pt">830830105</P>
+</TD><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt">Annual</P>
+</TD><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt">&nbsp;30-Jul-19</P>
+</TD><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt">&nbsp;05-Jun-19</P>
+</TD><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt">23,217</P>
+</TD><TD style="margin-top:0px" valign=top width=84.467><P style="margin:0px; font-family:Arial; font-size:9pt">Management</P>
+</TD><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt">Yes</P>
+</TD><TD style="margin-top:0px" valign=top width=73.333><P style="margin:0px; font-family:Arial; font-size:9pt">1.1</P>
+</TD><TD style="margin-top:0px" valign=top width=496.933><P style="margin:0px; font-family:Arial; font-size:9pt">Elect Director Keith Anderson</P>
+</TD><TD style="margin-top:0px" valign=top width=91.733><P style="margin:0px; font-family:Arial; font-size:9pt">For</P>
+</TD><TD style="margin-top:0px" valign=top width=8.533><P style="margin:0px; font-family:Arial; font-size:9pt">For</P>
+</TD><TD style="margin-top:0px" valign=top width=8.533><P style="margin:0px; font-family:Arial; font-size:9pt">Yes</P>
+</TD><TD style="margin-top:0px" valign=top width=8.533><P style="margin:0px; font-family:Arial; font-size:9pt">No</P>
+</TD></TR>
+signature.</P></body></html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

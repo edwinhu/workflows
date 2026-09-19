@@ -1,0 +1,49 @@
+<ACCEPTANCE-DATETIME>20060831153923
+ACCESSION NUMBER:		0000893759-06-000009
+CONFORMED SUBMISSION TYPE:	N-PX
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			GARDNER LEWIS INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000893759
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000893759
+<SERIES-ID>S000010424
+<SERIES-NAME>The Chesapeake Aggressive Growth Fund
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx0606.txt
+<DESCRIPTION>GARDNER LEWIS INVESTMENT TRUST
+<TEXT>
+<PAGE>
+ITEM 1. PROXY VOTING RECORDS
+
+                                  THE CHESAPEAKE AGGRESSIVE GROWTH FUND
+                                  -------------------------------------
+<TABLE>
+<S>                        <C>                                  <C>                      <C>
+
+Account -  CHESAPEAKE AGGRESSIVE GROWTH FUND, THE
+
+- ------------------------------------------------------------------------------------------------------------------------------------
+CENTENE CORPORATION                                             Ticker:  CNC             Special Meeting Date: 07/22/2005
+Issuer: 15135B             City:                                                         Holdings Reconciliation Date: 06/09/2005
+ISIN:                      Country: UNITED STATES                                        Vote Deadline Date: 07/21/2005
+Currency Code:             Par Value:
+SEDOL:
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: GLOBAL
+Agenda: 932372232 -MANAGEMENT
+
+     Proposal Number             Vote Cast           RV     Proposal
+- ------------------------------------------------------------------------------------------------------------------------------------
+            01                      For              For    AMEND INCENTIVE STOCK OPTION PLAN
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
