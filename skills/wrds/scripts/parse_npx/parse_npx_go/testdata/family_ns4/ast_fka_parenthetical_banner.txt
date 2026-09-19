@@ -1,0 +1,66 @@
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ADVANCED SERIES TRUST
+		CENTRAL INDEX KEY:			0000814679
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000814679
+<SERIES-ID>S000001976
+<SERIES-NAME>AST J.P. MORGAN INTERNATIONAL EQUITY PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000005186
+<CLASS-CONTRACT-NAME>AST J.P. MORGAN INTERNATIONAL EQUITY PORTFOLIO
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000814679
+<SERIES-ID>S000002009
+<SERIES-NAME>AST J.P. MORGAN TACTICAL PRESERVATION PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000005219
+<CLASS-CONTRACT-NAME>AST J.P. MORGAN TACTICAL PRESERVATION PORTFOLIO
+</CLASS-CONTRACT>
+</SERIES>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>f9555d1.txt
+<DESCRIPTION>AST N-PX
+<TEXT>
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-05186
+Reporting Period: 07/01/2020 - 06/30/2021
+Advanced Series Trust
+
+=========   AST JP Morgan Tactical Preservation Portfolio (FKA AST    ==========
+========= Goldman Sachs Multi Asset Portfolio) - Subadviser: Goldman  ==========
+=========                Sachs Asset Management, L.P.                 ==========
+
+
+A. O. SMITH CORPORATION
+
+Ticker:       AOS            Security ID:  831865209
+Meeting Date: APR 13, 2021   Meeting Type: Annual
+Record Date:  FEB 16, 2021
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Ronald D. Brown          For       For          Management
+1.2   Elect Director Ilham Kadri              For       For          Management
+1.3   Elect Director Idelle K. Wolf           For       For          Management
+1.4   Elect Director Gene C. Wulf             For       For          Management
+
+
+========== END NPX REPORT
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
