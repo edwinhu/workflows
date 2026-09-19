@@ -82,6 +82,13 @@ var layoutRegistry = []layoutEntry{
 		Name:     "votesummary",
 		Match:    matchVoteSummary,
 		ParseRaw: parseVoteSummaryRaw,
+		// The report's stacked header can sit behind a holdings cover: in
+		// Principal Variable Contracts Fund 2005 `Ballot Issues` first occurs at
+		// byte 2,161,971 of the normalized text, past signatureHeadBytes, and
+		// the matcher never saw the only line it tests for. Measured on the two
+		// filings, the parser reads 5,688 rows out of each once it does. 16 MB
+		// is what the sibling text layouts use.
+		HeadBytes: 16 << 20,
 	},
 	// htmltable follows every named layout: it is the generic fallback for the
 	// unclaimed HTML-table residue, and it offers itself to every body the named
