@@ -68,12 +68,17 @@ var spRoles = map[string]string{
 	"ITEM NUMBER":                spItem,
 	"PROPOSAL TEXT":              spDescription,
 	"PROPOSAL":                   spDescription,
-	"PROPOSAL CODE CATEGORY":     spCategory,
-	"MANAGEMENT RECOMMENDATION":  spMgmtRec,
-	"VOTE INSTRUCTION":           spVote,
-	"VOTING INSTRUCTION":         spVote,
-	"VOTE CAST":                  spVote,
-	"HOW VOTED":                  spVote,
+	// The ProxyEdge text report's name for the proponent column, which holds
+	// `Management` or `Shareholder`. Its neighbour `Against Mgmt.` stays
+	// deliberately unmapped: the schema has no with/against-management field,
+	// and filing a Yes/No into a vote field would be worse than dropping it.
+	"PROPOSAL TYPE":             spProponent,
+	"PROPOSAL CODE CATEGORY":    spCategory,
+	"MANAGEMENT RECOMMENDATION": spMgmtRec,
+	"VOTE INSTRUCTION":          spVote,
+	"VOTING INSTRUCTION":        spVote,
+	"VOTE CAST":                 spVote,
+	"HOW VOTED":                 spVote,
 }
 
 const (
@@ -117,7 +122,21 @@ func init() {
 	layoutRegistry = append(layoutRegistry, entry)
 }
 
-func matchSplitTable(head string) bool { return containsAnyFolded(head, spSignatures) }
+// spProxyEdgeBanner is the second signature of this family: Broadridge's
+// fixed-width "Investment Company Report", the plain-text sibling of the HTML
+// ProxyEdge grid layout_proxyedge.go reads. It prints neither of the
+// institutional-account headings, so it needs its own banner; both words are
+// required, since `ProxyEdge` alone also heads the HTML grid.
+var spProxyEdgeBanner = []string{"proxyedge -"}
+
+func spIsProxyEdgeText(text string) bool {
+	return containsAnyFolded(text, spProxyEdgeBanner) &&
+		containsAnyFolded(text, []string{"investment company report"})
+}
+
+func matchSplitTable(head string) bool {
+	return containsAnyFolded(head, spSignatures) || spIsProxyEdgeText(head)
+}
 
 // spSpan is one column as the table's own rule line draws it.
 type spSpan struct{ start, end int }
@@ -146,6 +165,7 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 		ctx       spContext
 		groupCtx  spContext
 		lastBare  string
+		proxyEdge = spIsProxyEdgeText(string(raw))
 	)
 
 	flush := func() {
@@ -211,7 +231,26 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 				cur.spans = spans
 				cur.labels = spLabels(header, spans)
 				haveRule = true
-			} else if len(trimmed) > 0 && !bytes.EqualFold(trimmed, []byte("<CAPTION>")) {
+			} else if proxyEdge && spIsPlainRule(line) {
+				// This vendor draws one unbroken rule rather than one dash run
+				// per column, so there is nothing to cut on. The stacked column
+				// labels immediately above it are: their own text runs, merged
+				// where they overlap, are the columns.
+				block := spTrailingBlock(header)
+				if spans := spHeaderSpans(block); spans != nil {
+					if labels := spLabels(block, spans); spHasVote(labels) {
+						cur.spans, cur.labels = spans, labels
+						haveRule = true
+						continue
+					}
+				}
+				header = append(header, line)
+			} else if bytes.EqualFold(trimmed, []byte("<CAPTION>")) {
+				// furniture
+			} else {
+				if proxyEdge {
+					spReadProxyEdgeHeading(line, &ctx, &groupCtx)
+				}
 				header = append(header, line)
 			}
 			continue
@@ -280,6 +319,7 @@ type spContext struct {
 	ticker  string
 	cusip   string
 	mtgDate string
+	mtgType string
 }
 
 // spReadContext folds one out-of-table line into the running context and returns
@@ -306,9 +346,152 @@ func spReadContext(line string, ctx *spContext, lastBare string) string {
 			ctx.mtgDate = htmlDate(p.value)
 		case strings.HasPrefix(p.label, "SECURITY ID"):
 			ctx.cusip = p.value
+		case p.label == "SELECTED ACCOUNTS":
+			// The ProxyEdge text report names the account this page belongs to
+			// in its banner, above every meeting on the page.
+			ctx.fund = p.value
 		}
 	}
 	return lastBare
+}
+
+// spIsPlainRule recognises the single unbroken dashed rule the ProxyEdge text
+// report draws, which spRuleSpans rejects because it cuts no columns.
+func spIsPlainRule(line string) bool {
+	t := strings.TrimSpace(line)
+	return strings.Contains(t, "----") && strings.Trim(t, "- ") == ""
+}
+
+// spTrailingBlock returns the run of non-blank header lines nearest the rule --
+// the column labels themselves, parted from the block heading above them by the
+// blank line the vendor prints between the two.
+func spTrailingBlock(header []string) []string {
+	end := len(header)
+	for end > 0 && strings.TrimSpace(header[end-1]) == "" {
+		end--
+	}
+	start := end
+	for start > 0 && strings.TrimSpace(header[start-1]) != "" {
+		start--
+	}
+	return header[start:end]
+}
+
+// spHeaderSpans cuts columns from the label lines themselves: each line's runs
+// of text, merged across lines wherever they overlap. A label stacked over two
+// lines (`Vote` over `Cast`) merges into one span; two labels side by side stay
+// apart, because the gap the vendor lays out between columns is wider than any
+// word.
+func spHeaderSpans(block []string) []spSpan {
+	var spans []spSpan
+	for _, line := range block {
+		for _, r := range spTextRuns(line) {
+			merged := false
+			for i := range spans {
+				if r.start < spans[i].end && spans[i].start < r.end {
+					if r.start < spans[i].start {
+						spans[i].start = r.start
+					}
+					if r.end > spans[i].end {
+						spans[i].end = r.end
+					}
+					merged = true
+					break
+				}
+			}
+			if !merged {
+				spans = append(spans, r)
+			}
+		}
+	}
+	if len(spans) < 2 {
+		return nil
+	}
+	for i := 1; i < len(spans); i++ {
+		s := spans[i]
+		j := i - 1
+		for ; j >= 0 && spans[j].start > s.start; j-- {
+			spans[j+1] = spans[j]
+		}
+		spans[j+1] = s
+	}
+	for i := 1; i < len(spans); i++ {
+		if spans[i].start < spans[i-1].end {
+			return nil
+		}
+	}
+	return spans
+}
+
+// spTextRuns returns the byte spans of one line's text, split on runs of two or
+// more spaces -- the same cut spFields makes.
+func spTextRuns(line string) []spSpan {
+	var out []spSpan
+	for i := 0; i < len(line); {
+		if line[i] == ' ' || line[i] == '\t' {
+			i++
+			continue
+		}
+		start, gap, end := i, 0, i
+		for ; i < len(line); i++ {
+			if line[i] == ' ' || line[i] == '\t' {
+				gap++
+				if gap >= 2 {
+					break
+				}
+				continue
+			}
+			gap = 0
+			end = i + 1
+		}
+		out = append(out, spSpan{start, end})
+	}
+	return out
+}
+
+func spHasVote(labels []string) bool {
+	for _, l := range labels {
+		if spRoles[l] == spVote {
+			return true
+		}
+	}
+	return false
+}
+
+// spReadProxyEdgeHeading reads the block identity the ProxyEdge text report
+// prints between its two rules: the issuer at column 0, its ticker to the
+// right, and `<type> Meeting Date: <date>` last. Only the line carrying the
+// meeting date is a heading; the security-id and SEDOL lines below it are
+// label:value pairs the schema has no full CUSIP for, and a six-character
+// issuer number is not a link key.
+func spReadProxyEdgeHeading(line string, ctx, groupCtx *spContext) {
+	cells := icrCells(strings.TrimSpace(line))
+	if len(cells) < 2 || !strings.Contains(cells[len(cells)-1], "Meeting Date:") {
+		return
+	}
+	issuer := strings.TrimSpace(cells[0])
+	if issuer == "" || strings.Contains(issuer, ":") {
+		return
+	}
+	ctx.issuer, ctx.ticker, ctx.cusip, ctx.mtgDate = issuer, "", "", ""
+	tail := cells[len(cells)-1]
+	i := strings.Index(tail, "Meeting Date:")
+	ctx.mtgDate = htmlDate(strings.TrimSpace(tail[i+len("Meeting Date:"):]))
+	if mt := strings.TrimSpace(tail[:i]); mt != "" {
+		ctx.mtgType = mt
+	}
+	if len(cells) > 2 {
+		if t := strings.TrimSpace(cells[1]); t != "" && !strings.Contains(t, ":") {
+			ctx.ticker = t
+		}
+	}
+	fund := groupCtx.fund
+	if fund == "" {
+		fund = ctx.fund
+	}
+	*groupCtx = *ctx
+	groupCtx.fund = fund
+	ctx.fund = fund
 }
 
 // spGroupRows joins one page group's parallel tables into votes.
@@ -423,6 +606,9 @@ func spGroupRows(group []spTable, seriesIdx map[string]*SeriesDecl, resolved map
 		}
 		if row.MeetingDate == "" {
 			row.MeetingDate = ctx.mtgDate
+		}
+		if row.MeetingType == "" {
+			row.MeetingType = ctx.mtgType
 		}
 		// A row with no vote in the vote cell is table furniture -- a spacer or a
 		// subtotal -- and emitting it would record a vote the filing never cast.

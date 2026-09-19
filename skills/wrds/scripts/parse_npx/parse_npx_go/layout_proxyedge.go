@@ -38,6 +38,11 @@ var peVocabulary = map[string]string{
 	"PROPONENT":      peBy,
 	"VOTE":           peVote,
 	"VOTE CAST":      peVote,
+	// The broker's standing instruction on this ballot -- what would have been
+	// cast absent one. It is neither the management recommendation nor the
+	// fund's ballot, so it has a role of its own and peVoteRow reads it into no
+	// field (Cullen Funds Trust 2017 and the vendor's later template).
+	"DEFAULT VOTE": peDefault,
 	// The ballot dispositions. Each is a share-count column and its label is
 	// what how_voted carries when the count is non-zero.
 	"FOR":              peDisposition,
@@ -58,6 +63,7 @@ const (
 	peMgmtRec     = "mgmtrec"
 	peBy          = "by"
 	peVote        = "vote"
+	peDefault     = "default"
 	peDisposition = "disposition"
 )
 
@@ -89,39 +95,79 @@ func peNonBlank(text string) []string {
 	return out
 }
 
-// peHeaderAt returns the roles of the header band starting at i, or nil when
-// there is none there. The band must open on the item column, name what was
-// voted on, and carry at least two disposition columns -- one alone could be a
-// tally rather than a ballot.
-func peHeaderAt(lines []string, i int) []string {
+// peHeader is one header band: its labels, one per logical column, and the
+// number of physical lines they were read from. The two differ when the vendor
+// wrapped a label across two cells.
+type peHeader struct {
+	labels   []string
+	consumed int
+}
+
+// peHeaderAt returns the header band starting at i, or nil when there is none
+// there. The band must open on the item column, name what was voted on, and
+// carry at least two disposition columns -- one alone could be a tally rather
+// than a ballot.
+func peHeaderAt(lines []string, i int) *peHeader {
 	if role, ok := peVocabulary[strings.ToUpper(lines[i])]; !ok || role != peItem {
 		return nil
 	}
-	var roles []string
-	desc, dispositions := false, 0
+	h := &peHeader{}
 	for k := i; k < len(lines); k++ {
-		role, ok := peVocabulary[strings.ToUpper(lines[k])]
-		if !ok {
-			break
+		if _, ok := peVocabulary[strings.ToUpper(lines[k])]; ok {
+			h.labels = append(h.labels, lines[k])
+			h.consumed++
+			continue
 		}
-		if role == peDesc {
+		// Some filers wrap one label onto two cells (`Take No` / `Action`,
+		// `Default` / `Vote`), which otherwise cuts the band short of the
+		// disposition columns. A line outside the vocabulary is one such half
+		// when joining it to the next line lands inside it.
+		if k+1 < len(lines) {
+			joined := lines[k] + " " + lines[k+1]
+			if _, ok := peVocabulary[strings.ToUpper(joined)]; ok {
+				h.labels = append(h.labels, joined)
+				h.consumed += 2
+				k++
+				continue
+			}
+		}
+		break
+	}
+	desc, dispositions := false, 0
+	for _, lab := range h.labels {
+		switch peVocabulary[strings.ToUpper(lab)] {
+		case peDesc:
 			desc = true
-		}
-		if role == peDisposition {
+		case peDisposition:
 			dispositions++
 		}
-		roles = append(roles, role)
 	}
 	if !desc || dispositions < 2 {
 		return nil
 	}
-	return roles
+	return h
 }
 
+// matchProxyEdge requires BOTH halves of this vendor's grammar: the ballot
+// header band, and the identity block it prints one label per line above it.
+// The band alone is not enough. `Item | Proposal | Recommendation | Default
+// Vote | For | Against | Abstain | Take No Action` is also how a filer lays out
+// a plain HTML tally table whose share counts belong to no ballot of the
+// fund's, and reading the heading of the column carrying the count as the vote
+// would be inventing one there. The label-per-line identity block -- `Ticker:`,
+// `Security:`, `Meeting Date:` each alone on their own cell -- is what says the
+// counts under those headings are this ballot's.
 func matchProxyEdge(head string) bool {
 	lines := peNonBlank(head)
+	band, identity := false, false
 	for i := range lines {
-		if peHeaderAt(lines, i) != nil {
+		if !band && peHeaderAt(lines, i) != nil {
+			band = true
+		}
+		if !identity && peIdentityLabel(lines[i]) {
+			identity = true
+		}
+		if band && identity {
 			return true
 		}
 	}
@@ -156,6 +202,19 @@ func peFundName(s string) bool {
 	return false
 }
 
+// peIdentityLabel reports a line that opens a ballot's identity block.
+func peIdentityLabel(line string) bool {
+	if !strings.HasSuffix(line, ":") {
+		return false
+	}
+	switch strings.ToUpper(strings.TrimSuffix(line, ":")) {
+	case "TICKER", "SECURITY", "SECURITY ID", "SECURITY ID ON BALLOT", "ISIN",
+		"MEETING DATE", "MEETING TYPE":
+		return true
+	}
+	return false
+}
+
 func parseProxyEdge(text string, meta FilingMeta) ([]VoteRow, error) {
 	lines := peNonBlank(text)
 	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
@@ -177,9 +236,9 @@ func parseProxyEdge(text string, meta FilingMeta) ([]VoteRow, error) {
 
 	for i := 0; i < len(lines); i++ {
 		line := lines[i]
-		if roles := peHeaderAt(lines, i); roles != nil {
-			labels = lines[i : i+len(roles)]
-			i += len(roles) - 1
+		if h := peHeaderAt(lines, i); h != nil {
+			labels = h.labels
+			i += h.consumed - 1
 			continue
 		}
 		// A label on its own line, its value on the next. A label whose next
@@ -236,8 +295,15 @@ func parseProxyEdge(text string, meta FilingMeta) ([]VoteRow, error) {
 			}
 			continue
 		}
-		issuer = line
-		ticker, cusip, isin, mtgDate, mtgType = "", "", "", "", ""
+		// The issuer heading is the bare line standing above the ballot's
+		// identity block. Requiring that block to follow is what tells it from
+		// the other bare cells this template prints between ballots -- the
+		// agenda number, its proponent, the meeting date range -- each of which
+		// would otherwise be taken for a new issuer and wipe the identity.
+		if i+1 < len(lines) && peIdentityLabel(lines[i+1]) {
+			issuer = line
+			ticker, cusip, isin, mtgDate, mtgType = "", "", "", "", ""
+		}
 	}
 
 	if len(rows) == 0 {

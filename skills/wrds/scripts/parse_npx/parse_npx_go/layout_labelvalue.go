@@ -68,13 +68,51 @@ func lvColumnHeader(cells []string) bool {
 	return haveProposal && haveVote
 }
 
-func matchLabelValue(head string) bool {
-	for _, line := range strings.Split(head, "\n") {
+func lvHasHeaderLine(text string) bool {
+	for _, line := range strings.Split(text, "\n") {
 		if lvColumnHeader(icrCells(strings.TrimSpace(line))) {
 			return true
 		}
 	}
 	return false
+}
+
+// lvUnwrap rejoins a report whose filer hard-wrapped each logical line inside
+// its own <div>. stripHTML leaves exactly one blank line between <div>s and
+// none inside one, so a RUN of consecutive non-blank lines IS one logical line
+// of the report; joining the run with a single space reconstructs it, column
+// gaps and all, and every predicate below then reads it unchanged.
+func lvUnwrap(text string) string {
+	var out []string
+	var run []string
+	flush := func() {
+		if len(run) > 0 {
+			out = append(out, strings.Join(run, " "))
+			run = run[:0]
+		}
+	}
+	for _, line := range strings.Split(text, "\n") {
+		if t := strings.TrimSpace(line); t != "" {
+			run = append(run, t)
+			continue
+		}
+		flush()
+		out = append(out, "")
+	}
+	flush()
+	return strings.Join(out, "\n")
+}
+
+// lvWrapped reports a document none of whose physical lines is the column
+// header but whose unwrapping has one. Unwrapping is applied only then: in
+// every other filing of this family a run of consecutive non-blank lines is a
+// run of separate rows, and joining them would destroy the table.
+func lvWrapped(text string) bool {
+	return !lvHasHeaderLine(text) && lvHasHeaderLine(lvUnwrap(text))
+}
+
+func matchLabelValue(head string) bool {
+	return lvHasHeaderLine(head) || lvWrapped(head)
 }
 
 // lvLabelled reads a `Label: value` pair out of a cell, returning the label
@@ -160,6 +198,9 @@ func lvResolveBanner(ix *issSeriesIndex, dict *dictFallback, name string) string
 }
 
 func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
+	if lvWrapped(text) {
+		text = lvUnwrap(text)
+	}
 	lines := strings.Split(text, "\n")
 	sharedIdx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
 	dict := cikDict.exactFallback(meta)

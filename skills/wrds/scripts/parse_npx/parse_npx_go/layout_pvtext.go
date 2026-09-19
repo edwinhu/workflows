@@ -68,7 +68,7 @@ func init() {
 func matchPVText(head string) bool {
 	lines := strings.Split(head, "\n")
 	for i := 0; i+1 < len(lines); i++ {
-		if pvTextHeaderAt(lines, i) {
+		if pvTextHeaderAt(lines, i) || pvSEIHeaderAt(lines, i) {
 			return true
 		}
 	}
@@ -77,6 +77,9 @@ func matchPVText(head string) bool {
 
 func parsePVText(text string, meta FilingMeta) ([]VoteRow, error) {
 	lines := strings.Split(text, "\n")
+	if rows := parsePVTextSEI(lines, meta); len(rows) > 0 {
+		return rows, nil
+	}
 	// The Account Number heading resolves against the declared (or dictionary)
 	// series under the shared rules, as in every other layout.
 	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
@@ -1014,4 +1017,178 @@ func pvTextBlankBetween(lines []string, a, b int) bool {
 		}
 	}
 	return true
+}
+
+// -- The SEI Institutional rendering -------------------------------------
+//
+// pvtext's second shape, and the largest coherent family left unread on
+// 2026-09-19: 144 of the 997 large skipped filings, 246 MB, every one filed
+// through agent 0001135428. It is the same two-part grammar -- an identity
+// block, then a fixed-width proposal table -- with a header the vendor spells
+// differently and GLUES TOGETHER:
+//
+//	                          CORE FIXED INCOME FUND
+//	 PROPOSAL                        PROPOSED BY MGT. POSITION     REGISTRANT VOTED
+//	<S>                                   <C>         <C>               <C>
+//	EVERGREEN FUNDS
+//	 CUSIP: 300250602
+//	 Meeting Date: 3/12/2009  Meeting Type: Special
+//	 1. Approve Investment Advisory Agreement   Management   For   Voted - For
+//
+// The header's four labels are PROPOSAL, PROPOSED BY, MGT. POSITION and
+// REGISTRANT VOTED, and the last three are separated by a SINGLE space -- on
+// most pages all three are glued -- so a gap split of the header yields two or
+// three cells however it is cut. The `<S> <C> <C> <C>` alignment line is what
+// says there are four columns; the data rows, whose cells the vendor does
+// separate by a real gap, are what says where they are. There is no rule line
+// anywhere in the document.
+//
+// how_voted is `Voted - For` verbatim, as the filing prints it. The management
+// position (`For`) is a separate column and is never read as the vote.
+
+// pvSEIHeaderAt reports the header line at i. The `<S> <C> <C> <C>` alignment
+// line the vendor prints beneath it is NOT available here and cannot be the
+// column witness: stripHTML deletes every SGML tag, so by the time the text
+// reaches a Parse layout the alignment line is gone entirely. What survives is
+// the two-space gap collapseSpaces preserves, which is exactly the cut the DATA
+// rows are laid out on -- four cells, however the header itself is glued. The
+// header phrase is the signature; the row arity is the column count.
+func pvSEIHeaderAt(lines []string, i int) bool {
+	return pvSEIHeaderLine(lines[i])
+}
+
+func pvSEIHeaderLine(line string) bool {
+	cells := icrCells(strings.TrimSpace(line))
+	if len(cells) < 2 || strings.ToUpper(cells[0]) != "PROPOSAL" {
+		return false
+	}
+	rest := strings.ToUpper(strings.Join(cells[1:], " "))
+	return strings.Contains(rest, "PROPOSED BY") &&
+		strings.Contains(rest, "MGT. POSITION") &&
+		strings.Contains(rest, "REGISTRANT VOTED")
+}
+
+// pvSEIItemPrefix splits a leading item number off the proposal cell, returning
+// the number and the description. A cell with no such prefix is not a vote row.
+func pvSEIItemPrefix(cell string) (string, string, bool) {
+	fields := strings.Fields(cell)
+	if len(fields) < 2 {
+		return "", "", false
+	}
+	item := strings.TrimSuffix(fields[0], ".")
+	if item == fields[0] || item == "" || len(item) > 6 {
+		return "", "", false
+	}
+	digit := false
+	for i := 0; i < len(item); i++ {
+		switch {
+		case item[i] >= '0' && item[i] <= '9':
+			digit = true
+		case item[i] >= 'a' && item[i] <= 'z', item[i] >= 'A' && item[i] <= 'Z', item[i] == '.':
+		default:
+			return "", "", false
+		}
+	}
+	if !digit {
+		return "", "", false
+	}
+	return item, strings.Join(fields[1:], " "), true
+}
+
+func parsePVTextSEI(lines []string, meta FilingMeta) []VoteRow {
+	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	issFormerKeys(seriesIx, meta.FormerNames)
+	dict := cikDict.exactFallback(meta)
+
+	var (
+		rows       []VoteRow
+		fund       string
+		fundSeries string
+		issuer     string
+		ticker     string
+		cusip      string
+		mtgDate    string
+		mtgType    string
+		inTable    bool
+	)
+
+	for i := 0; i < len(lines); i++ {
+		line := strings.TrimSpace(lines[i])
+		if pvSEIHeaderAt(lines, i) {
+			// The fund is the page heading printed directly above the column
+			// header, on its own line. A line with columns on it is the tail of
+			// the previous page's table, not a heading, and leaves the fund as
+			// it was.
+			for k := i - 1; k >= 0; k-- {
+				prev := strings.TrimSpace(lines[k])
+				if prev == "" || pvTextPageFurniture(prev) {
+					continue
+				}
+				if len(icrCells(prev)) == 1 && !strings.Contains(prev, ":") {
+					if prev != fund {
+						fund = prev
+						fundSeries = icrResolveFundShared(seriesIx, prev)
+						if fundSeries == "" {
+							fundSeries = htmlDictionaryFund(seriesIx, dict, prev)
+						}
+					}
+				}
+				break
+			}
+			inTable = true
+			continue
+		}
+		if !inTable || line == "" || pvTextPageFurniture(line) {
+			continue
+		}
+		cells := icrCells(line)
+		if pairs := lvPairs(cells); len(pairs) > 0 {
+			for _, p := range pairs {
+				switch p.label {
+				case "CUSIP":
+					cusip = p.value
+				case "TICKER":
+					ticker = p.value
+				case "MEETING DATE":
+					mtgDate = htmlDate(p.value)
+				case "MEETING TYPE":
+					mtgType = p.value
+				}
+			}
+			continue
+		}
+		if len(cells) >= 4 {
+			item, desc, ok := pvSEIItemPrefix(cells[0])
+			if !ok {
+				continue
+			}
+			n := len(cells)
+			if n > 4 {
+				desc = strings.TrimSpace(desc + " " + strings.Join(cells[1:n-3], " "))
+			}
+			rows = append(rows, VoteRow{
+				FundName:                 fund,
+				SeriesID:                 fundSeries,
+				IssuerName:               issuer,
+				Ticker:                   ticker,
+				CUSIP:                    icrCUSIP(cusip),
+				ISIN:                     icrISIN(cusip),
+				MeetingDate:              mtgDate,
+				MeetingType:              mtgType,
+				ItemSeq:                  item,
+				VoteDescription:          desc,
+				VoteSource:               cells[n-3],
+				ManagementRecommendation: cells[n-2],
+				HowVoted:                 cells[n-1],
+			})
+			continue
+		}
+		if len(cells) == 1 {
+			// A bare line: the issuer heading that opens the next meeting's
+			// identity block. Everything the previous block left is stale.
+			issuer = cells[0]
+			ticker, cusip, mtgDate, mtgType = "", "", "", ""
+		}
+	}
+	return rows
 }
