@@ -300,6 +300,19 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 			lastRow = -1
 			continue
 		}
+		// `Fund Name: <name>` -- the LABELLED fund heading the icr grammar reads
+		// (icrFundNameLabel). This layout had no reader for it, so every row of a
+		// `Fund Name:`-sectioned filing came out fundless and series-less, and
+		// consolidatedSeries (main.go) then joined all 32 declared ids onto every
+		// one of American Beacon 2017's rows. A link key is never guessed: a
+		// heading that resolves to nothing leaves series_id blank.
+		if pairs := lvPairs(cells); len(pairs) == 1 && pairs[0].label == icrFundNameLabel && pairs[0].value != "" {
+			fund = pairs[0].value
+			curSeries = lvResolveBanner(sharedIdx, dict, fund)
+			inBlock = false
+			lastRow = -1
+			continue
+		}
 		// The fund printed on the line ABOVE the report's own title, with no rule
 		// and no label to mark it: Ultra Series Fund heads every page of its
 		// report `ULTRA SERIES INTERNATIONAL STOCK FUND` over `PROXY VOTING

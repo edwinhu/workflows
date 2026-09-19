@@ -249,6 +249,51 @@ func icrItem(s string) bool {
 	return digits
 }
 
+// icrSupplement hands the icr blocks of a MIXED document to the icr reader
+// after another layout has claimed it. The registry is first-match-wins, which
+// is the wrong rule for a body printing two grammars: American Beacon Funds
+// 2017 (0000809593-17-000064) prints 3,223 icr blocks and 191 labelvalue ones
+// under the same `Fund Name:` label, and the 191 decide the filing because
+// labelvalue sits five registry slots ahead of icr. Reordering only inverts the
+// loss on a labelvalue-majority hybrid; reading BOTH grammars loses neither.
+//
+// A block the winner already read is never read again: the dedup key is the
+// (fund, issuer, meeting date) the filing itself prints, so an icr block is read
+// once each and a pure labelvalue/issnpx document whose winner covered every
+// block gains nothing. The FUND is part of the key because one meeting is voted
+// by many funds in these reports -- keying on the meeting alone would suppress
+// every fund's block after the first. matchICR is the gate -- it needs a block
+// header with a resolvable identity line under it -- so a body with no icr
+// grammar in it is never handed to parseICR at all.
+func icrSupplement(rows []VoteRow, text string, meta FilingMeta) []VoteRow {
+	if !matchICR(text) {
+		return rows
+	}
+	extra, err := parseICR(text, meta)
+	if err != nil || len(extra) == 0 {
+		return rows
+	}
+	seen := make(map[[3]string]bool, len(rows))
+	for _, r := range rows {
+		seen[icrSupplementKey(r)] = true
+	}
+	for _, r := range extra {
+		if seen[icrSupplementKey(r)] {
+			continue
+		}
+		rows = append(rows, r)
+	}
+	return rows
+}
+
+func icrSupplementKey(r VoteRow) [3]string {
+	return [3]string{
+		strings.ToUpper(strings.TrimSpace(r.FundName)),
+		strings.ToUpper(strings.TrimSpace(r.IssuerName)),
+		r.MeetingDate,
+	}
+}
+
 func matchICR(head string) bool {
 	lines := strings.Split(head, "\n")
 	for i := 0; i+1 < len(lines); i++ {
