@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/base64"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -795,6 +796,57 @@ func only(set map[string]struct{}) string {
 	return ""
 }
 
+// xmlContentReader is an io.Reader over one element's character data, taken
+// from a decoder already positioned just past that element's start tag. It
+// reports EOF at the matching end tag and leaves the decoder positioned past it.
+type xmlContentReader struct {
+	d     *xml.Decoder
+	name  xml.Name
+	buf   []byte
+	off   int
+	depth int
+	done  bool
+}
+
+func (c *xmlContentReader) Read(p []byte) (int, error) {
+	for c.off >= len(c.buf) {
+		if c.done {
+			return 0, io.EOF
+		}
+		tok, err := c.d.Token()
+		if err != nil {
+			c.done = true
+			return 0, io.EOF
+		}
+		switch t := tok.(type) {
+		case xml.CharData:
+			c.buf, c.off = append(c.buf[:0], t...), 0
+		case xml.StartElement:
+			c.depth++
+		case xml.EndElement:
+			if c.depth == 0 && t.Name == c.name {
+				c.done = true
+				return 0, io.EOF
+			}
+			c.depth--
+		}
+	}
+	n := copy(p, c.buf[c.off:])
+	c.off += n
+	return n, nil
+}
+
+// drain consumes whatever the caller left unread, so the enclosing walk resumes
+// after the element rather than inside it.
+func (c *xmlContentReader) drain() {
+	var sink [4096]byte
+	for !c.done {
+		if _, err := c.Read(sink[:]); err != nil {
+			return
+		}
+	}
+}
+
 // parseVoteTable streams <proxyTable> elements, decoding and releasing each one
 // before the next is read.
 //
@@ -845,7 +897,25 @@ func parseVoteTable(r io.Reader, meta *FilingMeta, classes map[string][]string, 
 			return total + n, ferr
 		}
 		se, ok := tok.(xml.StartElement)
-		if !ok || se.Name.Local != "proxyTable" {
+		if !ok {
+			continue
+		}
+		if se.Name.Local == "contents" {
+			// Some filer agents ship the vote table base64-encoded inside a
+			// <com:contents> element of a nested edgarSubmission rather than as
+			// the payload itself (Vanguard Personalized Indexing Management
+			// 2024, 3,095 records). The encoded bytes are another
+			// proxyVoteTable, so the same walk reads them; streaming the
+			// element's character data through the base64 decoder keeps the
+			// stream-and-release property. A malformed embedded payload ends
+			// that nested walk without sinking the filing.
+			cr := &xmlContentReader{d: d, name: se.Name}
+			n, _ := parseVoteTable(base64.NewDecoder(base64.StdEncoding, cr), meta, classes, reported, emit)
+			total += n
+			cr.drain()
+			continue
+		}
+		if se.Name.Local != "proxyTable" {
 			continue
 		}
 		var rec proxyRecord
