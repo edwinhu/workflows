@@ -188,9 +188,42 @@ func lvReportTitleBelow(lines []string, i int) bool {
 	return false
 }
 
+// lvMarkMarkup are the tags a vendor wraps a service or trade mark in. Their
+// CONTENT is the mark, so the element goes whole.
+var lvMarkMarkup = []string{"sup", "sub"}
+
+// lvStripMarkMarkup drops a mark element that survives ENTITY DECODING from a
+// fund-heading candidate: Wells Fargo escapes its service mark in the source
+// (`Wells Fargo Advantage Opportunity Fund&lt;sup&gt;SM&lt;/sup&gt;`), so the
+// decoder hands this layout a literal `<sup>SM</sup>` that is markup, not part
+// of the name. Narrow to the heading candidate on purpose -- a filing whose
+// escaped angle brackets are content keeps them everywhere else.
+func lvStripMarkMarkup(name string) string {
+	out := name
+	for _, tag := range lvMarkMarkup {
+		open, shut := "<"+tag+">", "</"+tag+">"
+		for {
+			i := strings.Index(out, open)
+			if i < 0 {
+				break
+			}
+			j := strings.Index(out[i:], shut)
+			if j < 0 {
+				break
+			}
+			out = out[:i] + out[i+j+len(shut):]
+		}
+	}
+	if out == name {
+		return name
+	}
+	return strings.TrimSpace(strings.Join(strings.Fields(out), " "))
+}
+
 // lvResolveBanner is the banner-to-series resolution this layout uses: the
 // shared text rules first, then the registrant's dictionary.
 func lvResolveBanner(ix *issSeriesIndex, dict *dictFallback, name string) string {
+	name = lvStripMarkMarkup(name)
 	if id := icrResolveFundShared(ix, name); id != "" {
 		return id
 	}
@@ -262,10 +295,7 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 			// its banners the same way: `PF LAZARD INTERNATIONAL VALUE FUND` names
 			// the fund by its then sub-adviser for a declared `PF International
 			// Value Fund` (S000001888, Pacific Funds 2006, 498 rows).
-			curSeries = icrResolveFundShared(sharedIdx, name)
-			if curSeries == "" {
-				curSeries = htmlDictionaryFund(sharedIdx, dict, name)
-			}
+			curSeries = lvResolveBanner(sharedIdx, dict, name)
 			inBlock = false
 			lastRow = -1
 			continue

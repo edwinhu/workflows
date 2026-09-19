@@ -174,7 +174,19 @@ func (s *spIndex) resolve(name string) string {
 	if id := icrResolveFundShared(s.ix, name); id != "" {
 		return id
 	}
-	return htmlDictionaryFund(s.ix, s.dict, name)
+	if id := htmlDictionaryFund(s.ix, s.dict, name); id != "" {
+		return id
+	}
+	// A trailing parenthetical on an institutional account name is the SLEEVE --
+	// the mandate a sub-adviser runs inside the portfolio -- not part of the
+	// series name: `HC Capital Trust - The Small Capitalization Equity Portfolio
+	// (Russell 2000 Passive Growth Sleeve)` is S000009380, the portfolio. Retried
+	// only when the verbatim name resolves to nothing, and only through the
+	// dictionary's exact rungs, never the leading-token walk.
+	if head, cut := issCutTrailingParenthetical(name); cut && head != "" && head != name {
+		return htmlDictionaryFund(s.ix, s.dict, head)
+	}
+	return ""
 }
 
 func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
