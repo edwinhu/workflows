@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"hash/fnv"
@@ -343,6 +344,69 @@ func hasVanguardColumnHeader(head string) bool {
 	return false
 }
 
+// dropUuencodedBlocks removes uuencoded binary attachments from a dissemination
+// file. A filing may carry its report a second time as a `<PDF>` document whose
+// body is a uuencode block (`begin 644 a.pdf` … `end`); its payload uses `<` and
+// `>` as ordinary data bytes, so stripHTML reads a payload `<` as a tag open and
+// deletes everything through the next `>`, newlines included, welding hundreds
+// of 61-byte lines into one pseudo-line up to a quarter of a megabyte long. No
+// layout can read those bytes, and every downstream rule that is superlinear in
+// line length then runs on them.
+//
+// The block is bounded exactly as uuencode defines it — a `begin <mode> <name>`
+// line through the next line that is `end` alone — so nothing a layout reads is
+// touched; an unterminated block is dropped to the end of the body, which is
+// what an EOF-truncated attachment is.
+func dropUuencodedBlocks(decoded []byte) []byte {
+	if !bytes.Contains(decoded, []byte("\nbegin ")) && !bytes.HasPrefix(decoded, []byte("begin ")) {
+		return decoded
+	}
+	out := make([]byte, 0, len(decoded))
+	rest := decoded
+	dropping := false
+	for len(rest) > 0 {
+		line := rest
+		next := rest[:0]
+		if i := bytes.IndexByte(rest, '\n'); i >= 0 {
+			line, next = rest[:i+1], rest[i+1:]
+		} else {
+			next = nil
+		}
+		rest = next
+		trimmed := strings.TrimRight(string(line), "\r\n")
+		if dropping {
+			if strings.TrimSpace(trimmed) == "end" {
+				dropping = false
+			}
+			continue
+		}
+		if isUuencodeBegin(trimmed) {
+			dropping = true
+			continue
+		}
+		out = append(out, line...)
+	}
+	return out
+}
+
+// isUuencodeBegin reports whether a line opens a uuencode block: `begin`, an
+// octal mode, and a file name.
+func isUuencodeBegin(line string) bool {
+	f := strings.Fields(line)
+	if len(f) != 3 || f[0] != "begin" {
+		return false
+	}
+	if len(f[1]) < 3 || len(f[1]) > 4 {
+		return false
+	}
+	for _, c := range f[1] {
+		if c < '0' || c > '7' {
+			return false
+		}
+	}
+	return f[2] != ""
+}
+
 // parseText normalizes a legacy filing body, dispatches it through
 // layoutRegistry, and returns rows plus a filled-in manifest row. It never
 // panics: a layout parser that panics or errors becomes parse_status=error
@@ -359,6 +423,8 @@ func parseText(body []byte, meta FilingMeta) *ParseResult {
 		res.Meta.NRows = 0
 		return res
 	}
+
+	decoded = dropUuencodedBlocks(decoded)
 
 	text := string(stripHTML(decoded))
 

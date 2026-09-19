@@ -2108,7 +2108,18 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	return name, d
 }
 
+// issMaxBannerBytes bounds the banner the cut chain will recurse on. Several
+// branches below re-resolve their own cut of the same banner, and a cut that
+// only removes a parenthesis pair descends once per pair, so the chain is
+// superlinear in banner length. A declared <SERIES-NAME> is tens of bytes; this
+// cap sits an order of magnitude above the longest in the corpus, so it refuses
+// only bytes no fund name could be and changes no heading's value.
+const issMaxBannerBytes = 512
+
 func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
+	if len(banner) > issMaxBannerBytes {
+		return banner, nil
+	}
 	idx, registrantKey := ix.byName, ix.registrantKey
 	d, declared := lookupSeriesEntry(idx, banner)
 	// A heading that is exactly one declared class ticker (`RWL`, RevenueShares
