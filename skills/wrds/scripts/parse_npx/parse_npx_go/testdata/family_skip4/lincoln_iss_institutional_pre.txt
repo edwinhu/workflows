@@ -1,0 +1,52 @@
+<SEC-DOCUMENT>0001193125-20-228094.txt : 20200824
+<SEC-HEADER>0001193125-20-228094.hdr.sgml : 20200824
+<ACCEPTANCE-DATETIME>20200824133929
+ACCESSION NUMBER:		0001193125-20-228094
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20200630
+FILED AS OF DATE:		20200824
+DATE AS OF CHANGE:		20200824
+EFFECTIVENESS DATE:		20200824
+
+FILER:
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+		CENTRAL INDEX KEY:			0000914036
+<SERIES>
+<OWNER-CIK>0000914036
+<SERIES-ID>S000002815
+<SERIES-NAME>LVIP BlackRock Dividend Value Managed Volatility Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000007726
+<CLASS-CONTRACT-NAME>Standard Class
+</CLASS-CONTRACT>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d35445dnpx.htm
+<DESCRIPTION>LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+<TEXT>
+<HTML><HEAD>
+<TITLE>Lincoln Variable Insurance Products Trust</TITLE>
+</HEAD>
+ <BODY BGCOLOR="WHITE">
+<PRE>
+
+LVIP BlackRock Dividend Value Managed Volatility Fund
+
+Institutional Account Name   LVIP BlackRock Dividend Value Managed Volatility
+Fund
+Institutional Account Number (All)
+
+                       Primary                   Proposal                                                 Vote      Vote Against
+Company Name  Ticker  Security ID  Meeting Date  Number            Proposal Text           Proponent   Instruction  Management
+------------  ------  -----------  ------------  --------  ------------------------------- ----------- -----------  ------------
+Alcon Inc.                                                 Accept Financial Statements
+               ALC    H01301128     06-May-20     1        and Statutory Reports           Management     For           No
+Alcon Inc.     ALC    H01301128     06-May-20     5.2      Reelect Lynn Bleil as Director  Management     For           No
+</PRE>
+</BODY></HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

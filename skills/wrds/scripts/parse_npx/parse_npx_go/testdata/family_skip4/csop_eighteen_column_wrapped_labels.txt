@@ -1,0 +1,79 @@
+<SEC-DOCUMENT>0001144204-19-040532.txt : 20190819
+<SEC-HEADER>0001144204-19-040532.hdr.sgml : 20190819
+ACCESSION NUMBER:		0001144204-19-040532
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20190630
+<OWNER-CIK>0001617113
+<SERIES-ID>S000047470
+<SERIES-NAME>CSOP FTSE CHINA A50 ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000149038
+<CLASS-CONTRACT-NAME>CSOP FTSE CHINA A50 ETF
+<DOCUMENT>
+<TYPE>N-PX
+<TEXT>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><B>CSOP FTSE China A50 ETF</B></P>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+<TR STYLE="vertical-align: bottom; background-color: #3366FF">
+    <TD STYLE="color: white; font-weight: bold; border: Black 0.5pt solid; width: 10%"><FONT STYLE="font-size: 8pt">Company Name</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 6%"><FONT STYLE="font-size: 8pt">ISIN</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 4%"><FONT STYLE="font-size: 8pt">Security
+    ID</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 5%"><FONT STYLE="font-size: 8pt">Sedol(s)</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 4%"><FONT STYLE="font-size: 8pt">Meeting
+    Date</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 30%"><FONT STYLE="font-size: 8pt">Proposal
+    Long Text</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 5%"><FONT STYLE="font-size: 8pt">Proposal
+    Short Text</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 3%"><FONT STYLE="font-size: 8pt">Vote
+    Options</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 3%"><FONT STYLE="font-size: 8pt">Voted
+    Shares</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 2%"><FONT STYLE="font-size: 8pt">Vote</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 3%"><FONT STYLE="font-size: 8pt">Shares
+    FOR</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 3%"><FONT STYLE="font-size: 8pt">%
+    Shares FOR</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 3%"><FONT STYLE="font-size: 8pt">Shares
+    TNA</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 3%"><FONT STYLE="font-size: 8pt">%
+    Shares TNA</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 3%"><FONT STYLE="font-size: 8pt">Shares
+    AGAINST</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 3%"><FONT STYLE="font-size: 8pt">%
+    Shares AGAINST</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 5%"><FONT STYLE="font-size: 8pt">Shares
+    ABSTAIN / WITHHOLD</FONT></TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt; width: 5%"><FONT STYLE="font-size: 8pt">%
+    Shares ABSTAIN / WITHHOLD</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt"><FONT STYLE="font-size: 8pt">CHINA
+    STATE CONSTRUCTION ENGINEERING CORPORATION L</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">CNE100000F46</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">Y1R16Z106</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">B3Y6LV2
+    BP3R2Q2 BSTJPR5</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">02-Jul-2018</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">AMENDMENTS
+    TO THE COMPANY'S RULES OF PROCEDURE GOVERNING THE BOARD MEETINGS&nbsp;</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">Management
+    Proposal</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">F,N,A</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD></TR>
+</TABLE>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
