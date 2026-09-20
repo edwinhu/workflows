@@ -476,8 +476,11 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		// (Royce Fund 2011) and must not clear the fund.
 		fundFromBanner bool
 		// prevText is the previous non-blank line, for the vintage that names
-		// the fund on the line above its Investment Company Report line.
-		prevText string
+		// the fund on the line above its Investment Company Report line, and
+		// prevTextLine the line it was read from, so a heading test can tell
+		// whether that line belongs to the proposal row still open.
+		prevText     string
+		prevTextLine = -1
 		// lastRow indexes the row a continuation may extend, and lastLine the
 		// line it was read from. A continuation must sit IMMEDIATELY under the
 		// row or under a previous continuation of it: between blocks these
@@ -491,9 +494,9 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
 		// Read before this line is classified, so the heading test sees the line above it.
-		lineAbove := prevText
+		lineAbove, lineAboveIdx := prevText, prevTextLine
 		if line != "" {
-			prevText = line
+			prevText, prevTextLine = line, i
 		}
 		cells := icrCells(line)
 
@@ -524,12 +527,20 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 				}
 			}
 			fundFromBanner = false
-		} else if icrUnderscoreRule(line) && lineAbove != "" && icrResolveFundShared(seriesIx, lineAbove) != "" {
+		} else if icrUnderscoreRule(line) && lineAbove != "" && !(lastRow >= 0 && lineAboveIdx == lastLine) && icrResolveFundShared(seriesIx, lineAbove) != "" {
 			// Another vintage names the fund on the bare line ABOVE a rule of
 			// underscores (T. Rowe Price Index Trust, 2026-09-02). The rule is
 			// the marker, and the line is taken only when it resolves to a
 			// declared series -- the header's own evidence -- so an issuer name
 			// above the same rule is never mistaken for a fund.
+			//
+			// A line that belongs to the proposal row still open is refused
+			// BEFORE it is offered to the resolver. This filing also prints the
+			// rule as the divider between issuer blocks, so when the block it
+			// closes ends on a wrapped continuation the line above is that
+			// wrap's tail (`2020`), which a dictionary spelling of the section's
+			// own fund answers. A continuation is never a banner, and whether it
+			// resolves is not evidence that it is one.
 			curFund = lineAbove
 			curSeries = icrResolveFundShared(seriesIx, lineAbove)
 		} else if strings.EqualFold(line, icrReportLine) && lineAbove != "" {
@@ -674,7 +685,13 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		// under its row. Anchored by line adjacency rather than by content, so a
 		// fragment can carry any words at all without a vocabulary deciding
 		// whether it belongs -- and prose that is merely NEAR a row never does.
-		if lastRow >= 0 && i == lastLine+1 && len(cells) == 1 && !icrItem(cells[0]) {
+		//
+		// An item-LOOKING fragment (`2020`, the tail of `Personnel Option Plan
+		// 2020`) reaches here only after the inverted-wrap branch above failed
+		// to turn it into a row of its own, so on this line adjacency it is the
+		// open row's tail, not a new item. Appending it also advances lastLine,
+		// which keeps any further continuation behind it anchored.
+		if lastRow >= 0 && i == lastLine+1 && len(cells) == 1 {
 			rows[lastRow].VoteDescription += " " + cells[0]
 			lastLine = i
 		}
