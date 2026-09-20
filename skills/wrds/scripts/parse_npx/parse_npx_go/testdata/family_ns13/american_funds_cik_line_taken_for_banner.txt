@@ -1,0 +1,96 @@
+<SEC-DOCUMENT>0000729528-04-000014.txt : 20040831
+<SEC-HEADER>0000729528-04-000014.hdr.sgml : 20040831
+<ACCEPTANCE-DATETIME>20040831135845
+ACCESSION NUMBER:		0000729528-04-000014
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+DATE AS OF CHANGE:		20040831
+EFFECTIVENESS DATE:		20040831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			AMERICAN FUND INSURANCE SERIES
+		CENTRAL INDEX KEY:			0000729528
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-03857
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	AMERICAN VARIABLE INSURANCE SERIES
+		DATE OF NAME CHANGE:	19920703
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	AMERICAN PATHWAY FUND
+		DATE OF NAME CHANGE:	19880531
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>afisnpx2004.txt
+<TEXT>
+                                  UNITED STATES
+
+                  Investment Company Act file number 811-3857
+
+                  ---------------------------------------------
+                     (Name and address of agent for service)
+
+       Registrant's telephone number, including area code: (213) 486-9200
+
+                      Date of fiscal year end: December 31
+
+<PAGE>
+
+
+===============================U.S. GOVERNMENT/AAA-RATED SECURITIES FUND========
+
+The fund did not hold any voting  securities  and  accordingly  did not vote any
+proxies during the reporting period.
+
+
+==========================================CASH MANAGEMENT FUND==================
+
+The fund did not hold any voting  securities  and  accordingly  did not vote any
+proxies during the reporting period.
+
+
+=========================================ASSET ALLOCATION FUND==================
+                                                                     0000729528
+
+- --------------------------------------------------------------------------------
+AFLAC INCORPORATED                            Agenda: 932116026
+     CUSIP: 001055102                         Meeting Type: Contested Consent
+    Ticker: AFL                               Meeting Date: 5/3/2004    ISIN:
+<TABLE>
+<S>     <C>                                                          <C>         <C>        <C>
+                                                                                            For/Against
+Proposal                                                             Type        Vote       Management
+- -------------------------------------------------------------------------------------------------------
+01      DANIEL P. AMOS                                                Mgmt          For           For
+        JOHN SHELBY AMOS II                                           Mgmt          For           For
+        MICHAEL H. ARMACOST                                           Mgmt          For           For
+        KRISS CLONINGER, III                                          Mgmt          For           For
+        JOE FRANK HARRIS                                              Mgmt          For           For
+        ELIZABETH J. HUDSON                                           Mgmt          For           For
+        KENNETH S. JANKE, SR.                                         Mgmt          For           For
+        DOUGLAS W. JOHNSON                                            Mgmt          For           For
+        ROBERT B. JOHNSON                                             Mgmt          For           For
+        CHARLES B. KNAPP                                              Mgmt          For           For
+        HIDEFUMI MATSUI                                               Mgmt          For           For
+        NOBUHIRO MORI                                                 Mgmt          For           For
+        E. STEPHEN PURDOM, M.D.                                       Mgmt          For           For
+        BARBARA K. RIMER                                              Mgmt          For           For
+        MARVIN R. SCHUSTER                                            Mgmt          For           For
+        GLENN VAUGHN, JR.                                             Mgmt          For           For
+        ROBERT L. WRIGHT                                              Mgmt          For           For
+02      TO CONSIDER AND APPROVE THE 2004                              Mgmt          For           For
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
