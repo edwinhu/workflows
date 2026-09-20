@@ -4504,6 +4504,69 @@ const (
 	issDistinctivePairTokenMin = 4
 )
 
+// issSleeveRegionWord is the geography vocabulary that distinguishes one index
+// sleeve of a family from another rather than describing it. A sleeve's region
+// is never a qualifier the heading may drop: `Maxim Index European` and `Maxim
+// Index Pacific` are not the declared `Maxim Index 600 Portfolio`.
+var issSleeveRegionWord = map[string]bool{
+	"europe": true, "european": true, "pacific": true, "asia": true,
+	"asian": true, "japan": true, "japanese": true, "international": true,
+	"emerging": true, "latin": true, "america": true, "american": true,
+	"global": true, "china": true, "chinese": true, "india": true,
+	"uk": true, "germany": true, "france": true, "korea": true,
+	"canada": true, "canadian": true, "world": true, "domestic": true,
+	"us": true, "usa": true, "eafe": true, "euro": true, "nordic": true,
+	"brazil": true, "russia": true, "taiwan": true, "hong": true,
+	"kong": true, "singapore": true, "australia": true, "mexico": true,
+	"north": true, "south": true, "east": true, "west": true,
+	"africa": true, "greater": true, "overseas": true, "worldwide": true,
+}
+
+// issNumericToken reports a token that is all digits -- the `400` of `Maxim
+// Index 400` against the `600` of `Maxim Index 600 Portfolio`.
+func issNumericToken(t string) bool {
+	if t == "" {
+		return false
+	}
+	for _, r := range t {
+		if r < '0' || r > '9' {
+			return false
+		}
+	}
+	return true
+}
+
+// issSleeveTokenContradiction reports that the heading and the candidate
+// declared name differ, on either side, by a NUMBER or a region word. A rung
+// that resolves on a SUBSET of the heading's tokens must refuse such a hit: the
+// tokens it dropped do not merely go unmentioned by the declared name, they
+// name a DIFFERENT sleeve of the same family. The adjacent pair `maxim index`
+// sits in exactly one declared name of Maxim Series Fund, so the pair rung
+// stamped `Maxim Index 400`, `Maxim Index European` and `Maxim Index Pacific`
+// all with `Maxim Index 600 Portfolio`'s S000023741 -- 3,464 rows of one 2004
+// filing carrying a series that is not theirs.
+func issSleeveTokenContradiction(toks []string, name string) bool {
+	head := map[string]bool{}
+	for _, t := range toks {
+		head[t] = true
+	}
+	decl := map[string]bool{}
+	for _, t := range strings.Fields(normalizeSeriesName(name)) {
+		decl[t] = true
+	}
+	for t := range head {
+		if !decl[t] && (issNumericToken(t) || issSleeveRegionWord[t]) {
+			return true
+		}
+	}
+	for t := range decl {
+		if !head[t] && (issNumericToken(t) || issSleeveRegionWord[t]) {
+			return true
+		}
+	}
+	return false
+}
+
 // issDistinctiveTokenDecl reads a heading printing the fund's name at the time
 // of the report against a declared name that has since changed:
 // `Goldman Sachs ActiveBeta Paris-Align Climate U.S. Low Vol Plus Equity ETF`
@@ -4564,6 +4627,9 @@ func issDistinctiveTokenDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		agree++
 	}
 	if agree < 2 {
+		return nil
+	}
+	if hit != nil && issSleeveTokenContradiction(toks, hit.Name) {
 		return nil
 	}
 	return hit
@@ -4629,6 +4695,9 @@ func issDistinctiveStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 			return nil
 		}
 		hit = owner
+	}
+	if hit != nil && issSleeveTokenContradiction(toks, hit.Name) {
+		return nil
 	}
 	return hit
 }
@@ -4762,6 +4831,9 @@ func issDistinctivePairDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		if h != d {
 			return nil
 		}
+	}
+	if hit != nil && issSleeveTokenContradiction(toks, hit.Name) {
+		return nil
 	}
 	return hit
 }
