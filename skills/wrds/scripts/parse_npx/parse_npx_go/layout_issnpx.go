@@ -513,8 +513,18 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 		banner := strings.Join(bannerBuf, " ")
 		name, d := issResolveFund(seriesIx, banner)
-		if alt := issDictInsertedWordDecl(seriesIx, dict, banner, d); alt != nil {
-			d = alt
+		// The dictionary rung is a TOLERANCE and may not outrank the filing's own
+		// exact declaration of this very name -- the <CLASS-CONTRACT-NAME> of a
+		// two-tier trust included. Pacific Select Fund declares one series for 33
+		// portfolios and heads each section with its class contract's own name, so
+		// `EMERGING MARKETS PORTFOLIO` is declared exactly; without this the
+		// dictionary's `Emerging Markets Debt Portfolio` (S000036460, a different
+		// fund declared four years later, a name these bytes never print) takes
+		// 1,783 rows off the declared series.
+		if !issBannerDeclaredExact(seriesIx, banner) {
+			if alt := issDictInsertedWordDecl(seriesIx, dict, banner, d); alt != nil {
+				d = alt
+			}
 		}
 		// The successor named over this very section replaces whatever the
 		// predecessor's name fuzz-matched: on the full Templeton filing the
@@ -2624,13 +2634,49 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 // tolerance rung in the chain runs after. An answer reached any other way is a
 // tolerance and may be outranked by an exact sibling hit.
 func issBannerDeclaredExact(ix *issSeriesIndex, banner string) bool {
+	if ix == nil {
+		return false
+	}
 	if d, _ := lookupSeriesEntry(ix.byName, banner); d != nil {
 		return true
 	}
 	if d, _ := lookupSeriesEntry(ix.aliases, banner); d != nil {
 		return true
 	}
-	return false
+	return issDeclaredClassContract(ix, banner) != nil
+}
+
+// issDeclaredClassContract returns the one series whose header block declares
+// this banner, exactly, as a <CLASS-CONTRACT-NAME>. A two-tier trust registers
+// one series and hangs its portfolios off it as class contracts, and then heads
+// each section with the contract's own name: Pacific Select Fund's
+// `EMERGING MARKETS PORTFOLIO` is `C000021137` of `S000007766`. Such a name is
+// the registrant's own declaration, as exact as a <SERIES-NAME>. Two series
+// answering to one class name refuse, the way every declared-name index here
+// refuses.
+func issDeclaredClassContract(ix *issSeriesIndex, banner string) *SeriesDecl {
+	key := normalizeSeriesName(banner)
+	if ix == nil || key == "" {
+		return nil
+	}
+	var hit *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" {
+			continue
+		}
+		for _, cn := range d.ClassNames {
+			if normalizeSeriesName(cn) != key {
+				continue
+			}
+			if hit != nil && hit.SeriesID != d.SeriesID {
+				return nil
+			}
+			hit = d
+			break
+		}
+	}
+	return hit
 }
 
 // issOwnBrandInfixDecl is cikSeries.ownBrandInfix read against the ONE

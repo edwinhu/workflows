@@ -368,7 +368,13 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			// survive it unchanged (American Century ETF Trust 2023, 228,328 of
 			// 228,448 rows stamped S000072999 carried an issuer name as their
 			// fund; Nationwide Mutual Funds 2019, 63,621 rows).
-			identityCell := htmlIssuerIdentityCell(cells)
+			// The same identity block, spread over ROWS instead of stacked inside
+			// one cell: the bare cell standing immediately above a `Ticker:` /
+			// `Security ID:` / `Meeting Date:` strip is the ISSUER of the block
+			// and is never offered to the resolver. Position is the evidence, not
+			// resolution -- this is family MISLINK18's rule for `labelvalue` read
+			// off this layout's cell shape.
+			identityCell := htmlIssuerIdentityCell(cells) || htmlIdentityStripFollows(feed, cells, row.pre)
 			if titles := htmlDatedTitles(seriesIx, heading, dict); titles != nil && !identityCell {
 				curFund, curSeries, outerSection, windowed = titles[0].name, titles[0].id, true, titles
 				continue
@@ -3980,6 +3986,86 @@ func htmlIssuerIdentityCell(cells []string) bool {
 			if strings.HasPrefix(strings.ToUpper(line), label) {
 				return true
 			}
+		}
+	}
+	return false
+}
+
+// htmlIdentityStripLabels open the identity strip this vendor prints in cells of
+// its own under the issuer name, rather than stacked inside the issuer's cell.
+var htmlIdentityStripLabels = []string{"TICKER:", "SECURITY ID", "MEETING DATE:"}
+
+// htmlIdentityStripLookahead bounds the walk past blank spacer rows between the
+// issuer's row and its strip; the two rows abut but for spacers.
+const htmlIdentityStripLookahead = 3
+
+// htmlIdentityStripFollows reports a bare one-cell row printed UNDER A DASHED
+// RULE whose next filled row OPENS that block's identity strip. Such a cell is
+// the ISSUER the block votes, never a fund banner: American Independence Funds
+// Trust 2008 prints `ESSILOR INTERNATIONAL` and `HERMES INTERNATIONAL` that way
+// and the resolver promoted both to the fund on the one word they share with the
+// declared `American Independence Funds International Equity Fund` (10,027
+// rows), and CIK 763852 does it to eight REIT issuers under `JPMORGAN U.S. REAL
+// ESTATE FUND`. htmlIssuerIdentityCell reads the vintage that stacks the same
+// block inside one cell; this reads the vintage that spreads it over rows.
+//
+// The rule is what separates the two readings of one position. A fund banner may
+// stand directly over an identity strip too -- Cavanal Hill Funds 2016 opens its
+// table with `Cavanal Hill Balanced Fund` and the `Ticker:` row beneath it --
+// and that banner is printed with no rule above it. The rule is this vendor's
+// own mark for the start of a ballot inside the fund's section.
+func htmlIdentityStripFollows(feed *htmlRowFeed, cells []string, pre string) bool {
+	if feed == nil || htmlFilledCells(cells) != 1 || !htmlDashedRuleAbove(pre) {
+		return false
+	}
+	head := ""
+	for _, c := range cells {
+		if v := htmlFlat(c); v != "" {
+			head = v
+			break
+		}
+	}
+	if head == "" || htmlIdentityStripLabel(head) {
+		return false
+	}
+	for i := 0; i < htmlIdentityStripLookahead; i++ {
+		row, ok := feed.peek(i)
+		if !ok || row.newTable {
+			return false
+		}
+		if htmlFilledCells(row.cells) == 0 {
+			continue
+		}
+		for _, c := range row.cells {
+			if v := htmlFlat(c); v != "" {
+				return htmlIdentityStripLabel(v)
+			}
+		}
+	}
+	return false
+}
+
+// htmlDashedRuleMin is the shortest dash run read as a rule; this vendor's is 80
+// characters wide, and a run this long is no word of any name.
+const htmlDashedRuleMin = 16
+
+// htmlDashedRuleAbove reports that the markup between the previous row and this
+// one ends in a run of dashes -- the rule this vendor draws over each ballot.
+func htmlDashedRuleAbove(pre string) bool {
+	last := ""
+	for _, line := range strings.Split(pre, "\n") {
+		if v := strings.TrimSpace(line); v != "" {
+			last = v
+		}
+	}
+	return len(last) >= htmlDashedRuleMin && strings.Trim(last, "-") == ""
+}
+
+func htmlIdentityStripLabel(value string) bool {
+	up := strings.ToUpper(value)
+	for _, label := range htmlIdentityStripLabels {
+		if strings.HasPrefix(up, label) {
+			return true
 		}
 	}
 	return false
