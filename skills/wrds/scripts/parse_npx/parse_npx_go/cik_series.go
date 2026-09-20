@@ -58,9 +58,54 @@ func loadCIKSeries(path string) (*cikSeries, error) {
 			decl.DeclDate = p[3]
 		}
 		d.byCIK[p[0]] = append(d.byCIK[p[0]], decl)
+		if lead := declaredLeadName(p[2]); lead != "" {
+			ak := p[0] + "\t" + p[1] + "\t" + lead
+			if !seen[ak] {
+				seen[ak] = true
+				alias := decl
+				alias.Name = lead
+				d.byCIK[p[0]] = append(d.byCIK[p[0]], alias)
+			}
+		}
 	}
 	d.indexCorpusNames()
 	return d, sc.Err()
+}
+
+// declaredLeadName is the name a declaration spells before a TRAILING rename
+// parenthetical -- `Victory 500 Index VIP Series (formerly Victory S&P 500 Index
+// VIP Series)` is also, and at that same vintage, `Victory 500 Index VIP
+// Series`. The registrant is declaring one name and annotating the old one, and
+// a filing of that vintage prints the leading name alone, so the whole-string
+// index misses it by the parenthetical. It returns "" when there is no such
+// tail. Only the leading name is an alias: the former name inside the
+// parenthetical is NOT keyed, since the declaration says that name is no longer
+// the fund's.
+func declaredLeadName(name string) string {
+	s := strings.TrimRight(name, " \t")
+	if !strings.HasSuffix(s, ")") {
+		return ""
+	}
+	i := strings.LastIndexByte(s, '(')
+	if i <= 0 {
+		return ""
+	}
+	inner := strings.ToLower(strings.TrimLeft(s[i+1:len(s)-1], " \t"))
+	renamed := false
+	for _, k := range []string{"formerly", "formally", "f/k/a", "fka"} {
+		if strings.HasPrefix(inner, k) {
+			renamed = true
+			break
+		}
+	}
+	if !renamed {
+		return ""
+	}
+	lead := strings.TrimRight(s[:i], " \t,")
+	if lead == "" || lead == name {
+		return ""
+	}
+	return lead
 }
 
 // indexCorpusNames builds byNameAll once the per-CIK slices have stopped
