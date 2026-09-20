@@ -633,6 +633,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			// A bare paragraph is a boundary only on an exact, unique name.
 			if d, _ := lookupSeriesEntry(seriesIx.byName, line); d != nil {
 				name, ok = line, true
+			} else if inTable && issProposalWrapLine(lines, i) {
+				// ... and never on the wrapped tail of the proposal still open
+				// above it, however well the tail resolves.
 			} else if issPlainHeadingSeries(seriesIx, dict, line) != "" {
 				// ... or on a name the registrant's own dictionary carries
 				// exactly. Pacific Select Fund prints its portfolio as a bare
@@ -7420,6 +7423,61 @@ func issSplitItem(line string) (item, rest string) {
 		}
 	}
 	return tok, strings.TrimSpace(parts[1])
+}
+
+// issProposalWrapWalk bounds the upward walk of issProposalWrapLine. A proposal
+// whose text wraps runs a handful of lines at most; sixteen clears the longest
+// observed run without reaching back past the block above.
+const issProposalWrapWalk = 16
+
+// issProposalWrapLine reports lines[i] as the wrapped tail of the numbered
+// proposal printed above it, inside the table still open. When the wrap is the
+// last line of its block a blank follows it, so it stands exactly where a
+// bare-paragraph fund heading stands and the plain-heading branch offers it as
+// one the moment the resolver answers: `Human Rights Violations`, the tail of
+// `Participate in OECD Mediation for Human Rights Violations`, reached the
+// declared `iShares Human Rights ETF` and took S000037043 and every row of the
+// AMERICAN ELECTRIC POWER meeting below it (iSHARES TRUST 2016). Resolving is
+// not evidence of a heading.
+//
+// The evidence is the grammar ABOVE the line, the same one
+// brProposalContinuationSlot and brContinuationRunLine apply to the other
+// grammar: collapseSpaces drops leading whitespace at every line start, so the
+// Proposal column the wrap is printed in is gone by the time this layout is
+// read. An unbroken run of non-blank, unruled lines reaching a numbered row that
+// carries this grammar's own trailing cells is what remains, and no fund heading
+// is ever printed under such a row with no blank or rule between.
+func issProposalWrapLine(lines []string, i int) bool {
+	if i < 1 {
+		return false
+	}
+	for j, steps := i-1, 0; j >= 0 && steps < issProposalWrapWalk; j, steps = j-1, steps+1 {
+		prev := strings.TrimSpace(lines[j])
+		if prev == "" || issPunctRuleLine(prev) {
+			return false
+		}
+		if _, ruled := issFundSeparator(prev); ruled {
+			return false
+		}
+		if item, rest := issSplitItem(prev); item != "" {
+			_, _, cast, sponsor := issPeelColumns(rest)
+			return cast != "" || sponsor != ""
+		}
+	}
+	return false
+}
+
+// issPunctRuleLine reports a line drawn entirely out of one rule character.
+func issPunctRuleLine(line string) bool {
+	if len(line) < 4 {
+		return false
+	}
+	switch line[0] {
+	case '-', '=', '_', '*':
+	default:
+		return false
+	}
+	return strings.Trim(line, string(line[0])) == ""
 }
 
 // issJoinWrappedVote completes a Vote Cast cell that WRAPPED across two physical
