@@ -3259,7 +3259,14 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 		return banner, d
 	}
 	// The same compact reading after an audited registrant brand is omitted.
-	if d, seen := ix.lessLeadCompact[compactKey]; seen {
+	// A declaration first made AFTER this filing's period is refused here the
+	// way the distinctive and stem rungs already refuse it: dropping the lead
+	// word of a name the registrant only registered years later invents a
+	// sleeve, it does not read one. `WELLS FARGO ADVANTAGE LARGE COMPANY
+	// GROWTH FUND` on a 20050630 report reaches S000029061, declared only as
+	// `Premier Large Company Growth Fund` and later, first seen 20110630, with
+	// `Premier` printed nowhere in the filing (327 rows).
+	if d, seen := ix.lessLeadCompact[compactKey]; seen && !issFutureVintage(ix, d) {
 		return banner, d
 	}
 
@@ -3286,7 +3293,7 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 		if d, seen := ix.byCompact[restCompact]; seen && d != nil {
 			return banner, d
 		}
-		if d, seen := ix.lessLeadCompact[restCompact]; seen && d != nil {
+		if d, seen := ix.lessLeadCompact[restCompact]; seen && d != nil && !issFutureVintage(ix, d) {
 			return banner, d
 		}
 		// The heading runs the capitalization token together AND prints a
@@ -3413,7 +3420,11 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	// Trust 2004, 5,702 rows with no fund). The banner must equal a declared
 	// name with exactly ONE leading token removed, and exactly one declared
 	// series may answer to it -- a collision was recorded as nil and refuses.
-	if d := ix.lessLeadToken[key]; d != nil {
+	// A declaration first made after the period is refused, as at the compact
+	// twin above: the dropped lead word is the only thing that distinguishes
+	// the declared name, and a sleeve registered years later cannot be what
+	// the banner names.
+	if d := ix.lessLeadToken[key]; d != nil && !issFutureVintage(ix, d) {
 		return banner, d
 	}
 	// The same reading where the heading ALSO substitutes the type word: `ICAP
@@ -3424,7 +3435,7 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	// name, and a stem two declared series answer to was recorded as nil and
 	// refuses.
 	if stem, typed := issDropTypeWord(key); typed {
-		if d := ix.lessLeadTokenAnyType[stem]; d != nil {
+		if d := ix.lessLeadTokenAnyType[stem]; d != nil && !issFutureVintage(ix, d) {
 			return banner, d
 		}
 	}
@@ -3439,7 +3450,7 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 		if !ok {
 			continue
 		}
-		if d := ix.lessLeadToken[rest]; d != nil {
+		if d := ix.lessLeadToken[rest]; d != nil && !issFutureVintage(ix, d) {
 			return banner, d
 		}
 	}
