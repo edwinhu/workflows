@@ -1,0 +1,90 @@
+<SEC-DOCUMENT>0001193125-05-176987.txt : 20050830
+<SEC-HEADER>0001193125-05-176987.hdr.sgml : 20050830
+<ACCEPTANCE-DATETIME>20050830120446
+ACCESSION NUMBER:		0001193125-05-176987
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050830
+DATE AS OF CHANGE:		20050830
+EFFECTIVENESS DATE:		20050830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			WILSHIRE VARIABLE INSURANCE TRUST
+		CENTRAL INDEX KEY:			0001026708
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	HORACE MANN MUTUAL FUNDS
+		DATE OF NAME CHANGE:	19961108
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>dnpx.txt
+<DESCRIPTION>WILSHIRE VARIABLE INSURANCE TRUST
+<TEXT>
+<PAGE>
+
+                               PROXY VOTING RECORD
+
+                               Vote Summary Report
+                           Jul 01, 2004 - Jun 30, 2005
+
+Equity Fund
+
+<TABLE>
+<CAPTION>
+Mtg           Company/                                                           Mgmt     Vote    Record               Shares
+Date/Type     Ballot Issues                                          Security    Rec      Cast     Date     Prpnent    Voted
+- -----------------------------------------------------------------------------------------------------------------------------
+<S>           <C>                                                   <C>        <C>      <C>      <C>       <C>        <C>
+04/14/05 - A  BP PLC (Form. Bp Amoco Plc)                           055622104                    02/18/05              17,200
+                   Meeting for Holders of ADR's
+              3    TO GIVE AUTHORITY TO ALLOT SHARES UP TO A
+                   SPECIFIED AMOUNT                                            For      For                Mgmt
+              4    SPECIAL RESOLUTION: TO GIVE AUTHORITY TO
+                   ALLOT A LIMITED NUMBER OF SHARES FOR CASH
+                   WITHOUT MAKING AN OFFER TO SHAREHOLDERS                     For      For                Mgmt
+              5    SPECIAL RESOLUTION: TO GIVE LIMITED
+                   AUTHORITY FOR THE PURCHASE OF ITS OWN
+                   SHARES BY THE COMPANY                                       For      For                Mgmt
+              6    TO APPROVE THE DIRECTORS REMUNERATION
+                   REPORT                                                      For      For                Mgmt
+              7    TO APPROVE THE RENEWAL OF EXECUTIVE
+                   DIRECTORS INCENTIVE PLAN                                    For      For                Mgmt
+              8    TO RECEIVE THE DIRECTORS ANNUAL REPORT AND
+                   THE ACCOUNTS                                                For      For                Mgmt
+</TABLE>
+
+
+                               Vote Summary Report
+                           Jul 01, 2004 - Jun 30, 2005
+
+INTERNATIONAL EQUITY FUND
+
+<TABLE>
+<CAPTION>
+Mtg           Company/                                                           Mgmt     Vote    Record               Shares
+Date/Type     Ballot Issues                                          Security    Rec      Cast     Date     Prpnent    Voted
+- -----------------------------------------------------------------------------------------------------------------------------
+<S>           <C>                                                   <C>        <C>      <C>      <C>       <C>         <C>
+06/29/05 - A  77 Bank Ltd.                                          J71348106                    03/31/05              22,000
+              2.1  Elect Director --- For
+
+                      None of the nominees has been designated by
+                      the company as an outside director.
+
+              2.2  Elect Director --- For
+              2.3  Elect Director --- For
+              2.4  Elect Director --- For
+              2.5  Elect Director --- For
+              2.6  Elect Director --- For
+              2.7  Elect Director --- For
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
