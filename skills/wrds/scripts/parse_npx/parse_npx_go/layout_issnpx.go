@@ -283,6 +283,18 @@ func (b *issRowBuf) complete() bool {
 // meeting context onto every proposal row it completes. A fund whose section
 // holds only the no-activity sentence contributes nothing, which is the correct
 // outcome rather than an error.
+// issPlainHeadingSeries resolves a heading the vendor printed as a bare line,
+// through the shared chain and nothing else: an exact declared name (the strip
+// of the registrant's own words included) or an exact dictionary name. A plain
+// line carries none of a ruled banner's evidence that it is a heading at all,
+// so its resolution is what proves it, and only an exact one does.
+func issPlainHeadingSeries(ix *issSeriesIndex, dict *dictFallback, line string) string {
+	if s := icrResolveFundShared(ix, line); s != "" {
+		return s
+	}
+	return htmlDictionaryFund(ix, dict, line)
+}
+
 func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	// The header declares a <SERIES-ID>/<SERIES-NAME> pair per series and the body
 	// prints a fund heading, so the name is the bridge between a vote and its
@@ -386,8 +398,14 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	// whose assets cast these votes.
 	reorgPred, reorgSucc := "", ""
 
+	// bannerPlain marks a banner the vendor printed as a bare line rather than
+	// between rules. Only such a heading is read against the registrant's
+	// dictionary: a ruled banner that resolves to nothing resolves to nothing.
+	bannerPlain := false
+
 	commitBanner := func() {
 		if len(bannerBuf) == 0 {
+			bannerPlain = false
 			return
 		}
 		banner := strings.Join(bannerBuf, " ")
@@ -406,11 +424,17 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			reorgPred, reorgSucc = "", ""
 		}
 		bannerBuf = bannerBuf[:0]
+		plain := bannerPlain
+		bannerPlain = false
 		fund = name
 		fundSeries, fundClasses = "", ""
 		if d != nil {
 			fundSeries = d.SeriesID
 			fundClasses = strings.Join(d.ClassIDs, MultiValueSep)
+			return
+		}
+		if plain {
+			fundSeries = issPlainHeadingSeries(seriesIx, dict, banner)
 		}
 	}
 
@@ -452,10 +476,19 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				name, ok = line, true
 			}
 		}
+		plainHeading := false
 		if !ok && line != "" && i+1 < len(lines) && strings.TrimSpace(lines[i+1]) == "" {
 			// A bare paragraph is a boundary only on an exact, unique name.
 			if d, _ := lookupSeriesEntry(seriesIx.byName, line); d != nil {
 				name, ok = line, true
+			} else if issPlainHeadingSeries(seriesIx, dict, line) != "" {
+				// ... or on a name the registrant's own dictionary carries
+				// exactly. Pacific Select Fund prints its portfolio as a bare
+				// line above each block and declares no series at all, so a
+				// heading the dictionary answers to is the only evidence the
+				// filing gives, and it is exact.
+				name, ok = line, true
+				plainHeading = true
 			}
 		}
 		if ok && fundSeries != "" && bannerTail == "" && len(bannerBuf) == 0 &&
@@ -497,6 +530,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 					commitBanner()
 				}
 				bannerBuf = append(bannerBuf, name)
+				bannerPlain = plainHeading
 				if !issBannerContinues(lines, i+1) {
 					commitBanner()
 				}
