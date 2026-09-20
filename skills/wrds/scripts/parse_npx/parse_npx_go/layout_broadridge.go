@@ -581,6 +581,27 @@ func brOpenProposalTail(cur *brRowBuf, slot string) bool {
 	return strings.TrimSpace(cur.text[len(cur.text)-1]) == slot
 }
 
+// brProposalContinuationSlot reports that the heading slot holds the WRAPPED
+// TEXT of the numbered proposal printed immediately above it, inside the block
+// still open. A proposal whose text runs onto a second line leaves that line
+// exactly where a fund banner sits when the block closes right after it, and
+// `ATTACHED AS APPENDIX  C  TO THE CIRCULAR` became the banner of every block
+// from FOREST CITY on (Touchstone Variable Series Trust 2005, 1,844 rows with no
+// series). brOpenProposalTail cannot see it -- the issuer heading below closes
+// the row before the slot is read -- and stripHTML has already dropped the
+// indentation, so the evidence is the line ABOVE the slot: a numbered row
+// carrying this grammar's own vote cells. A real banner is printed on its own,
+// over a blank line or the block above it, never under a proposal row.
+func brProposalContinuationSlot(lines []string, i int, slot string, open bool) bool {
+	j := i - 2
+	if !open || j < 1 || strings.TrimSpace(lines[j]) != slot {
+		return false
+	}
+	prev := strings.TrimSpace(lines[j-1])
+	item, _ := brSplitItem(prev)
+	return item != "" && brVoteRowSlot(prev)
+}
+
 // brVoteRowSlot reports a heading slot that is a complete PROPOSAL ROW of this
 // grammar rather than a name: a director-slate nominee carries the vote columns
 // of its own row (`DONALD A. WASHBURN  Mgmt  For  For`), so it is neither the
@@ -1313,7 +1334,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 						curSeries, curFund = d.SeriesID, slot
 					}
 				}
-				if slot, crossedBlank := brHeadingSlot(lines, i); slot != "" && !brOpenProposalTail(cur, slot) && !brVoteRowSlot(slot) && !brMeetingHeadingRun(lines, i) {
+				if slot, crossedBlank := brHeadingSlot(lines, i); slot != "" && !brOpenProposalTail(cur, slot) && !brVoteRowSlot(slot) && !brMeetingHeadingRun(lines, i) && !brProposalContinuationSlot(lines, i, slot, sawTable) {
 					if crossedBlank {
 						// Evidence-only: act solely on a name this filing's own
 						// header declares, because this slot is also what an
