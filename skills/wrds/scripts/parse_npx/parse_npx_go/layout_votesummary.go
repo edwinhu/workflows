@@ -139,7 +139,7 @@ func vsStripAccountCode(name string) string {
 func parseVoteSummaryRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 	lines := strings.Split(strings.ReplaceAll(string(raw), "\r\n", "\n"), "\n")
 
-	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK)
 	issFormerKeys(seriesIx, meta.FormerNames)
 	dict := cikDict.exactFallback(meta)
 	resolved := map[string]string{}

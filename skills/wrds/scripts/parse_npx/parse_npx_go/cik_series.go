@@ -17,6 +17,17 @@ import (
 // so class_ids stay blank on rows it attributes.
 type cikSeries struct {
 	byCIK map[string][]SeriesDecl
+	// byNameAll keys every dictionary name in the corpus, normalised, onto its
+	// single answer, and onto nil the moment two series or two registrants
+	// answer to it. It is the last rung's whole guard: see crossCIK.
+	byNameAll map[string]*corpusName
+}
+
+// corpusName is one normalised dictionary name's single corpus-wide answer:
+// which registrant declared it and which series it is.
+type corpusName struct {
+	cik  string
+	decl *SeriesDecl
 }
 
 // loadCIKSeries reads a headerless TSV: cik, series_id, series_name[, ...].
@@ -48,7 +59,62 @@ func loadCIKSeries(path string) (*cikSeries, error) {
 		}
 		d.byCIK[p[0]] = append(d.byCIK[p[0]], decl)
 	}
+	d.indexCorpusNames()
 	return d, sc.Err()
+}
+
+// indexCorpusNames builds byNameAll once the per-CIK slices have stopped
+// growing; a pointer taken during the scan would dangle on the next append.
+func (d *cikSeries) indexCorpusNames() {
+	d.byNameAll = make(map[string]*corpusName)
+	for cik, decls := range d.byCIK {
+		for i := range decls {
+			x := &decls[i]
+			key := normalizeSeriesName(x.Name)
+			if key == "" || x.SeriesID == "" {
+				continue
+			}
+			prev, seen := d.byNameAll[key]
+			if !seen {
+				d.byNameAll[key] = &corpusName{cik: cik, decl: x}
+				continue
+			}
+			if prev != nil && (prev.decl.SeriesID != x.SeriesID || prev.cik != cik) {
+				d.byNameAll[key] = nil // ambiguous corpus-wide: two series, or two registrants
+			}
+		}
+	}
+}
+
+// crossCIK answers a heading that resolved against neither the filing's own
+// declarations nor its own registrant's dictionary rows: the printed name is a
+// fund of a SIBLING registrant of the same sponsor, tagged under another CIK.
+// Claymore Exchange-Traded Fund Trust 2 prints nine funds of Claymore
+// Exchange-Traded Fund Trust (CIK 1364089, 14,290 rows); State Farm Mutual Fund
+// Trust prints `State Farm Small Cap Equity Index Fund`, tagged S000002061 at
+// CIK 1034633 (3,256 rows).
+//
+// EXACTNESS AND CORPUS-WIDE UNIQUENESS ARE THE WHOLE GUARD. The normalised name
+// must be one the corpus answers with exactly one series of exactly one
+// registrant; anything else stays blank. Nothing here is stemmed, cut or
+// widened -- a loose cross-CIK rung would mislink across sponsors, which is what
+// every widened rung has cost before. It is consulted only after every
+// registrant-scoped rung has refused, so a same-CIK answer always wins, and the
+// filer's own CIK is excluded: those rows are the registrant-scoped rungs' own
+// business and their refusals are not overridden here.
+func (d *cikSeries) crossCIK(cik, heading string) *SeriesDecl {
+	if d == nil || cik == "" || heading == "" {
+		return nil
+	}
+	key := normalizeSeriesName(heading)
+	if key == "" {
+		return nil
+	}
+	e := d.byNameAll[key]
+	if e == nil || e.cik == cik {
+		return nil
+	}
+	return e.decl
 }
 
 // back supplies dictionary decls to a filing whose header declares none.
@@ -159,6 +225,10 @@ type dictFallback struct {
 	// filing's own COMPANY CONFORMED NAME that a dictionary name begins with
 	// (`Mirae Asset`, of `Mirae Asset Discovery Funds`).
 	brandPrefixes []string
+	// corpus and cik back the last rung, which reads the dictionary of every
+	// OTHER registrant: see cikSeries.crossCIK.
+	corpus *cikSeries
+	cik    string
 }
 
 func (d *cikSeries) exactFallback(meta FilingMeta) *dictFallback {
@@ -182,9 +252,11 @@ func (d *cikSeries) exactFallback(meta FilingMeta) *dictFallback {
 		}
 	}
 	if len(extra) == 0 {
-		return nil
+		// The registrant-scoped rungs have nothing to read, but the cross-CIK
+		// rung reads no row of this registrant at all and still applies.
+		return &dictFallback{byName: map[string]*SeriesDecl{}, corpus: d, cik: meta.CIK}
 	}
-	f := &dictFallback{byName: seriesByName(extra), byUndotted: map[string]*SeriesDecl{}}
+	f := &dictFallback{byName: seriesByName(extra), byUndotted: map[string]*SeriesDecl{}, corpus: d, cik: meta.CIK}
 	// The dictionary spells an initialism with its periods where the heading
 	// spells it without: `Vesper U.S. Large Cap Short-Term Reversal Strategy ETF`
 	// (S000063053) for a banner `Vesper US ...`. Only the names whose two
@@ -294,6 +366,14 @@ func (f *dictFallback) apply(r *VoteRow) {
 	// refuse, the way every other rung here refuses.
 	if r.SeriesID == "" {
 		if d := f.brandPrefixed(r.FundName); d != nil {
+			r.SeriesID = d.SeriesID
+		}
+	}
+	// Last of all, and only after every registrant-scoped rung above has
+	// refused: the heading names a fund of a SIBLING registrant, exactly and
+	// uniquely corpus-wide.
+	if r.SeriesID == "" {
+		if d := f.corpus.crossCIK(f.cik, r.FundName); d != nil {
 			r.SeriesID = d.SeriesID
 		}
 	}

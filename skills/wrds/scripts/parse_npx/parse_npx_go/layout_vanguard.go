@@ -197,7 +197,7 @@ func parseVanguard(text string, meta FilingMeta) ([]VoteRow, error) {
 	// against the header's declared series under the shared rules (exact or one
 	// described edit, refused on ambiguity), so a multi-series Vanguard filing
 	// stamps the link key instead of carrying a bare fund name.
-	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK)
 	issFormerKeys(seriesIx, meta.FormerNames)
 
 	fund := ""

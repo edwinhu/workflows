@@ -289,7 +289,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	// series id. A heading that names no declared series, or one two series answer
 	// to, resolves to "" and the row is emitted with an empty series_id: the
 	// chassis still stamps single-series filings, and nothing here guesses.
-	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK)
 	issFormerKeys(seriesIx, meta.FormerNames)
 	dict := cikDict.exactFallback(meta)
 
@@ -1159,6 +1159,13 @@ func issFillBlankIdentity(rows []VoteRow, blank []int) {
 type issSeriesIndex struct {
 	byName        map[string]*SeriesDecl
 	registrantKey string
+	// cik is the filing's own registrant, so the cross-CIK rung at the tail of
+	// the chain can tell a sibling registrant's dictionary row from this one's.
+	// Empty when the index is built without a filing behind it.
+	cik string
+	// depth counts the chain's own recursive re-resolutions of a cut banner, so
+	// the cross-CIK rung can tell the heading as printed from a remainder.
+	depth int
 	// byTicker keys each class ticker the header declares, upper-cased, to its
 	// series; a ticker two series share is dropped rather than guessed.
 	byTicker map[string]*SeriesDecl
@@ -1298,6 +1305,14 @@ func issFormerKeys(ix *issSeriesIndex, former []string) {
 			ix.formerKeys = append(ix.formerKeys, k)
 		}
 	}
+}
+
+// issFilingIndex is newISSSeriesIndex for a real filing, carrying the
+// registrant's CIK the cross-CIK rung needs.
+func issFilingIndex(decls []SeriesDecl, registrantKey, cik string) *issSeriesIndex {
+	ix := newISSSeriesIndex(decls, registrantKey)
+	ix.cik = cik
+	return ix
 }
 
 func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex {
@@ -2166,7 +2181,30 @@ var (
 // registrantKey is the filing's COMPANY CONFORMED NAME already normalised, since
 // it is constant across every banner in the filing.
 func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
-	if ix == nil || ix.resolved == nil {
+	if ix == nil {
+		return issResolveFundUncached(ix, banner)
+	}
+	outer := ix.depth == 0
+	ix.depth++
+	name, d := issResolveFundMemo(ix, banner)
+	ix.depth--
+	// Last of all: the heading names a fund of a SIBLING registrant of the same
+	// sponsor, exact and unique corpus-wide (cikSeries.crossCIK). Read on the
+	// heading AS PRINTED only -- every cut the chain above makes is
+	// registrant-scoped evidence, and a remainder such as `Income Fund` names
+	// some other sponsor's fund in the corpus -- so it fires on the outermost
+	// call and never on a recursive cut, and its answer is not memoised, so no
+	// later cut can read it back out of the cache.
+	if d == nil && outer {
+		if alt := cikDict.crossCIK(ix.cik, banner); alt != nil {
+			return banner, alt
+		}
+	}
+	return name, d
+}
+
+func issResolveFundMemo(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
+	if ix.resolved == nil {
 		return issResolveFundUncached(ix, banner)
 	}
 	if r, ok := ix.resolved[banner]; ok {

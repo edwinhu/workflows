@@ -113,7 +113,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 	body := htmlTableBody(raw)
 	// Built ONCE per filing: these bodies reach 142 MB and 452,552 vote rows, so
 	// a per-row rebuild would make the job quadratic in the input.
-	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK)
 	issFormerKeys(seriesIx, meta.FormerNames)
 	dict := cikDict.exactFallback(meta)
 	if indexFrom(body, 0, "</tr>") < 0 {

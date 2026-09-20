@@ -115,7 +115,7 @@ func tbRule(line string) bool {
 
 func parseTwoBand(text string, meta FilingMeta) ([]VoteRow, error) {
 	lines := strings.Split(text, "\n")
-	seriesIx := newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))
+	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK)
 	issFormerKeys(seriesIx, meta.FormerNames)
 	dict := cikDict.exactFallback(meta)
 
