@@ -332,6 +332,67 @@ func issBrandCutStem(ix *issSeriesIndex, line string) string {
 	return ""
 }
 
+// issBroadridgeTailLookback bounds the walk back from the switch to the fund
+// line that introduces it; the whole meeting block sits between them.
+const issBroadridgeTailLookback = 60
+
+// issBroadridgeTailStart finds the line at which the filing stops printing this
+// grammar and starts printing Broadridge meeting blocks, or -1.
+//
+// The evidence is a Broadridge column header with a Broadridge meeting label
+// beneath the cut -- matchBroadridge's own test, applied to the remainder --
+// and the cut itself is the bare, unruled fund line that introduces the switch:
+// an unindented line alone between blanks, carrying no label of its own. Cutting
+// at the header instead would hand the reader a block with no fund and no
+// meeting identity.
+func issBroadridgeTailStart(lines []string) int {
+	h := -1
+	for i, l := range lines {
+		if brColumnHeader(strings.TrimSpace(l)) {
+			h = i
+			break
+		}
+	}
+	if h < 0 {
+		return -1
+	}
+	// Only a header whose every cell brColumnMap can name is handed over. A
+	// mixed file printing the canonical `ITEM | PROPOSAL | TYPE | VOTE |
+	// FOR/AGAINST MANAGEMENT` table is declined by this layout and claimed at
+	// dispatch instead; see TestISSNPXDoesNotClaimTheBroadridgeTable.
+	var spill []string
+	for _, j := range []int{h - 1, h + 1} {
+		if j >= 0 && j < len(lines) {
+			if s := strings.TrimSpace(lines[j]); s != "" && brColumnFurniture(s) {
+				spill = append(spill, s)
+			}
+		}
+	}
+	if brBuildColumnMap(strings.TrimSpace(lines[h]), spill) == nil {
+		return -1
+	}
+	for c := h - 1; c >= 0 && h-c <= issBroadridgeTailLookback; c-- {
+		s := strings.TrimSpace(lines[c])
+		if s == "" || strings.HasPrefix(lines[c], " ") || strings.HasPrefix(lines[c], "\t") {
+			continue
+		}
+		if strings.Contains(s, ":") || brDashRule(s) || len(brFindLabels(s)) > 0 {
+			continue
+		}
+		if c == 0 || strings.TrimSpace(lines[c-1]) != "" {
+			continue
+		}
+		if c+1 >= len(lines) || strings.TrimSpace(lines[c+1]) != "" {
+			continue
+		}
+		if !matchBroadridge(strings.Join(lines[c:], "\n")) {
+			return -1
+		}
+		return c
+	}
+	return -1
+}
+
 func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	// The header declares a <SERIES-ID>/<SERIES-NAME> pair per series and the body
 	// prints a fund heading, so the name is the bridge between a vote and its
@@ -496,7 +557,33 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	// The cover's series list may print a fund's rename under its current name,
 	// which is the only place a body banner spelling the OLD name is declared.
 	issCoverRenameAliases(seriesIx, lines)
+	// A filer agent may abandon this grammar mid-document for Broadridge
+	// meeting blocks (MFS Series Trust XI 2004: 52 issuers under a bare fund
+	// line, none of them read). The remainder of the body is handed to the
+	// parser that owns that grammar rather than dropped.
+	brTail := issBroadridgeTailStart(lines)
 	for i := 0; i < len(lines); i++ {
+		if i == brTail {
+			flush()
+			tail, err := parseBroadridge(strings.Join(lines[i:], "\n"), meta)
+			if err != nil {
+				return rows, err
+			}
+			// The switch line IS the fund heading, and the grammar below it
+			// prints no heading of its own. It is resolved through this
+			// parser's own chain, and stamped only on rows the Broadridge
+			// reader left unnamed.
+			switchFund := strings.TrimSpace(lines[i])
+			switchSeries := issPlainHeadingSeries(seriesIx, dict, switchFund)
+			for j := range tail {
+				if tail[j].FundName == "" && tail[j].SeriesID == "" {
+					tail[j].FundName = switchFund
+					tail[j].SeriesID = switchSeries
+				}
+			}
+			rows = append(rows, tail...)
+			break
+		}
 		line := strings.TrimSpace(lines[i])
 
 		// `Item 1. Signal Funds` opens a section of the report under a family

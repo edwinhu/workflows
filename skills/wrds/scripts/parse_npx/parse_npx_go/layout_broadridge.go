@@ -199,7 +199,20 @@ func brColumnHeader(line string) bool {
 	}
 	first := fields[0]
 	if !brItemFirstWords[first] {
-		return false
+		// `Proposal Number` opens the item column of the transposed shape (MFS
+		// Series Trust XI 2004). The second token must be NUMBER -- a bare
+		// PROPOSAL is the header's own spill line, which names no column --
+		// and every cell of the line must be one brColumnMap can name, so the
+		// reader that claims the shape is the one that can read its columns by
+		// their text rather than by position. `Proposal Number | Vote Cast |
+		// RV | Proposal` (Gardner Lewis 2005) names no RV and stays with the
+		// splittable layout that already reads it.
+		if first != "PROPOSAL" || len(fields) < 2 || fields[1] != "NUMBER" {
+			return false
+		}
+		if brBuildColumnMap(strings.TrimSpace(line), nil) == nil {
+			return false
+		}
 	}
 	// A bare "PROP" or "ITEM" must still be the item column, not a stray word:
 	// the header always names the proposal column somewhere to its right.
@@ -1258,6 +1271,9 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		pendingIssuerAt = -1
 		headerText      string
 		spill           []string
+		// colMap is set from a header whose every cell could be named; see
+		// brColumnMap.
+		colMap *brColumnMap
 
 		hasType bool
 		maxVote = 2
@@ -1500,6 +1516,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 			// its own and closed Air China's).
 			repeatHeader = sawTable
 			headerText = strings.Join(append(spill, line), " ")
+			colMap = brBuildColumnMap(line, spill)
 			spill = nil
 			hasType, maxVote = brColumnShape(headerText)
 			inTable, sawTable = true, true
@@ -1568,6 +1585,43 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 		if brPageFurniture(line) || brFundMasthead(lines, i) {
 			continue
+		}
+
+		// A header whose every cell could be named is read BY COLUMN, never by
+		// the trailing-cell order: this vintage prints the fund's vote to the
+		// LEFT of the management recommendation, so the positional peel would
+		// swap the two on every row. A label line still opens a meeting block
+		// and is left to the branches below.
+		if inTable && colMap != nil && !brDashRule(line) && len(brFindLabels(line)) == 0 {
+			if it, vote, mgmt, desc, ok := colMap.read(brSplitWide(line)); ok {
+				switch {
+				case it != "" && brIsItemToken(it):
+					flush()
+					cur = &brRowBuf{item: brNormalizeItem(it)}
+				case cur != nil && vote != "" && cur.vote != "":
+					// A nominee of the slate above votes under the item the
+					// slate opened; see the slate rule in brAbsorb's caller.
+					parent := cur.item
+					parentText := brSlateHead(cur)
+					flush()
+					cur = &brRowBuf{item: parent}
+					if parentText != "" {
+						cur.text = append(cur.text, parentText)
+					}
+				}
+				if cur != nil {
+					if desc != "" {
+						cur.text = append(cur.text, desc)
+					}
+					if vote != "" && cur.vote == "" {
+						cur.vote = vote
+					}
+					if mgmt != "" && cur.forAgnst == "" {
+						cur.forAgnst = mgmt
+					}
+				}
+				continue
+			}
 		}
 
 		item, rest := brSplitItem(line)
@@ -2430,6 +2484,141 @@ func brSplitWide(line string) []string {
 		}
 	}
 	return out
+}
+
+// brColumnMap names a header's cells by their TEXT -- `Vote Cast` is the fund's
+// vote wherever on the line it is printed -- and records the ORDER those named
+// columns are printed in.
+//
+// Every spelling the positional peel in brPeelColumns handles orders its
+// trailing cells TYPE, VOTE, MANAGEMENT. This vintage TRANSPOSES the two vote
+// columns (`Proposal Number | Vote Cast | Mgt Rec | Proposal`), so a positional
+// read of it would emit every row with the vote and the recommendation swapped
+// -- strictly worse than the blank the filing gets without it, because the rows
+// it inverts are exactly the ones that carry a dissent. A map is built only for
+// a header whose every cell can be named; any other header keeps the peel.
+type brColumnMap struct {
+	// fields holds one name per header cell, in printed order: "item",
+	// "vote", "mgmt" or "desc".
+	fields []string
+}
+
+// brColumnField names one header cell. Only the spellings of the transposed
+// shape are named: a header this cannot name in full builds no map at all.
+func brColumnField(text string) string {
+	switch strings.Join(strings.Fields(strings.ToUpper(text)), " ") {
+	case "PROPOSAL NUMBER", "PROPOSAL NO", "PROPOSAL NO.", "PROPOSAL #":
+		return "item"
+	case "VOTE CAST", "VOTES CAST":
+		return "vote"
+	case "REC", "REC.", "MGT REC", "MGT REC.", "MGMT REC", "MGMT REC.",
+		"MANAGEMENT REC", "MGT RECOMMENDATION", "MGMT RECOMMENDATION",
+		"MANAGEMENT RECOMMENDATION":
+		return "mgmt"
+	case "PROPOSAL", "PROPOSAL DESCRIPTION":
+		return "desc"
+	}
+	return ""
+}
+
+// brBuildColumnMap builds the map from the header's cells and the words of its
+// spill line, and returns nil unless every cell is named exactly once.
+//
+// A cell printed over two physical lines (`Mgt` above `Rec`) is joined by TEXT
+// rather than by column offset: collapseSpaces (html.go) squeezes every gap to
+// two spaces and drops indentation before any layout runs, so the offsets the
+// filer printed are gone by the time this reads them.
+func brBuildColumnMap(header string, spill []string) *brColumnMap {
+	cells := brSplitWide(header)
+	if len(cells) < 2 {
+		return nil
+	}
+	var spillWords []string
+	for _, s := range spill {
+		spillWords = append(spillWords, brSplitWide(s)...)
+	}
+	m := &brColumnMap{fields: make([]string, len(cells))}
+	seen := map[string]bool{}
+	for i, c := range cells {
+		f := brColumnField(c)
+		for _, w := range spillWords {
+			if f != "" {
+				break
+			}
+			if f = brColumnField(w + " " + c); f == "" {
+				f = brColumnField(c + " " + w)
+			}
+		}
+		if f == "" || seen[f] {
+			return nil
+		}
+		seen[f] = true
+		m.fields[i] = f
+	}
+	if !seen["vote"] || !seen["desc"] {
+		return nil
+	}
+	return m
+}
+
+// read pulls one printed row apart by column.
+//
+// A blank cell collapses away with the spacing, so the columns are anchored on
+// what a cell can BE rather than counted off: the item token opens the row, the
+// trailing run of cells that are not vote words is the description, and the
+// vote words between them fill the map's vote-bearing columns.
+//
+// They fill from the RIGHT on a row that carries an item token, because that is
+// the column this vintage leaves blank -- a slate's own line prints the
+// management recommendation with no fund vote beside it. A line with no item
+// token is a nominee of the slate above, which prints its own vote under the
+// vote column and no recommendation, so those fill from the LEFT.
+func (m *brColumnMap) read(cells []string) (item, vote, mgmt, desc string, ok bool) {
+	var voteCols []int
+	hasItem := false
+	for i, f := range m.fields {
+		switch f {
+		case "vote", "mgmt":
+			voteCols = append(voteCols, i)
+		case "item":
+			hasItem = true
+		}
+	}
+	lo := 0
+	if len(cells) > 0 && brIsItemToken(cells[0]) {
+		if !hasItem {
+			return "", "", "", "", false
+		}
+		item, lo = cells[0], 1
+	}
+	hi := len(cells)
+	for hi > lo && !brVoteVocabulary[strings.ToLower(strings.Trim(cells[hi-1], ".,;:"))] {
+		hi--
+	}
+	desc = strings.Join(cells[hi:], " ")
+	mid := cells[lo:hi]
+	if len(mid) > len(voteCols) {
+		return "", "", "", "", false
+	}
+	vals := make([]string, len(m.fields))
+	if item != "" {
+		for k := range mid {
+			vals[voteCols[len(voteCols)-1-k]] = mid[len(mid)-1-k]
+		}
+	} else {
+		for k := range mid {
+			vals[voteCols[k]] = mid[k]
+		}
+	}
+	for i, f := range m.fields {
+		switch f {
+		case "vote":
+			vote = vals[i]
+		case "mgmt":
+			mgmt = vals[i]
+		}
+	}
+	return item, vote, mgmt, desc, true
 }
 
 // brIdentityHeaderSpill reports a line built only from the words of a wrapped
