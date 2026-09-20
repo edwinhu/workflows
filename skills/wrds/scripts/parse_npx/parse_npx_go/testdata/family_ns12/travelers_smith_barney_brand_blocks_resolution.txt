@@ -1,0 +1,110 @@
+<SEC-DOCUMENT>0001193125-05-177809.txt : 20050831
+<SEC-HEADER>0001193125-05-177809.hdr.sgml : 20050831
+<ACCEPTANCE-DATETIME>20050831092305
+ACCESSION NUMBER:		0001193125-05-177809
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050831
+DATE AS OF CHANGE:		20050831
+EFFECTIVENESS DATE:		20050831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			TRAVELERS SERIES FUND INC
+		CENTRAL INDEX KEY:			0000919557
+		IRS NUMBER:				133767311
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08372
+		FILM NUMBER:		051060301
+
+	BUSINESS ADDRESS:	
+		STREET 1:		CITIGROUP ASSET MANAGEMENT
+		STREET 2:		125 BROAD STREET, 10TH FLOOR
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10004
+		BUSINESS PHONE:		212-291-2556
+
+	MAIL ADDRESS:	
+		STREET 1:		CITIGROUP ASSET MANAGEMENT
+		STREET 2:		125 BROAD STREET, 10TH FLOOR
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10004
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	SMITH BARNEY TRAVELERS SERIES FUND INC
+		DATE OF NAME CHANGE:	19940613
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	SBA VARIABLE PRODUCTS SERIES FUND INC
+		DATE OF NAME CHANGE:	19940228
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>dnpx.htm
+<DESCRIPTION>TRAVELERS SERIES FUND INC.
+<TEXT>
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" COLOR="#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+
+
+
+========== TRAVELERS SERIES FUND INC. - SMITH BARNEY LARGE CAP VALUE ===========
+==========                         PORTFOLIO                         ===========
+
+
+3COM CORP.
+
+Ticker:       COMS           Security ID:  885535104
+Meeting Date: SEP 22, 2004   Meeting Type: Annual
+Record Date:  AUG 2, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Eric A. Benhamou          For       For        Management
+1.2   Elect  Director Gary T. Dicamillo         For       For        Management
+1.3   Elect  Director James R. Long             For       For        Management
+1.4   Elect  Director Raj Reddy                 For       For        Management
+1.5   Elect  Director David C. Wajsgras         For       For        Management
+2     Ratify Auditors                           For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+ALLTEL CORP.
+
+Ticker:       AT             Security ID:  020039103
+Meeting Date: APR 21, 2005   Meeting Type: Annual
+Record Date:  FEB 24, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director John Belk                  For       For        Management
+1.2   Elect Director Gregory W. Penske          For       For        Management
+</PRE>
+ </DIV>
+<p Style='page-break-before:always'>
+<HR  SIZE="3" COLOR="#999999" WIDTH="100%" ALIGN="CENTER">
+ <P STYLE="margin-top:0px;margin-bottom:0px"><FONT FACE="Times New Roman" SIZE="2">SIGNATURES </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px"><FONT FACE="Times New Roman" SIZE="2">Pursuant to the requirements of the Investment Company Act of 1940, the registrant has duly caused this Report to be signed on its behalf by the undersigned, thereunto
+duly authorized. </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P><HR SIZE="1" NOSHADE COLOR="#000000" ALIGN="left"> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT FACE="Times New Roman" SIZE="2">Travelers
+Series Fund Inc. </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT
+FACE="Times New Roman" SIZE="2">By: </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT FACE="Times New Roman" SIZE="2">/s/ R. Jay Gerken </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT
+FACE="Times New Roman" SIZE="2">R. Jay Gerken </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT FACE="Times New Roman" SIZE="2">Chairman, President and Chief Executive Officer of </FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px"><FONT FACE="Times New Roman" SIZE="2">Travelers Series Fund Inc. </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT
+SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT FACE="Times New Roman" SIZE="2">Date: August 31, 2005 </FONT></P>
+</BODY></HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
