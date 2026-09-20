@@ -322,6 +322,20 @@ func parseProxyEdge(text string, meta FilingMeta) ([]VoteRow, error) {
 				continue
 			}
 		}
+		// The issuer heading is the bare line standing above the ballot's
+		// identity block. Requiring that block to follow is what tells it from
+		// the other bare cells this template prints between ballots -- the
+		// agenda number, its proponent, the meeting date range -- each of which
+		// would otherwise be taken for a new issuer and wipe the identity.
+		// This runs BEFORE the fund test because an issuer whose own name
+		// carries a fund word -- a real estate investment TRUST -- is still the
+		// issuer, and taking it for a fund would wipe the fund for the rest of
+		// the filing.
+		if i+1 < len(lines) && peIdentityLabel(lines[i+1]) {
+			issuer = line
+			ticker, cusip, isin, mtgDate, mtgType = "", "", "", "", ""
+			continue
+		}
 		// A bare heading. The vendor prints the fund above its ballots and the
 		// issuer above each one, with nothing to mark either.
 		// Only a whole cell can be a heading, and never the cell that follows

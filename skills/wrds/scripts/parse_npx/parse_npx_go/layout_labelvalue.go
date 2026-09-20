@@ -435,6 +435,18 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 		inBlock = false
 		lastRow = -1
 		if len(cells) == 1 && !lvYear(cells[0]) {
+			// The FUND heading, printed as a bare line with no rule and no
+			// label: Pacific Select Fund heads each section
+			// `PACIFIC SELECT FUND - EQUITY INDEX PORTFOLIO` and declares no
+			// series, and this layout read the line as an issuer, which the
+			// real issuer below it then overwrote -- all 13,199 rows of the
+			// 2005 filing carried no fund name at all. The resolution is the
+			// evidence: only a heading the same rules the ruled banners go
+			// through answer EXACTLY is read this way, so an issuer never is.
+			if s := lvResolveBanner(sharedIdx, dict, cells[0]); s != "" {
+				fund, curSeries = cells[0], s
+				continue
+			}
 			// The ISSUER heading, which this grammar prints above the identity
 			// pairs with nothing to mark it. A lone year is the wrapped tail of
 			// a `Record Date:` line, not a name.
