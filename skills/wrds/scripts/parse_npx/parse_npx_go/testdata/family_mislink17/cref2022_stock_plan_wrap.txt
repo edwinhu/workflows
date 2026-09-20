@@ -1,0 +1,91 @@
+<SEC-DOCUMENT>0000930413-22-001535.txt : 20220825
+ACCESSION NUMBER:		0000930413-22-001535
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20220630
+FILED AS OF DATE:		20220825
+DATE AS OF CHANGE:		20220825
+FILER:
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			COLLEGE RETIREMENT EQUITIES FUND
+		CENTRAL INDEX KEY:			0000777535
+		FORM TYPE:		N-PX
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000777535
+<SERIES-ID>S000005080
+<SERIES-NAME>Stock Account
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000777535
+<SERIES-ID>S000005081
+<SERIES-NAME>Global Equities Account
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000777535
+<SERIES-ID>S000005082
+<SERIES-NAME>Growth Account
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000777535
+<SERIES-ID>S000005083
+<SERIES-NAME>Equity Index Account
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000777535
+<SERIES-ID>S000005084
+<SERIES-NAME>Core Bond Account
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000777535
+<SERIES-ID>S000005085
+<SERIES-NAME>Inflation-Linked Bond Account
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000777535
+<SERIES-ID>S000005086
+<SERIES-NAME>Social Choice Account
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>c104311_npx.txt
+<TEXT>
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-04415
+Reporting Period: 07/01/2021 - 06/30/2022
+College Retirement Equities Fund
+
+============================== CREF Equity Index ===============================
+
+
+1-800-FLOWERS.COM, INC.
+
+Ticker:       FLWS           Security ID:  68243Q106
+Meeting Date: DEC 07, 2021   Meeting Type: Annual
+Record Date:  OCT 12, 2021
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+2     Ratify BDO USA, LLP as Auditors         For       For          Management
+3     Amend Omnibus Stock Plan                For       Against      Management
+4     Amend Non-Employee Director Omnibus     For       Against      Management
+      Stock Plan
+
+
+--------------------------------------------------------------------------------
+
+CLOUDERA, INC.
+
+Ticker:       CLDR           Security ID:  18914U100
+Meeting Date: AUG 25, 2021   Meeting Type: Special
+Record Date:  JUL 01, 2021
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Approve Merger Agreement                For       For          Management
+2     Advisory Vote on Golden Parachutes      For       For          Management
+3     Adjourn Meeting                         For       For          Management
