@@ -1,0 +1,74 @@
+<SEC-DOCUMENT>0000935069-08-001961.txt : 20080827
+<SEC-HEADER>0000935069-08-001961.hdr.sgml : 20080827
+<ACCEPTANCE-DATETIME>20080827164507
+ACCESSION NUMBER:		0000935069-08-001961
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20080630
+FILED AS OF DATE:		20080827
+DATE AS OF CHANGE:		20080827
+EFFECTIVENESS DATE:		20080827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			GAMCO GLOBAL SERIES FUNDS, INC
+		CENTRAL INDEX KEY:			0000909504
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MD
+		DATE OF NAME CHANGE:	19930805
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001064
+<SERIES-NAME>GABELLI GLOBAL CONVERTIBLE SECURITIES FUND
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001065
+<SERIES-NAME>GABELLI GLOBAL GROWTH FUND
+<CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx.txt
+<DESCRIPTION>GAMCO GLOBAL SERIES NPX 0608
+<TEXT>
+<PAGE>
+
+ProxyEdge - Investment Company Report
+Meeting Date Range: 07/01/2007 to 06/30/2008             Report Date: 07/11/2008
+Selected Accounts: NPX GABELLI GLOBAL GROWTH FD                    Page 1 of 101
+
+
+<TABLE>
+<S>                                                                    <C>             <C>
+BANK OF IRELAND (THE GOVERNOR AND COMPANY OF THE BANK OF IRELAND)      IRE             CRT MEETING DATE: 07/17/2007
+ISSUER: G49374146                                  ISIN: IE0030606259
+SEDOL:  B18VMN8, 3070732, B01ZKW5, 3060625
+</TABLE>
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                               Proposal        Vote            For or Against
+Number    Proposal                                                     Type            Cast            Management
+- --------  -----------------------------------------------------------  --------------  --------------  -----------------------------
+<S>       <C>                                                          <C>             <C>             <C>
+1.        RECEIVE THE REPORT OF THE DIRECTORS AND THE ACCOUNTS         Management      For             *Management Position Unknown
+          FOR THE YE 31 MAR 2007
+2.        APPROVE TO DECLARE A DIVIDEND                                Management      For             *Management Position Unknown
+3.A       ELECT MR. RICHIE BOUCHER AS A DIRECTOR                       Management      For             *Management Position Unknown
+3.B       ELECT MR. DES CROWLEY AS A DIRECTOR                          Management      For             *Management Position Unknown
+3.C       ELECT MR. DENIS DONOVAN AS A DIRECTOR                        Management      For             *Management Position Unknown
+3.D       ELECT MR. DENNIS HOLT AS A MEMBER OF THE REMUNERATION        Management      For             *Management Position Unknown
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
