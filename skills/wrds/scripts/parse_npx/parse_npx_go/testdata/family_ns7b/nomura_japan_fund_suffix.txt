@@ -1,0 +1,297 @@
+<SEC-DOCUMENT>0001193125-09-183914.txt : 20090828
+<SEC-HEADER>0001193125-09-183914.hdr.sgml : 20090828
+<ACCEPTANCE-DATETIME>20090828163750
+ACCESSION NUMBER:		0001193125-09-183914
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20090630
+FILED AS OF DATE:		20090828
+DATE AS OF CHANGE:		20090828
+EFFECTIVENESS DATE:		20090828
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			NOMURA PARTNERS FUNDS, INC.
+		CENTRAL INDEX KEY:			0000053192
+		IRS NUMBER:				131963426
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			0930
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-01090
+		FILM NUMBER:		091043645
+
+	BUSINESS ADDRESS:	
+		STREET 1:		C/O STATE STREET BANK AND TRUST COMPANY
+		STREET 2:		4 COPLEY PLACE, 5TH FLOOR
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02116
+		BUSINESS PHONE:		1-800-535-2726
+
+	MAIL ADDRESS:	
+		STREET 1:		C/O STATE STREET BANK AND TRUST COMPANY
+		STREET 2:		4 COPLEY PLACE, 5TH FLOOR
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02116
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	JAPAN FUND INC
+		DATE OF NAME CHANGE:	19920703
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000053192
+<SERIES-ID>S000009778
+<SERIES-NAME>THE JAPAN FUND, INC.
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026869
+<CLASS-CONTRACT-NAME>THE JAPAN FUND, INC. CLASS S
+<CLASS-CONTRACT-TICKER-SYMBOL>SJPNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000072810
+<CLASS-CONTRACT-NAME>CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>NPJAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000072811
+<CLASS-CONTRACT-NAME>CLASS C
+<CLASS-CONTRACT-TICKER-SYMBOL>NPJCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000072812
+<CLASS-CONTRACT-NAME>CLASS I
+<CLASS-CONTRACT-TICKER-SYMBOL>NPJIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000053192
+<SERIES-ID>S000024534
+<SERIES-NAME>ASIA PACIFIC EX JAPAN FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000072786
+<CLASS-CONTRACT-NAME>CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>NPAAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000072787
+<CLASS-CONTRACT-NAME>CLASS C
+<CLASS-CONTRACT-TICKER-SYMBOL>NPACX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000072788
+<CLASS-CONTRACT-NAME>CLASS I
+<CLASS-CONTRACT-TICKER-SYMBOL>NPAIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>dnpx.htm
+<DESCRIPTION>NOMURA PARTNERS FUNDS, INC.
+<TEXT>
+<HTML><HEAD>
+<TITLE>Nomura Partners Funds, inc.</TITLE>
+</HEAD>
+ <BODY BGCOLOR="WHITE">
+<p Style='page-break-before:always'>
+<HR  SIZE="3" COLOR="#999999" WIDTH="100%" ALIGN="CENTER">
+
+ <P STYLE="margin-top:0px;margin-bottom:0px"><FONT FACE="Times New Roman" SIZE="2"><B>Item 1 - Proxy Voting Record </B></FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT FACE="Times New Roman"
+SIZE="2"><U>PROXY VOTING REPORT </U></FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT FACE="Times New Roman" SIZE="2"><B>July&nbsp;1, 2008 - June 30, 2009 </B></FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT
+FACE="Times New Roman" SIZE="2"><B>NPF - THE JAPAN FUND </B></FONT></P> <P STYLE="font-size:12px;margin-top:0px;margin-bottom:0px">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" ALIGN="center">
+
+<TR>
+<TD WIDTH="15%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="7%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="7%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="9%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="25%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="5%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="4%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="5%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="11%"></TD></TR>
+<TR>
+<TD VALIGN="bottom" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:1px"><FONT FACE="Times New Roman" SIZE="1"><B>COMPANY NAME</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:1px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>TICKER</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:1px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>CUSIP</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:1px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>MTG DATE</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:1px"><FONT FACE="Times New Roman" SIZE="1"><B>DETAILS</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:1px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>PROPOSAL TYPE</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:1px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>VOTED? (Y/N)</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>VOTE</B></FONT></P> <P STYLE="margin-top:0px;margin-bottom:1px"
+ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>CAST</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:1px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>FOR/AGAINST MGMT</B></FONT></P></TD></TR>
+<TR>
+<TD VALIGN="top"><FONT FACE="Times New Roman" SIZE="2">ULVAC INC</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">659948905</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">29-Sep-08</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT FACE="Times New Roman" SIZE="2">AGM</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD></TR>
+<TR>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT FACE="Times New Roman" SIZE="2">1</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT FACE="Times New Roman" SIZE="2">Approve Allocation of Income, With a Final Dividend of JY 21</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">MGMT</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">Y</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">FOR</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">FOR</FONT></TD></TR>
+<p Style='page-break-before:always'>
+<HR  SIZE="3" COLOR="#999999" WIDTH="100%" ALIGN="CENTER">
+
+ <P STYLE="margin-top:0px;margin-bottom:0px"><FONT FACE="Times New Roman" SIZE="2"><U>PROXY VOTING REPORT </U></FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT FACE="Times New Roman"
+SIZE="2"><B>July 1, 2008 - June 30, 2009 </B></FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT FACE="Times New Roman" SIZE="2"><B>NPF - ASIA PACIFIC EX JAPAN FUND </B></FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT
+SIZE="1">&nbsp;</FONT></P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" ALIGN="center">
+
+<TR>
+<TD WIDTH="15%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="7%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="7%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="9%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="25%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="5%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="4%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="5%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="11%"></TD></TR>
+<TR>
+<TD VALIGN="bottom" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:1px"><FONT FACE="Times New Roman" SIZE="1"><B>COMPANY NAME</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:1px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>TICKER</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:1px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>CUSIP</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:1px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>MTG DATE</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:1px"><FONT FACE="Times New Roman" SIZE="1"><B>DETAILS</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:1px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>PROPOSAL TYPE</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:1px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>VOTED? (Y/N)</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:1px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>VOTE CAST</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1px solid #000000"> <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>FOR/AGAINST</B></FONT></P> <P STYLE="margin-top:0px;margin-bottom:1px"
+ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>MGMT</B></FONT></P></TD></TR>
+<TR>
+<TD VALIGN="top"><FONT FACE="Times New Roman" SIZE="2">BUMIPUTRA-COMMERCE HOLDINGS BHD</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">607574001</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">03-Feb-2009</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT FACE="Times New Roman" SIZE="2">EGM</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD></TR>
+<TR>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT FACE="Times New Roman" SIZE="2">1.</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top"><FONT FACE="Times New Roman" SIZE="2">Authorize the Directors of the Company, subject to the approvals being obtained from the relevant authority and/or parties: i) to issue and allot Warrants to TPG in such number equal to the
+Ringgit Malaysia [RM] equivalent of the nominal value of up to USD 150,000,000 senior Unsecured Guaranteed Bonds [Bonds] to be issued by CIMB Bank (L) Limited to TPG, on the issue date of the Bonds, divided by the initial exercise price of MYR
+10.00, based on the average spot exchange rate of SD to MYR as specified MYRFIX1 over 15 consecutive business days ending on the 3rd business day prior to the date of issue of the Warrants, subject to the provisions of a deed poll constituting the
+Warrants to be executed by the Company [Deed Poll], the salient terms as specified; ii) issue and allot from time to time such appropriate number of new ordinary shares of MYR 1.00 each in the capital of the Company following the exercise of the
+Warrants [new BCHB Shares] and that such new BCHB Shares shall, upon allotment and issue, rank pari passu in all respects with the then existing ordinary shares of the Company, save and except that the new BCHB Shares shall not be entitled to any
+dividends, rights, allotments and/or other distributions, the entitlement date of which is prior to the allotment of the new BCHB Shares; iii) to issue and allot such additional Warrants as a result from any adjustments made under the provisions of
+the Deed Poll [Additional Warrants] and to further issue and allot new BCHB Shares following the exercise of such additional warrants and that such new BCHB Shares shall, upon issue and allotment, rank pari passu in all respects with the then
+existing ordinary shares of the Company, save and except that the new BCHB Shares shall not be entitled to any dividends, rights, allotments and/or other distributions, the entitlement date of which is prior to the allotment of the new BCHB Shares;
+and iv) to do all such acts and execute all such documents, deeds or agreements as may be required to give effect to the proposed warrants issue with full power to assent to any conditions, modifications, amendments and variations as may be
+imposed/permitted by the relevant authorities and/or as the Directors may be deem fit or expedient in the best interest of the Company</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">MGMT</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">Y</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">FOR</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">FOR</FONT></TD></TR>
+</TABLE>
+</BODY></HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
