@@ -160,6 +160,29 @@ func spIsTextReport(text string) bool {
 // header, the only line of the nine that carries the short labels.
 const spSECFormLabel = "Issuer of Portfolio Security"
 
+// The same label SPLIT over two physical lines, which is how this template
+// spells it wherever the issuer column is narrower than the label. It is the
+// TAIL that sits directly over the dashed rule and carries the other short
+// labels, so `Portfolio Security` is the label line and `Issuer of` must be the
+// line immediately above it.
+const (
+	spSECFormLabelHead = "Issuer of"
+	spSECFormLabelTail = "Portfolio Security"
+)
+
+// spIsSECFormLabelLine reports whether lines[i] is the header's bottom label
+// line, in either spelling.
+func spIsSECFormLabelLine(lines []string, i int) bool {
+	line := strings.TrimRight(lines[i], "\r")
+	if strings.HasPrefix(line, spSECFormLabel) {
+		return true
+	}
+	if !strings.HasPrefix(line, spSECFormLabelTail) || i == 0 {
+		return false
+	}
+	return strings.HasPrefix(strings.TrimRight(lines[i-1], "\r"), spSECFormLabelHead)
+}
+
 // spIsSECFormPre is the fourth signature of this family: the SEC's own Form
 // N-PX column wording printed as a fixed-width table inside <PRE>, with the
 // stacked header's bottom label line sitting directly over its dashed rule.
@@ -171,13 +194,13 @@ const spSECFormLabel = "Issuer of Portfolio Security"
 // requiring the label line to cut at least four columns AND to be followed by a
 // rule drawing at least four.
 func spIsSECFormPre(text string) bool {
-	if !containsAnyFolded(text, []string{"issuer of portfolio security"}) {
+	if !containsAnyFolded(text, []string{"portfolio security"}) {
 		return false
 	}
 	lines := strings.Split(text, "\n")
 	for i, l := range lines {
 		line := strings.TrimRight(l, "\r")
-		if !strings.HasPrefix(line, spSECFormLabel) || len(spTextRuns(line)) < 4 {
+		if !spIsSECFormLabelLine(lines, i) || len(spTextRuns(line)) < 4 {
 			continue
 		}
 		for j := i + 1; j < len(lines) && j <= i+2; j++ {
@@ -280,6 +303,7 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 			case bytes.EqualFold(trimmed, []byte("<TABLE>")):
 				if len(group) == 0 {
 					groupCtx = ctx
+					groupCtx.bare = lastBare
 				}
 				cur, header, haveRule, sawType = &spTable{}, nil, false, false
 			case len(trimmed) == 0:
@@ -544,6 +568,18 @@ func spLabelBlock(header []string) []string {
 	return block
 }
 
+// spIsSECFormGroup reports whether a group's first table is headed by the SEC's
+// own Form N-PX wording, whose key column is the issuer of the portfolio
+// security in either of its two spellings.
+func spIsSECFormGroup(group []spTable) bool {
+	if len(group) == 0 || len(group[0].labels) == 0 {
+		return false
+	}
+	label := group[0].labels[0]
+	return strings.HasPrefix(label, strings.ToUpper(spSECFormLabelHead)) ||
+		strings.HasPrefix(label, strings.ToUpper(spSECFormLabelTail))
+}
+
 // spIsMainPanel reports whether a set of labels is the LEFT half of a table the
 // SEC Form N-PX template split because it was wider than the page: it names the
 // issuer and the matter voted on, and it stops short of the vote.
@@ -746,7 +782,12 @@ type spContext struct {
 	// Wilshire Total Market ETF` under a banner reading `SPDR DOW JONES TOTAL
 	// MARKET ETF (FORMERLY SPDR DJ WILSHIRE TOTAL MARKET ETF)`), which no index
 	// declares. The banner is the filing's own evidence for the same section.
-	page    string
+	page string
+	// bare is the last bare line read before the group opened, whatever it was.
+	// The SEC's own Form N-PX template prints NO preamble and NO account label:
+	// the fund is named on a line of its own above the stacked header, so for a
+	// group carrying that header this is the only place the fund is written.
+	bare    string
 	issuer  string
 	ticker  string
 	cusip   string
@@ -1105,6 +1146,14 @@ func spGroupRows(group []spTable, seriesIdx *spIndex, resolved map[string]string
 		// tables carry their own identity is read exactly as before.
 		if row.FundName == "" {
 			row.FundName = ctx.fund
+		}
+		if row.FundName == "" && ctx.bare != "" && spIsSECFormGroup(group) {
+			// The SEC's own Form N-PX template prints neither a preamble nor an
+			// account label, so the bare banner line above the header is the only
+			// name the filing gives the fund. Read only for a group carrying that
+			// header -- any other layout names its fund somewhere the reader
+			// already looks, and a bare line there is a heading, not a fund.
+			row.FundName = ctx.bare
 		}
 		if row.IssuerName == "" {
 			row.IssuerName = ctx.issuer
