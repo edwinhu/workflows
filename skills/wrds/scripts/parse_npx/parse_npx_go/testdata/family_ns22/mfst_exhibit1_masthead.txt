@@ -1,0 +1,89 @@
+<SEC-DOCUMENT>0001580642-17-004477.txt : 20170817
+<SEC-HEADER>0001580642-17-004477.hdr.sgml : 20170817
+<ACCEPTANCE-DATETIME>20170817161529
+ACCESSION NUMBER:		0001580642-17-004477
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20170630
+FILED AS OF DATE:		20170817
+DATE AS OF CHANGE:		20170817
+EFFECTIVENESS DATE:		20170817
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			MUTUAL FUND SERIES TRUST
+		CENTRAL INDEX KEY:			0001355064
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			OH
+		FISCAL YEAR END:			0630
+
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000049985
+<SERIES-NAME>Eventide Multi-Asset Income Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>mfst_npxb.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="width: 23%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Registrant:&nbsp;&nbsp;Mutual Fund Series Trust</B></FONT></TD>
+    <TD NOWRAP STYLE="width: 6%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 7%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 15%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 31%; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Fund Name - Eventide Multi-Asset Income Fund</B></FONT></TD>
+    <TD NOWRAP STYLE="width: 5%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 2%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 5%; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Exhibit 1</FONT></TD>
+    <TD NOWRAP STYLE="width: 6%">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="2"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Investment Company 1940 Act File # 811-21872</B></FONT></TD>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-top: Black 1pt solid">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; text-align: center">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; text-align: center">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 14pt"><B>N-PX Form Requirements</B></FONT></TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; text-align: center">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; text-align: center">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(a) Issuer's Name</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(b) Exchange Ticker Symbol</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(c)&quot;CUSIP&quot; #</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(d) Shareholder Meeting Type &amp; Date</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(e) Matter Identification</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(f) Proposal Type</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(g) Voted</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(h) Vote Cast</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(i) For or Against Management</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Hercules Capital Inc.</FONT></TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">HTGC</FONT></TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">427096508</FONT></TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Annual; 07/07/2016</FONT></TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">&nbsp;&nbsp;&nbsp;1a. Elect Director Manuel A. Henriquez</FONT></TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt</FONT></TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

@@ -5401,8 +5401,13 @@ func htmlLabelledCells(cells []string) (label, value string, ok bool) {
 	// `Item 1` (Mutual Fund Series Trust 2018, 502 of 1,433 rows with no
 	// series). The registrant and the item cell are dropped and the glued cell
 	// split on its own separator, as the Putnam single-cell path above does.
+	// The same banner spells the trailing scaffolding cell as the EXHIBIT number
+	// instead (`Registrant:  Mutual Fund Series Trust` | `Fund Name - Eventide
+	// Multi-Asset Income Fund` | `Exhibit 1`, Mutual Fund Series Trust 2017, all
+	// 1,302 rows named `Exhibit 1` with no series): a row that prints the label
+	// is read from the LABELLED cell either way, never from the last cell.
 	if len(vals) == 3 && strings.HasPrefix(strings.ToLower(vals[0]), "registrant:") &&
-		reHTMLBannerItemCell.MatchString(vals[2]) && htmlFundLabelled(vals[1]) {
+		(reHTMLBannerItemCell.MatchString(vals[2]) || reHTMLBareExhibitCell.MatchString(vals[2])) && htmlFundLabelled(vals[1]) {
 		if l, v, ok := htmlSplitGluedLabelCell(vals[1]); ok {
 			return l, v, true
 		}

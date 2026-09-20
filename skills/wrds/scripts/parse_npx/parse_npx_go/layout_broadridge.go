@@ -510,6 +510,27 @@ func brHeadingSlot(lines []string, i int) (slot string, crossedBlank bool) {
 	return slot, crossedBlank
 }
 
+// brMeetingHeadingRun reports that the rule at lines[i-1] closes the LABEL RUN
+// of the meeting heading the vendor has just opened, with no proposal table
+// between it and the block opening at lines[i]: an `… Agenda Number:  N` line,
+// a rule, the fixed run `Security:` / `Meeting Type:` / `Meeting Date:` /
+// `Ticker:` / `ISIN:`, then the rule this block opens under. A meeting that
+// carries no proposals at all leaves that run's LAST line exactly where a fund
+// heading sits, so `ISIN:  US2605431038` was read as the banner of the section
+// it stands inside and every row after it lost the fund (AMG Funds IV 2017,
+// S000044915, 1,361 rows). The run belongs to the heading above it, not to the
+// section, so the slot is refused and the section's own banner stands.
+func brMeetingHeadingRun(lines []string, i int) bool {
+	j := i - 2
+	for j >= 0 && !brDashRule(lines[j]) && strings.TrimSpace(lines[j]) != "" && len(brFindLabels(lines[j])) > 0 {
+		j--
+	}
+	if j == i-2 || j < 1 || !brDashRule(lines[j]) {
+		return false
+	}
+	return brAgendaOpener(lines[j-1])
+}
+
 // brProseBannerWalk is how many unindented prose lines may stand between the
 // fund banner and the block rule. The sentence this catches wraps onto two
 // lines; three bounds the walk without reaching the block above it.
@@ -1292,7 +1313,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 						curSeries, curFund = d.SeriesID, slot
 					}
 				}
-				if slot, crossedBlank := brHeadingSlot(lines, i); slot != "" && !brOpenProposalTail(cur, slot) && !brVoteRowSlot(slot) {
+				if slot, crossedBlank := brHeadingSlot(lines, i); slot != "" && !brOpenProposalTail(cur, slot) && !brVoteRowSlot(slot) && !brMeetingHeadingRun(lines, i) {
 					if crossedBlank {
 						// Evidence-only: act solely on a name this filing's own
 						// header declares, because this slot is also what an
