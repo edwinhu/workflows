@@ -1,0 +1,109 @@
+<SEC-DOCUMENT>0001104659-20-083781.txt : 20200715
+<SEC-HEADER>0001104659-20-083781.hdr.sgml : 20200715
+<ACCEPTANCE-DATETIME>20200715165740
+ACCESSION NUMBER:		0001104659-20-083781
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20200630
+FILED AS OF DATE:		20200715
+DATE AS OF CHANGE:		20200715
+EFFECTIVENESS DATE:		20200715
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CULLEN FUNDS TRUST
+		CENTRAL INDEX KEY:			0001109957
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0630
+
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001109957
+<SERIES-ID>S000006835
+<SERIES-NAME>Cullen High Dividend Equity Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001109957
+<SERIES-ID>S000006836
+<SERIES-NAME>Cullen International High Dividend Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>tm2024591d1_npx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"><B>Cullen International High Dividend Fund</B></P>
+
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+<TR STYLE="background-color: #004F75">
+    <TD COLSPAN="9" STYLE="color: white; font-weight: bold; vertical-align: top; border-top: black 0.5pt solid; border-bottom: black 0.5pt solid; border-left: black 0.5pt solid; text-align: left">ASCENDAS REAL ESTATE INVESTMENT TRUST</TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 0.5pt solid; border-bottom: black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 0.5pt solid; border-bottom: black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 0.5pt solid; border-bottom: black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 0.5pt solid; border-right: black 0.5pt solid; border-bottom: black 0.5pt solid">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="font-weight: bold; vertical-align: top; text-align: left">Security:</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; text-align: left">Y0205X103</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="font-weight: bold; vertical-align: top; text-align: left">Meeting Type:</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left">Annual General Meeting</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="font-weight: bold; vertical-align: top; text-align: left">Ticker:</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="font-weight: bold; vertical-align: top; text-align: left">Meeting Date:</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left">09-Jul-2019</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="font-weight: bold; vertical-align: top; text-align: left">ISIN</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; text-align: left">SG1M77906915</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="font-weight: bold; vertical-align: top; text-align: left">Vote Deadline Date:</TD>
+<TR STYLE="vertical-align: top; background-color: #004F75">
+    <TD STYLE="color: white; font-weight: bold; border-top: black 0.5pt solid; border-left: black 0.5pt solid; text-align: left">Item</TD>
+    <TD COLSPAN="3" STYLE="color: white; font-weight: bold; border-top: black 0.5pt solid; text-align: left">Proposal</TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: black 0.5pt solid; text-align: left">Recommendation</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; border-top: black 0.5pt solid; text-align: left">Default Vote</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; border-top: black 0.5pt solid; text-align: center">For</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; border-top: black 0.5pt solid; text-align: center">Against</TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: black 0.5pt solid; text-align: center">Abstain</TD>
+    <TD STYLE="color: white; font-weight: bold; border-top: black 0.5pt solid; border-right: black 0.5pt solid; text-align: center">Take No Action</TD></TR>
+<TR STYLE="vertical-align: top; background-color: #004F75">
+    <TD STYLE="border-bottom: black 0.5pt solid; border-left: black 0.5pt solid; text-align: left">1</TD>
+    <TD COLSPAN="3" STYLE="border-bottom: black 0.5pt solid; text-align: left">Management Proposal</TD>
+    <TD STYLE="border-bottom: black 0.5pt solid; text-align: left">For</TD>
+    <TD STYLE="border-bottom: black 0.5pt solid; text-align: left">None</TD>
+    <TD COLSPAN="2" STYLE="border-bottom: black 0.5pt solid; text-align: right">2262200</TD>
+    <TD COLSPAN="3" STYLE="border-bottom: black 0.5pt solid; text-align: right">0</TD>
+    <TD STYLE="border-bottom: black 0.5pt solid; text-align: right">0</TD>
+    <TD STYLE="border-right: black 0.5pt solid; border-bottom: black 0.5pt solid; text-align: right">0</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="text-align: left">2</TD>
+    <TD COLSPAN="3" STYLE="text-align: left">Management Proposal</TD>
+    <TD STYLE="text-align: left">For</TD>
+    <TD STYLE="text-align: left">None</TD>
+    <TD COLSPAN="2" STYLE="text-align: right">2262200</TD>
+    <TD COLSPAN="3" STYLE="text-align: right">0</TD>
+    <TD STYLE="text-align: right">0</TD>
+    <TD STYLE="text-align: right">0</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="text-align: left">3</TD>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
