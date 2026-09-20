@@ -1,0 +1,119 @@
+<SEC-DOCUMENT>0001683863-21-004726.txt : 20210827
+<SEC-HEADER>0001683863-21-004726.hdr.sgml : 20210827
+<ACCEPTANCE-DATETIME>20210827084926
+ACCESSION NUMBER:		0001683863-21-004726
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		2
+CONFORMED PERIOD OF REPORT:	20210630
+FILED AS OF DATE:		20210827
+DATE AS OF CHANGE:		20210827
+EFFECTIVENESS DATE:		20210827
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			VICTORY PORTFOLIOS
+		CENTRAL INDEX KEY:			0000802716
+	FILING VALUES:
+		FORM TYPE:		N-PX
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>f9302d2.htm
+<DESCRIPTION>VICTORY VARIABLE INSURANCE
+<TEXT>
+<html>
+<head><title></title></head>
+<body>
+
+<p align='center' style='font-weight:bold'>FORM N-PX</p>
+<br><br>
+<p>ICA File Number:&nbsp;&nbsp;811-08979</p><p>Registrant Name:&nbsp;&nbsp;Victory Variable Insurance</p><p>Reporting Period:&nbsp;&nbsp;07/01/2020 - 06/30/2021</p>
+<br style='page-break-after:always;'><p align='center'>Victory 500 Index VIP Series</p>
+
+<table cellpadding='2' cellspacing='0' width='100%' border='1'>
+<tr style='font-size:10pt;border:none;'><th style='font-size:10pt;border:none;' colspan='5'>&nbsp;</th></tr>
+<tr>
+<td style='font-size:10pt;font-weight:bold;' colspan='5'>10X GENOMICS, INC.
+<br>Meeting Date:&nbsp;&nbsp;JUN 11, 2021
+<br>Record Date:&nbsp;&nbsp;APR 15, 2021
+<br>Meeting Type:&nbsp;&nbsp;ANNUAL
+</td>
+</tr>
+<tr>
+<td style='font-size:10pt;' colspan='5'>
+Ticker:&nbsp;&nbsp;TXG
+<br>Security ID:&nbsp;&nbsp;88025U109
+<br>
+</td>
+</tr>
+<tr>
+<th style='font-size:10pt' width='10%'>Proposal No</th>
+<th style='font-size:10pt' width='55%'>Proposal</th>
+<th style='font-size:10pt' width='15%'>Proposed By</th>
+<th style='font-size:10pt' width='15%'>Management Recommendation</th>
+<th style='font-size:10pt' width='10%'>Vote Cast</th>
+</tr>
+<tr>
+<td style='font-size=10pt'>1a</td>
+<td style='font-size=10pt'>Elect Director Bryan E. Roberts</td>
+<td style='font-size=10pt'>Management</td>
+<td style='font-size=10pt'>For</td>
+<td style='font-size=10pt'>Against</td>
+</tr>
+<tr>
+<td style='font-size=10pt'>1b</td>
+<td style='font-size=10pt'>Elect Director Kimberly J. Popovits</td>
+<td style='font-size=10pt'>Management</td>
+<td style='font-size=10pt'>For</td>
+<td style='font-size=10pt'>Against</td>
+</tr>
+</table>
+
+<br style='page-break-after:always;'><p align='center'>Victory High Yield VIP Series</p>
+
+<table cellpadding='2' cellspacing='0' width='100%' border='1'>
+<tr style='font-size:10pt;border:none;'><th style='font-size:10pt;border:none;' colspan='5'>&nbsp;</th></tr>
+<tr>
+<td style='font-size:10pt;font-weight:bold;' colspan='5'>IHEARTMEDIA, INC.
+<br>Meeting Date:&nbsp;&nbsp;APR 21, 2021
+<br>Record Date:&nbsp;&nbsp;MAR 01, 2021
+<br>Meeting Type:&nbsp;&nbsp;ANNUAL
+</td>
+</tr>
+<tr>
+<td style='font-size:10pt;' colspan='5'>
+Ticker:&nbsp;&nbsp;IHRT
+<br>Security ID:&nbsp;&nbsp;45174J509
+<br>
+</td>
+</tr>
+<tr>
+<th style='font-size:10pt' width='10%'>Proposal No</th>
+<th style='font-size:10pt' width='55%'>Proposal</th>
+<th style='font-size:10pt' width='15%'>Proposed By</th>
+<th style='font-size:10pt' width='15%'>Management Recommendation</th>
+<th style='font-size:10pt' width='10%'>Vote Cast</th>
+</tr>
+<tr>
+<td style='font-size=10pt'>1..1</td>
+<td style='font-size=10pt'>DIRECTOR-Richard J. Bressler</td>
+<td style='font-size=10pt'>Management</td>
+<td style='font-size=10pt'>For</td>
+<td style='font-size=10pt'>For</td>
+</tr>
+<tr>
+<td style='font-size=10pt'>1..2</td>
+<td style='font-size=10pt'>DIRECTOR-K. Sivaramakrishnan</td>
+<td style='font-size=10pt'>Management</td>
+<td style='font-size=10pt'>For</td>
+<td style='font-size=10pt'>For</td>
+</tr>
+</table>
+<div><br></div></body>
+</html>
+</TEXT>
+</DOCUMENT>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
