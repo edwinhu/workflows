@@ -2610,6 +2610,25 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 				}
 			}
 		}
+		// The registrant's own words in a leading run with NO initialism among
+		// them: `Scudder VIT Equity 500 Index` and `VIT Small Cap Index Fund`
+		// on the ProxyEdge account banners of SCUDDER INVESTMENTS VIT FUNDS
+		// (11,411 rows of one 2004 filing with no series), whose dictionary
+		// spells the same funds `DWS Equity 500 Index VIP`. The run alone is no
+		// evidence, so the declaration that answers the remainder must spell
+		// none of the run's words; the remainder then goes back through the
+		// whole chain and the one type-token rung, the dictionary saying `VIP`
+		// where the account says `Fund`.
+		if rest, run, ok := issCutRegistrantWordRun(normalizeSeriesName(banner), registrantKey); ok {
+			if _, d := issResolveFund(ix, rest); issDeclOmitsRun(d, run) {
+				return banner, d
+			}
+			if stem, typed := issDropTypeWord(rest); typed && stem != "" {
+				if _, d := issResolveFund(ix, stem); issDeclOmitsRun(d, run) {
+					return banner, d
+				}
+			}
+		}
 		// The registrant's FORMER conformed names, which the SGML header also
 		// declares: John Hancock Variable Insurance Trust 2012 still heads
 		// funds `John Hancock Trust Balanced Trust`.
@@ -3859,6 +3878,68 @@ func issCutInitialsAndWordRun(key, registrantKey string) (string, bool) {
 		return "", false
 	}
 	return strings.Join(toks[n:], " "), true
+}
+
+// issCutRegistrantWordRun deletes a leading run of the registrant's own PLAIN
+// words, with no initialism among them -- `scudder vit` for `scudder
+// investments vit funds`. It returns the remainder and the run's tokens; the
+// caller decides on the run, since the run alone is no evidence (see
+// issDeclOmitsRun). Two tokens must remain.
+func issCutRegistrantWordRun(key, registrantKey string) (string, []string, bool) {
+	regToks := issRegistrantTokens(registrantKey)
+	if len(regToks) == 0 {
+		return "", nil, false
+	}
+	toks := strings.Fields(key)
+	n, named := 0, false
+	for ; n < len(toks); n++ {
+		if !regToks[toks[n]] {
+			break
+		}
+		if !issEntityTypeWord(toks[n]) {
+			named = true
+		}
+	}
+	// A run of the registrant's generic type words alone is no brand:
+	// `Trust Banking Fund` for RYDEX VARIABLE TRUST is a declared `Banking
+	// Fund` with a stray noun, not a prefixed heading.
+	if n == 0 || !named || len(toks)-n < 2 {
+		return "", nil, false
+	}
+	return strings.Join(toks[n:], " "), toks[:n], true
+}
+
+// issEntityTypeWord reports whether tok is a generic fund-entity noun rather
+// than a name of its own.
+func issEntityTypeWord(tok string) bool {
+	switch tok {
+	case "fund", "funds", "portfolio", "portfolios", "trust", "trusts",
+		"account", "accounts", "series", "company", "inc", "the":
+		return true
+	}
+	return false
+}
+
+// issDeclOmitsRun reports whether the declaration d spells NONE of the run's
+// words. That is what makes cutting a run of plain registrant words safe: when
+// the declaration carries one of them, the heading and the declaration differ
+// INSIDE the name rather than by a prefix, which is the `john hancock trust
+// Balanced Trust` former-name case (`trust`) and the `state street ... Index
+// Portfolio` noun swap (`state street`), both specified to stamp nothing.
+func issDeclOmitsRun(d *SeriesDecl, run []string) bool {
+	if d == nil {
+		return false
+	}
+	declToks := make(map[string]bool)
+	for _, t := range strings.Fields(normalizeSeriesName(d.Name)) {
+		declToks[t] = true
+	}
+	for _, t := range run {
+		if declToks[t] {
+			return false
+		}
+	}
+	return true
 }
 
 func issRegistrantPrefixAt(banner, registrantKey string, sep rune) (string, bool) {
