@@ -228,6 +228,29 @@ func peFundName(s string) bool {
 	return false
 }
 
+// peRegistrantFund reads the fund out of a `Registrant:` banner, which this
+// vendor prints as `<REGISTRANT NAME> - <FUND NAME>`. The right-hand side is
+// the fund, and it is taken only when the left-hand side is the registrant's
+// own name -- otherwise the banner is handed over whole, since nothing says
+// which side of the dash is the brand. A banner naming the registrant alone
+// names no fund and leaves the section's fund where it was.
+func peRegistrantFund(value, company string) string {
+	v := strings.TrimSpace(value)
+	if v == "" {
+		return ""
+	}
+	if k := strings.LastIndex(v, " - "); k >= 0 {
+		left, right := strings.TrimSpace(v[:k]), strings.TrimSpace(v[k+3:])
+		if right != "" && normalizeSeriesName(left) == normalizeSeriesName(company) {
+			return right
+		}
+	}
+	if normalizeSeriesName(v) == normalizeSeriesName(company) {
+		return ""
+	}
+	return v
+}
+
 // peItemCell reports that line i is a bare item number printed under a header
 // band -- the cell that opens a ballot row, whatever follows it.
 func peItemCell(lines []string, i int, labels []string) bool {
@@ -300,6 +323,19 @@ func parseProxyEdge(text string, meta FilingMeta) ([]VoteRow, error) {
 				mtgDate = htmlDate(value)
 			case "MEETING TYPE":
 				mtgType = value
+			case "REGISTRANT":
+				// The banner that opens a section. It names the section's fund
+				// outright, so it overrides whatever the bare-heading scan took
+				// before it -- on the cover page that is the agent-for-service
+				// paragraph, which names no fund -- and it re-seeds at every
+				// section, not once per document.
+				if name := peRegistrantFund(value, meta.CompanyName); name != "" {
+					fund = name
+					fundSeries = icrResolveFundShared(seriesIx, name)
+					if fundSeries == "" {
+						fundSeries = htmlDictionaryFund(seriesIx, dict, name)
+					}
+				}
 			}
 			continue
 		}
