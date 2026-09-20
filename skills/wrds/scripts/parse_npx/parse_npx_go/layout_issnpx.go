@@ -636,6 +636,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			} else if inTable && issProposalWrapLine(lines, i) {
 				// ... and never on the wrapped tail of the proposal still open
 				// above it, however well the tail resolves.
+			} else if issVoteRowLine(line) {
+				// ... nor on a COMPLETE numbered proposal row of this grammar,
+				// which the wrap guard above does not cover.
 			} else if issPlainHeadingSeries(seriesIx, dict, line) != "" {
 				// ... or on a name the registrant's own dictionary carries
 				// exactly. Pacific Select Fund prints its portfolio as a bare
@@ -7516,6 +7519,26 @@ func issProposalWrapLine(lines []string, i int) bool {
 		}
 	}
 	return false
+}
+
+// issVoteRowLine reports a line that is a COMPLETE numbered proposal row of
+// this grammar -- an item number, and the trailing Vote Cast and Sponsor cells
+// issPeelColumns reads off the right edge. issProposalWrapLine judges the
+// wrapped TAIL of such a row; the row itself stands one line higher and reaches
+// the bare-paragraph branch on its own when the meeting ends on it. `21
+// Authorise Market Purchase For For Management` was offered as a banner and the
+// trailing `Management` cell carried it through the dictionary to `Columbia
+// Variable Portfolio - Cash Management Fund`, S000019849 -- a money market fund
+// stamped on 28,414 rows of other portfolios' equity votes (Columbia Funds
+// Variable Series Trust II 2011). layout_broadridge.go applies the same test in
+// brVoteRowSlot.
+func issVoteRowLine(line string) bool {
+	item, rest := issSplitItem(line)
+	if item == "" {
+		return false
+	}
+	_, _, cast, sponsor := issPeelColumns(rest)
+	return cast != "" && sponsor != ""
 }
 
 // issPunctRuleLine reports a line drawn entirely out of one rule character.

@@ -1,0 +1,158 @@
+<SEC-DOCUMENT>0001438934-23-000262.txt : 20230828
+<SEC-HEADER>0001438934-23-000262.hdr.sgml : 20230828
+<ACCEPTANCE-DATETIME>20230828135721
+ACCESSION NUMBER:		0001438934-23-000262
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20230630
+FILED AS OF DATE:		20230828
+DATE AS OF CHANGE:		20230828
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			JOHN HANCOCK VARIABLE INSURANCE TRUST
+		CENTRAL INDEX KEY:			0000756913
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0630
+
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008214
+<SERIES-NAME>Total Bond Market Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008215
+<SERIES-NAME>American Growth Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008216
+<SERIES-NAME>American International Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008217
+<SERIES-NAME>Blue Chip Growth Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008219
+<SERIES-NAME>500 Index Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008220
+<SERIES-NAME>Capital Appreciation Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008222
+<SERIES-NAME>Core Bond Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008228
+<SERIES-NAME>Equity Income Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008229
+<SERIES-NAME>Financial Industries Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008231
+<SERIES-NAME>Global Equity Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000017255
+<SERIES-NAME>Emerging Markets Value Trust
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+3363 JHVIT Emerging Markets Value Trust
+--------------------------------------------------------------------------------------------------------------------------
+ JOHN HANCOCK COLLATERAL TRUST                                                               Agenda Number:  100001321
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  926EMC902
+    Meeting Type:  Special
+    Meeting Date:  09-Sep-2022
+          Ticker:
+            ISIN:
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1      DIRECTOR
+       Andrew G. Arnott                                          Mgmt          For                            For
+--------------------------------------------------------------------------------------------------------------------------
+ ANGANG STEEL COMPANY LTD                                                                    Agenda Number:  715827385
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  Y0132D105
+    Meeting Type:  EGM
+    Meeting Date:  14-Jul-2022
+          Ticker:
+            ISIN:  CNE1000001V4
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+CMMT   PLEASE NOTE THAT THE COMPANY NOTICE AND                   Non-Voting
+       PROXY FORM ARE AVAILABLE BY CLICKING ON THE
+       URL LINKS:
+       https://www1.hkexnews.hk/listedco/listconew
+       s/sehk/2022/0623/2022062301363.pdf AND
+       https://www1.hkexnews.hk/listedco/listconew
+       s/sehk/2022/0623/2022062301381.pdf
+
+1      TO CONSIDER AND APPROVE THE PROPOSED                      Mgmt          Against                        Against
+       AMENDMENTS TO ARTICLES OF ASSOCIATION
+
+2      TO CONSIDER AND APPROVE THE PROPOSED                      Mgmt          For                            For
+       ISSUANCE OF ULTRA-SHORT-TERM FINANCING
+       BILLS OF THE COMPANY IN THE INTER-BANK BOND
+       MARKET
+
+3      TO CONSIDER AND APPROVE THE PROPOSED                      Mgmt          For                            For
+       ISSUANCE OF SHORT-TERM FINANCING BILLS OF
+       THE COMPANY IN THE INTER-BANK BOND MARKET
+
+4      TO CONSIDER AND APPROVE THE PROPOSED                      Mgmt          For                            For
+       ISSUANCE OF MEDIUM-TERM NOTES OF THE
+       COMPANY IN THE INTER-BANK BOND MARKET
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+ ANGANG STEEL COMPANY LTD                                                                    Agenda Number:  716404948
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  Y0132D105
+    Meeting Type:  EGM
+    Meeting Date:  19-Dec-2022
+          Ticker:
+            ISIN:  CNE1000001V4
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+CMMT   PLEASE NOTE THAT THE COMPANY NOTICE AND                   Non-Voting
+       PROXY FORM ARE AVAILABLE BY CLICKING ON THE
+       URL LINKS:
+       https://www1.hkexnews.hk/listedco/listconew
+       s/sehk/2022/1128/2022112800520.pdf AND
+       https://www1.hkexnews.hk/listedco/listconew
+       s/sehk/2022/1128/2022112800587.pdf
+
+1      TO CONSIDER AND APPROVE THE APPOINTMENT OF                Mgmt          For                            For
+       MR. TIAN YONG (AS SPECIFIED) AS AN
+       EXECUTIVE DIRECTOR OF THE NINTH SESSION OF
+       THE BOARD OF THE COMPANY
