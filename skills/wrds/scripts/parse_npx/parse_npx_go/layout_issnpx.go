@@ -2468,6 +2468,19 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	ix.depth++
 	name, d := issResolveFundMemo(ix, banner)
 	ix.depth--
+	// The heading's own tier word, which no cut above may trade away: Summit
+	// Mutual Funds is a two-tier trust whose `SUMMIT RUSSELL 2000 SMALL CAP
+	// INDEX FUND` and `SUMMIT RUSSELL SMALL CAP INDEX PORTFOLIO` banners are
+	// different funds, and only the Portfolio tier is declared, so every rung
+	// that discards the tier word hands one id to both banners (2,932 rows).
+	// Judged on the outermost call against the banner AS PRINTED, and only
+	// where the registrant declares a series on the heading's own tier -- where
+	// it declares none the substitution is the vendor's, not the registrant's,
+	// and `AMERITAS SMALL CAP FUND` for a declared `Ameritas Small Cap
+	// Portfolio` still resolves.
+	if d != nil && outer && issTierMismatch(ix, normalizeSeriesName(banner), d) {
+		return banner, nil
+	}
 	// Last of all: the heading names a fund of a SIBLING registrant of the same
 	// sponsor, exact and unique corpus-wide (cikSeries.crossCIK). Read on the
 	// heading AS PRINTED only -- every cut the chain above makes is
@@ -2591,7 +2604,16 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 		return banner, d
 	}
 	if issTrustOwnName(ix, banner) {
-		return banner, nil
+		// The trust's own name is no series name -- except where the SEC renamed
+		// the registrant and left the series under the old one:
+		// Phoenix-Oakhurst Income & Growth Fund 2004 heads its only section
+		// `PHOENIX-OAKHURST INCOME & GROWTH FUND` for a series declared under the
+		// registrant's FORMER conformed name `PHOENIX INCOME & GROWTH FUND`
+		// (S000001378, 1,964 rows). Those former names are already on the index,
+		// so nothing new is read, and exactly one of them must be a declared
+		// series name at this CIK: a registrant whose former names reach two
+		// declared series, or none, stays blank, and no other rung is consulted.
+		return banner, issFormerNameDecl(ix)
 	}
 	// Franklin's terminal -Master is an export decoration, not a master/feeder alias.
 	// Retry only the remaining exact declared name; collisions still return nil.
@@ -6541,6 +6563,63 @@ func issDropTypeWord(key string) (string, bool) {
 		return strings.Join(f[:len(f)-1], " "), true
 	}
 	return key, false
+}
+
+// issFormerNameDecl is the one series a registrant's FORMER conformed names
+// declare at this CIK, or nil where they declare two or none.
+func issFormerNameDecl(ix *issSeriesIndex) *SeriesDecl {
+	var found *SeriesDecl
+	for _, fk := range ix.formerKeys {
+		d := ix.byName[fk]
+		if d == nil || d.SeriesID == "" {
+			continue
+		}
+		if found != nil && found.SeriesID != d.SeriesID {
+			return nil
+		}
+		found = d
+	}
+	return found
+}
+
+// issTierMismatch refuses a candidate whose declared type word differs from the
+// heading's own at a registrant that declares a series on the heading's tier.
+// Summit Mutual Funds is a two-tier trust whose `SUMMIT RUSSELL 2000 SMALL CAP
+// INDEX FUND` and `SUMMIT RUSSELL SMALL CAP INDEX PORTFOLIO` banners are
+// different funds, and only the Portfolio tier is declared, so dropping the tier
+// word hands one id to both banners (2,932 rows). Where the CIK declares nothing
+// on the heading's tier the substitution is the vendor's, not the registrant's,
+// and `AMERITAS SMALL CAP FUND` for a declared `Ameritas Small Cap Portfolio`
+// still resolves.
+func issTierMismatch(ix *issSeriesIndex, key string, d *SeriesDecl) bool {
+	if d == nil {
+		return false
+	}
+	declKey := normalizeSeriesName(d.Name)
+	if _, typed := issDropTypeWord(key); !typed {
+		return false
+	}
+	if _, typed := issDropTypeWord(declKey); !typed {
+		return false
+	}
+	f, df := strings.Fields(key), strings.Fields(declKey)
+	tw := f[len(f)-1]
+	return tw != df[len(df)-1] && issDeclaresTypeWord(ix, tw)
+}
+
+// issDeclaresTypeWord reports whether any declared name is itself typed with
+// the given type word, so a heading carrying that word names a tier the
+// registrant keeps apart rather than a spelling of another tier's series.
+func issDeclaresTypeWord(ix *issSeriesIndex, tw string) bool {
+	for i := range ix.decls {
+		if ix.decls[i].SeriesID == "" {
+			continue
+		}
+		if f := ix.declToks(i); len(f) > 1 && f[len(f)-1] == tw {
+			return true
+		}
+	}
+	return false
 }
 
 // issWithoutStandaloneSeries removes one internal SERIES token and accepts only
