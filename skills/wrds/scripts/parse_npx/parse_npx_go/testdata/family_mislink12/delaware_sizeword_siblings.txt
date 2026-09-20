@@ -1,0 +1,116 @@
+<SEC-DOCUMENT>0000910682-04-000022.txt : 20040827
+<SEC-HEADER>0000910682-04-000022.hdr.sgml : 20040827
+<ACCEPTANCE-DATETIME>20040827144827
+ACCESSION NUMBER:		0000910682-04-000022
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040827
+DATE AS OF CHANGE:		20040827
+EFFECTIVENESS DATE:		20040827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			DELAWARE POOLED TRUST INC
+		CENTRAL INDEX KEY:			0000875352
+		IRS NUMBER:				232651511
+		STATE OF INCORPORATION:			PA
+		FISCAL YEAR END:			1031
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx_811-6322pooledtrust.txt
+<DESCRIPTION>DELAWARE POOLED TRUST
+<TEXT>
+                                 UNITED STATES
+                      SECURITIES AND EXCHANGE COMMISSION
+                             Washington, DC 20549
+
+                                  FORM N-PX
+
+          ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT
+                             INVESTMENT COMPANIES
+
+
+Investment Company Act File Number:       811-6322
+
+Exact Name of Registrant as
+Specified in Charter:                     Delaware Pooled Trust
+
+Address of principal executive offices:   2005 Market Street
+                                          Philadelphia, PA 19103
+
+Name and address of agent for service:    Richelle S. Maestro
+                                          2005 Market Street
+                                          Philadelphia, PA 19103
+
+Registrant's telephone number:            (800) 523-1918
+
+Date of fiscal year end:                  October 31
+
+Date of reporting period:                 July 1, 2003 - June 30, 2004
+
+
+
+================================================================================
+
+ITEM 1. PROXY VOTING RECORD.
+
+====================== THE INTERNATIONAL EQUITY PORTFOLIO ======================
+
+
+AMCOR LTD.
+
+Ticker:       AMCR           Security ID:  AU000000AMC4
+Meeting Date: OCT 23, 2003   Meeting Type: Annual
+Record Date:  OCT 21, 2003
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Accept Financial Statements and Statutory For       For        Management
+      Reports
+2a    Elect Ronald Keith Barton as Director     For       For        Management
+2b    Elect George John Pizzey as Director      For       For        Management
+================= THE INTERNATIONAL LARGE-CAP EQUITY PORTFOLIO =================
+
+
+AVIVA PLC (FORMERLY CGNU PLC)
+
+Ticker:                      Security ID:  GB0002162385
+Meeting Date: APR 27, 2004   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Accept Financial Statements and Statutory For       For        Management
+      Reports
+2     Approve Final Dividend of 15.15 Pence Per For       For        Management
+      Share
+===================== THE LARGE-CAP VALUE EQUITY PORTFOLIO =====================
+
+
+ABBOTT LABORATORIES
+
+Ticker:       ABT            Security ID:  002824100
+Meeting Date: APR 23, 2004   Meeting Type: Annual
+Record Date:  FEB 25, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Roxanne S. Austin         For       For        Management
+1.2   Elect  Director H.Laurance Fuller         For       For        Management
+===================== THE SMALL-CAP VALUE EQUITY PORTFOLIO =====================
+
+
+A. O. SMITH CORP.
+
+Ticker:       SAOSA          Security ID:  831865209
+Meeting Date: APR 5, 2004    Meeting Type: Annual
+Record Date:  FEB 25, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director William F. Buehler        For       For        Management
+1.2   Elect  Director Kathleen J. Hempel        For       For        Management
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
