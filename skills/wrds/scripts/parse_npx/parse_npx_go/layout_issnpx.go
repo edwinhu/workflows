@@ -4523,6 +4523,13 @@ func issFutureVintage(ix *issSeriesIndex, d *SeriesDecl) bool {
 	for i := range ix.decls {
 		x := &ix.decls[i]
 		if len(x.DeclDate) != 8 {
+			// An undated decl is one the filing's own header printed. A
+			// series this filing declares existed when it was filed, so that
+			// declaration vetoes any later vintage a folded dictionary alias
+			// carries for the same id.
+			if x.SeriesID == d.SeriesID {
+				return false
+			}
 			continue
 		}
 		if earliest == "" || x.DeclDate < earliest {
