@@ -1,0 +1,120 @@
+<SEC-DOCUMENT>0001438934-21-000135.txt : 20210819
+<SEC-HEADER>0001438934-21-000135.hdr.sgml : 20210819
+<ACCEPTANCE-DATETIME>20210818205314
+ACCESSION NUMBER:		0001438934-21-000135
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20200630
+FILED AS OF DATE:		20210819
+DATE AS OF CHANGE:		20210818
+EFFECTIVENESS DATE:		20210819
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			John Hancock Funds II
+		CENTRAL INDEX KEY:			0001331971
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000036500
+<SERIES-NAME>Strategic Equity Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111805
+<CLASS-CONTRACT-NAME>Class NAV
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000055170
+<SERIES-NAME>International Strategic Equity Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000173477
+<CLASS-CONTRACT-NAME>Class NAV
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>BRD031_0001331971_2021.txt
+<DESCRIPTION>BRD031_0001331971_2021
+<TEXT>
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              WASHINGTON, D.C. 20549
+
+                                   FORM N-PX
+
+    ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT
+                                     COMPANY
+
+ INVESTMENT COMPANY ACT FILE NUMBER:     811-21779
+
+ NAME OF REGISTRANT:                     John Hancock Funds II
+
+
+
+ ADDRESS OF PRINCIPAL EXECUTIVE OFFICES: 200 Berkeley Street
+                                         Boston, MA 02116
+
+ NAME AND ADDRESS OF AGENT FOR SERVICE:  Charles A. Rizzo
+                                         197 Clarendon Street
+                                         Boston, MA 02116
+
+ REGISTRANT'S TELEPHONE NUMBER:          6176633000
+
+ DATE OF FISCAL YEAR END:                08/31
+
+ DATE OF REPORTING PERIOD:               07/01/2020 - 06/30/2021
+
+2X2K JHF II Strategic Equity Allocation Fund
+--------------------------------------------------------------------------------------------------------------------------
+ 1-800-FLOWERS.COM, INC.                                                                     Agenda Number:  935288565
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  68243Q106
+    Meeting Type:  Annual
+    Meeting Date:  09-Dec-2020
+          Ticker:  FLWS
+            ISIN:  US68243Q1067
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1.     DIRECTOR
+       Geralyn R. Breig                                          Mgmt          For                            For
+       Celia R. Brown                                            Mgmt          For                            For
+       James A. Cannavino                                        Mgmt          For                            For
+       Eugene F. DeMark                                          Mgmt          For                            For
+       Leonard J. Elmore                                         Mgmt          For                            For
+       Adam Hanft                                                Mgmt          For                            For
+       Stephanie R. Hofmann                                      Mgmt          For                            For
+       Christopher G. McCann                                     Mgmt          For                            For
+       James F. McCann                                           Mgmt          For                            For
+       Katherine Oliver                                          Mgmt          For                            For
+       Larry Zarin                                               Mgmt          For                            For
+
+2.     To ratify the appointment of BDO USA, LLP                 Mgmt          For                            For
+       as our independent registered public
+       accounting firm for the fiscal year ending
+       June 27, 2021.
+
+3.     To approve, on an advisory basis, the                     Mgmt          For                            For
+       Company's executive compensation.
+
+4.     To approve the 2003 Long Term Incentive and               Mgmt          For                            For
+       Share Award Plan, as Amended and Restated
+       October 15, 2020.
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
