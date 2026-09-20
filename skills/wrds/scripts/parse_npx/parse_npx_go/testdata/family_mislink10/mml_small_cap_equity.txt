@@ -1,0 +1,182 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ DWbuI8+I1qSfPyQIqPaEGdLZc08j1eNsfz4bGgPboZgZUCEqhxTfVrdzOmRvuesP
+ wVED+81FaauUrhYuuyF7QQ==
+
+<SEC-DOCUMENT>0001104659-04-026391.txt : 20040831
+<SEC-HEADER>0001104659-04-026391.hdr.sgml : 20040831
+<ACCEPTANCE-DATETIME>20040831111808
+ACCESSION NUMBER:		0001104659-04-026391
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+DATE AS OF CHANGE:		20040831
+EFFECTIVENESS DATE:		20040831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			MML SERIES INVESTMENT FUND
+		CENTRAL INDEX KEY:			0000067160
+		IRS NUMBER:				042476032
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>a04-9982_2npx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<p align="center" style="font-family:'Times New Roman';font-size:10.0pt;margin:0in 0in .0001pt;text-align:center;">&nbsp;</p>
+
+<p align="center" style="margin:0in 0in .0001pt;text-align:center;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">MML SMALL CAP EQUITY FUND</font></p>
+
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">ACTUANT
+CORP</font></p>
+
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+
+<table border="0" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:collapse;width:100.0%;">
+ <tr>
+  <td width="13%" valign="top" style="padding:0in 0in 0in 0in;width:13.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Ticker:</font></p>
+  </td>
+  <td width="15%" valign="top" style="padding:0in 0in 0in 0in;width:15.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">ATU</font></p>
+  </td>
+  <td width="13%" valign="top" style="padding:0in 0in 0in 0in;width:13.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Security
+  ID:</font></p>
+  </td>
+  <td width="59%" valign="top" style="padding:0in 0in 0in 0in;width:59.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">00508X203</font></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="13%" valign="top" style="padding:0in 0in 0in 0in;width:13.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Meeting
+  Date:</font></p>
+  </td>
+  <td width="15%" valign="top" style="padding:0in 0in 0in 0in;width:15.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">JAN
+  9, 2004</font></p>
+  </td>
+  <td width="13%" valign="top" style="padding:0in 0in 0in 0in;width:13.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Meeting
+  Type:</font></p>
+  </td>
+  <td width="59%" valign="top" style="padding:0in 0in 0in 0in;width:59.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Annual</font></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="13%" valign="top" style="padding:0in 0in 0in 0in;width:13.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Record
+  Date:</font></p>
+  </td>
+  <td width="15%" valign="top" style="padding:0in 0in 0in 0in;width:15.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">NOV
+  18, 2003</font></p>
+  </td>
+  <td width="13%" valign="top" style="padding:0in 0in 0in 0in;width:13.0%;">
+  <p style="font-size:1.0pt;margin:0in 0in .0001pt;">&nbsp;</p>
+  </td>
+  <td width="59%" valign="top" style="padding:0in 0in 0in 0in;width:59.0%;">
+  <p style="font-size:1.0pt;margin:0in 0in .0001pt;">&nbsp;</p>
+  </td>
+ </tr>
+</table>
+
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+
+<table border="0" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:collapse;width:100.0%;">
+ <tr>
+  <td width="5%" valign="bottom" style="border:none;border-bottom:solid windowtext .5pt;padding:0in 0in 0in 0in;width:5.54%;">
+  <p style="margin:0in 0in .0001pt;"><b><font size="1" face="Times New Roman" style="font-size:8.0pt;font-weight:bold;">#</font></b></p>
+  </td>
+  <td width="54%" valign="bottom" style="border:none;border-bottom:solid windowtext .5pt;padding:0in 0in 0in 0in;width:54.92%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:8.0pt;font-weight:bold;">Proposal</font></b></p>
+  </td>
+  <td width="13%" valign="bottom" style="border:none;border-bottom:solid windowtext .5pt;padding:0in 0in 0in 0in;width:13.18%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:8.0pt;font-weight:bold;">Mgt Rec</font></b></p>
+  </td>
+  <td width="13%" valign="bottom" style="border:none;border-bottom:solid windowtext .5pt;padding:0in 0in 0in 0in;width:13.18%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:8.0pt;font-weight:bold;">Vote Cast</font></b></p>
+  </td>
+  <td width="13%" valign="bottom" style="border:none;border-bottom:solid windowtext .5pt;padding:0in 0in 0in 0in;width:13.18%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:8.0pt;font-weight:bold;">Sponsor</font></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="5%" valign="top" bgcolor="#cceeff" style="background:#CCEEFF;border:none;padding:0in 0in 0in 0in;width:5.54%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">1.1</font></p>
+  </td>
+  <td width="54%" valign="top" bgcolor="#cceeff" style="background:#CCEEFF;border:none;padding:0in 0in 0in 0in;width:54.92%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Elect
+  Director Robert C. Arzbaecher</font></p>
+  </td>
+  <td width="13%" valign="top" bgcolor="#cceeff" style="background:#CCEEFF;border:none;padding:0in 0in 0in 0in;width:13.18%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">For</font></p>
+  </td>
+  <td width="13%" valign="top" bgcolor="#cceeff" style="background:#CCEEFF;border:none;padding:0in 0in 0in 0in;width:13.18%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">For</font></p>
+  </td>
+  <td width="13%" valign="top" bgcolor="#cceeff" style="background:#CCEEFF;border:none;padding:0in 0in 0in 0in;width:13.18%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Management</font></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="5%" valign="top" style="padding:0in 0in 0in 0in;width:5.54%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">1.2</font></p>
+  </td>
+  <td width="54%" valign="top" style="padding:0in 0in 0in 0in;width:54.92%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Elect
+  Director Gustav H.P. Boel</font></p>
+  </td>
+  <td width="13%" valign="top" style="padding:0in 0in 0in 0in;width:13.18%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">For</font></p>
+  </td>
+  <td width="13%" valign="top" style="padding:0in 0in 0in 0in;width:13.18%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">For</font></p>
+  </td>
+  <td width="13%" valign="top" style="padding:0in 0in 0in 0in;width:13.18%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Management</font></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="5%" valign="top" bgcolor="#cceeff" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:5.54%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">1.3</font></p>
+  </td>
+  <td width="54%" valign="top" bgcolor="#cceeff" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:54.92%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Elect
+  Director Bruce S. Chelberg</font></p>
+  </td>
+  <td width="13%" valign="top" bgcolor="#cceeff" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:13.18%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">For</font></p>
+  </td>
+  <td width="13%" valign="top" bgcolor="#cceeff" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:13.18%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">For</font></p>
+  </td>
+  <td width="13%" valign="top" bgcolor="#cceeff" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:13.18%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Management</font></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="5%" valign="top" style="padding:0in 0in 0in 0in;width:5.54%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">1.4</font></p>
+ </tr>
+</table>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

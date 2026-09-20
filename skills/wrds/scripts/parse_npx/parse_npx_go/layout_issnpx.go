@@ -2409,6 +2409,18 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	}
 	idx, registrantKey := ix.byName, ix.registrantKey
 	d, declared := lookupSeriesEntry(idx, banner)
+	// An EXACT hit on a name the registrant first declared AFTER this filing's
+	// period of report is a name it reused years later, not this section's fund:
+	// Touchstone Variable Series Trust's 20050630 report heads a section
+	// `Touchstone Balanced Fund`, which the dictionary carries exactly for
+	// S000059066, first declared in 2018, while the contemporaneous sleeve is
+	// S000003148. The hit is set aside so the rungs below read the heading the
+	// way they would with no name at all -- the brand cut answers it with the
+	// sleeve that existed. A HEADER-declared id is undated and issFutureVintage
+	// never refuses it, so a filing's own declarations are untouched.
+	if ix != nil && d != nil && issFutureVintage(ix, d) {
+		d, declared = nil, false
+	}
 	// A heading that is exactly one declared class ticker (`RWL`, RevenueShares
 	// 2012, 18,687 rows with no series): the header's own evidence, exact.
 	if d == nil {
@@ -2699,13 +2711,27 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	// Strategic Equity Allocation Fund` (John Hancock Funds II 2021, 79,614
 	// rows split between the two sections on one series).
 	if strings.Contains(registrantKey, "john hancock") {
+		ord := ""
+		if rf := strings.Fields(registrantKey); len(rf) > 1 && issRomanNumeral(rf[len(rf)-1]) {
+			ord = rf[len(rf)-1]
+		}
 		if f := strings.Fields(banner); len(f) > 1 && strings.EqualFold(f[0], "JHF") {
-			if rf := strings.Fields(registrantKey); len(f) > 2 && len(rf) > 1 &&
-				issRomanNumeral(rf[len(rf)-1]) && strings.EqualFold(f[1], rf[len(rf)-1]) {
+			if len(f) > 2 && ord != "" && strings.EqualFold(f[1], ord) {
 				if _, d := issResolveFund(ix, strings.Join(f[2:], " ")); d != nil {
 					return banner, d
 				}
 			}
+			if _, d := issResolveFund(ix, strings.Join(f[1:], " ")); d != nil {
+				return banner, d
+			}
+		} else if f := strings.Fields(banner); len(f) > 1 && ord != "" && strings.EqualFold(f[0], "JHF"+ord) {
+			// The same brand GLUED to the ordinal, which is how this registrant
+			// prints it: `JHFII U.S. Strategic Equity Allocation` for the declared
+			// `U.S. Strategic Equity Allocation Fund` (S000055171). The leading
+			// qualifier that separates it from the bare `Strategic Equity
+			// Allocation Fund` (S000036500) stays in the remainder, so the two
+			// sections keep their own ids; the remainder still has to name
+			// exactly one declared series.
 			if _, d := issResolveFund(ix, strings.Join(f[1:], " ")); d != nil {
 				return banner, d
 			}
@@ -3865,20 +3891,47 @@ func issSleeveStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		return nil
 	}
 	stem := toks[:cut+1]
+	// A trailing ORDINAL is not a sleeve qualifier: `AIM PREMIER EQUITY FUND II`
+	// is the registrant's second sleeve of that name, and dropping the `II` to
+	// reach the declared `AIM Premier Equity Fund` (S000000216) filed 114 rows
+	// under the sleeve the same filing prints and resolves on its own banner.
+	// No declared name of this registrant carries the ordinal at any vintage, so
+	// there is nothing to resolve to and the heading is refused.
+	ordinal := ""
+	if tail := toks[cut+1:]; len(tail) == 1 && issRomanNumeral(tail[0]) {
+		ordinal = tail[0]
+	}
 	var found *SeriesDecl
 	for name, d := range ix.byName {
 		if d == nil {
 			continue
 		}
 		cand := strings.Fields(name)
-		k := 0
+		k, skipAt := 0, -1
 		for _, t := range cand {
 			if k < len(stem) && t == stem[k] {
 				k++
+				continue
+			}
+			if skipAt < 0 {
+				skipAt = k
 			}
 		}
 		if k != len(stem) {
 			continue
+		}
+		// The declared name carries a word INSIDE the stem that the heading does
+		// not, and the heading's own stem up to that word is one this registrant
+		// declares other sleeves under: `MML SMALL CAP EQUITY FUND` reaches
+		// `MML Small Cap Growth Equity Fund` (S000003827) only by passing over
+		// `GROWTH`, while the same CIK declares `MML Small Cap Value Fund` and
+		// `MML Small Cap Index Fund`. The word passed over is what tells those
+		// sleeves apart, so the heading names a different fund and is refused.
+		if skipAt >= 2 && issStemHasSibling(ix, stem[:skipAt], d.SeriesID) {
+			return nil
+		}
+		if ordinal != "" && !issHasToken(name, ordinal) {
+			return nil
 		}
 		if found != nil && found.SeriesID != d.SeriesID {
 			return nil
@@ -3960,6 +4013,15 @@ func issSplicedDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		// (S000000567), not that name with words spliced in, and stamping it
 		// moved 866 rows onto a sibling series.
 		if indexOfToken(heading, "and") >= 0 && indexOfToken(want, "and") < 0 {
+			continue
+		}
+		// A trailing ORDINAL the declared name does not carry names a SECOND
+		// sleeve of that name rather than decorating the first: `AIM PREMIER
+		// EQUITY FUND II` against the declared `AIM Premier Equity Fund`
+		// (S000000216), which the same filing prints and resolves on its own
+		// banner. The registrant declares no `II` sleeve at any vintage, so the
+		// heading names nothing and 114 rows carried a fund they do not name.
+		if last := heading[len(heading)-1]; issRomanNumeral(last) && indexOfToken(want, last) < 0 {
 			continue
 		}
 		if found != nil && found.SeriesID != d.SeriesID {
@@ -4693,6 +4755,20 @@ func issNearMissDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		if !issNearMiss(banner, ix.declToks(i)) {
 			continue
 		}
+		// The slip was a DROPPED interior token, and the heading's own stem up
+		// to that token is a stem this registrant declares OTHER sleeves under:
+		// `MML SMALL CAP EQUITY FUND` reaches `MML Small Cap Growth Equity Fund`
+		// (S000003827) only by dropping `GROWTH`, while the same CIK declares
+		// `MML Small Cap Value Fund` and `MML Small Cap Index Fund` and the same
+		// filing prints and resolves the Growth banner exactly. The dropped word
+		// is what tells the sleeves apart, so this is a different fund, not a
+		// typo. The stem must run past the leading brand token -- a drop right
+		// behind the brand (`MASSMUTUAL AGGRESIVE GROWTH FUND` for a declared
+		// `MassMutual Select Aggressive Growth Fund`) shares nothing but the
+		// family name and stays readable.
+		if j := issNearMissDropAt(banner, ix.declToks(i)); j >= 2 && issStemHasSibling(ix, banner[:j], d.SeriesID) {
+			return nil
+		}
 		if hit != nil && hit.SeriesID != d.SeriesID {
 			return nil
 		}
@@ -4702,6 +4778,50 @@ func issNearMissDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		return nil
 	}
 	return hit
+}
+
+// issNearMissDropAt is the interior position of decl that issNearMiss dropped to
+// read banner, or -1 when the two agree without a drop.
+func issNearMissDropAt(banner, decl []string) int {
+	if len(decl)-len(banner) != 1 {
+		return -1
+	}
+	for j := 1; j < len(decl)-1; j++ {
+		if len(decl[j]) < issNearMissMinDrop {
+			continue
+		}
+		cut := append(append([]string{}, decl[:j]...), decl[j+1:]...)
+		if issOneTokenEdit(banner, cut) {
+			return j
+		}
+	}
+	return -1
+}
+
+// issStemHasSibling reports that some series of this registrant OTHER than id is
+// declared under a name beginning with stem, token for token.
+func issStemHasSibling(ix *issSeriesIndex, stem []string, id string) bool {
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || d.SeriesID == id || d.Name == "" {
+			continue
+		}
+		toks := ix.declToks(i)
+		if len(toks) <= len(stem) {
+			continue
+		}
+		same := true
+		for k := range stem {
+			if toks[k] != stem[k] {
+				same = false
+				break
+			}
+		}
+		if same {
+			return true
+		}
+	}
+	return false
 }
 
 // issNearMiss reports whether banner reads as decl after at most one INTERIOR
@@ -5155,6 +5275,19 @@ func issDistinctivePairDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		h := indexOfToken(toks, "etf") >= 0
 		d := indexOfToken(strings.Fields(normalizeSeriesName(hit.Name)), "etf") >= 0
 		if h != d {
+			return nil
+		}
+	}
+	// A TRAILING ORDINAL is the whole of what a heading says beyond the pair:
+	// `AIM PREMIER EQUITY FUND II` carries the pair `premier equity` in exactly
+	// one declared name, `AIM Premier Equity Fund` (S000000216) -- which is a
+	// DIFFERENT sleeve, printed and resolved on its own banner in the same
+	// filing. Dropping the ordinal filed 114 rows under it. The registrant
+	// declares no `II` sleeve, so there is nothing to resolve to and the heading
+	// is refused.
+	if hit != nil {
+		last := toks[len(toks)-1]
+		if issRomanNumeral(last) && !issHasToken(normalizeSeriesName(hit.Name), last) {
 			return nil
 		}
 	}
@@ -5769,6 +5902,21 @@ func issBannerContinues(lines []string, i int) bool {
 func issBannerWrapVisible(sofar, next string, ix ...*issSeriesIndex) bool {
 	if strings.Count(sofar, "(") > strings.Count(sofar, ")") {
 		return true
+	}
+	// A continuation that OPENS ON THE REGISTRANT'S OWN NAME is a banner of its
+	// own, not the tail of the one above it: Smith Barney Investment Series
+	// prints `=== SMITH BARNEY INVESTMENT SERIES - SB GOVERNMENT PORTFOLIO ===`
+	// and `=== SMITH BARNEY INVESTMENT SERIES - SB GROWTH AND INCOME FUND ===`
+	// between their own rules a few lines apart, and joining them filed the
+	// second sleeve's 869 rows under the first, which has no vote table at all.
+	// A wrapped tail never re-prints the registrant's name.
+	if len(ix) > 0 && ix[0] != nil {
+		nk := normalizeSeriesName(strings.TrimSpace(next))
+		for _, pk := range append([]string{ix[0].registrantKey}, ix[0].formerKeys...) {
+			if _, ok := issCutRegistrantPrefix(nk, pk); ok {
+				return false
+			}
+		}
 	}
 	// ... and only while the continuation names nothing on its own: a rule that
 	// resolves by itself is the next fund, not the tail of this one (Russell

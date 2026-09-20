@@ -1,0 +1,71 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ GIv4MkVt6rneQBRgHDwM+4IYiLMfJ8+KROW8J6S6BiY0WuVKgNUCjhbdhAnV0O2p
+ BnSqPkpfuY9BYTAl2zigAw==
+
+<SEC-DOCUMENT>0001144204-05-027209.txt : 20050826
+<SEC-HEADER>0001144204-05-027209.hdr.sgml : 20050826
+<ACCEPTANCE-DATETIME>20050826154808
+ACCESSION NUMBER:		0001144204-05-027209
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050826
+DATE AS OF CHANGE:		20050826
+EFFECTIVENESS DATE:		20050826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			TOUCHSTONE VARIABLE SERIES TRUST
+		CENTRAL INDEX KEY:			0000920547
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>v024870_npx-a.htm
+<TEXT>
+<html>
+  <head>
+    <title>
+</title>
+</head>
+  <body bgcolor="#ffffff">
+    <pre>Touchstone Balanced Fund
+
+- --------------------------------------------------------------------------------------------------------------------------
+ ACTUANT CORP.                                                                               Agenda Number:
+- --------------------------------------------------------------------------------------------------------------------------
+    Security:  00508X203                                                             Meeting Type:  Annual
+      Ticker:  ATU                                                                   Meeting Date:  10-Jan-2005
+        ISIN:
+- --------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+01     DIRECTOR
+       ROBERT C. ARZBAECHER                                      Mgmt          For                            For
+       GUSTAV H. P. BOEL                                         Mgmt          For                            For
+       THOMAS J. FISCHER                                         Mgmt          For                            For
+       WILLIAM K. HALL                                           Mgmt          For                            For
+       KATHLEEN J. HEMPEL                                        Mgmt          For                            For
+       ROBERT A. PETERSON                                        Mgmt          For                            For
+       WILLIAM P. SOVEY                                          Mgmt          For                            For
+       LARRY D. YOST                                             Mgmt          For                            For
+
+02     APPROVE ANNUAL BONUS PLAN                                 Mgmt          For                            For
+
+  </body>
+</html>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
