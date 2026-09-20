@@ -286,12 +286,37 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 		groupCtx  spContext
 		lastBare  string
 		proxyEdge = spIsTextReport(string(raw))
+		// contLabels is the geometry the pages AFTER a fund's first page are read
+		// on. The SEC Form N-PX template repeats the stacked header only once per
+		// fund; every later `<PAGE>` opens a bare `<TABLE>` carrying its `<S> <C>`
+		// type row and body lines and nothing else, with the columns the first page
+		// split across two panels printed inline on one line instead. The two
+		// panels are tracked as they are HEADED rather than as they are grouped:
+		// the template folds the neighbouring `Symbol` into the main panel's key
+		// label where the narrow spill panel does not, so the two routinely fail
+		// the group's exact-key test while still being one table's two halves.
+		contLabels []string
+		pendMain   []string
 	)
 
 	flush := func() {
 		if len(group) > 0 {
 			rows = append(rows, spGroupRows(group, seriesIdx, resolved, groupCtx)...)
 			group = nil
+		}
+	}
+
+	// headed folds a table's own header into the running continuation geometry.
+	headed := func(labels []string) {
+		if len(labels) == 0 || spRoleFor(labels[0]) != spIssuer {
+			return
+		}
+		if spIsMainPanel(labels) {
+			pendMain = labels
+			return
+		}
+		if joined := spJoinSpill(pendMain, labels); joined != nil {
+			contLabels, pendMain = joined, nil
 		}
 	}
 
@@ -317,6 +342,11 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 				// stays open across unrelated content is how this parser produced
 				// 148,521 bogus rows once already.
 				flush()
+				if !strings.HasPrefix(string(trimmed), "<") {
+					// A bare line between tables is the next fund's banner, which
+					// ends the run of continuation pages the last header covered.
+					contLabels, pendMain = nil, nil
+				}
 				// The ISS institutional-account report prints the whole identity
 				// of a meeting OUTSIDE the table, as LABEL: VALUE pairs under a
 				// bare issuer heading, and its table carries only the proposal
@@ -352,6 +382,7 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 				cur.spans = spans
 				cur.labels = spLabels(header, spans)
 				haveRule = true
+				headed(cur.labels)
 			} else if proxyEdge && spIsPlainRule(line) {
 				// This vendor draws one unbroken rule rather than one dash run
 				// per column, so there is nothing to cut on. The stacked column
@@ -362,12 +393,17 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 					if labels := spLabels(block, spans); spHasVote(labels) {
 						cur.spans, cur.labels = spans, labels
 						haveRule = true
+						headed(cur.labels)
 						continue
 					}
 				}
 				header = append(header, line)
 			} else if bytes.EqualFold(trimmed, []byte("<CAPTION>")) {
 				// furniture
+			} else if cont := spTypeSpans(line, header, contLabels); cont != nil {
+				cur.spans = cont
+				cur.labels = append([]string(nil), contLabels...)
+				haveRule, sawType = true, true
 			} else {
 				if proxyEdge {
 					spReadProxyEdgeHeading(line, &ctx, &groupCtx)
@@ -615,6 +651,43 @@ func spJoinSpill(main, spill []string) []string {
 	out := make([]string, 0, len(main)+len(spill)-1)
 	out = append(out, main...)
 	return append(out, spill[1:]...)
+}
+
+// spTypeSpans cuts a headerless continuation table's columns out of its SGML
+// `<S> <C> <C>` type row, which is the only geometry such a page prints: each
+// marker starts a column and the column runs to the next marker. It returns nil
+// unless the page really is a continuation of the last headed block -- nothing
+// but the type row read so far, a carried set of labels, and one marker per
+// carried label -- because reading a body on labels that do not count it out is
+// how this parser files one column's text under another's name.
+func spTypeSpans(line string, header, carried []string) []spSpan {
+	if len(carried) == 0 || !spTypeLine(line) {
+		return nil
+	}
+	for _, h := range header {
+		if strings.TrimSpace(h) != "" {
+			return nil
+		}
+	}
+	var runs []spSpan
+	for i := 0; i+3 <= len(line); i++ {
+		switch strings.ToUpper(line[i : i+3]) {
+		case "<S>", "<C>":
+			runs = append(runs, spSpan{i, i + 3})
+			i += 2
+		}
+	}
+	if len(runs) != len(carried) {
+		return nil
+	}
+	spans := make([]spSpan, len(runs))
+	for i, r := range runs {
+		spans[i] = r
+		if i+1 < len(runs) {
+			spans[i].end = runs[i+1].start
+		}
+	}
+	return spans
 }
 
 // spContinuationSpans cuts a headerless page's columns out of its own body. The
