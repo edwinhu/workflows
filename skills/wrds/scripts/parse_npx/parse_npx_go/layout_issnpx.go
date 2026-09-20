@@ -292,7 +292,44 @@ func issPlainHeadingSeries(ix *issSeriesIndex, dict *dictFallback, line string) 
 	if s := icrResolveFundShared(ix, line); s != "" {
 		return s
 	}
-	return htmlDictionaryFund(ix, dict, line)
+	if s := htmlDictionaryFund(ix, dict, line); s != "" {
+		return s
+	}
+	// The registrant prefix and a historical brand on the SAME heading. The
+	// chain's own pair of those two rungs reads the stem ONLY through the
+	// brand index, which keys each declared name whole, so a registrant whose
+	// names all carry a qualifier the banner never prints -- `Legg Mason
+	// Partners VARIABLE Large Cap Value Portfolio` for a heading reading
+	// `TRAVELERS SERIES FUND INC. - SMITH BARNEY LARGE CAP VALUE PORTFOLIO` --
+	// is unreachable there while the siblings registered without it resolve.
+	// The stem goes back through the whole chain instead, the dictionary
+	// included, as the registrant-run cuts already do with their remainders.
+	if stem := issBrandCutStem(ix, line); stem != "" {
+		if s := icrResolveFundShared(ix, stem); s != "" {
+			return s
+		}
+		return htmlDictionaryFund(ix, dict, stem)
+	}
+	return ""
+}
+
+// issBrandCutStem returns the heading with the registrant's own prefix (or one
+// of its former conformed names) and the successor brand behind it both cut,
+// or "" when the heading carries no such pair.
+func issBrandCutStem(ix *issSeriesIndex, line string) string {
+	if !issStripRegistrantPrefix || ix == nil {
+		return ""
+	}
+	for _, pk := range append([]string{ix.registrantKey}, ix.formerKeys...) {
+		rest, ok := issCutRegistrantPrefix(normalizeSeriesName(line), pk)
+		if !ok {
+			continue
+		}
+		if stem := issHistoricalBrandStem(issHistoricalBrandKey(rest)); stem != "" {
+			return stem
+		}
+	}
+	return ""
 }
 
 func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
@@ -435,6 +472,18 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 		if plain {
 			fundSeries = issPlainHeadingSeries(seriesIx, dict, banner)
+			return
+		}
+		// A RULED banner is not read against the dictionary as printed -- but
+		// one that spells the registrant's OWN name and then a successor brand
+		// (`TRAVELERS SERIES FUND INC. - SMITH BARNEY LARGE CAP VALUE
+		// PORTFOLIO` for a registrant whose every declared name reads `Legg
+		// Mason Partners Variable ... Portfolio`) has named the two things
+		// standing between the heading and the vocabulary. Only the stem those
+		// two cuts leave goes back through the chain, and only an exact or
+		// dictionary-exact answer to it counts.
+		if stem := issBrandCutStem(seriesIx, banner); stem != "" {
+			fundSeries = issPlainHeadingSeries(seriesIx, dict, stem)
 		}
 	}
 
@@ -2111,6 +2160,16 @@ func issCutRegistrantPrefix(key, prefix string) (string, bool) {
 	return rest, true
 }
 
+// issHistoricalBrandStem returns the stem a brand key carries -- the part after
+// the successor-brand tag issHistoricalBrandKey prefixes it with -- so a caller
+// can re-read the heading with the brand off. Empty when the key carries none.
+func issHistoricalBrandStem(brandKey string) string {
+	if i := strings.IndexByte(brandKey, ':'); i >= 0 {
+		return brandKey[i+1:]
+	}
+	return ""
+}
+
 // Audited successor brands only; the full distinctive stem must still agree.
 func issHistoricalBrandKey(key string) string {
 	for _, brand := range []string{"wells fargo advantage", "wells fargo", "allspring"} {
@@ -2792,8 +2851,12 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	// collision. The printed banner is kept as the fund name in every case.
 
 	// An internal fund code before a name the rules below can read: the code
-	// comes off and the remainder goes through the whole chain again.
-	if f := strings.Fields(banner); len(f) > 1 && internalFundCode(strings.Trim(f[0], "()")) {
+	// comes off and the remainder goes through the whole chain again. The
+	// leading `NPX` of a ProxyEdge `Selected Accounts: NPX GABELLI GLOBAL
+	// GROWTH FD` line is read the same way: it is the report type the vendor
+	// prints ahead of the account, never a fund word, so it comes off and the
+	// remainder goes back through the chain.
+	if f := strings.Fields(banner); len(f) > 1 && (internalFundCode(strings.Trim(f[0], "()")) || strings.EqualFold(f[0], "NPX")) {
 		if _, d := issResolveFund(ix, strings.Join(f[1:], " ")); d != nil {
 			return banner, d
 		}
