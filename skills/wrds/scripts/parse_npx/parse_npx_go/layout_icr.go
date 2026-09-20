@@ -793,7 +793,7 @@ func icrResolveFundShared(ix *issSeriesIndex, name string) string {
 	// Both registrant-scoped chains have refused: the heading may name a fund
 	// of a SIBLING registrant, admitted only on an exact, corpus-wide unique
 	// dictionary hit under one other CIK (cikSeries.crossCIK).
-	if d := cikDict.crossCIK(ix.cik, name, ix.period); d != nil {
+	if d := cikDict.crossCIK(ix.cik, name, ix.period, ix.registrantKey); d != nil {
 		return d.SeriesID
 	}
 	return ""

@@ -157,7 +157,16 @@ func (d *cikSeries) indexCorpusNames() {
 // hit is refused. dictContemporaneous is the same comparison on the same-CIK
 // path; period is the filing's, empty when unknown, and a decl with no
 // declaration date is read as contemporaneous the way that path reads it.
-func (d *cikSeries) crossCIK(cik, heading, period string) *SeriesDecl {
+//
+// THE FILER'S OWN BRAND INFIX REFUSES. Lazard Retirement Series Inc heads all
+// 30 sections of its 2017 filing with the RETAIL spelling its sibling The
+// Lazard Funds Inc registered, and its own sleeve is that name plus one token
+// of its own COMPANY CONFORMED NAME (`Lazard Retirement Global Dynamic
+// Multi-Asset Portfolio`, S000037000). A heading the filer's own dictionary
+// names at one inserted registrant-brand token is the filer's own sleeve
+// printed short of its brand, so the sibling's identically-spelled retail
+// series is the wrong answer and the heading stays blank.
+func (d *cikSeries) crossCIK(cik, heading, period, registrantKey string) *SeriesDecl {
 	if d == nil || cik == "" || heading == "" {
 		return nil
 	}
@@ -172,7 +181,49 @@ func (d *cikSeries) crossCIK(cik, heading, period string) *SeriesDecl {
 	if len(period) == 8 && len(e.decl.DeclDate) == 8 && e.decl.DeclDate > period {
 		return nil
 	}
+	if d.ownBrandInfix(cik, key, registrantKey) {
+		return nil
+	}
 	return e.decl
+}
+
+// ownBrandInfix reports whether a dictionary row of the FILER's own CIK, at any
+// vintage, differs from the heading by exactly one inserted token that is a
+// token of the registrant's own name. The comparison is issNearMissDecl's own
+// one-token-edit test, read against the filer's dictionary rather than the
+// filing index, which the chain above never consults for a filing that declared
+// something in its header.
+func (d *cikSeries) ownBrandInfix(cik, key, registrantKey string) bool {
+	banner := strings.Fields(key)
+	reg := strings.Fields(registrantKey)
+	if len(banner) == 0 || len(reg) == 0 {
+		return false
+	}
+	brand := make(map[string]bool, len(reg))
+	for _, t := range reg {
+		brand[t] = true
+	}
+	own := d.byCIK[cik]
+	for i := range own {
+		x := &own[i]
+		if x.SeriesID == "" || x.Name == "" {
+			continue
+		}
+		nt := strings.Fields(normalizeSeriesName(x.Name))
+		if len(nt) != len(banner)+1 {
+			continue
+		}
+		for j := range nt {
+			if !brand[nt[j]] {
+				continue
+			}
+			cut := append(append([]string{}, nt[:j]...), nt[j+1:]...)
+			if issOneTokenEdit(cut, banner) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // metaPeriod is the filing's period of report, falling back to the report's own
@@ -299,6 +350,10 @@ type dictFallback struct {
 	// period is the filing's PERIOD OF REPORT, which the cross-CIK rung needs to
 	// refuse a declaration made after it.
 	period string
+	// registrantKey is the filing's COMPANY CONFORMED NAME, normalised, which
+	// the cross-CIK rung needs to tell a registrant-brand infix from any other
+	// inserted word.
+	registrantKey string
 }
 
 func (d *cikSeries) exactFallback(meta FilingMeta) *dictFallback {
@@ -324,9 +379,9 @@ func (d *cikSeries) exactFallback(meta FilingMeta) *dictFallback {
 	if len(extra) == 0 {
 		// The registrant-scoped rungs have nothing to read, but the cross-CIK
 		// rung reads no row of this registrant at all and still applies.
-		return &dictFallback{byName: map[string]*SeriesDecl{}, corpus: d, cik: meta.CIK, period: metaPeriod(meta)}
+		return &dictFallback{byName: map[string]*SeriesDecl{}, corpus: d, cik: meta.CIK, period: metaPeriod(meta), registrantKey: normalizeSeriesName(meta.CompanyName)}
 	}
-	f := &dictFallback{byName: seriesByName(extra), byUndotted: map[string]*SeriesDecl{}, corpus: d, cik: meta.CIK, period: metaPeriod(meta)}
+	f := &dictFallback{byName: seriesByName(extra), byUndotted: map[string]*SeriesDecl{}, corpus: d, cik: meta.CIK, period: metaPeriod(meta), registrantKey: normalizeSeriesName(meta.CompanyName)}
 	// The dictionary spells an initialism with its periods where the heading
 	// spells it without: `Vesper U.S. Large Cap Short-Term Reversal Strategy ETF`
 	// (S000063053) for a banner `Vesper US ...`. Only the names whose two
@@ -443,7 +498,7 @@ func (f *dictFallback) apply(r *VoteRow) {
 	// refused: the heading names a fund of a SIBLING registrant, exactly and
 	// uniquely corpus-wide.
 	if r.SeriesID == "" {
-		if d := f.corpus.crossCIK(f.cik, r.FundName, f.period); d != nil {
+		if d := f.corpus.crossCIK(f.cik, r.FundName, f.period, f.registrantKey); d != nil {
 			r.SeriesID = d.SeriesID
 		}
 	}
