@@ -443,9 +443,20 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 			// 2005 filing carried no fund name at all. The resolution is the
 			// evidence: only a heading the same rules the ruled banners go
 			// through answer EXACTLY is read this way, so an issuer never is.
-			if s := lvResolveBanner(sharedIdx, dict, cells[0]); s != "" {
-				fund, curSeries = cells[0], s
-				continue
+			// ... and POSITION decides which of the two it is, because
+			// resolution does not: an issuer whose name carries the enclosing
+			// fund's distinctive word resolves just as well (`EDISON
+			// INTERNATIONAL` under a Vantagepoint index fund, `ALEXANDRIA REAL
+			// ESTATE EQUITIES, INC.` under LVIP Clarion Global Real Estate).
+			// This grammar prints its issuer heading directly above the
+			// `Ticker:`/`Security ID:`/`Meeting Date:` identity block, so when
+			// that block follows, the line is the issuer and is never offered
+			// as a banner. Pacific Select's heading has no block under it.
+			if !issIdentityBlockFollows(lines, i) {
+				if s := lvResolveBanner(sharedIdx, dict, cells[0]); s != "" {
+					fund, curSeries = cells[0], s
+					continue
+				}
 			}
 			// The ISSUER heading, which this grammar prints above the identity
 			// pairs with nothing to mark it. A lone year is the wrapped tail of
