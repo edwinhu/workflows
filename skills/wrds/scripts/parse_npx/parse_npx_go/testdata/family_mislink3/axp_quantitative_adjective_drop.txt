@@ -1,0 +1,74 @@
+<SEC-DOCUMENT>0000820027-04-000715.txt : 20040826
+<SEC-HEADER>0000820027-04-000715.hdr.sgml : 20040826
+<ACCEPTANCE-DATETIME>20040826131239
+ACCESSION NUMBER:		0000820027-04-000715
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040826
+DATE AS OF CHANGE:		20040826
+EFFECTIVENESS DATE:		20040826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			AXP GROWTH SERIES INC/MN
+		CENTRAL INDEX KEY:			0000049702
+		IRS NUMBER:				410962638
+		STATE OF INCORPORATION:			MN
+		FISCAL YEAR END:			0731
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>growth-npx.txt
+<DESCRIPTION>AXP GROWTH SERIES, INC.
+<TEXT>
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+
+                              Washington, DC 20549
+
+                                    FORM N-PX
+
+          ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT
+                               INVESTMENT COMPANY
+
+Investment Company Act file number  811-2111
+                                   ------------
+
+
+                             AXP GROWTH SERIES, INC.
+========================== AXP LARGE CAP EQUITY FUND ===========================
+
+AXP Blue Chip Advantage Fund, a series of AXP Market Advantage Series,  Inc. and
+AXP  Research  Opportunities  Fund,  a series of AXP Growth  Series,  Inc.  (the
+"Selling  Funds") were merged into AXP Large Cap Equity Fund (the "Buying Fund")
+on June 25, 2004. The following proxy voting record for the Buying Fund includes
+the proxy voting record of the Selling Funds.
+
+
+
+ACCENTURE LTD BERMUDA
+
+Ticker:       ACN            Security ID:  G1150G111
+Meeting Date: FEB 5, 2004    Meeting Type: Annual
+Record Date:  DEC 8, 2003
+==================== AXP QUANTITATIVE LARGE CAP EQUITY FUND ====================
+
+
+ABBOTT LABORATORIES
+
+Ticker:       ABT            Security ID:  002824100
+Meeting Date: APR 23, 2004   Meeting Type: Annual
+Record Date:  FEB 25, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Roxanne S. Austin         For       For        Management
+1.2   Elect  Director H.Laurance Fuller         For       For        Management
+1.3   Elect  Director Richard A. Gonzalez       For       For        Management
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
