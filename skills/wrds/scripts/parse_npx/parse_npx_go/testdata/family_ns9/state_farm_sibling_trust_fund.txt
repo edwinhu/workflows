@@ -1,0 +1,99 @@
+<SEC-DOCUMENT>0001193125-06-183133.txt : 20060831
+<SEC-HEADER>0001193125-06-183133.hdr.sgml : 20060831
+<ACCEPTANCE-DATETIME>20060831090533
+ACCESSION NUMBER:		0001193125-06-183133
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20060630
+FILED AS OF DATE:		20060831
+DATE AS OF CHANGE:		20060831
+EFFECTIVENESS DATE:		20060831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			STATE FARM MUTUAL FUND TRUST
+		CENTRAL INDEX KEY:			0001119720
+		IRS NUMBER:				000000000
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-10027
+		FILM NUMBER:		061066750
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001119720
+<SERIES-ID>S000002038
+<SERIES-NAME>State Farm Equity Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001119720
+<SERIES-ID>S000002040
+<SERIES-NAME>State Farm Small Cap Equity Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001119720
+<SERIES-ID>S000002048
+<SERIES-NAME>State Farm Small Cap Index Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>dnpx.txt
+<DESCRIPTION>STATE FARM MUTUAL FUND TRUST
+<TEXT>
+10:00:00.000  Ltd.                                              Director
+</TABLE>
+
+<PAGE>
+
+
+                               Vote Summary Report
+                           Sep 12, 2005 - Jun 30, 2006
+
+State Farm Small Cap Equity Index Fund
+
+<TABLE>
+<CAPTION>
+Mtg            Company/                                                Mgmt    Vote      Record
+Date/Type      Ballot Issues                            Security       Rec     Cast      Date       Prpnent
+- ------------   ---------------------------------------- ------------   -----   -------   --------   --------
+<S>            <C>                                      <C>            <C>     <C>       <C>        <C>
+12/02/05 - A   1-800-FLOWERS.Com Inc. *FLWS*            68243Q106                        10/08/05
+               1       Elect Directors                                 For     For                  Mgmt
+               2       Ratify Auditors                                 For     For                  Mgmt
+
+
+04/27/06 - A   1st Source Corp. *SRCE*                  336901103                        02/21/06
+               1       Elect Directors                                 For     For                  Mgmt
+
+
+05/24/06 - A   21st Century Insurance Group *TW*        90130N103                        04/03/06
+               1       Elect Directors                                 For     Split                Mgmt
+               1.1     Elect Director Steven J. Bensinger -- For
+               1.2     Elect Director John B. De Nault, III -- For
+               1.3     Elect Director Carlene M. Ellis -- For
+               1.4     Elect Director R. Scott Foster, M.D. -- For
+               1.5     Elect Director Roxani M. Gillespie --
+                       Withhold
+
+                          We recommend that shareholders WITHHOLD votes from Roxani
+                          M. Gillespie and Robert M. Sandler for standing as a
+                          non-independent directors on key board committees.
+
+               1.6     Elect Director Jeffrey L. Hayman -- For
+               1.7     Elect Director Phillip L. Isenberg -- For
+               1.8     Elect Director Bruce W. Marlow -- For
+               1.9     Elect Director Keith W. Renken -- For
+               1.10    Elect Director Robert M. Sandler --
+                       Withhold
+               1.11    Elect Director Thomas R. Tizzio -- For
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
