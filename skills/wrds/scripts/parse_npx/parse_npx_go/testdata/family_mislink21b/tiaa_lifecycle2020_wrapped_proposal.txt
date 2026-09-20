@@ -1,0 +1,54 @@
+<SEC-DOCUMENT>0000930413-20-002030.txt : 20200814
+<SEC-HEADER>0000930413-20-002030.hdr.sgml : 20200814
+ACCESSION NUMBER:		0000930413-20-002030
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20200630
+		COMPANY CONFORMED NAME:			TIAA-CREF FUNDS
+		CENTRAL INDEX KEY:			0001084380
+		DATE OF NAME CHANGE:	19990415
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001084380
+<SERIES-ID>S000005377
+<SERIES-NAME>TIAA-CREF Lifecycle 2020 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000014641
+<CLASS-CONTRACT-NAME>Retirement Class
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>c100186_npx.txt
+<TEXT>
+======================== TIAA-CREF Lifecycle 2020 Fund ========================
+
+
+Atlas Copco AB
+Ticker     Security ID:             Meeting Date          Meeting Status
+ATCOA      CINS W1R924195           04/23/2020            Voted
+Meeting Type                        Country of Trade
+Annual                              Sweden
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+23         Remuneration Guidelines  Mgmt       For        For        For
+24         Personnel Option Plan    Mgmt       For        For        For
+            2020
+
+________________________________________________________________________________
+Atlas Copco AB
+Ticker     Security ID:             Meeting Date          Meeting Status
+ATCOA      CINS W1R924161           04/23/2020            Voted
+Meeting Type                        Country of Trade
+Annual                              Sweden
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Non-Voting Meeting Note  N/A        N/A        N/A        N/A
+2          Non-Voting Meeting Note  N/A        N/A        N/A        N/A
