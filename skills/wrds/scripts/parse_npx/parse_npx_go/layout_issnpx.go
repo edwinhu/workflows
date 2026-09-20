@@ -516,6 +516,13 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		if !ok {
 			name, ok = issOpenBanner(line, lines, i)
 		}
+		if ok && name == "" {
+			// A bare rule is a boundary with no name -- unless the fund is
+			// printed between it and the next bare rule.
+			if n, sandwich := issRuledSandwichBanner(lines, i); sandwich {
+				name = n
+			}
+		}
 		if !ok && len(bannerBuf) > 0 {
 			name, ok = issThinBannerContinuation(lines, i)
 		}
@@ -7392,6 +7399,44 @@ func issOpenBanner(line string, lines []string, i int) (string, bool) {
 		return "", false
 	}
 	return "", false
+}
+
+// issRuledSandwichBanner reads a fund printed in a three-line ruled sandwich:
+// a bare rule, the fund alone on an unruled line, a second bare rule (American
+// Beacon Funds 2005, 1,867 rows carrying no fund name at all). It is the mirror
+// of issOpenBanner, whose opening rule carries the name; here both rules are
+// bare, so issFundSeparator reads each as a boundary with no name and the text
+// between them is read as prose.
+//
+// All three conditions are required together -- the opening bare rule, a next
+// non-blank line holding no '=', and a following non-blank line that is another
+// bare rule -- so ordinary prose between two rules is never claimed.
+func issRuledSandwichBanner(lines []string, i int) (string, bool) {
+	if n, ok := issFundSeparator(strings.TrimSpace(lines[i])); !ok || n != "" {
+		return "", false
+	}
+	j := i + 1
+	for j < len(lines) && strings.TrimSpace(lines[j]) == "" {
+		j++
+	}
+	if j >= len(lines) {
+		return "", false
+	}
+	name := strings.TrimSpace(lines[j])
+	if name == "" || strings.Contains(name, "=") {
+		return "", false
+	}
+	k := j + 1
+	for k < len(lines) && strings.TrimSpace(lines[k]) == "" {
+		k++
+	}
+	if k >= len(lines) {
+		return "", false
+	}
+	if n, ok := issFundSeparator(strings.TrimSpace(lines[k])); !ok || n != "" {
+		return "", false
+	}
+	return name, true
 }
 
 // issDeclaredToken reports a word any declared name carries, which is therefore
