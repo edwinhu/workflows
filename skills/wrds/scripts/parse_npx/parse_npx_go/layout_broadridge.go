@@ -510,6 +510,40 @@ func brHeadingSlot(lines []string, i int) (slot string, crossedBlank bool) {
 	return slot, crossedBlank
 }
 
+// brProseBannerWalk is how many unindented prose lines may stand between the
+// fund banner and the block rule. The sentence this catches wraps onto two
+// lines; three bounds the walk without reaching the block above it.
+const brProseBannerWalk = 3
+
+// brBannerAboveProse returns the fund banner of a section whose banner is
+// followed by unindented continuation prose before the block rule. The
+// registrant prints the banner on its own line and then a wrapped sentence --
+// `The fund held no voting securities during the reporting period and did not
+// vote any securities or` / `have any securities that were subject to a vote
+// during the reporting period.` -- so the heading slot holds the sentence's
+// LAST line and the whole section is filed under it (JPMorgan Insurance Trust
+// 2015, S000047319, 2,509 blank rows). Prose never resolves and a banner is a
+// single line this registrant's own index reads, so the heading is the nearest
+// preceding unindented line that resolves. Evidence-only, and no new rung: the
+// candidate goes to brResolveHeading unchanged, so a section whose lines above
+// resolve to nothing leaves the reading below it standing.
+func brBannerAboveProse(ix *issSeriesIndex, lines []string, i int) (string, string) {
+	for j, steps := i-3, 0; j >= 0 && steps < brProseBannerWalk; j, steps = j-1, steps+1 {
+		cand := lines[j]
+		if strings.HasPrefix(cand, " ") || strings.HasPrefix(cand, "\t") {
+			return "", ""
+		}
+		slot := strings.TrimSpace(cand)
+		if slot == "" || brDashRule(slot) || brVoteRowSlot(slot) {
+			return "", ""
+		}
+		if id := brResolveHeading(ix, slot); id != "" {
+			return slot, id
+		}
+	}
+	return "", ""
+}
+
 // brOpenProposalTail reports that the heading slot holds a line this parser has
 // ALREADY read as the tail of the proposal still open. A proposal whose text
 // wraps onto a short final line above a block rule leaves that line exactly
@@ -1312,6 +1346,14 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 						curFund = ""
 						if !strings.HasPrefix(lines[i-2], " ") && !strings.HasPrefix(lines[i-2], "\t") {
 							curFund = slot
+						}
+						// The slot may hold the last line of prose the banner
+						// prints beneath itself; the banner is the nearest
+						// unindented line above that resolves.
+						if curSeries == "" {
+							if banner, id := brBannerAboveProse(seriesIx, lines, i); id != "" {
+								curSeries, curFund = id, banner
+							}
 						}
 					}
 				}

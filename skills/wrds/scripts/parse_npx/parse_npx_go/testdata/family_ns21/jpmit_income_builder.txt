@@ -1,0 +1,111 @@
+<SEC-DOCUMENT>0001438934-15-000388.txt : 20150826
+<SEC-HEADER>0001438934-15-000388.hdr.sgml : 20150826
+<ACCEPTANCE-DATETIME>20150826171008
+ACCESSION NUMBER:		0001438934-15-000388
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20150630
+FILED AS OF DATE:		20150826
+DATE AS OF CHANGE:		20150826
+EFFECTIVENESS DATE:		20150826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			JPMORGAN INSURANCE TRUST
+		CENTRAL INDEX KEY:			0000909221
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000909221
+<SERIES-ID>S000047318
+<SERIES-NAME>JPMorgan Insurance Trust Global Allocation Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000148505
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000148506
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000909221
+<SERIES-ID>S000047319
+<SERIES-NAME>JPMorgan Insurance Trust Income Builder Portfolio*
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000148507
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000148508
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>brd_G4F0000909221.txt
+<DESCRIPTION>BRD_G4F0000909221
+<TEXT>
+<PAGE>
+
+<TABLE>
+<S>    <C>                                                       <C>           <C>                            <C>
+JPMorgan Insurance Trust Global Allocation Portfolio
+--------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ YAMATO HOLDINGS CO.,LTD.                                                                    Agenda Number:  706216618
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  J96612114
+    Meeting Type:  AGM
+    Meeting Date:  23-Jun-2015
+          Ticker:
+            ISIN:  JP3940000007
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+       Please reference meeting materials.                       Non-Voting
+
+1      Adopt Reduction of Liability System for                   Mgmt          No vote
+       Non-Executive Directors and Corporate
+3      Appoint a Corporate Auditor Ogawa, Etsuo                  Mgmt          No vote
+
+4      Appoint a Substitute Corporate Auditor                    Mgmt          No vote
+       Okawa, Koji
+
+
+
+JPMorgan Insurance Trust Income Builder Portfolio
+The fund held no voting securities during the reporting period and did not vote any securities or
+have any securities that were subject to a vote during the reporting period.
+--------------------------------------------------------------------------------------------------------------------------
+ ADMIRAL GROUP PLC, CARDIFF                                                                  Agenda Number:  705932588
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  G0110T106
+    Meeting Type:  AGM
+    Meeting Date:  29-Apr-2015
+          Ticker:
+            ISIN:  GB00B02J6398
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1      TO RECEIVE THE FINANCIAL STATEMENTS AND THE               Mgmt          No vote
+       REPORTS OF THE DIRECTORS AND THE AUDITORS
+
+2      TO APPROVE THE DIRECTORS' REMUNERATION                    Mgmt          No vote
+       REPORT
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
