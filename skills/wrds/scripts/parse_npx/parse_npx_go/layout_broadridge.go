@@ -592,9 +592,21 @@ func brOpenProposalTail(cur *brRowBuf, slot string) bool {
 // indentation, so the evidence is the line ABOVE the slot: a numbered row
 // carrying this grammar's own vote cells. A real banner is printed on its own,
 // over a blank line or the block above it, never under a proposal row.
+//
+// The anchor is the line the slot was READ FROM, found by repeating
+// brHeadingSlot's own blank walk: the meeting may end on the wrapped tail, so a
+// blank stands between it and the rule (`THE ISSUE OF SHORT-TERM DEBENTURE`,
+// John Hancock Funds II 2015, 32,630 rows). Testing lines[i-2] alone reads that
+// blank and hides the numbered vote row above the tail.
 func brProposalContinuationSlot(lines []string, i int, slot string, open bool) bool {
+	if !open || i < 2 {
+		return false
+	}
 	j := i - 2
-	if !open || j < 1 || strings.TrimSpace(lines[j]) != slot {
+	for steps := 0; j >= 0 && steps < brHeadingBlankWalk && strings.TrimSpace(lines[j]) == ""; steps++ {
+		j--
+	}
+	if j < 1 || strings.TrimSpace(lines[j]) != slot {
 		return false
 	}
 	prev := strings.TrimSpace(lines[j-1])
