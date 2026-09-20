@@ -34,11 +34,14 @@ func familyGGG3Dispatch(t *testing.T, fixture, dict, layout string, count int) [
 //	0000911637	S000002500	MFS Union Standard Equity Fund	20060630
 //
 // The filing opens on the ISS `=`-ruled banner grammar and is dispatched to
-// issnpx on it. The precondition of this test is that FIVE rows are emitted:
+// issnpx on it. The precondition of this test is that NINE rows are emitted:
 // one from the `MFS MID-CAP VALUE FUND` banner section that is in the cut to
 // hold the dispatch on issnpx, plus the four printed items of the Broadridge
-// tail below. On a tree that does not read the tail only the first of those is
-// emitted, so the precondition itself is red before the fix.
+// tail below, plus the four director-nominee rows under item 01 (fixture lines
+// 54-57), each of which prints its own value in the `Vote Cast` column and a
+// name in the `Proposal` column and is therefore a vote row, not furniture. On
+// a tree that does not read the tail only the first of those is emitted, so the
+// precondition itself is red before the fix.
 //
 // At line 3120 the filer agent switches grammars mid-document to a bare,
 // unruled fund line over Broadridge meeting blocks:
@@ -98,7 +101,7 @@ func familyGGG3Dispatch(t *testing.T, fixture, dict, layout string, count int) [
 // the remainder of the body to parseBroadridge at the grammar switch for that
 // reader to ever see these bytes.
 func TestFamilyGGG3MFSUnionStandardTailTransposedVoteColumns(t *testing.T) {
-	rows := familyGGG3Dispatch(t, "mfs_union_standard_tail.txt", "mfs_dict.tsv", "issnpx", 5)
+	rows := familyGGG3Dispatch(t, "mfs_union_standard_tail.txt", "mfs_dict.tsv", "issnpx", 9)
 	// item -> the value the header's `Vote Cast` column prints, verbatim.
 	want := map[string]string{"02": "For", "03": "Against", "04": "For"}
 	got := map[string]string{}
