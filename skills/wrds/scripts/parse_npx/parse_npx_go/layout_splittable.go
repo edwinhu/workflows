@@ -468,6 +468,7 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 		prevLabels []string
 		pendLabels []string
 		lastBare   string
+		pageBare   string
 		fundTail   bool
 	)
 	flush := func() {
@@ -498,6 +499,7 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 		if strings.HasPrefix(trimmed, "<") {
 			flush()
 			fundTail = false
+			pageBare = ""
 			continue
 		}
 		if spans != nil {
@@ -511,6 +513,14 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 		if r := spRuleSpans(line); r != nil {
 			block := spLabelBlock(header)
 			l := spLabels(block, r)
+			if spIsSECFormGroup([]spTable{{labels: l}}) {
+				// The stacked header is reprinted at each FUND, so the banner
+				// above it names the fund this header and every headerless page
+				// after it belongs to. Set unconditionally: a headed page with no
+				// banner is a fund the template never named, and carrying the
+				// previous one over would file its ballots under the wrong series.
+				ctx.bare = spBannerFund(pageBare, seriesIdx, resolved)
+			}
 			switch {
 			case spHasVote(l):
 				if joined := spJoinSpill(pendLabels, l); joined != nil {
@@ -582,11 +592,39 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 		}
 		if trimmed != "" && len(spTextRuns(line)) == 1 && !strings.Contains(trimmed, ":") {
 			lastBare = trimmed
+			if pageBare == "" {
+				// FIRST bare line of the page, not the last: the stacked header's
+				// own top line is a lone label run (`Who Proposed`) and would
+				// otherwise displace the banner printed above it.
+				pageBare = trimmed
+			}
 		}
 		header = append(header, line)
 	}
 	flush()
 	return rows
+}
+
+// spBannerFund is the fund a page of the SEC's own Form N-PX template names:
+// the bare line it prints above the stacked header, the only place this template
+// writes the fund at all. It is adopted ONLY when it resolves exactly through
+// the shared chain, because the same position also carries the wrapped issuer
+// name that opens a continuation page (`Marvell`) and a lone header label run.
+// A banner that resolves to nothing leaves the fund BLANK: a series_id is a link
+// key, and a block whose fund the page does not name must carry none.
+func spBannerFund(banner string, seriesIdx *spIndex, resolved map[string]string) string {
+	if banner == "" {
+		return ""
+	}
+	id, seen := resolved[banner]
+	if !seen {
+		id = seriesIdx.resolve(banner)
+		resolved[banner] = id
+	}
+	if id == "" {
+		return ""
+	}
+	return banner
 }
 
 // spLabelBlock is spTrailingBlock with one extra cut: a panel whose rows the
