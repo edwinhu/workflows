@@ -385,6 +385,37 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 		}
 	}
 
+	// The same shape, one rename away: a single-fund registrant that renamed
+	// itself before it ever declared a series id, so the equality above can
+	// never answer. Taiwan Greater China Fund (CIK 836267) prints no fund
+	// heading in its 20050630 report and declares S000034279 six years later as
+	// `SHELTON GREATER CHINA FUND`, under the same SEC file number -- 757 rows
+	// with no series. The registrant's own conformed name reaches the SAME
+	// resolver a heading reaches, and then the lead-brand swap the chain
+	// already accepts for headings (`MGIT International Select Equity Fund` for
+	// a declared `DWS International Select Equity Fund`), which is spelled for
+	// the registrant's own name in issRegistrantBrandSwapDecl: the distinctive
+	// phrase survives whole and only the lead brand token differs.
+	//
+	// Computed lazily, and read ONLY when the filing prints no fund heading at
+	// all -- a filing that names any fund has a parser that knows which fund a
+	// row belongs to, and the registrant's name is not that answer.
+	registrantNoHeadingSeries := func() string {
+		key := normalizeSeriesName(h.CompanyName)
+		if key == "" {
+			return ""
+		}
+		ix := issFilingIndex(h.SeriesDecls, key, h.CIK, metaPeriod(h))
+		issFormerKeys(ix, h.FormerNames)
+		if id := icrResolveFundShared(ix, h.CompanyName); id != "" {
+			return id
+		}
+		if d := issRegistrantBrandSwapDecl(ix, key); d != nil {
+			return d.SeriesID
+		}
+		return ""
+	}
+
 	defer func() {
 		if r := recover(); r != nil {
 			meta.ParseStatus = "error"
@@ -473,6 +504,21 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 		meta.FilePath = relPath
 		meta.ParseMode = mode
 		consolidated := consolidatedSeries(sc, res.Rows)
+		// The no-heading shape, decided on the parsed rows rather than guessed:
+		// every row's fund_name is empty, so the filing printed no fund heading
+		// anywhere and the registrant's own name is the only name it carries.
+		if !headerHasSeries && seriesRow == "" && registrantSeries == "" && consolidated == "" {
+			noHeading := true
+			for _, r := range res.Rows {
+				if r.FundName != "" {
+					noHeading = false
+					break
+				}
+			}
+			if noHeading && len(res.Rows) > 0 {
+				registrantSeries = registrantNoHeadingSeries()
+			}
+		}
 		for _, r := range res.Rows {
 			if r.Layout == "" {
 				r.Layout = meta.Layout
