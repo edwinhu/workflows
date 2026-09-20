@@ -969,6 +969,23 @@ func pvTextResolveAccount(ix *issSeriesIndex, name string) *SeriesDecl {
 			}
 		}
 	}
+	// A vendor ACCOUNT CODE in front of the fund name the same line prints:
+	// `BOk-APgrowth American Performance Growth Equity` for the declared
+	// `Growth Equity Fund` (S000008944, American Performance Funds 2005,
+	// 1,174 rows with no series). The code comes off and the NAME goes
+	// through the whole chain, but the answer is kept only when the two agree
+	// token for token once the registrant's own words and the type word are
+	// dropped: the sibling account `BOk-APequity American Performance Equity
+	// Fund` reaches that same series by DROPPING `Growth`, and a subset match
+	// of that shape names the OTHER account's fund. Both stay blank instead.
+	if d == nil {
+		if f := strings.Fields(name); len(f) > 2 && pvTextVendorAccountCode(ix, f[0]) {
+			rest := strings.Join(f[1:], " ")
+			if _, alt := issResolveFund(ix, rest); alt != nil && pvTextNameAgrees(ix, rest, alt.Name) {
+				d = alt
+			}
+		}
+	}
 	// VALIC's numbered second accounts use -2, not a target date or class.
 	if d == nil && (ix.registrantKey == "valic co i" || ix.registrantKey == "valic company i") {
 		if f := strings.Fields(name); len(f) > 1 && internalFundCode(f[0]) && strings.HasSuffix(name, "-2") {
@@ -980,6 +997,92 @@ func pvTextResolveAccount(ix *issSeriesIndex, name string) *SeriesDecl {
 		}
 	}
 	return d
+}
+
+// pvTextVendorAccountCode reports a leading token that is the custodian's own
+// account code rather than a word of the fund's name: it is hyphenated, it
+// changes case inside itself the way no printed fund word does, and no name
+// this registrant declares carries either of its parts. That last test is what
+// keeps a hyphenated fund word -- `Tax-Free`, `Bal-Aggresive` -- out.
+func pvTextVendorAccountCode(ix *issSeriesIndex, tok string) bool {
+	if len(tok) < 5 || len(tok) > 24 || !strings.Contains(tok, "-") {
+		return false
+	}
+	lower, mixed := false, false
+	for i := 0; i < len(tok); i++ {
+		switch c := tok[i]; {
+		case c >= 'a' && c <= 'z':
+			lower = true
+		case c >= 'A' && c <= 'Z':
+			if lower {
+				mixed = true
+			}
+		case c >= '0' && c <= '9', c == '-':
+		default:
+			return false
+		}
+	}
+	if !mixed {
+		return false
+	}
+	for _, part := range strings.Fields(normalizeSeriesName(tok)) {
+		if pvTextDeclaredToken(ix, part) {
+			return false
+		}
+	}
+	return true
+}
+
+// pvTextDeclaredToken reports whether any name this filing's index knows spells
+// the token.
+func pvTextDeclaredToken(ix *issSeriesIndex, tok string) bool {
+	for i := range ix.decls {
+		for _, t := range strings.Fields(normalizeSeriesName(ix.decls[i].Name)) {
+			if t == tok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// pvTextNameAgrees reports whether a printed account name and the declared name
+// it resolved to carry the SAME distinguishing words -- everything either one
+// spells once the registrant's own words and the generic type words are set
+// aside. A heading that merely contains a subset of the declared words, or adds
+// one of its own, names a different sleeve and is refused.
+func pvTextNameAgrees(ix *issSeriesIndex, printed, declared string) bool {
+	a, b := pvTextDistinctWords(ix, printed), pvTextDistinctWords(ix, declared)
+	if len(a) == 0 || len(a) != len(b) {
+		return false
+	}
+	for w := range a {
+		if !b[w] {
+			return false
+		}
+	}
+	return true
+}
+
+var pvTextGenericWord = map[string]bool{
+	"fund": true, "funds": true, "portfolio": true, "portfolios": true,
+	"trust": true, "series": true, "account": true, "accounts": true,
+	"inc": true, "the": true, "of": true,
+}
+
+func pvTextDistinctWords(ix *issSeriesIndex, name string) map[string]bool {
+	reg := map[string]bool{}
+	for _, t := range strings.Fields(ix.registrantKey) {
+		reg[t] = true
+	}
+	out := map[string]bool{}
+	for _, t := range strings.Fields(normalizeSeriesName(name)) {
+		if reg[t] || pvTextGenericWord[t] {
+			continue
+		}
+		out[t] = true
+	}
+	return out
 }
 
 // pvTextLetterAccountCode reports an account code of exactly four upper-case

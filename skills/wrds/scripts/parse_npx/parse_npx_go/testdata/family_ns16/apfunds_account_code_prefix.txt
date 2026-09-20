@@ -1,0 +1,58 @@
+<SEC-DOCUMENT>0000950152-05-007270.txt : 20050825
+<SEC-HEADER>0000950152-05-007270.hdr.sgml : 20050825
+<ACCEPTANCE-DATETIME>20050825162630
+ACCESSION NUMBER:		0000950152-05-007270
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050825
+DATE AS OF CHANGE:		20050825
+EFFECTIVENESS DATE:		20050825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			AMERICAN PERFORMANCE FUNDS
+		CENTRAL INDEX KEY:			0000864508
+		IRS NUMBER:				311303161
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0831
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	AMERICAN PLUS FUNDS
+		DATE OF NAME CHANGE:	19900910
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>l15783anvpx.txt
+<DESCRIPTION>AMERICAN PERFORMANCE FUNDS  N-PX
+<TEXT>
+<PAGE>
+
+                                    FORM N-PX
+
+          ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT
+                               INVESTMENT COMPANY
+<PAGE>
+
+Account Number: BOk-APgrowth American Performance Growth Equity
+
+<Table>
+<Caption>
+ISSUER NAME                                  TICKER                  CUSIP                  MTG DATE     MTG TYPE
+                                                                                            PROPOSAL                    FOR/AGNST
+                                                                                            TYPE         VOTED?  VOTE   MGMT
+<S>                   <C>                                         <C>                    <C>             <C>     <C>    <C>
+3M CO                                        MMM                     88579Y101              5/10/05        ANNUAL
+1.01                   Elect Vance D. Coffman                                               MGMT           YES   FOR    FOR
+1.02                   Elect Rozanne L. Ridgway                                             MGMT           YES   FOR    FOR
+1.03                   Elect Louis W. Sullivan                                              MGMT           YES   FOR    FOR
+2                      Ratify selection of auditors                                         MGMT           YES   FOR    FOR
+3                      Adopt Stock Incentive Plan                                           MGMT           YES   FOR    FOR
+4                      Review or promote animal welfare                                     SHLDR          YES   AGNST  FOR
+5                      China--adopt code of conduct                                         SHLDR          YES   AGNST  FOR
+</Table>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

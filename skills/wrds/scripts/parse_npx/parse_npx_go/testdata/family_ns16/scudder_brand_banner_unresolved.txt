@@ -1,0 +1,73 @@
+<SEC-DOCUMENT>0000088053-04-000603.txt : 20040826
+<SEC-HEADER>0000088053-04-000603.hdr.sgml : 20040826
+<ACCEPTANCE-DATETIME>20040826142419
+ACCESSION NUMBER:		0000088053-04-000603
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040826
+DATE AS OF CHANGE:		20040826
+EFFECTIVENESS DATE:		20040826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000088064
+		IRS NUMBER:				042212654
+		STATE OF INCORPORATION:			MA
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	SCUDDER INVESTMENT TRUST
+		DATE OF NAME CHANGE:	19920703
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	SCUDDER GROWTH & INCOME FUND
+		DATE OF NAME CHANGE:	19910402
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	SCUDDER COMMON STOCK FUND INC
+		DATE OF NAME CHANGE:	19841125
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx-allfunds.txt
+<DESCRIPTION>N-PX FILING
+<TEXT>
+<PAGE>
+
+Deutsche  Investment Company Report                      Report Date: 07/07/2004
+Meeting Date Range: 07/01/2003 to 06/30/2004
+Selected Accounts: Scudder Large Co Growth
+
+<TABLE>
+<CAPTION>
+- ----------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ARTS INC.                                                ERTS  Annual Meeting Date: 07/31/2003
+Issuer: 285512                          ISIN:
+SEDOL:
+- ----------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+ Proposal                                                           Proposal          Vote          Against
+ Number  Proposal                                                   Type              Cast           Mgmt.
+- ----------------------------------------------------------------------------------------------------------------------------
+
+<S>      <C>
+   01    ELECTION OF DIRECTORS                                      Management         For             No
+
+   02    AMEND OMNIBUS STOCK OPTION PLAN                            Management       Against          Yes
+
+   03    AMEND STOCK PURCHASE PLAN                                  Management         For             No
+
+   04    RATIFY APPOINTMENT OF INDEPENDENT AUDITORS                 Management         For             No
+</TABLE>
+ProxyEdge -  Investment Company Report                   Report Date: 07/19/2004
+Meeting Date Range: 07/01/2003 to 06/30/2004
+Selected Accounts: Equity 500 Index Portfolio
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

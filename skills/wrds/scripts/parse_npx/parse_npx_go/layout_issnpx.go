@@ -2220,6 +2220,17 @@ func issHistoricalBrandKey(key string) string {
 			return "invesco aim:" + stem
 		}
 	}
+	// Deutsche's 2004-2005 filings head their sections with the
+	// contemporaneous `Scudder` brand and declare the same funds under the
+	// successor `DWS`/`Deutsche` spelling: `Scudder Large Co Growth` for
+	// `DWS Large Company Growth Fund` (S000005707, Investment Trust 2004,
+	// 974 rows with no series). The stem after the brand must still agree
+	// whole.
+	for _, brand := range []string{"scudder ", "dws ", "deutsche "} {
+		if stem, ok := strings.CutPrefix(key, brand); ok && stem != "" {
+			return "scudder dws:" + stem
+		}
+	}
 	// TDAX account sleeves and the TDX/db-X registered names retain the
 	// target year or exact In Target stem.
 	if key == "db x in target date fund" {
@@ -2491,6 +2502,19 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	if key := issHistoricalBrandKey(normalizeSeriesName(banner)); key != "" {
 		if d, seen := ix.byHistoricalBrand[key]; seen {
 			return banner, d
+		}
+		// The brand index keys each declared name WHOLE, so a banner that
+		// abbreviates inside the stem -- `Scudder Large Co Growth` for the
+		// declared `DWS Large Company Growth Fund` (S000005707) -- never
+		// reaches it, while the same stem printed bare resolves through the
+		// abbreviation rungs above. The stem goes back through the whole
+		// chain instead, the way issBrandCutStem already sends the remainder
+		// of a registrant-prefixed heading. Every hop drops a leading token,
+		// so the re-read terminates.
+		if stem := issHistoricalBrandStem(key); stem != "" && stem != normalizeSeriesName(banner) {
+			if _, d := issResolveFund(ix, stem); d != nil {
+				return banner, d
+			}
 		}
 	}
 	// The heading spells out a word the declared name abbreviates: `Generation
