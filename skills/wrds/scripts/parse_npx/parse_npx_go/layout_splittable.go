@@ -941,6 +941,11 @@ func spReadContext(line string, ctx *spContext, lastBare string) string {
 			// The ProxyEdge text report names the account this page belongs to
 			// in its banner, above every meeting on the page.
 			ctx.fund = p.value
+			// The banner opens a new section, so the page banner the previous
+			// section left behind is not evidence for this one: a cover-page
+			// line that happens to resolve would otherwise be stamped on every
+			// later section whose own heading the index refuses.
+			ctx.page = ""
 		}
 	}
 	return lastBare
@@ -1128,6 +1133,9 @@ func spReadProxyEdgeHeading(line string, ctx, groupCtx *spContext) {
 	for _, p := range lvPairs(cells) {
 		if p.label == "SELECTED ACCOUNTS" && p.value != "" {
 			ctx.fund, groupCtx.fund = p.value, p.value
+			// The re-opened account is a new section: the page banner belongs
+			// to the section that set it, never filing-wide.
+			ctx.page, groupCtx.page = "", ""
 			return
 		}
 	}

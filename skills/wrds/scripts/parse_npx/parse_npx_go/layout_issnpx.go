@@ -5538,7 +5538,8 @@ func issBannerWrapVisible(sofar, next string, ix ...*issSeriesIndex) bool {
 			// nothing and blanks the section. Join only when it names the SAME
 			// series, so a rule that names a different fund still breaks.
 			if _, joined := issResolveFund(ix[0], sofar+" "+strings.TrimSpace(next)); joined != nil {
-				if sofarDecl == nil || sofarDecl.SeriesID == joined.SeriesID {
+				if (sofarDecl == nil || sofarDecl.SeriesID == joined.SeriesID) &&
+					!issHeadOnlyJoin(sofar, joined) {
 					return true
 				}
 			}
@@ -5561,6 +5562,24 @@ func issBannerWrapVisible(sofar, next string, ix ...*issSeriesIndex) bool {
 		return true
 	}
 	return strings.HasSuffix(f[0], ")")
+}
+
+// issHeadOnlyJoin reports a joined resolution the continuation had no part in:
+// the declaration that answered is a leading prefix of the banner SO FAR, so the
+// rung read none of the rule below it (JNL Series Trust 2004, a complete
+// `... BOND INDEX FUND` banner above a complete `... ENHANCED S&P 500 INDEX
+// FUND` banner, joined because the first name is a prefix of the join and the
+// second is a fund the registrant spells with a `STOCK` the filing omits). A
+// real wrap is answered by a declaration that spans both rules.
+func issHeadOnlyJoin(sofar string, joined *SeriesDecl) bool {
+	if joined == nil {
+		return false
+	}
+	decl := normalizeSeriesName(joined.Name)
+	if decl == "" {
+		return false
+	}
+	return strings.HasPrefix(normalizeSeriesName(sofar), decl)
 }
 
 // issNextBannerName is the text of the banner rule issBannerContinues found at

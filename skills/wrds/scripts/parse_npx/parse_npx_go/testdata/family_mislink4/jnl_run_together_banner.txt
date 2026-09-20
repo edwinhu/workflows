@@ -1,0 +1,58 @@
+<SEC-DOCUMENT>0000933691-04-000204.txt : 20040831
+<SEC-HEADER>0000933691-04-000204.hdr.sgml : 20040831
+<ACCEPTANCE-DATETIME>20040831164913
+ACCESSION NUMBER:		0000933691-04-000204
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+DATE AS OF CHANGE:		20040831
+EFFECTIVENESS DATE:		20040831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			JNL SERIES TRUST
+		CENTRAL INDEX KEY:			0000933691
+		IRS NUMBER:				381659835
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>jnlstnpx_804.txt
+<DESCRIPTION>JNLST N-PX
+<TEXT>
+
+
+
+
+================ JNL/MELLON CAPITAL MANAGEMENT BOND INDEX FUND =================
+
+
+
+
+========== JNL/MELLON CAPITAL MANAGEMENT ENHANCED S&P 500 INDEX FUND ===========
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 11, 2004   Meeting Type: Annual
+Record Date:  MAR 12, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Edward A. Brennan         For       Did Not    Management
+                                                          Vote
+1.2   Elect  Director Michael L. Eskew          For       Did Not    Management
+                                                          Vote
+1.3   Elect  Director W. James McNerney, Jr.    For       Did Not    Management
+                                                          Vote
+
+
+- --------------------------------------------------------------------------------
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
