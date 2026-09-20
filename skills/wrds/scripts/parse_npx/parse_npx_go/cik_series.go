@@ -102,7 +102,17 @@ func (d *cikSeries) indexCorpusNames() {
 // registrant-scoped rung has refused, so a same-CIK answer always wins, and the
 // filer's own CIK is excluded: those rows are the registrant-scoped rungs' own
 // business and their refusals are not overridden here.
-func (d *cikSeries) crossCIK(cik, heading string) *SeriesDecl {
+//
+// CONTEMPORANEITY IS PART OF THE GUARD. byNameAll indexes every vintage of every
+// name with no date filter, so an exact and unique hit may be a name the other
+// registrant adopted years AFTER the filing: BLACKROCK FUNDS' 2004 heading
+// `BLACKROCK BALANCED PORTFOLIO` matched S000003863 of CIK 319108 off its
+// 20250630 declaration, a series called `Mercury Balanced Capital Strategy
+// Portfolio` in 2004. The heading and the matched name never coexisted, so the
+// hit is refused. dictContemporaneous is the same comparison on the same-CIK
+// path; period is the filing's, empty when unknown, and a decl with no
+// declaration date is read as contemporaneous the way that path reads it.
+func (d *cikSeries) crossCIK(cik, heading, period string) *SeriesDecl {
 	if d == nil || cik == "" || heading == "" {
 		return nil
 	}
@@ -114,7 +124,19 @@ func (d *cikSeries) crossCIK(cik, heading string) *SeriesDecl {
 	if e == nil || e.cik == cik {
 		return nil
 	}
+	if len(period) == 8 && len(e.decl.DeclDate) == 8 && e.decl.DeclDate > period {
+		return nil
+	}
 	return e.decl
+}
+
+// metaPeriod is the filing's period of report, falling back to the report's own
+// period end the way cikSeries.back does.
+func metaPeriod(meta FilingMeta) string {
+	if meta.PeriodOfReport != "" {
+		return meta.PeriodOfReport
+	}
+	return meta.ReportPeriodEnd
 }
 
 // back supplies dictionary decls to a filing whose header declares none.
@@ -229,6 +251,9 @@ type dictFallback struct {
 	// OTHER registrant: see cikSeries.crossCIK.
 	corpus *cikSeries
 	cik    string
+	// period is the filing's PERIOD OF REPORT, which the cross-CIK rung needs to
+	// refuse a declaration made after it.
+	period string
 }
 
 func (d *cikSeries) exactFallback(meta FilingMeta) *dictFallback {
@@ -254,9 +279,9 @@ func (d *cikSeries) exactFallback(meta FilingMeta) *dictFallback {
 	if len(extra) == 0 {
 		// The registrant-scoped rungs have nothing to read, but the cross-CIK
 		// rung reads no row of this registrant at all and still applies.
-		return &dictFallback{byName: map[string]*SeriesDecl{}, corpus: d, cik: meta.CIK}
+		return &dictFallback{byName: map[string]*SeriesDecl{}, corpus: d, cik: meta.CIK, period: metaPeriod(meta)}
 	}
-	f := &dictFallback{byName: seriesByName(extra), byUndotted: map[string]*SeriesDecl{}, corpus: d, cik: meta.CIK}
+	f := &dictFallback{byName: seriesByName(extra), byUndotted: map[string]*SeriesDecl{}, corpus: d, cik: meta.CIK, period: metaPeriod(meta)}
 	// The dictionary spells an initialism with its periods where the heading
 	// spells it without: `Vesper U.S. Large Cap Short-Term Reversal Strategy ETF`
 	// (S000063053) for a banner `Vesper US ...`. Only the names whose two
@@ -373,7 +398,7 @@ func (f *dictFallback) apply(r *VoteRow) {
 	// refused: the heading names a fund of a SIBLING registrant, exactly and
 	// uniquely corpus-wide.
 	if r.SeriesID == "" {
-		if d := f.corpus.crossCIK(f.cik, r.FundName); d != nil {
+		if d := f.corpus.crossCIK(f.cik, r.FundName, f.period); d != nil {
 			r.SeriesID = d.SeriesID
 		}
 	}

@@ -82,7 +82,7 @@ func parsePVText(text string, meta FilingMeta) ([]VoteRow, error) {
 	}
 	// The Account Number heading resolves against the declared (or dictionary)
 	// series under the shared rules, as in every other layout.
-	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK)
+	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(seriesIx, meta.FormerNames)
 	// Read definitions before references so a later conflicting definition also
 	// refuses attribution. References are not themselves fund definitions.
@@ -1117,7 +1117,7 @@ func pvSEIItemPrefix(cell string) (string, string, bool) {
 }
 
 func parsePVTextSEI(lines []string, meta FilingMeta) []VoteRow {
-	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK)
+	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(seriesIx, meta.FormerNames)
 	dict := cikDict.exactFallback(meta)
 

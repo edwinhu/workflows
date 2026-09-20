@@ -450,7 +450,7 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 	lines := strings.Split(text, "\n")
 	// Built ONCE per filing: these filings reach 171,705 vote-like lines, and a
 	// per-section rebuild would make the job quadratic in the body.
-	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK)
+	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(seriesIx, meta.FormerNames)
 	// Donors are collected before any fill; conflicting identities stay blank.
 	identities := make(map[[2]string][3]string)
@@ -793,7 +793,7 @@ func icrResolveFundShared(ix *issSeriesIndex, name string) string {
 	// Both registrant-scoped chains have refused: the heading may name a fund
 	// of a SIBLING registrant, admitted only on an exact, corpus-wide unique
 	// dictionary hit under one other CIK (cikSeries.crossCIK).
-	if d := cikDict.crossCIK(ix.cik, name); d != nil {
+	if d := cikDict.crossCIK(ix.cik, name, ix.period); d != nil {
 		return d.SeriesID
 	}
 	return ""
