@@ -1,0 +1,115 @@
+<SEC-DOCUMENT>0001580642-20-003105.txt : 20200825
+<SEC-HEADER>0001580642-20-003105.hdr.sgml : 20200825
+<ACCEPTANCE-DATETIME>20200825095315
+ACCESSION NUMBER:		0001580642-20-003105
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		2
+CONFORMED PERIOD OF REPORT:	20200630
+FILED AS OF DATE:		20200825
+DATE AS OF CHANGE:		20200825
+EFFECTIVENESS DATE:		20200825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			TIMOTHY PLAN
+		CENTRAL INDEX KEY:			0000916490
+		IRS NUMBER:				597016828
+		STATE OF INCORPORATION:			DE
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08228
+		FILM NUMBER:		201129741
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000916490
+<SERIES-ID>S000063764
+<SERIES-NAME>Timothy Plan US Small Cap Core ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206642
+<CLASS-CONTRACT-NAME>Timothy Plan US Small Cap Core ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>TPSC
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000916490
+<SERIES-ID>S000063765
+<SERIES-NAME>Timothy Plan International ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206643
+<CLASS-CONTRACT-NAME>Timothy Plan International ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>TPIF
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>timothynpx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+<TABLE STYLE="width: 100%; border-collapse: collapse; font: 10pt Arial, Helvetica, Sans-Serif">
+<TR>
+    <TD COLSPAN="6" STYLE="font-weight: bold; vertical-align: top">Institution Account(s):&nbsp;&nbsp;TIMOTHY PLAN US SMALL CAP ETF </TD>
+    <TD STYLE="vertical-align: bottom; text-align: left">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; text-align: center">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; text-align: center">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: bottom; text-align: right">Exhibit 18</TD></TR>
+<TR>
+    <TD COLSPAN="6" STYLE="font-weight: bold; vertical-align: bottom">Investment Company Act file number:&nbsp;&nbsp;&nbsp;811-08228</TD>
+    <TD STYLE="vertical-align: bottom; text-align: left">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; text-align: center">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; text-align: center">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; text-align: center">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; text-align: center">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="6" STYLE="font-weight: bold; vertical-align: top">Reporting Period: <FONT STYLE="font: normal 400 10pt Arial, Helvetica, Sans-Serif">07/01/2019 to 06/30/2020</FONT></TD>
+    <TD STYLE="vertical-align: bottom; text-align: left">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; text-align: center">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; text-align: center">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; text-align: center">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; text-align: center">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top; background-color: #D9D9D9">
+    <TD STYLE="font-weight: bold">Company Name</TD>
+    <TD STYLE="font-weight: bold; text-align: center">Ticker</TD>
+    <TD STYLE="font-weight: bold; text-align: center">Primary Security ID</TD>
+    <TD STYLE="font-weight: bold; text-align: center">Meeting Date</TD>
+    <TD STYLE="font-weight: bold; text-align: center">Meeting Type</TD>
+    <TD STYLE="font-weight: bold">Proponent</TD>
+    <TD STYLE="font-weight: bold; text-align: left">Proposal Number</TD>
+    <TD STYLE="font-weight: bold">Proposal Text</TD>
+    <TD STYLE="font-weight: bold; text-align: center">Management Rec</TD>
+    <TD STYLE="font-weight: bold; text-align: center">Voting Policy Rec</TD>
+    <TD STYLE="font-weight: bold; text-align: center">Vote Instruction</TD>
+    <TD STYLE="font-weight: bold">Vote Against Mgmt</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>Capitol Federal Financial, Inc.</TD>
+    <TD STYLE="text-align: center">CFFN</TD>
+    <TD STYLE="text-align: center">14057J101</TD>
+    <TD STYLE="text-align: center">&nbsp;28-Jan-20</TD>
+    <TD STYLE="text-align: center">Annual</TD>
+    <TD>Management</TD>
+    <TD STYLE="text-align: left">1.1</TD>
+    <TD>Elect Director Michel' Philipp Cole</TD>
+    <TD STYLE="text-align: center">For</TD>
+    <TD STYLE="text-align: center">For</TD>
+    <TD STYLE="text-align: center">For</TD>
+    <TD>No</TD></TR>
+</TABLE>
+end
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
