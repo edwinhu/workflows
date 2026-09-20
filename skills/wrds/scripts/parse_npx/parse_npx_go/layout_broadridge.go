@@ -565,6 +565,55 @@ func brBannerAboveProse(ix *issSeriesIndex, lines []string, i int) (string, stri
 	return "", ""
 }
 
+// brProseSentenceSlot reports a candidate heading that is a SENTENCE IN FLIGHT:
+// it ends on a lower-case word, so the paragraph continues on the next line.
+// American AAdvantage Funds 2004 prints an explanatory paragraph under each
+// banner of a sleeve that holds no votes -- `The American AAdvantage
+// International Equity Index Fund invests all of its` -- whose first line names
+// the fund and therefore RESOLVES, and 5,997 rows of the sections below it were
+// filed under a sleeve that reports no votes at all. A fund banner is a name,
+// never a clause left open.
+func brProseSentenceSlot(slot string) bool {
+	f := strings.Fields(slot)
+	if len(f) == 0 {
+		return false
+	}
+	last := []rune(f[len(f)-1])[0]
+	return last >= 'a' && last <= 'z'
+}
+
+// brContinuationRunWalk bounds the upward walk of brContinuationRunLine. The
+// longest observed wrapped proposal runs nine lines; sixteen clears it without
+// reaching back past the block above.
+const brContinuationRunWalk = 16
+
+// brContinuationRunLine reports that lines[i] is the MIDDLE of an unbroken run
+// of continuation lines under a numbered vote row of this grammar. A wrapped
+// proposal reaches the free-standing-text branch one line at a time, so each
+// line in turn becomes pendingIssuer and the one before it is offered as a fund
+// heading: `BUT NOT LIMITED TO, SHORT-TERM COMMERCIAL`, the fifth line of a
+// Chinese debenture mandate, resolved against the declared `Short Term
+// Government Income Fund` and stamped S000024676 on 42,761 rows (John Hancock
+// Funds II 2015). The evidence is the grammar above the line, not its text: an
+// unbroken run of non-blank lines up to a numbered row carrying this grammar's
+// own vote cells. MIDDLE is required -- the run's last line stands where a real
+// banner can stand, and brProposalContinuationSlot already judges that one.
+func brContinuationRunLine(lines []string, i int) bool {
+	if i < 1 || i+1 >= len(lines) || strings.TrimSpace(lines[i+1]) == "" {
+		return false
+	}
+	for j, steps := i-1, 0; j >= 0 && steps < brContinuationRunWalk; j, steps = j-1, steps+1 {
+		prev := strings.TrimSpace(lines[j])
+		if prev == "" || brDashRule(prev) {
+			return false
+		}
+		if item, _ := brSplitItem(lines[j]); item != "" && brVoteRowSlot(prev) {
+			return true
+		}
+	}
+	return false
+}
+
 // brOpenProposalTail reports that the heading slot holds a line this parser has
 // ALREADY read as the tail of the proposal still open. A proposal whose text
 // wraps onto a short final line above a block rule leaves that line exactly
@@ -1204,8 +1253,11 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		recDate string
 
 		pendingIssuer string
-		headerText    string
-		spill         []string
+		// The line pendingIssuer was read from, so the grammar above it can be
+		// consulted before it is offered as a fund heading.
+		pendingIssuerAt = -1
+		headerText      string
+		spill           []string
 
 		hasType bool
 		maxVote = 2
@@ -1290,9 +1342,19 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 					curSeries, curFund = d.SeriesID, slot
 				}
 			} else if slot, ok := brEqualsRuleHeading(lines, i); ok {
+				// A line bracketed between two bare '=' rules is this vintage's
+				// section banner and nothing else, so it NAMES the section
+				// whether or not the registrant's own index reads it. American
+				// AAdvantage Funds 2004 prints eighteen of them and only some
+				// resolve under the 2004 spelling; acting only on the ones that
+				// do leaves the sleeve above standing over a section whose own
+				// banner does not name it, and 5,997 rows carried a series from
+				// a section that reports no votes at all. A blank series under
+				// the banner that was printed is the honest reading.
+				flush()
+				curFund, curSeries = slot, ""
 				if _, d := issResolveFund(seriesIx, slot); d != nil {
-					flush()
-					curSeries, curFund = d.SeriesID, slot
+					curSeries = d.SeriesID
 				}
 			} else if slot, ok := brRuleSandwichHeading(lines, i); ok && brSandwichResolves(seriesIx, slot) {
 				_, d := issResolveFund(seriesIx, slot)
@@ -1648,18 +1710,18 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 			// under them -- all 500 rows carry neither fund nor series).
 			// Evidence-only, so an issuer name wrapped over two lines leaves
 			// the section already open standing.
-			if pendingIssuer != "" {
+			if pendingIssuer != "" && !brProseSentenceSlot(pendingIssuer) && !brContinuationRunLine(lines, pendingIssuerAt) {
 				if _, d := issResolveFund(seriesIx, pendingIssuer); d != nil {
 					curSeries, curFund = d.SeriesID, pendingIssuer
 				}
 			}
-			pendingIssuer = brIssuerName(line)
+			pendingIssuer, pendingIssuerAt = brIssuerName(line), i
 			continue
 		}
 
 		if !inTable {
 			// An item-shaped token outside a table is prose, not a proposal.
-			pendingIssuer = brIssuerName(line)
+			pendingIssuer, pendingIssuerAt = brIssuerName(line), i
 			continue
 		}
 

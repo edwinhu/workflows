@@ -3824,6 +3824,12 @@ func issLeadingStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 			// The agreement runs past the pair; this is not the shape.
 			return nil
 		}
+		if issStyleSiblingSwap(ix, toks[2], want[2]) {
+			// The descriptor the heading swaps is the registrant's own STYLE
+			// discriminator, so the swap names a DIFFERENT fund rather than a
+			// marketing spelling of this one.
+			return nil
+		}
 		owners[d.SeriesID] = true
 		hit = d
 	}
@@ -3831,6 +3837,55 @@ func issLeadingStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		return nil
 	}
 	return hit
+}
+
+// issStyleWord reports a descriptor registrants use as the STYLE of a sleeve
+// rather than as its subject: the word that separates `Large Cap Growth` from
+// `Large Cap Value`. Swapping one of these for another never spells the same
+// registered fund.
+func issStyleWord(w string) bool {
+	switch w {
+	case "growth", "value", "income", "equity", "bond":
+		return true
+	}
+	return false
+}
+
+// issStyleSiblingSwap reports that a and b are both style words AND that this
+// registrant separates two of its OWN declared series with exactly that pair --
+// two declared names of equal length agreeing everywhere but one slot, one
+// carrying a and the other b. VALIC Co II declares `Small Cap Growth Fund`
+// beside `Small Cap Value Fund` and `Mid Cap Growth Fund` beside `Mid Cap Value
+// Fund`, so `Large Cap Growth Fund` names a sleeve it does not declare and must
+// not fold into `Large Cap Value Fund` (S000008030, 563 rows). The declared
+// evidence is required: a registrant that uses the word decoratively is
+// untouched.
+func issStyleSiblingSwap(ix *issSeriesIndex, a, b string) bool {
+	if a == b || !issStyleWord(a) || !issStyleWord(b) {
+		return false
+	}
+	for i := range ix.decls {
+		x := ix.declToks(i)
+		for j := range ix.decls {
+			if ix.decls[i].SeriesID == ix.decls[j].SeriesID {
+				continue
+			}
+			y := ix.declToks(j)
+			if len(x) != len(y) {
+				continue
+			}
+			diff, at := 0, -1
+			for k := range x {
+				if x[k] != y[k] {
+					diff, at = diff+1, k
+				}
+			}
+			if diff == 1 && x[at] == a && y[at] == b {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // issTrailingAcronymDecl reads a heading whose trailing words a declared name
