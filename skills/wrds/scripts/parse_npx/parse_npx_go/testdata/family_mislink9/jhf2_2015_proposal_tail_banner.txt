@@ -1,0 +1,123 @@
+<SEC-DOCUMENT>0001438934-15-000380.txt : 20150826
+<SEC-HEADER>0001438934-15-000380.hdr.sgml : 20150826
+<ACCEPTANCE-DATETIME>20150826170127
+ACCESSION NUMBER:		0001438934-15-000380
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20150630
+FILED AS OF DATE:		20150826
+DATE AS OF CHANGE:		20150826
+EFFECTIVENESS DATE:		20150826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			John Hancock Funds II
+		CENTRAL INDEX KEY:			0001331971
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0831
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000017260
+<SERIES-NAME>Emerging Markets Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000024676
+<SERIES-NAME>Short Term Government Income Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>brd031_0001331971.txt
+<DESCRIPTION>BRD031_0001331971
+<TEXT>
+<PAGE>
+
+<TABLE>
+<S>    <C>                                                       <C>           <C>                            <C>
+2DCN JHF II Emerging Makets Fund
+--------------------------------------------------------------------------------------------------------------------------
+ DONGJIANG ENVIRONMENTAL CO LTD                                                              Agenda Number:  705800387
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  Y2121H121
+    Meeting Type:  EGM
+    Meeting Date:  16-Mar-2015
+          Ticker:
+            ISIN:  CNE1000001B6
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+CMMT   PLEASE NOTE THAT THE COMPANY NOTICE AND                   Non-Voting
+       PROXY FORM ARE AVAILABLE BY CLICKING ON THE
+       URL LINKS:
+       HTTP://WWW.HKEXNEWS.HK/LISTEDCO/LISTCONEWS/
+       SEHK/2015/0127/LTN20150127830.PDF
+       HTTP://WWW.HKEXNEWS.HK/LISTEDCO/LISTCONEWS/
+       SEHK/2015/0127/LTN20150127805.PDF
+
+CMMT   PLEASE NOTE THAT SHAREHOLDERS ARE ALLOWED                 Non-Voting
+       TO VOTE 'IN FAVOR' OR 'AGAINST' FOR ALL
+       RESOLUTIONS, ABSTAIN IS NOT A VOTING OPTION
+       ON THIS MEETING
+
+1      TO CONSIDER AND APPROVE THE ELECTION OF MR.               Mgmt          For                            For
+       SU QI YUN AS AN INDEPENDENT NON-EXECUTIVE
+       DIRECTOR
+
+2      TO CONSIDER AND APPROVE THE ADOPTION OF THE               Mgmt          For                            For
+       SHAREHOLDERS' RETURN PLAN OF DONGJIANG
+       ENVIRONMENTAL COMPANY LIMITED FOR THE THREE
+       YEARS FROM 2015 TO 2017
+
+3      TO CONSIDER AND APPROVE THE 2015                          Mgmt          For                            For
+       CONTEMPLATED ROUTINE RELATED TRANSACTIONS
+
+4      TO CONSIDER AND APPROVE THE APPLICATION FOR               Mgmt          For                            For
+       THE ISSUE OF SHORT-TERM DEBENTURE
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+ DONGJIANG ENVIRONMENTAL CO LTD                                                              Agenda Number:  706048178
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  Y2121H121
+    Meeting Type:  AGM
+    Meeting Date:  05-Jun-2015
+          Ticker:
+            ISIN:  CNE1000001B6
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+CMMT   PLEASE NOTE THAT THE COMPANY NOTICE AND                   Non-Voting
+       PROXY FORM ARE AVAILABLE BY CLICKING ON THE
+       URL LINKS:
+       http://www.hkexnews.hk/listedco/listconews/
+       SEHK/2015/0419/LTN20150419027.pdf AND
+       http://www.hkexnews.hk/listedco/listconews/
+       SEHK/2015/0419/LTN20150419015.pdf
+
+CMMT   PLEASE NOTE IN THE HONG KONG MARKET THAT A                Non-Voting
+       VOTE OF "ABSTAIN" WILL BE TREATED THE SAME
+       AS A "TAKE NO ACTION" VOTE
+
+1      TO CONSIDER AND APPROVE THE 2014 ANNUAL                   Mgmt          For                            For
+       REPORT OF THE COMPANY
+
+2      TO CONSIDER AND APPROVE THE 2014 REPORT OF                Mgmt          For                            For
+       THE BOARD OF DIRECTORS OF THE COMPANY
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
