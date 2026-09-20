@@ -1,0 +1,95 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ CU/oB3RxSl+qgGIjf3uuWKpZnDwqJPC6R340n42czseualL9DOyQhlOUvu3qjAYV
+ VRig4TASFyhytvDSo90EdQ==
+
+<SEC-DOCUMENT>0001081400-10-000103.txt : 20100826
+<SEC-HEADER>0001081400-10-000103.hdr.sgml : 20100826
+<ACCEPTANCE-DATETIME>20100826162510
+ACCESSION NUMBER:		0001081400-10-000103
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20100826
+FILED AS OF DATE:		20100826
+DATE AS OF CHANGE:		20100826
+EFFECTIVENESS DATE:		20100826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			WELLS FARGO VARIABLE TRUST
+		CENTRAL INDEX KEY:			0001081402
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001081402
+<SERIES-ID>S000007215
+<SERIES-NAME>VT Index Asset Allocation Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001081402
+<SERIES-ID>S000007222
+<SERIES-NAME>VT International Equity Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>variabletrustnpx2010.htm
+<DESCRIPTION>VARIABLE TRUST NPX 2010
+<TEXT>
+<html>
+<head>
+    <title>variabletrustnpx2010.htm</title>
+<!-- Licensed to: Wells Fargo-->
+<!-- Document Created using EDGARizer 5.1.4.0 -->
+<!-- Copyright 1995 - 2009 Thomson Reuters. All rights reserved. -->
+</head>
+<body bgcolor="#ffffff" style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">===============
+Wells Fargo Advantage VT International Core Fund ===============</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="justify">&#160;</div>
+    <div style="DISPLAY: block; TEXT-INDENT: 0pt"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="justify">&#160;</div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">ABB
+LTD.</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="justify">&#160;</div>
+    <div style="DISPLAY: block; TEXT-INDENT: 0pt"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="justify">&#160;</div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Ticker:&#160;&#160;&#160;&#160;&#160;&#160;&#160;ABBN&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Security
+ID:&#160;&#160;H0010V101</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="justify">&#160;</div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Meeting
+Date: APR 26, 2010&#160;&#160;&#160;Meeting Type: Annual</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="justify">&#160;</div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Record
+Date:</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="justify">&#160;</div>
+    <div style="DISPLAY: block; TEXT-INDENT: 0pt"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="justify">&#160;</div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">#&#160;&#160;&#160;&#160;&#160;Proposal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Mgt
+Rec&#160;&#160;&#160;Vote Cast&#160;&#160;&#160;&#160;Sponsor</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="justify">&#160;</div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">1&#160;&#160;&#160;&#160;&#160;Receive
+Financial Statements
+and&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;None&#160;&#160;&#160;&#160;&#160;&#160;Did
+Not Vote Management</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="justify">&#160;</div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;&#160;&#160;&#160;&#160;&#160;Statutory
+Reports (Non-Voting)</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="justify">&#160;</div>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

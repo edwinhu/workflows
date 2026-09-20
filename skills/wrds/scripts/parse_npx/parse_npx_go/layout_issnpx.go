@@ -1397,10 +1397,54 @@ func issFormerKeys(ix *issSeriesIndex, former []string) {
 // issFilingIndex is newISSSeriesIndex for a real filing, carrying the
 // registrant's CIK the cross-CIK rung needs.
 func issFilingIndex(decls []SeriesDecl, registrantKey, cik, period string) *issSeriesIndex {
-	ix := newISSSeriesIndex(decls, registrantKey)
+	ix := newISSSeriesIndex(issDeclAliases(decls, cik, period), registrantKey)
 	ix.cik = cik
 	ix.period = period
 	return ix
+}
+
+// issDeclAliases folds this CIK's dictionary names for the series the header
+// ALREADY declares into the declaration set: a registrant renames a sleeve and
+// the vendor keeps printing the old name, as Wells Fargo Variable Trust 2010
+// heads `Wells Fargo Advantage VT International Core Fund` for a header that
+// declares S000007222 under its 2010 name `VT International Equity Fund`
+// (2,212 rows). Alias-only: no series id the header does not declare is ever
+// added, so the fold can only widen the spellings of ids the filing itself
+// names. The dictionary rows carry their DeclDate, so the vintage tiebreak
+// that guards dictionary-backfilled rows elsewhere guards these too.
+func issDeclAliases(decls []SeriesDecl, cik, period string) []SeriesDecl {
+	if cikDict == nil || len(decls) == 0 || cik == "" {
+		return decls
+	}
+	rows := cikDict.byCIK[cik]
+	if len(rows) == 0 {
+		return decls
+	}
+	known := map[string]map[string]bool{}
+	for _, x := range decls {
+		if known[x.SeriesID] == nil {
+			known[x.SeriesID] = map[string]bool{}
+		}
+		known[x.SeriesID][normalizeSeriesName(x.Name)] = true
+	}
+	var alias []SeriesDecl
+	for _, x := range rows {
+		names, declared := known[x.SeriesID]
+		if !declared {
+			continue
+		}
+		k := normalizeSeriesName(x.Name)
+		if k == "" || names[k] {
+			continue
+		}
+		names[k] = true
+		alias = append(alias, x)
+	}
+	if len(alias) == 0 {
+		return decls
+	}
+	out := append(append([]SeriesDecl(nil), decls...), alias...)
+	return dictContemporaneous(out, period)
 }
 
 func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex {
