@@ -40,12 +40,72 @@ func matchVoteSummary(head string) bool {
 	return false
 }
 
+// vsRulerLookahead is how many non-blank lines past the header pair the `<S> <C>`
+// ruler may be found in -- the `- -----` rule line, then the ruler itself.
+const vsRulerLookahead = 2
+
+// vsRulerMarkers returns the token starts of the `<S> ... <C> ...` ruler EDGAR
+// prints beneath the header pair, or nil when none is printed within
+// vsRulerLookahead non-blank lines. Only a line whose every token is `<S>` or
+// `<C>` is a ruler; the `- -----` rule line between is stepped over.
+func vsRulerMarkers(lines []string, from int) []int {
+	for j, seen := from, 0; j < len(lines) && seen < vsRulerLookahead; j++ {
+		line := strings.TrimRight(lines[j], "\r")
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" {
+			continue
+		}
+		seen++
+		if strings.HasPrefix(trimmed, "-") && strings.Trim(trimmed, "- ") == "" {
+			continue
+		}
+		if !strings.HasPrefix(trimmed, "<") {
+			return nil
+		}
+		var marks []int
+		ok := true
+		for i := 0; i < len(line) && ok; {
+			if line[i] == ' ' {
+				i++
+				continue
+			}
+			end := i
+			for end < len(line) && line[end] != ' ' {
+				end++
+			}
+			switch strings.ToUpper(line[i:end]) {
+			case "<S>", "<C>":
+				marks = append(marks, i)
+			default:
+				ok = false
+			}
+			i = end
+		}
+		if ok && len(marks) > 0 {
+			return marks
+		}
+		return nil
+	}
+	return nil
+}
+
 // voteSummaryColumns returns the column starts a stacked header pair defines, or
 // nil when the two lines are not one. A start is a position at which either line
 // begins a token AND both lines are blank in the two columns before it: that is
 // what separates a real column boundary from the second word of a wrapped label
 // (`Issues` in `Ballot Issues`, which begins one space after `Ballot` ends).
-func voteSummaryColumns(top, bottom string) []int {
+//
+// The header labels are not always where the data is: some registrants (Wilshire
+// Variable Insurance Trust) print each label 1-2 characters right of the ruler
+// marker its data is laid out on, so a cell cut on the label eats the head of the
+// column to its right -- `002824100` read as `02824100`, `For` as `r`. When a
+// ruler is printed, each header-derived start is therefore SNAPPED BACK to the
+// nearest marker at or before it; markers no header column claims are dropped.
+// Snapping only ever moves a boundary left, which can only widen the cell to its
+// right, so a filing whose data follows the labels instead (Select Sector SPDR,
+// whose ruler carries spurious markers) still reads every token from the cell it
+// belongs to. Column count and naming are unchanged either way.
+func voteSummaryColumns(top, bottom string, ruler []int) []int {
 	up, low := strings.ToUpper(top), strings.ToUpper(bottom)
 	if !strings.Contains(low, "BALLOT ISSUES") || !strings.Contains(low, "PRPNENT") ||
 		!strings.Contains(low, "CAST") || !strings.Contains(up, "MGMT") {
@@ -66,10 +126,35 @@ func voteSummaryColumns(top, bottom string) []int {
 		seen[i] = true
 		cols = append(cols, i)
 	}
+	cols = vsSnapToRuler(cols, ruler)
 	if len(cols) < 5 {
 		return nil
 	}
 	return cols
+}
+
+// vsSnapToRuler moves each column start back to the nearest ruler marker at or
+// before it. Two starts that snap onto the same marker collapse to one; a ruler
+// of no markers leaves the starts exactly as the header defined them.
+func vsSnapToRuler(cols, ruler []int) []int {
+	if len(ruler) == 0 {
+		return cols
+	}
+	out := cols[:0]
+	for _, c := range cols {
+		snapped := c
+		for _, m := range ruler {
+			if m > c {
+				break
+			}
+			snapped = m
+		}
+		if len(out) > 0 && out[len(out)-1] >= snapped {
+			continue
+		}
+		out = append(out, snapped)
+	}
+	return out
 }
 
 // voteSummaryFields names each column from the two header lines joined over that
@@ -206,7 +291,7 @@ func parseVoteSummaryRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, erro
 			continue
 		}
 		if i+1 < len(lines) {
-			if c := voteSummaryColumns(line, strings.TrimRight(lines[i+1], "\r")); c != nil {
+			if c := voteSummaryColumns(line, strings.TrimRight(lines[i+1], "\r"), vsRulerMarkers(lines, i+2)); c != nil {
 				if f, ok := voteSummaryFieldsOf(c, line, lines[i+1]); ok {
 					flush()
 					cols, fields, fund = c, f, last
