@@ -412,6 +412,20 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 			}
 			continue
 		}
+		if proxyEdge && spIsProxyEdgeHeading(line) {
+			// The ProxyEdge text report prints the next meeting's heading --
+			// rule / `<ISSUER NAME> ... Meeting Date:` / `Issuer:` / `ISIN:` /
+			// `SEDOL:` / rule -- INSIDE the open `<TABLE>`, with no `</TABLE>`
+			// between blocks. The heading closes the block above it: read as
+			// body it costs every later block its issuer and its meeting date,
+			// and the block's own stacked column labels become vote rows whose
+			// how_voted reads `Vote` and `Cast`.
+			group = spAppend(group, *cur, flush)
+			flush()
+			spReadProxyEdgeHeading(line, &ctx, &groupCtx)
+			cur, header, haveRule, sawType = &spTable{}, nil, false, false
+			continue
+		}
 		if !sawType && spTypeLine(line) {
 			// The SGML `<S> <C> <C>` column-type line, which is furniture.
 			sawType = true
@@ -976,17 +990,32 @@ func spIsPlainRule(line string) bool {
 
 // spTrailingBlock returns the run of non-blank header lines nearest the rule --
 // the column labels themselves, parted from the block heading above them by the
-// blank line the vendor prints between the two.
+// blank line the vendor prints between the two. The SGML `<S> <C>` type line
+// and the block's `Vote Group:` line end the label block as surely as a blank
+// does: this vendor does not always blank-separate them from the labels, and a
+// type line folded into the labels merges its `<C>` runs into the label spans,
+// which costs the table its item and description columns and drops every row of
+// the section.
 func spTrailingBlock(header []string) []string {
 	end := len(header)
-	for end > 0 && strings.TrimSpace(header[end-1]) == "" {
+	for end > 0 && spEndsLabelBlock(header[end-1]) {
 		end--
 	}
 	start := end
-	for start > 0 && strings.TrimSpace(header[start-1]) != "" {
+	for start > 0 && !spEndsLabelBlock(header[start-1]) {
 		start--
 	}
 	return header[start:end]
+}
+
+// spEndsLabelBlock reports whether a header line is furniture that parts the
+// column labels from the block heading above them.
+func spEndsLabelBlock(line string) bool {
+	t := strings.TrimSpace(line)
+	if t == "" || spTypeLine(line) {
+		return true
+	}
+	return len(t) >= len("Vote Group:") && strings.EqualFold(t[:len("Vote Group:")], "Vote Group:")
 }
 
 // spHeaderSpans cuts columns from the label lines themselves: each line's runs
@@ -1112,6 +1141,27 @@ func spHasVote(labels []string) bool {
 	return false
 }
 
+// spIsProxyEdgeHeading recognises the ProxyEdge block heading -- the issuer
+// name, its ticker and its meeting date on one line -- which is what parts one
+// meeting's block from the next inside a single `<TABLE>`. The `Meeting Date:`
+// label is matched case-insensitively: this vendor prints it in title case on
+// one template and in caps on another, and a case-sensitive gate leaves every
+// block of the caps template without its issuer and its meeting date.
+func spIsProxyEdgeHeading(line string) bool {
+	cells := icrCells(strings.TrimSpace(line))
+	if len(cells) < 2 || spMeetingDateAt(cells[len(cells)-1]) < 0 {
+		return false
+	}
+	issuer := strings.TrimSpace(cells[0])
+	return issuer != "" && !strings.Contains(issuer, ":")
+}
+
+// spMeetingDateAt returns the offset of the `Meeting Date:` label in a heading
+// cell, or -1.
+func spMeetingDateAt(cell string) int {
+	return strings.Index(strings.ToUpper(cell), "MEETING DATE:")
+}
+
 // spReadProxyEdgeHeading reads the block identity the ProxyEdge text report
 // prints between its two rules: the issuer at column 0, its ticker to the
 // right, and `<type> Meeting Date: <date>` last. Only the line carrying the
@@ -1139,16 +1189,13 @@ func spReadProxyEdgeHeading(line string, ctx, groupCtx *spContext) {
 			return
 		}
 	}
-	if len(cells) < 2 || !strings.Contains(cells[len(cells)-1], "Meeting Date:") {
+	if !spIsProxyEdgeHeading(line) {
 		return
 	}
 	issuer := strings.TrimSpace(cells[0])
-	if issuer == "" || strings.Contains(issuer, ":") {
-		return
-	}
 	ctx.issuer, ctx.ticker, ctx.cusip, ctx.mtgDate = issuer, "", "", ""
 	tail := cells[len(cells)-1]
-	i := strings.Index(tail, "Meeting Date:")
+	i := spMeetingDateAt(tail)
 	ctx.mtgDate = htmlDate(strings.TrimSpace(tail[i+len("Meeting Date:"):]))
 	if mt := strings.TrimSpace(tail[:i]); mt != "" {
 		ctx.mtgType = mt
