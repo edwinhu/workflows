@@ -1428,11 +1428,23 @@ func issDeclAliases(decls []SeriesDecl, cik, period string) []SeriesDecl {
 		return decls
 	}
 	known := map[string]map[string]bool{}
+	// headerFor is the id the header itself prints for a normalised name, or
+	// "" when more than one id carries it.
+	headerFor := map[string]string{}
 	for _, x := range decls {
 		if known[x.SeriesID] == nil {
 			known[x.SeriesID] = map[string]bool{}
 		}
-		known[x.SeriesID][normalizeSeriesName(x.Name)] = true
+		k := normalizeSeriesName(x.Name)
+		known[x.SeriesID][k] = true
+		if k == "" {
+			continue
+		}
+		if prev, seen := headerFor[k]; seen && prev != x.SeriesID {
+			headerFor[k] = ""
+		} else if !seen {
+			headerFor[k] = x.SeriesID
+		}
 	}
 	var alias []SeriesDecl
 	for _, x := range rows {
@@ -1443,6 +1455,16 @@ func issDeclAliases(decls []SeriesDecl, cik, period string) []SeriesDecl {
 		k := normalizeSeriesName(x.Name)
 		if k == "" || names[k] {
 			continue
+		}
+		// A rename that postdates the period of report cannot name this
+		// filing's sleeve, and folding it in when the header ALREADY prints
+		// that name for a different id manufactures a collision
+		// `lookupSeriesEntry` then refuses outright -- losing the section that
+		// the filing's own declaration resolves.
+		if len(period) == 8 && len(x.DeclDate) == 8 && x.DeclDate > period {
+			if id, ok := headerFor[k]; ok && id != "" && id != x.SeriesID {
+				continue
+			}
 		}
 		names[k] = true
 		alias = append(alias, x)

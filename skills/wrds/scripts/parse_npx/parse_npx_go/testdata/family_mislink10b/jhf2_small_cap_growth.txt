@@ -1,0 +1,81 @@
+<SEC-DOCUMENT>0001438934-17-000312.txt : 20170823
+<SEC-HEADER>0001438934-17-000312.hdr.sgml : 20170823
+<ACCEPTANCE-DATETIME>20170823143337
+ACCESSION NUMBER:		0001438934-17-000312
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20170630
+FILED AS OF DATE:		20170823
+DATE AS OF CHANGE:		20170823
+EFFECTIVENESS DATE:		20170823
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			John Hancock Funds II
+		CENTRAL INDEX KEY:			0001331971
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0831
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000003363
+<SERIES-NAME>Small Company Growth Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000003364
+<SERIES-NAME>Small Company Value Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000009817
+<SERIES-NAME>Small Cap Growth Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000009819
+<SERIES-NAME>Small Cap Value Fund
+</SERIES>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>BRD031_0001331971_2017.txt
+<DESCRIPTION>BRD031_0001331971_2017.TXT
+<TEXT>
+2DCY John Hancock Funds II Small Cap Growth Fund
+--------------------------------------------------------------------------------------------------------------------------
+ 2U INC.                                                                                     Agenda Number:  934617866
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  90214J101
+    Meeting Type:  Annual
+    Meeting Date:  05-Jun-2017
+          Ticker:  TWOU
+            ISIN:  US90214J1016
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1.     DIRECTOR
+       SALLIE L. KRAWCHECK                                       Mgmt          For                            For
+       MARK J. CHERNIS                                           Mgmt          For                            For
+       JOHN M. LARSON                                            Mgmt          For                            For
+       EDWARD S. MACIAS                                          Mgmt          For                            For
+
+2.     RATIFICATION OF THE APPOINTMENT OF KPMG LLP               Mgmt          For                            For
+       AS THE COMPANY'S INDEPENDENT REGISTERED
+       PUBLIC ACCOUNTING FIRM FOR THE 2017 FISCAL
+       YEAR.
+
+3.     APPROVAL, ON A NON-BINDING ADVISORY BASIS,                Mgmt          For                            For
+       OF THE COMPENSATION OF THE COMPANY'S NAMED
+       EXECUTIVE OFFICERS.
+
+4.     APPROVAL OF THE COMPANY'S 2017 EMPLOYEE                   Mgmt          For                            For
+       STOCK PURCHASE PLAN.
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
