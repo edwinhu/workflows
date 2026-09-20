@@ -128,7 +128,7 @@ enc() {
   printf '%s' "$s"
 }
 
-EVENT_DIR="${TMPDIR:-/tmp}/farm-events"
+EVENT_DIR="${TMPDIR:-/tmp}/farm-events${CLAUDE_CODE_SESSION_ID:+/$CLAUDE_CODE_SESSION_ID}"
 mkdir -p "$EVENT_DIR" 2>/dev/null || true
 EVENTS="$EVENT_DIR/$$.ndjson"
 emit() { printf 'farm: %s\n' "$*" >>"$EVENTS" 2>/dev/null || true; }

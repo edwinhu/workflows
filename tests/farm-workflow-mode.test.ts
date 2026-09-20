@@ -17,7 +17,10 @@ function workflowRun() {
   chmodSync(join(bin, 'claude-code'), 0o755)
   const wf = join(tmp, 'wf.js'); writeFileSync(wf, 'export const meta = { name: "x", description: "x" }\n')
   const res = spawnSync('bash', [FARM, '--workflow', wf, '--out', out, '--cwd', tmp], {
-    encoding: 'utf8', env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: tmp, FARM_OUT_CHILD: '1' },
+    // CLAUDE_CODE_SESSION_ID is pinned empty, not inherited: the event dir is keyed by it, and
+    // `bun test` itself runs inside a session, so an ambient value moves the dir under the runner.
+    encoding: 'utf8',
+    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: tmp, FARM_OUT_CHILD: '1', CLAUDE_CODE_SESSION_ID: '' },
   })
   const dir = join(tmp, 'farm-events')
   const lines = readdirSync(dir).flatMap((f) => readFileSync(join(dir, f), 'utf8').split('\n')).filter(Boolean)

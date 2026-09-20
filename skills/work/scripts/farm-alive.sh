@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Is the dispatch that will write $1 (a result.json path) still running?
 #
-# Keys on the RUN, not the runner: $TMPDIR/farm-events/<pid>.ndjson is written by the runner's
+# Keys on the RUN, not the runner: $TMPDIR/farm-events/<session>/<pid>.ndjson is written by the runner's
 # emitter, its START line carries out=<the --out path>, its CLAIM lines carry every artifact the
 # run promised, and the FILENAME is the pid. setsid forks, so the caller's $! is not the runner's
 # $$ — the event file is the only honest link between a run and its pid. Exit 0 iff some run
@@ -15,7 +15,7 @@ set -uo pipefail
 out=${1:-}
 [ -n "$out" ] || { echo "usage: farm-alive.sh <result.json path>" >&2; exit 2; }
 
-dir="${TMPDIR:-/tmp}/farm-events"
+dir="${TMPDIR:-/tmp}/farm-events${CLAUDE_CODE_SESSION_ID:+/$CLAUDE_CODE_SESSION_ID}"
 [ -d "$dir" ] || exit 1
 
 # Values in the event stream are percent-encoded by farm.sh's enc() over exactly space, tab, `=`

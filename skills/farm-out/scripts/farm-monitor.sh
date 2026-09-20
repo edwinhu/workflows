@@ -6,8 +6,10 @@
 # arguments — a plugin monitor's command is fixed — so it watches a conventional
 # directory instead of a log path a caller passes.
 #
-# The directory is under TMPDIR, not the repo: this is session-scoped,
-# high-frequency state and does not belong in anyone's working tree.
+# The directory is under TMPDIR, not the repo, and is keyed by CLAUDE_CODE_SESSION_ID
+# — TMPDIR alone is per-USER, so without that key every concurrent session's runs
+# land in one directory and each monitor reports the others' milestones and kill -0's
+# pids it does not own.
 #
 # WHY A SCRIPT AND NOT `tail -F`: silence has to be distinguishable from death. A
 # tail is equally quiet whether a farm is thinking or was killed, and a watch that
@@ -15,7 +17,7 @@
 # farm's own milestones AND notices a run whose process is gone without a DONE.
 set -uo pipefail
 
-DIR="${TMPDIR:-/tmp}/farm-events"
+DIR="${TMPDIR:-/tmp}/farm-events${CLAUDE_CODE_SESSION_ID:+/$CLAUDE_CODE_SESSION_ID}"
 mkdir -p "$DIR" 2>/dev/null || exit 0
 
 declare -A seen_lines=()
