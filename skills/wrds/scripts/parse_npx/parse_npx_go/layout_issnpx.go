@@ -488,6 +488,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	}
 
 	lines := issRejoinWrappedLabels(strings.Split(text, "\n"))
+	// The cover's series list may print a fund's rename under its current name,
+	// which is the only place a body banner spelling the OLD name is declared.
+	issCoverRenameAliases(seriesIx, lines)
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
 
@@ -1266,6 +1269,10 @@ type issSeriesIndex struct {
 	// formerKeys are the registrant's FORMER CONFORMED NAMEs, normalised; the
 	// registrant-prefix strip tries each of them after the current name.
 	formerKeys []string
+	// aliases keys a fund name the FILING ITSELF declares for a series, such as
+	// the cover's `(changed name from <X> on <date>)`. Nil on collision like
+	// every map here, and read only after the exact declared names.
+	aliases map[string]*SeriesDecl
 
 	// byCompact keys the same names with their spaces removed, for a banner
 	// that spaces a token the header runs together (`Russell 2000` against
@@ -1924,6 +1931,32 @@ func issCutTrailingParenthetical(name string) (string, bool) {
 	return head, true
 }
 
+// issAKAParenthetical returns the name inside a trailing parenthetical the
+// filing OPENS with an alias marker: `THE REAL ESTATE INVESTMENT TRUST
+// PORTFOLIO (a/k/a DELAWARE REIT FUND)` (Delaware Pooled Trust 2004, the second
+// ruled line of a two-line banner). The marker is what makes this a second
+// spelling of the same fund rather than a sleeve qualifier, and the head of such
+// a banner is often the registrant's OTHER sleeve with its ordinal off.
+func issAKAParenthetical(name string) (string, bool) {
+	s := strings.TrimSpace(name)
+	if !strings.HasSuffix(s, ")") {
+		return "", false
+	}
+	i := strings.LastIndex(s, "(")
+	if i < 0 {
+		return "", false
+	}
+	inner := strings.TrimSpace(s[i+1 : len(s)-1])
+	for _, marker := range []string{"a/k/a ", "aka ", "also known as "} {
+		if len(inner) > len(marker) && strings.EqualFold(inner[:len(marker)], marker) {
+			if rest := strings.TrimSpace(inner[len(marker):]); rest != "" {
+				return rest, true
+			}
+		}
+	}
+	return "", false
+}
+
 // issCutMedialParenthetical removes a parenthetical that sits between the fund
 // name and the tokens after it, joining the two halves.
 func issCutMedialParenthetical(name string) (string, bool) {
@@ -2476,6 +2509,15 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 			if td, ok := ix.byTicker[t]; ok {
 				return banner, td
 			}
+		}
+	}
+
+	// A name the FILING declares for one of its own series -- the cover's
+	// `(changed name from <X> on <date>)` -- is evidence of the same kind as a
+	// declared name, so it is read before any cut or tolerance.
+	if d == nil && !declared {
+		if a := ix.aliases[normalizeSeriesName(banner)]; a != nil {
+			return banner, a
 		}
 	}
 
@@ -3058,6 +3100,14 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	}
 	if cut, ok := issCutSubAdviser(banner); ok {
 		if _, d := issResolveFund(ix, cut); d != nil {
+			return banner, d
+		}
+	}
+
+	// A trailing parenthetical the filing marks as an ALIAS names the fund
+	// outright, so it is read before the head it sits beside.
+	if inner, ok := issAKAParenthetical(banner); ok {
+		if _, d := issResolveFund(ix, inner); d != nil {
 			return banner, d
 		}
 	}
@@ -4035,6 +4085,14 @@ func issSleeveStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		}
 		if ordinal != "" && !issHasToken(name, ordinal) {
 			return nil
+		}
+		// The mirror reading is refused the same way: the DECLARED name ends on
+		// an ordinal the heading never prints (`THE REAL ESTATE INVESTMENT TRUST
+		// PORTFOLIO` for the declared `... PORTFOLIO II`, Delaware Pooled Trust
+		// 2004, whose filing prints the `II` section separately and 286 rows of
+		// the untruncated section under it).
+		if ordinal == "" && len(cand) > 1 && issRomanNumeral(cand[len(cand)-1]) {
+			continue
 		}
 		if found != nil && found.SeriesID != d.SeriesID {
 			return nil
@@ -5104,13 +5162,20 @@ func issSleeveTokenContradiction(toks []string, name string) bool {
 	for _, t := range strings.Fields(normalizeSeriesName(name)) {
 		decl[t] = true
 	}
+	sleeveMark := func(t string) bool {
+		// A trailing ORDINAL tells sleeves of one family apart exactly as a
+		// number does: `THE REAL ESTATE INVESTMENT TRUST PORTFOLIO` reaches the
+		// declared `... PORTFOLIO II` on the vocabulary rungs, while Delaware
+		// Pooled Trust's 2004 filing prints the `II` section separately.
+		return issNumericToken(t) || issRomanNumeral(t) || issSleeveRegionWord[t]
+	}
 	for t := range head {
-		if !decl[t] && (issNumericToken(t) || issSleeveRegionWord[t]) {
+		if !decl[t] && sleeveMark(t) {
 			return true
 		}
 	}
 	for t := range decl {
-		if !head[t] && (issNumericToken(t) || issSleeveRegionWord[t]) {
+		if !head[t] && sleeveMark(t) {
 			return true
 		}
 	}
@@ -5833,6 +5898,61 @@ func issItemFamilyBrand(line string) (string, bool) {
 		return "", false
 	}
 	return stem, true
+}
+
+// reISSCoverRename reads the rename a cover's series list prints UNDER the
+// fund's current name, `(changed name from Evergreen Global Leaders Fund on
+// 11/05/04)`. The date is what makes the line a declaration rather than prose.
+var reISSCoverRename = regexp.MustCompile(`(?i)^\(\s*changed name from\s+(.+?)\s+on\s+\d{1,2}/\d{1,2}/\d{2,4}\s*\)$`)
+
+// issCoverRenameAliases folds the renames a filing prints on its own cover into
+// the index, the way issFormerKeys folds the header's FORMER CONFORMED NAMEs.
+// The alias is filing-scoped and DIRECTIONAL: the old name names the series the
+// line above it resolves to, and the line above must resolve EXACTLY -- a cover
+// name the registrant does not declare folds nothing, and no cut, tolerance or
+// cross-CIK rung is consulted for either side.
+func issCoverRenameAliases(ix *issSeriesIndex, lines []string) {
+	for i, raw := range lines {
+		m := reISSCoverRename.FindStringSubmatch(strings.TrimSpace(raw))
+		if m == nil {
+			continue
+		}
+		prev := ""
+		for j := i - 1; j >= 0 && j >= i-3; j-- {
+			if p := strings.TrimSpace(lines[j]); p != "" {
+				prev = p
+				break
+			}
+		}
+		d, _ := lookupSeriesEntry(ix.byName, prev)
+		if d == nil {
+			continue
+		}
+		ix.addAlias(m[1], d)
+	}
+}
+
+// addAlias keys a name the FILING declares for a series it already carries.
+// A key two series answer to is recorded as nil and refuses, like every map of
+// the index, and a name the header declares itself is never overwritten.
+func (ix *issSeriesIndex) addAlias(name string, d *SeriesDecl) {
+	key := normalizeSeriesName(name)
+	if key == "" || d == nil {
+		return
+	}
+	if cur, seen := lookupSeriesEntry(ix.byName, name); seen || cur != nil {
+		return
+	}
+	if ix.aliases == nil {
+		ix.aliases = map[string]*SeriesDecl{}
+	}
+	if cur, ok := ix.aliases[key]; ok && (cur == nil || cur.SeriesID != d.SeriesID) {
+		ix.aliases[key] = nil
+		return
+	}
+	ix.aliases[key] = d
+	// New evidence invalidates answers memoised before it arrived.
+	clear(ix.resolved)
 }
 
 // addBrand records a strippable brand the index did not derive from the
