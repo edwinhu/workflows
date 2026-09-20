@@ -3914,6 +3914,55 @@ func issStyleSiblingSwap(ix *issSeriesIndex, a, b string) bool {
 	if a == b || !issStyleWord(a) || !issStyleWord(b) {
 		return false
 	}
+	return issDeclSlotSwap(ix, a, b)
+}
+
+// issSizeWord reports a CAPITALISATION-BAND descriptor: the word that separates
+// `Small-Cap Growth` from `Mid-Cap Growth`. The hyphenations registrants print
+// fold to these tokens before this is consulted, because normalizeSeriesName
+// spaces the hyphen.
+func issSizeWord(w string) bool {
+	switch w {
+	case "small", "mid", "large", "smid", "all":
+		return true
+	}
+	return false
+}
+
+// issSizeSiblingSwap is issStyleSiblingSwap for the size band: a and b are both
+// size words AND this registrant separates two of its OWN declared series with
+// exactly that pair. Delaware Pooled Trust declares `The Large-Cap Growth Equity
+// Portfolio` beside `The Mid-Cap Growth Equity Portfolio` and `The Small-Cap
+// Growth Equity Portfolio`, which is its own proof that the band discriminates,
+// so a heading `The Small-Cap Value Equity Portfolio` names a sleeve it does not
+// declare and must not fold onto `The Large-Cap Value Equity Portfolio`
+// (S000003931, 938 rows). The declared evidence is required: a registrant that
+// uses the word decoratively is untouched.
+func issSizeSiblingSwap(ix *issSeriesIndex, a, b string) bool {
+	if a == b || !issSizeWord(a) || !issSizeWord(b) {
+		return false
+	}
+	return issDeclSlotSwap(ix, a, b)
+}
+
+// issSizeDiscriminator reports that w is a size word this registrant separates
+// two of its own declared names by -- the evidence a SPLICE needs, where the
+// heading inserts the word and there is no counterpart slot to read it against.
+func issSizeDiscriminator(ix *issSeriesIndex, w string) bool {
+	if !issSizeWord(w) {
+		return false
+	}
+	for _, b := range [...]string{"small", "mid", "large", "smid", "all"} {
+		if issSizeSiblingSwap(ix, w, b) {
+			return true
+		}
+	}
+	return false
+}
+
+// issDeclSlotSwap reports that two declared names of DIFFERENT series run the
+// same length, agree on every token but one, and carry a and b in that slot.
+func issDeclSlotSwap(ix *issSeriesIndex, a, b string) bool {
 	for i := range ix.decls {
 		x := ix.declToks(i)
 		for j := range ix.decls {
@@ -4185,6 +4234,21 @@ func issSplicedDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		if last := heading[len(heading)-1]; issRomanNumeral(last) && indexOfToken(want, last) < 0 {
 			continue
 		}
+		// An inserted SIZE word is the registrant's own discriminator rather
+		// than decoration: `The International Large-Cap Equity Portfolio`
+		// splices `large cap` into the declared `The International Equity
+		// Portfolio` (S000003944), whose section this same filing prints under
+		// its own banner. 655 rows carried a fund they do not name.
+		sized := false
+		for _, t := range subsequenceExtras(want, heading[at:]) {
+			if issSizeDiscriminator(ix, t) {
+				sized = true
+				break
+			}
+		}
+		if sized {
+			continue
+		}
 		if found != nil && found.SeriesID != d.SeriesID {
 			return nil // two declared names sit inside this heading; refuse to pick
 		}
@@ -4213,6 +4277,21 @@ func isOrderedSubsequence(want, have []string) bool {
 		}
 	}
 	return i == len(want)
+}
+
+// subsequenceExtras returns the tokens of have that the ordered-subsequence
+// match against want does not consume -- the words a splice INSERTED.
+func subsequenceExtras(want, have []string) []string {
+	i := 0
+	var extra []string
+	for _, t := range have {
+		if i < len(want) && want[i] == t {
+			i++
+			continue
+		}
+		extra = append(extra, t)
+	}
+	return extra
 }
 
 // issGeographyInflectionDecl retries the key with one geography noun replaced by
@@ -5438,6 +5517,25 @@ func issDistinctivePairDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 	if hit != nil && indexOfToken(toks, "and") >= 0 &&
 		indexOfToken(strings.Fields(normalizeSeriesName(hit.Name)), "and") < 0 {
 		return nil
+	}
+	// The heading and the name it reached run the same length and differ in ONE
+	// slot, and that slot is the registrant's own SIZE band: `The Small-Cap Value
+	// Equity Portfolio` reaches `The Large-Cap Value Equity Portfolio`
+	// (S000003931) on the pair `value equity`, and the same filing prints the
+	// large-cap section under its own banner, so the two cannot be one fund.
+	if hit != nil {
+		want := strings.Fields(normalizeSeriesName(hit.Name))
+		if len(want) == len(toks) {
+			diff, at := 0, -1
+			for k := range toks {
+				if toks[k] != want[k] {
+					diff, at = diff+1, k
+				}
+			}
+			if diff == 1 && issSizeSiblingSwap(ix, toks[at], want[at]) {
+				return nil
+			}
+		}
 	}
 	// One side names an ETF and the other a fund: `Fidelity Real Estate High
 	// Income Fund II` reaches Fidelity Covington Trust's `Fidelity Real Estate

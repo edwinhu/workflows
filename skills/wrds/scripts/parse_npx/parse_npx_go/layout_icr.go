@@ -784,7 +784,7 @@ func icrJoinWrappedFundValue(ix *issSeriesIndex, lines []string, i int, name str
 // chain fires only for a name the header does not declare, so icrResolveFund's
 // refusal of an ambiguous declared name stands.
 func icrResolveFundShared(ix *issSeriesIndex, name string) string {
-	if id := icrResolveFund(ix.byName, name); id != "" {
+	if id := icrResolveFundVintage(ix, ix.byName, name); id != "" {
 		return id
 	}
 	if _, d := issResolveFund(ix, name); d != nil {
@@ -835,6 +835,14 @@ const icrMinSuffixWords = 2
 // that rule exists to prevent. An unresolved name returns "" and the caller
 // CLEARS, so the section above never governs the section below.
 func icrResolveFund(idx map[string]*SeriesDecl, printed string) string {
+	return icrResolveFundVintage(nil, idx, printed)
+}
+
+// icrResolveFundVintage is icrResolveFund with the filing's own index in hand,
+// so the declared-side suffix walk can refuse a spelling the filing could not
+// have known. ix is nil for a caller that holds only the name map, and the
+// vintage refusal is then not made.
+func icrResolveFundVintage(ix *issSeriesIndex, idx map[string]*SeriesDecl, printed string) string {
 	fields := strings.Fields(printed)
 	for k := 0; k+icrMinSuffixWords <= len(fields); k++ {
 		d, declared := lookupSeriesEntry(idx, strings.Join(fields[k:], " "))
@@ -845,10 +853,10 @@ func icrResolveFund(idx map[string]*SeriesDecl, printed string) string {
 			return "" // the filing names this section and refuses to say which fund
 		}
 	}
-	if id := icrResolveDeclaredSuffix(idx, printed, len(fields)); id != "" {
+	if id := icrResolveDeclaredSuffix(ix, idx, printed, len(fields)); id != "" {
 		return id
 	}
-	return icrResolveQualified(idx, printed)
+	return icrResolveQualified(ix, idx, printed)
 }
 
 // icrQualifierDelim introduces a trailing ANNOTATION rather than part of the
@@ -873,14 +881,14 @@ const icrQualifierDelim = " - "
 //
 // Candidate heads are tried LONGEST first, and each is resolved through the full
 // rule above, so a head still has to match exactly or by a unique suffix.
-func icrResolveQualified(idx map[string]*SeriesDecl, printed string) string {
+func icrResolveQualified(ix *issSeriesIndex, idx map[string]*SeriesDecl, printed string) string {
 	for cut := strings.LastIndex(printed, icrQualifierDelim); cut > 0; {
 		head := strings.TrimSpace(printed[:cut])
 		if fields := strings.Fields(head); len(fields) >= icrMinSuffixWords {
 			if d, _ := lookupSeriesEntry(idx, head); d != nil {
 				return d.SeriesID
 			}
-			if id := icrResolveDeclaredSuffix(idx, head, len(fields)); id != "" {
+			if id := icrResolveDeclaredSuffix(ix, idx, head, len(fields)); id != "" {
 				return id
 			}
 		}
@@ -910,7 +918,7 @@ func icrResolveQualified(idx map[string]*SeriesDecl, printed string) string {
 // than to whichever was seen first. Matching is on a WORD boundary, so `Bond
 // Fund` cannot match `Municipal Bond Fund` by accident of spelling, and the
 // two-word floor still applies.
-func icrResolveDeclaredSuffix(idx map[string]*SeriesDecl, printed string, words int) string {
+func icrResolveDeclaredSuffix(ix *issSeriesIndex, idx map[string]*SeriesDecl, printed string, words int) string {
 	if words < icrMinSuffixWords {
 		return ""
 	}
@@ -923,12 +931,40 @@ func icrResolveDeclaredSuffix(idx map[string]*SeriesDecl, printed string, words 
 		if d == nil || !strings.HasSuffix(declaredName, " "+key) {
 			continue
 		}
+		// The declared spelling that carries the suffix post-dates the filing:
+		// `BALANCED FUND` ends only the 20110630 alias `Sterling Capital
+		// Strategic Allocation Balanced Fund`, whose id S000003554 was named
+		// `BB&T Capital Manager Moderate Growth Fund` at the 20040630 period of
+		// report -- a fund that filing prints as its own section. The suffix
+		// walk's uniqueness guard cannot see seven years forward, so the vintage
+		// refusal issFutureVintage makes for an exact hit is made here too.
+		if icrFutureDeclName(ix, d) {
+			continue
+		}
 		if found != "" && found != d.SeriesID {
 			return "" // more than one declared fund ends this way; refuse to pick
 		}
 		found = d.SeriesID
 	}
 	return found
+}
+
+// icrFutureDeclName is issFutureVintage at NAME granularity: the declared
+// spelling itself post-dates the filing's period of report, and post-dates the
+// earliest vintage this registrant carries at all. The second half is what keeps
+// a pre-2006 filing resolving, since series identifiers begin in 2006 and every
+// dictionary row such a filing reads post-dates it.
+func icrFutureDeclName(ix *issSeriesIndex, d *SeriesDecl) bool {
+	if ix == nil || d == nil || len(d.DeclDate) != 8 || len(ix.period) != 8 || d.DeclDate <= ix.period {
+		return false
+	}
+	earliest := ""
+	for i := range ix.decls {
+		if x := &ix.decls[i]; len(x.DeclDate) == 8 && (earliest == "" || x.DeclDate < earliest) {
+			earliest = x.DeclDate
+		}
+	}
+	return earliest != "" && d.DeclDate > earliest
 }
 
 // icrPeelProponent splits a trailing proponent word off a cell that merged the
