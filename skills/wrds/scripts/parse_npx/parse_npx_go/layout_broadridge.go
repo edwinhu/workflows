@@ -1282,6 +1282,20 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		sawTable bool
 		cur      *brRowBuf
 
+		// framed records that the meeting's identity came from a rule-framed
+		// block (brRuleFramedIdentity), which states the issuer outright. The
+		// free-standing furniture this vintage prints under that block -- `VOTE
+		// GROUP: GLOBAL` -- must not then be promoted into the issuer slot by
+		// the `AGENDA:` line beneath it.
+		framed bool
+
+		// The item and slate head of the row flush() last emitted, so a
+		// nominee line printed BELOW a blank line -- which flushed the item
+		// row before it -- still hangs under that item. Cleared at boundary(),
+		// because the next meeting's rows belong to no item of this one.
+		lastItem  string
+		lastSlate string
+
 		// Scratch for the silent-section window, allocated once per filing.
 		silentBuf = make([]byte, 0, brSilentLookahead*(brSilentLineCap+1))
 	)
@@ -1311,6 +1325,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 				VoteSource:               cur.typ,
 				ManagementRecommendation: cur.forAgnst,
 			})
+			lastItem, lastSlate = cur.item, brSlateHead(cur)
 		}
 		cur = nil
 	}
@@ -1335,13 +1350,39 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		inTable = false
 		issuer, ticker, cusip, isin = "", "", "", ""
 		mtgDate, mtgType, recDate = "", "", ""
+		framed = false
+		lastItem, lastSlate = "", ""
 	}
 
 	lines := strings.Split(text, "\n")
+	// The tail of a rule-framed identity block, read whole at its first line;
+	// its remaining label lines must not open blocks of their own.
+	framedUntil := -1
 	for i, raw := range lines {
+		if i <= framedUntil {
+			continue
+		}
 		line := strings.TrimSpace(raw)
 		if line == "" {
 			flush()
+			continue
+		}
+
+		// This vintage prints the whole meeting identity as a block framed by
+		// two dashed rules, whose FIRST line leads with the issuer's NAME and
+		// carries `<QUALIFIER> MEETING DATE:` to its right. None of its labels
+		// leads a line, so brFindLabels reads none of them (and must not be
+		// loosened to: its two-label floor is what keeps a proposal naming
+		// "Annual Meeting Date" from closing a table). Read as a unit instead.
+		if id := brRuleFramedIdentity(lines, i); id != nil {
+			flush()
+			boundary()
+			inTable = false
+			spill = nil
+			pendingIssuer = ""
+			issuer, ticker, cusip, mtgDate = id.issuer, id.ticker, id.cusip, id.mtgDate
+			framed = true
+			framedUntil = id.end
 			continue
 		}
 
@@ -1608,6 +1649,16 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 					if parentText != "" {
 						cur.text = append(cur.text, parentText)
 					}
+				case cur == nil && vote != "" && lastItem != "":
+					// A slate whose nominees are printed BELOW a blank line:
+					// the blank flushed the item row, so there is no open row
+					// to hang them on. The header map reads a vote in this
+					// line, and an item-less row that votes can only be a
+					// nominee of the item just emitted -- reopen its slate.
+					cur = &brRowBuf{item: lastItem}
+					if lastSlate != "" {
+						cur.text = append(cur.text, lastSlate)
+					}
 				}
 				if cur != nil {
 					if desc != "" {
@@ -1709,7 +1760,11 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 				boundary()
 				inTable = false
 				spill = nil
-				if pendingIssuer != "" {
+				// A block whose identity was stated outright keeps it: the
+				// free-standing `VOTE GROUP: GLOBAL` beneath it is the report's
+				// own furniture, and the `AGENDA:` line below promotes whatever
+				// preceded it.
+				if pendingIssuer != "" && !framed {
 					issuer = pendingIssuer
 					pendingIssuer = ""
 				}
@@ -2473,6 +2528,112 @@ func brIdentityColumnHeader(line string) []string {
 	}
 	return fields
 }
+
+// brFramedIdentity is one meeting's identity, read whole from the rule-framed
+// block that states it. end is the index of the block's closing rule.
+type brFramedIdentity struct {
+	issuer  string
+	ticker  string
+	cusip   string
+	mtgDate string
+	end     int
+}
+
+// brRuleFramedIdentity reads the identity block this 2004 vintage prints above
+// every proposal table, framed by two dashed rules:
+//
+//   - ------------------------------------------------------------…
+//     3M COMPANY                       MMM        ANNUAL MEETING DATE: 05/11/2004
+//     ISSUER: 88579Y101   CITY:                   HOLDINGS RECONCILIATION DATE: 03/12/2004
+//     ISIN:               COUNTRY: UNITED STATES  VOTE DEADLINE DATE: 05/11/2004
+//   - ------------------------------------------------------------…
+//
+// Every field is printed and none of it is reachable line by line: the first
+// line's only label does not open it, and `ISSUER` is not a label word at all --
+// here it holds the SECURITY ID, so its value goes to the cusip and never to the
+// issuer name, which is the bare text left of the first wide gap on the line
+// above.
+//
+// lines[i] must be the block's first line. The block is recognised only when
+// both rules are present, so a name printed under a rule for any other reason
+// reads nothing.
+func brRuleFramedIdentity(lines []string, i int) *brFramedIdentity {
+	head := strings.TrimSpace(lines[i])
+	if head == "" || brDashRule(head) || brColumnHeader(head) || brPageFurniture(head) {
+		return nil
+	}
+	cells := brSplitWide(lines[i])
+	if len(cells) < 2 {
+		return nil
+	}
+	// The date cell names MEETING DATE behind a qualifier word (`ANNUAL`,
+	// `SPECIAL`) and is never the first cell: a line that OPENS with the label
+	// is an ordinary label line and belongs to brFindLabels.
+	date := -1
+	for j := 1; j < len(cells); j++ {
+		if k := strings.Index(strings.ToUpper(cells[j]), "MEETING DATE:"); k > 0 {
+			date = j
+			break
+		}
+	}
+	if date < 1 {
+		return nil
+	}
+
+	// The rule above, and the rule that closes the block below.
+	j := i - 1
+	for j >= 0 && strings.TrimSpace(lines[j]) == "" {
+		j--
+	}
+	if j < 0 || !brDashRule(strings.TrimSpace(lines[j])) {
+		return nil
+	}
+	end := -1
+	for k := i + 1; k < len(lines) && k <= i+brFramedIdentityLines; k++ {
+		body := strings.TrimSpace(lines[k])
+		if body == "" {
+			continue
+		}
+		if brDashRule(body) {
+			end = k
+			break
+		}
+		// Every other line of the block is labelled.
+		if !strings.Contains(body, ":") {
+			return nil
+		}
+	}
+	if end < 0 {
+		return nil
+	}
+
+	id := &brFramedIdentity{issuer: cells[0], end: end}
+	if v := strings.TrimSpace(cells[date][strings.Index(strings.ToUpper(cells[date]), "MEETING DATE:")+len("MEETING DATE:"):]); v != "" {
+		id.mtgDate = brDate(v)
+	}
+	// The bare cell between the name and the date is the ticker.
+	if date == 2 {
+		if t := brFirstField(cells[1]); t == cells[1] && !strings.Contains(t, ":") && len(t) <= 6 {
+			id.ticker = t
+		}
+	}
+	for k := i + 1; k < end; k++ {
+		for _, cell := range brSplitWide(lines[k]) {
+			up := strings.ToUpper(cell)
+			if !strings.HasPrefix(up, "ISSUER:") {
+				continue
+			}
+			if v := brFirstField(cell[len("ISSUER:"):]); brLooksLikeSecurityID(v) {
+				id.cusip = v
+			}
+		}
+	}
+	return id
+}
+
+// brFramedIdentityLines bounds the search for the block's closing rule: the
+// vintage prints three lines between its rules.
+const brFramedIdentityLines = 6
 
 // brSplitWide splits a printed row on runs of two or more spaces, the gaps a
 // fixed-width report leaves between its cells.
