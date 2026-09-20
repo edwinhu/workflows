@@ -160,6 +160,12 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// row so an unattributed section shows as unmatched, not unnamed.
 		curFund      string
 		outerSection bool // a resolved enclosing heading, not a labelled account cell
+		// reportFund is the fund a `Vote Summary Report` title page named, which
+		// every continuation page of that report belongs to even though none of
+		// them repeats it. It is what a page break restores, in place of
+		// whatever heading the last page left standing.
+		reportFund   string
+		reportSeries string
 		// fundCol is the column a lone `Portfolio Name` header cell opened, in
 		// which a later lone cell names the block's fund.
 		fundCol = -1
@@ -245,10 +251,26 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// Summary Report` banner over its reporting period (S000029069, 981 rows
 		// with no series). A nameless banner is a page break, not a new section,
 		// so it leaves the resolved fund alone; an unresolved one still clears.
-		if name, id, ok := htmlFormNPXSleeveBanner(seriesIx, row.pre); ok {
+		// A page break whose preamble is the banner over the report's own run
+		// parameters names NO portfolio: the report named it once, on its first
+		// page, and everything printed under the parameters is the page's own
+		// first ISSUER (Met Investors Series Trust 2012, 1,091 continuation
+		// pages, 15,285 rows). Nothing in such a block may be adopted, so the
+		// fund resolved before the break carries across it.
+		if htmlPageBreakPreamble(row.pre) {
+			// The page belongs to the report, not to the heading the page
+			// before it left standing: an issuer heading adopted mid-page
+			// would otherwise run on through every page after it.
+			if reportSeries != "" {
+				curFund, curSeries, outerSection = reportFund, reportSeries, true
+			}
+		} else if name, id, ok := htmlFormNPXSleeveBanner(seriesIx, row.pre); ok {
 			curFund, curSeries, outerSection = name, id, true
 		} else if name, id, ok := htmlBareFundLine(seriesIx, row.pre, dict); ok {
 			curFund, curSeries, outerSection = name, id, id != ""
+			if id != "" && htmlBannerBlock(row.pre) {
+				reportFund, reportSeries = name, id
+			}
 		} else if name, ok := htmlFundHeading(row.pre); ok && (name != "" || curSeries == "") {
 			curFund = name
 			curSeries = icrResolveFundShared(seriesIx, name)
@@ -6348,6 +6370,50 @@ func htmlReportParameterLine(s string) bool {
 	if rest, ok := strings.CutPrefix(low, "institution account(s):"); ok {
 		return strings.HasPrefix(strings.TrimSpace(rest), "all ")
 	}
+	// The plural spelling is a different field: `Institutional Account(s): US
+	// Mid-Cap - 3619770182, 3609770181, ...` lists the report's ACCOUNT CODES
+	// under a portfolio named once on the report's first page (Met Investors
+	// Series Trust 2012, 15,285 rows named after it). It never names a fund, so
+	// it is a run parameter whatever it carries.
+	return strings.HasPrefix(low, "institutional account(s):")
+}
+
+// htmlBannerBlock reports a block that carries the `Vote Summary Report`
+// banner, which is what makes a fund named in it the REPORT's fund rather than
+// one section's.
+func htmlBannerBlock(pre string) bool {
+	for _, line := range strings.Split(pre, "\n") {
+		if strings.EqualFold(strings.TrimSpace(line), htmlVoteSummaryBanner) {
+			return true
+		}
+	}
+	return false
+}
+
+// htmlPageBreakPreamble reports the ISS report preamble as it is reprinted at
+// the top of a continuation page: the `Vote Summary Report` banner, with the
+// report's run parameters under it and nothing above it. The report's title page
+// prints its portfolio ABOVE the banner, so a block that names the fund is not
+// one of these.
+func htmlPageBreakPreamble(pre string) bool {
+	if pre == "" {
+		return false
+	}
+	banner := -1
+	for i, line := range strings.Split(pre, "\n") {
+		v := strings.TrimSpace(line)
+		if v == "" {
+			continue
+		}
+		if banner < 0 {
+			if !strings.EqualFold(v, htmlVoteSummaryBanner) {
+				return false
+			}
+			banner = i
+			continue
+		}
+		return htmlReportParameterLine(v)
+	}
 	return false
 }
 
@@ -6372,12 +6438,17 @@ func htmlFundHeading(pre string) (string, bool) {
 			// parameters (Ashmore Funds 2012, 2,199 rows named `Report was run
 			// from: 7/1/11 to 6/30/12`): that block continues the section above
 			// it, so no boundary opens and the section fund carries into it.
-			sawParam := false
 			for _, next := range lines[i+1:] {
 				if v := strings.TrimSpace(next); v != "" {
+					// A run parameter under the banner SEALS the preamble: what
+					// follows it is the page's own content, not the section's
+					// name. Met Investors' continuation pages print the banner,
+					// `Report was run from:` and `Institutional Account(s):`
+					// above the first ISSUER of the page, and reading that
+					// issuer as the fund loses the portfolio the report named on
+					// its first page (15,285 rows).
 					if htmlReportParameterLine(v) {
-						sawParam = true
-						continue
+						return "", false
 					}
 					// The line under the banner is the reporting period in
 					// some vintages (`Reporting Period: 07/01/2013 to
@@ -6388,9 +6459,6 @@ func htmlFundHeading(pre string) (string, bool) {
 					}
 					return v, true
 				}
-			}
-			if sawParam {
-				return "", false
 			}
 			return "", true
 		}
