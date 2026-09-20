@@ -381,6 +381,11 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		// wrapped tail without surviving a real gap in the document.
 		blankRun int
 
+		// ordinalGroups holds the `<n>` of every `<n>.<letter>.` section label
+		// already accepted as a boundary; a later sibling of the same group is
+		// a heading on its label alone. See issOrdinalSectionLabel.
+		ordinalGroups map[string]bool
+
 		// blankID marks that the CURRENT meeting block printed its identity line
 		// with both values empty (`Ticker:            Security ID:`), and
 		// blankIDRows collects the indexes of the rows that block emitted. The
@@ -549,6 +554,14 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				// filing gives, and it is exact.
 				name, ok = line, true
 				plainHeading = true
+			} else if g, labelled := issOrdinalSectionLabel(line); labelled && ordinalGroups[g] {
+				// ... or on a `<n>.<letter>.` label of a series whose earlier
+				// member this filing already opened a section on. The label is
+				// the evidence, so the section opens whether or not the name
+				// behind it resolves, and an undeclared sibling's rows come out
+				// blank rather than inheriting the last declared sibling's id.
+				name, ok = line, true
+				plainHeading = true
 			}
 		}
 		if ok && fundSeries != "" && bannerTail == "" && len(bannerBuf) == 0 &&
@@ -588,6 +601,12 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 				}
 				if len(bannerBuf) >= issMaxBannerLines {
 					commitBanner()
+				}
+				if g, labelled := issOrdinalSectionLabel(name); labelled {
+					if ordinalGroups == nil {
+						ordinalGroups = map[string]bool{}
+					}
+					ordinalGroups[g] = true
 				}
 				bannerBuf = append(bannerBuf, name)
 				bannerPlain = plainHeading
@@ -6460,6 +6479,27 @@ func issLeadingEnumerator(name string) (rest string, ok bool) {
 		return "", false
 	}
 	return strings.Join(f[1:], " "), true
+}
+
+// issOrdinalSectionLabel reads the `<n>.<letter>.` label a filing prints in
+// front of every fund heading of one report section (`1.D.  Sun Capital Real
+// Estate Fund`, `1.E.  SC Alger Growth Fund`), returning the `<n>` its labels
+// share. The label is byte evidence that the line is a heading, so a sibling
+// whose name resolves to nothing still opens a section.
+func issOrdinalSectionLabel(line string) (group string, ok bool) {
+	f := strings.Fields(line)
+	if len(f) < 2 {
+		return "", false
+	}
+	tok := f[0]
+	i := 0
+	for i < len(tok) && tok[i] >= '0' && tok[i] <= '9' {
+		i++
+	}
+	if i == 0 || len(tok) != i+3 || tok[i] != '.' || !isASCIILetter(tok[i+1]) || tok[i+2] != '.' {
+		return "", false
+	}
+	return tok[:i], true
 }
 
 // issReportTitleLine reports whether a line is the report title printed under a
