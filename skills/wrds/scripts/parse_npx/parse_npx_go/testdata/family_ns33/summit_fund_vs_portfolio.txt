@@ -1,0 +1,82 @@
+<SEC-DOCUMENT>0000743773-04-000020.txt : 20040827
+<SEC-HEADER>0000743773-04-000020.hdr.sgml : 20040827
+<ACCEPTANCE-DATETIME>20040827123049
+ACCESSION NUMBER:		0000743773-04-000020
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040827
+DATE AS OF CHANGE:		20040827
+EFFECTIVENESS DATE:		20040827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SUMMIT MUTUAL FUNDS INC
+		CENTRAL INDEX KEY:			0000743773
+		FISCAL YEAR END:			0630
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-04000
+		FILM NUMBER:		041001431
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	CARILLON FUND INC
+		DATE OF NAME CHANGE:	19920703
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npxfile.txt
+<DESCRIPTION>ANNUAL REPORT OF PROXY VOTING RECORD OF SUMMIT MUTUAL FUNDS, INC.
+<TEXT>
+Item 1.  Proxy Voting Record
+
+******************************* FORM N-PX REPORT
+*******************************
+
+ICA File Number: 811-04000
+Reporting Period: 07/01/2003 - 06/30/2004
+Summit Mutual Funds, Inc.
+
+
+=================== SUMMIT RUSSELL 2000 SMALL CAP INDEX FUND
+===================
+
+
+1-800-FLOWERS.COM INC.
+
+Ticker:       FLWS           Security ID:  68243Q106
+Meeting Date: DEC 2, 2003    Meeting Type: Annual
+Record Date:  OCT 8, 2003
+
+#     Proposal                                  Mgt Rec   Vote Cast
+Sponsor
+1.1   Elect Director Jeffrey C. Walker          For       For
+Management
+1.2   Elect Director Kevin J. O'Connor          For       For
+Management
+1.3   Elect Director Lawrence V. Calcano        For       For
+Management
+2     Approve Executive Incentive Bonus Plan    For       For
+Management
+3     Approve Omnibus Stock Plan                For       Against
+Management
+4     Ratify Auditors                           For       For
+Management
+
+
+- -----------------------------------------------------------------------
+- ---------
+
+A. SCHULMAN, INC.
+
+Ticker:       SHLM           Security ID:  808194104
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
