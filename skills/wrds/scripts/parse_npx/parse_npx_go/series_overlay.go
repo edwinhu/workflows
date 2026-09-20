@@ -87,7 +87,9 @@ func (o *seriesOverlay) apply(relPath string, declared map[string]bool, r *VoteR
 // overlayDeclaredIDs is the set of series the overlay may stamp: the header's
 // decls (or the CIK dictionary's when the header carries none) plus every series
 // the registrant's dictionary knows, since a fund merged or renamed before the
-// filing still voted under its old series id and the audited map names it.
+// filing still voted under its old series id and the audited map names it. That
+// widening licenses only ids declared EARLIER than the period; a future-vintage
+// id is dropped by overlayFutureVintage below.
 func overlayDeclaredIDs(meta FilingMeta) map[string]bool {
 	out := map[string]bool{}
 	for _, d := range meta.SeriesDecls {
@@ -102,5 +104,40 @@ func overlayDeclaredIDs(meta FilingMeta) map[string]bool {
 			}
 		}
 	}
+	for id := range out {
+		if overlayFutureVintage(meta, id) {
+			delete(out, id)
+		}
+	}
 	return out
+}
+
+// overlayFutureVintage is issFutureVintage's predicate (layout_issnpx.go)
+// restated over meta.SeriesDecls: the overlay is stamped from main.go's stamp
+// closure, where no issSeriesIndex exists. Keep the two in step. An id whose
+// earliest dated declaration post-dates BOTH this filing's period and the
+// earliest dated declaration the registrant carries did not exist at the
+// period, so the map may not stamp it. A declaration the filing's own header
+// printed is undated and is never refused.
+func overlayFutureVintage(meta FilingMeta, id string) bool {
+	if len(meta.PeriodOfReport) != 8 {
+		return false
+	}
+	first, earliest := "", ""
+	for i := range meta.SeriesDecls {
+		d := &meta.SeriesDecls[i]
+		if len(d.DeclDate) != 8 {
+			if d.SeriesID == id {
+				return false
+			}
+			continue
+		}
+		if earliest == "" || d.DeclDate < earliest {
+			earliest = d.DeclDate
+		}
+		if d.SeriesID == id && (first == "" || d.DeclDate < first) {
+			first = d.DeclDate
+		}
+	}
+	return first != "" && first > meta.PeriodOfReport && first > earliest
 }
