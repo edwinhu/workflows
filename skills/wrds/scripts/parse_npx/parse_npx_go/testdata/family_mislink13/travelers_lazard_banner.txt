@@ -1,0 +1,83 @@
+<SEC-DOCUMENT>0000930413-04-004219.txt : 20040831
+<SEC-HEADER>0000930413-04-004219.hdr.sgml : 20040831
+<ACCEPTANCE-DATETIME>20040831154338
+ACCESSION NUMBER:		0000930413-04-004219
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+DATE AS OF CHANGE:		20040831
+EFFECTIVENESS DATE:		20040831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			TRAVELERS SERIES TRUST
+		CENTRAL INDEX KEY:			0000880583
+		IRS NUMBER:				061346133
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>c33427_npx.txt
+<TEXT>
+<PAGE>
+
+
+ITEM 1.  PROXY VOTING RECORD
+
+
+
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-06465
+Reporting Period: 07/01/2003 - 06/30/2004
+The Travelers Series Trust
+
+
+
+
+
+=========== THE TRAVELERS SERIES TRUST - LAZARD INTERNATIONAL STOCK ============
+===========                        PORTFOLIO                        ============
+
+
+ACOM CO. LTD.
+
+Ticker:                      Security ID:  J00105106
+Meeting Date: JUN 24, 2004   Meeting Type: Annual
+Record Date:  MAR 31, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Approve Allocation of Income, Including   For       For        Management
+      the Following Dividends: Interim JY 40,
+      Final JY 40, Special JY 0
+2     Amend Articles to: Decrease Authorized    For       For        Management
+      Capital to Reflect Share Repurchase -
+      Authorize Share Repurchases at Board's
+      Discretion
+3.1   Elect Director                            For       For        Management
+3.2   Elect Director                            For       For        Management
+3.3   Elect Director                            For       For        Management
+3.4   Elect Director                            For       For        Management
+3.5   Elect Director                            For       For        Management
+3.6   Elect Director                            For       For        Management
+3.7   Elect Director                            For       For        Management
+3.8   Elect Director                            For       For        Management
+3.9   Elect Director                            For       For        Management
+3.10  Elect Director                            For       For        Management
+3.11  Elect Director                            For       For        Management
+4     Appoint Internal Statutory Auditor        For       Against    Management
+5     Approve Retirement Bonuses for Directors  For       Against    Management
+      and Statutory Auditor
+
+
+                                    Page 303
+<PAGE>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
