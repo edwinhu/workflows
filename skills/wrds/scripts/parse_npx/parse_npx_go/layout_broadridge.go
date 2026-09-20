@@ -660,6 +660,15 @@ func brOpenProposalTail(cur *brRowBuf, slot string) bool {
 // blank stands between it and the rule (`THE ISSUE OF SHORT-TERM DEBENTURE`,
 // John Hancock Funds II 2015, 32,630 rows). Testing lines[i-2] alone reads that
 // blank and hides the numbered vote row above the tail.
+//
+// The anchor itself may be several lines up: a proposal whose text wraps over
+// THREE lines leaves a wrapped continuation immediately above the slot, not the
+// numbered row (`COMPANY IN THE INTER-BANK BOND MARKET` under `ISSUANCE OF
+// MEDIUM-TERM NOTES OF THE`, John Hancock Variable Insurance Trust 2023, 5,553
+// rows on S000008214). So the walk climbs the whole unbroken run of non-blank,
+// unruled lines above the slot to the numbered row that opened it -- the same
+// bounded upward walk brContinuationRunLine and issProposalWrapLine perform --
+// rather than testing lines[j-1] alone.
 func brProposalContinuationSlot(lines []string, i int, slot string, open bool) bool {
 	if !open || i < 2 {
 		return false
@@ -671,9 +680,16 @@ func brProposalContinuationSlot(lines []string, i int, slot string, open bool) b
 	if j < 1 || strings.TrimSpace(lines[j]) != slot {
 		return false
 	}
-	prev := strings.TrimSpace(lines[j-1])
-	item, _ := brSplitItem(prev)
-	return item != "" && brVoteRowSlot(prev)
+	for k, steps := j-1, 0; k >= 0 && steps < brContinuationRunWalk; k, steps = k-1, steps+1 {
+		prev := strings.TrimSpace(lines[k])
+		if prev == "" || brDashRule(prev) {
+			return false
+		}
+		if item, _ := brSplitItem(prev); item != "" {
+			return brVoteRowSlot(prev)
+		}
+	}
+	return false
 }
 
 // brVoteRowSlot reports a heading slot that is a complete PROPOSAL ROW of this
@@ -683,11 +699,18 @@ func brProposalContinuationSlot(lines []string, i int, slot string, open bool) b
 // does, and it stood as the fund of every block after it (Touchstone Strategic
 // Trust 2005, 680 rows with no series). A proposal-type token followed by a vote
 // token is the grammar's own signature and never occurs in a fund name.
+//
+// The vocabulary carries the abbreviations this grammar's filings actually
+// print. `Shr` and `ShrHoldr` are whole vintages' spelling of the shareholder
+// proposal, and without them a COMPLETE row is read as prose and its tail
+// promoted: `EQUITY.`, under `5. STOCKHOLDER PROPOSAL REGARDING GENDER PAY
+// Shr  For  Against`, took another filer's S000008805 on 39,356 rows (John
+// Hancock Funds II 2016).
 func brVoteRowSlot(slot string) bool {
 	f := strings.Fields(slot)
 	for i := 1; i+1 < len(f); i++ {
 		switch strings.ToLower(f[i]) {
-		case "mgmt", "mgt", "management", "shareholder":
+		case "mgmt", "mgt", "management", "shareholder", "shr", "shrholdr":
 			switch strings.ToLower(f[i+1]) {
 			case "for", "against", "abstain", "withheld", "withhold", "none", "split":
 				return true
