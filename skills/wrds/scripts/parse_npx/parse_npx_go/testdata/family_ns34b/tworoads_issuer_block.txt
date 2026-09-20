@@ -1,0 +1,122 @@
+<SEC-DOCUMENT>0001580642-21-003998.txt : 20210826
+<SEC-HEADER>0001580642-21-003998.hdr.sgml : 20210826
+<ACCEPTANCE-DATETIME>20210826155140
+ACCESSION NUMBER:		0001580642-21-003998
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20210630
+FILED AS OF DATE:		20210826
+DATE AS OF CHANGE:		20210826
+EFFECTIVENESS DATE:		20210826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Two Roads Shared Trust
+		CENTRAL INDEX KEY:			0001552947
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>trstnpx2.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">The Corporation Trust Company</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">1209 Orange Street</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 10pt Arial, Helvetica, Sans-Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: top">
+    <TD STYLE="text-align: left; font: 10pt Arial, Helvetica, Sans-Serif; padding: 3pt"><FONT STYLE="font-size: 10pt">Registrant:
+    <U>TWO ROADS SHARED TRUST - Conductor Global Equity Fund</U> </FONT></TD>
+    <TD COLSPAN="4" STYLE="text-align: right; font: 10pt Arial, Helvetica, Sans-Serif; padding: 3pt">Item 1, Exhibit 24</TD></TR>
+<TR STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: top">
+    <TD COLSPAN="5" STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-size: 10pt">Investment Company
+    Act file number: 811-22718</FONT></TD></TR>
+<TR STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: top">
+    <TD COLSPAN="5" STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-size: 10pt">Reporting Period:
+    July 1, 2020 through June 30, 2021</FONT></TD></TR>
+<TR STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: top">
+    <TD COLSPAN="5" STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif">&nbsp;</TD></TR>
+<TR STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: top">
+    <TD COLSPAN="5" STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt"><B>Meeting
+    Date Range: 30-Jun-2020 To 01-Jul-2021</B></FONT></TD></TR>
+  <TR STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: top">
+    <TD COLSPAN="4" STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt"><B>Selected
+    Groups</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="background-color: rgb(0,78,117); font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: top">
+    <TD COLSPAN="5" STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: White"><B>NOVOLIPETSK
+    STEEL</B></FONT></TD></TR>
+  <TR STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: top">
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif; width: 38%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt"><B>Security:</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif; width: 13%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">X58996103</FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif; width: 20%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif; width: 16%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt"><B>Meeting
+    Type:</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif; width: 24%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">ExtraOrdinary
+    General Meeting</FONT></TD></TR>
+  <TR STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: top">
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt"><B>Ticker:</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt"><B>Meeting
+    Date:</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">25-Sep-2020</FONT></TD></TR>
+  <TR STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: top">
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt"><B>ISIN</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">RU0009046452</FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt"><B>Vote
+    Deadline Date:</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">21-Sep-2020</FONT></TD></TR>
+  <TR STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: top">
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt"><B>Agenda</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">712980463</FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt"><B>Total
+    Ballot Shares:</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">259400</FONT></TD></TR>
+  <TR STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: top">
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt"><B>Last
+    Vote Date:</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">22-Aug-2020</FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+  </TABLE>
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 10pt Arial, Helvetica, Sans-Serif; width: 100%; border-collapse: collapse">
+  <TR STYLE="background-color: rgb(0,78,117); font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: top">
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif; white-space: nowrap; width: 5%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: White"><B>Item</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif; white-space: nowrap; width: 37%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: White"><B>Proposal</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif; text-align: center; white-space: nowrap; width: 13%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: White"><B>Recommendation</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif; text-align: center; white-space: nowrap; width: 9%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: White"><B>Default
+    Vote</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif; text-align: center; white-space: nowrap; width: 8%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: White"><B>For</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif; text-align: center; white-space: nowrap; width: 8%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: White"><B>Against</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif; text-align: center; white-space: nowrap; width: 8%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: White"><B>Abstain</B></FONT></TD>
+    <TD STYLE="padding: 3pt; font: 10pt Arial, Helvetica, Sans-Serif; text-align: center; white-space: nowrap; width: 12%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: White"><B>Take
+    No Action</B></FONT></TD></TR>
+  <TR STYLE="font: 10pt Arial, Helvetica, Sans-Serif; vertical-align: top">
+    <TD STYLE="padding-right: 3pt; font: 10pt Arial, Helvetica, Sans-Serif; padding-left: 3pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1</FONT></TD>
+    <TD STYLE="padding-right: 3pt; font: 10pt Arial, Helvetica, Sans-Serif; padding-left: 3pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">ON DIVIDEND
+    PAYMENT (DECLARATION) ON</FONT></TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; text-align: center; padding-right: 3pt; padding-left: 3pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; text-align: center; padding-right: 3pt; padding-left: 3pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">None</FONT></TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; text-align: center; padding-right: 3pt; padding-left: 3pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">259400</FONT></TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; text-align: center; padding-right: 3pt; padding-left: 3pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">0</FONT></TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; text-align: center; padding-right: 3pt; padding-left: 3pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">0</FONT></TD>
+    <TD STYLE="font: 10pt Arial, Helvetica, Sans-Serif; text-align: center; padding-right: 3pt; padding-left: 3pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">0</FONT></TD></TR>
+
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
