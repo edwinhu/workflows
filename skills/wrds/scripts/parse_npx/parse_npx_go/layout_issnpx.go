@@ -3791,6 +3791,39 @@ func issSubstitutedBrandDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 	return d
 }
 
+// issRegistrantBrandSwapDecl is issSubstitutedBrandDecl read for the
+// REGISTRANT'S OWN name rather than a heading. The lead token there must not be
+// a brand; here it always is -- key IS the registrant key, so its first token
+// heads the registrant -- and the question is whether exactly one declaration
+// spells the same name under a DIFFERENT lead brand: `TAIWAN GREATER CHINA
+// FUND` for a declared `SHELTON GREATER CHINA FUND` (S000034279), the registrant
+// renamed between the report and its first series declaration.
+//
+// The distinctive phrase must survive whole: only the lead token may differ,
+// lessLeadToken is nil when two of the CIK's series answer to the remainder
+// (the same collision refusal seriesByName makes), and the remainder must name
+// two distinct words besides its type word, so a brand swap in front of a bare
+// `Equity Fund` never resolves.
+func issRegistrantBrandSwapDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 3 {
+		return nil
+	}
+	rest := strings.Join(toks[1:], " ")
+	if bare, _ := issDropTypeWord(rest); len(strings.Fields(bare)) < 2 {
+		return nil
+	}
+	d := ix.lessLeadToken[rest]
+	if d == nil || d.SeriesID == "" {
+		return nil
+	}
+	lead := strings.Fields(normalizeSeriesName(d.Name))
+	if len(lead) == 0 || lead[0] == toks[0] {
+		return nil
+	}
+	return d
+}
+
 func issTypoTypeWordDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 	toks := strings.Fields(key)
 	if len(toks) < 2 || !issTypeWord(toks[len(toks)-1]) {
