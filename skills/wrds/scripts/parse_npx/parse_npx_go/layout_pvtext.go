@@ -122,7 +122,7 @@ func parsePVText(text string, meta FilingMeta) ([]VoteRow, error) {
 			}
 			// Only the first numeric or NCF sleeve account following a resolved
 			// bare heading belongs to it; later accounts are new boundaries.
-			opaque := strings.HasPrefix(strings.ToUpper(strings.TrimSpace(lines[i])), "ACCOUNT NUMBER:") && len(f) > 0 && (f[0] >= '0' && f[0] <= '9' || pvTextNCFAccount.MatchString(f))
+			opaque := strings.HasPrefix(strings.ToUpper(strings.TrimSpace(lines[i])), "ACCOUNT NUMBER:") && len(f) > 0 && (f[0] >= '0' && f[0] <= '9' || pvTextNCFAccount.MatchString(f) || pvTextBareAccountCode(f))
 			// `Account Number: 9485` printed directly under the `Account Name:`
 			// line that just resolved is that account's number, not a new
 			// section (Seligman Portfolios 2004, 646 rows filed under `9485`
@@ -994,6 +994,27 @@ func pvTextLetterAccountCode(tok string) bool {
 		}
 	}
 	return true
+}
+
+// pvTextBareAccountCode reports a single alphanumeric token carrying a digit and
+// no name words -- `ONF19-6559`, `ONFS71B` -- which Ohio National prints under
+// the page's portfolio heading. It names no fund, so it must not displace a
+// heading that already resolved.
+func pvTextBareAccountCode(name string) bool {
+	if strings.ContainsAny(name, " \t") || len(name) < 4 {
+		return false
+	}
+	digit := false
+	for i := 0; i < len(name); i++ {
+		switch c := name[i]; {
+		case c >= '0' && c <= '9':
+			digit = true
+		case c >= 'a' && c <= 'z', c >= 'A' && c <= 'Z', c == '-':
+		default:
+			return false
+		}
+	}
+	return digit
 }
 
 // pvTextAccountFund retains the printed account code and name; only the
