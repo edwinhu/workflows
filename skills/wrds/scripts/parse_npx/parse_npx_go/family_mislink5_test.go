@@ -111,7 +111,7 @@ func familyMislink5Dispatch(t *testing.T, fixture, dict, layout string, count in
 // against 20060630 dictionary rows, and those stamps are right. A link key is
 // never guessed, so blank is asserted here.
 func TestFamilyMislink5ScoutEquityIndexFutureVintagePair(t *testing.T) {
-	rows := familyMislink5Dispatch(t, "umb_scout_equity_index.txt", "umb_scout_dict.tsv", "splittable", 5)
+	rows := familyMislink5Dispatch(t, "umb_scout_equity_index.txt", "umb_scout_dict.tsv", "splittable", 9)
 	for _, r := range rows {
 		if r.FundName != "Scout Equity Index" {
 			t.Errorf("fixture precondition: unexpected fund %q", r.FundName)
