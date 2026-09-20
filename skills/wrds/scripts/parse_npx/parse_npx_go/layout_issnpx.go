@@ -3531,7 +3531,102 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 			return banner, d
 		}
 	}
+	// The heading opens on the registrant's own brand printed COMPACTED, with
+	// the punctuation and the word boundaries the declarations carry squeezed
+	// out: `SMRI Growth` for a declared `SM&R Growth Fund` (SM&R Investments,
+	// Inc. 2010, 2,389 rows carrying no fund name at all, because a single
+	// remaining token is what every rung above refuses). The compaction is read
+	// off the registrant's own name, the same brand comes off both sides, and
+	// the remainder must then name exactly one DECLARED series.
+	if d := issBrandCompactedDecl(ix, key); d != nil {
+		return banner, d
+	}
 	return banner, nil
+}
+
+// issCompactKey squeezes a normalised key down to its letters and digits, with
+// the `and` normalizeSeriesName writes for `&` dropped: `sm and r investments
+// inc` -> `smrinvestmentsinc`. This is the spelling a vendor reaches for when it
+// compacts a brand it cannot print, and it is what the heading's lead token is
+// measured against.
+func issCompactKey(key string) string {
+	var b strings.Builder
+	for _, t := range strings.Fields(key) {
+		if t == "and" {
+			continue
+		}
+		b.WriteString(t)
+	}
+	return b.String()
+}
+
+// issCutCompactedBrand removes from a declared name the leading run of tokens
+// whose own compaction opens the heading's compacted lead token: `sm and r
+// growth fund` under `smri` gives `growth fund`, because `sm` and then `smr`
+// are prefixes of `smri` and `smrgrowth` is not. A run must be consumed and
+// something must be left.
+func issCutCompactedBrand(declKey, lead string) (string, bool) {
+	toks := strings.Fields(declKey)
+	consumed, cut := "", 0
+	for _, t := range toks {
+		next := consumed
+		if t != "and" {
+			next += t
+		}
+		if !strings.HasPrefix(lead, next) {
+			break
+		}
+		consumed, cut = next, cut+1
+	}
+	if consumed == "" || cut == 0 || cut >= len(toks) {
+		return "", false
+	}
+	return strings.Join(toks[cut:], " "), true
+}
+
+// issBrandCompactedDecl resolves a heading whose LEAD TOKEN is a compacted form
+// of the registrant's own name, with that brand then taken off BOTH sides. The
+// lead token must open the registrant's compacted name and must be no token of
+// any declared series, so an ordinary first word cannot reach here; the declared
+// side must give the same brand up; and what remains must name EXACTLY ONE
+// declared series -- exactly, after the trailing type word the heading drops.
+//
+// Scoped to this filing's own DECLARATIONS and never to the dictionary. SM&R's
+// `SM&R Alger Growth Fund` and `SM&R Alger Aggressive Growth Fund` are rows of
+// cik_series.tsv at this CIK but are not declared by this filing, and admitting
+// them would make `Growth` ambiguous and stamp nothing.
+func issBrandCompactedDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 2 {
+		return nil
+	}
+	lead := toks[0]
+	comp := issCompactKey(ix.registrantKey)
+	if len(lead) < 3 || len(lead) >= len(comp) || !strings.HasPrefix(comp, lead) || issDeclaredToken(ix, lead) {
+		return nil
+	}
+	rest := strings.Join(toks[1:], " ")
+	var hit *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		stem, ok := issCutCompactedBrand(normalizeSeriesName(d.Name), lead)
+		if !ok {
+			continue
+		}
+		if stem != rest {
+			if dropped, cut := issDropTypeWord(stem); !cut || dropped != rest {
+				continue
+			}
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	return hit
 }
 
 // issTypoTypeWordDecl reads a heading whose type word the DECLARATION spells
