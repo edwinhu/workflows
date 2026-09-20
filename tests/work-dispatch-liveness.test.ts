@@ -11,7 +11,9 @@ const DISPATCH = join(SCRIPTS, 'work-dispatch.sh')
 // Liveness is judged by watching a real process, not by reading the checker's source.
 function aliveFor(outPath: string, eventDir: string) {
   return spawnSync('bash', [ALIVE, outPath], {
-    encoding: 'utf8', env: { ...process.env, TMPDIR: eventDir },
+    // CLAUDE_CODE_SESSION_ID pinned empty: the event dir is keyed by it, and `bun test` itself
+    // runs inside a session, so an ambient value looks past the fixture's bare farm-events dir.
+    encoding: 'utf8', env: { ...process.env, TMPDIR: eventDir, CLAUDE_CODE_SESSION_ID: '' },
   }).status
 }
 
