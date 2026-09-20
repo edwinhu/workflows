@@ -477,7 +477,8 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			}
 		}
 		plainHeading := false
-		if !ok && line != "" && i+1 < len(lines) && strings.TrimSpace(lines[i+1]) == "" {
+		if !ok && line != "" && i+1 < len(lines) && strings.TrimSpace(lines[i+1]) == "" &&
+			!issIdentityBlockFollows(lines, i) {
 			// A bare paragraph is a boundary only on an exact, unique name.
 			if d, _ := lookupSeriesEntry(seriesIx.byName, line); d != nil {
 				name, ok = line, true
@@ -5611,6 +5612,28 @@ func issLetterCodeToken(name string) (rest string, ok bool) {
 		}
 	}
 	return strings.Join(fields[1:], " "), true
+}
+
+// issIdentityBlockFollows reports whether the first non-blank line after i
+// opens a ballot's identity block. Such a bare line is the ISSUER of the block,
+// never a fund heading: ING Mutual Funds 2005 prints `CANADIAN NATURAL
+// RESOURCES LTD.` as a bare paragraph under a ruled divider, and the dictionary
+// answers to it with a fund of the same CIK, carrying 2,399 of the enclosing
+// ING Foreign Fund's rows onto another series. Under a genuine ruled banner the
+// first non-blank line is the issuer name, and the identity lines sit two
+// records further down.
+func issIdentityBlockFollows(lines []string, i int) bool {
+	for j := i + 1; j < len(lines) && j <= i+4; j++ {
+		nxt := strings.TrimSpace(lines[j])
+		if nxt == "" {
+			continue
+		}
+		up := htmlUpperASCII(nxt)
+		return strings.HasPrefix(up, "TICKER:") ||
+			strings.HasPrefix(up, "SECURITY ID") ||
+			strings.HasPrefix(up, "MEETING DATE:")
+	}
+	return false
 }
 
 // issTickerLine parses 'Ticker: <t>   Security ID: <id>'. The id label is read
