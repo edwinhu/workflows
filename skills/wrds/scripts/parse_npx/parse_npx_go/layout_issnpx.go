@@ -4314,6 +4314,48 @@ func issRegistrantPrefixAt(banner, registrantKey string, sep rune) (string, bool
 	return "", false
 }
 
+// issFutureVintage reports a declaration made AFTER this filing's period of
+// report. When the header declares nothing, cikSeries.back backfills the
+// registrant's dictionary rows -- carrying their own DeclDate -- into
+// meta.SeriesDecls, and from there a row declared years later is
+// indistinguishable from a header declaration. That is not evidence about this
+// filing, and the rungs below read only PART of the heading, so nothing in the
+// printed bytes can contradict it: `Selected Accounts: Scout Equity Index` on a
+// 20040630 filing reached `Scout Equity Opportunity Fund` (S000044604, declared
+// only at 20140630) on the pair `scout equity`, stamping 3,486 rows.
+//
+// Deliberately narrow in two ways. The exact-name rungs stay unguarded: the
+// same registrant's 20050630 filing resolves `UMB Scout Stock Fund` and `UMB
+// Scout Growth Fund` against 20060630 dictionary rows by name in full, and
+// those stamps are right. And post-dating the period is not enough on its own,
+// because series identifiers themselves begin in 2006: every pre-2006 filing's
+// dictionary rows post-date it, and the earliest vintage a registrant carries
+// says nothing about when the sleeve existed. The series must ALSO be absent
+// from that earliest vintage -- declared later than rows this same registrant
+// already has -- which is what separates `Scout Equity Opportunity Fund`
+// (S000044604, this registrant's only 20140630 row, against siblings from
+// 20060630) from `DWS Capital Growth VIP` (S000006245, 20060630, the earliest
+// vintage its registrant has at all, reached from a 20050630 filing).
+func issFutureVintage(ix *issSeriesIndex, d *SeriesDecl) bool {
+	if d == nil || len(ix.period) != 8 {
+		return false
+	}
+	first, earliest := "", ""
+	for i := range ix.decls {
+		x := &ix.decls[i]
+		if len(x.DeclDate) != 8 {
+			continue
+		}
+		if earliest == "" || x.DeclDate < earliest {
+			earliest = x.DeclDate
+		}
+		if x.SeriesID == d.SeriesID && (first == "" || x.DeclDate < first) {
+			first = x.DeclDate
+		}
+	}
+	return first != "" && first > ix.period && first > earliest
+}
+
 // issWidthTruncatedDecl reads a heading the report cut off at its banner width:
 // the key must be a proper prefix of exactly ONE declared name, ending inside a
 // word rather than at a token boundary, so a heading that is merely a shorter
@@ -4341,6 +4383,9 @@ func issWidthTruncatedDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 			return nil
 		}
 		hit = &ix.decls[i]
+	}
+	if issFutureVintage(ix, hit) {
+		return nil
 	}
 	return hit
 }
@@ -4400,6 +4445,9 @@ func issAbbrevStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 			}
 			hit = d
 		}
+	}
+	if issFutureVintage(ix, hit) {
+		return nil
 	}
 	return hit
 }
@@ -4463,6 +4511,9 @@ func issNearMissDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 			return nil
 		}
 		hit = d
+	}
+	if issFutureVintage(ix, hit) {
+		return nil
 	}
 	return hit
 }
@@ -4715,6 +4766,9 @@ func issDistinctiveTokenDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 	if hit != nil && issSleeveTokenContradiction(toks, hit.Name) {
 		return nil
 	}
+	if issFutureVintage(ix, hit) {
+		return nil
+	}
 	return hit
 }
 
@@ -4780,6 +4834,9 @@ func issDistinctiveStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		hit = owner
 	}
 	if hit != nil && issSleeveTokenContradiction(toks, hit.Name) {
+		return nil
+	}
+	if issFutureVintage(ix, hit) {
 		return nil
 	}
 	return hit
@@ -4916,6 +4973,9 @@ func issDistinctivePairDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		}
 	}
 	if hit != nil && issSleeveTokenContradiction(toks, hit.Name) {
+		return nil
+	}
+	if issFutureVintage(ix, hit) {
 		return nil
 	}
 	return hit
