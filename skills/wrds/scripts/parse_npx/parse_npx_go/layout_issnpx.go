@@ -2603,8 +2603,18 @@ func issResolveFundMemo(ix *issSeriesIndex, banner string) (string, *SeriesDecl)
 // only bytes no fund name could be and changes no heading's value.
 const issMaxBannerBytes = 512
 
+// issMaxResolveDepth bounds how deep the cut chain may re-resolve. Several
+// branches recurse on their own cut of the same banner, so the descent branches
+// rather than shortens, and a cut that removes only a parenthesis pair descends
+// once per pair. A real heading is answered within a handful of cuts; this bound
+// sits far above that, so it refuses only descents no fund name could produce.
+const issMaxResolveDepth = 24
+
 func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	if len(banner) > issMaxBannerBytes {
+		return banner, nil
+	}
+	if ix != nil && ix.depth > issMaxResolveDepth {
 		return banner, nil
 	}
 	idx, registrantKey := ix.byName, ix.registrantKey

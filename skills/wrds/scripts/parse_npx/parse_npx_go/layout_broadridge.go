@@ -1824,13 +1824,13 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 					curSeries, curFund = d.SeriesID, pendingIssuer
 				}
 			}
-			pendingIssuer, pendingIssuerAt = brIssuerName(line), i
+			pendingIssuer, pendingIssuerAt = brPendingIssuerName(line), i
 			continue
 		}
 
 		if !inTable {
 			// An item-shaped token outside a table is prose, not a proposal.
-			pendingIssuer, pendingIssuerAt = brIssuerName(line), i
+			pendingIssuer, pendingIssuerAt = brPendingIssuerName(line), i
 			continue
 		}
 
@@ -2176,6 +2176,19 @@ func brUnglueTrailingCell(toks []string) []string {
 	out := make([]string, 0, len(toks)+1)
 	out = append(out, toks[:len(toks)-1]...)
 	return append(out, last[:cut], last[cut:])
+}
+
+// brPendingIssuerName reads a free-standing line as the pending issuer, except
+// where the line is longer than any issuer or fund name can be: stripHTML welds
+// a uuencoded attachment's payload into kilobyte-long pseudo-lines, and handing
+// one of those to the resolver costs a cut chain per parenthesis pair. Bounded
+// by the same cap the resolver itself refuses on, so no line either would read
+// is dropped here.
+func brPendingIssuerName(line string) string {
+	if len(line) > issMaxBannerBytes {
+		return ""
+	}
+	return brIssuerName(line)
 }
 
 // brIssuerName strips the trailing "Agenda Number: 932152666" that the modern
