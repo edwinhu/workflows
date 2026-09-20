@@ -785,6 +785,14 @@ func icrJoinWrappedFundValue(ix *issSeriesIndex, lines []string, i int, name str
 // refusal of an ambiguous declared name stands.
 func icrResolveFundShared(ix *issSeriesIndex, name string) string {
 	if id := icrResolveFundVintage(ix, ix.byName, name); id != "" {
+		// Its own first rung is the exact route; every rung after it cuts the
+		// printed name. An INEXACT answer of this registrant's own does not
+		// outrank an exact, corpus-unique, contemporaneous sibling hit.
+		if !issBannerDeclaredExact(ix, name) {
+			if d := cikDict.crossCIK(ix.cik, name, ix.period, ix.registrantKey); d != nil {
+				return d.SeriesID
+			}
+		}
 		return id
 	}
 	if _, d := issResolveFund(ix, name); d != nil {

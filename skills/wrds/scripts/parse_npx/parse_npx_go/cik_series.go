@@ -494,13 +494,13 @@ func (f *dictFallback) apply(r *VoteRow) {
 			r.SeriesID = d.SeriesID
 		}
 	}
-	// Last of all, and only after every registrant-scoped rung above has
-	// refused: the heading names a fund of a SIBLING registrant, exactly and
-	// uniquely corpus-wide.
-	if r.SeriesID == "" {
-		if d := f.corpus.crossCIK(f.cik, r.FundName, f.period, f.registrantKey); d != nil {
-			r.SeriesID = d.SeriesID
-		}
+	// Last of all: the heading names a fund of a SIBLING registrant, exactly
+	// and uniquely corpus-wide. Consulted whether the rungs above refused or
+	// answered INEXACTLY -- the exact rung returns early above, so every id
+	// still live here came from a cut of the printed name, and an exact,
+	// corpus-unique, contemporaneous sibling outranks it.
+	if d := f.corpus.crossCIK(f.cik, r.FundName, f.period, f.registrantKey); d != nil {
+		r.SeriesID = d.SeriesID
 	}
 }
 
