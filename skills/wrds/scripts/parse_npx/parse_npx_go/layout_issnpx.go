@@ -5485,6 +5485,53 @@ func issStemOrderInverted(toks []string, i int, declKey string) bool {
 	return false
 }
 
+// issTwoSidedLeadSwap reports whether the heading and the declared name a rare
+// pair reached agree word for word EXCEPT in their lead slot, with neither
+// name spelling the other's lead anywhere. That is one lead token off the
+// declared side and one off the heading side at once, which leaves no
+// distinctive lead word shared between them: the pair alone is then the whole
+// of the evidence and any invented lead answers the same id.
+//
+// The heading is read bare and with the registrant's own leading run cut, so a
+// banner that prints the trust's name in front is refused on the same reading.
+func issTwoSidedLeadSwap(ix *issSeriesIndex, toks []string, key string, hit *SeriesDecl) bool {
+	declKey := normalizeSeriesName(hit.Name)
+	wants := [][]string{strings.Fields(declKey)}
+	if bare, typed := issDropTypeWord(declKey); typed && bare != "" {
+		wants = append(wants, strings.Fields(bare))
+	}
+	heads := [][]string{toks}
+	if rest, ok := strings.CutPrefix(key, ix.registrantKey+" "); ok && rest != "" {
+		heads = append(heads, strings.Fields(rest))
+	}
+	for _, b := range ix.brands {
+		if rest, ok := issCutBrand(key, b); ok && rest != "" {
+			heads = append(heads, strings.Fields(rest))
+		}
+	}
+	for _, want := range wants {
+		if len(want) < 2 {
+			continue
+		}
+		for _, head := range heads {
+			if len(head) != len(want) || head[0] == want[0] {
+				continue
+			}
+			same := true
+			for k := 1; k < len(head); k++ {
+				if head[k] != want[k] {
+					same = false
+					break
+				}
+			}
+			if same && indexOfToken(want, head[0]) < 0 && indexOfToken(head, want[0]) < 0 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // issDistinctivePairDecl reads the same historical-name shape as
 // issDistinctiveTokenDecl where the rare evidence is an ADJACENT ORDERED PAIR
 // rather than two separate words: `NATIONS MARSICO GROWTH FUND MASTER` carries
@@ -5585,6 +5632,18 @@ func issDistinctivePairDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 				return nil
 			}
 		}
+	}
+	// ONE lead token may come off the declared side or off the heading side,
+	// never both: `THE TRAVELERS SERIES TRUST - LAZARD INTERNATIONAL STOCK
+	// PORTFOLIO` reaches the declared `Mondrian International Stock Portfolio`
+	// (S000011157) on the pair `international stock`, and the filing prints
+	// `Mondrian` nowhere. With the declared lead dropped and a lead word of the
+	// heading's own put in its place the two names share no distinctive lead
+	// word, and an invented one (`QQQ INTERNATIONAL STOCK PORTFOLIO`) reaches
+	// the same id. The heading is read bare and with the registrant's own
+	// leading run cut, so the prefixed banner is refused on the same reading.
+	if hit != nil && issTwoSidedLeadSwap(ix, toks, key, hit) {
+		return nil
 	}
 	// One side names an ETF and the other a fund: `Fidelity Real Estate High
 	// Income Fund II` reaches Fidelity Covington Trust's `Fidelity Real Estate
