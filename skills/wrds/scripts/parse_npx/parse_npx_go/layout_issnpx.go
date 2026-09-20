@@ -1803,6 +1803,25 @@ func issRegistrantTokens(registrantKey string) map[string]bool {
 	return set
 }
 
+// issRegistrantWordTruncation reports whether tok is one of the registrant's own
+// NAMING words truncated: a proper prefix of at least three characters, of a word
+// that is not a generic entity noun. The vendor prints `SCUD DREMAN HIGH RET
+// EQUITY` for SCUDDER VALUE SERIES INC on one banner of a filing that spells
+// `SCUDDER` in full on its other two, so the truncation is the registrant's word
+// and nothing about the fund. Generic nouns are excluded so `fun` never stands
+// for `fund`.
+func issRegistrantWordTruncation(tok, registrantKey string) bool {
+	if len(tok) < 3 {
+		return false
+	}
+	for _, t := range strings.Fields(registrantKey) {
+		if len(tok) < len(t) && strings.HasPrefix(t, tok) && !issEntityTypeWord(t) {
+			return true
+		}
+	}
+	return false
+}
+
 // issCorporateSuffixWord lists the trailing corporate form a declared name
 // carries and a printed banner drops.
 var issCorporateSuffixWord = map[string]bool{
@@ -4390,6 +4409,13 @@ func issCutRegistrantWordRun(key, registrantKey string) (string, []string, bool)
 	toks := strings.Fields(key)
 	n, named := 0, false
 	for ; n < len(toks); n++ {
+		// The LEADING token alone may be one of those words truncated:
+		// `SCUD` for `SCUDDER`. It names the registrant exactly as the full
+		// spelling does, so the run cuts it the same way.
+		if n == 0 && !regToks[toks[n]] && issRegistrantWordTruncation(toks[n], registrantKey) {
+			named = true
+			continue
+		}
 		if !regToks[toks[n]] {
 			break
 		}
