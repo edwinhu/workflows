@@ -1,0 +1,92 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ U2FBjfEK0/3oYSjggVWa42bIzFCwg1YzKF9qMBAaJ0ztOQ5h/PivcqMZY+tmkPmq
+ YRnv3ybyGdvMljJR+3ynCg==
+
+<SEC-DOCUMENT>0000809593-04-000019.txt : 20040831
+<SEC-HEADER>0000809593-04-000019.hdr.sgml : 20040831
+<ACCEPTANCE-DATETIME>20040831165314
+ACCESSION NUMBER:		0000809593-04-000019
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+DATE AS OF CHANGE:		20040831
+EFFECTIVENESS DATE:		20040831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			AMERICAN AADVANTAGE FUNDS
+		CENTRAL INDEX KEY:			0000809593
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1031
+
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx2004adv.txt
+<DESCRIPTION>AADVANTAGE FUNDS PROXY VOTE RECORD
+<TEXT>
+===============================================================================
+             AMERICAN AADVANTAGE INTERNATIONAL EQUITY INDEX FUND
+===============================================================================
+The American AAdvantage International Equity Index Fund invests all of its
+investable assets in the Master International Index Series of the Quantitative
+Master Series Trust.  The proxy voting record of the Quantitative Master Series
+Trust for the year ended June 30, 2004 was filed on August 13, 2004 under CIK
+0001025836 and 1940 Act File Number 811-07885.
+
+
+<PAGE>
+
+===============================================================================
+                  AMERICAN AADVANTAGE LARGE CAP GROWTH FUND
+===============================================================================
+
+- --------------------------------------------------------------------------------
+CBRL GROUP, INC.
+- --------------------------------------------------------------------------------
+
+CUSIP/CINS: 12489V106                       MEETING TYPE: ANNUAL
+    TICKER: CBRL                            MEETING DATE: 11/25/2003
+      ISIN:                                       AGENDA:
+      CITY:                 HOLDINGS RECONCILIATION DATE:
+   COUNTRY: UNITED STATES             VOTE DEADLINE DATE: 11/24/2003
+     SEDOL:
+
+<Table>
+<Caption>
+- -------------------------------------------------------------------------------------------------------------
+                                                                                                  FOR/AGAINST
+ITEM                              PROPOSAL                              TYPE           VOTE       MANAGEMENT
+- -------------------------------------------------------------------------------------------------------------
+<S>                                                                     <C>            <C>        <C>
+01   DIRECTORS                                                          Mgmt
+     1      JAMES D. CARREKER                                                          For        For
+     2      ROBERT V. DALE                                                             For        For
+     3      DAN W. EVINS                                                               For        For
+     4      ROBERT C. HILTON                                                           For        For
+     5      CHARLES E. JONES                                                           For        For
+     6      B.F. (JACK) LOWERY                                                         For        For
+     7      GORDON L. MILLER                                                           For        For
+     8      MARTHA M. MITCHELL                                                         For        For
+     9      ANDREA M. WEISS                                                            For        For
+     10     JIMMIE D. WHITE                                                            For        For
+     11     MICHAEL A. WOODHOUSE                                                       For        For
+02   TO APPROVE THE SELECTION OF DELOITTE & TOUCHE                      Mgmt           For        For
+     LLP AS THE COMPANY'S INDEPENDENT AUDITORS FOR
+     FISCAL YEAR 2004
+</Table>
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
