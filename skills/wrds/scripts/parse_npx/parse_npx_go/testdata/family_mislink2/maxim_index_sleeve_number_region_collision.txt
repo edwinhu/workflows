@@ -1,0 +1,69 @@
+<SEC-DOCUMENT>0000356476-04-000106.txt : 20040909
+<SEC-HEADER>0000356476-04-000106.hdr.sgml : 20040909
+<ACCEPTANCE-DATETIME>20040909161306
+ACCESSION NUMBER:		0000356476-04-000106
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040909
+DATE AS OF CHANGE:		20040909
+EFFECTIVENESS DATE:		20040909
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			MAXIM SERIES FUND INC
+		CENTRAL INDEX KEY:			0000356476
+		IRS NUMBER:				840876044
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1231
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>msfnpxa99.txt
+<TEXT>
+=============================== MAXIM INDEX 400 ================================
+
+
+3COM CORP.
+
+Ticker:       COMS           Security ID:  885535104
+Meeting Date: SEP 23, 2003   Meeting Type: Annual
+Record Date:  JUL 25, 2003
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Bruce L. Claflin           For       Did Not    Management
+                                                          Vote
+1.2   Elect Director Paul G. Yovovich           For       Did Not    Management
+                                                          Vote
+============================= MAXIM INDEX EUROPEAN =============================
+
+
+ACOM CO. LTD.
+
+Ticker:                      Security ID:  6049784
+Meeting Date: JUN 24, 2004   Meeting Type: Annual
+Record Date:  MAR 31, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Approve Allocation of Income, Including   For       Did Not    Management
+      the Following Dividends: Interim JY 40,             Vote
+      Final JY 40, Special JY 0
+============================= MAXIM INDEX PACIFIC ==============================
+
+
+ACOM CO. LTD.
+
+Ticker:                      Security ID:  6049784
+Meeting Date: JUN 24, 2004   Meeting Type: Annual
+Record Date:  MAR 31, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Approve Allocation of Income, Including   For       Did Not    Management
+      the Following Dividends: Interim JY 40,             Vote
+      Final JY 40, Special JY 0
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
