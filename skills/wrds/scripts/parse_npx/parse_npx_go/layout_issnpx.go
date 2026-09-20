@@ -2668,6 +2668,18 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 				}
 			}
 		}
+		// A leading run that mixes the registrant's own word with a MASTER
+		// trust's brand: `Scudder Inv Portfolio EAFE Equity Index Portfolio`,
+		// the ProxyEdge account name of the master a Scudder Advisor Funds II
+		// feeder holds (6,603 rows of one 2005 filing with no series). `Inv
+		// Portfolio` is Scudder Investment Portfolios, the master trust, so it
+		// is not the registrant's own word and the two runs above keep half of
+		// the run. The run alone is no evidence, so the remainder must resolve
+		// to ONE declared or dictionary name that spells none of the run's
+		// words, and two cut points reading different series stamp nothing.
+		if d := issCutRegistrantBrandRun(ix, normalizeSeriesName(banner), registrantKey); d != nil {
+			return banner, d
+		}
 		// The registrant's FORMER conformed names, which the SGML header also
 		// declares: John Hancock Variable Insurance Trust 2012 still heads
 		// funds `John Hancock Trust Balanced Trust`.
@@ -3985,6 +3997,60 @@ func issDeclOmitsRun(d *SeriesDecl, run []string) bool {
 		}
 	}
 	return true
+}
+
+// issCutRegistrantBrandRun reads a leading run that opens with one of the
+// registrant's own naming words and then carries words that are NOT the
+// registrant's -- a master trust's brand on a feeder's account name. Every cut
+// point is tried against the whole chain and the one type-token retry, and only
+// a remainder resolving to a declaration that spells none of the run's words
+// counts; cut points disagreeing about the series refuse.
+func issCutRegistrantBrandRun(ix *issSeriesIndex, key, registrantKey string) *SeriesDecl {
+	regToks := issRegistrantTokens(registrantKey)
+	if len(regToks) == 0 {
+		return nil
+	}
+	toks := strings.Fields(key)
+	if len(toks) < 4 || !regToks[toks[0]] || issEntityTypeWord(toks[0]) {
+		return nil
+	}
+	var found *SeriesDecl
+	for n := 2; n <= len(toks)-2; n++ {
+		run := toks[:n]
+		foreign := false
+		for _, t := range run[1:] {
+			if !regToks[t] {
+				foreign = true
+			}
+		}
+		if !foreign {
+			continue
+		}
+		rest := strings.Join(toks[n:], " ")
+		d := issBrandRunRemainder(ix, rest, run)
+		if d == nil {
+			continue
+		}
+		if found != nil && found.SeriesID != d.SeriesID {
+			return nil
+		}
+		found = d
+	}
+	return found
+}
+
+// issBrandRunRemainder resolves one cut point's remainder, retrying once
+// without a trailing type word, and keeps only a declaration omitting the run.
+func issBrandRunRemainder(ix *issSeriesIndex, rest string, run []string) *SeriesDecl {
+	if _, d := issResolveFund(ix, rest); issDeclOmitsRun(d, run) {
+		return d
+	}
+	if stem, typed := issDropTypeWord(rest); typed && stem != "" {
+		if _, d := issResolveFund(ix, stem); issDeclOmitsRun(d, run) {
+			return d
+		}
+	}
+	return nil
 }
 
 func issRegistrantPrefixAt(banner, registrantKey string, sep rune) (string, bool) {
