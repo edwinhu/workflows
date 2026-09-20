@@ -2600,12 +2600,70 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// some other sponsor's fund in the corpus -- so it fires on the outermost
 	// call and never on a recursive cut, and its answer is not memoised, so no
 	// later cut can read it back out of the cache.
-	if d == nil && outer {
+	//
+	// It is consulted whenever the registrant-scoped chain answered INEXACTLY,
+	// not only when it refused. An exact, corpus-unique, contemporaneous sibling
+	// outranks a same-CIK TOLERANCE answer: Victory Portfolios prints `Victory
+	// High Yield VIP Series` for the sleeve its sibling CIK 1068663 declares
+	// under exactly that name, and a cut that trades the heading's last two
+	// words away matches the filer's own retail `Victory High Yield Fund`
+	// (S000053572) instead. A same-CIK EXACT answer is untouched, and every
+	// guard inside crossCIK -- the own-brand-infix refusal, contemporaneity,
+	// corpus uniqueness -- still applies.
+	if outer && !issBannerDeclaredExact(ix, banner) && !issOwnBrandInfixDecl(ix, banner, d) {
 		if alt := cikDict.crossCIK(ix.cik, banner, ix.period, ix.registrantKey); alt != nil {
 			return banner, alt
 		}
 	}
 	return name, d
+}
+
+// issBannerDeclaredExact reports whether the filing's OWN header spells this
+// banner as printed for one series -- the exact route (seriesByName /
+// lookupSeriesEntry, and the aliases the filing itself declares) that every
+// tolerance rung in the chain runs after. An answer reached any other way is a
+// tolerance and may be outranked by an exact sibling hit.
+func issBannerDeclaredExact(ix *issSeriesIndex, banner string) bool {
+	if d, _ := lookupSeriesEntry(ix.byName, banner); d != nil {
+		return true
+	}
+	if d, _ := lookupSeriesEntry(ix.aliases, banner); d != nil {
+		return true
+	}
+	return false
+}
+
+// issOwnBrandInfixDecl is cikSeries.ownBrandInfix read against the ONE
+// declaration the registrant-scoped chain answered with: the answer differs
+// from the heading by exactly one inserted token of the registrant's own name,
+// so the heading is the filer's own sleeve printed short of its brand and a
+// sibling's identically-spelled retail series is the wrong answer (family
+// MISLINK7, Lazard Retirement Series). The dictionary-side test cannot see this
+// answer, which comes from the filing's own header.
+func issOwnBrandInfixDecl(ix *issSeriesIndex, banner string, d *SeriesDecl) bool {
+	if d == nil || d.Name == "" {
+		return false
+	}
+	bt := strings.Fields(normalizeSeriesName(banner))
+	nt := strings.Fields(normalizeSeriesName(d.Name))
+	reg := strings.Fields(ix.registrantKey)
+	if len(bt) == 0 || len(reg) == 0 || len(nt) != len(bt)+1 {
+		return false
+	}
+	brand := make(map[string]bool, len(reg))
+	for _, t := range reg {
+		brand[t] = true
+	}
+	for j := range nt {
+		if !brand[nt[j]] {
+			continue
+		}
+		cut := append(append([]string{}, nt[:j]...), nt[j+1:]...)
+		if issOneTokenEdit(cut, bt) {
+			return true
+		}
+	}
+	return false
 }
 
 func issResolveFundMemo(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
