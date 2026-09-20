@@ -160,6 +160,10 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// row so an unattributed section shows as unmatched, not unnamed.
 		curFund      string
 		outerSection bool // a resolved enclosing heading, not a labelled account cell
+		// windowed is the section's own title block when it names the SAME fund
+		// under two spellings, each with the printed date window it covers. The
+		// row's meeting date picks between them; every other heading clears it.
+		windowed []htmlDatedTitle
 		// reportFund is the fund a `Vote Summary Report` title page named, which
 		// every continuation page of that report belongs to even though none of
 		// them repeats it. It is what a page break restores, in place of
@@ -258,6 +262,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// pages, 15,285 rows). Nothing in such a block may be adopted, so the
 		// fund resolved before the break carries across it.
 		if htmlPageBreakPreamble(row.pre) {
+			windowed = nil
 			// The page belongs to the report, not to the heading the page
 			// before it left standing: an issuer heading adopted mid-page
 			// would otherwise run on through every page after it.
@@ -265,16 +270,16 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				curFund, curSeries, outerSection = reportFund, reportSeries, true
 			}
 		} else if name, id, ok := htmlFormNPXSleeveBanner(seriesIx, row.pre); ok {
-			curFund, curSeries, outerSection = name, id, true
+			curFund, curSeries, outerSection, windowed = name, id, true, nil
 		} else if name, id, ok := htmlBareFundLine(seriesIx, row.pre, dict); ok {
-			curFund, curSeries, outerSection = name, id, id != ""
+			curFund, curSeries, outerSection, windowed = name, id, id != "", nil
 			if id != "" && htmlBannerBlock(row.pre) {
 				reportFund, reportSeries = name, id
 			}
 		} else if name, ok := htmlFundHeading(row.pre); ok && (name != "" || curSeries == "") {
 			curFund = name
 			curSeries = icrResolveFundShared(seriesIx, name)
-			outerSection = curSeries != ""
+			outerSection, windowed = curSeries != "", nil
 		}
 		// One vintage prints the labelled heading as TWO CELLS of a table row,
 		// `Fund Name :` beside the name (Putnam, ~1M rows): the label is the
@@ -292,7 +297,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			}
 			// A registrant or sleeve label cannot erase a proven outer section.
 			if id != "" || !outerSection {
-				curFund, curSeries, outerSection = value, id, false
+				curFund, curSeries, outerSection, windowed = value, id, false, nil
 			}
 			continue
 		}
@@ -325,7 +330,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// so the label and its value are rejoined and the exhibit cells dropped.
 		if joined, ok := htmlRegistrantSplitCells(cells); ok {
 			if name, id, ok := htmlBareFundLine(seriesIx, joined, dict); ok {
-				curFund, curSeries, outerSection = name, id, id != ""
+				curFund, curSeries, outerSection, windowed = name, id, id != "", nil
 				continue
 			}
 		}
@@ -349,6 +354,16 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				if flat := htmlFlat(heading); strings.HasPrefix(flat, "In All Markets, for all voted ballots, for ") {
 					heading = flat
 				}
+			}
+			// The section's own title block names ONE fund under two spellings,
+			// each carrying the window it covers (Principal Funds 2009:
+			// `... SmallCap Value Fund II (05/01/09 through 06/30/09)` over
+			// `... SmallCap Value Fund III (07/01/08 through 04/30/09)`). Taking
+			// either title alone files the whole section under it, so the window
+			// is read and the row's meeting date picks.
+			if titles := htmlDatedTitles(seriesIx, heading, dict); titles != nil {
+				curFund, curSeries, outerSection, windowed = titles[0].name, titles[0].id, true, titles
+				continue
 			}
 			name, id, ok := htmlBareFundLine(seriesIx, heading, dict)
 			if !ok {
@@ -379,11 +394,11 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				}
 			}
 			if ok {
-				curFund, curSeries, outerSection = name, id, registrantSection && id != ""
+				curFund, curSeries, outerSection, windowed = name, id, registrantSection && id != "", nil
 			} else if value, brandOnly := htmlBrandOnlyHeading(seriesIx, heading); brandOnly {
 				// A heading that names the registrant and a type word and
 				// nothing else cannot resolve, but it does open a section.
-				curFund, curSeries, outerSection = value, "", false
+				curFund, curSeries, outerSection, windowed = value, "", false, nil
 				brandOnlyFund = value
 			}
 			// A lone header cell naming the fund column opens it for the rows
@@ -625,6 +640,9 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				if r, ok := htmlDataRow(cells, mapping, headerArity, ctx); ok {
 					r.SeriesID = curSeries
 					r.FundName = curFund
+					if n, id, ok := htmlWindowedFund(windowed, r.MeetingDate); ok {
+						r.FundName, r.SeriesID = n, id
+					}
 					htmlAdoptRowFundColumn(cells, mapping, headerArity, seriesIx, dict)
 					v := htmlFundCell(cells, mapping, headerArity)
 					// The account-name cell degrades into the account NUMBER
@@ -6487,6 +6505,68 @@ func htmlFundHeading(pre string) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+// htmlDatedTitle is one section title printed with the window it covers.
+type htmlDatedTitle struct {
+	name, id, from, to string
+}
+
+// reHTMLTitleWindow matches the date window a renamed fund's section title
+// trails: `(07/01/08 through 04/30/09)`.
+var reHTMLTitleWindow = regexp.MustCompile(`\(([0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}) through ([0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4})\)$`)
+
+// htmlDatedTitles reads a heading block that names a fund under SEVERAL
+// spellings, each with the window it covers. Principal Funds reprints a renamed
+// fund's old and new section titles one above the other that way, and the
+// vendor then stamps a stale `Fund Name :` label under them (2009 filing, 2,732
+// rows with no series). Every dated title must resolve through the shared chain
+// -- one that does not makes the block an ordinary heading, read as before --
+// and a block printing fewer than two is not this shape.
+func htmlDatedTitles(ix *issSeriesIndex, block string, dict *dictFallback) []htmlDatedTitle {
+	var out []htmlDatedTitle
+	for _, line := range strings.Split(block, "\n") {
+		line = strings.TrimSpace(line)
+		m := reHTMLTitleWindow.FindStringSubmatch(line)
+		if m == nil {
+			continue
+		}
+		from, to := htmlDate(m[1]), htmlDate(m[2])
+		if from == "" || to == "" || from > to {
+			return nil
+		}
+		id := icrResolveFundShared(ix, line)
+		if id == "" {
+			id = htmlDictionaryFund(ix, dict, line)
+		}
+		if id == "" {
+			return nil
+		}
+		out = append(out, htmlDatedTitle{name: line, id: id, from: from, to: to})
+	}
+	if len(out) < 2 {
+		return nil
+	}
+	return out
+}
+
+// htmlWindowedFund picks the title whose printed window holds the row's meeting
+// date. A date no window claims, or one two windows claim, picks nothing and
+// leaves the section's standing fund alone.
+func htmlWindowedFund(titles []htmlDatedTitle, date string) (name, id string, ok bool) {
+	if date == "" {
+		return "", "", false
+	}
+	for _, t := range titles {
+		if date < t.from || date > t.to {
+			continue
+		}
+		if ok {
+			return "", "", false
+		}
+		name, id, ok = t.name, t.id, true
+	}
+	return name, id, ok
 }
 
 // htmlIsYesNo reports a did-vote flag value.

@@ -230,7 +230,7 @@ func parseAgenda(text string, meta FilingMeta) ([]VoteRow, error) {
 		// slate carries an item number; a candidate whose LAST cell names the Type
 		// column belongs to the open block's table whatever its cell count.
 		inTable := blockSeen && (icrItem(cells[0]) || agProponent(cells[len(cells)-1]))
-		if !isVote && banner && !inTable {
+		if !isVote && banner && !inTable && !agPageFooter(strings.TrimSpace(cells[0])) {
 			heading = strings.TrimSpace(cells[0])
 		}
 	}
@@ -239,6 +239,23 @@ func parseAgenda(text string, meta FilingMeta) ([]VoteRow, error) {
 		return nil, errLayoutDeclined
 	}
 	return rows, nil
+}
+
+// agPageFooter reports a line whose whole content is a bare digit run. American
+// Funds Insurance Series right-aligns the REGISTRANT'S OWN CIK on the line under
+// each ruled fund banner, and the banner rule then adopts that line instead of
+// the fund above it. A digit run names no fund at any rung, so it is page
+// furniture and must not displace the banner it follows.
+func agPageFooter(s string) bool {
+	if s == "" {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		if s[i] < '0' || s[i] > '9' {
+			return false
+		}
+	}
+	return true
 }
 
 // agVoteRow reads one proposal row from the right: the proponent is the third

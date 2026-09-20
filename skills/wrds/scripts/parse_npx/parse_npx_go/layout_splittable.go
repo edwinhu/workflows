@@ -1119,6 +1119,18 @@ func spReadProxyEdgeHeading(line string, ctx, groupCtx *spContext) {
 		return
 	}
 	cells := icrCells(strings.TrimSpace(line))
+	// The ProxyEdge report reprints `Selected Accounts: <name>` after every
+	// `<PAGE>` break, and those breaks fall INSIDE one `<TABLE>` that runs to the
+	// end of the filing (Scudder Variable Series I 2005: nine accounts, one table,
+	// 4,400 rows all carrying the first). The line re-opens the account wherever
+	// it is printed, not only in the block that opened the table, so it must
+	// overwrite the group's fund as well as the running one.
+	for _, p := range lvPairs(cells) {
+		if p.label == "SELECTED ACCOUNTS" && p.value != "" {
+			ctx.fund, groupCtx.fund = p.value, p.value
+			return
+		}
+	}
 	if len(cells) < 2 || !strings.Contains(cells[len(cells)-1], "Meeting Date:") {
 		return
 	}
