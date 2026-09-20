@@ -121,6 +121,40 @@ func peWholeCell(text string) []bool {
 	return out
 }
 
+// peCellRun returns, for each line peNonBlank returned, the index of the first
+// line of the cell it belongs to. A run of adjacent lines is one cell the
+// vendor hard-wrapped over source lines, so its text is the run joined.
+func peCellRun(text string) []int {
+	var out []int
+	start := -1
+	for _, l := range strings.Split(text, "\n") {
+		if strings.TrimSpace(l) == "" {
+			start = -1
+			continue
+		}
+		if start < 0 {
+			start = len(out)
+		}
+		out = append(out, start)
+	}
+	return out
+}
+
+// peCellAt returns the whole text of the cell beginning at line i and the index
+// of its last line. Two Roads 2021 wraps `NOVOLIPETSK` / `STEEL`, `Meeting` /
+// `Type:` and `ExtraOrdinary` / `General Meeting` this way, and neither half of
+// such a pair names anything on its own.
+func peCellAt(lines []string, run []int, i int) (string, int) {
+	end := i
+	for end+1 < len(lines) && run[end+1] == run[i] {
+		end++
+	}
+	if end == i {
+		return lines[i], i
+	}
+	return strings.Join(lines[i:end+1], " "), end
+}
+
 // peHeader is one header band: its labels, one per logical column, and the
 // number of physical lines they were read from. The two differ when the vendor
 // wrapped a label across two cells.
@@ -277,6 +311,7 @@ func peIdentityLabel(line string) bool {
 func parseProxyEdge(text string, meta FilingMeta) ([]VoteRow, error) {
 	lines := peNonBlank(text)
 	whole := peWholeCell(text)
+	run := peCellRun(text)
 	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(seriesIx, meta.FormerNames)
 	dict := cikDict.exactFallback(meta)
@@ -301,16 +336,26 @@ func parseProxyEdge(text string, meta FilingMeta) ([]VoteRow, error) {
 			i += h.consumed - 1
 			continue
 		}
-		// A label on its own line, its value on the next. A label whose next
-		// line is another label was printed empty, which is normal: a foreign
-		// ballot carries a security id and no ticker.
-		if strings.HasSuffix(line, ":") {
-			label := strings.ToUpper(strings.TrimSuffix(line, ":"))
+		cell, cellEnd := peCellAt(lines, run, i)
+		// A label on its own cell, its value on the next. A label whose next
+		// cell is another label was printed empty, which is normal: a foreign
+		// ballot carries a security id and no ticker. The label and the value
+		// are each read whole, since this vendor hard-wraps either of them
+		// across source lines (`Meeting` / `Type:`).
+		labelText, labelEnd := line, i
+		if !strings.HasSuffix(line, ":") && run[i] == i && cellEnd > i && peIdentityLabel(cell) {
+			labelText, labelEnd = cell, cellEnd
+		}
+		if strings.HasSuffix(labelText, ":") {
+			label := strings.ToUpper(strings.TrimSuffix(labelText, ":"))
+			i = labelEnd
 			value := ""
-			if i+1 < len(lines) && !strings.HasSuffix(lines[i+1], ":") &&
-				peHeaderAt(lines, i+1) == nil {
-				value = lines[i+1]
-				i++
+			if i+1 < len(lines) && peHeaderAt(lines, i+1) == nil {
+				next, nextEnd := peCellAt(lines, run, i+1)
+				if !strings.HasSuffix(next, ":") {
+					value = next
+					i = nextEnd
+				}
 			}
 			switch label {
 			case "TICKER":
@@ -366,11 +411,15 @@ func parseProxyEdge(text string, meta FilingMeta) ([]VoteRow, error) {
 		// This runs BEFORE the fund test because an issuer whose own name
 		// carries a fund word -- a real estate investment TRUST -- is still the
 		// issuer, and taking it for a fund would wipe the fund for the rest of
-		// the filing.
-		if i+1 < len(lines) && peIdentityLabel(lines[i+1]) {
-			issuer = line
-			ticker, cusip, isin, mtgDate, mtgType = "", "", "", "", ""
-			continue
+		// the filing. The heading is the whole CELL: the tail of a hard-wrapped
+		// cell is not a heading, and the reset below must never fire on one.
+		if run[i] == i && cellEnd+1 < len(lines) {
+			if next, _ := peCellAt(lines, run, cellEnd+1); peIdentityLabel(next) {
+				issuer = cell
+				ticker, cusip, isin, mtgDate, mtgType = "", "", "", "", ""
+				i = cellEnd
+				continue
+			}
 		}
 		// A bare heading. The vendor prints the fund above its ballots and the
 		// issuer above each one, with nothing to mark either.
@@ -384,15 +433,6 @@ func parseProxyEdge(text string, meta FilingMeta) ([]VoteRow, error) {
 				fundSeries = htmlDictionaryFund(seriesIx, dict, line)
 			}
 			continue
-		}
-		// The issuer heading is the bare line standing above the ballot's
-		// identity block. Requiring that block to follow is what tells it from
-		// the other bare cells this template prints between ballots -- the
-		// agenda number, its proponent, the meeting date range -- each of which
-		// would otherwise be taken for a new issuer and wipe the identity.
-		if i+1 < len(lines) && peIdentityLabel(lines[i+1]) {
-			issuer = line
-			ticker, cusip, isin, mtgDate, mtgType = "", "", "", "", ""
 		}
 	}
 
