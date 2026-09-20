@@ -5373,6 +5373,15 @@ func htmlLabelledCells(cells []string) (label, value string, ok bool) {
 			vals = append(vals, v)
 		}
 	}
+	// The account label opens the section in the FIRST cell of the row and the
+	// vendor right-aligns the exhibit number in the last cell of that same row:
+	// `Institution Account(s):  TIMOTHY PLAN US SMALL CAP ETF` | `Exhibit 18`
+	// (Timothy Plan 2020, 2,967 rows named `Exhibit 18`). The exhibit cell is
+	// report scaffolding, dropped like the item cell below, so the glued label
+	// cell is read on its own and the number is never taken for the fund.
+	if len(vals) == 2 && htmlFundLabelled(vals[0]) && reHTMLBareExhibitCell.MatchString(vals[1]) {
+		vals = vals[:1]
+	}
 	// Putnam prints label and value in ONE cell: `Fund Name : Putnam VT
 	// Capital Appreciation Fund` (36,599 of 36,599 rows with no fund in the
 	// 2010 filing on 2026-09-02).
@@ -5467,6 +5476,10 @@ func htmlFlattenCells(cells []string) string {
 
 // reHTMLBannerItemCell matches the bare form-item cell some fund banners trail.
 var reHTMLBannerItemCell = regexp.MustCompile(`(?i)^Item [0-9]{1,2}\.?$`)
+
+// reHTMLBareExhibitCell matches the bare exhibit marker some fund banners
+// right-align in the last cell of the row the account label opens.
+var reHTMLBareExhibitCell = regexp.MustCompile(`(?i)^Exhibit [0-9A-Z]{1,3}$`)
 
 // htmlSplitGluedLabelCell splits a banner cell that carries both the label and
 // the fund: `Fund Name - Eventide Health Care & Life Sciences Fund`, or the
