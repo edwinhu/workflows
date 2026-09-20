@@ -1994,9 +1994,19 @@ func issCutGluedBrand(ix *issSeriesIndex, banner, registrantKey string) *SeriesD
 		return nil
 	}
 	toks := strings.Fields(normalizeSeriesName(rawTail))
-	for k := len(toks) - 1; k >= 1; k-- {
+	printed := map[string]bool{head: true}
+	for _, t := range toks {
+		printed[t] = true
+	}
+	// LONGEST remainder first: the candidate that keeps the most of the printed
+	// heading is the most evidence, and trying the shortest first hands the
+	// answer to whichever sibling sleeve the stem's discriminating words would
+	// have separated (`PHOENIX-SENECA MID-CAP GROWTH SERIES` took the declared
+	// `PHOENIX GROWTH AND INCOME` through `phoenix growth series` while
+	// `phoenix mid cap growth series` names S000001959 exactly).
+	for k := 1; k < len(toks); k++ {
 		cand := head + " " + strings.Join(toks[k:], " ")
-		if _, d := issResolveFund(ix, cand); d != nil {
+		if _, d := issResolveFund(ix, cand); d != nil && !issDeclAddsUnprintedToken(printed, d) {
 			return d
 		}
 		if d := issUniqueNamePrefix(ix, cand); d != nil {
@@ -2004,6 +2014,23 @@ func issCutGluedBrand(ix *issSeriesIndex, banner, registrantKey string) *SeriesD
 		}
 	}
 	return nil
+}
+
+// issDeclAddsUnprintedToken refuses a brand cut whose answer spells a word the
+// heading never prints. Only the brand between the house token and the fund
+// stem may be dropped; a candidate that also dropped one of the stem's own
+// discriminating words resolves onto a SIBLING sleeve, and the declared name
+// says so -- `phoenix growth series`, cut out of `PHOENIX-JANUS GROWTH SERIES`,
+// answers the declared `PHOENIX GROWTH AND INCOME SERIES`, whose `INCOME` this
+// filing's heading does not print. The prefix rung below is untouched: a
+// declared name printed SHORT of its own tail is exactly what it reads.
+func issDeclAddsUnprintedToken(printed map[string]bool, d *SeriesDecl) bool {
+	for _, t := range strings.Fields(normalizeSeriesName(d.Name)) {
+		if !printed[t] {
+			return true
+		}
+	}
+	return false
 }
 
 // issVowelDropped reports the vendor's vowel-dropping abbreviation of one word:
@@ -2305,7 +2332,7 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// call and never on a recursive cut, and its answer is not memoised, so no
 	// later cut can read it back out of the cache.
 	if d == nil && outer {
-		if alt := cikDict.crossCIK(ix.cik, banner, ix.period); alt != nil {
+		if alt := cikDict.crossCIK(ix.cik, banner, ix.period, ix.registrantKey); alt != nil {
 			return banner, alt
 		}
 	}
