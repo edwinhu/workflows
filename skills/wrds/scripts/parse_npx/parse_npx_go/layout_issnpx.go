@@ -2647,8 +2647,21 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 		}
 	}
 	// JHF is the filing-agent abbreviation used on John Hancock registrants.
+	// The brand this registrant prints is that token PLUS its own trailing
+	// ordinal (`JHF II` for `John Hancock Funds II`, exactly as the sibling
+	// section of the same filing glues it into `JHFII`), so the ordinal is part
+	// of the brand and goes with it. Left standing, `II Strategic Equity
+	// Allocation Fund` reads as an abbreviation of the declared `International
+	// Strategic Equity Allocation Fund` (John Hancock Funds II 2021, 79,614
+	// rows split between the two sections on one series).
 	if strings.Contains(registrantKey, "john hancock") {
 		if f := strings.Fields(banner); len(f) > 1 && strings.EqualFold(f[0], "JHF") {
+			if rf := strings.Fields(registrantKey); len(f) > 2 && len(rf) > 1 &&
+				issRomanNumeral(rf[len(rf)-1]) && strings.EqualFold(f[1], rf[len(rf)-1]) {
+				if _, d := issResolveFund(ix, strings.Join(f[2:], " ")); d != nil {
+					return banner, d
+				}
+			}
 			if _, d := issResolveFund(ix, strings.Join(f[1:], " ")); d != nil {
 				return banner, d
 			}

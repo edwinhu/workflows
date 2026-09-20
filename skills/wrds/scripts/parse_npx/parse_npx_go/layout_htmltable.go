@@ -361,12 +361,24 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			// `... SmallCap Value Fund III (07/01/08 through 04/30/09)`). Taking
 			// either title alone files the whole section under it, so the window
 			// is read and the row's meeting date picks.
-			if titles := htmlDatedTitles(seriesIx, heading, dict); titles != nil {
+			// One merged cell carrying the ISSUER on its first line and this
+			// vendor's meeting labels below it (`Meeting Date:` / `Record
+			// Date:` / `Meeting Type:`) is the meeting's identity block, never
+			// a section heading: the enclosing section's fund and series
+			// survive it unchanged (American Century ETF Trust 2023, 228,328 of
+			// 228,448 rows stamped S000072999 carried an issuer name as their
+			// fund; Nationwide Mutual Funds 2019, 63,621 rows).
+			identityCell := htmlIssuerIdentityCell(cells)
+			if titles := htmlDatedTitles(seriesIx, heading, dict); titles != nil && !identityCell {
 				curFund, curSeries, outerSection, windowed = titles[0].name, titles[0].id, true, titles
 				continue
 			}
-			name, id, ok := htmlBareFundLine(seriesIx, heading, dict)
-			if !ok {
+			var name, id string
+			var ok bool
+			if !identityCell {
+				name, id, ok = htmlBareFundLine(seriesIx, heading, dict)
+			}
+			if !ok && !identityCell {
 				// One heading CELL may hold several paragraphs, and the name
 				// runs across them: `Wright Major` / `Blue Chip Equities Fund`
 				// in one <TD> (Wright Managed Equity Trust 2010, 942 rows).
@@ -382,7 +394,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			// rows, which prints no section heading at all). The label is the
 			// evidence: the value is read only from the column that header
 			// cell opened, and only when it resolves.
-			if !ok && fundCol >= 0 && fundCol < len(cells) && htmlFilledCells(cells) == 1 && strings.TrimSpace(cells[fundCol]) != "" {
+			if !ok && !identityCell && fundCol >= 0 && fundCol < len(cells) && htmlFilledCells(cells) == 1 && strings.TrimSpace(cells[fundCol]) != "" {
 				if value := htmlFlat(cells[fundCol]); value != "" && !htmlFundLabelled(value) {
 					if fid := icrResolveFundShared(seriesIx, value); fid != "" {
 						name, id, ok = value, fid, true
@@ -395,7 +407,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			}
 			if ok {
 				curFund, curSeries, outerSection, windowed = name, id, registrantSection && id != "", nil
-			} else if value, brandOnly := htmlBrandOnlyHeading(seriesIx, heading); brandOnly {
+			} else if value, brandOnly := htmlBrandOnlyHeading(seriesIx, heading); brandOnly && !identityCell {
 				// A heading that names the registrant and a type word and
 				// nothing else cannot resolve, but it does open a section.
 				curFund, curSeries, outerSection, windowed = value, "", false, nil
@@ -3922,6 +3934,52 @@ func htmlHasVoteCell(cells []string) bool {
 	for _, c := range cells {
 		if htmlIsVoteValue(htmlFlat(c)) {
 			return true
+		}
+	}
+	return false
+}
+
+// htmlIssuerIdentityLabels are the meeting labels this vendor prints UNDER the
+// issuer inside one merged cell (`<td ... colSpan='5'>ISSUER<br>Meeting
+// Date:&nbsp;...<br>Record Date:&nbsp;...<br>Meeting Type:&nbsp;...`).
+var htmlIssuerIdentityLabels = []string{"MEETING DATE:", "RECORD DATE:", "MEETING TYPE:"}
+
+// htmlIssuerIdentityCell reports a row whose single filled cell opens with a
+// line that is not a label and carries one of those labels beneath it in the
+// SAME cell: the meeting's identity block, never a section heading. The
+// evidence is printed in the cell itself. One label is enough because Fidelity
+// Salem Street 2015 prints only `MEETING DATE:` under the issuer on all 10,417
+// of its identity cells, where American Century and Nationwide print three.
+func htmlIssuerIdentityCell(cells []string) bool {
+	if htmlFilledCells(cells) != 1 {
+		return false
+	}
+	var lines []string
+	for _, cell := range cells {
+		if htmlFlat(cell) == "" {
+			continue
+		}
+		for _, line := range strings.Split(cell, "\n") {
+			if v := htmlFlat(line); v != "" {
+				lines = append(lines, v)
+			}
+		}
+		break
+	}
+	if len(lines) < 2 {
+		return false
+	}
+	head := strings.ToUpper(lines[0])
+	for _, label := range htmlIssuerIdentityLabels {
+		if strings.HasPrefix(head, label) {
+			return false
+		}
+	}
+	for _, line := range lines[1:] {
+		for _, label := range htmlIssuerIdentityLabels {
+			if strings.HasPrefix(strings.ToUpper(line), label) {
+				return true
+			}
 		}
 	}
 	return false
