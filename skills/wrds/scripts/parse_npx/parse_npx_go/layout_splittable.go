@@ -412,6 +412,23 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 			}
 			continue
 		}
+		if fund, ok := spSelectedAccounts(line); proxyEdge && ok {
+			// A `Selected Accounts:` line is a section boundary EVERY time it is
+			// printed, not only where it heads the table. The report reprints it
+			// after each `<PAGE>` and this vendor closes no `</TABLE>` between
+			// pages, so a later banner arrives as body and the section it opens
+			// keeps the fund it names until the next one is printed. Read as body
+			// it costs every later section its own fund: Scudder Value Series
+			// 2005 prints four banners and stamps the first sleeve on all 2,166
+			// rows. The rows read so far belong to the section this ends, so the
+			// block is closed before the fund is switched.
+			group = spAppend(group, *cur, flush)
+			flush()
+			ctx.fund, groupCtx.fund = fund, fund
+			ctx.page, groupCtx.page = "", ""
+			cur, header, haveRule, sawType = &spTable{}, nil, false, false
+			continue
+		}
 		if proxyEdge && spIsProxyEdgeHeading(line) {
 			// The ProxyEdge text report prints the next meeting's heading --
 			// rule / `<ISSUER NAME> ... Meeting Date:` / `Issuer:` / `ISIN:` /
@@ -965,6 +982,17 @@ func spReadContext(line string, ctx *spContext, lastBare string) string {
 	return lastBare
 }
 
+// spSelectedAccounts reads the ProxyEdge `Selected Accounts: <name>` banner --
+// the line that names the account every meeting printed below it belongs to.
+func spSelectedAccounts(line string) (string, bool) {
+	for _, p := range lvPairs(icrCells(strings.TrimSpace(line))) {
+		if p.label == "SELECTED ACCOUNTS" && p.value != "" {
+			return p.value, true
+		}
+	}
+	return "", false
+}
+
 // spAccountFund reads the `Account -  <name>` banner the banner-stripped
 // Investment Company Report prints above every page's meetings. It carries no
 // colon, so lvPairs never sees it.
@@ -1180,14 +1208,12 @@ func spReadProxyEdgeHeading(line string, ctx, groupCtx *spContext) {
 	// 4,400 rows all carrying the first). The line re-opens the account wherever
 	// it is printed, not only in the block that opened the table, so it must
 	// overwrite the group's fund as well as the running one.
-	for _, p := range lvPairs(cells) {
-		if p.label == "SELECTED ACCOUNTS" && p.value != "" {
-			ctx.fund, groupCtx.fund = p.value, p.value
-			// The re-opened account is a new section: the page banner belongs
-			// to the section that set it, never filing-wide.
-			ctx.page, groupCtx.page = "", ""
-			return
-		}
+	if fund, ok := spSelectedAccounts(line); ok {
+		ctx.fund, groupCtx.fund = fund, fund
+		// The re-opened account is a new section: the page banner belongs
+		// to the section that set it, never filing-wide.
+		ctx.page, groupCtx.page = "", ""
+		return
 	}
 	if !spIsProxyEdgeHeading(line) {
 		return
