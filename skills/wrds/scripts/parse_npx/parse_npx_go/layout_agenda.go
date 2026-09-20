@@ -125,13 +125,28 @@ func parseAgenda(text string, meta FilingMeta) ([]VoteRow, error) {
 		mtgType    string
 		inBlock    bool
 		blockSeen  bool
+		pageTop    bool
 	)
 
 	for _, raw := range lines {
 		line := strings.TrimSpace(raw)
 		if line == "" {
+			// A page break opens a fresh page exactly as `<TABLE>`/`<S>` does, and
+			// the fund banner is the first text on it. Advantus prints the break
+			// and nothing else -- `<PAGE>`, a blank line, then the bare fund name
+			// -- and reopens no table; by the time this layout runs the break is a
+			// blank line like any other, because removeMarkup turns the tag into a
+			// newline and collapseSpaces squeezes the run to one.
+			pageTop = true
 			continue
 		}
+		// Only the FIRST line of a page may be that banner. Metropolitan Series
+		// Fund breaks the page in the MIDDLE of a proposal table, so the block is
+		// still open below the break and its wrapped description lines must stay
+		// what they are: reading the break as the end of the block would file the
+		// rest of the filing under `CHIEF EXECUTIVE OFFICER.`.
+		atPageTop := pageTop
+		pageTop = false
 		if agRule(raw) {
 			// The fund banner is the two-cell line the report prints above the
 			// first rule of a page: the fund on the left, the registrant on the
@@ -223,7 +238,7 @@ func parseAgenda(text string, meta FilingMeta) ([]VoteRow, error) {
 		// or more spaces comes back as two cells -- so the open block does, for
 		// every cell count alike.
 		_, isVote := agVoteRow(cells)
-		banner := len(cells) >= 1 && !blockSeen
+		banner := len(cells) >= 1 && (!blockSeen || atPageTop)
 		// A proposal row the vote reader declined is not a fund heading. On a
 		// contested or consent ballot the vendor prints the Type column and stops,
 		// so the row is too short for agVoteRow and only the first proposal of a
