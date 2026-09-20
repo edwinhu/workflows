@@ -1,0 +1,65 @@
+<SEC-HEADER>0000950135-04-004248.hdr.sgml : 20040830
+<ACCEPTANCE-DATETIME>20040830160444
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040830
+		COMPANY CONFORMED NAME:			MFS SERIES TRUST XI
+		CENTRAL INDEX KEY:			0000911637
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>b51580xinvpx.txt
+<DESCRIPTION>MFS SERIES TRUST XI
+<TEXT>
+ITEM 1.  PROXY VOTING RECORD.
+<PAGE>
+============================ MFS MID-CAP VALUE FUND ============================
+
+
+ABER DIAMOND CORP. (FORMERLY ABER RESOURCES LTD. )
+
+Ticker:       ABZ            Security ID:  002893105
+Meeting Date: JUN 22, 2004   Meeting Type: Annual
+Record Date:  MAY 17, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Elect James Fernandez, Robert Gannicott,  For       For        Management
+      Lars-Eric Johansson, Thomas O'Neill, J.
+<PAGE>
+
+MFS Union Standard Equity Fund
+
+<TABLE>
+<S>                   <C>                                            <C>                   <C>
+- ------------------------------------------------------------------------------------------------------------------------------------
+3M COMPANY                                                           MMM                   ANNUAL MEETING DATE: 05/11/2004
+ISSUER: 88579Y101     CITY:                                                                HOLDINGS RECONCILIATION DATE: 03/12/2004
+ISIN:                 COUNTRY: UNITED STATES                                               VOTE DEADLINE DATE: 05/11/2004
+- ------------------------------------------------------------------------------------------------------------------------------------
+</TABLE>
+
+VOTE GROUP: GLOBAL
+AGENDA: 932124186 -MANAGEMENT
+
+<TABLE>
+<CAPTION>
+                                              Mgt
+   Proposal Number          Vote Cast         Rec    Proposal
+- ------------------------------------------------------------------------------------------------------------------------------------
+<S>      <C>                <C>             <C>      <C>
+         01                                   For    ELECTION OF DIRECTORS
+
+                            Withheld                 EDWARD A. BRENNAN
+                               For                   MICHAEL L. ESKEW
+                               For                   W. JAMES MCNERNEY, JR.
+                            Withheld                 KEVIN W. SHARER
+
+         02                    For            For    RATIFY APPOINTMENT OF INDEPENDENT AUDITORS
+
+         03                  Against          For    APPROVE AUTHORIZED COMMON STOCK INCREASE
+
+         04                    For          Against  S/H PROPOSAL - CORPORATE GOVERNANCE
+</TABLE>
+
