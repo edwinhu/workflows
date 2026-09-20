@@ -1733,6 +1733,25 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 					put(ix.lessBrandType, r2, d)
 					put(ix.lessBrandTypeCompact, strings.ReplaceAll(r2, " ", ""), d)
 				}
+				// A declared name can carry BOTH a leading registrant token and
+				// the registrant's trailing-initials brand: Wilshire Variable
+				// Insurance Trust declares `WILSHIRE VIT EQUITY FUND` and prints
+				// `Equity Fund`. One cut at the front leaves `vit equity fund`,
+				// so re-cut the residue against the same brand list until it
+				// stops shrinking.
+				for pass := 0; pass < issBrandRecutPasses; pass++ {
+					next, ok := issCutAnyBrand(rest, ix.brands)
+					if !ok || !issSeedableBrandCut(next) {
+						break
+					}
+					rest = next
+					put(ix.lessBrandFull, rest, d)
+					put(ix.lessLeadCompact, strings.ReplaceAll(rest, " ", ""), d)
+					if r2, ok := issDropTypeWord(rest); ok && issSeedableBrandCut(r2) {
+						put(ix.lessBrandType, r2, d)
+						put(ix.lessBrandTypeCompact, strings.ReplaceAll(r2, " ", ""), d)
+					}
+				}
 			}
 		}
 		if d.SeriesID == "" || d.Name == "" {
@@ -6427,6 +6446,38 @@ func issCutBrand(key, brand string) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+// issBrandRecutPasses bounds the re-cut of a brand residue against the same
+// brand list. Two is already one more than any observed registrant needs
+// (`wilshire` then `vit`); the bound is what keeps the widening finite.
+const issBrandRecutPasses = 2
+
+// issCutAnyBrand cuts the first brand of the list that fronts key, or reports
+// that none does.
+func issCutAnyBrand(key string, brands []string) (string, bool) {
+	for _, b := range brands {
+		if rest, ok := issCutBrand(key, b); ok && rest != key {
+			return rest, true
+		}
+	}
+	return "", false
+}
+
+// issSeedableBrandCut refuses a residue that names nothing: empty, or a lone
+// generic type word every registrant's sleeves end in.
+func issSeedableBrandCut(rest string) bool {
+	f := strings.Fields(rest)
+	if len(f) == 0 {
+		return false
+	}
+	if len(f) == 1 {
+		switch f[0] {
+		case "fund", "funds", "portfolio", "portfolios", "trust", "account", "series":
+			return false
+		}
+	}
+	return true
 }
 
 // issFundSeparator recognises the '===== FUND NAME =====' rule that opens a fund
