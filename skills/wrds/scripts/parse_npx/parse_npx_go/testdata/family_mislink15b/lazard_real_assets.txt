@@ -1,0 +1,109 @@
+<SEC-DOCUMENT>0000930413-17-002976.txt : 20170818
+<SEC-HEADER>0000930413-17-002976.hdr.sgml : 20170818
+<ACCEPTANCE-DATETIME>20170818070033
+ACCESSION NUMBER:		0000930413-17-002976
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20170630
+FILED AS OF DATE:		20170818
+DATE AS OF CHANGE:		20170818
+EFFECTIVENESS DATE:		20170818
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			LAZARD RETIREMENT SERIES INC
+		CENTRAL INDEX KEY:			0001033669
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1231
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001033669
+<SERIES-ID>S000010297
+<SERIES-NAME>Lazard Retirement US Equity Concentrated Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028472
+<CLASS-CONTRACT-NAME>Service Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028473
+<CLASS-CONTRACT-NAME>Investor Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001033669
+<SERIES-ID>S000051021
+<SERIES-NAME>Lazard Retirement Emerging Markets Equity Advantage Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000160753
+<CLASS-CONTRACT-NAME>Investor Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000160754
+<CLASS-CONTRACT-NAME>Service Shares
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>c89130_npx.htm
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+
+<P STYLE="margin: 0"></P>
+
+<PRE>
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              WASHINGTON, DC 20549
+
+                                    FORM N-PX
+
+                     ANNUAL REPORT OF PROXY VOTING RECORD OF
+                    REGISTERED MANAGEMENT INVESTMENT COMPANY
+
+                  Investment Company Act file number: 811-08071
+                                                      --------------
+                         Date of fiscal year end: 12/31
+
+              Date of reporting period: July 1, 2016-June 30, 2017
+============== Lazard Emerging Markets Equity Advantage Portfolio ==============
+
+
+AAC TECHNOLOGIES HOLDINGS INC.
+
+Ticker:       2018           Security ID:  G2953R114
+Meeting Date: MAY 24, 2017   Meeting Type: Annual
+Record Date:  MAY 18, 2017
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Accept Financial Statements and         For       For          Management
+      Statutory Reports
+2     Approve Final Dividend                  For       For          Management
+============ Lazard Real Assets and Pricing Opportunities Portfolio ============
+
+
+3M COMPANY
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 09, 2017   Meeting Type: Annual
+Record Date:  MAR 14, 2017
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Sondra L. Barbour        For       For          Management
+1b    Elect Director Thomas "Tony" K. Brown   For       For          Management
+1c    Elect Director Vance D. Coffman         For       For          Management
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
