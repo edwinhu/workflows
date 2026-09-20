@@ -338,7 +338,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	// series id. A heading that names no declared series, or one two series answer
 	// to, resolves to "" and the row is emitted with an empty series_id: the
 	// chassis still stamps single-series filings, and nothing here guesses.
-	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK)
+	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(seriesIx, meta.FormerNames)
 	dict := cikDict.exactFallback(meta)
 
@@ -1247,6 +1247,9 @@ type issSeriesIndex struct {
 	// the chain can tell a sibling registrant's dictionary row from this one's.
 	// Empty when the index is built without a filing behind it.
 	cik string
+	// period is the filing's PERIOD OF REPORT (YYYYMMDD), so the cross-CIK rung
+	// can refuse a declaration another registrant made after this filing.
+	period string
 	// depth counts the chain's own recursive re-resolutions of a cut banner, so
 	// the cross-CIK rung can tell the heading as printed from a remainder.
 	depth int
@@ -1393,9 +1396,10 @@ func issFormerKeys(ix *issSeriesIndex, former []string) {
 
 // issFilingIndex is newISSSeriesIndex for a real filing, carrying the
 // registrant's CIK the cross-CIK rung needs.
-func issFilingIndex(decls []SeriesDecl, registrantKey, cik string) *issSeriesIndex {
+func issFilingIndex(decls []SeriesDecl, registrantKey, cik, period string) *issSeriesIndex {
 	ix := newISSSeriesIndex(decls, registrantKey)
 	ix.cik = cik
+	ix.period = period
 	return ix
 }
 
@@ -2290,7 +2294,7 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// call and never on a recursive cut, and its answer is not memoised, so no
 	// later cut can read it back out of the cache.
 	if d == nil && outer {
-		if alt := cikDict.crossCIK(ix.cik, banner); alt != nil {
+		if alt := cikDict.crossCIK(ix.cik, banner, ix.period); alt != nil {
 			return banner, alt
 		}
 	}
@@ -3961,6 +3965,38 @@ func issDictInsertedWordDecl(ix *issSeriesIndex, dict *dictFallback, banner stri
 	return nil
 }
 
+// issDroppedTokenNamesSibling reports that a token a subset-token rung dropped
+// is spelled in ANOTHER declared name of this registrant, under a series other
+// than the hit's. Dropping it is then a CHOICE between two of the registrant's
+// series rather than the removal of a decoration, which is family MISLINK2's
+// principle read off the registrant's own vocabulary instead of a word list:
+// AXP GROWTH SERIES' `AXP QUANTITATIVE LARGE CAP EQUITY FUND` dropped
+// `quantitative` onto `RiverSource Large Cap Equity Fund` (S000003289) while the
+// same registrant spells that token in `Columbia Large Core Quantitative Fund`
+// (S000003287), and the filing prints `AXP LARGE CAP EQUITY FUND` as a separate
+// banner -- 1,684 rows carrying the plain sleeve's series.
+//
+// The token must be distinctive on its own terms: a type word, a registrant
+// token and anything shorter than issDistinctiveTokenMin are shared vocabulary
+// and say nothing about which series is meant.
+func issDroppedTokenNamesSibling(ix *issSeriesIndex, tok string, hit *SeriesDecl) bool {
+	if hit == nil || hit.SeriesID == "" || len(tok) < issDistinctiveTokenMin || issTypeWord(tok) {
+		return false
+	}
+	if issHasToken(ix.registrantKey, tok) {
+		return false
+	}
+	for i := range ix.decls {
+		if ix.decls[i].SeriesID == "" || ix.decls[i].SeriesID == hit.SeriesID {
+			continue
+		}
+		if i < len(ix.normNames) && issHasToken(ix.normNames[i], tok) {
+			return true
+		}
+	}
+	return false
+}
+
 func issInternalTokenDropDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 	f := strings.Fields(key)
 	if len(f) < 3 {
@@ -3972,6 +4008,9 @@ func issInternalTokenDropDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		d, _ := lookupSeriesEntry(ix.byName, strings.Join(alt, " "))
 		if d == nil {
 			continue
+		}
+		if issDroppedTokenNamesSibling(ix, f[i], d) {
+			return nil
 		}
 		if out != nil && out.SeriesID != d.SeriesID {
 			return nil
@@ -4177,12 +4216,32 @@ func issCutRegistrantBrandRun(ix *issSeriesIndex, key, registrantKey string) *Se
 
 // issBrandRunRemainder resolves one cut point's remainder, retrying once
 // without a trailing type word, and keeps only a declaration omitting the run.
+//
+// The run is cut unread, so it is a subset-token drop in family MISLINK2's
+// sense and carries that family's guard: a run word naming ANOTHER series of
+// this registrant refuses. AXP GROWTH SERIES' `AXP QUANTITATIVE LARGE CAP
+// EQUITY FUND` cuts the run `axp quantitative` and resolves the remainder to
+// `RiverSource Large Cap Equity Fund` (S000003289) -- which the filing already
+// prints as its own banner `AXP LARGE CAP EQUITY FUND` -- while the registrant
+// spells `quantitative` in `Columbia Large Core Quantitative Fund`
+// (S000003287). 1,684 rows carried the plain sleeve's series.
 func issBrandRunRemainder(ix *issSeriesIndex, rest string, run []string) *SeriesDecl {
-	if _, d := issResolveFund(ix, rest); issDeclOmitsRun(d, run) {
+	keep := func(d *SeriesDecl) bool {
+		if !issDeclOmitsRun(d, run) {
+			return false
+		}
+		for _, t := range run {
+			if issDroppedTokenNamesSibling(ix, t, d) {
+				return false
+			}
+		}
+		return true
+	}
+	if _, d := issResolveFund(ix, rest); keep(d) {
 		return d
 	}
 	if stem, typed := issDropTypeWord(rest); typed && stem != "" {
-		if _, d := issResolveFund(ix, stem); issDeclOmitsRun(d, run) {
+		if _, d := issResolveFund(ix, stem); keep(d) {
 			return d
 		}
 	}

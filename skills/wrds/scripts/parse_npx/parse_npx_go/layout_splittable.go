@@ -248,7 +248,7 @@ type spIndex struct {
 }
 
 func spSeriesIndex(meta FilingMeta) *spIndex {
-	ix := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK)
+	ix := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(ix, meta.FormerNames)
 	return &spIndex{ix: ix, dict: cikDict.exactFallback(meta)}
 }

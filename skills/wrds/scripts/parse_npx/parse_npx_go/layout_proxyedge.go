@@ -254,7 +254,7 @@ func peIdentityLabel(line string) bool {
 func parseProxyEdge(text string, meta FilingMeta) ([]VoteRow, error) {
 	lines := peNonBlank(text)
 	whole := peWholeCell(text)
-	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK)
+	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(seriesIx, meta.FormerNames)
 	dict := cikDict.exactFallback(meta)
 

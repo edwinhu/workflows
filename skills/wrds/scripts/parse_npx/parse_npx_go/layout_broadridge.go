@@ -1094,7 +1094,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 	// the name index per block would make the grid job a function of the square
 	// of the body. A name two distinct series answer to maps to nothing, which is
 	// what keeps an ambiguous heading from stamping either of them.
-	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK)
+	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(seriesIx, meta.FormerNames)
 	seriesIdx := seriesIx.byName
 

@@ -235,7 +235,7 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 		text = lvUnwrap(text)
 	}
 	lines := strings.Split(text, "\n")
-	sharedIdx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK)
+	sharedIdx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	dict := cikDict.exactFallback(meta)
 
 	var (
