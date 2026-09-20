@@ -4,6 +4,11 @@ import (
 	"strings"
 )
 
+// How far back over a page's centred furniture -- report title, reporting
+// period, a `VOTED BY ...:` line -- the banner search may reach when the last
+// text line before the table resolves to nothing.
+const vsBannerLookback = 6
+
 // The ISS `VOTE SUMMARY REPORT` is a fixed-width text grammar wrapped in EDGAR's
 // <TABLE>/<CAPTION>/<S>/<C> pseudo-markup, one section per fund per page
 // (streetTRACKS Series Trust 2004 prints 1,096 of them in 2.9 MB). Its column
@@ -173,6 +178,7 @@ func parseVoteSummaryRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, erro
 		fund       string
 		fundSeries string
 		last       string
+		block      []string
 		issuer     string
 		cusip      string
 		mtgDate    string
@@ -195,6 +201,7 @@ func parseVoteSummaryRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, erro
 			if strings.EqualFold(trimmed, "</TABLE>") {
 				flush()
 				cols = nil
+				block = block[:0]
 			}
 			continue
 		}
@@ -204,6 +211,19 @@ func parseVoteSummaryRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, erro
 					flush()
 					cols, fields, fund = c, f, last
 					fundSeries = resolve(fund)
+					if fundSeries == "" {
+						// Some vendors centre the fund, the report title and
+						// the reporting period above the table, so the last
+						// text line is a date range and never the fund. Walk
+						// back over the page's own lines to the nearest one
+						// that resolves and take that as the banner.
+						for j := len(block) - 2; j >= 0 && j >= len(block)-vsBannerLookback; j-- {
+							if id := resolve(block[j]); id != "" {
+								fund, fundSeries = block[j], id
+								break
+							}
+						}
+					}
 					issuer, cusip, mtgDate = "", "", ""
 					i++
 					continue
@@ -212,6 +232,7 @@ func parseVoteSummaryRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, erro
 		}
 		if cols == nil {
 			last = trimmed
+			block = append(block, trimmed)
 			continue
 		}
 		// The rule line under the header, and any page furniture, carry text in
