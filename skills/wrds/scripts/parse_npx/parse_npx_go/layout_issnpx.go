@@ -4045,6 +4045,22 @@ func issSizeDiscriminator(ix *issSeriesIndex, w string) bool {
 	return false
 }
 
+// issStyleDiscriminator is issSizeDiscriminator for the style band: w is a
+// style word this registrant separates two of its own declared names by, the
+// evidence a SPLICE needs where the heading inserts the word and there is no
+// counterpart slot to read it against.
+func issStyleDiscriminator(ix *issSeriesIndex, w string) bool {
+	if !issStyleWord(w) {
+		return false
+	}
+	for _, b := range [...]string{"growth", "value", "income", "equity", "bond"} {
+		if issStyleSiblingSwap(ix, w, b) {
+			return true
+		}
+	}
+	return false
+}
+
 // issDeclSlotSwap reports that two declared names of DIFFERENT series run the
 // same length, agree on every token but one, and carry a and b in that slot.
 func issDeclSlotSwap(ix *issSeriesIndex, a, b string) bool {
@@ -4273,6 +4289,7 @@ func issSplicedDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		registrant[t] = true
 	}
 	var found *SeriesDecl
+	var refused []string
 	for name, d := range ix.byName {
 		if d == nil {
 			continue
@@ -4324,20 +4341,62 @@ func issSplicedDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		// splices `large cap` into the declared `The International Equity
 		// Portfolio` (S000003944), whose section this same filing prints under
 		// its own banner. 655 rows carried a fund they do not name.
-		sized := false
+		// An inserted STYLE word reads on the same evidence: `SIMT MID-CAP
+		// GROWTH FUND` splices `growth` into the declared `SIMT MID CAP FUND`
+		// (S000006675), whose own section this same filing prints, while the
+		// registrant separates its own declared siblings by exactly that word
+		// (`SIMT SMALL CAP GROWTH FUND` beside `SIMT SMALL CAP VALUE FUND`).
+		// 1,891 rows sat on that hazard.
+		sized, styled := false, false
 		for _, t := range subsequenceExtras(want, heading[at:]) {
 			if issSizeDiscriminator(ix, t) {
 				sized = true
 				break
 			}
+			if issStyleDiscriminator(ix, t) {
+				styled = true
+			}
 		}
 		if sized {
+			continue
+		}
+		if styled {
+			refused = append(refused, d.SeriesID)
+			continue
+		}
+		// A run inserted immediately BEHIND the declared name's first token,
+		// opening with a word this registrant declares nowhere, sits in the
+		// slot a sponsor names its sub-adviser in, and that is the sleeve's
+		// discriminator rather than decoration: `PF AIM AGGRESSIVE GROWTH FUND`
+		// splices `aim aggressive` straight behind the `PF` of a declared `PF
+		// Growth Fund` (S000001906), whose contemporary spelling `PF JANUS
+		// GROWTH LT FUND` the same filing prints under its own banner and
+		// stamps with that id. This registrant names every sleeve by
+		// sub-adviser (`PF VAN KAMPEN ...`, `PF OPPENHEIMER ...`), and `aim`
+		// appears in no declared name at the CIK, so the heading names a sleeve
+		// the registrant does not declare; 486 rows carried one it does. The
+		// surviving NAME must also be one the registrant adopted after this
+		// filing: `Baron Capital Partners Fund Series` splices the sponsor's
+		// house word into a contemporary `BARON PARTNERS FUND` and is the same
+		// fund, so the sub-adviser reading is taken only where the stem is a
+		// later rename the section cannot have been printed under.
+		if at+1 < len(heading) && heading[at+1] != want[1] && !registrant[heading[at+1]] &&
+			!issDeclaredToken(ix, heading[at+1]) && issFutureVintageName(ix, d) {
+			refused = append(refused, d.SeriesID)
 			continue
 		}
 		if found != nil && found.SeriesID != d.SeriesID {
 			return nil // two declared names sit inside this heading; refuse to pick
 		}
 		found = d
+	}
+	// A candidate the guards above threw out still proves the heading is not
+	// unambiguous: refusing it must never PROMOTE a sibling that the ambiguity
+	// rule was already suppressing.
+	for _, id := range refused {
+		if found != nil && found.SeriesID != id {
+			return nil
+		}
 	}
 	return found
 }
@@ -4950,6 +5009,34 @@ func issFutureVintage(ix *issSeriesIndex, d *SeriesDecl) bool {
 		}
 	}
 	return first != "" && first > ix.period && first > earliest
+}
+
+// issFutureVintageName is issFutureVintage one level finer: the SERIES may be
+// contemporary with the filing while the particular NAME a rung matched is a
+// later rename. `PF Growth Fund` is a 20150630 rename of S000001906, whose
+// 20060630 spelling `PF JANUS GROWTH LT FUND` is the banner a 20040630 filing
+// prints; a rung reading only part of a heading has nothing in the printed
+// bytes to contradict the later alias. As with issFutureVintage an undated
+// (header) declaration of the same id vetoes, and the alias must post-date the
+// registrant's own earliest vintage as well as the period.
+func issFutureVintageName(ix *issSeriesIndex, d *SeriesDecl) bool {
+	if d == nil || len(ix.period) != 8 || len(d.DeclDate) != 8 || d.DeclDate <= ix.period {
+		return false
+	}
+	earliest := ""
+	for i := range ix.decls {
+		x := &ix.decls[i]
+		if len(x.DeclDate) != 8 {
+			if x.SeriesID == d.SeriesID {
+				return false
+			}
+			continue
+		}
+		if earliest == "" || x.DeclDate < earliest {
+			earliest = x.DeclDate
+		}
+	}
+	return earliest != "" && d.DeclDate > earliest
 }
 
 // issWidthTruncatedDecl reads a heading the report cut off at its banner width:
