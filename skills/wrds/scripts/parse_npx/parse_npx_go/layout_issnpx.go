@@ -1224,6 +1224,12 @@ type issSeriesIndex struct {
 	// (S000008739, 1,021 rows). Two declared names that differ only by their
 	// type word collide here and refuse.
 	lessAnyType map[string]*SeriesDecl
+	// lessCorpSuffix keys a declared name with its trailing incorporation word
+	// removed, for a heading that prints the name without it: `NPF - THE JAPAN
+	// FUND` for a declared `THE JAPAN FUND, INC.` (S000009778, Nomura Partners
+	// Funds 2009, 3,430 rows with no series). Nil on collision like every map
+	// here, and consulted only for an exact hit on the remainder.
+	lessCorpSuffix map[string]*SeriesDecl
 	// lessLeadTokenAnyType keys a declared name by ONE leading token dropped and
 	// its trailing type word dropped as well, so a heading that omits an
 	// acquirer's brand AND substitutes the type word reaches it: `ICAP Select
@@ -1313,6 +1319,7 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 		lessConjunct:      make(map[string]*SeriesDecl),
 
 		lessAnyType:          make(map[string]*SeriesDecl),
+		lessCorpSuffix:       make(map[string]*SeriesDecl),
 		lessLeadTokenAnyType: make(map[string]*SeriesDecl),
 		lessBrandTypeCompact: make(map[string]*SeriesDecl),
 		lessRegistrantLead:   make(map[string]*SeriesDecl),
@@ -1456,6 +1463,9 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 			}
 		}
 		key := normalizeSeriesName(d.Name)
+		if rest, ok := issDropDeclaredIncSuffix(key); ok {
+			put(ix.lessCorpSuffix, rest, d)
+		}
 		put(ix.byHistoricalBrand, issHistoricalBrandKey(key), d)
 		put(ix.byCompact, strings.ReplaceAll(key, " ", ""), d)
 		// The marketing abbreviation of `capitalization`: Target Portfolio
@@ -1651,6 +1661,24 @@ func issRegistrantTokens(registrantKey string) map[string]bool {
 var issCorporateSuffixWord = map[string]bool{
 	"inc": true, "incorporated": true, "corp": true, "corporation": true,
 	"co": true, "company": true, "ltd": true, "llc": true, "lp": true, "plc": true,
+}
+
+// issDropDeclaredIncSuffix removes a trailing incorporation word from an
+// already-normalised DECLARED name (`the japan fund inc` -> `the japan fund`),
+// leaving two tokens at least so no name collapses to a single word. Only the
+// `Inc` spellings, which is the form a heading omits; the caller must still
+// require an exact, unambiguous hit on the remainder.
+func issDropDeclaredIncSuffix(key string) (rest string, ok bool) {
+	toks := strings.Fields(key)
+	if len(toks) < 3 {
+		return "", false
+	}
+	switch toks[len(toks)-1] {
+	case "inc", "incorporated":
+	default:
+		return "", false
+	}
+	return strings.Join(toks[:len(toks)-1], " "), true
 }
 
 // issInitials builds the acronym a registrant makes of its own name: the first
@@ -2211,6 +2239,17 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 		if alt, _ := lookupSeriesEntry(idx, rest); alt != nil {
 			return rest, alt
 		}
+	}
+	// The mirror case: the DECLARED name carries the incorporation word and the
+	// heading omits it -- `NPF - THE JAPAN FUND` for a declared `THE JAPAN
+	// FUND, INC.` (S000009778, Nomura Partners Funds 2009, 3,430 rows with no
+	// series; this rung reads the heading printed bare, the brand rung below
+	// the one carrying the registrant's own `NPF`). Exact on the remainder
+	// only: the same filing declares `ASIA PACIFIC EX JAPAN FUND`, which any
+	// looser reading would collide with. lessCorpSuffix is nil on collision, so
+	// two declared names agreeing after the cut stamp nothing.
+	if d := ix.lessCorpSuffix[normalizeSeriesName(banner)]; d != nil {
+		return banner, d
 	}
 	if issTrustOwnName(ix, banner) {
 		return banner, nil
@@ -2919,6 +2958,12 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 			// declared `RSI Retirement Trust - Core Equity Fund` (RSI
 			// Retirement Trust 2004, 2,761 rows with no fund).
 			if d, seen := ix.lessBrand[rest]; seen {
+				return banner, d
+			}
+			// The brand comes off the banner and the declared name's
+			// incorporation word off the other side: `NPF - THE JAPAN FUND`
+			// for a declared `THE JAPAN FUND, INC.`.
+			if d := ix.lessCorpSuffix[normalizeSeriesName(rest)]; d != nil {
 				return banner, d
 			}
 		}
