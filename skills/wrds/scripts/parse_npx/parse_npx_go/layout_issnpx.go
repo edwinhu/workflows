@@ -4701,6 +4701,22 @@ func issCutRegistrantBrandRun(ix *issSeriesIndex, key, registrantKey string) *Se
 	if len(toks) < 4 || !regToks[toks[0]] || issEntityTypeWord(toks[0]) {
 		return nil
 	}
+	// A heading that spells the registrant's name WHOLE in front of the fund
+	// has already said which words are the registrant's, so nothing behind them
+	// is a brand run: `THE TRAVELERS SERIES TRUST - SOCIAL AWARENESS STOCK
+	// PORTFOLIO` (Travelers Series Trust 2004, 1,119 rows) cuts `social` and
+	// then `awareness` as foreign words and hands `stock portfolio` to
+	// lessLeadToken, which answers from the declared `Federated Stock
+	// Portfolio` -- the fund the SAME filing heads in its own separate section.
+	// The heading minus exactly the registrant prefix is the fund's own name,
+	// so it must resolve on its own or the prefixed heading resolves to
+	// nothing; any invented name ending in a declared name's trailing words
+	// reaches that declaration otherwise.
+	if rest, ok := issCutRegistrantPrefix(key, registrantKey); ok {
+		if _, d := issResolveFund(ix, rest); d == nil {
+			return nil
+		}
+	}
 	var found *SeriesDecl
 	for n := 2; n <= len(toks)-2; n++ {
 		run := toks[:n]
