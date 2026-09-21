@@ -6804,7 +6804,7 @@ func issBannerWrapVisible(sofar, next string, ix ...*issSeriesIndex) bool {
 			// series, so a rule that names a different fund still breaks.
 			if _, joined := issResolveFund(ix[0], sofar+" "+strings.TrimSpace(next)); joined != nil {
 				if (sofarDecl == nil || sofarDecl.SeriesID == joined.SeriesID) &&
-					!issHeadOnlyJoin(sofar, joined) {
+					!issHeadOnlyJoin(ix[0], sofar, joined) {
 					return true
 				}
 			}
@@ -6836,7 +6836,16 @@ func issBannerWrapVisible(sofar, next string, ix ...*issSeriesIndex) bool {
 // FUND` banner, joined because the first name is a prefix of the join and the
 // second is a fund the registrant spells with a `STOCK` the filing omits). A
 // real wrap is answered by a declaration that spans both rules.
-func issHeadOnlyJoin(sofar string, joined *SeriesDecl) bool {
+// The head is read through the SAME registrant-scoped cuts that answer it on its
+// own -- its registrant prefix, and the historical brand stem -- because a head
+// that resolves only through one of those is still a head the declaration
+// answered whole: Wells Fargo Funds Trust prints a complete
+// `WELLS FARGO NEBRASKA TAX-FREE FUND` banner for a fund that cast no proxies,
+// blank lines, then a complete `WELLS FARGO OUTLOOK 2010 FUND` banner, and the
+// join is answered by `Nebraska Tax-Free Fund` (S000007393) -- a declaration the
+// head already carries once its brand is cut, so the rule below it read nothing
+// and its 5,647 rows would file under the fund above.
+func issHeadOnlyJoin(ix *issSeriesIndex, sofar string, joined *SeriesDecl) bool {
 	if joined == nil {
 		return false
 	}
@@ -6844,7 +6853,24 @@ func issHeadOnlyJoin(sofar string, joined *SeriesDecl) bool {
 	if decl == "" {
 		return false
 	}
-	return strings.HasPrefix(normalizeSeriesName(sofar), decl)
+	key := normalizeSeriesName(sofar)
+	heads := []string{key}
+	if stem := issHistoricalBrandStem(issHistoricalBrandKey(key)); stem != "" {
+		heads = append(heads, stem)
+	}
+	if ix != nil {
+		for _, pk := range append([]string{ix.registrantKey}, ix.formerKeys...) {
+			if rest, ok := issCutRegistrantPrefix(key, pk); ok {
+				heads = append(heads, rest)
+			}
+		}
+	}
+	for _, h := range heads {
+		if strings.HasPrefix(h, decl) {
+			return true
+		}
+	}
+	return false
 }
 
 // issNextBannerName is the text of the banner rule issBannerContinues found at
