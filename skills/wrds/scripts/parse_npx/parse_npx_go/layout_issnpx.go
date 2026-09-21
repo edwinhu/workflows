@@ -525,6 +525,11 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			if alt := issDictInsertedWordDecl(seriesIx, dict, banner, d); alt != nil {
 				d = alt
 			}
+			// The sub-adviser suffix cut, read EXACTLY, outranks whatever the
+			// uncut heading reached by tolerance.
+			if alt := issAdvisorSuffixDecl(seriesIx, banner); alt != nil {
+				d = alt
+			}
 		}
 		// The successor named over this very section replaces whatever the
 		// predecessor's name fuzz-matched: on the full Templeton filing the
@@ -2216,9 +2221,15 @@ func issClassPairDecl(ix *issSeriesIndex, key, banner string) *SeriesDecl {
 // what makes this a deletion rather than a tolerance: only text after the
 // literal `Sub-Adviser:` (or `Subadviser:`) is dropped, with the dash before
 // it. ~1.5M rows across five Advanced Series Trust filings, 2026-09-02.
+//
+// The same registrant's 2006 reports print the label UNHYPHENATED, after a
+// dash: `AST DEAM SMALL-CAP GROWTH PORTFOLIO - ADVISOR: DEUTSCHE ASSET
+// MANAGEMENT` (Strategic Partners Mutual Funds 2006, 34,701 rows with no
+// series). The bare label is admitted only behind that dash, so an `Investment
+// Advisor:` printed mid-name is not a cut point.
 func issCutSubAdviser(banner string) (string, bool) {
 	low := strings.ToLower(banner)
-	for _, label := range []string{"sub-adviser:", "subadviser:", "sub adviser:", "sub-advisor:", "subadvisor:"} {
+	for _, label := range []string{"sub-adviser:", "subadviser:", "sub adviser:", "sub-advisor:", "subadvisor:", "- adviser:", "- advisor:"} {
 		i := strings.Index(low, label)
 		if i <= 0 {
 			continue
@@ -2231,6 +2242,33 @@ func issCutSubAdviser(banner string) (string, bool) {
 		return head, true
 	}
 	return "", false
+}
+
+// issAdvisorSuffixDecl answers a banner whose sub-adviser suffix is cut off by
+// issCutSubAdviser and whose REMAINDER is an exact name -- the filing's own
+// declaration, or one series of the corpus under another CIK. Strategic
+// Partners Mutual Funds 2006 files American Skandia Trust's own document
+// (`astnpx2006final.txt`, file number 811-05186) and heads every section
+// `AST <fund> PORTFOLIO - ADVISOR: <manager>`: cut the suffix and the heading
+// is the verbatim declared name of an AST series at this filing's own vintage,
+// while the uncut heading reaches a Strategic Partners retail fund by tail
+// similarity (34,701 rows blank and six sections wrongly stamped, 2026-09-20).
+//
+// Exact only, on both routes: crossCIK keys a name that two series or two
+// registrants answer to onto nil, so the same fund printed under several
+// advisers in one filing never collapses two different funds.
+func issAdvisorSuffixDecl(ix *issSeriesIndex, banner string) *SeriesDecl {
+	if ix == nil {
+		return nil
+	}
+	cut, ok := issCutSubAdviser(banner)
+	if !ok || cut == "" || normalizeSeriesName(cut) == normalizeSeriesName(banner) {
+		return nil
+	}
+	if d, _ := lookupSeriesEntry(ix.byName, cut); d != nil {
+		return d
+	}
+	return cikDict.crossCIK(ix.cik, cut, ix.period, ix.registrantKey)
 }
 
 // issCutGluedBrand removes a sub-adviser brand the filing GLUES to the house
