@@ -94,6 +94,65 @@ func parseHeader(buf []byte) FilingMeta {
 	return meta
 }
 
+var (
+	// The attached document's own <FILENAME>, and the body's own statement of
+	// whose report it is. Both live after </SEC-HEADER>, never inside it.
+	reDocFilename    = regexp.MustCompile(`(?m)^<FILENAME>([^\r\n]*)`)
+	reBodyRegistrant = regexp.MustCompile(`(?i)NAME OF REGISTRANT:[ \t]*([^\r\n]*)`)
+	reDigitRun       = regexp.MustCompile(`[0-9]+`)
+)
+
+// swappedDocumentOwner reports the CIK an attached document names as its OWN
+// owner when that is not the filer's: a Broadridge-prepared filer attached a
+// sibling registrant's document by mistake, so every banner the body prints
+// belongs to that registrant and none of them is in the filer's pool. John
+// Hancock Investment Trust II (CIK 0000743861) filed
+// `<FILENAME>BRD031_0000022370_2020.txt`, a body byte-identical to the one
+// John Hancock Investment Trust (CIK 0000022370) filed the same day.
+//
+// The evidence must be the document's own, twice over, or nothing happens. The
+// filename must carry EXACTLY ONE zero-padded 10-digit token -- an unpadded or
+// over-long digit run is some other number of the filer's (`brd006000879947`,
+// the filer's own CIK written without padding), and two such tokens name no
+// single owner -- and the body's `NAME OF REGISTRANT` must be a name the filer
+// is NOT: the filer's own name there is the ordinary case, where the filename
+// digits mean nothing. A body that states no registrant at all refuses.
+//
+// Measured across the 6,539 Broadridge filings in the corpus: 3,553 embed a
+// zero-padded CIK, 3,550 of them the filer's own, and exactly 3 another's.
+func swappedDocumentOwner(head []byte, filerCIK, filerName string) (cik, registrant string, ok bool) {
+	body := head
+	if i := bytes.Index(head, []byte("</SEC-HEADER>")); i >= 0 {
+		body = head[i:]
+	}
+	m := reDocFilename.FindSubmatch(body)
+	if m == nil {
+		return "", "", false
+	}
+	for _, run := range reDigitRun.FindAll(m[1], -1) {
+		if len(run) != 10 || run[0] != '0' {
+			continue
+		}
+		if cik != "" {
+			return "", "", false
+		}
+		cik = string(run)
+	}
+	if cik == "" || strings.TrimLeft(cik, "0") == strings.TrimLeft(filerCIK, "0") {
+		return "", "", false
+	}
+	n := reBodyRegistrant.FindSubmatch(body)
+	if n == nil {
+		return "", "", false
+	}
+	registrant = strings.TrimSpace(string(n[1]))
+	key := normalizeSeriesName(registrant)
+	if key == "" || key == normalizeSeriesName(filerName) {
+		return "", "", false
+	}
+	return cik, registrant, true
+}
+
 // parseSeriesClasses returns every series/class/ticker triple in the SGML
 // header, in document order. A class contract with no ticker still yields a
 // triple, with an empty Ticker.

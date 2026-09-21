@@ -249,13 +249,22 @@ func (d *cikSeries) back(meta *FilingMeta) {
 	if d == nil || len(meta.SeriesDecls) > 0 {
 		return
 	}
-	if decls := d.byCIK[meta.CIK]; len(decls) > 0 {
-		period := meta.PeriodOfReport
-		if period == "" {
-			period = meta.ReportPeriodEnd
-		}
-		meta.SeriesDecls = dictContemporaneous(decls, period)
+	if decls := d.poolFor(meta.CIK, metaPeriod(*meta)); len(decls) > 0 {
+		meta.SeriesDecls = decls
 	}
+}
+
+// poolFor is one registrant's dictionary decls, contemporaneous with period.
+// Nil when the dictionary carries nothing for that CIK.
+func (d *cikSeries) poolFor(cik, period string) []SeriesDecl {
+	if d == nil {
+		return nil
+	}
+	decls := d.byCIK[cik]
+	if len(decls) == 0 {
+		return nil
+	}
+	return dictContemporaneous(decls, period)
 }
 
 // dictContemporaneous drops the dictionary entries that make one name answer to
