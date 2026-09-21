@@ -452,6 +452,7 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 	var declared map[string]bool
 	if seriesMap != nil {
 		declared = overlayDeclaredIDs(h)
+		seriesMap.licenseHandMapped(relPath, h, declared)
 	}
 	dictFB := cikDict.exactFallback(h)
 	stamp := func(r VoteRow) error {

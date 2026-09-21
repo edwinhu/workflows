@@ -991,7 +991,7 @@ func htmlPreText(seg []byte) string {
 	// fund -- which stamps the wrong sibling. Unlike a CELL, whose stacked lines
 	// are labels and values, the markup between rows is paragraphs, so the join
 	// is on here and off there.
-	return strings.TrimSpace(collapseSpaces(decodeEntities(removeMarkup(seg, true))))
+	return strings.TrimSpace(collapseSpaces(decodeEntities(removeMarkup(seg, true, false))))
 }
 
 func (f *htmlRowFeed) fill(n int) {

@@ -68,7 +68,7 @@ const (
 )
 
 func init() {
-	entry := layoutEntry{Name: "proxyedge", Match: matchProxyEdge, Parse: parseProxyEdge,
+	entry := layoutEntry{Name: "proxyedge", Match: matchProxyEdge, ParseRaw: parseProxyEdge,
 		// The first ballot sits behind a cover page; 16 MB is what the sibling
 		// text layouts use.
 		HeadBytes: 16 << 20}
@@ -95,47 +95,58 @@ func peNonBlank(text string) []string {
 	return out
 }
 
-// peWholeCell reports, for each line peNonBlank returned, whether it stood
-// alone between the blank lines the markup leaves around a cell. A run of two
-// or more adjacent lines is ONE cell the vendor hard-wrapped over source lines
-// (American National 2009 prints item 8's description as three), not one cell
-// per line, so neither the head nor the tail of such a run names anything.
-func peWholeCell(text string) []bool {
-	var out []bool
-	run := 0
-	end := func() {
-		if run == 1 {
-			out[len(out)-1] = true
-		}
-		run = 0
-	}
-	for _, l := range strings.Split(text, "\n") {
-		if strings.TrimSpace(l) == "" {
-			end()
-			continue
-		}
-		out = append(out, false)
-		run++
-	}
-	end()
-	return out
-}
-
-// peCellRun returns, for each line peNonBlank returned, the index of the first
-// line of the cell it belongs to. A run of adjacent lines is one cell the
-// vendor hard-wrapped over source lines, so its text is the run joined.
-func peCellRun(text string) []int {
-	var out []int
-	start := -1
-	for _, l := range strings.Split(text, "\n") {
-		if strings.TrimSpace(l) == "" {
+// peCellLines returns the layout's line stream and, for each line, the index of
+// the first line of the CELL it belongs to. It reads the marked strip, whose
+// container boundaries are the only record of where one <td> ends: after
+// stripHTML a hard-wrapped cell and a run of whole cells look alike, because
+// <BR> emits a break and the source newline that follows it emits a second, so
+// each wrap line stands alone between blank lines exactly as a cell does (CSOP
+// ETF Trust 2016 wraps every proposal that way, and the wrap line `SECURITY
+// FUND AND LISTING ON THE HONG` was read as a fund banner on 17,653 rows). A
+// blank line INSIDE a container is therefore part of its cell and does not end
+// it; only a container boundary does.
+//
+// Before the document's first boundary there are no containers -- that is the
+// SGML envelope, which carries no block markup -- so a blank line parts the
+// lines there, as it does for the whole stream when a body prints none.
+func peCellLines(marked string) ([]string, []int) {
+	var (
+		lines   []string
+		run     []int
+		start   = -1
+		inCells bool
+	)
+	for _, l := range strings.Split(marked, "\n") {
+		t := strings.TrimSpace(l)
+		if t == cellMark {
+			inCells = true
 			start = -1
 			continue
 		}
-		if start < 0 {
-			start = len(out)
+		if t == "" {
+			if !inCells {
+				start = -1
+			}
+			continue
 		}
-		out = append(out, start)
+		if start < 0 {
+			start = len(lines)
+		}
+		lines = append(lines, t)
+		run = append(run, start)
+	}
+	return lines, run
+}
+
+// peWholeCells reports, for each line, whether it is a cell ENTIRE -- the only
+// line of its own cell. A cell the vendor hard-wrapped over several lines names
+// nothing by its head or its tail, so no heading scan may fire on one.
+func peWholeCells(run []int) []bool {
+	out := make([]bool, len(run))
+	for i := range run {
+		if run[i] == i && (i+1 >= len(run) || run[i+1] != i) {
+			out[i] = true
+		}
 	}
 	return out
 }
@@ -308,10 +319,12 @@ func peIdentityLabel(line string) bool {
 	return false
 }
 
-func parseProxyEdge(text string, meta FilingMeta) ([]VoteRow, error) {
-	lines := peNonBlank(text)
-	whole := peWholeCell(text)
-	run := peCellRun(text)
+// parseProxyEdge reads the raw markup rather than the stripped text: this is a
+// <table> grammar, and which lines belong to which cell is a fact only the
+// markup holds.
+func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
+	lines, run := peCellLines(string(stripHTMLCells(raw)))
+	whole := peWholeCells(run)
 	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(seriesIx, meta.FormerNames)
 	dict := cikDict.exactFallback(meta)
@@ -384,8 +397,8 @@ func parseProxyEdge(text string, meta FilingMeta) ([]VoteRow, error) {
 			}
 			continue
 		}
-		if labels != nil {
-			if row, ok := peVoteRow(lines, i, labels); ok {
+		if labels != nil && run[i] == i {
+			if row, rowEnd, ok := peVoteRow(lines, run, i, labels); ok {
 				row.IssuerName = issuer
 				row.Ticker = ticker
 				row.CUSIP = icrCUSIP(cusip)
@@ -399,7 +412,7 @@ func parseProxyEdge(text string, meta FilingMeta) ([]VoteRow, error) {
 				row.FundName = fund
 				row.SeriesID = fundSeries
 				rows = append(rows, row)
-				i += len(labels) - 1
+				i = rowEnd
 				continue
 			}
 		}
@@ -444,12 +457,20 @@ func parseProxyEdge(text string, meta FilingMeta) ([]VoteRow, error) {
 
 // peVoteRow reads one ballot row: len(labels) consecutive cells, positional
 // against the header. The vote is the LABEL of the disposition column carrying
-// a non-zero count, verbatim, and that count is the shares voted.
-func peVoteRow(lines []string, i int, labels []string) (VoteRow, bool) {
-	if i+len(labels) > len(lines) {
-		return VoteRow{}, false
+// a non-zero count, verbatim, and that count is the shares voted. It returns
+// the index of the last LINE the row consumed, which is not i+len(labels)-1
+// whenever the vendor hard-wrapped a cell across lines.
+func peVoteRow(lines []string, run []int, i int, labels []string) (VoteRow, int, bool) {
+	cells := make([]string, 0, len(labels))
+	pos := i
+	for range labels {
+		if pos >= len(lines) {
+			return VoteRow{}, i, false
+		}
+		cell, end := peCellAt(lines, run, pos)
+		cells = append(cells, cell)
+		pos = end + 1
 	}
-	cells := lines[i : i+len(labels)]
 	row := VoteRow{}
 	var votedLabel, votedShares string
 	var dispositions int
@@ -468,7 +489,7 @@ func peVoteRow(lines []string, i int, labels []string) (VoteRow, bool) {
 		case peDisposition:
 			n, ok := peCount(cells[k])
 			if !ok {
-				return VoteRow{}, false
+				return VoteRow{}, i, false
 			}
 			dispositions++
 			if n != "0" && votedLabel == "" {
@@ -477,17 +498,17 @@ func peVoteRow(lines []string, i int, labels []string) (VoteRow, bool) {
 		}
 	}
 	if dispositions == 0 || row.ItemSeq == "" || row.VoteDescription == "" {
-		return VoteRow{}, false
+		return VoteRow{}, i, false
 	}
 	if row.HowVoted == "" {
 		if votedLabel == "" {
 			// Every disposition is zero: the ballot was reported and nothing was
 			// cast. how_voted is verbatim by contract, so it stays empty rather
 			// than being filled with an inferred value.
-			return VoteRow{}, false
+			return VoteRow{}, i, false
 		}
 		row.HowVoted = votedLabel
 		row.SharesVoted = votedShares
 	}
-	return row, true
+	return row, pos - 1, true
 }
