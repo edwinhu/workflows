@@ -160,6 +160,12 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// row so an unattributed section shows as unmatched, not unnamed.
 		curFund      string
 		outerSection bool // a resolved enclosing heading, not a labelled account cell
+		// bannerFund marks the standing fund as one an explicit `FUND:` banner
+		// named. This export prints that banner ONCE, in the title block of page
+		// 1, and reprints the vendor's internal `Institution Account(s):` code in
+		// the run-parameter strip of EVERY page, so the code must never overwrite
+		// it (Principal Variable Contracts Funds 2011, 13,695 rows).
+		bannerFund bool
 		// windowed is the section's own title block when it names the SAME fund
 		// under two spellings, each with the printed date window it covers. The
 		// row's meeting date picks between them; every other heading clears it.
@@ -271,8 +277,10 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			}
 		} else if name, id, ok := htmlFormNPXSleeveBanner(seriesIx, row.pre); ok {
 			curFund, curSeries, outerSection, windowed = name, id, true, nil
+			bannerFund = false
 		} else if name, id, ok := htmlBareFundLine(seriesIx, row.pre, dict); ok {
 			curFund, curSeries, outerSection, windowed = name, id, id != "", nil
+			bannerFund = id != "" && htmlExplicitFundBanner(row.pre)
 			if id != "" && htmlBannerBlock(row.pre) {
 				reportFund, reportSeries = name, id
 			}
@@ -280,6 +288,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			curFund = name
 			curSeries = icrResolveFundShared(seriesIx, name)
 			outerSection, windowed = curSeries != "", nil
+			bannerFund = false
 		}
 		// One vintage prints the labelled heading as TWO CELLS of a table row,
 		// `Fund Name :` beside the name (Putnam, ~1M rows): the label is the
@@ -295,9 +304,20 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			if id == "" && normalizeSeriesName(value) == seriesIx.registrantKey {
 				continue
 			}
+			// `Institution Account(s): PVC SMALLCAP VALUE ACCT I - PMC` is the
+			// vendor's internal key for a fund the registrant's own `FUND:`
+			// banner already named in this block. The banner is printed once and
+			// the code on every page, so adopting the code loses the fund for the
+			// whole report (Principal Variable Contracts Funds 2011, 13,695 rows).
+			// The banner wins; nothing here stops the code naming a fund in the
+			// vintages where it is the only thing printed.
+			if bannerFund && strings.HasPrefix(strings.ToLower(strings.TrimSpace(label)), "institution account") {
+				continue
+			}
 			// A registrant or sleeve label cannot erase a proven outer section.
 			if id != "" || !outerSection {
 				curFund, curSeries, outerSection, windowed = value, id, false, nil
+				bannerFund = false
 			}
 			continue
 		}
@@ -331,6 +351,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		if joined, ok := htmlRegistrantSplitCells(cells); ok {
 			if name, id, ok := htmlBareFundLine(seriesIx, joined, dict); ok {
 				curFund, curSeries, outerSection, windowed = name, id, id != "", nil
+				bannerFund = id != "" && htmlExplicitFundBanner(joined)
 				continue
 			}
 		}
@@ -377,6 +398,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			identityCell := htmlIssuerIdentityCell(cells) || htmlIdentityStripFollows(feed, cells, row.pre)
 			if titles := htmlDatedTitles(seriesIx, heading, dict); titles != nil && !identityCell {
 				curFund, curSeries, outerSection, windowed = titles[0].name, titles[0].id, true, titles
+				bannerFund = false
 				continue
 			}
 			var name, id string
@@ -413,10 +435,12 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			}
 			if ok {
 				curFund, curSeries, outerSection, windowed = name, id, registrantSection && id != "", nil
+				bannerFund = id != "" && htmlExplicitFundBanner(heading)
 			} else if value, brandOnly := htmlBrandOnlyHeading(seriesIx, heading); brandOnly && !identityCell {
 				// A heading that names the registrant and a type word and
 				// nothing else cannot resolve, but it does open a section.
 				curFund, curSeries, outerSection, windowed = value, "", false, nil
+				bannerFund = false
 				brandOnlyFund = value
 			}
 			// A lone header cell naming the fund column opens it for the rows
@@ -6556,6 +6580,19 @@ func htmlReportParameterLine(s string) bool {
 	// Series Trust 2012, 15,285 rows named after it). It never names a fund, so
 	// it is a run parameter whatever it carries.
 	return strings.HasPrefix(low, "institutional account(s):")
+}
+
+// htmlExplicitFundBanner reports a block that names its fund under the
+// registrant's own `FUND:` banner, which is the strongest name a block prints:
+// the vendor's `Institution Account(s):` account code, printed under the same
+// title block and reprinted on every continuation page, never displaces it.
+func htmlExplicitFundBanner(block string) bool {
+	for _, line := range strings.Split(block, "\n") {
+		if strings.HasPrefix(strings.ToLower(strings.TrimSpace(line)), "fund:") {
+			return true
+		}
+	}
+	return false
 }
 
 // htmlBannerBlock reports a block that carries the `Vote Summary Report`

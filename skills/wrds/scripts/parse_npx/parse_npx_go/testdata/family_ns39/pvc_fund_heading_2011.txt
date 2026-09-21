@@ -1,0 +1,835 @@
+<SEC-DOCUMENT>0000898745-11-000548.txt : 20110817
+<SEC-HEADER>0000898745-11-000548.hdr.sgml : 20110817
+<ACCEPTANCE-DATETIME>20110817131248
+ACCESSION NUMBER:		0000898745-11-000548
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		2
+CONFORMED PERIOD OF REPORT:	20110630
+FILED AS OF DATE:		20110817
+DATE AS OF CHANGE:		20110817
+EFFECTIVENESS DATE:		20110817
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PRINCIPAL VARIABLE CONTRACTS FUNDS INC
+		CENTRAL INDEX KEY:			0000012601
+		IRS NUMBER:				420948301
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-01944
+		FILM NUMBER:		111042021
+
+	BUSINESS ADDRESS:	
+		STREET 1:		PRINCIPAL FINANCIAL GROUP
+		STREET 2:		711 HIGH STREET
+		CITY:			DES MOINES
+		STATE:			IA
+		ZIP:			50392
+		BUSINESS PHONE:		515-247-5477
+
+	MAIL ADDRESS:	
+		STREET 1:		PRINCIPAL FINANCIAL GROUP
+		STREET 2:		711 HIGH STREET
+		CITY:			DES MOINES
+		STATE:			IA
+		ZIP:			50392
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRINCIPAL VARIABLE CONTRACTS FUND INC
+		DATE OF NAME CHANGE:	19980617
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRINCIPAL CAPITAL ACCUMULATION FUND INC
+		DATE OF NAME CHANGE:	19920703
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRINCOR INVESTMENT FUND INC
+		DATE OF NAME CHANGE:	19880906
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007678
+<SERIES-NAME>SmallCap Value Account I
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020926
+<CLASS-CONTRACT-NAME>SmallCap Value Account I Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038554
+<CLASS-CONTRACT-NAME>SmallCap Value Account I Class 2
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000014084
+<SERIES-NAME>Strategic Asset Management Strategic Growth Portfolio Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038530
+<CLASS-CONTRACT-NAME>Strategic Asset Management Strategic Growth Portfolio Account Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038531
+<CLASS-CONTRACT-NAME>Strategic Asset Management Strategic Growth Portfolio Account Class 2
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000014090
+<SERIES-NAME>Strategic Asset Management Balanced Portfolio Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038542
+<CLASS-CONTRACT-NAME>Strategic Asset Management Balanced Portfolio Account Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038543
+<CLASS-CONTRACT-NAME>Strategic Asset Management Balanced Portfolio Account Class 1
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000014091
+<SERIES-NAME>Strategic Asset Management Conservative Balanced Portfolio Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038544
+<CLASS-CONTRACT-NAME>Strategic Asset Management Conservative Balanced Portfolio Account Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038545
+<CLASS-CONTRACT-NAME>Strategic Asset Management Conservative Balanced Portfolio Account Class 1
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000014092
+<SERIES-NAME>Strategic Asset Management Conservative Growth Portfolio Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038546
+<CLASS-CONTRACT-NAME>Strategic Asset Management Conservative Growth Portfolio Account Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038547
+<CLASS-CONTRACT-NAME>Strategic Asset Management Conservative Growth Portfolio Account Class 2
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000014093
+<SERIES-NAME>Strategic Asset Management Flexible Income Portfolio Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038548
+<CLASS-CONTRACT-NAME>Strategic Asset Management Flexible Income Portfolio Account Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038549
+<CLASS-CONTRACT-NAME>Strategic Asset Management Flexible Income Portfolio Account Class 2
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>pvc-npxpart6.htm
+<DESCRIPTION>PVC - NPX 2011 PART 6
+<TEXT>
+<HR align=center SIZE=2 width="100%" noShade>
+<DIV style="PAGE-BREAK-BEFORE: always">&nbsp;</DIV>
+
+
+
+<!--$$/page=-->
+<A name="page_1"></A><BR>
+<DIV align=left>
+<TABLE border=0 cellSpacing=0>
+<TR>
+     <TD width="99%"></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><B><FONT size=3 face=Arial-BoldMT,Arial,Helvetica,sans-serif>FUND: Principal Variable Contracts Funds, Inc. &#150; SmallCap Value Account I</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><B><FONT size=3 face=Arial-BoldMT,Arial,Helvetica,sans-serif>ADVISOR: Principal Management Corporation</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><B><FONT color=#0080c0 size=2 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Vote Summary Report</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Report was run from: 7/1/10 to 6/30/11</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Location(s): Principal Management Corporation</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Institution Account(s): PVC SMALLCAP VALUE ACCT I - PMC</FONT></TD></TR></TABLE></DIV>
+<P style="MARGIN: 0px">&nbsp;</P>
+<DIV align=left>
+<TABLE border=0 cellSpacing=0>
+<TR>
+     <TD width="4%"></TD>
+     <TD width="12%"></TD>
+     <TD width="10%"></TD>
+     <TD width="9%"></TD>
+     <TD width="10%"></TD>
+     <TD width="8%"></TD>
+     <TD width="20%"></TD>
+     <TD width="22%"></TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=8 align=center><B><FONT size=3 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Mentor Graphics Corporation</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Ticker</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Meeting Date</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Country</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Security ID</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Meeting Type</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Record Date</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Shares Voted</FONT></B></TD>
+     <TD style="TEXT-INDENT: 6px" align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Shares on Loan</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>MENT</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>01-Jul-10</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>USA</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>587200106</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Annual</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>03-May-10</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>4,731</FONT></TD>
+     <TD style="TEXT-INDENT: 19px" align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>0</FONT></TD></TR>
+<TR>
+     <TD colSpan=8>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Vote</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid; TEXT-INDENT: 8px" colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Proponent</FONT></TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid; TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt Rec</FONT></TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Instruction</FONT></TD></TR>
+<TR>
+     <TD colSpan=8>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.1</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Peter L. Bonfield</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.2</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Marsha B. Congdon</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.3</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director James R. Fiebiger</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.4</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Gregory K. Hinckley</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.5</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Kevin C. McDonough</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.6</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Patrick B. McManus</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.7</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Walden C. Rhines</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.8</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Fontaine K. Richardson</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>2</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Increase Authorized Common Stock</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>3</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Approve Omnibus Stock Plan</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>4</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Ratify Auditors</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR></TABLE></DIV>
+<P style="MARGIN: 0px">&nbsp;</P>
+<DIV align=left>
+<TABLE border=0 cellSpacing=0>
+<TR>
+     <TD width="4%"></TD>
+     <TD width="12%"></TD>
+     <TD width="10%"></TD>
+     <TD width="8%"></TD>
+     <TD width="2%"></TD>
+     <TD width="10%"></TD>
+     <TD width="8%"></TD>
+     <TD width="20%"></TD>
+     <TD width="21%"></TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=9 align=center><B><FONT size=3 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Online Resources Corporation</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Ticker</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Meeting Date</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Country</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Security ID</FONT></B></TD>
+     <TD align=center>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 2px" align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Meeting Type</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Record Date</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Shares Voted</FONT></B></TD>
+     <TD style="TEXT-INDENT: 6px" align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Shares on Loan</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>ORCC</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>01-Jul-10</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>USA</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>68273</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>G101</FONT></TD>
+     <TD style="TEXT-INDENT: 2px" align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Annual</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>19-May-10</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>844</FONT></TD>
+     <TD style="TEXT-INDENT: 19px" align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>0</FONT></TD></TR>
+<TR>
+     <TD colSpan=9>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Vote</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid; TEXT-INDENT: 10px" colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Proponent</FONT></TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid; TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt Rec</FONT></TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Instruction</FONT></TD></TR>
+<TR>
+     <TD colSpan=9>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.1</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Donald W. Layden, Jr.</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.2</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Ervin R. Shames</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.3</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Barry D. Wessler</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>2</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Ratify Auditors</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR>
+     <TD colSpan=9>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=9 align=center><B><FONT size=3 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Global Crossing Limited</FONT></B></TD></TR></TABLE></DIV>
+<P style="MARGIN: 0px">&nbsp;</P>
+<HR align=center SIZE=2 width="100%" noShade>
+<DIV style="PAGE-BREAK-BEFORE: always">&nbsp;</DIV>
+
+<!--$$/page=-->
+<A name="page_2"></A><BR>
+<DIV align=left>
+<TABLE border=0 cellSpacing=0>
+<TR>
+     <TD width="100%"></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><B><FONT color=#0080c0 size=2 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Vote Summary Report</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Report was run from: 7/1/10 to 6/30/11</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Location(s): Principal Management Corporation</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Institution Account(s): PVC SMALLCAP VALUE ACCT I - PMC</FONT></TD></TR></TABLE></DIV>
+<P style="MARGIN: 0px">&nbsp;</P>
+<DIV align=left>
+<TABLE border=0 cellSpacing=0>
+<TR>
+     <TD width="4%"></TD>
+     <TD width="12%"></TD>
+     <TD width="12%"></TD>
+     <TD width="8%"></TD>
+     <TD width="2%"></TD>
+     <TD width="5%"></TD>
+     <TD width="14%"></TD>
+     <TD width="21%"></TD>
+     <TD width="21%"></TD></TR>
+<TR vAlign=bottom>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Ticker</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Meeting Date</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Country</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Security ID</FONT></B></TD>
+     <TD align=center>&nbsp;</TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Meeting Type </FONT></B></TD>
+     <TD align=center>&nbsp;<FONT size=1 face=Arial><B>Record Date</B></FONT></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Shares Voted</FONT></B></TD>
+     <TD style="TEXT-INDENT: 6px" align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Shares on Loan</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>GLBC</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>08-Jul-10</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Bermuda</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>G3921</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>A175</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Annual</FONT></TD>
+     <TD style="TEXT-INDENT: 8px" align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>10-May-10</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>410</FONT></TD>
+     <TD style="TEXT-INDENT: 19px" align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>0</FONT></TD></TR>
+<TR>
+     <TD colSpan=9>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Vote</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Proponent</FONT></TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid; TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt Rec</FONT></TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Instruction</FONT></TD></TR>
+<TR>
+     <TD colSpan=9>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.1</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Charles Macaluso</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Withhold</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.2</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Michael Rescoe</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Withhold</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>2</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Amend Omnibus Stock Plan</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Against</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>3</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Approve Executive Incentive Bonus Plan</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Against</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>4</FONT></TD>
+     <TD colSpan=5 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Approve Ernst &amp; Young as Auditors and Authorize Board to Fix</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Their Remuneration Auditors</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR></TABLE></DIV>
+<P style="MARGIN: 0px">&nbsp;</P>
+<DIV align=left>
+<TABLE border=0 cellSpacing=0>
+<TR>
+     <TD width="5%"></TD>
+     <TD width="12%"></TD>
+     <TD width="9%"></TD>
+     <TD width="9%"></TD>
+     <TD width="11%"></TD>
+     <TD width="8%"></TD>
+     <TD width="20%"></TD>
+     <TD width="22%"></TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=8 align=center><B><FONT size=3 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Ascent Media Corporation</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Ticker</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Meeting Date</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Country</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Security ID</FONT></B></TD>
+     <TD style="TEXT-INDENT: 4px" align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Meeting Type</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Record Date</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Shares Voted</FONT></B></TD>
+     <TD style="TEXT-INDENT: 6px" align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Shares on Loan</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>ASCMA</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>09-Jul-10</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>USA</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>043632108</FONT></TD>
+     <TD style="TEXT-INDENT: 4px" align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Annual</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>20-May-10</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>764</FONT></TD>
+     <TD style="TEXT-INDENT: 19px" align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>0</FONT></TD></TR>
+<TR>
+     <TD colSpan=8>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Vote</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid; TEXT-INDENT: 12px" colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Proponent</FONT></TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid; TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt Rec</FONT></TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Instruction</FONT></TD></TR>
+<TR>
+     <TD colSpan=8>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.1</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Philip J. Holthouse</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 12px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.2</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Brian C. Mulligan</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 12px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>2</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Ratify Auditors</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 12px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>3</FONT></TD>
+     <TD colSpan=3 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Eliminate Shareholder Rights Plan (Poison Pill)</FONT></TD>
+     <TD style="TEXT-INDENT: 12px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>SH</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Against</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR></TABLE></DIV>
+<P style="MARGIN: 0px">&nbsp;</P>
+<DIV align=left>
+<TABLE border=0 cellSpacing=0>
+<TR>
+     <TD width="4%"></TD>
+     <TD width="12%"></TD>
+     <TD width="9%"></TD>
+     <TD width="10%"></TD>
+     <TD width="10%"></TD>
+     <TD width="8%"></TD>
+     <TD width="20%"></TD>
+     <TD width="22%"></TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=8 align=center><B><FONT size=3 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Sigma Designs, Inc.</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Ticker</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Meeting Date</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Country</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Security ID</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Meeting Type</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Record Date</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Shares Voted</FONT></B></TD>
+     <TD style="TEXT-INDENT: 6px" align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Shares on Loan</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>SIGM</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>09-Jul-10</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>USA</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>826565103</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Annual</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>14-May-10</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>793</FONT></TD>
+     <TD style="TEXT-INDENT: 19px" align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>0</FONT></TD></TR>
+<TR>
+     <TD colSpan=8>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Vote</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid; TEXT-INDENT: 8px" colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Proponent</FONT></TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid; TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt Rec</FONT></TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Instruction</FONT></TD></TR>
+<TR>
+     <TD colSpan=8>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.1</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Thinh Q. Tran</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.2</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director William J. Almon</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Withhold</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.3</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Julien Nguyen</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Withhold</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.4</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Lung C. Tsai</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Withhold</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>2</FONT></TD>
+     <TD colSpan=3 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Approve Qualified Employee Stock Purchase Plan</FONT></TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR></TABLE></DIV>
+<P style="MARGIN: 0px">&nbsp;</P>
+<HR align=center SIZE=2 width="100%" noShade>
+<DIV style="PAGE-BREAK-BEFORE: always">&nbsp;</DIV>
+
+<!--$$/page=-->
+<A name="page_3"></A><BR>
+<DIV align=left>
+<TABLE border=0 cellSpacing=0>
+<TR>
+     <TD width="100%"></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><B><FONT color=#0080c0 size=2 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Vote Summary Report</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Report was run from: 7/1/10 to 6/30/11</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Location(s): Principal Management Corporation</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Institution Account(s): PVC SMALLCAP VALUE ACCT I - PMC</FONT></TD></TR></TABLE></DIV>
+<P style="MARGIN: 0px">&nbsp;</P>
+<DIV align=left>
+<TABLE border=0 cellSpacing=0>
+<TR>
+     <TD width="4%"></TD>
+     <TD width="12%"></TD>
+     <TD width="9%"></TD>
+     <TD width="10%"></TD>
+     <TD width="10%"></TD>
+     <TD width="8%"></TD>
+     <TD width="20%"></TD>
+     <TD width="22%"></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>3</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Ratify Auditors</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR>
+     <TD colSpan=8>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=8 align=center><B><FONT size=3 face=Tahoma-Bold,Arial,Helvetica,sans-serif>SeaChange International, Inc.</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Ticker</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Meeting Date</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Country</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Security ID</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Meeting Type</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Record Date</FONT></B></TD>
+     <TD align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Shares Voted</FONT></B></TD>
+     <TD style="TEXT-INDENT: 6px" align=center><B><FONT size=1 face=Tahoma-Bold,Arial,Helvetica,sans-serif>Shares on Loan</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>SEAC</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>15-Jul-10</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>USA</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>811699107</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Annual</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>18-May-10</FONT></TD>
+     <TD align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1,451</FONT></TD>
+     <TD style="TEXT-INDENT: 19px" align=center><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>0</FONT></TD></TR>
+<TR>
+     <TD colSpan=8>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Vote</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid; TEXT-INDENT: 8px" colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Proponent</FONT></TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid; TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt Rec</FONT></TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Instruction</FONT></TD></TR>
+<TR>
+     <TD colSpan=8>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.1</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Thomas F. Olson</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.2</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Carlo Salvatori</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>1.3</FONT></TD>
+     <TD colSpan=2 align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Elect Director Edward Terino</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>2</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Ratify Auditors</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 8px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD>
+     <TD align=left><FONT size=1 face=Tahoma,Arial,Helvetica,sans-serif>For</FONT></TD></TR></TABLE></DIV>
+<P style="MARGIN: 0px">&nbsp;</P>
+<DIV align=left>
+<TABLE border=0 cellSpacing=0>
+<TR>
+     <TD width="4%"></TD>
+     <TD width="12%"></TD>
+     <TD width="11%"></TD>
+     <TD width="9%"></TD>
+     <TD width="2%"></TD>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
