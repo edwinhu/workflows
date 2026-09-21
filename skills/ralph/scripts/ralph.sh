@@ -14,7 +14,9 @@
 #   2. The loop never grades itself. Continue-or-stop is --check's exit code and nothing else. The
 #      agent's only write channel is `append`, and that channel carries OBSERVATIONS, never verdicts:
 #      it takes a whitelist of agent-owned kinds, so no record the agent can write ends the run,
-#      declares success, or is mistaken for the loop's own bookkeeping.
+#      declares success, or is mistaken for the loop's own bookkeeping. `stop` is the operator's
+#      command and is refused from inside an iteration, and `status` reports the run's outcome from
+#      the last LOOP-owned record, so nothing the agent appends afterwards erases it.
 #   3. A key recorded as a floor is injected into EVERY later prompt as an exclusion. Without that,
 #      an amnesiac iteration re-diagnoses the same dead item every pass, for a week.
 #
@@ -99,7 +101,10 @@ journal_append() {
 # task looks impossible and says so in the only channel it has. Both are reachable, and the loop
 # survives neither if the record lands.
 AGENT_KINDS='progress floor attempt note'
-LOOP_KINDS='start iter iter_end wait done stalled budget stop'
+# Every kind the agent may not write, and -- the same fact read the other way -- every kind `status`
+# will believe about how the run ended. One list, because a second one could disagree with it.
+# `stop` is the operator's record and `stopped` is the loop's answer to it; neither is the agent's.
+LOOP_KINDS='start iter iter_end wait done stalled budget stop stopped'
 
 # A WHITELIST, not a blacklist: an unrecognised kind is refused, which disposes of every near-miss
 # spelling ("Stop", " stop", a unicode lookalike) without enumerating any of them, since the reader
@@ -145,7 +150,8 @@ check_agent_record() {
 # crash resumable, and it must never be turned into an error.
 JQ_SCAN='
   def clean: tostring | gsub("[\\n\\r\\t]"; " ");
-  [inputs | fromjson? | select(type == "object")] as $r
+  ($own | split(" ") | map(select(. != ""))) as $loop
+  | [inputs | fromjson? | select(type == "object")] as $r
   | ([$r[] | select(.kind == "iter") | .i | numbers] | max // 0) as $maxi
   | ([$r | to_entries[] | select(.value.kind == "progress") | .key] | last) as $lp
   | ([$r | to_entries[] | select(.value.kind == "iter") | .key
@@ -155,11 +161,17 @@ JQ_SCAN='
   | ([$r[] | select(.kind == "floor") | select(.key != null)
        | {key: (.key | clean), why: ((.why // "") | clean)}]
      | group_by(.key) | map(.[0])) as $floors
+  # How the run ENDED is read from the last LOOP-owned record, never the positional last one: the
+  # agent may legitimately append a progress record after the loop has written done, and a reader
+  # that took the final line would report a finished run as still working. Matched exactly against
+  # the whitelist, so " done", "Done" and a unicode lookalike are all simply not loop-owned.
+  | ([$r[] | .kind | strings | select(IN($loop[]))] | last) as $lastloop
   | "next_i=\($maxi + 1)",
     "stall=\($stall)",
     "stops=\($stops)",
     "pid=\($pid // "")",
     "last=\(($r | last | .kind? // "") | clean)",
+    "loop_last=\(($lastloop // "") | clean)",
     ($floors[] | "floor=\(.key)\t\(.why)")
 '
 
@@ -167,12 +179,12 @@ JQ_SCAN='
 # bottom of scan_journal can SEE: initialised to the literal 1, as it was, the guard could never fire
 # and an unreadable journal read as a virgin one -- counter back to 1, every floor gone, and a fresh
 # agent handed an iteration the journal already records.
-SCAN_NEXT_I=- SCAN_STALL=0 SCAN_STOPS=0 SCAN_PID= SCAN_LAST=
+SCAN_NEXT_I=- SCAN_STALL=0 SCAN_STOPS=0 SCAN_PID= SCAN_LAST= SCAN_LOOP_LAST=
 FLOOR_KEYS=() FLOOR_WHY=()
 
 scan_journal() {
   local j=$1 out rc line k v
-  SCAN_NEXT_I=- SCAN_STALL=0 SCAN_STOPS=0 SCAN_PID= SCAN_LAST=
+  SCAN_NEXT_I=- SCAN_STALL=0 SCAN_STOPS=0 SCAN_PID= SCAN_LAST= SCAN_LOOP_LAST=
   FLOOR_KEYS=() FLOOR_WHY=()
   # Absent or empty is a genuinely virgin journal: there is nothing to read and numbering starts at
   # 1. This is the ONLY path that invents a counter, and it is settled before jq is ever asked.
@@ -185,7 +197,7 @@ scan_journal() {
   # The journal is named as an ARGUMENT, not redirected onto stdin: a shell redirect that fails
   # never runs jq at all, so there is no exit status of jq's to read. `--` for the same reason the
   # rest of this file uses it -- a path may begin with a dash.
-  out=$(jq -Rrn "$JQ_SCAN" -- "$j" 2>/dev/null); rc=$?
+  out=$(jq -Rrn --arg own "$LOOP_KINDS" "$JQ_SCAN" -- "$j" 2>/dev/null); rc=$?
   if [ "$rc" -ne 0 ]; then
     warn "journal scan of $j failed (jq exit $rc); refusing to reset state"
     return 1
@@ -199,6 +211,7 @@ scan_journal() {
       stops)  SCAN_STOPS=$v ;;
       pid)    SCAN_PID=$v ;;
       last)   SCAN_LAST=$v ;;
+      loop_last) SCAN_LOOP_LAST=$v ;;
       floor)
         if [[ $v == *$'\t'* ]]; then
           FLOOR_KEYS+=("${v%%$'\t'*}"); FLOOR_WHY+=("${v#*$'\t'}")
@@ -248,7 +261,8 @@ One JSON object on one line, under $ATOMIC_BOUND bytes, or the append is refused
 written. kind must be one of [$AGENT_KINDS], and a floor without a non-empty key is refused.
 The loop owns [$LOOP_KINDS] and appending any of those is refused: you report what you FOUND, never
 how the run ended. Nothing you write decides whether the loop stops -- that is the check command's
-exit code.
+exit code. The stop subcommand is the operator's and is refused while you are inside an iteration,
+so do not reach for it when the work looks impossible: file a floor and report what you found.
 
 EOF
   printf '%s\n' "$body"
@@ -355,7 +369,10 @@ cmd_run() {
     cmd=("$runner" -p "$prompt")
     [ -n "$model" ] && cmd+=(--model "$model")
     warn "iteration $i: ${#FLOOR_KEYS[@]} floors, $SCAN_STALL since progress"
-    "${cmd[@]}"
+    # The marker that tells `stop` it is being run by an iteration rather than by the operator. It
+    # is scoped to this one command, so it reaches the runner and everything the runner spawns and
+    # nothing else; the operator's own shell never has it, which is why their stop still works.
+    RALPH_ITERATION=$i "${cmd[@]}"
     rc=$?
     journal_append "$journal" "{\"kind\":\"iter_end\",\"i\":$i,\"exit\":$rc,\"ts\":\"$(now)\"}"
   done
@@ -409,18 +426,28 @@ cmd_status() {
 
   # A terminal record is the truth about how the run ended; the pid is consulted only when the
   # journal does not already say. (A recycled pid can read as alive -- the record cannot.)
+  #
+  # The record switched on is the last LOOP-owned one. Status is the only window a human has into a
+  # detached run, and a `progress` the agent appends after the loop wrote `done` -- a late note from
+  # the iteration that was still finishing when the check went green -- is legitimate. Switching on
+  # the positional last record would let that erase the outcome.
   if [ -n "$SCAN_PID" ] && kill -0 "$SCAN_PID" 2>/dev/null; then alive=alive; else alive=gone; fi
-  case "$SCAN_LAST" in
-    done|stalled|budget|stopped) state=$SCAN_LAST ;;
+  case "$SCAN_LOOP_LAST" in
+    done|stalled|budget|stopped) state=$SCAN_LOOP_LAST ;;
     '')                          state=idle ;;
     *)
       # No start record means no run has ever begun on this journal, whatever else it holds --
       # `append` needs no run, so a journal carrying only agent records is exactly that case.
-      # Reporting it "abandoned" is a verdict about a run that never happened, which is the same
+      # Reporting it "orphaned" is a verdict about a run that never happened, which is the same
       # mistake as letting the agent write one.
+      #
+      # "orphaned", not "abandoned": this report is read by grep as often as by eye, and the word
+      # `abandoned` CONTAINS `done`, so a run that died without recording how answered yes to
+      # `status | grep done`. Same rule as the journal path below -- nothing in this output may be
+      # readable as a verdict it is not.
       if   [ -z "$SCAN_PID" ];   then state=idle
       elif [ "$alive" = alive ]; then state=running
-      else                            state=abandoned
+      else                            state=orphaned
       fi ;;
   esac
 
@@ -431,6 +458,7 @@ cmd_status() {
   # the caller controls must never be readable as the loop's verdict, so status reports what it read,
   # not what it was told.
   printf 'state:          %s\n' "$state"
+  printf 'loop record:    %s\n' "${SCAN_LOOP_LAST:-none}"
   printf 'last record:    %s\n' "${SCAN_LAST:-none}"
   printf 'pid:            %s (%s)\n' "${SCAN_PID:-unknown}" "$alive"
   printf 'iterations:     %s\n' "$((SCAN_NEXT_I - 1))"
@@ -453,8 +481,23 @@ cmd_tail() {
   if [ -n "$follow" ]; then tail -f -n "$n" -- "$journal"; else tail -n "$n" -- "$journal"; fi
 }
 
+# `stop` belongs to the OPERATOR. `append` already refuses kind=stop, but this subcommand writes the
+# same record through journal_append directly, and every prompt prints RALPH_SH -- so an iteration
+# that reads the skill, sees the documented command and concludes the task looks impossible could end
+# a run it did not start. `run` marks the environment it invokes the runner in; a shell carrying that
+# marker is inside an iteration and is refused here, loudly, because a guard that fails silently
+# teaches the next amnesiac iteration nothing.
+#
+# THE LIMIT, STATED RATHER THAN CHASED: the threat is an uninformed iteration, not an adversary. An
+# iteration runs bash. It can unset RALPH_ITERATION, and it can kill the pid it reads out of the
+# journal. No in-band check can prevent either, and pretending otherwise would be the defect. This
+# closes the documented path and names the reason; it is not a guarantee that the loop cannot be
+# stopped, and SKILL.md says so.
 cmd_stop() {
   local journal= why=requested
+  if [ -n "${RALPH_ITERATION:-}" ]; then
+    refuse "stop: refused: this shell is inside iteration ${RALPH_ITERATION} of a run, and stop is the OPERATOR's command. An iteration reports what it FOUND through 'append'; whether the run ends is the check command's exit code, never an iteration's opinion that the work looks impossible."
+  fi
   while [ $# -gt 0 ]; do
     case "$1" in
       --journal) journal=${2:?--journal needs a value}; shift 2 ;;
