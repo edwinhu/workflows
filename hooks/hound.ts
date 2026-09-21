@@ -72,7 +72,7 @@ export function decide(
   }
 }
 
-function main(): void {
+export function main(): void {
   const payload = JSON.parse(readFileSync(0, 'utf8') || '{}')
 
   // Blocking a stop causes another stop. Without this the session can never end.
