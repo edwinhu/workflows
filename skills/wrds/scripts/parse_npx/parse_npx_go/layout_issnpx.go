@@ -572,6 +572,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	// The cover's series list may print a fund's rename under its current name,
 	// which is the only place a body banner spelling the OLD name is declared.
 	issCoverRenameAliases(seriesIx, lines)
+	// The rename a filing does NOT print on its own cover, read out of the same
+	// registrant's prospectus by hand: see issRegistrantRenames.
+	issAuditedRenameAliases(seriesIx)
 	// A filer agent may abandon this grammar mid-document for Broadridge
 	// meeting blocks (MFS Series Trust XI 2004: 52 issuers under a bare fund
 	// line, none of them read). The remainder of the body is handed to the
@@ -6620,6 +6623,60 @@ func issCoverRenameAliases(ix *issSeriesIndex, lines []string) {
 			continue
 		}
 		ix.addAlias(m[1], d)
+	}
+}
+
+// issRegistrantRenames is the audited pre-2006 rename table: for one CIK, a
+// heading its filings print against the name the SAME registrant's dictionary
+// spells the surviving fund under. EDGAR tags no series before 2006, so a fund
+// renamed in 2005 is declared for the first time under its NEW name only, and
+// the old heading a 2004-2005 N-PX prints exists in no dictionary row at any
+// CIK or vintage -- no name-based rung can reach it, because the two names
+// share no distinctive word.
+//
+// A ROW IS NOT A NAME MATCH. Each entry cites the registrant's own filing
+// saying the fund changed its name, and is registrant-scoped: the successor is
+// resolved against THIS CIK's own declarations, so nothing here reaches across
+// registrants and a successor the registrant never declared folds nothing.
+// Funds that MERGED AWAY or liquidated are deliberately absent -- their
+// filings name a surviving sibling, which is a different fund, not this fund
+// under a later name.
+//
+// Evergreen Variable Annuity Trust (CIK 0000928754) renamed two series
+// effective 2005-04-18, announced in 485BPOS 0000907244-05-000018 ("Effective
+// on or about April 18, 2005, Evergreen VA Foundation Fund (the "Fund") will
+// change its name to Evergreen VA Balanced Fund", and the same sentence for
+// Evergreen VA Growth and Income Fund -> Evergreen VA Fundamental Large Cap
+// Fund) and confirmed after the fact in 485BPOS 0000907244-05-000130
+// ("Evergreen VA Balanced Fund (formerly Evergreen VA Foundation Fund) ...
+// Evergreen VA Fundamental Large Cap Fund (formerly Evergreen VA Growth and
+// Income Fund)"). Both successors are dictionary rows of this same CIK at
+// vintage 20060630, the trust's first tagged filing, whose roster carries
+// neither old name. 8,380 rows with no series across 0000907244-04-000276,
+// 0000907244-04-000279 and 0000907244-05-000318. The trust's six other
+// untagged headings -- EVERGREEN VA FUND, SPECIAL EQUITY, EQUITY INDEX, BLUE
+// CHIP, GLOBAL LEADERS, MASTERS -- merged away or liquidated and stay blank.
+var issRegistrantRenames = map[string]map[string]string{
+	"0000928754": {
+		"evergreen va foundation fund":        "Evergreen VA Balanced Fund",
+		"evergreen va growth and income fund": "Evergreen VA Fundamental Large Cap Fund",
+	},
+}
+
+// issAuditedRenameAliases folds issRegistrantRenames into the index for the
+// filing's own registrant, through the same addAlias the cover-printed renames
+// use: the old name is keyed to the series the successor name resolves to, and
+// only an EXACT declared name resolves it. A name the filing already declares
+// is never overwritten, and a successor this filing's pool does not spell folds
+// nothing.
+func issAuditedRenameAliases(ix *issSeriesIndex) {
+	if ix == nil || ix.cik == "" {
+		return
+	}
+	for old, succ := range issRegistrantRenames[ix.cik] {
+		if d, _ := lookupSeriesEntry(ix.byName, succ); d != nil {
+			ix.addAlias(old, d)
+		}
 	}
 }
 
