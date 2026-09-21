@@ -2249,6 +2249,26 @@ func issCutSubAdviser(banner string) (string, bool) {
 		}
 		return head, true
 	}
+	// The PARTICIPIAL spelling, which carries no colon: `PVC - Balanced Account
+	// - Sub-Advised by PGI` (Principal Variable Contracts Fund 2005). The
+	// lead-in stands in for the label, and the dash before it is what bounds
+	// the name, so the clause is cut only where a dash precedes it and a
+	// manager follows -- `Sub-Advised by` printed mid-name is not a cut point.
+	for _, lead := range []string{"sub-advised by ", "sub advised by ", "subadvised by "} {
+		i := strings.Index(low, lead)
+		if i <= 0 {
+			continue
+		}
+		head := strings.TrimRight(banner[:i], " \t")
+		if !strings.HasSuffix(head, "-") && !strings.HasSuffix(head, "–") && !strings.HasSuffix(head, "—") {
+			continue
+		}
+		head = strings.TrimRight(head, "-–— \t")
+		if head == "" {
+			return "", false
+		}
+		return head, true
+	}
 	return "", false
 }
 
