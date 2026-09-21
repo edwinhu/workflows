@@ -69,6 +69,13 @@ const tableMark = "\x01"
 // blank lines exactly as a whole cell does. A layout that reads one cell per
 // line needs the difference, so this marks every block boundary EXCEPT <br> --
 // a <br> is a line break INSIDE a cell, never the end of one.
+// stripHTMLIndent is stripHTML with each line's leading indentation kept as a
+// single space. Its line structure is identical to stripHTML's -- the two differ
+// only in that leading space -- so a layout may read either.
+func stripHTMLIndent(src []byte) []byte {
+	return []byte(collapseSpacesIndent(decodeEntities(removeMarkup(src, true, false)), true))
+}
+
 func stripHTMLCells(src []byte) []byte {
 	return []byte(collapseSpaces(decodeEntities(removeMarkup(src, true, true))))
 }
@@ -494,6 +501,18 @@ func resolveEntity(body string) (string, bool) {
 // keeps column padding tellable from word spacing, and a run that was ONE space
 // still emits one, so prose never acquires a gap it did not have.
 func collapseSpaces(s string) string {
+	return collapseSpacesIndent(s, false)
+}
+
+// collapseSpacesIndent is collapseSpaces with the leading run of a line kept,
+// squeezed to indentMarkWidth. Leading whitespace is dropped by default because
+// every line-oriented reader trims it anyway, but in a fixed-width grammar the
+// column a line STARTS at is part of the record -- an issuer heading begins at
+// column 0 where a wrapped description is indented under it, and once the
+// leading run is gone the two are the same bare line. Only a layout that reads
+// that difference asks for it; keeping it everywhere moves prose and banner
+// lines other layouts already classify.
+func collapseSpacesIndent(s string, keepIndent bool) string {
 	s = strings.ReplaceAll(s, "\r\n", "\n")
 	var b strings.Builder
 	b.Grow(len(s))
@@ -510,7 +529,14 @@ func collapseSpaces(s string) string {
 			}
 			atLineStart = true
 		case isHorizontalSpace(r):
-			if !atLineStart && pendingSpaces < columnGapWidth {
+			limit := columnGapWidth
+			if atLineStart {
+				limit = 0
+				if keepIndent {
+					limit = indentMarkWidth
+				}
+			}
+			if pendingSpaces < limit {
 				pendingSpaces++
 			}
 		default:
@@ -529,6 +555,18 @@ func collapseSpaces(s string) string {
 // than one character: the narrowest run the layouts can still recognise as a
 // column separator.
 const columnGapWidth = 2
+
+// indentMarkWidth is how much of a line's leading whitespace run survives
+// collapseSpaces. It is one space: enough for lineIndented to answer whether a
+// line starts at column 0, and narrow enough that it can never be read as a
+// column gap.
+const indentMarkWidth = 1
+
+// lineIndented reports a line that starts right of column 0, reading the line
+// as collapseSpaces left it -- before any trim, which erases the whole signal.
+func lineIndented(line string) bool {
+	return line != strings.TrimLeft(line, " \t")
+}
 
 func isLineBreak(r rune) bool {
 	switch r {

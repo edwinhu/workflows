@@ -48,7 +48,7 @@ type pvTextMeeting struct {
 // named layouts still get first refusal, while pvtext's exact two-line signature
 // prevents it from claiming the other table shapes in a mixed filing.
 func init() {
-	entry := layoutEntry{Name: "pvtext", Match: matchPVText, Parse: parsePVText,
+	entry := layoutEntry{Name: "pvtext", Match: matchPVText, ParseRaw: parsePVTextRaw,
 		// This format's header can sit megabytes into a filing: measured over 40
 		// filings that yielded nothing, the offset has median 2,784 but p90
 		// 2,260,260 and max 10,972,887, and one 5.5 MB filing carries its first
@@ -73,6 +73,26 @@ func matchPVText(head string) bool {
 		}
 	}
 	return false
+}
+
+// parsePVTextRaw re-normalizes the document for the SEI sub-layout alone, which
+// is the one reader in this file that needs to know what column a line starts
+// at. Every other grammar here trims its lines, so the ordinary normalization
+// serves them and the extra pass is paid only by a document that carries the SEI
+// column header.
+func parsePVTextRaw(raw []byte, text string, meta FilingMeta) ([]VoteRow, error) {
+	lines := strings.Split(text, "\n")
+	for i := range lines {
+		if !pvSEIHeaderAt(lines, i) {
+			continue
+		}
+		indented := strings.Split(string(stripHTMLIndent(raw)), "\n")
+		if rows := parsePVTextSEI(indented, meta); len(rows) > 0 {
+			return rows, nil
+		}
+		break
+	}
+	return parsePVText(text, meta)
 }
 
 func parsePVText(text string, meta FilingMeta) ([]VoteRow, error) {
@@ -1219,6 +1239,37 @@ func pvSEIItemPrefix(cell string) (string, string, bool) {
 	return item, strings.Join(fields[1:], " "), true
 }
 
+// pvSEIPageNumber reports the bare page number this vendor prints at the foot
+// of a page. It is a line of digits and nothing else, so no issuer name can be
+// one.
+func pvSEIPageNumber(line string) bool {
+	line = strings.TrimSpace(line)
+	if line == "" {
+		return false
+	}
+	for i := 0; i < len(line); i++ {
+		if line[i] < '0' || line[i] > '9' {
+			return false
+		}
+	}
+	return true
+}
+
+// pvSEIFundReprint reports the bare line at i as the fund heading a page break
+// reprints, rather than an issuer heading, by looking ahead to the next content
+// line: on a resumed page that line is the column header, because the vendor
+// reprints <PAGE>, the fund and the header and does NOT reprint the issuer.
+func pvSEIFundReprint(lines []string, i int) bool {
+	for k := i + 1; k < len(lines); k++ {
+		next := strings.TrimSpace(lines[k])
+		if next == "" || pvTextPageFurniture(next) {
+			continue
+		}
+		return pvSEIHeaderLine(next)
+	}
+	return false
+}
+
 func parsePVTextSEI(lines []string, meta FilingMeta) []VoteRow {
 	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(seriesIx, meta.FormerNames)
@@ -1269,7 +1320,13 @@ func parsePVTextSEI(lines []string, meta FilingMeta) []VoteRow {
 		if pairs := lvPairs(cells); len(pairs) > 0 {
 			for _, p := range pairs {
 				switch p.label {
-				case "CUSIP":
+				case "CUSIP", "ISSUER":
+					// The 2010 vintage relabels the identity line: where 2008
+					// and 2009 print `CUSIP: 300250602`, 2010 prints
+					// `Issuer: 88579Y101 Ticker: MMM` for the same field. The
+					// value is the security id either way; icrCUSIP/icrISIN
+					// pick the token out of it. Scoped to this layout -- in
+					// other renderings `Issuer:` names the company.
 					cusip = p.value
 				case "TICKER":
 					ticker = p.value
@@ -1310,6 +1367,19 @@ func parsePVTextSEI(lines []string, meta FilingMeta) []VoteRow {
 		if len(cells) == 1 {
 			// A bare line: the issuer heading that opens the next meeting's
 			// identity block. Everything the previous block left is stale.
+			//
+			// Two bare lines are not issuer headings and must not clear the
+			// carried identity. A meeting that runs past the bottom of a page
+			// resumes with <PAGE>, the fund heading and the column header, and
+			// no reprinted issuer block -- so a bare line whose next content
+			// line is the column header is that reprinted fund heading, which
+			// the header branch above already reads as the fund. And a proposal
+			// description too long for its column is continued on its own
+			// indented line; an issuer heading starts at column 0. The page
+			// number the vendor prints at the foot of the page is bare too.
+			if lineIndented(lines[i]) || pvSEIPageNumber(line) || pvSEIFundReprint(lines, i) {
+				continue
+			}
 			issuer = cells[0]
 			ticker, cusip, mtgDate, mtgType = "", "", "", ""
 		}
