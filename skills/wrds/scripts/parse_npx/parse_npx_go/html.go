@@ -55,6 +55,13 @@ func stripHTML(src []byte) []byte {
 // prints, so a line carrying it is never a line of the grammar.
 const cellMark = "\x00"
 
+// tableMark is what stripHTMLCells puts where a <table> opens or closes. It is
+// a cell boundary like cellMark and is told apart from one only so a layout can
+// scope a guard to the table it is reading: the cells of the previous table are
+// a different ballot, and a test that reads across the boundary answers about
+// markup the heading it is judging has nothing to do with.
+const tableMark = "\x01"
+
 // stripHTMLCells is stripHTML with the container boundaries kept. stripHTML
 // turns EVERY block tag into a newline, which leaves a <br> hard-wrap inside one
 // <td> indistinguishable from the gap between two <td>s: the source newline
@@ -183,7 +190,11 @@ func removeMarkup(src []byte, joinPara, markCells bool) string {
 		if blockTags[name] {
 			b.WriteByte('\n')
 			if markCells && name != "br" {
-				b.WriteString(cellMark)
+				if name == "table" {
+					b.WriteString(tableMark)
+				} else {
+					b.WriteString(cellMark)
+				}
 				b.WriteByte('\n')
 			}
 			inPara = name == "p" && !(after > i+1 && src[i+1] == '/')
