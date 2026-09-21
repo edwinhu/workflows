@@ -1,0 +1,258 @@
+<SEC-DOCUMENT>0001144204-16-119504.txt : 20160815
+<SEC-HEADER>0001144204-16-119504.hdr.sgml : 20160815
+<ACCEPTANCE-DATETIME>20160815164018
+ACCESSION NUMBER:		0001144204-16-119504
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20160630
+FILED AS OF DATE:		20160815
+DATE AS OF CHANGE:		20160815
+EFFECTIVENESS DATE:		20160815
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CSOP ETF Trust
+		CENTRAL INDEX KEY:			0001617113
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22998
+		FILM NUMBER:		161833375
+
+	BUSINESS ADDRESS:	
+		STREET 1:		2801-2803, TWO EXCHANGE SQUARE
+		STREET 2:		8 CONNAUGHT PLACE, CENTRAL
+		CITY:			HONG KONG
+		STATE:			F4
+		ZIP:			00000
+		BUSINESS PHONE:		852 3406-5628
+
+	MAIL ADDRESS:	
+		STREET 1:		2801-2803, TWO EXCHANGE SQUARE
+		STREET 2:		8 CONNAUGHT PLACE, CENTRAL
+		CITY:			HONG KONG
+		STATE:			F4
+		ZIP:			00000
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001617113
+<SERIES-ID>S000047470
+<SERIES-NAME>CSOP FTSE CHINA A50 ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000149038
+<CLASS-CONTRACT-NAME>CSOP FTSE CHINA A50 ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>AFTY
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001617113
+<SERIES-ID>S000051155
+<SERIES-NAME>CSOP China CSI 300 A-H Dynamic ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161052
+<CLASS-CONTRACT-NAME>CSOP China CSI 300 A-H Dynamic ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>HAHA
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001617113
+<SERIES-ID>S000051156
+<SERIES-NAME>CSOP MSCI China A International Hedged ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161053
+<CLASS-CONTRACT-NAME>CSOP MSCI China A International Hedged ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>CNHX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>v445254_npx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: justify"><B>Item&nbsp;1. Proxy Voting Record</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center">CSOP FTSE China A50 ETF</P>
+
+
+
+<P STYLE="margin: 0">&nbsp;</P>
+
+<P STYLE="margin: 0"></P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 10pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR>
+    <TD NOWRAP COLSPAN="11" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Meeting Date Range: 01-Jul-2015 To 30-Jun-2016</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR>
+    <TD NOWRAP COLSPAN="11" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Selected Accounts</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="background-color: #004F75">
+    <TD COLSPAN="8" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>SHANGHAI PUDONG DEVELOPMENT BANK CO LTD, SHANGHAI</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Security:</B></FONT></TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Y7689F102</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Meeting Type:</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">ExtraOrdinary General Meeting</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Ticker:</B></FONT></TD>
+    <TD NOWRAP COLSPAN="3" STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Meeting Date:</B></FONT></TD>
+    <TD NOWRAP COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">01-Jul-2015</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>ISIN</B></FONT></TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">CNE0000011B7</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Vote Deadline Date:</B></FONT></TD>
+    <TD NOWRAP COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">23-Jun-2015</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Agenda</B></FONT></TD>
+    <TD STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">706278531</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Management</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Total Ballot Shares:</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">1332615</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Last Vote Date:</B></FONT></TD>
+    <TD NOWRAP COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">09-Oct-2015</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top; background-color: #004F75">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>Item</B></FONT></TD>
+    <TD COLSPAN="3" STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>Proposal</B></FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>Recommendation</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>Default Vote</B></FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>For</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>Against</B></FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>Abstain</B></FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>Take No Action</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: white">
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">1</FONT></TD>
+    <TD COLSPAN="3" STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">ELIGIBILITY FOR ASSETS PURCHASE VIA</FONT><BR>
+<FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">SHARE OFFERING</FONT></TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD>
+    <TD NOWRAP COLSPAN="2" STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">None</FONT></TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">1332615</FONT></TD>
+    <TD NOWRAP COLSPAN="2" STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">0</FONT></TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">0</FONT></TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">0</FONT></TD></TR>
+<TR STYLE="background-color: #004F75">
+    <TD COLSPAN="8" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>CITIC SECURITIES CO LTD, BEIJING</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Security:</B></FONT></TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Y1639N109</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Meeting Type:</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">ExtraOrdinary General Meeting</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Ticker:</B></FONT></TD>
+    <TD NOWRAP COLSPAN="3" STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Meeting Date:</B></FONT></TD>
+    <TD NOWRAP COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">25-Aug-2015</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>ISIN</B></FONT></TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">CNE000001DB6</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Vote Deadline Date:</B></FONT></TD>
+    <TD NOWRAP COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">17-Aug-2015</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Agenda</B></FONT></TD>
+    <TD STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">706317802</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Management</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Total Ballot Shares:</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">135246</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Last Vote Date:</B></FONT></TD>
+    <TD NOWRAP COLSPAN="2" STYLE="vertical-align: top; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">09-Oct-2015</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top; background-color: #004F75">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>Item</B></FONT></TD>
+    <TD COLSPAN="3" STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>Proposal</B></FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>Recommendation</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>Default Vote</B></FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>For</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>Against</B></FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>Abstain</B></FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; color: white"><B>Take No Action</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">1</FONT></TD>
+    <TD COLSPAN="3" STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">TARGETED ADDITIONAL OFFERING H-SHARE</FONT><BR>
+<FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">TO NATIONAL COUNCIL FOR SOCIAL</FONT><BR>
+<FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">SECURITY FUND AND LISTING ON THE HONG</FONT><BR>
+<FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">KONG STOCK EXCHANGE: STOCK TYPE</FONT></TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD>
+    <TD NOWRAP COLSPAN="2" STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">None</FONT></TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">135246</FONT></TD>
+    <TD NOWRAP COLSPAN="2" STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">0</FONT></TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">0</FONT></TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">0</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">2</FONT></TD>
+    <TD COLSPAN="3" STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">TARGETED ADDITIONAL OFFERING H-SHARE</FONT><BR>
+<FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">TO NATIONAL COUNCIL FOR SOCIAL</FONT><BR>
+<FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">SECURITY FUND AND LISTING ON THE HONG</FONT><BR>
+<FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">KONG STOCK EXCHANGE: DATE OF</FONT><BR>
+<FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">ISSUANCE</FONT></TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD>
+    <TD NOWRAP COLSPAN="2" STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">None</FONT></TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">135246</FONT></TD>
+    <TD NOWRAP COLSPAN="2" STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">0</FONT></TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">0</FONT></TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">0</FONT></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

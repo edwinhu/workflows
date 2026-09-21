@@ -21,6 +21,11 @@ type cikSeries struct {
 	// single answer, and onto nil the moment two series or two registrants
 	// answer to it. It is the last rung's whole guard: see crossCIK.
 	byNameAll map[string]*corpusName
+	// idsAll is every series id the corpus dictionary carries, under any CIK. It
+	// is not a matching route -- nothing resolves a heading through it -- only a
+	// sanity check that an id an audited overlay row names is a real one: see
+	// seriesOverlay.licenseHandMapped.
+	idsAll map[string]bool
 }
 
 // corpusName is one normalised dictionary name's single corpus-wide answer:
@@ -112,10 +117,14 @@ func declaredLeadName(name string) string {
 // growing; a pointer taken during the scan would dangle on the next append.
 func (d *cikSeries) indexCorpusNames() {
 	d.byNameAll = make(map[string]*corpusName)
+	d.idsAll = make(map[string]bool)
 	for cik, decls := range d.byCIK {
 		for i := range decls {
 			x := &decls[i]
 			key := normalizeSeriesName(x.Name)
+			if x.SeriesID != "" {
+				d.idsAll[x.SeriesID] = true
+			}
 			if key == "" || x.SeriesID == "" {
 				continue
 			}

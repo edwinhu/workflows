@@ -11,9 +11,9 @@ import (
 // headings the rules left unresolved (today: the audited Gemini map). It is
 // consulted only for a row whose series_id is still blank after the rules and
 // the chassis stamp, only on the exact heading the parser printed, and only
-// when the mapped id is one the filing's own header declares -- an id the
-// header does not know cannot be a link key for that filing, so it is dropped
-// rather than trusted.
+// when the mapped id is one the permitted set carries -- the filing's own decls,
+// its registrant's dictionary, and the ids this filing's own map rows name (see
+// licenseHandMapped). Anything else is dropped rather than trusted.
 type seriesOverlay struct {
 	byFiling map[string]map[string]string
 }
@@ -110,6 +110,35 @@ func overlayDeclaredIDs(meta FilingMeta) map[string]bool {
 		}
 	}
 	return out
+}
+
+// licenseHandMapped widens overlayDeclaredIDs by the ids THIS filing's own map
+// rows name. A fund that changed registrants between filings -- ING Partners'
+// `ING UBS U.S. ALLOCATION PORTFOLIO`, re-registered under ING Investors Trust
+// and tagged S000005761 there -- has its id in no dictionary the filer's CIK
+// owns, so the same-CIK membership test refuses it however well audited the map
+// entry is. A map entry is not a match: it is keyed to one filing and one
+// printed heading and was read by hand, so the filer's own dictionary is not the
+// authority on it. The matching routes stay as strict as they are -- crossCIK
+// and overlayFutureVintage are untouched, and nothing here resolves a heading;
+// only an id an auditor already wrote against this exact filing is licensed.
+//
+// Two guards remain: the id must be one the corpus dictionary actually carries
+// under some registrant (a typo or a retired id is not an audit), and
+// overlayFutureVintage still refuses an id this filing's own header dates after
+// the period.
+func (o *seriesOverlay) licenseHandMapped(relPath string, meta FilingMeta, declared map[string]bool) {
+	if o == nil || declared == nil || cikDict == nil {
+		return
+	}
+	for _, id := range o.byFiling[relPath] {
+		for _, one := range strings.Split(id, MultiValueSep) {
+			if one == "" || declared[one] || !cikDict.idsAll[one] || overlayFutureVintage(meta, one) {
+				continue
+			}
+			declared[one] = true
+		}
+	}
 }
 
 // overlayFutureVintage is issFutureVintage's predicate (layout_issnpx.go)

@@ -45,9 +45,25 @@ var namedEntities = map[string]string{
 // decodes named and numeric character references. Runs of spaces collapse; runs
 // of newlines never collapse away, because the legacy layouts are line-oriented.
 func stripHTML(src []byte) []byte {
-	stripped := removeMarkup(src, true)
+	stripped := removeMarkup(src, true, false)
 	decoded := decodeEntities(stripped)
 	return []byte(collapseSpaces(decoded))
+}
+
+// cellMark is the byte stripHTMLCells puts on a line of its own wherever a
+// container element opens or closes. It is a control character no filing
+// prints, so a line carrying it is never a line of the grammar.
+const cellMark = "\x00"
+
+// stripHTMLCells is stripHTML with the container boundaries kept. stripHTML
+// turns EVERY block tag into a newline, which leaves a <br> hard-wrap inside one
+// <td> indistinguishable from the gap between two <td>s: the source newline
+// following each <BR> emits a second break, so a wrap line stands alone between
+// blank lines exactly as a whole cell does. A layout that reads one cell per
+// line needs the difference, so this marks every block boundary EXCEPT <br> --
+// a <br> is a line break INSIDE a cell, never the end of one.
+func stripHTMLCells(src []byte) []byte {
+	return []byte(collapseSpaces(decodeEntities(removeMarkup(src, true, true))))
 }
 
 // EDGAR hard-wraps a dissemination file at a fixed width, blind to what it cuts:
@@ -69,7 +85,7 @@ const maxTagNameLen = 2 * edgarWrapWidth
 // stripHTMLCell is stripHTML for one table cell's inner markup: the lines
 // inside the cell are kept as printed.
 func stripHTMLCell(src []byte) []byte {
-	stripped := removeMarkup(src, false)
+	stripped := removeMarkup(src, false, false)
 	return []byte(collapseSpaces(decodeEntities(stripped)))
 }
 
@@ -84,7 +100,11 @@ func stripHTMLCell(src []byte) []byte {
 // the grammar. Any block tag ends the paragraph; <pre> is never one. The table
 // layout strips each cell on its own with joinPara off, because it reads the
 // lines inside a cell as stacked labels and values (Clearwater 2011).
-func removeMarkup(src []byte, joinPara bool) string {
+//
+// markCells additionally emits cellMark on its own line at every block boundary
+// but <br>, which is what tells one container's text from the next once the
+// newlines have been collapsed. See stripHTMLCells.
+func removeMarkup(src []byte, joinPara, markCells bool) string {
 	var b strings.Builder
 	b.Grow(len(src))
 	col := 0
@@ -152,12 +172,20 @@ func removeMarkup(src []byte, joinPara bool) string {
 				return b.String()
 			}
 			b.WriteByte('\n')
+			if markCells {
+				b.WriteString(cellMark)
+				b.WriteByte('\n')
+			}
 			col = advanceColumn(src, i, end+1, col)
 			i = end + 1
 			continue
 		}
 		if blockTags[name] {
 			b.WriteByte('\n')
+			if markCells && name != "br" {
+				b.WriteString(cellMark)
+				b.WriteByte('\n')
+			}
 			inPara = name == "p" && !(after > i+1 && src[i+1] == '/')
 		}
 		end := indexByteFrom(src, after, '>')
