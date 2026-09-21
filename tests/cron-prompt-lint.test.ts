@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
 const REPO = join(import.meta.dir, '..')
-import { lint } from '../skills/until/scripts/cron-prompt-lint'
+import { lint } from '../skills/hound/scripts/cron-prompt-lint'
 
 /**
  * The corpus is the three runs that actually stalled on the night of 2026-08-27/28, plus the text
@@ -89,7 +89,7 @@ describe('the remaining rules', () => {
     expect(rules('the parser has been made better')).toContain('C4')
   })
 
-  test('the escapes are NOT lint rules — they are until-arm.sh flags the hook enforces', () => {
+  test('the escapes are NOT lint rules — they are hound-arm.sh flags the hook enforces', () => {
     // A prompt that restates a ceiling in prose is the bug this rule set refuses to reward.
     const r = rules('Run `bun test` and report its exit code. Take the next action without asking. ' +
                     'End this heartbeat with CronDelete.')

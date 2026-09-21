@@ -59,7 +59,7 @@ case "$MAX_MINUTES" in
 esac
 
 # `--minutes` prints that ceiling and nothing else, for the caller that ARMS it rather than states
-# it: `until-arm.sh --minutes`. The hook enforces the number; the clause below states it. Reading
+# it: `hound-arm.sh --minutes`. The hook enforces the number; the clause below states it. Reading
 # both from here is what stops the armed hold and the stated clause naming different ceilings —
 # the same drift this file's header records between the default here and work-elapsed.sh's.
 if [ "${1-}" = "--minutes" ]; then printf '%s\n' "$MAX_MINUTES"; exit 0; fi

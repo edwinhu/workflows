@@ -3,9 +3,9 @@ import { mkdtempSync, writeFileSync, existsSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
-import { decide, statePath } from '../hooks/until'
+import { decide, statePath } from '../hooks/hound'
 
-const HOOK = join(import.meta.dir, '..', 'hooks', 'until.ts')
+const HOOK = join(import.meta.dir, '..', 'hooks', 'hound.ts')
 
 const state = (o: Partial<Parameters<typeof decide>[0]> = {}) => ({
   check: 'false', startedAt: 1_000_000, ceilingMinutes: 720, maxRounds: 8, rounds: 0, ...o,
@@ -48,14 +48,14 @@ describe('the decision, separated from the IO so every branch is reachable', () 
 // ---------------------------------------------------------------- the hook end to end
 
 function run(payload: object, st?: object) {
-  const dir = mkdtempSync(join(tmpdir(), 'until-'))
+  const dir = mkdtempSync(join(tmpdir(), 'hound-'))
   const sid = 'test-session'
-  if (st) writeFileSync(join(dir, `until-${sid}.json`), JSON.stringify(st))
+  if (st) writeFileSync(join(dir, `hound-${sid}.json`), JSON.stringify(st))
   const r = spawnSync('bun', [HOOK], {
     input: JSON.stringify({ session_id: sid, ...payload }),
     encoding: 'utf8', env: { ...process.env, TMPDIR: dir },
   })
-  return { ...r, dir, path: join(dir, `until-${sid}.json`) }
+  return { ...r, dir, path: join(dir, `hound-${sid}.json`) }
 }
 
 describe('the hook', () => {
@@ -91,14 +91,14 @@ describe('the hook', () => {
   })
 
   test('an unreadable state file releases rather than holds on unreadable terms', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'until-'))
-    writeFileSync(join(dir, 'until-test-session.json'), '{not json')
+    const dir = mkdtempSync(join(tmpdir(), 'hound-'))
+    writeFileSync(join(dir, 'hound-test-session.json'), '{not json')
     const r = spawnSync('bun', [HOOK], {
       input: JSON.stringify({ session_id: 'test-session' }),
       encoding: 'utf8', env: { ...process.env, TMPDIR: dir },
     })
     expect(r.status).toBe(0)
-    expect(existsSync(join(dir, 'until-test-session.json'))).toBe(false)
+    expect(existsSync(join(dir, 'hound-test-session.json'))).toBe(false)
   })
 
   test('statePath is per SESSION, so arming one does not hold another', () => {

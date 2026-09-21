@@ -13,7 +13,7 @@
  * access, no model. A defect that needs judgement is not in here; see SKILL.md. This exists
  * because ~/.claude/CLAUDE.md rule 9 forbids settling by prose review what an exit code can settle.
  *
- * The two escapes are NOT rules here: a round counter and a wall clock are `until-arm.sh --rounds`
+ * The two escapes are NOT rules here: a round counter and a wall clock are `hound-arm.sh --rounds`
  * and `--minutes`, enforced by the hook rather than remembered by the model.
  */
 
@@ -113,7 +113,7 @@ function lint(text: string, isBrief = false): Finding[] {
       rule: 'C3',
       severity: 'critical',
       message: 'Turn-counting escape. Nothing in the harness counts turns — no num_turns, no turn_count — so this is prose re-adjudicated on every tick.',
-      fix: 'The ceilings are `until-arm.sh --rounds N --minutes M`, which the Stop hook enforces. Do not restate them as prose.',
+      fix: 'The ceilings are `hound-arm.sh --rounds N --minutes M`, which the Stop hook enforces. Do not restate them as prose.',
     })
 
   if (!EXIT_CODE.test(t) && !BACKTICKED.test(t))
@@ -169,7 +169,7 @@ function lint(text: string, isBrief = false): Finding[] {
       rule: 'C10',
       severity: 'major',
       message: 'No teardown. A cron outlives the work and CronDelete is a model tool with no CLI, so this text is the only thing present when the work is done.',
-      fix: 'End with: end this heartbeat with CronDelete. If a hold was armed for the same objective and did not self-clear, `until-arm.sh --disarm` goes in the same sentence.',
+      fix: 'End with: end this heartbeat with CronDelete. If a hold was armed for the same objective and did not self-clear, `hound-arm.sh --disarm` goes in the same sentence.',
     })
 
   return f
