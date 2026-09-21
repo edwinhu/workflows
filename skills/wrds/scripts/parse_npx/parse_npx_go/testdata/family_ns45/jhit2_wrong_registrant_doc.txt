@@ -1,0 +1,263 @@
+<SEC-DOCUMENT>0001438934-20-000324.txt : 20200827
+<SEC-HEADER>0001438934-20-000324.hdr.sgml : 20200827
+<ACCEPTANCE-DATETIME>20200827081134
+ACCESSION NUMBER:		0001438934-20-000324
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20200630
+FILED AS OF DATE:		20200827
+DATE AS OF CHANGE:		20200827
+EFFECTIVENESS DATE:		20200827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			JOHN HANCOCK INVESTMENT TRUST II
+		CENTRAL INDEX KEY:			0000743861
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-03999
+		FILM NUMBER:		201139087
+
+	BUSINESS ADDRESS:	
+		STREET 1:		C/O JOHN HANCOCK FUNDS
+		STREET 2:		200 BERKELEY STREET
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02116
+		BUSINESS PHONE:		617-663-3000
+
+	MAIL ADDRESS:	
+		STREET 1:		C/O JOHN HANCOCK FUNDS
+		STREET 2:		200 BERKELEY STREET
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02116
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	FREEDOM INVESTMENT TRUST
+		DATE OF NAME CHANGE:	19920703
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	FREEDOM GOLD & GOVERNMENT TRUST
+		DATE OF NAME CHANGE:	19850530
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000743861
+<SERIES-ID>S000000634
+<SERIES-NAME>Financial Industries Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001809
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FIDAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001810
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FIDBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001811
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FIDCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000128459
+<CLASS-CONTRACT-NAME>Class NAV
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000173131
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>JFIFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000178763
+<CLASS-CONTRACT-NAME>Class R6
+<CLASS-CONTRACT-TICKER-SYMBOL>JFDRX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000743861
+<SERIES-ID>S000000635
+<SERIES-NAME>Regional Bank Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001813
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FRBAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001814
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FRBFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001815
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FRBCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000173132
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>JRBFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000178764
+<CLASS-CONTRACT-NAME>Class R6
+<CLASS-CONTRACT-TICKER-SYMBOL>JRGRX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>BRD031_0000022370_2020.txt
+<DESCRIPTION>BRD031_0000022370_2020
+<TEXT>
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              WASHINGTON, D.C. 20549
+
+                                   FORM N-PX
+
+    ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT
+                                     COMPANY
+
+ INVESTMENT COMPANY ACT FILE NUMBER:     811-00560
+
+ NAME OF REGISTRANT:                     John Hancock Investment Trust
+
+
+
+ ADDRESS OF PRINCIPAL EXECUTIVE OFFICES: 200 Berkeley Street
+                                         Boston, MA 02116
+
+ NAME AND ADDRESS OF AGENT FOR SERVICE:  Charles A. Rizzo
+                                         197 Clarendon Street
+                                         Boston, MA 02116
+
+ REGISTRANT'S TELEPHONE NUMBER:          6176633000
+
+ DATE OF FISCAL YEAR END:                10/31
+
+ DATE OF REPORTING PERIOD:               07/01/2019 - 06/30/2020
+
+
+<PAGE>
+
+<TABLE>
+<S>    <C>                                                       <C>           <C>                            <C>
+
+2X16 JHF Balanced Fund
+--------------------------------------------------------------------------------------------------------------------------
+ ABBOTT LABORATORIES                                                                         Agenda Number:  935138570
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  002824100
+    Meeting Type:  Annual
+    Meeting Date:  24-Apr-2020
+          Ticker:  ABT
+            ISIN:  US0028241000
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1.     DIRECTOR
+       R.J. Alpern                                               Mgmt          For                            For
+       R.S. Austin                                               Mgmt          For                            For
+       S.E. Blount                                               Mgmt          For                            For
+       R.B. Ford                                                 Mgmt          For                            For
+       M.A. Kumbier                                              Mgmt          For                            For
+       E.M. Liddy                                                Mgmt          For                            For
+       D.W. McDew                                                Mgmt          For                            For
+       N. McKinstry                                              Mgmt          For                            For
+       P.N. Novakovic                                            Mgmt          For                            For
+       W.A. Osborn                                               Mgmt          For                            For
+       D.J. Starks                                               Mgmt          For                            For
+       J.G. Stratton                                             Mgmt          For                            For
+       G.F. Tilton                                               Mgmt          For                            For
+       M.D. White                                                Mgmt          For                            For
+
+2.     Ratification of Ernst & Young LLP as                      Mgmt          For                            For
+       Auditors.
+
+3.     Say on Pay - An Advisory Vote to Approve                  Mgmt          For                            For
+       Executive Compensation.
+
+4.     Shareholder Proposal - Lobbying Disclosure.               Shr           Against                        For
+
+5.     Shareholder Proposal - Non-GAAP Financial                 Shr           For                            Against
+       Performance Metrics Disclosure.
+
+6.     Shareholder Proposal - Shareholder Voting                 Shr           Against                        For
+       on By-Law Amendments.
+
+7.     Shareholder Proposal - Simple Majority                    Shr           For                            Against
+       Vote.
+
+
+2X64 JHF Small Cap Core Fund
+--------------------------------------------------------------------------------------------------------------------------
+ AMBARELLA, INC.                                                                             Agenda Number:  935193730
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  G037AX101
+    Meeting Type:  Annual
+    Meeting Date:  04-Jun-2020
+          Ticker:  AMBA
+            ISIN:  KYG037AX1015
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1.     DIRECTOR
+       Leslie Kohn                                               Mgmt          For                            For
+       D. Jeffrey Richardson                                     Mgmt          For                            For
+       Elizabeth M. Schwarting                                   Mgmt          For                            For
+
+2.     Ratification of PricewaterhouseCoopers LLP                Mgmt          For                            For
+       as Ambarella, Inc.'s independent registered
+       public accounting firm for the fiscal year
+       ending January 31, 2021.
+
+3.     Advisory vote to approve the compensation                 Mgmt          For                            For
+
+3380 JHF Diversified Real Assets Fund
+--------------------------------------------------------------------------------------------------------------------------
+ ACTIVIA PROPERTIES INC.                                                                     Agenda Number:  711459544
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  J00089102
+    Meeting Type:  EGM
+    Meeting Date:  09-Aug-2019
+          Ticker:
+            ISIN:  JP3047490002
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1      Amend Articles to: Change Company Location                Mgmt          For                            For
+       within TOKYO, Update the Structure of Fee
+       to be received by Asset Management Firm
+
+2      Appoint an Executive Director Sato, Kazushi               Mgmt          For                            For
+
+3      Appoint a Substitute Executive Director                   Mgmt          For                            For
+       Murayama, Kazuyuki
+
+4.1    Appoint a Supervisory Director Yamada,                    Mgmt          For                            For
+       Yonosuke
+
+
+</TABLE>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

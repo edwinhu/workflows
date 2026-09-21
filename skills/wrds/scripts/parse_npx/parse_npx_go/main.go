@@ -416,6 +416,21 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 		return ""
 	}
 
+	// The banners a body prints belong to the registrant the DOCUMENT names,
+	// which is the filer in every filing but the handful where a preparer
+	// attached a sibling's document: see swappedDocumentOwner. Only the
+	// registrant-scoped resolution pool moves -- the manifest row below keeps
+	// the filer's own identity, because who filed this is not in doubt.
+	parseMeta := h
+	if cik, registrant, ok := swappedDocumentOwner(head, h.CIK, h.CompanyName); ok {
+		if pool := cikDict.poolFor(cik, metaPeriod(h)); len(pool) > 0 {
+			parseMeta.CIK = cik
+			parseMeta.CompanyName = registrant
+			parseMeta.FormerNames = nil
+			parseMeta.SeriesDecls = pool
+		}
+	}
+
 	defer func() {
 		if r := recover(); r != nil {
 			meta.ParseStatus = "error"
@@ -454,7 +469,7 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 		declared = overlayDeclaredIDs(h)
 		seriesMap.licenseHandMapped(relPath, h, declared)
 	}
-	dictFB := cikDict.exactFallback(h)
+	dictFB := cikDict.exactFallback(parseMeta)
 	stamp := func(r VoteRow) error {
 		if r.SeriesID == "" {
 			r.SeriesID = seriesRow
@@ -496,12 +511,16 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 			meta.ErrorMsg = err.Error()
 			return meta
 		}
-		res := parseText(buf, meta)
+		parseMeta.ParseMode = mode
+		res := parseText(buf, parseMeta)
 		if res == nil {
 			meta.ErrorMsg = "text parser returned no result"
 			return meta
 		}
 		meta = res.Meta
+		// The manifest row is the FILING's identity, never the attached
+		// document's: parseMeta only ever moved the resolution pool.
+		meta.CIK, meta.CompanyName, meta.FormerNames, meta.SeriesDecls = h.CIK, h.CompanyName, h.FormerNames, h.SeriesDecls
 		meta.FilePath = relPath
 		meta.ParseMode = mode
 		consolidated := consolidatedSeries(sc, res.Rows)
