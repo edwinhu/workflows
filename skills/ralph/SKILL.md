@@ -78,6 +78,13 @@ bash ${CLAUDE_SKILL_DIR}/scripts/ralph.sh stop   --journal "$J" --why 'grid down
 `stop` is a record, not a signal: the loop honours it at its next boundary, after the pass in flight
 finishes. Exit codes are `0` done, `2` refused, `3` stalled, `4` budget exhausted, `5` stopped.
 
+That subcommand is refused from inside an iteration, and the refusal names its reason — the loop
+marks the environment it invokes the runner in, and an operator's own shell carries no such mark, so
+an iteration that reads this file and concludes the work looks impossible cannot end a run the
+operator started. The guard closes the documented path and claims nothing beyond it: an iteration
+runs bash and can still `kill` the pid recorded in `start`, so this prevents a good-faith mistake
+rather than guaranteeing the loop cannot be stopped from inside.
+
 ## Against until — the difference is whether anything stays alive
 
 |  | until | ralph |

@@ -133,6 +133,26 @@ describe('skills/ralph/SKILL.md', () => {
     ).toBe(true)
   })
 
+  test('states the limit of the stop guard rather than implying a guarantee', () => {
+    // The guard refuses the stop subcommand from inside an iteration, which stops the good-faith
+    // mistake. It cannot stop an iteration that kills the pid it read out of the journal, because
+    // an iteration runs bash. A reader who is not told the boundary will assume the stronger claim,
+    // and will trust the loop with work it should not be trusted with.
+    const md = body()
+    // The claim: the stop subcommand is refused when an iteration runs it.
+    expect(
+      /refus\w*[^.]{0,120}\bfrom inside an iteration\b/i.test(md) ||
+        /\bfrom inside an iteration\b[^.]{0,120}refus\w*/i.test(md),
+      'SKILL.md must state that the stop subcommand is refused from inside an iteration',
+    ).toBe(true)
+    // The limit: an iteration runs bash, so it can always kill the process. Saying only the first
+    // half sells a guard as a guarantee.
+    expect(
+      /\bkill\b/i.test(md),
+      'SKILL.md must state the limit — an iteration can still kill the process',
+    ).toBe(true)
+  })
+
   test('documents that a floor record is refused without a key', () => {
     // A floor accepted and then silently dropped is the defect that makes a loop never converge.
     const md = body().toLowerCase()
