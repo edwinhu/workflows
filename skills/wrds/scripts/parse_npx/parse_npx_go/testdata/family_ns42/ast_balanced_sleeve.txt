@@ -1,0 +1,90 @@
+<SEC-DOCUMENT>0001683863-23-006059.txt : 20230825
+<SEC-HEADER>0001683863-23-006059.hdr.sgml : 20230825
+<ACCEPTANCE-DATETIME>20230825152337
+ACCESSION NUMBER:		0001683863-23-006059
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20230630
+FILED AS OF DATE:		20230825
+DATE AS OF CHANGE:		20230825
+EFFECTIVENESS DATE:		20230825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ADVANCED SERIES TRUST
+		CENTRAL INDEX KEY:			0000814679
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000814679
+<SERIES-ID>S000006792
+<SERIES-NAME>AST ACADEMIC STRATEGIES ASSET ALLOCATION PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018400
+<CLASS-CONTRACT-NAME>AST ACADEMIC STRATEGIES ASSET ALLOCATION PORTFOLIO
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000814679
+<SERIES-ID>S000006793
+<SERIES-NAME>AST BALANCED ASSET ALLOCATION PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018401
+<CLASS-CONTRACT-NAME>AST BALANCED ASSET ALLOCATION PORTFOLIO
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>f36111d1.htm
+<DESCRIPTION>ADVANCED SERIES FUND N-PX
+<TEXT>
+<html><body>
+<div><br /></div><pre>
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-05186
+Reporting Period: 07/01/2022 - 06/30/2023
+Advanced Series Trust
+
+
+
+
+============= AST Balanced Asset Allocation Portfolio (S&P 500) -  =============
+=============     Subadviser: PGIM Quantitative Solutions LLC      =============
+
+
+3M COMPANY
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 09, 2023   Meeting Type: Annual
+Record Date:  MAR 14, 2023
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Elect Thomas K. Brown                   For       For          Management
+2     Elect Anne H. Chow                      For       For          Management
+3     Elect David B. Dillon                   For       For          Management
+4     Elect Michael L. Eskew                  For       For          Management
+5     Elect James R. Fitterling               For       For          Management
+6     Elect Amy E. Hood                       For       For          Management
+7     Elect Suzan Kereere                     For       For          Management
+8     Elect Gregory R. Page                   For       For          Management
+9     Elect Pedro J. Pizarro                  For       For          Management
+10    Elect Michael F. Roman                  For       For          Management
+11    Ratification of Auditor                 For       For          Management
+12    Advisory Vote on Executive Compensation For       For          Management
+13    Frequency of Advisory Vote on           1 Year    1 Year       Management
+      Executive Compensation
+
+
+</pre>
+</body></html>
+</TEXT>
+</DOCUMENT>

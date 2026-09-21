@@ -1,0 +1,134 @@
+<SEC-DOCUMENT>0001683863-22-005656.txt : 20220825
+<SEC-HEADER>0001683863-22-005656.hdr.sgml : 20220825
+<ACCEPTANCE-DATETIME>20220825140801
+ACCESSION NUMBER:		0001683863-22-005656
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20220630
+FILED AS OF DATE:		20220825
+DATE AS OF CHANGE:		20220825
+EFFECTIVENESS DATE:		20220825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ADVANCED SERIES TRUST
+		CENTRAL INDEX KEY:			0000814679
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000814679
+<SERIES-ID>S000031888
+<SERIES-NAME>AST Quantitative Modeling Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099308
+<CLASS-CONTRACT-NAME>AST Quantitative Modeling Portfolio
+</CLASS-CONTRACT>
+<SERIES>
+<OWNER-CIK>0000814679
+<SERIES-ID>S000047530
+<SERIES-NAME>AST QMA International Core Equity Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000149255
+<CLASS-CONTRACT-NAME>AST QMA International Core Equity Portfolio
+</CLASS-CONTRACT>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>f.htm
+<TEXT>
+<html><body>
+<pre>
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-05186
+Reporting Period: 07/01/2021 - 06/30/2022
+Advanced Series Trust
+
+
+
+========= AST QMP PGIMQS International Core Equity - Subadviser: PGIM  =========
+=========                  Quantitative Solutions LLC                  =========
+
+
+ABRDN PLC
+
+Ticker:       ABDN           Security ID:  G0152L102
+Meeting Date: MAY 18, 2022   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Accounts and Reports                    For       For          Management
+2     Final Dividend                          For       For          Management
+3     Appointment of Auditor                  For       For          Management
+4     Authority to Set Auditor's Fees         For       For          Management
+5     Remuneration Report                     For       For          Management
+6     Elect Douglas (Sir) J. Flint            For       For          Management
+7     Elect Jonathan Asquith                  For       For          Management
+8     Elect Stephen Bird                      For       For          Management
+9     Elect Stephanie Bruce                   For       For          Management
+10    Elect John Devine                       For       For          Management
+11    Elect Brian McBride                     For       For          Management
+12    Elect Cathleen Raffaeli                 For       For          Management
+13    Elect Cecilia Reyes                     For       For          Management
+14    Elect Catherine Bradley                 For       Against      Management
+15    Elect Hannah Melissa Wood Grove         For       For          Management
+16    Elect Pam Kaur                          For       For          Management
+17    Elect Michael O'Brien                   For       For          Management
+18    Authorisation of Political Donations    For       For          Management
+19    Authority to Issue Shares w/            For       For          Management
+
+
+============= AST QMP PGIMQS S&P5 Index Sleeve - Subadviser: PGIM  =============
+=============              Quantitative Solutions LLC              =============
+
+
+DELTA AIR LINES, INC.
+
+Ticker:       DAL            Security ID:  247361702
+Meeting Date: JUN 16, 2022   Meeting Type: Annual
+Record Date:  APR 29, 2022
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Elect Edward H. Bastian                 For       For          Management
+2     Elect Francis S. Blake                  For       For          Management
+3     Elect Ashton Carter                     For       For          Management
+4     Elect Greg Creed                        For       For          Management
+5     Elect David G. DeWalt                   For       For          Management
+6     Elect William H. Easter III             For       For          Management
+7     Elect Leslie D. Hale                    For       Against      Management
+8     Elect Christopher A. Hazleton           For       For          Management
+
+
+=========== AST Quantitative Modeling Portfolio International Core  ============
+===========  Equity - Subadviser: PGIM Quantitative Solutions LLC   ============
+
+
+3I GROUP PLC
+
+Ticker:       III            Security ID:  G88473148
+Meeting Date: JUN 29, 2023   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Accounts and Reports                    For       For          Management
+2     Remuneration Report                     For       For          Management
+3     Remuneration Policy                     For       For          Management
+4     Increase in NED Fee Cap                 For       For          Management
+5     Final Dividend                          For       For          Management
+6     Elect Simon A. Borrows                  For       For          Management
+7     Elect Stephen Daintith                  For       For          Management
+8     Elect Jasi Halai                        For       For          Management
+9     Elect James Hatchley                    For       For          Management
+
+</pre>
+</body></html>
+</TEXT>
+</DOCUMENT>
