@@ -2663,7 +2663,14 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// (S000053572) instead. A same-CIK EXACT answer is untouched, and every
 	// guard inside crossCIK -- the own-brand-infix refusal, contemporaneity,
 	// corpus uniqueness -- still applies.
-	if outer && !issBannerDeclaredExact(ix, banner) && !issOwnBrandInfixDecl(ix, banner, d) {
+	//
+	// A tier-word substitution the registrant's own rename history licenses is
+	// registrant-scoped evidence about this filing's header, not a tolerance,
+	// so it is not offered to the sibling rung: 890453's unbranded 2006
+	// `Small Company Growth Fund` names its declared S000001047, and the exact
+	// contemporaneous corpus twin S000003363 belongs to CIK 0001331971.
+	if outer && !issBannerDeclaredExact(ix, banner) && !issOwnBrandInfixDecl(ix, banner, d) &&
+		!issTierRenameKept(ix, normalizeSeriesName(banner), d) {
 		if alt := cikDict.crossCIK(ix.cik, banner, ix.period, ix.registrantKey); alt != nil {
 			return banner, alt
 		}
@@ -7086,20 +7093,54 @@ func issFormerNameDecl(ix *issSeriesIndex) *SeriesDecl {
 // on the heading's tier the substitution is the vendor's, not the registrant's,
 // and `AMERITAS SMALL CAP FUND` for a declared `Ameritas Small Cap Portfolio`
 // still resolves.
+//
+// It does NOT refuse where the registrant's own declarations prove the two
+// words spell one tier: Wilshire Mutual Funds declares S000001049 `DOW JONES
+// WILSHIRE 5000 INDEX PORTFOLIO` in 2006 and `WILSHIRE 5000 INDEX FUND` from
+// 2009 on -- one id, both words -- so its `Wilshire Large Company Growth Fund`
+// banner is a rename of the declared `... GROWTH PORTFOLIO` and the other
+// fund-typed ids in the pool are unrelated siblings (20,336 rows).
 func issTierMismatch(ix *issSeriesIndex, key string, d *SeriesDecl) bool {
+	swap, tw, declTW := issTierWordSwap(ix, key, d)
+	return swap && !cikDict.typeWordRenamed(issIndexCIK(ix), tw, declTW)
+}
+
+// issTierRenameKept is the complement: a type-word substitution the tier guard
+// would have refused and the registrant's own rename history licenses. Such an
+// answer is registrant-scoped evidence about this filing's own header, so it
+// stands ahead of the cross-CIK rung -- at 890453 the unbranded 2006 heading
+// `Small Company Growth Fund` names the declared S000001047 and must not be
+// traded for the corpus-unique sibling S000003363 at CIK 0001331971.
+func issTierRenameKept(ix *issSeriesIndex, key string, d *SeriesDecl) bool {
+	swap, tw, declTW := issTierWordSwap(ix, key, d)
+	return swap && cikDict.typeWordRenamed(issIndexCIK(ix), tw, declTW)
+}
+
+// issIndexCIK is the filing's own registrant, or "" where there is no index.
+func issIndexCIK(ix *issSeriesIndex) string {
+	if ix == nil {
+		return ""
+	}
+	return ix.cik
+}
+
+// issTierWordSwap is the raw condition both read: the heading and the declared
+// name are each typed, their type words differ, and the registrant declares a
+// series on the heading's own tier.
+func issTierWordSwap(ix *issSeriesIndex, key string, d *SeriesDecl) (swap bool, tw, declTW string) {
 	if d == nil {
-		return false
+		return false, "", ""
 	}
 	declKey := normalizeSeriesName(d.Name)
 	if _, typed := issDropTypeWord(key); !typed {
-		return false
+		return false, "", ""
 	}
 	if _, typed := issDropTypeWord(declKey); !typed {
-		return false
+		return false, "", ""
 	}
 	f, df := strings.Fields(key), strings.Fields(declKey)
-	tw := f[len(f)-1]
-	return tw != df[len(df)-1] && issDeclaresTypeWord(ix, tw)
+	tw, declTW = f[len(f)-1], df[len(df)-1]
+	return tw != declTW && issDeclaresTypeWord(ix, tw), tw, declTW
 }
 
 // issDeclaresTypeWord reports whether any declared name is itself typed with

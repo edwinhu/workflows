@@ -1,0 +1,270 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ SWnB4qgPtO9fMby6/SVoYdesNSLKCH3PBxYHcWsTQUqdy1FNEUSwu915iiGdpPIY
+ Uck0B5ckbrmAuS27YOPUwA==
+
+<SEC-DOCUMENT>0001135428-10-000342.txt : 20100831
+<SEC-HEADER>0001135428-10-000342.hdr.sgml : 20100831
+<ACCEPTANCE-DATETIME>20100831140116
+ACCESSION NUMBER:		0001135428-10-000342
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20100630
+FILED AS OF DATE:		20100831
+DATE AS OF CHANGE:		20100831
+EFFECTIVENESS DATE:		20100831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			WILSHIRE MUTUAL FUNDS INC
+		CENTRAL INDEX KEY:			0000890453
+		IRS NUMBER:				000000000
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07076
+		FILM NUMBER:		101049588
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1299 OCEAN AVENUE
+		STREET 2:		SUITE 700
+		CITY:			SANTA MONICA
+		STATE:			CA
+		ZIP:			90401
+		BUSINESS PHONE:		610-676-3419
+
+	MAIL ADDRESS:	
+		STREET 1:		1299 OCEAN AVENUE
+		STREET 2:		SUITE 700
+		CITY:			SANTA MONICA
+		STATE:			CA
+		ZIP:			90401
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	WILSHIRE TARGET FUNDS INC
+		DATE OF NAME CHANGE:	19960603
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	DREYFUS WILSHIRE TARGET FUNDS INC
+		DATE OF NAME CHANGE:	19921014
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	DREYFUS WILSHIRE SERIES FUND INC/
+		DATE OF NAME CHANGE:	19921014
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000890453
+<SERIES-ID>S000001045
+<SERIES-NAME>WILSHIRE LARGE COMPANY GROWTH PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002805
+<CLASS-CONTRACT-NAME>INVESTMENT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DTLGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002806
+<CLASS-CONTRACT-NAME>INSTITUTIONAL CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>WLCGX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890453
+<SERIES-ID>S000001046
+<SERIES-NAME>WILSHIRE LARGE COMPANY VALUE PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002807
+<CLASS-CONTRACT-NAME>INVESTMENT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DTLVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002808
+<CLASS-CONTRACT-NAME>INSTITUTIONAL CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>WLCVX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890453
+<SERIES-ID>S000001047
+<SERIES-NAME>WILSHIRE SMALL COMPANY GROWTH PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002809
+<CLASS-CONTRACT-NAME>INVESTMENT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DTSGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002810
+<CLASS-CONTRACT-NAME>INSTITUTIONAL CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>WSMGX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890453
+<SERIES-ID>S000001048
+<SERIES-NAME>WILSHIRE SMALL COMPANY VALUE PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002811
+<CLASS-CONTRACT-NAME>INVESTMENT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DTSVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002812
+<CLASS-CONTRACT-NAME>INSTITUTIONAL CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>WSMVX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890453
+<SERIES-ID>S000001049
+<SERIES-NAME>WILSHIRE 5000 INDEX FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002813
+<CLASS-CONTRACT-NAME>QUALIFIED CLASS
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002814
+<CLASS-CONTRACT-NAME>HORACE MANN CLASS
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002815
+<CLASS-CONTRACT-NAME>INVESTMENT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>WFIVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002816
+<CLASS-CONTRACT-NAME>INSTITUTIONAL CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>WINDX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890453
+<SERIES-ID>S000019534
+<SERIES-NAME>WILSHIRE LARGE CAP CORE 130/30 FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000065456
+<CLASS-CONTRACT-NAME>INVESTMENT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>WLCTX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000065457
+<CLASS-CONTRACT-NAME>INSTITUTIONAL CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>WLTTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890453
+<SERIES-ID>S000022095
+<SERIES-NAME>Wilshire/MAXAM Diversity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063396
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063397
+<CLASS-CONTRACT-NAME>Investment Class
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>wilmut_npx.txt
+<TEXT>
+
+                                   FORM N-PX
+
+                    ANNUAL REPORT OF PROXY VOTING RECORD OF
+
+                          WILSHIRE MUTUAL FUNDS, INC.
+
+                 Investment Company Act File Number: 811-07076
+
+                                   REGISTRANT
+                        Wilshire Associates Incorporated
+                          1299 Ocean Avenue, Suite 700
+                             Santa Monica, CA 90401
+
+                               AGENT FOR SERVICE
+                          Lawrence Davanzo, President
+                          1299 Ocean Avenue, Suite 700
+                             Santa Monica, CA 90401
+                                  310-260-6639
+
+                      Date of fiscal year end: December 31
+
+                 For the Period: July 1, 2009 to June 30, 2010
+
+                                                                 WIL-NC-002-0200
+
+                                       1
+
+<PAGE>
+
+
+<TABLE>
+<S>                              <C>                          <C>          <C>          <C>
+<PAGE>
+
+
+
+                                    Wilshire Large Company Growth Fund
+ Proposal                                                   Proposed by  Mgt. Position Registrant Voted
+3M COMPANY
+ CUSIP: 88579Y101 Ticker: MMM
+ Meeting Date: 05/11/2010            Meeting Type: Annual
+ 1.   Elect Linda Alvarado                                   Management     For          Voted - For
+ 2.   Elect George Buckley                                   Management     For          Voted - For
+ 3.   Elect Vance Coffman                                    Management     For          Voted - For
+ 4.   Elect Michael Eskew                                    Management     For          Voted - For
+ 5.   Elect W. James Farrell                                 Management     For          Voted - For
+ 6.   Elect Herbert Henkel                                   Management     For          Voted - For
+ 7.   Elect Edward Liddy                                     Management     For          Voted - For
+ 8.   Elect Robert Morrison                                  Management     For          Voted - For
+ 9.   Elect Aulana Peters                                    Management     For          Voted - Against
+ 10.  Elect Robert Ulrich                                    Management     For          Voted - For
+ 11.  Ratification of Auditor                                Management     For          Voted - For
+ 12.  Amendment to the 2008 Long-Term Incentive Plan         Management     For          Voted - For
+ 13.  Shareholder Proposal Regarding Right to Call a
+       Special Meeting                                       Shareholder    Against      Voted - For
+ABBOTT LABORATORIES
+ CUSIP: 002824100 Ticker: ABT
+ Meeting Date: 04/23/10              Meeting Type: Annual
+ 1.1. Elect Director R.J. Alpern                             Management     For          Voted - For
+ 1.2. Elect Director R.S. Austin                             Management     For          Voted - For
+ 1.3. Elect Director W.M. Daley                              Management     For          Voted - Withheld
+ 1.4. Elect Director W.J. Farrell                            Management     For          Voted - Withheld
+ 1.5. Elect Director H.L. Fuller                             Management     For          Voted - Withheld
+ 1.6. Elect Director W.A. Osborn                             Management     For          Voted - Withheld
+ 1.7. Elect Director D.A.L. Owen                             Management     For          Voted - For
+ 1.8. Elect Director R.S. Roberts                            Management     For          Voted - For
+ 1.9. Elect Director S.C. Scott, III                         Management     For          Voted - For
+ 1.10. Elect Director W.D. Smithburg                         Management     For          Voted - Withheld
+ 1.11. Elect Director G.F. Tilton                            Management     For          Voted - For
+ 1.12. Elect Director M.D. White                             Management     For          Voted - For
+ 2.   Ratify Auditors                                        Management     For          Voted - For
+ 3.   Advisory Vote to Ratify Named Executive Officers'
+       Compensation                                          Shareholder    Against      Voted - For
+ 4.   Amend Articles/Bylaws/Charter -- Call Special
+       Meetings                                              Shareholder    Against      Voted - For
+ABBOTT LABORATORIES INC
+ CUSIP: 002824100 Ticker: ABT
+ Meeting Date: 04/23/2010            Meeting Type: Annual
+ 1.1. Elect Robert Alpern                                    Management     For          Voted - For
+ 1.2. Elect Roxanne Austin                                   Management     For          Voted - For
+ 1.3. Elect William Daley                                    Management     For          Voted - For
+                                                          753
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
