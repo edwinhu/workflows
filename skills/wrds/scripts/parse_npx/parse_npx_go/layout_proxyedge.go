@@ -96,7 +96,10 @@ func peNonBlank(text string) []string {
 }
 
 // peCellLines returns the layout's line stream and, for each line, the index of
-// the first line of the CELL it belongs to. It reads the marked strip, whose
+// the first line of the CELL it belongs to and the ordinal of the TABLE RUN it
+// stands in -- the stretch of the document between two <table> boundaries, which
+// is the widest span a guard about one ballot may read. It reads the marked
+// strip, whose
 // container boundaries are the only record of where one <td> ends: after
 // stripHTML a hard-wrapped cell and a run of whole cells look alike, because
 // <BR> emits a break and the source newline that follows it emits a second, so
@@ -109,16 +112,21 @@ func peNonBlank(text string) []string {
 // Before the document's first boundary there are no containers -- that is the
 // SGML envelope, which carries no block markup -- so a blank line parts the
 // lines there, as it does for the whole stream when a body prints none.
-func peCellLines(marked string) ([]string, []int) {
+func peCellLines(marked string) ([]string, []int, []int) {
 	var (
 		lines   []string
 		run     []int
+		tbl     []int
 		start   = -1
 		inCells bool
+		table   int
 	)
 	for _, l := range strings.Split(marked, "\n") {
 		t := strings.TrimSpace(l)
-		if t == cellMark {
+		if t == cellMark || t == tableMark {
+			if t == tableMark {
+				table++
+			}
 			inCells = true
 			start = -1
 			continue
@@ -134,8 +142,9 @@ func peCellLines(marked string) ([]string, []int) {
 		}
 		lines = append(lines, t)
 		run = append(run, start)
+		tbl = append(tbl, table)
 	}
-	return lines, run
+	return lines, run, tbl
 }
 
 // peWholeCells reports, for each line, whether it is a cell ENTIRE -- the only
@@ -297,9 +306,16 @@ func peRegistrantFund(value, company string) string {
 }
 
 // peItemCell reports that line i is a bare item number printed under a header
-// band -- the cell that opens a ballot row, whatever follows it.
-func peItemCell(lines []string, i int, labels []string) bool {
-	if labels == nil || i < 0 {
+// band -- the cell that opens a ballot row, whatever follows it. The claim is
+// about the ballot line `heading` stands in, so both lines must stand in the
+// same table run: a count in the PREVIOUS table is the tail of a ballot that
+// closed with `</table>`, and the centred banner the vendor prints between two
+// sections is a fund heading, not the continuation of a row (CSOP ETF Trust
+// 2016 opens each of its three sleeves that way, and reading table 1's last
+// `Take No Action` count as this heading's item cell stamped all three sleeves
+// with sleeve 1's series).
+func peItemCell(lines []string, tbl []int, i, heading int, labels []string) bool {
+	if labels == nil || i < 0 || tbl[i] != tbl[heading] {
 		return false
 	}
 	_, ok := peCount(lines[i])
@@ -323,7 +339,7 @@ func peIdentityLabel(line string) bool {
 // <table> grammar, and which lines belong to which cell is a fact only the
 // markup holds.
 func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
-	lines, run := peCellLines(string(stripHTMLCells(raw)))
+	lines, run, tbl := peCellLines(string(stripHTMLCells(raw)))
 	whole := peWholeCells(run)
 	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(seriesIx, meta.FormerNames)
@@ -437,9 +453,10 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// A bare heading. The vendor prints the fund above its ballots and the
 		// issuer above each one, with nothing to mark either.
 		// Only a whole cell can be a heading, and never the cell that follows
-		// an item number under an open band: that pair is a ballot row whose
-		// description peVoteRow refused, not a fund the vendor printed.
-		if whole[i] && !peItemCell(lines, i-1, labels) && peFundName(line) {
+		// an item number under an open band IN THE SAME TABLE: that pair is a
+		// ballot row whose description peVoteRow refused, not a fund the vendor
+		// printed. Across a table boundary the pair is two different ballots.
+		if whole[i] && !peItemCell(lines, tbl, i-1, i, labels) && peFundName(line) {
 			fund = line
 			fundSeries = icrResolveFundShared(seriesIx, line)
 			if fundSeries == "" {
