@@ -739,12 +739,12 @@ echo "args:  $out"
 # and missed 36, /loop landed 52 and missed 29. Both halves below land INSIDE this turn instead —
 # one as a file this script writes, one as a tool call only the model can make.
 #
-# HALF ONE, THE HOLD. hooks/until.ts re-runs $hold_check on every Stop and blocks the stop until it
+# HALF ONE, THE HOLD. hooks/hound.ts re-runs $hold_check on every Stop and blocks the stop until it
 # exits 0, which is what the goal's PASS clause meant; the two escapes the goal states as prose are
 # --rounds and --minutes here, enforced by the hook rather than re-adjudicated each turn.
 #
 # The check NORMALISES work-result.sh's exit code to 0/1 on purpose. Before the run returns there is
-# no result.json and work-result.sh exits 2, which until-arm.sh correctly refuses as could-not-run
+# no result.json and work-result.sh exits 2, which hound-arm.sh correctly refuses as could-not-run
 # rather than a verdict — so a bare invocation would refuse to arm at exactly the moment the hold is
 # needed. A readOnly run closes on a verdict of either sign (its gate legitimately FAILs), so it
 # accepts 0 and 1; a writing run closes on PASS alone.
@@ -754,9 +754,9 @@ else
   hold_check="bash \"$SKILL/scripts/work-result.sh\" \"$R/result.json\"; [ \$? -eq 0 ]"
 fi
 hold_minutes=$("$SKILL/scripts/compose-goal.sh" --minutes) || hold_minutes=720
-bash "$SKILL/../until/scripts/until-arm.sh" "$hold_check" --rounds "$maxrounds" --minutes "$hold_minutes"
+bash "$SKILL/../hound/scripts/hound-arm.sh" "$hold_check" --rounds "$maxrounds" --minutes "$hold_minutes"
 hold_rc=$?
-[ $hold_rc -eq 0 ] || echo "until-arm exited $hold_rc — this session has NO HOLD; it will stop at its first stopping point." >&2
+[ $hold_rc -eq 0 ] || echo "hound-arm exited $hold_rc — this session has NO HOLD; it will stop at its first stopping point." >&2
 
 # HALF TWO, THE HEARTBEAT, and this is the structural catch: CronCreate is a MODEL TOOL. There is no
 # cron CLI, and a session-scoped cron lives in memory rather than in .claude/scheduled_tasks.json, so
@@ -784,9 +784,9 @@ cron_prompt="Heartbeat for craft run $runid. Run \`bash $SKILL/scripts/work-resu
 # The lint that used to sit on the self-send chokepoint now sits here, on the text that actually
 # re-enters the session. It REPORTS and never refuses: the run is already dispatched by the time a
 # finding could matter, and a refusal here would leave a dispatched run with no heartbeat at all.
-if command -v bun > /dev/null 2>&1 && [ -f "$SKILL/../until/scripts/cron-prompt-lint.ts" ]; then
-  bun "$SKILL/../until/scripts/cron-prompt-lint.ts" "$cron_prompt" > /dev/null 2>&1 \
-    || echo "WARNING: cron-prompt-lint has findings on the heartbeat text below — run it yourself: bun $SKILL/../until/scripts/cron-prompt-lint.ts \"\$prompt\"" >&2
+if command -v bun > /dev/null 2>&1 && [ -f "$SKILL/../hound/scripts/cron-prompt-lint.ts" ]; then
+  bun "$SKILL/../hound/scripts/cron-prompt-lint.ts" "$cron_prompt" > /dev/null 2>&1 \
+    || echo "WARNING: cron-prompt-lint has findings on the heartbeat text below — run it yourself: bun $SKILL/../hound/scripts/cron-prompt-lint.ts \"\$prompt\"" >&2
 fi
 
 # Printed LAST on every path that dispatches, so nothing scrolls it away. A dispatch that ends with

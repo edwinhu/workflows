@@ -110,7 +110,7 @@
           },
           {
             "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/until.ts"
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/hound.ts"
           }
         ]
       }

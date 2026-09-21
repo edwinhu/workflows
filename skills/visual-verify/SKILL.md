@@ -97,17 +97,17 @@ The loop is done when ALL of these hold:
 
 Arm a **hold** whose check gates on the **enumerable defect substrate** — fused labels and BLOCKING visual defects — not the 0-10 aesthetic score (an LLM vision score is noisy and won't stably hit 9.5; chasing it is a treadmill). Run the loop body (render → vision → fix) inside each turn.
 
-The check must be a COMMAND whose exit code is the verdict, because `hooks/until.ts` runs it on every Stop. The pre-screen is already one; write the BLOCKING-defect count to SCORES.md as you go and let the check read it:
+The check must be a COMMAND whose exit code is the verdict, because `hooks/hound.ts` runs it on every Stop. The pre-screen is already one; write the BLOCKING-defect count to SCORES.md as you go and let the check read it:
 
 ```bash
-bash ${CLAUDE_SKILL_DIR}/../until/scripts/until-arm.sh \
+bash ${CLAUDE_SKILL_DIR}/../hound/scripts/hound-arm.sh \
   'grep -q "^BLOCKING: 0$" SCORES.md && ! pdftotext -layout OUTPUT.pdf - | grep -qE "FUSED"' \
   --rounds 5 --minutes 120
 ```
 
-`until-arm.sh` writes a session-scoped state file — no transport, nothing typed, so it lands inside the turn that runs it. It **refuses a check that already exits 0** (a hold on a met objective holds nothing) and one that exits above 1 (could-not-run, which would hold forever on a broken command), so a successful arm is itself proof the check is live and red. `--rounds` and `--minutes` are the ceilings, enforced by the hook rather than restated as prose; do not write "stop after 5 turns" into the check — nothing in the harness counts turns.
+`hound-arm.sh` writes a session-scoped state file — no transport, nothing typed, so it lands inside the turn that runs it. It **refuses a check that already exits 0** (a hold on a met objective holds nothing) and one that exits above 1 (could-not-run, which would hold forever on a broken command), so a successful arm is itself proof the check is live and red. `--rounds` and `--minutes` are the ceilings, enforced by the hook rather than restated as prose; do not write "stop after 5 turns" into the check — nothing in the harness counts turns.
 
-The hold **self-clears**: the hook removes the state file the moment the check exits 0, so the terminal PASS needs no teardown. `bash ${CLAUDE_SKILL_DIR}/../until/scripts/until-arm.sh --status` settles whether it is armed; `--disarm` releases it early. With no hold armed there is no loop at all — one pass, no gate. A spawned agent cannot arm the caller's session: it returns the literal `until-arm.sh` line to its caller.
+The hold **self-clears**: the hook removes the state file the moment the check exits 0, so the terminal PASS needs no teardown. `bash ${CLAUDE_SKILL_DIR}/../hound/scripts/hound-arm.sh --status` settles whether it is armed; `--disarm` releases it early. With no hold armed there is no loop at all — one pass, no gate. A spawned agent cannot arm the caller's session: it returns the literal `hound-arm.sh` line to its caller.
 
 ### Score Tracking
 

@@ -5,7 +5,7 @@
  * own pane, and a detached drainer typed it when the pane went IDLE. A session that has just
  * dispatched a run is mid-turn and then works back-to-back, so the window frequently never opened:
  * measured 2026-09-16, `/goal` landed 127 times and missed 36, `/loop` landed 52 and missed 29.
- * Both halves now land INSIDE the dispatching turn — the HOLD as a state file until-arm.sh writes,
+ * Both halves now land INSIDE the dispatching turn — the HOLD as a state file hound-arm.sh writes,
  * the HEARTBEAT as a CronCreate call only the model can make.
  *
  * That second half is the one this file exists for. A shell cannot call CronCreate, so the script
@@ -20,7 +20,7 @@ import { execFileSync } from 'node:child_process'
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync, chmodSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { lint } from '../skills/until/scripts/cron-prompt-lint'
+import { lint } from '../skills/hound/scripts/cron-prompt-lint'
 
 const REPO = join(import.meta.dir, '..')
 const SKILL = join(REPO, 'skills/work')
@@ -62,7 +62,7 @@ function fixture(extraArgs: Record<string, unknown> = {}) {
 }
 
 /**
- * A real dispatch, with a real (fabricated) session id and a private TMPDIR — so until-arm.sh
+ * A real dispatch, with a real (fabricated) session id and a private TMPDIR — so hound-arm.sh
  * writes a real state file this test can read, and cannot touch the hold of the live session
  * running the suite. CRAFT_FARM is stubbed so nothing is farmed out for real.
  */
@@ -86,7 +86,7 @@ function dispatch(f: { dir: string; plan: string }, extraEnv: Record<string, str
 }
 
 const holdState = (r: { sid: string; tmp: string }) =>
-  JSON.parse(readFileSync(join(r.tmp, `until-${r.sid}.json`), 'utf8'))
+  JSON.parse(readFileSync(join(r.tmp, `hound-${r.sid}.json`), 'utf8'))
 
 describe('the self-send transport is gone, not merely unused', () => {
   /**
@@ -128,7 +128,7 @@ describe('half one: the HOLD is armed by the script itself', () => {
   })
 
   /**
-   * work-result.sh exits 2 when there is no result.json, and until-arm.sh correctly refuses an
+   * work-result.sh exits 2 when there is no result.json, and hound-arm.sh correctly refuses an
    * exit above 1 as could-not-run rather than a verdict. Unwrapped, the arm would therefore fail
    * at exactly the moment the hold is needed — before the run has returned anything.
    */

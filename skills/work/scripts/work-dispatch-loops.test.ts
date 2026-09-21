@@ -82,7 +82,7 @@ function fixture(extraArgs: Record<string, unknown> = {}) {
 }
 
 /**
- * CLAUDE_CODE_SESSION_ID is blanked so until-arm.sh refuses at its identity check (exit 2) BEFORE
+ * CLAUDE_CODE_SESSION_ID is blanked so hound-arm.sh refuses at its identity check (exit 2) BEFORE
  * writing anything. A hold's state file is keyed by session id, so without this a test dispatch
  * would arm a real hold on whatever live session is running the suite.
  */

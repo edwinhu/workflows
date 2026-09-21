@@ -3,14 +3,14 @@
 ## The check command
 
 ```bash
-bash ${CLAUDE_SKILL_DIR}/scripts/until-arm.sh '<CHECK>' --rounds <N> --minutes <M>
+bash ${CLAUDE_SKILL_DIR}/scripts/hound-arm.sh '<CHECK>' --rounds <N> --minutes <M>
 ```
 
 `<CHECK>` is the objective. One clause per claim, red at the moment you arm it, runnable in this
 session's cwd, no apostrophes. Filled in, for an unattended night:
 
 ```bash
-bash skills/until/scripts/until-arm.sh \
+bash skills/hound/scripts/hound-arm.sh \
   'bash skills/wrds/scripts/parse_npx/measure.sh --xml-error-rate-below 0.01' \
   --rounds 15 --minutes 480
 ```
@@ -37,7 +37,7 @@ the objective is met — so nothing but this text is present at the moment it sh
 Lint it:
 
 ```bash
-bun skills/until/scripts/cron-prompt-lint.ts "<that text>"
+bun skills/hound/scripts/cron-prompt-lint.ts "<that text>"
 ```
 
 ## The unattended-brief template
@@ -78,7 +78,7 @@ asked whether to amend and re-dispatch or read the findings first, and slept 4h1
 Rewrite — the verdict file, read for PASS rather than for existence:
 
 ```bash
-bash skills/until/scripts/until-arm.sh \
+bash skills/hound/scripts/hound-arm.sh \
   'bash skills/work/scripts/work-result.sh .craft/0827-npx-iss/result.json' \
   --rounds 6 --minutes 480
 ```
@@ -99,7 +99,7 @@ questions: push three green commits, and how far to take a fix already diagnosed
 Rewrite — armed when the recon is dispatched, not after it lands:
 
 ```bash
-bash skills/until/scripts/until-arm.sh \
+bash skills/hound/scripts/hound-arm.sh \
   'bun test tests/ambiguous-settlement.test.ts' --rounds 4 --minutes 300
 ```
 

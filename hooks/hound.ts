@@ -22,7 +22,7 @@
  * INERT unless armed. The state file is per session, so this fires for exactly one session
  * rather than every session in the project.
  *
- *   arm:     until-arm.sh '<check command>' [--rounds N] [--minutes M]
+ *   arm:     hound-arm.sh '<check command>' [--rounds N] [--minutes M]
  *   disarm:  rm the state file (the path is printed on every block)
  */
 
@@ -40,7 +40,7 @@ interface State {
 }
 
 export function statePath(session: string): string {
-  return join(process.env.TMPDIR || tmpdir(), `until-${session}.json`)
+  return join(process.env.TMPDIR || tmpdir(), `hound-${session}.json`)
 }
 
 /** What the hook decides, separated from the IO so it can be tested. */

@@ -61,7 +61,7 @@ Bash allowlist — so no timing claim is made here. See §6, experiment B.
 | `bash-allowlist.py` | *not a hook* — a library called by the above (`main-thread-guard.sh:232`) | is this Bash command read-only enough for the main thread | allowlist | same |
 | `outbound-send-guard.sh` | PreToolUse · `Bash` — **declared in agent frontmatter**, `~/.claude/agents/email.md:11-16` and `assistant.md:14` | an outbound send → `permissionDecision: ask` | **already agent-scoped** | `email` / `assistant` draft-by-default |
 | `herdr-agent-state.sh` | SessionStart · `*` (twice — duplicated entry) | records session state for Herdr | none | infrastructure |
-| `work-goal-resend.sh` | SessionStart · `*` | re-seeds a craft goal after a context clear | craft state | `craft` / `until` |
+| `work-goal-resend.sh` | SessionStart · `*` | re-seeds a craft goal after a context clear | craft state | `craft` / `hound` |
 | `farm-monitor-arm.sh` | PreToolUse · `Bash` | arms the farm-out run monitor | command shape | `farm-out` |
 | `assistant-projects-context.ts` | SessionStart | injects personal-productivity context | none | `assistant` |
 | `vault-flush.sh` | PreCompact, SessionEnd (`settings.local.json`) | flushes the Obsidian vault | none | `obsidian` |

@@ -225,7 +225,7 @@ while fixing a typo in the rationale costs nothing.
 ## Phase 3 — HOLD + HEARTBEAT
 
 **Arm a hold, not a goal.** No file holds the success criteria — the plan does, and it is what's
-hashed. What the hold adds is mechanical: `hooks/until.ts` RUNS a check on every Stop, and while it
+hashed. What the hold adds is mechanical: `hooks/hound.ts` RUNS a check on every Stop, and while it
 exits non-zero **the session starts another turn instead of returning control to the user**. That is
 what runs craft's outer loop (gate FAIL → fix → re-run; tuicr findings → fix → re-review) without
 the user prompting each step. `workflow.js` can't do this — it returns a verdict once.
@@ -284,7 +284,7 @@ script cannot arm is the half a model has to notice.
 
 | half | what it does | who arms it |
 |---|---|---|
-| **HOLD** | `hooks/until.ts` re-runs the check on every Stop and blocks the stop until it exits 0 | `work-dispatch.sh`, by writing a state file — **no action needed from you** |
+| **HOLD** | `hooks/hound.ts` re-runs the check on every Stop and blocks the stop until it exits 0 | `work-dispatch.sh`, by writing a state file — **no action needed from you** |
 | **HEARTBEAT** | a cron tick that starts a turn in a session that has already gone quiet | **you, with the `CronCreate` tool**, in the dispatch turn |
 
 `CronCreate` is a model tool. There is no cron CLI, and a session-scoped cron lives in memory rather
@@ -302,14 +302,14 @@ Nothing is typed into this session and nothing is queued, so there is no send to
 to fall back to, and no ordering constraint against Phase 4.
 
 **The hold's check is `work-result.sh`, normalised to 0/1.** Before the run returns there is no
-`result.json` and `work-result.sh` exits 2, which `until-arm.sh` correctly refuses as could-not-run
+`result.json` and `work-result.sh` exits 2, which `hound-arm.sh` correctly refuses as could-not-run
 rather than a verdict; the dispatch wraps it so the absent verdict reads as RED instead. A writing
 run's hold closes on PASS alone; a `readOnly` run's closes on either verdict, because an audit's gate
 legitimately FAILs and a PASS-conditioned hold would drive at an outcome the run is forbidden to
 produce. The two escapes the objective states as prose — the round counter and the wall clock — are
 also `--rounds` and `--minutes` on the armed hold, enforced by the hook rather than re-adjudicated.
 
-`bash ${CLAUDE_PLUGIN_ROOT}/skills/until/scripts/until-arm.sh --status` settles whether the hold is
+`bash ${CLAUDE_PLUGIN_ROOT}/skills/hound/scripts/hound-arm.sh --status` settles whether the hold is
 live. **`CronList` — the tool, not a shell — settles whether the heartbeat is.** Check both.
 
 **Name the plan by PATH, never by a fixed sha256.** A pinned digest self-invalidates the first time
@@ -324,7 +324,7 @@ dispatch reuses it verbatim as the heartbeat's tick prompt — the one string pr
 fires into an otherwise empty session, which is why it carries the standing authority, the
 continuation rule and the `CronDelete` teardown as well as the check.
 
-The hold **self-clears**: `hooks/until.ts` removes the state file the moment the check exits 0, so
+The hold **self-clears**: `hooks/hound.ts` removes the state file the moment the check exits 0, so
 the normal ending needs no teardown. The heartbeat does not — a cron outlives the work and only
 `CronDelete` cancels it. That asymmetry is why the tick text ends with the teardown instruction.
 
@@ -798,11 +798,11 @@ descope with the user rather than guessing a third time.
 | Sizing not in the approved plan | pick lenses/checks at dispatch time | it shapes the gate — put it in the plan, re-hash, then dispatch |
 | Tasks feel like they could run in parallel | fan out implementers yourself, or give each a worktree | declare `dependsOn` and let IMPLEMENT wave them — concurrent within a wave, and arg-validation refuses a wave whose `writablePaths` overlap, so safety is checked rather than trusted. Worktrees stay out: `workflow.js` cannot merge them (no filesystem), and a merge agent's silent slip reads as an implementer's omission |
 | A task reads a file another task writes | rely on `tasks[]` array order | array order is not a contract the script enforces — declare `dependsOn: ['<id>']`. An unknown id and a cycle both throw before dispatch; an edge to a task outside `onlyTasks` is treated as satisfied, since a prior run put its output on disk |
-| `until-arm.sh` exits non-zero at dispatch | proceed as though the hold were armed | it is NOT armed — this session stops at its first stopping point. Read the reason it printed (already green, or no session id) and fix it before walking away |
+| `hound-arm.sh` exits non-zero at dispatch | proceed as though the hold were armed | it is NOT armed — this session stops at its first stopping point. Read the reason it printed (already green, or no session id) and fix it before walking away |
 | Dispatch printed the `CronCreate` block | scroll past it; the hold covers it | the hold cannot restart a session that has gone quiet. Call `CronCreate` this turn and report the job id; `CronList` is what proves it |
-| About to self-send a `/goal` or `/loop` into this session | any transport — herdr, agent-msg, a drainer | none of them land: a typed send needs the pane IDLE and a dispatching session never is. `until-arm.sh` writes a file and `CronCreate` is a tool call; both land inside the turn |
+| About to self-send a `/goal` or `/loop` into this session | any transport — herdr, agent-msg, a drainer | none of them land: a typed send needs the pane IDLE and a dispatching session never is. `hound-arm.sh` writes a file and `CronCreate` is a tool call; both land inside the turn |
 | Session opens on `Implement the following plan:` | implement it in the main thread | the context was cleared at approval — this is Phase 4, not the work. The plan's frontmatter `workflow:` names the skill to invoke first; then dispatch. `work-dispatch.sh` needs nothing you lost. Same answer when an Edit is denied for an armed run |
-| Hold's check is a claim, not a command | "the tests in the plan pass" | the hook RUNS the check — give it a command whose exit code is the verdict, and `until-arm.sh` refuses one that is already green or cannot run |
+| Hold's check is a claim, not a command | "the tests in the plan pass" | the hook RUNS the check — give it a command whose exit code is the verdict, and `hound-arm.sh` refuses one that is already green or cannot run |
 | Recon would flood the conversation | read every file into this context | scout with a subagent during CLARIFY/PLAN — graded work still goes through workflow.js |
 | One small task, workflow feels heavy | dispatch a lone subagent and accept its report | still workflow.js with one task — a self-report is not a verification |
 | Tasks look like they need to talk to each other | reach for agent teams | **On a run that writes, no teams** — for the mechanical reason given under *IMPLEMENT runs in waves* above, not as a style preference. Tasks needing to talk means the plan under-specifies the boundary; fix the task table, re-hash. **The ban does not apply to `readOnly`**, where nothing writes and a team is the default (CLARIFY axis 7); see *Where the agent team lives* |
