@@ -82,7 +82,7 @@ func matchAgenda(head string) bool {
 }
 
 func init() {
-	entry := layoutEntry{Name: "agenda", Match: matchAgenda, Parse: parseAgenda,
+	entry := layoutEntry{Name: "agenda", Match: matchAgenda, ParseRaw: parseAgendaRaw,
 		// The first block sits behind a cover page and the SEC's Item 1
 		// instructions; 16 MB is what the sibling text layouts use.
 		HeadBytes: 16 << 20}
@@ -104,6 +104,17 @@ func agRule(line string) bool {
 		return false
 	}
 	return strings.Trim(t, "- ") == "" && strings.Count(t, "-") >= 8
+}
+
+// parseAgendaRaw re-normalizes the document keeping each line's leading
+// indentation, which is the one signal this grammar cannot recover once the
+// lines are trimmed: a banner is printed at column 0 and a wrapped proposal
+// description is indented under its item, and after a blank line the two are
+// otherwise the same bare line. stripHTMLIndent's line structure is identical to
+// stripHTML's, and every reader below trims, so only the banner test reads the
+// difference.
+func parseAgendaRaw(raw []byte, text string, meta FilingMeta) ([]VoteRow, error) {
+	return parseAgenda(string(stripHTMLIndent(raw)), meta)
 }
 
 func parseAgenda(text string, meta FilingMeta) ([]VoteRow, error) {
@@ -243,8 +254,14 @@ func parseAgenda(text string, meta FilingMeta) ([]VoteRow, error) {
 		// contested or consent ballot the vendor prints the Type column and stops,
 		// so the row is too short for agVoteRow and only the first proposal of a
 		// slate carries an item number; a candidate whose LAST cell names the Type
-		// column belongs to the open block's table whatever its cell count.
-		inTable := blockSeen && (icrItem(cells[0]) || agProponent(cells[len(cells)-1]))
+		// column belongs to the open block's table whatever its cell count. And a
+		// description wide enough to wrap may wrap across a BLANK LINE (Manufacturers
+		// Investment Trust 756913: `TO APPROVE AN AMENDMENT TO THE S` / blank /
+		// `COMPANY ARTICLES OF ORGANIZATION`), which arms atPageTop on a line that
+		// broke no page. That continuation carries neither an item number nor a
+		// proponent word, so the column it starts at is what separates it from a
+		// banner: every banner here is printed at column 0.
+		inTable := blockSeen && (icrItem(cells[0]) || agProponent(cells[len(cells)-1]) || lineIndented(raw))
 		if !isVote && banner && !inTable && !agPageFooter(strings.TrimSpace(cells[0])) {
 			heading = strings.TrimSpace(cells[0])
 		}
