@@ -1,0 +1,406 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ MpbylSecbQkyjofrxzKxImCrmcQv4X4O54BfJSv1jN9IHp6K4pGyYpBLkwaOpjcz
+ De2U5kXIOeHISsCEd7S8bQ==
+
+<SEC-DOCUMENT>0000898745-06-000116.txt : 20060822
+<SEC-HEADER>0000898745-06-000116.hdr.sgml : 20060822
+<ACCEPTANCE-DATETIME>20060822092618
+ACCESSION NUMBER:		0000898745-06-000116
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20060630
+FILED AS OF DATE:		20060822
+DATE AS OF CHANGE:		20060822
+EFFECTIVENESS DATE:		20060822
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PRINCIPAL VARIABLE CONTRACTS FUND INC
+		CENTRAL INDEX KEY:			0000012601
+		IRS NUMBER:				420948301
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-01944
+		FILM NUMBER:		061047756
+
+	BUSINESS ADDRESS:	
+		STREET 1:		PRINCIPAL FINANCIAL GROUP
+		STREET 2:		711 HIGH STREET
+		CITY:			DES MOINES
+		STATE:			IA
+		ZIP:			50392-2080
+		BUSINESS PHONE:		515-247-5476
+
+	MAIL ADDRESS:	
+		STREET 1:		PRINCIPAL FINANCIAL GROUP
+		STREET 2:		711 HIGH STREET
+		CITY:			DES MOINES
+		STATE:			IA
+		ZIP:			50392-2080
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRINCIPAL CAPITAL ACCUMULATION FUND INC
+		DATE OF NAME CHANGE:	19920703
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRINCOR INVESTMENT FUND INC
+		DATE OF NAME CHANGE:	19880906
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRINCOR FUND INC
+		DATE OF NAME CHANGE:	19871013
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007655
+<SERIES-NAME>Asset Allocation Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020903
+<CLASS-CONTRACT-NAME>Asset Allocation Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007656
+<SERIES-NAME>International Emerging Markets Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020904
+<CLASS-CONTRACT-NAME>International Emerging Markets Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007657
+<SERIES-NAME>International SmallCap Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020905
+<CLASS-CONTRACT-NAME>International SmallCap Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007658
+<SERIES-NAME>LargeCap Blend Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020906
+<CLASS-CONTRACT-NAME>LargeCap Blend Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007659
+<SERIES-NAME>LargeCap Growth Equity Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020907
+<CLASS-CONTRACT-NAME>LargeCap Growth Equity Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007660
+<SERIES-NAME>LargeCap Stock Index Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020908
+<CLASS-CONTRACT-NAME>LargeCap Stock Index Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007661
+<SERIES-NAME>LargeCap Value Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020909
+<CLASS-CONTRACT-NAME>LargeCap Value Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007662
+<SERIES-NAME>MidCap Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020910
+<CLASS-CONTRACT-NAME>MidCap Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007663
+<SERIES-NAME>MidCap Growth Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020911
+<CLASS-CONTRACT-NAME>MidCap Growth Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007664
+<SERIES-NAME>MidCap Value Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020912
+<CLASS-CONTRACT-NAME>MidCap Value Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007665
+<SERIES-NAME>Money Market Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020913
+<CLASS-CONTRACT-NAME>Money Market Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007666
+<SERIES-NAME>Balanced Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020914
+<CLASS-CONTRACT-NAME>Balanced Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007667
+<SERIES-NAME>Principal LifeTime 2010 Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020915
+<CLASS-CONTRACT-NAME>Principal LifeTime 2010 Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007668
+<SERIES-NAME>Principal LifeTime 2020 Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020916
+<CLASS-CONTRACT-NAME>Principal LifeTime 2020 Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007669
+<SERIES-NAME>Principal LifeTime 2030 Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020917
+<CLASS-CONTRACT-NAME>Principal LifeTime 2030 Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007670
+<SERIES-NAME>Principal LifeTime 2040 Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020918
+<CLASS-CONTRACT-NAME>Principal LifeTime 2040 Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007671
+<SERIES-NAME>Principal LifeTime 2050 Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020919
+<CLASS-CONTRACT-NAME>Principal LifeTime 2050 Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007672
+<SERIES-NAME>Principal LifeTime Strategic Income Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020920
+<CLASS-CONTRACT-NAME>Principal LifeTime Strategic Income Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007673
+<SERIES-NAME>Real Estate Securities Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020921
+<CLASS-CONTRACT-NAME>Real Estate Securities Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007674
+<SERIES-NAME>Short-Term Bond Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020922
+<CLASS-CONTRACT-NAME>Short-Term Bond Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007675
+<SERIES-NAME>SmallCap Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020923
+<CLASS-CONTRACT-NAME>SmallCap Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007676
+<SERIES-NAME>SmallCap Growth Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020924
+<CLASS-CONTRACT-NAME>SmallCap Growth Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007677
+<SERIES-NAME>Bond Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020925
+<CLASS-CONTRACT-NAME>Bond Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007678
+<SERIES-NAME>SmallCap Value Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020926
+<CLASS-CONTRACT-NAME>SmallCap Value Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007679
+<SERIES-NAME>Equity Value Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020927
+<CLASS-CONTRACT-NAME>Equity Value Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007680
+<SERIES-NAME>Capital Value Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020928
+<CLASS-CONTRACT-NAME>Capital Value Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007681
+<SERIES-NAME>Diversified International Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020929
+<CLASS-CONTRACT-NAME>Diversified International Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007682
+<SERIES-NAME>Equity Growth Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020930
+<CLASS-CONTRACT-NAME>Equity Growth Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007683
+<SERIES-NAME>Equity Income Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020931
+<CLASS-CONTRACT-NAME>Equity Income Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007684
+<SERIES-NAME>Government & High Quality Bond Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020932
+<CLASS-CONTRACT-NAME>Government & High Quality Bond Account
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000012601
+<SERIES-ID>S000007685
+<SERIES-NAME>Growth Account
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020933
+<CLASS-CONTRACT-NAME>Growth Account
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>all-pvc2006.txt
+<DESCRIPTION>PVC N-PX 7/1/05THROUGH 6/30/06
+<TEXT>
+<TABLE>
+<CAPTION>
+                First Quarter 2006 - January 1, to March 31, 2006
+
+                               Vote Summary Report
+                           Jan 01, 2006 - Mar 31, 2006
+
+PRIN01-Principal MidCap Growth
+
+Mtg                 Company/                                              Mgmt         Vote       Record                    Shares
+Date/Type           Ballot Issues                           Security      Rec          Cast       Date        Prpnent        Voted
+- ------------------- --------------------------------------- ------------- ------------ ---------- ----------- ---------- ----------
+- -----------------------------------------------------------------------------------------------------------------------------------
+
+<S>                 <C>
+03/01/06 - A        Agilent Technologies Inc. *A*           00846U101                             01/03/06                  17,300
+                    1       Elect Directors                               For          For                    Mgmt
+                    2       Ratify Auditors                               For          For                    Mgmt
+                    3       Approve Executive Incentive Bonus Plan        For          For                    Mgmt
+                               Key employees will receive cash or stock.
+
+
+02/01/06 - A        Florida Rock Industries, Inc. *FRK*     341140101                             12/13/05                   6,000
+</TABLE>
+<TABLE>
+<CAPTION>
+                First Quarter 2006 - January 1, to March 31, 2006
+
+                               Vote Summary Report
+                           Jan 01, 2006 - Mar 31, 2006
+
+PRINSV - Principal Variable Contracts - Small Cap Value
+
+Mtg                 Company/                                             Mgmt         Vote     Record                      Shares
+Date/Type           Ballot Issues                           Security     Rec          Cast     Date         Prpnent         Voted
+- ------------------- --------------------------------------- ------------ ------------ -------- ------------ ----------- ----------
+- ----------------------------------------------------------------------------------------------------------------------------------
+
+<S>                 <C>
+01/13/06 - A        Actuant Corp *ATU*                      00508X203                          11/18/05                     1,000
+                    1      Elect Directors                               For          For                   Mgmt
+                    2      Amend Non-Employee Director Omnibus Stock     For          For                   Mgmt
+                           Plan
+                               Plan's cost of 5.17% is within allowable cap of 9.90%.
+                    3      Amend Omnibus Stock Plan                      For          For                   Mgmt
+                               Plan's cost of 8.73% is within allowable cap of 9.90%.
+
+
+02/08/06 - A        Atmos Energy Corp. *ATO*                049560105                          12/15/05                     2,900
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

@@ -1,0 +1,148 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ ON+vdwkrC3A1KPP2CQoLTgh6Q3wIioLoPuMKdZMZa3Qrw2oKEKWGSXB2GKzU+r7/
+ wu3M9w/irbTbXfript+bRw==
+
+<SEC-DOCUMENT>0000012601-05-000038.txt : 20051209
+<SEC-HEADER>0000012601-05-000038.hdr.sgml : 20051209
+<ACCEPTANCE-DATETIME>20051209101418
+ACCESSION NUMBER:		0000012601-05-000038
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20051209
+DATE AS OF CHANGE:		20051209
+EFFECTIVENESS DATE:		20051209
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PRINCIPAL VARIABLE CONTRACTS FUND INC
+		CENTRAL INDEX KEY:			0000012601
+		IRS NUMBER:				420948301
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX/A
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-01944
+		FILM NUMBER:		051254313
+
+	BUSINESS ADDRESS:	
+		STREET 1:		PRINCIPAL FINANCIAL GROUP
+		STREET 2:		711 HIGH STREET
+		CITY:			DES MOINES
+		STATE:			IA
+		ZIP:			50392-2080
+		BUSINESS PHONE:		515-247-5476
+
+	MAIL ADDRESS:	
+		STREET 1:		PRINCIPAL FINANCIAL GROUP
+		STREET 2:		711 HIGH STREET
+		CITY:			DES MOINES
+		STATE:			IA
+		ZIP:			50392-2080
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRINCIPAL CAPITAL ACCUMULATION FUND INC
+		DATE OF NAME CHANGE:	19920703
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRINCOR INVESTMENT FUND INC
+		DATE OF NAME CHANGE:	19880906
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRINCOR FUND INC
+		DATE OF NAME CHANGE:	19871013
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>all-revised.txt
+<DESCRIPTION>PVC N-PX 7/1/04 THROUGH 6/30/05 (REVISED)
+<TEXT>
+<TABLE>
+<CAPTION>
+- --------------------------------------------------------------------------------------------------------------------------------
+Mgmt Rec - Company Management Recommended Vote
+
+
+                                                          Vote Summary Report
+                                                      Jul 01, 2004 - Jun 30, 2005
+
+PVC - Balanced Account - Sub-Advised by PGI
+
+Mtg                 Company/                                              Mgmt         Vote     Record                    Shares
+Date/Type           Ballot Issues                           Security      Rec          Cast     Date        Prpnent        Voted
+- ------------------- --------------------------------------- ------------- ------------ -------- ----------- ---------- ----------
+- ---------------------------------------------------------------------------------------------------------------------------------
+
+<S>                                                                                             <C>
+05/10/05 - A        3M CO *MMM*                             88579Y101                           03/11/05                   1,396
+                    1       Elect Directors                               For          For                  Mgmt
+                    1.1     Elect Director Vance D. Coffman --- For
+                               We recommend a vote FOR the directors.
+                    1.2     Elect Director Rozanne L. Ridgway --- For
+                    1.3     Elect Director Louis W. Sullivan --- For
+                    2       Ratify Auditors                               For          For                  Mgmt
+                    3       Approve Omnibus Stock Plan                    For          For                  Mgmt
+</TABLE>
+<PAGE>
+<TABLE>
+<CAPTION>
+- --------------------------------------------------------------------------------------------------------------------------------
+Mgmt Rec - Company Management Recommended Vote
+
+
+                                                          Vote Summary Report
+                                                      Jul 01, 2004 - Jun 30, 2005
+
+Principal VCF - Cap Value - Sub-Advised by Principal Global Investors
+
+Mtg                 Company/                                              Mgmt         Vote     Record                    Shares
+Date/Type           Ballot Issues                           Security      Rec          Cast     Date        Prpnent        Voted
+- ------------------- --------------------------------------- ------------- ------------ -------- ----------- ---------- ----------
+- ---------------------------------------------------------------------------------------------------------------------------------
+
+<S>                                                                                             <C>
+04/29/05 - A        Aetna Inc. *AET*                        00817Y108                           02/25/05                  12,450
+                    1       Elect Directors                               For          For                  Mgmt
+                    2       Ratify Auditors                               For          For                  Mgmt
+                    3       Amend Stock Option Plan                       For          For                  Mgmt
+                               The  performance  measures  included  under  the  plan  are
+</TABLE>
+<PAGE>
+<TABLE>
+<CAPTION>
+- --------------------------------------------------------------------------------------------------------------------------------
+Mgmt Rec - Company Management Recommended Vote* - Exception Vote
+
+
+                               Vote Summary Report
+                           Jul 01, 2004 - Jun 30, 2005
+
+Principle Variable Contracts Fund-Large Cap Blend Series
+
+Mtg                 Company/                                              Mgmt          Vote      Record                    Shares
+Date/Type           Ballot Issues                            Security     Rec           Cast      Date        Prpnent        Voted
+- ------------------- ---------------------------------------- ------------ ------------- --------- ----------- ---------- ----------
+- -----------------------------------------------------------------------------------------------------------------------------------
+
+<S>                                                                                               <C>
+05/10/05 - A        3M CO *MMM*                              88579Y101                            03/11/05                   1,300
+                    1       Elect Directors                               For           For                   Mgmt
+                    2       Ratify Auditors                               For           For                   Mgmt
+                    3       Approve Omnibus Stock Plan                    For           For                   Mgmt
+                    4       Eliminate Animal Testing                      Against       Against               ShrHoldr
+                    5       Implement China Principles                    Against       Against               ShrHoldr
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
