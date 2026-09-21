@@ -358,9 +358,16 @@ function newNode(text,status){ return {id:uid(),text:text||"",status:status||"yo
 const DOC="plan/bench";
 const CHAT="plan/chat";
 // The runtime exposes a snapshot's payload as a method; older shapes used a property.
-const snapData = s => (s && typeof s.data === "function") ? s.data() : (s ? s.data : null);
+// It hands back deep-frozen data, so clone it — everything downstream mutates in place.
+const snapData = s => {
+  const d = (s && typeof s.data === "function") ? s.data() : (s ? s.data : null);
+  if (d == null || typeof d !== "object") return d;
+  try { return structuredClone(d); }
+  catch (_) { try { return JSON.parse(JSON.stringify(d)); } catch (__) { return d; } }
+};
 let saveT=null, dirty=false, loaded=false;
-function snapshot(){return {intent:S.intent,srcmeta:S.srcmeta,outline:S.outline,
+let carried={};   // top-level fields this page does not manage; a set() would erase them
+function snapshot(){return {...carried,intent:S.intent,srcmeta:S.srcmeta,outline:S.outline,
   sources:S.sources,rev:Date.now()};}
 function save(){
   // Never write before the first read settles — an early autosave would
@@ -402,6 +409,8 @@ function adoptChat(d){
 }
 function adopt(d){
   if(!d||typeof d!=="object") return;
+  carried={};
+  Object.keys(d||{}).forEach(k=>{ if(!["intent","srcmeta","outline","sources","claims","counters","sections","rev"].includes(k)) carried[k]=d[k]; });
   if(d.intent) Object.assign(S.intent,d.intent);
   if(d.srcmeta) Object.assign(S.srcmeta,d.srcmeta);
   if(Array.isArray(d.sources)) S.sources=d.sources;
