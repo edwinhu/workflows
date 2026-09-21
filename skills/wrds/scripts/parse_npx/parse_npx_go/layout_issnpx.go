@@ -1590,15 +1590,20 @@ func issDeclAliases(decls []SeriesDecl, cik, period string) []SeriesDecl {
 		if k == "" || names[k] {
 			continue
 		}
-		// A rename that postdates the period of report cannot name this
-		// filing's sleeve, and folding it in when the header ALREADY prints
-		// that name for a different id manufactures a collision
-		// `lookupSeriesEntry` then refuses outright -- losing the section that
-		// the filing's own declaration resolves.
-		if len(period) == 8 && len(x.DeclDate) == 8 && x.DeclDate > period {
-			if id, ok := headerFor[k]; ok && id != "" && id != x.SeriesID {
-				continue
-			}
+		// The filing's OWN header declaration for a name always wins over a
+		// same-CIK dictionary alias, at any vintage. A dictionary name the
+		// header already prints for a DIFFERENT id cannot name this filing's
+		// sleeve -- folding it in manufactures a collision `lookupSeriesEntry`
+		// then refuses outright, losing the section that the filing's own
+		// declaration resolves. This holds in both directions: a rename that
+		// postdates the period of report (Wells Fargo Variable Trust), and a
+		// stale name the registrant has since moved down the chain -- Advanced
+		// Series Trust's 20060630 `AST BALANCED ASSET ALLOCATION PORTFOLIO`
+		// sits on S000006792 while the 2022 and 2023 headers declare that exact
+		// name for S000006793 (34,286 rows lost, 16,660 more wrongly stamped
+		// through the descriptor rungs the refusal falls through to).
+		if id, ok := headerFor[k]; ok && id != "" && id != x.SeriesID {
+			continue
 		}
 		names[k] = true
 		alias = append(alias, x)
@@ -3777,6 +3782,18 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 			return banner, d
 		}
 	}
+	// The heading abbreviates the registrant's OWN declared portfolio to its
+	// initials and then names a sleeve of it: `AST QMP PGIMQS International
+	// Core Equity` for the declared `AST Quantitative Modeling Portfolio`
+	// (S000031888, Advanced Series Trust 20220630), whose 2023 filing spells
+	// the same sleeve out and resolves through the sleeve-stem rung. This runs
+	// ahead of the vocabulary rungs below because the sleeve descriptor alone
+	// reaches an UNRELATED declared name that ends in the same words -- `AST
+	// QMA International Core Equity Portfolio` -- which stamps the wrong id
+	// rather than losing the section.
+	if d := issOwnInitialsSleeveDecl(ix, key); d != nil {
+		return banner, d
+	}
 	// The registrant's own vocabulary, when the heading prints a name that has
 	// since been changed and no single edit reaches it.
 	if d := issDistinctiveTokenDecl(ix, key); d != nil {
@@ -5392,6 +5409,64 @@ func issAbbrevStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 			}
 			hit = d
 		}
+	}
+	if issFutureVintage(ix, hit) {
+		return nil
+	}
+	return hit
+}
+
+// issOwnInitialsMinAcronym is the shortest initialism issOwnInitialsSleeveDecl
+// will read as a declared portfolio's own short code. Three letters at least,
+// so a two-word declared name cannot manufacture one out of a class letter.
+const issOwnInitialsMinAcronym = 3
+
+// issOwnInitialsSleeveDecl resolves a heading that abbreviates ONE declared
+// name of this registrant to its own initials and then names a sleeve of it:
+// `AST QMP PGIMQS International Core Equity`, `AST QMP PGIMQS S&P5 Index
+// Sleeve` and `AST QMP PGIMQS Large Cap Core LTE` for the declared `AST
+// Quantitative Modeling Portfolio` (S000031888, Advanced Series Trust
+// 20220630), where QMP is the portfolio's own initials and PGIMQS the
+// subadviser's short code. The same registrant's 20230630 filing spells the
+// identical sleeves out (`AST Quantitative Modeling Portfolio International
+// Core Equity`) and resolves through issSleeveStemDecl.
+//
+// The evidence is the registrant's own header: the heading and the declared
+// name must agree on a leading run of whole tokens (the family brand, `AST`),
+// the very next heading token must be the initials of ALL the declared name's
+// remaining tokens, and a sleeve qualifier must follow it. Exactly one declared
+// series may answer -- two refuse -- so nothing here can choose between two
+// funds whose short codes coincide.
+func issOwnInitialsSleeveDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 3 {
+		return nil
+	}
+	var hit *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		dt := ix.declToks(i)
+		p := 0
+		for p < len(dt) && p < len(toks) && dt[p] == toks[p] {
+			p++
+		}
+		// A shared leading token at least (the registrant's own brand, which
+		// is what ties the abbreviation to this family), the abbreviated token
+		// itself, and a sleeve qualifier behind it.
+		if p < 1 || p > len(toks)-2 || len(dt)-p < 2 {
+			continue
+		}
+		acr := issInitials(dt[p:])
+		if len(acr) < issOwnInitialsMinAcronym || acr != toks[p] {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
 	}
 	if issFutureVintage(ix, hit) {
 		return nil
