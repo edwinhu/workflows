@@ -196,6 +196,40 @@ func (d *cikSeries) crossCIK(cik, heading, period, registrantKey string) *Series
 	return e.decl
 }
 
+// typeWordRenamed reports whether ONE series id of this registrant is declared,
+// across the corpus dictionary's vintages, under both of these trailing type
+// words. That is the registrant's own proof that the two words spell one tier
+// rather than two: Wilshire Mutual Funds declares S000001049 `DOW JONES
+// WILSHIRE 5000 INDEX PORTFOLIO` in 2006 and `WILSHIRE 5000 INDEX FUND` from
+// 2009 on, so a `... Fund` heading there is a rename of a declared
+// `... Portfolio`, not a sibling tier. One id carrying both is required: a
+// registrant that merely declares some Funds and some Portfolios says nothing,
+// which is exactly the two-tier trust the tier guard exists for.
+func (d *cikSeries) typeWordRenamed(cik, a, b string) bool {
+	if d == nil || cik == "" || a == "" || b == "" || a == b {
+		return false
+	}
+	seen := map[string]string{}
+	for _, x := range d.byCIK[cik] {
+		if x.SeriesID == "" || x.Name == "" {
+			continue
+		}
+		f := strings.Fields(normalizeSeriesName(x.Name))
+		if len(f) < 2 {
+			continue
+		}
+		tw := f[len(f)-1]
+		if tw != a && tw != b {
+			continue
+		}
+		if prev, ok := seen[x.SeriesID]; ok && prev != tw {
+			return true
+		}
+		seen[x.SeriesID] = tw
+	}
+	return false
+}
+
 // ownBrandInfix reports whether a dictionary row of the FILER's own CIK, at any
 // vintage, differs from the heading by exactly one inserted token that is a
 // token of the registrant's own name. The comparison is issNearMissDecl's own
