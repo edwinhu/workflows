@@ -1483,6 +1483,8 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 
   // name -> why it is not wired. Measured 2026-08-21 against the tree at that commit.
   const UNREGISTERED_BY_DECISION = {
+    'until.ts':
+      'compatibility shim for the until -> hound rename (721039ad): Claude Code resolves a hook command at SESSION START, so a session opened before the rename still invokes this path and loses its Stop hook without it. Deliberately not in hooks.json -- it re-exports hound.ts rather than registering a second Stop gate. Delete it once no pre-rename session survives; one was still running 2026-09-22.',
     'plugin-validate.ts':
       'fires on all 89 SKILL.md + agents + manifests and emits the same symlink warning every time (91 firing files); registering it spams every skill edit',
   }

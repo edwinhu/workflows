@@ -194,8 +194,11 @@ function judgeGoal(
     `sentence of evidence. Judge UNMET if the goal names work that is still outstanding, blocked, ` +
     `or only partly done.`
 
-  const model = process.env.HOUND_JUDGE_MODEL || 'claude-haiku-4-5-20251001'
-  const bin = process.env.HOUND_JUDGE_BIN || 'claude-code'
+  // codex-code's haiku tier is the cheapest capable judge on this machine; both it and claude-code
+  // were tried on the same prompt and both answer in the required shape. Overridable, because the
+  // right answer here changes with pricing and with which proxy is logged in.
+  const model = process.env.HOUND_JUDGE_MODEL || 'gpt-5.6-luna'
+  const bin = process.env.HOUND_JUDGE_BIN || 'codex-code'
   // RUN IT NEUTRAL. These wrappers are agent CLIs, not model endpoints: started inside a project
   // they load that project's CLAUDE.md, hooks and skills, and answer as that agent. Measured
   // 2026-09-22 — the same prompt returned "UNMET" from /tmp and "Craft run abandoned. The
