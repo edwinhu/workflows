@@ -6748,7 +6748,34 @@ func issCoverRenameAliases(ix *issSeriesIndex, lines []string) {
 // 15,567 rows with no series across 0000950124-04-004080 and
 // 0000950153-05-002209. The third heading, GROWTH, needs no entry: its pre-2006
 // name survived verbatim into the 2006 declaration (S000008664).
+//
+// iShares Trust (CIK 0001100663) prints its GSTI sleeves under the INDEX
+// VENDOR's later name while its own header still spells them under the vendor's
+// earlier one. GSTI is the Goldman Sachs Technology Index family; S&P took the
+// family over, and the registrant's own dictionary rows carry the handover
+// across exactly this filing's vintage -- S000004352 is declared `iShares
+// Goldman Sachs Technology Index Fund` at 20060630 and `iShares S&P North
+// American Technology Sector Index Fund` at 20080630, S000004353 Networking,
+// S000004354 Semiconductor and S000004355 Software the same way -- while the
+// 20070630 filing in between heads those four sections `ISHARES S&P GSTI[TM]
+// <X> INDEX FUND`, a spelling no dictionary row at any CIK carries. The sole
+// class of each names the fund's ticker (IGM, IGN, IGW, IGV), and the
+// unrelated `iShares Dow Jones U.S. Technology Sector Index Fund` (S000004329,
+// ticker IYW, never an S&P or Goldman Sachs index) prints its own separate
+// section in the same filing and must keep it. Both printed spellings of the
+// mark are keyed: `[TM]` folds to a `tm` token, while `(TM)`, the glyph and a
+// bare `GSTI` all fold to the unmarked key.
 var issRegistrantRenames = map[string]map[string]string{
+	"0001100663": {
+		"ishares s and p gsti tm technology index fund":    "iShares Goldman Sachs Technology Index Fund",
+		"ishares s and p gsti technology index fund":       "iShares Goldman Sachs Technology Index Fund",
+		"ishares s and p gsti tm networking index fund":    "iShares Goldman Sachs Networking Index Fund",
+		"ishares s and p gsti networking index fund":       "iShares Goldman Sachs Networking Index Fund",
+		"ishares s and p gsti tm semiconductor index fund": "iShares Goldman Sachs Semiconductor Index Fund",
+		"ishares s and p gsti semiconductor index fund":    "iShares Goldman Sachs Semiconductor Index Fund",
+		"ishares s and p gsti tm software index fund":      "iShares Goldman Sachs Software Index Fund",
+		"ishares s and p gsti software index fund":         "iShares Goldman Sachs Software Index Fund",
+	},
 	"0000928754": {
 		"evergreen va foundation fund":        "Evergreen VA Balanced Fund",
 		"evergreen va growth and income fund": "Evergreen VA Fundamental Large Cap Fund",

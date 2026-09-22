@@ -103,6 +103,14 @@ func (o *seriesOverlay) applyWithHeader(relPath string, declared map[string]bool
 		}
 		return
 	}
+	// MISLINK-GSTI1100663-BLOCK: the map's own sibling rows for THIS filing
+	// outrank a row that jumps out of the block they agree on.
+	if alt := o.siblingBlockID(relPath, r.FundName, hdr); alt != "" && !overlayNamesID(id, alt) {
+		if declared[alt] {
+			r.SeriesID = alt
+		}
+		return
+	}
 	// A class pair the map names as "S1;S2" is stamped whole, the form the issnpx
 	// class-pair rule emits; every id in it must be one the filing declares.
 	for _, one := range strings.Split(id, MultiValueSep) {
@@ -111,6 +119,124 @@ func (o *seriesOverlay) applyWithHeader(relPath string, declared map[string]bool
 		}
 	}
 	r.SeriesID = id
+}
+
+// siblingBlockID is the second cross-check on a map row, and the one that needs
+// no header answer for the heading itself. The header cross-check above fires
+// only when the filing's own header resolves the SAME heading to a different
+// series; a vendor rename the header does not spell resolves to NOTHING, so a
+// map row on such a heading has nothing to disagree with and is stamped
+// unexamined, however far it lands from its own siblings.
+//
+// iShares Trust (CIK 0001100663, filing 0001193125-07-193032) prints four
+// `ISHARES S&P GSTI[TM] <X> INDEX FUND` banners -- S&P's later name for the
+// Goldman Sachs index family -- which the header spells under the old brand and
+// resolves to nothing. The map reads three of them onto the registrant's own
+// contiguous Goldman Sachs block (NETWORKING -> S000004353, SEMICONDUCTOR ->
+// S000004354, SOFTWARE -> S000004355) and the fourth, TECHNOLOGY, onto
+// S000004329, `iShares Dow Jones U.S. Technology Sector Index Fund` (ticker
+// IYW), a different family that prints its OWN banner and its own 1,563 rows in
+// this same filing -- one series id handed two printed sections, and 1,684 rows
+// of the Goldman Sachs fund filed under a fund that cast none of them.
+//
+// The evidence is the map's own siblings, read only within this one filing. A
+// sibling heading that differs from this heading in EXACTLY ONE token states how
+// this registrant spells the difference: the sibling's declared name carries the
+// sibling's token, and substituting this heading's token for it yields a name
+// the filing's header declares -- `iShares Goldman Sachs Technology Index Fund`,
+// S000004352, sole class C000012082, ticker IGM. Two or more siblings must agree
+// unanimously on the substituted answer, so a single coincidental one-token
+// neighbour decides nothing, and an answer that merely restates the map's own id
+// changes nothing. Registrant-scoped by construction: every input is this
+// filing's map rows and this filing's header declarations.
+func (o *seriesOverlay) siblingBlockID(relPath, heading string, hdr *overlayHeaderIndex) string {
+	if o == nil || hdr == nil {
+		return ""
+	}
+	m := o.byFiling[relPath]
+	self := sanitize(heading)
+	toks := strings.Fields(normalizeSeriesName(heading))
+	if len(m) < 3 || len(toks) < 3 {
+		return ""
+	}
+	votes := map[string]int{}
+	for sibHeading, sibID := range m {
+		if sibHeading == self || strings.Contains(sibID, MultiValueSep) {
+			continue
+		}
+		sibToks := strings.Fields(normalizeSeriesName(sibHeading))
+		p, ok := overlayLoneTokenDiff(toks, sibToks)
+		if !ok {
+			continue
+		}
+		// The sibling's own declared name, which must carry the sibling's
+		// distinguishing token exactly once for the substitution to be defined.
+		name := overlayDeclaredName(hdr, sibID, sibToks[p])
+		if name == nil {
+			continue
+		}
+		name[indexOfToken(name, sibToks[p])] = toks[p]
+		if d, _ := lookupSeriesEntry(hdr.byName, strings.Join(name, " ")); d != nil && d.SeriesID != "" {
+			votes[d.SeriesID]++
+		}
+	}
+	if len(votes) != 1 {
+		return ""
+	}
+	for id, n := range votes {
+		if n >= 2 {
+			return id
+		}
+	}
+	return ""
+}
+
+// overlayLoneTokenDiff returns the single position at which two equal-length
+// token runs differ. Any other shape -- different lengths, identical runs, two
+// or more differences -- is not a sibling pair and reports false.
+func overlayLoneTokenDiff(a, b []string) (int, bool) {
+	if len(a) != len(b) {
+		return 0, false
+	}
+	at := -1
+	for i := range a {
+		if a[i] == b[i] {
+			continue
+		}
+		if at >= 0 {
+			return 0, false
+		}
+		at = i
+	}
+	return at, at >= 0
+}
+
+// overlayDeclaredName returns the tokens of the ONE name this filing's header
+// declares for id and that carries tok exactly once, or nil when the header
+// declares no such name, more than one, or one that spells tok twice -- each of
+// which leaves the substitution undefined.
+func overlayDeclaredName(hdr *overlayHeaderIndex, id, tok string) []string {
+	var out []string
+	for name, d := range hdr.byName {
+		if d == nil || d.SeriesID != id {
+			continue
+		}
+		fields := strings.Fields(name)
+		n := 0
+		for _, f := range fields {
+			if f == tok {
+				n++
+			}
+		}
+		if n != 1 {
+			continue
+		}
+		if out != nil {
+			return nil
+		}
+		out = fields
+	}
+	return out
 }
 
 // overlayNamesID reports whether a mapped id -- a single series or a "S1;S2"
