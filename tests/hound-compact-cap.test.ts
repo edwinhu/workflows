@@ -120,6 +120,44 @@ sys.exit(1)
   return p;
 }
 
+/**
+ * A fake `agent-msg`, imitating the same `/autocompact` behaviour as fakeHerdr.
+ *
+ * `send --as-user <cse> "/autocompact X"` applies the merged value and logs it prefixed with the
+ * transport and the target it was given, so a test can tell WHICH transport carried the send.
+ * `fail` makes every send exit 1 instead, which is the herdr-fallback case.
+ */
+function fakeAgentMsg(dir: string, applied: string, user: string, local: string, fail = false): string {
+  const p = join(dir, "agent-msg");
+  writeFileSync(p, `#!/usr/bin/env python3
+import json, sys
+a = sys.argv[1:]
+if a[:1] == ["--help"]:
+    sys.exit(0)
+if a[:2] == ["send", "--as-user"]:
+    if ${fail ? "True" : "False"}:
+        sys.exit(1)
+    target, arg = a[2], a[3].split()[-1]
+    def load(p):
+        try:
+            return json.load(open(p))
+        except Exception:
+            return {}
+    g = load(${JSON.stringify(user)})
+    if arg == "auto":
+        g.pop("autoCompactWindow", None)
+    else:
+        g["autoCompactWindow"] = int(arg)
+    open(${JSON.stringify(user)}, "w").write(json.dumps(g, indent=2) + "\\n")
+    merged = load(${JSON.stringify(local)}).get("autoCompactWindow", arg)
+    open(${JSON.stringify(applied)}, "a").write("agent-msg %s %s\\n" % (target, merged))
+    sys.exit(0)
+sys.exit(1)
+`);
+  chmodSync(p, 0o755);
+  return p;
+}
+
 function env(dir: string, session: string, herdr: string, user: string, project: string) {
   return {
     ...process.env,
@@ -129,6 +167,11 @@ function env(dir: string, session: string, herdr: string, user: string, project:
     HOUND_HERDR: herdr,
     HOUND_USER_SETTINGS: user,
     HOUND_SETTLE_MS: "0",
+    // The suite inherits the REAL session's env, where a live bridge id plus a real agent-msg on
+    // PATH would send `/autocompact` into the session running the tests. Both are pinned absent
+    // here; the transport tests below opt back in explicitly.
+    CLAUDE_CODE_BRIDGE_SESSION_ID: "",
+    HOUND_AGENT_MSG: "/nonexistent-agent-msg",
     // Never a real billed judge call, and never the real agenix key -- see runHook in
     // tests/judge-integration.test.ts.
     XDG_RUNTIME_DIR: "/nonexistent-so-no-agenix-key",
@@ -216,4 +259,96 @@ test("the expired release restores the window too", () => {
   expect(readFileSync(applied, "utf8").trim().split("\n")).toEqual(["250000", "300000"]);
   expect(existsSync(local)).toBe(false);
   expect(readFileSync(user, "utf8")).toBe(seed);
+});
+
+// ------------------------------------------------------------------------- transport selection
+
+/** Arm with both fakes installed, then run the real Stop hook on a check that has gone green. */
+function armAndRelease(session: string, bridge: string, agentMsgFails: boolean) {
+  const dir = tmp("houndcap-tx-");
+  const project = join(dir, "project");
+  mkdirSync(project, { recursive: true });
+  const applied = join(dir, "applied.log");
+  const user = join(dir, "settings.json");
+  const seed = JSON.stringify({ theme: "dark" }, null, 2) + "\n";
+  writeFileSync(user, seed);
+  const local = join(project, ".claude", "settings.local.json");
+  const herdr = fakeHerdr(dir, session, applied, user, local);
+  const agentMsg = fakeAgentMsg(dir, applied, user, local, agentMsgFails);
+  const flag = join(dir, "flag");
+  const e = {
+    ...env(dir, session, herdr, user, project),
+    CLAUDE_CODE_BRIDGE_SESSION_ID: bridge,
+    HOUND_AGENT_MSG: agentMsg,
+  };
+
+  const arm = Bun.spawnSync(
+    ["bash", join(REPO, "skills/hound/scripts/hound-arm.sh"), `test -f ${flag}`, "--rounds", "8"],
+    { env: e, stdout: "pipe", stderr: "pipe" },
+  );
+  const armOut = arm.stdout.toString() + arm.stderr.toString();
+  const armLog = readFileSync(applied, "utf8").trim().split("\n");
+  // Read before the release: a passed hold deletes its own state file.
+  const state = JSON.parse(readFileSync(join(dir, `hound-${session}.json`), "utf8"));
+
+  writeFileSync(flag, "");
+  const stop = Bun.spawnSync(["bun", join(REPO, "hooks/hound.ts")], {
+    stdin: Buffer.from(JSON.stringify({ session_id: session })),
+    env: e,
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  return {
+    armOut,
+    armLog,
+    log: readFileSync(applied, "utf8").trim().split("\n"),
+    state,
+    user: readFileSync(user, "utf8"),
+    seed,
+    local,
+    stop,
+  };
+}
+
+test("a bridge id sends over agent-msg, and herdr is never called", () => {
+  const r = armAndRelease("cap-tx-1", "session_abc123", false);
+  expect(r.armOut).toContain("capped at 250000");
+  expect(r.armOut).toContain("over agent-msg");
+  expect(r.armLog).toEqual(["agent-msg cse_abc123 250000"]);
+  // The cse is resolved at ARM time and carried in the one state object, so the release does not
+  // depend on the Stop hook's own env.
+  expect(r.state.compact.cse).toBe("cse_abc123");
+  expect(r.log).toEqual(["agent-msg cse_abc123 250000", "agent-msg cse_abc123 auto"]);
+  expect(existsSync(r.local)).toBe(false);
+  expect(r.user).toBe(r.seed);
+});
+
+test("an agent-msg that refuses falls back to the herdr pane", () => {
+  const r = armAndRelease("cap-tx-2", "session_def456", true);
+  expect(r.armOut).toContain("over herdr");
+  expect(r.log).toEqual(["250000", "auto"]);
+  expect(r.state.compact.cse).toBe("cse_def456");
+  expect(existsSync(r.local)).toBe(false);
+  expect(r.user).toBe(r.seed);
+});
+
+test("no transport at all skips the cap and writes no local file", () => {
+  const dir = tmp("houndcap-tx-");
+  const project = join(dir, "project");
+  mkdirSync(project, { recursive: true });
+  const session = "cap-tx-3";
+  const user = join(dir, "settings.json");
+  writeFileSync(user, "{}\n");
+  const arm = Bun.spawnSync(
+    ["bash", join(REPO, "skills/hound/scripts/hound-arm.sh"), "exit 1", "--rounds", "8"],
+    {
+      env: { ...env(dir, session, "/nonexistent-herdr", user, project) },
+      stdout: "pipe",
+      stderr: "pipe",
+    },
+  );
+  const out = arm.stdout.toString() + arm.stderr.toString();
+  expect(out).toContain("Not capped");
+  expect(out).toContain("no agent-msg id and no Herdr pane");
+  expect(existsSync(join(project, ".claude", "settings.local.json"))).toBe(false);
 });
