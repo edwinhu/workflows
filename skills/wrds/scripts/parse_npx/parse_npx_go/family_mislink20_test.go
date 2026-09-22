@@ -132,3 +132,163 @@ func TestFamilyMislink20VictoryVIPSleeveTakesFilerRetailSeries(t *testing.T) {
 		}
 	}
 }
+
+// familyMislink20OverlayDispatch runs the real dispatch on a family MISLINK20
+// fixture under the real `-series-map` overlay, and asserts the fixture's own
+// preconditions -- status, layout and row count -- so a failure below is an
+// assertion about the series id and never a broken fixture. relPath is passed
+// separately from the fixture's path on disk because the overlay is keyed by the
+// filing's corpus-relative path: handing processFile the real key lets the
+// overlay fixture stay a verbatim cut of series_map_applied.tsv rather than a
+// rewritten one. dict "" means no dictionary at all.
+func familyMislink20OverlayDispatch(t *testing.T, relPath, fixture, overlay, dict, layout string, count int) []VoteRow {
+	t.Helper()
+	oldDict, oldMap := cikDict, seriesMap
+	t.Cleanup(func() { cikDict, seriesMap = oldDict, oldMap })
+	if dict == "" {
+		cikDict = nil
+	} else {
+		var err error
+		cikDict, err = loadCIKSeries(filepath.Join("testdata", "family_mislink20", dict))
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	ov, err := loadSeriesOverlay(filepath.Join("testdata", "family_mislink20", overlay))
+	if err != nil {
+		t.Fatal(err)
+	}
+	seriesMap = ov
+	ch := make(chan *ParseResult, 1024)
+	sink := &rowSink{out: ch}
+	meta := processFile(relPath, filepath.Join("testdata", "family_mislink20", fixture), sink, make([]byte, headBytes))
+	close(ch)
+	var rows []VoteRow
+	for pr := range ch {
+		rows = append(rows, pr.Rows...)
+	}
+	rows = append(rows, sink.buf...)
+	if meta.ParseStatus != "ok" || meta.Layout != layout || len(rows) != count {
+		t.Fatalf("fixture/dispatch precondition: status=%s layout=%s rows=%d want=%d error=%s", meta.ParseStatus, meta.Layout, len(rows), count, meta.ErrorMsg)
+	}
+	return rows
+}
+
+// familyMislink20BannerHolds asserts that no row of the section carries the
+// wrong series, and that every row carries the series the banner's own words
+// name. Both halves are asserted, because refusing the wrong id and never
+// reaching the right one leaves the section blank, which is better but is not
+// the answer the filing's own header supports.
+func familyMislink20BannerHolds(t *testing.T, rows []VoteRow, wrongSeries, wantFund, wantSeries, wantDeclared string) {
+	t.Helper()
+	for i, r := range rows {
+		if r.SeriesID == wrongSeries {
+			t.Errorf("row %d (issuer=%q date=%q desc=%q): fund_name=%q series_id=%q -- %s is a DIFFERENT declared series of this registrant, whose own banner this filing prints nowhere near here; the section is headed %q, which names %s (%q)",
+				i+1, r.IssuerName, r.MeetingDate, r.VoteDescription, r.FundName, r.SeriesID, wrongSeries, wantFund, wantSeries, wantDeclared)
+		}
+	}
+	for i, r := range rows {
+		if r.FundName != wantFund || r.SeriesID != wantSeries {
+			t.Errorf("row %d (issuer=%q date=%q desc=%q): fund_name=%q series_id=%q want %q / %s (%q)",
+				i+1, r.IssuerName, r.MeetingDate, r.VoteDescription, r.FundName, r.SeriesID, wantFund, wantSeries, wantDeclared)
+		}
+	}
+}
+
+// 000075/756913/0001438934-14-000466.txt (JOHN HANCOCK VARIABLE INSURANCE
+// TRUST, CIK 756913, period 20140630, layout broadridge, 68 MB on
+// /wrds/sec/archives): verbatim source lines 1-50 (the SEC header preamble),
+// then the 82 `<SERIES>` blocks of source lines 51-1440 cut to
+// `<SERIES>`/`<OWNER-CIK>`/`<SERIES-ID>`/`<SERIES-NAME>`/`</SERIES>` -- the
+// class-contract detail dropped, the declared SET kept whole, because the
+// resolver's collision and ambiguity rules read the set and a two-name header
+// would change the answer rather than shorten the fixture -- then verbatim body
+// source lines 36190-36235: the tail of the TRW AUTOMOTIVE HOLDINGS CORP.
+// 13-May-2014 meeting, the banner at 36208, and the head of the 3I GROUP PLC,
+// LONDON 18-Jul-2013 AGM through its first five proposals. The fixture's body
+// opens inside the TRW proposal table, below that meeting's masthead, so the
+// only rows the dispatch emits are the 3I GROUP rows the banner governs.
+// `jhvit2014_series_map.tsv` is lines 1 and 782 of the corpus overlay
+// `series_map_applied.tsv`, verbatim, and the test passes processFile the
+// filing's real corpus-relative path so that the overlay's `filing` key matches
+// as shipped.
+//
+// THE BYTES. Source line 36208, the banner, verbatim and the only occurrence in
+// the filing (`grep -c` = 1):
+//
+//	2A32 Int'l Equity Index B
+//
+// It has this vendor's standard section-banner shape -- two blank lines, column-0
+// text, then the block rule and the next masthead -- and sits between the close
+// of the TRW meeting and the 3I GROUP AGM. `2A32` is a four-character internal
+// fund code (header.go:508, internalFundCode), and the remainder abbreviates a
+// name the filing's own header declares at source lines 574-575:
+//
+//	<SERIES-ID>S000008297
+//	<SERIES-NAME>International Equity Index Trust B
+//
+// `International` shortened to `Int'l`, the tier word `Trust` dropped from the
+// middle, the `B` sleeve letter kept. The neighbouring banners of the same run
+// spell the brand out -- source line 35587 is `2A29 JHVIT Strategic Income
+// Opportunities Trust` -- so this one is the abbreviated outlier.
+//
+// WHAT THE ROWS GET. Measured on the whole filing, real dispatch, corpus
+// dictionary and `-series-map` as shipped: every row from the banner onward --
+// 3I GROUP and many later meetings, 23,999 rows -- carries the banner text
+// verbatim as fund_name and series_id S000029541, whose class contracts
+// C000090646;C000090647;C000090648 the row then inherits. S000029541 is source
+// lines 1288-1289:
+//
+//	<SERIES-ID>S000029541
+//	<SERIES-NAME>International Growth Stock Trust
+//
+// a different fund of the same registrant, whose own banner the filing prints
+// 700K lines further on, at source line 758694 (`2Y51 John Hancock Trust
+// International Growth Stock Trust`, 1,124 rows). A wrong link key, not a
+// missing one: 23,999 rows of the International Equity Index B sleeve are filed
+// under the International Growth Stock sleeve.
+//
+// WHERE IT COMES FROM -- READ, NOT ASSUMED. It is not a rung of
+// `brResolveHeading` (layout_broadridge.go:824). Dispatching this same fixture
+// with the overlay withheld leaves series_id EMPTY on all five rows, so no
+// registrant-scoped rung reaches S000029541, and none reaches S000008297 either:
+// `normalizeSeriesName` (header.go:262) folds every non-alphanumeric rune to a
+// token break, so the printed heading keys as `int l equity index b` against a
+// declared `international equity index trust b` -- five tokens each, aligning
+// nowhere -- and `lookupSeriesTolerantEntry` (header.go:488) drops the `2A32`
+// code and then finds nothing. The id arrives from the audited Gemini overlay,
+// `series_map_applied.tsv` line 782, verbatim:
+//
+//	000075/756913/0001438934-14-000466.txt	2A32 Int'l Equity Index B	S000029541	0.9	17632
+//
+// `seriesOverlay.apply` (series_overlay.go:65) stamps it because the row's
+// series_id is blank, the heading matches as printed, and S000029541 is one the
+// filing's own header declares -- every guard the overlay carries is satisfied
+// by a map row that is simply wrong. The overlay itself contradicts it: the
+// IDENTICAL heading string is mapped to S000008297 for this registrant's other
+// filings (lines 772, 775 and 5803 -- the 2006, 2007 and 2008 reports), so one
+// heading is read two ways by the same table.
+//
+// Recommended fix, both halves. (1) header.go, the abbreviation route
+// `lookupSeriesTolerantEntry` reaches after the code strip: a printed token that
+// is the declared token's leading letters plus an elision mark (`Int'l` for
+// `International`) is this vendor's own abbreviation, and with the tier word
+// `Trust` already in `brTypeTailWord` (layout_broadridge.go:846) the heading
+// resolves to S000008297 from the filing's own header -- at which point
+// `seriesOverlay.apply` never fires, since it only fills a BLANK series_id.
+// (2) The overlay row is bad data and should be corrected to S000008297 to agree
+// with its three siblings; a map that spells one heading two ways for one
+// registrant is not audited truth.
+//
+// This test asserts the rows carry S000008297 and, separately, that none carries
+// S000029541, so a repair that only refuses the wrong id is reported distinctly
+// from one that also reaches the right one.
+func TestFamilyMislink20JHVITIntlEquityIndexBTakesSiblingSeries(t *testing.T) {
+	rows := familyMislink20OverlayDispatch(t,
+		"000075/756913/0001438934-14-000466.txt",
+		"jhvit2014_intl_equity_index_b_banner.txt",
+		"jhvit2014_series_map.tsv", "", "broadridge", 5)
+	familyMislink20BannerHolds(t, rows,
+		"S000029541", "2A32 Int'l Equity Index B",
+		"S000008297", "International Equity Index Trust B")
+}

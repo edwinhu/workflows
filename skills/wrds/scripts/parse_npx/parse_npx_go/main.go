@@ -465,9 +465,13 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 	}
 
 	var declared map[string]bool
+	var overlayHdr *overlayHeaderIndex
 	if seriesMap != nil {
 		declared = overlayDeclaredIDs(h)
 		seriesMap.licenseHandMapped(relPath, h, declared)
+		// Built once per filing: the overlay's cross-check asks the filing's own
+		// header whether it names a series for the heading the map claims.
+		overlayHdr = newOverlayHeaderIndex(h.SeriesDecls)
 	}
 	dictFB := cikDict.exactFallback(parseMeta)
 	stamp := func(r VoteRow) error {
@@ -477,7 +481,7 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 		if r.SeriesID == "" && r.FundName == "" {
 			r.SeriesID = registrantSeries
 		}
-		seriesMap.apply(relPath, declared, &r)
+		seriesMap.applyWithHeader(relPath, declared, overlayHdr, &r)
 		dictFB.apply(&r)
 		if r.ClassIDs == "" && r.SeriesID != "" {
 			r.ClassIDs = classesOf(r.SeriesID)
