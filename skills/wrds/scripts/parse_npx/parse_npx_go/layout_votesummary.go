@@ -221,6 +221,45 @@ func vsStripAccountCode(name string) string {
 	return strings.TrimSpace(name[:i])
 }
 
+// vsFundLabels are the label spellings a section may name its fund with, above
+// the page's own furniture. `Fund Name:` is listed before `Fund:` so the longer
+// spelling is matched on its own terms rather than as a bare `Fund` with a
+// `Name:` remainder.
+var vsFundLabels = []string{"fund name:", "name of fund:", "fund:"}
+
+// vsFundLabel returns the fund a labelled line names, or "" when the line
+// carries no label or nothing after it.
+func vsFundLabel(line string) string {
+	lower := strings.ToLower(line)
+	for _, label := range vsFundLabels {
+		if strings.HasPrefix(lower, label) {
+			return strings.TrimSpace(line[len(label):])
+		}
+	}
+	return ""
+}
+
+// vsLabelledFund returns the nearest labelled fund above the table that resolves
+// to a declared series, or "" when the page carries none. Principal Investors
+// Fund (CIK 898745) labels its sub-advised sections `Fund Name:  <name>` where
+// its own earlier sections say `Fund:  <name>`; without the label the banner
+// search falls through to the vendor's report title (`MSIM - Principal Investors
+// Partners Large Cap Growth`), an internal account label that names no series.
+// The label is only taken when it resolves, so a page whose label names nothing
+// declared is read exactly as before.
+func vsLabelledFund(block []string, resolve func(string) string) (string, string) {
+	for j := len(block) - 1; j >= 0; j-- {
+		name := vsFundLabel(block[j])
+		if name == "" {
+			continue
+		}
+		if id := resolve(name); id != "" {
+			return name, id
+		}
+	}
+	return "", ""
+}
+
 // parseVoteSummaryRaw walks the sections of one filing. A section opens with the
 // fund banner -- the last text line before the header pair, carried verbatim
 // including the registrant's internal account code (`... INDEX FUND - J920`) --
@@ -295,17 +334,23 @@ func parseVoteSummaryRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, erro
 				if f, ok := voteSummaryFieldsOf(c, line, lines[i+1]); ok {
 					flush()
 					cols, fields, fund = c, f, last
-					fundSeries = resolve(fund)
-					if fundSeries == "" {
-						// Some vendors centre the fund, the report title and
-						// the reporting period above the table, so the last
-						// text line is a date range and never the fund. Walk
-						// back over the page's own lines to the nearest one
-						// that resolves and take that as the banner.
-						for j := len(block) - 2; j >= 0 && j >= len(block)-vsBannerLookback; j-- {
-							if id := resolve(block[j]); id != "" {
-								fund, fundSeries = block[j], id
-								break
+					if name, id := vsLabelledFund(block, resolve); id != "" {
+						// The section names its own fund on a labelled line;
+						// that beats both the last text line and the lookback.
+						fund, fundSeries = name, id
+					} else {
+						fundSeries = resolve(fund)
+						if fundSeries == "" {
+							// Some vendors centre the fund, the report title and
+							// the reporting period above the table, so the last
+							// text line is a date range and never the fund. Walk
+							// back over the page's own lines to the nearest one
+							// that resolves and take that as the banner.
+							for j := len(block) - 2; j >= 0 && j >= len(block)-vsBannerLookback; j-- {
+								if id := resolve(block[j]); id != "" {
+									fund, fundSeries = block[j], id
+									break
+								}
 							}
 						}
 					}
