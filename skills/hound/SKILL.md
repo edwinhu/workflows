@@ -72,6 +72,13 @@ command disagree eventually, and only one of them runs.
   fails on its own terms, and the failure names which.
 - **It must run in that session's own cwd.** A check whose paths live in another repo can never be
   met where it runs, only released unmet.
+- **Broad enough that one edit cannot close it.** A check satisfiable by a single fix is a
+  milestone wearing a command's clothes: it goes green, the hold self-clears, and the session stops
+  with the budget untouched. The founding complaint this skill exists to answer was "all I am doing
+  is asking what else every hour" — a narrow check reproduces it exactly, because the answer to
+  "what else" was supposed to be the goal's own job. Prefer a check over the whole surface (every
+  gate in the suite, the rate across all inputs) to one over the defect you already know about.
+
 - **No milestone.** `test -f report.md` is true while the objective is unmet. Name what the WORK
   reaches: a suite passing, a rate under a number, a count at zero.
 
@@ -90,9 +97,9 @@ session. The authority, the continuation rule and the terminal blockers live in 
 Run `<CHECK>` and report its exit code — judge from the command, not from the conversation. If it
 fails, take the next action now rather than proposing it. If it passes, spend the remaining budget:
 hunt for work the check does not cover — an ungated checker, a suite nothing runs, a vendored copy,
-a count that has drifted — fix the largest one, say in one line why you picked it, and ARM the
-hold on it before the turn ends. Standing
-authority: <commit / push / pick the next scope / re-dispatch> without asking. The only terminal
+a count that has drifted — fix the largest one, say in one line why you picked it, then keep going
+through them until the budget is spent, and ARM the hold on what is left before the turn ends.
+Standing authority: <commit / push / pick the next scope / re-dispatch> without asking. The only terminal
 blockers are <a missing credential, a dead network, an irreversible or outward-facing action>;
 everything else is the next task, difficulty included. When the budget is spent, end this heartbeat
 with CronDelete.
