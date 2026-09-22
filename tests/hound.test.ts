@@ -3,7 +3,7 @@ import { mkdtempSync, writeFileSync, existsSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
-import { decide, statePath } from '../hooks/hound'
+import { decide, statePath, parseJudgeVerdict } from '../hooks/hound'
 
 const HOOK = join(import.meta.dir, '..', 'hooks', 'hound.ts')
 
@@ -104,4 +104,29 @@ describe('the hook', () => {
   test('statePath is per SESSION, so arming one does not hold another', () => {
     expect(statePath('a')).not.toBe(statePath('b'))
   })
+})
+
+test("the judge verdict is found past the wrapper's own warnings", () => {
+  // Measured 2026-09-22: claude-code prints a permission-rule notice and a connector notice before
+  // the model's answer, so reading line 0 saw a warning and every verdict parsed as UNAVAILABLE.
+  const out = [
+    "Permission ask rule (/home/eh/.claude/settings.json): Write(...) is not matched",
+    "⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY is set",
+    "UNMET",
+    "Three tests are still failing and the flake check was never run.",
+  ].join("\n")
+  const v = parseJudgeVerdict(out)
+  expect(v.verdict).toBe("UNMET")
+  expect(v.reason).toContain("flake check")
+})
+
+test("a sentence mentioning unmet is not mistaken for the verdict", () => {
+  const out = ["The goal is not unmet in any obvious way, but:", "MET", "everything shipped."].join("\n")
+  expect(parseJudgeVerdict(out).verdict).toBe("MET")
+})
+
+test("no parsable verdict fails open rather than blocking", () => {
+  // A hook that traps a session because a model was unreachable is worse than one that lets a turn
+  // end, so an unreadable answer must be UNAVAILABLE and never UNMET.
+  expect(parseJudgeVerdict("the model rambled and never answered").verdict).toBe("UNAVAILABLE")
 })
