@@ -90,12 +90,17 @@ session. The authority, the continuation rule and the terminal blockers live in 
 Run `<CHECK>` and report its exit code — judge from the command, not from the conversation. If it
 fails, take the next action now rather than proposing it. If it passes, spend the remaining budget:
 hunt for work the check does not cover — an ungated checker, a suite nothing runs, a vendored copy,
-a count that has drifted — fix the largest one and say in one line why you picked it. Standing
+a count that has drifted — fix the largest one, say in one line why you picked it, and ARM the
+hold on it before the turn ends. Standing
 authority: <commit / push / pick the next scope / re-dispatch> without asking. The only terminal
 blockers are <a missing credential, a dead network, an irreversible or outward-facing action>;
 everything else is the next task, difficulty included. When the budget is spent, end this heartbeat
 with CronDelete.
 ```
+
+**The hunt branch must re-arm.** The hold SELF-CLEARS the moment its check exits 0, so on green
+nothing gates stopping and the tick is the only thing left driving. A hunt that ends in a report
+ends the loop. Arm the next red check before the turn ends, and the hold does the driving again.
 
 **Enumerate the terminal blockers.** The list is what keeps a hard problem from being filed as a
 blocker. "When done or blocked, notify" produced a 5-hour idle: the session hit a fixture it could
@@ -195,6 +200,7 @@ pick one, say why in a clause, do it. A menu offered at 02:00 is a five-hour pau
 | Hold a green commit "because the user is asleep" | the authority clause should have pre-authorized it; the commit is reversible, the silence is not | commit, and say so in the report |
 | Put "and the user has approved" in the objective | a session cannot close it by working — measured 18h | review after the hold releases, as a step it performs |
 | Write "or stop after N turns" | nothing in the harness counts turns | `--rounds`, which the hook counts |
+| Finish a hunt with a report and stop | the hold self-cleared when the check went green, so nothing gates stopping and the loop ends there | arm the next red check before the turn ends |
 | Report "N of M rounds used" and stop at N | the budget was the authorization, not a ceiling on ambition | spend it, or say why the remainder is unusable |
 
 ## References
