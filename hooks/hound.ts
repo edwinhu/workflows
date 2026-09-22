@@ -209,14 +209,20 @@ function judgeGoal(
     `sentence of evidence. Judge UNMET if the goal names work that is still outstanding, blocked, ` +
     `or only partly done.`
 
-  // `agy` is the cheapest judge tried here: Gemini through Antigravity OAuth. skills/look-at
-  // calls that route unmetered; that is ITS claim, repeated rather than measured, so treat it as
-  // cheapest-known and not as free. Four were tried on one prompt and all
-  // four answer in the required shape -- agy, codex-code/gpt-5.6-luna, claude-code/haiku-4-5 and
-  // gemini-code/flash-lite -- so this picks on cost, and agy's output is also the only one with no
-  // warning preamble ahead of the verdict. Overridable, since the cheapest option moves.
-  const bin = process.env.HOUND_JUDGE_BIN || 'agy'
-  const model = process.env.HOUND_JUDGE_MODEL || ''
+  // JUDGE BACKEND. The verdict is one word, so this is the easiest thing a model does and every
+  // candidate handles it. Measured here on one prompt, all three correct:
+  //
+  //   gemini-code / gemini-3.1-flash-lite   2s
+  //   codex-code  / gpt-5.6-luna            3s
+  //   agy         (Antigravity Gemini)      4s
+  //
+  // Latency is close enough not to decide it, and PRICE cannot be measured from inside this hook,
+  // so the default follows the operator's standing judgement that codex's small tier is the
+  // cheapest capable option here. An earlier revision defaulted to agy on the strength of
+  // skills/look-at calling that route "unmetered" -- someone else's claim, repeated rather than
+  // checked, which is not a basis for a default.
+  const bin = process.env.HOUND_JUDGE_BIN || 'codex-code'
+  const model = process.env.HOUND_JUDGE_MODEL || 'gpt-5.6-luna'
   // RUN IT NEUTRAL. These wrappers are agent CLIs, not model endpoints: started inside a project
   // they load that project's CLAUDE.md, hooks and skills, and answer as that agent. Measured
   // 2026-09-22 — the same prompt returned "UNMET" from /tmp and "Craft run abandoned. The
