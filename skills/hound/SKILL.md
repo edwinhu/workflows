@@ -28,6 +28,13 @@ bash $A --status     # armed? prints the check, the ceilings, and any release at
 bash $A --disarm     # THE USER releases it, confirming at a terminal; an agent gets exit 2
 ```
 
+**Cap the context window when the session is SPAWNED**, not after: a held session keeps working, so
+every turn bills against the model's full 1M window until auto-compact fires there.
+`claude --settings '{"autoCompactWindow":250000}' ...` is session-scoped and leaks into no other
+session; `CLAUDE_CODE_AUTO_COMPACT_WINDOW=250000` is the same cap in the form the session cannot
+change from inside, which is where hound already stands on release. `hound-arm.sh` warns — never
+refuses — when a ceiling of 2h or more is armed while that var is unset or at 500000+.
+
 ### Three layers, and the hole each one leaves
 
 | layer | stops | leaves |

@@ -45,6 +45,15 @@ interface State {
   ceilingMinutes: number
   maxRounds: number
   rounds: number
+  history?: RoundRecord[]
+}
+
+/** One round of the hold, as the hook observed it. */
+export interface RoundRecord {
+  round: number
+  at: number             // epoch seconds
+  exit: number           // the check's exit code
+  note?: string          // the judge's verdict, when there was one
 }
 
 export function statePath(session: string): string {
@@ -124,6 +133,83 @@ function rubricDrift(s: { checkFiles?: Record<string, string> }): string[] {
     if (now !== was) moved.push(file)
   }
   return moved
+}
+
+
+/**
+ * What the judge reads: the session's own compaction summary, then the turns since it.
+ *
+ * A fixed tail is the wrong window for a long run. The harness compacts a session by REPLACING its
+ * older turns with a summary and writing that summary into the transcript as an entry flagged
+ * `isCompactSummary` -- so by round 6 the tail holds the last few minutes and nothing about what
+ * the goal meant. That summary is already on disk and already paid for; reading the newest one is
+ * the long-term memory this judge was missing, and it costs no record of our own.
+ *
+ * HEAD of the summary, TAIL of the turns: the summary opens with intent and closes with the state
+ * it was written at, which the recent turns already cover better. The scan is over the WHOLE file,
+ * because a boundary further back than the last 120 lines is precisely the long run this is for.
+ */
+export function transcriptContext(
+  jsonl: string,
+  tailChars: number,
+  summaryChars: number,
+): { summary: string; tail: string } {
+  const lines = jsonl.trim().split('\n')
+  const textOf = (c: unknown): string => {
+    if (typeof c === 'string') return c
+    if (Array.isArray(c))
+      return c
+        .filter((b) => b?.type === 'text' && typeof b.text === 'string')
+        .map((b) => b.text)
+        .join('\n')
+    return ''
+  }
+
+  let boundary = -1
+  let summary = ''
+  for (let i = 0; i < lines.length; i++) {
+    try {
+      const e = JSON.parse(lines[i])
+      if (e?.isCompactSummary !== true) continue
+      const t = textOf(e?.message?.content).trim()
+      if (t) {
+        boundary = i
+        summary = t.slice(0, summaryChars)
+      }
+    } catch {}
+  }
+
+  const texts: string[] = []
+  for (const line of lines.slice(boundary + 1).slice(-120)) {
+    try {
+      const t = textOf(JSON.parse(line)?.message?.content)
+      if (t) texts.push(t)
+    } catch {}
+  }
+  return { summary, tail: texts.join('\n').slice(-tailChars) }
+}
+
+/**
+ * The run's own memory -- and the reason it needs no file of its own.
+ *
+ * The exit code each round, and the judge's reason when it spoke, are facts the hook already
+ * computes and then threw away; by round 6 nothing remembered that round 2 had been released-then-
+ * blocked for a reason still outstanding. They go in the EXISTING state file, which is where
+ * mutable episode state belongs, rather than in a second file that could disagree with it. Bounded
+ * on write, so a long hold cannot grow the record without limit.
+ */
+export function renderHistory(h: RoundRecord[] | undefined): string {
+  if (!h?.length) return ''
+  return h
+    .map((r) => {
+      const t = new Date(r.at * 1000).toISOString().slice(11, 16)
+      return `  round ${r.round} (${t}Z): check exit ${r.exit}${r.note ? ` -- ${r.note}` : ''}`
+    })
+    .join('\n')
+}
+
+export function pushRound(s: State, r: RoundRecord, max = 20): void {
+  s.history = [...(s.history ?? []), r].slice(-max)
 }
 
 
@@ -275,42 +361,45 @@ function judgeGoal(
   transcriptPath: string,
   goal: string,
   check: string,
+  history?: RoundRecord[],
 ): { verdict: 'MET' | 'UNMET' | 'UNAVAILABLE'; reason: string } {
   // The verdict is ONE WORD, so the model does almost no work -- the cost is what we send it.
   // Sending 12000 characters of transcript to get back "MET" is paying for input to produce a bit.
-  // 4000 covers the recent turns a verdict actually rests on; override when a goal needs more.
+  // 4000 covers the recent turns a verdict rests on, and the compaction summary covers the run they
+  // sit in; both are overridable when a goal needs more.
   const TAIL_CHARS = Number(process.env.HOUND_JUDGE_TAIL_CHARS || 4000)
-  let tail = ''
+  const SUMMARY_CHARS = Number(process.env.HOUND_JUDGE_SUMMARY_CHARS || 3000)
+  let ctx: { summary: string; tail: string }
   try {
-    const lines = readFileSync(transcriptPath, 'utf8').trim().split('\n')
-    const texts: string[] = []
-    for (const line of lines.slice(-120)) {
-      try {
-        const e = JSON.parse(line)
-        const c = e?.message?.content
-        if (typeof c === 'string') texts.push(c)
-        else if (Array.isArray(c))
-          for (const b of c) if (b?.type === 'text' && typeof b.text === 'string') texts.push(b.text)
-      } catch {}
-    }
-    tail = texts.join('\n').slice(-TAIL_CHARS)
+    ctx = transcriptContext(readFileSync(transcriptPath, 'utf8'), TAIL_CHARS, SUMMARY_CHARS)
   } catch {
     return { verdict: 'UNAVAILABLE', reason: 'no readable transcript' }
   }
-  if (!tail.trim()) return { verdict: 'UNAVAILABLE', reason: 'empty transcript' }
+  if (!ctx.tail.trim() && !ctx.summary.trim())
+    return { verdict: 'UNAVAILABLE', reason: 'empty transcript' }
+
+  const rounds = renderHistory(history)
+  const evidence = [
+    ctx.summary &&
+      `EARLIER IN THIS RUN — the session's own compaction summary of turns since dropped from its context:\n${ctx.summary}`,
+    rounds && `WHAT THE HOLD RECORDED, round by round:\n${rounds}`,
+    ctx.tail && `MOST RECENT TURNS:\n${ctx.tail}`,
+  ]
+    .filter(Boolean)
+    .join('\n\n')
 
   const prompt =
     `You are judging whether a coding session has MET its stated goal. You are not the session; ` +
     `judge only from the evidence below.\n\nGOAL: ${goal}\n\n` +
     `A command called the check already exits 0: ${check}\nThat is a floor, not proof the goal is met.\n\n` +
-    `TRANSCRIPT TAIL:\n${tail}\n\n` +
+    `${evidence}\n\n` +
     `Set met=false if the goal names work that is still outstanding, blocked, or only partly done. ` +
     `Put one sentence of evidence in why.`
 
   // Jev first: a decision model returns a calibrated probability for one typed question, which is
   // this judge's exact shape and an order of magnitude cheaper than a chat round trip. The chat
   // judge below stays as the fallback for when the key or the endpoint is not there.
-  const decided = judgeViaDecisions(tail, goal)
+  const decided = judgeViaDecisions(evidence, goal)
   if (decided.verdict !== 'UNAVAILABLE') return decided
 
   // STRUCTURED OUTPUT, not prose parsing. The verdict is a boolean, and asking for it in prose
@@ -431,9 +520,12 @@ function main(): void {
     // with a goal set, block ONCE and restate it: the session must say the goal is met or re-arm on
     // what is left. Bounded to one extra round by goalPrompted, so it cannot become its own trap.
     if (s.goal) {
-      const j = judgeGoal(String(payload.transcript_path || ''), s.goal, s.check)
+      const j = judgeGoal(String(payload.transcript_path || ''), s.goal, s.check, s.history)
       if (j.verdict === 'UNMET') {
         s.rounds += 1
+        // The judge's reason is the one fact a compaction destroys and nothing else holds: the
+        // check is green, so no later round can rediscover why this one was refused.
+        pushRound(s, { round: s.rounds, at: Math.floor(Date.now() / 1000), exit: 0, note: `judge UNMET: ${j.reason}` })
         writeFileSync(path, JSON.stringify(s))
         process.stdout.write(JSON.stringify({
           decision: 'block',
@@ -466,6 +558,7 @@ function main(): void {
   }
 
   s.rounds += 1
+  pushRound(s, { round: s.rounds, at: Math.floor(Date.now() / 1000), exit })
   writeFileSync(path, JSON.stringify(s))
   const movedB = rubricDrift(s)
   const goalB = s.goal ? ` THE GOAL: ${s.goal}` : ''
@@ -479,4 +572,41 @@ function main(): void {
   process.exit(0)
 }
 
-if (import.meta.main) main()
+/**
+ * SessionStart entry: put the hold back in context after the harness has taken it out.
+ *
+ * Compaction, `/clear` and a resume all leave the session with a context that no longer contains
+ * the goal, the budget, or what the earlier rounds tried -- while the hold itself is untouched,
+ * because it lives in a file. The Stop hook restates the goal, but only once the session stops, so
+ * a whole round can be spent working on a reconstruction. Everything printed here is READ from the
+ * state file; nothing is recorded for it, and it is silent on a session that is not armed.
+ */
+function brief(): void {
+  const payload = JSON.parse(readFileSync(0, 'utf8') || '{}')
+  const session = payload.session_id || process.env.CLAUDE_CODE_SESSION_ID || ''
+  if (!session) process.exit(0)
+  const path = statePath(session)
+  if (!existsSync(path)) process.exit(0)
+  let s: State
+  try {
+    s = JSON.parse(readFileSync(path, 'utf8'))
+  } catch {
+    process.exit(0)
+  }
+
+  const left = s.ceilingMinutes - Math.floor((Date.now() / 1000 - s.startedAt) / 60)
+  const rounds = renderHistory(s.history)
+  const out = [
+    '# HOUND — this session is under an armed hold',
+    `Read from ${path}, not remembered: the context this was in has just been summarised or cleared.`,
+    s.goal ? `GOAL: ${s.goal}` : '',
+    `CHECK: \`${s.check}\` — the hold releases when this exits 0${s.goal ? ' AND an independent judge agrees the goal is met' : ''}.`,
+    `BUDGET: ${s.rounds} of ${s.maxRounds} rounds used; ${left} min left of the ${s.ceilingMinutes} min ceiling.`,
+    [s.authority, s.continuation].filter(Boolean).join(' '),
+    rounds ? `ROUNDS SO FAR — do not repeat these:\n${rounds}` : '',
+  ].filter(Boolean)
+  process.stdout.write(out.join('\n') + '\n')
+  process.exit(0)
+}
+
+if (import.meta.main) (process.argv.includes('--brief') ? brief : main)()
