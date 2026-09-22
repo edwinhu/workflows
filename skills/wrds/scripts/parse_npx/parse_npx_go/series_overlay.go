@@ -61,8 +61,28 @@ func loadSeriesOverlay(path string) (*seriesOverlay, error) {
 }
 
 // apply fills r.SeriesID from the map when it is blank, the filing has an entry
-// for the row's printed fund name, and the id is declared by the filing.
+// for the row's printed fund name, and the id is declared by the filing. It is
+// applyWithHeader with no header cross-check available.
 func (o *seriesOverlay) apply(relPath string, declared map[string]bool, r *VoteRow) {
+	o.applyWithHeader(relPath, declared, nil, r)
+}
+
+// applyWithHeader is apply plus the cross-check against the filing's OWN header
+// declarations. The map is hand-audited but not audited truth: for
+// `000075/756913/0001438934-14-000466.txt` it maps the heading `2A32 Int'l Equity
+// Index B` to S000029541 (`International Growth Stock Trust`), a real but
+// unrelated series of the same registrant, while mapping that IDENTICAL heading
+// string to S000008297 (`International Equity Index Trust B`) for the same
+// registrant's 2006, 2007 and 2008 filings -- one heading read two ways by one
+// table, 23,999 rows filed under the wrong sleeve.
+//
+// So when the filing's own header names a series for this heading and the map
+// names a DIFFERENT one, the header wins: a declaration the registrant itself
+// printed in this filing is stronger evidence than an external map row. A
+// heading the header does not name -- the common case, and the reason the
+// overlay exists at all -- is left to the map exactly as before, so the
+// thousands of correct rows are untouched.
+func (o *seriesOverlay) applyWithHeader(relPath string, declared map[string]bool, hdr *overlayHeaderIndex, r *VoteRow) {
 	if o == nil || r.SeriesID != "" {
 		return
 	}
@@ -74,6 +94,15 @@ func (o *seriesOverlay) apply(relPath string, declared map[string]bool, r *VoteR
 	if id == "" {
 		return
 	}
+	if d := hdr.resolve(r.FundName); d != nil && d.SeriesID != "" && !overlayNamesID(id, d.SeriesID) {
+		// The map contradicts the header. Stamp the header's answer when it is one
+		// the overlay would have been allowed to stamp, and otherwise nothing --
+		// never the contradicted map id.
+		if declared[d.SeriesID] {
+			r.SeriesID = d.SeriesID
+		}
+		return
+	}
 	// A class pair the map names as "S1;S2" is stamped whole, the form the issnpx
 	// class-pair rule emits; every id in it must be one the filing declares.
 	for _, one := range strings.Split(id, MultiValueSep) {
@@ -82,6 +111,18 @@ func (o *seriesOverlay) apply(relPath string, declared map[string]bool, r *VoteR
 		}
 	}
 	r.SeriesID = id
+}
+
+// overlayNamesID reports whether a mapped id -- a single series or a "S1;S2"
+// class pair -- names want. A pair that carries the header's answer agrees with
+// it rather than contradicting it.
+func overlayNamesID(mapped, want string) bool {
+	for _, one := range strings.Split(mapped, MultiValueSep) {
+		if one == want {
+			return true
+		}
+	}
+	return false
 }
 
 // overlayDeclaredIDs is the set of series the overlay may stamp: the header's

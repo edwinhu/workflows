@@ -522,6 +522,121 @@ func internalFundCode(tok string) bool {
 	return digit
 }
 
+// overlayHeaderIndex is the filing's own <SERIES-NAME> index, built once per
+// filing, for the ONE consumer that needs to ask "does this filing's header
+// itself name a series for this heading?" -- seriesOverlay.applyWithHeader's
+// cross-check. It is per-filing state used from the single goroutine that walks
+// that filing, so the memo needs no lock.
+//
+// Nothing here resolves a heading for a layout parser. The rungs the layouts run
+// are untouched, and the elision tolerance below is reachable ONLY through an
+// overlay row, where the alternative is a map id that may be wrong.
+type overlayHeaderIndex struct {
+	byName map[string]*SeriesDecl
+	memo   map[string]*SeriesDecl
+}
+
+// newOverlayHeaderIndex builds the index from a filing's header declarations.
+func newOverlayHeaderIndex(decls []SeriesDecl) *overlayHeaderIndex {
+	return &overlayHeaderIndex{byName: seriesByName(decls), memo: map[string]*SeriesDecl{}}
+}
+
+// resolve returns the series this filing's own header names under heading, or
+// nil when it names none or names two. A nil index resolves nothing, which is
+// what leaves apply's behaviour unchanged for callers that have no header.
+func (h *overlayHeaderIndex) resolve(heading string) *SeriesDecl {
+	if h == nil || heading == "" {
+		return nil
+	}
+	if d, ok := h.memo[heading]; ok {
+		return d
+	}
+	d, _ := lookupSeriesTolerantEntry(h.byName, heading)
+	if d == nil {
+		d = h.elidedTokenMatch(heading)
+	}
+	h.memo[heading] = d
+	return d
+}
+
+// elidedTokenMatch resolves a heading whose words this vendor ELIDES with an
+// apostrophe -- `2A32 Int'l Equity Index B` for the declared `International
+// Equity Index Trust B` (CIK 756913, S000008297) -- which no rung above can
+// reach: normalizeSeriesName deletes the apostrophe, so the printed token keys
+// as `intl` against a declared `international` and aligns nowhere.
+//
+// The discipline is the one every other tolerance in this package carries. The
+// apostrophe must be PRINTED, so only a token the filer itself marked as
+// shortened is ever read as short; an elided token must abbreviate its declared
+// token under issAbbreviates (same first letter, rest a subsequence); every
+// other printed token must match EXACTLY; at least two must be spelled in full;
+// the only declared tokens the heading may omit are brTypeTailWord, which carry
+// no strategy; and two declared series answering stamps NOTHING, since choosing
+// between them would move one fund's votes onto another.
+func (h *overlayHeaderIndex) elidedTokenMatch(heading string) *SeriesDecl {
+	fields := strings.Fields(heading)
+	if len(fields) > 1 && internalFundCode(strings.Trim(fields[0], "()")) {
+		fields = fields[1:]
+	}
+	type printedToken struct {
+		tok    string
+		elided bool
+	}
+	var toks []printedToken
+	elided := false
+	for _, f := range fields {
+		mark := strings.ContainsAny(f, "'’")
+		for _, t := range strings.Fields(normalizeSeriesName(f)) {
+			toks = append(toks, printedToken{t, mark})
+			elided = elided || mark
+		}
+	}
+	if !elided || len(toks) < 3 {
+		return nil
+	}
+	var hit *SeriesDecl
+	for name, d := range h.byName {
+		if d == nil || d.SeriesID == "" {
+			continue
+		}
+		dt := strings.Fields(name)
+		j, exact, fit := 0, 0, true
+		for _, p := range toks {
+			// A declared type word the heading does not print may be skipped, and
+			// only while it does not itself answer the printed token.
+			for j < len(dt) && dt[j] != p.tok && brTypeTailWord[dt[j]] {
+				j++
+			}
+			switch {
+			case j >= len(dt):
+				fit = false
+			case dt[j] == p.tok:
+				exact++
+			case p.elided && issAbbreviates(p.tok, dt[j]):
+			default:
+				fit = false
+			}
+			if !fit {
+				break
+			}
+			j++
+		}
+		for ; fit && j < len(dt); j++ {
+			if !brTypeTailWord[dt[j]] {
+				fit = false
+			}
+		}
+		if !fit || exact < 2 {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	return hit
+}
+
 // classIDsFor returns the class-contract ids belonging to one series id.
 func classIDsFor(sc []SeriesClass, seriesID string) []string {
 	var out []string
