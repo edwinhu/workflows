@@ -706,7 +706,18 @@ func brProposalContinuationSlot(lines []string, i int, slot string, open bool) b
 // promoted: `EQUITY.`, under `5. STOCKHOLDER PROPOSAL REGARDING GENDER PAY
 // Shr  For  Against`, took another filer's S000008805 on 39,356 rows (John
 // Hancock Funds II 2016).
+//
+// A COMMENT row is a complete row of this grammar too, and it carries no vote
+// cell at all: its type cell reads `Non-Voting` and the FOR/AGAINST columns are
+// blank (`CMMT   PLEASE NOTE MINIMUM QUANTITY FOR ATTENDANCE   Non-Voting`).
+// The type/vote pair above can never match it, so its wrapped tail stood where
+// a banner sits and was resolved by name against an unrelated registrant's
+// series (`1000 SHARES` -> Mutual Shares Trust, John Hancock Variable Insurance
+// Trust 2014). brCommentRowSlot judges that shape instead.
 func brVoteRowSlot(slot string) bool {
+	if brCommentRowSlot(slot) {
+		return true
+	}
 	f := strings.Fields(slot)
 	for i := 1; i+1 < len(f); i++ {
 		switch strings.ToLower(f[i]) {
@@ -715,6 +726,24 @@ func brVoteRowSlot(slot string) bool {
 			case "for", "against", "abstain", "withheld", "withhold", "none", "split":
 				return true
 			}
+		}
+	}
+	return false
+}
+
+// brCommentRowSlot reports a heading slot that is a complete COMMENT ROW of
+// this grammar: an item token opening the row and a `Non-Voting` type cell
+// standing where a proposal row prints its type and vote. Some vintages print
+// the cell truncated by the column width (`Non-Votin`), so the token is matched
+// on its prefix. A fund name carries neither an item token nor that cell.
+func brCommentRowSlot(slot string) bool {
+	f := strings.Fields(slot)
+	if len(f) < 2 || !brIsItemToken(f[0]) {
+		return false
+	}
+	for _, tok := range f[1:] {
+		if strings.HasPrefix(strings.ToLower(tok), "non-votin") {
+			return true
 		}
 	}
 	return false

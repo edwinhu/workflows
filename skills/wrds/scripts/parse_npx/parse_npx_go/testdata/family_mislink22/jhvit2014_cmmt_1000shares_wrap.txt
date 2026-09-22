@@ -1,0 +1,661 @@
+<SEC-DOCUMENT>0001438934-14-000466.txt : 20140827
+<SEC-HEADER>0001438934-14-000466.hdr.sgml : 20140827
+<ACCEPTANCE-DATETIME>20140827113936
+ACCESSION NUMBER:		0001438934-14-000466
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20140630
+FILED AS OF DATE:		20140827
+DATE AS OF CHANGE:		20140827
+EFFECTIVENESS DATE:		20140827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			JOHN HANCOCK VARIABLE INSURANCE TRUST
+		CENTRAL INDEX KEY:			0000756913
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0630
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-04146
+		FILM NUMBER:		141067291
+
+	BUSINESS ADDRESS:	
+		STREET 1:		601 CONGRESS STREET
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02210
+		BUSINESS PHONE:		617-663-3000
+
+	MAIL ADDRESS:	
+		STREET 1:		601 CONGRESS STREET
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02210
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	JOHN HANCOCK TRUST
+		DATE OF NAME CHANGE:	20050124
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	MANUFACTURERS INVESTMENT TRUST
+		DATE OF NAME CHANGE:	19971022
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	NASL SERIES FUND INC
+		DATE OF NAME CHANGE:	19881030
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008214
+<SERIES-NAME>Total Bond Market Trust B
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008215
+<SERIES-NAME>American Growth Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008216
+<SERIES-NAME>American International Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008217
+<SERIES-NAME>Blue Chip Growth Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008219
+<SERIES-NAME>500 Index Trust B
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008220
+<SERIES-NAME>Capital Appreciation Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008222
+<SERIES-NAME>Core Bond Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008228
+<SERIES-NAME>Equity-Income Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008229
+<SERIES-NAME>Financial Services Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008230
+<SERIES-NAME>Fundamental Value Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008231
+<SERIES-NAME>Global Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008233
+<SERIES-NAME>Global Bond Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008236
+<SERIES-NAME>Active Bond Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008239
+<SERIES-NAME>Health Sciences Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008240
+<SERIES-NAME>High Yield Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008242
+<SERIES-NAME>All Cap Core Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008247
+<SERIES-NAME>American Growth-Income Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008271
+<SERIES-NAME>Core Strategy Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008273
+<SERIES-NAME>Investment Quality Bond Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008277
+<SERIES-NAME>Lifestyle Aggressive MVP
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008278
+<SERIES-NAME>Lifestyle Growth MVP
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008279
+<SERIES-NAME>Lifestyle Balanced MVP
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008280
+<SERIES-NAME>Lifestyle Moderate MVP
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008281
+<SERIES-NAME>Lifestyle Conservative MVP
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008285
+<SERIES-NAME>Mid Cap Index Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008286
+<SERIES-NAME>Mid Cap Stock Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008289
+<SERIES-NAME>Mid Value Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008290
+<SERIES-NAME>Money Market Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008291
+<SERIES-NAME>Money Market Trust B
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008292
+<SERIES-NAME>Natural Resources Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008296
+<SERIES-NAME>Fundamental All Cap Core Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008297
+<SERIES-NAME>International Equity Index Trust B
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008301
+<SERIES-NAME>International Small Company Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008302
+<SERIES-NAME>International Value Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008311
+<SERIES-NAME>Small Cap Index Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008312
+<SERIES-NAME>Small Cap Opportunities Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008313
+<SERIES-NAME>Small Cap Value Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008315
+<SERIES-NAME>Small Company Growth Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008316
+<SERIES-NAME>Small Company Value Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008318
+<SERIES-NAME>New Income Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008320
+<SERIES-NAME>Strategic Income Opportunities Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008321
+<SERIES-NAME>Fundamental Large Cap Value Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008324
+<SERIES-NAME>Total Return Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008325
+<SERIES-NAME>Total Stock Market Index Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008331
+<SERIES-NAME>U.S. Equity Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008333
+<SERIES-NAME>Utilities Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008334
+<SERIES-NAME>Value Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008338
+<SERIES-NAME>Real Estate Securities Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008339
+<SERIES-NAME>Real Return Bond Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008340
+<SERIES-NAME>Science & Technology Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008343
+<SERIES-NAME>Small Cap Growth Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000008872
+<SERIES-NAME>International Core Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000017250
+<SERIES-NAME>American Asset Allocation Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000017251
+<SERIES-NAME>Franklin Templeton Founding Allocation Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000017252
+<SERIES-NAME>Income Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000017253
+<SERIES-NAME>Mutual Shares Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000017255
+<SERIES-NAME>Emerging Markets Value Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000017256
+<SERIES-NAME>American Global Growth Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000017258
+<SERIES-NAME>American New World Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000020239
+<SERIES-NAME>Lifecycle 2040 Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000020240
+<SERIES-NAME>Lifecycle 2045 Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000020241
+<SERIES-NAME>Lifecycle 2050 Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000020245
+<SERIES-NAME>Lifecycle 2010 Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000020246
+<SERIES-NAME>Lifecycle 2015 Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000020247
+<SERIES-NAME>Lifecycle 2020 Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000020248
+<SERIES-NAME>Lifecycle 2025 Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000020249
+<SERIES-NAME>Lifecycle 2030 Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000020250
+<SERIES-NAME>Lifecycle 2035 Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000021933
+<SERIES-NAME>Capital Appreciation Value Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000023550
+<SERIES-NAME>Alpha Opportunities Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000024662
+<SERIES-NAME>Short Term Government Income Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000026132
+<SERIES-NAME>Bond Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000029540
+<SERIES-NAME>Currency Strategies trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000029541
+<SERIES-NAME>International Growth Stock Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000029542
+<SERIES-NAME>Ultra Short Term Bond Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000032002
+<SERIES-NAME>Bond PS Series
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000032004
+<SERIES-NAME>Lifestyle Balanced PS Series
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000032005
+<SERIES-NAME>Lifestyle Conservative PS Series
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000032006
+<SERIES-NAME>Lifestyle Growth PS Series
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000032007
+<SERIES-NAME>Lifestyle Moderate PS Series
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000036499
+<SERIES-NAME>Strategic Equity Allocation Trust
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000756913
+<SERIES-ID>S000042142
+<SERIES-NAME>Lifestyle Aggressive PS Series
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>brd0310000756913.txt
+<DESCRIPTION>BRD0310000756913
+<TEXT>
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              WASHINGTON, D.C. 20549
+
+                                   FORM N-PX
+
+    ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT
+                                     COMPANY
+
+ INVESTMENT COMPANY ACT FILE NUMBER:     811-04146
+
+ NAME OF REGISTRANT:                     John Hancock Variable Insurance
+                                         Trust
+
+
+
+ ADDRESS OF PRINCIPAL EXECUTIVE OFFICES: 601 Congress Street
+                                         Boston, MA 02210-2805
+
+ NAME AND ADDRESS OF AGENT FOR SERVICE:  Charles Rizzo
+                                         601 Congress Street
+                                         Boston, MA 02210-2805
+
+ REGISTRANT'S TELEPHONE NUMBER:          617-663-3000
+
+ DATE OF FISCAL YEAR END:                12/31
+
+ DATE OF REPORTING PERIOD:               07/01/2013 - 06/30/2014
+
+
+<PAGE>
+
+<TABLE>
+<S>    <C>                                                       <C>           <C>                            <C>
+2A57 International Small Company Trust
+--------------------------------------------------------------------------------------------------------------------------
+  TAKAOKA TOKO CO.,LTD.                                                                      Agenda Number:  705396249
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  J80551104
+    Meeting Type:  AGM
+    Meeting Date:  27-Jun-2014
+          Ticker:
+            ISIN:  JP3591600006
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1      Approve Appropriation of Surplus                          Mgmt          For                            For
+
+2.1    Appoint a Director                                        Mgmt          For                            For
+
+2.2    Appoint a Director                                        Mgmt          For                            For
+
+2.3    Appoint a Director                                        Mgmt          For                            For
+
+2.4    Appoint a Director                                        Mgmt          For                            For
+
+2.5    Appoint a Director                                        Mgmt          For                            For
+
+2.6    Appoint a Director                                        Mgmt          For                            For
+
+2.7    Appoint a Director                                        Mgmt          For                            For
+
+2.8    Appoint a Director                                        Mgmt          For                            For
+
+3      Appoint a Corporate Auditor                               Mgmt          Against                        Against
+
+4      Appoint a Substitute Corporate Auditor                    Mgmt          Against                        Against
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+ ACERINOX SA, MADRID                                                                         Agenda Number:  705237320
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  E0060D145
+    Meeting Type:  OGM
+    Meeting Date:  09-Jun-2014
+          Ticker:
+            ISIN:  ES0132105018
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+CMMT   PLEASE NOTE IN THE EVENT THE MEETING DOES                 Non-Voting
+       NOT REACH QUORUM, THERE WILL BE A SECOND
+       CALL ON 10 JUN 2014. CONSEQUENTLY, YOUR
+       VOTING INSTRUCTIONS WILL REMAIN VALID FOR
+       ALL CALLS UNLESS THE AGENDA IS AMENDED.
+       THANK YOU.
+
+1      APPROVAL OF INDIVIDUAL AND CONSOLIDATED                   Mgmt          For                            For
+       ANNUAL ACCOUNTS AND MANAGEMENT REPORTS
+
+2      APPROVAL OF ALLOCATION OF RESULTS                         Mgmt          For                            For
+
+3      APPROVAL OF THE MANAGEMENT OF THE BOARD OF                Mgmt          For                            For
+       DIRECTORS
+
+4      INCREASE IN CAPITAL CHARGED TO VOLUNTARY                  Mgmt          For                            For
+       RESERVES
+
+5      AUTHORIZATION TO THE BOARD OF DIRECTORS FOR               Mgmt          For                            For
+       THE ACQUISITION OF OWN SHARES
+
+6      APPOINTMENT OF AUDITORS                                   Mgmt          For                            For
+
+7.1    RE-ELECTION OF MR BERNARDO VELAZQUEZ                      Mgmt          For                            For
+       HERREROS AS DIRECTOR
+
+7.2    RE-ELECTION OF MR SANTOS MARTINEZ-CONDE                   Mgmt          Against                        Against
+       GUTIERREZ-BARQUIN
+
+7.3    RE-ELECTION OF MR MVULENI GEOFFREY QHENA AS               Mgmt          Against                        Against
+       DIRECTOR
+
+7.4    APPOINTMENT OF MR JAVIER FERNANDEZ ALONSO                 Mgmt          Against                        Against
+       AS DIRECTOR
+
+7.5    RATIFICATION AND APPOINTMENT OF MR RAFAEL                 Mgmt          For                            For
+       MIRANDA ROBREDO AS DIRECTOR
+
+7.6    RATIFICATION AND APPOINTMENT OF MS ROSA                   Mgmt          For                            For
+       MARIA GARCIA GARCIA
+
+8      CONSULTIVE VOTE REGARDING THE ANNUAL                      Mgmt          Against                        Against
+       REMUNERATION REPORT OF THE BOARD OF
+       DIRECTORS
+
+9      DELEGATION OF AUTHORITY TO THE BOARD OF                   Mgmt          For                            For
+       DIRECTORS TO IMPLEMENT AGREEMENTS ADOPTED
+       BY SHAREHOLDERS AT THE GM
+
+10     DESIGNATION OF AUDITORS TO APPROVE THE                    Mgmt          For                            For
+       MINUTES OF THE GM
+
+CMMT   PLEASE NOTE MINIMUM QUANTITY FOR ATTENDANCE               Non-Voting
+       1000 SHARES
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+ ACHILLES CORPORATION                                                                        Agenda Number:  705376704
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  J00084103
+    Meeting Type:  AGM
+    Meeting Date:  27-Jun-2014
+          Ticker:
+            ISIN:  JP3108000005
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1      Approve Appropriation of Surplus                          Mgmt          For                            For
+
+2.1    Appoint a Director                                        Mgmt          For                            For
+
+2.2    Appoint a Director                                        Mgmt          For                            For
+
+2.3    Appoint a Director                                        Mgmt          For                            For
+
+2.4    Appoint a Director                                        Mgmt          For                            For
+
+2.5    Appoint a Director                                        Mgmt          For                            For
+
+2.6    Appoint a Director                                        Mgmt          For                            For
+
+2.7    Appoint a Director                                        Mgmt          For                            For
+
+2.8    Appoint a Director                                        Mgmt          For                            For
+
+3      Appoint a Corporate Auditor                               Mgmt          For                            For
+
+4      Appoint a Substitute Corporate Auditor                    Mgmt          For                            For
+
+5      Approve Renewal of Policy regarding                       Mgmt          Against                        Against
+       Large-scale Purchases of Company Shares
+       (Anti-Takeover Defense Measures)
+
+
+
+
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
