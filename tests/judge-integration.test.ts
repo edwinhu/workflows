@@ -31,7 +31,16 @@ socketserver.TCPServer(("127.0.0.1", ${port}), H).serve_forever()
 function runHook(env: Record<string, string>, payload: unknown) {
   const p = Bun.spawnSync(["bun", "hooks/hound.ts"], {
     stdin: Buffer.from(JSON.stringify(payload)),
-    env: { ...process.env, ...env },
+    // Jev is tried BEFORE the chat judge, and it reads the agenix key out of XDG_RUNTIME_DIR --
+    // which process.env carries in. Without these two the suite silently made real billed calls
+    // to the live Decisions API and every chat-judge assertion below tested the wrong judge.
+    // Both are overridable, so a test that WANTS the Decisions path stubs it explicitly.
+    env: {
+      ...process.env,
+      XDG_RUNTIME_DIR: "/nonexistent-so-no-agenix-key",
+      HOUND_DECISIONS_URL: "http://127.0.0.1:1/decisions",
+      ...env,
+    },
     stdout: "pipe",
     stderr: "pipe",
   });
@@ -97,4 +106,60 @@ test("an UNREACHABLE judge releases rather than trapping the session", async () 
   );
   expect(r.out).not.toContain('"decision":"block"');
   expect(r.err).toContain("judge unavailable");
+}, 30000);
+
+/** The Decisions API's shape: one typed question in, a calibrated probability out. */
+function stubDecisions(port: number, noul: number) {
+  const code = `
+import json, http.server, socketserver
+class H(http.server.BaseHTTPRequestHandler):
+    def do_POST(self):
+        b = json.dumps({"answers":{"met":{"type":"noul","noul":${noul}}}}).encode()
+        self.send_response(200); self.send_header("content-type","application/json")
+        self.send_header("content-length", str(len(b))); self.end_headers(); self.wfile.write(b)
+    def log_message(self, *a): pass
+socketserver.TCPServer.allow_reuse_address = True
+socketserver.TCPServer(("127.0.0.1", ${port}), H).serve_forever()
+`;
+  return Bun.spawn(["python3", "-c", code], { stdout: "ignore", stderr: "ignore" });
+}
+
+test("Jev below the threshold blocks, and reports the probability it gave", async () => {
+  const port = 18783;
+  const srv = stubDecisions(port, 0.21);
+  await settle();
+  const { dir, transcript } = fixture("it-jev-low", "every suite is green");
+  const r = runHook(
+    {
+      TMPDIR: dir,
+      HOUND_JUDGE_TOKEN: "test-token",
+      HOUND_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
+      // Deliberately dead: if Jev were skipped, this would fail OPEN and the test would pass
+      // for the wrong reason. Blocking proves the verdict came from the Decisions path.
+      HOUND_JUDGE_URL: "http://127.0.0.1:1/v1/chat/completions",
+    },
+    { session_id: "it-jev-low", transcript_path: transcript },
+  );
+  srv.kill();
+  expect(r.out).toContain('"decision":"block"');
+  expect(r.out).toContain("21%");
+}, 30000);
+
+test("Jev above the threshold releases the hold", async () => {
+  const port = 18784;
+  const srv = stubDecisions(port, 0.93);
+  await settle();
+  const { dir, transcript } = fixture("it-jev-high", "every suite is green");
+  const r = runHook(
+    {
+      TMPDIR: dir,
+      HOUND_JUDGE_TOKEN: "test-token",
+      HOUND_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
+      HOUND_JUDGE_URL: "http://127.0.0.1:1/v1/chat/completions",
+    },
+    { session_id: "it-jev-high", transcript_path: transcript },
+  );
+  srv.kill();
+  expect(r.out).not.toContain('"decision":"block"');
+  expect(r.err).toContain("objective met");
 }, 30000);
