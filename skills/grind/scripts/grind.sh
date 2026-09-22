@@ -158,7 +158,9 @@ JQ_SCAN='
   | ([$r | to_entries[] | select(.value.kind == "progress") | .key] | last) as $lp
   | ([$r | to_entries[] | select(.value.kind == "iter") | .key
        | select($lp == null or . > $lp)] | length) as $stall
-  | ([$r[] | select(.kind == "stop")] | length) as $stops
+  | ([$r | to_entries[] | select(.value.kind == "stopped") | .key] | last) as $ls
+  | ([$r | to_entries[] | select(.value.kind == "stop") | .key
+       | select($ls == null or . > $ls)] | length) as $stops
   | ([$r[] | select(.kind == "start") | .pid | numbers] | last) as $pid
   | ([$r[] | select(.kind == "floor") | select(.key != null)
        | {key: (.key | clean), why: ((.why // "") | clean)}]
@@ -347,13 +349,10 @@ run_loop() {
     passes=$((passes + 1))
     scan_journal "$journal" || { warn "unreadable journal; stopping rather than guessing"; return 2; }
 
-    # 0. The operator's stop wins over everything, at the next loop boundary. A stop record is a
-    #    standing instruction that belongs to the JOURNAL, not to one invocation: it ends this run
-    #    and every later run on the same journal, so resuming after one means a new journal. There is
-    #    deliberately no baseline of "stops that were already there" -- under that reading an
-    #    operator's `stop` is overtaken by the next `run` and silently does nothing, which is the one
-    #    outcome a stop may never have. Honouring every stop is safe only because `append` refuses
-    #    the kind: the operator can write one, the agent cannot.
+    # 0. The operator's stop wins over everything, at the next loop boundary. A stop is pending
+    #    until the loop answers it with `stopped`, so one written while nothing runs still ends the
+    #    next run, and an answered one does not make the journal -- and its floors -- unresumable.
+    #    Safe only because `append` refuses both kinds: the agent can neither stop nor un-stop.
     if [ "$SCAN_STOPS" -gt 0 ]; then
       journal_append "$journal" "{\"kind\":\"stopped\",\"ts\":\"$(now)\",\"why\":\"stop record\"}"
       warn "stop record honoured after $((SCAN_NEXT_I - 1)) iterations"

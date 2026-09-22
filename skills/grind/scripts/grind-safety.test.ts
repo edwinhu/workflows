@@ -236,4 +236,26 @@ describe('the operator still owns stop', () => {
 
     expect(r.status).toBe(5)
   })
+
+  test('a stop the loop has answered is spent: a later run resumes the same journal', () => {
+    const d = workdir('grind-resume')
+    const journal = join(d, 'journal.jsonl')
+    const check = script(d, 'check.sh', 'exit 1')
+    const runner = script(d, 'runner.sh', 'exit 0')
+    writeFileSync(join(d, 'prompt.txt'), 'work')
+    const args = (iters: string) => [
+      'run', '--journal', journal, '--check', check, '--runner', runner,
+      '--prompt-file', join(d, 'prompt.txt'), '--max-iters', iters, '--sleep', '0',
+    ]
+
+    expect(grind(['stop', '--journal', journal]).status).toBe(0)
+    expect(grind(args('3')).status).toBe(5)
+
+    // The resumed run spends its budget instead of re-honouring the answered stop.
+    expect(grind(args('2')).status).toBe(4)
+
+    // A fresh stop after the resume is honoured again.
+    expect(grind(['stop', '--journal', journal]).status).toBe(0)
+    expect(grind(args('9')).status).toBe(5)
+  })
 })
