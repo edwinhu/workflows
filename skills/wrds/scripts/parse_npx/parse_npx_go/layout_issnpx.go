@@ -1446,6 +1446,13 @@ type issSeriesIndex struct {
 	// and prints its banners without it. A fact of the filing's own header,
 	// not a tolerance; nil when the names do not all agree.
 	lessSuffix map[string]*SeriesDecl
+	// lessSuffixSibling keys the stems lessSuffix would otherwise claim that a
+	// SIBLING declaration answers to under a different trailing type word, and
+	// holds that sibling: `Avantis International Equity` is the declared
+	// `Avantis International Equity Fund`, not the `... ETF` the registrant's
+	// dominant suffix would substitute for it. The contested stems are kept out
+	// of lessSuffix, and two siblings sharing one stem are nil here and refuse.
+	lessSuffixSibling map[string]*SeriesDecl
 	// lessTypeWord keys the declared names with the registrant's own last
 	// token removed from WHEREVER it sits ("500 Index Trust B" under "500
 	// index b" for JOHN HANCOCK VARIABLE INSURANCE TRUST), built only when
@@ -1891,6 +1898,43 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 	if suffix := issCommonLastWord(decls); suffix != "" {
 		ix.commonSuffix = suffix
 		ix.lessSuffix = make(map[string]*SeriesDecl)
+		// Every stem the drop below would claim, so the sibling scan next can
+		// tell a contested stem from a free one.
+		claimed := map[string]bool{}
+		for i := range decls {
+			d := &decls[i]
+			if d.SeriesID == "" || d.Name == "" {
+				continue
+			}
+			if rest, ok := strings.CutSuffix(normalizeSeriesName(d.Name), " "+suffix); ok && rest != "" {
+				claimed[rest] = true
+			}
+		}
+		// A declared name that reduces to a claimed stem under its OWN trailing
+		// type word: `Avantis International Equity Fund` (S000066463) beside
+		// `Avantis International Equity ETF` (S000066456), American Century ETF
+		// Trust 2022, where 32 of the 41 declared names end in `ETF` and the
+		// drop below would hand the ETF a bare `Avantis International Equity`
+		// banner that is the Fund's section. The suffix is dominant, not
+		// universal, so the stem is not the common-suffix name's to take; the
+		// registrant spells the common-suffix name in full where it prints it
+		// (that filing's own `... ETF` banner resolves exactly, beside this
+		// one), and the bare stem is the sibling's. Two siblings sharing a stem
+		// collide in put and refuse rather than guess.
+		ix.lessSuffixSibling = make(map[string]*SeriesDecl)
+		for i := range decls {
+			d := &decls[i]
+			if d.SeriesID == "" || d.Name == "" {
+				continue
+			}
+			toks := strings.Fields(normalizeSeriesName(d.Name))
+			if len(toks) < 2 || toks[len(toks)-1] == suffix || !issTypeWord(toks[len(toks)-1]) {
+				continue
+			}
+			if stem := strings.Join(toks[:len(toks)-1], " "); claimed[stem] {
+				put(ix.lessSuffixSibling, stem, d)
+			}
+		}
 		for i := range decls {
 			d := &decls[i]
 			if d.SeriesID == "" || d.Name == "" {
@@ -1898,6 +1942,9 @@ func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex
 			}
 			key := normalizeSeriesName(d.Name)
 			if rest, ok := strings.CutSuffix(key, " "+suffix); ok && rest != "" {
+				if _, contested := ix.lessSuffixSibling[rest]; contested {
+					continue
+				}
 				put(ix.lessSuffix, rest, d)
 			}
 		}
@@ -3659,7 +3706,14 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 		}
 	}
 
-	// The last word every declared name shares, missing from the banner.
+	// The last word every declared name shares, missing from the banner. A stem
+	// a sibling declaration answers to under its own type word is that
+	// sibling's, not the common-suffix name's, and never reaches the drop.
+	if ix.lessSuffixSibling != nil {
+		if d, seen := ix.lessSuffixSibling[key]; seen {
+			return banner, d
+		}
+	}
 	if ix.lessSuffix != nil {
 		if d, seen := ix.lessSuffix[key]; seen {
 			return banner, d
