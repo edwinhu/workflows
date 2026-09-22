@@ -102,7 +102,17 @@ TEARDOWN='When this goal closes, cancel the run loop with CronDelete — it is a
 # That is the whole difference between a session that spends its budget and one that reports a
 # verdict and goes quiet with hours left, which is what a human then has to notice and restart.
 AUTHORITY='You may decide alone, without asking: whether to re-dispatch, which findings to fix first, and whether to commit what is green (with explicit paths; never push).'
-CONTINUATION='A FAIL is not a stopping point: fix and re-dispatch in the same turn. When the stated scope closes and budget remains, pick the largest open item you found while working, say in one line why you picked it, and start it. Report at the ceiling, not at the first stopping point.'
+# shellcheck source=../../../lib/goal-clauses.sh
+_clauses="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)/lib/goal-clauses.sh"
+# shellcheck disable=SC1090
+[ -r "$_clauses" ] && . "$_clauses"
+# A FALLBACK, because this also runs from the DEPLOYED plugin copy, which may not carry
+# lib/. Verified the hazard rather than assumed it: with lib/ hidden the clause silently
+# lost its tail and still read plausibly -- exactly the drift this extraction exists to
+# prevent, reintroduced as a packaging bug.
+: "${GOAL_CONTINUATION_TAIL:=When the stated scope closes and budget remains, pick the largest open item you found while working, say in one line why you picked it, and start it. Report at the ceiling, not at the first stopping point.}"
+
+CONTINUATION="A FAIL is not a stopping point: fix and re-dispatch in the same turn. $GOAL_CONTINUATION_TAIL"
 
 if [ "$READONLY" = 1 ]; then
     # An audit produces a diagnosis, not a pass: its gate legitimately FAILs and that is the outcome.

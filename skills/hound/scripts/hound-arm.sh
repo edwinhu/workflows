@@ -96,7 +96,17 @@ fi
 # the goal was "the one text it re-reads every turn" -- and in hound that text is the hold's block
 # message, which carried none of them.
 AUTHORITY_CLAUSE='You may decide alone, without asking: which finding to fix first, whether to commit what is green (explicit paths, never push), and what to pick up next.'
-CONTINUATION_CLAUSE='A failing check is not a stopping point: fix it and re-run in the same turn. When the stated scope closes and budget remains, pick the largest open item you found while working, say in one line why you picked it, and start it. Report at the ceiling, not at the first stopping point.'
+# shellcheck source=../../../lib/goal-clauses.sh
+_clauses="$(cd "$(dirname "$(readlink -f "$0")")/../../.." && pwd)/lib/goal-clauses.sh"
+# shellcheck disable=SC1090
+[ -r "$_clauses" ] && . "$_clauses"
+# A FALLBACK, because this also runs from the DEPLOYED plugin copy, which may not carry
+# lib/. Verified the hazard rather than assumed it: with lib/ hidden the clause silently
+# lost its tail and still read plausibly -- exactly the drift this extraction exists to
+# prevent, reintroduced as a packaging bug.
+: "${GOAL_CONTINUATION_TAIL:=When the stated scope closes and budget remains, pick the largest open item you found while working, say in one line why you picked it, and start it. Report at the ceiling, not at the first stopping point.}"
+
+CONTINUATION_CLAUSE="A failing check is not a stopping point: fix it and re-run in the same turn. $GOAL_CONTINUATION_TAIL"
 
 python3 - "$STATE" "$CHECK" "$ROUNDS" "$MINUTES" "${GOAL:-}" "$AUTHORITY_CLAUSE" "$CONTINUATION_CLAUSE" <<'PY'
 import hashlib, json, os, re, sys, time
