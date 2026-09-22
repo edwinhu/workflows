@@ -184,3 +184,165 @@ func TestFamilyMislink21AmIndIssuerNamePromotedToFundBanner(t *testing.T) {
 		}
 	}
 }
+
+// familyMislink21OverlayDispatch runs the real dispatch on a family MISLINK21
+// fixture with BOTH the registrant's dictionary rows and the real `-series-map`
+// overlay loaded, and asserts the fixture's own preconditions -- status, layout
+// and row count -- so a failure below is an assertion about the series id and
+// never a broken fixture. relPath is passed separately from the fixture's path
+// on disk because the overlay is keyed by the filing's corpus-relative path:
+// handing processFile the real key lets the overlay fixture stay a verbatim cut
+// of series_map_applied.tsv rather than a rewritten one.
+func familyMislink21OverlayDispatch(t *testing.T, relPath, fixture, dict, overlay, layout string, count int) []VoteRow {
+	t.Helper()
+	oldDict, oldMap := cikDict, seriesMap
+	t.Cleanup(func() { cikDict, seriesMap = oldDict, oldMap })
+	var err error
+	cikDict, err = loadCIKSeries(filepath.Join("testdata", "family_mislink21", dict))
+	if err != nil {
+		t.Fatal(err)
+	}
+	seriesMap, err = loadSeriesOverlay(filepath.Join("testdata", "family_mislink21", overlay))
+	if err != nil {
+		t.Fatal(err)
+	}
+	ch := make(chan *ParseResult, 1024)
+	sink := &rowSink{out: ch}
+	meta := processFile(relPath, filepath.Join("testdata", "family_mislink21", fixture), sink, make([]byte, headBytes))
+	close(ch)
+	var rows []VoteRow
+	for pr := range ch {
+		rows = append(rows, pr.Rows...)
+	}
+	rows = append(rows, sink.buf...)
+	if meta.ParseStatus != "ok" || meta.Layout != layout || len(rows) != count {
+		t.Fatalf("fixture/dispatch precondition: status=%s layout=%s rows=%d want=%d error=%s", meta.ParseStatus, meta.Layout, len(rows), count, meta.ErrorMsg)
+	}
+	return rows
+}
+
+// 000075/756913/0001438934-14-000466.txt (JOHN HANCOCK VARIABLE INSURANCE
+// TRUST, CIK 756913, period 20140630, layout broadridge, 68 MB on
+// /wrds/sec/archives): source lines 1-465 of the sibling family MISLINK20
+// fixture -- the SEC header preamble plus the 82 `<SERIES>` blocks cut to
+// `<SERIES>`/`<OWNER-CIK>`/`<SERIES-ID>`/`<SERIES-NAME>`/`</SERIES>`, the
+// declared SET kept whole because every rung below reads it -- then verbatim
+// body source lines 1028996-1029078: the `THANK YOU.` tail of the section
+// above, the banner at 1029000, and the ACE LIMITED and ACTAVIS, INC. meetings
+// it governs, cut before the DARDEN RESTAURANTS masthead at 1029080.
+// `jhvit2014_series_map.tsv` is a header line plus ALL EIGHT rows of the corpus
+// overlay `series_map_applied.tsv` that carry this filing (lines 782, 5819,
+// 5820, 7155-7159), verbatim, and `jhvit2014_cik_series.tsv` is all 206 rows of
+// the corpus dictionary `cik_series.tsv` under CIK 0000756913, verbatim. The
+// test passes processFile the filing's real corpus-relative path so the
+// overlay's `filing` key matches as shipped.
+//
+// THE BYTES. Source line 1029000, the banner, verbatim and the only occurrence
+// of this string in the filing (`grep -n 'All Cap'` reports five hits: header
+// lines 311 and 558, body lines 30730, 778068 and this one):
+//
+//	2c87 All Cap Value Trust
+//
+// `2c87` is a four-character internal fund code and the remainder is a name the
+// filing's own 2014 header does NOT declare. The registrant's own dictionary
+// does, from its 20060630 report 000075/756913/0001271631-06-000250.txt:
+//
+//	0000756913	S000008242	All Cap Core Trust	20060630
+//	0000756913	S000008243	All Cap Growth Trust	20060630
+//	0000756913	S000008244	All Cap Value Trust	20060630
+//
+// Three sibling series whose names differ in exactly one slot. Only the first
+// survived to 2014 -- the 2014 header declares `All Cap Core Trust`
+// (S000008242) at source lines 310-311 and neither of the other two, which were
+// reorganized away in 2013 -- and the filing nonetheless prints a section for
+// the Value sleeve's residual votes, 250,932 lines BELOW the Core sleeve's own
+// banner at source line 778068 (`2c41 All Cap Core Trust`).
+//
+// WHAT THE ROWS GET, AND WHERE IT COMES FROM -- READ, NOT ASSUMED. Every row of
+// the section is stamped S000008242, `All Cap Core Trust`: a DIFFERENT declared
+// series of this registrant, which prints its own banner and its own rows
+// elsewhere in the same filing. The rung is `issLeadingStemDecl`
+// (layout_issnpx.go:4293), reached through `brResolveHeading`
+// (layout_broadridge.go:851) -> `issResolveFund`; probed directly on this
+// fixture's own 82 declarations it is the ONLY rung of the chain that answers,
+// and `lookupSeriesTolerant` and `brHeadingDropsTypeTail` both return nil.
+// It reads a heading that keeps a declared name's leading PAIR and replaces the
+// descriptor after it: `all cap` + `value` against a declared `all cap` +
+// `core`, with `cap` the registrant's family word (the `want[1] != toks[1]`
+// test at `:4316` admits Small Cap, Mid Cap and the rest into `family`) and
+// exactly one declared name leading with the pair. Its one guard against
+// folding siblings together, `issStyleSiblingSwap` (`:4363`), does not fire,
+// because it demands that BOTH swapped descriptors be `issStyleWord`s (`:4346`
+// -- growth, value, income, equity, bond) and `core` is not on that list. The
+// rung is descriptor-blind in consequence: resolved against this same header,
+// the invented heading `2c99 All Cap Banana Trust` also answers S000008242.
+//
+// The defect is independent of both side tables. Measured on this fixture with
+// the dictionary and the overlay each present and absent, all four ways, the
+// seven rows come out S000008242 every time -- so it is a registrant-scoped
+// resolution rung reading the filing's own header, not an overlay row and not a
+// dictionary fallback.
+//
+// THE OVERLAY ALREADY CARRIES THE RIGHT ANSWER AND CANNOT DELIVER IT. Line 7159
+// of `series_map_applied.tsv`, verbatim:
+//
+//	000075/756913/0001438934-14-000466.txt	2c87 All Cap Value Trust	S000008244	1.0	51
+//
+// -- the audited map reads this exact heading, at confidence 1.0, onto
+// S000008244, which is the name the bytes print character for character, is a
+// real series of this same CIK, and is licensed for stamping by
+// `overlayDeclaredIDs` (series_overlay.go:260 -- the registrant's dictionary
+// carries it) with `overlayFutureVintage` satisfied (declared 20060630, period
+// 20140630). `seriesOverlay.apply` (series_overlay.go:66) never sees the row,
+// because its first condition is `r.SeriesID != ""` and the rung above has
+// already filled it. A confidence-1.0 audited answer loses to a tolerance rung
+// that threw the heading's only discriminating token away.
+//
+// NOT the MISLINK-GSTI1100663-BLOCK sibling guard (`siblingBlockID`,
+// series_overlay.go:152), which was the hypothesis this test was written to
+// check. It cannot fire here: the guard needs >=2 of this filing's own map rows
+// differing from the heading by exactly one token, and this filing has EIGHT
+// map rows in total, none of them five tokens long (`2c87 all cap value trust`
+// normalises to five), so `overlayLoneTokenDiff` rejects every pair. There is
+// no `2c41 All Cap Core Trust` map row for this filing at all. And the guard
+// lives downstream of the `r.SeriesID != ""` test that already returned.
+//
+// Fix location: `layout_issnpx.go`, `issLeadingStemDecl` (`:4293`). The
+// descriptor slot it swaps is a discriminator whenever the registrant declares
+// TWO OR MORE series agreeing on the leading pair and differing only there --
+// which is exactly the All Cap Core / Growth / Value trio at this CIK --
+// regardless of whether the swapped words happen to sit on the closed
+// `issStyleWord` list. `issDeclSlotSwap` (`:4431`) already computes that shape
+// over the index; consulting it, and reading the registrant's dictionary rows
+// where a merger has thinned the header, refuses this heading -- at which point
+// the row is blank and `seriesOverlay.apply` stamps the map's own S000008244.
+//
+// This test asserts both halves separately, as family MISLINK20 does: that no
+// row carries S000008242, and that every row carries S000008244. A repair that
+// only refuses the wrong id leaves the section blank -- better, since a wrong
+// series is worse than a blank one, but not the answer the overlay already
+// holds -- and is reported distinctly from one that also reaches the right one.
+func TestFamilyMislink21JHVITAllCapValueTakesSiblingCoreSeries(t *testing.T) {
+	rows := familyMislink21OverlayDispatch(t,
+		"000075/756913/0001438934-14-000466.txt",
+		"jhvit2014_all_cap_value_banner.txt",
+		"jhvit2014_cik_series.tsv",
+		"jhvit2014_series_map.tsv", "broadridge", 7)
+	for _, r := range rows {
+		if r.FundName != "2c87 All Cap Value Trust" {
+			t.Fatalf("fixture banner not read as printed: fund=%q", r.FundName)
+		}
+	}
+	for i, r := range rows {
+		if r.SeriesID == "S000008242" {
+			t.Errorf("row %d (issuer=%q date=%q desc=%q): fund_name=%q series_id=%q -- S000008242 is `All Cap Core Trust`, a DIFFERENT declared series of this registrant whose own banner this filing prints at source line 778068; the section is headed %q, which names S000008244 (`All Cap Value Trust`, declared by this CIK at 20060630 and mapped at confidence 1.0 by series_map_applied.tsv line 7159)",
+				i+1, r.IssuerName, r.MeetingDate, r.VoteDescription, r.FundName, r.SeriesID, r.FundName)
+		}
+	}
+	for i, r := range rows {
+		if r.SeriesID != "S000008244" {
+			t.Errorf("row %d (issuer=%q date=%q desc=%q): fund_name=%q series_id=%q want S000008244 (`All Cap Value Trust`)",
+				i+1, r.IssuerName, r.MeetingDate, r.VoteDescription, r.FundName, r.SeriesID)
+		}
+	}
+}
