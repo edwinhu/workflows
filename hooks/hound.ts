@@ -152,25 +152,46 @@ function rubricDrift(s: { checkFiles?: Record<string, string> }): string[] {
 export function parseJudgeVerdict(
   stdout: string,
 ): { verdict: 'MET' | 'UNMET' | 'UNAVAILABLE'; reason: string } {
-  const lines = stdout.trim().split('\n').map((l) => l.trim())
+  const text = stdout.trim()
+  if (!text) return { verdict: 'UNAVAILABLE', reason: 'empty judge reply' }
+
+  // Preferred: the schema'd envelope. `response_format: json_schema` is an API feature and the
+  // OAuth-proxied routes may ignore or reject it, so a prose answer is accepted too rather than
+  // depended upon not to happen.
+  let content = text
+  try {
+    const env = JSON.parse(text)
+    const c = env?.choices?.[0]?.message?.content
+    if (typeof c === 'string') content = c
+    else if (env && typeof env === 'object' && 'choices' in env)
+      return { verdict: 'UNAVAILABLE', reason: 'no content in judge reply' }
+  } catch {
+    /* not an envelope: treat the whole thing as the answer */
+  }
+
+  try {
+    const v = JSON.parse(content)
+    if (typeof v?.met === 'boolean') {
+      const why = typeof v.why === 'string' ? v.why.slice(0, 400) : ''
+      return v.met ? { verdict: 'MET', reason: why } : { verdict: 'UNMET', reason: why }
+    }
+  } catch {
+    /* not json: fall through to the prose scanner */
+  }
+
+  // Prose fallback. SCAN for the verdict; the wrapper prints permission and connector notices
+  // ahead of the answer, so line 0 is often a warning. Match a STANDALONE word so a sentence
+  // mentioning "unmet" cannot masquerade as the verdict.
+  const lines = content.split('\n').map((l) => l.trim())
   const idx = lines.findIndex((l) => /^\**(MET|UNMET)\**[.:]?$/i.test(l))
   if (idx === -1) return { verdict: 'UNAVAILABLE', reason: 'judge gave no parsable verdict' }
   const word = lines[idx].toUpperCase().replace(/[^A-Z]/g, '')
   const why = lines.slice(idx + 1).join(' ').trim().slice(0, 400)
-  if (word === 'UNMET') return { verdict: 'UNMET', reason: why || 'judge said unmet' }
-  return { verdict: 'MET', reason: why || 'judge said met' }
+  return word === 'UNMET'
+    ? { verdict: 'UNMET', reason: why || 'judge said unmet' }
+    : { verdict: 'MET', reason: why || 'judge said met' }
 }
 
-/**
- * Argument shape per judge binary. `agy` (Antigravity CLI) takes a bare `-p` and rejects the
- * `--model` the proxy wrappers require, so one arg list cannot serve both and passing the wrong
- * one makes the judge look unavailable rather than misconfigured.
- */
-export function judgeArgs(bin: string, model: string, prompt: string): string[] {
-  const base = bin.split('/').pop() ?? bin
-  if (base === 'agy' || !model) return ['-p', prompt]
-  return ['--model', model, '-p', prompt]
-}
 
 function judgeGoal(
   transcriptPath: string,
@@ -205,43 +226,70 @@ function judgeGoal(
     `judge only from the evidence below.\n\nGOAL: ${goal}\n\n` +
     `A command called the check already exits 0: ${check}\nThat is a floor, not proof the goal is met.\n\n` +
     `TRANSCRIPT TAIL:\n${tail}\n\n` +
-    `Answer on the first line with exactly one word, MET or UNMET. On the second line give one ` +
-    `sentence of evidence. Judge UNMET if the goal names work that is still outstanding, blocked, ` +
-    `or only partly done.`
+    `Set met=false if the goal names work that is still outstanding, blocked, or only partly done. ` +
+    `Put one sentence of evidence in why.`
 
-  // JUDGE BACKEND. The verdict is one word, so this is the easiest thing a model does and every
-  // candidate handles it. Measured here on one prompt, all three correct:
+  // STRUCTURED OUTPUT, not prose parsing. The verdict is a boolean, and asking for it in prose
+  // then scanning for a standalone MET/UNMET is guesswork with a fail-open hole: the wrapper's own
+  // warning lines sat ahead of the answer, and a judge that cannot be parsed silently stops
+  // judging. The proxy speaks OpenAI chat completions with `response_format: json_schema`, so the
+  // shape is guaranteed by the server rather than requested politely.
   //
-  //   gemini-code / gemini-3.1-flash-lite   2s
-  //   codex-code  / gpt-5.6-luna            3s
-  //   agy         (Antigravity Gemini)      4s
-  //
-  // Latency is close enough not to decide it, and PRICE cannot be measured from inside this hook,
-  // so the default follows the operator's standing judgement that codex's small tier is the
-  // cheapest capable option here. An earlier revision defaulted to agy on the strength of
-  // skills/look-at calling that route "unmetered" -- someone else's claim, repeated rather than
-  // checked, which is not a basis for a default.
-  const bin = process.env.HOUND_JUDGE_BIN || 'codex-code'
+  // Calling the HTTP API also removes the agent CLI entirely, and with it a bug this had: those
+  // wrappers load the CLAUDE.md, hooks and skills of whatever directory they start in and answer
+  // AS that agent -- the same prompt returned "UNMET" from /tmp and "Craft run abandoned..." from
+  // a repo carrying craft context. An HTTP call has no cwd and no persona to inherit.
+  const url = process.env.HOUND_JUDGE_URL || 'http://127.0.0.1:8317/v1/chat/completions'
+  const token = process.env.HOUND_JUDGE_TOKEN || 'sk-local-claude-proxy'
   const model = process.env.HOUND_JUDGE_MODEL || 'gpt-5.6-luna'
-  // RUN IT NEUTRAL. These wrappers are agent CLIs, not model endpoints: started inside a project
-  // they load that project's CLAUDE.md, hooks and skills, and answer as that agent. Measured
-  // 2026-09-22 — the same prompt returned "UNMET" from /tmp and "Craft run abandoned. The
-  // implementation was already complete from an earlier round." from a repo with craft context.
-  // A judge that adopts the judged project's persona is not independent. stdin is closed too, or
-  // the wrapper waits 3s for input that never comes.
-  const r = spawnSync(bin, judgeArgs(bin, model, prompt), {
-    encoding: 'utf8',
-    timeout: 120_000,
-    cwd: tmpdir(),
-    stdio: ['ignore', 'pipe', 'pipe'],
-    env: { ...process.env, CLAUDE_PROJECT_DIR: undefined } as NodeJS.ProcessEnv,
-  })
-  if (r.error || r.status !== 0) return { verdict: 'UNAVAILABLE', reason: `judge did not run (${bin})` }
-  // SCAN for the verdict line; do not assume it is first. The wrapper prints its own warnings
-  // ahead of the model's answer (permission-rule notices, connector notices), so reading line 0
-  // returned a warning and every verdict parsed as UNAVAILABLE. Match a standalone word so a
-  // sentence mentioning "unmet" in passing cannot masquerade as the verdict.
-  return parseJudgeVerdict(r.stdout || '')
+
+  const body = {
+    model,
+    messages: [{ role: 'user', content: prompt }],
+    response_format: {
+      type: 'json_schema',
+      json_schema: {
+        name: 'verdict',
+        strict: true,
+        schema: {
+          type: 'object',
+          properties: { met: { type: 'boolean' }, why: { type: 'string' } },
+          required: ['met', 'why'],
+          additionalProperties: false,
+        },
+      },
+    },
+  }
+
+  const post = (payload: unknown) =>
+    spawnSync(
+      'curl',
+      ['-sS', '--max-time', '90', '-X', 'POST', url,
+       '-H', `Authorization: Bearer ${token}`,
+       '-H', 'Content-Type: application/json',
+       '--data-binary', '@-'],
+      { encoding: 'utf8', input: JSON.stringify(payload), timeout: 120_000 },
+    )
+
+  let r = post(body)
+  if (r.error || r.status !== 0) return { verdict: 'UNAVAILABLE', reason: 'judge endpoint unreachable' }
+  let out = parseJudgeVerdict(r.stdout || '')
+
+  // RETRY WITHOUT THE SCHEMA. `response_format` is an API feature and an OAuth-proxied route may
+  // reject it -- curl still exits 0 on a 4xx, so the error body arrives as an unparsable verdict
+  // and judging would have stopped silently while everything looked healthy. The retry asks in
+  // prose and the parser accepts that shape too.
+  if (out.verdict === 'UNAVAILABLE') {
+    const { response_format: _dropped, ...plain } = body as Record<string, unknown>
+    const proseAsk =
+      prompt +
+      '\n\nAnswer on the first line with exactly one word, MET or UNMET. On the second line give ' +
+      'one sentence of evidence.'
+    r = post({ ...plain, messages: [{ role: 'user', content: proseAsk }] })
+    if (r.error || r.status !== 0) return { verdict: 'UNAVAILABLE', reason: 'judge endpoint unreachable' }
+    out = parseJudgeVerdict(r.stdout || '')
+  }
+  return out
 }
 
 function main(): void {
