@@ -3,7 +3,7 @@ import { mkdtempSync, writeFileSync, existsSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
-import { decide, statePath, parseJudgeVerdict, judgeArgs } from '../hooks/hound'
+import { decide, statePath, parseJudgeVerdict } from '../hooks/hound'
 
 const HOOK = join(import.meta.dir, '..', 'hooks', 'hound.ts')
 
@@ -106,36 +106,31 @@ describe('the hook', () => {
   })
 })
 
-test("the judge verdict is found past the wrapper's own warnings", () => {
-  // Measured 2026-09-22: claude-code prints a permission-rule notice and a connector notice before
-  // the model's answer, so reading line 0 saw a warning and every verdict parsed as UNAVAILABLE.
-  const out = [
-    "Permission ask rule (/home/eh/.claude/settings.json): Write(...) is not matched",
-    "⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY is set",
-    "UNMET",
-    "Three tests are still failing and the flake check was never run.",
-  ].join("\n")
-  const v = parseJudgeVerdict(out)
+const envelope = (content: string) =>
+  JSON.stringify({ choices: [{ message: { content } }] })
+
+test("a schema'd verdict parses to UNMET with its evidence", () => {
+  const v = parseJudgeVerdict(envelope('{"met":false,"why":"3 tests are still failing."}'))
   expect(v.verdict).toBe("UNMET")
-  expect(v.reason).toContain("flake check")
+  expect(v.reason).toContain("3 tests")
 })
 
-test("a sentence mentioning unmet is not mistaken for the verdict", () => {
-  const out = ["The goal is not unmet in any obvious way, but:", "MET", "everything shipped."].join("\n")
-  expect(parseJudgeVerdict(out).verdict).toBe("MET")
+test("met=true parses to MET", () => {
+  expect(parseJudgeVerdict(envelope('{"met":true,"why":"suite is green"}')).verdict).toBe("MET")
 })
 
-test("no parsable verdict fails open rather than blocking", () => {
-  // A hook that traps a session because a model was unreachable is worse than one that lets a turn
-  // end, so an unreadable answer must be UNAVAILABLE and never UNMET.
+test("a PROSE answer still parses, because structured output may not survive every route", () => {
+  // response_format is an API feature and the OAuth-proxied routes may ignore or reject it, so the
+  // parser accepts a plain MET/UNMET line as well. It must still ignore the wrapper's own warning
+  // lines, which sit ahead of the answer.
+  const prose = ["Permission ask rule (...): Write(...) is not matched", "UNMET", "three tests fail"].join("\n")
+  expect(parseJudgeVerdict(envelope(prose)).verdict).toBe("UNMET")
+  expect(parseJudgeVerdict(prose).verdict).toBe("UNMET")
+})
+
+test("a malformed judge reply fails OPEN, never UNMET", () => {
+  // A hook that traps a session because a judge was unreachable or answered badly is worse than one
+  // that lets a turn end on the check alone. UNAVAILABLE releases; UNMET would block.
   expect(parseJudgeVerdict("the model rambled and never answered").verdict).toBe("UNAVAILABLE")
+  expect(parseJudgeVerdict(JSON.stringify({ choices: [] })).verdict).toBe("UNAVAILABLE")
 })
-
-test("agy takes a bare -p; the proxy wrappers take --model", () => {
-  // One arg list cannot serve both: agy rejects --model, and passing it makes the judge look
-  // unavailable rather than misconfigured, which fails OPEN and silently stops judging.
-  expect(judgeArgs("agy", "", "P")).toEqual(["-p", "P"]);
-  expect(judgeArgs("/usr/bin/agy", "ignored", "P")).toEqual(["-p", "P"]);
-  expect(judgeArgs("codex-code", "gpt-5.6-luna", "P")).toEqual(["--model", "gpt-5.6-luna", "-p", "P"]);
-  expect(judgeArgs("claude-code", "", "P")).toEqual(["-p", "P"]);
-});
