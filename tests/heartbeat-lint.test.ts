@@ -140,3 +140,39 @@ describe('the cron prompts in references/templates.md', () => {
     },
   )
 })
+
+test("C11 fires when a hunt branch never re-arms", () => {
+  // The hold self-clears on green, so a hunt that ends in a report ends the loop. Measured
+  // 2026-09-22: eight consecutive green ticks, each doing one piece of work and stopping.
+  const text =
+    "Run `bash /tmp/x.sh` and report its exit code — judge from the command, not from the conversation. " +
+    "If it fails, take the next action now rather than proposing it. If it passes, spend the remaining budget: " +
+    "hunt for work the check does not cover — an ungated checker, a suite nothing runs — fix the largest one " +
+    "and say in one line why you picked it. Standing authority: commit without asking. The only terminal " +
+    "blockers are a missing credential, a dead network, and an outward-facing action such as pushing. " +
+    "When the budget is spent, end this heartbeat with CronDelete."
+  const ids = lint(text).map((x) => x.rule)
+  expect(ids).toContain("C11")
+})
+
+test("C11 is silent once the hunt branch arms the hold", () => {
+  const text =
+    "Run `bash /tmp/x.sh` and report its exit code — judge from the command, not from the conversation. " +
+    "If it fails, take the next action now rather than proposing it. If it passes, spend the remaining budget: " +
+    "hunt for work the check does not cover — an ungated checker, a suite nothing runs — fix the largest one, " +
+    "say in one line why you picked it, and ARM the hold on it before the turn ends. Standing authority: commit " +
+    "without asking. The only terminal blockers are a missing credential, a dead network, and an outward-facing " +
+    "action such as pushing. When the budget is spent, end this heartbeat with CronDelete."
+  expect(lint(text).map((x) => x.rule)).not.toContain("C11")
+})
+
+test("C11 does not fire on a tick that has no hunt branch", () => {
+  // The rule is conditional on hunting; a tick that only drives its own check must not be asked
+  // to re-arm a goal it never declared met.
+  const text =
+    "Run `bash /tmp/x.sh` and report its exit code — judge from the command, not from the conversation. " +
+    "If it fails, take the next action now rather than proposing it and keep going until the ceiling. " +
+    "Standing authority: commit without asking. The only terminal blockers are a missing credential, a dead " +
+    "network, and an outward-facing action such as pushing. When the budget is spent, end this heartbeat with CronDelete."
+  expect(lint(text).map((x) => x.rule)).not.toContain("C11")
+})
