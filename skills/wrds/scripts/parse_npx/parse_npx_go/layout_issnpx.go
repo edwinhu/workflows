@@ -6676,10 +6676,32 @@ func issCoverRenameAliases(ix *issSeriesIndex, lines []string) {
 // 0000907244-04-000279 and 0000907244-05-000318. The trust's six other
 // untagged headings -- EVERGREEN VA FUND, SPECIAL EQUITY, EQUITY INDEX, BLUE
 // CHIP, GLOBAL LEADERS, MASTERS -- merged away or liquidated and stay blank.
+//
+// ING Strategic Allocation Portfolios, Inc. (CIK 0000935070) renamed two of its
+// three sleeves effective with the 2006-05-01 prospectus: 485APOS
+// 0001193125-06-026304 (filed 20060210) carries "ING VP Strategic Allocation
+// Moderate Portfolio (formally known as ING VP Strategic Allocation Balanced
+// Portfolio)" and "ING VP Strategic Allocation Conservative Portfolio (formally
+// known as ING VP Strategic Allocation Income Portfolio)", and 485BPOS
+// 0001193125-06-090942 (filed 20060427) repeats both with "(formerly, ...)".
+// The FY2005 N-CSR 0001104659-06-015813 (filed 20060310) still uses the old
+// names throughout, which brackets the rename to after both reporting periods
+// the N-PX filings cover. Both successors are dictionary rows of this same CIK
+// at vintage 20060620 (S000008665, S000008666) from the registrant's first
+// tagged filing 0001193125-06-182503, whose roster carries neither old name --
+// neither "Strategic Allocation Income" nor "ING VP Strategic Allocation
+// Balanced Portfolio" appears in any of the 41,139 dictionary rows at any CIK.
+// 15,567 rows with no series across 0000950124-04-004080 and
+// 0000950153-05-002209. The third heading, GROWTH, needs no entry: its pre-2006
+// name survived verbatim into the 2006 declaration (S000008664).
 var issRegistrantRenames = map[string]map[string]string{
 	"0000928754": {
 		"evergreen va foundation fund":        "Evergreen VA Balanced Fund",
 		"evergreen va growth and income fund": "Evergreen VA Fundamental Large Cap Fund",
+	},
+	"0000935070": {
+		"ing vp strategic allocation balanced portfolio": "ING VP Strategic Allocation Moderate Portfolio",
+		"ing vp strategic allocation income portfolio":   "ING VP Strategic Allocation Conservative Portfolio",
 	},
 }
 
