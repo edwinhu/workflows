@@ -20,7 +20,7 @@ import { execFileSync } from 'node:child_process'
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync, chmodSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { lint } from '../skills/hound/scripts/cron-prompt-lint'
+import { lint } from '../skills/hound/scripts/heartbeat-lint'
 
 const REPO = join(import.meta.dir, '..')
 const SKILL = join(REPO, 'skills/work')
@@ -179,7 +179,7 @@ describe('half two: the HEARTBEAT is INSTRUCTED, because no shell can call CronC
    * present when a tick fires into an otherwise empty session. An ungated checker is what the old
    * arrangement degenerated into once its one caller stopped landing anything.
    */
-  test('the prompt text passes cron-prompt-lint clean', () => {
+  test('the prompt text passes heartbeat-lint clean', () => {
     const prompt = /prompt:\s+(\S.*)$/m.exec(r.out)![1]
     expect(lint(prompt).map(f => `${f.rule}: ${f.message}`)).toEqual([])
   })

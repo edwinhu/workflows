@@ -37,7 +37,7 @@ the objective is met — so nothing but this text is present at the moment it sh
 Lint it:
 
 ```bash
-bun skills/hound/scripts/cron-prompt-lint.ts "<that text>"
+bun skills/hound/scripts/heartbeat-lint.ts "<that text>"
 ```
 
 ## The unattended-brief template
