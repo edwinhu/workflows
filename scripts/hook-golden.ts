@@ -133,7 +133,28 @@ function normalise(text: string, dir: string): string {
     .sort((a, b) => b[0].length - a[0].length)
     .reduce((acc, [from, to]) => acc.split(from).join(to), text);
   // session-end stamps the wall clock to the minute; that is the clock, not behaviour.
-  return pathed.replace(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/g, "<TIMESTAMP>");
+  const stamped = pathed.replace(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/g, "<TIMESTAMP>");
+  // session-start reports INSTALL HEALTH — which ~/.claude/agents symlinks resolve on THIS machine.
+  // That is a report about the box, not behaviour of the hook, and pinning it made the golden fail
+  // whenever the machine changed. Measured 2026-09-22: the goldens had been red since 2026-09-16
+  // purely because those symlinks were created in between, and the diff is hashes alone, so the
+  // only visible signal was "something changed" — which trains re-recording without reading, and
+  // that is how a real regression would have walked straight through.
+  // Both representations: hooks emit this inside a JSON payload, where the newlines are the two
+  // characters \\n and the em-dash is \\u2014. A regex written against the literal form matched
+  // nothing and the scrub silently did nothing -- it looked like it worked because the goldens had
+  // just been re-recorded on this machine.
+  const DASH = "(?:\u2014|\\\\u2014)";
+  const NL = "(?:\n|\\\\n)";
+  return stamped.replace(
+    new RegExp(`## Workflows Install ${DASH} Problems Detected${NL}[\\s\\S]*?Detection only[^\\n]*?${NL}${NL}?`, "g"),
+    // The trailing ${NL}? absorbs the blank line the section contributes as a separator: without
+    // it a machine WITH problems normalised one newline longer than one without, and the golden
+    // still failed on a different box while looking scrubbed.
+    // Replaced with NOTHING, not a marker: a machine WITH problems and a machine WITHOUT them must
+    // normalise to the same text, and any placeholder leaves them differing by its own length.
+    "",
+  );
 }
 
 /** sha256 of every file under `dir`, keyed by repo-relative path. The filesystem half of parity. */

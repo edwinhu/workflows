@@ -161,11 +161,26 @@ export function parseJudgeVerdict(
   return { verdict: 'MET', reason: why || 'judge said met' }
 }
 
+/**
+ * Argument shape per judge binary. `agy` (Antigravity CLI) takes a bare `-p` and rejects the
+ * `--model` the proxy wrappers require, so one arg list cannot serve both and passing the wrong
+ * one makes the judge look unavailable rather than misconfigured.
+ */
+export function judgeArgs(bin: string, model: string, prompt: string): string[] {
+  const base = bin.split('/').pop() ?? bin
+  if (base === 'agy' || !model) return ['-p', prompt]
+  return ['--model', model, '-p', prompt]
+}
+
 function judgeGoal(
   transcriptPath: string,
   goal: string,
   check: string,
 ): { verdict: 'MET' | 'UNMET' | 'UNAVAILABLE'; reason: string } {
+  // The verdict is ONE WORD, so the model does almost no work -- the cost is what we send it.
+  // Sending 12000 characters of transcript to get back "MET" is paying for input to produce a bit.
+  // 4000 covers the recent turns a verdict actually rests on; override when a goal needs more.
+  const TAIL_CHARS = Number(process.env.HOUND_JUDGE_TAIL_CHARS || 4000)
   let tail = ''
   try {
     const lines = readFileSync(transcriptPath, 'utf8').trim().split('\n')
@@ -179,7 +194,7 @@ function judgeGoal(
           for (const b of c) if (b?.type === 'text' && typeof b.text === 'string') texts.push(b.text)
       } catch {}
     }
-    tail = texts.join('\n').slice(-12000)
+    tail = texts.join('\n').slice(-TAIL_CHARS)
   } catch {
     return { verdict: 'UNAVAILABLE', reason: 'no readable transcript' }
   }
@@ -194,18 +209,21 @@ function judgeGoal(
     `sentence of evidence. Judge UNMET if the goal names work that is still outstanding, blocked, ` +
     `or only partly done.`
 
-  // codex-code's haiku tier is the cheapest capable judge on this machine; both it and claude-code
-  // were tried on the same prompt and both answer in the required shape. Overridable, because the
-  // right answer here changes with pricing and with which proxy is logged in.
-  const model = process.env.HOUND_JUDGE_MODEL || 'gpt-5.6-luna'
-  const bin = process.env.HOUND_JUDGE_BIN || 'codex-code'
+  // `agy` is the cheapest judge tried here: Gemini through Antigravity OAuth. skills/look-at
+  // calls that route unmetered; that is ITS claim, repeated rather than measured, so treat it as
+  // cheapest-known and not as free. Four were tried on one prompt and all
+  // four answer in the required shape -- agy, codex-code/gpt-5.6-luna, claude-code/haiku-4-5 and
+  // gemini-code/flash-lite -- so this picks on cost, and agy's output is also the only one with no
+  // warning preamble ahead of the verdict. Overridable, since the cheapest option moves.
+  const bin = process.env.HOUND_JUDGE_BIN || 'agy'
+  const model = process.env.HOUND_JUDGE_MODEL || ''
   // RUN IT NEUTRAL. These wrappers are agent CLIs, not model endpoints: started inside a project
   // they load that project's CLAUDE.md, hooks and skills, and answer as that agent. Measured
   // 2026-09-22 — the same prompt returned "UNMET" from /tmp and "Craft run abandoned. The
   // implementation was already complete from an earlier round." from a repo with craft context.
   // A judge that adopts the judged project's persona is not independent. stdin is closed too, or
   // the wrapper waits 3s for input that never comes.
-  const r = spawnSync(bin, ['--model', model, '-p', prompt], {
+  const r = spawnSync(bin, judgeArgs(bin, model, prompt), {
     encoding: 'utf8',
     timeout: 120_000,
     cwd: tmpdir(),
