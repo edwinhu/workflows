@@ -3,7 +3,7 @@ import { mkdtempSync, writeFileSync, existsSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
-import { decide, statePath, parseJudgeVerdict } from '../hooks/hound'
+import { decide, statePath, parseJudgeVerdict, parseNoul } from '../hooks/hound'
 
 const HOOK = join(import.meta.dir, '..', 'hooks', 'hound.ts')
 
@@ -133,4 +133,30 @@ test("a malformed judge reply fails OPEN, never UNMET", () => {
   // that lets a turn end on the check alone. UNAVAILABLE releases; UNMET would block.
   expect(parseJudgeVerdict("the model rambled and never answered").verdict).toBe("UNAVAILABLE")
   expect(parseJudgeVerdict(JSON.stringify({ choices: [] })).verdict).toBe("UNAVAILABLE")
+})
+
+const noulReply = (p: number) =>
+  JSON.stringify({ model: "typesafe/jev-1.13", answers: { met: { type: "noul", noul: p } }, usage: {} })
+
+test("the noul probability is thresholded, not trusted as a word", () => {
+  // Measured against the live model 2026-09-22: suite green + flake green -> 0.92; three tests
+  // failing -> 0.01; TWO OF THREE FIXED -> 0.02. "Partly done" sits near zero, which is what keeps
+  // a hold working rather than releasing on "probably".
+  expect(parseNoul(noulReply(0.92), "met", 0.8).verdict).toBe("MET")
+  expect(parseNoul(noulReply(0.02), "met", 0.8).verdict).toBe("UNMET")
+  expect(parseNoul(noulReply(0.79), "met", 0.8).verdict).toBe("UNMET")
+  expect(parseNoul(noulReply(0.8), "met", 0.8).verdict).toBe("MET")
+})
+
+test("the noul verdict states the probability it acted on", () => {
+  // A bare MET/UNMET hides whether it was 0.81 or 0.99, which is the whole value of a calibrated
+  // answer; the reason carries both the number and the threshold.
+  expect(parseNoul(noulReply(0.92), "met", 0.8).reason).toContain("92%")
+  expect(parseNoul(noulReply(0.92), "met", 0.8).reason).toContain("80%")
+})
+
+test("a missing or malformed decision reply fails OPEN", () => {
+  expect(parseNoul(JSON.stringify({ answers: {} }), "met", 0.8).verdict).toBe("UNAVAILABLE")
+  expect(parseNoul("not json", "met", 0.8).verdict).toBe("UNAVAILABLE")
+  expect(parseNoul(JSON.stringify({ answers: { met: { type: "noul" } } }), "met", 0.8).verdict).toBe("UNAVAILABLE")
 })
