@@ -23,10 +23,12 @@
  * rather than every session in the project.
  *
  *   arm:     hound-arm.sh '<check command>' [--rounds N] [--minutes M]
- *   disarm:  rm the state file (the path is printed on every block)
+ *   release: the check passes, a ceiling is reached, or the USER confirms `--disarm` at a
+ *            terminal. Deleting the state file is not a release: the ledger beside it records
+ *            the arm, and this hook restores a hold that vanished without one.
  */
 
-import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { appendFileSync, existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
@@ -41,6 +43,26 @@ interface State {
 
 export function statePath(session: string): string {
   return join(process.env.TMPDIR || tmpdir(), `hound-${session}.json`)
+}
+
+/**
+ * The ledger beside the state file. `hound-arm.sh` appends `armed` here when it arms and
+ * `released by user` / `declined` / `refused` when release is attempted; this hook appends
+ * `passed` and `expired`. It exists because the state file alone made the hold `rm`-able: a
+ * session that could not argue its way out could still delete its way out. If the state file is
+ * gone while the ledger's last word is `armed`, the hold was removed by something other than the
+ * two sanctioned exits, and it is RESTORED rather than honoured.
+ */
+export function ledgerPath(session: string): string {
+  return join(process.env.TMPDIR || tmpdir(), `hound-${session}.releases.log`)
+}
+
+function lastLedgerVerb(ledger: string): string | null {
+  if (!existsSync(ledger)) return null
+  const lines = readFileSync(ledger, 'utf8').trim().split('\n').filter(Boolean)
+  const last = lines[lines.length - 1]
+  if (!last) return null
+  return (last.split('\t')[1] || '').trim() || null
 }
 
 /** What the hook decides, separated from the IO so it can be tested. */
@@ -81,7 +103,29 @@ export function main(): void {
   const session = payload.session_id || process.env.CLAUDE_CODE_SESSION_ID || ''
   if (!session) process.exit(0)
   const path = statePath(session)
-  if (!existsSync(path)) process.exit(0)          // not armed: inert
+  const ledger = ledgerPath(session)
+
+  if (!existsSync(path)) {
+    // Gone. Was it one of the sanctioned exits, or did someone delete it?
+    const verb = lastLedgerVerb(ledger)
+    const armed = verb !== null && verb.startsWith('armed')
+    if (!armed) process.exit(0)                   // never armed, or properly released: inert
+    const record = (verb.split('\u0000')[0] || '').slice(0)
+    void record
+    const saved = (readFileSync(ledger, 'utf8').trim().split('\n').filter(Boolean).pop() || '')
+    const json = saved.split('\t')[2] || ''
+    try {
+      const restored = JSON.parse(json) as State
+      writeFileSync(path, JSON.stringify(restored))
+      process.stdout.write(JSON.stringify({
+        decision: 'block',
+        reason: `the hold on \`${restored.check}\` was removed without a user-confirmed --disarm; it has been restored. Release needs the user to confirm at a terminal, or the check to pass.`,
+      }))
+      process.exit(0)
+    } catch {
+      process.exit(0)                             // unparseable ledger: do not invent a hold
+    }
+  }
 
   let s: State
   try {
@@ -98,11 +142,13 @@ export function main(): void {
   const d = decide(s, exit, Math.floor(Date.now() / 1000))
 
   if (d.action === 'pass') {
+    appendFileSync(ledger, `${new Date().toISOString()}\tpassed\t${s.check}\n`)
     rmSync(path, { force: true })
     process.stderr.write(`until: \`${s.check}\` exits 0 — objective met, hold released.\n`)
     process.exit(0)
   }
   if (d.action === 'expired') {
+    appendFileSync(ledger, `${new Date().toISOString()}\texpired\t${s.check}\n`)
     rmSync(path, { force: true })
     process.stderr.write(`until: ${d.reason}. Hold released UNMET — say so.\n`)
     process.exit(0)

@@ -24,16 +24,40 @@ An unattended run needs both.
 ```bash
 A=${CLAUDE_SKILL_DIR}/scripts/hound-arm.sh
 bash $A '<the CHECK command>' --rounds 8 --minutes 720
-bash $A --status     # armed? prints the check and the ceilings
-bash $A --disarm     # release early
+bash $A --status     # armed? prints the check, the ceilings, and any release attempts
+bash $A --disarm     # THE USER releases it, confirming at a terminal; an agent gets exit 2
 ```
+
+### Three layers, and the hole each one leaves
+
+| layer | stops | leaves |
+|---|---|---|
+| tty prompt inside `hound-arm.sh --disarm` | an agent releasing the hold at all | needs a human at THAT terminal; no phone |
+| the hook restoring a deleted state file from the ledger | `rm` on the state file, however spelled | a FORGED ledger line reading `released by user` |
+| `permissions.ask` on `*hound-*.json*` and `*hound-*.releases.log*` | the literal spellings, and reaches the user anywhere | evadable by indirection: `rm -f "$STATE"` matches no pattern |
+
+None of the three is sufficient alone, and the list is the honest statement of that. The strongest
+is the tty prompt, because it lives inside the program rather than matching a string; the weakest is
+the permission rule, because a variable defeats it. Keep all three: the residual hole is a
+deliberate circumvention, which is a different thing from an accident, and the ask rules make the
+attempt visible.
+
+**Release is not the session's to take.** Arming refuses a check that is already green or cannot
+run, because a session will rationalise — and then release was left to that same judgment.
+Measured 2026-09-21: one session released itself twice in an evening, each time with a reason it
+believed ("the gate measures the wrong property"), which is the argument equally available to a
+session that simply finds the gate hard. So `--disarm` reads a confirmation from `/dev/tty`: one
+keystroke for a human, exit 2 for an agent, and every attempt appended to a ledger that `--status`
+prints. Deleting the state file is not a release either — the ledger records the arm, and the hook
+RESTORES a hold that vanished without a sanctioned exit. The honest move for a bad gate is to arm
+the right one, not to stop.
 
 Pass the check as **one single-quoted argument, with no apostrophes in it** — an apostrophe ends the
 quote, and double quotes would hand every backticked fragment to the shell to run first. Write "the
 exemption in vendor-lint.sh", not "vendor-lint.sh's exemption".
 
-The hold is **self-clearing**: the hook removes the state file the moment the check exits 0, and
-again when either ceiling is reached — that release says UNMET, and saying so is the session's job.
+The hold is **self-clearing on its own terms**: the hook removes the state file the moment the
+check exits 0, and again when either ceiling is reached — that release says UNMET, and saying so is the session's job.
 
 ## The CHECK COMMAND
 
@@ -77,11 +101,31 @@ with CronDelete.
 blocker. "When done or blocked, notify" produced a 5-hour idle: the session hit a fixture it could
 not cut cleanly and, having no list, called the difficulty a blocker.
 
-Lint it before creating the cron:
+### Lint the check too
+
+`hound-arm.sh` refuses a check that is already green or that cannot run — behavioural facts. The
+rules ABOVE are a specification, and until 2026-09-21 nothing enforced them: two gates passed
+arm-time validation and were still mis-specified (one measured a pager whose discreteness is
+intended; the other asserted a threshold above its instrument ceiling, then began returning exit 3
+on a flaky recorder). `hold-lint.ts` settles the decidable part and arming calls it — a CRITICAL
+refuses, anything less prints and arms:
 
 ```bash
-bun ${CLAUDE_SKILL_DIR}/scripts/cron-prompt-lint.ts "<the prompt>"
-bun ${CLAUDE_SKILL_DIR}/scripts/cron-prompt-lint.ts --file BRIEF.md
+bun ${CLAUDE_SKILL_DIR}/scripts/hold-lint.ts '<the CHECK>'            # string rules
+bun ${CLAUDE_SKILL_DIR}/scripts/hold-lint.ts '<the CHECK>' --probe    # also RUNS it twice
+```
+
+`--probe` is where the value is: two runs that disagree, or one that exits above 1, is an
+instrument rather than a gate, and the hook would block or release on chance. It also costs the
+check — this executes on EVERY Stop, so a three-minute check makes every turn end a three-minute
+pause. It renders no opinion on whether the objective is right; "measures the wrong property" is
+judgment and stays yours.
+
+Lint the cron prompt before creating the cron:
+
+```bash
+bun ${CLAUDE_SKILL_DIR}/scripts/heartbeat-lint.ts "<the prompt>"
+bun ${CLAUDE_SKILL_DIR}/scripts/heartbeat-lint.ts --file BRIEF.md
 ```
 
 Exit 0 clean, 1 findings, 2 usage. Eleven rules, all decidable from the string. Fix every critical
@@ -98,7 +142,7 @@ creating is not a job; measured 2026-09-16, a creation reported success while `C
 
 | | |
 |---|---|
-| the hold | self-clears when the check exits 0 or a ceiling is hit; `--disarm` ends it early |
+| the hold | self-clears when the check exits 0 or a ceiling is hit. `--disarm` needs the USER at a terminal; an agent cannot release it, and `rm` on the state file is undone by the hook |
 | the cron | `CronDelete`, a model tool with no CLI. Nothing else can end it — a session cron lives in memory, and no hook event fires when the work completes — so the last sentence of the cron prompt is the only thing present at the moment it should stop |
 
 <EXTREMELY-IMPORTANT>
@@ -142,6 +186,7 @@ pick one, say why in a clause, do it. A menu offered at 02:00 is a five-hour pau
 | Put an apostrophe in the check | it ends the single quote, and double quotes run every backticked fragment first | write the word without it |
 | Arm a hold on YOUR OWN session to try the hook out | it then blocks your own stop until the check passes | read `tests/until.test.ts`, or arm a check you can satisfy on demand |
 | Treat a stopping condition you wrote down as binding on yourself | prose is re-adjudicated away; only the hook blocks a stop. Measured 2026-09-02: a session wrote "I'm treating that as binding regardless" and idled three hours later | arm it, and confirm with `--status` |
+| Disarm your own hold because the gate looks wrong | that is the same sentence a session uses when the gate is merely hard, and it is not yours to judge: `--disarm` refuses without a tty and the hook restores a deleted state file | arm the RIGHT check — replacing a gate is allowed, stopping is not — or ask the user to confirm the release |
 | Restate `--rounds` or `--minutes` as prose in the prompt | two ceilings that can disagree, and the prose one is the bug | the flags; the hook counts and clocks them |
 | Write "has returned a verdict" / "the report exists" as the check | milestone: true while the objective is unmet | a suite passing, a rate under a number, a count at zero |
 | Leave a session running overnight on the hold alone | nothing in a Stop hook runs once the session is quiet | `CronCreate` a heartbeat; `CronDelete` when the work is done |

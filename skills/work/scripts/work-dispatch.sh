@@ -784,9 +784,9 @@ cron_prompt="Heartbeat for craft run $runid. Run \`bash $SKILL/scripts/work-resu
 # The lint that used to sit on the self-send chokepoint now sits here, on the text that actually
 # re-enters the session. It REPORTS and never refuses: the run is already dispatched by the time a
 # finding could matter, and a refusal here would leave a dispatched run with no heartbeat at all.
-if command -v bun > /dev/null 2>&1 && [ -f "$SKILL/../hound/scripts/cron-prompt-lint.ts" ]; then
-  bun "$SKILL/../hound/scripts/cron-prompt-lint.ts" "$cron_prompt" > /dev/null 2>&1 \
-    || echo "WARNING: cron-prompt-lint has findings on the heartbeat text below — run it yourself: bun $SKILL/../hound/scripts/cron-prompt-lint.ts \"\$prompt\"" >&2
+if command -v bun > /dev/null 2>&1 && [ -f "$SKILL/../hound/scripts/heartbeat-lint.ts" ]; then
+  bun "$SKILL/../hound/scripts/heartbeat-lint.ts" "$cron_prompt" > /dev/null 2>&1 \
+    || echo "WARNING: heartbeat-lint has findings on the heartbeat text below — run it yourself: bun $SKILL/../hound/scripts/heartbeat-lint.ts \"\$prompt\"" >&2
 fi
 
 # Printed LAST on every path that dispatches, so nothing scrolls it away. A dispatch that ends with

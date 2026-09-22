@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
 const REPO = join(import.meta.dir, '..')
-import { lint } from '../skills/hound/scripts/cron-prompt-lint'
+import { lint } from '../skills/hound/scripts/heartbeat-lint'
 
 /**
  * The corpus is the three runs that actually stalled on the night of 2026-08-27/28, plus the text

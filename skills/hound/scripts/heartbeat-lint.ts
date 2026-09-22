@@ -1,9 +1,14 @@
 #!/usr/bin/env bun
 /**
- * cron-prompt-lint.ts — the decidable half of reviewing the text a heartbeat re-enters with.
+ * heartbeat-lint.ts — the decidable half of reviewing the text a HEARTBEAT re-enters with.
  *
- *   bun cron-prompt-lint.ts "<cron prompt>" [--json]
- *   bun cron-prompt-lint.ts --file BRIEF.md [--json]
+ * Named for the mechanism, not the transport: `cron` is how the tick is scheduled, while the thing
+ * being linted is the heartbeat's objective text. Its sibling is hold-lint.ts, which lints the other
+ * mechanism's artifact — the CHECK COMMAND a hold gates on. One linter per mechanism, and the names
+ * now say which.
+ *
+ *   bun heartbeat-lint.ts "<cron prompt>" [--json]
+ *   bun heartbeat-lint.ts --file BRIEF.md [--json]
  *
  * Exit 0 = clean, 1 = findings, 2 = usage error.
  *
@@ -183,14 +188,14 @@ function main() {
   if (fileIdx !== -1) {
     const p = argv[fileIdx + 1]
     if (!p) {
-      console.error('cron-prompt-lint: --file needs a path')
+      console.error('heartbeat-lint: --file needs a path')
       process.exit(2)
     }
     text = readFileSync(p, 'utf8')
   } else {
     const positional = argv.filter((a) => !a.startsWith('--'))
     if (positional.length === 0) {
-      console.error('usage: cron-prompt-lint.ts "<cron prompt>" | --file <path> [--json]')
+      console.error('usage: heartbeat-lint.ts "<cron prompt>" | --file <path> [--json]')
       process.exit(2)
     }
     text = positional.join(' ')
@@ -200,7 +205,7 @@ function main() {
   if (json) {
     console.log(JSON.stringify({ findings, clean: findings.length === 0 }, null, 2))
   } else if (findings.length === 0) {
-    console.log('cron-prompt-lint: clean')
+    console.log('heartbeat-lint: clean')
   } else {
     for (const x of findings) {
       console.log(`[${x.severity.toUpperCase()}] ${x.rule}: ${x.message}`)
