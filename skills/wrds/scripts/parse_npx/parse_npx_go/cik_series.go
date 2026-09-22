@@ -301,6 +301,21 @@ func (d *cikSeries) poolFor(cik, period string) []SeriesDecl {
 	return dictContemporaneous(decls, period)
 }
 
+// registrantExactName is the ONE series this registrant's own dictionary spells
+// EXACTLY as heading, contemporaneous with period. Nil when the dictionary
+// names none, or when two answer -- the same refusal seriesByName makes
+// everywhere else. It reads only rows of this CIK, so it is the registrant's own
+// evidence about its own sleeve, merely at a vintage other than the header the
+// filing happens to carry.
+func (d *cikSeries) registrantExactName(cik, heading, period string) *SeriesDecl {
+	pool := d.poolFor(cik, period)
+	if len(pool) == 0 {
+		return nil
+	}
+	x, _ := lookupSeriesEntry(seriesByName(pool), heading)
+	return x
+}
+
 // dictContemporaneous drops the dictionary entries that make one name answer to
 // two series when the registrant simply reused the name years apart: CIK
 // 1217286 declared `JPMorgan Market Neutral Fund` for S000002614 in 2006 and
