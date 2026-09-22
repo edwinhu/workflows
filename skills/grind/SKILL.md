@@ -80,7 +80,8 @@ bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh stop   --journal "$J" --why 'grid down
 ```
 
 `stop` is a record, not a signal: the loop honours it at its next boundary, after the pass in flight
-finishes. Exit codes are `0` done, `2` refused, `3` stalled, `4` budget exhausted, `5` stopped.
+finishes. Once the loop answers it with `stopped`, the same `run` command resumes the journal,
+floors and all. Exit codes are `0` done, `2` refused, `3` stalled, `4` budget exhausted, `5` stopped.
 
 That subcommand is refused from inside an iteration, and the refusal names its reason — the loop
 marks the environment it invokes the runner in, and an operator's own shell carries no such mark, so
