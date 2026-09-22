@@ -1,12 +1,12 @@
 /**
- * ralph.sh — who may end a run, and who may say how it ended.
+ * grind.sh — who may end a run, and who may say how it ended.
  *
  * Round 2 closed the `append` channel: an agent can no longer write a `stop` or a `done` record.
  * Two ways round it survived, both found by the amnesia-safety lens as residue:
  *
  *  1. `cmd_stop` writes the same record through `journal_append` directly, and every iteration's
  *     prompt prints `RALPH_SH` — the absolute path to the script that owns the stop channel. An
- *     iteration that reads SKILL.md, sees `ralph.sh stop`, and concludes the task looks impossible
+ *     iteration that reads SKILL.md, sees `grind.sh stop`, and concludes the task looks impossible
  *     ends a run the operator started.
  *  2. `status` reports the run's outcome from the POSITIONAL last record. The agent can still append
  *     `progress`, legitimately, after the loop has written `done` — and the only window a human has
@@ -19,7 +19,7 @@
  * faith is refused, and the refusal is visible rather than silent. SKILL.md must say this plainly,
  * because a guard whose limits are undocumented reads as a guarantee it is not.
  *
- * Run: bun test /home/eh/projects/workflows/skills/ralph/scripts/ralph-authority.test.ts
+ * Run: bun test /home/eh/projects/workflows/skills/grind/scripts/grind-authority.test.ts
  */
 import { describe, expect, test, afterAll } from 'bun:test'
 import { spawnSync } from 'node:child_process'
@@ -27,7 +27,7 @@ import { mkdtempSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-const RALPH = `${import.meta.dir}/ralph.sh`
+const GRIND = `${import.meta.dir}/grind.sh`
 
 const scratch: string[] = []
 afterAll(() => scratch.forEach(d => rmSync(d, { recursive: true, force: true })))
@@ -45,8 +45,8 @@ function script(dir: string, name: string, bodyText: string): string {
   return p
 }
 
-function ralph(args: string[], env?: Record<string, string>) {
-  return spawnSync('bash', [RALPH, ...args], {
+function grind(args: string[], env?: Record<string, string>) {
+  return spawnSync('bash', [GRIND, ...args], {
     encoding: 'utf8',
     timeout: 60_000,
     env: { ...process.env, ...(env ?? {}) },
@@ -69,7 +69,7 @@ function records(journal: string): any[] {
 
 describe('an iteration cannot end the run with the documented stop command', () => {
   test('the stop subcommand is refused from inside an iteration, and the run ends on its budget', () => {
-    const d = workdir('ralph-authstop')
+    const d = workdir('grind-authstop')
     const journal = join(d, 'journal.jsonl')
     const check = script(d, 'check.sh', 'exit 1')
     writeFileSync(join(d, 'prompt.txt'), 'work')
@@ -83,13 +83,13 @@ describe('an iteration cannot end the run with the documented stop command', () 
         `prompt=""; while [ $# -gt 0 ]; do [ "$1" = "-p" ] && { prompt="$2"; break; }; shift; done`,
         `j=$(printf '%s' "$prompt" | sed -n 's/^RALPH_JOURNAL: //p' | head -1)`,
         `s=$(printf '%s' "$prompt" | sed -n 's/^RALPH_SH: //p' | head -1)`,
-        `[ -n "$s" ] || s=${RALPH}`,
+        `[ -n "$s" ] || s=${GRIND}`,
         `bash "$s" stop --journal "$j" --why 'this looks impossible' >>${join(d, 'stop.out')} 2>&1 || true`,
         `exit 0`,
       ].join('\n'),
     )
 
-    const r = ralph([
+    const r = grind([
       'run',
       '--journal', journal,
       '--check', check,
@@ -110,17 +110,17 @@ describe('an iteration cannot end the run with the documented stop command', () 
   })
 
   test('the operator, outside any iteration, still stops a run', () => {
-    const d = workdir('ralph-opstop2')
+    const d = workdir('grind-opstop2')
     const journal = join(d, 'journal.jsonl')
 
-    expect(ralph(['stop', '--journal', journal]).status).toBe(0)
+    expect(grind(['stop', '--journal', journal]).status).toBe(0)
     expect(records(journal).filter(x => x.kind === 'stop').length).toBe(1)
 
     const check = script(d, 'check.sh', 'exit 1')
     const runner = script(d, 'runner.sh', 'exit 0')
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    const r = ralph([
+    const r = grind([
       'run',
       '--journal', journal,
       '--check', check,
@@ -135,7 +135,7 @@ describe('an iteration cannot end the run with the documented stop command', () 
 
 describe('status reports the loop, not whatever landed last', () => {
   test('an agent record appended after a terminal one does not erase it from status', () => {
-    const d = workdir('ralph-statuslast')
+    const d = workdir('grind-statuslast')
     const journal = join(d, 'journal.jsonl')
 
     writeFileSync(
@@ -150,24 +150,24 @@ describe('status reports the loop, not whatever landed last', () => {
 
     // Legitimate, and the agent is entitled to write it: a late progress note from the iteration
     // that was still finishing when the check went green.
-    expect(ralph(['append', '--journal', journal, '{"kind":"progress","key":"K1"}']).status).toBe(0)
+    expect(grind(['append', '--journal', journal, '{"kind":"progress","key":"K1"}']).status).toBe(0)
 
-    const s = ralph(['status', '--journal', journal])
+    const s = grind(['status', '--journal', journal])
     expect(s.status).toBe(0)
     expect(s.stdout).toContain('done')
   })
 
   test('a run still in flight is not reported as finished', () => {
-    const d = workdir('ralph-statusrunning')
+    const d = workdir('grind-statusrunning')
     const journal = join(d, 'journal.jsonl')
 
     writeFileSync(
       journal,
       ['{"kind":"start","pid":4242}', '{"kind":"iter","i":1}', ''].join('\n'),
     )
-    expect(ralph(['append', '--journal', journal, '{"kind":"progress","key":"K1"}']).status).toBe(0)
+    expect(grind(['append', '--journal', journal, '{"kind":"progress","key":"K1"}']).status).toBe(0)
 
-    const s = ralph(['status', '--journal', journal])
+    const s = grind(['status', '--journal', journal])
     expect(s.status).toBe(0)
     expect(s.stdout).not.toContain('done')
   })
