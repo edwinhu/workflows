@@ -87,6 +87,17 @@ const CONTINUATION =
 const TEARDOWN_CRON = /\bCronDelete\b/
 
 /**
+ * A hunt branch that never re-arms. The HOLD self-clears the instant its check exits 0, so on green
+ * nothing gates stopping and the tick is the only thing still driving; a hunt that ends in a report
+ * ends the loop. C9 requires a continuation clause, but that governs the budget WITHIN a goal and
+ * says nothing about replacing a goal that is already met. Measured 2026-09-22: eight consecutive
+ * ticks, each green, each producing one piece of adjacent work and then stopping, with every
+ * continuation coming from the user asking why the session kept stopping.
+ */
+const HUNT = /\bhunt\b|\bwork the check does not cover\b|\bspend the (remaining|rest)\b/i
+const REARM = /\b(re-?arm|arm the (hold|next|new)|arm it on|hound-arm)\b/i
+
+/**
  * `isBrief` = the text is a multi-paragraph brief rather than a one-line tick. A brief may
  * legitimately contain question marks (it specifies what the recon must answer); a tick may not.
  */
@@ -175,6 +186,14 @@ function lint(text: string, isBrief = false): Finding[] {
       severity: 'major',
       message: 'No teardown. A cron outlives the work and CronDelete is a model tool with no CLI, so this text is the only thing present when the work is done.',
       fix: 'End with: end this heartbeat with CronDelete. If a hold was armed for the same objective and did not self-clear, `hound-arm.sh --disarm` goes in the same sentence.',
+    })
+
+  if (HUNT.test(t) && !REARM.test(t))
+    f.push({
+      rule: 'C11',
+      severity: 'major',
+      message: 'The hunt branch never re-arms. The hold self-clears when its check exits 0, so on green nothing gates stopping and a hunt that ends in a report ends the loop.',
+      fix: 'Say that the tick arms the hold on what it found before the turn ends, e.g. "fix the largest one and ARM the hold on it before the turn ends".',
     })
 
   return f
