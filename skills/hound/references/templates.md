@@ -23,7 +23,9 @@ ceilings that can disagree is a bug, and the prose one is the bug.
 ```
 Run `<CHECK>` and report its exit code — judge from the command, not from the conversation. If it
 fails, take the next action now rather than proposing it. If it passes, spend the remaining budget:
-hunt for work the check does not cover, fix the largest one and say in one line why you picked it.
+hunt for work the check does not cover, fix the largest one, say in one line why you picked it, and
+ARM the hold on it before the turn ends -- the hold self-clears on green, so a hunt that ends in a
+report ends the loop.
 Standing authority: <what it may decide alone>. The only terminal blockers are <the complete list>;
 everything else is the next task, difficulty included. When the budget is spent, end this heartbeat
 with CronDelete.
