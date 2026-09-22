@@ -3,7 +3,10 @@ import { mkdtempSync, writeFileSync, existsSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
-import { decide, statePath, parseJudgeVerdict, parseNoul } from '../hooks/hound'
+import {
+  decide, statePath, parseJudgeVerdict, parseNoul,
+  transcriptContext, renderHistory, pushRound,
+} from '../hooks/hound'
 
 const HOOK = join(import.meta.dir, '..', 'hooks', 'hound.ts')
 
@@ -159,4 +162,147 @@ test("a missing or malformed decision reply fails OPEN", () => {
   expect(parseNoul(JSON.stringify({ answers: {} }), "met", 0.8).verdict).toBe("UNAVAILABLE")
   expect(parseNoul("not json", "met", 0.8).verdict).toBe("UNAVAILABLE")
   expect(parseNoul(JSON.stringify({ answers: { met: { type: "noul" } } }), "met", 0.8).verdict).toBe("UNAVAILABLE")
+})
+
+// ---------------------------------------------------------------- the run's own memory
+
+/** A transcript line as the harness writes it. */
+const turn = (text: string) => JSON.stringify({ type: 'assistant', message: { content: text } })
+const summaryLine = (text: string) =>
+  JSON.stringify({ type: 'user', isCompactSummary: true, message: { content: text } })
+
+describe('transcriptContext — the window the judge actually reads', () => {
+  test('a transcript with NO compaction behaves exactly as a bare tail did', () => {
+    const jsonl = [turn('one'), turn('two'), turn('three')].join('\n')
+    const c = transcriptContext(jsonl, 4000, 3000)
+    expect(c.summary).toBe('')
+    expect(c.tail).toBe('one\ntwo\nthree')
+  })
+
+  test('the LAST summary wins when a long run has compacted more than once', () => {
+    const jsonl = [
+      turn('ancient'), summaryLine('FIRST SUMMARY'), turn('middle'),
+      summaryLine('SECOND SUMMARY'), turn('recent'),
+    ].join('\n')
+    const c = transcriptContext(jsonl, 4000, 3000)
+    expect(c.summary).toBe('SECOND SUMMARY')
+    expect(c.tail).toBe('recent')
+  })
+
+  // THE BUG THIS EXISTS FOR. A boundary further back than the last 120 lines is precisely the long
+  // unattended run the summary is the memory of; a reader that only looks at the recent window
+  // finds no summary exactly when one matters.
+  test('a boundary FURTHER BACK than 120 lines is still found', () => {
+    const lines = [turn('pre-boundary'), summaryLine('DEEP SUMMARY')]
+    for (let i = 0; i < 400; i++) lines.push(turn(`t${i}`))
+    const c = transcriptContext(lines.join('\n'), 100_000, 3000)
+    expect(c.summary).toBe('DEEP SUMMARY')
+    expect(c.tail).toContain('t399')
+  })
+
+  test('turns BEFORE the boundary are excluded — they are what the summary replaced', () => {
+    const jsonl = [turn('BEFORE-MARKER'), summaryLine('S'), turn('after')].join('\n')
+    const c = transcriptContext(jsonl, 4000, 3000)
+    expect(c.tail).not.toContain('BEFORE-MARKER')
+    expect(c.tail).toBe('after')
+  })
+
+  test('the summary does not leak into the tail, where it would eat the whole tail budget', () => {
+    const big = 'S'.repeat(5000)
+    const jsonl = [summaryLine(big), turn('after')].join('\n')
+    const c = transcriptContext(jsonl, 4000, 3000)
+    expect(c.tail).toBe('after')
+  })
+
+  test('both halves are capped, and each keeps the end that carries its information', () => {
+    // HEAD of the summary (it opens with intent), TAIL of the turns (they carry recent evidence).
+    const jsonl = [summaryLine('HEAD' + 'x'.repeat(5000) + 'SUMTAIL'),
+                   turn('OLDEST' + 'y'.repeat(5000) + 'NEWEST')].join('\n')
+    const c = transcriptContext(jsonl, 100, 50)
+    expect(c.summary.length).toBe(50)
+    expect(c.summary.startsWith('HEAD')).toBe(true)
+    expect(c.tail.length).toBe(100)
+    expect(c.tail.endsWith('NEWEST')).toBe(true)
+  })
+
+  test('unparsable lines are skipped rather than losing the whole transcript', () => {
+    const jsonl = ['{not json', summaryLine('S'), 'also not json', turn('after')].join('\n')
+    const c = transcriptContext(jsonl, 4000, 3000)
+    expect(c.summary).toBe('S')
+    expect(c.tail).toBe('after')
+  })
+
+  test('content blocks are read as well as plain strings', () => {
+    const jsonl = JSON.stringify({ message: { content: [{ type: 'text', text: 'block text' }] } })
+    expect(transcriptContext(jsonl, 4000, 3000).tail).toBe('block text')
+  })
+})
+
+describe('the round record — no new file, and bounded on write', () => {
+  test('is empty when nothing has been recorded', () => {
+    expect(renderHistory(undefined)).toBe('')
+    expect(renderHistory([])).toBe('')
+  })
+
+  test('renders the exit code and the judge reason a compaction would destroy', () => {
+    const out = renderHistory([
+      { round: 1, at: 1_700_000_000, exit: 1 },
+      { round: 2, at: 1_700_003_600, exit: 0, note: 'judge UNMET: two suites still red' },
+    ])
+    expect(out).toContain('round 1')
+    expect(out).toContain('check exit 1')
+    expect(out).toContain('two suites still red')
+  })
+
+  test('is BOUNDED on write, so a long hold cannot grow the state file without limit', () => {
+    const s: any = { history: [] }
+    for (let i = 1; i <= 50; i++) pushRound(s, { round: i, at: i, exit: 1 }, 20)
+    expect(s.history.length).toBe(20)
+    expect(s.history[0].round).toBe(31)       // the OLDEST are dropped, not the newest
+    expect(s.history[19].round).toBe(50)
+  })
+
+  test('starts a history on a state file that has none', () => {
+    const s: any = {}
+    pushRound(s, { round: 1, at: 1, exit: 1 })
+    expect(s.history.length).toBe(1)
+  })
+})
+
+// ------------------------------------------------- arming warns about an uncapped context window
+
+describe('hound-arm.sh on an uncapped auto-compact window', () => {
+  const ARM = join(import.meta.dir, '..', 'skills', 'hound', 'scripts', 'hound-arm.sh')
+
+  function arm(window: string | null, minutes: string) {
+    const dir = mkdtempSync(join(tmpdir(), 'houndarm-'))
+    const env: Record<string, string> = {
+      ...process.env, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'arm-warn-test',
+    }
+    if (window === null) delete env.CLAUDE_CODE_AUTO_COMPACT_WINDOW
+    else env.CLAUDE_CODE_AUTO_COMPACT_WINDOW = window
+    const r = spawnSync('bash', [ARM, 'exit 1', '--minutes', minutes], { encoding: 'utf8', env })
+    return { ...r, dir }
+  }
+
+  test('warns on a long hold with the window unset, and ARMS anyway', () => {
+    const r = arm(null, '720')
+    expect(r.stderr).toContain('WARNING')
+    expect(r.stderr).toContain('autoCompactWindow')          // names the concrete fix
+    expect(r.stderr).toContain('CLAUDE_CODE_AUTO_COMPACT_WINDOW=250000')
+    expect(r.status).toBe(0)                                  // a cost problem, not a broken gate
+    expect(existsSync(join(r.dir, 'hound-arm-warn-test.json'))).toBe(true)
+  })
+
+  test('warns when the var is SET to the model maximum — that is not a cap', () => {
+    expect(arm('1000000', '720').stderr).toContain('WARNING')
+  })
+
+  test('is quiet once the window is actually capped', () => {
+    expect(arm('250000', '720').stderr).not.toContain('WARNING')
+  })
+
+  test('is quiet on a short hold, which never reaches the window anyway', () => {
+    expect(arm(null, '30').stderr).not.toContain('WARNING')
+  })
 })
