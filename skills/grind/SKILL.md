@@ -58,16 +58,16 @@ setsid nohup bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh run \
   --check 'bash /abs/measure.sh --lost-below 120000' \
   --gate  'test -f /abs/out/round-ready' \
   --sleep 300 --stall-after 5 --max-iters 200 \
-  --notify 'herdr notification show "grind $RALPH_STATE" --body "$RALPH_JOURNAL" --sound done' \
   >/abs/grind.log 2>&1 </dev/null &
 ```
 
 Never foreground it: a Bash tool call caps out and takes the run with it, and a session held open to
 watch is the cost this skill exists to remove. `--runner` defaults to `claude-code` and `--model` is
-passed through to it; a test or a dry run points `--runner` at a stub instead. `--notify` fires on
-every ending — `done`, `stalled`, `budget`, `stopped` — with `RALPH_STATE`, `RALPH_EXIT` and
-`RALPH_JOURNAL` set; a stall is the ending you most need to hear about, and a failing notifier never
-changes the exit code.
+passed through to it; a test or a dry run points `--runner` at a stub instead. Every ending — `done`, `stalled`,
+`budget`, `stopped` — is announced by default: `agent-msg` to the session that launched the run
+(`--notify-to` names another), plus a herdr popup where herdr is installed. `--notify CMD` replaces
+that and gets `RALPH_STATE`, `RALPH_EXIT` and `RALPH_JOURNAL`; `--notify none` silences it. A failed
+notification never changes the exit code.
 
 Then, from anywhere and at any time:
 

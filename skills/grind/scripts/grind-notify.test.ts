@@ -4,9 +4,9 @@
  * A loop that runs for days and then exits silently has to be polled to be useful, and polling is
  * the cost this whole design removes. The run already knows how it ended; it should say so.
  *
- * The flag takes a COMMAND, not a transport. grind has no business knowing about herdr, beeper,
- * notify-send or ntfy, and a loop that hardcodes one is a loop that cannot be used on a machine
- * that has another. The command is handed the outcome in the environment:
+ * With no flag the loop notifies by default: agent-msg to the session that launched it (or to
+ * --notify-to), plus a herdr popup only when herdr is on PATH. --notify CMD replaces the default,
+ * and --notify none turns it off. A custom command is handed the outcome in the environment:
  *
  *   RALPH_STATE    done | stalled | budget | stopped
  *   RALPH_EXIT     the loop's exit code
@@ -19,7 +19,7 @@
  */
 import { describe, expect, test, afterAll } from 'bun:test'
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync, symlinkSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -52,8 +52,29 @@ function notifier(dir: string): { path: string; out: string } {
   return { path, out }
 }
 
-function run(args: string[]) {
-  return spawnSync('bash', [GRIND, 'run', ...args], { encoding: 'utf8', timeout: 60_000 })
+function run(args: string[], env?: Record<string, string>) {
+  return spawnSync('bash', [GRIND, 'run', ...args], {
+    encoding: 'utf8', timeout: 60_000, env: env ?? process.env,
+  })
+}
+
+const SYSTEM_TOOLS = ['bash', 'sh', 'env', 'jq', 'date', 'dirname', 'basename', 'realpath', 'readlink',
+  'mkdir', 'sleep', 'cat', 'head', 'tail', 'wc', 'sed', 'awk', 'grep', 'tr', 'cut', 'rm', 'mv', 'touch',
+  'kill', 'ps', 'timeout', 'setsid', 'mktemp']
+
+/** A PATH holding only the system tools plus the stubs given, so the real agent-msg and herdr
+ *  on this machine can never be reached from a test. */
+function stubPath(dir: string, stubs: string[]): { env: Record<string, string>; log: string } {
+  const bin = join(dir, 'bin')
+  mkdirSync(bin)
+  const log = join(dir, 'calls.txt')
+  for (const name of stubs) script(bin, name, `printf '%s %s\\n' ${name} "$*" >> ${log}`)
+  // /usr/bin itself carries herdr on some machines, so link only the tools the loop runs.
+  for (const tool of SYSTEM_TOOLS) {
+    const real = spawnSync('bash', ['-c', `PATH=/usr/bin:/bin command -v ${tool}`], { encoding: 'utf8' }).stdout.trim()
+    if (real && !existsSync(join(bin, tool))) symlinkSync(real, join(bin, tool))
+  }
+  return { env: { PATH: bin, HOME: dir }, log }
 }
 
 describe('grind.sh --notify', () => {
@@ -150,24 +171,80 @@ describe('grind.sh --notify', () => {
     expect(r.status).toBe(0)
   })
 
-  test('without --notify nothing is spawned and the run is unchanged', () => {
-    const d = workdir('grind-notify-absent')
+  function finishing(d: string) {
     const journal = join(d, 'journal.jsonl')
-    const n = notifier(d)
-    const check = script(d, 'check.sh', 'exit 0')
-    const runner = script(d, 'runner.sh', 'exit 0')
     writeFileSync(join(d, 'prompt.txt'), 'work')
+    return {
+      journal,
+      args: [
+        '--journal', journal,
+        '--check', script(d, 'check.sh', 'exit 0'),
+        '--runner', script(d, 'runner.sh', 'exit 0'),
+        '--prompt-file', join(d, 'prompt.txt'),
+        '--max-iters', '3', '--sleep', '0',
+      ],
+    }
+  }
 
-    const r = run([
-      '--journal', journal,
-      '--check', check,
-      '--runner', runner,
-      '--prompt-file', join(d, 'prompt.txt'),
-      '--max-iters', '3',
-      '--sleep', '0',
-    ])
+  test('by default it agent-msgs the launching session, and pops herdr when herdr is present', () => {
+    const d = workdir('grind-notify-default')
+    const { journal, args } = finishing(d)
+    const { env, log } = stubPath(d, ['agent-msg', 'herdr'])
+
+    const r = run(args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
-    expect(existsSync(n.out)).toBe(false)
+    const calls = readFileSync(log, 'utf8')
+    expect(calls).toMatch(/^agent-msg send sess-launch .*done/m)
+    expect(calls).toContain(journal)
+    expect(calls).toMatch(/^herdr notification show .*done/m)
+  })
+
+  test('without herdr on PATH the default sends agent-msg alone', () => {
+    const d = workdir('grind-notify-noherdr')
+    const { args } = finishing(d)
+    const { env, log } = stubPath(d, ['agent-msg'])
+
+    const r = run(args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+
+    expect(r.status).toBe(0)
+    const calls = readFileSync(log, 'utf8')
+    expect(calls).toMatch(/^agent-msg send sess-launch /m)
+    expect(calls).not.toMatch(/^herdr /m)
+  })
+
+  test('--notify-to overrides the launching session as the target', () => {
+    const d = workdir('grind-notify-to')
+    const { args } = finishing(d)
+    const { env, log } = stubPath(d, ['agent-msg'])
+
+    const r = run([...args, '--notify-to', 'orchestrator'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+
+    expect(r.status).toBe(0)
+    expect(readFileSync(log, 'utf8')).toMatch(/^agent-msg send orchestrator /m)
+  })
+
+  test('--notify none spawns nothing and the run is unchanged', () => {
+    const d = workdir('grind-notify-none')
+    const { args } = finishing(d)
+    const { env, log } = stubPath(d, ['agent-msg', 'herdr'])
+
+    const r = run([...args, '--notify', 'none'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+
+    expect(r.status).toBe(0)
+    expect(existsSync(log)).toBe(false)
+  })
+
+  test('a custom --notify replaces the default rather than adding to it', () => {
+    const d = workdir('grind-notify-custom')
+    const { journal, args } = finishing(d)
+    const { env, log } = stubPath(d, ['agent-msg', 'herdr'])
+    const n = notifier(d)
+
+    const r = run([...args, '--notify', n.path], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+
+    expect(r.status).toBe(0)
+    expect(readFileSync(n.out, 'utf8').trim()).toBe(`done 0 ${journal}`)
+    expect(existsSync(log)).toBe(false)
   })
 })
