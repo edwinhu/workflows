@@ -193,6 +193,84 @@ export function parseJudgeVerdict(
 }
 
 
+/**
+ * Ask Jev (TypeSafe System One, via OpenRouter's Decisions API) whether the goal is met.
+ *
+ * This is a DECISION model, not a chat model: it takes state plus typed questions and returns a
+ * typed answer. A `noul` question is exactly this judge's shape -- "evaluate a yes/no question and
+ * return the PROBABILITY that the answer is yes" -- so the verdict arrives calibrated rather than
+ * as a word to be parsed, and the threshold is ours to set in code.
+ *
+ * It does NOT speak chat completions; the model page is explicit that chat SDKs will not work with
+ * it. Request: {state, model, questions:{k:{type:"noul", instructions}}}.
+ * Response:    {answers:{k:{type:"noul", noul:0..1}}, usage:{...}}.
+ *
+ * Priced at $0.042/M in and FREE out (2026-09-22), with a 0.26s P50 -- which suits a judge that
+ * runs inside a Stop hook and returns one bit.
+ */
+export function parseNoul(
+  stdout: string,
+  key: string,
+  threshold: number,
+): { verdict: 'MET' | 'UNMET' | 'UNAVAILABLE'; reason: string } {
+  try {
+    const d = JSON.parse(stdout)
+    const a = d?.answers?.[key]
+    const p = typeof a?.noul === 'number' ? a.noul : null
+    if (p === null) return { verdict: 'UNAVAILABLE', reason: 'no noul answer in the decision reply' }
+    const pct = Math.round(p * 100)
+    return p >= threshold
+      ? { verdict: 'MET', reason: `judge put the goal met at ${pct}% (threshold ${Math.round(threshold * 100)}%)` }
+      : { verdict: 'UNMET', reason: `judge put the goal met at only ${pct}% (threshold ${Math.round(threshold * 100)}%)` }
+  } catch {
+    return { verdict: 'UNAVAILABLE', reason: 'decision reply was not parsable json' }
+  }
+}
+
+function judgeViaDecisions(
+  state: string,
+  goal: string,
+): { verdict: 'MET' | 'UNMET' | 'UNAVAILABLE'; reason: string } {
+  const url = process.env.HOUND_DECISIONS_URL || 'https://openrouter.ai/api/alpha/decisions'
+  const model = process.env.HOUND_DECISIONS_MODEL || 'typesafe/jev-1.13'
+  // The threshold is DELIBERATELY high. Releasing a hold ends the work, so "probably done" is not
+  // done: an uncertain answer should keep the session working, which is the failure this whole
+  // mechanism exists to prevent.
+  const threshold = Number(process.env.HOUND_DECISIONS_THRESHOLD || 0.8)
+
+  let token = process.env.HOUND_JUDGE_TOKEN || ''
+  if (!token) {
+    const runtime = process.env.XDG_RUNTIME_DIR || '/run/user/1000'
+    try {
+      token = readFileSync(`${runtime}/agenix/openrouter-api-key`, 'utf8').trim()
+    } catch {
+      return { verdict: 'UNAVAILABLE', reason: 'no openrouter key (agenix secret not present)' }
+    }
+  }
+  if (!token) return { verdict: 'UNAVAILABLE', reason: 'empty openrouter key' }
+
+  const body = {
+    state,
+    model,
+    questions: {
+      met: {
+        type: 'noul',
+        instructions: `This goal has been fully met, with nothing outstanding, blocked or only partly done: ${goal}`,
+      },
+    },
+  }
+  const r = spawnSync(
+    'curl',
+    ['-sS', '--max-time', '60', '-X', 'POST', url,
+     '-H', `Authorization: Bearer ${token}`,
+     '-H', 'Content-Type: application/json',
+     '--data-binary', '@-'],
+    { encoding: 'utf8', input: JSON.stringify(body), timeout: 90_000 },
+  )
+  if (r.error || r.status !== 0) return { verdict: 'UNAVAILABLE', reason: 'decisions endpoint unreachable' }
+  return parseNoul(r.stdout || '', 'met', threshold)
+}
+
 function judgeGoal(
   transcriptPath: string,
   goal: string,
@@ -228,6 +306,12 @@ function judgeGoal(
     `TRANSCRIPT TAIL:\n${tail}\n\n` +
     `Set met=false if the goal names work that is still outstanding, blocked, or only partly done. ` +
     `Put one sentence of evidence in why.`
+
+  // Jev first: a decision model returns a calibrated probability for one typed question, which is
+  // this judge's exact shape and an order of magnitude cheaper than a chat round trip. The chat
+  // judge below stays as the fallback for when the key or the endpoint is not there.
+  const decided = judgeViaDecisions(tail, goal)
+  if (decided.verdict !== 'UNAVAILABLE') return decided
 
   // STRUCTURED OUTPUT, not prose parsing. The verdict is a boolean, and asking for it in prose
   // then scanning for a standalone MET/UNMET is guesswork with a fail-open hole: the wrapper's own
