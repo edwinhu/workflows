@@ -28,11 +28,11 @@
  *            the arm, and this hook restores a hold that vanished without one.
  */
 
-import { appendFileSync, existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { appendFileSync, existsSync, mkdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { join } from 'node:path'
-import { tmpdir } from 'node:os'
+import { homedir, tmpdir } from 'node:os'
 
 interface State {
   check: string
@@ -46,6 +46,7 @@ interface State {
   maxRounds: number
   rounds: number
   history?: RoundRecord[]
+  compact?: CapRecord
 }
 
 /** One round of the hold, as the hook observed it. */
@@ -465,6 +466,201 @@ function judgeGoal(
   return out
 }
 
+/* ------------------------------------------------------------------ the auto-compact window cap
+ *
+ * A held session keeps working, so every turn bills against the model's FULL window until
+ * auto-compact fires there. Capping it is worth roughly a 4x cut in steady-state input — but a
+ * RUNNING session reads `autoCompactWindow` once at startup (2.1.280), so editing any settings
+ * file mid-session changes nothing for the session already in flight.
+ *
+ * `/autocompact <X>` is the only live path into a running session, and what it applies is NOT X:
+ * it writes X into the user's GLOBAL settings, re-reads the MERGED settings — where the project's
+ * `.claude/settings.local.json` outranks global — and applies the merged value. So the cap goes in
+ * the PROJECT-LOCAL file and the command is sent with the global file's CURRENT value, which makes
+ * the global write a no-op while the session picks up the local cap. Release is the reverse.
+ *
+ * Verified live 2026-09-22 against 2.1.280: with a local cap present, `/autocompact auto` replied
+ * "set to auto in settings, but a higher-priority override is active (300k tokens)" and left the
+ * global file alone.
+ */
+
+/** The file `/autocompact` writes to. Resolved through symlinks — it is usually stowed. */
+export function userSettingsPath(): string {
+  const p = process.env.HOUND_USER_SETTINGS || join(homedir(), '.claude', 'settings.json')
+  try {
+    return realpathSync(p)
+  } catch {
+    return p
+  }
+}
+
+/** The project-local file that outranks global — where the cap actually lives. */
+export function localSettingsPath(): string {
+  return join(process.env.CLAUDE_PROJECT_DIR || process.cwd(), '.claude', 'settings.local.json')
+}
+
+const WINDOW_KEY = 'autoCompactWindow'
+
+function readSettings(path: string): Record<string, unknown> | null {
+  try {
+    const v = JSON.parse(readFileSync(path, 'utf8'))
+    return v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : null
+  } catch {
+    return null
+  }
+}
+
+/** What to send so that `/autocompact`'s global write reproduces the value already there. */
+export function globalArg(): string {
+  const g = readSettings(userSettingsPath())
+  const v = g?.[WINDOW_KEY]
+  return typeof v === 'number' && Number.isFinite(v) ? String(Math.trunc(v)) : 'auto'
+}
+
+export interface CapRecord {
+  path: string
+  window: number
+  prior: number | null
+  created: boolean
+}
+
+/** Put the cap in the local file, preserving every other key and its order. */
+export function writeLocalCap(path: string, window: number): CapRecord {
+  const created = !existsSync(path)
+  const cur = readSettings(path) ?? {}
+  const p = cur[WINDOW_KEY]
+  const prior = typeof p === 'number' && Number.isFinite(p) ? Math.trunc(p) : null
+  cur[WINDOW_KEY] = window
+  mkdirSync(join(path, '..'), { recursive: true })
+  writeFileSync(path, JSON.stringify(cur, null, 2) + '\n')
+  return { path, window, prior, created }
+}
+
+/**
+ * Undo `writeLocalCap` — but only if the key is still OURS.
+ *
+ * Someone editing the window mid-run is expressing a preference; overwriting it with a value from
+ * before the hold would silently discard that. Never throws: a release must not fail on a file.
+ */
+export function restoreLocal(rec: CapRecord): void {
+  try {
+    const cur = readSettings(rec.path)
+    if (!cur) return
+    if (cur[WINDOW_KEY] !== rec.window) return
+    if (rec.prior === null) delete cur[WINDOW_KEY]
+    else cur[WINDOW_KEY] = rec.prior
+    if (rec.created && Object.keys(cur).length === 0) {
+      rmSync(rec.path, { force: true })
+      return
+    }
+    writeFileSync(rec.path, JSON.stringify(cur, null, 2) + '\n')
+  } catch {
+    /* a release must not fail on a settings file */
+  }
+}
+
+/** This session's own Herdr pane, matched on the agent session id. Null rather than throwing. */
+export function selfPane(session: string): string | null {
+  try {
+    const r = spawnSync(process.env.HOUND_HERDR || 'herdr', ['agent', 'list'], {
+      encoding: 'utf8',
+      timeout: 20_000,
+    })
+    if (r.error || r.status !== 0 || !r.stdout) return null
+    const agents = JSON.parse(r.stdout)?.result?.agents
+    if (!Array.isArray(agents)) return null
+    for (const a of agents) if (a?.agent_session?.value === session) return a?.pane_id ?? null
+    return null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Make the running session re-read its merged settings, without changing the global file.
+ *
+ * The sleep is for the settings watcher: the file write and the command must not race, or the
+ * session re-reads settings from before the cap landed.
+ */
+export function applyWindow(session: string): string {
+  try {
+    const pane = selfPane(session)
+    if (!pane) return 'no pane found; window unchanged'
+    const settle = Number(process.env.HOUND_SETTLE_MS ?? 2000)
+    if (settle > 0) spawnSync('sleep', [String(settle / 1000)])
+    // NEVER a bare `/autocompact` — with no argument it opens an interactive picker.
+    const arg = globalArg()
+    const r = spawnSync(
+      process.env.HOUND_HERDR || 'herdr',
+      ['agent', 'prompt', pane, `/autocompact ${arg}`],
+      { encoding: 'utf8', timeout: 20_000 },
+    )
+    if (r.error || r.status !== 0) return 'herdr refused the /autocompact send; window unchanged'
+    return 'ok'
+  } catch {
+    return 'window unchanged (unexpected error)'
+  }
+}
+
+function capCli(): void {
+  const say = (m: string) => process.stdout.write(`  window:  ${m}\n`)
+  const session = process.env.CLAUDE_CODE_SESSION_ID || ''
+  if (!session) return say('no CLAUDE_CODE_SESSION_ID; not capped')
+  const path = statePath(session)
+  if (!existsSync(path)) return say('no armed hold; not capped')
+
+  if (process.env.HOUND_COMPACT_WINDOW === '0') return say('HOUND_COMPACT_WINDOW=0; not capped')
+  if (process.env.CLAUDE_CODE_AUTO_COMPACT_WINDOW)
+    return say('CLAUDE_CODE_AUTO_COMPACT_WINDOW is set; it wins and /autocompact refuses. Not capped')
+
+  let s: State
+  try {
+    s = JSON.parse(readFileSync(path, 'utf8'))
+  } catch {
+    return say('state unreadable; not capped')
+  }
+
+  const local = localSettingsPath()
+  if (!selfPane(session))
+    return say(
+      `no Herdr pane for this session; add "${WINDOW_KEY}": 250000 to ${local} and run ` +
+        '`/autocompact auto` yourself. Not capped',
+    )
+
+  const raw = Number(process.env.HOUND_COMPACT_WINDOW || 250_000)
+  const window = Math.min(1_000_000, Math.max(100_000, Number.isFinite(raw) ? raw : 250_000))
+
+  s.compact = writeLocalCap(local, window)
+  writeFileSync(path, JSON.stringify(s))
+
+  const status = applyWindow(session)
+  say(
+    status === 'ok'
+      ? `capped at ${window} for this session via ${local}; global settings untouched`
+      : `cap written to ${local} at ${window}, but not applied live: ${status}`,
+  )
+}
+
+/** Put the window back. Shared by `--uncap` and by every release inside the Stop hook. */
+function uncap(session: string, s: State | null): string | null {
+  if (!s?.compact) return null
+  restoreLocal(s.compact)
+  return applyWindow(session)
+}
+
+function uncapCli(): void {
+  const session = process.env.CLAUDE_CODE_SESSION_ID || ''
+  if (!session) return
+  let s: State | null = null
+  try {
+    s = JSON.parse(readFileSync(statePath(session), 'utf8'))
+  } catch {
+    return
+  }
+  const status = uncap(session, s)
+  if (status) process.stdout.write(`  window:  restored (${status})\n`)
+}
+
 function main(): void {
   const payload = JSON.parse(readFileSync(0, 'utf8') || '{}')
 
@@ -503,7 +699,7 @@ function main(): void {
     s = JSON.parse(readFileSync(path, 'utf8'))
   } catch {
     // An unreadable state file is a hold nobody can reason about; drop it rather than hold
-    // the session on terms that cannot be read.
+    // the session on terms that cannot be read. No cap record survives it, so nothing to restore.
     rmSync(path, { force: true })
     process.exit(0)
   }
@@ -540,6 +736,7 @@ function main(): void {
         process.stderr.write(`until: goal judge unavailable (${j.reason}); releasing on the check alone.\n`)
     }
     appendFileSync(ledger, `${new Date().toISOString()}\tpassed\t${s.check}\n`)
+    uncap(session, s)
     rmSync(path, { force: true })
     const moved = rubricDrift(s)
     const note = moved.length
@@ -550,6 +747,7 @@ function main(): void {
   }
   if (d.action === 'expired') {
     appendFileSync(ledger, `${new Date().toISOString()}\texpired\t${s.check}\n`)
+    uncap(session, s)
     rmSync(path, { force: true })
     const movedX = rubricDrift(s)
     const noteX = movedX.length ? ` (the check's own files also changed while armed: ${movedX.join(', ')})` : ''
@@ -609,4 +807,11 @@ function brief(): void {
   process.exit(0)
 }
 
-if (import.meta.main) (process.argv.includes('--brief') ? brief : main)()
+if (import.meta.main)
+  (process.argv.includes('--brief')
+    ? brief
+    : process.argv.includes('--cap')
+      ? capCli
+      : process.argv.includes('--uncap')
+        ? uncapCli
+        : main)()

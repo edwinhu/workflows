@@ -14,6 +14,7 @@ set -uo pipefail
 SID="${CLAUDE_CODE_SESSION_ID-}"
 [ -n "$SID" ] || { echo "hound-arm: no CLAUDE_CODE_SESSION_ID — cannot arm a session-scoped hold" >&2; exit 2; }
 STATE="${TMPDIR:-/tmp}/hound-$SID.json"
+HOOK="$(cd "$(dirname "$(readlink -f "$0")")/../../.." && pwd)/hooks/hound.ts"
 
 case "${1-}" in
   --status)
@@ -48,6 +49,8 @@ case "${1-}" in
     case "$ans" in
       y|Y|yes|YES)
         printf '%s\treleased by user\t%s\n' "$(date -Is)" "$(jq -r .check "$STATE" 2>/dev/null)" >> "$LOG"
+        # Restore the window BEFORE the state file goes: the cap record lives in it.
+        [ -r "$HOOK" ] && command -v bun >/dev/null 2>&1 && bun "$HOOK" --uncap
         rm -f "$STATE"; echo "hound: disarmed (user confirmed)"; exit 0 ;;
       *)
         printf '%s\tdeclined\t%s\n' "$(date -Is)" "$(jq -r .check "$STATE" 2>/dev/null)" >> "$LOG"
@@ -153,28 +156,12 @@ if [ -r "$LINT" ] && command -v bun >/dev/null 2>&1; then
   fi
 fi
 
-# WARN, NEVER REFUSE, when a long hold is armed on an UNCAPPED context window. Under a hold the
-# session keeps working, so every turn is billed against the model's FULL window (1M) until
-# auto-compact fires there; capping the window at 250000 cuts steady-state input to roughly a
-# quarter without changing what the session can do. THE RULE: warn when the ceiling is 120 minutes
-# or more and CLAUDE_CODE_AUTO_COMPACT_WINDOW is either unset or itself 500000 or above -- set to
-# the model's own maximum is not a cap, and observed 2026-09-22 it was sitting at 1000000, which a
-# plain unset-check would have called fine. Only the env var is decidable from here -- a
-# `--settings` cap is session-scoped and lands in no file this script can read -- so a session
-# capped that way warns anyway. That is the right way round: an uncapped window is a cost problem,
-# not a broken gate, and refusing belongs to checks that cannot work.
-W="${CLAUDE_CODE_AUTO_COMPACT_WINDOW-}"
-case "$W" in *[!0-9]*|'') W=0 ;; esac
-if [ "$MINUTES" -ge 120 ] 2>/dev/null && { [ "$W" -eq 0 ] || [ "$W" -ge 500000 ]; }; then
-  echo "hound-arm: WARNING — arming a $MINUTES min hold with the auto-compact window uncapped (CLAUDE_CODE_AUTO_COMPACT_WINDOW=${CLAUDE_CODE_AUTO_COMPACT_WINDOW-unset})." >&2
-  echo "  This session may run to the model's full 1M window on every turn. Cap it at spawn time:" >&2
-  echo "    claude --settings '{\"autoCompactWindow\":250000}' ...  (session-scoped, leaks nowhere)" >&2
-  echo "    CLAUDE_CODE_AUTO_COMPACT_WINDOW=250000 claude ...       (the session cannot change it)" >&2
-  echo "  Armed regardless; if you capped it with --settings this warning cannot see that." >&2
-fi
-
 echo "hound: ARMED on \`$CHECK\` (currently exits $RC)"
 echo "  ceiling: $ROUNDS rounds or $MINUTES minutes, whichever first"
 printf '%s\tarmed\t%s\n' "$(date -Is)" "$(cat "$STATE")" >> "${STATE%.json}.releases.log"
+# CAP THE WINDOW FOR THIS SESSION. A held session keeps working, so every turn bills against the
+# model's full window until auto-compact fires there. Only the hook can do it live, and only after
+# the state file exists -- the cap record is stored in it and every release undoes it.
+[ -r "$HOOK" ] && command -v bun >/dev/null 2>&1 && bun "$HOOK" --cap
 echo "  state:   $STATE"
 echo "  release: --disarm, which requires the USER to confirm at a terminal"

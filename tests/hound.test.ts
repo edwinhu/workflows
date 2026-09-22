@@ -271,38 +271,37 @@ describe('the round record — no new file, and bounded on write', () => {
 
 // ------------------------------------------------- arming warns about an uncapped context window
 
-describe('hound-arm.sh on an uncapped auto-compact window', () => {
+describe('hound-arm.sh and the auto-compact cap', () => {
   const ARM = join(import.meta.dir, '..', 'skills', 'hound', 'scripts', 'hound-arm.sh')
 
-  function arm(window: string | null, minutes: string) {
+  // No herdr on PATH here, so the cap cannot reach a pane -- which is the point: arming must still
+  // succeed and say what to do by hand. The opt-outs are asserted on the line they print.
+  function arm(extra: Record<string, string>) {
     const dir = mkdtempSync(join(tmpdir(), 'houndarm-'))
     const env: Record<string, string> = {
-      ...process.env, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'arm-warn-test',
+      ...process.env, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'arm-cap-test',
+      HOUND_HERDR: '/nonexistent-herdr', HOUND_SETTLE_MS: '0',
+      CLAUDE_CODE_AUTO_COMPACT_WINDOW: '', ...extra,
     }
-    if (window === null) delete env.CLAUDE_CODE_AUTO_COMPACT_WINDOW
-    else env.CLAUDE_CODE_AUTO_COMPACT_WINDOW = window
-    const r = spawnSync('bash', [ARM, 'exit 1', '--minutes', minutes], { encoding: 'utf8', env })
+    const r = spawnSync('bash', [ARM, 'exit 1', '--minutes', '720'], { encoding: 'utf8', env })
     return { ...r, dir }
   }
 
-  test('warns on a long hold with the window unset, and ARMS anyway', () => {
-    const r = arm(null, '720')
-    expect(r.stderr).toContain('WARNING')
-    expect(r.stderr).toContain('autoCompactWindow')          // names the concrete fix
-    expect(r.stderr).toContain('CLAUDE_CODE_AUTO_COMPACT_WINDOW=250000')
-    expect(r.status).toBe(0)                                  // a cost problem, not a broken gate
-    expect(existsSync(join(r.dir, 'hound-arm-warn-test.json'))).toBe(true)
+  test('with no pane it arms anyway and names the manual fix', () => {
+    const r = arm({})
+    expect(r.status).toBe(0)
+    expect(r.stdout).toContain('no Herdr pane')
+    expect(r.stdout).toContain('settings.local.json')
+    expect(existsSync(join(r.dir, 'hound-arm-cap-test.json'))).toBe(true)
   })
 
-  test('warns when the var is SET to the model maximum — that is not a cap', () => {
-    expect(arm('1000000', '720').stderr).toContain('WARNING')
+  test('HOUND_COMPACT_WINDOW=0 opts out', () => {
+    expect(arm({ HOUND_COMPACT_WINDOW: '0' }).stdout).toContain('not capped')
   })
 
-  test('is quiet once the window is actually capped', () => {
-    expect(arm('250000', '720').stderr).not.toContain('WARNING')
-  })
-
-  test('is quiet on a short hold, which never reaches the window anyway', () => {
-    expect(arm(null, '30').stderr).not.toContain('WARNING')
+  test('CLAUDE_CODE_AUTO_COMPACT_WINDOW wins, so the cap stands down', () => {
+    const r = arm({ CLAUDE_CODE_AUTO_COMPACT_WINDOW: '400000' })
+    expect(r.stdout).toContain('CLAUDE_CODE_AUTO_COMPACT_WINDOW is set')
+    expect(r.status).toBe(0)
   })
 })
