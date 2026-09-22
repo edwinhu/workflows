@@ -4336,7 +4336,45 @@ func issLeadingStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 	if len(family) < 2 || len(owners) != 1 {
 		return nil
 	}
+	if issDictLeadingPairRival(ix, toks, hit.SeriesID) {
+		return nil
+	}
 	return hit
+}
+
+// issDictLeadingPairRival reports that the registrant's DICTIONARY names a
+// series OTHER than own whose own name leads with the heading's pair -- the
+// sibling evidence the two-owner refusal above reads off the header, restored
+// where a merger has thinned the header since the sleeve last filed.
+//
+// John Hancock Variable Insurance Trust (CIK 756913) declared `All Cap Core
+// Trust` (S000008242), `All Cap Growth Trust` (S000008243) and `All Cap Value
+// Trust` (S000008244) at 20060630; only Core survived to the 2014 header, and
+// the filing still prints a section for the Value sleeve's residual votes. With
+// one owner left in the header the rung above reads `all cap value` as a
+// marketing spelling of `all cap core` and stamps a fund that cast none of
+// those votes. The registrant's own dictionary says otherwise: the slot after
+// the pair is where this registrant separates three registered series, so a
+// heading that swaps it names a DIFFERENT fund and must stay blank -- at which
+// point the audited overlay stamps the id the heading actually spells.
+func issDictLeadingPairRival(ix *issSeriesIndex, toks []string, own string) bool {
+	if cikDict == nil || ix == nil || ix.cik == "" || len(toks) < 3 {
+		return false
+	}
+	for _, d := range cikDict.byCIK[ix.cik] {
+		if d.SeriesID == "" || d.SeriesID == own || d.Name == "" {
+			continue
+		}
+		want := strings.Fields(normalizeSeriesName(d.Name))
+		if len(want) < 3 || want[0] != toks[0] || want[1] != toks[1] {
+			continue
+		}
+		if !issTypeWord(want[len(want)-1]) {
+			continue
+		}
+		return true
+	}
+	return false
 }
 
 // issStyleWord reports a descriptor registrants use as the STYLE of a sleeve
