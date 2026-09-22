@@ -28,12 +28,9 @@ bash $A --status     # armed? prints the check, the ceilings, and any release at
 bash $A --disarm     # THE USER releases it, confirming at a terminal; an agent gets exit 2
 ```
 
-**Cap the context window when the session is SPAWNED**, not after: a held session keeps working, so
-every turn bills against the model's full 1M window until auto-compact fires there.
-`claude --settings '{"autoCompactWindow":250000}' ...` is session-scoped and leaks into no other
-session; `CLAUDE_CODE_AUTO_COMPACT_WINDOW=250000` is the same cap in the form the session cannot
-change from inside, which is where hound already stands on release. `hound-arm.sh` warns — never
-refuses — when a ceiling of 2h or more is armed while that var is unset or at 500000+.
+Arming caps THIS session's auto-compact window at 250000 through the project's
+`.claude/settings.local.json`; every release — pass, expiry or `--disarm` — restores it, and global
+settings are never touched. `HOUND_COMPACT_WINDOW=0` opts out.
 
 ### Three layers, and the hole each one leaves
 
@@ -203,7 +200,7 @@ pick one, say why in a clause, do it. A menu offered at 02:00 is a five-hour pau
 | Arm a check that already exits 0 | it holds nothing and teaches the session the hold is noise | `hound-arm.sh` refuses it; pick the check that is red now |
 | Arm a check whose paths live in a different repo | it can never be met where it runs, only released unmet | the check must run in that session's own cwd |
 | Put an apostrophe in the check | it ends the single quote, and double quotes run every backticked fragment first | write the word without it |
-| Arm a hold on YOUR OWN session to try the hook out | it then blocks your own stop until the check passes | read `tests/until.test.ts`, or arm a check you can satisfy on demand |
+| Arm a hold on YOUR OWN session to try the hook out | it then blocks your own stop until the check passes | read `tests/hound.test.ts`, or arm a check you can satisfy on demand |
 | Treat a stopping condition you wrote down as binding on yourself | prose is re-adjudicated away; only the hook blocks a stop. Measured 2026-09-02: a session wrote "I'm treating that as binding regardless" and idled three hours later | arm it, and confirm with `--status` |
 | Disarm your own hold because the gate looks wrong | that is the same sentence a session uses when the gate is merely hard, and it is not yours to judge: `--disarm` refuses without a tty and the hook restores a deleted state file | arm the RIGHT check — replacing a gate is allowed, stopping is not — or ask the user to confirm the release |
 | Restate `--rounds` or `--minutes` as prose in the prompt | two ceilings that can disagree, and the prose one is the bug | the flags; the hook counts and clocks them |
