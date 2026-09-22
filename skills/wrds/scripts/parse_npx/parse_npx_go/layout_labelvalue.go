@@ -250,6 +250,10 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 		inBlock   bool
 		lastRow   = -1
 		lastLine  = -2
+		// The series named by a `FUND:` cue line standing in the heading region
+		// above a banner, held only until that banner is read or a vote row is
+		// emitted. See the fallback in the banner branch below.
+		fundCue string
 	)
 
 	for i := 0; i < len(lines); i++ {
@@ -296,9 +300,30 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 			// the fund by its then sub-adviser for a declared `PF International
 			// Value Fund` (S000001888, Pacific Funds 2006, 498 rows).
 			curSeries = lvResolveBanner(sharedIdx, dict, name)
+			// A banner that abbreviates the fund out of resolution, printed under
+			// a `FUND:` line that names it exactly: Principal Investors Fund heads
+			// its section `FUND:  PIF - Partners LargeCap Blend Fund I` and then
+			// rules `===== PRINCIPAL INVESTORS FUND LRG CAP BLEND =====` sixteen
+			// lines below it, inside the same section. `LRG CAP BLEND` resolves to
+			// nothing and must not be guessed at -- expanded it leaves three
+			// candidates under this CIK -- so the cue line is the only evidence,
+			// and it is used ONLY when the banner itself yields nothing. The banner
+			// still supplies the fund NAME, as every other section's does; a
+			// banner that resolves on its own is untouched.
+			if curSeries == "" {
+				curSeries = fundCue
+			}
+			fundCue = ""
 			inBlock = false
 			lastRow = -1
 			continue
+		}
+		// The `FUND: <name>` cue this grammar prints above some banners. It never
+		// opens a section on its own account -- the banner does that -- so it only
+		// records what it resolves to, and only while no row has been emitted
+		// since, which confines it to a heading region.
+		if pairs := lvPairs(cells); len(pairs) == 1 && pairs[0].label == "FUND" && pairs[0].value != "" {
+			fundCue = lvResolveBanner(sharedIdx, dict, pairs[0].value)
 		}
 		// `Fund Name: <name>` -- the LABELLED fund heading the icr grammar reads
 		// (icrFundNameLabel). This layout had no reader for it, so every row of a
@@ -407,6 +432,7 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 		if row, ok := lvVoteRow(cells, issuer, ticker, cusip, mtgDate, mtgType, fund, curSeries); ok && inBlock {
 			rows = append(rows, row)
 			lastRow, lastLine = len(rows)-1, i
+			fundCue = ""
 			continue
 		}
 
