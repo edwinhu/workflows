@@ -27,7 +27,10 @@
       "tsExpected": {
         "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "exit": 0,
-        "fs": {}
+        "fs": {
+          ".bun/install/cache/@t@/4e6f3c0572d49f62.pile": "34f2e7f1a2542b36",
+          ".bun/install/cache/@t@/f37872b8bc7d7953.pile": "505e3064724fad64"
+        }
       }
     },
     {
@@ -47,7 +50,10 @@
       "tsExpected": {
         "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "exit": 0,
-        "fs": {}
+        "fs": {
+          ".bun/install/cache/@t@/4e6f3c0572d49f62.pile": "34f2e7f1a2542b36",
+          ".bun/install/cache/@t@/f37872b8bc7d7953.pile": "505e3064724fad64"
+        }
       }
     },
     {
@@ -67,7 +73,10 @@
       "tsExpected": {
         "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "exit": 0,
-        "fs": {}
+        "fs": {
+          ".bun/install/cache/@t@/4e6f3c0572d49f62.pile": "34f2e7f1a2542b36",
+          ".bun/install/cache/@t@/f37872b8bc7d7953.pile": "505e3064724fad64"
+        }
       }
     },
     {
@@ -89,7 +98,9 @@
         "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "exit": 0,
         "fs": {
-          ".claude/projects/-proj-foo/pending-patterns.json": "<deleted>"
+          ".claude/projects/-proj-foo/pending-patterns.json": "<deleted>",
+          ".bun/install/cache/@t@/4e6f3c0572d49f62.pile": "34f2e7f1a2542b36",
+          ".bun/install/cache/@t@/f37872b8bc7d7953.pile": "505e3064724fad64"
         }
       }
     },
@@ -111,6 +122,8 @@
         "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "exit": 0,
         "fs": {
+          ".bun/install/cache/@t@/4e6f3c0572d49f62.pile": "34f2e7f1a2542b36",
+          ".bun/install/cache/@t@/f37872b8bc7d7953.pile": "505e3064724fad64",
           ".claude/projects/-proj-foo/pending-patterns.json": "74f2c64c41a2b62a"
         }
       }
@@ -133,6 +146,8 @@
         "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "exit": 0,
         "fs": {
+          ".bun/install/cache/@t@/4e6f3c0572d49f62.pile": "34f2e7f1a2542b36",
+          ".bun/install/cache/@t@/f37872b8bc7d7953.pile": "505e3064724fad64",
           ".claude/pending-patterns.json": "bbe2d12b495128e8"
         }
       }
@@ -155,6 +170,8 @@
         "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "exit": 0,
         "fs": {
+          ".bun/install/cache/@t@/4e6f3c0572d49f62.pile": "34f2e7f1a2542b36",
+          ".bun/install/cache/@t@/f37872b8bc7d7953.pile": "505e3064724fad64",
           ".claude/projects/-proj-foo/pending-patterns.json": "8f629160e8c99aaf"
         }
       }
@@ -177,6 +194,8 @@
         "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "exit": 0,
         "fs": {
+          ".bun/install/cache/@t@/4e6f3c0572d49f62.pile": "34f2e7f1a2542b36",
+          ".bun/install/cache/@t@/f37872b8bc7d7953.pile": "505e3064724fad64",
           ".claude/projects/-proj-deep-nest/pending-patterns.json": "6caf74b14e669cb3"
         }
       }

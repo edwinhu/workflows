@@ -34,7 +34,7 @@
         "GH_TOKEN": ""
       },
       "tsExpected": {
-        "stdoutSha256": "22563d74f185906287ad33e6666b9d2e52b4851832dfbd1da0e03eccec91c462",
+        "stdoutSha256": "8449bc586be05c11b62d9ec50652a6b4c143c690fa78ac5001d4570ba87272cc",
         "exit": 0,
         "fs": {}
       }
@@ -71,7 +71,7 @@
         "GH_TOKEN": ""
       },
       "tsExpected": {
-        "stdoutSha256": "ff363629318e36be36a128dc7c629409f44718e935fad150e8aaa6d66b2e682e",
+        "stdoutSha256": "5d7367a1c25162e45bc814c6a147d1d672e32b0694c078dc111510b837fc03f8",
         "exit": 0,
         "fs": {}
       }
@@ -109,7 +109,7 @@
         ".pixi/envs/default/.gitignore": "*\n"
       },
       "tsExpected": {
-        "stdoutSha256": "9f51f8ec5677c169e0893c0ee24715f847874faeb21bdda6f467b99d41d3b985",
+        "stdoutSha256": "6b4ddb2490861c114e7c35e4bde6e540983616985ed5e8b61af210500f522a7c",
         "exit": 0,
         "fs": {}
       }
@@ -149,7 +149,7 @@
         ".planning/SPEC.md": "---\nstatus: approved\nowner: eh\n---\n\n# Spec: parity harness\n\nThe harness must compare stdout, exit code, and filesystem delta.\n\nThird summary line.\n\nFourth line, beyond max_lines=3, must be cut.\n"
       },
       "tsExpected": {
-        "stdoutSha256": "22563d74f185906287ad33e6666b9d2e52b4851832dfbd1da0e03eccec91c462",
+        "stdoutSha256": "8449bc586be05c11b62d9ec50652a6b4c143c690fa78ac5001d4570ba87272cc",
         "exit": 0,
         "fs": {}
       }
@@ -192,7 +192,7 @@
         ".planning/drafts/part-1.md": "draft text\n"
       },
       "tsExpected": {
-        "stdoutSha256": "22563d74f185906287ad33e6666b9d2e52b4851832dfbd1da0e03eccec91c462",
+        "stdoutSha256": "8449bc586be05c11b62d9ec50652a6b4c143c690fa78ac5001d4570ba87272cc",
         "exit": 0,
         "fs": {}
       }
@@ -234,7 +234,7 @@
         ".planning/REVIEW.md": "reviewed\n"
       },
       "tsExpected": {
-        "stdoutSha256": "22563d74f185906287ad33e6666b9d2e52b4851832dfbd1da0e03eccec91c462",
+        "stdoutSha256": "8449bc586be05c11b62d9ec50652a6b4c143c690fa78ac5001d4570ba87272cc",
         "exit": 0,
         "fs": {}
       }
@@ -273,7 +273,7 @@
         ".claude/PLAN.md": "---\nstatus: legacy\n---\n\n# Legacy Plan\n\nProse plan with no checkbox tasks at all.\n\nAnother line.\n\nA fourth line that must be cut.\n"
       },
       "tsExpected": {
-        "stdoutSha256": "22563d74f185906287ad33e6666b9d2e52b4851832dfbd1da0e03eccec91c462",
+        "stdoutSha256": "8449bc586be05c11b62d9ec50652a6b4c143c690fa78ac5001d4570ba87272cc",
         "exit": 0,
         "fs": {}
       }
@@ -312,7 +312,7 @@
         ".planning/scratch-notes.md": "not a recognized state file\n"
       },
       "tsExpected": {
-        "stdoutSha256": "22563d74f185906287ad33e6666b9d2e52b4851832dfbd1da0e03eccec91c462",
+        "stdoutSha256": "8449bc586be05c11b62d9ec50652a6b4c143c690fa78ac5001d4570ba87272cc",
         "exit": 0,
         "fs": {}
       }
@@ -353,7 +353,7 @@
         ".planning/PHASE_SUMMARY.md": "summary\n"
       },
       "tsExpected": {
-        "stdoutSha256": "22563d74f185906287ad33e6666b9d2e52b4851832dfbd1da0e03eccec91c462",
+        "stdoutSha256": "8449bc586be05c11b62d9ec50652a6b4c143c690fa78ac5001d4570ba87272cc",
         "exit": 0,
         "fs": {}
       }
