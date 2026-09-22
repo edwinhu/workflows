@@ -3,7 +3,7 @@ import { mkdtempSync, writeFileSync, existsSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
-import { decide, statePath, parseJudgeVerdict } from '../hooks/hound'
+import { decide, statePath, parseJudgeVerdict, judgeArgs } from '../hooks/hound'
 
 const HOOK = join(import.meta.dir, '..', 'hooks', 'hound.ts')
 
@@ -130,3 +130,12 @@ test("no parsable verdict fails open rather than blocking", () => {
   // end, so an unreadable answer must be UNAVAILABLE and never UNMET.
   expect(parseJudgeVerdict("the model rambled and never answered").verdict).toBe("UNAVAILABLE")
 })
+
+test("agy takes a bare -p; the proxy wrappers take --model", () => {
+  // One arg list cannot serve both: agy rejects --model, and passing it makes the judge look
+  // unavailable rather than misconfigured, which fails OPEN and silently stops judging.
+  expect(judgeArgs("agy", "", "P")).toEqual(["-p", "P"]);
+  expect(judgeArgs("/usr/bin/agy", "ignored", "P")).toEqual(["-p", "P"]);
+  expect(judgeArgs("codex-code", "gpt-5.6-luna", "P")).toEqual(["--model", "gpt-5.6-luna", "-p", "P"]);
+  expect(judgeArgs("claude-code", "", "P")).toEqual(["-p", "P"]);
+});
