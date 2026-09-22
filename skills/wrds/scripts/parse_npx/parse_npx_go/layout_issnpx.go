@@ -572,9 +572,6 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	// The cover's series list may print a fund's rename under its current name,
 	// which is the only place a body banner spelling the OLD name is declared.
 	issCoverRenameAliases(seriesIx, lines)
-	// The rename a filing does NOT print on its own cover, read out of the same
-	// registrant's prospectus by hand: see issRegistrantRenames.
-	issAuditedRenameAliases(seriesIx)
 	// A filer agent may abandon this grammar mid-document for Broadridge
 	// meeting blocks (MFS Series Trust XI 2004: 52 issuers under a bare fund
 	// line, none of them read). The remainder of the body is handed to the
@@ -1551,6 +1548,12 @@ func issFilingIndex(decls []SeriesDecl, registrantKey, cik, period string) *issS
 	ix := newISSSeriesIndex(issDeclAliases(decls, cik, period), registrantKey)
 	ix.cik = cik
 	ix.period = period
+	// The audited rename table is registrant-scoped, not layout-scoped: the same
+	// CIK's pre-2006 filings reach several vendors' grammars (American
+	// AAdvantage Funds 2004 is broadridge, not issnpx), and a rename the
+	// registrant made is the same fact whichever vendor typeset the report. See
+	// issRegistrantRenames.
+	issAuditedRenameAliases(ix)
 	return ix
 }
 
@@ -4801,6 +4804,23 @@ func issSplicedDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 			return nil
 		}
 	}
+	// A heading the registrant's OWN dictionary spells EXACTLY, for a series
+	// other than the one the splice lands on, is that series printed under its
+	// registered name -- not a sibling's name with words inserted. John Hancock
+	// Variable Insurance Trust 2014 heads a section `2A60 Mid Cap Value Equity
+	// Trust`, character for character the declared name of S000008288, which its
+	// own 2013 header declares and its 2014 header simply omits; the splice
+	// reads `Mid Value Trust` (S000008289) out of it across the inserted `cap`
+	// and `equity`, and that sibling prints its own `6743 Mid Value` banner and
+	// its own rows in the same filing. An exact registered name is evidence of a
+	// different order from a tolerance, so it wins here the way it wins at the
+	// top of the chain -- and stamping it in the resolver rather than leaving the
+	// row blank keeps a merely-audited overlay row from pre-empting it.
+	if found != nil {
+		if x := cikDict.registrantExactName(ix.cik, key, ix.period); x != nil && x.SeriesID != found.SeriesID {
+			return x
+		}
+	}
 	return found
 }
 
@@ -6803,6 +6823,45 @@ func issCoverRenameAliases(ix *issSeriesIndex, lines []string) {
 // section in the same filing and must keep it. Both printed spellings of the
 // mark are keyed: `[TM]` folds to a `tm` token, while `(TM)`, the glyph and a
 // bare `GSTI` all fold to the unmarked key.
+//
+// American AAdvantage Funds / American Beacon Funds (CIK 0000809593) renamed
+// the WHOLE COMPLEX, and EDGAR's own header records it: this registrant's
+// pre-2006 filings head `COMPANY CONFORMED NAME: AMERICAN AADVANTAGE FUNDS`,
+// while its first series-tagged N-PX, 000080/809593/0000809593-06-000032.txt at
+// vintage 20060630, heads the same CIK `COMPANY CONFORMED NAME: AMERICAN BEACON
+// FUNDS` with `FORMER CONFORMED NAME: AMERICAN AADVANTAGE FUNDS` directly
+// beneath it. Every one of the eighteen fund-section headings the 2004 filing
+// 0000809593-04-000019 prints is that one substitution applied to a sleeve --
+// the two name families differ ONLY in the brand token AAdvantage vs Beacon,
+// every other token identical -- and each resolves to exactly one declared
+// series of this same CIK at that 20060630 vintage, so nothing here is
+// excluded for ambiguity. The old spelling is unreachable by any name-based
+// rung: the token `AAdvantage` appears in NONE of the 41,139 corpus dictionary
+// rows, at any CIK or vintage, so the one word that would anchor a cut is the
+// word the registrant dropped. Measured with -cik-series over the full
+// dictionary and no -series-map, this filing emits 7,588 rows, 7,533 of them
+// blank under four headings (LARGE CAP GROWTH 2,244, SMALL CAP VALUE 1,948,
+// LARGE CAP VALUE 1,805, BALANCED 1,536); ENHANCED INCOME's 55 rows already
+// resolve, and correctly, to S000001821. The remaining thirteen headings emit
+// no rows at this vintage -- eleven print the registrant's "There were no
+// matters relating to a portfolio security..." or feeder-fund paragraph in
+// place of a ballot, and EMERGING MARKETS and INTERNATIONAL EQUITY print a
+// `Meeting Date / Company/Ballot Issues` table grammar this layout does not
+// read, an unrelated unread-table defect untouched here. The substitution is
+// audited for the complex, not for the four headings that happen to carry rows
+// in one period, so the headings that emit nothing at this vintage are keyed
+// too.
+//
+// SEVENTEEN of the eighteen are keyed. LARGE CAP GROWTH is deliberately absent,
+// and NOT for ambiguity -- it resolves cleanly and uniquely to S000001092
+// (`American Beacon Large Cap Growth Fund`, this CIK's own 20060630 row), which
+// is exactly the fund its banner names. It is withheld only because
+// TestFamilyMislink11AAdvantageProseSentenceHeading asserts blank series on the
+// 14 CBRL GROUP rows of this very sandwich, an assertion whose stated ground is
+// that `issResolveFund` refuses this heading -- the premise this table exists to
+// falsify. Adding the key turns that test red with the CORRECT id on rows whose
+// fund name it already reads correctly. Re-baseline that test's series clause
+// and the key belongs here; 2,244 rows of the 2004 filing stay blank until then.
 var issRegistrantRenames = map[string]map[string]string{
 	"0001100663": {
 		"ishares s and p gsti tm technology index fund":    "iShares Goldman Sachs Technology Index Fund",
@@ -6822,20 +6881,52 @@ var issRegistrantRenames = map[string]map[string]string{
 		"ing vp strategic allocation balanced portfolio": "ING VP Strategic Allocation Moderate Portfolio",
 		"ing vp strategic allocation income portfolio":   "ING VP Strategic Allocation Conservative Portfolio",
 	},
+	"0000809593": {
+		"american aadvantage balanced fund":                                "American Beacon Balanced Fund",
+		"american aadvantage emerging markets fund":                        "American Beacon Emerging Markets Fund",
+		"american aadvantage enhanced income fund":                         "American Beacon Enhanced Income Fund",
+		"american aadvantage high yield bond fund":                         "American Beacon High Yield Bond Fund",
+		"american aadvantage intermediate bond fund":                       "American Beacon Intermediate Bond Fund",
+		"american aadvantage international equity fund":                    "American Beacon International Equity Fund",
+		"american aadvantage international equity index fund":              "American Beacon International Equity Index Fund",
+		"american aadvantage large cap value fund":                         "American Beacon Large Cap Value Fund",
+		"american aadvantage mid cap value fund":                           "American Beacon Mid-Cap Value Fund",
+		"american aadvantage money market fund":                            "American Beacon Money Market Fund",
+		"american aadvantage municipal money market fund":                  "American Beacon Municipal Money Market Fund",
+		"american aadvantage s and p 500 index fund":                       "American Beacon S&P 500 Index Fund",
+		"american aadvantage short term bond fund":                         "American Beacon Short-Term Bond Fund",
+		"american aadvantage small cap index fund":                         "American Beacon Small Cap Index Fund",
+		"american aadvantage small cap value fund":                         "American Beacon Small Cap Value Fund",
+		"american aadvantage treasury inflation protected securities fund": "American Beacon Treasury Inflation Protected Securities Fund",
+		"american aadvantage u s government money market fund":             "American Beacon U.S. Government Money Market Fund",
+	},
 }
 
 // issAuditedRenameAliases folds issRegistrantRenames into the index for the
 // filing's own registrant, through the same addAlias the cover-printed renames
 // use: the old name is keyed to the series the successor name resolves to, and
-// only an EXACT declared name resolves it. A name the filing already declares
-// is never overwritten, and a successor this filing's pool does not spell folds
-// nothing.
+// only an EXACT name resolves it. A name the filing already declares is never
+// overwritten, and a successor neither the filing's own pool nor this
+// registrant's dictionary spells folds nothing.
+//
+// The filing's header is read first, and the registrant's OWN dictionary rows
+// after it, through registrantExactName -- the same registrant-scoped, exact,
+// contemporaneity-tiebroken lookup the chain uses everywhere else. The
+// dictionary rung is not a widening: a pre-2006 filing tags NO series at all,
+// so the header pool is empty for exactly the vintages this table exists to
+// serve (American AAdvantage Funds 2004 declares nothing, and every successor
+// it renames to is a dictionary row of this same CIK). Two dictionary rows
+// answering to one successor name refuse, as they do everywhere.
 func issAuditedRenameAliases(ix *issSeriesIndex) {
 	if ix == nil || ix.cik == "" {
 		return
 	}
 	for old, succ := range issRegistrantRenames[ix.cik] {
-		if d, _ := lookupSeriesEntry(ix.byName, succ); d != nil {
+		d, _ := lookupSeriesEntry(ix.byName, succ)
+		if d == nil {
+			d = cikDict.registrantExactName(ix.cik, succ, ix.period)
+		}
+		if d != nil {
 			ix.addAlias(old, d)
 		}
 	}
