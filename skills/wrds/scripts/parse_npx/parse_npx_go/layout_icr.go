@@ -719,13 +719,21 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 }
 
 // icrReportPeriodLine reports whether a line is nothing but the section's
-// reporting period: `07/01/2007 - 06/30/2008`.
+// reporting period: `07/01/2007 - 06/30/2008`. Some filers separate the two
+// dates with a double hyphen instead -- `JULY 1, 2010 -- JUNE 30, 2011`
+// (Vantagepoint Funds, CIK 1066980) -- which parseLabelValue already allows.
+// Both halves must still be dates, so a line carrying a stray dash is refused.
 func icrReportPeriodLine(line string) bool {
-	head, tail, ok := strings.Cut(line, " - ")
-	if !ok {
-		return false
+	for _, sep := range [...]string{" -- ", " - "} {
+		head, tail, ok := strings.Cut(line, sep)
+		if !ok {
+			continue
+		}
+		if htmlDate(strings.TrimSpace(head)) != "" && htmlDate(strings.TrimSpace(tail)) != "" {
+			return true
+		}
 	}
-	return htmlDate(strings.TrimSpace(head)) != "" && htmlDate(strings.TrimSpace(tail)) != ""
+	return false
 }
 
 // icrHeadingAbovePeriod returns the nearest nonblank line above a reporting
