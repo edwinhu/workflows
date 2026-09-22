@@ -1,5 +1,5 @@
 /**
- * ralph.sh — the four unattended-safety defects the amnesia-safety lens found in round 1, each
+ * grind.sh — the four unattended-safety defects the amnesia-safety lens found in round 1, each
  * turned into the failing test that closes it.
  *
  * All four share one theme: the loop trusts records the AGENT wrote. An amnesiac iteration is not
@@ -21,7 +21,7 @@
  * The fix for 2, 3 and 4 is one rule: `append` takes a whitelist of agent kinds and enforces the
  * fields each one needs. Loop-owned kinds are refused.
  *
- * Run: bun test /home/eh/projects/workflows/skills/ralph/scripts/ralph-safety.test.ts
+ * Run: bun test /home/eh/projects/workflows/skills/grind/scripts/grind-safety.test.ts
  */
 import { describe, expect, test, afterAll } from 'bun:test'
 import { spawnSync } from 'node:child_process'
@@ -29,7 +29,7 @@ import { mkdtempSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-const RALPH = `${import.meta.dir}/ralph.sh`
+const GRIND = `${import.meta.dir}/grind.sh`
 
 /** Records the loop owns. An agent that could write one of these could end or misreport the run. */
 const LOOP_OWNED = ['start', 'iter', 'iter_end', 'wait', 'done', 'stalled', 'budget', 'stop']
@@ -53,8 +53,8 @@ function script(dir: string, name: string, bodyText: string): string {
   return p
 }
 
-function ralph(args: string[]) {
-  return spawnSync('bash', [RALPH, ...args], { encoding: 'utf8', timeout: 60_000 })
+function grind(args: string[]) {
+  return spawnSync('bash', [GRIND, ...args], { encoding: 'utf8', timeout: 60_000 })
 }
 
 function records(journal: string): any[] {
@@ -73,7 +73,7 @@ function records(journal: string): any[] {
 
 describe('a scan that fails must not be mistaken for a virgin journal', () => {
   test('refuses to run an iteration when the journal cannot be read, rather than restarting at 1', () => {
-    const d = workdir('ralph-scanfail')
+    const d = workdir('grind-scanfail')
     const journal = join(d, 'journal.jsonl')
     const marker = join(d, 'runner-was-called')
 
@@ -97,7 +97,7 @@ describe('a scan that fails must not be mistaken for a virgin journal', () => {
     const runner = script(d, 'runner.sh', `touch ${marker}`)
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    const r = ralph([
+    const r = grind([
       'run',
       '--journal', journal,
       '--check', check,
@@ -119,10 +119,10 @@ describe('a scan that fails must not be mistaken for a virgin journal', () => {
 
 describe('append enforces the shape each agent record needs', () => {
   test('refuses a floor with no key, instead of accepting a record the reader will drop', () => {
-    const d = workdir('ralph-floorkey')
+    const d = workdir('grind-floorkey')
     const journal = join(d, 'journal.jsonl')
 
-    const r = ralph([
+    const r = grind([
       'append',
       '--journal', journal,
       '{"kind":"floor","why":"no machine-readable text","note":"1934-paper-scans"}',
@@ -132,22 +132,22 @@ describe('append enforces the shape each agent record needs', () => {
     expect(records(journal).length).toBe(0)
 
     // An empty key is the same defect wearing a different hat.
-    expect(ralph(['append', '--journal', journal, '{"kind":"floor","key":""}']).status).not.toBe(0)
+    expect(grind(['append', '--journal', journal, '{"kind":"floor","key":""}']).status).not.toBe(0)
     expect(records(journal).length).toBe(0)
 
     // The well-formed record still lands.
-    expect(ralph(['append', '--journal', journal, '{"kind":"floor","key":"CIK-79179"}']).status).toBe(0)
-    expect(ralph(['floors', '--journal', journal]).stdout).toContain('CIK-79179')
+    expect(grind(['append', '--journal', journal, '{"kind":"floor","key":"CIK-79179"}']).status).toBe(0)
+    expect(grind(['floors', '--journal', journal]).stdout).toContain('CIK-79179')
   })
 
   test('accepts every agent-owned kind', () => {
-    const d = workdir('ralph-agentkinds')
+    const d = workdir('grind-agentkinds')
     const journal = join(d, 'journal.jsonl')
     for (const kind of AGENT_OWNED) {
       const rec = kind === 'floor'
         ? '{"kind":"floor","key":"K1"}'
         : `{"kind":"${kind}","key":"K1"}`
-      expect(ralph(['append', '--journal', journal, rec]).status).toBe(0)
+      expect(grind(['append', '--journal', journal, rec]).status).toBe(0)
     }
     expect(records(journal).length).toBe(AGENT_OWNED.length)
   })
@@ -155,18 +155,18 @@ describe('append enforces the shape each agent record needs', () => {
 
 describe('the agent may report observations, never verdicts about the run', () => {
   test('refuses every loop-owned kind, so no appended record can end or misreport the run', () => {
-    const d = workdir('ralph-reserved')
+    const d = workdir('grind-reserved')
     const journal = join(d, 'journal.jsonl')
 
     for (const kind of LOOP_OWNED) {
-      const r = ralph(['append', '--journal', journal, `{"kind":"${kind}","i":12}`])
+      const r = grind(['append', '--journal', journal, `{"kind":"${kind}","i":12}`])
       expect({ kind, status: r.status }).toEqual({ kind, status: 2 })
     }
     expect(records(journal).length).toBe(0)
   })
 
   test('a run is not ended by a stop record the agent tried to append', () => {
-    const d = workdir('ralph-forgestop')
+    const d = workdir('grind-forgestop')
     const journal = join(d, 'journal.jsonl')
     const check = script(d, 'check.sh', 'exit 1')
     writeFileSync(join(d, 'prompt.txt'), 'work')
@@ -178,12 +178,12 @@ describe('the agent may report observations, never verdicts about the run', () =
       [
         `prompt=""; while [ $# -gt 0 ]; do [ "$1" = "-p" ] && { prompt="$2"; break; }; shift; done`,
         `j=$(printf '%s' "$prompt" | sed -n 's/^RALPH_JOURNAL: //p' | head -1)`,
-        `bash ${RALPH} append --journal "$j" '{"kind":"stop","why":"this looks impossible"}' || true`,
+        `bash ${GRIND} append --journal "$j" '{"kind":"stop","why":"this looks impossible"}' || true`,
         `exit 0`,
       ].join('\n'),
     )
 
-    const r = ralph([
+    const r = grind([
       'run',
       '--journal', journal,
       '--check', check,
@@ -200,13 +200,13 @@ describe('the agent may report observations, never verdicts about the run', () =
   })
 
   test('status cannot be made to report a finish the agent invented', () => {
-    const d = workdir('ralph-forgedone')
+    const d = workdir('grind-forgedone')
     const journal = join(d, 'journal.jsonl')
 
-    ralph(['append', '--journal', journal, '{"kind":"progress","key":"K1"}'])
-    expect(ralph(['append', '--journal', journal, '{"kind":"done","i":12,"note":"finished"}']).status).toBe(2)
+    grind(['append', '--journal', journal, '{"kind":"progress","key":"K1"}'])
+    expect(grind(['append', '--journal', journal, '{"kind":"done","i":12,"note":"finished"}']).status).toBe(2)
 
-    const s = ralph(['status', '--journal', journal])
+    const s = grind(['status', '--journal', journal])
     expect(s.status).toBe(0)
     expect(s.stdout).not.toContain('done')
   })
@@ -214,17 +214,17 @@ describe('the agent may report observations, never verdicts about the run', () =
 
 describe('the operator still owns stop', () => {
   test('the stop subcommand ends a run the agent could not', () => {
-    const d = workdir('ralph-opstop')
+    const d = workdir('grind-opstop')
     const journal = join(d, 'journal.jsonl')
 
-    expect(ralph(['stop', '--journal', journal]).status).toBe(0)
+    expect(grind(['stop', '--journal', journal]).status).toBe(0)
     expect(records(journal).filter(x => x.kind === 'stop').length).toBe(1)
 
     const check = script(d, 'check.sh', 'exit 1')
     const runner = script(d, 'runner.sh', 'exit 0')
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    const r = ralph([
+    const r = grind([
       'run',
       '--journal', journal,
       '--check', check,

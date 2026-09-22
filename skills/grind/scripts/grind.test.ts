@@ -1,5 +1,5 @@
 /**
- * ralph.sh — a Ralph loop that runs OUTSIDE any chat session, with one append-only journal as its
+ * grind.sh — a Ralph-pattern loop that runs OUTSIDE any chat session, with one append-only journal as its
  * entire memory.
  *
  * These tests are the specification. They exist because the three properties below are the ones an
@@ -17,7 +17,7 @@
  *
  * Nothing here touches the network. `--runner` points at a stub in every case.
  *
- * Run: bun test /home/eh/projects/workflows/skills/ralph/scripts/ralph.test.ts
+ * Run: bun test /home/eh/projects/workflows/skills/grind/scripts/grind.test.ts
  */
 import { describe, expect, test, afterAll } from 'bun:test'
 import { spawnSync } from 'node:child_process'
@@ -25,7 +25,7 @@ import { mkdtempSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-const RALPH = `${import.meta.dir}/ralph.sh`
+const GRIND = `${import.meta.dir}/grind.sh`
 
 /** The single-write bound a record must fit in. POSIX guarantees an O_APPEND write of at most
  *  PIPE_BUF bytes lands whole, which is what lets the loop and the agent share one file with no
@@ -48,8 +48,8 @@ function script(dir: string, name: string, body: string): string {
   return p
 }
 
-function ralph(args: string[], cwd?: string) {
-  return spawnSync('bash', [RALPH, ...args], { encoding: 'utf8', cwd, timeout: 60_000 })
+function grind(args: string[], cwd?: string) {
+  return spawnSync('bash', [GRIND, ...args], { encoding: 'utf8', cwd, timeout: 60_000 })
 }
 
 /** Every parseable record, in order. Unparseable lines are skipped, which is the reader contract. */
@@ -80,15 +80,15 @@ function failNTimes(dir: string, n: number): string {
   )
 }
 
-describe('ralph.sh run — the loop', () => {
+describe('grind.sh run — the loop', () => {
   test('exits 0 when the check goes green, having run exactly one iteration per red check', () => {
-    const d = workdir('ralph-green')
+    const d = workdir('grind-green')
     const journal = join(d, 'journal.jsonl')
     const check = failNTimes(d, 3)
     const runner = script(d, 'runner.sh', 'exit 0')
     writeFileSync(join(d, 'prompt.txt'), 'do one unit of work')
 
-    const r = ralph([
+    const r = grind([
       'run',
       '--journal', journal,
       '--check', check,
@@ -104,7 +104,7 @@ describe('ralph.sh run — the loop', () => {
   })
 
   test('a failing --gate suppresses the model call entirely — no runner invocation, no iter record', () => {
-    const d = workdir('ralph-gate')
+    const d = workdir('grind-gate')
     const journal = join(d, 'journal.jsonl')
     const marker = join(d, 'runner-was-called')
     const check = script(d, 'check.sh', 'exit 1')
@@ -112,7 +112,7 @@ describe('ralph.sh run — the loop', () => {
     const runner = script(d, 'runner.sh', `touch ${marker}`)
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    const r = ralph([
+    const r = grind([
       'run',
       '--journal', journal,
       '--check', check,
@@ -131,13 +131,13 @@ describe('ralph.sh run — the loop', () => {
   })
 
   test('--stall-after stops the loop when no iteration records progress', () => {
-    const d = workdir('ralph-stall')
+    const d = workdir('grind-stall')
     const journal = join(d, 'journal.jsonl')
     const check = script(d, 'check.sh', 'exit 1')
     const runner = script(d, 'runner.sh', 'exit 0')
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    const r = ralph([
+    const r = grind([
       'run',
       '--journal', journal,
       '--check', check,
@@ -154,9 +154,9 @@ describe('ralph.sh run — the loop', () => {
   })
 })
 
-describe('ralph.sh — floors are an exclusion list, delivered to every later prompt', () => {
+describe('grind.sh — floors are an exclusion list, delivered to every later prompt', () => {
   test('a key recorded as a floor reaches later prompts and is listed by the floors subcommand', () => {
-    const d = workdir('ralph-floor')
+    const d = workdir('grind-floor')
     const journal = join(d, 'journal.jsonl')
     const promptDir = join(d, 'prompts')
     const check = script(d, 'check.sh', 'exit 1')
@@ -174,12 +174,12 @@ describe('ralph.sh — floors are an exclusion list, delivered to every later pr
         `prompt=""; while [ $# -gt 0 ]; do [ "$1" = "-p" ] && { prompt="$2"; break; }; shift; done`,
         `printf '%s' "$prompt" > ${promptDir}/$n.txt`,
         `j=$(printf '%s' "$prompt" | sed -n 's/^RALPH_JOURNAL: //p' | head -1)`,
-        `[ "$n" = "0" ] && bash ${RALPH} append --journal "$j" '{"kind":"floor","key":"CIK-1081400","why":"declared nowhere"}'`,
+        `[ "$n" = "0" ] && bash ${GRIND} append --journal "$j" '{"kind":"floor","key":"CIK-1081400","why":"declared nowhere"}'`,
         `exit 0`,
       ].join('\n'),
     )
 
-    const r = ralph([
+    const r = grind([
       'run',
       '--journal', journal,
       '--check', check,
@@ -192,7 +192,7 @@ describe('ralph.sh — floors are an exclusion list, delivered to every later pr
     expect(r.status).toBe(4)
 
     // The floors subcommand derives the set from the journal — there is no second file.
-    const floors = ralph(['floors', '--journal', journal])
+    const floors = grind(['floors', '--journal', journal])
     expect(floors.status).toBe(0)
     expect(floors.stdout).toContain('CIK-1081400')
 
@@ -206,18 +206,18 @@ describe('ralph.sh — floors are an exclusion list, delivered to every later pr
   })
 })
 
-describe('ralph.sh append — the atomicity rule', () => {
+describe('grind.sh append — the atomicity rule', () => {
   test('refuses a record larger than one atomic write instead of splitting it', () => {
-    const d = workdir('ralph-big')
+    const d = workdir('grind-big')
     const journal = join(d, 'journal.jsonl')
 
-    const ok = ralph(['append', '--journal', journal, '{"kind":"progress","key":"small"}'])
+    const ok = grind(['append', '--journal', journal, '{"kind":"progress","key":"small"}'])
     expect(ok.status).toBe(0)
     const sizeAfterSmall = statSync(journal).size
 
     const huge = JSON.stringify({ kind: 'progress', key: 'x'.repeat(ATOMIC_BOUND + 512) })
     expect(huge.length).toBeGreaterThan(ATOMIC_BOUND)
-    const r = ralph(['append', '--journal', journal, huge])
+    const r = grind(['append', '--journal', journal, huge])
 
     expect(r.status).not.toBe(0)
     // Refused means absent: not truncated to fit, not split across two lines.
@@ -226,18 +226,18 @@ describe('ralph.sh append — the atomicity rule', () => {
   })
 
   test('rejects a record that is not one JSON object on one line', () => {
-    const d = workdir('ralph-bad')
+    const d = workdir('grind-bad')
     const journal = join(d, 'journal.jsonl')
 
-    expect(ralph(['append', '--journal', journal, 'not json']).status).not.toBe(0)
-    expect(ralph(['append', '--journal', journal, '{"kind":"a"}\n{"kind":"b"}']).status).not.toBe(0)
+    expect(grind(['append', '--journal', journal, 'not json']).status).not.toBe(0)
+    expect(grind(['append', '--journal', journal, '{"kind":"a"}\n{"kind":"b"}']).status).not.toBe(0)
     expect(records(journal).length).toBe(0)
   })
 })
 
-describe('ralph.sh — a journal truncated by a crash is resumable', () => {
+describe('grind.sh — a journal truncated by a crash is resumable', () => {
   test('skips an unparseable final line and continues the iteration numbering', () => {
-    const d = workdir('ralph-trunc')
+    const d = workdir('grind-trunc')
     const journal = join(d, 'journal.jsonl')
 
     // Two whole records, then a line a crash cut mid-write: no closing brace, no newline.
@@ -253,7 +253,7 @@ describe('ralph.sh — a journal truncated by a crash is resumable', () => {
     const runner = script(d, 'runner.sh', 'exit 0')
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    const r = ralph([
+    const r = grind([
       'run',
       '--journal', journal,
       '--check', check,
@@ -271,15 +271,15 @@ describe('ralph.sh — a journal truncated by a crash is resumable', () => {
   })
 })
 
-describe('ralph.sh status — derived from the journal, with no pidfile', () => {
+describe('grind.sh status — derived from the journal, with no pidfile', () => {
   test('reports the run after it finishes, reading only the journal', () => {
-    const d = workdir('ralph-status')
+    const d = workdir('grind-status')
     const journal = join(d, 'journal.jsonl')
     const check = failNTimes(d, 1)
     const runner = script(d, 'runner.sh', 'exit 0')
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    ralph([
+    grind([
       'run',
       '--journal', journal,
       '--check', check,
@@ -289,7 +289,7 @@ describe('ralph.sh status — derived from the journal, with no pidfile', () => 
       '--sleep', '0',
     ])
 
-    const s = ralph(['status', '--journal', journal])
+    const s = grind(['status', '--journal', journal])
     expect(s.status).toBe(0)
     expect(s.stdout).toContain('done')
 
@@ -297,13 +297,13 @@ describe('ralph.sh status — derived from the journal, with no pidfile', () => 
     const stray = readFileSync(journal, 'utf8')
     expect(stray.length).toBeGreaterThan(0)
     expect(existsSync(`${journal}.pid`)).toBe(false)
-    expect(existsSync(join(d, 'ralph.state'))).toBe(false)
+    expect(existsSync(join(d, 'grind.state'))).toBe(false)
   })
 })
 
-describe('ralph.sh — usage', () => {
+describe('grind.sh — usage', () => {
   test('bare invocation prints a usage listing every subcommand and exits 2', () => {
-    const r = ralph([])
+    const r = grind([])
     expect(r.status).toBe(2)
     const usage = `${r.stdout}${r.stderr}`
     for (const sub of ['run', 'append', 'floors', 'status', 'tail', 'stop']) {

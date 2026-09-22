@@ -1,10 +1,10 @@
 ---
-name: ralph
-description: "Use when work has to keep going with NO session alive — \"run this in a loop overnight\", \"ralph loop\", \"start the loop and go to bed\", \"keep iterating until the check passes without me\", \"a fresh agent every iteration\", \"loop on this for days\", \"the orchestrator session is burning tokens on status reports\", \"wake it only when the grid job lands\", \"what has the loop done so far\", \"stop the loop\", \"it keeps re-diagnosing the same dead item\". Use proactively when a hill-climb needs many cheap passes over hours or days and each pass costs more to supervise than to run. NEGATIVE ROUTING: a stopping condition for a session that stays ALIVE — a Stop-hook hold, a cron heartbeat, an overnight brief — is hound; one delegated piece of work handed to another model and waited on is farm-out; starting a persistent interactive session is agent-spawn. This skill owns the out-of-session loop, the append-only journal that is its whole memory, and the shell gate that decides when a model call is worth spending."
+name: grind
+description: "Use when work has to keep going with NO session alive — \"run this in a loop overnight\", \"grind loop\", \"start the loop and go to bed\", \"keep iterating hound the check passes without me\", \"a fresh agent every iteration\", \"loop on this for days\", \"the orchestrator session is burning tokens on status reports\", \"wake it only when the grid job lands\", \"what has the loop done so far\", \"stop the loop\", \"it keeps re-diagnosing the same dead item\". Use proactively when a hill-climb needs many cheap passes over hours or days and each pass costs more to supervise than to run. NEGATIVE ROUTING: a stopping condition for a session that stays ALIVE — a Stop-hook hold, a cron heartbeat, an overnight brief — is hound; one delegated piece of work handed to another model and waited on is farm-out; starting a persistent interactive session is agent-spawn. This skill owns the out-of-session loop, the append-only journal that is its whole memory, and the shell gate that decides when a model call is worth spending."
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob]
 ---
 
-# ralph — a loop with no session, whose only memory is one append-only journal
+# grind — a loop with no session, whose only memory is one append-only journal
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
@@ -15,7 +15,7 @@ project 2026-09-20, one orchestrator spent 1.05 billion cache-read tokens in a d
 turns on a ~575K-token context, and 208 of those wakes were status reports that needed no judgement
 at all. Here nothing accumulates between iterations because nothing survives them.
 
-The loop is `scripts/ralph.sh`. Nothing session-scoped can be load-bearing in it — no `CronCreate`,
+The loop is `scripts/grind.sh`. Nothing session-scoped can be load-bearing in it — no `CronCreate`,
 no Stop hook, no `Monitor`, no session id — so the journal is the whole interface. A human, or a
 chat session peeking in, tails it and has no other handle on the run.
 
@@ -52,27 +52,31 @@ objective is unmet, and the loop exits on pass 1.
 ## Start it detached
 
 ```bash
-setsid nohup bash ${CLAUDE_SKILL_DIR}/scripts/ralph.sh run \
+setsid nohup bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh run \
   --journal /abs/run.jsonl \
   --prompt-file /abs/PROMPT.md \
   --check 'bash /abs/measure.sh --lost-below 120000' \
   --gate  'test -f /abs/out/round-ready' \
   --sleep 300 --stall-after 5 --max-iters 200 \
-  >/abs/ralph.log 2>&1 </dev/null &
+  --notify 'herdr notification show "grind $RALPH_STATE" --body "$RALPH_JOURNAL" --sound done' \
+  >/abs/grind.log 2>&1 </dev/null &
 ```
 
 Never foreground it: a Bash tool call caps out and takes the run with it, and a session held open to
 watch is the cost this skill exists to remove. `--runner` defaults to `claude-code` and `--model` is
-passed through to it; a test or a dry run points `--runner` at a stub instead.
+passed through to it; a test or a dry run points `--runner` at a stub instead. `--notify` fires on
+every ending — `done`, `stalled`, `budget`, `stopped` — with `RALPH_STATE`, `RALPH_EXIT` and
+`RALPH_JOURNAL` set; a stall is the ending you most need to hear about, and a failing notifier never
+changes the exit code.
 
 Then, from anywhere and at any time:
 
 ```bash
 J=/abs/run.jsonl
-bash ${CLAUDE_SKILL_DIR}/scripts/ralph.sh status --journal "$J"      # state, pid, iterations, floors, stall
-bash ${CLAUDE_SKILL_DIR}/scripts/ralph.sh tail   --journal "$J" -n 40
-bash ${CLAUDE_SKILL_DIR}/scripts/ralph.sh floors --journal "$J"
-bash ${CLAUDE_SKILL_DIR}/scripts/ralph.sh stop   --journal "$J" --why 'grid down for maintenance'
+bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh status --journal "$J"      # state, pid, iterations, floors, stall
+bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh tail   --journal "$J" -n 40
+bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh floors --journal "$J"
+bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh stop   --journal "$J" --why 'grid down for maintenance'
 ```
 
 `stop` is a record, not a signal: the loop honours it at its next boundary, after the pass in flight
@@ -85,9 +89,9 @@ operator started. The guard closes the documented path and claims nothing beyond
 runs bash and can still `kill` the pid recorded in `start`, so this prevents a good-faith mistake
 rather than guaranteeing the loop cannot be stopped from inside.
 
-## Against until — the difference is whether anything stays alive
+## Against hound — the difference is whether anything stays alive
 
-|  | until | ralph |
+|  | hound | grind |
 |---|---|---|
 | what stays alive | a chat session, held open by a Stop hook and re-woken by a cron heartbeat | nothing — a bash loop outside every session |
 | the memory | that session's context, which grows with every turn | one journal; each iteration is a fresh process that starts empty |
@@ -122,9 +126,9 @@ Every prompt carries `RALPH_JOURNAL`, `RALPH_SH`, `RALPH_ITER` and `RALPH_FLOORS
 needs nothing from outside itself:
 
 ```bash
-bash ${CLAUDE_SKILL_DIR}/scripts/ralph.sh append --journal "$RALPH_JOURNAL" \
+bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh append --journal "$RALPH_JOURNAL" \
   '{"kind":"progress","key":"2004-noseries","note":"heading index resolved 41K rows"}'
-bash ${CLAUDE_SKILL_DIR}/scripts/ralph.sh append --journal "$RALPH_JOURNAL" \
+bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh append --journal "$RALPH_JOURNAL" \
   '{"kind":"floor","key":"1934-paper-scans","why":"no machine-readable text in the source"}'
 ```
 
@@ -151,7 +155,7 @@ grep '"kind":"iter_end"' "$J" | jq -r 'select(.exit != 0) | .i'
 | Hand an iteration a key an earlier one closed | it re-diagnoses the same dead family every pass, and the loop never converges | read `RALPH_FLOORS` before choosing work; file a `floor` the first time a key dies |
 | Append a whole report as one record | over the single-write bound it is refused, and splitting it would leave a log nobody can replay | a key and a one-line note; write the report to a file and name its path |
 | Add a pidfile, a progress file or a notes file beside the journal | two files that can disagree about one fact, and the tiebreak rule is the bug | append a record; derive the pid, the counter and the floors from the journal |
-| Foreground the loop from a chat session | the Bash tool call caps out and kills the run mid-flight, and the live session is the cost ralph removes | `setsid nohup … &`, then `ralph.sh status` when you want to know |
-| `kill -9` the loop to end it | the journal then ends on `iter`, and nothing can tell a kill from a crash | `ralph.sh stop`, honoured at the next boundary |
+| Foreground the loop from a chat session | the Bash tool call caps out and kills the run mid-flight, and the live session is the cost grind removes | `setsid nohup … &`, then `grind.sh status` when you want to know |
+| `kill -9` the loop to end it | the journal then ends on `iter`, and nothing can tell a kill from a crash | `grind.sh stop`, honoured at the next boundary |
 | Read `iter_end` with exit 0 as progress | it says the process ran, not that anything moved | `progress` records, which are what `--stall-after` counts |
-| Reach for until's hold to keep this going | the hold keeps a SESSION alive, which is the thing this loop exists to avoid | until while a session must live; ralph when none should |
+| Reach for hound's hold to keep this going | the hold keeps a SESSION alive, which is the thing this loop exists to avoid | hound while a session must live; grind when none should |

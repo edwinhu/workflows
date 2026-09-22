@@ -1,5 +1,5 @@
 /**
- * skills/ralph/SKILL.md — the doctrine, and the guarantee that it describes the script that exists.
+ * skills/grind/SKILL.md — the doctrine, and the guarantee that it describes the script that exists.
  *
  * Two classes of defect this pins, both of which have bitten this plugin before:
  *
@@ -11,7 +11,7 @@
  *     check runs in BOTH directions: nothing documented that does not exist, nothing existing that
  *     is not documented.
  *
- * Run: bun test /home/eh/projects/workflows/skills/ralph/scripts/ralph-skill.test.ts
+ * Run: bun test /home/eh/projects/workflows/skills/grind/scripts/grind-skill.test.ts
  */
 import { describe, expect, test } from 'bun:test'
 import { spawnSync } from 'node:child_process'
@@ -20,8 +20,8 @@ import { join, resolve } from 'node:path'
 
 const SKILL_DIR = resolve(import.meta.dir, '..')
 const SKILL_MD = join(SKILL_DIR, 'SKILL.md')
-const RALPH = join(SKILL_DIR, 'scripts', 'ralph.sh')
-const UNTIL_MD = resolve(import.meta.dir, '..', '..', 'until', 'SKILL.md')
+const GRIND = join(SKILL_DIR, 'scripts', 'grind.sh')
+const HOUND_MD = resolve(import.meta.dir, '..', '..', 'hound', 'SKILL.md')
 
 const body = () => readFileSync(SKILL_MD, 'utf8')
 
@@ -34,21 +34,21 @@ function tocBang(md: string): string | undefined {
 
 /** Subcommands the script itself dispatches on, taken from its own usage output. */
 function implementedSubcommands(): string[] {
-  const r = spawnSync('bash', [RALPH], { encoding: 'utf8', timeout: 30_000 })
+  const r = spawnSync('bash', [GRIND], { encoding: 'utf8', timeout: 30_000 })
   const usage = `${r.stdout}${r.stderr}`
   return ['run', 'append', 'floors', 'status', 'tail', 'stop'].filter(s =>
     new RegExp(`(^|\\s)${s}(\\s|$)`, 'm').test(usage),
   )
 }
 
-/** Subcommands the documentation shows, from every `ralph.sh <word>` it prints. */
+/** Subcommands the documentation shows, from every `grind.sh <word>` it prints. */
 function documentedSubcommands(md: string): string[] {
   const found = new Set<string>()
-  for (const m of md.matchAll(/ralph\.sh\s+([a-z][a-z-]*)/g)) found.add(m[1])
+  for (const m of md.matchAll(/grind\.sh\s+([a-z][a-z-]*)/g)) found.add(m[1])
   return [...found]
 }
 
-describe('skills/ralph/SKILL.md', () => {
+describe('skills/grind/SKILL.md', () => {
   test('exists', () => {
     expect(existsSync(SKILL_MD)).toBe(true)
   })
@@ -57,23 +57,23 @@ describe('skills/ralph/SKILL.md', () => {
     const md = body()
     expect(md.startsWith('---\n')).toBe(true)
     const fm = md.slice(4, md.indexOf('\n---', 4))
-    expect(fm).toMatch(/^name:\s*ralph\s*$/m)
+    expect(fm).toMatch(/^name:\s*grind\s*$/m)
     expect(fm).toMatch(/^description:\s*\S/m)
     expect(fm).toMatch(/^allowed-tools:\s*\[/m)
   })
 
-  test('description routes away from the skills ralph is not', () => {
+  test('description routes away from the skills grind is not', () => {
     const md = body()
     const fm = md.slice(4, md.indexOf('\n---', 4))
-    // until holds a live session open; ralph exists so that no session lives at all. A reader who
+    // hound holds a live session open; grind exists so that no session lives at all. A reader who
     // cannot tell them apart reaches for the wrong one.
     expect(fm).toContain('NEGATIVE ROUTING')
-    expect(fm).toMatch(/until/)
+    expect(fm).toMatch(/hound/)
   })
 
-  test('carries the skill-toc bang line, byte-identical to the one in until', () => {
+  test('carries the skill-toc bang line, byte-identical to the one in hound', () => {
     const ours = tocBang(body())
-    const theirs = tocBang(readFileSync(UNTIL_MD, 'utf8'))
+    const theirs = tocBang(readFileSync(HOUND_MD, 'utf8'))
     expect(theirs).toBeDefined()
     expect(ours).toBe(theirs)
   })
