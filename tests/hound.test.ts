@@ -274,13 +274,16 @@ describe('the round record — no new file, and bounded on write', () => {
 describe('hound-arm.sh and the auto-compact cap', () => {
   const ARM = join(import.meta.dir, '..', 'skills', 'hound', 'scripts', 'hound-arm.sh')
 
-  // No herdr on PATH here, so the cap cannot reach a pane -- which is the point: arming must still
-  // succeed and say what to do by hand. The opt-outs are asserted on the line they print.
+  // Neither transport exists here, so the cap cannot reach the session -- which is the point:
+  // arming must still succeed and say what to do by hand. Both are pinned to absent values because
+  // the suite inherits the REAL session's env, where a live bridge id would make this send for
+  // real. The opt-outs are asserted on the line they print.
   function arm(extra: Record<string, string>) {
     const dir = mkdtempSync(join(tmpdir(), 'houndarm-'))
     const env: Record<string, string> = {
       ...process.env, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'arm-cap-test',
       HOUND_HERDR: '/nonexistent-herdr', HOUND_SETTLE_MS: '0',
+      CLAUDE_CODE_BRIDGE_SESSION_ID: '', HOUND_AGENT_MSG: '/nonexistent-agent-msg',
       CLAUDE_CODE_AUTO_COMPACT_WINDOW: '', ...extra,
     }
     const r = spawnSync('bash', [ARM, 'exit 1', '--minutes', '720'], { encoding: 'utf8', env })

@@ -522,6 +522,8 @@ export interface CapRecord {
   window: number
   prior: number | null
   created: boolean
+  /** This session's Remote Control id, resolved at ARM time — the Stop hook's env may lack it. */
+  cse?: string
 }
 
 /** Put the cap in the local file, preserving every other key and its order. */
@@ -576,27 +578,62 @@ export function selfPane(session: string): string | null {
   }
 }
 
+/** This session's Remote Control id, which is its bridge session id with the prefix swapped. */
+export function selfCse(): string | null {
+  const bridge = process.env.CLAUDE_CODE_BRIDGE_SESSION_ID
+  return bridge ? bridge.replace(/^session_/, 'cse_') : null
+}
+
+const agentMsgBin = () => process.env.HOUND_AGENT_MSG || 'agent-msg'
+
+/** The Remote Control target, but only when the id AND the binary are both there. */
+function agentMsgTarget(cse?: string | null): string | null {
+  const target = cse ?? selfCse()
+  if (!target) return null
+  const r = spawnSync(agentMsgBin(), ['--help'], { encoding: 'utf8', timeout: 10_000 })
+  return r.error ? null : target
+}
+
+/** Whether `applyWindow` has any way into the running session at all. */
+export function hasTransport(session: string, cse?: string | null): boolean {
+  return agentMsgTarget(cse) !== null || selfPane(session) !== null
+}
+
 /**
  * Make the running session re-read its merged settings, without changing the global file.
+ *
+ * `agent-msg send --as-user` delivers real user input over Remote Control and the slash command
+ * executes mid-turn, so it is preferred: it needs no multiplexer and no idle pane. Herdr is the
+ * fallback for sessions with no bridge id, and for an agent-msg that refuses.
  *
  * The sleep is for the settings watcher: the file write and the command must not race, or the
  * session re-reads settings from before the cap landed.
  */
-export function applyWindow(session: string): string {
+export function applyWindow(session: string, cse?: string | null): string {
   try {
-    const pane = selfPane(session)
-    if (!pane) return 'no pane found; window unchanged'
+    const target = agentMsgTarget(cse)
+    const pane = target ? null : selfPane(session)
+    if (!target && !pane) return 'no transport into this session; window unchanged'
     const settle = Number(process.env.HOUND_SETTLE_MS ?? 2000)
     if (settle > 0) spawnSync('sleep', [String(settle / 1000)])
     // NEVER a bare `/autocompact` — with no argument it opens an interactive picker.
     const arg = globalArg()
+    if (target) {
+      const r = spawnSync(agentMsgBin(), ['send', '--as-user', target, `/autocompact ${arg}`], {
+        encoding: 'utf8',
+        timeout: 20_000,
+      })
+      if (!r.error && r.status === 0) return 'ok:agent-msg'
+    }
+    const p = pane ?? selfPane(session)
+    if (!p) return 'agent-msg refused the /autocompact send and there is no pane; window unchanged'
     const r = spawnSync(
       process.env.HOUND_HERDR || 'herdr',
-      ['agent', 'prompt', pane, `/autocompact ${arg}`],
+      ['agent', 'prompt', p, `/autocompact ${arg}`],
       { encoding: 'utf8', timeout: 20_000 },
     )
     if (r.error || r.status !== 0) return 'herdr refused the /autocompact send; window unchanged'
-    return 'ok'
+    return 'ok:herdr'
   } catch {
     return 'window unchanged (unexpected error)'
   }
@@ -621,22 +658,25 @@ function capCli(): void {
   }
 
   const local = localSettingsPath()
-  if (!selfPane(session))
+  const cse = selfCse()
+  if (!hasTransport(session, cse))
     return say(
-      `no Herdr pane for this session; add "${WINDOW_KEY}": 250000 to ${local} and run ` +
-        '`/autocompact auto` yourself. Not capped',
+      `no agent-msg id and no Herdr pane for this session; add "${WINDOW_KEY}": 250000 to ` +
+        `${local} and run \`/autocompact auto\` yourself. Not capped`,
     )
 
   const raw = Number(process.env.HOUND_COMPACT_WINDOW || 250_000)
   const window = Math.min(1_000_000, Math.max(100_000, Number.isFinite(raw) ? raw : 250_000))
 
   s.compact = writeLocalCap(local, window)
+  if (cse) s.compact.cse = cse
   writeFileSync(path, JSON.stringify(s))
 
-  const status = applyWindow(session)
+  const status = applyWindow(session, cse)
   say(
-    status === 'ok'
-      ? `capped at ${window} for this session via ${local}; global settings untouched`
+    status.startsWith('ok:')
+      ? `capped at ${window} for this session via ${local} over ${status.slice(3)}; ` +
+        'global settings untouched'
       : `cap written to ${local} at ${window}, but not applied live: ${status}`,
   )
 }
@@ -645,7 +685,7 @@ function capCli(): void {
 function uncap(session: string, s: State | null): string | null {
   if (!s?.compact) return null
   restoreLocal(s.compact)
-  return applyWindow(session)
+  return applyWindow(session, s.compact.cse)
 }
 
 function uncapCli(): void {
