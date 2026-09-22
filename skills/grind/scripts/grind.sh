@@ -41,8 +41,10 @@ grind.sh -- an unattended loop whose only memory is one append-only journal.
 
   grind.sh run    --journal J --check CMD --prompt-file F [--gate CMD] [--runner R]
                   [--model M] [--max-iters N] [--sleep S] [--stall-after K]
-                  [--notify CMD]   run by bash on every ending, with RALPH_STATE, RALPH_EXIT
-                                   and RALPH_JOURNAL set; its failure never changes the exit
+                  [--notify CMD|none] [--notify-to SESSION]
+                  default: agent-msg to the launching session (or --notify-to), plus herdr if
+                  installed; CMD replaces it and gets RALPH_STATE, RALPH_EXIT, RALPH_JOURNAL.
+                  A failed notification never changes the exit code.
   grind.sh append --journal J '{"kind":"progress","key":"..."}'
   grind.sh floors --journal J
   grind.sh status --journal J
@@ -274,28 +276,53 @@ EOF
 
 # ------------------------------------------------------------------ subcommands
 
-# --notify is peeled off here so the loop's five terminal returns stay the single source of the
-# outcome: the notifier reads the exit code, never a second copy of the state.
+# The ending is announced by default: agent-msg to the session that launched the run (or
+# --notify-to), plus a herdr popup only where herdr is installed. --notify CMD replaces that and
+# --notify none silences it. The target is captured at launch, since a detached loop outlives the
+# environment it was started from. Peeled off here so the loop's terminal returns stay the single
+# source of the outcome.
 cmd_run() {
-  local notify= journal= rc=0
+  local notify= notify_to=${CLAUDE_CODE_SESSION_ID:-} journal= rc=0
   local -a pass=()
   while [ $# -gt 0 ]; do
     case "$1" in
-      --notify)  notify=${2:?--notify needs a value}; shift 2 ;;
-      --journal) journal=${2:-}; pass+=("$1" "${2:-}"); shift 2 ;;
-      *)         pass+=("$1"); shift ;;
+      --notify)    notify=${2:?--notify needs a value};       shift 2 ;;
+      --notify-to) notify_to=${2:?--notify-to needs a value}; shift 2 ;;
+      --journal)   journal=${2:-}; pass+=("$1" "${2:-}");     shift 2 ;;
+      *)           pass+=("$1"); shift ;;
     esac
   done
   run_loop "${pass[@]}" || rc=$?
-  [ -n "$notify" ] || return "$rc"
   local state
   case "$rc" in
     0) state=done ;; 3) state=stalled ;; 4) state=budget ;; 5) state=stopped ;;
     *) return "$rc" ;;
   esac
-  RALPH_STATE=$state RALPH_EXIT=$rc RALPH_JOURNAL=$journal bash -c "$notify" </dev/null \
-    || warn "--notify exited $?; the run's own verdict stands"
+  export RALPH_STATE=$state RALPH_EXIT=$rc RALPH_JOURNAL=$journal
+  case "$notify" in
+    none) ;;
+    '')   notify_default "$notify_to" ;;
+    *)    bash -c "$notify" </dev/null || warn "--notify exited $?; the run's own verdict stands" ;;
+  esac
   return "$rc"
+}
+
+notify_default() {
+  local to=$1 last
+  last=$(tail -n 1 -- "$RALPH_JOURNAL" 2>/dev/null | cut -c1-200)
+  if command -v agent-msg >/dev/null 2>&1; then
+    if [ -n "$to" ]; then
+      agent-msg send "$to" "grind loop ended: $RALPH_STATE (exit $RALPH_EXIT). Journal $RALPH_JOURNAL. Status: bash $SELF status --journal $RALPH_JOURNAL" \
+        </dev/null || warn "agent-msg to $to failed; the run's own verdict stands"
+    else
+      warn "no session to notify: launch from a Claude session or pass --notify-to"
+    fi
+  fi
+  if command -v herdr >/dev/null 2>&1; then
+    herdr notification show "grind: $RALPH_STATE (exit $RALPH_EXIT)" --body "$last" --sound done \
+      </dev/null >/dev/null 2>&1 || warn "herdr notification failed"
+  fi
+  return 0
 }
 
 run_loop() {
