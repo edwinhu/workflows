@@ -67,45 +67,11 @@ The Batch API has non-obvious requirements that will fail silently:
 
 ## Prerequisites
 
-### Install gcloud SDK
+**CRITICAL:** Vertex AI requires ADC (`gcloud auth application-default login`), not just an API key.
+**CRITICAL:** Gemini Batch only works with buckets in `us-central1`.
 
-```bash
-# macOS: Install via nix-darwin (add to ~/nix/ configuration)
-# Or if already available: gcloud --version
-
-# Linux: Install Google Cloud SDK from official sources
-curl https://sdk.cloud.google.com | bash
-```
-
-### Authentication Setup
-
-```bash
-# Authenticate with Google Cloud Platform
-gcloud auth login
-
-# Set up Application Default Credentials for Python libraries
-gcloud auth application-default login
-
-# Enable Vertex AI API in your project
-gcloud services enable aiplatform.googleapis.com
-```
-
-**Why both auth methods?**
-- `gcloud auth login`: For gsutil and gcloud CLI commands
-- `gcloud auth application-default login`: For google-generativeai Python library
-- **CRITICAL:** Vertex AI requires ADC (step 2), not just API key
-
-### Create GCS Bucket
-
-```bash
-# Create bucket in us-central1 (required region)
-gsutil mb -l us-central1 gs://your-batch-bucket
-
-# Verify bucket location is us-central1
-gsutil ls -L -b gs://your-batch-bucket | grep "Location"
-```
-
-See `references/gcs-setup.md` for complete setup guide.
+Check: `LINES=1000 COLUMNS=250 GCP_PROJECT=.. BUCKET=.. upmd --ci --block verify ${CLAUDE_SKILL_DIR}/references/gcs-setup-runbook.md` (or run that block by hand without upmd).
+Setup: the user runs the whole thing, `GCP_PROJECT=.. BUCKET=.. upmd --cli --all ${CLAUDE_SKILL_DIR}/references/gcs-setup-runbook.md` (idempotent; its `manual-*` logins need a human).
 
 ## Quick Start
 
@@ -349,7 +315,8 @@ Two honest caveats. The human sample was small (20 rows, 11 companies), and iden
 
 ### References
 - `references/embeddings.md` - **NEW:** Dedicated reference for embedding batches (model choice, file-based + keyed pattern, sentinel verification)
-- `references/gcs-setup.md` - Complete GCS and Vertex AI setup guide
+- `references/gcs-setup-runbook.md` - One-time GCP setup as an upmd runbook (install, auth, APIs, bucket) with a `verify` block
+- `references/gcs-setup.md` - GCS usage: uploads, permissions, lifecycle, troubleshooting
 - `references/gotchas.md` - 20 critical production gotchas (Gemini 3.x thinking_level per tier, location='global'; embedding gotcha now lives in embeddings.md)
 - `references/best-practices.md` - Idempotent IDs, state tracking, validation
 - `references/scale-up-testing.md` - Incremental scale-up testing (LangExtract prototyping, LLM-as-judge, Vertex AI batch, gate design, input- vs output-dominated cost)
