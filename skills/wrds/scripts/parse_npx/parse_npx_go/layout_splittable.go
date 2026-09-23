@@ -366,8 +366,8 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 				// Asking the heading reader FIRST, on exactly the lines it
 				// recognises, keeps the block whole; every other line still
 				// goes to spReadContext unchanged.
-				if l := string(trimmed); proxyEdge && spIsProxyEdgeHeadingBody(l, &ctx) {
-					spReadProxyEdgeHeading(l, &ctx, &groupCtx)
+				if l := string(trimmed); proxyEdge && spIsProxyEdgeHeadingBody(l, &ctx, lastBare) {
+					spReadProxyEdgeHeading(l, &ctx, &groupCtx, lastBare)
 					continue
 				}
 				lastBare = spReadContext(string(trimmed), &ctx, lastBare)
@@ -422,7 +422,10 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 				haveRule, sawType = true, true
 			} else {
 				if proxyEdge {
-					spReadProxyEdgeHeading(line, &ctx, &groupCtx)
+					// The combined template's name line is the last bare header
+					// line read above this one, exactly as `lastBare` is out
+					// between tables.
+					spReadProxyEdgeHeading(line, &ctx, &groupCtx, spLastBareHeaderLine(header))
 				}
 				header = append(header, line)
 			}
@@ -455,7 +458,9 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 			// how_voted reads `Vote` and `Cast`.
 			group = spAppend(group, *cur, flush)
 			flush()
-			spReadProxyEdgeHeading(line, &ctx, &groupCtx)
+			// This arm is gated on spIsProxyEdgeHeading, so the combined
+			// template never reaches it and there is no name line to pass.
+			spReadProxyEdgeHeading(line, &ctx, &groupCtx, "")
 			cur, header, haveRule, sawType = &spTable{}, nil, false, false
 			continue
 		}
@@ -1200,6 +1205,26 @@ func spIsProxyEdgeHeading(line string) bool {
 	return issuer != "" && !strings.Contains(issuer, ":")
 }
 
+// spLastBareHeaderLine returns the nearest header line above the current one
+// that is a bare name -- one text run, no colon, not a rule and not a marker --
+// which is where the combined ProxyEdge template prints the company name.
+func spLastBareHeaderLine(header []string) string {
+	for i := len(header) - 1; i >= 0; i-- {
+		t := strings.TrimSpace(header[i])
+		if t == "" {
+			continue
+		}
+		if strings.HasPrefix(t, "<") || strings.Contains(t, ":") || strings.Trim(t, "- ") == "" {
+			return ""
+		}
+		if len(icrCells(t)) != 1 {
+			return ""
+		}
+		return t
+	}
+	return ""
+}
+
 // spMeetingDateAt returns the offset of the `Meeting Date:` label in a heading
 // cell, or -1.
 func spMeetingDateAt(cell string) int {
@@ -1212,12 +1237,78 @@ func spMeetingDateAt(cell string) int {
 // body line only counts once a heading has opened a block, which is the same
 // condition spReadProxyEdgeHeading applies to it; without that, any stray
 // `LABEL: value` line out between tables could be read as a security id.
-func spIsProxyEdgeHeadingBody(line string, ctx *spContext) bool {
+func spIsProxyEdgeHeadingBody(line string, ctx *spContext, bareAbove string) bool {
 	if spIsProxyEdgeHeading(line) {
+		return true
+	}
+	if _, ok := spProxyEdgeCombinedHeading(line, bareAbove); ok {
 		return true
 	}
 	_, ok := spProxyEdgeSecurityID(line)
 	return ok && ctx.issuer != ""
+}
+
+// spProxyEdgeCombinedHeading recognises the THIRD ProxyEdge heading template,
+// where the block's identity is neither split name-line / id-line nor carried
+// whole by one bare-name line, but printed as a company name ALONE on its own
+// line above a single line that glues the id label to the meeting:
+//
+//	SHAW COMMUNICATIONS INC.
+//
+//	ISSUER: 82028K200             SJR   SPECIAL MEETING DATE: 07/10/2007
+//	SEDOL:                        ISIN:
+//
+// spIsProxyEdgeHeading can never open this block: the only line carrying
+// `MEETING DATE:` opens with `ISSUER:`, whose colon is exactly what that
+// recogniser refuses, and the name line carries no date. The gate is therefore
+// the pair -- a bare name on the line above (`bareAbove`, colon-free), and a
+// line whose FIRST cell is an `Issuer:`/`CUSIP:` pair holding a single id token
+// and whose LAST cell is `<type> MEETING DATE: <date>` with a date that parses.
+// Values are copied exactly as printed; the date goes through htmlDate, the
+// same canonical parse the two sibling templates use.
+func spProxyEdgeCombinedHeading(line, bareAbove string) (spContext, bool) {
+	var out spContext
+	name := strings.TrimSpace(bareAbove)
+	if name == "" || strings.Contains(name, ":") {
+		return out, false
+	}
+	cells := icrCells(strings.TrimSpace(line))
+	if len(cells) < 2 {
+		return out, false
+	}
+	tail := cells[len(cells)-1]
+	i := spMeetingDateAt(tail)
+	if i < 0 {
+		return out, false
+	}
+	label, value, ok := lvLabelled(cells[0])
+	if !ok || (label != "ISSUER" && label != "CUSIP") {
+		return out, false
+	}
+	id := spContextCUSIP(value)
+	if id == "" {
+		return out, false
+	}
+	date := htmlDate(strings.TrimSpace(tail[i+len("Meeting Date:"):]))
+	if date == "" {
+		return out, false
+	}
+	// The meeting type is glued to the date label on this template
+	// (`SPECIAL MEETING DATE:`); a tail that carries no type at all is some
+	// other line that happens to name a date, not this heading.
+	mtgType := strings.TrimSpace(tail[:i])
+	if mtgType == "" || strings.IndexFunc(mtgType, func(r rune) bool { return r >= '0' && r <= '9' }) >= 0 {
+		return out, false
+	}
+	out.issuer, out.cusip, out.mtgType, out.mtgDate = name, id, mtgType, date
+	// Whatever sits between the id cell and the date cell is the bare ticker.
+	for _, c := range cells[1 : len(cells)-1] {
+		if t := strings.TrimSpace(c); t != "" && !strings.Contains(t, ":") {
+			out.ticker = t
+			break
+		}
+	}
+	return out, true
 }
 
 // spReadProxyEdgeHeading reads the block identity the ProxyEdge text report
@@ -1227,7 +1318,7 @@ func spIsProxyEdgeHeadingBody(line string, ctx *spContext) bool {
 // a link key like any other -- copied verbatim, exactly as printed -- so it is
 // read into the block's CUSIP even where the vendor has no full nine-character
 // value and prints the six-character issuer number alone.
-func spReadProxyEdgeHeading(line string, ctx, groupCtx *spContext) {
+func spReadProxyEdgeHeading(line string, ctx, groupCtx *spContext, bareAbove string) {
 	if fund, ok := spAccountFund(line); ok {
 		ctx.fund = fund
 		return
@@ -1253,6 +1344,22 @@ func spReadProxyEdgeHeading(line string, ctx, groupCtx *spContext) {
 		return
 	}
 	if !spIsProxyEdgeHeading(line) {
+		// The combined template prints the whole identity on one line under a
+		// bare name line, which spIsProxyEdgeHeading cannot open; the block is
+		// otherwise the same block and is banked the same way.
+		id, ok := spProxyEdgeCombinedHeading(line, bareAbove)
+		if !ok {
+			return
+		}
+		ctx.issuer, ctx.ticker, ctx.cusip, ctx.mtgDate = id.issuer, id.ticker, id.cusip, id.mtgDate
+		ctx.mtgType = id.mtgType
+		fund := groupCtx.fund
+		if fund == "" {
+			fund = ctx.fund
+		}
+		*groupCtx = *ctx
+		groupCtx.fund = fund
+		ctx.fund = fund
 		return
 	}
 	issuer := strings.TrimSpace(cells[0])
