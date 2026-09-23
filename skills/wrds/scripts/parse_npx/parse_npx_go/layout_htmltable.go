@@ -3705,13 +3705,47 @@ func htmlSplitStackedLabelsWithIssuer(cells []string, feed *htmlRowFeed) (map[in
 	joined := make([]string, len(cells))
 	for i := range cells {
 		joined[i] = htmlFlat(cells[i] + " " + next.cells[i])
-		// Colspan values are anchored at the right edge. The lower `Date`
-		// can occupy the left half of the merged Meeting Country cell.
-		if i > 0 && htmlStackedLabelKey(htmlFlat(cells[i])) == "MEETING COUNTRY" &&
+		// Colspan values are anchored at the right edge, so a colspanned label
+		// on the upper row and its stacked second word on the lower row need
+		// not share a column: the lower word sits in the left half of the span
+		// (`Meeting Country` over `Date`, and `Primary Security` over `ID` in
+		// the same header of Principal Funds 2010). The pair joins only when
+		// the result is a label this grammar knows, so an unrelated value in
+		// the left half is never glued onto the label beside it.
+		if i > 0 && htmlFlat(cells[i]) != "" &&
 			htmlFlat(cells[i-1]) == "" && htmlFlat(next.cells[i]) == "" &&
-			htmlStackedLabelKey(htmlFlat(next.cells[i-1])) == "DATE" {
-			joined[i] = htmlFlat(cells[i] + " " + next.cells[i-1])
-			joined[i-1] = ""
+			htmlFlat(next.cells[i-1]) != "" {
+			pair := htmlFlat(cells[i] + " " + next.cells[i-1])
+			if _, known := htmlStackedLabelSet[htmlStackedLabelKey(pair)]; known {
+				joined[i] = pair
+				joined[i-1] = ""
+			}
+		}
+	}
+	// The issuer heading and the column header share one physical row, and the
+	// company name -- colspanned, so anchored at the right edge of its span --
+	// wraps onto the row below into the LEFT half of that span (`Reliance
+	// Infrastructure | Meeting Country | Primary Security | ...` over `Limited
+	// | | Date | ID | ...`, Principal Funds Inc 0000898745-10-000426: 6,429 of
+	// the filing's 12,280 rows carried `Primary Security` -- the column label
+	// -- as their issuer). Read in column order the continuation is a second
+	// unlabelled cell and the whole row is refused, which is how the column
+	// label came to be read as the name.
+	if i0 := htmlFirstFilled(cells); i0 > 0 {
+		if _, isLabel := htmlStackedLabelSet[htmlStackedLabelKey(htmlFlat(cells[i0]))]; !isLabel &&
+			htmlFlat(next.cells[i0]) == "" {
+			for j := 0; j < i0; j++ {
+				tail := htmlFlat(next.cells[j])
+				if tail == "" {
+					continue
+				}
+				if _, isLabel := htmlStackedLabelSet[htmlStackedLabelKey(tail)]; isLabel {
+					break
+				}
+				joined[i0] = htmlFlat(cells[i0] + " " + tail)
+				joined[j] = ""
+				break
+			}
 		}
 	}
 	labels, issuer, ok := htmlStackedLabelsWithIssuer(joined)
