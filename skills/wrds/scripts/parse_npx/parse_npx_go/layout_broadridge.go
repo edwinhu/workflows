@@ -1284,6 +1284,86 @@ type brRowBuf struct {
 	forAgnst string
 }
 
+// brNumericBannerCode reports whether a section slot is a bare vendor code: an
+// unbroken run of digits and nothing else. Capital Group Private Client Services
+// Funds 2015 prints eight of them where every other vintage of the same
+// registrant prints the sleeve's name (5,555 rows, all eight sections, no series
+// and no fund name anywhere in the body). The all-digit shape is the whole
+// scope: a named banner carries a letter and is refused here, so nothing this
+// function admits could have been resolved by name.
+//
+// Four digits is the floor. A one- or two-digit line is an item number or a page
+// number, and those are what a shorter floor would start counting.
+func brNumericBannerCode(s string) bool {
+	if len(s) < 4 {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		if s[i] < '0' || s[i] > '9' {
+			return false
+		}
+	}
+	return true
+}
+
+// brNumericCodeOrdinals maps each bare vendor code the body prints as a section
+// banner onto the series the registrant's own header declares at that ordinal
+// position, and returns nil unless the filing's shape makes that reading
+// unambiguous.
+//
+// The gate is the count: the body must print exactly as many distinct codes as
+// the header declares series, at least two of each. The 2015 Capital Group
+// filing prints eight codes and declares eight series, and its own adjacent 2014
+// filing prints plain fund-name banners in that same order, section for section
+// -- the five sleeves holding no voting securities are the first five in both.
+// A filing whose counts disagree offers no such correspondence and gets nothing:
+// a wrong series is worse than a blank one.
+//
+// Only a line in BANNER POSITION counts: unindented, and drawn over the dashed
+// rule this vintage rules every section banner with. An all-digit line inside a
+// table is a share count or an agenda number, indented by the grammar that
+// prints it; an all-digit line in the SGML header is an acceptance datetime or
+// the CIK itself, and neither is ruled.
+func brNumericCodeOrdinals(lines []string, decls []SeriesDecl) map[string]string {
+	if len(decls) < 2 {
+		return nil
+	}
+	var codes []string
+	seen := map[string]bool{}
+	for i, raw := range lines {
+		if raw == "" || raw[0] == ' ' || raw[0] == '\t' {
+			continue
+		}
+		s := strings.TrimSpace(raw)
+		if !brNumericBannerCode(s) || seen[s] {
+			continue
+		}
+		j := i + 1
+		for j < len(lines) && strings.TrimSpace(lines[j]) == "" {
+			j++
+		}
+		if j >= len(lines) || !brDashRule(lines[j]) {
+			continue
+		}
+		seen[s] = true
+		codes = append(codes, s)
+		if len(codes) > len(decls) {
+			return nil
+		}
+	}
+	if len(codes) != len(decls) {
+		return nil
+	}
+	out := make(map[string]string, len(codes))
+	for i, c := range codes {
+		if decls[i].SeriesID == "" {
+			return nil
+		}
+		out[c] = decls[i].SeriesID
+	}
+	return out
+}
+
 // parseBroadridge walks the meeting blocks, carrying the current meeting context
 // onto every proposal row it completes.
 //
@@ -1407,6 +1487,9 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 	}
 
 	lines := strings.Split(text, "\n")
+	// Built once per filing, and nil for every filing that prints a fund name
+	// where a fund name belongs; see brNumericCodeOrdinals.
+	codeOrdinal := brNumericCodeOrdinals(lines, meta.SeriesDecls)
 	// The tail of a rule-framed identity block, read whole at its first line;
 	// its remaining label lines must not open blocks of their own.
 	framedUntil := -1
@@ -1597,6 +1680,15 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 				flush()
 				curSeries = ""
 				curFund = ""
+			}
+
+			// The section the branches above recorded may be a bare vendor
+			// code rather than a name. No name-based rung can ever reach one,
+			// so the ordinal run is the only identity the document offers.
+			if codeOrdinal != nil && curSeries == "" && curFund != "" {
+				if id, ok := codeOrdinal[curFund]; ok {
+					curSeries = id
+				}
 			}
 		}
 
