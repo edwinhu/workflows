@@ -1,0 +1,172 @@
+<SEC-DOCUMENT>0000935069-08-001888.txt : 20080826
+<SEC-HEADER>0000935069-08-001888.hdr.sgml : 20080826
+<ACCEPTANCE-DATETIME>20080826145747
+ACCESSION NUMBER:		0000935069-08-001888
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20080630
+FILED AS OF DATE:		20080826
+DATE AS OF CHANGE:		20080826
+EFFECTIVENESS DATE:		20080826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			787 Fund, Inc.
+		CENTRAL INDEX KEY:			0001394166
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22041
+		FILM NUMBER:		081039145
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1290 AVENUE OF THE AMERICAS
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10104
+		BUSINESS PHONE:		800-432-4320
+
+	MAIL ADDRESS:	
+		STREET 1:		1290 AVENUE OF THE AMERICAS
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10104
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001394166
+<SERIES-ID>S000017793
+<SERIES-NAME>Enterprise Mergers and Acquisitions Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000049130
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000049131
+<CLASS-CONTRACT-NAME>Class B
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000049132
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000049133
+<CLASS-CONTRACT-NAME>Class Y
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>n787.txt
+<DESCRIPTION>GABELLI ENTERPRISE MERGERS - 787 FUND NPX 0808
+<TEXT>
+<PAGE>
+
+
+                               PROXY VOTING RECORD
+                    FOR PERIOD JULY 1, 2007 TO JUNE 30, 2008
+
+
+- --------------------------------------------------------------------------------
+SHAW COMMUNICATIONS INC.
+
+ISSUER: 82028K200             SJR   SPECIAL MEETING DATE: 07/10/2007
+SEDOL:                        ISIN:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                              Proposal      Vote       For or Against
+ Number   Proposal                                                    Type          Cast       Management
+- --------  ----------------------------------------------------------  ------------  ---------  --------------------
+<S>       <C>                                                         <C>           <C>        <C>
+   01     THE APPROVAL OF THE SPECIAL RESOLUTION (THE                 Management    For        For
+          SPLIT RESOLUTION ) TO AMEND THE ARTICLES OF THE
+          CORPORATION TO EFFECT A TWO-FOR-ONE STOCK SPLIT,
+          THE FULL TEXT OF WHICH IS REPRODUCED AS EXHIBIT
+          A OF THE ACCOMPANYING PROXY CIRCULAR.
+</TABLE>
+
+- --------------------------------------------------------------------------------
+EMMIS COMMUNICATIONS CORPORATION
+
+ISSUER: 291525103             EMMS  ANNUAL MEETING DATE: 07/11/2007
+SEDOL:                        ISIN:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                              Proposal      Vote       For or Against
+ Number   Proposal                                                    Type          Cast       Management
+- --------  ----------------------------------------------------------  ------------  ---------  --------------------
+<S>       <C>                                                         <C>           <C>        <C>
+   01     DIRECTOR                                                    Management    For
+          JEFFREY H. SMULYAN                                          Management    For        For
+          GREG A. NATHANSON                                           Management    For        For
+   02     PROPOSAL TO RATIFY THE SELECTION OF ERNST & YOUNG           Management    For        For
+          LLP AS INDEPENDENT REGISTERED PUBLIC ACCOUNTANTS.
+   03     IN THEIR DISCRETION, THE PROXIES ARE AUTHORIZED             Management    For        For
+          TO VOTE UPON SUCH OTHER BUSINESS AS MAY PROPERLY
+          COME BEFORE THE MEETING.
+</TABLE>
+
+- --------------------------------------------------------------------------------
+STRATOS INTERNATIONAL, INC.
+
+ISSUER: 863100202             STLW  SPECIAL MEETING DATE: 07/12/2007
+SEDOL:                        ISIN:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                              Proposal      Vote       For or Against
+ Number   Proposal                                                    Type          Cast       Management
+- --------  ----------------------------------------------------------  ------------  ---------  --------------------
+<S>       <C>                                                         <C>           <C>        <C>
+   01     TO APPROVE AND ADOPT THE AGREEMENT AND PLAN OF              Management    For        For
+          MERGER, DATED AS OF MAY 14, 2007, AMONG STRATOS
+          INTERNATIONAL, INC., EMERSON NETWORK POWER CONNECTIVITY
+          SOLUTIONS, INC. AND EMERSUB C, INC.
+</TABLE>
+
+
+- --------------------------------------------------------------------------------
+STATION CASINOS, INC.
+
+ISSUER: 857689103             STN   SPECIAL MEETING DATE: 08/13/2007
+SEDOL:                        ISIN:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                              Proposal      Vote       For or Against
+ Number   Proposal                                                    Type          Cast       Management
+- --------  ----------------------------------------------------------  ------------  ---------  --------------------
+<S>       <C>                                                         <C>           <C>        <C>
+   01     PROPOSAL TO APPROVE THE AGREEMENT AND PLAN OF               Management    For        For
+          MERGER, DATED AS OF FEBRUARY 23, 2007 AND AMENDED
+          AS OF MAY 4, 2007, AMONG STATION CASINOS, INC.,
+          FERTITTA COLONY PARTNERS LLC AND FCP ACQUISITION
+          SUB, AS IT MAY BE AMENDED FROM TIME TO TIME.
+   02     MOTION TO ADJOURN THE SPECIAL MEETING TO A LATER            Management    For        For
+          DATE, IF NECESSARY OR APPROPRIATE, TO SOLICIT
+          ADDITIONAL PROXIES IF THERE ARE INSUFFICIENT
+          VOTES AT THE TIME OF THE SPECIAL MEETING TO APPROVE
+          PROPOSAL NUMBER 1.
+</TABLE>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
