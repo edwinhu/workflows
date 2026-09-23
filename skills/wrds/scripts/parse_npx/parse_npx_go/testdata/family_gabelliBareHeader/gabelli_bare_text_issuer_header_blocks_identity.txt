@@ -1,0 +1,1174 @@
+<SEC-DOCUMENT>0000935069-08-002098.txt : 20080829
+<SEC-HEADER>0000935069-08-002098.hdr.sgml : 20080829
+<ACCEPTANCE-DATETIME>20080829144723
+ACCESSION NUMBER:		0000935069-08-002098
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20080630
+FILED AS OF DATE:		20080829
+DATE AS OF CHANGE:		20080829
+EFFECTIVENESS DATE:		20080829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			GABELLI CAPITAL SERIES FUNDS INC
+		CENTRAL INDEX KEY:			0000901246
+		IRS NUMBER:				133761834
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07644
+		FILM NUMBER:		081048702
+
+	BUSINESS ADDRESS:	
+		STREET 1:		ONE CORPORATE CENTER
+		CITY:			RYE
+		STATE:			NY
+		ZIP:			10580
+		BUSINESS PHONE:		8004223554
+
+	MAIL ADDRESS:	
+		STREET 1:		ONE CORPORATE CENTER
+		CITY:			RYE
+		STATE:			NY
+		ZIP:			10580
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	WCC CAPITAL GROWTH FUND INC
+		DATE OF NAME CHANGE:	19930714
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000901246
+<SERIES-ID>S000001060
+<SERIES-NAME>GABELLI CAPITAL ASSET FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002849
+<CLASS-CONTRACT-NAME>CLASS AAA
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx.txt
+<DESCRIPTION>GABELLI CAPITAL ASSET NPX 0608
+<TEXT>
+<PAGE>
+
+                               PROXY VOTING RECORD
+
+                    FOR PERIOD JULY 1, 2007 TO JUNE 30, 2008
+
+- --------------------------------------------------------------------------------
+FREEPORT-MCMORAN COPPER & GOLD INC.     FCX      ANNUAL MEETING DATE: 07/10/2007
+ISSUER: 35671D857                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+01         DIRECTOR                                                        Management   For
+           RICHARD C. ADKERSON                                             Management   For             For
+           ROBERT J. ALLISON, JR.                                          Management   For             For
+           ROBERT A. DAY                                                   Management   For             For
+           GERALD J. FORD                                                  Management   For             For
+           H. DEVON GRAHAM, JR.                                            Management   For             For
+           J. BENNETT JOHNSTON                                             Management   For             For
+           CHARLES C. KRULAK                                               Management   For             For
+           BOBBY LEE LACKEY                                                Management   For             For
+           JON C. MADONNA                                                  Management   For             For
+           DUSTAN E. MCCOY                                                 Management   For             For
+           GABRIELLE K. MCDONALD                                           Management   For             For
+           JAMES R. MOFFETT                                                Management   For             For
+           B.M. RANKIN, JR.                                                Management   For             For
+           J. STAPLETON ROY                                                Management   For             For
+           STEPHEN H. SIEGELE                                              Management   For             For
+           J. TAYLOR WHARTON                                               Management   For             For
+03         ADOPTION OF THE PROPOSED AMENDMENTS TO THE 2006                 Management
+           STOCK INCENTIVE PLAN.
+02         RATIFICATION OF APPOINTMENT OF ERNST & YOUNG                    Management   For             For
+           LLP AS INDEPENDENT AUDITORS.
+</TABLE>
+
+- --------------------------------------------------------------------------------
+SHAW COMMUNICATIONS INC.                SJR    SPECIAL MEETING DATE: 07/10/2007
+ISSUER: 82028K200                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+01         THE APPROVAL OF THE SPECIAL RESOLUTION (THE                     Management   For             For
+           SPLIT RESOLUTION ) TO AMEND THE ARTICLES OF THE
+           CORPORATION TO EFFECT A TWO-FOR-ONE STOCK SPLIT,
+           THE FULL TEXT OF WHICH IS REPRODUCED AS EXHIBIT
+           A OF THE ACCOMPANYING PROXY CIRCULAR.
+</TABLE>
+
+- --------------------------------------------------------------------------------
+EMAP PLC                                EM8.BE      AGM MEETING DATE: 07/12/2007
+ISSUER: G30268174                       ISIN: GB00B1B59F82
+SEDOL: B1B59F8, B1FP7F0, B1FP2L1
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+1.         RECEIVE THE COMPANY S REPORT AND THE ACCOUNTS                   Management   For             *Management Position Unknown
+           FOR THE YE 31 MAR 2007
+2.         APPROVE THE DIRECTOR S REMUNERATION REPORT FOR                  Management   For             *Management Position Unknown
+           THE YE 31 MAR 2007
+3.         DECLARE A FINAL DIVIDEND OF 22.1P PER ORDINARY                  Management   For             *Management Position Unknown
+           SHARE IN RESPECT OF THE YE 31 MAR 2007
+</TABLE>
+
+<PAGE>
+
+<TABLE>
+<S>        <C>                                                             <C>          <C>             <C>
+4.         RE-APPOINT MR. DEREK CARTER AS A DIRECTOR OF                    Management   For             *Management Position Unknown
+           THE COMPANY
+5.         RE-APPOINT MR. PIERRE DANON AS A DIRECTOR OF                    Management   For             *Management Position Unknown
+           THE COMPANY
+6.         RE-APPOINT MR. JONATHAN HOWELL AS A DIRECTOR                    Management   For             *Management Position Unknown
+           OF THE COMPANY
+7.         RE-APPOINT PRICEWATERHOUSECOOPERS LLP AS THE                    Management   For             *Management Position Unknown
+           AUDITORS OF THE COMPANY, UNTIL THE CONCLUSION
+           OF THE NEXT AGM AT WHICH ACCOUNTS ARE LAID BEFORE
+           THE COMPANY
+8.         AUTHORIZE THE DIRECTORS TO DETERMINE PRICEWATERHOUSECOOPERS     Management   For             *Management Position Unknown
+           LLP S REMUNERATION AS THE AUDITORS
+9.         AUTHORIZE THE BOARD, IN SUBSTITUTION FOR ALL                    Management   For             *Management Position Unknown
+           PREVIOUS AUTHORITY, TO ALLOT RELEVANT SECURITIES
+           SECTION 80 OF THE COMPANIES ACT 1985 UP TO AN
+           AGGREGATE NOMINAL AMOUNT OF GBP 19,570,000; AUTHORITY
+           EXPIRES THE EARLIER OF THE THE CONCLUSION OF
+           THE NEXT AGM OR 11 OCT 2008; AND THE DIRECTORS
+           MAY ALLOT RELEVANT SECURITIES AFTER THE EXPIRY
+           OF THIS AUTHORITY IN PURSUANCE OF SUCH AN OFFER
+           OR AGREEMENT MADE PRIOR TO SUCH EXPIRY
+S.10       AUTHORIZE THE BOARD, PURSUANT TO SECTION 95 OF                  Management   For             *Management Position Unknown
+           THE COMPANIES ACT 1985, SUBJECT TO THE PASSING
+           OF THE PREVIOUS RESOLUTION, TO ALLOT EQUITY SECURITIES
+           FOR CASH SECTION 94(2) OF THE ACT PURSUANT TO
+           THE AUTHORITY CONFERRED BY THE PREVIOUS RESOLUTION,
+           TO ALLOT EQUITY SECURITIES FOR CASH SECTION 94(3)
+           OF THE SAID ACT, IN EITHER CASE DISAPPLYING THE
+           STATUTORY PRE-EMPTION RIGHTS SECTION 89(1) OF
+           THE ACT, PROVIDED THAT THIS POWER IS LIMITED
+           TO THE ALLOTMENT OF EQUITY SECURITIES: A) IN
+           CONNECTION WITH A RIGHTS ISSUE, OPEN OFFER OR
+           ANY OTHER PRE-EMPTIVE OFFER IN FAVOR OF ORDINARY
+           SHAREHOLDERS; B) UP TO AN AGGREGATE NOMINAL VALUE
+           OF GBP 3,230,000; AUTHORITY EXPIRES THE EARLIER
+           OF THE CONCLUSION OF THE NEXT AGM OF THE COMPANY
+           OR 11 OCT 2008; AND THE DIRECTORS MAY ALLOT EQUITY
+           SECURITIES AFTER THE EXPIRY OF THIS AUTHORITY
+           IN PURSUANCE OF SUCH AN OFFER OR AGREEMENT MADE
+           PRIOR TO SUCH EXPIRY
+S.11       AUTHORIZE THE COMPANY, IN ACCORDANCE WITH THE                   Management   For             *Management Position Unknown
+           ARTICLE 7 OF ITS ARTICLES OF ASSOCIATION OF THE
+           COMPANY, FOR THE PURPOSES OF SECTION 166 OF THE
+           COMPANIES ACT 1985, TO MAKE MARKET PURCHASES
+           SECTION 163 OF THE ACT OF UP TO 21,580,000, BEING
+           10% OF THE ISSUED SHARE CAPITAL OF THE COMPANY
+           AT 23 MAY 2007; AT A MINIMUM PRICE OF 30 PENCE
+           AND NOT MORE THAN 105% OF THE AVERAGE MIDDLE
+           MARKET QUOTATIONS FOR SUCH SHARES DERIVED FROM
+           THE LONDON STOCK EXCHANGE DAILY OFFICIAL LIST,
+           OVER THE PREVIOUS 5 BUSINESS DAYS IMMEDIATELY
+           PRECEDING THE DAY ON WHICH THE ORDINARY SHARE
+           IS PURCHASED WHICH AMOUNT SHALL BE EXCLUSIVE
+           OF EXPENSE; AND THE HIGHER OF THE PRICE OF THE
+           LAST INDEPENDENT TRADE AND THE HIGHEST CURRENT
+           INDEPENDENT BID ON THE TRADING VENUE WHERE THE
+           PURCHASE IS CARRIED OUT; AUTHORITY EXPIRES THE
+           EARLIER OF THE CONCLUSION OF THE AGM OF THE COMPANY
+           OR 11 OCT 2008; AND THE COMPANY, BEFORE THE EXPIRY,
+           MAY MAKE A CONTRACT TO PURCHASE ORDINARY SHARES
+           WHICH WILL OR MAY BE EXECUTED WHOLLY OR PARTLY
+           AFTER SUCH EXPIRY
+</TABLE>
+
+<PAGE>
+
+<TABLE>
+<S>        <C>                                                             <C>          <C>             <C>
+12         APPROVE THAT PURSUANT TO PARAGRAPH 10 OF SCHEDULE               Management   For             *Management Position Unknown
+           5 OF THE COMPANIES ACT 2006, AND WITHOUT PREJUDICE
+           TO THE EXISTING PROVISIONS OF THE ARTICLES OF
+           ASSOCIATION OF THE COMPANY: A) THE COMPANY MAY
+           SEND OR SUPPLY DOCUMENTS OR INFORMATION TO SHAREHOLDERS
+           BY MAKING THEM AVAILABLE ON A WEBSITE; AND B)
+           THE COMPANY MAY USE ELECTRONIC MEANS WITHIN THE
+           MEANING OF THE DISCLOSURE AND TRANSPARENCY RULES
+           SOURCEBOOK PUBLISHED BY THE FINANCIAL SERVICES
+           AUTHORITY TO SEND OR SUPPLY AND DOCUMENTS OR
+           INFORMATION TO SHAREHOLDERS
+13.        AMEND THE RULES OF THE EMAP PLC PERFORMANCE RELATED             Management   For             *Management Position Unknown
+           PAY PLAN 2004 PRP AS SPECIFIED AND AUTHORIZE
+           THE DIRECTORS TO DO SUCH ACTS AND THINGS AS THEY
+           MAY CONSIDER APPROPRIATE TO IMPLEMENT THE AMENDED
+           PRP
+</TABLE>
+
+- --------------------------------------------------------------------------------
+WEIR GROUP PLC                          WEIR.L      EGM MEETING DATE: 07/13/2007
+ISSUER: G95248137                       ISIN: GB0009465807
+SEDOL: B02R8M6, 0946580, B28C8S5
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+1.         APPROVE THE ACQUISITION BY THE COMPANY OF 100%                  Management   For             *Management Position Unknown
+           OF THE ISSUED SHARE CAPITAL OFSPM FLOW CONTROL,
+           INC. ON THE TERMS AND SUBJECT TO THE CONDITIONS
+           CONTAINED IN THE SALE AND PURCHASE AGREEMENT
+           AS SPECIFIED AND AUTHORIZE THE DIRECTORS OF THE
+           COMPANY TO DO ALL SUCH THINGS AND ENTER INTO
+           SUCH DOCUMENTS AS MAY BE NECESSARY TO GIVE EFFECT
+           THERETO INCLUDING THE MAKING OF SUCH NON-MATERIAL
+           VARIATIONS TO THE TERMS AND CONDITIONS OF SUCH
+           SALE AND PURCHASE AGREEMENT AND OTHER RELATED
+           DOCUMENTS AS THE DIRECTORS OF THE COMPANY OR
+           DULY CONSTITUTED COMMITTEE OF THE BOARD OF DIRECTORS
+           SHALL, IN THEIR DISCRETION, THINK APPROPRIATE
+</TABLE>
+
+- --------------------------------------------------------------------------------
+MODINE MANUFACTURING COMPANY            MOD      ANNUAL MEETING DATE: 07/18/2007
+ISSUER: 607828100                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+01         DIRECTOR                                                        Management   For
+           CHARLES P. COOLEY                                               Management   For             For
+           GARY L. NEALE                                                   Management   For             For
+           DAVID B. RAYBURN                                                Management   For             For
+02         APPROVE THE MODINE MANUFACTURING COMPANY 2007                   Management   Abstain         Against
+           INCENTIVE COMPENSATION PLAN.
+03         RATIFY THE APPOINTMENT OF PRICEWATERHOUSECOOPERS                Management   For             For
+           LLP AS INDEPENDENT REGISTERED PUBLIC ACCOUNTING
+           FIRM.
+</TABLE>
+
+<PAGE>
+
+- --------------------------------------------------------------------------------
+BT GROUP PLC                            BT       ANNUAL MEETING DATE: 07/19/2007
+ISSUER: 05577E101                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+01         REPORTS AND ACCOUNTS                                            Management   For             For
+02         REMUNERATION REPORT                                             Management   For             For
+03         FINAL DIVIDEND                                                  Management   For             For
+04         RE-ELECT SIR CHRISTOPHER BLAND                                  Management   For             For
+05         RE-ELECT ANDY GREEN                                             Management   For             For
+06         RE-ELECT IAN LIVINGSTON                                         Management   For             For
+07         RE-ELECT JOHN NELSON                                            Management   For             For
+08         ELECT DEBORAH LATHEN                                            Management   For             For
+09         ELECT FRANCOIS BARRAULT                                         Management   For             For
+10         REAPPOINTMENT OF AUDITORS                                       Management   For             For
+11         REMUNERATION OF AUDITORS                                        Management   For             For
+12         AUTHORITY TO ALLOT SHARES                                       Management   For             For
+13         AUTHORITY TO ALLOT SHARES FOR CASH SPECIAL RESOLUTION           Management   For             For
+14         AUTHORITY TO PURCHASE OWN SHARES SPECIAL RESOLUTION             Management   For             For
+15         AUTHORISE ELECTRONIC COMMUNICATIONS SPECIAL RESOLUTION          Management   For             For
+16         AUTHORITY FOR POLITICAL DONATIONS                               Management   For             For
+</TABLE>
+
+- --------------------------------------------------------------------------------
+BT GROUP PLC, LONDON                    BT          AGM MEETING DATE: 07/19/2007
+ISSUER: G16612106                       ISIN: GB0030913577
+SEDOL: B02S7B1, B014679, 3091357
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+1.         RECEIVE THE FINANCIAL STATEMENTS AND THE STATUTORY              Management   For             *Management Position Unknown
+           REPORTS
+2.         APPROVE THE REMUNERATION REPORT                                 Management   For             *Management Position Unknown
+3.         APPROVE THE FINAL DIVIDEND OF 10 PENCE PER SHARE                Management   For             *Management Position Unknown
+4.         RE-ELECT SIR CHRISTOPHER BLAND AS A DIRECTOR                    Management   For             *Management Position Unknown
+5.         RE-ELECT MR. ANDY GREEN AS A DIRECTOR                           Management   For             *Management Position Unknown
+6.         RE-ELECT MR. IAN LIVINGSTON AS A DIRECTOR                       Management   For             *Management Position Unknown
+7.         RE-ELECT MR. JOHN NELSON AS A DIRECTOR                          Management   For             *Management Position Unknown
+8.         ELECT MR. DEBORAH LATHEN AS A DIRECTOR                          Management   For             *Management Position Unknown
+9.         ELECT MR. FRANCOIS BARRAULT AS A DIRECTOR                       Management   For             *Management Position Unknown
+10.        RE-APPOINT PRICEWATERHOUSECOOPERS LLP AS THE                    Management   For             *Management Position Unknown
+           AUDITORS OF THE COMPANY
+11.        AUTHORIZE THE BOARD TO FIX THE REMUNERATION OF                  Management   For             *Management Position Unknown
+           THE AUDITORS
+12.        GRANT AUTHORITY TO ISSUE EQUITY OR EQUITY LINKED                Management   For             *Management Position Unknown
+           SECUIRITIES WITH PRE-EMPTIVERIGHTS UP TO AN AGGREGATE
+           NOMINAL AMOUNT OF GBP 136,000,000
+S.13       GRANT AUTHORITY TO ISSUE EQUITY OR EQUITY-LINKED                Management   For             *Management Position Unknown
+           SECQURITIES WITHOUT PRE-EMPTIVE RIGHTSUP TO AN
+           AGGREGATE NOMINAL AMOUNT OF GBP 21,000,000 SHARES
+           FOR MARKET PURCHASE
+S.14       GRANT AUTHORITY TO MAKE MARKER PURCHASES OF 827,000,000         Management   For             *Management Position Unknown
+           SHARES
+S.15       AUTHORIZE THE COMPANY TO COMMUNICATE WITH SHAREHOLDERS          Management   For             *Management Position Unknown
+</TABLE>
+
+<PAGE>
+
+<TABLE>
+<S>        <C>                                                             <C>          <C>             <C>
+           BY MAKING DOCUMENTS AND INFORMATION AVAILABLE
+           ON A WEBSITE
+16.        AUTHORIZE BRITISH TELECOMMUNICATIONS PLC TO MAKE                Management   For             *Management Position Unknown
+           EU POLITICAL ORGANIZATION DONATIONS UP TO GBP
+           100,000
+</TABLE>
+
+- --------------------------------------------------------------------------------
+JAMES RIVER COAL COMPANY                JRCC     ANNUAL MEETING DATE: 07/19/2007
+ISSUER: 470355207                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+01         DIRECTOR                                                        Management   For
+           LEONARD J. KUJAWA                                               Management   For             For
+           PETER T. SOCHA                                                  Management   For             For
+</TABLE>
+
+- --------------------------------------------------------------------------------
+LEGG MASON, INC.                        LM       ANNUAL MEETING DATE: 07/19/2007
+ISSUER: 524901105                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+01         DIRECTOR                                                        Management   For
+           HAROLD L. ADAMS*                                                Management   For             For
+           RAYMOND A. MASON*                                               Management   For             For
+           MARGARET M. RICHARDSON*                                         Management   For             For
+           KURT L. SCHMOKE*                                                Management   For             For
+           ROBERT E. ANGELICA**                                            Management   For             For
+02         AMENDMENT OF THE LEGG MASON, INC. 1996 EQUITY                   Management   Against         Against
+           INCENTIVE PLAN.
+03         AMENDMENT OF THE LEGG MASON, INC. NON-EMPLOYEE                  Management   For             For
+           DIRECTOR EQUITY PLAN.
+04         RATIFICATION OF THE APPOINTMENT OF PRICEWATERHOUSECOOPERS       Management   For             For
+           LLP AS INDEPENDENT REGISTERED PUBLIC ACCOUNTING
+           FIRM.
+05         STOCKHOLDER PROPOSAL RELATING TO AN INDEPENDENT                 Shareholder  Against         For
+           DIRECTOR SERVING AS THE CHAIRMAN OF THE BOARD.
+</TABLE>
+
+- --------------------------------------------------------------------------------
+MYERS INDUSTRIES, INC.                  MYE    SPECIAL MEETING DATE: 07/23/2007
+ISSUER: 628464109                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+01         TO ADOPT AND APPROVE THE AGREEMENT AND PLAN OF                  Management   Against         Against
+           MERGER DATED AS OF APRIL 24, 2007, BY AND AMONG
+           MYERS INDUSTRIES, INC., MERGER SUB AND BUYER.
+02         TO ADJOURN OR POSTPONE THE SPECIAL MEETING OF                   Management   Against         Against
+</TABLE>
+
+<PAGE>
+
+<TABLE>
+<S>        <C>                                                             <C>          <C>             <C>
+           SHAREHOLDERS, IF NECESSARY, TO PERMIT FURTHER
+           SOLICITATION OF PROXIES IN THE EVENT THERE ARE
+           NOT SUFFICIENT VOTES AT THE TIME OF THE SPECIAL
+           MEETING OF SHAREHOLDERS TO APPROVE PROPOSAL 1.
+</TABLE>
+
+- --------------------------------------------------------------------------------
+FLORIDA EAST COAST INDUSTRIES, INC.     FLA    SPECIAL MEETING DATE: 07/24/2007
+ISSUER: 340632108                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+01         APPROVAL OF THE AGREEMENT AND PLAN OF MERGER,                   Management   For             For
+           DATED AS OF MAY 8, 2007, BY AND AMONG IRON HORSE
+           ACQUISITION HOLDING LLC, IRON HORSE ACQUISITION
+           SUB INC. AND FLORIDA EAST COAST INDUSTRIES, INC.
+           (THE MERGER AGREEMENT ).
+02         APPROVAL OF THE ADJOURNMENT OR POSTPONEMENT OF                  Management   For             For
+           THE SPECIAL MEETING, IF NECESSARY OR APPROPRIATE,
+           FOR AMONG OTHER REASONS, THE SOLICITATION OF
+           ADDITIONAL PROXIES IF THERE ARE INSUFFICIENT
+           VOTES AT THE TIME OF THE SPECIAL MEETING TO APPROVE
+           THE MERGER AGREEMENT.
+</TABLE>
+
+- --------------------------------------------------------------------------------
+VODAFONE GROUP PLC                      VOD      ANNUAL MEETING DATE: 07/24/2007
+ISSUER: 92857W209                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+27         TO ISSUE COMPANY BONDS DIRECTLY TO SHAREHOLDERS,                Management   Against         For
+           INCREASING THE GROUP S INDEBTEDNESS
+26         TO SEPARATE OUT THE COMPANY S 45% INTEREST IN                   Management   Against         For
+           VERIZON WIRELESS FROM ITS OTHER ASSETS BY TRACKING
+           SHARES OR SPIN OFF
+25         TO AMEND ARTICLE 114.1 OF THE COMPANY S ARTICLES                Management   Against         For
+           OF ASSOCIATION (SPECIAL RESOLUTION)
+24         TO ADOPT NEW ARTICLES OF ASSOCIATION (SPECIAL                   Management   For             For
+           RESOLUTION)
+23         TO AUTHORISE THE COMPANY TO SEND OR SUPPLY DOCUMENTS            Management   For             For
+           OR INFORMATION TO SHAREHOLDERS IN ELECTRONIC
+           FORM OR BY MEANS OF A WEBSITE (SPECIAL RESOLUTION)
+22         TO AUTHORISE THE COMPANY S PURCHASE OF ITS OWN                  Management   For             For
+           SHARES (SECTION 166, COMPANIES ACT 1985) (SPECIAL
+           RESOLUTION)
+21         TO RENEW THE AUTHORITY TO DIS-APPLY PRE-EMPTION                 Management   For             For
+           RIGHTS UNDER ARTICLE 16.3 OF THE COMPANY S ARTICLES
+           OF ASSOCIATION (SPECIAL RESOLUTION)
+20         TO RENEW THE AUTHORITY TO ALLOT SHARES UNDER                    Management   For             For
+           ARTICLE 16.2 OF THE COMPANY S ARTICLES OF ASSOCIATION
+19         TO AUTHORISE THE AUDIT COMMITTEE TO DETERMINE                   Management   For             For
+           THE REMUNERATION OF THE AUDITORS
+18         TO RE-APPOINT DELOITTE & TOUCHE LLP AS AUDITORS                 Management   For             For
+17         TO APPROVE THE REMUNERATION REPORT                              Management   For             For
+16         TO APPROVE A FINAL DIVIDEND OF 4.41P PER ORDINARY               Management   For             For
+           SHARE
+15         TO ELECT SIMON MURRAY AS A DIRECTOR                             Management   For             For
+</TABLE>
+
+<PAGE>
+
+<TABLE>
+<S>        <C>                                                             <C>          <C>             <C>
+14         TO ELECT NICK LAND AS A DIRECTOR                                Management   For             For
+28         TO AMEND THE COMPANY S ARTICLES OF ASSOCIATION                  Management   Against         For
+           TO LIMIT THE COMPANY S ABILITY TO MAKE ACQUISITIONS
+           WITHOUT APPROVAL BY SPECIAL RESOLUTION (SPECIAL
+           RESOLUTION)
+13         TO ELECT ALAN JEBSON AS A DIRECTOR                              Management   For             For
+12         TO ELECT VITTORIO COLAO AS A DIRECTOR                           Management   For             For
+11         TO RE-ELECT PHILIP YEA AS A DIRECTOR (MEMBER                    Management   For             For
+           OF THE REMUNERATION COMMITTEE)
+10         TO RE-ELECT ANTHONY WATSON AS A DIRECTOR (MEMBER                Management   For             For
+           OF THE REMUNERATION COMMITTEE)
+09         TO RE-ELECT LUC VANDEVELDE AS A DIRECTOR (MEMBER                Management   For             For
+           OF THE NOMINATIONS AND GOVERNANCE COMMITTEE)
+           (MEMBER OF THE REMUNERATION COMMITTEE)
+08         TO RE-ELECT PROFESSOR JURGEN SCHREMPP AS A DIRECTOR             Management   For             For
+           (MEMBER OF THE NOMINATIONS AND GOVERNANCE COMMITTEE)
+           (MEMBER OF THE REMUNERATION COMMITTEE)
+07         TO RE-ELECT ANNE LAUVERGEON AS A DIRECTOR (MEMBER               Management   For             For
+           OF THE AUDIT COMMITTEE)
+06         TO RE-ELECT ANDY HALFORD AS A DIRECTOR                          Management   For             For
+05         TO RE-ELECT JOHN BUCHANAN AS A DIRECTOR (MEMBER                 Management   For             For
+           OF THE AUDIT COMMITTEE) (MEMBER OF THE NOMINATIONS
+           AND GOVERNANCE COMMITTEE)
+04         TO RE-ELECT DR MICHAEL BOSKIN AS A DIRECTOR (MEMBER             Management   For             For
+           OF THE AUDIT COMMITTEE) (MEMBER OF THE REMUNERATION
+           COMMITTEE)
+03         TO RE-ELECT ARUN SARIN AS A DIRECTOR (MEMBER                    Management   For             For
+           OF THE NOMINATIONS AND GOVERNANCE COMMITTEE)
+02         TO RE-ELECT SIR JOHN BOND AS A DIRECTOR (MEMBER                 Management   For             For
+           OF THE NOMINATIONS AND GOVERNANCE COMMITTEE)
+01         TO RECEIVE THE REPORT OF THE DIRECTORS AND FINANCIAL            Management   For             For
+           STATEMENTS FOR THE YEAR ENDED 31 MARCH 2007.
+</TABLE>
+
+- --------------------------------------------------------------------------------
+ARGONAUT GROUP, INC.                    AGII   SPECIAL MEETING DATE: 07/25/2007
+ISSUER: 040157109                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+02         APPROVAL OF ADJOURNMENT OF THE SPECIAL MEETING                  Management   For             For
+           TO A LATER DATE IF NECESSARY, TO PERMIT FURTHER
+           SOLICITATION OF PROXIES IF THERE ARE NOT SUFFICIENT
+           VOTES AT THE TIME OF THE SPECIAL MEETING TO APPROVE
+           THE ABOVE PROPOSAL.
+01         APPROVAL OF THE AGREEMENT AND PLAN OF MERGER,                   Management   For             For
+           DATED AS OF MARCH 14, 2007 AND AMENDED AND RESTATED
+           AS OF JUNE 8, 2007, BY AND AMONG PXRE GROUP LTD.,
+           PXMS INC., A DIRECT, WHOLLY OWNED SUBSIDIARY
+           OF PXRE GROUP LTD., AND ARGONAUT, WHEREBY PXMS
+           INC. WILL MERGE WITH AND INTO ARGONAUT, WITH
+           ARGONAUT AS THE SURVIVING COMPANY.
+</TABLE>
+
+- --------------------------------------------------------------------------------
+PALM HARBOR HOMES, INC.                 PHHM     ANNUAL MEETING DATE: 07/25/2007
+ISSUER: 696639103                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<PAGE>
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+02         RATIFICATION OF THE APPOINTMENT OF ERNST & YOUNG                Management   For             For
+           LLP AS THE INDEPENDENT AUDITORS FOR THE FISCAL
+           YEAR ENDING MARCH 28, 2008.
+01         DIRECTOR                                                        Management   For
+           LARRY H. KEENER                                                 Management   For             For
+           LEE POSEY                                                       Management   For             For
+           WILLIAM M. ASHBAUGH                                             Management   For             For
+           JERRY D. MALLONEE                                               Management   For             For
+           FREDERICK R. MEYER                                              Management   For             For
+           ELYSIA HOLT RAGUSA                                              Management   For             For
+           W.D. ROSENBERG, JR.                                             Management   For             For
+           A. GARY SHILLING                                                Management   For             For
+           W. CHRISTOPHER WELLBORN                                         Management   For             For
+           JOHN H. WILSON                                                  Management   For             For
+</TABLE>
+
+- --------------------------------------------------------------------------------
+BROWN-FORMAN CORPORATION                BFA      ANNUAL MEETING DATE: 07/26/2007
+ISSUER: 115637100                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+01         DIRECTOR                                                        Management   For
+           P. BOUSQUET-CHAVANNE                                            Management   For             For
+           BARRY D. BRAMLEY                                                Management   For             For
+           GEO. GARVIN BROWN IV                                            Management   For             For
+           MARTIN S. BROWN, JR.                                            Management   For             For
+           OWSLEY BROWN II                                                 Management   For             For
+           DONALD G. CALDER                                                Management   For             For
+           SANDRA A. FRAZIER                                               Management   For             For
+           RICHARD P. MAYER                                                Management   For             For
+           WILLIAM E. MITCHELL                                             Management   For             For
+           MATTHEW R. SIMMONS                                              Management   For             For
+           WILLIAM M. STREET                                               Management   For             For
+           DACE BROWN STUBBS                                               Management   For             For
+           PAUL C. VARGA                                                   Management   For             For
+           JAMES S. WELCH, JR.                                             Management   For             For
+</TABLE>
+
+- --------------------------------------------------------------------------------
+CONSTELLATION BRANDS, INC.              STZ      ANNUAL MEETING DATE: 07/26/2007
+ISSUER: 21036P108                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+01         DIRECTOR                                                        Management   For
+           BARRY A. FROMBERG                                               Management   For             For
+           JEANANNE K. HAUSWALD                                            Management   For             For
+           JAMES A. LOCKE III                                              Management   For             For
+           RICHARD SANDS                                                   Management   For             For
+           ROBERT SANDS                                                    Management   For             For
+           THOMAS C. MCDERMOTT                                             Management   For             For
+           PAUL L. SMITH                                                   Management   For             For
+           PETER H. SODERBERG                                              Management   For             For
+</TABLE>
+
+<PAGE>
+
+<TABLE>
+<S>        <C>                                                             <C>          <C>             <C>
+05         PROPOSAL TO APPROVE THE AMENDMENT AND RESTATEMENT               Management   For             For
+           OF THE COMPANY S ANNUAL MANAGEMENT INCENTIVE PLAN.
+04         PROPOSAL TO APPROVE THE AMENDMENT AND RESTATEMENT               Management   Against         Against
+           OF THE COMPANY S LONG-TERM STOCK INCENTIVE PLAN.
+03         PROPOSAL TO AMEND THE COMPANY S CERTIFICATE OF                  Management   For             For
+           INCORPORATION TO INCREASE THE NUMBER OF AUTHORIZED
+           SHARES OF CLASS A COMMON STOCK FROM 300,000,000
+           SHARES TO 315,000,000 SHARES.
+02         PROPOSAL TO RATIFY THE SELECTION OF KPMG LLP,                   Management   For             For
+           CERTIFIED PUBLIC ACCOUNTANTS, AS THE COMPANY
+           S INDEPENDENT PUBLIC ACCOUNTANTS FOR THE FISCAL
+           YEAR ENDING FEBRUARY 29, 2008.
+</TABLE>
+
+- --------------------------------------------------------------------------------
+TELEPHONE AND DATA SYSTEMS, INC.        TDS      ANNUAL MEETING DATE: 07/26/2007
+ISSUER: 879433100                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+01         DIRECTOR                                                        Management   For
+           G.P. JOSEFOWICZ                                                 Management   For             For
+           C.D. O'LEARY                                                    Management   For             For
+           M.H. SARANOW                                                    Management   For             For
+           H.S. WANDER                                                     Management   For             For
+02         NON-EMPLOYEE DIRECTOR COMPENSATION PLAN.                        Management   For             For
+03         RATIFY ACCOUNTANTS FOR 2007.                                    Management   For             For
+</TABLE>
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+01         DIRECTOR                                                        Management   For
+           G.P. JOSEFOWICZ                                                 Management   For             For
+           C.D. O'LEARY                                                    Management   For             For
+           M.H. SARANOW                                                    Management   For             For
+           H.S. WANDER                                                     Management   For             For
+</TABLE>
+
+- --------------------------------------------------------------------------------
+REMY COINTREAU SA, COGNAC               RCO.PA      EGM MEETING DATE: 07/31/2007
+ISSUER: F7725A100                       ISIN: FR0000130395
+SEDOL: 4721352, B01DPS0, 4741714
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+*          FRENCH RESIDENT SHAREOWNERS MUST COMPLETE, SIGN                 Non-Voting                   *Management Position Unknown
+           AND FORWARD THE PROXY CARD DIRECTLY TO THE SUB
+           CUSTODIAN. PLEASE CONTACT YOUR CLIENT SERVICE
+           REPRESENTATIVE TO OBTAIN THE NECESSARY CARD,
+           ACCOUNT DETAILS AND DIRECTIONS. THE FOLLOWING
+           APPLIES TO NON-RESIDENT SHAREOWNERS: PROXY
+           CARDS: VOTING INSTRUCTIONS WILL BE FORWARDED
+           TO THE GLOBAL CUSTODIANS THAT HAVE BECOME REGISTERED
+           INTERMEDIARIES, ON THE VOTE DEADLINE DATE. IN
+           CAPACITY AS REGISTERED INTERMEDIARY, THE GLOBAL
+           CUSTODIAN WILL SIGN THE PROXY CARD AND FORWARD
+           TO THE LOCAL CUSTODIAN. IF YOU ARE UNSURE WHETHER
+           YOUR GLOBAL CUSTODIAN ACTS AS REGISTERED INTERMEDIARY,
+           PLEASE CONTACT YOUR REPRESENTATIVE
+</TABLE>
+
+<PAGE>
+
+<TABLE>
+<S>        <C>                                                             <C>          <C>             <C>
+O.1        RECEIVE THE REPORTS OF THE BOARD OF DIRECTORS                   Management   For             *Management Position Unknown
+           AND THE AUDITORS, APPROVE THE COMPANY S FINANCIAL
+           STATEMENTS FOR THE YEAR ENDING IN 2006, AS PRESENTED;
+           EARNINGS
+O.2        APPROVE THE RECOMMENDATIONS OF THE BOARD OF DIRECTORS           Management   For             *Management Position Unknown
+           AND THE INCOME FOR THE FY BE APPROPRIATED AS
+           FOLLOWS: EARNINGS FOR THE FY: EUR 175,629,723.44,
+           PRIOR RETAINED EARNINGS: EUR 37,696,670.24, DISTRIBUTABLE
+           INCOME: EUR 213,326,393.68, LEGAL RESERVES: EUR
+           78,985.28, DIVIDENDS: EUR 55,199,762.40, RETAINED
+           EARNINGS: EUR 158,047,646.00, GLOBAL AMOUNT:
+           EUR 213,326,393.68, IN THE EVENT THAT THE COMPANY
+           HOLDS SOME OF ITS OWN SHARES ON SUCH DATE, THE
+           AMOUNT OF THE UNPAID DIVIDEND ON SUCH SHARES
+           SHALL BE ALLOCATED TO THE RETAINED EARNINGS ACCOUNT;
+           AUTHORIZE THE BOARD OF DIRECTORS TO TAKE ALL
+           NECESSARY MEASURES AND ACCOMPLISH ALL NECESSARY
+           FORMALITIES
+O.3        RECEIVE THE REPORTS OF THE BOARD OF DIRECTORS                   Management   For             *Management Position Unknown
+           AND THE AUDITORS, APPROVE THE CONSOLIDATED FINANCIAL
+           STATEMENTS FOR THE SAID YE, IN THE FORM PRESENTED
+           TO THE MEETING; LOSS FOR THE FY: EUR - 23,031,000.00
+O.4        RECEIVE THE SPECIAL REPORT OF THE AUDITORS ON                   Management   For             *Management Position Unknown
+           AGREEMENTS GOVERNED BY THE ARTICLE L.225-38 AND
+           L.225-40 OF THE FRENCH COMMERCIAL CODE, APPROVE
+           THE AGREEMENTS ENTERED INTO OR WHICH REMAINED
+           IN FORCE DURING THE FY
+O.5        GRANT PERMANENT DISCHARGE TO THE BOARD OF DIRECTORS             Management   For             *Management Position Unknown
+           FOR THE PERFORMANCE OF THEIR DUTIES DURING THE
+           FY
+O.8        APPOINT MR. TIM JONES AS AN EXECUTIVE DIRECTOR                  Management   For             *Management Position Unknown
+           FOR A 3 YEAR PERIOD
+O.6        APPROVE TO RENEW THE APPOINTMENT OF MR. MARC                    Management   For             *Management Position Unknown
+           HERIARD DUBREUIL AS AN EXECUTIVEDIRECTOR FOR
+           A 3 YEAR PERIOD
+O.7        APPROVE TO RENEW THE APPOINTMENT OF MR. JEAN                    Management   For             *Management Position Unknown
+           BURELLE AS AN EXECUTIVE DIRECTORFOR A 3 YEAR
+           PERIOD
+O.9        APPROVE TO AWARD TOTAL ANNUAL FEES OF EUR 294,000.00            Management   For             *Management Position Unknown
+           TO THE BOARD OF DIRECTORS
+O.10       AUTHORIZE THE BOARD OF DIRECTORS TO BUY BACK                    Management   For             *Management Position Unknown
+           THE COMPANY S SHARES ON THE OPENMARKET, SUBJECT
+           TO THE CONDITIONS: MAXIMUM PURCHASE PRICE: EUR
+           60.00, MINIMUM SALE PRICE: 30.00, MAXIMUM NUMBER
+           OF SHARES TO BE ACQUIRED: 10% OF THE SHARE CAPITAL,
+           MAXIMUM FUNDS INVESTED IN THE SHARE BUYBACKS:
+           EUR 241,738,800.00; AUTHORITY EXPIRES AFTER 18
+           MONTHS; AND THIS AUTHORIZATION SUPERSEDES THE
+           FRACTION UNUSED OF THE AUTHORIZATION GRANTED
+           BY THE SHAREHOLDERS MEETING OF 27 JUL 2006 IN
+           ITS RESOLUTION 13 AND TO TAKE ALL NECESSARY FORMALITIES
+O.11       GRANT FULL POWERS TO THE BEARER OF AN ORIGINAL,                 Management   For             *Management Position Unknown
+           A COPY OR EXTRACT OF THE MINUTES OF THE MEETING
+           TO CARRY OUT ALL FILINGS, PUBLICATIONS AND OTHER
+           FORMALITIES PRESCRIBED BY THE LAW
+E.12       AMEND, AS A CONSEQUENCE OF THE REGULATION CHANGES,              Management   For             *Management Position Unknown
+           THE ARTICLE 23.1 OF THE BY-LAWS CONCERNING THE
+           MODALITIES OF CONVENING AND ATTENDANCE OF THE
+           SHAREHOLDERS TO THE GENERAL MEETINGS OF THE COMPANY
+</TABLE>
+
+<PAGE>
+
+<TABLE>
+<S>        <C>                                                             <C>          <C>             <C>
+E.13       AMEND, AS A CONSEQUENCE OF THE REGULATION CHANGES,              Management   For             *Management Position Unknown
+           THE ARTICLE 23.6 OF THE BY-LAWS CONCERNING THE
+           MODALITIES OF CONVENING AND ATTENDANCE OF THE
+           SHAREHOLDERS TO THE GENERAL MEETINGS OF THE COMPANY
+*          PLEASE NOTE THAT THIS IS A MIX MEETING. THANK                   Non-Voting                   *Management Position Unknown
+           YOU.
+E.14       AUTHORIZE THE BOARD OF DIRECTORS TO REDUCE THE                  Management   For             *Management Position Unknown
+           CAPITAL, ON 1 OR MORE OCCASIONS AND ITS SOLE
+           DISCRETION, BY CANCELING ALL OR PART OF THE COMPANY
+           S OWN SHARES IN CONNECTION WITH A STOCK REPURCHASE
+           PLAN, UP TO A MAXIMUM OF 10% OF THE SHARE CAPITAL
+           OVER A 24 MONTH PERIOD, AUTHORITY EXPIRES AFTER
+           18 MONTHS; THIS AUTHORIZATIONS SUPERSEDES THE
+           FRACTION UNUSED OF THE AUTHORIZATION GRANTED
+           BY THE SHAREHOLDERS MEETING OF 27 JUL 2006 IN
+           ITS RESOLUTION 19
+E.15       AUTHORIZE THE BOARD OF DIRECTORS TO INCREASE                    Management   For             *Management Position Unknown
+           THE CAPITAL, ON 1 OR MORE OCCASIONS, IN FRANCE
+           OR ABROAD, BY A MAXIMUM NOMINAL AMOUNT OF EUR
+           30,000,000.00, WHICH IS COMMON WITH THE RESOLUTION
+           16, BY ISSUANCE, WITH PREFERRED SUBSCRIPTION
+           RIGHTS MAINTAINED, OF SHARES AND OR DEBT SECURITIES;
+           THE MAXIMUM NOMINAL AMOUNT OF DEBT SECURITIES
+           WHICH MAY BE ISSUED SHALL NOT EXCEED EUR 750,000,000.00;
+           AUTHORITY EXPIRES AFTER 26 MONTHS AND TO TAKE
+           ALL NECESSARY FORMALITIES; THIS DELEGATION OF
+           POWERS SUPERSEDES ANY AND ALL EARLIER DELEGATIONS
+           TO THE SAME EFFECT
+E.16       AUTHORIZE THE BOARD OF DIRECTORS TO INCREASE                    Management   For             *Management Position Unknown
+           THE CAPITAL, ON 1 OR MORE OCCASIONS, IN FRANCE
+           OR ABROAD, BY A MAXIMUM NOMINAL AMOUNT OF EUR
+           30,000,000.00, BY ISSUANCE, WITHOUT PREFERRED
+           SUBSCRIPTION RIGHTS MAINTAINED, OF SHARES AND
+           OR DEBT SECURITIES; THE MAXIMUM NOMINAL AMOUNT
+           OF DEBT SECURITIES WHICH MAY BE ISSUED SHALL
+           NOT EXCEED EUR 750,000,000.00; AUTHORITY EXPIRES
+           AFTER 26 MONTHS AND TO TAKE ALL NECESSARY FORMALITIES;
+           THIS DELEGATION OF POWERS SUPERSEDES ANY AND
+           ALL EARLIER DELEGATIONS TO THE SAME EFFECT
+E.17       AUTHORIZE THE BOARD OF DIRECTORS TO GRANT, IN                   Management   For             *Management Position Unknown
+           1 OR MORE TRANSACTIONS, TO BENEFICIARIES TO BE
+           CHOSEN BY IT, OPTIONS GIVING THE RIGHT EITHER
+           TO SUBSCRIBE FOR NEW SHARES IN THE COMPANY TO
+           BE ISSUED THROUGH A SHARE CAPITAL INCREASE, OR
+           TO PURCHASE EXISTING SHARES PURCHASED BY THE
+           COMPANY, IT BEING PROVIDED THAT THE OPTIONS SHALL
+           NOT GIVE RIGHTS TO A TOTAL NUMBER OF SHARES,
+           WHICH SHALL EXCEED 3% OF THE SHARE CAPITAL; AUTHORITY
+           EXPIRES AFTER 38 MONTHS; AND APPROVE TO CANCEL
+           THE SHAREHOLDERS PREFERENTIAL SUBSCRIPTION RIGHTS;
+           AUTHORIZE THE BOARD OF DIRECTORS TO TAKE ALL
+           NECESSARY FORMALITIES; THIS AUTHORIZATIONS SUPERSEDES
+           THE FRACTION UNUSED OF THE AUTHORIZATION GRANTED
+           BY THE SHAREHOLDERS MEETING OF 07 SEP 2004 IN
+           ITS RESOLUTION 7
+E.18       AUTHORIZE THE BOARD OF DIRECTORS TO INCREASE                    Management   For             *Management Position Unknown
+           THE CAPITAL, ON 1 OR MORE OCCASIONS, AT ITS SOLE
+           DISCRETION, IN FAVOUR OF EMPLOYEES AND CORPORATE
+           OFFICERS OF THE COMPANY WHO ARE MEMBERS OF A
+           COMPANY SAVING PLAN; AUTHORITY EXPIRES AFTER
+           26 MONTHS AND FOR A NOMINAL AMOUNT THAT SHALL
+           NOT EXCEED EUR 1,400,000.00; AND TO TAKE ALL
+           NECESSARY FORMALITIES
+</TABLE>
+
+<PAGE>
+
+<TABLE>
+<S>        <C>                                                             <C>          <C>             <C>
+E.19       AUTHORIZE THE BOARD OF DIRECTORS TO INCREASE                    Management   For             *Management Position Unknown
+           THE NUMBER OF SECURITIES TO BE ISSUED IN THE
+           EVENT OF A CAPITAL INCREASE IN CASE OF AN EXCESS
+           DEMAND, AT THE SAME PRICE AS THE INITIAL ISSUE,
+           WITHIN 30 DAYS OF THE CLOSING OF SUBSCRIPTION
+           PERIOD AND UP TO A MAXIMUM OF 15% OF THE INITIAL
+           ISSUE; AUTHORITY EXPIRES AFTER 26 MONTHS AND
+           TO TAKE ALL NECESSARY FORMALITIES; THIS AUTHORIZATIONS
+           SUPERSEDES THE FRACTION UNUSED OF THE AUTHORIZATION
+           GRANTED BY THE SHAREHOLDERS MEETING OF 28 JUL
+           2006 IN ITS RESOLUTION 19
+E.20       AUTHORIZE THE BOARD OF DIRECTORS, FOLLOWING THE                 Management   For             *Management Position Unknown
+           APPROVAL OF THE RESOLUTIONS 15 AND 16, FOR A
+           26- MONTH PERIOD AND WITHIN THE LIMIT OF 10%
+           OF THE COMPANY S SHARE CAPITAL, TO SET THE ISSUE
+           PRICE OF THE ORDINARY SHARES OR SECURITIES TO
+           BE ISSUED, IN ACCORDANCE WITH THE TERMS AND CONDITIONS
+           AS SPECIFIED; APPROVE TO CANCEL THE PREFERENTIAL
+           SUBSCRIPTION RIGHTS IN FAVOUR
+E.21       AUTHORIZE THE BOARD OF DIRECTORS TO REDUCE THE                  Management   For             *Management Position Unknown
+           CAPITAL, ON 1 OR MORE OCCASIONS AND AT ITS SOLE
+           DISCRETION, BY CANCELING ALL OR PART OF THE SHARES
+           HELD BY THE COMPANY IN CONNECTION WITH A STOCK
+           REPURCHASE PLAN, UP TO A MAXIMUM OF 30% OF THE
+           SHARE CAPITAL; AUTHORITY EXPIRES AFTER 36 MONTHS
+           AND TO TAKE ALL NECESSARY FORMALITIES; THIS AUTHORIZATIONS
+           SUPERSEDES THE FRACTION UNUSED OF THE AUTHORIZATION
+           GRANTED BY THE SHAREHOLDERS MEETING OF 07 SEP
+           2004 IN ITS RESOLUTION 16
+E.22       RECEIVE THE REPORT OF THE BOARD OF DIRECTORS,                   Management   For             *Management Position Unknown
+           APPROVE VARIOUS DELEGATIONS GIVEN TO IT AT THE
+           PRESENT MEETING SHALL BE USED IN WHOLE OR IN
+           PART IN ACCORDANCE WITH THE LEGAL PROVISIONS
+           IN FORCE, DURING PERIODS WHEN CASH OR STOCK TENDER
+           OFFERS ARE IN EFFECT FOR THE COMPANY S SHARES
+           FOR A 18- MONTH PERIOD, STARTING FROM THE DATE
+           OF THE PRESENT MEETING AND BY THE SHAREHOLDER
+           S MEETING OF 27 JUL 2006
+E.23       AUTHORIZE THE BOARD OF DIRECTORS TO CHARGE THE                  Management   For             *Management Position Unknown
+           SHARE ISSUANCE COSTS AGAINST THE RELATED PREMIUMS
+           AND DEDUCT FROM THE PREMIUMS THE AMOUNTS NECESSARY
+           TO RAISE THE LEGAL RESERVE TO 1/10 OF THE NEW
+           CAPITAL AFTER EACH INCREASE
+E.24       GRANT FULL POWERS TO THE BEARER OF AN ORIGINAL,                 Management   For             *Management Position Unknown
+           A COPY OR EXTRACT OF THE MINUTES OF THIS MEETING
+           TO CARRY OUT ALL FILINGS, PUBLICATIONS AND OTHER
+           FORMALITIES PRESCRIBED BY THE LAW
+</TABLE>
+
+- --------------------------------------------------------------------------------
+AQUANTIVE, INC.                         AQNT   SPECIAL MEETING DATE: 08/09/2007
+ISSUER: 03839G105                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+02         TO APPROVE ANY PROPOSAL TO ADJOURN THE SPECIAL                  Management   For             For
+           MEETING TO SOLICIT ADDITIONAL PROXIES IF THERE
+</TABLE>
+
+<PAGE>
+
+<TABLE>
+<S>        <C>                                                             <C>          <C>             <C>
+           ARE INSUFFICIENT VOTES AT THE TIME OF THE SPECIAL
+           MEETING TO APPROVE THE MERGER AGREEMENT OR IF
+           OTHERWISE DEEMED NECESSARY OR APPROPRIATE.
+01         TO APPROVE THE AGREEMENT AND PLAN OF MERGER,                    Management   For             For
+           DATED AS OF MAY 17, 2007, BY AND AMONG AQUANTIVE,
+           INC., MICROSOFT CORPORATION AND ARROW ACQUISITION
+           COMPANY.
+</TABLE>
+
+- --------------------------------------------------------------------------------
+PETROCHINA COMPANY LIMITED              PTR    SPECIAL MEETING DATE: 08/10/2007
+ISSUER: 71646E100                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+01         THAT CONDITIONAL UPON THE OBTAINING OF APPROVALS                Management   For             For
+           FROM THE CSRC AND OTHER RELEVANT REGULATORY AUTHORITIES,
+           THE ALLOTMENT AND ISSUE OF A SHARES BY THE COMPANY
+           IN THE PRC BY WAY OF PUBLIC OFFERING OF NEW A
+           SHARES AND THE FOLLOWING TERMS AND CONDITIONS
+           OF THE A SHARE ISSUE BE AND ARE HEREBY APPROVED.
+02         THAT THE BOARD AND ITS ATTORNEY SHALL BE AND                    Management   For             For
+           ARE AUTHORIZED TO DEAL WITH MATTERS IN RELATION
+           TO THE A SHARE ISSUE AND THE LISTING OF A SHARES
+           INCLUDING BUT NOT LIMITED TO THE FOLLOWING.
+</TABLE>
+
+- --------------------------------------------------------------------------------
+PRECISION CASTPARTS CORP.               PCP      ANNUAL MEETING DATE: 08/14/2007
+ISSUER: 740189105                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+02         APPROVING THE EXECUTIVE PERFORMANCE INCENTIVE                   Management   For             For
+           PLAN
+01         DIRECTOR                                                        Management   For
+           PETER R. BRIDENBAUGH                                            Management   For             For
+           STEVEN G. ROTHMEIER                                             Management   For             For
+           RICK SCHMIDT                                                    Management   For             For
+           DANIEL J. MURPHY                                                Management   For             For
+</TABLE>
+
+- --------------------------------------------------------------------------------
+H.J. HEINZ COMPANY                      HNZ      ANNUAL MEETING DATE: 08/15/2007
+ISSUER: 423074103                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+07         TO AMEND THE COMPANY ARTICLES OF INCORPORATION                  Management   For             For
+           TO REQUIRE A MAJORITY VOTING STANDARD IN THE
+           ELECTION OF DIRECTORS.
+06         TO AMEND THE COMPANY ARTICLES OF INCORPORATION                  Management   For             For
+</TABLE>
+
+<PAGE>
+
+<TABLE>
+<S>        <C>                                                             <C>          <C>             <C>
+           TO REDUCE THE SHAREHOLDER VOTE REQUIRED TO APPROVE
+           CERTAIN BUSINESS COMBINATIONS.
+05         TO AMEND THE COMPANY BY-LAWS AND ARTICLES OF                    Management   For             For
+           INCORPORATION TO REDUCE THE SHAREHOLDER VOTE
+           REQUIRED TO AMEND LIMITATION OF DIRECTOR LIABILITY
+           AND DIRECTOR AND OFFICER INDEMNIFICATION.
+04         TO APPROVE PERFORMANCE METRICS UNDER THE FISCAL                 Management   For             For
+           YEAR 2003 STOCK INCENTIVE PLAN.
+03         TO AMEND AND EXTEND THE AMENDED AND RESTATED                    Management   For             For
+           GLOBAL STOCK PURCHASE PLAN.
+02         RATIFICATION OF INDEPENDENT REGISTERED PUBLIC                   Management   For             For
+           ACCOUNTING FIRM.
+01         DIRECTOR                                                        Management   For
+           W.R. JOHNSON                                                    Management   For             For
+           C.E. BUNCH                                                      Management   For             For
+           L.S. COLEMAN, JR.                                               Management   For             For
+           J.G. DROSDICK                                                   Management   For             For
+           E.E. HOLIDAY                                                    Management   For             For
+           C. KENDLE                                                       Management   For             For
+           D.R. O'HARE                                                     Management   For             For
+           N. PELTZ                                                        Management   For             For
+           D.H. REILLEY                                                    Management   For             For
+           L.C. SWANN                                                      Management   For             For
+           T.J. USHER                                                      Management   For             For
+           M.F. WEINSTEIN                                                  Management   For             For
+</TABLE>
+
+- --------------------------------------------------------------------------------
+THE J.M. SMUCKER COMPANY                SJM      ANNUAL MEETING DATE: 08/16/2007
+ISSUER: 832696405                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+02         RATIFICATION OF APPOINTMENT OF INDEPENDENT REGISTERED           Management   For             For
+           PUBLIC ACCOUNTING FIRM.
+01         DIRECTOR                                                        Management   For
+           KATHRYN W. DINDO                                                Management   For             For
+           RICHARD K. SMUCKER                                              Management   For             For
+           WILLIAM H. STEINBRINK                                           Management   For             For
+</TABLE>
+
+- --------------------------------------------------------------------------------
+TRIBUNE COMPANY                         TRB    SPECIAL MEETING DATE: 08/21/2007
+ISSUER: 896047107                       ISIN:
+SEDOL:
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+01         BOARD PROPOSAL TO ADOPT THE AGREEMENT AND PLAN                  Management   For             For
+           OF MERGER, DATED AS OF APRIL 1, 2007, BY AND
+           AMONG TRIBUNE COMPANY, GREATBANC TRUST COMPANY,
+           SOLELY AS TRUSTEE OF THE TRIBUNE EMPLOYEE STOCK
+           OWNERSHIP TRUST, WHICH FORMS A PART OF THE TRIBUNE
+           EMPLOYEE STOCK OWNERSHIP PLAN, TESOP CORPORATION,
+           ALL AS MORE FULLY DESCRIBED IN THE PROXY STATEMENT.
+02         BOARD PROPOSAL TO ADJOURN THE SPECIAL MEETING                   Management   For             For
+           TO A LATER DATE TO SOLICIT ADDITIONAL PROXIES
+           IF THERE ARE INSUFFICIENT VOTES AT THE TIME OF
+</TABLE>
+
+<PAGE>
+
+<TABLE>
+<S>        <C>                                                             <C>          <C>             <C>
+           THE SPECIAL MEETING TO APPROVE PROPOSAL NUMBER
+           1.
+</TABLE>
+
+- --------------------------------------------------------------------------------
+VIVO PARTICIPACOES SA                   VIV         EGM MEETING DATE: 08/21/2007
+ISSUER: P9810G108                       ISIN: BRVIVOACNOR1
+SEDOL: B07C7C9, B088458
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal     Vote            For or Against
+Number     Proposal                                                        Type         Cast            Management
+- ---------  --------------------------------------------------------------  -----------  --------------  ----------------------------
+<S>        <C>                                                             <C>          <C>             <C>
+*          IMPORTANT MARKET PROCESSING REQUIREMENT: A BENEFICIAL           Non-Voting                   *Management Position Unknown
+           OWNER SIGNED POWER OF ATTORNEY (POA) IS REQUIRED
+           IN ORDER TO LODGE AND EXECUTE YOUR VOTING INSTRUCTIONS
+           IN THIS MARKET. ABSENCE OF A POA, MAY CAUSE YOUR
+           INSTRUCTIONS TO BE REJECTED. IF YOU HAVE ANY
+           QUESTIONS, PLEASE CONTACT YOUR CLIENT SERVICE
+           REPRESENTATIVE
+1.         RATIFY THE ELECTION OF THE MEMBERS OF THE BOARD                 Management   For             *Management Position Unknown
+           OF DIRECTORS, MR. LUIS MIGUELGILPEREZ LOPEZ,
+           ELECTED ON 22 MAR 2007, AND MR. JOSE GUIMARAES
+           MONFORTE, ELECTED ON 29 JUN 2007
+2.         RATIFY, UNDER THE TERMS OF ARTICLE 256 OF LAW                   Management   For             *Management Position Unknown
+           NUMBER 6.404/76, THE ENTERING INTO OF A SHARE
+           PURCHASE AND SALE CONTRACT FOR THE ACQUISITION
+           OF THE SHARES HELD BY TELPART PARTICIPACOES S.A.
+           ISSUED BY THE COMPANIES TELEMIG CELULAR PARTICIPACOES
+           S.A. AND TELE NORTE CELULAR PARTICIPACOES S.A.,
+           THE PARENT COMPANIES OF TELEMIG CELULAR S.A.
+           AND AMAZONIA CELULAR S.A.
+</TABLE>
+</TABLE>
+
+<PAGE>
+
+                                   SIGNATURES
+
+Pursuant to the requirements of the Investment Company Act of 1940, the
+registrant has duly caused this report to be signed on its behalf by the
+undersigned, thereunto duly authorized.
+
+Registrant Gabelli Capital Series Funds, Inc.
+
+
+By (Signature and Title)* /S/ Bruce N. Alpert
+                          ----------------------------
+                          Bruce N. Alpert,
+                          Principal Executive Officer
+
+Date August 25, 2008
+
+*    Print the name and title of each signing officer under his or her
+     signature.
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
