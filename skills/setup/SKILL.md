@@ -56,66 +56,9 @@ it had. Nothing surfaces this but a check.
   This plugin's skills dispatch those bare names, so an unlinked file here registers nowhere:
   the dispatch falls back to a default agent and its guard never fires.
 
-Check both halves. Enumerate the shipped agents; never name them:
-
-```bash
-ls -1 ~/.claude/skills/workflows/agents/*.md 2>/dev/null || echo "NO plugin-scoped agents shipped"
-ls -1 ~/.claude/skills/workflows/user-agents/*.md 2>/dev/null || echo "NO user-scoped agents shipped"
-ls -la ~/.claude/agents/ 2>/dev/null || echo "NO ~/.claude/agents directory"
-```
-
-Then, for every enumerated agent, check its `skills:` entries against the installed plugin's
-`skills/` **and** whether it resolves at user scope:
-
-```bash
-P=~/.claude/skills/workflows bun -e '
-import { readdirSync, readFileSync, existsSync, realpathSync } from "node:fs";
-import { join } from "node:path";
-import { homedir } from "node:os";
-const root = process.env.P.replace(/^~/, process.env.HOME);
-const userDir = join(homedir(), ".claude", "agents");
-// NO NAMED EXCEPTIONS: the directory an agent sits in states its scope.
-const dirs = [["agents", "plugin"], ["user-agents", "user"]].filter(([d]) => existsSync(join(root, d)));
-if (!dirs.length) { console.log(`NO AGENTS: neither agents/ nor user-agents/ exists under ${root}`); process.exit(1); }
-const real = p => { try { return realpathSync(p); } catch { return null; } };
-let bad = 0, agents = [];
-for (const [sub, tier] of dirs) {
-  const agentsDir = join(root, sub);
-  // ENUMERATED, never listed.
-  for (const a of readdirSync(agentsDir).filter(f => f.endsWith(".md")).sort()) {
-  agents.push(a);
-  const name = a.replace(/\.md$/, "");
-  if (tier === "user") {
-    const want = real(join(agentsDir, a));
-    const got = real(join(userDir, a));
-    if (got === null) { console.log(`  UNLINKED  ${name} (no resolving ${userDir}/${a}) — registers nowhere, hooks never fire`); bad++; }
-    else if (got !== want) { console.log(`  MISLINKED ${name} -> ${got}, expected ${want}`); bad++; }
-    else console.log(`  SCOPED    ${name} (user-level via symlink)`);
-  } else {
-    console.log(`  PLUGIN    ${name} (plugin-scoped on purpose; dispatch as workflows:${name})`);
-  }
-  const body = readFileSync(join(agentsDir, a), "utf8");
-  const fm = body.startsWith("---") ? body.slice(3, body.indexOf("\n---", 3)) : "";
-  const m = fm.match(/^skills:[ \t]*(.*)$((?:\n[ \t]+-[ \t]*.*)*)/m);
-  if (!m) { console.log(`  ${a}: no skills: preloads`); continue; }
-  const inline = m[1].trim().replace(/^\[|\]$/g, "").split(",");
-  const block = m[2].split("\n").map(l => l.replace(/^[ \t]*-[ \t]*/, ""));
-  const skills = [...inline, ...block].map(s => s.trim().replace(/^["\x27]|["\x27]$/g, "")).filter(Boolean);
-  for (const s of skills) {
-    const sk = join(root, "skills", s, "SKILL.md");
-    if (!existsSync(sk)) { console.log(`  DANGLING  ${a} -> ${s} (no skills/${s}/SKILL.md)`); bad++; continue; }
-    const head = readFileSync(sk, "utf8").slice(0, 2000);
-    if (/^disable-model-invocation:[ \t]*true[ \t]*$/m.test(head)) {
-      console.log(`  DISABLED  ${a} -> ${s} (skill sets disable-model-invocation: true)`); bad++; continue;
-    }
-    console.log(`  OK        ${a} -> ${s}`);
-  }
-  }
-}
-console.log(bad ? `\n${bad} problem(s) — an unresolved preload or an unlinked agent both fail silently.`
-                : `\nall preloads resolve and every agent is at its intended scope (${agents.length} agent(s)).`);
-'
-```
+Check both halves. Enumerate the shipped agents; never name them — run
+`LINES=1000 COLUMNS=250 upmd --ci --all ${CLAUDE_SKILL_DIR}/references/install-check.md` (no upmd: run that file's bash
+blocks in order) and read its `agents-listed` and `preloads` output.
 
 **If an agent is UNLINKED**, the fix is a symlink, never a copy — a copy goes stale on the next
 plugin update and nothing reports the drift. `~/dotfiles/scripts/setup-claude-symlinks.sh` links
@@ -137,12 +80,7 @@ falls back to `.claude/plans` when it is unset, so unset is a working default an
 broken without it. Setting it at the **user** tier covers every project at once, which is
 usually what you want (`skills/work/SKILL.md`).
 
-Read both tiers first:
-
-```bash
-rg -n '"plansDirectory"' ~/.claude/settings.json 2>/dev/null \
-  || echo "plansDirectory: UNSET at the user tier (default .claude/plans applies)"
-```
+Read both tiers first — the `plans-directory` block of `references/install-check.md`.
 
 If it is already set, **say so and do nothing.** Only change it if the user asks, and show the
 current value before you do.
@@ -196,26 +134,11 @@ path look right — start a new session.
 ## Step (c) — Check the Main-Thread Guard's Allowlist (REPORT ONLY)
 
 **Why.** `~/.claude/hooks/main-thread-guard.sh` denies loose `Agent` dispatches and reroutes
-them to `farm.sh`, which never loads an agent body. A denied dispatch loses the agent's own
-framing silently.
-
-**A user-tier agent dispatches by its BARE name, so the `workflows:*` glob does not cover it.**
-Enumerate the user-tier agents and check each bare name against the allowlist case — never type
-one in:
-
-```bash
-G=~/.claude/hooks/main-thread-guard.sh
-test -f "$G" || echo "no main-thread guard at $G — nothing to check"
-CASE=$(grep -A 4 'subagent_type' "$G" 2>/dev/null | grep 'allow ;;' | head -1)
-echo "current: $CASE"
-for f in ~/.claude/agents/*.md; do
-  n=$(basename "$f" .md)
-  case "$CASE" in *"|$n|"*|*"($n|"*) echo "  OK       $n" ;; *) echo "  MISSING  $n" ;; esac
-done
-grep -q 'workflows:\*' <<<"$CASE" \
-  && echo "workflows:* present (covers the plugin-scoped agents)" \
-  || echo "workflows:* MISSING (plugin-scoped agents denied)"
-```
+them to `farm.sh`. That is intended for the user-tier personas (`ds`, `writing`, `teaching`, …):
+a `farm.sh` row with `"agent"` runs `claude --agent`, which loads the real persona, so a persona
+absent from the allowlist is NOT a defect. What must hold is that `workflows:*` stays allowed and
+the deny message still names `farm.sh` — the `guard-allowlist` block of
+`references/install-check.md`.
 
 **DO NOT EDIT THIS FILE.** It is the user's dotfiles and other sessions routinely have
 concurrent edits in that tree. If the entry is missing, show the one-line change and let the
