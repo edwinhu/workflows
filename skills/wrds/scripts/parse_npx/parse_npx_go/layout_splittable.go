@@ -354,6 +354,22 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 				// its issuer, fund, security id and meeting date; a filing whose
 				// tables carry those columns themselves is unaffected, because
 				// the context only fills a field the columns left empty.
+				//
+				// The same ProxyEdge heading block this vendor prints INSIDE an
+				// open `<TABLE>` on one template is printed BETWEEN tables, as
+				// bare text, on another (Gabelli Capital Series 2008, agent
+				// 0000935069). Out here the heading's labels are the ones
+				// spReadContext does not know -- the date label carries the
+				// meeting type glued to it (`ANNUAL MEETING DATE:`) and the id
+				// label is `ISSUER:` -- so every such block loses its issuer,
+				// its security id and its meeting date to the generic switch.
+				// Asking the heading reader FIRST, on exactly the lines it
+				// recognises, keeps the block whole; every other line still
+				// goes to spReadContext unchanged.
+				if l := string(trimmed); proxyEdge && spIsProxyEdgeHeadingBody(l, &ctx) {
+					spReadProxyEdgeHeading(l, &ctx, &groupCtx)
+					continue
+				}
 				lastBare = spReadContext(string(trimmed), &ctx, lastBare)
 			}
 			continue
@@ -1190,15 +1206,36 @@ func spMeetingDateAt(cell string) int {
 	return strings.Index(strings.ToUpper(cell), "MEETING DATE:")
 }
 
+// spIsProxyEdgeHeadingBody reports whether an OUT-OF-TABLE line is one of the
+// two lines of a ProxyEdge heading block that carry the meeting's identity: the
+// heading line itself, or the `Issuer:`/`CUSIP:` body line that follows it. The
+// body line only counts once a heading has opened a block, which is the same
+// condition spReadProxyEdgeHeading applies to it; without that, any stray
+// `LABEL: value` line out between tables could be read as a security id.
+func spIsProxyEdgeHeadingBody(line string, ctx *spContext) bool {
+	if spIsProxyEdgeHeading(line) {
+		return true
+	}
+	_, ok := spProxyEdgeSecurityID(line)
+	return ok && ctx.issuer != ""
+}
+
 // spReadProxyEdgeHeading reads the block identity the ProxyEdge text report
 // prints between its two rules: the issuer at column 0, its ticker to the
-// right, and `<type> Meeting Date: <date>` last. Only the line carrying the
-// meeting date is a heading; the security-id and SEDOL lines below it are
-// label:value pairs the schema has no full CUSIP for, and a six-character
-// issuer number is not a link key.
+// right, and `<type> Meeting Date: <date>` last, then the `Issuer:` / `ISIN:` /
+// `SEDOL:` body lines below it. The security id printed on those body lines is
+// a link key like any other -- copied verbatim, exactly as printed -- so it is
+// read into the block's CUSIP even where the vendor has no full nine-character
+// value and prints the six-character issuer number alone.
 func spReadProxyEdgeHeading(line string, ctx, groupCtx *spContext) {
 	if fund, ok := spAccountFund(line); ok {
 		ctx.fund = fund
+		return
+	}
+	if id, ok := spProxyEdgeSecurityID(line); ok && ctx.issuer != "" {
+		// The body lines arrive AFTER the heading line has already copied the
+		// context into the group, so the id has to reach both.
+		ctx.cusip, groupCtx.cusip = id, id
 		return
 	}
 	cells := icrCells(strings.TrimSpace(line))
@@ -1248,6 +1285,57 @@ func spReadProxyEdgeHeading(line string, ctx, groupCtx *spContext) {
 	*groupCtx = *ctx
 	groupCtx.fund = fund
 	ctx.fund = fund
+}
+
+// spContextCUSIP returns the security id a block heading printed. icrCUSIP
+// picks a nine-character CUSIP out of a cell that may carry other text; where
+// the heading instead prints a shorter id alone -- the ProxyEdge `Issuer:`
+// line's six-character issuer number -- the id is still a link key and is kept
+// verbatim, never padded. Whether it resolves is the linker's cusip6 rung to
+// decide.
+func spContextCUSIP(cell string) string {
+	if c := icrCUSIP(cell); c != "" {
+		return c
+	}
+	f := strings.Fields(cell)
+	if len(f) != 1 || len(f[0]) < 6 || len(f[0]) > 12 || !isAlnumToken(f[0]) {
+		return ""
+	}
+	return f[0]
+}
+
+func isAlnumToken(s string) bool {
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if (c < '0' || c > '9') && (c < 'A' || c > 'Z') && (c < 'a' || c > 'z') {
+			return false
+		}
+	}
+	return s != ""
+}
+
+// spProxyEdgeSecurityID reads the security id off a ProxyEdge heading-block
+// body line -- `Issuer: 034425                ISIN:` / `SEDOL:`. Every cell of
+// the line must be a `LABEL: value` pair, so a stacked column-header line that
+// happens to carry a colon can never be read as one, and the value is returned
+// exactly as printed.
+func spProxyEdgeSecurityID(line string) (string, bool) {
+	cells := icrCells(strings.TrimSpace(line))
+	if len(cells) == 0 {
+		return "", false
+	}
+	pairs := lvPairs(cells)
+	if len(pairs) != len(cells) {
+		return "", false
+	}
+	for _, label := range []string{"CUSIP", "ISSUER"} {
+		for _, p := range pairs {
+			if p.label == label && p.value != "" && len(strings.Fields(p.value)) == 1 {
+				return p.value, true
+			}
+		}
+	}
+	return "", false
 }
 
 // spGroupRows joins one page group's parallel tables into votes.
@@ -1366,7 +1454,7 @@ func spGroupRows(group []spTable, seriesIdx *spIndex, resolved map[string]string
 			row.Ticker = ctx.ticker
 		}
 		if row.CUSIP == "" {
-			row.CUSIP = icrCUSIP(ctx.cusip)
+			row.CUSIP = spContextCUSIP(ctx.cusip)
 		}
 		if row.MeetingDate == "" {
 			row.MeetingDate = ctx.mtgDate
