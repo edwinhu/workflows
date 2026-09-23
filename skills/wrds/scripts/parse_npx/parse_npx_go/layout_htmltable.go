@@ -4517,6 +4517,17 @@ func htmlDate(s string) string {
 	if s == "" {
 		return ""
 	}
+	// `be held Wednesday, June 8, 2022 at 9:00 AM Pacific Time`: the vendor
+	// truncates `The meeting will be held ...` and prints the fragment itself
+	// as the MEETING DATE value (Vericimetry Funds 2022 and 2023, agent
+	// 0001398344 -- all 24 distinct values in the filing carry the prefix, so
+	// every proposal row was undated). Dropping the preamble, and with it any
+	// trailing local-time clause, leaves the weekday token first, so the strip
+	// below and brDate -- which already reads the day-first `8 June 2022`
+	// ordering the same filing prints -- run unchanged.
+	if rest, ok := htmlTrimBeHeld(s); ok {
+		s = rest
+	}
 	if k := strings.IndexAny(s, ", "); k > 0 {
 		switch strings.ToUpper(s[:k]) {
 		case "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY":
@@ -4579,6 +4590,28 @@ func htmlDate(s string) string {
 		}
 	}
 	return ""
+}
+
+// htmlTrimBeHeld strips the `be held` sentence fragment this vendor prints in
+// front of a meeting date, together with the ` at <local time>` clause that can
+// follow it (`at 9:00 AM Pacific Time`, `at 8:00 a.m., Eastern Time`). It
+// reports false unless the value actually opens with the preamble, so no other
+// printed date shape is touched.
+func htmlTrimBeHeld(s string) (string, bool) {
+	rest := ""
+	for _, p := range []string{"will be held on ", "will be held ", "to be held on ", "to be held ", "be held on ", "be held "} {
+		if len(s) >= len(p) && strings.EqualFold(s[:len(p)], p) {
+			rest = strings.TrimSpace(s[len(p):])
+			break
+		}
+	}
+	if rest == "" {
+		return s, false
+	}
+	if i := strings.Index(strings.ToLower(rest), " at "); i > 0 {
+		rest = strings.TrimSpace(strings.TrimRight(rest[:i], ","))
+	}
+	return rest, rest != ""
 }
 
 // htmlDataRow renders one table row through the header's column mapping. Cells
