@@ -605,13 +605,14 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 		if r := spRuleSpans(line); r != nil {
 			block := spLabelBlock(header)
 			l := spLabels(block, r)
-			if spIsSECFormGroup([]spTable{{labels: l}}) {
+			if spIsBannerNamedGroup([]spTable{{labels: l}}) {
 				// The stacked header is reprinted at each FUND, so the banner
 				// above it names the fund this header and every headerless page
 				// after it belongs to. Set unconditionally: a headed page with no
 				// banner is a fund the template never named, and carrying the
 				// previous one over would file its ballots under the wrong series.
 				ctx.bare = spBannerFund(pageBare, seriesIdx, resolved)
+				ctx.bareFund = ctx.bare != ""
 			}
 			switch {
 			case spHasVote(l):
@@ -776,6 +777,39 @@ func spIsSECFormGroup(group []spTable) bool {
 	label := group[0].labels[0]
 	return strings.HasPrefix(label, strings.ToUpper(spSECFormLabelHead)) ||
 		strings.HasPrefix(label, strings.ToUpper(spSECFormLabelTail))
+}
+
+// spIsBannerNamedGroup reports whether a group's header is one the banner
+// templates print with NO fund of its own -- the only case in which the bare
+// line above the header is the fund rather than a heading.
+//
+// The SEC's own Form N-PX stack is one such header. The other is the vendor
+// stack Lincoln Variable Insurance Products Trust prints for a minority of its
+// sections (CIK 914036: `Company Name` / `Ticker` / `Provider Security ID` /
+// `Meeting Date` / `Proposal Text` / `Proponent` / `Voted` / `Vote
+// Instruction` / `Vote Against Management`), one blank line below a banner
+// printed exactly as the resolving sections print theirs. Keyed on ROLES, not
+// on wording: the issuer is the key column, and no column names the fund.
+//
+// A header carrying a fund column is excluded, because there the bare line is
+// the issuer heading the institutional-account report prints above its account
+// label, and reading it as the fund would file every ballot under a company.
+func spIsBannerNamedGroup(group []spTable) bool {
+	if spIsSECFormGroup(group) {
+		return true
+	}
+	if len(group) == 0 || len(group[0].labels) == 0 ||
+		spRoleFor(group[0].labels[0]) != spIssuer {
+		return false
+	}
+	for _, t := range group {
+		for _, l := range t.labels {
+			if spRoleFor(l) == spFund {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 // spIsMainPanel reports whether a set of labels is the LEFT half of a table the
@@ -1022,12 +1056,19 @@ type spContext struct {
 	// The SEC's own Form N-PX template prints NO preamble and NO account label:
 	// the fund is named on a line of its own above the stacked header, so for a
 	// group carrying that header this is the only place the fund is written.
-	bare    string
-	issuer  string
-	ticker  string
-	cusip   string
-	mtgDate string
-	mtgType string
+	bare string
+	// bareFund records that `bare` is a fund banner the reader already put
+	// through spBannerFund -- it resolved exactly through the shared chain --
+	// rather than the raw last-bare-line candidate the tagged path carries.
+	// Only the banner-printing templates set it, and only for a header block
+	// that names no fund column of its own, so a group may adopt it without
+	// re-testing the header's wording.
+	bareFund bool
+	issuer   string
+	ticker   string
+	cusip    string
+	mtgDate  string
+	mtgType  string
 }
 
 // spReadContext folds one out-of-table line into the running context and returns
@@ -1644,7 +1685,7 @@ func spGroupRows(group []spTable, seriesIdx *spIndex, resolved map[string]string
 		if row.FundName == "" {
 			row.FundName = ctx.fund
 		}
-		if row.FundName == "" && ctx.bare != "" && spIsSECFormGroup(group) {
+		if row.FundName == "" && ctx.bare != "" && (ctx.bareFund || spIsSECFormGroup(group)) {
 			// The SEC's own Form N-PX template prints neither a preamble nor an
 			// account label, so the bare banner line above the header is the only
 			// name the filing gives the fund. Read only for a group carrying that
