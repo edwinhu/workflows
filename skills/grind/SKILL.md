@@ -25,7 +25,11 @@ chat session peeking in, tails it and has no other handle on the run.
 cheap precondition — a queue check, a file that appears when a round lands. While it exits non-zero
 the loop appends a `wait`, sleeps `--sleep`, and **never invokes the runner**. A verdict that takes
 ten hours otherwise buys ten hours of model calls whose only finding is that the job is still
-queued. Wake on decisions, not on events.
+queued. Wake on decisions, not on events. Each `wait` record carries the gate's last output line as
+`why`, so a gate should print the reason it is shut rather than just exiting non-zero. A streak of
+consecutive waits is announced through the notification channel while the run continues
+(`--wait-alert N`, default 6, `0` disables), because a gate stuck closed looks identical to
+legitimate waiting from outside.
 
 **2. The keep decision is `--check`'s exit code, never the agent's opinion.** An iteration reports
 success whether or not it did anything, and no downstream check catches a confidently wrong answer.
