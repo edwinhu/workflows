@@ -70,7 +70,7 @@ watch is the cost this skill exists to remove. `--runner` defaults to `claude-co
 passed through to it; a test or a dry run points `--runner` at a stub instead. Every ending — `done`, `stalled`,
 `budget`, `stopped` — is announced by default: `agent-msg` to the session that launched the run
 (`--notify-to` names another), plus a herdr popup where herdr is installed. `--notify CMD` replaces
-that and gets `RALPH_STATE`, `RALPH_EXIT` and `RALPH_JOURNAL`; `--notify none` silences it. A failed
+that and gets `GRIND_STATE`, `GRIND_EXIT` and `GRIND_JOURNAL`; `--notify none` silences it. A failed
 notification never changes the exit code.
 
 Then, from anywhere and at any time:
@@ -127,13 +127,13 @@ writes can end a run or report a finish the loop did not compute. A `floor` is r
 carries a non-empty `key`, because one accepted without a key is dropped by the reader and the loop
 re-diagnoses that family forever.
 
-Every prompt carries `RALPH_JOURNAL`, `RALPH_SH`, `RALPH_ITER` and `RALPH_FLOORS`, so an iteration
+Every prompt carries `GRIND_JOURNAL`, `GRIND_SH`, `GRIND_ITER` and `GRIND_FLOORS`, so an iteration
 needs nothing from outside itself:
 
 ```bash
-bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh append --journal "$RALPH_JOURNAL" \
+bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh append --journal "$GRIND_JOURNAL" \
   '{"kind":"progress","key":"2004-noseries","note":"heading index resolved 41K rows"}'
-bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh append --journal "$RALPH_JOURNAL" \
+bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh append --journal "$GRIND_JOURNAL" \
   '{"kind":"floor","key":"1934-paper-scans","why":"no machine-readable text in the source"}'
 ```
 
@@ -157,7 +157,7 @@ grep '"kind":"iter_end"' "$J" | jq -r 'select(.exit != 0) | .i'
 | Let an iteration's own report decide the run is finished | the loop would be grading itself, and one confident wrong answer ends a week of work with the goal unmet | only `--check` exiting 0 writes `done`; the agent writes records, never verdicts |
 | Point `--check` at a milestone — a file existing, a report written, an agent having reported back | it is true while the objective is unmet, so the loop stops on pass 1 | name the state the work reaches: a suite passing, a count under a number |
 | Run without `--gate` when the verdict takes hours | every pass spends a model call to learn the job is still queued — that is the whole bill | a shell precondition; while it is red the loop records `wait` and sleeps for free |
-| Hand an iteration a key an earlier one closed | it re-diagnoses the same dead family every pass, and the loop never converges | read `RALPH_FLOORS` before choosing work; file a `floor` the first time a key dies |
+| Hand an iteration a key an earlier one closed | it re-diagnoses the same dead family every pass, and the loop never converges | read `GRIND_FLOORS` before choosing work; file a `floor` the first time a key dies |
 | Append a whole report as one record | over the single-write bound it is refused, and splitting it would leave a log nobody can replay | a key and a one-line note; write the report to a file and name its path |
 | Add a pidfile, a progress file or a notes file beside the journal | two files that can disagree about one fact, and the tiebreak rule is the bug | append a record; derive the pid, the counter and the floors from the journal |
 | Foreground the loop from a chat session | the Bash tool call caps out and kills the run mid-flight, and the live session is the cost grind removes | `setsid nohup … &`, then `grind.sh status` when you want to know |

@@ -177,7 +177,7 @@ describe('the agent may report observations, never verdicts about the run', () =
       'runner.sh',
       [
         `prompt=""; while [ $# -gt 0 ]; do [ "$1" = "-p" ] && { prompt="$2"; break; }; shift; done`,
-        `j=$(printf '%s' "$prompt" | sed -n 's/^RALPH_JOURNAL: //p' | head -1)`,
+        `j=$(printf '%s' "$prompt" | sed -n 's/^GRIND_JOURNAL: //p' | head -1)`,
         `bash ${GRIND} append --journal "$j" '{"kind":"stop","why":"this looks impossible"}' || true`,
         `exit 0`,
       ].join('\n'),
