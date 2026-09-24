@@ -3219,6 +3219,15 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 				continue
 			}
 		}
+		// A label/value pair whose LABEL wraps at a source newline inside the
+		// cell (`Location` / `Name:  Piedmont Investment Advisers LLC`) is one
+		// item, read whole: split into lines, its tail reads as a bare line and
+		// the line-above fallback below takes the sub-adviser for the issuer.
+		if flat := htmlFlat(cell); htmlStackedLabelledLine(flat) {
+			items = append(items, flat)
+			cellOf = append(cellOf, ci)
+			continue
+		}
 		for _, line := range strings.Split(cell, "\n") {
 			items = append(items, strings.TrimSpace(line))
 			cellOf = append(cellOf, ci)
@@ -3264,7 +3273,10 @@ func htmlReadContext(cells []string) (ctx htmlContext, labelled bool) {
 			// while the meeting identity is corrupted. Labels FOLLOWING the first on
 			// the same line are still read: filers print two per line.
 			if !htmlHasLabelPrefix(up) {
-				if line != "" {
+				// A labelled pair this reader does not carry (`Location Name:
+				// Piedmont Investment Advisers LLC`) is not an unlabelled line,
+				// so it is no candidate for the line-above issuer fallback.
+				if line != "" && !htmlStackedLabelledLine(line) {
 					above2, above = above, line
 				}
 				continue
@@ -3959,37 +3971,49 @@ func htmlInlineMeetingHeading(line, up string) (htmlContext, bool) {
 
 // htmlPreLead returns the last non-empty line of the text before a row when
 // it is issuer-shaped and is not the fund heading just read from that text.
+// A trailing paragraph that is a labelled pair of the vocabulary carrying no
+// identity (`Institutional Account Name: Corverus Strategic Equity Fund`,
+// FundVantage Trust 2011) is not the issuer and does not hide it: the bare
+// issuer paragraph above it is read instead.
 func htmlPreLead(pre, fund string) string {
 	lines := strings.Split(pre, "\n")
 	end := len(lines)
-	for end > 0 && strings.TrimSpace(lines[end-1]) == "" {
-		end--
-	}
-	if end == 0 {
-		return ""
-	}
-	// The paragraph may wrap at source newlines (`GENTING` / `LEISURE LTD.`):
-	// the trailing run of non-blank lines is one paragraph, since the blank
-	// paragraphs between headings arrive as blank lines.
-	start := end
-	for start > 0 && strings.TrimSpace(lines[start-1]) != "" {
-		start--
-	}
-	// The fund heading may abut the issuer with no blank between; it is not
-	// part of the issuer's paragraph.
-	for i := start; i < end; i++ {
-		if strings.TrimSpace(lines[i]) == fund {
-			start = i + 1
+	for {
+		for end > 0 && strings.TrimSpace(lines[end-1]) == "" {
+			end--
 		}
+		if end == 0 {
+			return ""
+		}
+		// The paragraph may wrap at source newlines (`GENTING` / `LEISURE LTD.`):
+		// the trailing run of non-blank lines is one paragraph, since the blank
+		// paragraphs between headings arrive as blank lines.
+		para := end
+		for para > 0 && strings.TrimSpace(lines[para-1]) != "" {
+			para--
+		}
+		// The fund heading may abut the issuer with no blank between; it is not
+		// part of the issuer's paragraph.
+		start := para
+		for i := start; i < end; i++ {
+			if strings.TrimSpace(lines[i]) == fund {
+				start = i + 1
+			}
+		}
+		if start < end {
+			if line := htmlFlat(strings.Join(lines[start:end], " ")); line != fund &&
+				htmlIsIssuerLine(line) && !htmlStackedLabelledLine(line) {
+				return line
+			}
+		}
+		// Only a labelled pair this reader carries no identity for is stepped
+		// over; any other trailing paragraph that is not the issuer means the
+		// text before this row prints none.
+		if !htmlStackedLabelledLine(htmlFlat(strings.Join(lines[para:end], " "))) {
+			return ""
+		}
+		end = para
 	}
-	if start >= end {
-		return ""
-	}
-	line := htmlFlat(strings.Join(lines[start:end], " "))
-	if line == fund || !htmlIsIssuerLine(line) {
-		return ""
-	}
-	return line
 }
 
 // htmlHasVoteCell reports a row with a vote value in any cell: a data row,
@@ -4168,6 +4192,24 @@ func htmlIsMeetingTypePhrase(s string) bool {
 func htmlIsBareLabel(s string) bool {
 	_, isLabel := htmlStackedLabelSet[htmlStackedLabelKey(htmlFlat(s))]
 	return isLabel || htmlIsHeaderWord(s)
+}
+
+// htmlStackedLabelledLine reports a line printed as `<label>: <value>` for a
+// label of the bare-label vocabulary this reader does not carry as identity:
+// `Location Name:  Piedmont Investment Advisers LLC` and `Institutional Account
+// Name: Corverus Strategic Equity Fund` (FundVantage Trust 2011, 4,466 rows of
+// 0000950123-11-081621). Such a line is a label/value pair whose value is a
+// sub-adviser or an account, never the bare issuer name the block prints on a
+// line of its own -- and the label may wrap at a source newline inside its
+// cell (`Location` / `Name:  ...`), so the line is judged flat.
+func htmlStackedLabelledLine(s string) bool {
+	flat := htmlFlat(s)
+	colon := strings.IndexByte(flat, ':')
+	if colon <= 0 || strings.TrimSpace(flat[colon+1:]) == "" {
+		return false
+	}
+	_, ok := htmlStackedLabelSet[htmlStackedLabelKey(flat[:colon])]
+	return ok
 }
 
 func htmlContextLead(cells []string) (string, bool) {
