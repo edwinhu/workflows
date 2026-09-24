@@ -6898,6 +6898,12 @@ var issRegistrantRenames = map[string]map[string]string{
 		"svs ii scud total ret port eq": "DWS Balanced VIP",
 		// Turner Mid Cap Growth row of the same Exhibit (a)(25) table.
 		"svs turner mid cap growth portfolio": "DWS Turner Mid Cap Growth VIP",
+		// `Scudder Blue Chip Portfolio -> DWS Blue Chip VIP` row of the same
+		// Exhibit (a)(25) table, in the 2004 filing's abbreviated spelling
+		// (`SCUD` for Scudder, `PORT` for Portfolio). The sibling `Scudder
+		// Global Blue Chip Portfolio` prints its own separate, `GLOB`-bearing
+		// heading in the same filing, so the abbreviation is unambiguous.
+		"svs ii scud blue chip port": "DWS Blue Chip VIP",
 	},
 	"0001100663": {
 		"ishares s and p gsti tm technology index fund":    "iShares Goldman Sachs Technology Index Fund",
