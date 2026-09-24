@@ -297,6 +297,16 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 		// the group's exact-key test while still being one table's two halves.
 		contLabels []string
 		pendMain   []string
+		// implicitTable opens a table at the page banner for a ProxyEdge text
+		// report that prints NO `<TABLE>` tag at all. This vendor opens the tag
+		// once for the whole document and closes it once at the end, so a
+		// document whose pages carry the report grammar but never that one tag
+		// reads as nothing: every line falls to the between-tables arm, no
+		// table is ever opened, and the filing skips with zero rows even though
+		// its banners, rules, stacked column headers and ballots are all
+		// printed. The guard is the document's OWN tag, not a heuristic: a body
+		// that opens a table anywhere keeps the tag-driven path byte for byte.
+		implicitTable = proxyEdge && !spOpensTable(raw)
 	)
 
 	flush := func() {
@@ -366,6 +376,20 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 				// Asking the heading reader FIRST, on exactly the lines it
 				// recognises, keeps the block whole; every other line still
 				// goes to spReadContext unchanged.
+				// A report that never opens a `<TABLE>` opens one here, at the
+				// page banner that names the account: the banner is the section
+				// boundary this layout already treats as one wherever it is
+				// printed inside a table, so it is the same cut, made one line
+				// earlier. Everything below it -- the heading block, the plain
+				// rule, the stacked column labels and the ballot -- is then read
+				// by the ordinary in-table path.
+				if fund, ok := spSelectedAccounts(string(trimmed)); implicitTable && ok {
+					ctx.fund, ctx.page = fund, ""
+					groupCtx = ctx
+					groupCtx.bare = ""
+					cur, header, haveRule, sawType = &spTable{}, nil, false, false
+					continue
+				}
 				if l := string(trimmed); proxyEdge && spIsProxyEdgeHeadingBody(l, &ctx, lastBare) {
 					spReadProxyEdgeHeading(l, &ctx, &groupCtx, lastBare)
 					continue
@@ -1622,6 +1646,18 @@ func spGroupRows(group []spTable, seriesIdx *spIndex, resolved map[string]string
 		rows = append(rows, row)
 	}
 	return rows
+}
+
+// spOpensTable reports whether the body prints a `<TABLE>` tag on a line of its
+// own anywhere. It is the gate on the implicit-table path: a document that
+// opens one is read exactly as before.
+func spOpensTable(raw []byte) bool {
+	for _, line := range spLines(raw) {
+		if bytes.EqualFold(bytes.TrimSpace(line), []byte("<TABLE>")) {
+			return true
+		}
+	}
+	return false
 }
 
 // spLines splits the raw document into lines without copying it, and without
