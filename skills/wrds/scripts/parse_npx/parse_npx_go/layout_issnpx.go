@@ -6949,6 +6949,26 @@ var issRegistrantRenames = map[string]map[string]string{
 		// `SVS II SCUD BLUE CHIP PORT -> DWS Blue Chip VIP` entry above,
 		// which is a different fund.
 		"svs ii scud glob blue chip": "DWS Global Thematic VIP",
+		// Seven further Column A -> Column B rows of that SAME Exhibit (a)(25)
+		// table, in the printed spellings the two lossy filings carry. The
+		// 2004 filing prints the vendor's abbreviations (`SCUD`, `FINAN
+		// SERVS`, `OPP`, `SM CAP`, `PORT`), and `LARGE CAP VALUE VALUE` keeps
+		// the vendor's own doubled word byte for byte.
+		"svs ii large cap value value port": "DWS Large Cap Value VIP",
+		"svs ii dreman finan servs port":    "DWS Dreman Financial Services VIP",
+		"svs ii janus growth opp port":      "DWS Janus Growth Opportunities VIP",
+		"svs ii scud tech growth port":      "DWS Technology VIP",
+		"svs ii scud sm cap growth port":    "DWS Small Cap Growth VIP",
+		// The 2005 filing prints three of the same funds unabbreviated. Two
+		// are SECOND spellings of rows keyed above: `SVS II Technology Growth
+		// Portfolio` is the 2005 spelling of `Scudder Technology Growth
+		// Portfolio` (S000006262), and `SVS II Global Blue Chip Portfolio` is
+		// the 2005 spelling of the `SVS II SCUD GLOB BLUE CHIP` row
+		// (S000006276). Both vintages must be keyed; neither name-based rung
+		// reaches the other's spelling.
+		"svs janus growth and income portfolio": "DWS Janus Growth & Income VIP",
+		"svs ii technology growth portfolio":    "DWS Technology VIP",
+		"svs ii global blue chip portfolio":     "DWS Global Thematic VIP",
 	},
 	"0001119720": {
 		// `Sm/Mid Cap Equity` abbreviates the declared `Small Mid Cap
