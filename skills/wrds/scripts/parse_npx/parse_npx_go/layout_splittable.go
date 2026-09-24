@@ -543,16 +543,31 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 		body       []string
 		prevLabels []string
 		pendLabels []string
-		lastBare   string
-		pageBare   string
-		fundTail   bool
+		pendSpans  []spSpan
+		// pendMain is the main panel of a split table whose ballots were read
+		// before its spill panel's rule arrived: its rows carry no vote, and the
+		// vote is printed underneath, one spill line per main line.
+		pendMain    *spTable
+		spillLabels []string
+		spillSpans  []spSpan
+		lastBare    string
+		pageBare    string
+		fundTail    bool
 	)
 	flush := func() {
+		spill := spSpillBody(header, pendMain, spans)
 		switch {
 		case len(spans) > 0 && len(body) > 0:
 			rows = append(rows, spGroupRows([]spTable{{labels: labels, spans: spans, body: body}},
 				seriesIdx, resolved, ctx)...)
 			prevLabels = labels
+		case spill != nil:
+			// The two panels print the same ballots in the same order, so the
+			// vote is read off the spill panel by line position -- the join
+			// spGroupRows already performs for this family's tagged tables.
+			rows = append(rows, spGroupRows([]spTable{*pendMain,
+				{labels: spillLabels, spans: spillSpans, body: spill}},
+				seriesIdx, resolved, ctx)...)
 		case spans == nil && len(prevLabels) > 0:
 			// A page after a break: bare ballot lines under no header of their
 			// own, read on the labels and the fund the preceding page carried.
@@ -564,6 +579,7 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 			}
 		}
 		spans, labels, body, header = nil, nil, nil, nil
+		pendMain, spillLabels, spillSpans = nil, nil, nil
 	}
 
 	for _, rawLine := range spLines(raw) {
@@ -601,20 +617,29 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 			case spHasVote(l):
 				if joined := spJoinSpill(pendLabels, l); joined != nil {
 					// The spill panel of a table whose main panel was too wide
-					// to print the vote. Its own lines RESTATE the main panel's
-					// ballots keyed on the issuer alone, so reading them would
-					// emit phantom rows; what it is kept for is its labels,
-					// which complete the geometry the pages after the break
-					// print inline.
-					prevLabels, pendLabels = joined, nil
+					// to print the vote. Its labels complete the geometry the
+					// pages after the break print inline; its own lines are a
+					// RESTATEMENT of the main panel's ballots keyed on the
+					// issuer alone, so reading them on their own would emit
+					// phantom rows. They are not nothing, though: when the main
+					// panel's ballots are still in the header buffer, they are
+					// that panel's missing vote column, held for the positional
+					// join flush performs.
+					if block := spLabelBlock(header); len(pendSpans) > 0 && len(block) < len(header) {
+						pendMain = &spTable{labels: pendLabels, spans: pendSpans,
+							body: append([]string(nil), header[:len(header)-len(block)]...)}
+						spillLabels, spillSpans = l, r
+					}
+					prevLabels, pendLabels, pendSpans = joined, nil, nil
 					header = nil
 					continue
 				}
 				spans, labels = r, l
 			case spIsMainPanel(l):
 				// A main panel carrying no vote column: no row of it can be
-				// emitted, but it is the left half of the geometry above.
-				pendLabels = l
+				// emitted on its own, but it is the left half of the geometry
+				// above, and its ballots fall to the header buffer below.
+				pendLabels, pendSpans = l, r
 				header = nil
 			default:
 				header = nil
@@ -639,7 +664,7 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 			// line of a reprinted preamble carries only the head of the name
 			// the previous one was joined out of.
 			if name == "" || !strings.HasPrefix(strings.ToUpper(ctx.fund), strings.ToUpper(name)) {
-				prevLabels, pendLabels = nil, nil
+				prevLabels, pendLabels, pendSpans = nil, nil, nil
 			}
 			ctx = spContext{fund: name, page: lastBare}
 			fundTail = name != ""
@@ -679,6 +704,29 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 	}
 	flush()
 	return rows
+}
+
+// spSpillBody is the spill panel's ballots, ready to be joined by line position
+// to the main panel's. The two panels print one line each per ballot -- wraps
+// included -- so the join is only taken when the counts agree exactly; anything
+// else is a spill that is not this main panel's restatement, and is left to the
+// continuation path that read it before. A block still under its own rule
+// (spans) is a table of its own, not a spill.
+func spSpillBody(header []string, main *spTable, spans []spSpan) []string {
+	if main == nil || spans != nil {
+		return nil
+	}
+	start, end := 0, len(header)
+	for start < end && strings.TrimSpace(header[start]) == "" {
+		start++
+	}
+	for end > start && strings.TrimSpace(header[end-1]) == "" {
+		end--
+	}
+	if end-start != len(main.body) || end == start {
+		return nil
+	}
+	return header[start:end]
 }
 
 // spBannerFund is the fund a page of the SEC's own Form N-PX template names:
