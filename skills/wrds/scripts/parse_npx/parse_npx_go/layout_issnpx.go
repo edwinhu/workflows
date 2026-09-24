@@ -1390,6 +1390,17 @@ type issSeriesIndex struct {
 	// depth counts the chain's own recursive re-resolutions of a cut banner, so
 	// the cross-CIK rung can tell the heading as printed from a remainder.
 	depth int
+	// hdrOnly is this same index built from the filing's OWN declarations
+	// alone, with the corpus dictionary unreadable: the answer this filing
+	// reaches with no -cik-series loaded. A series id is a link key and a wrong
+	// one is worse than a blank, so the dictionary rungs -- the folded aliases,
+	// the registrant-scoped dictionary lookups and crossCIK alike -- may only
+	// FILL a heading this index refuses, never replace what it answers. Nil on
+	// the header-only index itself and whenever no dictionary is loaded.
+	hdrOnly *issSeriesIndex
+	// noDict makes every dictionary rung reached through this index refuse; see
+	// issIndexDict.
+	noDict bool
 	// byTicker keys each class ticker the header declares, upper-cased, to its
 	// series; a ticker two series share is dropped rather than guessed.
 	byTicker map[string]*SeriesDecl
@@ -1530,8 +1541,21 @@ func (ix *issSeriesIndex) declToks(i int) []string {
 	return strings.Fields(ix.declNorm(i))
 }
 
+// issIndexDict is the corpus dictionary as this index may read it: nil on the
+// header-only index, whose whole answer is the one the filing reaches with no
+// dictionary loaded. Every ix-scoped dictionary rung goes through it.
+func issIndexDict(ix *issSeriesIndex) *cikSeries {
+	if ix == nil || ix.noDict {
+		return nil
+	}
+	return cikDict
+}
+
 // issFormerKeys normalises the header's former conformed names for the index.
 func issFormerKeys(ix *issSeriesIndex, former []string) {
+	if ix.hdrOnly != nil {
+		issFormerKeys(ix.hdrOnly, former)
+	}
 	// A former key is new evidence, so answers memoised before it arrived are
 	// stale; the resolver's cache is only valid for a fixed index.
 	clear(ix.resolved)
@@ -1548,6 +1572,18 @@ func issFilingIndex(decls []SeriesDecl, registrantKey, cik, period string) *issS
 	ix := newISSSeriesIndex(issDeclAliases(decls, cik, period), registrantKey)
 	ix.cik = cik
 	ix.period = period
+	// The filing's own answer, computed on the same chain with the dictionary
+	// unreadable, so the rungs below can fill what it refuses without ever
+	// replacing what it answers. Built only when a dictionary is loaded: with
+	// none there is nothing to outrank and nothing to build.
+	if cikDict != nil {
+		hdr := newISSSeriesIndex(decls, registrantKey)
+		hdr.cik = cik
+		hdr.period = period
+		hdr.noDict = true
+		issAuditedRenameAliases(hdr)
+		ix.hdrOnly = hdr
+	}
 	// The audited rename table is registrant-scoped, not layout-scoped: the same
 	// CIK's pre-2006 filings reach several vendors' grammars (American
 	// AAdvantage Funds 2004 is broadridge, not issnpx), and a rename the
@@ -2346,7 +2382,7 @@ func issAdvisorSuffixDecl(ix *issSeriesIndex, banner string) *SeriesDecl {
 	if d, _ := lookupSeriesEntry(ix.byName, cut); d != nil {
 		return d
 	}
-	return cikDict.crossCIK(ix.cik, cut, ix.period, ix.registrantKey)
+	return issIndexDict(ix).crossCIK(ix.cik, cut, ix.period, ix.registrantKey)
 }
 
 // issCutGluedBrand removes a sub-adviser brand the filing GLUES to the house
@@ -2706,6 +2742,17 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	ix.depth++
 	name, d := issResolveFundMemo(ix, banner)
 	ix.depth--
+	// The filing's own declarations answer on this same chain with the
+	// dictionary unreadable, and what they answer stands: every rung the chain
+	// above adds reads the corpus dictionary, and a dictionary rung may only
+	// fill a heading the filing itself leaves blank. Read on the outermost
+	// call, the way the cross-CIK rung is, so a recursive cut does not re-run
+	// the whole chain.
+	if outer && ix.hdrOnly != nil {
+		if hname, hd := issResolveFund(ix.hdrOnly, banner); hd != nil {
+			name, d = hname, hd
+		}
+	}
 	// The heading's own tier word, which no cut above may trade away: Summit
 	// Mutual Funds is a two-tier trust whose `SUMMIT RUSSELL 2000 SMALL CAP
 	// INDEX FUND` and `SUMMIT RUSSELL SMALL CAP INDEX PORTFOLIO` banners are
@@ -2742,13 +2789,45 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// so it is not offered to the sibling rung: 890453's unbranded 2006
 	// `Small Company Growth Fund` names its declared S000001047, and the exact
 	// contemporaneous corpus twin S000003363 belongs to CIK 0001331971.
+	//
+	// And never against a heading that is the answer's own declared name printed
+	// SHORT: `Equity Index` under a declared `EQUITY INDEX FUND` contradicts
+	// nothing the registrant declared, and an exact stranger -- CIK 1131013
+	// spells `EQUITY INDEX` -- is not evidence against the filing's own header
+	// (19,014 rows of American Century Capital Portfolios' 20100630 report filed
+	// under two other sponsors' funds). The Victory shape above is the opposite:
+	// `VIP Series` are words the declaration does not carry at all.
 	if outer && !issBannerDeclaredExact(ix, banner) && !issOwnBrandInfixDecl(ix, banner, d) &&
-		!issTierRenameKept(ix, normalizeSeriesName(banner), d) {
-		if alt := cikDict.crossCIK(ix.cik, banner, ix.period, ix.registrantKey); alt != nil {
+		!issTierRenameKept(ix, normalizeSeriesName(banner), d) && !issHeadingWithinDecl(banner, d) {
+		if alt := issIndexDict(ix).crossCIK(ix.cik, banner, ix.period, ix.registrantKey); alt != nil {
 			return banner, alt
 		}
 	}
 	return name, d
+}
+
+// issHeadingWithinDecl reports that the heading says nothing this declaration
+// does not: every word it prints is a word of the declared name. Such a heading
+// is the registrant's own name printed short of a word or two, never a claim
+// about some other fund, so no stranger's exact spelling of it outranks it.
+func issHeadingWithinDecl(banner string, d *SeriesDecl) bool {
+	if d == nil {
+		return false
+	}
+	toks := strings.Fields(normalizeSeriesName(banner))
+	if len(toks) == 0 {
+		return false
+	}
+	have := map[string]bool{}
+	for _, t := range strings.Fields(normalizeSeriesName(d.Name)) {
+		have[t] = true
+	}
+	for _, t := range toks {
+		if !have[t] {
+			return false
+		}
+	}
+	return true
 }
 
 // issBannerDeclaredExact reports whether the filing's OWN header spells this
@@ -6738,6 +6817,9 @@ var reISSCoverRename = regexp.MustCompile(`(?i)^\(\s*changed name from\s+(.+?)\s
 // name the registrant does not declare folds nothing, and no cut, tolerance or
 // cross-CIK rung is consulted for either side.
 func issCoverRenameAliases(ix *issSeriesIndex, lines []string) {
+	if ix.hdrOnly != nil {
+		issCoverRenameAliases(ix.hdrOnly, lines)
+	}
 	for i, raw := range lines {
 		m := reISSCoverRename.FindStringSubmatch(strings.TrimSpace(raw))
 		if m == nil {
@@ -7038,7 +7120,7 @@ func issAuditedRenameAliases(ix *issSeriesIndex) {
 	for old, succ := range issRegistrantRenames[ix.cik] {
 		d, _ := lookupSeriesEntry(ix.byName, succ)
 		if d == nil {
-			d = cikDict.registrantExactName(ix.cik, succ, ix.period)
+			d = issIndexDict(ix).registrantExactName(ix.cik, succ, ix.period)
 		}
 		if d != nil {
 			ix.addAlias(old, d)

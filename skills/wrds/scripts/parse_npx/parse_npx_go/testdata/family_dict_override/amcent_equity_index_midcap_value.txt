@@ -1,0 +1,172 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ SnJ7ySX2gEEC8Pn0JjZCho9rw41BrznTcfLXuh3tsBagQ3chY/fUMySsUbk1L4bN
+ BCklFABumdOe7F75YTpkMw==
+
+<SEC-DOCUMENT>0000908186-10-000104.txt : 20100827
+<SEC-HEADER>0000908186-10-000104.hdr.sgml : 20100827
+<ACCEPTANCE-DATETIME>20100827154304
+ACCESSION NUMBER:		0000908186-10-000104
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20100630
+FILED AS OF DATE:		20100827
+DATE AS OF CHANGE:		20100827
+EFFECTIVENESS DATE:		20100827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			AMERICAN CENTURY CAPITAL PORTFOLIOS INC
+		CENTRAL INDEX KEY:			0000908186
+		IRS NUMBER:				431646043
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			0331
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07820
+		FILM NUMBER:		101043951
+
+	BUSINESS ADDRESS:	
+		STREET 1:		4500 MAIN STREET
+		STREET 2:		9TH FLOOR
+		CITY:			KANSAS CITY
+		STATE:			MO
+		ZIP:			64111
+		BUSINESS PHONE:		816-531-5575
+
+	MAIL ADDRESS:	
+		STREET 1:		4500 MAIN STREET
+		CITY:			KANSAS CITY
+		STATE:			MO
+		ZIP:			64111
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	TWENTIETH CENTURY CAPITAL PORTFOLIOS INC
+		DATE OF NAME CHANGE:	19930624
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000908186
+<SERIES-ID>S000005777
+<SERIES-NAME>EQUITY INDEX FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015869
+<CLASS-CONTRACT-NAME>INVESTOR CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>ACIVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015870
+<CLASS-CONTRACT-NAME>INSTITUTIONAL CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>ACQIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000908186
+<SERIES-ID>S000005779
+<SERIES-NAME>MID CAP VALUE FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015878
+<CLASS-CONTRACT-NAME>INVESTOR CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>ACMVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015879
+<CLASS-CONTRACT-NAME>A CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>ACLAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015880
+<CLASS-CONTRACT-NAME>INSTITUTIONAL CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>AVUAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015881
+<CLASS-CONTRACT-NAME>R CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>AMVRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000087957
+<CLASS-CONTRACT-NAME>C CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>ACCLX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx-2010.htm
+<DESCRIPTION>FORM N-PX
+<TEXT>
+<html>
+<head>
+    <title>npx-2010.htm</title>
+<!-- Licensed to: AMERICAN CENTURY INVESTMENTS-->
+<!-- Document Created using EDGARizer 5.2.0.0 -->
+<!-- Copyright 1995 - 2009 Thomson Reuters. All rights reserved. -->
+</head>
+<body bgcolor="#ffffff" style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">
+<pre>
+================================= Equity Index =================================
+
+
+3M COMPANY
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 11, 2010   Meeting Type: Annual
+Record Date:  MAR 12, 2010
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Elect Director Linda G. Alvarado        For       For          Management
+2     Elect Director George W. Buckley        For       For          Management
+3     Elect Director Vance D. Coffman         For       For          Management
+4     Elect Director Michael L. Eskew         For       For          Management
+5     Elect Director W. James Farrell         For       For          Management
+6     Elect Director Herbert L. Henkel        For       For          Management
+7     Elect Director Edward M. Liddy          For       For          Management
+8     Elect Director Robert S. Morrison       For       For          Management
+9     Elect Director Aulana L. Peters         For       For          Management
+10    Elect Director Robert J. Ulrich         For       For          Management
+11    Ratify Auditors                         For       For          Management
+12    Amend Omnibus Stock Plan                For       Against      Management
+13    Amend Articles/Bylaws/Charter -- Call   Against   For          Shareholder
+      Special Meetings
+
+
+- --------------------------------------------------------------------------------
+================================ Mid Cap Value =================================
+
+
+ACCENTURE PLC
+
+Ticker:       ACN            Security ID:  G1150G111
+Meeting Date: AUG 5, 2009    Meeting Type: Special
+Record Date:  JUN 19, 2009
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Approve Reincorporation from Bermuda to For       For          Management
+      Ireland through Scheme of Arrangement
+2     Adjourn Meeting                         For       For          Management
+1     Approve Reincorporation from Bermuda to For       For          Management
+      Ireland through Scheme of Arrangement
+2     Adjourn Meeting                         For       For          Management
+1     Approve the Creation of Distributable   For       For          Management
+      Reserves for Accenture plc
+2     Adjourn Meeting                         For       For          Management
+
+
+- --------------------------------------------------------------------------------
+</pre>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
