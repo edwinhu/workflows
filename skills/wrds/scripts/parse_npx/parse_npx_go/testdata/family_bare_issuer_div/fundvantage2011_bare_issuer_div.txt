@@ -1,0 +1,527 @@
+<SEC-DOCUMENT>0000950123-11-081621.txt : 20110831
+<SEC-HEADER>0000950123-11-081621.hdr.sgml : 20110831
+<ACCEPTANCE-DATETIME>20110831124359
+ACCESSION NUMBER:		0000950123-11-081621
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20110630
+FILED AS OF DATE:		20110831
+DATE AS OF CHANGE:		20110831
+EFFECTIVENESS DATE:		20110831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			FundVantage Trust
+		CENTRAL INDEX KEY:			0001388485
+		IRS NUMBER:				000000000
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22027
+		FILM NUMBER:		111067847
+
+	BUSINESS ADDRESS:	
+		BUSINESS PHONE:		610-382-8667
+
+	MAIL ADDRESS:	
+		STREET 1:		301 BELLEVUE PARKWAY
+		CITY:			WILMINGTON
+		STATE:			DE
+		ZIP:			19809
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001388485
+<SERIES-ID>S000022514
+<SERIES-NAME>Corverus Strategic Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000065124
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>CVSAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000065125
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>CVSEX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>w84089nvpx.htm
+<DESCRIPTION>FORM N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE>nvpx</TITLE>
+</HEAD>
+<!-- PAGEBREAK -->
+<P><HR noshade><P>
+<H5 align="left" style="page-break-before:always">&nbsp;</H5><P>
+
+<DIV style="font-family: Helvetica,Arial,sans-serif">
+<DIV align="left" style="font-size: 10pt; margin-top: 6pt"><!-- LANDSCAPE --></DIV>
+
+<DIV align="center" style="font-size: 10pt; margin-top: 6pt"><B><U>Corverus Strategic Equity Fund</U></B>
+</DIV>
+<DIV align="left" style="font-size: 10pt; margin-top: 6pt">MASTERCARD INCORPORATED
+</DIV>
+
+<DIV align="left" style="font-size: 10pt; margin-top: 6pt">Institutional Account Name: Corverus Strategic Equity Fund
+</DIV>
+
+<DIV align="center">
+<TABLE style="font-size: 10pt" cellspacing="0" border="0" cellpadding="0" width="100%">
+<!-- Begin Table Head -->
+<TR valign="bottom">
+    <TD width="44%">&nbsp;</TD>
+    <TD width="5%">&nbsp;</TD>
+    <TD width="45%">&nbsp;</TD>
+</TR>
+<!-- End Table Head -->
+<!-- Begin Table Body -->
+<TR valign="bottom">
+
+<TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">Location
+Name:  Piedmont Investment Advisers LLC
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Ticker: MA</TD>
+</TR>
+<TR valign="bottom">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">Primary Security ID: 57636Q104
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Security ID on Ballot: 57636Q104</TD>
+</TR>
+<TR valign="bottom">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">CUSIP: 57636Q104
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Country: USA</TD>
+</TR>
+<TR valign="bottom">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">Meeting Date: 21-Sep-10
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Shares Voted: 270</TD>
+</TR>
+<TR valign="bottom">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">Record Date: 26-Jul-10
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top"></TD>
+</TR>
+<!-- End Table Body -->
+</TABLE>
+</DIV>
+
+<DIV align="center">
+<TABLE style="font-size: 6pt" cellspacing="0" border="0" cellpadding="0" width="100%">
+<!-- Begin Table Head -->
+<TR valign="bottom">
+    <TD width="5%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="18%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="18%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="7%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="7%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="7%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="7%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="7%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="7%">&nbsp;</TD>
+</TR>
+<TR style="font-size: 6pt" valign="bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left"><B>Voting</B></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left"><B>Voted Against</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left">&nbsp;</TD>
+</TR>
+<TR style="font-size: 6pt" valign="bottom">
+    <TD nowrap align="left"><B>Item</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left"><B>Proposal Code</B></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left"><B>Proposal</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left"><B>Management</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left"><B>Vote</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left" style="border-bottom: 0px solid #000000"><B>Management_</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left">&nbsp;</TD>
+</TR>
+<TR style="font-size: 6pt" valign="bottom">
+    <TD nowrap align="left" style="border-bottom: 1px solid #000000"><B>Number</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left" style="border-bottom: 1px solid #000000"><B>Description</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left" style="border-bottom: 1px solid #000000"><B>Proposal</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left" style="border-bottom: 1px solid #000000"><B>(y/n)</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left" style="border-bottom: 1px solid #000000"><B>Recommendation</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left" style="border-bottom: 1px solid #000000"><B>Instruction</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left" style="border-bottom: 1px solid #000000"><B>YN</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left" style="border-bottom: 1px solid #000000"><B>Voted_YN</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left" style="border-bottom: 1px solid #000000"><B>Proponent</B></TD>
+</TR>
+
+<!-- End Table Head -->
+<!-- Begin Table Body -->
+<TR valign="bottom" style="background: #cceeff">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">1
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Declassify the Board
+of Directors
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Declassify the Board
+of Directors
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">No
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Management</TD>
+</TR>
+<TR valign="bottom">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">2
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Reduce Supermajority
+Vote Req(s)
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Reduce Supermajority
+Vote Requirement
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">No
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Management</TD>
+</TR>
+<TR valign="bottom" style="background: #cceeff">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">3
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Adopt or Amnd Dir
+Qualifications
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Amend Board
+Qualifications
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">No
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Management</TD>
+</TR>
+<TR valign="bottom">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">4
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Appr/Amnd Stck
+Ownrship Limitations
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Amend Stock Ownership
+Limitations
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">No
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Management</TD>
+</TR>
+<TR valign="bottom" style="background: #cceeff">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">5
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Adjourn Meeting
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Adjourn Meeting
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">No
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Management</TD>
+</TR>
+<TR valign="bottom">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">6.1
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Elect Directors
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Elect Director Nancy
+J. Karch
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">No
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Management</TD>
+</TR>
+<TR valign="bottom" style="background: #cceeff">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">6.2
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Elect Directors
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Elect Director Jose
+Octavio Reyes Lagunes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">No
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Management</TD>
+</TR>
+<TR valign="bottom">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">6.3
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Elect Directors
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Elect Director Edward
+Suning Tian
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">No
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Management</TD>
+</TR>
+<TR valign="bottom" style="background: #cceeff">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">6.4
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Elect Directors
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Elect Director Silvio
+Barzi
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">No
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Management</TD>
+</TR>
+<TR valign="bottom">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">7
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Appr/Amnd Exec
+Incentive Bonus Plan
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Approve Executive
+Incentive Bonus Plan
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">No
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Management</TD>
+</TR>
+<TR valign="bottom" style="background: #cceeff">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">8
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Ratify Auditors
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Ratify Auditors
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">No
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Management</TD>
+</TR>
+<!-- End Table Body -->
+</TABLE>
+</DIV>
+
+
+<P align="center" style="font-size: 10pt"><!-- Folio -->&nbsp;<!-- /Folio -->
+</DIV>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
