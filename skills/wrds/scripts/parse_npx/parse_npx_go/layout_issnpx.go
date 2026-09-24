@@ -6884,13 +6884,20 @@ func issCoverRenameAliases(ix *issSeriesIndex, lines []string) {
 // 20040630 prints `SVS II SCUD TOTAL RET PORT- EQ` (326 rows, all blank).
 // Neither is reachable by a name-based rung -- `Total Return` and `DWS Balanced
 // VIP` share no content word at all, and the 2004 spelling is not even the
-// Column A name but a truncation of it -- so both are keyed. Only the one
-// exhibit row this is read from is keyed; the other 28 redesignations are left
-// for a round that reads each of their printed spellings off the filings.
+// Column A name but a truncation of it -- so both are keyed.
+//
+// The Turner key is the `SVS Turner Mid Cap Growth Portfolio -> DWS Turner Mid
+// Cap Growth VIP` row of that SAME exhibit table (successor S000006274, a
+// dictionary row of this CIK at vintage 20060630); the registrant's three
+// `Mid Cap Growth` successors make no name-based rung able to pick it out.
+// Only the exhibit rows read off the filings are keyed; the remaining
+// redesignations are left for a round that reads their printed spellings.
 var issRegistrantRenames = map[string]map[string]string{
 	"0000810573": {
 		"svs ii total return portfolio": "DWS Balanced VIP",
 		"svs ii scud total ret port eq": "DWS Balanced VIP",
+		// Turner Mid Cap Growth row of the same Exhibit (a)(25) table.
+		"svs turner mid cap growth portfolio": "DWS Turner Mid Cap Growth VIP",
 	},
 	"0001100663": {
 		"ishares s and p gsti tm technology index fund":    "iShares Goldman Sachs Technology Index Fund",
