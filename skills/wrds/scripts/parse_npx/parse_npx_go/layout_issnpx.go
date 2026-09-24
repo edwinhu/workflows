@@ -7059,6 +7059,17 @@ var issRegistrantRenames = map[string]map[string]string{
 		// abbreviation is unambiguous.
 		"state farm mutual fund trust sm mid cap equity": "State Farm Small Mid Cap Equity Fund",
 	},
+	"0001034633": {
+		// The vendor interleaves the fund's distinguishing words into the
+		// trust's own name, so the residue `Large Cap` prefixes TWO declared
+		// series (S000002060 Large Cap Equity Index, S000002067 Large Cap
+		// Equity) and no name rung can choose. The banner sits inside the
+		// Bridgeway report, whose own header scopes it to `Large Cap Equity
+		// Fund` and `Small Mid Cap Equity Fund` -- neither an index fund --
+		// while the filing's Blackrock report separately carries all three
+		// index sleeves, S000002060 among them.
+		"state farm large cap variable product": "State Farm Large Cap Equity Fund",
+	},
 	"0001100663": {
 		"ishares s and p gsti tm technology index fund":    "iShares Goldman Sachs Technology Index Fund",
 		"ishares s and p gsti technology index fund":       "iShares Goldman Sachs Technology Index Fund",
