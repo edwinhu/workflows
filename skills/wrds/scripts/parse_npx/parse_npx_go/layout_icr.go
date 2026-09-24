@@ -809,12 +809,20 @@ func icrJoinWrappedFundValue(ix *issSeriesIndex, lines []string, i int, name str
 // chain fires only for a name the header does not declare, so icrResolveFund's
 // refusal of an ambiguous declared name stands.
 func icrResolveFundShared(ix *issSeriesIndex, name string) string {
+	// The filing's own declarations answer first, with the dictionary
+	// unreadable: a dictionary rung may only fill a heading they leave blank.
+	// See issSeriesIndex.hdrOnly.
+	if ix != nil && ix.hdrOnly != nil {
+		if id := icrResolveFundShared(ix.hdrOnly, name); id != "" {
+			return id
+		}
+	}
 	if id := icrResolveFundVintage(ix, ix.byName, name); id != "" {
 		// Its own first rung is the exact route; every rung after it cuts the
 		// printed name. An INEXACT answer of this registrant's own does not
 		// outrank an exact, corpus-unique, contemporaneous sibling hit.
 		if !issBannerDeclaredExact(ix, name) {
-			if d := cikDict.crossCIK(ix.cik, name, ix.period, ix.registrantKey); d != nil {
+			if d := issIndexDict(ix).crossCIK(ix.cik, name, ix.period, ix.registrantKey); d != nil {
 				return d.SeriesID
 			}
 		}
@@ -826,7 +834,7 @@ func icrResolveFundShared(ix *issSeriesIndex, name string) string {
 	// Both registrant-scoped chains have refused: the heading may name a fund
 	// of a SIBLING registrant, admitted only on an exact, corpus-wide unique
 	// dictionary hit under one other CIK (cikSeries.crossCIK).
-	if d := cikDict.crossCIK(ix.cik, name, ix.period, ix.registrantKey); d != nil {
+	if d := issIndexDict(ix).crossCIK(ix.cik, name, ix.period, ix.registrantKey); d != nil {
 		return d.SeriesID
 	}
 	return ""
