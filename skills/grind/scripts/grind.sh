@@ -45,13 +45,16 @@ grind.sh -- an unattended loop whose only memory is one append-only journal.
 
   grind.sh run    --journal J --check CMD --prompt-file F [--gate CMD] [--runner R]
                   [--model M] [--max-iters N] [--sleep S] [--stall-after K]
-                  [--notify CMD|none] [--notify-to SESSION] [--wait-alert N]
+                  [--notify CMD|none] [--notify-to SESSION] [--wait-alert N] [--push]
                   default: agent-msg to the launching session (or --notify-to), plus herdr if
                   installed; CMD replaces it and gets GRIND_STATE, GRIND_EXIT, GRIND_JOURNAL.
                   A failed notification never changes the exit code.
                   --wait-alert N announces every Nth CONSECUTIVE wait through that same channel
                   without ending the run (default 6, 0 disables); the command also gets
                   GRIND_WAITS and GRIND_WHY, the gate's last output line.
+                  --push also sends every announcement as a phone push (claude -p calling
+                  PushNotification), because agent-msg to an idle session can be stored and
+                  never delivered. Opt-in, so test runs never reach a phone.
   grind.sh append --journal J '{"kind":"progress","key":"..."}'
   grind.sh floors --journal J
   grind.sh status --journal J
@@ -293,11 +296,11 @@ EOF
 # long has to reach the same target while the run is still going -- a notifier the loop cannot see is
 # a notifier that only ever speaks after the fact. run_loop leaves it in NOTIFY/NOTIFY_TO, and this
 # function still owns the terminal announcement, so the loop's returns stay the source of the outcome.
-NOTIFY= NOTIFY_TO= NOTIFY_JOURNAL=
+NOTIFY= NOTIFY_TO= NOTIFY_JOURNAL= PUSH=
 
 cmd_run() {
   local rc=0
-  NOTIFY= NOTIFY_TO=${CLAUDE_CODE_SESSION_ID:-} NOTIFY_JOURNAL=
+  NOTIFY= NOTIFY_TO=${CLAUDE_CODE_SESSION_ID:-} NOTIFY_JOURNAL= PUSH=
   run_loop "$@" || rc=$?
   local state
   case "$rc" in
@@ -310,7 +313,20 @@ cmd_run() {
     '')   notify_default "$NOTIFY_TO" ;;
     *)    bash -c "$NOTIFY" </dev/null || warn "--notify exited $?; the run's own verdict stands" ;;
   esac
+  [ "$NOTIFY" = none ] || push_phone "grind loop ended: $state (exit $rc). Journal $NOTIFY_JOURNAL"
   return "$rc"
+}
+
+# agent-msg only stores the event; a session idle with no client attached never drains it
+# (seq 58434, 2026-09-24). A PushNotification from a one-shot claude run reaches the operator
+# away from the terminal. Bounded, and a failure never touches the verdict.
+push_phone() {
+  [ -n "$PUSH" ] || return 0
+  command -v claude >/dev/null 2>&1 || { warn "--push: claude not on PATH"; return 0; }
+  timeout 120 claude -p "Call the PushNotification tool exactly once with this message, verbatim: $1" \
+    --model claude-haiku-4-5-20251001 --allowedTools=PushNotification </dev/null >/dev/null 2>&1 \
+    || warn "--push: phone push failed"
+  return 0
 }
 
 # A gate that has been shut for N passes in a row looks exactly like legitimate waiting from outside,
@@ -319,6 +335,7 @@ cmd_run() {
 # A failure here is warned about and swallowed, for the same reason the terminal notification's is.
 notify_waiting() {
   local waits=$1 why=$2 j=$3
+  [ "$NOTIFY" = none ] || push_phone "grind loop waiting: $waits consecutive gate waits. Why: ${why:-(the gate printed nothing)}. Journal $j"
   case "$NOTIFY" in
     none) return 0 ;;
     '')
@@ -368,6 +385,7 @@ run_loop() {
       --notify)      NOTIFY=${2:?--notify needs a value};           shift 2 ;;
       --notify-to)   NOTIFY_TO=${2:?--notify-to needs a value};     shift 2 ;;
       --wait-alert)  want_int --wait-alert "${2:-}"; wait_alert=$2; shift 2 ;;
+      --push)        PUSH=1;                                         shift ;;
       --journal)     journal=${2:?--journal needs a value};         shift 2 ;;
       --check)       check=${2:?--check needs a value};             shift 2 ;;
       --gate)        gate=${2:?--gate needs a value};               shift 2 ;;
