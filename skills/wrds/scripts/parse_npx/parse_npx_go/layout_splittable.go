@@ -1423,18 +1423,25 @@ func isAlnumToken(s string) bool {
 
 // spProxyEdgeSecurityID reads the security id off a ProxyEdge heading-block
 // body line -- `Issuer: 034425                ISIN:` / `SEDOL:`. Every cell of
-// the line must be a `LABEL: value` pair, so a stacked column-header line that
-// happens to carry a colon can never be read as one, and the value is returned
-// exactly as printed.
+// the line must be either a `LABEL: value` pair or a bare, colon-free vendor
+// annotation word (`BLOCKING`, a share-blocking notice), so a stacked
+// column-header line that happens to carry a colon can never be read as one,
+// and the value is returned exactly as printed. The id is only ever taken from
+// the `CUSIP`/`ISSUER` pair, so an annotation word can never become one.
 func spProxyEdgeSecurityID(line string) (string, bool) {
 	cells := icrCells(strings.TrimSpace(line))
 	if len(cells) == 0 {
 		return "", false
 	}
-	pairs := lvPairs(cells)
-	if len(pairs) != len(cells) {
-		return "", false
+	for _, cell := range cells {
+		if _, _, ok := lvLabelled(cell); ok {
+			continue
+		}
+		if !spBareAnnotationCell(cell) {
+			return "", false
+		}
 	}
+	pairs := lvPairs(cells)
 	for _, label := range []string{"CUSIP", "ISSUER"} {
 		for _, p := range pairs {
 			if p.label == label && p.value != "" && len(strings.Fields(p.value)) == 1 {
@@ -1443,6 +1450,25 @@ func spProxyEdgeSecurityID(line string) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+// spBareAnnotationCell reports whether a heading-block body cell is a bare
+// vendor annotation -- one colon-free alphabetic word such as `BLOCKING`.
+// Kept deliberately narrow: a stacked column header is two words
+// (`Primary Security`) and an identifier carries digits, so neither can pass
+// here and be mistaken for annotation noise.
+func spBareAnnotationCell(cell string) bool {
+	f := strings.Fields(cell)
+	if len(f) != 1 || len(f[0]) < 2 || len(f[0]) > 20 {
+		return false
+	}
+	for i := 0; i < len(f[0]); i++ {
+		c := f[0][i]
+		if (c < 'A' || c > 'Z') && (c < 'a' || c > 'z') {
+			return false
+		}
+	}
+	return true
 }
 
 // spGroupRows joins one page group's parallel tables into votes.
