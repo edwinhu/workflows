@@ -6941,6 +6941,13 @@ var issRegistrantRenames = map[string]map[string]string{
 		// heading in the same filing, so the abbreviation is unambiguous.
 		"svs ii scud blue chip port": "DWS Blue Chip VIP",
 	},
+	"0001119720": {
+		// `Sm/Mid Cap Equity` abbreviates the declared `Small Mid Cap
+		// Equity`, and the vendor drops the trailing `Fund`; the trust's
+		// other 14 declared series carry no `Mid Cap Equity` sleeve, so the
+		// abbreviation is unambiguous.
+		"state farm mutual fund trust sm mid cap equity": "State Farm Small Mid Cap Equity Fund",
+	},
 	"0001100663": {
 		"ishares s and p gsti tm technology index fund":    "iShares Goldman Sachs Technology Index Fund",
 		"ishares s and p gsti technology index fund":       "iShares Goldman Sachs Technology Index Fund",
