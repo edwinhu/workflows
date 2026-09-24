@@ -301,12 +301,20 @@ func parseVoteSummaryRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, erro
 		fields     voteSummaryFields
 		fund       string
 		fundSeries string
-		last       string
-		block      []string
-		issuer     string
-		cusip      string
-		mtgDate    string
-		pending    *VoteRow
+		// The most recently RESOLVED fund of this filing, kept across the
+		// `block` reset that `</TABLE>` performs. Some vendors name the fund
+		// once, on a cover page of its own, and print a nameless continuation
+		// banner (report title + reporting period) on every page after it, so a
+		// later table's own lookback sees only page furniture. Fallback only:
+		// never consulted when the table resolves a fund of its own.
+		heldFund       string
+		heldFundSeries string
+		last           string
+		block          []string
+		issuer         string
+		cusip          string
+		mtgDate        string
+		pending        *VoteRow
 	)
 	flush := func() {
 		if pending != nil {
@@ -352,7 +360,16 @@ func parseVoteSummaryRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, erro
 									break
 								}
 							}
+							if fundSeries == "" && heldFundSeries != "" {
+								// Nothing on this page names a fund: this is a
+								// continuation of the section whose cover page
+								// did.
+								fund, fundSeries = heldFund, heldFundSeries
+							}
 						}
+					}
+					if fundSeries != "" {
+						heldFund, heldFundSeries = fund, fundSeries
 					}
 					issuer, cusip, mtgDate = "", "", ""
 					i++
