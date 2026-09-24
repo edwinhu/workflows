@@ -1,0 +1,159 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ O/HTQLahIt2OHDyxsxjdtKPFg3nZ8YOTq5Y8YgqVpqxcMR10rjfCK+5+vHXdZZk8
+ YdfdLzLjtnqjiUxDmnL64g==
+
+<SEC-DOCUMENT>0000088053-05-000923.txt : 20050825
+<SEC-HEADER>0000088053-05-000923.hdr.sgml : 20050825
+<ACCEPTANCE-DATETIME>20050825155704
+ACCESSION NUMBER:		0000088053-05-000923
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050825
+DATE AS OF CHANGE:		20050825
+EFFECTIVENESS DATE:		20050825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SCUDDER INTERNATIONAL FUND INC
+		CENTRAL INDEX KEY:			0000088053
+		IRS NUMBER:				132827803
+		FISCAL YEAR END:			0331
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-00642
+		FILM NUMBER:		051048942
+
+	BUSINESS ADDRESS:	
+		STREET 1:		345 PARK AVE
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10154
+		BUSINESS PHONE:		2123266200
+
+	MAIL ADDRESS:	
+		STREET 1:		345 PARK AVE
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10154
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	SCUDDER INTERNATIONAL INVESTMENTS LTD
+		DATE OF NAME CHANGE:	19761203
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx-allfunds.txt
+<DESCRIPTION>N-PX FILING
+<TEXT>
+<PAGE>
+ProxyEdge -  Investment Company Report                   Report Date: 08/04/2005
+Meeting Date Range: 07/01/2004 to 06/30/2005
+Selected Accounts: Scudder International Fund
+
+<TABLE>
+<CAPTION>
+- ------------------------------------------------------------------------------------------------------------------------------------
+YELL GROUP PLC                                                                                          AGM Meeting Date: 07/13/2004
+Issuer: G9835W104                              ISIN: GB0031718066
+SEDOL:  3171806
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+Proposal                                                                           Proposal          Vote             Against
+Number    Proposal                                                                   Type            Cast              Mgmt.
+- ------------------------------------------------------------------------------------------------------------------------------------
+<S>     <C>    <C>    <C>    <C>    <C>    <C>
+
+1.        RECEIVE THE REPORT OF THE DIRECTORS AND THE AUDITORS                    Management          For
+          AND THE AUDITED ACCOUNTS OF THE COMPANY, FOR
+          THE YE 31 MAR 2004
+- ------------------------------------------------------------------------------------------------------------------------------------
+ENI SPA, ROMA                                                                                           OGM Meeting Date: 05/26/2005
+Issuer: T3643A145                              ISIN: IT0003132476                  BLOCKING
+SEDOL:  7145056, 7146059, B020CR8, B07LWK9
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+Proposal                                                                           Proposal          Vote             Against
+Number    Proposal                                                                   Type            Cast              Mgmt.
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+*         PLEASE NOTE IN THE EVENT THE MEETING DOES NOT                           Non-Voting
+          REACH QUORUM THERE WILL BE A SEC OND CALL ON
+          27 MAY 2005. YOUR VOTING INSTRUCTIONS WILL REMAIN
+          VALID FOR ALL CA LLS UNLESS THE AGENDA IS AMENDED.
+          PLEASE BE ALSO ADVISED THAT YOUR SHARES WILL
+          BE BLOCKED UNTIL THE QUORUM IS MET OR THE MEETING
+          IS CANCELLED.  THANK YOU
+
+1.        APPROVE THE FINANCIAL STATEMENT AT 31 DEC 2004;                                  Management
+          THE REPORT OF THE DIRECTORS, A UDITORS AND THE
+          INDEPENDENT AUDITORS
+
+2.        APPROVE THE ALLOCATION OF PROFITS                                                Management
+
+3.        GRANT AUTHORITY TO BUY BACK OWN SHARES                                           Management
+
+4.        APPROVE THE ASSIGNMENT OF OWN SHARES TO STOCK                                    Management
+          OPTION PLAN
+
+5.        APPOINT THE NUMBER OF MEMBERS OF THE BOARD OF                                    Management
+          AUDITORS
+
+6.        APPOINT THE DIRECTORS AND APPROVE TO ESTABLISH                                   Management
+          THE DURATION OF THEIR ASSIGNMEN T
+
+7.        APPOINT THE BOARD OF DIRECTORS AND THE CHAIRMAN                                  Management
+          AND APPROVE THEIR EMOLUMENTS
+
+8.        APPOINT THE BOARD OF AUDITORS AND THE CHAIRMAN                                   Management
+          AND APPROVE THEIR EMOLUMENTS
+                           Approve Draft Merger Agreement and Deed Contract
+                           For the Merger of the Company With 'Delta
+                           Singular S.A.' by Absorption of the Latter; Grant
+                           Authorization to Board to Sign Notary Papers
+1                          Regarding the Merger                                    Mgmt             For
+                           Authorize Increase in Capital Due to Merger;
+2                          Amend Article 5 Accordingly                             Mgmt             For
+                           Approve Actions, Statements and Announcements of
+                           the Board, Their Substitutes and Proxies As They
+3                          Relate to the Merger                                    Mgmt             For
+</TABLE>
+<PAGE>
+
+                                   SIGNATURES
+
+                           [See General Instruction F]
+
+Pursuant to the requirements of the Investment Company Act of 1940, the
+registrant has duly caused this report to be signed on its behalf by the
+undersigned, thereunto duly authorized.
+
+(Registrant) Scudder International Fund, Inc.
+
+
+
+By (Signature and Title)* /s/Julian Sluyters
+                          -----------------------------------------------
+                           Julian Sluyters, Chief Executive Officer
+
+Date    8/15/05
+       ---------
+* Print the name and title of each signing officer under his or her signature.
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
