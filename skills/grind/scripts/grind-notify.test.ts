@@ -200,6 +200,30 @@ describe('grind.sh --notify', () => {
     expect(calls).toMatch(/^herdr notification show .*done/m)
   })
 
+  test('--push also sends a phone push through claude, because agent-msg to an idle session can be dropped', () => {
+    const d = workdir('grind-notify-push')
+    const { args } = finishing(d)
+    const { env, log } = stubPath(d, ['agent-msg', 'claude'])
+
+    const r = run([...args, '--push'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+
+    expect(r.status).toBe(0)
+    const calls = readFileSync(log, 'utf8')
+    expect(calls).toMatch(/^agent-msg send sess-launch .*done/m)
+    expect(calls).toMatch(/^claude -p .*PushNotification.*done/m)
+  })
+
+  test('without --push no claude call is made, so test runs never reach a phone', () => {
+    const d = workdir('grind-notify-nopush')
+    const { args } = finishing(d)
+    const { env, log } = stubPath(d, ['agent-msg', 'claude'])
+
+    const r = run(args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+
+    expect(r.status).toBe(0)
+    expect(readFileSync(log, 'utf8')).not.toMatch(/^claude /m)
+  })
+
   test('without herdr on PATH the default sends agent-msg alone', () => {
     const d = workdir('grind-notify-noherdr')
     const { args } = finishing(d)
