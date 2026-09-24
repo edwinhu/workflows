@@ -6892,7 +6892,43 @@ func issCoverRenameAliases(ix *issSeriesIndex, lines []string) {
 // `Mid Cap Growth` successors make no name-based rung able to pick it out.
 // Only the exhibit rows read off the filings are keyed; the remaining
 // redesignations are left for a round that reads their printed spellings.
+//
+// Penn Series Funds, Inc. (CIK 0000702340) renamed one sleeve between its 2004
+// and 2005 annual reports, and the instrument is the registrant's OWN NSAR-B
+// item 007 class-contract code, which is stable across the rename:
+//
+//	0000702340-03-000003.txt:81   007 C020100 PENN SERIES GROWTH EQUITY FUND
+//	0000702340-04-000003.txt:81   007 C020100 PENN SERIES GROWTH EQUITY FUND
+//	0000702340-05-000003.txt:82   007 C020100 PENN SERIES GROWTH STOCK FUND
+//
+// One code, one fund, two names, asserted by the registrant itself -- not a
+// word-similarity guess. The successor is a dictionary row of this SAME CIK:
+// the trust's first series-tagged N-PX,
+// 000070/702340/0001104659-06-058507.txt (vintage 20060630), declares
+// S000006732 `Penn Series Growth Stock Fund`, and that filing's own vote body
+// heads the section `GROWTH STOCK FUND`. No filing of this CIK at that vintage
+// or later prints a `GROWTH EQUITY FUND` banner at all. 3,474 rows with no
+// series across 0000702340-04-000010, 0000702340-04-000012 and
+// 0000702340-05-000001, all under that one heading.
+//
+// No name-based rung reaches it: `Growth Equity` and `Growth Stock` share only
+// the word `Growth`, which this registrant's own roster spends on eight other
+// declared series (Mid Cap Growth, Large Cap Growth, Small Cap Growth, Smid Cap
+// Growth, Large Core Growth, ...), and `Growth Equity Fund` appears in no
+// dictionary row of this CIK at any vintage. The filing declares no series --
+// EDGAR tagged none for this registrant before 2006 -- so the header pool is
+// empty and the successor resolves through registrantExactName against this
+// CIK's own dictionary rows.
+//
+// The two OTHER blank headings of these filings, CORE EQUITY FUND (2,721 rows)
+// and EMERGING GROWTH FUND (5,250 rows), are FLOOR and deliberately unkeyed:
+// neither has a successor in this CIK's own dictionary at any vintage, and a
+// corpus-wide grep of cik_series.tsv for either name returns only unrelated
+// CIKs.
 var issRegistrantRenames = map[string]map[string]string{
+	"0000702340": {
+		"growth equity fund": "Penn Series Growth Stock Fund",
+	},
 	"0000810573": {
 		"svs ii total return portfolio": "DWS Balanced VIP",
 		"svs ii scud total ret port eq": "DWS Balanced VIP",
