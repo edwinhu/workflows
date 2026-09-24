@@ -6862,7 +6862,36 @@ func issCoverRenameAliases(ix *issSeriesIndex, lines []string) {
 // falsify. Adding the key turns that test red with the CORRECT id on rows whose
 // fund name it already reads correctly. Re-baseline that test's series clause
 // and the key belongs here; 2,244 rows of the 2004 filing stay blank until then.
+//
+// Scudder Variable Series II (CIK 0000810573, filing agent 0000088053)
+// redesignated TWENTY-NINE series at once, and the instrument is a signed,
+// trustee-executed amendment to the Declaration of Trust on EDGAR: Exhibit
+// (a)(25) to 485BPOS 000081/810573/0000088053-06-000476.txt, document
+// `<FILENAME>exa25-svs2.txt`, headed `SCUDDER VARIABLE SERIES II /
+// Redesignation of Series`, whose Column A / Column B table redesignates each
+// listed series and is "effective February 6, 2006". The row keyed here is
+//
+//	Scudder Total Return Portfolio  ->  DWS Balanced VIP
+//
+// and that successor is a dictionary row of this SAME CIK, declared at vintage
+// 20060630 in 000081/810573/0000088053-06-001068.txt, the registrant's first
+// series-tagged N-PX: S000006265. EDGAR tagged no series for this trust before
+// 2006, so the header pool of every lossy filing is empty and the successor is
+// resolved against the registrant's own dictionary rows.
+//
+// TWO printed spellings, one per lossy vintage, because the vendor abbreviates:
+// 20050630 prints `SVS II Total Return Portfolio` (598 rows, all blank) and
+// 20040630 prints `SVS II SCUD TOTAL RET PORT- EQ` (326 rows, all blank).
+// Neither is reachable by a name-based rung -- `Total Return` and `DWS Balanced
+// VIP` share no content word at all, and the 2004 spelling is not even the
+// Column A name but a truncation of it -- so both are keyed. Only the one
+// exhibit row this is read from is keyed; the other 28 redesignations are left
+// for a round that reads each of their printed spellings off the filings.
 var issRegistrantRenames = map[string]map[string]string{
+	"0000810573": {
+		"svs ii total return portfolio": "DWS Balanced VIP",
+		"svs ii scud total ret port eq": "DWS Balanced VIP",
+	},
 	"0001100663": {
 		"ishares s and p gsti tm technology index fund":    "iShares Goldman Sachs Technology Index Fund",
 		"ishares s and p gsti technology index fund":       "iShares Goldman Sachs Technology Index Fund",
