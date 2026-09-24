@@ -33,6 +33,10 @@ set -uo pipefail
 # discipline as farm.sh:131-134: one printf, no flock, write errors swallowed.
 ATOMIC_BOUND=4096
 
+# The gate's output is text the loop does not control, and a record that overruns ATOMIC_BOUND is
+# refused outright -- so a wait's `why` is cut here rather than discovered to be too long at write time.
+WHY_MAX=200
+
 SELF=$(realpath -- "${BASH_SOURCE[0]}" 2>/dev/null) || SELF=${BASH_SOURCE[0]}
 
 usage() {
@@ -41,10 +45,13 @@ grind.sh -- an unattended loop whose only memory is one append-only journal.
 
   grind.sh run    --journal J --check CMD --prompt-file F [--gate CMD] [--runner R]
                   [--model M] [--max-iters N] [--sleep S] [--stall-after K]
-                  [--notify CMD|none] [--notify-to SESSION]
+                  [--notify CMD|none] [--notify-to SESSION] [--wait-alert N]
                   default: agent-msg to the launching session (or --notify-to), plus herdr if
                   installed; CMD replaces it and gets RALPH_STATE, RALPH_EXIT, RALPH_JOURNAL.
                   A failed notification never changes the exit code.
+                  --wait-alert N announces every Nth CONSECUTIVE wait through that same channel
+                  without ending the run (default 6, 0 disables); the command also gets
+                  RALPH_WAITS and RALPH_WHY, the gate's last output line.
   grind.sh append --journal J '{"kind":"progress","key":"..."}'
   grind.sh floors --journal J
   grind.sh status --journal J
@@ -281,30 +288,58 @@ EOF
 # --notify none silences it. The target is captured at launch, since a detached loop outlives the
 # environment it was started from. Peeled off here so the loop's terminal returns stay the single
 # source of the outcome.
+#
+# The channel is parsed by run_loop rather than peeled off here, because a wait that has gone on too
+# long has to reach the same target while the run is still going -- a notifier the loop cannot see is
+# a notifier that only ever speaks after the fact. run_loop leaves it in NOTIFY/NOTIFY_TO, and this
+# function still owns the terminal announcement, so the loop's returns stay the source of the outcome.
+NOTIFY= NOTIFY_TO= NOTIFY_JOURNAL=
+
 cmd_run() {
-  local notify= notify_to=${CLAUDE_CODE_SESSION_ID:-} journal= rc=0
-  local -a pass=()
-  while [ $# -gt 0 ]; do
-    case "$1" in
-      --notify)    notify=${2:?--notify needs a value};       shift 2 ;;
-      --notify-to) notify_to=${2:?--notify-to needs a value}; shift 2 ;;
-      --journal)   journal=${2:-}; pass+=("$1" "${2:-}");     shift 2 ;;
-      *)           pass+=("$1"); shift ;;
-    esac
-  done
-  run_loop "${pass[@]}" || rc=$?
+  local rc=0
+  NOTIFY= NOTIFY_TO=${CLAUDE_CODE_SESSION_ID:-} NOTIFY_JOURNAL=
+  run_loop "$@" || rc=$?
   local state
   case "$rc" in
     0) state=done ;; 3) state=stalled ;; 4) state=budget ;; 5) state=stopped ;;
     *) return "$rc" ;;
   esac
-  export RALPH_STATE=$state RALPH_EXIT=$rc RALPH_JOURNAL=$journal
-  case "$notify" in
+  export RALPH_STATE=$state RALPH_EXIT=$rc RALPH_JOURNAL=$NOTIFY_JOURNAL
+  case "$NOTIFY" in
     none) ;;
-    '')   notify_default "$notify_to" ;;
-    *)    bash -c "$notify" </dev/null || warn "--notify exited $?; the run's own verdict stands" ;;
+    '')   notify_default "$NOTIFY_TO" ;;
+    *)    bash -c "$NOTIFY" </dev/null || warn "--notify exited $?; the run's own verdict stands" ;;
   esac
   return "$rc"
+}
+
+# A gate that has been shut for N passes in a row looks exactly like legitimate waiting from outside,
+# and that is the whole defect: the run knows, and says so, without ending. Fired from inside the loop
+# through the SAME channel as the ending, so an operator who configured one target hears both.
+# A failure here is warned about and swallowed, for the same reason the terminal notification's is.
+notify_waiting() {
+  local waits=$1 why=$2 j=$3
+  case "$NOTIFY" in
+    none) return 0 ;;
+    '')
+      if command -v agent-msg >/dev/null 2>&1; then
+        if [ -n "$NOTIFY_TO" ]; then
+          agent-msg send "$NOTIFY_TO" \
+            "grind loop waiting: $waits consecutive gate waits, still running. Why: ${why:-(the gate printed nothing)}. Journal $j" \
+            </dev/null || warn "agent-msg to $NOTIFY_TO failed; the run continues"
+        else
+          warn "no session to notify about $waits consecutive waits: launch from a Claude session or pass --notify-to"
+        fi
+      fi
+      if command -v herdr >/dev/null 2>&1; then
+        herdr notification show "grind: waiting ($waits consecutive)" --body "${why:-the gate printed nothing}" \
+          </dev/null >/dev/null 2>&1 || warn "herdr notification failed"
+      fi ;;
+    *)
+      RALPH_STATE=waiting RALPH_WAITS=$waits RALPH_WHY=$why RALPH_JOURNAL=$j \
+        bash -c "$NOTIFY" </dev/null || warn "--notify exited $? on a wait alert; the run continues" ;;
+  esac
+  return 0
 }
 
 notify_default() {
@@ -327,9 +362,12 @@ notify_default() {
 
 run_loop() {
   local journal= check= gate= promptfile= model= runner=claude-code
-  local max_iters=0 sleep_s=60 stall_after=0
+  local max_iters=0 sleep_s=60 stall_after=0 wait_alert=6
   while [ $# -gt 0 ]; do
     case "$1" in
+      --notify)      NOTIFY=${2:?--notify needs a value};           shift 2 ;;
+      --notify-to)   NOTIFY_TO=${2:?--notify-to needs a value};     shift 2 ;;
+      --wait-alert)  want_int --wait-alert "${2:-}"; wait_alert=$2; shift 2 ;;
       --journal)     journal=${2:?--journal needs a value};         shift 2 ;;
       --check)       check=${2:?--check needs a value};             shift 2 ;;
       --gate)        gate=${2:?--gate needs a value};               shift 2 ;;
@@ -342,6 +380,7 @@ run_loop() {
       *) refuse "run: unknown argument: $1" ;;
     esac
   done
+  NOTIFY_JOURNAL=$journal
   [ -n "$journal" ]    || refuse "run: --journal is required"
   [ -n "$check" ]      || refuse "run: --check is required; it is the only authority on whether the goal is met"
   [ -n "$promptfile" ] || refuse "run: --prompt-file is required"
@@ -370,7 +409,7 @@ run_loop() {
   # tell that from a crash. One record makes the journal honest about how the run ended.
   trap 'journal_append "$journal" "{\"kind\":\"stopped\",\"ts\":\"$(now)\",\"why\":\"signal\"}"; exit 5' INT TERM
 
-  local passes=0 i rc prompt
+  local passes=0 i rc prompt waits=0 gate_out= gate_rc why=
   local -a cmd
   while :; do
     passes=$((passes + 1))
@@ -402,11 +441,31 @@ run_loop() {
 
     # 2. The supervisor. While the gate is red there is no decision to make, so no model call is
     #    spent -- this is the difference between a loop that costs a fortune and one that does not.
-    if [ -n "$gate" ] && ! bash -c "$gate"; then
-      journal_append "$journal" "{\"kind\":\"wait\",\"pass\":$passes,\"ts\":\"$(now)\"}"
-      [ "$sleep_s" -gt 0 ] && sleep "$sleep_s"
-      continue
+    #    The gate's output is CAPTURED (stdout and stderr both -- a gate that explains itself usually
+    #    does so on stderr) and its last non-empty line is recorded as the wait's `why`, cut to
+    #    $WHY_MAX bytes so one chatty gate can never push a record over the single-write bound. It is
+    #    still echoed on, because an operator watching the terminal must not lose it to this capture.
+    #    The line is arbitrary text owned by whoever wrote the gate, so it goes into the record
+    #    through jq --arg and never through string concatenation.
+    if [ -n "$gate" ]; then
+      gate_out=$(bash -c "$gate" 2>&1); gate_rc=$?
+      [ -n "$gate_out" ] && printf '%s\n' "$gate_out" >&2
+      if [ "$gate_rc" -ne 0 ]; then
+        why=$(printf '%s\n' "$gate_out" | grep -v '^[[:space:]]*$' | tail -n 1 | cut -c"1-$WHY_MAX")
+        journal_append "$journal" "$(jq -cn --argjson pass "$passes" --arg ts "$(now)" --arg why "$why" \
+          '{kind:"wait",pass:$pass,ts:$ts,why:$why}')"
+        waits=$((waits + 1))
+        # Every Nth wait, not just the Nth: a gate stuck shut for a week is worth saying twice.
+        if [ "$wait_alert" -gt 0 ] && [ "$((waits % wait_alert))" -eq 0 ]; then
+          notify_waiting "$waits" "$why" "$journal"
+        fi
+        [ "$sleep_s" -gt 0 ] && sleep "$sleep_s"
+        continue
+      fi
     fi
+    # The streak counts CONSECUTIVE waits: a pass that got past the gate is the end of one, whatever
+    # it goes on to do.
+    waits=0
 
     # 3. Checked before the call, not after, so a resumed run that is already stalled spends nothing.
     if [ "$stall_after" -gt 0 ] && [ "$SCAN_STALL" -ge "$stall_after" ]; then
