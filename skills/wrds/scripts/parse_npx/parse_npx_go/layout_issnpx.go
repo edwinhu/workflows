@@ -6940,6 +6940,15 @@ var issRegistrantRenames = map[string]map[string]string{
 		// Global Blue Chip Portfolio` prints its own separate, `GLOB`-bearing
 		// heading in the same filing, so the abbreviation is unambiguous.
 		"svs ii scud blue chip port": "DWS Blue Chip VIP",
+		// `Scudder Global Blue Chip Portfolio -> DWS Global Thematic VIP` row
+		// of the same Exhibit (a)(25) to 485BPOS 0000088053-06-000476.txt,
+		// effective 2006-02-06; the successor is S000006276, this CIK's own
+		// 20060630 dictionary declaration. The 2004 filing's ProxyEdge banner
+		// abbreviates the old name as `SVS II SCUD GLOB BLUE CHIP` (`SCUD`
+		// for Scudder, `GLOB` for Global). Distinct from the sibling
+		// `SVS II SCUD BLUE CHIP PORT -> DWS Blue Chip VIP` entry above,
+		// which is a different fund.
+		"svs ii scud glob blue chip": "DWS Global Thematic VIP",
 	},
 	"0001119720": {
 		// `Sm/Mid Cap Equity` abbreviates the declared `Small Mid Cap
