@@ -4093,6 +4093,20 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 			return banner, d
 		}
 	}
+	// The heading abbreviates its OWN trailing type word: `Real Est Sec Port`
+	// for `Real Estate Securities Portfolio` (Scudder Investments VIT Funds
+	// 2004, 102 rows, whose dictionary spells the fund `DWS RREEF Real Estate
+	// Securities VIP`). The rung above appends the registrant's shared suffix
+	// only where the heading carries no type word at all, and a heading printing
+	// `Port` carries one it never spells out, so the suffix is never reached.
+	// The short word is DROPPED, exactly as issDropTypeWord drops the spelled
+	// one, and the stem goes back through the whole chain -- an ambiguous stem
+	// still refuses.
+	if stem, ok := issDropAbbrevTypeWord(key); ok {
+		if _, d := issResolveFund(ix, stem); d != nil {
+			return banner, d
+		}
+	}
 	// The heading spells the declared name's trailing words as an ACRONYM:
 	// `BB&T MID CAP GROWTH VIF` for a declared `BB&T MID CAP GROWTH VARIABLE
 	// INSURANCE FUND` (S000012132, 487 rows; 2,140 rows in that filing carry a
@@ -7579,6 +7593,29 @@ func issDropTypeWord(key string) (string, bool) {
 	switch f[len(f)-1] {
 	case "fund", "portfolio", "trust", "account", "series":
 		return strings.Join(f[:len(f)-1], " "), true
+	}
+	return key, false
+}
+
+// issDropAbbrevTypeWord removes a trailing type word the heading prints SHORT:
+// `Port` for `Portfolio`, `Ser` for `Series`. Only a STRICT prefix of one of the
+// type words issDropTypeWord knows counts, three characters at least, so a token
+// that merely shares a letter with one is left alone and a token that IS a type
+// word is left to issDropTypeWord itself. Two tokens must remain, so a heading
+// is never reduced to one word.
+func issDropAbbrevTypeWord(key string) (string, bool) {
+	f := strings.Fields(key)
+	if len(f) < 3 {
+		return key, false
+	}
+	last := f[len(f)-1]
+	if len(last) < 3 || issTypeWord(last) {
+		return key, false
+	}
+	for _, tw := range []string{"fund", "portfolio", "trust", "account", "series"} {
+		if len(last) < len(tw) && strings.HasPrefix(tw, last) {
+			return strings.Join(f[:len(f)-1], " "), true
+		}
 	}
 	return key, false
 }
