@@ -173,7 +173,7 @@ describe('grind.sh — floors are an exclusion list, delivered to every later pr
         `n=$(ls ${promptDir} | wc -l)`,
         `prompt=""; while [ $# -gt 0 ]; do [ "$1" = "-p" ] && { prompt="$2"; break; }; shift; done`,
         `printf '%s' "$prompt" > ${promptDir}/$n.txt`,
-        `j=$(printf '%s' "$prompt" | sed -n 's/^RALPH_JOURNAL: //p' | head -1)`,
+        `j=$(printf '%s' "$prompt" | sed -n 's/^GRIND_JOURNAL: //p' | head -1)`,
         `[ "$n" = "0" ] && bash ${GRIND} append --journal "$j" '{"kind":"floor","key":"CIK-1081400","why":"declared nowhere"}'`,
         `exit 0`,
       ].join('\n'),
@@ -198,11 +198,11 @@ describe('grind.sh — floors are an exclusion list, delivered to every later pr
 
     // Every iteration after the one that filed it is handed the key, so it is never re-attempted.
     const second = readFileSync(join(promptDir, '1.txt'), 'utf8')
-    expect(second).toContain('RALPH_FLOORS:')
+    expect(second).toContain('GRIND_FLOORS:')
     expect(second).toContain('CIK-1081400')
 
     // And the prompt carries the journal path, which is the agent's only write channel.
-    expect(second).toContain(`RALPH_JOURNAL: ${journal}`)
+    expect(second).toContain(`GRIND_JOURNAL: ${journal}`)
   })
 })
 

@@ -5,7 +5,7 @@
  * Two ways round it survived, both found by the amnesia-safety lens as residue:
  *
  *  1. `cmd_stop` writes the same record through `journal_append` directly, and every iteration's
- *     prompt prints `RALPH_SH` — the absolute path to the script that owns the stop channel. An
+ *     prompt prints `GRIND_SH` — the absolute path to the script that owns the stop channel. An
  *     iteration that reads SKILL.md, sees `grind.sh stop`, and concludes the task looks impossible
  *     ends a run the operator started.
  *  2. `status` reports the run's outcome from the POSITIONAL last record. The agent can still append
@@ -74,15 +74,15 @@ describe('an iteration cannot end the run with the documented stop command', () 
     const check = script(d, 'check.sh', 'exit 1')
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    // Iteration 1 reads the prompt, finds RALPH_SH and RALPH_JOURNAL, and runs the stop command it
+    // Iteration 1 reads the prompt, finds GRIND_SH and GRIND_JOURNAL, and runs the stop command it
     // saw documented — the good-faith mistake, not an attack.
     const runner = script(
       d,
       'runner.sh',
       [
         `prompt=""; while [ $# -gt 0 ]; do [ "$1" = "-p" ] && { prompt="$2"; break; }; shift; done`,
-        `j=$(printf '%s' "$prompt" | sed -n 's/^RALPH_JOURNAL: //p' | head -1)`,
-        `s=$(printf '%s' "$prompt" | sed -n 's/^RALPH_SH: //p' | head -1)`,
+        `j=$(printf '%s' "$prompt" | sed -n 's/^GRIND_JOURNAL: //p' | head -1)`,
+        `s=$(printf '%s' "$prompt" | sed -n 's/^GRIND_SH: //p' | head -1)`,
         `[ -n "$s" ] || s=${GRIND}`,
         `bash "$s" stop --journal "$j" --why 'this looks impossible' >>${join(d, 'stop.out')} 2>&1 || true`,
         `exit 0`,

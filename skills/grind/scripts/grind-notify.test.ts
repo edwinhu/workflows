@@ -8,9 +8,9 @@
  * --notify-to), plus a herdr popup only when herdr is on PATH. --notify CMD replaces the default,
  * and --notify none turns it off. A custom command is handed the outcome in the environment:
  *
- *   RALPH_STATE    done | stalled | budget | stopped
- *   RALPH_EXIT     the loop's exit code
- *   RALPH_JOURNAL  the journal path, so the notifier can quote a figure from it
+ *   GRIND_STATE    done | stalled | budget | stopped
+ *   GRIND_EXIT     the loop's exit code
+ *   GRIND_JOURNAL  the journal path, so the notifier can quote a figure from it
  *
  * It fires on EVERY terminal state, not just success. A stall at 3am is the one you most want to
  * hear about, because it means the loop stopped early with the goal unmet.
@@ -47,7 +47,7 @@ function notifier(dir: string): { path: string; out: string } {
   const path = script(
     dir,
     'notify.sh',
-    `printf '%s %s %s\\n' "$RALPH_STATE" "$RALPH_EXIT" "$RALPH_JOURNAL" > ${out}`,
+    `printf '%s %s %s\\n' "$GRIND_STATE" "$GRIND_EXIT" "$GRIND_JOURNAL" > ${out}`,
   )
   return { path, out }
 }

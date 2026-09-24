@@ -47,11 +47,11 @@ grind.sh -- an unattended loop whose only memory is one append-only journal.
                   [--model M] [--max-iters N] [--sleep S] [--stall-after K]
                   [--notify CMD|none] [--notify-to SESSION] [--wait-alert N]
                   default: agent-msg to the launching session (or --notify-to), plus herdr if
-                  installed; CMD replaces it and gets RALPH_STATE, RALPH_EXIT, RALPH_JOURNAL.
+                  installed; CMD replaces it and gets GRIND_STATE, GRIND_EXIT, GRIND_JOURNAL.
                   A failed notification never changes the exit code.
                   --wait-alert N announces every Nth CONSECUTIVE wait through that same channel
                   without ending the run (default 6, 0 disables); the command also gets
-                  RALPH_WAITS and RALPH_WHY, the gate's last output line.
+                  GRIND_WAITS and GRIND_WHY, the gate's last output line.
   grind.sh append --journal J '{"kind":"progress","key":"..."}'
   grind.sh floors --journal J
   grind.sh status --journal J
@@ -251,19 +251,19 @@ scan_journal() {
 # previous iteration is already in hand.
 build_prompt() {
   local body=$1 j=$2 i=$3 n
-  printf 'RALPH_JOURNAL: %s\n' "$j"
-  printf 'RALPH_SH: %s\n' "$SELF"
-  printf 'RALPH_ITER: %s\n' "$i"
+  printf 'GRIND_JOURNAL: %s\n' "$j"
+  printf 'GRIND_SH: %s\n' "$SELF"
+  printf 'GRIND_ITER: %s\n' "$i"
   if [ "${#FLOOR_KEYS[@]}" -eq 0 ]; then
-    printf 'RALPH_FLOORS: none recorded yet.\n'
+    printf 'GRIND_FLOORS: none recorded yet.\n'
   else
-    printf 'RALPH_FLOORS: these keys are CLOSED. Do NOT re-attempt, re-diagnose or re-open them.\n'
+    printf 'GRIND_FLOORS: these keys are CLOSED. Do NOT re-attempt, re-diagnose or re-open them.\n'
     for n in "${!FLOOR_KEYS[@]}"; do
       printf '  %s\t%s\n' "${FLOOR_KEYS[$n]}" "${FLOOR_WHY[$n]}"
     done
   fi
   cat <<EOF
-RALPH_PROTOCOL: the journal above is your ONLY write channel to this loop.
+GRIND_PROTOCOL: the journal above is your ONLY write channel to this loop.
   $SELF append --journal $j '{"kind":"progress","key":"...","note":"..."}'
   $SELF append --journal $j '{"kind":"floor","key":"...","why":"..."}'
 progress = you moved the goal. Iterations that record none are counted consecutively and the loop
@@ -304,7 +304,7 @@ cmd_run() {
     0) state=done ;; 3) state=stalled ;; 4) state=budget ;; 5) state=stopped ;;
     *) return "$rc" ;;
   esac
-  export RALPH_STATE=$state RALPH_EXIT=$rc RALPH_JOURNAL=$NOTIFY_JOURNAL
+  export GRIND_STATE=$state GRIND_EXIT=$rc GRIND_JOURNAL=$NOTIFY_JOURNAL
   case "$NOTIFY" in
     none) ;;
     '')   notify_default "$NOTIFY_TO" ;;
@@ -336,7 +336,7 @@ notify_waiting() {
           </dev/null >/dev/null 2>&1 || warn "herdr notification failed"
       fi ;;
     *)
-      RALPH_STATE=waiting RALPH_WAITS=$waits RALPH_WHY=$why RALPH_JOURNAL=$j \
+      GRIND_STATE=waiting GRIND_WAITS=$waits GRIND_WHY=$why GRIND_JOURNAL=$j \
         bash -c "$NOTIFY" </dev/null || warn "--notify exited $? on a wait alert; the run continues" ;;
   esac
   return 0
@@ -344,17 +344,17 @@ notify_waiting() {
 
 notify_default() {
   local to=$1 last
-  last=$(tail -n 1 -- "$RALPH_JOURNAL" 2>/dev/null | cut -c1-200)
+  last=$(tail -n 1 -- "$GRIND_JOURNAL" 2>/dev/null | cut -c1-200)
   if command -v agent-msg >/dev/null 2>&1; then
     if [ -n "$to" ]; then
-      agent-msg send "$to" "grind loop ended: $RALPH_STATE (exit $RALPH_EXIT). Journal $RALPH_JOURNAL. Status: bash $SELF status --journal $RALPH_JOURNAL" \
+      agent-msg send "$to" "grind loop ended: $GRIND_STATE (exit $GRIND_EXIT). Journal $GRIND_JOURNAL. Status: bash $SELF status --journal $GRIND_JOURNAL" \
         </dev/null || warn "agent-msg to $to failed; the run's own verdict stands"
     else
       warn "no session to notify: launch from a Claude session or pass --notify-to"
     fi
   fi
   if command -v herdr >/dev/null 2>&1; then
-    herdr notification show "grind: $RALPH_STATE (exit $RALPH_EXIT)" --body "$last" --sound done \
+    herdr notification show "grind: $GRIND_STATE (exit $GRIND_EXIT)" --body "$last" --sound done \
       </dev/null >/dev/null 2>&1 || warn "herdr notification failed"
   fi
   return 0
@@ -483,7 +483,7 @@ run_loop() {
     # The marker that tells `stop` it is being run by an iteration rather than by the operator. It
     # is scoped to this one command, so it reaches the runner and everything the runner spawns and
     # nothing else; the operator's own shell never has it, which is why their stop still works.
-    RALPH_ITERATION=$i "${cmd[@]}"
+    GRIND_ITERATION=$i "${cmd[@]}"
     rc=$?
     journal_append "$journal" "{\"kind\":\"iter_end\",\"i\":$i,\"exit\":$rc,\"ts\":\"$(now)\"}"
   done
@@ -593,21 +593,21 @@ cmd_tail() {
 }
 
 # `stop` belongs to the OPERATOR. `append` already refuses kind=stop, but this subcommand writes the
-# same record through journal_append directly, and every prompt prints RALPH_SH -- so an iteration
+# same record through journal_append directly, and every prompt prints GRIND_SH -- so an iteration
 # that reads the skill, sees the documented command and concludes the task looks impossible could end
 # a run it did not start. `run` marks the environment it invokes the runner in; a shell carrying that
 # marker is inside an iteration and is refused here, loudly, because a guard that fails silently
 # teaches the next amnesiac iteration nothing.
 #
 # THE LIMIT, STATED RATHER THAN CHASED: the threat is an uninformed iteration, not an adversary. An
-# iteration runs bash. It can unset RALPH_ITERATION, and it can kill the pid it reads out of the
+# iteration runs bash. It can unset GRIND_ITERATION, and it can kill the pid it reads out of the
 # journal. No in-band check can prevent either, and pretending otherwise would be the defect. This
 # closes the documented path and names the reason; it is not a guarantee that the loop cannot be
 # stopped, and SKILL.md says so.
 cmd_stop() {
   local journal= why=requested
-  if [ -n "${RALPH_ITERATION:-}" ]; then
-    refuse "stop: refused: this shell is inside iteration ${RALPH_ITERATION} of a run, and stop is the OPERATOR's command. An iteration reports what it FOUND through 'append'; whether the run ends is the check command's exit code, never an iteration's opinion that the work looks impossible."
+  if [ -n "${GRIND_ITERATION:-}" ]; then
+    refuse "stop: refused: this shell is inside iteration ${GRIND_ITERATION} of a run, and stop is the OPERATOR's command. An iteration reports what it FOUND through 'append'; whether the run ends is the check command's exit code, never an iteration's opinion that the work looks impossible."
   fi
   while [ $# -gt 0 ]; do
     case "$1" in

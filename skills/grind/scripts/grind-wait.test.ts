@@ -105,7 +105,7 @@ function counting(dir: string): { path: string; out: string; lines: () => string
   const path = script(
     dir,
     'notify.sh',
-    `printf '%s|%s|%s\\n' "$RALPH_STATE" "$RALPH_WAITS" "$RALPH_WHY" >> ${out}`,
+    `printf '%s|%s|%s\\n' "$GRIND_STATE" "$GRIND_WAITS" "$GRIND_WHY" >> ${out}`,
   )
   return {
     path,
