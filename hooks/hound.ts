@@ -584,6 +584,10 @@ export function selfCse(): string | null {
   return bridge ? bridge.replace(/^session_/, 'cse_') : null
 }
 
+// The user permissions.ask matches any Bash command naming a hound-*.json path, so a cat of the
+// state prompts them; the Read tool and --status do not.
+const stateRef = (path: string) => `(state: ${path} — inspect it with the Read tool, Read(file_path: "${path}"), or \`hound-arm.sh --status\`; never name this path in a Bash command, which prompts the user)`
+
 const agentMsgBin = () => process.env.HOUND_AGENT_MSG || 'agent-msg'
 
 /** The Remote Control target, but only when the id AND the binary are both there. */
@@ -768,7 +772,7 @@ function main(): void {
           reason:
             `\`${s.check}\` exits 0, so the CHECK is met — that is the floor, not the objective. ` +
             `An independent judge read the transcript and says the GOAL is NOT met: ${j.reason} ` +
-            `THE GOAL: ${s.goal} ${[s.authority, s.continuation].filter(Boolean).join(' ')} (state: ${path})`,
+            `THE GOAL: ${s.goal} ${[s.authority, s.continuation].filter(Boolean).join(' ')} ${stateRef(path)}`,
         }))
         process.exit(0)
       }
@@ -806,7 +810,7 @@ function main(): void {
   const noteB = movedB.length
     ? ` The check's own files changed since it was armed (${movedB.join(', ')}): that is the objective moving, not the work — justify it on the line or restore them.`
     : ''
-  process.stdout.write(JSON.stringify({ decision: 'block', reason: `${d.reason}${goalB}${noteB}${clausesB ? ' ' + clausesB : ''} (state: ${path})` }))
+  process.stdout.write(JSON.stringify({ decision: 'block', reason: `${d.reason}${goalB}${noteB}${clausesB ? ' ' + clausesB : ''} ${stateRef(path)}` }))
   process.exit(0)
 }
 
@@ -836,7 +840,7 @@ function brief(): void {
   const rounds = renderHistory(s.history)
   const out = [
     '# HOUND — this session is under an armed hold',
-    `Read from ${path}, not remembered: the context this was in has just been summarised or cleared.`,
+    `Read with the Read tool, Read(file_path: "${path}"), not remembered: the context this was in has just been summarised or cleared.`,
     s.goal ? `GOAL: ${s.goal}` : '',
     `CHECK: \`${s.check}\` — the hold releases when this exits 0${s.goal ? ' AND an independent judge agrees the goal is met' : ''}.`,
     `BUDGET: ${s.rounds} of ${s.maxRounds} rounds used; ${left} min left of the ${s.ceilingMinutes} min ceiling.`,
