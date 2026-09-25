@@ -7021,7 +7021,23 @@ func issCoverRenameAliases(ix *issSeriesIndex, lines []string) {
 // neither has a successor in this CIK's own dictionary at any vintage, and a
 // corpus-wide grep of cik_series.tsv for either name returns only unrelated
 // CIKs.
+//
+// AXP Managed Series, Inc. (CIK 0000755221) prints exactly one fund-section
+// banner, `AXP MANAGED ALLOCATION FUND`, across both its pre-2006 N-PX
+// filings, and the registrant's own later filing records the rename:
+// 000075/755221/0001068800-07-000984.txt lines 7014-7016, item (5) of a
+// numbered list of name changes, reads "Effective Oct. 1, 2005, ... Managed
+// Allocation Fund changed its name to Strategic Allocation Fund", while item
+// (3) of the same list records the complex-wide rebrand -- AXP was replaced
+// with RiverSource in the registrant name. Those two substitutions carry the
+// printed banner to `RiverSource Strategic Allocation Fund`, this CIK's own
+// S000003404 declaration at vintage 20060630. Neither the old name nor any
+// distinctive word of it reaches the successor by a name rung, so the
+// resolution is registrant-scoped here.
 var issRegistrantRenames = map[string]map[string]string{
+	"0000755221": {
+		"axp managed allocation fund": "RiverSource Strategic Allocation Fund",
+	},
 	"0000702340": {
 		"growth equity fund": "Penn Series Growth Stock Fund",
 	},
