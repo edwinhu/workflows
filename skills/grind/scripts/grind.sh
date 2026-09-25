@@ -45,6 +45,9 @@ grind.sh -- an unattended loop whose only memory is one append-only journal.
 
   grind.sh run    --journal J --check CMD --prompt-file F [--gate CMD] [--runner R]
                   [--model M] [--max-iters N] [--sleep S] [--stall-after K]
+                  [--exhaust-after N]
+                  --exhaust-after N stops offering a subject after N attempts with no progress
+                  since its last progress or reopen record (default 3, 0 disables).
                   [--notify CMD|none] [--notify-to SESSION] [--wait-alert N] [--push]
                   default: agent-msg to the launching session (or --notify-to), plus herdr if
                   installed; CMD replaces it and gets GRIND_STATE, GRIND_EXIT, GRIND_JOURNAL.
@@ -114,7 +117,7 @@ journal_append() {
 # uninformed: it reconstructs the record shape from its prompt and gets a field wrong, or decides the
 # task looks impossible and says so in the only channel it has. Both are reachable, and the loop
 # survives neither if the record lands.
-AGENT_KINDS='progress floor attempt note'
+AGENT_KINDS='progress floor attempt note reopen'
 # Every kind the agent may not write, and -- the same fact read the other way -- every kind `status`
 # will believe about how the run ended. One list, because a second one could disagree with it.
 # `stop` is the operator's record and `stopped` is the loop's answer to it; neither is the agent's.
@@ -135,7 +138,7 @@ check_agent_record() {
 
   kind=$(jq -r -s '.[0].kind | if type == "string" then . else "" end' <<<"$rec" 2>/dev/null)
   case "$kind" in
-    progress|floor|attempt|note) ;;
+    progress|floor|attempt|note|reopen) ;;
     *)
       printf 'grind: refused: kind %s is not yours to write; the agent may append [%s], the loop owns [%s]\n' \
         "${kind:-(missing)}" "$AGENT_KINDS" "$LOOP_KINDS" >&2
@@ -151,6 +154,21 @@ check_agent_record() {
     jq -e -s '.[0].key | (type == "string" or type == "number") and (tostring | test("[^[:space:]]"))' \
       >/dev/null 2>&1 <<<"$rec" || {
       printf 'grind: refused: a floor needs a non-empty key; without one the reader drops it and the key is re-diagnosed forever\n' >&2
+      return 2; }
+  fi
+
+  # A reopen is the ONLY thing that puts an exhausted subject back in front of an iteration, so it
+  # has to name what it reopens and what changed. A reopen with neither would reset the count on the
+  # strength of nothing, which is how a subject that is genuinely dead gets re-attempted forever --
+  # the same non-convergence a keyless floor causes, read from the other side.
+  if [ "$kind" = reopen ]; then
+    jq -e -s '.[0].subject | (type == "string" or type == "number") and (tostring | test("[^[:space:]]"))' \
+      >/dev/null 2>&1 <<<"$rec" || {
+      printf 'grind: refused: a reopen needs a non-empty subject and a non-empty rerunReason; it resets that subject'"'"'s attempt count, so it must say which subject and what changed\n' >&2
+      return 2; }
+    jq -e -s '.[0].rerunReason | type == "string" and test("[^[:space:]]")' \
+      >/dev/null 2>&1 <<<"$rec" || {
+      printf 'grind: refused: a reopen needs a non-empty rerunReason; reopening a subject without saying what changed re-attempts a dead subject forever\n' >&2
       return 2; }
   fi
   return 0
@@ -187,6 +205,31 @@ JQ_SCAN='
   # agent may legitimately append a progress record after the loop has written done, and a reader
   # that took the final line would report a finished run as still working. Matched exactly against
   # the whitelist, so " done", "Done" and a unicode lookalike are all simply not loop-owned.
+  # Subjects group work on one family across iterations, and their attempt count is DERIVED here for
+  # the same reason the floor set is: a count kept anywhere else could disagree with the journal
+  # about whether a subject is still worth a pass. The count runs from the last progress OR reopen
+  # record on that subject, whichever is later -- both are "something changed, look again". Whether that
+  # count means EXHAUSTED belongs to the caller, because the threshold is a run flag and this scan is
+  # also read by status and floors, which have no flag.
+  | ([$r | to_entries[]
+       | select(.value.subject != null)
+       | {i: .key, kind: (.value.kind | strings // ""), subj: (.value.subject | clean),
+          text: ((.value.note // .value.why // "") | clean)}
+       | select(.subj | test("[^[:space:]]"))
+       | select(.kind == "attempt" or .kind == "progress" or .kind == "reopen")]
+     | group_by(.subj) | map(
+         ([.[] | select(.kind == "progress" or .kind == "reopen") | .i] | last) as $reset
+         | {subj: .[0].subj,
+            touch: (.[-1].i),
+            work: ([.[] | select(.kind == "attempt" or .kind == "progress")] | length),
+            attempts: ([.[] | select(.kind == "attempt")
+                         | select($reset == null or .i > $reset)] | length),
+            progress: ([.[] | select(.kind == "progress")] | length),
+            last: (([.[] | select(.kind == "attempt") | .text] | last // "")[0:($lastmax | tonumber)])})
+     # A note mentioning a subject is steering, not work done on it, so a subject with no attempt and
+     # no progress is not listed. The newest $subjmax survive, oldest first, so a loop that has
+     # touched hundreds of subjects does not grow its own prompt without end.
+     | map(select(.work > 0)) | sort_by(.touch) | .[-($subjmax | tonumber):]) as $subjects
   | ([$r[] | .kind | strings | select(IN($loop[]))] | last) as $lastloop
   | "next_i=\($maxi + 1)",
     "stall=\($stall)",
@@ -195,12 +238,23 @@ JQ_SCAN='
     "last=\(($r | last | .kind? // "") | clean)",
     "loop_last=\(($lastloop // "") | clean)",
     ($floors[] | "floor=\(.key)\t\(.why)"),
-    ($notes[] | "note=\(.key)\t\(.note)")
+    ($notes[] | "note=\(.key)\t\(.note)"),
+    ($subjects[] | "subject=\(.subj)\t\(.attempts)\t\(.progress)\t\(.last)")
 '
 
 # How many operator notes reach a prompt. The newest ones, because a note appended today corrects
 # the one appended last week rather than queueing behind it.
 NOTE_MAX=10
+
+# How many subjects reach a prompt, and how much of one subject's newest attempt is quoted. The
+# newest subjects, because the block is a working set rather than a history -- the journal is the
+# history. The excerpt is cut so one chatty attempt cannot crowd out twenty-nine other subjects.
+SUBJECT_MAX=30
+SUBJECT_LAST_MAX=200
+
+# Attempts on ONE subject since its last reset before the prompt stops offering it. 0 disables the
+# feature outright: every subject stays open however many passes it has cost.
+EXHAUST_AFTER=3
 
 # A sentinel, not a plausible value. A failed scan has to leave behind something the guard at the
 # bottom of scan_journal can SEE: initialised to the literal 1, as it was, the guard could never fire
@@ -209,12 +263,14 @@ NOTE_MAX=10
 SCAN_NEXT_I=- SCAN_STALL=0 SCAN_STOPS=0 SCAN_PID= SCAN_LAST= SCAN_LOOP_LAST=
 FLOOR_KEYS=() FLOOR_WHY=()
 NOTE_KEYS=() NOTE_TEXT=()
+SUBJ_KEYS=() SUBJ_ATTEMPTS=() SUBJ_PROGRESS=() SUBJ_LAST=()
 
 scan_journal() {
-  local j=$1 out rc line k v
+  local j=$1 out rc line k v sj sa sp sl
   SCAN_NEXT_I=- SCAN_STALL=0 SCAN_STOPS=0 SCAN_PID= SCAN_LAST= SCAN_LOOP_LAST=
   FLOOR_KEYS=() FLOOR_WHY=()
   NOTE_KEYS=() NOTE_TEXT=()
+  SUBJ_KEYS=() SUBJ_ATTEMPTS=() SUBJ_PROGRESS=() SUBJ_LAST=()
   # Absent or empty is a genuinely virgin journal: there is nothing to read and numbering starts at
   # 1. This is the ONLY path that invents a counter, and it is settled before jq is ever asked.
   if [ ! -s "$j" ]; then SCAN_NEXT_I=1; return 0; fi
@@ -226,7 +282,8 @@ scan_journal() {
   # The journal is named as an ARGUMENT, not redirected onto stdin: a shell redirect that fails
   # never runs jq at all, so there is no exit status of jq's to read. `--` for the same reason the
   # rest of this file uses it -- a path may begin with a dash.
-  out=$(jq -Rrn --arg own "$LOOP_KINDS" --arg notemax "$NOTE_MAX" "$JQ_SCAN" -- "$j" 2>/dev/null); rc=$?
+  out=$(jq -Rrn --arg own "$LOOP_KINDS" --arg notemax "$NOTE_MAX" \
+    --arg subjmax "$SUBJECT_MAX" --arg lastmax "$SUBJECT_LAST_MAX" "$JQ_SCAN" -- "$j" 2>/dev/null); rc=$?
   if [ "$rc" -ne 0 ]; then
     warn "journal scan of $j failed (jq exit $rc); refusing to reset state"
     return 1
@@ -253,6 +310,13 @@ scan_journal() {
         else
           NOTE_KEYS+=("$v"); NOTE_TEXT+=("")
         fi ;;
+      # Four tab-separated fields, always emitted together, so a missing one means a scan this reader
+      # does not understand rather than a subject with no attempts. `clean` has already flattened
+      # tabs out of the subject and the excerpt, so the split cannot land mid-field.
+      subject)
+        IFS=$'\t' read -r sj sa sp sl <<<"$v"
+        SUBJ_KEYS+=("$sj"); SUBJ_ATTEMPTS+=("${sa:-0}")
+        SUBJ_PROGRESS+=("${sp:-0}"); SUBJ_LAST+=("${sl:-}") ;;
     esac
   done <<<"$out"
   # The second half of the same rule, for the case where jq exits 0 having emitted no counter: the
@@ -272,7 +336,7 @@ scan_journal() {
 # are closed. The floors are read at the TOP of the pass that builds this, so a key filed by the
 # previous iteration is already in hand.
 build_prompt() {
-  local body=$1 j=$2 i=$3 n
+  local body=$1 j=$2 i=$3 n state
   printf 'GRIND_JOURNAL: %s\n' "$j"
   printf 'GRIND_SH: %s\n' "$SELF"
   printf 'GRIND_ITER: %s\n' "$i"
@@ -282,6 +346,19 @@ build_prompt() {
     printf 'GRIND_FLOORS: these keys are CLOSED. Do NOT re-attempt, re-diagnose or re-open them.\n'
     for n in "${!FLOOR_KEYS[@]}"; do
       printf '  %s\t%s\n' "${FLOOR_KEYS[$n]}" "${FLOOR_WHY[$n]}"
+    done
+  fi
+  # What earlier iterations already tried, grouped by subject. Without it an attempt record is
+  # write-only: the next amnesiac pass re-diagnoses the same family under a different key.
+  if [ "${#SUBJ_KEYS[@]}" -eq 0 ]; then
+    printf 'GRIND_SUBJECTS: none.\n'
+  else
+    printf 'GRIND_SUBJECTS: work so far by subject. Exhausted subjects are excluded like floors: do not pick one unless you first append a reopen record naming what changed.\n'
+    for n in "${!SUBJ_KEYS[@]}"; do
+      state=open
+      [ "$EXHAUST_AFTER" -gt 0 ] && [ "${SUBJ_ATTEMPTS[$n]}" -ge "$EXHAUST_AFTER" ] && state=EXHAUSTED
+      printf '  %s\tattempts=%s\tprogress=%s\t%s\tlast=%s\n' \
+        "${SUBJ_KEYS[$n]}" "${SUBJ_ATTEMPTS[$n]}" "${SUBJ_PROGRESS[$n]}" "$state" "${SUBJ_LAST[$n]}"
     done
   fi
   # The operator's steering channel. An iteration never opens the journal file, so a note that is
@@ -302,6 +379,11 @@ progress = you moved the goal. Iterations that record none are counted consecuti
 stops after --stall-after of them, so record one whenever you actually moved -- filing a floor
 counts, but append the progress record too. floor = this key is dead for good; every later
 iteration is handed it as an exclusion, which is the only reason this loop converges.
+Any record may carry "subject": the family the work is about (a CIK, a shard, a fixture), which is
+what groups your attempt with the earlier ones in GRIND_SUBJECTS -- use the SAME subject string an
+existing line already uses rather than inventing a new one. To pick a subject listed EXHAUSTED,
+first append {"kind":"reopen","subject":"...","rerunReason":"what changed"}; a reopen without both
+of those is refused.
 One JSON object on one line, under $ATOMIC_BOUND bytes, or the append is refused and nothing is
 written. kind must be one of [$AGENT_KINDS], and a floor without a non-empty key is refused.
 The loop owns [$LOOP_KINDS] and appending any of those is refused: you report what you FOUND, never
@@ -424,6 +506,7 @@ run_loop() {
       --max-iters)   want_int --max-iters "${2:-}";   max_iters=$2;   shift 2 ;;
       --sleep)       want_int --sleep "${2:-}";       sleep_s=$2;     shift 2 ;;
       --stall-after) want_int --stall-after "${2:-}"; stall_after=$2; shift 2 ;;
+      --exhaust-after) want_int --exhaust-after "${2:-}"; EXHAUST_AFTER=$2; shift 2 ;;
       *) refuse "run: unknown argument: $1" ;;
     esac
   done

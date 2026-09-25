@@ -117,18 +117,31 @@ comes from `start`. Two files that can disagree about one fact are a bug generat
 | `wait` | the loop | the gate was red, so the pass cost nothing |
 | `progress` | the agent | the goal moved; this is what `--stall-after` counts back from |
 | `floor` | the agent | this key is dead for good, and every later prompt is handed it |
+| `reopen` | the agent | an exhausted subject is worth another pass, and `rerunReason` says what changed |
 | `done` | the loop | `--check` exited 0 — the only record that means success |
 | `stalled` / `budget` | the loop | `--stall-after` passes with no progress; `--max-iters` spent |
 | `stop` / `stopped` | the operator / the loop | a stop was requested; the loop honoured it |
 
 That split is enforced, not merely described. The agent may append only `progress`, `floor`,
-`attempt` and `note`: `append` refuses every loop-owned kind with exit 2, so nothing an iteration
+`attempt`, `note` and `reopen`: `append` refuses every loop-owned kind with exit 2, so nothing an iteration
 writes can end a run or report a finish the loop did not compute. A `floor` is refused unless it
 carries a non-empty `key`, because one accepted without a key is dropped by the reader and the loop
 re-diagnoses that family forever.
 
-Every prompt carries `GRIND_JOURNAL`, `GRIND_SH`, `GRIND_ITER`, `GRIND_FLOORS` and `GRIND_NOTES`, so
-an iteration needs nothing from outside itself:
+Any record may also carry a `subject` — the family the work is about, a CIK or a shard rather than a
+free-text key — and that is what groups one iteration's attempt with the earlier ones. Every prompt
+carries a `GRIND_SUBJECTS` block listing each subject's attempts since its last reset, its lifetime
+progress count and an excerpt of its newest attempt, so a fresh iteration can see what has already
+been tried instead of re-diagnosing it under a new key. A subject with `--exhaust-after` attempts
+(default 3, `0` disables) and no progress since is marked EXHAUSTED and is excluded from the
+iteration's choices the way a floor excludes a key. The only way back is a
+`{"kind":"reopen","subject":"...","rerunReason":"what changed"}` record, which resets that subject's
+count and is refused without both a `subject` and a non-empty `rerunReason`; a `progress` record on
+the subject resets it too. Recording is never refused for exhaustion — an `attempt` on an exhausted
+subject still lands, because the journal must not lie about the work that was done.
+
+Every prompt carries `GRIND_JOURNAL`, `GRIND_SH`, `GRIND_ITER`, `GRIND_FLOORS`, `GRIND_SUBJECTS` and
+`GRIND_NOTES`, so an iteration needs nothing from outside itself:
 
 ```bash
 bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh append --journal "$GRIND_JOURNAL" \
