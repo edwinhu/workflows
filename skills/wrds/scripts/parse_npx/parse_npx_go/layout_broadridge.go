@@ -1364,6 +1364,149 @@ func brNumericCodeOrdinals(lines []string, decls []SeriesDecl) map[string]string
 	return out
 }
 
+// brOneWordShortOf reports that got is want with exactly ONE word removed, the
+// removed word being neither the first -- which carries the brand -- nor the
+// last, which carries the type word. Both keys are already normalised. Nothing
+// fuzzy happens here: every other token must agree exactly, in order.
+func brOneWordShortOf(want, got []string) bool {
+	if len(want) != len(got)+1 {
+		return false
+	}
+	p := 0
+	for p < len(got) && want[p] == got[p] {
+		p++
+	}
+	if p < 1 || p > len(want)-2 || issTypeWord(want[p]) {
+		return false
+	}
+	for j := p; j < len(got); j++ {
+		if want[j+1] != got[j] {
+			return false
+		}
+	}
+	return true
+}
+
+// brResidualDeclaredBanner completes, WITHIN ONE FILING AND NEVER ACROSS ONE,
+// the pairing that filing's own header and its own body already all but state:
+// a banner that resolves to nothing, one series the header declares that no
+// banner of this filing claimed, and a banner name that is that declared name
+// with exactly one interior word missing.
+//
+// Alpha Architect ETF Trust (CIK 1592900) declares S000046017 `Alpha Architect
+// International Quantitative Value ETF` and prints its banner with `Value`
+// dropped outright. A partial name never guesses -- `Alpha Architect
+// International Quantitative` is also the declared Momentum sleeve one word
+// short -- so the resolver refuses it, and every row of that section carries no
+// series. What decides it is not the name but the ACCOUNTING: the banners this
+// filing prints claim their declared series one for one, and the pairing is read
+// only from what is left over on both sides.
+//
+// The discipline is the one the rest of this parser keeps -- one hit stamps, two
+// refuse (see issVowelDroppedAbbrev, and lookupSeriesEntry, where a name two
+// series answer to maps to nothing). A banner that is one word short of TWO
+// unclaimed declared names is a choice between two of the registrant's own
+// sleeves, and there is NO tiebreak: nothing is stamped and the banner stays
+// unresolved. An ordinal or nearest-fund reading of the section order would
+// resolve some of those, but series_id is a link key -- a positional guess
+// between two of the registrant's own sleeves mis-attributes ballots silently,
+// and a blank is the cheaper error. That reading was gated REVERT once already
+// (CIK 1064642, the SPDR/streetTRACKS continuation banner) and does not come
+// back here.
+//
+// Scope: the filing's OWN header (decls) and its OWN body, so nothing here can
+// move a vote onto another registrant's fund. A banner the chain already resolves
+// is left exactly as it is; this only ever fills a blank.
+func brResidualDeclaredBanner(lines []string, decls []SeriesDecl, ix *issSeriesIndex) map[string]string {
+	if ix == nil || len(decls) < 2 {
+		return nil
+	}
+	type bannerHit struct {
+		slot string
+		// id is the series the chain already answers for this banner, empty
+		// when it answers nothing.
+		id string
+	}
+	var order []bannerHit
+	claimed := map[string]bool{}
+	seen := map[string]bool{}
+	for i, raw := range lines {
+		// Banner position, the same shape brNumericCodeOrdinals reads:
+		// unindented and drawn over the dashed rule this vintage rules every
+		// section banner with.
+		if raw == "" || raw[0] == ' ' || raw[0] == '\t' {
+			continue
+		}
+		slot := strings.TrimSpace(raw)
+		if slot == "" || seen[slot] || brVoteRowSlot(slot) {
+			continue
+		}
+		j := i + 1
+		for j < len(lines) && strings.TrimSpace(lines[j]) == "" {
+			j++
+		}
+		if j >= len(lines) || !brDashRule(lines[j]) {
+			continue
+		}
+		seen[slot] = true
+		id := ""
+		if _, d := issResolveFund(ix, slot); d != nil {
+			id = d.SeriesID
+		}
+		if id != "" {
+			claimed[id] = true
+		}
+		order = append(order, bannerHit{slot: slot, id: id})
+	}
+
+	var out map[string]string
+	// takenBy carries the banner a declared series was paired with, and an empty
+	// string once a second banner reached it: two banners naming one series is a
+	// refusal for BOTH, not a race the first one wins.
+	takenBy := map[string]string{}
+	for _, b := range order {
+		if b.id != "" {
+			continue
+		}
+		toks := strings.Fields(normalizeSeriesName(b.slot))
+		// Name-shaped only: a registered fund's name carries a type word, and
+		// proposal text and issuer names do not end in one.
+		if len(toks) < 3 || !issTypeWord(toks[len(toks)-1]) {
+			continue
+		}
+		var cand []int
+		for i, d := range decls {
+			if d.SeriesID == "" || claimed[d.SeriesID] {
+				continue
+			}
+			if brOneWordShortOf(strings.Fields(normalizeSeriesName(d.Name)), toks) {
+				cand = append(cand, i)
+			}
+		}
+		pick := -1
+		if len(cand) == 1 {
+			pick = cand[0]
+		}
+		if pick < 0 {
+			continue
+		}
+		id := decls[pick].SeriesID
+		if first, dup := takenBy[id]; dup {
+			if first != "" {
+				delete(out, first)
+			}
+			takenBy[id] = ""
+			continue
+		}
+		takenBy[id] = b.slot
+		if out == nil {
+			out = map[string]string{}
+		}
+		out[b.slot] = id
+	}
+	return out
+}
+
 // parseBroadridge walks the meeting blocks, carrying the current meeting context
 // onto every proposal row it completes.
 //
@@ -1490,6 +1633,9 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 	// Built once per filing, and nil for every filing that prints a fund name
 	// where a fund name belongs; see brNumericCodeOrdinals.
 	codeOrdinal := brNumericCodeOrdinals(lines, meta.SeriesDecls)
+	// Also built once per filing, and nil for every filing whose banners all
+	// answer; see brResidualDeclaredBanner.
+	residual := brResidualDeclaredBanner(lines, meta.SeriesDecls, seriesIx)
 	// The tail of a rule-framed identity block, read whole at its first line;
 	// its remaining label lines must not open blocks of their own.
 	framedUntil := -1
@@ -1687,6 +1833,15 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 			// so the ordinal run is the only identity the document offers.
 			if codeOrdinal != nil && curSeries == "" && curFund != "" {
 				if id, ok := codeOrdinal[curFund]; ok {
+					curSeries = id
+				}
+			}
+
+			// The section may be named by a banner the chain refuses and this
+			// filing's own left-over declaration answers; see
+			// brResidualDeclaredBanner. Fills a blank only.
+			if residual != nil && curSeries == "" && curFund != "" {
+				if id, ok := residual[curFund]; ok {
 					curSeries = id
 				}
 			}
