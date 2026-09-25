@@ -7295,7 +7295,31 @@ func issFundSeparator(line string) (string, bool) {
 	if total < issBannerMinEquals {
 		return "", false
 	}
-	return strings.TrimSpace(line[lead : n-trail]), true
+	name := strings.TrimSpace(line[lead : n-trail])
+	if !issNameLike(name) {
+		// The interior carries no letter or digit, so it is not a fund name under
+		// any grammar -- a single stray glyph where an '=' belongs (Ohio National
+		// Fund 2011 prints seven rules corrupted to '====?====') leaves an
+		// interior of "?". Reading that as a banner NAME renames the open fund to
+		// punctuation and, worse, marks the fund as banner-set, so the next clean
+		// bare rule closes a section the `Fund Name :` label still has open. Fall
+		// through to the bare-rule case: the line is the ordinary issuer divider
+		// its uncorrupted siblings are, and the open fund keeps standing.
+		return "", n >= issBannerMinEquals
+	}
+	return name, true
+}
+
+// issNameLike reports whether a banner interior could be a fund name at all,
+// i.e. whether it carries any letter or digit. Empty and pure-punctuation
+// interiors are not names.
+func issNameLike(s string) bool {
+	for _, r := range s {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) {
+			return true
+		}
+	}
+	return false
 }
 
 // issThinBannerRule reads a rule that spends FEWER than issBannerMinEquals on
