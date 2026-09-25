@@ -515,6 +515,13 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 			meta.ErrorMsg = err.Error()
 			return meta
 		}
+		// A filing that declares itself a later submission of one split report
+		// names its predecessor in a paragraph of its own; that bare accession
+		// number is not an issuer name.
+		priorAcc := priorRelatedAccession(head, h.Accession)
+		if priorAcc != "" {
+			buf = blankRelatedAccession(buf, priorAcc)
+		}
 		parseMeta.ParseMode = mode
 		res := parseText(buf, parseMeta)
 		if res == nil {
@@ -543,9 +550,28 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 				registrantSeries = registrantNoHeadingSeries()
 			}
 		}
+		// The split falls wherever the byte budget ran out, so this document's
+		// body can open inside a fund section whose banner the DECLARED earlier
+		// submission printed and never repeated. Read only when the first row
+		// carries no fund of its own, and spent only on rows before the first
+		// banner this document prints for itself.
+		inheritFund, inheritSeries := "", ""
+		if priorAcc != "" && len(res.Rows) > 0 && res.Rows[0].FundName == "" {
+			inheritFund, inheritSeries = relatedPredecessorFund(fullPath, priorAcc)
+		}
 		for _, r := range res.Rows {
 			if r.Layout == "" {
 				r.Layout = meta.Layout
+			}
+			if inheritFund != "" {
+				if r.FundName != "" {
+					inheritFund = ""
+				} else {
+					r.FundName = inheritFund
+					if r.SeriesID == "" {
+						r.SeriesID = inheritSeries
+					}
+				}
 			}
 			if consolidated != "" && r.SeriesID == "" {
 				r.SeriesID = consolidated
