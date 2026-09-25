@@ -188,6 +188,82 @@ func peWholeCells(run []int) []bool {
 	return out
 }
 
+// peWrapWidth is the least width a line must carry before a run of them reads
+// as a paragraph the vendor wrapped at a fixed column. A fund banner is a name
+// and is printed short; the wrapped proposals that defect here run to sixty
+// characters a line because the column, not the sentence, ends them.
+const peWrapWidth = 40
+
+// peWrapRun is the least number of consecutive lines such a paragraph must
+// carry. Two lines are how this vendor hard-wraps an ordinary cell -- a fund
+// name over `Guinness Atkinson Global` / `Energy Fund`, an issuer over
+// `NOVOLIPETSK` / `STEEL` -- and those are already one cell by their container.
+const peWrapRun = 3
+
+// peWrappedProse reports, for each line, whether it is a CONTINUATION line of a
+// paragraph the vendor wrapped across several containers. Some templates print
+// a long proposal's text as one <div> PER PHYSICAL LINE inside a single <td>
+// (Guinness Atkinson Funds 2012 wraps Canadian Natural's item 18 over seven of
+// them). Each of those divs IS a container, so peCellLines parts them and
+// peWholeCells calls every one of them a cell entire -- the protection those two
+// give a <BR>-wrapped cell cannot reach a cell wrapped this way, because the
+// markup no longer says where the <td> ended.
+//
+// What still says it is the shape of the run: a paragraph broken at a column
+// prints several long lines in a row, and every line after the first opens
+// mid-sentence, on a lower-case word that the line before it did not finish. A
+// heading never opens that way -- the vendor's fund and issuer banners are names
+// standing alone in their own cell -- so a line that does is a fragment of the
+// cell above it, whatever words it happens to carry, and no heading scan may
+// fire on one.
+//
+// Only the continuations are marked, never the run's first line: that line does
+// begin a cell, and a banner the vendor happened to print above a wrapped
+// paragraph is still a banner.
+func peWrappedProse(lines []string, tbl []int, whole []bool) []bool {
+	out := make([]bool, len(lines))
+	for i := 0; i < len(lines); i++ {
+		if !whole[i] || !peWrapLine(lines[i]) {
+			continue
+		}
+		end := i
+		for end+1 < len(lines) && whole[end+1] && tbl[end+1] == tbl[i] &&
+			peWrapContinues(lines[end], lines[end+1]) {
+			end++
+		}
+		if end-i+1 >= peWrapRun {
+			for k := i + 1; k <= end; k++ {
+				out[k] = true
+			}
+		}
+		i = end
+	}
+	return out
+}
+
+// peWrapLine reports a line long enough to have been ended by the column rather
+// than by its own text.
+func peWrapLine(s string) bool {
+	return len([]rune(s)) >= peWrapWidth
+}
+
+// peWrapContinues reports that next carries on the sentence prev broke off: prev
+// ended on a word rather than on a sentence's close, and next opens on a
+// lower-case word rather than on a name. The last line of a wrapped paragraph is
+// short by construction, so it is the only one this admits under peWrapWidth.
+func peWrapContinues(prev, next string) bool {
+	if prev == "" || next == "" {
+		return false
+	}
+	if c := prev[len(prev)-1]; peWordBreak(c) && c != ',' && c != ';' && c != '-' && c != '\'' {
+		return false
+	}
+	if c := next[0]; c < 'a' || c > 'z' {
+		return false
+	}
+	return true
+}
+
 // peCellAt returns the whole text of the cell beginning at line i and the index
 // of its last line. Two Roads 2021 wraps `NOVOLIPETSK` / `STEEL`, `Meeting` /
 // `Type:` and `ExtraOrdinary` / `General Meeting` this way, and neither half of
@@ -460,6 +536,7 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 	lines, run, tbl := peCellLines(string(stripHTMLCells(raw)))
 	whole := peWholeCells(run)
 	summary := peSummaryBody(lines, tbl, whole)
+	wrapped := peWrappedProse(lines, tbl, whole)
 	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(seriesIx, meta.FormerNames)
 	dict := cikDict.exactFallback(meta)
@@ -578,7 +655,13 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// Nothing inside a summary grid's body is a heading at all: every cell
 		// there is one column of one ballot row, the first of them the issuer's
 		// own name.
-		if whole[i] && !summary[i] && !peItemCell(lines, tbl, i-1, i, labels) && peFundName(line) {
+		// Nor is a continuation line of a paragraph the vendor wrapped across
+		// several containers: peWholeCells cannot tell one from a cell, so
+		// peWrappedProse tells it from the run's shape instead. Such a line is
+		// reached at all only because peVoteRow refused the row it splits, and
+		// clearing the open fund on a sentence fragment blanks the series for
+		// every row after it.
+		if whole[i] && !summary[i] && !wrapped[i] && !peItemCell(lines, tbl, i-1, i, labels) && peFundName(line) {
 			fund = line
 			fundSeries = icrResolveFundShared(seriesIx, line)
 			if fundSeries == "" {

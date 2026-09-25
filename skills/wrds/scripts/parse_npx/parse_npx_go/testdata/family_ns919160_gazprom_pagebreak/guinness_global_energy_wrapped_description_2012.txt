@@ -1,0 +1,935 @@
+<SEC-DOCUMENT>0001398344-12-003055.txt : 20120919
+<SEC-HEADER>0001398344-12-003055.hdr.sgml : 20120919
+<ACCEPTANCE-DATETIME>20120919171652
+ACCESSION NUMBER:		0001398344-12-003055
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20120630
+FILED AS OF DATE:		20120919
+DATE AS OF CHANGE:		20120919
+EFFECTIVENESS DATE:		20120919
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			GUINNESS ATKINSON FUNDS
+		CENTRAL INDEX KEY:			0000919160
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX/A
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08360
+		FILM NUMBER:		121100374
+
+	BUSINESS ADDRESS:	
+		STREET 1:		21550 OXNARD STREET
+		STREET 2:		SUITE 750
+		CITY:			WOODLAND HILLS
+		STATE:			CA
+		ZIP:			91367
+		BUSINESS PHONE:		626-914-1041
+
+	MAIL ADDRESS:	
+		STREET 1:		21550 OXNARD STREET
+		STREET 2:		SUITE 750
+		CITY:			WOODLAND HILLS
+		STATE:			CA
+		ZIP:			91367
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	INVESTEC FUNDS
+		DATE OF NAME CHANGE:	20000927
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	GUINNESS FLIGHT INVESTMENT FUNDS
+		DATE OF NAME CHANGE:	19970506
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	GUINNESS FLIGHT INVESTMENT FUNDS INC
+		DATE OF NAME CHANGE:	19940217
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000919160
+<SERIES-ID>S000005896
+<SERIES-NAME>Guinness Atkinson Global Energy Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016120
+<CLASS-CONTRACT-NAME>Guinness Atkinson Global Energy Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>GAGEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000919160
+<SERIES-ID>S000009156
+<SERIES-NAME>Guinness Atkinson Alternative Energy Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000024897
+<CLASS-CONTRACT-NAME>Guinness Atkinson Alternative Energy Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>GAAEX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>fp0005548_npxa.htm
+<TEXT>
+<html>
+<head>
+    <title>fp0005548_npxa.htm</title>
+    <!--Licensed to: FilePoint Investment Services-->
+    <!--Document Created using EDGARizerAgent 5.4.3.1-->
+    <!--Copyright 1995 - 2009 Thomson Reuters. All rights reserved.-->
+</head>
+<body bgcolor="#ffffff" style="DISPLAY: inline; FONT-FAMILY: Times New Roman; FONT-SIZE: 10pt">
+<div>
+<table cellpadding="0" cellspacing="0" width="100%" style="FONT-FAMILY: times new roman; FONT-SIZE: 10pt; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">
+<tr>
+<td align="left" colspan="10" valign="top" width="72%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Guinness Atkinson Global Energy Fund</font></div>
+</td>
+<td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+</tr><tr>
+<td align="left" colspan="10" valign="top" width="72%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Meeting Date Range: 01-Jul-2011 To 30-Jun-2012</font></div>
+</td>
+<td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+</tr><tr>
+<td align="left" colspan="10" valign="top" width="72%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Selected Accounts</font></div>
+</td>
+<td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+</tr><tr bgcolor="#004f75">
+<td align="left" colspan="8" valign="top" width="65%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">COASTAL ENERGY COMPANY, GEORGETOWN</font></div>
+</td>
+<td align="left" valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td align="left" valign="bottom" width="3%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td align="left" valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+</tr><tr>
+<td align="left" colspan="2" valign="top" width="12%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Security:</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="41%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">G22404118</font></div>
+</td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td align="left" colspan="3" valign="top" width="14%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Meeting Type:</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="10%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">MIX</font></div>
+</td>
+</tr><tr>
+<td align="left" colspan="2" valign="top" width="12%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Ticker:</font></div>
+</td>
+<td colspan="3" valign="bottom" width="41%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td align="left" colspan="3" valign="top" width="14%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Meeting Date:</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="10%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">21-Jul-2011</font></div>
+</td>
+</tr><tr>
+<td align="left" colspan="2" valign="top" width="12%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">ISIN</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="41%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">KYG224041189</font></div>
+</td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td align="left" colspan="3" valign="top" width="14%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Vote Deadline Date:</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="10%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">15-Jul-2011</font></div>
+</td>
+</tr><tr>
+<td align="left" colspan="2" valign="top" width="12%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Agenda</font></div>
+</td>
+<td align="left" valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">703202666</font></div>
+</td>
+<td align="left" valign="top" width="14%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Management</font></div>
+</td>
+<td valign="bottom" width="13%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td align="left" colspan="3" valign="top" width="14%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Total Ballot Shares:</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="10%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">477021</font></div>
+</td>
+</tr><tr>
+<td align="left" colspan="2" valign="top" width="12%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Last Vote Date:</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="28%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">12-Jul-2011</font></div>
+</td>
+<td valign="bottom" width="13%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="3%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="3%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+</tr><tr bgcolor="#004f75">
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Item</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Proposal</font></div>
+</td>
+<td align="left" valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Recommendation</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">For</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Against</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Abstain</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Take No Action</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">1</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">PLEASE NOTE THAT SHAREHOLDERS ARE ALLOWED</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">TO VOTE 'IN FAVOR' OR 'AGAINST' ONLY FOR</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">RESOLUTIONS "3, 4 AND 5" AND 'IN FAVOR' OR</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">'ABSTAIN' ONLY FOR RESOLUTION NUMBERS "1.A TO</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">1.G AND 2". THANK YOU.</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">None</font></div>
+</td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="3%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td colspan="4" valign="top" width="21%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Non Voting</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">2</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">To elect Randy L. Bartley as a Director</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">477021</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">3</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">To elect Charles Robert Black as a Director</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">477021</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">4</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">To elect Andrew L. Cochran as a Director</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">477021</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">5</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">To elect Oliver De Montal as a Director</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">477021</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">6</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">To elect William C. Phelps as a Director</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">477021</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">7</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">To elect Lloyd Barnaby Smith as a Director</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">477021</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">8</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">To elect John Brian Zaozirny as a Director</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">477021</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr bgcolor="#004f75">
+<td align="left" colspan="8" valign="top" width="65%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">CANADIAN NATURAL RESOURCES LTD, CALGARY AB</font></div>
+</td>
+<td align="left" valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td align="left" valign="bottom" width="3%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td align="left" valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+</tr><tr>
+<td align="left" colspan="2" valign="top" width="12%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Security:</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="41%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">136385101</font></div>
+</td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td align="left" colspan="3" valign="top" width="14%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Meeting Type:</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="10%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">MIX</font></div>
+</td>
+</tr><tr>
+<td align="left" colspan="2" valign="top" width="12%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Ticker:</font></div>
+</td>
+<td colspan="3" valign="bottom" width="41%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td align="left" colspan="3" valign="top" width="14%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Meeting Date:</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="10%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">03-May-2012</font></div>
+</td>
+</tr><tr>
+<td align="left" colspan="2" valign="top" width="12%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">ISIN</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="41%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">CA1363851017</font></div>
+</td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td align="left" colspan="3" valign="top" width="14%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Vote Deadline Date:</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="10%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">27-Apr-2012</font></div>
+</td>
+</tr><tr>
+<td align="left" colspan="2" valign="top" width="12%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Agenda</font></div>
+</td>
+<td align="left" valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">703726022</font></div>
+</td>
+<td align="left" valign="top" width="14%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Management</font></div>
+</td>
+<td valign="bottom" width="13%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td align="left" colspan="3" valign="top" width="14%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Total Ballot Shares:</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="10%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+</tr><tr>
+<td align="left" colspan="2" valign="top" width="12%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Last Vote Date:</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="28%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">19-Apr-2012</font></div>
+</td>
+<td valign="bottom" width="13%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="3%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="3%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+</tr><tr bgcolor="#004f75">
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Item</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Proposal</font></div>
+</td>
+<td align="left" valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Recommendation</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">For</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Against</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Abstain</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Take No Action</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">1</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">PLEASE NOTE THAT SHAREHOLDERS ARE ALLOWED</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">TO VOTE 'IN FAVOR' OR 'AGAINST' ONLY FOR</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">RESOLUTIONS "3 AND 4" AND 'IN FAVOR' OR 'ABSTAIN'</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">ONLY FOR RESOLUTION NUMBERS "1.1 TO 1.14 AND</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">2". THANK YOU.</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">None</font></div>
+</td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="3%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td colspan="4" valign="top" width="21%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Non Voting</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">2</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Election of Director: Catherine M. Best</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">3</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Election of Director: N. Murray Edwards</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">4</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Election of Director: Timothy W. Faithfull</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">5</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Election of Director: Honourable Gary A. Filmon</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">6</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Election of Director: Christopher L. Fong</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">7</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Election of Director: Ambassador Gordon D. Giffin</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">8</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Election of Director: Wilfred A. Gobert</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">9</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Election of Director: Steve W. Laut</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">10</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Election of Director: Keith A.J. MacPhail</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">11</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">PLEASE NOTE THAT ALLAN P. MARKIN HAS RESIGNED</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">AND WILL NOT STAND FOR RE-ELECTION. THANK</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">YOU.</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">None</font></div>
+</td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td valign="bottom" width="3%"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">&#160; </font></td>
+<td colspan="4" valign="top" width="21%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Non Voting</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">12</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Election of Director: Allan P. Markin</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">13</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Election of Director: Honourable Frank J. McKenna</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">14</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Election of Director: James S. Palmer</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">15</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Election of Director: Eldon R. Smith</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">16</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Election of Director: David A. Tuer</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">17</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">The appointment of PricewaterhouseCoopers LLP,</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">Chartered Accountants, Calgary, Alberta, as auditors of the</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">corporation for the ensuing year and the authorization of the</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">audit committee of the board of directors of the corporation</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">to fix their remuneration</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">18</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">The special resolution amending the corporation's articles to</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">change the provisions of the currently authorized class of</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">preferred shares to a class of preferred shares issuable in a</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">series, and authorizing the board of directors to fix the</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">number of shares in each series and to determine the</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">designation, rights, privileges, restrictions and conditions</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">attaching to the shares of each series at the time the shares</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">are issued as described in the information circular</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">19</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="35%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">On an advisory basis, accepting the corporation's approach</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">to executive compensation as described in the information</font></div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">circular</font></div>
+</td>
+<td valign="top" width="13%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">128100</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 11pt">0</font></div>
+</td>
+</tr></table>
+</div>
+</body>
+</html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
