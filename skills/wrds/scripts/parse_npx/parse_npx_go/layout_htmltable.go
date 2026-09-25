@@ -396,17 +396,22 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			// resolution -- this is family MISLINK18's rule for `labelvalue` read
 			// off this layout's cell shape.
 			identityCell := htmlIssuerIdentityCell(cells) || htmlIdentityStripFollows(feed, cells, row.pre)
-			if titles := htmlDatedTitles(seriesIx, heading, dict); titles != nil && !identityCell {
+			// The same position holds one more thing that is not a heading: a
+			// word-wrapped run of the vendor's own rationale prose, stacked
+			// uncapitalised inside one merged cell. Nothing in such a cell is
+			// offered to the resolver either.
+			notHeading := identityCell || htmlWrappedProseCell(cells)
+			if titles := htmlDatedTitles(seriesIx, heading, dict); titles != nil && !notHeading {
 				curFund, curSeries, outerSection, windowed = titles[0].name, titles[0].id, true, titles
 				bannerFund = false
 				continue
 			}
 			var name, id string
 			var ok bool
-			if !identityCell {
+			if !notHeading {
 				name, id, ok = htmlBareFundLine(seriesIx, heading, dict)
 			}
-			if !ok && !identityCell {
+			if !ok && !notHeading {
 				// One heading CELL may hold several paragraphs, and the name
 				// runs across them: `Wright Major` / `Blue Chip Equities Fund`
 				// in one <TD> (Wright Managed Equity Trust 2010, 942 rows).
@@ -422,7 +427,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			// rows, which prints no section heading at all). The label is the
 			// evidence: the value is read only from the column that header
 			// cell opened, and only when it resolves.
-			if !ok && !identityCell && fundCol >= 0 && fundCol < len(cells) && htmlFilledCells(cells) == 1 && strings.TrimSpace(cells[fundCol]) != "" {
+			if !ok && !notHeading && fundCol >= 0 && fundCol < len(cells) && htmlFilledCells(cells) == 1 && strings.TrimSpace(cells[fundCol]) != "" {
 				if value := htmlFlat(cells[fundCol]); value != "" && !htmlFundLabelled(value) {
 					if fid := icrResolveFundShared(seriesIx, value); fid != "" {
 						name, id, ok = value, fid, true
@@ -436,7 +441,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			if ok {
 				curFund, curSeries, outerSection, windowed = name, id, registrantSection && id != "", nil
 				bannerFund = id != "" && htmlExplicitFundBanner(heading)
-			} else if value, brandOnly := htmlBrandOnlyHeading(seriesIx, heading); brandOnly && !identityCell {
+			} else if value, brandOnly := htmlBrandOnlyHeading(seriesIx, heading); brandOnly && !notHeading {
 				// A heading that names the registrant and a type word and
 				// nothing else cannot resolve, but it does open a section.
 				curFund, curSeries, outerSection, windowed = value, "", false, nil
@@ -4066,6 +4071,140 @@ func htmlIssuerIdentityCell(cells []string) bool {
 	for _, line := range lines[1:] {
 		for _, label := range htmlIssuerIdentityLabels {
 			if strings.HasPrefix(strings.ToUpper(line), label) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// htmlWrappedProseCell reports a one-filled-cell row whose cell holds a
+// word-wrapped run of ORDINARY PROSE rather than a section banner: TDX
+// Independence Funds 2009 word-wraps its ISS vote rationales one fragment per
+// inline element inside a cell whose siblings are all `&nbsp;`, so
+//
+//	`the` / `context of` / `the` / `global` / `economic`
+//
+// arrives in the exact shape a bare banner has. The fragment `global` then
+// resolves through the sibling-registrant rung onto CIK 88525's `GLOBAL`
+// (S000008807) and files 7,006 of the filing's 8,242 rows -- 85% -- under
+// another registrant's fund, with none of the filer's own five declared series
+// appearing at all. Every crossCIK guard passes on the way in because each of
+// them judges WHICH series a banner names; none of them asks whether the text
+// was a banner. This is that question, asked before the resolver is.
+//
+// CASE is the evidence, read the way htmlIssuerIdentityCell reads cell shape.
+// A registrant prints its fund names capitalised -- Title Case or ALL CAPS --
+// and a run of several stacked lines carrying no capital and no digit anywhere
+// is a sentence the vendor broke over elements, not a heading. Both halves are
+// required: a single lowercase line is left alone, because one line is the
+// shape a heading has however it is cased.
+func htmlWrappedProseCell(cells []string) bool {
+	if htmlFilledCells(cells) != 1 {
+		return false
+	}
+	var lines []string
+	for _, cell := range cells {
+		if htmlFlat(cell) == "" {
+			continue
+		}
+		for _, line := range strings.Split(cell, "\n") {
+			if v := htmlFlat(line); v != "" {
+				lines = append(lines, v)
+			}
+		}
+		break
+	}
+	if len(lines) < 2 {
+		return false
+	}
+	for _, line := range lines {
+		for i := 0; i < len(line); i++ {
+			if c := line[i]; c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// htmlBannerSharedTokenMin is how many of a declared name's own distinctive
+// words a bold run must repeat before it counts as that registrant's banner.
+// One is coincidence -- every third issuer shares a word with some fund -- and
+// two of this registrant's own vocabulary in one bold line is not.
+const htmlBannerSharedTokenMin = 2
+
+// htmlBannerTokenMinLen is the shortest word read as distinctive. `of`, `and`
+// and the class letters carry no evidence about whose name this is.
+const htmlBannerTokenMinLen = 4
+
+// htmlPrintsDeclaredFundBanner reports that this HTML body PRINTS a section
+// banner naming one of the registrant's own declared funds, whether or not any
+// rung could resolve it.
+//
+// It answers a filing-level question the rows cannot: consolidatedSeries widens
+// a filing to every declared id when no row carries a fund or a series, on the
+// reading that such a filing reported the trust's votes as ONE record. A body
+// that printed five per-fund banners and resolved none of them looks exactly
+// like that from the rows, and widening it files each fund's votes under all
+// five (TDX Independence Funds 2009, 8,242 rows under `TDAX Independence 2010
+// ETF Composite` and its four siblings, none of which any rung can spell back
+// to the header's `TDX Independence 2010 Exchange-Traded Fund`). The banner is
+// the evidence that the filing did name its funds.
+//
+// Two marks are required together, and both are the grammar's own. The text
+// must be BOLD, which is how this layout prints a section banner and never how
+// it prints a vote, an issuer or a rationale; and it must repeat at least
+// htmlBannerSharedTokenMin distinctive words of ONE declared series name, which
+// no issuer's name and no sentence of prose does by accident.
+func htmlPrintsDeclaredFundBanner(raw []byte, decls []SeriesDecl) bool {
+	var names []map[string]bool
+	for i := range decls {
+		if decls[i].SeriesID == "" || decls[i].Name == "" {
+			continue
+		}
+		toks := map[string]bool{}
+		for _, t := range strings.Fields(normalizeSeriesName(decls[i].Name)) {
+			if len(t) >= htmlBannerTokenMinLen && !htmlBrandOnlyTypeWord[t] {
+				toks[t] = true
+			}
+		}
+		names = append(names, toks)
+	}
+	if len(names) < 2 {
+		return false
+	}
+	for pos := 0; pos < len(raw); {
+		open := indexFrom(raw, pos, "<b")
+		if open < 0 {
+			return false
+		}
+		pos = open + len("<b")
+		if pos < len(raw) && isNameByte(raw[pos]) {
+			// <br>, <body>, <blockquote>: a longer element, not emphasis.
+			continue
+		}
+		gt := indexByteFrom(raw, open, '>')
+		if gt < 0 {
+			return false
+		}
+		end := indexFrom(raw, gt, "</b>")
+		if end < 0 {
+			return false
+		}
+		pos = end + len("</b>")
+		banner := strings.Fields(normalizeSeriesName(htmlPreText(raw[gt+1 : end])))
+		if len(banner) < htmlBannerSharedTokenMin {
+			continue
+		}
+		for _, declared := range names {
+			shared := map[string]bool{}
+			for _, t := range banner {
+				if declared[t] {
+					shared[t] = true
+				}
+			}
+			if len(shared) >= htmlBannerSharedTokenMin {
 				return true
 			}
 		}

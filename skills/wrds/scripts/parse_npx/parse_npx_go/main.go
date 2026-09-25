@@ -535,6 +535,16 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 		meta.FilePath = relPath
 		meta.ParseMode = mode
 		consolidated := consolidatedSeries(sc, res.Rows)
+		// ... unless the body PRINTED this registrant's funds in section
+		// banners and no rung could spell them back to a declared id. Such a
+		// filing reported per fund; its rows are blank because the names did
+		// not resolve, not because the trust voted as one record, and widening
+		// them to every declared id files each fund's votes under all of them.
+		// The rows cannot tell the two apart, so the banner is read off the
+		// body (TDX Independence Funds 2009, five printed banners, 8,242 rows).
+		if consolidated != "" && meta.Layout == "htmltable" && htmlPrintsDeclaredFundBanner(buf, h.SeriesDecls) {
+			consolidated = ""
+		}
 		// The no-heading shape, decided on the parsed rows rather than guessed:
 		// every row's fund_name is empty, so the filing printed no fund heading
 		// anywhere and the registrant's own name is the only name it carries.
