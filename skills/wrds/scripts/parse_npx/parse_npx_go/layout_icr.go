@@ -92,6 +92,49 @@ func icrParentheticalNote(line string) bool {
 	return len(line) > 2 && len(line) <= 300 && strings.HasPrefix(line, "(") && strings.HasSuffix(line, ")")
 }
 
+// icrSubadviserCaption reports the caption a Hartford HLS section prints under
+// its fund banner naming the tranche's sub-adviser, in the spelling that carries
+// no parentheses at all (`THIS PORTION SUB-ADVISED BY SSGA FUNDS MANAGEMENT
+// INC.`, CIK 790558 2009). It names a MANAGER, never a registrant series, so it
+// is an annotation on the banner above it exactly as the parenthesised spelling
+// of the same sentence is.
+func icrSubadviserCaption(line string) bool {
+	l := strings.ToLower(strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(line), "(")))
+	for _, lead := range []string{"this portion sub-advised by ", "this portion sub advised by ", "this portion subadvised by "} {
+		if strings.HasPrefix(l, lead) {
+			return true
+		}
+	}
+	return false
+}
+
+// icrSectionNote reports the line at index k as commentary on the section rather
+// than the name of its fund: a wholly parenthesised note, the unparenthesised
+// sub-adviser caption, or the TAIL of either wrapped across two physical lines
+// (`LLC)`). The tail is taken only when the line above it opens a parenthetical
+// it never closes -- otherwise a name that merely ends in a bracket would be
+// discarded as a note.
+func icrSectionNote(lines []string, k int) bool {
+	if k < 0 || k >= len(lines) {
+		return false
+	}
+	line := strings.TrimSpace(lines[k])
+	if icrParentheticalNote(line) || icrSubadviserCaption(line) {
+		return true
+	}
+	if len(line) > 300 || !strings.HasSuffix(line, ")") || strings.Contains(line, "(") {
+		return false
+	}
+	for j := k - 1; j >= 0 && j >= k-3; j-- {
+		prev := strings.TrimSpace(lines[j])
+		if prev == "" {
+			continue
+		}
+		return strings.Contains(prev, "(") && !strings.Contains(prev, ")")
+	}
+	return false
+}
+
 func icrUnderscoreRule(line string) bool {
 	if len(line) < 20 {
 		return false
@@ -567,14 +610,14 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 			// fund read, 2026-09-02). The report line is the marker; the line
 			// above it is the name, resolved like any other heading.
 			curFund = lineAbove
-			if icrParentheticalNote(lineAbove) {
-				// A fully parenthesised note -- a merger successor, a sub-adviser
-				// attribution -- is commentary on the section, not its fund. Skip
-				// the notes and read the first line above them.
+			if icrSectionNote(lines, lineAboveIdx) {
+				// A note -- a merger successor, a sub-adviser attribution, in or
+				// out of parentheses -- is commentary on the section, not its
+				// fund. Skip the notes and read the first line above them.
 				curSeries = ""
 				for k := i - 1; k >= 0 && k >= i-6; k-- {
 					candidate := strings.TrimSpace(lines[k])
-					if candidate == "" || icrParentheticalNote(candidate) {
+					if candidate == "" || icrSectionNote(lines, k) {
 						continue
 					}
 					if id := icrResolveFundShared(seriesIx, candidate); id != "" {
