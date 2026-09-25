@@ -1,0 +1,242 @@
+<SEC-DOCUMENT>0001398344-23-014901.txt : 20230814
+<SEC-HEADER>0001398344-23-014901.hdr.sgml : 20230814
+<ACCEPTANCE-DATETIME>20230814171705
+ACCESSION NUMBER:		0001398344-23-014901
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20230630
+FILED AS OF DATE:		20230814
+DATE AS OF CHANGE:		20230814
+EFFECTIVENESS DATE:		20230814
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SYNTAX ETF TRUST
+		CENTRAL INDEX KEY:			0001580843
+		IRS NUMBER:				376551880
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001580843
+<SERIES-ID>S000056928
+<SERIES-NAME>Syntax Stratified LargeCap ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000180762
+<CLASS-CONTRACT-NAME>Syntax Stratified LargeCap ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>SSPY
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001580843
+<SERIES-ID>S000067565
+<SERIES-NAME>Syntax Stratified MidCap ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000217194
+<CLASS-CONTRACT-NAME>Syntax Stratified MidCap ETF
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001580843
+<SERIES-ID>S000067566
+<SERIES-NAME>Syntax Stratified SmallCap ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000217195
+<CLASS-CONTRACT-NAME>Syntax Stratified SmallCap ETF
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001580843
+<SERIES-ID>S000067955
+<SERIES-NAME>Syntax Stratified U.S. Total Market ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000217871
+<CLASS-CONTRACT-NAME>Syntax Stratified U.S. Total Market ETF
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001580843
+<SERIES-ID>S000068233
+<SERIES-NAME>Syntax Stratified U.S. Total Market Hedged ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000218427
+<CLASS-CONTRACT-NAME>Syntax Stratified U.S. Total Market Hedged ETF
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001580843
+<SERIES-ID>S000074623
+<SERIES-NAME>Syntax Stratified Total Market II ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232648
+<CLASS-CONTRACT-NAME>Syntax Stratified Total Market II ETF
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fp0084375-1_npx.htm
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+
+<P STYLE="margin: 0">&nbsp;</P>
+<TABLE CELLPADDING="4" CELLSPACING="0" STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; width: 100%">
+<TR STYLE="background-color: #004F75">
+    <TD COLSPAN="13" STYLE="vertical-align: top; border-top: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="color: white"><B>EQUITY
+    RESIDENTIAL</B></FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 1pt solid; border-right: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="4" STYLE="vertical-align: top"><B>Security</B></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top">29476L107</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top"><B>Meeting Type</B></TD>
+    <TD STYLE="vertical-align: top">Annual&nbsp;&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="4" STYLE="vertical-align: top"><B>Ticker Symbol</B></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top">EQR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top"><B>Meeting Date</B></TD>
+    <TD STYLE="vertical-align: top">15-Jun-2023</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="4" STYLE="vertical-align: top"><B>ISIN</B></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top">US29476L1070</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top"><B>Agenda</B></TD>
+    <TD STYLE="vertical-align: top">935842434 - Management</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="4" STYLE="vertical-align: top"><B>Record Date</B></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top">31-Mar-2023</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top"><B>Holding Recon Date</B></TD>
+    <TD STYLE="vertical-align: top">31-Mar-2023</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top"><B>City /</B></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top"><B>Country</B></TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">/</TD>
+    <TD STYLE="vertical-align: top">United<BR>
+    States</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top"><B>Vote Deadline Date</B></TD>
+    <TD STYLE="vertical-align: top">14-Jun-2023</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="4" STYLE="vertical-align: top"><B>SEDOL(s)</B></TD>
+    <TD COLSPAN="5" STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top"><B>Quick Code</B></TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR STYLE="background-color: #004F75">
+    <TD STYLE="border-top: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: left; vertical-align: bottom"><FONT STYLE="color: white"><B>Item</B></FONT></TD>
+    <TD COLSPAN="6" STYLE="vertical-align: bottom; border-top: black 1pt solid; border-bottom: black 1pt solid"><FONT STYLE="color: white"><B>Proposal</B></FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 1pt solid; border-bottom: black 1pt solid; text-align: center"><FONT STYLE="color: white"><B>Proposed
+    by</B></FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 1pt solid; border-bottom: black 1pt solid; text-align: center"><FONT STYLE="color: white"><B>Vote</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: bottom; border-top: black 1pt solid; border-bottom: black 1pt solid; text-align: center"><FONT STYLE="color: white"><B>Management
+    Recommendation</B></FONT></TD>
+    <TD STYLE="border-top: black 1pt solid; border-bottom: black 1pt solid; vertical-align: bottom; text-align: center"><FONT STYLE="color: white"><B>For/Against
+    Management</B></FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 1pt solid; border-right: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">1.&nbsp;&nbsp;&nbsp;</TD>
+    <TD COLSPAN="7" STYLE="vertical-align: top">DIRECTOR</TD>
+    <TD STYLE="vertical-align: top">Management</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">1</TD>
+    <TD COLSPAN="6" STYLE="vertical-align: top">Angela M. Aman</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">2.&nbsp;&nbsp;&nbsp;</TD>
+    <TD COLSPAN="7" STYLE="vertical-align: top">Ratification of the selection of Ernst &amp; Young LLP as the Company's independent
+    registered public accounting firm for 2023.</TD>
+    <TD STYLE="vertical-align: top">Management</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">3.&nbsp;&nbsp;&nbsp;</TD>
+    <TD COLSPAN="7" STYLE="vertical-align: top">Approval of Executive Compensation.</TD>
+    <TD STYLE="vertical-align: top">Management</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">4.&nbsp;&nbsp;&nbsp;</TD>
+    <TD COLSPAN="7" STYLE="vertical-align: top">Advisory vote on the frequency of shareholder votes on Executive Compensation.</TD>
+    <TD STYLE="vertical-align: top">Management</TD>
+    <TD STYLE="vertical-align: top; text-align: center">1 Year</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center">1 Year</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
