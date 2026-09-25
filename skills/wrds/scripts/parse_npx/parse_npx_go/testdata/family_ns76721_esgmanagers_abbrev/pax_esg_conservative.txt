@@ -1,0 +1,377 @@
+<SEC-DOCUMENT>0000076721-12-000009.txt : 20120822
+<SEC-HEADER>0000076721-12-000009.hdr.sgml : 20120822
+<ACCEPTANCE-DATETIME>20120822122345
+ACCESSION NUMBER:		0000076721-12-000009
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20120630
+FILED AS OF DATE:		20120822
+DATE AS OF CHANGE:		20120822
+EFFECTIVENESS DATE:		20120822
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PAX WORLD FUNDS SERIES TRUST I
+		CENTRAL INDEX KEY:			0000076721
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-02064
+		FILM NUMBER:		121049375
+
+	BUSINESS ADDRESS:	
+		STREET 1:		30 PENHALLOW STREET, SUITE 400
+		CITY:			PORTSMOUTH
+		STATE:			NH
+		ZIP:			03801-3852
+		BUSINESS PHONE:		800-767-1729
+
+	MAIL ADDRESS:	
+		STREET 1:		30 PENHALLOW STREET, SUITE 400
+		CITY:			PORTSMOUTH
+		STATE:			NH
+		ZIP:			03801-3852
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PAX WORLD BALANCED FUND
+		DATE OF NAME CHANGE:	20061113
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PAX WORLD BALANCED FUND INC
+		DATE OF NAME CHANGE:	20040624
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PAX WORLD FUND INC
+		DATE OF NAME CHANGE:	19920703
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000076721
+<SERIES-ID>S000011971
+<SERIES-NAME>PAX WORLD BALANCED FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043250
+<CLASS-CONTRACT-NAME>Individual Investor Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043251
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PAXIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043252
+<CLASS-CONTRACT-NAME>R Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PAXRX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000076721
+<SERIES-ID>S000015758
+<SERIES-NAME>Pax World High Yield Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043226
+<CLASS-CONTRACT-NAME>Individual Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PAXHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043227
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PXHIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043228
+<CLASS-CONTRACT-NAME>R Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PXHRX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000076721
+<SERIES-ID>S000015760
+<SERIES-NAME>Pax World International Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043232
+<CLASS-CONTRACT-NAME>Individual Investor Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043233
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043234
+<CLASS-CONTRACT-NAME>R Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000076721
+<SERIES-ID>S000015763
+<SERIES-NAME>Pax World Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043241
+<CLASS-CONTRACT-NAME>Individual Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PXWGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043242
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PWGIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043243
+<CLASS-CONTRACT-NAME>R Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PXGRX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000076721
+<SERIES-ID>S000019419
+<SERIES-NAME>Pax World Global Women's Equality Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000053979
+<CLASS-CONTRACT-NAME>Individual Investor
+<CLASS-CONTRACT-TICKER-SYMBOL>PXWEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000053980
+<CLASS-CONTRACT-NAME>Institutional
+<CLASS-CONTRACT-TICKER-SYMBOL>PXWIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000076721
+<SERIES-ID>S000021458
+<SERIES-NAME>Pax World Global Environmental Markets Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061357
+<CLASS-CONTRACT-NAME>Individual Investor Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061358
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061359
+<CLASS-CONTRACT-NAME>R Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000076721
+<SERIES-ID>S000021459
+<SERIES-NAME>Pax World Small Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061360
+<CLASS-CONTRACT-NAME>Individual Investor Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061361
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061362
+<CLASS-CONTRACT-NAME>R Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000076721
+<SERIES-ID>S000027263
+<SERIES-NAME>ESG Managers Aggressive Growth Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082278
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082279
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082280
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000076721
+<SERIES-ID>S000027264
+<SERIES-NAME>ESG Managers Conservative Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082281
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082282
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082283
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000076721
+<SERIES-ID>S000027265
+<SERIES-NAME>ESG Managers Growth Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082284
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082285
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082286
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000076721
+<SERIES-ID>S000027266
+<SERIES-NAME>ESG Managers Moderate Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082287
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082288
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082289
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>paxesgmnpx2012.txt
+<DESCRIPTION>PAX WORLD FUNDS SERIES TRUST I N-PX 06/30/12
+<TEXT>
+SECURITIES AND EXCHANGE COMMISSION
+Washington, D.C. 20549
+
+FORM N-PX REPORT
+
+ANNUAL REPORT OF PROXY VOTING RECORD OF
+REGISTERED MANAGEMENT INVESTMENT COMPANY
+
+Investment Company Act file number
+0000076721
+
+PAX WORLD FUNDS SERIES TRUST I
+(Exact name of registrant as specified in charter)
+
+30 Penhallow St, Ste. 400
+Portsmouth, NH 03801
+(Address of principal executive offices)
+
+Registrant's Telephone Number, Including Area Code:
+(800) 767-1729
+
+Pax World Management LLC
+30 Penhallow Street, Suite 400
+Portsmouth, NH 03801
+Attn: Joseph F. Keefe
+(Name and address of agent for service)
+
+Date of fiscal year end: December 31, 2012
+
+Date of reporting period: July 1, 2011 - June 30, 2012
+
+Item 1: Proxy Voting Record
+
+Fund Name : Conservative LV Clear Bridge
+
+07/01/2011 - 06/30/2012
+
+________________________________________________________________________________
+Air Products and Chemicals, Inc.
+Ticker     Security ID:             Meeting Date          Meeting Status
+APD        CUSIP 009158106          01/26/2012            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Elect Director Mario L.  Mgmt       For        For        For
+            Baeza
+
+2          Elect Director Susan K.  Mgmt       For        For        For
+            Carter
+
+3          Elect Director John E.   Mgmt       For        For        For
+            McGlade
+
+4          Ratify Auditors          Mgmt       For        For        For
+5          Advisory Vote to Ratify  Mgmt       For        For        For
+            Named Executive
+            Officers'
+            Compensation
+
+
+________________________________________________________________________________
+American Express Company
+Ticker     Security ID:             Meeting Date          Meeting Status
+AXP        CUSIP 25816109           04/30/2012            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1.1        Elect Director C.        Mgmt       For        For        For
+            Barshefsky
+
+1.2        Elect Director U.M.      Mgmt       For        For        For
+            Burns
+
+1.3        Elect Director K.I.      Mgmt       For        For        For
+            Chenault
+
+1.4        Elect Director P.        Mgmt       For        For        For
+            Chernin
+
+1.5        Elect Director T.J.      Mgmt       For        For        For
+            Leonsis
+
+1.6        Elect Director J.        Mgmt       For        For        For
+            Leschly
+
+1.7        Elect Director R.C.      Mgmt       For        For        For
+            Levin
+
+1.8        Elect Director R.A.      Mgmt       For        For        For
+            McGinn
+
+1.9        Elect Director E.D.      Mgmt       For        For        For
+            Miller
+
+1.10       Elect Director S.S.      Mgmt       For        For        For
+            Reinemund
+
+1.11       Elect Director R.D.      Mgmt       For        For        For
+            Walter
+
+1.12       Director R.A. Williams   Mgmt       For        For        For
+2          Ratify Auditors          Mgmt       For        For        For
+3          Advisory Vote to Ratify  Mgmt       For        For        For
+            Named Executive
+            Officers'
+            Compensation
+
+4          Amend Omnibus Stock Plan Mgmt       For        For        For
+5          Provide for Cumulative   ShrHldr    Against    Against    For
+            Voting
+
+6          Require Independent      ShrHldr    Against    Against    For
+            Board
+            Chairman
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
