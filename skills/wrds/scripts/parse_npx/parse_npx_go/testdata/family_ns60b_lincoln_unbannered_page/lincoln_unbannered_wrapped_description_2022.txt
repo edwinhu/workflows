@@ -1,0 +1,220 @@
+<SEC-DOCUMENT>0001193125-22-231315.txt : 20220826
+<SEC-HEADER>0001193125-22-231315.hdr.sgml : 20220826
+<ACCEPTANCE-DATETIME>20220826161426
+ACCESSION NUMBER:		0001193125-22-231315
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20220630
+FILED AS OF DATE:		20220826
+DATE AS OF CHANGE:		20220826
+EFFECTIVENESS DATE:		20220826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+		CENTRAL INDEX KEY:			0000914036
+		IRS NUMBER:				521835648
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08090
+		FILM NUMBER:		221205330
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1301 SOUTH HARRISON STREET
+		CITY:			FORT WAYNE
+		STATE:			IN
+		ZIP:			46802
+		BUSINESS PHONE:		260-455-2000
+
+	MAIL ADDRESS:	
+		STREET 1:		1301 SOUTH HARRISON STREET
+		CITY:			FORT WAYNE
+		STATE:			IN
+		ZIP:			46802
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	AGGRESSIVE GROWTH FUND /
+		DATE OF NAME CHANGE:	20031001
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+		DATE OF NAME CHANGE:	20030910
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	LINCOLN NATIONAL AGGRESSIVE GROWTH FUND INC
+		DATE OF NAME CHANGE:	19931025
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000914036
+<SERIES-ID>S000015972
+<SERIES-NAME>LVIP Blended Mid Cap Managed Volatility Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043859
+<CLASS-CONTRACT-NAME>Standard Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043860
+<CLASS-CONTRACT-NAME>Service Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914036
+<SERIES-ID>S000015973
+<SERIES-NAME>LVIP Wellington SMID Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043861
+<CLASS-CONTRACT-NAME>Service Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043862
+<CLASS-CONTRACT-NAME>Standard Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d357272dnpx.htm
+<DESCRIPTION>LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+<TEXT>
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+
+LVIP Blended Mid Cap Managed Volatility Fund
+
+
+
+                   Exchange                                                     Who Proposed
+Issuer of          Ticker               Shareholder   Summary of Matter Voted  Matter: Issuer /  Whether Fund Cast
+Portfolio Security Symbol     CUSIP #   Meeting Date            On               Shareholder      Vote on Matter
+------------------ --------  ---------- ------------  ------------------------ ----------------  -----------------
+Chewy, Inc.                                           Elect Director Fahim
+                    CHWY     16679L109   14-Jul-21    Ahmed                      Management            Yes
+Chewy, Inc.                                           Elect Director Michael
+                    CHWY     16679L109   14-Jul-21    Chang                      Management            Yes
+Chewy, Inc.                                           Elect Director Kristine
+                    CHWY     16679L109   14-Jul-21    Dickson                    Management            Yes
+Chewy, Inc.                                           Elect Director James A.
+                    CHWY     16679L109   14-Jul-21    Star                       Management            Yes
+Chewy, Inc.                                           Ratify Deloitte &amp;
+                    CHWY     16679L109   14-Jul-21    Touche LLP as Auditors     Management            Yes
+Chewy, Inc.                                           Advisory Vote to Ratify
+                                                      Named Executive
+                    CHWY     16679L109   14-Jul-21    Officers' Compensation     Management            Yes
+ICON plc                                              Elect Director Ciaran
+                    ICLR     G4705A100   20-Jul-21    Murray                     Management            Yes
+ICON plc                                              Elect Director Joan
+                    ICLR     G4705A100   20-Jul-21    Garahy                     Management            Yes
+ICON plc                                              Elect Director Eugene
+                    ICLR     G4705A100   20-Jul-21    McCague                    Management            Yes
+ICON plc                                              Elect Director Colin
+                    ICLR     G4705A100   20-Jul-21    Shannon                    Management            Yes
+ICON plc                                              Elect Director Linda
+                    ICLR     G4705A100   20-Jul-21    Grais                      Management            Yes
+                    Fund's Vote For or
+                   Against Proposal, or
+                     Abstain; For or
+Issuer of           Withhold Regarding    Vote Against
+Portfolio Security Election of Directors  Management?
+------------------ ---------------------  ------------
+Chewy, Inc.
+                         Withhold             Yes
+Chewy, Inc.
+                         Withhold             Yes
+Chewy, Inc.
+                         For                  No
+Chewy, Inc.
+                         Withhold             Yes
+Chewy, Inc.
+                         For                  No
+Chewy, Inc.
+
+                         For                  No
+ICON plc
+                         For                  No
+ICON plc
+                         For                  No
+ICON plc
+                         For                  No
+ICON plc
+                         For                  No
+ICON plc
+                         For                  No
+</PRE>
+ </DIV>
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+
+
+
+                   Exchange                                                     Who Proposed
+Issuer of          Ticker               Shareholder   Summary of Matter Voted  Matter: Issuer /  Whether Fund Cast
+Portfolio Security Symbol     CUSIP #   Meeting Date            On               Shareholder      Vote on Matter
+------------------ --------  ---------- ------------  ------------------------ ----------------  -----------------
+Chewy, Inc.                                           Elect Director Fahim
+                    CHWY     16679L109   14-Jul-21    Ahmed                      Management            Yes
+Chewy, Inc.                                           Elect Director Michael
+                    CHWY     16679L109   14-Jul-21    Chang                      Management            Yes
+Chewy, Inc.                                           Elect Director Kristine
+                    CHWY     16679L109   14-Jul-21    Dickson                    Management            Yes
+Chewy, Inc.                                           Elect Director James A.
+                    CHWY     16679L109   14-Jul-21    Star                       Management            Yes
+Chewy, Inc.                                           Ratify Deloitte &amp;
+                    CHWY     16679L109   14-Jul-21    Touche LLP as Auditors     Management            Yes
+Chewy, Inc.                                           Advisory Vote to Ratify
+                                                      Named Executive
+                    CHWY     16679L109   14-Jul-21    Officers' Compensation     Management            Yes
+nCino, Inc.                                           Elect Director Pierre
+                    NCNO     63947U107   15-Jul-21    Naude                      Management            Yes
+nCino, Inc.                                           Elect Director William
+                    NCNO     63947U107   15-Jul-21    Ruh                        Management            Yes
+nCino, Inc.                                           Elect Director Pam
+                    NCNO     63947U107   15-Jul-21    Kilday                     Management            Yes
+nCino, Inc.                                           Ratify Ernst &amp; Young
+                    NCNO     63947U107   15-Jul-21    LLP as Auditors            Management            Yes
+RH                                                    Elect Director Gary
+                    RH       74967X103   15-Jul-21    Friedman                   Management            Yes
+                    Fund's Vote For or
+                   Against Proposal, or
+                     Abstain; For or       Whether Vote Was
+Issuer of           Withhold Regarding    For (Yes) or Against
+Portfolio Security Election of Directors    (No) Management
+------------------ ---------------------  --------------------
+Chewy, Inc.
+                         Withhold                 No
+Chewy, Inc.
+                         Withhold                 No
+Chewy, Inc.
+                         For                      Yes
+Chewy, Inc.
+                         For                      Yes
+Chewy, Inc.
+                         For                      Yes
+Chewy, Inc.
+
+                         For                      Yes
+nCino, Inc.
+                         For                      Yes
+nCino, Inc.
+                         For                      Yes
+nCino, Inc.
+                         For                      Yes
+nCino, Inc.
+                         For                      Yes
+RH
+                         For                      Yes
+</PRE>
+ </DIV>
+</TEXT>
+</DOCUMENT>
