@@ -177,6 +177,12 @@ JQ_SCAN='
   | ([$r[] | select(.kind == "floor") | select(.key != null)
        | {key: (.key | clean), why: ((.why // "") | clean)}]
      | group_by(.key) | map(.[0])) as $floors
+  # Notes are the steering channel and are read in journal order, newest last, with NO dedupe by
+  # key: a second note about the same key corrects the first rather than duplicating it. Only the
+  # newest $notemax survive, so a loop steered for a week does not grow its own prompt without end.
+  | ([$r[] | select(.kind == "note")
+       | {key: ((.key // "") | clean), note: ((.note // .why // "") | clean)}]
+     | .[-($notemax | tonumber):]) as $notes
   # How the run ENDED is read from the last LOOP-owned record, never the positional last one: the
   # agent may legitimately append a progress record after the loop has written done, and a reader
   # that took the final line would report a finished run as still working. Matched exactly against
@@ -188,8 +194,13 @@ JQ_SCAN='
     "pid=\($pid // "")",
     "last=\(($r | last | .kind? // "") | clean)",
     "loop_last=\(($lastloop // "") | clean)",
-    ($floors[] | "floor=\(.key)\t\(.why)")
+    ($floors[] | "floor=\(.key)\t\(.why)"),
+    ($notes[] | "note=\(.key)\t\(.note)")
 '
+
+# How many operator notes reach a prompt. The newest ones, because a note appended today corrects
+# the one appended last week rather than queueing behind it.
+NOTE_MAX=10
 
 # A sentinel, not a plausible value. A failed scan has to leave behind something the guard at the
 # bottom of scan_journal can SEE: initialised to the literal 1, as it was, the guard could never fire
@@ -197,11 +208,13 @@ JQ_SCAN='
 # agent handed an iteration the journal already records.
 SCAN_NEXT_I=- SCAN_STALL=0 SCAN_STOPS=0 SCAN_PID= SCAN_LAST= SCAN_LOOP_LAST=
 FLOOR_KEYS=() FLOOR_WHY=()
+NOTE_KEYS=() NOTE_TEXT=()
 
 scan_journal() {
   local j=$1 out rc line k v
   SCAN_NEXT_I=- SCAN_STALL=0 SCAN_STOPS=0 SCAN_PID= SCAN_LAST= SCAN_LOOP_LAST=
   FLOOR_KEYS=() FLOOR_WHY=()
+  NOTE_KEYS=() NOTE_TEXT=()
   # Absent or empty is a genuinely virgin journal: there is nothing to read and numbering starts at
   # 1. This is the ONLY path that invents a counter, and it is settled before jq is ever asked.
   if [ ! -s "$j" ]; then SCAN_NEXT_I=1; return 0; fi
@@ -213,7 +226,7 @@ scan_journal() {
   # The journal is named as an ARGUMENT, not redirected onto stdin: a shell redirect that fails
   # never runs jq at all, so there is no exit status of jq's to read. `--` for the same reason the
   # rest of this file uses it -- a path may begin with a dash.
-  out=$(jq -Rrn --arg own "$LOOP_KINDS" "$JQ_SCAN" -- "$j" 2>/dev/null); rc=$?
+  out=$(jq -Rrn --arg own "$LOOP_KINDS" --arg notemax "$NOTE_MAX" "$JQ_SCAN" -- "$j" 2>/dev/null); rc=$?
   if [ "$rc" -ne 0 ]; then
     warn "journal scan of $j failed (jq exit $rc); refusing to reset state"
     return 1
@@ -233,6 +246,12 @@ scan_journal() {
           FLOOR_KEYS+=("${v%%$'\t'*}"); FLOOR_WHY+=("${v#*$'\t'}")
         else
           FLOOR_KEYS+=("$v"); FLOOR_WHY+=("")
+        fi ;;
+      note)
+        if [[ $v == *$'\t'* ]]; then
+          NOTE_KEYS+=("${v%%$'\t'*}"); NOTE_TEXT+=("${v#*$'\t'}")
+        else
+          NOTE_KEYS+=("$v"); NOTE_TEXT+=("")
         fi ;;
     esac
   done <<<"$out"
@@ -265,8 +284,18 @@ build_prompt() {
       printf '  %s\t%s\n' "${FLOOR_KEYS[$n]}" "${FLOOR_WHY[$n]}"
     done
   fi
+  # The operator's steering channel. An iteration never opens the journal file, so a note that is
+  # not printed here is a note nobody reads.
+  if [ "${#NOTE_KEYS[@]}" -eq 0 ]; then
+    printf 'GRIND_NOTES: none.\n'
+  else
+    printf 'GRIND_NOTES: operator notes, newest last. Act on them; they outrank the prompt'"'"'s ranking.\n'
+    for n in "${!NOTE_KEYS[@]}"; do
+      printf '  %s\t%s\n' "${NOTE_KEYS[$n]}" "${NOTE_TEXT[$n]}"
+    done
+  fi
   cat <<EOF
-GRIND_PROTOCOL: the journal above is your ONLY write channel to this loop.
+GRIND_PROTOCOL: the journal file at GRIND_JOURNAL is your ONLY write channel to this loop.
   $SELF append --journal $j '{"kind":"progress","key":"...","note":"..."}'
   $SELF append --journal $j '{"kind":"floor","key":"...","why":"..."}'
 progress = you moved the goal. Iterations that record none are counted consecutively and the loop
