@@ -274,12 +274,55 @@ func peCount(s string) (string, bool) {
 // identity labels -- so the fund is told from the issuer by its own name.
 func peFundName(s string) bool {
 	up := strings.ToUpper(s)
-	for _, w := range []string{" FUND", " PORTFOLIO", " TRUST", " ETF", " SERIES"} {
-		if strings.Contains(up, w) {
+	for _, w := range []string{"FUND", "PORTFOLIO", "TRUST", "ETF", "SERIES"} {
+		if peFundWord(up, w) {
 			return true
 		}
 	}
 	return false
+}
+
+// peFundWord reports that w stands as a WORD of up, not merely as a substring
+// of one. It is still never the first word -- the vendor's fund names carry a
+// brand ahead of the fund word -- so a space must precede it, and nothing that
+// glues it into a longer word may follow: `Trust-Type` in a proposal's text is
+// not the word `Trust` (Aspiriant Trust 2016 prints seven such proposals inside
+// the grid the bare-heading scan reads, and each one taken for a banner blanked
+// the section's series for every row after it). The plural is the same word.
+func peFundWord(up, w string) bool {
+	for off := 0; off+len(w) <= len(up); {
+		j := strings.Index(up[off:], w)
+		if j < 0 {
+			return false
+		}
+		k := off + j
+		end := k + len(w)
+		if end < len(up) && up[end] == 'S' && !strings.HasSuffix(w, "S") {
+			end++
+		}
+		if k > 0 && peSpace(up[k-1]) && (end == len(up) || peWordBreak(up[end])) {
+			return true
+		}
+		off = k + 1
+	}
+	return false
+}
+
+// peSpace reports the blank the fund word stands behind.
+func peSpace(c byte) bool {
+	return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' || c == '\f'
+}
+
+// peWordBreak reports a byte that ends a word. A hyphen and an apostrophe do
+// not: they bind what stands on either side of them into one word.
+func peWordBreak(c byte) bool {
+	switch {
+	case c >= 'A' && c <= 'Z', c >= 'a' && c <= 'z', c >= '0' && c <= '9':
+		return false
+	case c == '-' || c == '\'' || c == '_':
+		return false
+	}
+	return true
 }
 
 // peRegistrantFund reads the fund out of a `Registrant:` banner, which this
