@@ -1,5 +1,5 @@
 /**
- * The SessionStart hook reports an owed craft run. It NEVER sends anything.
+ * The SessionStart hook reports an owed work run. It NEVER sends anything.
  *
  * Why the send leg is gone rather than guarded. The hook runs unprompted on every SessionStart in
  * every directory, and what it used to send arrived as a USER MESSAGE — a `/goal` line, which sets

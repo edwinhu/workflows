@@ -62,7 +62,7 @@ the skill, this file was not it.
   `.westlaw.txt` that is also fidelity to the reporter, against an OCR corpus source it is not.
   Everything else in the file is unchanged.
 
-## `SKILL.md` — minimal, craft phases not restructured
+## `SKILL.md` — minimal, `work` phases not restructured
 
 - The `refs` table row for `retrieval.md` now names `workflows:westlaw` as the first route and
   describes the corpus routes as the fallback.

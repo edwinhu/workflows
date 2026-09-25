@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Compose the /goal line craft self-sends, with every clause DECIDABLE.
+# Compose the /goal line work self-sends, with every clause DECIDABLE.
 #
 #   compose-goal.sh <plan.md> <run-dir> <max-rounds> <readOnly:0|1>
 #
@@ -26,11 +26,11 @@
 #
 # WHAT CLOSES THE GOAL IS PASS, NOT "a verdict". `work-result.sh` exits 1 on overallPass=false, so
 # a clause reading "exits 0 or 1" is satisfied by a FAIL. Measured 2026-08-27: round 1 of the
-# suite-lint run FAILED with 8 surviving blocking findings and closed the goal — craft's own loop is
+# suite-lint run FAILED with 8 surviving blocking findings and closed the goal — `work`'s own loop is
 # gate FAIL -> fix -> re-run, and nothing was carrying it. A losing run is stopped by the round cap
 # below, which is bounded and decidable; it is not stopped by calling a FAIL "done".
 #
-#   This reverses an earlier removal whose stated reason — "PASS is unsatisfiable, because craft
+#   This reverses an earlier removal whose stated reason — "PASS is unsatisfiable, because work
 #   fails any task whose redCommand is green at baseline (red-not-red)" — was already stale when it
 #   was written. `redDisposition` shipped 2026-08-17 and is exactly the field a completed task
 #   declares instead of a red gate; the removal is dated 2026-08-23.
@@ -121,6 +121,6 @@ if [ "$READONLY" = 1 ]; then
 else
     # The run has produced a verdict work-result.sh can read. That is the terminal MACHINE event;
     # what to do about it — including opening review — is Phase 5's business, not the goal's.
-    printf '/goal craft has returned PASS for %s — `bash %s/scripts/work-result.sh %s/result.json` exits 0 — or %s. %s %s %s\n' \
+    printf '/goal the work run has returned PASS for %s — `bash %s/scripts/work-result.sh %s/result.json` exits 0 — or %s. %s %s %s\n' \
         "$PLAN" "$SKILL_DIR" "$RUN_DIR" "$ESCAPES" "$AUTHORITY" "$CONTINUATION" "$TEARDOWN"
 fi

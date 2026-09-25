@@ -356,7 +356,7 @@ describe('a pattern the guard misses must still not stall the dispatch', () => {
    * and `(a|aa){3,}` all classify FALSE, because the nested-quantifier rule's `[^)]*` stops at the
    * first `)` and neither rule reads brace quantifiers. A 2.2 KB file of twenty such assertions
    * against twenty failure literals did not return in 60 seconds — on a path that runs at EVERY
-   * craft dispatch, over files the repository did not write.
+   * work dispatch, over files the repository did not write.
    *
    * Both halves are pinned here on purpose. Widening the guard alone would leave the next unlisted
    * shape free: a blocklist over an infinite grammar cannot be completed, so the cost has to be
@@ -468,7 +468,7 @@ describe('a pattern the guard misses must still not stall the dispatch', () => {
 
   test('BUDGET, end to end: a guard-defeating file completes AND is bounded', () => {
     // Out of process: a regression here HANGS rather than fails, and a hung suite takes the whole
-    // craft mechanical check with it. The child is killed at the bound and that is the failure.
+    // work mechanical check with it. The child is killed at the bound and that is the failure.
     const dir = mkdtempSync(join(tmpdir(), 'suite-lint-bomb-'))
     scratch.push(dir)
     const lines: string[] = []

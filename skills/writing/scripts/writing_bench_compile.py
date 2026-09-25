@@ -390,7 +390,7 @@ def compile_bench(
     plan_path = project / ".planning" / f"{slug}.md"
     if plan_path.exists() and not force:
         reasons.append(
-            f"{plan_path} already exists; the plan is hashed by craft, so refusing to rewrite it "
+            f"{plan_path} already exists; the plan is hashed by work, so refusing to rewrite it "
             "silently. Pass --force to overwrite deliberately."
         )
 

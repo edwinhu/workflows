@@ -2,9 +2,9 @@
 // Fixtures below are executed, not declared: the lens and task literals here are
 // test INPUTS to workflow.js, not workflow declarations carrying domain rules.
 // P7 governs what workflow-creator EMITS.
-// Tests for craft's GATE — the arithmetic in workflow.js that decides PASS/FAIL.
+// Tests for work's GATE — the arithmetic in workflow.js that decides PASS/FAIL.
 //
-// Every assertion here is a rule stated in craft/SKILL.md or workflow-creator's gate-laws.md, not a
+// Every assertion here is a rule stated in work/SKILL.md or workflow-creator's gate-laws.md, not a
 // transcription of current behaviour. If one fails, the question is which of the two is wrong.
 //
 // Run: bun test ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/workflow.test.ts
@@ -537,7 +537,7 @@ test('a redCommand still brackets its OWN implementer inside a concurrent wave',
 })
 
 // ---------------------------------------------------------------- scoredChecks (ADVISORY, counts in / scores computed here)
-// The agent returns RAW COUNTS and craft computes every score, because an agent that reports its own
+// The agent returns RAW COUNTS and work computes every score, because an agent that reports its own
 // score inflates it and one that never sees the formula cannot. Nothing below may reach overallPass.
 
 // The slides-diagnose constants, declared rather than coded: s1 = 10 - missing·1.0 - collapsed·0.5,
@@ -621,7 +621,7 @@ test('the S3 arithmetic is computed per ITEM from the slides-diagnose constants,
 test('a score-named or non-whitelisted schema field throws at arg time and dispatches nothing', async () => {
   const bad = [
     // The blacklist-killer: integer-typed and score-named. A refusal keyed on type:'number' waves
-    // this through, and the agent then reports the very number craft exists to compute.
+    // this through, and the agent then reports the very number `work` exists to compute.
     scoredCheck({ schema: { type: 'object', properties: { ...countProps, compositeScore: { type: 'integer' } } } }),
     scoredCheck({ schema: { type: 'object', properties: { ...countProps, qualityScore: { type: 'number' } } } }),
     // Score-shaped AND whitelisted: it is a declared penalty key, so only the NAME rule can refuse it.
@@ -706,7 +706,7 @@ test('a dead scored agent yields null with its reason, is visible as unreported,
   expect(result.scoreTable.scoresReported).toBe(1)
   expect(result.overallPass).toBe(true)
   expect(result.verdict).toBe('PASS')
-  // ...and it adds nothing to any selector, so craft's law that a FAIL names a re-run target holds.
+  // ...and it adds nothing to any selector, so `work`'s law that a FAIL names a re-run target holds.
   expect(result.tasksThatFlagged).toEqual([])
   expect(result.mechanicalThatFailed).toEqual([])
   expect(result.lensesThatFlagged).toEqual([])
@@ -848,7 +848,7 @@ test('a non-array passthrough throws for THAT reason, not incidentally', async (
 
 // ---------------------------------------------------------------- the spec, not the prose, is authority
 //
-// The hash craft pins is over the `craft:dispatch` block's canonical JSON, so the paragraphs around
+// The hash the work skill pins is over the `craft:dispatch` block's canonical JSON, so the paragraphs around
 // it are explanatory. An agent that reads a paragraph as a requirement is inventing authority, and
 // an agent that cannot re-derive the hash cannot detect an amendment — so AUTHORITY has to name the
 // field, the verification command, and the prose's status.

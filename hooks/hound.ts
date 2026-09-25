@@ -411,8 +411,8 @@ function judgeGoal(
   //
   // Calling the HTTP API also removes the agent CLI entirely, and with it a bug this had: those
   // wrappers load the CLAUDE.md, hooks and skills of whatever directory they start in and answer
-  // AS that agent -- the same prompt returned "UNMET" from /tmp and "Craft run abandoned..." from
-  // a repo carrying craft context. An HTTP call has no cwd and no persona to inherit.
+  // AS that agent -- the same prompt returned "UNMET" from /tmp and "work run abandoned..." from
+  // a repo carrying work context. An HTTP call has no cwd and no persona to inherit.
   const url = process.env.HOUND_JUDGE_URL || 'http://127.0.0.1:8317/v1/chat/completions'
   const token = process.env.HOUND_JUDGE_TOKEN || 'sk-local-claude-proxy'
   const model = process.env.HOUND_JUDGE_MODEL || 'gpt-5.6-luna'

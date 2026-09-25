@@ -19,7 +19,7 @@ bun ~/.claude/skills/workflows/skills/work/scripts/plan-preflight.ts <plan.md|ar
     [--only redCommand|mechanical|acceptance] [--skip <key,key>] [--timeout N] [--unsafe]
 ```
 
-Both accept a plan file or a craft args object. Exit 0 clean, 1 findings, 2 unparseable. Fix
+Both accept a plan file or a `work` args object. Exit 0 clean, 1 findings, 2 unparseable. Fix
 everything they report before dispatching Phase 4.
 
 **Severity is the precision claim.** Tier 1's `major` rules are the ones whose verdict is

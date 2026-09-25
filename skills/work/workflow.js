@@ -1,7 +1,7 @@
 export const meta = {
   name: 'work',
-  description: 'Craft loop core: sequential plan-bound implementation, blind verification in parallel with advisory third-party review, JS-computed gate',
-  whenToUse: 'Invoked by the craft skill after plan approval; never discovers authority — requires planPath + specHash + tasks as args.',
+  description: 'work loop core: sequential plan-bound implementation, blind verification in parallel with advisory third-party review, JS-computed gate',
+  whenToUse: 'Invoked by the work skill after plan approval; never discovers authority — requires planPath + specHash + tasks as args.',
   phases: [
     { title: 'Implement', detail: 'one agent per task, sequential (shared working tree); not opened at all under readOnly' },
     { title: 'Verify', detail: 'review lenses + adversarial refute, plus per-task blind verifiers when not readOnly' },
@@ -15,19 +15,19 @@ export const meta = {
 // variables, no conditionals, no shared sub-objects. The harness parses it without running the
 // script, so a `phases` computed from `args` is rejected outright and NOTHING in this file loads,
 // readOnly or not. An earlier version hoisted a `READ_ONLY` const and five phase arrays above this
-// block to advertise a mode-specific phase list; it made craft unloadable in every mode and was
+// block to advertise a mode-specific phase list; it made work unloadable in every mode and was
 // caught only when a run finally invoked the harness for real, because every test until then had
 // stubbed the hooks. Hence: one static list whose details name what readOnly changes, rather than
 // lists chosen at parse time. `Implement` is advertised and then never opened on a readOnly run — a
 // cosmetic cost, and the only shape the contract permits.
 
 // ---------------------------------------------------------------- args (fail-closed)
-if (!args || typeof args !== 'object') throw new Error('craft: args object required')
+if (!args || typeof args !== 'object') throw new Error('work: args object required')
 const { projectDir, planPath, specHash, goal, tasks } = args
-if (!projectDir) throw new Error('craft: projectDir required')
-if (!planPath) throw new Error('craft: planPath required — the approved plan snapshot is the sole authority')
-if (!/^[0-9a-f]{64}$/.test(specHash || '')) throw new Error('craft: specHash must be the 64-hex sha256 of the plan\'s canonical craft:dispatch spec')
-if (!goal) throw new Error('craft: goal required (one sentence + criteria from .craft/<run>/goal.md)')
+if (!projectDir) throw new Error('work: projectDir required')
+if (!planPath) throw new Error('work: planPath required — the approved plan snapshot is the sole authority')
+if (!/^[0-9a-f]{64}$/.test(specHash || '')) throw new Error('work: specHash must be the 64-hex sha256 of the plan\'s canonical craft:dispatch spec')
+if (!goal) throw new Error('work: goal required (one sentence + criteria from .craft/<run>/goal.md)')
 // readOnly (default false): audit an existing tree. No Implement phase, no per-task verifiers, and
 // therefore no requirement that tasks[] be non-empty. When readOnly is false the tasks[] guard is
 // exactly as it has always been.
@@ -41,7 +41,7 @@ const readOnly = args.readOnly === true
 // and a machine-specific literal would be wrong everywhere but one box. Both uses are prompt text a
 // shell or an agent expands.
 const skillRoot = args.skillRoot || '~/.claude/skills/workflows/skills/work'
-if (!readOnly && (!Array.isArray(tasks) || tasks.length === 0)) throw new Error('craft: tasks[] required')
+if (!readOnly && (!Array.isArray(tasks) || tasks.length === 0)) throw new Error('work: tasks[] required')
 // Every later reference goes through taskList. When tasks[] is present this IS tasks (same array),
 // so nothing downstream changes; it is [] only on a readOnly run that supplied no tasks.
 const taskList = Array.isArray(tasks) ? tasks : []
@@ -54,15 +54,15 @@ const RED_COMMAND_OPERATORS = /[;&|`$><(){}\n\r]/
 const isRedGated = t => typeof t.redCommand === 'string'
 for (const t of taskList) {
   if (!t.id || !t.name || !t.work || !t.acceptance) {
-    throw new Error(`craft: task missing id/name/work/acceptance: ${JSON.stringify(t)}`)
+    throw new Error(`work: task missing id/name/work/acceptance: ${JSON.stringify(t)}`)
   }
   if (t.redCommand !== undefined && t.redCommand !== null) {
     if (typeof t.redCommand !== 'string' || !t.redCommand.trim()) {
-      throw new Error(`craft: task ${t.id}: redCommand must be a non-empty string: ${JSON.stringify(t.redCommand)}`)
+      throw new Error(`work: task ${t.id}: redCommand must be a non-empty string: ${JSON.stringify(t.redCommand)}`)
     }
     if (RED_COMMAND_OPERATORS.test(t.redCommand)) {
       throw new Error(
-        `craft: task ${t.id}: redCommand must be ONE INVOCATION — the shell operators ; & | \` $ > < ( ) { } and newlines are rejected: ${JSON.stringify(t.redCommand)}. ` +
+        `work: task ${t.id}: redCommand must be ONE INVOCATION — the shell operators ; & | \` $ > < ( ) { } and newlines are rejected: ${JSON.stringify(t.redCommand)}. ` +
         'Flags and quotes are fine (pytest tests/x.py -k "a or b"); a shell program is not. ' +
         'If the check genuinely needs several steps, put them in a script and name the script.'
       )
@@ -70,9 +70,9 @@ for (const t of taskList) {
   }
   if (t.dependsOn !== undefined && t.dependsOn !== null) {
     if (!Array.isArray(t.dependsOn) || t.dependsOn.some(d => typeof d !== 'string' || !d.trim())) {
-      throw new Error(`craft: task ${t.id}: dependsOn must be an array of task id strings: ${JSON.stringify(t.dependsOn)}`)
+      throw new Error(`work: task ${t.id}: dependsOn must be an array of task id strings: ${JSON.stringify(t.dependsOn)}`)
     }
-    if (t.dependsOn.includes(t.id)) throw new Error(`craft: task ${t.id}: dependsOn cannot include itself`)
+    if (t.dependsOn.includes(t.id)) throw new Error(`work: task ${t.id}: dependsOn cannot include itself`)
   }
 }
 
@@ -86,7 +86,7 @@ for (const t of taskList) {
   for (const d of depsOf(t)) {
     // Unknown ids are refused rather than ignored: a typo'd dependency would silently drop the
     // ordering it was written to enforce, and the implementer would read a file that is not there yet.
-    if (!taskIds.has(d)) throw new Error(`craft: task ${t.id}: dependsOn names unknown task id ${JSON.stringify(d)}`)
+    if (!taskIds.has(d)) throw new Error(`work: task ${t.id}: dependsOn names unknown task id ${JSON.stringify(d)}`)
   }
 }
 // Optional priorFindings: [{title, severity, detail, file?, lens?}] — discoveries made OUTSIDE this
@@ -109,14 +109,14 @@ const UNATTRIBUTED = 'unattributed'
 const PRIOR_FINDING_SEVERITIES = ['critical', 'major', 'minor']
 // Validated at arg time, not mid-run: a malformed entry must fail before a single agent is dispatched.
 if (args.priorFindings !== undefined && !Array.isArray(args.priorFindings)) {
-  throw new Error(`craft: priorFindings must be an array of {title, severity, detail, file?, lens?}: ${JSON.stringify(args.priorFindings)}`)
+  throw new Error(`work: priorFindings must be an array of {title, severity, detail, file?, lens?}: ${JSON.stringify(args.priorFindings)}`)
 }
 for (const f of Array.isArray(args.priorFindings) ? args.priorFindings : []) {
   if (!f || !f.title || !f.severity || !f.detail) {
-    throw new Error(`craft: priorFinding missing title/severity/detail: ${JSON.stringify(f)}`)
+    throw new Error(`work: priorFinding missing title/severity/detail: ${JSON.stringify(f)}`)
   }
   if (!PRIOR_FINDING_SEVERITIES.includes(f.severity)) {
-    throw new Error(`craft: priorFinding severity must be one of ${PRIOR_FINDING_SEVERITIES.join('|')}: ${JSON.stringify(f)}`)
+    throw new Error(`work: priorFinding severity must be one of ${PRIOR_FINDING_SEVERITIES.join('|')}: ${JSON.stringify(f)}`)
   }
 }
 // Attribution is settled HERE, once, so nothing downstream has to remember to default it.
@@ -137,12 +137,12 @@ const reviewLenses = Array.isArray(args.reviewLenses) && args.reviewLenses.lengt
 // Whole-deliverable mechanical checks: [{name, cmd}]. Optional; absent/empty skips the phase entirely.
 const mechanicalChecks = Array.isArray(args.mechanicalChecks) ? args.mechanicalChecks : []
 for (const c of mechanicalChecks) {
-  if (!c || !c.name || !c.cmd) throw new Error(`craft: mechanicalCheck missing name/cmd: ${JSON.stringify(c)}`)
+  if (!c || !c.name || !c.cmd) throw new Error(`work: mechanicalCheck missing name/cmd: ${JSON.stringify(c)}`)
 }
 // Optional scored checks: [{key, items, prompt, schema, components, refs?, agentType?}]. ADVISORY:
 // nothing computed from them is read by overallPass, and there is deliberately no threshold — gating
 // on a weighted composite chases minors rather than defects. The agent returns RAW COUNTS and the
-// arithmetic below is craft's, because an agent that reports its own score inflates it and one that
+// arithmetic below is work's, because an agent that reports its own score inflates it and one that
 // never sees the formula cannot. Absent or [] means the leg dispatches nothing.
 const scoredChecks = Array.isArray(args.scoredChecks) ? args.scoredChecks : []
 const ITEMS_CHECKED = 'itemsChecked'
@@ -152,32 +152,32 @@ const SCORE_NAME = /score|composite|rating|grade/i
 const penaltyFields = s => new Set(s.components.flatMap(c => Object.keys(c.penalties)))
 for (const s of scoredChecks) {
   if (!s || typeof s !== 'object' || !s.key || !s.prompt) {
-    throw new Error(`craft: scoredCheck missing key/prompt: ${JSON.stringify(s)}`)
+    throw new Error(`work: scoredCheck missing key/prompt: ${JSON.stringify(s)}`)
   }
   const at = `scoredCheck ${JSON.stringify(s.key)}`
   if (!Array.isArray(s.items) || !s.items.length || s.items.some(i => typeof i !== 'string' || !i.trim())) {
-    throw new Error(`craft: ${at}: items must be a non-empty array of non-empty strings: ${JSON.stringify(s.items)}`)
+    throw new Error(`work: ${at}: items must be a non-empty array of non-empty strings: ${JSON.stringify(s.items)}`)
   }
   if (!Array.isArray(s.components) || !s.components.length) {
-    throw new Error(`craft: ${at}: components must be a non-empty array of {name, weight, base, penalties}: ${JSON.stringify(s.components)}`)
+    throw new Error(`work: ${at}: components must be a non-empty array of {name, weight, base, penalties}: ${JSON.stringify(s.components)}`)
   }
   for (const c of s.components) {
-    if (!c || typeof c !== 'object' || !c.name) throw new Error(`craft: ${at}: component missing name: ${JSON.stringify(c)}`)
+    if (!c || typeof c !== 'object' || !c.name) throw new Error(`work: ${at}: component missing name: ${JSON.stringify(c)}`)
     if (!Number.isFinite(c.weight) || !Number.isFinite(c.base)) {
-      throw new Error(`craft: ${at}: component ${c.name}: weight and base must be finite numbers: ${JSON.stringify(c)}`)
+      throw new Error(`work: ${at}: component ${c.name}: weight and base must be finite numbers: ${JSON.stringify(c)}`)
     }
     if (!c.penalties || typeof c.penalties !== 'object' || Array.isArray(c.penalties) || !Object.keys(c.penalties).length) {
-      throw new Error(`craft: ${at}: component ${c.name}: penalties must be a non-empty {countField: perUnit} object: ${JSON.stringify(c.penalties)}`)
+      throw new Error(`work: ${at}: component ${c.name}: penalties must be a non-empty {countField: perUnit} object: ${JSON.stringify(c.penalties)}`)
     }
     for (const [k, per] of Object.entries(c.penalties)) {
       if (!Number.isFinite(per)) {
-        throw new Error(`craft: ${at}: component ${c.name}: penalty ${JSON.stringify(k)} must be a finite per-unit number: ${JSON.stringify(per)}`)
+        throw new Error(`work: ${at}: component ${c.name}: penalty ${JSON.stringify(k)} must be a finite per-unit number: ${JSON.stringify(per)}`)
       }
     }
   }
   const props = s.schema && typeof s.schema === 'object' ? s.schema.properties : null
   if (!props || typeof props !== 'object' || Array.isArray(props)) {
-    throw new Error(`craft: ${at}: schema must be an object schema with a properties map: ${JSON.stringify(s.schema)}`)
+    throw new Error(`work: ${at}: schema must be an object schema with a properties map: ${JSON.stringify(s.schema)}`)
   }
   const counts = penaltyFields(s)
   // `passthrough` is EVIDENCE, not input to any score: denominators a finding is stated against
@@ -188,14 +188,14 @@ for (const s of scoredChecks) {
   // "anything non-numeric", which would still refuse the numeric denominators.
   const pass = new Set(Array.isArray(s.passthrough) ? s.passthrough : [])
   if (s.passthrough !== undefined && !Array.isArray(s.passthrough)) {
-    throw new Error(`craft: ${at}: passthrough must be an array of schema field names: ${JSON.stringify(s.passthrough)}`)
+    throw new Error(`work: ${at}: passthrough must be an array of schema field names: ${JSON.stringify(s.passthrough)}`)
   }
   for (const k of pass) {
     if (counts.has(k)) {
-      throw new Error(`craft: ${at}: ${JSON.stringify(k)} is declared both as a penalties key and as passthrough — a field either feeds a score or is evidence, never both.`)
+      throw new Error(`work: ${at}: ${JSON.stringify(k)} is declared both as a penalties key and as passthrough — a field either feeds a score or is evidence, never both.`)
     }
     if (!(k in props)) {
-      throw new Error(`craft: ${at}: passthrough names ${JSON.stringify(k)}, which the schema does not declare.`)
+      throw new Error(`work: ${at}: passthrough names ${JSON.stringify(k)}, which the schema does not declare.`)
     }
   }
   for (const [k, def] of Object.entries(props)) {
@@ -204,28 +204,28 @@ for (const s of scoredChecks) {
     // agent then reports the one number this parameter exists to compute in JS.
     if (k !== ITEMS_CHECKED && !counts.has(k) && !pass.has(k)) {
       throw new Error(
-        `craft: ${at}: schema field ${JSON.stringify(k)} is not "${ITEMS_CHECKED}", not a penalties key of any component (${[...counts].join(', ') || 'none declared'}), and not declared in passthrough. ` +
-        'A scored agent returns RAW COUNTS ONLY and craft computes every score; declare evidence fields in passthrough, and refuse anything else.'
+        `work: ${at}: schema field ${JSON.stringify(k)} is not "${ITEMS_CHECKED}", not a penalties key of any component (${[...counts].join(', ') || 'none declared'}), and not declared in passthrough. ` +
+        'A scored agent returns RAW COUNTS ONLY and work computes every score; declare evidence fields in passthrough, and refuse anything else.'
       )
     }
     // Applied to passthrough too: the guarantee is that no agent supplies the number, and an evidence
     // field named `composite` would smuggle one straight past the count rules.
     if (SCORE_NAME.test(k)) {
-      throw new Error(`craft: ${at}: schema field ${JSON.stringify(k)} is score-shaped (/score|composite|rating|grade/i). Name the thing counted, not the number it feeds.`)
+      throw new Error(`work: ${at}: schema field ${JSON.stringify(k)} is score-shaped (/score|composite|rating|grade/i). Name the thing counted, not the number it feeds.`)
     }
     // Scored fields stay numeric with no nesting; passthrough may be any shape, since nothing computes on it.
     if (!pass.has(k) && (!def || typeof def !== 'object' || (def.type !== 'number' && def.type !== 'integer') || def.properties !== undefined)) {
-      throw new Error(`craft: ${at}: schema field ${JSON.stringify(k)} must be declared type number|integer with no nested properties: ${JSON.stringify(def)}`)
+      throw new Error(`work: ${at}: schema field ${JSON.stringify(k)} must be declared type number|integer with no nested properties: ${JSON.stringify(def)}`)
     }
   }
   if (!(ITEMS_CHECKED in props)) {
-    throw new Error(`craft: ${at}: schema must declare ${ITEMS_CHECKED} — it is what states how much was examined, and without it every item is unmeasured.`)
+    throw new Error(`work: ${at}: schema must declare ${ITEMS_CHECKED} — it is what states how much was examined, and without it every item is unmeasured.`)
   }
   for (const k of counts) {
     // A penalty over a field the schema never declares contributes zero on every run, and a penalty
     // that never fires is indistinguishable from one that never applied.
     if (!(k in props)) {
-      throw new Error(`craft: ${at}: penalty ${JSON.stringify(k)} names a count field the schema does not declare (declared: ${Object.keys(props).join(', ')})`)
+      throw new Error(`work: ${at}: penalty ${JSON.stringify(k)} names a count field the schema does not declare (declared: ${Object.keys(props).join(', ')})`)
     }
   }
 }
@@ -272,7 +272,7 @@ const JUDGE_REFS_INTRO = 'The rules this judgement is made against. Read each of
 // Refuters get the ref paths NAMED but not a read-in-full instruction. A lens is one agent doing
 // open-ended reading; its refuters are one agent PER FINDING, and handing each of them the same
 // full ref set multiplies the largest read in the run by the finding count — measured at 39
-// refuters against 1,700 lines of refs, which is where a craft run's tokens actually go. The
+// refuters against 1,700 lines of refs, which is where a work run's tokens actually go. The
 // finding's own quoted evidence is what a refuter judges; the refs stay reachable for the case
 // where that evidence genuinely is not enough, so nothing is structurally hidden from it.
 const REFUTER_REFS_INTRO = 'Rules files, available if the finding\'s own quoted evidence is not enough to reach a verdict. Do NOT read these by default — the finding above should be self-contained, and opening one costs the run real tokens. If you do open one, say so in your reason.'
@@ -371,13 +371,13 @@ const fanOut = {
 const fanOutFloor = Object.values(fanOut).reduce((a, b) => a + b, 0)
 if (fanOutFloor > maxAgents) {
   throw new Error(
-    `craft: fan-out floor ${fanOutFloor} exceeds maxAgents ${maxAgents} — ` +
+    `work: fan-out floor ${fanOutFloor} exceeds maxAgents ${maxAgents} — ` +
     `${JSON.stringify(fanOut)} (lens-finding refuters are ON TOP of this, up to ${REFUTERS_PER_LENS} per lens). ` +
     'This is a sizing decision and it belongs to the user at plan-approval time, not to the dispatcher. ' +
-    'Split into sequenced craft runs, cut priorFindings/lenses in the plan and re-hash, or pass an explicit maxAgents.'
+    'Split into sequenced work runs, cut priorFindings/lenses in the plan and re-hash, or pass an explicit maxAgents.'
   )
 }
-if (onlyTasks && activeTasks.length === 0) throw new Error('craft: onlyTasks matched none of tasks[]')
+if (onlyTasks && activeTasks.length === 0) throw new Error('work: onlyTasks matched none of tasks[]')
 
 // ── IMPLEMENT waves ──────────────────────────────────────────────────────────
 // Tasks within a wave run CONCURRENTLY; waves run in order. An edge to a task outside `activeTasks`
@@ -394,7 +394,7 @@ function implementWaves(list) {
     if (!ready.length) {
       // Kahn leftover: the remaining ids are exactly the cycle. Naming them beats "invalid graph".
       throw new Error(
-        `craft: dependsOn contains a cycle among ${JSON.stringify([...pending.keys()])} — ` +
+        `work: dependsOn contains a cycle among ${JSON.stringify([...pending.keys()])} — ` +
         'IMPLEMENT cannot be ordered. A dependency is a read ordering, so a cycle means two tasks each need the other\'s output.'
       )
     }
@@ -420,7 +420,7 @@ for (const wave of IMPLEMENT_WAVES) {
         for (const b of (wave[j].writablePaths || []).map(normPath)) {
           if (pathsOverlap(a, b)) {
             throw new Error(
-              `craft: tasks ${wave[i].id} and ${wave[j].id} would implement CONCURRENTLY but both claim ${JSON.stringify(a === b ? a : [a, b])} — ` +
+              `work: tasks ${wave[i].id} and ${wave[j].id} would implement CONCURRENTLY but both claim ${JSON.stringify(a === b ? a : [a, b])} — ` +
               'same-wave writable paths must be disjoint. Give one a dependsOn on the other, or narrow the paths in the plan and re-hash.'
             )
           }
@@ -1175,7 +1175,7 @@ return {
   // [] when mechanicalChecks is absent: the phase was skipped, so there is nothing to re-run.
   mechanical,
   // ADVISORY, like thirdParty: one entry per (key, item) in dispatch order, each carrying the
-  // JS-computed component scores and composite, or nulls with a reason. Craft emits no cross-item
+  // JS-computed component scores and composite, or nulls with a reason. `work` emits no cross-item
   // mean or rank — combining items is the caller's business, and an average over a null item is the
   // vacuous number the null exists to prevent. [] when scoredChecks is absent. NOT a selector: these
   // cannot fail the run, so they add nothing to the three channels below.

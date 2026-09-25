@@ -22,8 +22,8 @@ For each candidate cause, state:
 
 Use direct, bounded read-only inspection only. Do not delegate a team or make changes while diagnosing.
 If the evidence establishes an R4 condition, immediately route to `/ds` native replanning. If it leaves
-the approved plan intact, the finding becomes a row in the craft plan's task table and is verified by
-craft's own independent verifier.
+the approved plan intact, the finding becomes a row in the `work` plan's task table and is verified by
+`work`'s own independent verifier.
 
 ## Evidence table
 

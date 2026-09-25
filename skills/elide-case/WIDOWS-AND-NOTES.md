@@ -147,7 +147,7 @@ along with what is not a reason for a note: anything the preamble already covers
 - `references/verification.md` — four legs → five, the new leg's row, and why it is the one
   leg that is on by default
 
-**The craft phases were not restructured.** No change to CLARIFY's three questions, PLAN's
+**The `work` phases were not restructured.** No change to CLARIFY's three questions, PLAN's
 sections, the wave graph, `scoredChecks`, or the FAIL loop.
 
 ---

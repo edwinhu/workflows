@@ -3,7 +3,7 @@
 #
 # Three legs, none short-circuiting, so every leg reports on every run. They were three
 # separate mechanicalChecks entries until 2026-09-15; a list of N independent commands
-# loses one silently, and craft re-runs a claimed mechanical pass in a shell, which is
+# loses one silently, and work re-runs a claimed mechanical pass in a shell, which is
 # affordable for one command and not for three.
 #
 # Usage: check.sh --plan <planPath> --project-dir <dir>

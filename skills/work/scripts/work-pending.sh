@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Is a craft run armed but undispatched in this project?
+# Is a work run armed but undispatched in this project?
 #
 # Armed  = the newest plan carries a `<!-- craft:dispatch … -->` block. Writing that block is
 #          what arms the run, and the plan is the only file plan mode may write — which is also

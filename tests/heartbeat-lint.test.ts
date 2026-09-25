@@ -44,7 +44,7 @@ describe('what compose-goal.sh emits', () => {
 describe('the three runs that stalled', () => {
   test('npx-reconcile: a verdict is a milestone, and it closed on a hard FAIL', () => {
     // Cost: 4h10m, 2026-08-27 02:42 local.
-    expect(rules('craft has returned a verdict for .planning/npx-iss-reconciliation.md')).toContain(
+    expect(rules('the work run has returned a verdict for .planning/npx-iss-reconciliation.md')).toContain(
       'C1',
     )
   })

@@ -6,7 +6,7 @@
  * work-dispatch.sh executes every active task's `redCommand` BEFORE dispatching, and refuses a
  * probe that could not run or that already passes.
  *
- * craft detects `red-not-red` and `green-not-green` at RUN time — after two probe agents, an
+ * the work skill detects `red-not-red` and `green-not-green` at RUN time — after two probe agents, an
  * implementer, a verifier, five lenses and five mechanical checks have already been paid for. Both
  * verdicts are decidable at DISPATCH time from the same command, one round earlier. Observed
  * 2026-08-13: four tasks scored `green-not-green` for a whole round because their `redCommand` was
@@ -70,7 +70,7 @@ function dispatch(f: { dir: string; plan: string }, ...extra: string[]) {
   }
 }
 
-describe('the goal names the round budget craft actually enforces', () => {
+describe('the goal names the round budget work actually enforces', () => {
   /**
    * The clause reads `args.rounds` — the per-round counter work-redispatch increments and hard-stops
    * at `maxRounds` (exit 4 beyond it). Composed against `goalTurns` instead, it names a number the
@@ -101,7 +101,7 @@ describe('the goal names the round budget craft actually enforces', () => {
     expect(goal).not.toMatch(/reads 12 or more/)   // goalTurns' default, the value it used to name
   })
 
-  test('the default round budget is craft\'s own, so an unstated maxRounds is still reachable', () => {
+  test('the default round budget is work\'s own, so an unstated maxRounds is still reachable', () => {
     const f = fixture({ redCommand: 'bash scripts/check.sh' })
     script(f.dir, 'check.sh', 'echo "1 failed, 0 passed"\nexit 1')
     expect(goalOf(f)).toMatch(/reads 6 or more/)
@@ -116,7 +116,7 @@ describe('the goal names the round budget craft actually enforces', () => {
 })
 
 describe('the redCommand probe runs at dispatch, not a round later', () => {
-  test('a redCommand that genuinely fails a test PROCEEDS — non-zero with a real test result is the RED craft wants', () => {
+  test('a redCommand that genuinely fails a test PROCEEDS — non-zero with a real test result is the RED `work` wants', () => {
     const f = fixture({ redCommand: 'bash scripts/check.sh' })
     script(f.dir, 'check.sh', 'echo "1 failed, 0 passed"\nexit 1')
     const r = dispatch(f)
@@ -306,7 +306,7 @@ describe('a probe refusal is atomic — the run is left exactly as it was', () =
 })
 
 /**
- * The plan file is NOT craft's, and nothing preserves it: `.claude/plans/` is gitignored scratch, and
+ * The plan file is NOT work's, and nothing preserves it: `.claude/plans/` is gitignored scratch, and
  * re-entering plan mode in the same session OVERWRITES the file the harness told it to overwrite.
  * Measured 2026-08-13: the plan behind dotfiles 025c90a2 was destroyed that way and recoverable only
  * from a session transcript. Every dispatched agent verifies `specHash` against `planPath`, so after
@@ -580,7 +580,7 @@ describe('dispatch injects specHash, and planHash is gone', () => {
  * path the run's own output?
  *
  * The guard used to deny EVERY Edit and Write until args.json landed, which deadlocked the thing
- * craft requires most — dispatch probes every `redCommand` before wave 1, so the failing suite must
+ * the work skill requires most — dispatch probes every `redCommand` before wave 1, so the failing suite must
  * already exist, and `self-gating-task` forbids the task that would write it. The suite is
  * therefore in no task's writablePaths, and that is exactly what makes it safe to author in chat:
  * no implementer could have produced it. Anything inside a writable set still belongs to the gate.

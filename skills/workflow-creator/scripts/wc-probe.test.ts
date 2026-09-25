@@ -2151,7 +2151,7 @@ describe('D18 — a documentation placeholder is a template, not a broken path',
 describe('D19 — P2 skips are reported, and its scanners cover relative links', () => {
   const md = (body: string) => fixture({ 'SKILL.md': skillMd('d19', body) })
 
-  // craft shipped `(../../agent-spawn/...)`, one `..` too many, and every probe returned CLEAN:
+  // the work skill shipped `(../../agent-spawn/...)`, one `..` too many, and every probe returned CLEAN:
   // P2 ran a placeholder scanner and an absolute scanner, and a relative link is neither.
   test('a broken relative markdown link is a critical', () => {
     const r = cli(['--target', md('see [x](../../nope/gone.md) for details')])
@@ -2196,7 +2196,7 @@ describe('D19 — P2 skips are reported, and its scanners cover relative links',
 
 describe('D20 — shell scripts are inside the walk', () => {
   // BARE_ABS_RE already matched .sh paths NAMED FROM a scanned file, so a .sh was checkable as a
-  // target while never being opened as a source. craft ships two, and the probe reported "3 of 3".
+  // target while never being opened as a source. `work` ships two, and the probe reported "3 of 3".
   test('a broken path inside a .sh is a critical', () => {
     const dir = fixture({
       'SKILL.md': skillMd('sh'),
@@ -2970,7 +2970,7 @@ describe('D30 — an unbalanced fence does not switch P2 off for the rest of the
 // ------------------------------------------------------------------ D31
 
 describe('D31 — the NOT CHECKED channel reaches a consumer', () => {
-  // The demotion rested on "announced, not silent". Nothing consumed the announcement: craft's gate
+  // The demotion rested on "announced, not silent". Nothing consumed the announcement: `work`'s gate
   // reads exitCode, its probe agent captures "the last ~2000 characters" (so the header, and the
   // count, were the first thing truncated), and the write-time surface discarded skips entirely.
   test('a trailing summary carries the counts, so a tail-truncated capture keeps them', () => {
@@ -3223,14 +3223,14 @@ describe('D35 — P12: a craft-args fence dispatches through work-dispatch.sh', 
   // A script named inside a fence is a mechanicalChecks command, not a claim about the dispatch.
   test('(a) says nothing about a script named only inside a fence', () => {
     const fence = argsFence(1, ['gate']).replace('cmd: "true"', 'cmd: "bash check-slides.sh"')
-    const dir = fixture({ 'SKILL.md': `${skillMd('mech', 'Craft owns the invocation.')}\n${fence}\n` })
+    const dir = fixture({ 'SKILL.md': `${skillMd('mech', 'the work skill owns the invocation.')}\n${fence}\n` })
     expect(rulesOf(dir, 'P12')).toEqual([])
   })
 
   // CONTROL: naming a script is not routing through it — `workshop/SKILL.md` says it ships NO
   // workflow.js, and a rule that read the filename alone called that a hand-rolled dispatch.
   test('(a) says nothing about a script the file names without claiming as its dispatch', () => {
-    const body = 'It ships no `workflow.js` and restates none of craft\'s mechanics.'
+    const body = 'It ships no `workflow.js` and restates none of work\'s mechanics.'
     const dir = fixture({ 'SKILL.md': `${skillMd('mentions', body)}\n${argsFence(1, ['gate'])}\n` })
     expect(rulesOf(dir, 'P12')).toEqual([])
     expect(cli(['--target', dir]).code).toBe(0)
@@ -3244,7 +3244,7 @@ describe('D35 — P12: a craft-args fence dispatches through work-dispatch.sh', 
   })
 
   test('(a) a file naming NEITHER entry point is not judged', () => {
-    const body = 'Craft owns the invocation, the wait and the return shape.'
+    const body = '`work` owns the invocation, the wait and the return shape.'
     const dir = fixture({ 'SKILL.md': `${skillMd('unnamed', body)}\n${argsFence(1, ['gate'])}\n` })
     expect(rulesOf(dir, 'P12')).toEqual([])
   })

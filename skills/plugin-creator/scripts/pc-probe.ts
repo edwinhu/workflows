@@ -53,7 +53,7 @@
  *     same claim twice.
  *     Defect: the `prose-register` lens (teaching) and the `slide-register` system (workflows) now
  *     make the same claim about the same three string literals at two severities, with no dedup
- *     path between a craft finding and a span id (sweep 3, F1).
+ *     path between a work finding and a span id (sweep 3, F1).
  *     NOT "one lens per skill directory": `/writing` carries four lenses whose columns are
  *     genuinely different (one reads the plan, one the register), and a rule that flagged those
  *     would fire on correct structure. The shared literal is what makes two lenses one claim.

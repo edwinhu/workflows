@@ -32,7 +32,7 @@ function script(dir: string, name: string, body: string) {
 /**
  * A stand-in for farm.sh, reached through CRAFT_FARM (work-dispatch.sh:64). It writes the verdict
  * the case needs to the --out path it was handed, which is exactly the contract the real runner has
- * with craft — so the loop under test polls a real file written by a real detached process.
+ * with work — so the loop under test polls a real file written by a real detached process.
  */
 function stubFarm(dir: string, pass: boolean, delaySec = 0) {
   const verdict = JSON.stringify({

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * PreToolUse on CronDelete: refuse to cancel the loop that drives a craft run still in flight.
+ * PreToolUse on CronDelete: refuse to cancel the loop that drives a work run still in flight.
  *
  * The refusal is TASK-SPECIFIC. `--record` runs as PostToolUse on CronCreate and appends the new
  * job id to `heartbeatCrons` in the args.json of every `.craft/<run>` whose name the prompt names,
@@ -150,9 +150,9 @@ const run = /^[A-Za-z0-9._-]+$/.test(newest) ? newest : "(a run under .craft/)";
 
 deny(
   (claiming.length
-    ? `The loop you are deleting drives a craft run that is still in flight: .craft/${run}/args.json ` +
+    ? `The loop you are deleting drives a work run that is still in flight: .craft/${run}/args.json ` +
       "records this cron in heartbeatCrons and has no verdict beside it. "
-    : `A craft run is still in flight: .craft/${run}/args.json has no verdict beside it, and no run ` +
+    : `A work run is still in flight: .craft/${run}/args.json has no verdict beside it, and no run ` +
       "claims this cron, so it cannot be told apart from that run's heartbeat. ") +
     "The loop is usually what drives that run to completion -- it is what re-enters the session to " +
     "read the verdict, fix what failed and redispatch. Deleting it now strands the run: the " +

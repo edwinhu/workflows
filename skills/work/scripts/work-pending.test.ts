@@ -1,5 +1,5 @@
 /**
- * "Is a craft run armed but undispatched?" — the question main-thread-guard.sh holds every Edit,
+ * "Is a work run armed but undispatched?" — the question main-thread-guard.sh holds every Edit,
  * Write and delegation on.
  *
  * The run dir does not have to live under the same root as the plan file. A dispatch block may name

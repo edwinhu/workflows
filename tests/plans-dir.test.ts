@@ -31,7 +31,7 @@ function settings(dir: string, body: string, file = 'settings.json') {
   writeFileSync(join(dir, '.claude', file), body)
 }
 
-/** An armed craft WRITING plan (dispatch block + Writing Intent) at `path`. */
+/** An armed work WRITING plan (dispatch block + Writing Intent) at `path`. */
 function plantWritingPlan(path: string, domain = 'legal') {
   mkdirSync(dirname(path), { recursive: true })
   writeFileSync(

@@ -385,10 +385,10 @@ async function main(): Promise<void> {
 
   const writingPlan = authenticatedWritingPlan(projectRoot);
   // STRUCTURAL checks stay gated on an authenticated APPROVED plan — they encode craft-workflow
-  // invariants (outline-sync, anchored-numbers) that are meaningless outside a craft run.
+  // invariants (outline-sync, anchored-numbers) that are meaningless outside a work run.
   //
   // The PROSE AUDIT is not gated, and used to be. `if (!writingPlan) process.exit(0)` meant a
-  // draft written outside a craft workflow was never linted AND never said so, which reads
+  // draft written outside a work workflow was never linted AND never said so, which reads
   // identically to "clean". Measured 2026-08-21: a 1,150-word blog post under docs/blog/ carried
   // an `ai-tic·sev3·rule-bites` hit through nine editing rounds because rule611 has no
   // armed plan in its plans directory. Silence that cannot be distinguished from a pass is not

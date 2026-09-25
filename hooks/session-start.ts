@@ -273,7 +273,7 @@ function pendingCraftRuns(root: string): string[] {
 /**
  * The plan's declared owning workflow: `.craft/<run>/args.json` → `planPath` → the plan's YAML
  * frontmatter `workflow:`. "" when anything on that chain is missing or unreadable — a run whose
- * plan declares nothing is craft's own and gets the unchanged line.
+ * plan declares nothing is `work`'s own and gets the unchanged line.
  */
 function runWorkflowName(root: string, run: string): string {
   try {
@@ -290,13 +290,13 @@ function runWorkflowName(root: string, run: string): string {
 }
 
 /**
- * A craft run that is armed but unfinished. `.craft/<run>/args.json` exists once a dispatch was
+ * A work run that is armed but unfinished. `.craft/<run>/args.json` exists once a dispatch was
  * armed; a missing `result.json` means the round never landed. The plan is the authority, so it is
  * named rather than summarised — the session reads it.
  *
  * A plan that declares `workflow:` in its frontmatter also names the skill to invoke first: approval
  * with "clear context" wipes the conversation, and without that name the re-seeded session falls
- * back to generic craft and loses the domain's result handling and human review.
+ * back to generic work and loses the domain's result handling and human review.
  */
 export function buildInProgressSection(root: string = process.cwd()): string {
   const pending = pendingCraftRuns(root);
@@ -307,11 +307,11 @@ export function buildInProgressSection(root: string = process.cwd()): string {
     if (name) {
       const skill = name.includes(":") ? name : `workflows:${name}`;
       lines.push(
-        `- craft run \`${run}\` (workflow \`${name}\`) was dispatched and has no result.json yet — ` +
+        `- work run \`${run}\` (workflow \`${name}\`) was dispatched and has no result.json yet — ` +
           `invoke \`Skill(skill="${skill}")\` first; it owns the result handling and human review.`,
       );
     } else {
-      lines.push(`- craft run \`${run}\` was dispatched and has no result.json yet.`);
+      lines.push(`- work run \`${run}\` was dispatched and has no result.json yet.`);
     }
   }
   lines.push(

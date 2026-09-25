@@ -1,28 +1,28 @@
 ---
 name: dev
-description: "Use when the user says \"build this feature\", \"implement X\", \"add support for\", \"add a flag for\", \"fix this bug properly\", \"this is broken, fix it\", \"refactor X\", \"write the tests for this\", \"/dev\", or hands over any code change that should ship with a real failing-then-passing test rather than a quick edit. Use proactively the moment a request implies changing code — before reading the codebase to understand the bug, since that reading is part of the run. NEGATIVE ROUTING: a change whose acceptance cannot be one command that fails now and passes later is /craft; a dataset, table, figure or number is /ds even when code produces it; a skill, workflow, hook or plugin manifest in this repo is skill-creator, workflow-creator or plugin-creator; a typo or one-line fix is done inline."
+description: "Use when the user says \"build this feature\", \"implement X\", \"add support for\", \"add a flag for\", \"fix this bug properly\", \"this is broken, fix it\", \"refactor X\", \"write the tests for this\", \"/dev\", or hands over any code change that should ship with a real failing-then-passing test rather than a quick edit. Use proactively the moment a request implies changing code — before reading the codebase to understand the bug, since that reading is part of the run. NEGATIVE ROUTING: a change whose acceptance cannot be one command that fails now and passes later is /work; a dataset, table, figure or number is /ds even when code produces it; a skill, workflow, hook or plugin manifest in this repo is skill-creator, workflow-creator or plugin-creator; a typo or one-line fix is done inline."
 argument-hint: 'the feature, change, or bug to develop'
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
 ---
 
-# dev — a code change, run through craft with a test-first gate
+# dev — a code change, run through `work` with a test-first gate
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
-The lifecycle is [craft](${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md). Read it and follow it.
+The lifecycle is [`work`](${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md). Read it and follow it.
 This file is a **delta**: it supplies the domain — the CLARIFY axes, the task-row shape, the lenses,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
-craft's mechanics.
+`work`'s mechanics.
 
-What makes a run `dev` rather than plain craft is one thing: **every implementation task carries a
-`redCommand`**, so craft's probes execute the failing test before the implementer and the passing
+What makes a run `dev` rather than plain `work` is one thing: **every implementation task carries a
+`redCommand`**, so `work`'s probes execute the failing test before the implementer and the passing
 test after it, and the JS reads both exit codes. A task whose acceptance cannot be expressed as one
 command that fails now and passes later is not ready to plan.
 
 ## Phase 1 — CLARIFY
 
-Craft's Phase 1, on these axes. Ask them **before any reconnaissance**: code says how the system
+`work`'s Phase 1, on these axes. Ask them **before any reconnaissance**: code says how the system
 works, not what the user wants.
 
 1. **Outcome** — what behaviour exists after this run that does not exist now, and what does done
@@ -80,7 +80,7 @@ it rather than asking the user to type it. Then **prove it with one `LSP` call o
 the repo** — `documentSymbol` is enough. The install command's exit code says the plugin was
 enabled, not that a server answers.
 
-Craft's remaining axes are taken as craft states them, with one domain binding: craft axis 4
+`work`'s remaining axes are taken as `work` states them, with one domain binding: `work` axis 4
 (observable success criteria) is answered with the **target project's own** test, lint and build
 commands, and those strings become `mechanicalChecks` verbatim.
 
@@ -94,15 +94,15 @@ trade-offs, and obtain an explicit choice. A sole viable option still needs its 
 
 ## Phase 2 — PLAN
 
-Craft's Phase 2. The plan opens with frontmatter `workflow: dev` — required, so a context clear at
-approval resumes here and not in craft.
+`work`'s Phase 2. The plan opens with frontmatter `workflow: dev` — required, so a context clear at
+approval resumes here and not in `work`.
 
 Three domain requirements on the table:
 
 - **`redCommand` per implementation task** — one invocation, no shell operators, failing now for the
   intended missing behaviour and passing once the task is done. It goes in the plan's Run sizing
   `Test-first:` block too, because it costs 2 agents against the fan-out ceiling.
-- **`refs` per task row and per lens** — required, may be empty. Craft's spine does not validate it;
+- **`refs` per task row and per lens** — required, may be empty. `work`'s spine does not validate it;
   `wc-probe` P7 refuses an absent key in THIS file, so a live run assembled from an approved plan is
   unchecked. Write `refs: []` to state "no domain rules" rather than omitting the key.
 - **Narrow `writablePaths`** — the probe runs a command that loads code the implementer can edit, so
@@ -115,16 +115,16 @@ Three domain requirements on the table:
 
 ## Phase 3 — GOAL
 
-Craft's Phase 3 unchanged.
+`work`'s Phase 3 unchanged.
 
-## Phase 4 — the craft call
+## Phase 4 — the work call
 
-The args go in the plan's `<!-- craft:dispatch -->` arming block, and the dispatch is **craft's own
+The args go in the plan's `<!-- craft:dispatch -->` arming block, and the dispatch is **`work`'s own
 `work-dispatch.sh`** — never a hand-written runner line. That script owns the TIER 1 plan-lint
 gate, which refuses to dispatch on a `major`/`critical` plan finding and fails CLOSED on a verdict it
-cannot count; hand-rolling the invocation silently drops it. Craft owns the wait, the result handling
+cannot count; hand-rolling the invocation silently drops it. `work` owns the wait, the result handling
 and the return shape too, and `work-result.sh` reads the verdict. This run's `projectDir` is the
-session repo, so craft's own run directory is already inside it and no `--run-dir` override applies.
+session repo, so `work`'s own run directory is already inside it and no `--run-dir` override applies.
 There is no built-in `Workflow` call — the guard at
 `~/.claude/hooks/main-thread-guard.sh` denies that tool outright.
 
@@ -165,7 +165,7 @@ Omitting it silently runs the user's codex request on claude.
 
   // Judged BEFORE any implementer is dispatched; a surviving critical|major returns FAIL having
   // built nothing. Cheap: a spec defect costs a few read-only agents instead of a whole round.
-  // Passing reviewLenses REPLACES craft's defaults, so the two defaults are spelled out here
+  // Passing reviewLenses REPLACES `work`'s defaults, so the two defaults are spelled out here
   // rather than elided — an array of three would silently drop them.
   reviewLenses: [
     { key: "criteria-vs-artifacts",
@@ -217,12 +217,12 @@ Add `${CLAUDE_PLUGIN_ROOT}/skills/dev/references/testing-web.md` or
 task's real test drives a browser or a native app. `authorityExtra` names them; `refs` is what makes
 an implementer read one in full.
 
-Handle the result per craft's Phase 4 — including that a `red-not-red`, `red-unproven` or
+Handle the result per `work`'s Phase 4 — including that a `red-not-red`, `red-unproven` or
 `green-not-green` verdict lands in `tasksThatFlagged` and is fixed as a task, not as a lens.
 
 ## Phase 5 — HUMAN REVIEW
 
-Craft's Phase 5 unchanged, on the review surface from CLARIFY axis 7.
+`work`'s Phase 5 unchanged, on the review surface from CLARIFY axis 7.
 
 ## Red flags
 
@@ -232,8 +232,8 @@ Craft's Phase 5 unchanged, on the review surface from CLARIFY axis 7.
 | RED is an ImportError on the module being built | call it red and dispatch | the probe refuses it as `could-not-run`; write the throwing stub, declare it in `scaffoldPaths` |
 | LSP enabled, binary never installed | trust the install's exit 0 | one `LSP documentSymbol` on a repo file before recon; `ENOENT` there is the whole failure |
 | No test harness in the repo | proceed and test by hand | test infrastructure is the first task, decided at CLARIFY — absence of tests is never a waiver |
-| The failing test needs two steps | `redCommand: "build && test"` | craft throws on shell operators; put the steps in a script and name the script |
+| The failing test needs two steps | `redCommand: "build && test"` | `work` throws on shell operators; put the steps in a script and name the script |
 | Task's real test would drive a browser or an app | assert on source or logs | the runtime references are refs on that task; a screenshot with no assertion is not evidence |
-| Adding domain lenses | pass the three and let craft add its own | passing `reviewLenses` REPLACES the defaults — spell all five out |
+| Adding domain lenses | pass the three and let `work` add its own | passing `reviewLenses` REPLACES the defaults — spell all five out |
 | RED reported by the implementer | accept it | probes execute `redCommand` on both sides; the verdict is the JS's, never the doer's |
-| Something craft does not obviously do | write a `dev/workflow.js` | ask which craft parameter is missing — `redCommand` itself came from exactly this question |
+| Something `work` does not obviously do | write a `dev/workflow.js` | ask which `work` parameter is missing — `redCommand` itself came from exactly this question |

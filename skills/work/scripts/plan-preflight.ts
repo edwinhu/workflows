@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * plan-preflight.ts — TIER 2 of craft's plan review: run the plan's own gates at BASELINE, before
+ * plan-preflight.ts — TIER 2 of work's plan review: run the plan's own gates at BASELINE, before
  * any implementer is dispatched, and read the exit codes.
  *
  *   bun .../plan-preflight.ts <plan.md | args.json> --cwd <repo> [--json] [--timeout 120]
@@ -8,7 +8,7 @@
  *
  * Exit 0 = baseline is consistent with the plan, 1 = defects reported, 2 = could not parse.
  *
- * craft already executes these commands — as probes AFTER dispatching implementers, where a bad
+ * `work` already executes these commands — as probes AFTER dispatching implementers, where a bad
  * gate surfaces as `red-not-red` and costs a whole round. The commands are the same; only the
  * moment changes, and at this moment a defect costs zero agents.
  *

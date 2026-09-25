@@ -150,7 +150,7 @@ describe('the dispatch reports which cgroup path it took', () => {
     const r = dispatch(f, { CRAFT_FARM: stubFarm(f.dir), CRAFT_NO_SCOPE: '1' })
     expect(r.code).toBe(0)
     expect(awaitResult(join(f.runDir, 'result.json'))).toBe(true)
-    // No craft unit anywhere in the runner's cgroup: nothing placed it.
+    // No work unit anywhere in the runner's cgroup: nothing placed it.
     expect(runnerCgroup(f.runDir)).not.toContain('scope-run')
   })
 })

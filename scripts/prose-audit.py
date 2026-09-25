@@ -981,7 +981,7 @@ def _hard_wrap_hits(text: str) -> list[dict]:
 
 
 # ── slide register (DECK ONLY) ───────────────────────────────────────────────
-# The decidable subset of the craft lens `prose-register`: bullets that ANNOUNCE what follows, or
+# The decidable subset of the work lens `prose-register`: bullets that ANNOUNCE what follows, or
 # that talk about the deck and the room, instead of stating the thing. The judgement half stays in
 # the lens — there is deliberately no heuristic here for "does this line carry a fact".
 #

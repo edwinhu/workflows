@@ -13,7 +13,7 @@ argument-hint: 'the case to excerpt, the insertion point, and the page target'
 allowed-tools: [Bash, Read, Write, Edit, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
 ---
 
-# elide-case — a court opinion cut into a student reading, on the craft spine
+# elide-case — a court opinion cut into a student reading, on the work spine
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
@@ -21,11 +21,11 @@ allowed-tools: [Bash, Read, Write, Edit, Grep, Glob, AskUserQuestion, EnterPlanM
 **Typst rules in force here** — read the one that governs what you are writing; they are independent:
 !`k=notes,prose; command -v typst-rules >/dev/null 2>&1 && exec typst-rules "$k"; r=$HOME/.claude/skills/typst/scripts/load-constraints; [ -x "$r" ] && exec "$r" "$k"; r=$HOME/projects/typst/scripts/load-constraints; [ -x "$r" ] && exec "$r" "$k"; echo "(typst corpus unavailable: NO Typst rule is listed here — install the typst plugin, or start a new session so its bin/ reaches PATH)"`
 
-The lifecycle is [craft](/home/eh/.claude/skills/workflows/skills/work/SKILL.md). Read it and
-follow it. This file supplies craft's spine with the domain and nothing else — the three CLARIFY
+The lifecycle is [`work`](/home/eh/.claude/skills/workflows/skills/work/SKILL.md). Read it and
+follow it. This file supplies `work`'s spine with the domain and nothing else — the three CLARIFY
 questions, the plan grammar, the task rows, the two scored checks, the one mechanical entry point, the refs
 and the authority text. **It ships no `workflow.js` and no `.js` of any kind**, and restates none of
-craft's mechanics.
+`work`'s mechanics.
 
 The domain rules live in `references/` and reach every dispatched agent through `refs`:
 
@@ -76,7 +76,7 @@ and class number still come from the request, or off the schedule if the request
 ### THE INTERVIEW, AND EXACTLY WHAT ENFORCES IT
 
 Never self-answer either question, never state an assumption and continue, never infer the thread
-from the Teacher's Manual or from the case itself. Craft's CLARIFY is conversational and **a
+from the Teacher's Manual or from the case itself. `work`'s CLARIFY is conversational and **a
 dispatched agent cannot call `AskUserQuestion`** — a run started from a farmed-out agent has nobody
 to ask, and its only correct move is to stop and report that the interview is unanswered. Elevating
 the run to a session that can reach the user is the fix; guessing is not.
@@ -103,13 +103,13 @@ them is software:
 **What that leg proves, and what it does not.** It proves the section exists and every required answer
 is non-empty. It is a backstop against an **orchestrator that skipped the question** — nothing more.
 The plan file is written by the orchestrator, so no grep of it can tell the user's answers from the
-orchestrator's own, and craft's `mechanicalChecks` run at gate time, *after* IMPLEMENT, so no
+orchestrator's own, and `work`'s `mechanicalChecks` run at gate time, *after* IMPLEMENT, so no
 mechanical leg can refuse to proceed past CLARIFY. Do not close the gap with a second
 `mechanicalChecks` entry — P10 refuses one, and the leg belongs inside the single entry point.
 
 ## Phase 2 — PLAN
 
-Craft's Phase 2. Domain requirements on the plan:
+`work`'s Phase 2. Domain requirements on the plan:
 
 - **A `## Readings In Scope` section**, one row per reading: `caption | source docs/*.westlaw.docx (a docs/*.txt from an
   earlier run, or from the fallback route, still resolves) | page
@@ -119,7 +119,7 @@ Craft's Phase 2. Domain requirements on the plan:
   target is per reading, from interview question 3; `check.sh` maps each `.typ` caption to its row and
   passes that row's own MIN-MAX to `check-addendum.py`. The caption is the identifier the `.typ` and the mechanical entry point key on — the entry
   point derives its per-reading checks from the captions in the `.typ`. Each row also generates one
-  `cut-<slug>` task, which is how a per-reading re-run reaches craft's `onlyTasks`.
+  `cut-<slug>` task, which is how a per-reading re-run reaches `work`'s `onlyTasks`.
 - **The first two CLARIFY answers, quoted** (the third is the `page target` column above), under `## Doctrinal target`, on three labelled lines the
   `--plan` leg parses — `Doctrinal thread:`, `Cuts against:`, `Taught for:` (holding or reasoning).
   A placeholder (`TBD`, `<…>`, `N/A`) reads as absent and fails the leg.
@@ -132,9 +132,9 @@ Craft's Phase 2. Domain requirements on the plan:
   `// elide-unchecked:` marker in the `.typ` is no longer honoured and its presence is itself a
   FAIL naming the reading.
 - **Run sizing** naming the one mechanical entry point, the two `scoredChecks` keys on the `Scored
-  checks:` line marked ADVISORY, the two craft default lenses on the `Review lenses:` line, and the
+  checks:` line marked ADVISORY, the two `work` default lenses on the `Review lenses:` line, and the
   task rows. R readings give R + 2 tasks — one `retrieve`, R `cut-<slug>`, one `compile-table` — and
-  2R scored items; with craft's two default lenses and one mechanical check the floor is
+  2R scored items; with `work`'s two default lenses and one mechanical check the floor is
   2(R + 2) + 1 + 2 + 2R = 4R + 7 agents — 11 for a single reading, 19 for four readings.
 - **The wave assignment, stated**: `retrieve` in wave 1, every `cut-<slug>` in wave 2, `compile-table`
   in wave 3. `work-dispatch.sh` prints the wave graph it computes; if it does not match those three
@@ -145,7 +145,7 @@ Craft's Phase 2. Domain requirements on the plan:
 
 ## Phase 3 — GOAL
 
-Craft's Phase 3, on the PASS phrasing: a run that writes can turn a FAIL into a PASS, and craft's
+`work`'s Phase 3, on the PASS phrasing: a run that writes can turn a FAIL into a PASS, and `work`'s
 outer fix loop is what does it.
 
 **Condition: `work-result.sh` returned 0 for the plan path, and the tuicr gate returned approved.**
@@ -157,7 +157,7 @@ tuicr gate has returned approved, or stop after N turns
 
 Name the plan by **path**, never by a pinned digest — the FAIL loop amends and re-hashes the plan,
 so a named hash self-invalidates. Name **`work-result.sh`'s exit code**, which is the run's verdict:
-`overallPass` in `result.json` is not the verdict and must never be read directly (craft/SKILL.md's
+`overallPass` in `result.json` is not the verdict and must never be read directly (work/SKILL.md's
 `mechanicalChecks` row). Naming the returned verdict is also what makes a gate FAIL reach a stopping
 condition at all — including one carried by a lens finding, which otherwise reaches none.
 
@@ -168,9 +168,9 @@ reach `overallPass` at all, so their output sits in `result.json` and is **retri
 a human who runs the command there. Nothing carries it to him. Both named verdicts get printed, so
 both are judgeable from the transcript.
 
-## Phase 4 — the craft call
+## Phase 4 — the work call
 
-The args go in the plan's `<!-- craft:dispatch -->` block and the dispatch is craft's own
+The args go in the plan's `<!-- craft:dispatch -->` block and the dispatch is `work`'s own
 `work-dispatch.sh` — never a hand-written `farm.sh --workflow` line, which drops the TIER 1
 plan-lint gate and both probe gates:
 
@@ -184,7 +184,7 @@ becomes `--provider codex` on that line. Omitting it runs the user's codex reque
 content-filter facts that make this matter are in `references/retrieval.md`, alongside the other
 reason a run belongs on `--provider gemini`: a source whose text came from OCR.
 
-`--run-dir` is not optional: craft resolves `.craft/<run-id>` against `$PWD`, which on an elide run is
+`--run-dir` is not optional: `work` resolves `.craft/<run-id>` against `$PWD`, which on an elide run is
 the course directory — a tree this run writes only `addenda/`, `output/addenda/` and `docs/` in.
 
 The args object, complete as it stands.
@@ -193,10 +193,10 @@ The args object, complete as it stands.
 row each — cut that reading and nothing else — above one shared `retrieve` row and below one
 `compile-table` row. A second reading therefore adds exactly one task, and adds **no** lens and **no**
 mechanical entry: the entry point derives its per-reading legs from the `.typ` itself. This
-granularity is not cosmetic. It is what makes a per-reading re-run expressible in craft's own
+granularity is not cosmetic. It is what makes a per-reading re-run expressible in `work`'s own
 vocabulary — see *The FAIL loop* below.
 
-**The wave shape is forced by craft's disjointness rule, not chosen for tidiness.** Same-wave tasks
+**The wave shape is forced by `work`'s disjointness rule, not chosen for tidiness.** Same-wave tasks
 must have pairwise-disjoint `writablePaths`, checked prefix-aware and **refused at arg-validation,
 before any agent is dispatched**. Every reading needs its source in `docs/`, so if each reading row
 claimed `docs` they would all land in wave 1 claiming the same directory and a two-reading addendum
@@ -270,7 +270,7 @@ added.
       dependsOn: ["retrieve"],
       // Task-specific: check-quotes.py for THIS caption alone. Not the run's entry point — a task
       // graded by the shared command can be reported done because a DIFFERENT task's work made it
-      // pass, which leaves craft's per-task Verify channel nothing task-specific to judge.
+      // pass, which leaves `work`'s per-task Verify channel nothing task-specific to judge.
       acceptance: "python3 /home/eh/projects/workflows/skills/elide-case/scripts/check-quotes.py /home/eh/areas/secreg/addenda/NN-addendum-<slug>.typ /home/eh/areas/secreg/docs/<name>.westlaw.docx --caption '<this reading's caption>' --skip-editorial exits 0, having checked a non-zero number of sentences for that caption.",
       redDisposition: "The behaviour this task must satisfy is already executed by the run's one mechanical entry point, whose check-quotes.py leg is red before the excerpt exists and green after; a redCommand here would be that same command run a second time by a second agent.",
       refs: [
@@ -289,7 +289,7 @@ added.
       // this task's only grader.
       acceptance: "python3 /home/eh/projects/workflows/skills/elide-case/scripts/check-addendum.py /home/eh/areas/secreg/addenda/NN-addendum.typ /home/eh/areas/secreg/output/addenda/NN-addendum.pdf --target <the page target the plan's `## Readings In Scope` rows carry; when the rows differ, run the run's entry point instead, which reads each row's own target> exits 0 — summary-table rows equal readings found (arity), every stated page range matches the compiled PDF (table truth), and each reading is inside its target (length).",
       dependsOn: ["cut-<slug>" /* , one id per reading row; `retrieve` is reached transitively */],
-      redDisposition: "Work whose whole acceptance is the run's mechanical entry point; craft re-runs that command in a shell to adjudicate it, so a redCommand would duplicate the gate rather than gate the task.",
+      redDisposition: "Work whose whole acceptance is the run's mechanical entry point; `work` re-runs that command in a shell to adjudicate it, so a redCommand would duplicate the gate rather than gate the task.",
       refs: [
         "/home/eh/projects/workflows/skills/elide-case/references/authenticity.md",
         "/home/eh/projects/workflows/skills/elide-case/references/verification.md",
@@ -298,12 +298,12 @@ added.
   ],
 
   // ── legibility and fidelity are `scoredChecks`, and that is WHY they are advisory. ──
-  // A `reviewLenses` entry gates by construction: craft's workflow.js computes overallPass FROM
+  // A `reviewLenses` entry gates by construction: the work skill's workflow.js computes overallPass FROM
   // surviving lens findings, so declaring these two as lenses and calling them advisory in prose
   // would be a claim about the spine rather than a parameter to it. `scoredChecks` is the mechanism
   // that carries the property: overallPass is computed without reading any scored value, there is no
   // threshold and no blockBelow, it opens no selector channel, and a dead agent does not flip the
-  // verdict (craft/references/scored-checks.md, S6/S7). That is ~/.claude/CLAUDE.md rule 9 satisfied
+  // verdict (work/references/scored-checks.md, S6/S7). That is ~/.claude/CLAUDE.md rule 9 satisfied
   // structurally — an open-ended prose review cannot gate a loop, because round n's fix gives round
   // n+1 new things to object to.
   //
@@ -362,7 +362,7 @@ added.
   ],
 
   // ── reviewLenses is DELIBERATELY ABSENT, not `[]`. ──
-  // Passing `[]` does not disable review: craft falls back to its own two defaults,
+  // Passing `[]` does not disable review: the work skill falls back to its own two defaults,
   // `criteria-vs-artifacts` and `scope-fidelity`, and they gate. That fallback is CHOSEN here. Those
   // two judge whether the plan's own stated criteria were met and whether the run stayed inside
   // `addenda/`, `output/addenda/` and `docs/` — both decidable against the plan text, both bounded,
@@ -379,12 +379,12 @@ added.
 
 ## Phase 5 — HUMAN REVIEW
 
-Craft's Phase 5, on the compiled PDF: the reviewer reads the reading, not the diff. Open the PDF
+`work`'s Phase 5, on the compiled PDF: the reviewer reads the reading, not the diff. Open the PDF
 beside `human-review-gate.sh -w`.
 
 ### Where the legibility and fidelity scores actually are
 
-**They are in `result.json` under `scores[]`, and nothing delivers them.** Craft returns each item's
+**They are in `result.json` under `scores[]`, and nothing delivers them.** `work` returns each item's
 computed score, its raw counts, and — because `passthrough` declared them — the verbatim offending
 text under `evidence`. Phase 5 is a human step, so no exit code can compel anyone to look. Print them
 with one command:
@@ -396,7 +396,7 @@ jq -r '.scores[] | "\(.key)  \(.item)  composite=\(.composite // "null")  itemsC
   /home/eh/.local/state/craft/<run-id>/result.json
 ```
 
-The field is `composite`, not `score` — craft emits one `scores[]` entry per (key, item) pair as
+The field is `composite`, not `score` — `work` emits one `scores[]` entry per (key, item) pair as
 `{key, item, components, composite, itemsChecked, evidence, reason?}`, and there is no cross-item
 mean or total to read.
 
@@ -442,13 +442,13 @@ Three rules on the rendering, because each is a way the output silently stops me
 The reviewer decides what to do with all of it. A low score re-runs nothing by itself — see *The FAIL
 loop*.
 
-## The FAIL loop — craft's three selectors, and where the per-reading granularity comes from
+## The FAIL loop — `work`'s three selectors, and where the per-reading granularity comes from
 
-The selector is craft's own, all three channels, consumed together: `tasksThatFlagged`,
+The selector is `work`'s own, all three channels, consumed together: `tasksThatFlagged`,
 `mechanicalThatFailed` and `lensesThatFlagged`. A scoped re-run is `onlyTasks` + `priorResults`,
-derived by `work-redispatch.sh` from those three. **There is no caption channel** — craft scopes by
+derived by `work-redispatch.sh` from those three. **There is no caption channel** — `work` scopes by
 task id and nothing else, so a re-run instruction phrased as "re-cut the failing caption" names a
-dimension craft does not have and cannot be executed.
+dimension `work` does not have and cannot be executed.
 
 **Per-reading re-cutting falls out of one task per reading, not out of any caption machinery.**
 Because each reading is its own task row, a reading that fails puts its own id in `tasksThatFlagged`,
@@ -463,7 +463,7 @@ back to its task id to read what `onlyTasks` will hold. Two domain rules on the 
   from `docs/<name>.westlaw.docx`; never patch sentence by sentence.**
 - Never trust a corruption tell you have not grepped for in **both** files.
 
-`lensesThatFlagged` names craft's own two defaults, `criteria-vs-artifacts` and `scope-fidelity` —
+`lensesThatFlagged` names `work`'s own two defaults, `criteria-vs-artifacts` and `scope-fidelity` —
 the only lenses this run declares. **The legibility and fidelity scores appear in no selector at
 all**: `scoredChecks` opens no channel, which is the same fact as their not gating. A low score is
 read by the human at Phase 5 and acted on there or not at all; it never re-runs anything by itself.
@@ -471,10 +471,10 @@ A `null` score with a stated reason means the item was unreliable or its agent d
 
 ## The rule for whoever edits this next
 
-**Any property this file asserts about craft must be traceable to a parameter craft reads or to a
+**Any property this file asserts about `work` must be traceable to a parameter `work` reads or to a
 command's exit code. Otherwise it is decoration.** Three times in this skill's construction a property
 was written as a sentence and bound nothing, and a fourth is recorded below: a re-run selector declared to be a "caption", a dimension
-craft has no channel for; two lenses declared ADVISORY while sitting in `reviewLenses`, which craft
+`work` has no channel for; two lenses declared ADVISORY while sitting in `reviewLenses`, which `work`
 gates on; and an interview refusal declared absolute when no mechanism could carry it — the plan is
 written by the orchestrator, so a grep of it cannot identify the answerer, and `mechanicalChecks` run
 after IMPLEMENT, so none of them can stop a run at CLARIFY. The first two now rest on a parameter —
@@ -482,7 +482,7 @@ the task-id selector and `scoredChecks`. The third was **scoped down** instead: 
 proves only that the answers are recorded and non-empty, and the instructor's approval of the plan is
 named as the step that carries the rest.
 
-The fourth was the scored checks being "reported to the human". Craft's Phase 5 is a human step, so no
+The fourth was the scored checks being "reported to the human". `work`'s Phase 5 is a human step, so no
 exit code can compel a human to read a score, and three review rounds said so before the claim came
 out. It too was scoped down rather than re-promised: the scores are **retrievable** at a named `jq`
 command over `result.json`, a reviewer who does not run it does not see them, and that is the accepted
@@ -501,17 +501,17 @@ command that makes X true — and if there is none, say so plainly where the cla
 | Ask about a passage to keep, or about the insertion point | Both were declined; insertion point and class number come from the request or the schedule. The page target IS asked — question 3 |
 | Type a `--target` on a real run, or invent a range to fit the excerpt | The target lives in the plan, per reading. With `--plan` the flag is ignored and said to be ignored; `--target` is the `--no-plan` fixture override |
 | Leave a `## Readings In Scope` page target blank or `TBD` | The `--plan` leg FAILS naming the row. Ask question 3, or take the 2-6 default |
-| Let a legibility or fidelity finding block the run | They are `scoredChecks`, which craft's `overallPass` never reads — the deterministic gate is the entry point's exit code |
+| Let a legibility or fidelity finding block the run | They are `scoredChecks`, which `work`'s `overallPass` never reads — the deterministic gate is the entry point's exit code |
 | Declare legibility or fidelity in `reviewLenses` because it "reads like a lens" | A lens gates by construction; the advisory property has to be a parameter, not a sentence. Keep them in `scoredChecks` |
-| Pass `reviewLenses: []` to turn review off | `[]` falls back to craft's two defaults. Omit the key and say in the plan that those two are the chosen set |
+| Pass `reviewLenses: []` to turn review off | `[]` falls back to `work`'s two defaults. Omit the key and say in the plan that those two are the chosen set |
 | Add a threshold or `blockBelow` to a scored check | No such knob exists, and adding one chases minors. Read the score; gate on the entry point |
 | Add a second `mechanicalChecks` entry | The verdict is one command; P10 refuses a list, and a list drops a check without reporting it |
-| Write a `workflow.js` for this skill | Craft's spine takes a parameter for it. Name the missing parameter and generalize craft |
-| Give every reading row `docs` in its writable paths | Craft refuses a wave with overlapping writable paths before dispatch. `retrieve` owns `docs/` in wave 1; the cut rows write one fragment each |
+| Write a `workflow.js` for this skill | `work`'s spine takes a parameter for it. Name the missing parameter and generalize `work` |
+| Give every reading row `docs` in its writable paths | `work` refuses a wave with overlapping writable paths before dispatch. `retrieve` owns `docs/` in wave 1; the cut rows write one fragment each |
 | Write "this workflow does X" with nothing reading X | Name the parameter or the exit code that makes it true, or record that none does — see *The rule for whoever edits this next* |
 | Write that the scores "are reported to the human" | Nothing reports them. They sit in `result.json` under `scores[]`; Phase 5 names the `jq` command that prints them, and a reviewer who does not run it does not see them |
 | Re-cut every reading after one FAIL | Re-run `onlyTasks` on the flagged reading's task id — one task per reading is what makes that possible |
-| Scope a re-run "by caption" | Craft has no caption channel; the selector is `tasksThatFlagged` + `mechanicalThatFailed` + `lensesThatFlagged` |
+| Scope a re-run "by caption" | `work` has no caption channel; the selector is `tasksThatFlagged` + `mechanicalThatFailed` + `lensesThatFlagged` |
 | Silently skip a reading that has no reporter source | Stop and report it. The instructor declares it in the plan's `## Non-court readings` section; an undeclared one FAILS, which is the point |
 | Write `// elide-unchecked:` into the `.typ` to quiet a reading | That marker is self-exempting and is no longer honoured — its presence FAILS. Non-court text is declared in the plan, by the instructor |
 | Omit both `--plan` and `--no-plan` from the entry point's `cmd` | That is a FAIL naming the missing flag — the leg fails closed. Pass `--plan <md>` on a real run; `--no-plan` is the fixture escape and prints a loud NOT CHECKED line |

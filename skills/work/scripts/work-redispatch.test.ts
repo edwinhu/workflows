@@ -316,7 +316,7 @@ describe('a re-dispatched plan is archived beside args.json, like a first dispat
 
 // ------------------------------------------------------------------ the selective re-run, derived
 //
-// craft has supported `onlyTasks` + `priorResults` all along, and a live 8-round run set NEITHER,
+// the work skill has supported `onlyTasks` + `priorResults` all along, and a live 8-round run set NEITHER,
 // eight times running: every round re-ran 6 tasks x2, 6 red probes x2, 5 lenses and 5 mechanical
 // checks — ~34 agents — when typically 3 findings across 3 tasks needed fixing. A capability that
 // depends on the orchestrator remembering it is not a capability. work-redispatch.sh already reads

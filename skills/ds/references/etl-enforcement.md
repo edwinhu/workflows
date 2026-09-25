@@ -111,7 +111,7 @@ Before implementing each task, check the Parallelism Plan table in PLAN.md. The 
 For each task in PLAN.md Parallelism Plan:
 
 ### If Method = "Background Task agents":
-- craft's IMPLEMENT is sequential by construction; do not fan out independent groups/years until worker filesystem isolation exists
+- `work`'s IMPLEMENT is sequential by construction; do not fan out independent groups/years until worker filesystem isolation exists
 - Each agent gets its own data scope (e.g., one year, one sector)
 - Reconcile results after all agents complete
 - DO NOT process sequentially "because it's simpler"

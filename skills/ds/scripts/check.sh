@@ -4,7 +4,7 @@
 # Three legs, none short-circuiting. Two of them are the PROJECT's own commands, which a
 # plan discovers and passes in -- that is why they are arguments rather than a fixed list:
 # this skill cannot know what a given project runs, but it can still be the single command
-# whose exit code craft reads. A plan that has no test or lint command omits the flag and
+# whose exit code `work` reads. A plan that has no test or lint command omits the flag and
 # the leg reports "not declared" rather than silently not existing.
 #
 # Usage: check.sh --plan <planPath> --project-dir <dir> [--test-cmd <cmd>] [--lint-cmd <cmd>]

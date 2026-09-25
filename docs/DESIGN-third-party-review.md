@@ -1,15 +1,15 @@
 # Optional third-party review
 
-Design record. Settled 2026-08-03 against the beat primitives; carried to the craft spine in v6.0.0.
+Design record. Settled 2026-08-03 against the beat primitives; carried to the work spine in v6.0.0.
 
 ## The problem
 
-Every review surface in this repo is Claude reviewing Claude. craft dispatches an implementer and
+Every review surface in this repo is Claude reviewing Claude. `work` dispatches an implementer and
 then a *fresh* verifier — independent in context, identical in model and training. A whole class of
 defect that both instances share is invisible by construction, and adding more Claude verifiers does
 not touch it. A different model is the only thing that can.
 
-## What craft ships
+## What `work` ships
 
 The opt-in is `"thirdParty": ["codex"]` or `["gemini"]` inside the plan's `craft:dispatch` args.
 `workflow.js` runs one runner agent per named model, in parallel with the review leg, after the
@@ -60,7 +60,7 @@ The v5 implementation carried a per-adapter bundle receipt — `briefSources` (s
 sha256 of every rule set handed to the reviewer, on every return path) and a separate
 `briefsDelivered` predicate, because *resolved* and *delivered* are two claims and a list alone would
 be a receipt for something that may not have happened. That machinery lived in
-`scripts/beat/adapters/`, which the craft spine does not have: the runner is an agent reading one
+`scripts/beat/adapters/`, which the work spine does not have: the runner is an agent reading one
 document, so there is no adapter to hand rules to and no receipt to keep honest.
 
 The principle it encoded still applies to any future rule-passing mechanism: **what the reviewer was

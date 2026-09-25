@@ -5,21 +5,21 @@ argument-hint: 'the document, article or chapter to write'
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
 ---
 
-# writing — a document, run through craft with a computed grammar and citation gate
+# writing — a document, run through `work` with a computed grammar and citation gate
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
-The lifecycle is [craft](${CLAUDE_SKILL_DIR}/../work/SKILL.md). Read it and follow it.
+The lifecycle is [`work`](${CLAUDE_SKILL_DIR}/../work/SKILL.md). Read it and follow it.
 This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lenses,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
-craft's mechanics.
+`work`'s mechanics.
 
-What makes a run `writing` rather than plain craft is one thing craft cannot supply: **a PLAN
+What makes a run `writing` rather than plain `work` is one thing `work` cannot supply: **a PLAN
 GRAMMAR that a program parses.** Eight required headings, stable `CLAIM-NN` ids, a total
 claim→section map and a section-outputs table are read by
 `scripts/writing_section_index.py`; the drafts are then checked against that parse by
-`scripts/writing_gate_probe.py` and `scripts/writing_prose_gate.py`. Craft's JS reads their exit
+`scripts/writing_gate_probe.py` and `scripts/writing_prose_gate.py`. `work`'s JS reads their exit
 codes.
 
 ## Write surface
@@ -28,14 +28,14 @@ Main chat clarifies, plans and dispatches. It does not write the document. It ne
 a file under the writing project's `drafts/`, `outlines/` or `references/` — not by Write/Edit, and
 not by Bash (`cat >`, a heredoc, `sed -i`, `tee`). The one exception is
 `writing_bench_compile.py` under Phase 2 Path A, which is a compiler, not an author. Drafting runs in
-a dispatched agent. Craft's
+a dispatched agent. `work`'s
 dispatch is already structural and its judges are pinned to `Explore`, so this is a rule on you, not
 a hook — a skill-frontmatter hook is measured not to reach dispatched agents, so there is nothing to
 attach it to.
 
 ## Phase 1 — CLARIFY
 
-Craft's Phase 1, on these axes.
+`work`'s Phase 1, on these axes.
 
 <EXTREMELY-IMPORTANT>
 **ASK BEFORE YOU DRAFT, AND GATHER SOURCES BEFORE YOU CLAIM. This is not negotiable.**
@@ -67,11 +67,11 @@ document short enough that an artifact is overhead.
 Ask in one `AskUserQuestion` call when answers are independent. Ask cascading questions separately:
 the venue decides the length, and the length decides the section count.
 
-Craft's remaining axes are taken as craft states them, with two domain bindings: craft axis 4
+`work`'s remaining axes are taken as `work` states them, with two domain bindings: `work` axis 4
 (observable success criteria) is answered by the four mechanical checks below — `GRAMMAR`, `CITE`,
 `CLAIM` and `PROSE-HARD`, defined in
 [`references/writing-checks.md`](${CLAUDE_SKILL_DIR}/references/writing-checks.md)
-— whose command strings become `mechanicalChecks` verbatim; craft axis 6 (third-party review) is
+— whose command strings become `mechanicalChecks` verbatim; `work` axis 6 (third-party review) is
 answered **not opted in**, so no `thirdParty` key is passed.
 
 Then gather sources — **through the librarian, never from recall**. Dispatch the
@@ -81,8 +81,8 @@ source area the librarian could not fill is a planned evidence task, not a claim
 
 ## Phase 2 — PLAN
 
-Craft's Phase 2. The plan opens with frontmatter `workflow: writing` — required, so a context clear
-at approval resumes here and not in craft.
+`work`'s Phase 2. The plan opens with frontmatter `workflow: writing` — required, so a context clear
+at approval resumes here and not in `work`.
 
 The plan must be written in the **required plan grammar** below, because
 `scripts/writing_section_index.py` **parses it** and is the only canonical grammar parser — there is
@@ -134,15 +134,15 @@ Field rules, all enforced by the parser:
 
 Three further domain requirements on the plan:
 
-- **`refs` per task row and per lens** — required, may be empty. Craft's spine does not validate it;
+- **`refs` per task row and per lens** — required, may be empty. `work`'s spine does not validate it;
   `wc-probe` P7 refuses an absent key in THIS file, so a live run assembled from an approved plan is
   unchecked. Write `refs: []` to state "no domain rules" rather than omitting the key.
 - **One task row per section**, drawn from `## Section Outputs` — its outline and its draft are that
-  one row's work, never two rows. This is where the plugin's per-section drafting fan-out went: craft
+  one row's work, never two rows. This is where the plugin's per-section drafting fan-out went: `work`
   implements the rows sequentially against one tree and verifies each independently. Parallelism
   across sections is the acknowledged loss; a shared spine and a single gate are the gain.
-- **`plansDirectory` is `"./.planning"`** for a writing project — so craft's
-  approved plan is already the generated plan the parser authenticates. Craft honours whatever the
+- **`plansDirectory` is `"./.planning"`** for a writing project — so `work`'s
+  approved plan is already the generated plan the parser authenticates. `work` honours whatever the
   setting says (default `.claude/plans`), so read the configured value rather than assuming this
   one. **Never copy the plan.**
 
@@ -197,7 +197,7 @@ written only by dispatched agents.
 
 ## Phase 3 — GOAL
 
-Craft's Phase 3 unchanged.
+`work`'s Phase 3 unchanged.
 
 ## On-disk layout and the literal invocations
 
@@ -206,19 +206,19 @@ project root.
 
 | Path | What it is |
 |---|---|
-| `<proj>/.planning/<slug>.md` | craft's approved plan, hashed in place — **the** generated plan the parser authenticates. Never a copy; never the basename `PLAN.md`, which the parser rejects as legacy |
-| `<proj>/.planning/.state/review.json` | the receipt, generated by `scripts/writing_receipt.py` from craft's own two approvals. The parser refuses to parse without it |
+| `<proj>/.planning/<slug>.md` | `work`'s approved plan, hashed in place — **the** generated plan the parser authenticates. Never a copy; never the basename `PLAN.md`, which the parser rejects as legacy |
+| `<proj>/.planning/.state/review.json` | the receipt, generated by `scripts/writing_receipt.py` from `work`'s own two approvals. The parser refuses to parse without it |
 | `<proj>/.planning/ACTIVE_WORKFLOW.md` | written by the same shim, carrying `workflow: writing` and `style: <Domain>`. The parser reads it as legacy provenance, so the receipt must be well-formed for the layout to read canonical rather than `legacy-only` |
 | `<proj>/outlines/…`, `<proj>/drafts/…` | the `Outline` and `Draft` paths `## Section Outputs` names **verbatim** |
 | `<proj>/<bib>.bib` | the Source Plan `Bibliography:` path |
 
-The receipt shim, run once after ExitPlanMode and before the craft dispatch:
+The receipt shim, run once after ExitPlanMode and before the work dispatch:
 
 ```bash
 uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_receipt.py \
-  --project <proj> --plan <planPath> --plan-hash <craft plan hash> \
+  --project <proj> --plan <planPath> --plan-hash <work plan hash> \
   --approved-session <the ExitPlanMode approval's session id> \
-  --reviewer-session <the craft run id that authorizes implementation> --domain <legal|econ|general>
+  --reviewer-session <the work run id that authorizes implementation> --domain <legal|econ|general>
 ```
 
 The three commands, quoted exactly as
@@ -232,7 +232,7 @@ uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_section_inde
 defect, not a content failure** — the check did not run, and an unrun check is never a pass.
 
 ```
-uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_gate_probe.py "<proj>/drafts/<Section>.md" --bib "<proj>/<bib>.bib" --plan "<proj>/.planning/<slug>.md" --plan-hash <craft plan hash>
+uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_gate_probe.py "<proj>/drafts/<Section>.md" --bib "<proj>/<bib>.bib" --plan "<proj>/.planning/<slug>.md" --plan-hash <work plan hash>
 ```
 `0` = pass; `1` = fail, with the offending keys and line numbers under `evidence`. One invocation per
 section; the draft argument is the `Draft` cell of that section's `## Section Outputs` row, verbatim.
@@ -261,14 +261,14 @@ copies the clean fixture once per check, applies exactly one defect, and asserts
 clean, non-zero on the break, **and that the failure names its own subject** — the last of those
 because exit-code-only assertions let a check pass while exercising a different dimension entirely.
 
-## Phase 4 — the craft call
+## Phase 4 — the work call
 
-The args go in the plan's `<!-- craft:dispatch -->` arming block, and the dispatch is **craft's own
+The args go in the plan's `<!-- craft:dispatch -->` arming block, and the dispatch is **`work`'s own
 `work-dispatch.sh`** — never a hand-written runner line. That script owns the TIER 1 plan-lint
 gate, which refuses to dispatch on a `major`/`critical` plan finding and fails CLOSED on a verdict it
-cannot count; hand-rolling the invocation silently drops it. Craft owns the `Monitor` wait, the
+cannot count; hand-rolling the invocation silently drops it. `work` owns the `Monitor` wait, the
 result handling and the return shape too, and `work-result.sh` reads the verdict. This run's
-`projectDir` is the session repo, so craft's own run directory is already inside it and no
+`projectDir` is the session repo, so `work`'s own run directory is already inside it and no
 `--run-dir` override applies. There is no built-in `Workflow` call — the guard at
 `~/.claude/hooks/main-thread-guard.sh` denies that tool outright.
 
@@ -311,7 +311,7 @@ Omitting it silently runs the user's codex request on claude.
   tasks: [
     { id: "T1",
       name: "Section: <Section>",
-      work: "Write <proj>/outlines/<Section>.md against the plan's Document Structure entry, pinning a Source Plan source to every beat, then expand it into <proj>/drafts/<Section>.md carrying the claims the Claim → Section Map assigns this section and citing only bibliography keys its outline pinned. DRAFT FRONTMATTER CONTRACT — the draft OPENS with YAML frontmatter carrying `implements: [CLAIM-NN, ...]`, exactly the claim set this section's Claim → Section Map row assigns it, and `plan_hash: <craft's current plan hash>`. writing_gate_probe.py enforces both (implementsMismatch / claimIdsMissing) and fails the section otherwise.",
+      work: "Write <proj>/outlines/<Section>.md against the plan's Document Structure entry, pinning a Source Plan source to every beat, then expand it into <proj>/drafts/<Section>.md carrying the claims the Claim → Section Map assigns this section and citing only bibliography keys its outline pinned. DRAFT FRONTMATTER CONTRACT — the draft OPENS with YAML frontmatter carrying `implements: [CLAIM-NN, ...]`, exactly the claim set this section's Claim → Section Map row assigns it, and `plan_hash: <the work skill's current plan hash>`. writing_gate_probe.py enforces both (implementsMismatch / claimIdsMissing) and fails the section otherwise.",
       writablePaths: ["<proj>/outlines/<Section>.md", "<proj>/drafts/<Section>.md"],
       acceptance: "writing_section_index.py exits 0 for the project, writing_gate_probe.py exits 0 for this section's draft, and writing_prose_gate.py exits 0 for the project.",
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md",
@@ -335,13 +335,13 @@ Omitting it silently runs the user's codex request on claude.
   // with what is on disk, and no sections at all is a refusal rather than a pass.
   mechanicalChecks: [
     { name: "writing",
-      cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/check.sh --project <proj> --bib \"<proj>/<bib>.bib\" --plan \"<proj>/.planning/<slug>.md\" --plan-hash <craft plan hash> --style <domain>" },
+      cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/check.sh --project <proj> --bib \"<proj>/<bib>.bib\" --plan \"<proj>/.planning/<slug>.md\" --plan-hash <work plan hash> --style <domain>" },
   ],
 
   // Judged BEFORE any drafter is dispatched; a surviving critical returns FAIL having written
   // nothing. The grammar lens parses the same headings writing_section_index.py does, so a malformed
   // plan is caught before every section is drafted against it.
-  // Passing reviewLenses REPLACES craft's defaults, so the two defaults are spelled out here
+  // Passing reviewLenses REPLACES `work`'s defaults, so the two defaults are spelled out here
   // rather than elided — an array of two would silently drop them.
   reviewLenses: [
     { key: "criteria-vs-artifacts",
@@ -383,9 +383,9 @@ Omitting it silently runs the user's codex request on claude.
     "IRON LAW OF WRITING PLANNING — ask before you draft, and gather sources before you claim. Training-data recall is NOT a source: every citation resolves to a real artifact under the project's references/ and to a key in the Source Plan Bibliography.",
     "IRON LAW OF WRITING VERIFICATION — no check result without the runner's own output. A mechanical check reported from reading the plan or the draft is the model certifying its own work. Every COMPUTED result is an exit code observed on this run.",
     "Never report GRAMMAR, CITE, CLAIM or PROSE-HARD from reading the code, and never report COVER, FIDELITY, TRANSITION or COUNTER as PASS — those four are MODEL-EVALUATED judgements and are reported as such, with the evidence read.",
-    "The approved plan at .planning/<slug>.md is the authority and craft hashes it in place. It is never copied, never renamed to PLAN.md, and never edited mid-run — the runners re-verify its hash and stop on mismatch.",
-    "The generated .planning/.state/review.json receipt is derived from craft's own two approvals. It is an artifact of craft's authority, never a competing one; do not treat it as a second gate and do not hand-edit it.",
-    "DRAFT FRONTMATTER CONTRACT — every draft OPENS with YAML frontmatter carrying `implements: [CLAIM-NN, ...]`, exactly matching the claim set the plan's Claim → Section Map assigns that section, and `plan_hash: <craft's current plan hash>`. writing_gate_probe.py enforces both and fails the section otherwise; a draft with prose above its frontmatter has no frontmatter at all.",
+    "The approved plan at .planning/<slug>.md is the authority and work hashes it in place. It is never copied, never renamed to PLAN.md, and never edited mid-run — the runners re-verify its hash and stop on mismatch.",
+    "The generated .planning/.state/review.json receipt is derived from `work`'s own two approvals. It is an artifact of work's authority, never a competing one; do not treat it as a second gate and do not hand-edit it.",
+    "DRAFT FRONTMATTER CONTRACT — every draft OPENS with YAML frontmatter carrying `implements: [CLAIM-NN, ...]`, exactly matching the claim set the plan's Claim → Section Map assigns that section, and `plan_hash: <the work skill's current plan hash>`. writing_gate_probe.py enforces both and fails the section otherwise; a draft with prose above its frontmatter has no frontmatter at all.",
     "Every command naming a draft QUOTES that path. Section names carry spaces and parentheses, and an unquoted path dies in bash before python runs — and a probe's cmd is run verbatim, with no corrected re-run.",
     "A section absent from the plan's ## Section Outputs is one nothing will check and cannot be claimed as drafted.",
     "The document is written by dispatched agents. Main chat writes nothing under the project's drafts/, outlines/ or references/, by any tool including Bash heredocs — the sole exception being writing_bench_compile.py, a compiler emitting the user's own accepted outline.",
@@ -396,7 +396,7 @@ Omitting it silently runs the user's codex request on claude.
 
   // The plan's Domain: selects the register, so it selects the doer too — each of these three agents
   // preloads exactly the register skill that Domain names. SUBSTITUTE ONE literal name when the plan
-  // is armed, exactly as `--style <domain>` above is substituted; craft takes a single string and
+  // is armed, exactly as `--style <domain>` above is substituted; the work skill takes a single string and
   // never branches at runtime.
   //   Domain: general -> "writing"   Domain: legal -> "writing-legal"   Domain: econ -> "writing-econ"
   implementerAgentType: "<writing|writing-legal|writing-econ>",   // the doer's own prompt replaces Claude Code's software-engineering one, which frames an article as a codebase
@@ -404,7 +404,7 @@ Omitting it silently runs the user's codex request on claude.
 }
 ```
 
-`implementerAgentType` is a placeholder because craft takes a single string: the value is written
+`implementerAgentType` is a placeholder because `work` takes a single string: the value is written
 into the block when the plan is armed, from the plan's `Domain:` field, and no runtime branch exists
 to write it later. The default agent carries Claude Code's software-engineering system prompt and
 the deliverable here is prose a human reads, so the implementer must be an agent whose body replaces
@@ -420,7 +420,7 @@ judge that structurally cannot modify the tree beats a prompt asking it not to.
 
 ## Phase 5 — HUMAN REVIEW
 
-Craft's Phase 5 unchanged, over the plan's `## Review Surfaces`. A clean technical verification is
+`work`'s Phase 5 unchanged, over the plan's `## Review Surfaces`. A clean technical verification is
 evidence for that conversation, not human acceptance.
 
 ## Red flags
@@ -433,7 +433,7 @@ evidence for that conversation, not human acceptance.
 | Returning to the bench later in the run | publish a second bench artifact | republish the URL recorded in `.planning/ACTIVE_WORKFLOW.md` — a second artifact is a second, divergent outline |
 | A coauthor who should see the bench | send them the URL | a `db` artifact is organization-internal; on a personal account a second signed-in account gets "Page not found" (verified) — export the compiled plan instead |
 | Needing a source | cite what you remember | recall is not a source — dispatch `librarian` and make it leave a real artifact under `references/` |
-| The plan's location | copy craft's plan into `.planning/` | set `plansDirectory` to `./.planning` so craft's plan already IS the parsed one; a copy drifts from what the user approved |
+| The plan's location | copy `work`'s plan into `.planning/` | set `plansDirectory` to `./.planning` so `work`'s plan already IS the parsed one; a copy drifts from what the user approved |
 | Naming the plan file | `PLAN.md` | the parser rejects that basename as legacy — use the slug plan mode wrote |
 | Building the task table | an outline row and a draft row per section | one row per section: outline and draft are the same row's work, and splitting them doubles the fan-out this port exists to collapse |
 | A section named only in prose | expect the gate to find it | a runner cannot open what it was never told about — add its row to `## Section Outputs` before approval |
@@ -443,5 +443,5 @@ evidence for that conversation, not human acceptance.
 | `COVER`/`FIDELITY`/`TRANSITION`/`COUNTER` | report them as `PASS` | that presents a judgement as a computation — `MODEL-EVALUATED` with the evidence read |
 | A judgement that depends on the register | dispatch a built-in agent (`Explore`, `Plan`, `general-purpose`) | their prompts are predefined and no preloaded skill reaches them, so the register is graded from memory — dispatch a custom agent whose body you control, like `writing-reviewer` |
 | Sections that could be drafted in parallel | fan out drafters | IMPLEMENT is sequential by design — one row per section, one shared tree, one gate |
-| Project state | write a `SPEC.md`, `STATE.md` or `NOTES.md` | competing state makes progress ambiguous — the approved plan is the authority and craft hashes it |
-| Something craft does not obviously do | write a `writing/workflow.js` | ask which craft parameter is missing — `tasks[]` + `mechanicalChecks` is what turned the per-section fan-out into rows and the runners into the gate |
+| Project state | write a `SPEC.md`, `STATE.md` or `NOTES.md` | competing state makes progress ambiguous — the approved plan is the authority and `work` hashes it |
+| Something `work` does not obviously do | write a `writing/workflow.js` | ask which work parameter is missing — `tasks[]` + `mechanicalChecks` is what turned the per-section fan-out into rows and the runners into the gate |

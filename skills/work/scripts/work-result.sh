@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# work-result.sh — adjudicate the JSON that `farm.sh --out` wrote for a craft run, then print it.
+# work-result.sh — adjudicate the JSON that `farm.sh --out` wrote for a work run, then print it.
 #
 #   work-result.sh <work-result.json>
 #
-# exit 0  shape is a craft gate return, every claimed mechanical exit code was re-observed, overallPass true
+# exit 0  shape is a work gate return, every claimed mechanical exit code was re-observed, overallPass true
 # exit 1  same, but overallPass false — the run FAILED. Verdict and score table still print on stdout.
 # exit 2  refused — stdout stays empty, every reason is named on stderr
 #
@@ -63,7 +63,7 @@ NVALS=$(printf '%s' "$SLURP" | jq 'length')
 PROBLEMS=$(printf '%s' "$SLURP" | jq -r --argjson contract "$CONTRACT" --argjson optional "$OPTIONAL" '
   .[0] as $r
   | if ($r | type) != "object" then
-      "the return is a \($r | type), not an object — a craft gate return is a single JSON object"
+      "the return is a \($r | type), not an object — a work gate return is a single JSON object"
     else
       ( $contract | to_entries[]
         | .key as $k | .value as $want
@@ -87,7 +87,7 @@ PROBLEMS=$(printf '%s' "$SLURP" | jq -r --argjson contract "$CONTRACT" --argjson
 ')
 
 if [ -n "$PROBLEMS" ]; then
-  printf 'work-result.sh: REFUSED — %s is not a craft gate return:\n' "$FILE" >&2
+  printf 'work-result.sh: REFUSED — %s is not a work gate return:\n' "$FILE" >&2
   printf '%s\n' "$PROBLEMS" | sed 's/^/  - /' >&2
   exit 2
 fi
@@ -172,7 +172,7 @@ while IFS=' ' read -r name64 cmd64; do
     # gate straight through, which is the opposite lesson.
     case "$claimed/$observed" in
       0/*) direction='the claimed PASS does not reproduce — the probe reported success this shell cannot observe. Treat the result as untrusted: this is the case the adjudicator exists for.' ;;
-      */0) direction='the claimed FAILURE does not reproduce — this shell ran the same command and it PASSED. That is a probe-side flake, not a verdict about the code; a check that is load-sensitive (a default test timeout, a wall-clock budget) fails this way while craft runs agents concurrently. RE-RUN the gate, do not re-plan or dispatch another round on it.' ;;
+      */0) direction='the claimed FAILURE does not reproduce — this shell ran the same command and it PASSED. That is a probe-side flake, not a verdict about the code; a check that is load-sensitive (a default test timeout, a wall-clock budget) fails this way while `work` runs agents concurrently. RE-RUN the gate, do not re-plan or dispatch another round on it.' ;;
       *)   direction='both runs failed, with different exit codes — the check is not deterministic.' ;;
     esac
     {
