@@ -544,6 +544,18 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		bannerBuf = bannerBuf[:0]
 		plain := bannerPlain
 		bannerPlain = false
+		// The series already established by the evidence above this banner. A
+		// banner that resolves to nothing must not erase it: Vantagepoint's
+		// sub-adviser reports name the fund in the page heading
+		// (`VANTAGEPOINT INTERNATIONAL FUND`, this filing's own declaration
+		// S000008133) and then rule the section with the REGISTRANT's own name
+		// (`===== THE VANTAGEPOINT FUNDS =====`), which is no fund's name --
+		// 1,143 rows of that section went out blank because the rule erased
+		// what the heading had just answered. This is the DICT-OVERRIDE rule
+		// read the other way round, and the guard commit 13467611 gave the
+		// sibling labelvalue layout for this very registrant: only evidence
+		// that resolves may replace a resolved series.
+		prevSeries, prevClasses := fundSeries, fundClasses
 		fund = name
 		fundSeries, fundClasses = "", ""
 		if d != nil {
@@ -565,6 +577,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		// dictionary-exact answer to it counts.
 		if stem := issBrandCutStem(seriesIx, banner); stem != "" {
 			fundSeries = issPlainHeadingSeries(seriesIx, dict, stem)
+		}
+		if fundSeries == "" && issRegistrantOwnBanner(seriesIx, banner) {
+			fundSeries, fundClasses = prevSeries, prevClasses
 		}
 	}
 
@@ -643,7 +658,8 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 			}
 		}
 		plainHeading := false
-		if !ok && line != "" && i+1 < len(lines) && strings.TrimSpace(lines[i+1]) == "" &&
+		if !ok && line != "" && i+1 < len(lines) &&
+			(strings.TrimSpace(lines[i+1]) == "" || issSubadviserLine(lines[i+1])) &&
 			!issIdentityBlockFollows(lines, i) {
 			// A bare paragraph is a boundary only on an exact, unique name.
 			if d, _ := lookupSeriesEntry(seriesIx.byName, line); d != nil {
@@ -7942,6 +7958,30 @@ func issLetterCodeToken(name string) (rest string, ok bool) {
 		}
 	}
 	return strings.Join(fields[1:], " "), true
+}
+
+// issRegistrantOwnBanner reports whether a banner spells the REGISTRANT's own
+// name rather than any fund's. Such a rule names no fund and can carry no
+// series of its own, so it is a page ornament, not a section boundary that may
+// erase the series the evidence above it already established.
+func issRegistrantOwnBanner(ix *issSeriesIndex, banner string) bool {
+	key := ix.registrantKey
+	if key == "" {
+		return false
+	}
+	name := normalizeSeriesName(banner)
+	name = strings.TrimPrefix(name, "the ")
+	return name == strings.TrimPrefix(key, "the ")
+}
+
+// issSubadviserLine reports whether a line is a page heading's `SUBADVISER:`
+// attribution. Vantagepoint's sub-adviser reports print the fund's own name as
+// a centred page heading and this line DIRECTLY under it, with no blank line
+// between, so a heading terminated by it is as complete as one terminated by a
+// blank line.
+func issSubadviserLine(line string) bool {
+	up := htmlUpperASCII(strings.TrimSpace(line))
+	return strings.HasPrefix(up, "SUBADVISER:") || strings.HasPrefix(up, "SUB-ADVISER:")
 }
 
 // issIdentityBlockFollows reports whether the first non-blank line after i
