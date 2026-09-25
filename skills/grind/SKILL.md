@@ -127,8 +127,8 @@ writes can end a run or report a finish the loop did not compute. A `floor` is r
 carries a non-empty `key`, because one accepted without a key is dropped by the reader and the loop
 re-diagnoses that family forever.
 
-Every prompt carries `GRIND_JOURNAL`, `GRIND_SH`, `GRIND_ITER` and `GRIND_FLOORS`, so an iteration
-needs nothing from outside itself:
+Every prompt carries `GRIND_JOURNAL`, `GRIND_SH`, `GRIND_ITER`, `GRIND_FLOORS` and `GRIND_NOTES`, so
+an iteration needs nothing from outside itself:
 
 ```bash
 bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh append --journal "$GRIND_JOURNAL" \
@@ -136,6 +136,11 @@ bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh append --journal "$GRIND_JOURNAL" \
 bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh append --journal "$GRIND_JOURNAL" \
   '{"kind":"floor","key":"1934-paper-scans","why":"no machine-readable text in the source"}'
 ```
+
+An operator steers a running loop with the same channel: append `{"kind":"note","key":"...",
+"note":"..."}` and the newest ten notes are printed as `GRIND_NOTES` in every later prompt, newest
+last, outranking the prompt's own ranking. No iteration opens the journal file, so a note that is
+not injected is a note nobody reads.
 
 A record must be one JSON object on one line and must fit in a single atomic write, or it is
 **refused** — never split, never truncated — because a split record leaves a log nobody can replay.
