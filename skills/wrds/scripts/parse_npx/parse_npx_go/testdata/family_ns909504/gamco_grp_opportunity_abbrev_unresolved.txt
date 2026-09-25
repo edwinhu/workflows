@@ -1,0 +1,145 @@
+<SEC-DOCUMENT>0000935069-06-002240.txt : 20060822
+<SEC-HEADER>0000935069-06-002240.hdr.sgml : 20060822
+<ACCEPTANCE-DATETIME>20060822142135
+ACCESSION NUMBER:		0000935069-06-002240
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20060630
+FILED AS OF DATE:		20060822
+DATE AS OF CHANGE:		20060822
+EFFECTIVENESS DATE:		20060822
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			GABELLI GLOBAL SERIES FUNDS INC
+		CENTRAL INDEX KEY:			0000909504
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MD
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001064
+<SERIES-NAME>GABELLI GLOBAL CONVERTIBLE SECURITIES FUND
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001065
+<SERIES-NAME>GABELLI GLOBAL GROWTH FUND
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001066
+<SERIES-NAME>GABELLI GLOBAL OPPORTUNITY FUND
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001067
+<SERIES-NAME>GABELLI GLOBAL TELECOMMUNICATIONS FUND
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>gabelliglobal_series-funds.txt
+<DESCRIPTION>GLOBAL SERIES NPX 0806
+<TEXT>
+
+                        THE GAMCO GLOBAL OPPORTUNITY FUND
+
+
+ProxyEdge - Investment Company Report
+Meeting Date Range: 07/01/2005 to 06/30/2006
+Selected Accounts: GABELLI GLOBAL OPP FUND GRP                      Page 1 of 57
+
+<TABLE>
+<S>                                          <C>                                                        <C>
+- ------------------------------------------------------------------------------------------------------------------------------------
+IRELAND BK                                                                                              CRT MEETING DATE: 07/06/2005
+
+ISSUER: G49374146                            ISIN: IE0030606259
+
+SEDOL: 3060625, B01ZKW5, 3070732
+- ------------------------------------------------------------------------------------------------------------------------------------
+</TABLE>
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+ Proposal                                                                     Proposal         Vote            For or Against
+  Number  Proposal                                                            Type             Cast                 Mgmt.
+- ------------------------------------------------------------------------------------------------------------------------------------
+<S>       <C>                                                                 <C>           <C>         <C>
+    1.    ADOPT THE REPORT OF THE DIRECTORS AND THE ACCOUNTS                  Management        For     *Management Position Unknown
+          FOR THE YE 31 MAR 2005
+    2.    DECLARE A DIVIDEND                                                  Management        For     *Management Position Unknown
+   3.1    ELECT MR. PAUL HARAN AS A DIRECTOR                                  Management        For     *Management Position Unknown
+  3.2.A   RE-ELECT MR. RICHARD BURROWS AS A DIRECTOR                          Management        For     *Management Position Unknown
+  3.2.B   RE-ELECT MR. BRIAN GOGGIN AS A DIRECTOR                             Management        For     *Management Position Unknown
+  3.2.C   RE-ELECT MR. DENIS O BRIEN AS A DIRECTOR                            Management        For     *Management Position Unknown
+  3.2.D   RE-ELECT MR. JOHN O DONOVAN AS A DIRECTOR                           Management        For     *Management Position Unknown
+  3.2.E   RE-ELECT MR. MARY REDMOND AS A DIRECTOR                             Management        For     *Management Position Unknown
+    4.    AUTHORIZE THE DIRECTORS TO DETERMINE THE REMUNERATION               Management        For     *Management Position Unknown
+          OF THE AUDITORS
+   S.5    AUTHORIZE THE BANK AND/OR ANY SUBSIDIARY AS                         Management        For     *Management Position Unknown
+          SUCH EXPRESSION IS DEFINED BY SECTION 155 OF
+          THE COMPANIES ACT, 1963, TO MAKE MARKET PURCHASES
+           DEFINED BY SECTION 212 OF THE COMPANIES ACT,
+          1990 THE 1990 ACT OF UP TO A MAXIMUM NUMBER
+          95,732,060 UNITS OF ORDINARY STOCK, AT A MINIMUM
+          OF NOMINAL VALUE EUR 0.64 AND MINIMUM AND MAXIMUM
+          PRICES WHICH MAY BE PAID FOR ANY SUCH UNITS OF
+          ORDINARY STOCK SHALL BE DETERMINED IN ACCORDANCE
+          WITH BYE-LAW 39 OF THE BYE-LAWS OF THE BANK;
+          B) AUTHORIZE THE BANK AND/OR ANY SUBSIDIARY
+          AS SUCH EXPRESSION IS DEFINED BY SECTION 155
+          OF THE COMPANIES ACT, 1963, TO MAKE MARKET PURCHASES
+           DEFINED BY SECTION 212 OF THE COMPANIES ACT,
+          1990 ACT OF UP TO A MAXIMUM OF 1,876,090 UNITS
+          OF NON-CUMULATIVE PREFERENCE STOCK OF EUR 1.27
+          EACH OF THE BANK THE STERLING PREFERENCE STOCK
+           AND UNITS OF NON-CUMULATIVE PREFERENCE STOCK
+          OF EUR 1.27 EACH OF THE BANK THE EURO PREFERENCE
+          STOCK AND THE MINIMUM AND MAXIMUM PRICES WHICH
+          MAY BE PAID FOR ANY SUCH UNITS OF STERLING PREFERENCE
+          STOCK SHALL BE DETERMINED IN ACCORDANCE WITH
+          BYE-LAW 39 OF THE BYE-LAWS OF THE BANK, THE MAXIMUM
+          NUMBER OF UNITS OF EURO PREFERENCE STOCK AUTHORIZED
+          TO BE ACQUIRED PURSUANT TO THE TERMS OF THIS
+          RESOLUTION SHALL, SUBJECT TO THE PROVISO HEREINAFTER
+          SET OUT, NOT EXCEED 3,026,598 UNITS, THE MINIMUM
+          AND MAXIMUM PRICES WHICH MAY BE PAID FOR ANY
+          SUCH UNITS OF EURO PREFERENCE STOCK SHALL BE
+          DETERMINED IN ACCORDANCE WITH BYE-LAW 39 OF THE
+          BYE-LAWS OF THE BANK, PROVIDED THAT THE NOMINAL
+          VALUE OF THE UNITS OF ORDINARY STOCK, STERLING
+          PREFERENCE STOCK AND EURO PREFERENCE STOCK ACQUIRED
+          PURSUANT TO THE TERMS OF THIS RESOLUTION SHALL
+          NOT EXCEED 10% OF THE NOMINAL VALUE OF THE ISSUED
+          CAPITAL STOCK OF THE BANK AT ANYTIME; AUTHORITY
+          EXPIRES THE EARLIER AT THE CONCLUSION OF THE
+          ANNUAL GENERAL COURT OR 5 JAN 2007,; THE BANK
+          OR ANY SUCH SUBSIDIARY, BEFORE THE EXPIRY,
+          MAY MAKE A CONTRACT FOR THE PURCHASE OF UNITS
+          OR ORDINARY STOCK, UNITS OF STERLING PREFERENCE
+          STOCK OR UNITS OF EURO PREFERENCE STOCK WHICH
+          WILL OR MAY BE WHOLLY OR PARTLY EXECUTED AFTER
+          SUCH EXPIRY
+   S.6    APPROVE, FOR THE PURPOSES OF SECTION 209 OF THE                     Management        For     *Management Position Unknown
+          COMPANIES ACT, 1990 THE 1990 ACT , THE RE-ISSUE
+          PRICE RANGE AT WHICH ANY UNITS OF TREASURY STOCK
+          FOR THE TIME BEING HELD BY THE BANK IN ACCORDANCE
+          WITH SECTION 209 OF THE 1990 ACT MAY BE RE-ISSUED
+          OFF-MARKET SHALL BE DETERMINED IN ACCORDANCE
+          WITH BYE-LAW 40 OF THE BYE-LAWS OF THE BANK;
+          AUTHORITY EXPIRES AT THE EARLIER OF CONCLUSION
+          OF ANNUAL GENERAL COURT OR 5 JAN 2007
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
