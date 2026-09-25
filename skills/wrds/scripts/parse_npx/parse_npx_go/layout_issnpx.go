@@ -420,6 +420,11 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		recDate     string
 		lastLine    string
 
+		// bannerRename is the filing-wide pairing issRenamedBannerFill reads off
+		// this filing's own header and its own banners; nil for every filing
+		// whose banners all answer. Built once, below, where `lines` exists.
+		bannerRename map[string]*SeriesDecl
+
 		inTable bool
 		// tailRow is the index in rows of the last row flushed from the OPEN
 		// table, or -1. A wrapped tail that arrives after a blank line -- with no
@@ -578,6 +583,16 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		if stem := issBrandCutStem(seriesIx, banner); stem != "" {
 			fundSeries = issPlainHeadingSeries(seriesIx, dict, stem)
 		}
+		// The section may be named by a banner every rung above refuses and this
+		// filing's own left-over declaration answers on a token neither side
+		// spells twice; see issRenamedBannerFill. Fills a blank only.
+		if fundSeries == "" && bannerRename != nil {
+			if alt := bannerRename[normalizeSeriesName(banner)]; alt != nil {
+				fundSeries = alt.SeriesID
+				fundClasses = strings.Join(alt.ClassIDs, MultiValueSep)
+				return
+			}
+		}
 		if fundSeries == "" && issRegistrantOwnBanner(seriesIx, banner) {
 			fundSeries, fundClasses = prevSeries, prevClasses
 		}
@@ -587,6 +602,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	// The cover's series list may print a fund's rename under its current name,
 	// which is the only place a body banner spelling the OLD name is declared.
 	issCoverRenameAliases(seriesIx, lines)
+	// Read AFTER the cover's aliases are folded in, so the accounting below
+	// sees exactly the answers the loop will reach.
+	bannerRename = issRenamedBannerFill(lines, seriesIx)
 	// A filer agent may abandon this grammar mid-document for Broadridge
 	// meeting blocks (MFS Series Trust XI 2004: 52 issuers under a bare fund
 	// line, none of them read). The remainder of the body is handed to the
@@ -2943,6 +2961,266 @@ func issOwnBrandInfixDecl(ix *issSeriesIndex, banner string, d *SeriesDecl) bool
 		}
 	}
 	return false
+}
+
+// issRenamedBannerMinToken is the shortest token the rename fill will pair on.
+// A fund name's distinguishing word -- `Infrastructure`, `Commodity`,
+// `Healthcare` -- is long; the short ones are the vocabulary every sleeve of a
+// registrant shares (`mid`, `cap`, `500`, `plus`), and those must never carry a
+// pairing on their own.
+const issRenamedBannerMinToken = 5
+
+// issRenamedBannerFill completes, WITHIN ONE FILING AND NEVER ACROSS ONE, the
+// pairing that filing's own header and its own body already all but state: a
+// banner every rung of the chain refuses, one series the header declares that no
+// banner of this filing claimed, and a word that occurs in exactly ONE of the
+// filing's banners and under exactly ONE of its declared series.
+//
+// ProShares Trust (CIK 1174610) declares S000040181 `ProShares DJ Brookfield
+// Global Infrastructure ETF` and prints its banner under the marketing name the
+// index provider left behind, `ProShares Global Direct Infrastructure`: three
+// declared words dropped (`DJ`, `Brookfield`, `ETF`) and one inserted
+// (`Direct`). No name cut reaches it -- the chain's rungs drop leading brands,
+// trailing type words and parentheticals, never an interior pair -- so every row
+// of the section goes out blank (1,216 rows in the 2016 report, 1,341 in 2017,
+// and in both filings every blank row sits under this one banner).
+//
+// What decides it is not the name but the ACCOUNTING, the same discipline
+// brResidualDeclaredBanner keeps for the sibling layout. `Infrastructure` is
+// printed by exactly one of the filing's 45 banners and declared under exactly
+// one of its series, so the pairing is 1:1 on both sides and is read off what is
+// left over, not guessed among candidates. Two banners carrying the word, or two
+// declared sleeves carrying it, and the word decides nothing and is skipped --
+// there is no tiebreak, because a series_id is a link key and a positional or
+// nearest-fund guess between two of the registrant's own sleeves mis-attributes
+// ballots silently, where a blank merely loses them.
+//
+// The word alone is not enough either. The shape must be a RENAME and not a
+// shortening or an extension: the banner prints exactly ONE word the declaration
+// does not, the declaration carries at least one word the banner does not, and
+// everything else the banner prints the declaration prints too, two declared
+// words at least. A heading that is the declared name one word short stays blank
+// (family MISLINK4), and one that is the declared name plus a word is another
+// sleeve (family MISLINK10). Words of the registrant's own name and of the type
+// vocabulary never decide, since those are shared by construction rather than
+// distinguishing.
+//
+// Scope: the filing's OWN header (ix.decls) and its OWN body, so nothing here
+// can move a vote onto another registrant's fund, and a banner the chain already
+// answers is left exactly as it is -- this only ever fills a blank.
+func issRenamedBannerFill(lines []string, ix *issSeriesIndex) map[string]*SeriesDecl {
+	if ix == nil || len(ix.decls) == 0 {
+		return nil
+	}
+	// The filing's banners, in document order, deduplicated on the key the fill
+	// is read back on in commitBanner.
+	var keys, printed []string
+	toks := map[string][]string{}
+	for i, raw := range lines {
+		l := strings.TrimSpace(raw)
+		if l == "" {
+			continue
+		}
+		name, ok := issFundSeparator(l)
+		if !ok {
+			name, _, ok = issBannerWithTail(l)
+		}
+		if !ok {
+			name, ok = issOpenBanner(l, lines, i)
+		}
+		if !ok || name == "" {
+			continue
+		}
+		k := normalizeSeriesName(name)
+		if k == "" {
+			continue
+		}
+		if _, dup := toks[k]; dup {
+			continue
+		}
+		toks[k] = issDedupTokens(strings.Fields(k))
+		keys = append(keys, k)
+		printed = append(printed, name)
+	}
+	if len(keys) == 0 {
+		return nil
+	}
+
+	// Which declared series the body already claims, read on the banner AS
+	// PRINTED so the answer is the one the loop itself will reach. The memo is
+	// swapped out for the duration: the loop may still teach this index a brand
+	// (issItemFamilyBrand), and a pre-pass answer cached ahead of that would
+	// then be read back as though it were the loop's own.
+	saved, savedHdr := ix.resolved, map[string]issResolved(nil)
+	ix.resolved = map[string]issResolved{}
+	if ix.hdrOnly != nil {
+		savedHdr = ix.hdrOnly.resolved
+		ix.hdrOnly.resolved = map[string]issResolved{}
+	}
+	claimed := map[string]bool{}
+	var open []string
+	for i, k := range keys {
+		if _, d := issResolveFund(ix, printed[i]); d != nil {
+			claimed[d.SeriesID] = true
+		} else {
+			open = append(open, k)
+		}
+	}
+	ix.resolved = saved
+	if ix.hdrOnly != nil {
+		ix.hdrOnly.resolved = savedHdr
+	}
+	if len(open) == 0 {
+		return nil
+	}
+
+	// How many of the filing's banners print each word, and which single series
+	// declares it. A word two series declare decides nothing.
+	bannerCnt := map[string]int{}
+	for _, k := range keys {
+		for _, t := range toks[k] {
+			bannerCnt[t]++
+		}
+	}
+	declOf, declAmb := map[string]string{}, map[string]bool{}
+	for i := range ix.decls {
+		id := ix.decls[i].SeriesID
+		if id == "" {
+			continue
+		}
+		for _, t := range issDedupTokens(ix.declToks(i)) {
+			if prev, ok := declOf[t]; !ok {
+				declOf[t] = id
+			} else if prev != id {
+				declAmb[t] = true
+			}
+		}
+	}
+	reg := map[string]bool{}
+	for _, t := range strings.Fields(ix.registrantKey) {
+		reg[t] = true
+	}
+
+	var out map[string]*SeriesDecl
+	// takenBy carries the banner a declared series was paired with, and an empty
+	// string once a second banner reached it: two banners naming one series is a
+	// refusal for BOTH, not a race the first one wins.
+	takenBy := map[string]string{}
+	for _, k := range open {
+		bt := toks[k]
+		// Name-shaped only: a registered fund's name is several words, and the
+		// pairing needs words to agree on beyond the one that decides.
+		if len(bt) < 3 {
+			continue
+		}
+		var pick *SeriesDecl
+		for i := range ix.decls {
+			d := &ix.decls[i]
+			if d.SeriesID == "" || claimed[d.SeriesID] {
+				continue
+			}
+			if !issRenamedBannerPair(bt, ix.declToks(i), d.SeriesID, reg, bannerCnt, declOf, declAmb) {
+				continue
+			}
+			if pick != nil && pick.SeriesID != d.SeriesID {
+				pick = nil
+				break
+			}
+			if pick == nil {
+				pick = d
+			}
+		}
+		if pick == nil {
+			continue
+		}
+		if first, dup := takenBy[pick.SeriesID]; dup {
+			if first != "" {
+				delete(out, first)
+			}
+			takenBy[pick.SeriesID] = ""
+			continue
+		}
+		takenBy[pick.SeriesID] = k
+		if out == nil {
+			out = map[string]*SeriesDecl{}
+		}
+		out[k] = pick
+	}
+	return out
+}
+
+// issRenamedBannerPair reports that this banner and this declaration name one
+// fund on evidence neither side spells twice: they share a word that occurs in
+// exactly ONE banner of the filing and under exactly ONE declared series, that
+// word belongs to neither the registrant's own name nor the type vocabulary, and
+// everything else the banner prints -- bar EXACTLY one inserted word -- the
+// declaration prints too, while the declaration keeps at least one word of its
+// own. Both token slices are already normalised; bt is deduplicated.
+func issRenamedBannerPair(bt, dt []string, id string, reg map[string]bool,
+	bannerCnt map[string]int, declOf map[string]string, declAmb map[string]bool) bool {
+	have := make(map[string]bool, len(dt))
+	for _, t := range dt {
+		have[t] = true
+	}
+	shared, foreign, rare := 0, 0, false
+	for _, t := range bt {
+		if !have[t] {
+			foreign++
+			continue
+		}
+		shared++
+		if len(t) < issRenamedBannerMinToken || issTypeWord(t) || reg[t] || declAmb[t] {
+			continue
+		}
+		if bannerCnt[t] == 1 && declOf[t] == id {
+			rare = true
+		}
+	}
+	// EXACTLY one inserted word, never none. A banner that prints a SUBSET of
+	// the declared name is a shortening, not a rename, and the chain refuses
+	// those deliberately: `... ENHANCED S&P 500 INDEX FUND` under a declared
+	// `... ENHANCED S&P 500 STOCK INDEX FUND` is one interior word short, and
+	// family MISLINK4 asserts it stays blank. A rename trades words BOTH ways
+	// -- the marketing name prints something the registration does not -- and
+	// that trade is what this rung reads.
+	if !rare || shared < 2 || foreign != 1 {
+		return false
+	}
+	// And the declaration must carry a word the banner does not print. A heading
+	// that prints the declared name WHOLE and adds to it is the opposite shape:
+	// `AIM PREMIER EQUITY FUND II` over a declared `AIM Premier Equity Fund` is
+	// the registrant's second sleeve, which the chain refuses on purpose (family
+	// MISLINK10), and the accounting cannot tell it from a rename.
+	for _, t := range dt {
+		if !issTokensContain(bt, t) {
+			return true
+		}
+	}
+	return false
+}
+
+// issTokensContain reports membership in an already-deduplicated token slice.
+func issTokensContain(toks []string, t string) bool {
+	for _, x := range toks {
+		if x == t {
+			return true
+		}
+	}
+	return false
+}
+
+// issDedupTokens keeps the first occurrence of each token, in order.
+func issDedupTokens(toks []string) []string {
+	out := make([]string, 0, len(toks))
+	seen := make(map[string]bool, len(toks))
+	for _, t := range toks {
+		if seen[t] {
+			continue
+		}
+		seen[t] = true
+		out = append(out, t)
+	}
+	return out
 }
 
 func issResolveFundMemo(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
