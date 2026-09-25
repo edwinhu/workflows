@@ -2419,10 +2419,7 @@ func issCutSubAdviser(banner string) (string, bool) {
 //
 // Exact only, on both routes: crossCIK keys a name that two series or two
 // registrants answer to onto nil, so the same fund printed under several
-// advisers in one filing never collapses two different funds. A remainder both
-// routes refuse is retried once under the corpus's own other spellings of the
-// sub-adviser house it names -- see issHouseSpellingDecl, which re-enters these
-// same exact routes and admits one series or nothing.
+// advisers in one filing never collapses two different funds.
 func issAdvisorSuffixDecl(ix *issSeriesIndex, banner string) *SeriesDecl {
 	if ix == nil {
 		return nil
@@ -2431,122 +2428,10 @@ func issAdvisorSuffixDecl(ix *issSeriesIndex, banner string) *SeriesDecl {
 	if !ok || cut == "" || normalizeSeriesName(cut) == normalizeSeriesName(banner) {
 		return nil
 	}
-	if d := issAdvisorRemainderExact(ix, cut); d != nil {
+	if d, _ := lookupSeriesEntry(ix.byName, cut); d != nil {
 		return d
 	}
-	return issHouseSpellingDecl(ix, cut)
-}
-
-// issAdvisorRemainderExact is the pair of EXACT routes the cut remainder is
-// admitted by: the filing's own declaration, then one series of the corpus
-// under another CIK. Factored out so the house-spelling rung below can reach a
-// respelled remainder on exactly these terms and no others.
-func issAdvisorRemainderExact(ix *issSeriesIndex, name string) *SeriesDecl {
-	if d, _ := lookupSeriesEntry(ix.byName, name); d != nil {
-		return d
-	}
-	return issIndexDict(ix).crossCIK(ix.cik, name, ix.period, ix.registrantKey)
-}
-
-// issHouseSpellingDecl re-reads a cut ADVISOR remainder that the exact routes
-// refuse under the OTHER spellings the corpus itself records for a sub-adviser
-// house, and admits an answer only when every spelling that resolves names one
-// series. Strategic Partners Mutual Funds 2006 heads `AST JP MORGAN
-// INTERNATIONAL EQUITY PORTFOLIO - ADVISOR: JP MORGAN` where the declaration at
-// its own 20060630 vintage runs the house together, `AST JPMORGAN
-// INTERNATIONAL EQUITY PORTFOLIO` (S000001976, 1,124 rows blank), and `AST T.
-// ROWE GLOBAL BOND PORTFOLIO - ADVISOR: T. ROWE PRICE` where the declaration
-// spells the house in full, `AST T. ROWE PRICE GLOBAL BOND PORTFOLIO`
-// (S000001979).
-//
-// This is NOT a similarity rung. The substitution is a closed list of spellings
-// the corpus attests for one house -- S000001976 is itself declared both `AST
-// JPMORGAN ...` (20060630) and `AST J.P. MORGAN ...` (20120630) -- applied to
-// one occurrence of one house per name, and each respelling is then put through
-// the same exact, collision-refusing routes the remainder was already put
-// through. Two spellings that answer with DIFFERENT series refuse, the way
-// every index here refuses a name two series answer to.
-func issHouseSpellingDecl(ix *issSeriesIndex, cut string) *SeriesDecl {
-	var hit *SeriesDecl
-	for _, cand := range issHouseSpellings(normalizeSeriesName(cut)) {
-		d := issAdvisorRemainderExact(ix, cand)
-		if d == nil {
-			continue
-		}
-		if hit != nil && hit.SeriesID != d.SeriesID {
-			return nil
-		}
-		hit = d
-	}
-	return hit
-}
-
-// issHouseGroups are the sub-adviser houses the corpus spells more than one
-// way, each group listing the equivalent normalised spellings LONGEST FIRST so
-// the widest one claims the occurrence: `t rowe price` must never be read as
-// `t rowe` plus a stray `price`, which would respell it `t rowe price price`.
-//
-// Deliberately closed and deliberately short. Every member of a group has to be
-// a difference in how ONE house is printed, never a difference between houses,
-// which is the same standard normalizeSeriesName holds its own foldings to.
-var issHouseGroups = [][]string{
-	{"j p morgan", "jp morgan", "jpmorgan"},
-	{"t rowe price", "t rowe"},
-}
-
-// issHouseSpellings returns key respelled under each OTHER spelling of the one
-// house it names, or nil when it names none. At most one occurrence of at most
-// one group is substituted: a name is respelled, never rewritten.
-func issHouseSpellings(key string) []string {
-	toks := strings.Fields(key)
-	if len(toks) == 0 {
-		return nil
-	}
-	var out []string
-	for _, grp := range issHouseGroups {
-		for _, member := range grp {
-			mt := strings.Fields(member)
-			i := issTokenRunIndex(toks, mt)
-			if i < 0 {
-				continue
-			}
-			for _, alt := range grp {
-				if alt == member {
-					continue
-				}
-				at := strings.Fields(alt)
-				nt := make([]string, 0, len(toks)-len(mt)+len(at))
-				nt = append(nt, toks[:i]...)
-				nt = append(nt, at...)
-				nt = append(nt, toks[i+len(mt):]...)
-				out = append(out, strings.Join(nt, " "))
-			}
-			break
-		}
-	}
-	return out
-}
-
-// issTokenRunIndex is the index of the first whole-token occurrence of run in
-// toks, or -1. Whole tokens throughout, so no house spelling can match inside a
-// word of a fund's name.
-func issTokenRunIndex(toks, run []string) int {
-	if len(run) == 0 || len(run) > len(toks) {
-		return -1
-	}
-	for i := 0; i+len(run) <= len(toks); i++ {
-		ok := true
-		for j := range run {
-			if toks[i+j] != run[j] {
-				ok = false
-				break
-			}
-		}
-		if ok {
-			return i
-		}
-	}
-	return -1
+	return issIndexDict(ix).crossCIK(ix.cik, cut, ix.period, ix.registrantKey)
 }
 
 // issCutGluedBrand removes a sub-adviser brand the filing GLUES to the house
