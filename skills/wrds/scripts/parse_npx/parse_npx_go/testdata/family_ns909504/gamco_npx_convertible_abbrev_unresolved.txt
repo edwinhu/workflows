@@ -1,0 +1,87 @@
+<SEC-DOCUMENT>0000935069-08-001961.txt : 20080827
+<SEC-HEADER>0000935069-08-001961.hdr.sgml : 20080827
+<ACCEPTANCE-DATETIME>20080827164507
+ACCESSION NUMBER:		0000935069-08-001961
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20080630
+FILED AS OF DATE:		20080827
+DATE AS OF CHANGE:		20080827
+EFFECTIVENESS DATE:		20080827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			GAMCO GLOBAL SERIES FUNDS, INC
+		CENTRAL INDEX KEY:			0000909504
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MD
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001064
+<SERIES-NAME>GABELLI GLOBAL CONVERTIBLE SECURITIES FUND
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001065
+<SERIES-NAME>GABELLI GLOBAL GROWTH FUND
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001066
+<SERIES-NAME>GABELLI GLOBAL OPPORTUNITY FUND
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001067
+<SERIES-NAME>GABELLI GLOBAL TELECOMMUNICATIONS FUND
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx.txt
+<DESCRIPTION>GAMCO GLOBAL SERIES NPX 0608
+<TEXT>
+<PAGE>
+
+                               PROXY VOTING RECORD
+
+                    FOR PERIOD JULY 1, 2007 TO JUNE 30, 2008
+
+ProxyEdge - Investment Company Report                    Report Date: 07/10/2008
+Meeting Date Range: 07/01/2007 to 06/30/2008                         Page 1 of 4
+Selected Accounts: NPX GAB GLB CONVERTIBLE SEC FD
+
+
+<TABLE>
+<S>                                                                     <C>                   <C>
+IMDEX LIMITED (FORMERLY IMDEX NL)                                       IMDXF.PK              AGM MEETING DATE: 10/19/2007
+ISSUER: Q4878M104                                                       ISIN: AU000000IMD5
+SEDOL:  B1HHRN2, 6462154
+</TABLE>
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                         Proposal     Vote    For or Against
+Number   Proposal                                                                Type         Cast    Management
+- -------- ----------------------------------------------------------------------- ------------ ------- -----------------------------
+<S>      <C>                                                                     <C>          <C>     <C>
+1.       RECEIVE THE ANNUAL FINANCIAL REPORT, TOGETHER                           Non-Voting           *Management Position Unknown
+         WITH THE DIRECTORS AND THE AUDITOR S REPORT
+         FOR THE YE 30 JUN 2007
+2.       RE-ELECT MR. KEVIN DUNDO AS A DIRECTOR, WHO RETIRES                     Management   For     For
+         BY ROTATION
+3.       RE-ELECT MR. MAGNUS LEMMEL AS A DIRECTOR                                Management   For     For
+4.       APPROVE, FOR THE PURPOSES OF ASX LISTING RULE                           Management   For     For
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

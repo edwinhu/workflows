@@ -3590,6 +3590,34 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 		}
 	}
 
+	// The TRAILING half of the same ProxyEdge account grammar. `Selected
+	// Accounts: GABELLI GLOBAL OPP FUND GRP` closes on the vendor's account-GROUP
+	// marker, and `Selected Accounts: NPX GABELLI GLB TELECOM FD` on its
+	// vowel-dropped spelling of the type word the declared name prints in full
+	// (CIK 909504, Gabelli Global Series Funds: 3,015 rows with no series across
+	// its 2006-2008 reports). Neither token is a fund word, so the account name
+	// is re-spelled once -- the group marker dropped, the abbreviation restored
+	// to the one type word it abbreviates -- and the remainder goes back through
+	// the whole chain, which still refuses a collision. The restored token is
+	// spelled out in full, so the re-read can never make the same edit again.
+	if f := strings.Fields(banner); len(f) > 2 {
+		last := strings.ToLower(strings.Trim(f[len(f)-1], ".,"))
+		if last == "grp" {
+			if _, d := issResolveFund(ix, strings.Join(f[:len(f)-1], " ")); d != nil {
+				return banner, d
+			}
+		}
+		for _, tw := range []string{"fund", "portfolio", "trust", "series"} {
+			if !issVowelDropped(last, tw) {
+				continue
+			}
+			g := append(append([]string{}, f[:len(f)-1]...), tw)
+			if _, d := issResolveFund(ix, strings.Join(g, " ")); d != nil {
+				return banner, d
+			}
+		}
+	}
+
 	// A labelled sub-adviser clause after the fund name.
 	// `Clarion Global Real Estate Portfolio, a series of Met Investors Series
 	// Trust`: the registrant named after the fund (MET Investors, 20k rows).
