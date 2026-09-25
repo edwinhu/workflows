@@ -7371,7 +7371,32 @@ func issCoverRenameAliases(ix *issSeriesIndex, lines []string) {
 // S000003404 declaration at vintage 20060630. Neither the old name nor any
 // distinctive word of it reaches the successor by a name rung, so the
 // resolution is registrant-scoped here.
+//
+// TDX Independence Funds, Inc. (CIK 0001385533) is the same complex-wide brand
+// substitution as American AAdvantage, and EDGAR's own header records it the
+// same way: 000138/1385533/0000891092-09-003339.txt heads `COMPANY CONFORMED
+// NAME: TDX Independence Funds, Inc.` with `FORMER CONFORMED NAME: TDAX Funds,
+// Inc.` beneath it, and the vote body heads every section under the OLD brand
+// token -- `TDAX Independence 2010 ETF Composite` -- against the five series
+// the same header declares as `TDX Independence <N> Exchange-Traded Fund`
+// (S000016521..S000016525). The two spellings differ in the brand token alone
+// (`TDAX` for `TDX`) plus the fund-type suffix the resolver already spans, and
+// each banner's year token -- or `In-Target` -- picks exactly one of the five,
+// so nothing here is excluded for ambiguity. The old spelling is unreachable by
+// any name rung: `TDAX` appears in no dictionary row of this CIK at any vintage
+// (its rows spell `TDX` at 20080630 and `db-X` / `Deutsche X-trackers` later),
+// so the one word that would anchor a cut is the word the registrant dropped.
+// 8,242 rows with no series in that filing, and 8,242 more in the filer's
+// duplicate report of the same period, 0000891092-10-000935. All five sleeves
+// are keyed, not only the two that carry rows in one period.
 var issRegistrantRenames = map[string]map[string]string{
+	"0001385533": {
+		"tdax independence 2010 etf composite":      "TDX Independence 2010 Exchange-Traded Fund",
+		"tdax independence 2020 etf composite":      "TDX Independence 2020 Exchange-Traded Fund",
+		"tdax independence 2030 etf composite":      "TDX Independence 2030 Exchange-Traded Fund",
+		"tdax independence 2040 etf composite":      "TDX Independence 2040 Exchange-Traded Fund",
+		"tdax independence in target etf composite": "TDX Independence In-Target Exchange-Traded Fund",
+	},
 	"0000755221": {
 		"axp managed allocation fund": "RiverSource Strategic Allocation Fund",
 	},
