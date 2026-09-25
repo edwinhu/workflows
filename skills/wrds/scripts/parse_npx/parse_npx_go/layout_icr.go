@@ -1,6 +1,9 @@
 package main
 
-import "strings"
+import (
+	"strings"
+	"unicode"
+)
 
 // icr reads the ISS "Investment Company Report" block grammar: a per-issuer
 // block carrying its own identity header, meeting header and column header,
@@ -897,7 +900,10 @@ func icrResolveFundVintage(ix *issSeriesIndex, idx map[string]*SeriesDecl, print
 	if id := icrResolveDeclaredSuffix(ix, idx, printed, len(fields)); id != "" {
 		return id
 	}
-	return icrResolveQualified(ix, idx, printed)
+	if id := icrResolveQualified(ix, idx, printed); id != "" {
+		return id
+	}
+	return icrResolveInteriorStyleWord(ix, printed)
 }
 
 // icrQualifierDelim introduces a trailing ANNOTATION rather than part of the
@@ -940,6 +946,137 @@ func icrResolveQualified(ix *issSeriesIndex, idx map[string]*SeriesDecl, printed
 		cut = next
 	}
 	return ""
+}
+
+// icrStyleConnectors are the lowercase words a multi-word style slot may carry
+// INSIDE it (`Growth and Income`). A candidate prefix may never begin or end on
+// one.
+var icrStyleConnectors = map[string]bool{"and": true, "of": true, "the": true}
+
+// icrStyleWord reports whether a printed token is a style word -- one initial
+// capital and lowercase letters after it (`Conservative`, `Moderate`, `Income`).
+// An all-caps or digit-bearing token (`LV`, `LB`, `MID`, `WS`, `SB`, `MUTUAL`,
+// `IPB`, `FUNDS`) is NOT one, which is what ends the leading run.
+func icrStyleWord(tok string) bool {
+	rs := []rune(tok)
+	if len(rs) < 2 || !unicode.IsUpper(rs[0]) {
+		return false
+	}
+	for _, r := range rs[1:] {
+		if !unicode.IsLetter(r) || unicode.IsUpper(r) {
+			return false
+		}
+	}
+	return true
+}
+
+// icrHeaderDecls is the filing's OWN declared series, or nil when this index's
+// declaration set has been widened by the corpus dictionary. issFilingIndex
+// folds dictionary aliases into the outer index and keeps the unwidened set on
+// hdrOnly, so the set is the header's exactly when the dictionary is unreadable
+// here (noDict) or was never loaded (no hdrOnly to hold it).
+func icrHeaderDecls(ix *issSeriesIndex) *issSeriesIndex {
+	if ix == nil || len(ix.decls) == 0 {
+		return nil
+	}
+	if ix.noDict || ix.hdrOnly == nil {
+		return ix
+	}
+	return nil
+}
+
+// icrResolveInteriorStyleWord resolves a banner that prints only the STYLE SLOT
+// of a manager-of-managers portfolio plus a sub-adviser code. Pax World Funds
+// Series Trust I (CIK 0000076721) prints one section per (portfolio,
+// sub-adviser) pair and heads each `Conservative LV Clear Bridge`, `Moderate
+// MUTUAL FUNDS`, `Growth and Income LB Pax World` -- never the declared `ESG
+// Managers <Style> Portfolio`. The style word sits in the INTERIOR of the
+// declared name, which no rung above reaches: the leading-token walk lifts
+// tails, the declared-suffix mirror matches ends, and the qualified rung needs
+// a ` - ` this line does not have. 5,062 rows across two filings.
+//
+// THE FILING'S OWN HEADER IS THE ONLY EVIDENCE ADMITTED. This registrant's
+// dictionary SHUFFLES which id owns which style word across vintages --
+// S000027264 is `ESG Managers Conservative Portfolio` at 20100630 and `ESG
+// Managers Income Portfolio` at 20130630 -- so a style word resolved against
+// the corpus would attribute one filing's sections to another filing's id.
+// icrHeaderDecls is what keeps the candidate set to the series THIS filing
+// declares.
+//
+// UNIQUENESS AND WORD BOUNDARY DO THE REST. The leading run of style words is
+// tried longest first (`Growth and Income` before `Growth`), matched as a whole
+// TOKEN sequence strictly inside a declared name -- a token before it and a
+// token after it -- and resolved only when exactly ONE declared name answers.
+// Two declared names carrying the same style word refuse rather than pick, so a
+// `Balanced` that is interior to both `ESG Managers Balanced Portfolio` and a
+// sibling `PAX WORLD BALANCED FUND` stays blank instead of being guessed.
+func icrResolveInteriorStyleWord(ix *issSeriesIndex, printed string) string {
+	hdr := icrHeaderDecls(ix)
+	if hdr == nil {
+		return ""
+	}
+	fields := strings.Fields(printed)
+	// The leading run ends at the first token that is neither a style word nor
+	// an interior connector; with no such token the banner is a plain name, not
+	// a style slot followed by a code, and this rung has nothing to say.
+	run := 0
+	for run < len(fields) && (icrStyleWord(fields[run]) || icrStyleConnectors[strings.ToLower(fields[run])]) {
+		run++
+	}
+	if run == 0 || run >= len(fields) {
+		return ""
+	}
+	for k := run; k >= 1; k-- {
+		if !icrStyleWord(fields[0]) || !icrStyleWord(fields[k-1]) {
+			continue
+		}
+		if id := icrInteriorUnique(hdr, strings.Fields(normalizeSeriesName(strings.Join(fields[:k], " ")))); id != "" {
+			return id
+		}
+	}
+	return ""
+}
+
+// icrInteriorUnique returns the one declared series whose normalised name
+// carries toks as a strictly interior token run, or "" when none or more than
+// one does.
+func icrInteriorUnique(ix *issSeriesIndex, toks []string) string {
+	if len(toks) == 0 {
+		return ""
+	}
+	found := ""
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || icrFutureDeclName(ix, d) {
+			continue
+		}
+		if !icrInteriorRun(ix.declToks(i), toks) {
+			continue
+		}
+		if found != "" && found != d.SeriesID {
+			return "" // two declared funds carry this style word; refuse to pick
+		}
+		found = d.SeriesID
+	}
+	return found
+}
+
+// icrInteriorRun reports whether toks occurs in decl as a whole-token run with
+// at least one token before it and one after it.
+func icrInteriorRun(decl, toks []string) bool {
+	for start := 1; start+len(toks) < len(decl); start++ {
+		hit := true
+		for j, t := range toks {
+			if decl[start+j] != t {
+				hit = false
+				break
+			}
+		}
+		if hit {
+			return true
+		}
+	}
+	return false
 }
 
 // icrResolveDeclaredSuffix is the MIRROR of the walk above, for the filings that
