@@ -44,14 +44,14 @@ These are the skills you invoke directly with `/name`:
 
 ### Core Workflows
 
-`/craft` is the spine: clarify with the user, draft a plan they edit and approve, self-set a goal,
+`/work` is the spine: clarify with the user, draft a plan they edit and approve, self-set a goal,
 run `workflow.js` to implement and independently verify, then put the result in front of a human in
 tuicr. Human rejection routes back to CLARIFY. The domain workflows dispatch through it and add
 their own computed gate.
 
-| Workflow | Adds to the craft loop |
+| Workflow | Adds to the work loop |
 |----------|------------------------|
-| `/craft` | nothing — the generic loop for any task worth doing properly |
+| `/work` | nothing — the generic loop for any task worth doing properly |
 | `/dev` | TDD discipline: a failing test before the change, and lens reviews for security, performance and test coverage |
 | `/ds` | a computed data-quality gate (DQ1-DQ6, M1, R1) over the panel the run builds |
 | `/writing` | a computed plan-grammar and citation gate, plus the domain style register the plan's `Domain:` selects |
@@ -130,12 +130,12 @@ These skills have `user-invocable: false` — Claude loads them automatically wh
 ### Utilities
 `farm-out`, `look-at`, `visual-verify`, `visual-mockup`, `data-context`, `continuous-learning`, `pattern-capture`, `ai-anti-patterns`, `obsidian-organize`, `pptx-render`, `headline-card`
 
-`farm-out` is the dispatcher craft runs its agents through — `work-dispatch.sh` uses the sibling copy
+`farm-out` is the dispatcher `work` runs its agents through — `work-dispatch.sh` uses the sibling copy
 by default, so the plugin dispatches without an outside install. It fetches its own SDK on first run.
 
 ### Internal Workflow Phases
 
-None. The craft spine has no sub-skills: the phases are beats inside `skills/work/workflow.js`,
+None. The work spine has no sub-skills: the phases are beats inside `skills/work/workflow.js`,
 dispatched as agents, so there is nothing to invoke by name and nothing to keep in sync.
 
 ---
@@ -158,7 +158,7 @@ registers user-scoped (bare name, `hooks:` honoured) via a symlink into `~/.clau
 | `writing-econ` | Finance and accounting journal prose | user | source-first `PreToolUse` guard |
 | `writing-reviewer` | Read-only prose grading against the preloaded register and the tic table | user | — |
 
-The craft spine's per-beat verifiers are still dispatched from `skills/work/workflow.js` with the
+The work spine's per-beat verifiers are still dispatched from `skills/work/workflow.js` with the
 prompt the run needs, so no agent file exists for them. Implementers are the exception: `/ds`,
 `/writing` and `/workshop` each set `implementerAgentType` to the matching agent above, and the
 teaching plugin sets it to its own `lecture-impl`. `/dev` and `/workflow-creator` deliberately leave
@@ -229,7 +229,7 @@ Hooks auto-run at specific lifecycle events. The table has one row per command t
 
 | Script | Event | Trigger | Purpose |
 |--------|-------|---------|---------|
-| `session-start.ts` | SessionStart | startup/resume/clear/compact | Inject using-skills meta-skill; report an unfinished craft run |
+| `session-start.ts` | SessionStart | startup/resume/clear/compact | Inject using-skills meta-skill; report an unfinished work run |
 | `session-end.ts` | Stop | * | Update LEARNINGS.md timestamp |
 | `suggest-compact.ts` | PreToolUse | Edit/Write | Suggest compaction when context is large |
 | `image-read-guard.ts` | PreToolUse | Read | Redirect to look-at for media files |
@@ -245,8 +245,8 @@ Hooks auto-run at specific lifecycle events. The table has one row per command t
 
 ## Session Continuity
 
-A craft run keeps two records, one owner each: the approved plan at `.claude/plans/<slug>.md` is the
-run's authority and the file craft hashes in place, and `.craft/<run-id>/` holds the args, the
+A work run keeps two records, one owner each: the approved plan at `.claude/plans/<slug>.md` is the
+run's authority and the file `work` hashes in place, and `.craft/<run-id>/` holds the args, the
 verdict JSON and the plan bytes each round actually ran under. Project auto-memory retains reusable
 facts; project directories retain real inputs and deliverables.
 
@@ -268,9 +268,9 @@ workflows/
 ├── agents/                     # Plugin-scoped subagents (auto-discovered)
 ├── user-agents/                # User-scoped subagents (symlinked into ~/.claude/agents/)
 ├── skills/                     # User-facing and internal skills
-│   ├── craft/                  # The spine: workflow.js, plan-lint, dispatch, gate
+│   ├── work/                   # The spine: workflow.js, plan-lint, dispatch, gate
 │   ├── dev/, ds/, writing/, workshop/, workflow-creator/  # Domain workflows
-│   ├── farm-out/               # The dispatcher craft farms agents out through
+│   ├── farm-out/               # The dispatcher the `work` skill farms agents out through
 │   ├── docx, pdf, pptx, xlsx  # Document formats (symlinks)
 │   └── ...                     # Internal phases and auto-invoked skills
 ├── bin/                        # Optional dependency installer

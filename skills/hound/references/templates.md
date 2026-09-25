@@ -72,7 +72,7 @@ defect, and — having no list of what counts as a blocker — filed the difficu
 
 ### 1. `npx-reconcile` — the milestone objective
 
-Was: hold until `craft has returned a verdict for .planning/npx-iss-reconciliation.md`.
+Was: hold until `the work run has returned a verdict for .planning/npx-iss-reconciliation.md`.
 
 It closed on `overallPass=false`, 0 of 5 tasks implemented, 20 blocking findings. The session then
 asked whether to amend and re-dispatch or read the findings first, and slept 4h10m.

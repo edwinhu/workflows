@@ -24,7 +24,7 @@ themselves wrote. Nothing here is inferred from documentation.
   `~/.claude/agents/wc-hook-reach-probe.md` → symlink to `/tmp/wc-hook-reach/agent.md`.
 - `wf.js` — a minimal Workflow script: one `phase('Write')`, one `agent(...)` told to use the Write
   tool to create a file; takes an optional `agentType` arg that it spreads into the `agent()` options
-  exactly as craft's `workflow.js` does.
+  exactly as `work`'s `workflow.js` does.
 
 **Driver.** The agent running t7 has no `Agent` and no `Workflow` tool of its own (subagents cannot
 fan out further), so each cell was driven from a **fresh headless session**:

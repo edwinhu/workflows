@@ -104,12 +104,12 @@ Two remedies were considered and dropped. **Gate-judging lenses blocking once, t
 is subsumed by the freeze — after round 1 no fresh lens finding blocks, gate-judging or not.
 **Requiring a blocking finding to name a path some task wrote** would downgrade genuine defects in
 files no task touched, and the freeze already defuses the `scope-fidelity` cases that motivated it
-(pytest caches, a foreign staged deletion, "eleven dirty files attributable to the concurrent craft
+(pytest caches, a foreign staged deletion, "eleven dirty files attributable to the concurrent `work`
 session").
 
 **Do not dedupe findings against a seen-set.** It would suppress 3 findings out of 158. The
 `workflow-creator` loop-until-dry doctrine warns to dedupe against `seen` because *its* finders
-re-surface the same bug; craft's lenses never do. It would also weaken the one genuine cross-run
+re-surface the same bug; `work`'s lenses never do. It would also weaken the one genuine cross-run
 repeat — a defect restated across a run boundary because it was still unfixed.
 
 **Do not freeze the plan outright.** Some amendments are obligatory (a `redCommand` wrong as written
@@ -139,7 +139,7 @@ The levers, ranked by yield per token:
    from inside this task's `writablePaths`? This is the specific form (1) takes after a repeat, and it
    is what the repeat reason prints.
 3. **Model diversity.** Addresses FRAMING lock-in, not execution quality. Worth pulling only once (1)
-   and (2) have shown the brief is sound — and craft already carries two thirds of it:
+   and (2) have shown the brief is sound — and `work` already carries two thirds of it:
    - **Judge side, cross-provider: `thirdParty: ["codex"|"gemini"]`.** Already shipped, and advisory
      by construction. This is the diversity lever that exists; a second reader that does not share
      the first's framing is exactly what a repeated failure calls for, and it cannot corrupt the gate.
@@ -157,15 +157,15 @@ The levers, ranked by yield per token:
      to whatever broke round 3.
    - **Per-leg tier tuning inside one provider: `implementerModel` / `lensModel`.** Plan keys, so
      changing them means amending the plan and re-hashing.
-4. **A parallel horse race across approaches — do not build one into craft.** Two independent
+4. **A parallel horse race across approaches — do not build one into `work`.** Two independent
    blockers, and the first is the same one that already keeps worktrees out (SKILL.md, *Red flags*):
    `workflow.js` has no filesystem, so it can neither isolate N competing implementations nor merge
    the winner, and a merge agent's silent slip reads as an implementer's omission. Second, a race
-   needs a decidable selector. Craft's per-task signals are `redCommand`'s exit code, the verifier and
+   needs a decidable selector. `work`'s per-task signals are `redCommand`'s exit code, the verifier and
    the mechanical checks — if every horse goes green they do not discriminate, and picking a winner
    collapses into a fuzzy prose judgement, which is the loop that does not terminate. If one horse
    goes green it was not a race, it was retry-until-green, and the round already does that. Race
-   outside craft, at the CLARIFY architecture step, where the deliverable is a *choice* and a human
+   outside `work`, at the CLARIFY architecture step, where the deliverable is a *choice* and a human
    makes it.
 
 **Neither (3) nor (4) would have helped the measured case, and running them is how a spec defect gets

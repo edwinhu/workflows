@@ -57,11 +57,11 @@ Bash allowlist — so no timing claim is made here. See §6, experiment B.
 
 | Checker | Event · matcher | What it decides | Scoped today by | Owning rule |
 |---|---|---|---|---|
-| `main-thread-guard.sh` | PreToolUse · `Agent\|Task\|Workflow\|Edit\|Write\|NotebookEdit\|Bash`; **and** Stop | three policies: delegation routes through farm-out; mail composition belongs to `email`; a `farmOutOnly` project and an armed-undispatched craft run take no main-thread writes | `FARM_OUT_CHILD` env escape (`:65`); an ancestor walk for `.claude/plans` and `.claude-workflows.json`, stopping at `$HOME` (`:76-87`); `work-pending.sh` exit code (`:96-107`) | `using-skills` Iron Law + `craft` Phase 3/4 — **session-wide invariant** |
+| `main-thread-guard.sh` | PreToolUse · `Agent\|Task\|Workflow\|Edit\|Write\|NotebookEdit\|Bash`; **and** Stop | three policies: delegation routes through farm-out; mail composition belongs to `email`; a `farmOutOnly` project and an armed-undispatched work run take no main-thread writes | `FARM_OUT_CHILD` env escape (`:65`); an ancestor walk for `.claude/plans` and `.claude-workflows.json`, stopping at `$HOME` (`:76-87`); `work-pending.sh` exit code (`:96-107`) | `using-skills` Iron Law + `work` Phase 3/4 — **session-wide invariant** |
 | `bash-allowlist.py` | *not a hook* — a library called by the above (`main-thread-guard.sh:232`) | is this Bash command read-only enough for the main thread | allowlist | same |
 | `outbound-send-guard.sh` | PreToolUse · `Bash` — **declared in agent frontmatter**, `~/.claude/agents/email.md:11-16` and `assistant.md:14` | an outbound send → `permissionDecision: ask` | **already agent-scoped** | `email` / `assistant` draft-by-default |
 | `herdr-agent-state.sh` | SessionStart · `*` (twice — duplicated entry) | records session state for Herdr | none | infrastructure |
-| `work-goal-resend.sh` | SessionStart · `*` | re-seeds a craft goal after a context clear | craft state | `craft` / `hound` |
+| `work-goal-resend.sh` | SessionStart · `*` | re-seeds a `work` goal after a context clear | work state | `work` / `hound` |
 | `farm-monitor-arm.sh` | PreToolUse · `Bash` | arms the farm-out run monitor | command shape | `farm-out` |
 | `assistant-projects-context.ts` | SessionStart | injects personal-productivity context | none | `assistant` |
 | `vault-flush.sh` | PreCompact, SessionEnd (`settings.local.json`) | flushes the Obsidian vault | none | `obsidian` |
@@ -308,7 +308,7 @@ them twice (skill-creator and plugin-creator) is fine — the registry is additi
 | `suggest-compact.ts`, `session-start.ts`, `session-end.ts`, `pattern-scan.ts`, `pr-url-logger.ts` | Session lifecycle and logging. None of them is a checker; four of them decide nothing at all. They are not in scope for a design about deterministic checkers and should be struck from the framing rather than relocated. |
 | `teammate-idle-report-check.sh` | Team-lifecycle invariant, event `TeammateIdle`, no skill owns it. Its rule lives in `~/dotfiles/.claude/rules/agent-teams.md`, which applies to every teammate regardless of skill. |
 | `outbound-send-guard.sh` | **Already** correctly scoped, to the two agents that can send. It is the existing proof that Tier A works; do not touch it. |
-| `lint-check.ts` | Arguable, and I would leave it. It fires on any `.py`/`.R`/`.ts` write, which happens in `dev`, `ds`, `craft` implementers, and plenty of inline work that belongs to no skill. Scoping it to `dev` and `ds` would leave the most common case — a quick fix in a repo with no workflow running — unlinted. |
+| `lint-check.ts` | Arguable, and I would leave it. It fires on any `.py`/`.R`/`.ts` write, which happens in `dev`, `ds`, `work` implementers, and plenty of inline work that belongs to no skill. Scoping it to `dev` and `ds` would leave the most common case — a quick fix in a repo with no workflow running — unlinted. |
 
 **Delete rather than relocate:**
 

@@ -36,7 +36,7 @@ test('neither liveness site names a runner file', () => {
   const livenessLines = src.split('\n').filter((l) => l.includes('result\\.json') || l.includes('farm-alive'))
   expect(livenessLines.length).toBeGreaterThan(0)
   // Assert on a COUNT, never on the file's text: a failure diff that dumps this script's
-  // source contains the words "not found", and craft's red-probe classifier reads probe
+  // source contains the words "not found", and work's red-probe classifier reads probe
   // output and would misread that as a missing command rather than a test verdict.
   // Two evasions to defeat: the escaped dot (`farm\.ts`) and the pgrep bracket (`[f]arm`).
   const offenders = livenessLines
@@ -45,7 +45,7 @@ test('neither liveness site names a runner file', () => {
   expect(offenders).toBe(0)
 })
 
-test('craft dispatches the runner with bash, not bun', () => {
+test('`work` dispatches the runner with bash, not bun', () => {
   const src = readFileSync(DISPATCH, 'utf8')
   expect(src.includes('bun "$FARM"')).toBe(false)
   expect(src.includes('farm.sh')).toBe(true)

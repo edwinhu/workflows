@@ -9,7 +9,7 @@
  *      down is invisible to every future reader, including the model reading the header to learn
  *      the interface.
  *   2. SKILL.md documents the flag and the exit codes the driver returns — and grows by less than
- *      25 lines doing it, because SKILL.md is re-read into context on EVERY craft invocation, so a
+ *      25 lines doing it, because SKILL.md is re-read into context on EVERY work invocation, so a
  *      line there is a recurring token cost, not a one-time one.
  *
  * Run: bun test /home/eh/projects/workflows/skills/work/scripts/work-loops-docs.test.ts

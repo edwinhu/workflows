@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# How long has this craft run been going, and is it past the goal's wall-clock ceiling?
+# How long has this work run been going, and is it past the goal's wall-clock ceiling?
 #
 #   work-elapsed.sh <run-dir> [max-minutes]
 #
@@ -35,7 +35,7 @@ elapsed_min=$(( (now_epoch - start_epoch) / 60 ))
 elapsed_h=$(( elapsed_min / 60 ))
 rounds_on_disk=$(find "$RUN_DIR" -maxdepth 1 -name 'result-round*.json' | wc -l)
 
-printf 'craft run %s: %dh%02dm elapsed, %s completed round(s) on disk, ceiling %dm\n' \
+printf 'work run %s: %dh%02dm elapsed, %s completed round(s) on disk, ceiling %dm\n' \
   "$(basename "$RUN_DIR")" "$elapsed_h" "$(( elapsed_min % 60 ))" "$rounds_on_disk" "$MAX_MINUTES"
 
 if [ "$elapsed_min" -ge "$MAX_MINUTES" ]; then

@@ -1,6 +1,6 @@
 ---
 name: farm-out
-description: "Run ALL delegated agent work through the CLIProxyAPI wrappers. Use INSTEAD OF the Agent tool, subagents, the Workflow tool, and in-session agent teams — for any \"delegate this\", \"run these in parallel\", \"fan out\", \"have an agent review/investigate/search\", \"use a subagent\", \"spawn a team\", \"get a second opinion\", \"run this workflow script\", or any task you were about to hand to a background agent. Also use for explicit mentions of cliproxy, codex-code, gemini-code, claude-code, farm out, or delegating work to another model. NEGATIVE ROUTING: anything phrased as a new, background, separate or companion SESSION — 'spawn an agent', 'spawn a background claude', 'kick off claude in <dir>' — belongs to agent-spawn, which fires first and carries this work inside its prompt; messaging a session that already exists is agent-msg; designing, repairing or auditing a workflow is workflow-creator; and a craft, dev or ds dispatch goes through work-dispatch.sh, never a hand-written farm.sh --workflow line."
+description: "Run ALL delegated agent work through the CLIProxyAPI wrappers. Use INSTEAD OF the Agent tool, subagents, the Workflow tool, and in-session agent teams — for any \"delegate this\", \"run these in parallel\", \"fan out\", \"have an agent review/investigate/search\", \"use a subagent\", \"spawn a team\", \"get a second opinion\", \"run this workflow script\", or any task you were about to hand to a background agent. Also use for explicit mentions of cliproxy, codex-code, gemini-code, claude-code, farm out, or delegating work to another model. NEGATIVE ROUTING: anything phrased as a new, background, separate or companion SESSION — 'spawn an agent', 'spawn a background claude', 'kick off claude in <dir>' — belongs to agent-spawn, which fires first and carries this work inside its prompt; messaging a session that already exists is agent-msg; designing, repairing or auditing a workflow is workflow-creator; and a `work`, dev or ds dispatch goes through work-dispatch.sh, never a hand-written farm.sh --workflow line."
 ---
 
 # farm-out
@@ -38,7 +38,7 @@ branch only redirects delegation you already chose. To make a project refuse
 main-thread implementation outright, set `"farmOutOnly": true` in its committed
 `.claude-workflows.json`; every `Edit`/`Write` there is then denied unless it
 targets that file, `.claude/plans/`, or `.craft/`. Without it the `Edit` branch
-allows unconditionally whenever no craft dispatch is owed — measured 2026-08-20:
+allows unconditionally whenever no work dispatch is owed — measured 2026-08-20:
 313 main-thread writes in mail-bridge over 28 hours with the hook enabled, the
 user objecting three times.
 
@@ -83,7 +83,7 @@ carried `Skill`; the others not carrying it was drift, not policy.
 | Job | Shape |
 |---|---|
 | one well-scoped piece of work | a one-row `--tasks` file with `"agent": "ds"` — the persona's prompt and its narrow toolset are the point |
-| needs to plan, fan out, dispatch subagents, or run a craft workflow end-to-end | same, but **omit `"agent"`** — a persona has `Skill` but no `Agent`/`Workflow`, so it cannot fan out or dispatch |
+| needs to plan, fan out, dispatch subagents, or run a `work` workflow end-to-end | same, but **omit `"agent"`** — a persona has `Skill` but no `Agent`/`Workflow`, so it cannot fan out or dispatch |
 | several independent jobs at once | more rows; each carries its own `"agent"` |
 
 Row count is orthogonal to the persona question: a fan-out of five can be five `ds`
@@ -92,7 +92,7 @@ workers. "More than one job" does not mean "generic".
 An orchestrating child is a full Claude Code session, so it has `Agent` and `Workflow`
 and can dispatch the persona itself — `Agent(subagent_type: "ds")` gives the subagent
 the same real persona plus the same deliberate restriction. That layering is the design
-the craft skills already use (`skills/ds/SKILL.md` sets `implementerAgentType: "ds"`),
+the work skills already use (`skills/ds/SKILL.md` sets `implementerAgentType: "ds"`),
 not a workaround.
 
 Agents live in `~/.claude/agents/`: `ds`, `writing`, `writing-econ`, `writing-legal`,
@@ -101,7 +101,7 @@ Agents live in `~/.claude/agents/`: `ds`, `writing`, `writing-econ`, `writing-le
 
 **A `--workflow` run takes no `--agent`** — it picks agents PER LEG, which is the point:
 `agent(prompt, {agentType: "ds"})` inside the script, or `implementerAgentType` /
-`verifierAgentType` / `reviewLenses[].agentType` in a craft args file. One top-level
+`verifierAgentType` / `reviewLenses[].agentType` in a `work` args file. One top-level
 persona could only apply to every leg, when what you want is `ds` implementing and
 `ds-reviewer` or `Explore` judging. Note `workflow.js` strips the `Agent` tool from every
 leg regardless of agentType, so legs cannot nest further delegation; fan-out is the

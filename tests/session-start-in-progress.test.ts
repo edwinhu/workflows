@@ -1,8 +1,8 @@
 /**
  * Approving a plan with "clear context" re-seeds a bare `Implement the following plan:` session, and
- * the plan is all that survives. The IN-PROGRESS line for a result-less craft run therefore reads the
+ * the plan is all that survives. The IN-PROGRESS line for a result-less work run therefore reads the
  * plan's frontmatter `workflow:` and names the skill to invoke — otherwise the re-seeded session
- * falls back to generic craft and loses that domain's result handling and human review.
+ * falls back to generic work and loses that domain's result handling and human review.
  *
  * Run: bun test tests/session-start-in-progress.test.ts
  */
@@ -15,7 +15,7 @@ import { buildInProgressSection } from "../hooks/session-start.ts";
 const TMP = mkdtempSync(join(tmpdir(), "in-progress-test-"));
 afterAll(() => rmSync(TMP, { recursive: true, force: true }));
 
-/** A project holding one craft run whose args.json points at a plan with `body` as its text. */
+/** A project holding one work run whose args.json points at a plan with `body` as its text. */
 function project(name: string, body: string | null, opts: { result?: boolean } = {}): string {
   const dir = join(TMP, name);
   mkdirSync(join(dir, ".claude", "plans"), { recursive: true });
@@ -51,14 +51,14 @@ describe("buildInProgressSection", () => {
   test("a plan with no frontmatter yields the plain line and names no skill", () => {
     const dir = project("plain", "# Plan\n\nNo frontmatter here.\n");
     const out = buildInProgressSection(dir);
-    expect(out).toContain("- craft run `0912-run` was dispatched and has no result.json yet.");
+    expect(out).toContain("- work run `0912-run` was dispatched and has no result.json yet.");
     expect(out).not.toContain("Skill(");
   });
 
   test("a missing plan file is not a throw — the line is unchanged", () => {
     const dir = project("gone", null);
     const out = buildInProgressSection(dir);
-    expect(out).toContain("- craft run `0912-run` was dispatched and has no result.json yet.");
+    expect(out).toContain("- work run `0912-run` was dispatched and has no result.json yet.");
     expect(out).not.toContain("Skill(");
   });
 

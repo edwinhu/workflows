@@ -338,7 +338,7 @@ moved. The five pattern systems and the four loaders are unchanged. What changed
 `hooks/mechanical-floor-gate.ts` and `workflows/writing-verify.js` no longer exist. `run-constraints.py`
 now has exactly ONE live consumer, `hooks/writing-prose-check.ts`. (`workshop-deck.py` is not a
 second one: `skills/workshop/scripts/workshop-deck.py:57-62` runs the typst skill's
-`run-constraints.py`, a different checker over a different directory.) Under craft, the mechanical
+`run-constraints.py`, a different checker over a different directory.) Under `work`, the mechanical
 floor is not a PreToolUse gate at all: it is the
 `mechanicalChecks` list in the plan's `craft:dispatch` block, executed at baseline by
 `plan-preflight.ts` before dispatch and again by `workflow.js` in the gate. A check that cannot run
@@ -360,7 +360,7 @@ wikipedia-promotional finding for the same span.
 `writing-outline-sync`, `writing-shortjournal`, `writing-topic-sentences` — and are still picked up
 automatically, because `run-constraints.py` already globbed `skills/*/references/*.py`. A sixth,
 `writing-stop-triggers`, was deleted rather than moved: it checked that a constraint's `applies-to`
-frontmatter named a skill that called `load-constraints.ts`, and craft's skills do not call the
+frontmatter named a skill that called `load-constraints.ts`, and `work`'s skills do not call the
 loader, so the property it verified no longer exists.
 
 **The plan lookup changed shape.** `hooks/lib/writing-plan-context.ts` resolved an APPROVED

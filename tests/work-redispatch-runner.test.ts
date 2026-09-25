@@ -5,7 +5,7 @@ import { join } from 'node:path'
 const SRC = readFileSync(join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'work-redispatch.sh'), 'utf8')
 
 // Assert on booleans, never on the file's text: a diff that dumps this script contains the
-// words "not found", which craft's red-probe classifier reads as a missing command.
+// words "not found", which `work`'s red-probe classifier reads as a missing command.
 test('work-redispatch resolves the runner to farm.sh', () => {
   expect(SRC.includes('farm-out/scripts/farm.ts')).toBe(false)
   expect(SRC.includes('farm-out/scripts/farm.sh')).toBe(true)

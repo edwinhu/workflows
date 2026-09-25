@@ -1251,7 +1251,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 
 // ── THE WRITABLE DEFAULT: every lens declares an agentType, every prose implementer names one ────
 //
-// The silent failure this closes. Craft's `reviewAgentType(explicit)` returns the explicit type, or
+// The silent failure this closes. the work skill's `reviewAgentType(explicit)` returns the explicit type, or
 // `Explore` ONLY under `readOnly`, or NULL (skills/work/workflow.js:264). Null contributes no
 // `agentType` key at all, so the dispatcher default applies — and the dispatcher default HOLDS EDIT
 // AND WRITE. A lens is a judge: it only READS. An unpinned lens in a writing mode therefore judges

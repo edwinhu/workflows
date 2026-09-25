@@ -146,7 +146,7 @@ def test_typ_prose_rule_fires_on_body_not_code(tmp_path):
 # --------------------------------------------------------------------------
 
 def _authenticate(project_root: Path, domain: str | None = None) -> None:
-    """Give the project an ARMED craft writing plan.
+    """Give the project an ARMED work writing plan.
 
     The canonical writing hooks refuse to lint a project that has none — see the
     `authenticatedWritingPlan` guard in hooks/lib/writing-plan-context.ts. Without one the hook

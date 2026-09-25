@@ -5,7 +5,7 @@ argument-hint: 'the paper to turn into a workshop deck'
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
 ---
 
-# workshop — a talk, run through craft with a computed deck gate
+# workshop — a talk, run through `work` with a computed deck gate
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
@@ -18,28 +18,28 @@ nothing else. (Absence of the plugin degrades this index but does not bypass a g
 
 !`k=slides,notes,workshop; command -v typst-rules >/dev/null 2>&1 && exec typst-rules "$k"; r=$HOME/.claude/skills/typst/scripts/load-constraints; [ -x "$r" ] && exec "$r" "$k"; r=$HOME/projects/typst/scripts/load-constraints; [ -x "$r" ] && exec "$r" "$k"; echo "(typst corpus unavailable: NO Typst rule is listed here — a deck graded against no corpus is not a deck that passed. Install the typst plugin, or start a new session so its bin/ reaches PATH)"`
 
-The lifecycle is [craft](${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md). Read it and follow it.
+The lifecycle is [`work`](${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md). Read it and follow it.
 This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lenses,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
-craft's mechanics.
+`work`'s mechanics.
 
-What makes a run `workshop` rather than plain craft is one thing: **the built deck is verified
+What makes a run `workshop` rather than plain `work` is one thing: **the built deck is verified
 against the approved plan by a computed probe, not by the agent that generated it.**
 `scripts/workshop-deck.py` parses the plan's `## Source Paper`, `## Source Inventory`, `## Slide Spec`
 and `## Outputs and Verification`, opens the built artifacts itself, and fails closed on a missing
-tool, a missing file, an unreadable PDF or a malformed Slide Spec; craft's JS reads its exit code.
+tool, a missing file, an unreadable PDF or a malformed Slide Spec; `work`'s JS reads its exit code.
 
 ## Write surface
 
 Main chat clarifies, plans and dispatches. It does not build the deck, and it **never writes a
 `.typ` file** — not by Write/Edit, and not by Bash (`cat >`, a heredoc, `sed -i`, `tee`). Slides and
-notes are written by dispatched agents. Craft's dispatch is already structural and its judges are
+notes are written by dispatched agents. `work`'s dispatch is already structural and its judges are
 pinned to `Explore`, so this is a rule on you, not a hook — reach for the workflow first rather than
 after a refusal.
 
 ## Phase 1 — CLARIFY
 
-Craft's Phase 1, on these axes. Ask in one `AskUserQuestion` call where answers are independent;
+`work`'s Phase 1, on these axes. Ask in one `AskUserQuestion` call where answers are independent;
 ask cascading ones separately — the venue decides the duration, and the duration decides the slide
 count the Proportions split is drawn from.
 
@@ -54,26 +54,26 @@ count the Proportions split is drawn from.
 | Outputs | The deck source, the notes source and their rendered PDFs, by path relative to the project root |
 | Review evidence | What makes each section credible at review: a named figure, a quoted statistic, or user judgment |
 
-Craft's remaining axes are taken as craft states them, with two domain bindings.
+`work`'s remaining axes are taken as `work` states them, with two domain bindings.
 
-Craft axis 4 (observable success criteria) is answered by the deck probe, the constraint runner and
+`work` axis 4 (observable success criteria) is answered by the deck probe, the constraint runner and
 the probe's own suite. **All three `mechanicalChecks` are fixed strings, and nothing is collected
-from the user here.** The one per-run value is the approved plan's path, which craft already resolved
+from the user here.** The one per-run value is the approved plan's path, which `work` already resolved
 and hashed in Phase 2; every other argument is literal. `## Outputs and Verification` is an
 `Artifact | Path` table of **artifact paths, not commands** — the probe opens those paths itself, so
 no cell of it is ever substituted into a `cmd`, and there is no per-project test or lint entry to
 collect or omit. Adding a command collected at CLARIFY would change the gate's shape from the one the
 plan's Run sizing recorded.
 
-Craft axis 5 (review surface) is answered by the plan's `## Review Surfaces` section.
+`work` axis 5 (review surface) is answered by the plan's `## Review Surfaces` section.
 
 Gather planning evidence read-only: extract the paper's figures, tables, results and assertions into
 the F/T/R/A inventory the plan will declare. Building a slide is not planning evidence.
 
 ## Phase 2 — PLAN
 
-Craft's Phase 2. The plan opens with frontmatter `workflow: workshop` — required, so a context clear
-at approval resumes here and not in craft.
+`work`'s Phase 2. The plan opens with frontmatter `workflow: workshop` — required, so a context clear
+at approval resumes here and not in `work`.
 
 Four domain requirements on the plan:
 
@@ -100,16 +100,16 @@ value, plus one assembler. The assembler reads what the section rows write, so i
 
 ## Phase 3 — GOAL
 
-Craft's Phase 3 unchanged.
+`work`'s Phase 3 unchanged.
 
-## Phase 4 — the craft call
+## Phase 4 — the work call
 
-Args, then dispatch **exactly as craft's Phase 4 states it** — craft owns the invocation, the result
+Args, then dispatch **exactly as `work`'s Phase 4 states it** — `work` owns the invocation, the result
 handling and the return shape.
 
 Paths below are written the way each consumer reads them: `refs` are absolute, because an implementer
 resolves them against no particular directory; `writablePaths` and every `mechanicalChecks` `cmd` are
-**project-relative**, because craft spawns each leg with its working directory at `projectDir`.
+**project-relative**, because `work` spawns each leg with its working directory at `projectDir`.
 
 ```js
 {
@@ -155,7 +155,7 @@ resolves them against no particular directory; `writablePaths` and every `mechan
   // skipped[] are all empty AND the summed `inspected` is greater than zero, and 1 otherwise, so
   // it is a check capable of failing on a presentation directory that does not resolve or a corpus
   // that lost its modules. The CON verdict is the probe's, read from this runner's JSON and never
-  // from its status. `presentation` is PROJECT-RELATIVE and carries no placeholder: craft runs a
+  // from its status. `presentation` is PROJECT-RELATIVE and carries no placeholder: the work skill runs a
   // cmd VERBATIM with the working directory at the project root, so a `<projectDir>/presentation`
   // written literally targets a directory of that name, discovers zero modules, and exits 1 on
   // every conforming run — permanently red, therefore permanently waived. A runner pointed at the
@@ -164,10 +164,10 @@ resolves them against no particular directory; `writablePaths` and every `mechan
   // TEMPLATE SLOT in the `<...>` convention this whole object already uses (see planPath above),
   // substituted by the orchestrator when it writes args.json. It is NOT `${planPath}`: that is a
   // property of this same object literal, not a lexical binding, so a template literal ships the
-  // characters unresolved into a cmd craft runs VERBATIM.
+  // characters unresolved into a cmd `work` runs VERBATIM.
   // probe-tests is the probe's own contract suite: a gate whose runner is untested is untested.
   // ONE entry point. These were three separate entries until 2026-09-15; a list of N
-  // independent commands loses one silently, and craft re-runs a claimed mechanical pass
+  // independent commands loses one silently, and work re-runs a claimed mechanical pass
   // in a shell, affordable for one command and not for three. check.sh runs all three
   // legs, none short-circuiting, and its exit code IS the mechanical verdict.
   mechanicalChecks: [
@@ -179,7 +179,7 @@ resolves them against no particular directory; `writablePaths` and every `mechan
   // workshop-deck.py parses these four sections, so a defect here un-gates SPEC, NOTE and INV at
   // once. The CRITICAL criterion is bounded to a named concrete input, or plan review does not
   // terminate.
-  // Passing reviewLenses REPLACES craft's defaults, so the two defaults are spelled out here.
+  // Passing reviewLenses REPLACES `work`'s defaults, so the two defaults are spelled out here.
   // deck-fidelity, deck-convention and visual-integrity OWN FID, CONV and VIS — the probe computes
   // none of the three and emits a MODEL-EVALUATED line for each, so these lenses are the run's ONLY
   // fidelity coverage.
@@ -229,7 +229,7 @@ resolves them against no particular directory; `writablePaths` and every `mechan
     "SPEC and NOTE join a built slide's `=== ` title line to its Slide Spec row on the NORMALIZED title key defined in ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md — never on ordinal position and never on row count. Retitling a slide fails the gate rather than passing quietly.",
     "Every generated slide emits `#inv(...)` immediately after its `=== ` title line, listing EXACTLY that slide's own Slide Spec Inventory IDs as quoted string literals. INV is a per-slide SET EQUALITY against that row's cell and FAILs on a difference in either direction; membership in ## Source Inventory is the second half of the check, not the whole of it, so the same boilerplate ID repeated deck-wide FAILs. A slide carrying no `#inv(` call FAILs, and a call inside a `//` or `/* … */` comment is not an emission.",
     "The vendored templates are copied into the project's presentation/templates/ by the assemble task and imported project-relative. The probe compiles with --root at the project root, so a template left in the skill directory is unreachable from the built deck.",
-    "Craft runs a mechanicalCheck cmd VERBATIM, with the working directory at the project root. Every path in a cmd is therefore project-relative and literal; a placeholder shipped into a cmd targets a directory of that literal name, fails on every conforming run, and is therefore permanently waived.",
+    "`work` runs a mechanicalCheck cmd VERBATIM, with the working directory at the project root. Every path in a cmd is therefore project-relative and literal; a placeholder shipped into a cmd targets a directory of that literal name, fails on every conforming run, and is therefore permanently waived.",
     "An artifact absent from the plan's ## Outputs and Verification is one nothing will check and cannot be claimed as verified. Do not verify an output that section never declared.",
     "The deck is built by dispatched agents. Main chat writes no .typ file, by any tool.",
     "Standing workshop doer authority — the Typst constraint corpus governs every deck and notes task. You already hold its index: your agent definition names the typst:typst skill, whose bang renders the index at load time from each rule's own frontmatter, so it is correct the moment a rule is added or retired. NEVER state how many modules there are; the index in your context IS the set. They have one canonical home and are never copied into a skill. A task's refs are contractual reads of task ARTEFACTS, not constraints: read in full every file your task's refs name before writing a slide. ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md stays a separate load.",
@@ -255,7 +255,7 @@ CLAUDE.md reaches it.
 
 ## Phase 5 — HUMAN REVIEW
 
-Craft's Phase 5 unchanged, over the plan's `## Review Surfaces` — the rendered deck and the rendered
+`work`'s Phase 5 unchanged, over the plan's `## Review Surfaces` — the rendered deck and the rendered
 notes. A clean deck gate is evidence for that conversation, not human acceptance.
 
 ## Red flags
@@ -264,7 +264,7 @@ notes. A clean deck gate is evidence for that conversation, not human acceptance
 |---|---|---|
 | A slide's title reads better than the Slide Spec cell | improve it in the deck | SPEC and NOTE join on that cell's normalized key — amend the plan's cell, re-hash, then rebuild |
 | A slide's inventory IDs | leave them to a grep over the prose, or emit one boilerplate ID deck-wide because it is declared | prose cannot be joined to an inventory, and membership alone measures nothing — emit exactly that row's `Inventory` cell after the `=== ` line, which `INV` compares as a set in both directions |
-| A `mechanicalCheck` needs the project directory | write `<projectDir>/presentation` into the `cmd` | craft runs the `cmd` verbatim with the working directory at the project root — emit the project-relative `presentation`. A literal placeholder targets a directory of that name, exits 1 on every conforming run, and is a permanently waived check |
+| A `mechanicalCheck` needs the project directory | write `<projectDir>/presentation` into the `cmd` | `work` runs the `cmd` verbatim with the working directory at the project root — emit the project-relative `presentation`. A literal placeholder targets a directory of that name, exits 1 on every conforming run, and is a permanently waived check |
 | The templates | import them from the skill directory | the probe compiles with `--root` at the project root — the assemble task copies them into `presentation/templates/` and imports project-relative |
 | Naming a produced artifact | name it in prose | a runner given prose cannot open it — add its path to `## Outputs and Verification` before approval |
 | The deck verdict | let the generating agent report it | the generator cannot see the assumption it made in both places — the probe is a `mechanicalCheck` and the JS reads its exit code |
@@ -272,6 +272,6 @@ notes. A clean deck gate is evidence for that conversation, not human acceptance
 | A computed check reported clean with no tool installed | accept it | that is the defect this port exists to remove — a missing `typst` or `pypdf` is a FAIL, never a clean line |
 | Widows or overflow | add back upstream's runt or overflow checker | both fail open; the probe owns `WID` and `OVR` natively, so those two rules are the probe's, not the corpus runner's |
 | A judgement that depends on the Typst modules | dispatch a built-in agent (`Explore`, `Plan`, `general-purpose`) | their prompts are predefined, no preloaded skill reaches them and they skip the CLAUDE.md hierarchy, so the corpus is graded from whatever got read — dispatch a custom agent whose body you control, like `workshop-reviewer` |
-| Handing a doer the Typst conventions | name the constraint paths in the task prompt's prose, or copy the modules into a skill | prose is discretionary and a copy is a second source of truth `tests/constraints-no-duplication.test.ts` fails on — put the canonical paths in the task's `refs`, which craft defines as reads the doer owes in full |
+| Handing a doer the Typst conventions | name the constraint paths in the task prompt's prose, or copy the modules into a skill | prose is discretionary and a copy is a second source of truth `tests/constraints-no-duplication.test.ts` fails on — put the canonical paths in the task's `refs`, which `work` defines as reads the doer owes in full |
 | Section tasks and the assembler | rely on their order in `tasks[]` | the assembler reads what they write — give it `dependsOn` naming every section row |
-| Something craft does not obviously do | write a `workshop/workflow.js` | ask which craft parameter is missing — `mechanicalChecks` is what makes the deck probe the gate |
+| Something `work` does not obviously do | write a `workshop/workflow.js` | ask which work parameter is missing — `mechanicalChecks` is what makes the deck probe the gate |

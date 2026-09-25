@@ -24,7 +24,7 @@ const SCRIPT = `${import.meta.dir}/work-loop.sh`
 const scratch: string[] = []
 afterAll(() => scratch.forEach(d => rmSync(d, { recursive: true, force: true })))
 
-/** A craft gate return with the seven required keys, so work-result.sh adjudicates rather than refuses. */
+/** A work gate return with the seven required keys, so work-result.sh adjudicates rather than refuses. */
 function verdict(pass: boolean, tasksThatFlagged: string[] = []) {
   return {
     overallPass: pass,

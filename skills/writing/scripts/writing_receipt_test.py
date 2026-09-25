@@ -1,6 +1,6 @@
 #!/usr/bin/env -S uv run python3
 """Tests for writing_receipt.py — the adapter that derives the writing workflow's
-on-disk approval artifacts from craft's two approvals.
+on-disk approval artifacts from `work`'s two approvals.
 
 Run directly (NOT under pytest), matching writing_gate_probe_test.py's harness:
 
@@ -269,7 +269,7 @@ def assert_receipt(label: str, project: Path, plan_hash: str, style: str) -> Non
     ok(f"{label}: receipt status is APPROVED", receipt["status"] == "APPROVED")
     ok(f"{label}: receipt plan_file is the parser's safe generated basename",
        wsi._safe_generated_name(receipt["plan_file"]), receipt["plan_file"])
-    ok(f"{label}: receipt plan_hash is craft's plan hash", receipt["plan_hash"] == plan_hash)
+    ok(f"{label}: receipt plan_hash is `work`'s plan hash", receipt["plan_hash"] == plan_hash)
     ok(f"{label}: receipt session ids differ",
        receipt["reviewer_session_id"] != receipt["approved_session_id"])
     ok(f"{label}: receipt timestamps are strict UTC",
@@ -307,7 +307,7 @@ with tempfile.TemporaryDirectory() as td:
     ok("temp: parser reads the style from the plan", index.style == "legal", index.style)
 
 # ── Accepted round-trip #2: the PERSISTENT fixture, derived not rebuilt ──────
-# fixtures/clean/ is a deliverable — craft's verifier is read-only and cannot
+# fixtures/clean/ is a deliverable — `work`'s verifier is read-only and cannot
 # reproduce a demonstration against a throwaway directory. This leg therefore
 # leaves the receipt there, but it DERIVES it from the plan already on disk and
 # deletes nothing: every other mechanical check is demonstrated against this same

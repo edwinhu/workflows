@@ -12,7 +12,7 @@
  * NOTHING HERE READS `git show HEAD:` — deliberately. An earlier draft took its baseline from HEAD
  * and asserted the baseline still shipped a tests lens; that holds only while the change is
  * uncommitted, so the suite would have gone permanently red on the first commit and taken the whole
- * craft mechanical check (`bun test .../skills/work/scripts/`) with it. A suite whose verdict
+ * work mechanical check (`bun test .../skills/work/scripts/`) with it. A suite whose verdict
  * depends on whether the tree has been committed is not a contract.
  *
  * Non-vacuity is proved instead by MUTATION: the same parser is run over a synthetic template that
@@ -110,7 +110,7 @@ describe('the tests lens is retired', () => {
     expect(lensEntries(now).map(l => l.key)).toEqual(SURVIVING)
   })
 
-  test('each surviving lens still carries the agentType, refs and prompt craft needs', () => {
+  test('each surviving lens still carries the agentType, refs and prompt `work` needs', () => {
     for (const l of lensEntries(now)) {
       expect(l.text).toContain('agentType: "Explore"')
       expect(l.text).toMatch(/refs: \[/)

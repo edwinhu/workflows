@@ -29,7 +29,7 @@ as evidence rather than a judgement about transcript length.
 
 ## 2. `workflow.js has returned PASS` is unsatisfiable after success
 
-Craft fails any task whose `redCommand` exits 0 at baseline (`red-not-red` — "your test proves
+`work` fails any task whose `redCommand` exits 0 at baseline (`red-not-red` — "your test proves
 nothing"). Once a plan's tasks are implemented, every red gate is green **by construction**, so a
 re-run flags all of them: the episode above ended at `redNotRed: 5`. A goal naming PASS is therefore
 reachable only *before* the work is finished, and becomes structurally unreachable the moment it

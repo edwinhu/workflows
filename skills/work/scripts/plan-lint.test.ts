@@ -261,7 +261,7 @@ test('markdown table cells keep escaped pipes inside code spans', () => {
   expect(p.tasks[0].dependsOn).toEqual(['B0'])
 })
 
-test('a craft args object parses to the same model as a plan file', () => {
+test('a work args object parses to the same model as a plan file', () => {
   const p = parseArgs({
     tasks: [{ id: 'A', work: 'w', writablePaths: ['src/'], acceptance: 'a', redCommand: 'bun test' }],
     mechanicalChecks: [{ name: 'tests', cmd: 'bun test' }],
@@ -560,7 +560,7 @@ test('work-dispatch.sh refuses a cyclic plan and prints no layering', () => {
 //
 // A task whose work is already COMPLETE can satisfy neither gate: declare a redCommand and the
 // red-at-dispatch probe refuses it (`red-not-red`), omit it and R2 fires. `redDisposition` is the
-// third answer — the same shape craft already uses for open plan findings, a claim a human filed.
+// third answer — the same shape `work` already uses for open plan findings, a claim a human filed.
 
 test('a task declaring only redDisposition does not fire redcommand-missing', () => {
   const p = base({

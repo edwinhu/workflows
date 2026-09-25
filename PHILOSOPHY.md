@@ -85,7 +85,7 @@ The pattern:
 
 Why instructions fail: context pressure causes the main chat to shortcut past "mandatory" steps. The agent that skips the gate is the same agent reading the instruction not to skip. Why artifacts work: the check is in the PREREQUISITES section, read before any work starts — binary pass/fail, no rationalization possible.
 
-**Hook-enforced gates (strongest):** Even artifact checks in instructional text can be compressed away during context compaction or rationalized past ("the file probably exists"). The strongest enforcement is a skill-scoped PreToolUse hook that blocks code-modifying tools until the current receipt has authenticated the generated plan and independent review. Claude Code fires the hook on every tool call — no escape, no rationalization, no context dependency. The craft spine spends that enforcement budget differently: the gate is a program, not a hook — `work-dispatch.sh` refuses to arm a run whose plan fails `plan-lint.ts`, and every dispatched agent re-verifies the plan's `specHash` before acting. A hook cannot be compressed away, but neither can a dispatch that never happened.
+**Hook-enforced gates (strongest):** Even artifact checks in instructional text can be compressed away during context compaction or rationalized past ("the file probably exists"). The strongest enforcement is a skill-scoped PreToolUse hook that blocks code-modifying tools until the current receipt has authenticated the generated plan and independent review. Claude Code fires the hook on every tool call — no escape, no rationalization, no context dependency. The work spine spends that enforcement budget differently: the gate is a program, not a hook — `work-dispatch.sh` refuses to arm a run whose plan fails `plan-lint.ts`, and every dispatched agent re-verifies the plan's `specHash` before acting. A hook cannot be compressed away, but neither can a dispatch that never happened.
 
 **The enforcement gradient for gates:** hook-enforced > artifact check in instructions > advisory text. Design for hook-enforced; fall back to artifact checks only when hooks cannot express the constraint.
 
@@ -244,7 +244,7 @@ ledger, workshop's overflow probe. Mechanism is code; policy is data in the plan
 The v5 spine got this half right. The mechanisms were shared, but each domain also got its own
 skills to *invoke* them, so the invocation drifted even where the mechanism did not.
 
-The craft spine is where this landed: one loop, one authority (the plan's `craft:dispatch` spec and
+The work spine is where this landed: one loop, one authority (the plan's `craft:dispatch` spec and
 its hash), and per-domain contribution limited to mechanical checks and review lenses. A domain does
 not get its own lifecycle — see `skills/work/SKILL.md`.
 
@@ -308,7 +308,7 @@ Fresh subagents achieve the same effect within a single session. Each subagent g
 
 **Core principle: Progress lives in files, not in conversation.**
 
-Under craft the loop is the workflow script: `workflow.js` schedules the task graph, dispatches one fresh agent per beat, and writes the verdict to `.craft/<run>/result.json`. The approved plan holds intent; the result file holds what a round actually did. Neither is a conversation, and there is no second execution driver for any domain.
+Under `work` the loop is the workflow script: `workflow.js` schedules the task graph, dispatches one fresh agent per beat, and writes the verdict to `.craft/<run>/result.json`. The approved plan holds intent; the result file holds what a round actually did. Neither is a conversation, and there is no second execution driver for any domain.
 
 ### The Three Topologies
 

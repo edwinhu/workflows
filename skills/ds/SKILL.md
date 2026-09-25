@@ -5,7 +5,7 @@ argument-hint: 'the dataset, analysis, or data pipeline to build'
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
 ---
 
-# ds — a data project, run through craft with a computed data-quality gate
+# ds — a data project, run through `work` with a computed data-quality gate
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
@@ -13,26 +13,26 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanM
 **DS constraints in force** — every rule scoped to this workflow, discovered from the corpus so a new one needs no edit here; read the ones your task touches:
 !`c=${CLAUDE_PLUGIN_ROOT}/scripts/load-constraints; [ -x "$c" ] && exec "$c" ds; echo "(constraint index unavailable: NO DS rule is listed here — the four named below are not the whole set)"`
 
-The lifecycle is [craft](${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md). Read it and follow it.
+The lifecycle is [`work`](${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md). Read it and follow it.
 This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lenses,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
-craft's mechanics.
+`work`'s mechanics.
 
-What makes a run `ds` rather than plain craft is one thing: **every declared data output is verified
+What makes a run `ds` rather than plain `work` is one thing: **every declared data output is verified
 by a computed runner, not by the agent that produced it.** `scripts/ds-dq.py` reads the approved
-plan's `## Data Outputs` table and opens each artifact itself; craft's JS reads its exit code.
+plan's `## Data Outputs` table and opens each artifact itself; `work`'s JS reads its exit code.
 
 ## Write surface
 
 Main chat clarifies, plans and dispatches. It does not do the analysis, and it never writes a `.py`,
 `.ipynb`, `.R`, `.sas`, `.sql` or `.qmd` file — not by Write/Edit, and not by Bash (`python3 -c`,
-`pixi run python`, inline pandas/numpy). Analysis runs in a dispatched agent. Craft's dispatch is
+`pixi run python`, inline pandas/numpy). Analysis runs in a dispatched agent. `work`'s dispatch is
 already structural and its judges are pinned to `Explore`, so this line is a rule on you, not a hook;
 reach for the workflow first rather than after a refusal.
 
 ## Phase 1 — CLARIFY
 
-Craft's Phase 1, on these axes.
+`work`'s Phase 1, on these axes.
 
 <EXTREMELY-IMPORTANT>
 **ASK BEFORE YOU LOOK; PLAN ONLY FROM EVIDENCE YOU ACTUALLY GATHERED. This is not negotiable.**
@@ -64,12 +64,12 @@ Three facts decide these axes, and each prevents a defect that is expensive to f
 - A criterion that **cannot name evidence** is a wish. The explicit `TBD (<phase>)` convention is
   legitimate only when profiling is the scheduled evidence-producing phase; never invent coverage.
 
-Craft's remaining axes are taken as craft states them, with two domain bindings: craft axis 4
+`work`'s remaining axes are taken as `work` states them, with two domain bindings: `work` axis 4
 (observable success criteria) is answered with the DQ runner over the plan's `## Data Outputs` plus
 the target project's own test and lint commands **when the project has them**, and those strings
-become `mechanicalChecks` verbatim; craft axis 5 (review surface) is answered by the plan's
+become `mechanicalChecks` verbatim; `work` axis 5 (review surface) is answered by the plan's
 `## Review Surfaces` section. The `ds-dq` entry is never conditional. The `tests` and `lint` entries
-are **omitted entirely when the project has no such command** — craft's probe runs a `cmd` verbatim,
+are **omitted entirely when the project has no such command** — `work`'s probe runs a `cmd` verbatim,
 so an unsubstituted `<the project's lint command>` placeholder blocks the gate on a placeholder
 instead of on data quality.
 
@@ -104,8 +104,8 @@ Four discovery rules run in this same planning step, each governed by its own co
 
 ## Phase 2 — PLAN
 
-Craft's Phase 2. The plan opens with frontmatter `workflow: ds` — required, so a context clear at
-approval resumes here and not in craft.
+`work`'s Phase 2. The plan opens with frontmatter `workflow: ds` — required, so a context clear at
+approval resumes here and not in `work`.
 
 Five domain requirements on the plan:
 
@@ -142,22 +142,22 @@ Five domain requirements on the plan:
 
 - **A `## Review Surfaces` section** naming the concrete tables, figures, notebook exports,
   diagnostics, or decisions the user will inspect during human review.
-- **`refs` per task row and per lens** — required, may be empty. Craft's spine does not validate it;
+- **`refs` per task row and per lens** — required, may be empty. `work`'s spine does not validate it;
   `wc-probe` P7 refuses an absent key in THIS file, so a live run assembled from an approved plan is
   unchecked. Write `refs: []` to state "no domain rules" rather than omitting the key.
 
 ## Phase 3 — GOAL
 
-Craft's Phase 3 unchanged.
+`work`'s Phase 3 unchanged.
 
-## Phase 4 — the craft call
+## Phase 4 — the work call
 
-The args go in the plan's `<!-- craft:dispatch -->` arming block, and the dispatch is **craft's own
+The args go in the plan's `<!-- craft:dispatch -->` arming block, and the dispatch is **`work`'s own
 `work-dispatch.sh`** — never a hand-written runner line. That script owns the TIER 1 plan-lint
 gate, which refuses to dispatch on a `major`/`critical` plan finding and fails CLOSED on a verdict it
-cannot count; hand-rolling the invocation silently drops it. Craft owns the wait, the result handling
+cannot count; hand-rolling the invocation silently drops it. `work` owns the wait, the result handling
 and the return shape too, and `work-result.sh` reads the verdict. This run's `projectDir` is the
-session repo, so craft's own run directory is already inside it and no `--run-dir` override applies.
+session repo, so `work`'s own run directory is already inside it and no `--run-dir` override applies.
 There is no built-in `Workflow` call — the guard at
 `~/.claude/hooks/main-thread-guard.sh` denies that tool outright.
 
@@ -219,7 +219,7 @@ Omitting it silently runs the user's codex request on claude.
 
   // Judged BEFORE any implementer is dispatched; a surviving critical|major returns FAIL having
   // built nothing. Cheap: a spec defect costs a few read-only agents instead of a whole round.
-  // Passing reviewLenses REPLACES craft's defaults, so the two defaults are spelled out here
+  // Passing reviewLenses REPLACES `work`'s defaults, so the two defaults are spelled out here
   // rather than elided — an array of two would silently drop them.
   reviewLenses: [
     { key: "criteria-vs-artifacts",
@@ -298,7 +298,7 @@ any run that touches the runner.
 
 ## Phase 5 — HUMAN REVIEW
 
-Craft's Phase 5 unchanged, over the plan's `## Review Surfaces`. A clean technical verification is
+`work`'s Phase 5 unchanged, over the plan's `## Review Surfaces`. A clean technical verification is
 evidence for that conversation, not human acceptance.
 
 ## Red flags
@@ -312,6 +312,6 @@ evidence for that conversation, not human acceptance.
 | `M1`/`UNI`/`DEN`/`DEL`/`R1` | report them as `PASS` | that presents a judgement as a computation — `MODEL-EVALUATED` with the evidence read |
 | `DQ4`/`DQ6` reported `N/A` | read the `N/A` as the runner having checked them | `always N/A` is not a third kind of pass — the runner computes neither and an `N/A` never sets its non-zero exit; disposition both against task-local evidence, exactly like the MODEL-EVALUATED rows |
 | A judgement that depends on the constraint index | dispatch a built-in agent (`Explore`, `Plan`, `general-purpose`) | their prompts are predefined, no preloaded skill reaches them and they skip the CLAUDE.md hierarchy, so the constraints are graded from memory — dispatch a custom agent whose body you control, like `ds-reviewer` |
-| Handing a doer the constraint aggregates | name the four paths in the task prompt's prose, or copy the aggregates into a skill | prose is discretionary and a copy is a second source of truth `tests/constraints-no-duplication.test.ts` fails on — put the four canonical paths in the task's `refs`, which craft defines as reads the doer owes in full |
-| Project state | write a `SPEC.md`, `STATE.md` or `LEARNINGS.md` | competing state makes progress ambiguous — the approved plan is the authority and craft hashes it |
-| Something craft does not obviously do | write a `ds/workflow.js` | ask which craft parameter is missing — `mechanicalChecks` is what makes the DQ runner the gate |
+| Handing a doer the constraint aggregates | name the four paths in the task prompt's prose, or copy the aggregates into a skill | prose is discretionary and a copy is a second source of truth `tests/constraints-no-duplication.test.ts` fails on — put the four canonical paths in the task's `refs`, which `work` defines as reads the doer owes in full |
+| Project state | write a `SPEC.md`, `STATE.md` or `LEARNINGS.md` | competing state makes progress ambiguous — the approved plan is the authority and `work` hashes it |
+| Something `work` does not obviously do | write a `ds/workflow.js` | ask which `work` parameter is missing — `mechanicalChecks` is what makes the DQ runner the gate |

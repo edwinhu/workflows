@@ -29,7 +29,7 @@ const REQUIRED = [
   'lensesThatFlagged',
 ] as const
 
-/** A well-formed craft gate return: every required key, every type correct. */
+/** A well-formed work gate return: every required key, every type correct. */
 const valid = () => ({
   overallPass: true,
   verdict: 'PASS',

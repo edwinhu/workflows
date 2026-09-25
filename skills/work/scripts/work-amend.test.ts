@@ -203,7 +203,7 @@ describe('the second AUTO rule — redcommand-relative-path', () => {
     const rc: string = taskInPlan(f.plan).redCommand
     expect(rc).toContain(f.dir)
     expect(rc).not.toMatch(/(^|\s)scripts\/check\.sh/)   // no surviving relative spelling
-    // craft refuses every shell operator in a redCommand at arg-validation, so the rewrite must
+    // `work` refuses every shell operator in a redCommand at arg-validation, so the rewrite must
     // not have introduced one.
     expect(rc).not.toMatch(/[;&|`$><(){}\n]/)
   })

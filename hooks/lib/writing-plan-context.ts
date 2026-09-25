@@ -50,10 +50,10 @@ function armedWritingPlan(dir: string): string | null {
 }
 
 /**
- * Find the armed craft writing plan governing `path`: the nearest enclosing directory whose
+ * Find the armed work writing plan governing `path`: the nearest enclosing directory whose
  * configured plans directory (see `resolvePlansDir`) holds a plan carrying a `craft:dispatch`
  * block and a `## Writing Intent`
- * section. The plan file is the authority — craft hashes it in place, so there is no separate
+ * section. The plan file is the authority — `work` hashes it in place, so there is no separate
  * receipt to consult.
  */
 export function authenticatedWritingPlan(path: string): AuthenticatedWritingPlan | null {

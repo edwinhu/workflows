@@ -10,7 +10,7 @@
  *   (absolute or ./-prefixed — a bare relative path is read as a NAME FILTER and exits 1 having
  *   matched nothing, which is byte-identical to a real failure.)
  *
- * Fixtures only: the script's inputs are files craft already writes, so a run dir is a directory
+ * Fixtures only: the script's inputs are files `work` already writes, so a run dir is a directory
  * of JSON and nothing here needs a real run. The exit code is the verdict — 0 CONVERGING,
  * 1 NOT CONVERGING, 2 cannot judge.
  */
@@ -28,7 +28,7 @@ afterAll(() => {
 
 type Round = {
   blocking: number; generated?: number; titles?: string[]; files?: string[]
-  /** The three re-run selectors, as craft writes them — what the failure signature is built from. */
+  /** The three re-run selectors, as `work` writes them — what the failure signature is built from. */
   tasksThatFlagged?: string[]; red?: { id: string; verdict: string }[]; mechFailed?: string[]
 }
 

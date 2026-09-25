@@ -31,7 +31,7 @@ Resolution succeeds only when the manifest and implementation are contained by t
 
 `loadConstraints` accepts an explicit `constraintsDir`, `skillName`, and optional `markerPath`. It returns deterministic combined content plus `ConstraintLoadEvidence`: skill name, matched/skipped counts, sorted constraint filenames, marker path, and whether the marker write succeeded. Invalid or escaping roots/files throw; the compatibility CLI preserves its existing stdout and nonzero-error behavior.
 
-### Craft spine runner
+### `work` spine runner
 
 `skills/work/workflow.js` is a **Workflow script**, not an importable module: its top-level
 `phase()`, `agent()` and `args` exist only inside the Workflow runtime, so importing it throws by

@@ -2,9 +2,9 @@
 # The ONE mechanical entry point for the dev workflow. Its exit code IS the verdict.
 #
 # Every leg here is the PROJECT's own command, which is why they are arguments: this skill
-# cannot know what a given project runs. It can still be the single command craft reads,
+# cannot know what a given project runs. It can still be the single command `work` reads,
 # which is the whole of P10 — three separate mechanicalChecks entries lose one silently,
-# and craft re-runs a claimed mechanical pass in a shell, affordable for one and not three.
+# and work re-runs a claimed mechanical pass in a shell, affordable for one and not three.
 #
 # A command not passed reports "not declared" and passes. That is deliberate and visible:
 # a project with no build step should say so once, here, rather than have the plan quietly

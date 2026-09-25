@@ -1,5 +1,5 @@
 /**
- * compose-goal.sh — the /goal line craft self-sends, built so every clause is DECIDABLE.
+ * compose-goal.sh — the /goal line work self-sends, built so every clause is DECIDABLE.
  *
  * Two defects it fixes, both measured on a live episode that could not close its own goal:
  *
@@ -89,7 +89,7 @@ describe('compose-goal.sh', () => {
 
   test('a writing run names PASS by PATH and never by a pinned hash', () => {
     const out = compose({ readOnly: false }).out
-    expect(out).toMatch(/craft has returned PASS/)
+    expect(out).toMatch(/the work run has returned PASS/)
     // The hash clause is what self-invalidated: the FAIL loop amends the plan and re-hashes, so a
     // run would PASS against a digest the condition no longer names. The path is stable.
     expect(out).not.toMatch(/at its current hash/)
@@ -190,7 +190,7 @@ describe('the goal closes on a machine verdict, never on a human', () => {
 
   test('a writing run closes on PASS, NOT on any verdict — a FAIL keeps the loop turning', () => {
     // Measured 2026-08-27: with `exits 0 or 1`, round 1 FAILING with 8 surviving blocking findings
-    // SATISFIED the goal. craft's own diagram is gate FAIL -> fix -> re-run; accepting exit 1 means
+    // SATISFIED the goal. `work`'s own diagram is gate FAIL -> fix -> re-run; accepting exit 1 means
     // nothing carries that loop, and the run ends holding a list of defects instead of a fix.
     const out = compose({ rounds: '4' }).out
     expect(out).toMatch(/work-result\.sh/)
@@ -200,9 +200,9 @@ describe('the goal closes on a machine verdict, never on a human', () => {
     expect(out).not.toMatch(/or 1 rather than 2/)
   })
 
-  test('the round escape names the round budget craft actually enforces', () => {
+  test('the round escape names the round budget work actually enforces', () => {
     // The counter this clause reads is `args.rounds`, incremented per round and hard-stopped at
-    // `maxRounds` (work-redispatch exits 4 beyond it). Composing against anything larger — craft
+    // `maxRounds` (work-redispatch exits 4 beyond it). Composing against anything larger — work
     // dispatched with goalTurns, 24 against a maxRounds of 3 — makes the clause UNREACHABLE, which
     // is how the 10-minute ceiling became the only escape that ever fired.
     expect(compose({ rounds: '3' }).out).toMatch(/reads 3 or more/)

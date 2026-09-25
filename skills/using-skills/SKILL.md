@@ -20,14 +20,14 @@ Read top to bottom; the first row that matches wins.
 | The task is | Route to | How |
 |---|---|---|
 | already-invoked skill (`<command-name>/dev</command-name>` in this turn) | it is **already loaded** | just follow it — never re-invoke |
-| the prompt opens `Implement the following plan:` and the plan's frontmatter has `workflow: <name>` | that skill | `Skill(skill="workflows:<name>")` (as written when plugin-qualified) FIRST — the context was cleared at approval; never craft, never inline |
+| the prompt opens `Implement the following plan:` and the plan's frontmatter has `workflow: <name>` | that skill | `Skill(skill="workflows:<name>")` (as written when plugin-qualified) FIRST — the context was cleared at approval; never `work`, never inline |
 | anything "in a new / background / separate / companion session" | **agent-spawn** skill | it is the transport; the real task goes inside its prompt |
 | a feature, bug fix, or engineering change | `/dev` | `Skill(skill="dev")` |
 | data: build/merge/model/profile a dataset, a table, a figure, a number | `/ds` | `Skill(skill="ds")` |
 | long-form prose a human reads: article, memo, brief, chapter | `/writing` | `Skill(skill="writing")` |
 | a Typst talk built from a research paper | `/workshop` | `Skill(skill="workshop")` |
 | lecture notes / slides for a course chapter | `/notes`, `/slides` | teaching plugin |
-| substantial work with no domain gate, but worth doing properly | `/craft` | `Skill(skill="workflows:craft")` |
+| substantial work with no domain gate, but worth doing properly | `/work` | `Skill(skill="workflows:work")` |
 | a specialist's job with no workflow shape | **farm out to the agent** | see the Iron Law below |
 | a substantive question, or any search for sources | **your own library FIRST** | see the Iron Law below — not `WebSearch` |
 | image, PDF, video, audio — understanding its content | **look-at** | never the `Read` tool |
@@ -35,8 +35,8 @@ Read top to bottom; the first row that matches wins.
 | setting a `/goal`, or briefing a session that will outlive your attention | `hound` | `Skill(skill="workflows:hound")` |
 | a lookup, a one-line answer, a typo fix, conversation | do it inline | no ceremony |
 
-A domain workflow beats `/craft` when the task has its shape — it brings a gate craft does not have.
-`/craft` is not a universal wrapper.
+A domain workflow beats `/work` when the task has its shape — it brings a gate `work` does not have.
+`/work` is not a universal wrapper.
 
 Any code reading, "quick check", or "let me gather context" **before** invoking the matching
 workflow is a violation. Scope ("just one file", "simple question") does not exempt you.
@@ -71,7 +71,7 @@ jq -n '[{prompt:"…", expect:"/abs/out.md", label:"…", agent:"ds"}]' > /tmp/t
 bash $S/farm.sh --tasks /tmp/t.json --cwd /repo
 ```
 
-Omit `"agent"` on a row that must itself plan, fan out, or run a craft skill — persona agents are
+Omit `"agent"` on a row that must itself plan, fan out, or run a `work` skill — persona agents are
 sealed and hold no `Agent`/`Skill`/`Workflow`. Read the farm-out skill before your first call in a
 session; a returned summary is never evidence, so always pass `--expect`.
 

@@ -1,6 +1,6 @@
 # writing fixtures — the mechanical checks, demonstrated flipping
 
-One fixture writing project, kept in the tree as a deliverable rather than scratch: craft's verifier is read-only and must be able to re-run every check against it.
+One fixture writing project, kept in the tree as a deliverable rather than scratch: `work`'s verifier is read-only and must be able to re-run every check against it.
 substitute for observing it. Every line here runs as written from this directory.
 
 `clean/` is a complete, well-formed writing project — the fixture every mechanical check runs

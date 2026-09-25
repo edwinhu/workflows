@@ -1,6 +1,6 @@
 # Third-party review runners (advisory only)
 
-Rules for the craft workflow's third-party runner agents. Each runner executes ONE external
+Rules for the `work` workflow's third-party runner agents. Each runner executes ONE external
 CLI over the working-tree changes, parses the result, and returns the schema'd object
 `{model, status, findings[], raw?}`. Findings are **advisory** — they never enter the gate.
 
@@ -26,7 +26,7 @@ Shared rules for both models:
 
 Diff scoping — pick exactly one:
 
-- Uncommitted working-tree changes (the craft default; changes are left uncommitted):
+- Uncommitted working-tree changes (the work default; changes are left uncommitted):
 
   ```bash
   timeout 600 codex review --uncommitted --color never \

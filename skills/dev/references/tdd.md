@@ -54,7 +54,7 @@ fine; the smell is hand-made state carrying an assertion that something is undet
 ## `redCommand` — the gate that executes
 
 Each task declares `redCommand`: the exact command that fails before the task is implemented and
-passes after. It is **not evidence you report**. Craft's spine dispatches a probe that runs the
+passes after. It is **not evidence you report**. `work`'s spine dispatches a probe that runs the
 string verbatim on both sides of the implementer and reads the two exit codes.
 
 | Verdict | Meaning |

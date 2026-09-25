@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Human review gate for the craft skill: launch tuicr BLOCKING (via the tuicr skill's launcher,
+# Human review gate for the work skill: launch tuicr BLOCKING (via the tuicr skill's launcher,
 # a dotfiles asset), then read the persisted session and emit ONE JSON verdict on stdout:
 #
 #   {"verdict":"approved",   "reviewed_count":N, ...}   files marked reviewed, zero new comments

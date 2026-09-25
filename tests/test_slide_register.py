@@ -1,6 +1,6 @@
 """The `slide-register` system: DECK-ONLY, and advisory by construction.
 
-The craft lens `prose-register` judges slide prose for meta-label bullets and mannered prose. This
+The work lens `prose-register` judges slide prose for meta-label bullets and mannered prose. This
 is the small DECIDABLE subset of that category — bullets that announce what follows, or that talk
 about the deck and the room instead of stating the thing.
 

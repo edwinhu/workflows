@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * converge-check.ts — is this craft run converging, or drawing from a constant-rate generator?
+ * converge-check.ts — is this work run converging, or drawing from a constant-rate generator?
  *
  *   bun converge-check.ts <run-dir> [--json]
  *
@@ -11,7 +11,7 @@
  * ADVISORY. Nothing here gates a dispatch; the round cap in work-redispatch.sh is what stops a run.
  * This says WHY it had to be stopped.
  *
- * Every input is a file craft already writes — `result-round<N>.json`, `result.json`, `args.json`,
+ * Every input is a file the work skill already writes — `result-round<N>.json`, `result.json`, `args.json`,
  * the archived `plan-*.md`. No LLM, no new state.
  *
  * THE VERDICT IS THE SURVIVING-BLOCKING SEQUENCE. A fix loop converges when the blocking set it is

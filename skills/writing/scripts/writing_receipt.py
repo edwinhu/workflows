@@ -1,5 +1,5 @@
 #!/usr/bin/env -S uv run python3
-"""Derive the writing workflow's on-disk approval artifacts from craft's approvals.
+"""Derive the writing workflow's on-disk approval artifacts from `work`'s approvals.
 
 `writing_section_index.py` refuses to parse anything without a well-formed
 `<proj>/.planning/.state/review.json`, and `run-constraints.py` scopes itself from
@@ -8,23 +8,23 @@ unconditionally and every `ds-*`/`dev-*`/`typst-*` hard constraint runs on a wri
 project. This shim writes both.
 
 It is an ADAPTER, never a second authority. Every field is mapped from an approval
-craft already carries:
+`work` already carries:
 
-  plan_file / plan_hash                  ← craft's planPath / planHash
+  plan_file / plan_hash                  ← `work`'s planPath / planHash
   approved_session_id / approved_at      ← the user's ExitPlanMode approval
-  reviewer_session_id / reviewed_at      ← the craft RUN that authorizes implementation
+  reviewer_session_id / reviewed_at      ← the work RUN that authorizes implementation
                                            (its run id and dispatch time)
 
 What this receipt does NOT assert: a second human review. It satisfies the parser's
 two-distinct-approvals schema, nothing more. The genuine independent review in a
 craft-native flow is the per-task verifier plus the review lenses — they run DOWNSTREAM
 of this file and gate the result, so they cannot be encoded in something that must exist
-before they run. An earlier draft mapped this field to craft's plan-lens review, which
+before they run. An earlier draft mapped this field to `work`'s plan-lens review, which
 does not exist at this point (plan lenses run inside the dispatch, after the shim) and may
 not exist at all (a run may drop them).
 
 The plan is never copied: a writing project sets `plansDirectory` to `./.planning`,
-so craft's approved plan already IS the generated plan the parser authenticates.
+so `work`'s approved plan already IS the generated plan the parser authenticates.
 
 CLI:
   writing_receipt.py --project <proj> --plan <planPath> --plan-hash <hash>
@@ -96,7 +96,7 @@ def _plan_basename(project: Path, plan: Path) -> str:
         raise ReceiptRefusal(f"--project is not a directory: {project}.")
     if not planning.is_dir():
         raise ReceiptRefusal(
-            f"--project has no .planning/ directory: {planning}. A writing project sets craft's "
+            f"--project has no .planning/ directory: {planning}. A writing project sets `work`'s "
             "plansDirectory to ./.planning so the approved plan lands there."
         )
     try:
@@ -108,7 +108,7 @@ def _plan_basename(project: Path, plan: Path) -> str:
     if plan_real.parent != planning.resolve():
         raise ReceiptRefusal(
             f"--plan must be a direct child of {planning}; got {plan_real}. The plan is never copied — "
-            "point craft's plansDirectory at ./.planning instead."
+            "point `work`'s plansDirectory at ./.planning instead."
         )
     name = plan_real.name
     if name == "PLAN.md":
@@ -167,7 +167,7 @@ def build_receipt(
     if approved_session == reviewer_session:
         raise ReceiptRefusal(
             "--approved-session and --reviewer-session must differ: the receipt records two distinct "
-            "craft approvals (the user's plan approval and the craft run that authorizes implementation)."
+            "work approvals (the user's plan approval and the work run that authorizes implementation)."
         )
 
     plan_domain = _plan_domain(plan)
@@ -189,7 +189,7 @@ def build_receipt(
     if reviewed_dt <= approved_dt:
         raise ReceiptRefusal(
             f"--reviewed-at {reviewed_text} must be strictly later than --approved-at {approved_text}: "
-            "the authorizing craft run is dispatched after the user's approval."
+            "the authorizing work run is dispatched after the user's approval."
         )
 
     receipt = {
@@ -207,7 +207,7 @@ def build_receipt(
 
 
 def active_workflow_text(style: str) -> str:
-    return f"---\nworkflow: writing\nstyle: {style}\n---\n\nScoping marker for run-constraints.py — written by writing_receipt.py from craft's approved plan.\n"
+    return f"---\nworkflow: writing\nstyle: {style}\n---\n\nScoping marker for run-constraints.py — written by writing_receipt.py from `work`'s approved plan.\n"
 
 
 def write_artifacts(project: Path, receipt: dict, style: str) -> tuple[Path, Path]:
@@ -224,7 +224,7 @@ def write_artifacts(project: Path, receipt: dict, style: str) -> tuple[Path, Pat
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="writing_receipt.py",
-        description="Derive .planning/.state/review.json and .planning/ACTIVE_WORKFLOW.md from craft's approvals.",
+        description="Derive .planning/.state/review.json and .planning/ACTIVE_WORKFLOW.md from `work`'s approvals.",
     )
     parser.add_argument("--project", required=True)
     parser.add_argument("--plan", required=True)

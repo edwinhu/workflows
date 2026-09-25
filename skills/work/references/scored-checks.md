@@ -1,8 +1,8 @@
 # `scoredChecks` — advisory scores computed in JS from agent-returned counts
 
-An optional craft parameter for the *advisory* half of a diagnose loop: a weighted 0–10 composite
+An optional work parameter for the *advisory* half of a diagnose loop: a weighted 0–10 composite
 per item. What makes it worth having is not the number but **who computes it**. The agent returns
-RAW COUNTS; craft computes every score in JS from constants the caller declared. An agent that
+RAW COUNTS; `work` computes every score in JS from constants the caller declared. An agent that
 reports its own score inflates it; an agent that reports counts cannot, because it never sees the
 formula.
 
@@ -22,7 +22,7 @@ entry, all in parallel, mirroring `mechanicalLeg`.
 |---|---|
 | `key` | name for this check, used in `scores[].key` and in `scoreTable` reporting |
 | `items` | the things to score — one dispatched agent each |
-| `prompt` | caller text for the agent. Craft appends the standing instruction that only counts are wanted |
+| `prompt` | caller text for the agent. `work` appends the standing instruction that only counts are wanted |
 | `schema` | the flat count schema the agent returns — see S2 |
 | `components` | the declared arithmetic — see S3 |
 | `refs` | absolute paths the agent must read |
@@ -82,7 +82,7 @@ Passthrough fields are never read by any arithmetic. Four rules keep the guarant
   refused whether it is declared as a count or as evidence, because otherwise the new door is exactly
   the way an agent-supplied number gets in.
 
-## S3 — Craft owns the arithmetic, declaratively
+## S3 — `work` owns the arithmetic, declaratively
 
 Each `components` entry is `{name, weight, base, penalties: {<countField>: <perUnit>}}`, and the JS
 computes:
@@ -105,7 +105,7 @@ composite_j = Σ_i weight_i · score_ij
 {key, item, components: {<name>: score|null}, composite: composite_j|null, reason?}
 ```
 
-Craft emits **no cross-item mean, total or rank** — combining items is the caller's business, and an
+`work` emits **no cross-item mean, total or rank** — combining items is the caller's business, and an
 average taken over a `null` item is exactly the vacuous number S4 forbids.
 
 A `penalties` key naming a count field the schema does not declare **throws**: it would contribute
@@ -184,7 +184,7 @@ When a returned `itemsChecked` is absent or `0`, that item's scores are `null` w
 **never `base`, never `0`**.
 
 A check that measured nothing scoring a perfect 10 by subtracting no penalties is the vacuous pass
-craft exists to prevent; a `0` is equally wrong, reading as measured-and-terrible. Same discipline as
+`work` exists to prevent; a `0` is equally wrong, reading as measured-and-terrible. Same discipline as
 `slides-diagnose.js`, which emits `'n/a'` for a dropped lecture.
 
 ## S5 — Fail closed on a dead agent, but do not gate
@@ -215,7 +215,7 @@ never `undefined` while every neighbouring one is an explicit `null`.
 ## S7 — No new selector channel
 
 Because the scores cannot fail the run, they add nothing to `tasksThatFlagged` /
-`mechanicalThatFailed` / `lensesThatFlagged`. Craft's law that `overallPass ===
+`mechanicalThatFailed` / `lensesThatFlagged`. `work`'s law that `overallPass ===
 false` implies a non-empty selector is therefore untouched — which is itself the proof that this
 channel does not gate.
 
@@ -233,4 +233,4 @@ signal is the substrate: deterministic checks (`mechanicalChecks`) and categoric
 `critical|major` lens findings. Score the run to read it; gate it on something that can be wrong in
 only one direction.
 
-Craft's precedent for the shape is `thirdParty`: advisory, reported, never in the gate arithmetic.
+`work`'s precedent for the shape is `thirdParty`: advisory, reported, never in the gate arithmetic.

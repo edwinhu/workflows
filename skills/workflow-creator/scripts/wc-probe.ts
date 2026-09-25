@@ -1811,7 +1811,7 @@ export function checkPathResolution(
     // about THIS machine, and nobody illustrates with someone else's absolute path.
     //
     // A NOTE IS NOT A GATE, and this demotion is justified on its merits or not at all. The gate
-    // reads the exit code; craft's mechanicalChecks agent is told to capture "the last ~2000
+    // reads the exit code; `work`'s mechanicalChecks agent is told to capture "the last ~2000
     // characters". So a demoted finding does not fail anything, and its note may not even reach the
     // report. The claim to weigh is that a critical against correct documentation is worse than a
     // miss here — not that the note makes it safe.
@@ -2700,7 +2700,7 @@ export function checkBareWorkflowRefs(file: string, text: string, exemptions: re
 
 // ---------------------------------------------------------------- P7
 
-/** True when an object literal's keys look like a craft task row. */
+/** True when an object literal's keys look like a work task row. */
 export function isTaskRow(keys: string[]): boolean {
   const has = (k: string) => keys.includes(k)
   return has('id') && (has('work') || has('writablePaths') || has('acceptance'))
@@ -2864,7 +2864,7 @@ export function findKeyValueSpan(
 
 // ---------------------------------------------------------------- P10 / P11
 
-/** One craft args object, as read out of one fenced block of a Markdown file. */
+/** One work args object, as read out of one fenced block of a Markdown file. */
 export interface CraftArgsFence {
   /** 1-based file line of the fence's opening delimiter. */
   fenceLine: number
@@ -2872,7 +2872,7 @@ export interface CraftArgsFence {
   mechanicalCount: number | null
   /** 1-based file line of the `mechanicalChecks` value. */
   mechanicalLine: number | null
-  /** Sorted `reviewLenses[].key` values. An ABSENT key yields `[]`, not null: craft reads an absent
+  /** Sorted `reviewLenses[].key` values. An ABSENT key yields `[]`, not null: the work skill reads an absent
    *  or empty array as its own two defaults, so omitting it declares a lens set rather than none. */
   lensKeys: string[]
   /** The `projectDir` STRING LITERAL, or null when the key is absent or written as a shorthand /
@@ -2898,7 +2898,7 @@ export interface InstanceId {
 /**
  * How an instance id is read out of a fence, and why each is a run of DIGITS.
  *
- * A fan-out id has no declared syntax anywhere in craft — it is whatever the caller wrote into a
+ * A fan-out id has no declared syntax anywhere in work — it is whatever the caller wrote into a
  * lens key, an item line and a `--lecture` spec. Digits are the one shape all three carry in the
  * corpus and the one shape that can be matched back against a task id without guessing: a lens key
  * suffix that is not numeric (`scope-fidelity`, `source-first`) is a lens NAME, not an instance, and
@@ -2948,10 +2948,10 @@ export function arrayElementCount(masked: string, span: { start: number; end: nu
 }
 
 /**
- * Every craft args object emitted in a fenced block, one per object.
+ * Every work args object emitted in a fenced block, one per object.
  *
  * A CODE fence only (`isCodeFence`), and the object must declare `mechanicalChecks` or
- * `reviewLenses` — the two keys that make an args object the thing craft is dispatched with.
+ * `reviewLenses` — the two keys that make an args object the thing the work skill is dispatched with.
  */
 export function craftArgsFences(text: string): CraftArgsFence[] {
   const out: CraftArgsFence[] = []
@@ -3069,7 +3069,7 @@ export function checkLoaderEntryPoint(file: string, text: string, exemptions: re
 }
 
 /**
- * P10 one entry point — a craft args object declares ONE `mechanicalChecks` entry.
+ * P10 one entry point — a work args object declares ONE `mechanicalChecks` entry.
  *
  * A list of N commands loses one silently, and nothing reports a check it never knew about; one
  * entry point whose exit code is the mechanical verdict is also the only shape a reviewer can
@@ -3137,7 +3137,7 @@ export function checkLensSetParity(file: string, text: string): Finding[] {
       line: f.fenceLine,
       detail: `this craft-args fence declares lenses [${f.lensKeys.join(', ')}] where the fence at line ${first.fenceLine} declares [${first.lensKeys.join(', ')}]; no declaration names ${undeclared.map(k => `"${k}"`).join(', ')}`,
       remedy:
-        `make the two lens sets identical, or declare the intended difference with <!-- wc-probe: lens-set-differs ${undeclared.join(' ')} --> — an absent reviewLenses array is not "no lenses", it is craft's own defaults, so a silent difference judges the two branches by different standards`,
+        `make the two lens sets identical, or declare the intended difference with <!-- wc-probe: lens-set-differs ${undeclared.join(' ')} --> — an absent reviewLenses array is not "no lenses", it is the work skill's own defaults, so a silent difference judges the two branches by different standards`,
     })
   }
   return findings
@@ -3157,7 +3157,7 @@ export function repoRootOf(from: string): string | null {
 }
 
 /**
- * P12 dispatch routing — a file that emits a craft-args fence dispatches craft the way craft says.
+ * P12 dispatch routing — a file that emits a craft-args fence dispatches work the way `work` says.
  *
  * (a) CRITICAL. The file names some OTHER runner script and never names `work-dispatch.sh`.
  *     Hand-rolling that line drops everything work-dispatch owns on the way in: TIER 1 `plan-lint`,
@@ -3167,7 +3167,7 @@ export function repoRootOf(from: string): string | null {
  *     filename: a name-keyed rule retires itself silently the day the runner is renamed.
  *
  * (b) MAJOR. A fence whose `projectDir` literal lies OUTSIDE the repository containing this file,
- *     with no `--run-dir` anywhere in the file: craft then writes `args`/`result`/`log` into a
+ *     with no `--run-dir` anywhere in the file: the work skill then writes `args`/`result`/`log` into a
  *     `.craft/` inside a tree the run was only meant to read.
  *
  * A file naming NEITHER entry point is deliberately not judged. Delegating without naming the entry
@@ -3198,7 +3198,7 @@ export function handRolledRunner(text: string): { name: string; line: number } |
 }
 
 /**
- * P12(a)'s view of "this file emits craft args", broader than `craftArgsFences` — which keys on the
+ * P12(a)'s view of "this file emits work args", broader than `craftArgsFences` — which keys on the
  * lens and mechanical declarations P10/P11 measure. A fence LABELLED `craft-args`, or one carrying a
  * `tasks` array, arms a run this rule must judge even when it declares neither of those.
  */
@@ -3251,7 +3251,7 @@ export function checkDispatchRouting(file: string, text: string, exemptions: rea
       severity: 'major',
       file,
       line,
-      detail: `this fence dispatches with projectDir "${pd}", outside the repository ${repo} that contains this file, and no --run-dir appears anywhere in it, so craft writes its args, result and log into a .craft/ inside that foreign tree`,
+      detail: `this fence dispatches with projectDir "${pd}", outside the repository ${repo} that contains this file, and no --run-dir appears anywhere in it, so the work skill writes its args, result and log into a .craft/ inside that foreign tree`,
       remedy:
         'pass --run-dir with an ABSOLUTE path outside the judged tree to work-dispatch.sh, or declare the exception with <!-- wc-probe: ignore-dispatch -->',
     })
@@ -3795,7 +3795,7 @@ export function parseArgs(argv: string[]): {
  * The LAST line, and the only one a truncated report is guaranteed to keep.
  *
  * The header sits at the top and every note after it, so a caller told to capture "the last ~2000
- * characters" (craft's mechanicalChecks instruction) drops the header and keeps an arbitrary tail of
+ * characters" (`work`'s mechanicalChecks instruction) drops the header and keeps an arbitrary tail of
  * notes. 69 notes on one file is ~14KB, so the count a reader needs was the first thing discarded.
  * The gate itself reads only the exit code, so an un-summarised note channel is consumed by nobody.
  */

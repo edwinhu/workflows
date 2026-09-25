@@ -1,6 +1,6 @@
 ---
 name: hound
-description: "Use when a session's stopping condition is being written or repaired — \"set the stopping condition\", \"hold it until the tests pass\", \"what should the objective be\", \"give it something to work toward before I go to bed\", \"write the brief for the spawned agent\", \"it stopped overnight\", \"it idled while I was asleep\", \"it asked me a question instead of continuing\", \"why did it stop\", \"is the hold actually armed\", \"make it keep working\", \"run this unattended\", \"leave it running overnight\". Use proactively BEFORE handing work to any session that will outlive the user's attention — a spawned agent, a background job, a craft dispatch left running, or this session at night. NEGATIVE ROUTING: composing a craft run's own stopping condition is work-dispatch.sh and needs no help; spawning the session is agent-spawn; delegating a task to a subagent is farm-out. This skill owns the CHECK COMMAND that settles it, the standing authority that travels with it, and the proof that both mechanisms are live."
+description: "Use when a session's stopping condition is being written or repaired — \"set the stopping condition\", \"hold it until the tests pass\", \"what should the objective be\", \"give it something to work toward before I go to bed\", \"write the brief for the spawned agent\", \"it stopped overnight\", \"it idled while I was asleep\", \"it asked me a question instead of continuing\", \"why did it stop\", \"is the hold actually armed\", \"make it keep working\", \"run this unattended\", \"leave it running overnight\". Use proactively BEFORE handing work to any session that will outlive the user's attention — a spawned agent, a background job, a work dispatch left running, or this session at night. NEGATIVE ROUTING: composing a work run's own stopping condition is work-dispatch.sh and needs no help; spawning the session is agent-spawn; delegating a task to a subagent is farm-out. This skill owns the CHECK COMMAND that settles it, the standing authority that travels with it, and the proof that both mechanisms are live."
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob]
 ---
 
@@ -166,10 +166,10 @@ creating is not a job; measured 2026-09-16, a creation reported success while `C
 
 **An objective names the state the WORK reaches, never the event on the way there.**
 
-"craft has returned a verdict", "the recon report exists", "BRIEF.md has been carried out", "the
+"the work run has returned a verdict", "the recon report exists", "BRIEF.md has been carried out", "the
 agent has reported back" — each is true while the objective is still unmet. The moment it closes the
-session stops, and at 02:00 the work stops for the night. `craft has returned a verdict` closed on
-`overallPass=false` with 0 of 5 tasks done and 20 blocking findings; craft's own loop is FAIL → fix
+session stops, and at 02:00 the work stops for the night. `the work run has returned a verdict` closed on
+`overallPass=false` with 0 of 5 tasks done and 20 blocking findings; `work`'s own loop is FAIL → fix
 → re-run, and calling FAIL "done" stops the loop that was going to fix it.
 </EXTREMELY-IMPORTANT>
 
