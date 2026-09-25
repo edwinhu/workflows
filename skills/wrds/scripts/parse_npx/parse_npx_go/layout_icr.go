@@ -599,6 +599,20 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 				curFund, curSeries = "", ""
 			}
 			continue
+		} else if icrItemOneMarker(line) {
+			// Hartford's HLS reports open each sub-adviser tranche with an
+			// `ITEM 1: PROXY VOTING RECORD` line and print the fund name on the
+			// first line below it (CIK 790558, 2007, 3,085 rows with no series).
+			// The marker is the line; the name below it is resolved like any
+			// other heading, and adopted only when it resolves -- so the
+			// `This portion sub-advised by ...` line that follows the name names
+			// a manager, never a series, and nothing is cleared.
+			if name, ok := icrHeadingBelowMarker(lines, i); ok {
+				if id := icrResolveFundShared(seriesIx, name); id != "" {
+					curFund, curSeries = name, id
+					fundFromBanner = false
+				}
+			}
 		} else if icrReportPeriodLine(line) {
 			// Neuberger Berman heads each section with a bare fund line above the
 			// reporting period and no rule or label at all, and wraps a rename
@@ -760,6 +774,31 @@ func icrReportPeriodLine(line string) bool {
 		}
 	}
 	return false
+}
+
+// icrItemOneMarker reports whether a line is nothing but the N-PX item heading
+// `ITEM 1: PROXY VOTING RECORD`, matched on the collapsed line so neither case
+// nor the spacing around the colon decides whether a section is seen. Nothing
+// but that heading matches: a line carrying any further text is refused, so a
+// proposal description mentioning the phrase cannot open a fund section.
+func icrItemOneMarker(line string) bool {
+	return strings.EqualFold(strings.Join(strings.Fields(line), " "), "ITEM 1: PROXY VOTING RECORD")
+}
+
+// icrHeadingBelowMarker returns the nearest nonblank line below a marker line,
+// refused when it is a table marker or a labelled field rather than a name.
+func icrHeadingBelowMarker(lines []string, i int) (string, bool) {
+	for k := i + 1; k < len(lines) && k <= i+3; k++ {
+		name := strings.TrimSpace(lines[k])
+		if name == "" {
+			continue
+		}
+		if strings.ContainsAny(name, ":<") {
+			return "", false
+		}
+		return name, true
+	}
+	return "", false
 }
 
 // icrHeadingAbovePeriod returns the nearest nonblank line above a reporting
