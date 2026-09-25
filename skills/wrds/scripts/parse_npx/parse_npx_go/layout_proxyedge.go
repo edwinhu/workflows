@@ -57,6 +57,34 @@ var peVocabulary = map[string]string{
 	"UNVOTED":          peDisposition,
 }
 
+// peSummaryVocabulary is the header band of the OTHER grid these filings carry:
+// a plain HTML summary whose FIRST column is the issuer's own name, one ballot
+// per <tr>, with no identity block anywhere in it. Its columns are the ballot's
+// facts spread sideways -- ticker, country, security id, meeting type and date
+// -- where the ProxyEdge template prints them stacked as `Ticker:` /
+// `Security:` labels above the grid.
+var peSummaryVocabulary = map[string]bool{
+	"COMPANY NAME": true, "ISSUER NAME": true, "SECURITY NAME": true,
+	"TICKER": true, "COUNTRY": true, "SECURITY ID": true, "CUSIP": true,
+	"PROVIDER SECURITY ID": true, "SECURITY ID ON BALLOT": true, "ISIN": true,
+	"MEETING TYPE": true, "MEETING DATE": true, "RECORD DATE": true,
+	"PROPONENT": true, "PROPOSAL NUMBER": true, "PROPOSAL TEXT": true,
+	"PROPOSAL": true, "MANAGEMENT RECOMMENDATION": true, "VOTE INSTRUCTION": true,
+	"VOTED": true, "VOTE AGAINST MANAGEMENT": true, "SHARES VOTED": true,
+	"SHARES ON LOAN": true, "VOTE CAST": true,
+}
+
+// peSummaryOpener is the column a summary band must open on. It is the one that
+// says the grid's rows are ISSUERS: a band that merely carries a ticker and a
+// meeting date is the stacked identity block, not this grid.
+var peSummaryOpener = map[string]bool{
+	"COMPANY NAME": true, "ISSUER NAME": true, "SECURITY NAME": true,
+}
+
+// peSummaryColumns is the least a band must carry before its table's rows are
+// read as this grid's. The real header prints fourteen.
+const peSummaryColumns = 6
+
 const (
 	peItem        = "item"
 	peDesc        = "desc"
@@ -228,6 +256,53 @@ func peHeaderAt(lines []string, i int) *peHeader {
 	return h
 }
 
+// peSummaryHeaderAt returns the number of lines the summary grid's header band
+// at i occupies, or 0 when there is none there. The band opens on the
+// issuer-name column, runs over whole cells of the summary vocabulary in one
+// table, and must name at least peSummaryColumns of them.
+func peSummaryHeaderAt(lines []string, tbl []int, whole []bool, i int) int {
+	if !whole[i] || !peSummaryOpener[strings.ToUpper(lines[i])] {
+		return 0
+	}
+	n := 0
+	for k := i; k < len(lines) && tbl[k] == tbl[i] && whole[k]; k++ {
+		if !peSummaryVocabulary[strings.ToUpper(lines[k])] {
+			break
+		}
+		n++
+	}
+	if n < peSummaryColumns {
+		return 0
+	}
+	return n
+}
+
+// peSummaryBody reports, for each line, whether it stands in the BODY of a
+// summary grid -- after that grid's own header band and before its table
+// closes. Every cell there is a data cell of an ordinary ballot row, so the
+// first of them is the ISSUER's name however many fund words that corporate
+// name carries (Aspiriant Trust 2016 votes `Daito Trust Construction Co. Ltd.`,
+// and taking it for a fund banner blanked the section's series for every row
+// after it). The existing issuer guard cannot reach these: it recognises only
+// the stacked spelling, where an identity label follows the name.
+//
+// Only the body is marked, never the whole run: a vendor that prints the fund
+// banner as a spanning row ABOVE this header is still naming a fund there.
+func peSummaryBody(lines []string, tbl []int, whole []bool) []bool {
+	out := make([]bool, len(lines))
+	for i := 0; i < len(lines); i++ {
+		n := peSummaryHeaderAt(lines, tbl, whole, i)
+		if n == 0 {
+			continue
+		}
+		for k := i + n; k < len(lines) && tbl[k] == tbl[i]; k++ {
+			out[k] = true
+		}
+		i += n - 1
+	}
+	return out
+}
+
 // matchProxyEdge requires BOTH halves of this vendor's grammar: the ballot
 // header band, and the identity block it prints one label per line above it.
 // The band alone is not enough. `Item | Proposal | Recommendation | Default
@@ -384,6 +459,7 @@ func peIdentityLabel(line string) bool {
 func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 	lines, run, tbl := peCellLines(string(stripHTMLCells(raw)))
 	whole := peWholeCells(run)
+	summary := peSummaryBody(lines, tbl, whole)
 	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(seriesIx, meta.FormerNames)
 	dict := cikDict.exactFallback(meta)
@@ -499,7 +575,10 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// an item number under an open band IN THE SAME TABLE: that pair is a
 		// ballot row whose description peVoteRow refused, not a fund the vendor
 		// printed. Across a table boundary the pair is two different ballots.
-		if whole[i] && !peItemCell(lines, tbl, i-1, i, labels) && peFundName(line) {
+		// Nothing inside a summary grid's body is a heading at all: every cell
+		// there is one column of one ballot row, the first of them the issuer's
+		// own name.
+		if whole[i] && !summary[i] && !peItemCell(lines, tbl, i-1, i, labels) && peFundName(line) {
 			fund = line
 			fundSeries = icrResolveFundShared(seriesIx, line)
 			if fundSeries == "" {
