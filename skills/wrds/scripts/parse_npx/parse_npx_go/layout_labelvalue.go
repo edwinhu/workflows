@@ -299,7 +299,6 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 			// its banners the same way: `PF LAZARD INTERNATIONAL VALUE FUND` names
 			// the fund by its then sub-adviser for a declared `PF International
 			// Value Fund` (S000001888, Pacific Funds 2006, 498 rows).
-			curSeries = lvResolveBanner(sharedIdx, dict, name)
 			// A banner that abbreviates the fund out of resolution, printed under
 			// a `FUND:` line that names it exactly: Principal Investors Fund heads
 			// its section `FUND:  PIF - Partners LargeCap Blend Fund I` and then
@@ -310,7 +309,20 @@ func parseLabelValue(text string, meta FilingMeta) ([]VoteRow, error) {
 			// and it is used ONLY when the banner itself yields nothing. The banner
 			// still supplies the fund NAME, as every other section's does; a
 			// banner that resolves on its own is untouched.
-			if curSeries == "" {
+			//
+			// A banner that resolves to nothing and has no cue leaves the series
+			// already established ALONE rather than clearing it: Vantagepoint's
+			// sub-adviser reports print the fund as a bare page heading
+			// (`INTERNATIONAL FUND`, read and resolved by the bare-line branch
+			// below) and then rule the section with the REGISTRANT's own name
+			// (`===== The VantagePoint Funds =====`), which is no fund's name and
+			// resolves to nothing -- 5,569 rows across the three filings went out
+			// blank because the rule erased what the heading had just answered.
+			// This is the DICT-OVERRIDE rule read the other way round: only
+			// evidence that resolves may replace a resolved series.
+			if s := lvResolveBanner(sharedIdx, dict, name); s != "" {
+				curSeries = s
+			} else if fundCue != "" {
 				curSeries = fundCue
 			}
 			fundCue = ""

@@ -1,0 +1,54 @@
+<PAGE>
+                               SELECT VALUE FUNDS
+
+ARTISAN PARTNERS LIMITED PARTNERSHIP
+
+===================== The VantagePoint Select Value Funds ======================
+
+
+ALLEGHANY CORPORATION
+
+Ticker:       Y              Security ID:  017175100
+Meeting Date: APR 24, 2015   Meeting Type: Annual
+Record Date:  MAR 02, 2015
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director John G. Foos             For       For          Management
+1b    Elect Director William K. Lavin         For       For          Management
+Zix Corporation  Amendment to the 2012       Mgmt       For       For       Vantagepoint    Voted
+                 Incentive Plan                                             Discovery Fund
+</TABLE>
+
+<PAGE>
+
+                               INTERNATIONAL FUND
+
+ARTISAN PARTNERS LIMITED PARTNERSHIP
+
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-08941
+Reporting Period: 07/01/2014 - 06/30/2015
+The VantagePoint Funds
+
+
+
+
+
+
+
+
+
+============================ The VantagePoint Funds ============================
+
+
+ACTELION LTD.
+
+Ticker:       ATLN           Security ID:  H0032X135
+Meeting Date: MAY 08, 2015   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Accept Financial Statements and         For       For          Management
+      Statutory Reports
+1.2   Approve Remuneration Report             For       For          Management
