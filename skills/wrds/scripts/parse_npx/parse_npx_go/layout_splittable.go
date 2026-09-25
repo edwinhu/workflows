@@ -605,13 +605,18 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 		if r := spRuleSpans(line); r != nil {
 			block := spLabelBlock(header)
 			l := spLabels(block, r)
-			if spIsBannerNamedGroup([]spTable{{labels: l}}) {
+			if banner := spPageBanner(pageBare, block); banner != "" &&
+				spIsBannerNamedGroup([]spTable{{labels: l}}) {
 				// The stacked header is reprinted at each FUND, so the banner
 				// above it names the fund this header and every headerless page
-				// after it belongs to. Set unconditionally: a headed page with no
-				// banner is a fund the template never named, and carrying the
-				// previous one over would file its ballots under the wrong series.
-				ctx.bare = spBannerFund(pageBare, seriesIdx, resolved)
+				// after it belongs to. Set whenever the page PRINTS one --
+				// including a banner that fails to resolve, which is a fund the
+				// template named and the dictionary does not know, and whose
+				// ballots must not be filed under the previous series. A page
+				// that reprints the header with NO banner text above it is a
+				// continuation of the open fund, not a fund the template never
+				// named, so the open fund is carried rather than cleared.
+				ctx.bare = spBannerFund(banner, seriesIdx, resolved)
 				ctx.bareFund = ctx.bare != ""
 			}
 			switch {
@@ -728,6 +733,24 @@ func spSpillBody(header []string, main *spTable, spans []spSpan) []string {
 		return nil
 	}
 	return header[start:end]
+}
+
+// spPageBanner is the banner text a page printed above the stacked header whose
+// label block is `block`, or "" when the page printed none. The page's first
+// lone text run is the candidate, but that run is a banner only when it sits
+// ABOVE the header: on a page whose <PRE> opens with the header itself, the
+// first lone run is one of the header's own stacked label lines (`Fund's Vote
+// For or`), and reading it as a banner would clear a fund the page never renamed.
+func spPageBanner(pageBare string, block []string) string {
+	if pageBare == "" {
+		return ""
+	}
+	for _, line := range block {
+		if strings.TrimSpace(line) == pageBare {
+			return ""
+		}
+	}
+	return pageBare
 }
 
 // spBannerFund is the fund a page of the SEC's own Form N-PX template names:
