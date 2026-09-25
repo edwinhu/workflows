@@ -503,6 +503,21 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 		cells := icrCells(line)
 
+		// THE ISS REPORT HEADER CLOSES ANY OPEN ICR BLOCK. A mixed document
+		// prints both grammars, and this one's block is opened by a header line
+		// and closed only by the next one -- a marker the ISS grammar never
+		// prints. Left open, the last vendor block of an icr section stamps its
+		// issuer, CUSIP and meeting date on every item-shaped line of every ISS
+		// meeting behind it (Vantagepoint Funds 2014, 1,681 rows, 1,412 of them
+		// with no series, duplicating a region the labelvalue layout already read
+		// correctly). The `FORM N-Px REPORT` banner is the ISS report's own
+		// header: no icr block can span it, so the open meeting ends here.
+		if isISSReportBanner(line) {
+			haveMtg = false
+			lastRow, lastLine = -1, -2
+			continue
+		}
+
 		// THE FUND SECTION MARKER. Resolution is by EXACT normalised equality
 		// against a <SERIES-NAME> the filing itself declares -- never the
 		// tolerant lookup, whose leading-code strip errs about 1 in 25, which is
@@ -719,6 +734,14 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 	}
 	return rows, nil
+}
+
+// isISSReportBanner reports whether a line is the ISS report's own header rule,
+// `***** FORM N-Px REPORT *****`. The same text is what matchISSNPX and
+// issSkippableHeader key on; here it is a section boundary rather than a
+// signature.
+func isISSReportBanner(line string) bool {
+	return strings.Contains(strings.ToUpper(line), "FORM N-PX REPORT")
 }
 
 // icrReportPeriodLine reports whether a line is nothing but the section's
