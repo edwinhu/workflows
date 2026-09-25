@@ -94,6 +94,15 @@
         ]
       },
       {
+        "matcher": "CronCreate",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/cron-delete-guard.ts --record"
+          }
+        ]
+      },
+      {
         "matcher": "Bash",
         "hooks": [
           {

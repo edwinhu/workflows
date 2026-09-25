@@ -1,19 +1,111 @@
 #!/usr/bin/env bun
 /**
- * PreToolUse hook: refuse to cancel a loop while a craft run is still in flight.
+ * PreToolUse on CronDelete: refuse to cancel the loop that drives a craft run still in flight.
  *
- * A /loop cron is usually what DRIVES a craft run to completion -- it is what re-enters the
- * session to read the verdict, fix what failed and redispatch. Deleting it early strands the run:
- * the dispatch keeps going detached and nothing comes back for it. Measured 2026-09-14: deleted at
- * round 2 of 6 with the goal unmet, on the reasoning that the run had been halted.
+ * The refusal is TASK-SPECIFIC. `--record` runs as PostToolUse on CronCreate and appends the new
+ * job id to `heartbeatCrons` in the args.json of every `.craft/<run>` whose name the prompt names,
+ * so the guard denies only when a run CLAIMING this id is in flight; an id no run claims falls back
+ * to the old rule (deny while any run is in flight).
  *
  * In flight is decided as work-goal-resend.sh decides it -- a run directory holds args.json with
  * no non-empty result.json beside it. That is a property of the filesystem, not of anyone's belief
- * that the run is over, which is exactly where the judgement failed.
+ * that the run is over, which is exactly where the judgement failed (measured 2026-09-14: a loop
+ * deleted at round 2 of 6 with the goal unmet, on the reasoning that the run had been halted).
  */
-import { readdirSync, statSync } from "node:fs";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { allow, deny, denyOnCrash, parsePayload } from "./_gate_common.ts";
+
+/** A cron job id as CronCreate mints them: 8 lowercase hex chars. */
+const JOB_ID = /\b[0-9a-f]{8}\b/;
+
+/** Run directories under `<cwd>/.craft` that hold an args.json, with what that file says. */
+interface Run {
+  name: string;
+  argsPath: string;
+  argsMtime: number;
+  inFlight: boolean;
+  crons: string[];
+}
+
+function runsUnder(cwd: string): Run[] | null {
+  const craftDir = join(cwd, ".craft");
+  let entries: string[];
+  try {
+    entries = readdirSync(craftDir);
+  } catch {
+    return null; // no .craft at all: a determinate "no run here"
+  }
+  const runs: Run[] = [];
+  for (const name of entries) {
+    const argsPath = join(craftDir, name, "args.json");
+    let argsMtime: number;
+    try {
+      argsMtime = statSync(argsPath).mtimeMs;
+    } catch {
+      continue; // not a run directory
+    }
+    let inFlight = true;
+    try {
+      if (statSync(join(craftDir, name, "result.json")).size > 0) inFlight = false; // has a verdict
+    } catch {
+      // An absent result.json IS the in-flight shape.
+    }
+    let crons: string[] = [];
+    try {
+      const parsed = JSON.parse(readFileSync(argsPath, "utf8"));
+      if (parsed && typeof parsed === "object" && Array.isArray(parsed.heartbeatCrons)) {
+        crons = parsed.heartbeatCrons.filter((x: unknown) => typeof x === "string");
+      }
+    } catch {
+      // Unparseable args.json claims nothing; it is still a run directory for the fallback rule.
+    }
+    runs.push({ name, argsPath, argsMtime, inFlight, crons });
+  }
+  return runs;
+}
+
+// ---------------------------------------------------------------- record mode (PostToolUse)
+
+/**
+ * NEVER blocks and NEVER prints a decision: a PostToolUse hook that emits a PreToolUse shape gets
+ * the payload rejected, and a crash here must not be visible at all. Every failure exits 0 silently.
+ */
+if (process.argv.includes("--record")) {
+  try {
+    const payload: Record<string, unknown> = JSON.parse(await Bun.stdin.text());
+    const toolInput = (payload?.tool_input ?? {}) as Record<string, unknown>;
+    const prompt = String(toolInput?.prompt ?? "");
+    const response = payload?.tool_response as unknown;
+
+    // tool_response is an object for some tools and a bare string for others, so both are read.
+    let id = "";
+    if (response && typeof response === "object" && typeof (response as Record<string, unknown>).id === "string") {
+      id = (response as Record<string, unknown>).id as string;
+    } else if (typeof response === "string") {
+      id = response.match(JOB_ID)?.[0] ?? "";
+    }
+    if (!JOB_ID.test(id)) process.exit(0);
+
+    const cwd = String(payload?.cwd ?? "") || process.cwd();
+    for (const run of runsUnder(cwd) ?? []) {
+      if (!run.name || !prompt.includes(run.name)) continue;
+      if (run.crons.includes(id)) continue; // idempotent
+      const raw = readFileSync(run.argsPath, "utf8");
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) continue;
+      parsed.heartbeatCrons = [...run.crons, id];
+      // Keep the file's own formatting: the indent of its first nested line, and its trailing newline.
+      const indent = raw.match(/^\{\r?\n([ \t]+)"/)?.[1] ?? "";
+      writeFileSync(run.argsPath, JSON.stringify(parsed, null, indent) + (raw.endsWith("\n") ? "\n" : ""));
+    }
+  } catch {
+    // Recording is best-effort: a run whose id was never recorded simply falls back to the old rule.
+  }
+  process.exit(0);
+}
+
+// ---------------------------------------------------------------- guard mode (PreToolUse)
 
 // FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an exit-1,
 // which Claude Code treats as NON-BLOCKING -- i.e. a silent allow in a PreToolUse gate.
@@ -27,36 +119,26 @@ if (String(hookInput?.tool_name ?? "") !== "CronDelete") allow();
 if (process.env.CRAFT_ALLOW_CRON_DELETE === "1") allow();
 
 const cwd = String(hookInput?.cwd ?? "") || process.cwd();
-const craftDir = join(cwd, ".craft");
+const deleteId = String(((hookInput?.tool_input ?? {}) as Record<string, unknown>)?.id ?? "");
 
 // No .craft at all is a determinate "no run here", not a failure to decide, so it allows. An
 // unreadable directory that EXISTS is a different case and reaches denyOnCrash via the throw.
-let entries: string[];
-try {
-  entries = readdirSync(craftDir);
-} catch {
-  allow();
-}
+const runs = runsUnder(cwd);
+if (runs === null) allow();
 
-// The newest in-flight run, by args.json mtime -- the file the dispatch writes.
+// A run that CLAIMS this id answers the question by itself: a heartbeat recorded for run A says
+// nothing about run B, so an unrelated in-flight run must not hold A's finished loop open.
+const claiming = deleteId ? runs.filter(r => r.crons.includes(deleteId)) : [];
+const candidates = claiming.length ? claiming : runs;
+
+// The newest in-flight run among the candidates, by args.json mtime -- the file the dispatch writes.
 let newest = "";
 let newestMtime = 0;
-for (const name of entries) {
-  const dir = join(craftDir, name);
-  let argsMtime: number;
-  try {
-    argsMtime = statSync(join(dir, "args.json")).mtimeMs;
-  } catch {
-    continue; // not a run directory
-  }
-  try {
-    if (statSync(join(dir, "result.json")).size > 0) continue; // has a verdict: not in flight
-  } catch {
-    // An absent result.json IS the in-flight shape; fall through.
-  }
-  if (argsMtime > newestMtime) {
-    newestMtime = argsMtime;
-    newest = name;
+for (const run of candidates) {
+  if (!run.inFlight) continue;
+  if (run.argsMtime > newestMtime) {
+    newestMtime = run.argsMtime;
+    newest = run.name;
   }
 }
 
@@ -67,11 +149,15 @@ if (!newest) allow();
 const run = /^[A-Za-z0-9._-]+$/.test(newest) ? newest : "(a run under .craft/)";
 
 deny(
-  `A craft run is still in flight: .craft/${run}/args.json has no verdict beside it. ` +
-    "The loop you are deleting is usually what drives that run to completion -- it is what " +
-    "re-enters the session to read the verdict, fix what failed and redispatch. Deleting it now " +
-    "strands the run: the dispatch keeps going detached and nothing comes back for it. Let the " +
-    "run finish (work-result.sh exits 0, or the round cap or time ceiling is reached), then " +
-    "delete the loop. If you genuinely mean to abandon the run, set CRAFT_ALLOW_CRON_DELETE=1 " +
-    "for the call and say so out loud.",
+  (claiming.length
+    ? `The loop you are deleting drives a craft run that is still in flight: .craft/${run}/args.json ` +
+      "records this cron in heartbeatCrons and has no verdict beside it. "
+    : `A craft run is still in flight: .craft/${run}/args.json has no verdict beside it, and no run ` +
+      "claims this cron, so it cannot be told apart from that run's heartbeat. ") +
+    "The loop is usually what drives that run to completion -- it is what re-enters the session to " +
+    "read the verdict, fix what failed and redispatch. Deleting it now strands the run: the " +
+    "dispatch keeps going detached and nothing comes back for it. Let the run finish " +
+    "(work-result.sh exits 0, or the round cap or time ceiling is reached), then delete the loop. " +
+    "If you genuinely mean to abandon the run, set CRAFT_ALLOW_CRON_DELETE=1 for the call and say " +
+    "so out loud.",
 );
