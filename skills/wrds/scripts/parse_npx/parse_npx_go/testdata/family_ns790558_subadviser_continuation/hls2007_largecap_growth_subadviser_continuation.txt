@@ -1,0 +1,323 @@
+<PAGE>
+
+                               VOTE SUMMARY REPORT
+                           Jul 01, 2006 - Sep 30, 2006
+
+HARTFORD LARGECAP GROWTH HLS FUND
+
+This portion sub-advised by Holland Capital Management, LLP
+
+<TABLE>
+<CAPTION>
+Mtg           Company/                                                                  Mgmt     Vote    Record              Shares
+Date/Type     Ballot Issues                                                 Security    Rec      Cast     Date     Prpnent    Voted
+- ---------     -----------------------------------------------------------  ---------  -------  -------  --------  --------  --------
+<S>           <C>                                                          <C>        <C>      <C>      <C>       <C>       <C>
+07/27/06 - A  ELECTRONIC ARTS INC. *ERTS*                                  285512109                    06/06/06              12,600
+              1    Elect Directors                                                    For      Split              Mgmt
+              1.1  Elect Director M. Richard Asher --- For
+              1.2  Elect Director Leonard S. Coleman --- For
+              1.3  Elect Director Gary M. Kusin --- For
+              1.4  Elect Director Gregory B. Maffei --- For
+              1.5  Elect Director Timothy Mott --- For
+              1.6  Elect Director Vivek Paul --- For
+              1.7  Elect Director Lawrence F. Probst, III --- For
+              1.8  Elect Director Richard A. Simonson --- For
+              1.9  Elect Director Linda J. Srere --- Withhold
+              2    Approve Repricing of Options                                       For      For                Mgmt
+              3    Amend Omnibus Stock Plan                                           For      For                Mgmt
+              4    Amend Qualified Employee Stock Purchase Plan                       For      Against            Mgmt
+              5    Ratify Auditors                                                    For      For                Mgmt
+
+09/25/06 - A  FEDEX CORPORATION *FDX*                                      31428X106                    07/31/06               8,400
+              1    Elect Directors                                                    For      For                Mgmt
+              2    Reduce Supermajority Vote Requirement                              For      For                Mgmt
+              3    Ratify Auditors                                                    For      For                Mgmt
+              4    Report on Environmental Policy                                     Against  Against            ShrHoldr
+              5    Require a Majority Vote for the Election of Directors              Against  For                ShrHoldr
+
+09/07/06 - A  H&R BLOCK, INC. *HRB*                                        093671105                    07/05/06              31,000
+              1    Elect Directors                                                    For      For                Mgmt
+              2    Approve Stock Option Plan                                          For      For                Mgmt
+              3    Approve/Amend Executive Incentive Bonus Plan                       For      For                Mgmt
+              4    Ratify Auditors                                                    For      For                Mgmt
+
+08/24/06 - A  MEDTRONIC, INC. *MDT*                                        585055106                    06/26/06              11,600
+              1    Elect Directors                                                    For      For                Mgmt
+</TABLE>
+
+
+Mgmt Rec - Company Management Recommended Vote                            Page 1
+
+<PAGE>
+
+                               VOTE SUMMARY REPORT
+                           Jul 01, 2006 - Sep 30, 2006
+
+HLSFND-HARTFORD LARGE CAP GROWTH FUND
+
+<TABLE>
+<CAPTION>
+Mtg           Company/                                                                  Mgmt     Vote    Record              Shares
+Date/Type     Ballot Issues                                                 Security    Rec      Cast     Date     Prpnent    Voted
+- ---------     -----------------------------------------------------------  ---------  -------  -------  --------  --------  --------
+<S>           <C>                                                          <C>        <C>      <C>      <C>       <C>       <C>
+              2    Ratify Auditors                                                    For      For                Mgmt
+              3    Require a Majority Vote for the Election of Directors              Against  For                ShrHoldr
+
+09/13/06 - A  SYMANTEC CORP. *SYMC*                                        871503108                    07/17/06              63,200
+              1    Elect Directors                                                    For      Split              Mgmt
+              1.1  Elect Director Michael Brown --- Withhold
+              1.2  Elect Director William T. Coleman --- Withhold
+              1.3  Elect Director David L. Mahoney --- Withhold
+              1.4  Elect Director Robert S. Miller --- Withhold
+              1.5  Elect Director George Reyes --- Withhold
+              1.6  Elect Director David Roux --- For
+              1.7  Elect Director Daniel H. Schulman --- Withhold
+              1.8  Elect Director John W. Thompson --- For
+              1.9  Elect Director V. Paul Unruh --- For
+              2    Amend Omnibus Stock Plan                                           For      For                Mgmt
+              3    Ratify Auditors                                                    For      Against            Mgmt
+</TABLE>
+
+
+Mgmt Rec - Company Management Recommended Vote                            Page 2
+
+<PAGE>
+
+                               VOTE SUMMARY REPORT
+                           Oct 01, 2006 - Dec 31, 2006
+
+HLSFND-HARTFORD LARGE CAP GROWTH FUND
+
+<TABLE>
+<CAPTION>
+Mtg             Company/                                                                Mgmt     Vote    Record              Shares
+Date/Type       Ballot Issues                                               Security    Rec      Cast     Date     Prpnent    Voted
+- ---------       ---------------------------------------------------------  ---------  -------  -------  --------  --------  --------
+<S>             <C>                                                        <C>        <C>      <C>      <C>       <C>       <C>
+11/14/06 - A    AUTOMATIC DATA PROCESSING, INC. *ADP*                      053015103                    09/15/06              16,600
+                1    Elect Directors                                                  For      For                Mgmt
+                2    Approve Executive Incentive Bonus Plan                           For      For                Mgmt
+                3    Ratify Auditors                                                  For      For                Mgmt
+
+10/18/06 - A/S  COGNOS INC. *CSN*                                          19244C109                    09/06/06              17,600
+                1    Elect Directors                                                  For      Split              Mgmt
+                1.1  Elect Director Robert G. Ashe --- For
+                1.2  Elect Director John E. Caldwell --- Withhold
+                1.3  Elect Director Paul D. Damp --- For
+                1.4  Elect Director Pierre Y. Ducros --- For
+                1.5  Elect Director Robert W. Korthals --- For
+                1.6  Elect Director Janet R. Perna --- For
+                1.7  Elect Director John J. Rando --- For
+                1.8  Elect Director William V. Russell --- For
+                1.9  Elect Director James M. Tory --- For
+                1.10 Elect Director Renato Zambonini --- For
+                2    Approve Ernst & Young LLP as Auditors and Authorize              For      For                Mgmt
+                     Board to Fix Remuneration of Auditors
+                3    Amend Stock Option Plan                                          For      For                Mgmt
+                4    Amend Employee Stock Purchase Plan                               For      For                Mgmt
+
+11/01/06 - A    LINEAR TECHNOLOGY CORP. *LLTC*                             535678106                    09/05/06              36,750
+                1    Elect Directors                                                  For      Split              Mgmt
+                1.1  Elect Director Robert H. Swanson, Jr. --- For
+                1.2  Elect Director David S. Lee --- For
+                1.3  Elect Director Lothar Maier --- Withhold
+                1.4  Elect Director Richard M. Moley --- For
+                1.5  Elect Director Thomas S. Volpe --- Withhold
+                2    Ratify Auditors                                                  For      For                Mgmt
+</TABLE>
+
+
+Mgmt Rec - Company Management Recommended Vote                            Page 1
+
+<PAGE>
+
+                               VOTE SUMMARY REPORT
+                           Oct 01, 2006 - Dec 31, 2006
+
+HLSFND-HARTFORD LARGE CAP GROWTH FUND
+
+<TABLE>
+<CAPTION>
+Mtg           Company/                                                                  Mgmt     Vote    Record              Shares
+Date/Type     Ballot Issues                                                 Security    Rec      Cast     Date     Prpnent    Voted
+- ---------     -----------------------------------------------------------  ---------  -------  -------  --------  --------  --------
+<S>           <C>                                                          <C>        <C>      <C>      <C>       <C>       <C>
+11/14/06 - A  MICROSOFT CORP. *MSFT*                                       594918104                    09/08/06             107,300
+              1    Elect Director William H. Gates, III                               For      For                Mgmt
+              2    Elect Director Steven A. Ballmer                                   For      For                Mgmt
+              3    Elect Director James I. Cash, Jr., Ph.D.                           For      For                Mgmt
+              4    Elect Director Dina Dublon                                         For      For                Mgmt
+              5    Elect Director Raymond V. Gilmartin                                For      For                Mgmt
+              6    Elect Director David F. Marquardt                                  For      For                Mgmt
+              7    Elect Director Charles H. Noski                                    For      For                Mgmt
+              8    Elect Director Helmut Panke                                        For      For                Mgmt
+              9    Elect Director Jon A. Shirley                                      For      For                Mgmt
+              10   Ratify Auditors                                                    For      For                Mgmt
+              11   Cease Product Sales that Can Be Used to Violate                    Against  Against            ShrHoldr
+                   Human Rights
+              12   Amend EEO Statement to Not Reference Sexual                        Against  Against            ShrHoldr
+                   Orientation
+              13   Establish Shareholder Advisory Committee                           Against  Against            ShrHoldr
+
+10/05/06 - S  TEVA PHARMACEUTICAL INDUSTRIES                               881624209                    08/29/06              27,000
+                   MEETING FOR HOLDERS OF ADRS
+              1    TO APPROVE THE REMUNERATION OF MR. ELI                             For      For                Mgmt
+                   HURVITZ IN HIS CAPACITY AS CHAIRMAN OF THE
+                   BOARD OF TEVA, IN AN AMOUNT OF THE NIS
+                   EQUIVALENT OF $300,000 PER ANNUM PLUS VAT,
+                   TO BE ADJUSTED BY THE INCREASE OF THE
+                   ISRAELI CONSUMER PRICE INDEX, TOGETHER
+                   WITH AN OFFIC
+              2    TO APPROVE THE REMUNERATION OF DR. PHILLIP                         For      For                Mgmt
+                   FROST IN HIS CAPACITY AS VICE CHAIRMAN OF
+                   THE BOARD OF TEVA AND CHAIRMAN OF THE
+                   BOARD S SCIENCE AND TECHNOLOGY
+                   COMMITTEE, IN AN AMOUNT OF THE NIS
+                   EQUIVALENT OF $275,000 PER ANNUM PLUS VAT,
+                   TO BE ADJUSTED BY THE
+</TABLE>
+
+
+Mgmt Rec - Company Management Recommended Vote                            Page 2
+
+<PAGE>
+
+                               VOTE SUMMARY REPORT
+                           Jan 01, 2007 - Mar 31, 2007
+
+HLSFND-HARTFORD LARGE CAP GROWTH FUND
+
+<TABLE>
+<CAPTION>
+Mtg           Company/                                                                  Mgmt     Vote    Record              Shares
+Date/Type     Ballot Issues                                                 Security    Rec      Cast     Date     Prpnent    Voted
+- ---------     -----------------------------------------------------------  ---------  -------  -------  --------  --------  --------
+<S>           <C>                                                          <C>        <C>      <C>      <C>       <C>       <C>
+01/30/07 - A  BJ SERVICES COMPANY *BJS*                                    055482103                    12/08/06              17,550
+              1    Elect Directors                                                    For      For                Mgmt
+
+03/15/07 - S  CVS/CAREMARK CORP *CVS*                                      126650100                    01/19/07              20,150
+              1    Amend Articles/Increase Common Stock and Change                    For      For                Mgmt
+                   Company Name
+              2    Issue Shares in Connection with an Acquisition                     For      For                Mgmt
+              3    Adjourn Meeting                                                    For      For                Mgmt
+
+03/06/07 - A  NOVARTIS AG                                                  66987V109                    01/19/07              17,800
+                   MEETING FOR ADR HOLDERS
+              1    APPROVAL OF THE ANNUAL REPORT, THE                                 For      For                Mgmt
+                   FINANCIAL STATEMENTS OF NOVARTIS AG AND
+                   THE GROUP CONSOLIDATED FINANCIAL
+                   STATEMENTS FOR THE YEAR 2006.
+              2    APPROVAL OF THE ACTIVITIES OF THE BOARD OF                         For      For                Mgmt
+                   DIRECTORS
+              3    APPROPRIATION OF AVAILABLE EARNINGS OF                             For      For                Mgmt
+                   NOVARTIS AG AS PER BALANCE SHEET AND
+                   DECLARATION OF DIVIDEND
+              4    ELECTION TO THE BOARD OF DIRECTORS: RE-                            For      For                Mgmt
+                   ELECTION OF HANS-JOERG RUDLOFF FOR A
+                   THREE-YEAR TERM
+              5    ELECTION TO THE BOARD OF DIRECTORS: RE-                            For      For                Mgmt
+                   ELECTION OF DR. DANIEL VASELLA FOR A THREE-
+                   YEAR TERM
+              6    ELECTION TO THE BOARD OF DIRECTORS:                                For      For                Mgmt
+                   ELECTION OF NEW MEMBER MARJORIE M. YANG
+                   FOR A TERM OF OFFICE BEGINNING ON 1
+                   JANUARY 2008 AND ENDING ON THE DAY OF THE
+                   AGM IN 2010
+              7    Ratify Auditors                                                    For      For                Mgmt
+              8    VOTES REGARDING ADDITIONAL AND/OR                                  For      Abstain            Mgmt
+</TABLE>
+
+
+Mgmt Rec - Company Management Recommended Vote                            Page 1
+
+<PAGE>
+
+                               VOTE SUMMARY REPORT
+                           Jan 01, 2007 - Mar 31, 2007
+
+HLSFND-HARTFORD LARGE CAP GROWTH FUND
+
+<TABLE>
+<CAPTION>
+Mtg           Company/                                                                  Mgmt     Vote    Record              Shares
+Date/Type     Ballot Issues                                                 Security    Rec      Cast     Date     Prpnent    Voted
+- ---------     -----------------------------------------------------------  ---------  -------  -------  --------  --------  --------
+<S>           <C>                                                          <C>        <C>      <C>      <C>       <C>       <C>
+                   COUNTER-PROPOSALS AT THE AGM OF NOVARTIS
+                   AG IF YOU GIVE NO INSTRUCTIONS ON AGENDA
+                   ITEM 6, YOUR VOTES WILL BE CAST IN
+                   ACCORDANCE WITH THE PROPOSALS OF THE
+                   BOARD OF DIRECTORS. MARKING THE BOX FOR IS
+                   A VOTE FOR THE PROPOS
+
+02/27/07 - A  TD AMERITRADE HOLDINGS CORP. *AMTD*                          87236Y108                    01/03/07              47,750
+              1    Elect Directors                                                    For      For                Mgmt
+              2    Ratify Auditors                                                    For      For                Mgmt
+              3    Approve Non-Employee Director Stock Option Plan                    For      For                Mgmt
+              4    Approve Executive Incentive Bonus Plan                             For      For                Mgmt
+              5    Other Business                                                     For      Against            Mgmt
+
+01/10/07 - A  WALGREEN CO. *WAG*                                           931422109                    11/13/06              36,550
+              1    Elect Directors                                                    For      Split              Mgmt
+              1.1  Elect Director David W. Bernauer --- For
+              1.2  Elect Director William C. Foote --- Withhold
+              1.3  Elect Director James J. Howard --- For
+              1.4  Elect Director Alan G. McNally --- For
+              1.5  Elect Director Cordell Reed --- For
+              1.6  Elect Director Jeffrey A. Rein --- For
+              1.7  Elect Director Nancy M. Schlichting --- For
+              1.8  Elect Director David Y. Schwartz --- For
+              1.9  Elect Director James A. Skinner --- For
+              1.10 Elect Director Marilou M. von Ferstel --- For
+              1.11 Elect Director Charles R. Walgreen, III --- For
+              2    Ratify Auditors                                                    For      For                Mgmt
+              3    Amend Omnibus Stock Plan                                           For      For                Mgmt
+</TABLE>
+
+
+Mgmt Rec - Company Management Recommended Vote                            Page 2
+<PAGE>
+
+ITEM 1: PROXY VOTING RECORD
+
+Hartford LargeCap Growth HLS Fund
+
+This portion sub-advised by Hartford Investment Management Company
+
+ABBOTT LABORATORIES INC
+
+<TABLE>
+<S>           <C>                                        <C>                     <C>
+TICKER        SECURITY ID:                               MEETING DATE            MEETING STATUS
+ABT           CUSIP9 002824100                           04/27/2007              Voted
+MEETING TYPE  COUNTRY OF TRADE
+Annual        United States
+</TABLE>
+
+<TABLE>
+<CAPTION>
+ISSUE NO.     DESCRIPTION                                PROPONENT    MGMT REC   VOTE CAST   FOR/AGNST MGMT
+- ---------     -----------                                ---------    --------   ---------   --------------
+<S>           <C>                                        <C>          <C>        <C>         <C>
+1.1           Elect Roxanne Austin                       Mgmt         For        For         For
+1.2           Elect William Daley                        Mgmt         For        For         For
+1.3           Elect W. James Farrell                     Mgmt         For        For         For
+1.4           Elect H. Laurance Fuller                   Mgmt         For        For         For
+1.5           Elect Richard Gonzalez                     Mgmt         For        For         For
+1.6           Elect David Owen                           Mgmt         For        For         For
+1.7           Elect Boone Powell, Jr.                    Mgmt         For        For         For
+1.8           Elect W. Ann Reynolds                      Mgmt         For        For         For
+1.9           Elect Roy Roberts                          Mgmt         For        For         For
+1.10          Elect Samuel Scott III                     Mgmt         For        For         For
+1.11          Elect William Smithburg                    Mgmt         For        For         For
+1.12          Elect Glenn Tilton                         Mgmt         For        For         For
+1.13          Elect Miles White                          Mgmt         For        For         For
+2             RATIFICATION OF DELOITTE & TOUCHE LLP      Mgmt         For        For         For
+              AS AUDITORS
+3             SHAREHOLDER PROPOSAL - ADVISORY VOTE       ShrHoldr     Against    For         Against
+4             SHAREHOLDER PROPOSAL - THE ROLES OF        ShrHoldr     Against    For         Against
+              CHAIR AND CEO
+</TABLE>
