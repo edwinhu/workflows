@@ -167,6 +167,16 @@ func (d *cikSeries) indexCorpusNames() {
 // path; period is the filing's, empty when unknown, and a decl with no
 // declaration date is read as contemporaneous the way that path reads it.
 //
+// ABANDONMENT IS THE OTHER HALF OF CONTEMPORANEITY. A matched name whose
+// declaration precedes the period is still wrong when the SAME series, under
+// the same registrant, was redeclared under a DIFFERENT name at or before that
+// period: the registrant's own statement that the name was superseded. SYNTAX
+// ETF TRUST's 2023 wrapped banner `EQUITY` matched S000008805 of CIK 88525 off
+// its 20060630 declaration, a series renamed `Large Cap Core` in 2010 and
+// `Guggenheim StylePlus - Large Core Fund` in 2013; S000008807 is the same
+// shape for `GLOBAL`. The guard above refuses a name adopted too LATE, this one
+// a name dropped too EARLY, and neither widens anything.
+//
 // THE FILER'S OWN BRAND INFIX REFUSES. Lazard Retirement Series Inc heads all
 // 30 sections of its 2017 filing with the RETAIL spelling its sibling The
 // Lazard Funds Inc registered, and its own sleeve is that name plus one token
@@ -190,10 +200,36 @@ func (d *cikSeries) crossCIK(cik, heading, period, registrantKey string) *Series
 	if len(period) == 8 && len(e.decl.DeclDate) == 8 && e.decl.DeclDate > period {
 		return nil
 	}
+	if d.abandonedByPeriod(e, key, period) {
+		return nil
+	}
 	if d.ownBrandInfix(cik, key, registrantKey) {
 		return nil
 	}
 	return e.decl
+}
+
+// abandonedByPeriod reports whether the matched decl's name had been superseded
+// by the filing's period: the SAME series id, under the SAME registrant, carries
+// another dictionary row declared strictly after the matched one and at or
+// before period, under a different normalised name. A missing or malformed date
+// on either side is read as contemporaneous, the way the guard above reads it.
+func (d *cikSeries) abandonedByPeriod(e *corpusName, key, period string) bool {
+	if e == nil || e.decl == nil || len(period) != 8 || len(e.decl.DeclDate) != 8 {
+		return false
+	}
+	for _, x := range d.byCIK[e.cik] {
+		if x.SeriesID != e.decl.SeriesID || len(x.DeclDate) != 8 {
+			continue
+		}
+		if x.DeclDate <= e.decl.DeclDate || x.DeclDate > period {
+			continue
+		}
+		if normalizeSeriesName(x.Name) != key {
+			return true
+		}
+	}
+	return false
 }
 
 // typeWordRenamed reports whether ONE series id of this registrant is declared,
