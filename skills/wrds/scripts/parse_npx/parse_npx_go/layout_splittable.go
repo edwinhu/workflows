@@ -552,7 +552,11 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 		spillSpans  []spSpan
 		lastBare    string
 		pageBare    string
-		fundTail    bool
+		// pageRuled reports whether a dashed rule has already been read on this
+		// page. A banner is printed ABOVE the page's stacked header, so any lone
+		// text run first seen AFTER a rule is body, not banner position.
+		pageRuled bool
+		fundTail  bool
 	)
 	flush := func() {
 		spill := spSpillBody(header, pendMain, spans)
@@ -592,6 +596,7 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 			flush()
 			fundTail = false
 			pageBare = ""
+			pageRuled = false
 			continue
 		}
 		if spans != nil {
@@ -616,9 +621,23 @@ func spInstitutionalPreRows(raw []byte, seriesIdx *spIndex, resolved map[string]
 				// that reprints the header with NO banner text above it is a
 				// continuation of the open fund, not a fund the template never
 				// named, so the open fund is carried rather than cleared.
-				ctx.bare = spBannerFund(banner, seriesIdx, resolved)
-				ctx.bareFund = ctx.bare != ""
+				//
+				// The one exception is a candidate that resolves to NOTHING and
+				// was first printed after a rule this page already carried: the
+				// spill panel's rule re-reads the page's first lone run, and on
+				// a continuation page that run can be the middle line of a
+				// WRAPPED ballot description, printed alone because the issuer
+				// name above it fit on one line (`Named Executive`). That is
+				// page furniture, not a section the template opened -- a real
+				// banner prints above the page's first header -- so it must not
+				// clear the fund the banner that opened the section set.
+				if fund := spBannerFund(banner, seriesIdx, resolved); fund != "" ||
+					!pageRuled || !ctx.bareFund {
+					ctx.bare = fund
+					ctx.bareFund = fund != ""
+				}
 			}
+			pageRuled = true
 			switch {
 			case spHasVote(l):
 				if joined := spJoinSpill(pendLabels, l); joined != nil {
