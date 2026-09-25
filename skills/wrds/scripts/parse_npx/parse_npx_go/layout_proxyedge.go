@@ -247,10 +247,25 @@ func peWrapLine(s string) bool {
 	return len([]rune(s)) >= peWrapWidth
 }
 
-// peWrapContinues reports that next carries on the sentence prev broke off: prev
-// ended on a word rather than on a sentence's close, and next opens on a
-// lower-case word rather than on a name. The last line of a wrapped paragraph is
-// short by construction, so it is the only one this admits under peWrapWidth.
+// peWrapContinues reports that next carries on the sentence prev broke off:
+// prev ended on a word rather than on a sentence's close, and next opens where a
+// name does not. A lower-case opener says that outright -- the 2012 filing's
+// proposals are mixed-case prose and every continuation of them opens on a
+// lower-case word. So does an opener that is not a letter at all: a wrap that
+// lands inside a quoted or parenthesised phrase prints a line beginning `"TRUST
+// DEED")`, and this vendor's fund and issuer banners are names, which never open
+// on punctuation.
+//
+// An UPPER-CASE opener is the one shape a banner shares, because some templates
+// print a long proposal's text ALL-CAPS or Capitalised (Guinness Atkinson's
+// foreign-market ballots from 2012 through 2016 -- Singapore, Hong Kong and
+// Russian resolutions -- print it ALL-CAPS, and the wrap lands on `ISSUED),`).
+// There the shape of the line itself has to part the two: a banner is a NAME,
+// printed short and carrying no clause punctuation, while a line the vendor's
+// column ended rather than its own text is long and carries the marks of the
+// sentence it is a piece of. The last line of a wrapped paragraph is short by
+// construction, so a lower-case or punctuation opener is the only one this
+// admits under peWrapWidth.
 func peWrapContinues(prev, next string) bool {
 	if prev == "" || next == "" {
 		return false
@@ -258,10 +273,23 @@ func peWrapContinues(prev, next string) bool {
 	if c := prev[len(prev)-1]; peWordBreak(c) && c != ',' && c != ';' && c != '-' && c != '\'' {
 		return false
 	}
-	if c := next[0]; c < 'a' || c > 'z' {
-		return false
+	switch c := next[0]; {
+	case c >= 'a' && c <= 'z':
+		return true
+	case c < 'A' || c > 'Z':
+		return true
+	default:
+		return peWrapLine(next) && peWrapClause(next)
 	}
-	return true
+}
+
+// peWrapClause reports the punctuation a clause of a proposal carries and a
+// name printed as a banner does not. The vendor's fund and issuer banners are
+// names -- `Guinness Atkinson Asia Pacific Dividend Builder Fund`, `CAPITALAND
+// MALL TRUST, SINGAPORE` -- and what little punctuation they carry is a comma
+// or a period; a resolution's text enumerates, quotes and parenthesises.
+func peWrapClause(s string) bool {
+	return strings.ContainsAny(s, ";:()\"")
 }
 
 // peCellAt returns the whole text of the cell beginning at line i and the index
