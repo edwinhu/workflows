@@ -2187,11 +2187,26 @@ func issAKAParenthetical(name string) (string, bool) {
 		return "", false
 	}
 	inner := strings.TrimSpace(s[i+1 : len(s)-1])
-	for _, marker := range []string{"a/k/a ", "aka ", "also known as "} {
-		if len(inner) > len(marker) && strings.EqualFold(inner[:len(marker)], marker) {
-			if rest := strings.TrimSpace(inner[len(marker):]); rest != "" {
-				return rest, true
-			}
+	for _, marker := range []string{"a/k/a", "aka", "also known as"} {
+		if len(inner) <= len(marker) || !strings.EqualFold(inner[:len(marker)], marker) {
+			continue
+		}
+		rest := inner[len(marker):]
+		// The marker is a whole token, not a prefix of a longer word: a letter
+		// or a digit right after it means this is `AKAMAI ...`, not an alias.
+		// What separates the marker from the name is whatever punctuation the
+		// filing prints -- a plain space in the 2004 banners, `a/k/a,` (comma
+		// before the space) in the 2014-era ones, sometimes a trailing slash.
+		var first rune
+		for _, r := range rest {
+			first = r
+			break
+		}
+		if unicode.IsLetter(first) || unicode.IsDigit(first) {
+			continue
+		}
+		if rest := strings.TrimSpace(strings.TrimLeft(rest, " \t ,.:;/-")); rest != "" {
+			return rest, true
 		}
 	}
 	return "", false

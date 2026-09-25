@@ -1,0 +1,250 @@
+<SEC-DOCUMENT>0001104659-14-063953.txt : 20140829
+<SEC-HEADER>0001104659-14-063953.hdr.sgml : 20140829
+<ACCEPTANCE-DATETIME>20140829130402
+ACCESSION NUMBER:		0001104659-14-063953
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20140630
+FILED AS OF DATE:		20140829
+DATE AS OF CHANGE:		20140829
+EFFECTIVENESS DATE:		20140829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			DELAWARE POOLED TRUST
+		CENTRAL INDEX KEY:			0000875352
+		IRS NUMBER:				232651511
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-06322
+		FILM NUMBER:		141074450
+
+	BUSINESS ADDRESS:	
+		STREET 1:		ONE COMMERCE SQUARE
+		STREET 2:		2005 MARKET STREET
+		CITY:			PHILADELPHIA
+		STATE:			PA
+		ZIP:			19103
+		BUSINESS PHONE:		18005231918
+
+	MAIL ADDRESS:	
+		STREET 1:		ONE COMMERCE SQUARE
+		STREET 2:		2005 MARKET STREET
+		CITY:			PHILADELPHIA
+		STATE:			PA
+		ZIP:			19103
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	DELAWARE POOLED TRUST INC
+		DATE OF NAME CHANGE:	19920717
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003928
+<SERIES-NAME>THE SELECT 20 PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011032
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DPCEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003929
+<SERIES-NAME>THE LABOR SELECT INTERNATIONAL EQUITY PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011033
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DELPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003930
+<SERIES-NAME>THE LARGE-CAP GROWTH EQUITY PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011034
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DPLGX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003931
+<SERIES-NAME>THE LARGE-CAP VALUE EQUITY PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011035
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DPDEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003933
+<SERIES-NAME>THE REAL ESTATE INVESTMENT TRUST PORTFOLIO II
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011037
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DPRTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003935
+<SERIES-NAME>The Focus Smid-Cap Growth Equity Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011039
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DCGTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003937
+<SERIES-NAME>DELAWARE REIT FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011041
+<CLASS-CONTRACT-NAME>CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>DPREX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011042
+<CLASS-CONTRACT-NAME>CLASS B
+<CLASS-CONTRACT-TICKER-SYMBOL>DPRBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011043
+<CLASS-CONTRACT-NAME>CLASS C
+<CLASS-CONTRACT-TICKER-SYMBOL>DPRCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011044
+<CLASS-CONTRACT-NAME>CLASS R
+<CLASS-CONTRACT-TICKER-SYMBOL>DPRRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011045
+<CLASS-CONTRACT-NAME>INSTITUTIONAL CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DPRSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011046
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DPRIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003938
+<SERIES-NAME>THE CORE FOCUS FIXED INCOME PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011047
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DCFIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003939
+<SERIES-NAME>THE CORE PLUS FIXED INCOME PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011048
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DCPFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003940
+<SERIES-NAME>THE EMERGING MARKETS PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011049
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DPEMX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003942
+<SERIES-NAME>THE HIGH-YIELD BOND PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011051
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DPHYX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003944
+<SERIES-NAME>THE INTERNATIONAL EQUITY PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011053
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DPIEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000025841
+<SERIES-NAME>The Emerging Markets Portfolio II
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000077274
+<CLASS-CONTRACT-NAME>DPT CLASS
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>a14-17222_14npx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+
+
+<html>
+<head>
+
+  </head>
+<body lang="EN-US">
+<div style="font-family:Times New Roman;">
+<div style="border-bottom:solid windowtext 1.0pt;border-left:none;border-right:none;border-top:solid windowtext 3.0pt;padding:1.0pt 0in 1.0pt 0in;">
+<p style="border:none;margin:0in 0in .0001pt;padding:0in;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+</div>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">========== DPT - The Real Estate Investment Trust Portfolio (a/k/a,&#160; ===========</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">==========&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Delaware REIT Fund)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; ===========</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">AMERICAN CAMPUS COMMUNITIES, INC.&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker:&#160;&#160;&#160;&#160;&#160;&#160; ACC&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Security ID:&#160; 024835100&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Date: MAY 01, 2014&#160;&#160; Meeting Type: Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Record Date:&#160; MAR 10, 2014&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">#&#160;&#160;&#160;&#160; Proposal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgt Rec&#160;&#160; Vote Cast&#160;&#160;&#160; Sponsor&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1a&#160;&#160;&#160; Elect Director William C. Bayless Jr.&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1b&#160;&#160;&#160; Elect Director R.D. Burck&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1c&#160;&#160;&#160; Elect Director G. Steven Dawson&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1d&#160;&#160;&#160; Elect Director Cydney C. Donnell&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1e&#160;&#160;&#160; Elect Director Dennis G. Lopez&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1f&#160;&#160;&#160; Elect Director Edward Lowenthal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1g&#160;&#160;&#160; Elect Director Oliver Luck&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1h&#160;&#160;&#160; Elect Director C. Patrick Oles, Jr.&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1i&#160;&#160; &#160;Elect Director Winston W. Walker&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">2&#160;&#160;&#160;&#160; Ratify Auditors&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">3&#160;&#160;&#160;&#160; Advisory Vote to Ratify Named&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160; Executive Officers' Compensation&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+</body>
+</html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
