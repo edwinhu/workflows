@@ -3818,6 +3818,24 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 		if alt != "" {
 			g := append(append([]string{}, f[:len(f)-1]...), alt)
 			if _, d := issResolveFund(ix, strings.Join(g, " ")); d != nil {
+				// The trailing character may instead be a footnote marker
+				// welded onto a fund name that is itself declared:
+				// `ARDEN ALTERNATIVE STRATEGIES FUND II 1` (S000040927,
+				// Arden Investment Series Trust 2015) becomes `... FUND II I`
+				// under the rewrite, whose trailing `II I` then reads as a
+				// sleeve of the SIBLING `Arden Alternative Strategies Fund`
+				// (S000037639). A genuine series letter leaves a stem that
+				// names no series of its own -- `SBL Fund - Series` is not a
+				// declared name -- so a stem that DOES answer, and answers a
+				// different series than the rewrite, is the evidence that the
+				// character was never a series letter. The stem's own answer
+				// wins; the rewrite only stands when the stem is silent or
+				// agrees.
+				if len(f) > 1 {
+					if _, stem := issResolveFund(ix, strings.Join(f[:len(f)-1], " ")); stem != nil && stem.SeriesID != d.SeriesID {
+						return banner, stem
+					}
+				}
 				return banner, d
 			}
 		}

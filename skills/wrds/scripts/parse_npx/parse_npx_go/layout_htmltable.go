@@ -810,11 +810,12 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 						// section's series only while the table names ONE fund;
 						// a table naming several refuses.
 						r.FundName = v
+						r.FundFromAccountCell = true
 						if fundCells == nil {
 							fundCells = map[string]bool{}
 						}
 						fundCells[v] = true
-						if id := icrResolveFundShared(seriesIx, v); id != "" {
+						if id := htmlFundCellSeries(seriesIx, v); id != "" {
 							r.SeriesID = id
 						} else if len(fundCells) > 1 && !htmlAccountCodeFundCell(v, accountNames, outerSection && curSeries != "") {
 							r.SeriesID = ""
@@ -5863,6 +5864,56 @@ func htmlHasDigit(s string) bool {
 // column, honouring the one-cell item offset htmlDataRow applies.
 func htmlFundCell(cells []string, mapping map[string]int, headerArity int) string {
 	return htmlMappedCell(cells, mapping, headerArity, htmlFieldFund)
+}
+
+// htmlFundCellSeries resolves a row's own fund-name cell, refusing an id that
+// belongs to NO series of the filing's own registrant.
+//
+// A per-row account-name cell is the filing agent's operating label for a
+// custodial account, printed with no section masthead behind it, and the filing
+// makes no statement anywhere that the account belongs to another registrant.
+// The sibling rung at the tail of the chain (cikSeries.crossCIK) defends itself
+// with the QUALITY of the name match -- exact, corpus-unique, contemporaneous --
+// which is evidence about which series spells a name and no evidence at all that
+// this filer reports for it. ARDEN INVESTMENT SERIES TRUST's 2015 report (CIK
+// 1547625) labels 443 rows `Aurora Horizons Fund`, a name this registrant never
+// declares and which the corpus spells once, under the unrelated CIK 1141819
+// (S000040227): a homonym, stamped on a third of the filing. Where a registrant
+// really does report for a sibling's funds it says so in a section masthead --
+// Claymore Exchange-Traded Fund Trust 2's `Fund Name :` sections, family NS9 --
+// and that route is untouched here.
+func htmlFundCellSeries(ix *issSeriesIndex, cell string) string {
+	id := icrResolveFundShared(ix, cell)
+	if id == "" || issOwnRegistrantSeries(ix, id) {
+		return id
+	}
+	return ""
+}
+
+// issOwnRegistrantSeries reports whether the id is one the filing's own
+// registrant declares -- in this filing's header, in the header-only index, or
+// in the corpus dictionary's rows for its own CIK. An index with no CIK behind
+// it cannot tell, and answers yes rather than refusing every id.
+func issOwnRegistrantSeries(ix *issSeriesIndex, id string) bool {
+	if ix == nil || id == "" || ix.cik == "" {
+		return true
+	}
+	for _, d := range ix.decls {
+		if d.SeriesID == id {
+			return true
+		}
+	}
+	if ix.hdrOnly != nil && issOwnRegistrantSeries(ix.hdrOnly, id) {
+		return true
+	}
+	if d := issIndexDict(ix); d != nil {
+		for _, x := range d.byCIK[ix.cik] {
+			if x.SeriesID == id {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // htmlAdoptRowFundColumn claims an UNLABELLED leading column as the fund column

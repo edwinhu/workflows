@@ -1,0 +1,331 @@
+<SEC-DOCUMENT>0000930413-15-003531.txt : 20150827
+<SEC-HEADER>0000930413-15-003531.hdr.sgml : 20150827
+<ACCEPTANCE-DATETIME>20150827150501
+ACCESSION NUMBER:		0000930413-15-003531
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20150630
+FILED AS OF DATE:		20150827
+DATE AS OF CHANGE:		20150827
+EFFECTIVENESS DATE:		20150827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Arden Investment Series Trust
+		CENTRAL INDEX KEY:			0001547625
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22701
+		FILM NUMBER:		151078576
+
+	BUSINESS ADDRESS:	
+		STREET 1:		375 PARK AVENUE, 32 FLOOR
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10152
+		BUSINESS PHONE:		(212) 751-5252
+
+	MAIL ADDRESS:	
+		STREET 1:		375 PARK AVENUE, 32 FLOOR
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10152
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001547625
+<SERIES-ID>S000037639
+<SERIES-NAME>Arden Alternative Strategies Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000116093
+<CLASS-CONTRACT-NAME>Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ARDNX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001547625
+<SERIES-ID>S000040927
+<SERIES-NAME>Arden Alternative Strategies II
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000126940
+<CLASS-CONTRACT-NAME>Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>IARDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000130366
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ARETX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000130367
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CARDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000130368
+<CLASS-CONTRACT-NAME>Class R Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>RARDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000130369
+<CLASS-CONTRACT-NAME>Advisor Class Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ARDWX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>c82196_npx.htm
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+<TABLE CELLPADDING="0" CELLSPACING="0" STYLE="border-collapse: collapse; width: 100%; font: 6pt Arial, Helvetica, Sans-Serif">
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom; border-bottom: Black 1px solid">Custodian Account Name</TD><TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom; border-bottom: Black 1px solid">Company Name</TD><TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom; border-bottom: Black 1px solid">Ticker</TD><TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom; border-bottom: Black 1px solid">Primary CUSIP</TD><TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom; border-bottom: Black 1px solid">Meeting Type</TD><TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom; border-bottom: Black 1px solid">Meeting Date</TD><TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom; border-bottom: Black 1px solid">Record Date</TD><TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom; border-bottom: Black 1px solid">Proposal Number</TD><TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom; border-bottom: Black 1px solid">Proposal Text</TD><TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom; border-bottom: Black 1px solid">Management Recommendation</TD><TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom; border-bottom: Black 1px solid">Vote Instruction</TD><TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom; border-bottom: Black 1px solid">Voted</TD><TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; text-align: left; vertical-align: bottom; border-bottom: Black 1px solid">Vote Against Management</TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: rgb(229,255,255)">
+    <TD STYLE="width: 12%; text-align: left; vertical-align: top">Aurora Horizons Fund</TD><TD STYLE="width: 1%; text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="width: 12%; text-align: left; vertical-align: top">Tyco International Ltd.</TD><TD STYLE="width: 1%; text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="width: 4%; text-align: left; vertical-align: top">TYC</TD><TD STYLE="width: 1%; text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="width: 5%; text-align: left; vertical-align: top">H89128104</TD><TD STYLE="width: 1%; text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="width: 4%; text-align: left; vertical-align: top">Special</TD><TD STYLE="width: 1%; text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="width: 6%; text-align: left; vertical-align: top">09-Sep-14</TD><TD STYLE="width: 1%; text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="width: 6%; text-align: left; vertical-align: top">25-Jul-14</TD><TD STYLE="width: 1%; text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="width: 4%; text-align: left; vertical-align: top">1</TD><TD STYLE="width: 1%; text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="width: 13%; text-align: left; vertical-align: top">Change Jurisdiction of Incorporation [from Switzerland to Ireland]</TD><TD STYLE="width: 1%; text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="width: 6%; text-align: left; vertical-align: top">For</TD><TD STYLE="width: 1%; text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="width: 6%; text-align: left; vertical-align: top">For</TD><TD STYLE="width: 1%; text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="width: 4%; text-align: left; vertical-align: top">Yes</TD><TD STYLE="width: 1%; text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="width: 6%; text-align: left; vertical-align: top">No</TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: White">
+    <TD STYLE="text-align: left; vertical-align: top">Aurora Horizons Fund</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Tyco International Ltd.</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">TYC</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">H89128104</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Special</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">09-Sep-14</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">25-Jul-14</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">2</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Approve Creation of Distributable Reserves</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">For</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">For</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Yes</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">No</TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: rgb(229,255,255)">
+    <TD STYLE="text-align: left; vertical-align: top">K2</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Tyco International Ltd.</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">TYC</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">H89128104</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Special</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">09-Sep-14</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">25-Jul-14</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">1</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Change Jurisdiction of Incorporation [from Switzerland to Ireland]</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">For</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">For</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Yes</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">No</TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: White">
+    <TD STYLE="text-align: left; vertical-align: top">K2</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Tyco International Ltd.</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">TYC</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">H89128104</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Special</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">09-Sep-14</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">25-Jul-14</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">2</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Approve Creation of Distributable Reserves</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">For</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">For</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Yes</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">No</TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: rgb(229,255,255)">
+    <TD STYLE="text-align: left; vertical-align: top">Aurora Horizons Fund</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">B/E Aerospace, Inc.</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">BEAV</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">073302101</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Annual</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">10-Sep-14</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">01-Aug-14</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">1.1</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Elect Director Amin J. Khoury</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">For</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">For</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Yes</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">No</TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: White">
+    <TD STYLE="text-align: left; vertical-align: top">Aurora Horizons Fund</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">B/E Aerospace, Inc.</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">BEAV</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">073302101</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Annual</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">10-Sep-14</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">01-Aug-14</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">1.2</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Elect Director Jonathan M. Schofield</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">For</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">For</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">Yes</TD><TD STYLE="text-align: left; vertical-align: top">&nbsp;</TD>
+    <TD STYLE="text-align: left; vertical-align: top">No</TD></TR>
+</TABLE>
+<TABLE CELLPADDING="0" CELLSPACING="0" STYLE="border-collapse: collapse; width: 100%; font: 6pt Arial, Helvetica, Sans-Serif">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 12%; border-bottom: black 1px solid; text-align: left; vertical-align: bottom"><B>Custodian Account Name</B></td>
+    <TD STYLE="width: 1%; padding-bottom: 1pt; text-align: left; vertical-align: bottom"><B>&nbsp;</B></td>
+    <TD STYLE="width: 12%; border-bottom: black 1px solid; text-align: left; vertical-align: bottom"><B>Company Name</B></td>
+    <TD STYLE="width: 1%; padding-bottom: 1pt; text-align: left; vertical-align: bottom"><B>&nbsp;</B></td>
+    <TD STYLE="width: 4%; border-bottom: black 1px solid; text-align: left; vertical-align: bottom"><B>Ticker</B></td>
+    <TD STYLE="width: 1%; padding-bottom: 1pt; text-align: left; vertical-align: bottom"><B>&nbsp;</B></td>
+    <TD STYLE="width: 5%; border-bottom: black 1px solid; text-align: left; vertical-align: bottom"><B>Primary CUSIP</B></td>
+    <TD STYLE="width: 1%; padding-bottom: 1pt; text-align: left; vertical-align: bottom"><B>&nbsp;</B></td>
+    <TD STYLE="width: 4%; border-bottom: black 1px solid; text-align: left; vertical-align: bottom"><B>Meeting Type</B></td>
+    <TD STYLE="width: 1%; padding-bottom: 1pt; text-align: left; vertical-align: bottom"><B>&nbsp;</B></td>
+    <TD STYLE="width: 6%; border-bottom: black 1px solid; text-align: left; vertical-align: bottom; padding-left: 2pt"><B>Meeting Date</B></td>
+    <TD STYLE="width: 1%; padding-bottom: 1pt; text-align: left; vertical-align: bottom"><B>&nbsp;</B></td>
+    <TD STYLE="width: 6%; border-bottom: black 1px solid; text-align: left; vertical-align: bottom; padding-left: 2pt"><B>Record Date</B></td>
+    <TD STYLE="width: 1%; padding-bottom: 1pt; text-align: left; vertical-align: bottom"><B>&nbsp;</B></td>
+    <TD STYLE="width: 4%; border-bottom: black 1px solid; text-align: left; vertical-align: bottom"><B>Proposal Number</B></td>
+    <TD STYLE="width: 1%; padding-bottom: 1pt; text-align: left; vertical-align: bottom"><B>&nbsp;</B></td>
+    <TD STYLE="width: 13%; border-bottom: black 1px solid; text-align: left; vertical-align: bottom"><B>Proposal Text</B></td>
+    <TD STYLE="width: 1%; padding-bottom: 1pt; text-align: left; vertical-align: bottom"><B>&nbsp;</B></td>
+    <TD STYLE="width: 6%; border-bottom: black 1px solid; text-align: left; vertical-align: bottom"><B>Management Recommendation</B></td>
+    <TD STYLE="width: 1%; padding-bottom: 1pt; text-align: left; vertical-align: bottom"><B>&nbsp;</B></td>
+    <TD STYLE="width: 6%; border-bottom: black 1px solid; text-align: left; vertical-align: bottom"><B>Vote Instruction</B></td>
+    <TD STYLE="width: 1%; padding-bottom: 1pt; text-align: left; vertical-align: bottom"><B>&nbsp;</B></td>
+    <TD STYLE="width: 4%; border-bottom: black 1px solid; text-align: left; vertical-align: bottom"><B>Voted</B></td>
+    <TD STYLE="width: 1%; padding-bottom: 1pt; text-align: left; vertical-align: bottom"><B>&nbsp;</B></td>
+    <TD STYLE="width: 6%; border-bottom: black 1px solid; text-align: left; vertical-align: bottom"><B>Vote Against Management</B></td></tr>
+<TR STYLE="vertical-align: top; background-color: rgb(229,255,255)">
+    <TD>ARDEN ALTERNATIVE STRATEGIES FUND II 1</td>
+    <TD>&nbsp;</td>
+    <TD>Liberty Global plc</td>
+    <TD>&nbsp;</td>
+    <TD>LBTYK</td>
+    <TD>&nbsp;</td>
+    <TD>530555101</td>
+    <TD>&nbsp;</td>
+    <TD>Special</td>
+    <TD>&nbsp;</td>
+    <TD>&nbsp;24-Feb-15</td>
+    <TD>&nbsp;</td>
+    <TD>&nbsp;26-Dec-14</td>
+    <TD>&nbsp;</td>
+    <TD>1</td>
+    <TD>&nbsp;</td>
+    <TD>Adopt New Articles of Association</td>
+    <TD>&nbsp;</td>
+    <TD>For</td>
+    <TD>&nbsp;</td>
+    <TD>For</td>
+    <TD>&nbsp;</td>
+    <TD>Yes</td>
+    <TD>&nbsp;</td>
+    <TD>No</td></tr>
+<TR STYLE="vertical-align: top; background-color: White">
+    <TD>ARDEN ALTERNATIVE STRATEGIES FUND II 1</td>
+    <TD>&nbsp;</td>
+    <TD>Liberty Global plc</td>
+    <TD>&nbsp;</td>
+    <TD>LBTYK</td>
+    <TD>&nbsp;</td>
+    <TD>530555101</td>
+    <TD>&nbsp;</td>
+    <TD>Special</td>
+    <TD>&nbsp;</td>
+    <TD>&nbsp;24-Feb-15</td>
+    <TD>&nbsp;</td>
+    <TD>&nbsp;26-Dec-14</td>
+    <TD>&nbsp;</td>
+    <TD>2</td>
+    <TD>&nbsp;</td>
+    <TD>Approve Management and Allocation Policies Relating to the Liberty Global Group and LiLAC Group</td>
+    <TD>&nbsp;</td>
+    <TD>For</td>
+    <TD>&nbsp;</td>
+    <TD>For</td>
+    <TD>&nbsp;</td>
+    <TD>Yes</td>
+    <TD>&nbsp;</td>
+    <TD>No</td></tr>
+<TR STYLE="vertical-align: top; background-color: rgb(229,255,255)">
+    <TD>ARDEN ALTERNATIVE STRATEGIES FUND II 1</td>
+    <TD>&nbsp;</td>
+    <TD>Liberty Global plc</td>
+    <TD>&nbsp;</td>
+    <TD>LBTYK</td>
+    <TD>&nbsp;</td>
+    <TD>530555101</td>
+    <TD>&nbsp;</td>
+    <TD>Special</td>
+    <TD>&nbsp;</td>
+    <TD>&nbsp;24-Feb-15</td>
+    <TD>&nbsp;</td>
+    <TD>&nbsp;26-Dec-14</td>
+    <TD>&nbsp;</td>
+    <TD>3</td>
+    <TD>&nbsp;</td>
+    <TD>Approve Share Consolidation</td>
+    <TD>&nbsp;</td>
+    <TD>For</td>
+    <TD>&nbsp;</td>
+    <TD>For</td>
+    <TD>&nbsp;</td>
+    <TD>Yes</td>
+    <TD>&nbsp;</td>
+    <TD>No</td></tr>
+<TR STYLE="vertical-align: top; background-color: White">
+    <TD>ARDEN ALTERNATIVE STRATEGIES FUND II 1</td>
+    <TD>&nbsp;</td>
+    <TD>Liberty Global plc</td>
+    <TD>&nbsp;</td>
+    <TD>LBTYK</td>
+    <TD>&nbsp;</td>
+    <TD>530555101</td>
+    <TD>&nbsp;</td>
+    <TD>Special</td>
+    <TD>&nbsp;</td>
+    <TD>&nbsp;24-Feb-15</td>
+    <TD>&nbsp;</td>
+    <TD>&nbsp;26-Dec-14</td>
+    <TD>&nbsp;</td>
+    <TD>4</td>
+    <TD>&nbsp;</td>
+    <TD>Amend Articles of Association with Respect to Voting on the Variation of Rights Attached to Classes of Shares</td>
+    <TD>&nbsp;</td>
+    <TD>For</td>
+    <TD>&nbsp;</td>
+    <TD>For</td>
+    <TD>&nbsp;</td>
+    <TD>Yes</td>
+    <TD>&nbsp;</td>
+    <TD>No</td></tr>
+</table>
+</BODY>
+</HTML>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

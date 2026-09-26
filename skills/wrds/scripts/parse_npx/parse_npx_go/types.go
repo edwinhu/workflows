@@ -35,6 +35,12 @@ type VoteRow struct {
 	VoteOtherInfo            string
 	ParseMode                string // xml | text | none
 	Layout                   string
+
+	// FundFromAccountCell marks a FundName read off the row's own account-name
+	// cell rather than a section masthead, which withholds the cross-CIK sibling
+	// rung in dictFallback.apply. It is not a votes.tsv column and is not
+	// serialized.
+	FundFromAccountCell bool
 }
 
 // FilingMeta is one row of manifest.tsv.gz, one per filing.
