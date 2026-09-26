@@ -639,6 +639,15 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 			// resolves is not evidence that it is one.
 			curFund = lineAbove
 			curSeries = icrResolveFundShared(seriesIx, lineAbove)
+		} else if name, ok := icrUnderscoreBannerName(line); ok && icrResolveFundShared(seriesIx, name) != "" {
+			// The same vintage's OTHER banner shape: the name printed INSIDE
+			// the rule of underscores rather than on the line above it. Taken
+			// only when the embedded text resolves to a declared series -- the
+			// header's own evidence -- so a rule with any other text welded
+			// into it is left alone rather than guessed at, and the section
+			// that is already open keeps its fund.
+			curFund = name
+			curSeries = icrResolveFundShared(seriesIx, name)
 		} else if strings.EqualFold(line, icrReportLine) && lineAbove != "" && !(lastRow >= 0 && lineAboveIdx == lastLine) {
 			// One vintage names the fund on a bare line ABOVE its `Investment
 			// Company Report` line (Hartford Mutual Funds, ~180k rows with no
@@ -1079,7 +1088,50 @@ func icrFundName(line string) (string, bool) {
 	if !strings.EqualFold(label, icrFundNameLabel) && !strings.EqualFold(label, "PORTFOLIO NAME") {
 		return "", false
 	}
-	return strings.TrimSpace(line[colon+1:]), true
+	value := strings.TrimSpace(line[colon+1:])
+	// A VALUE THAT IS ITSELF A LABEL IS A COLUMN CAPTION, NOT A DECLARATION.
+	// One vendor heads its list of funds with no reportable votes with a
+	// two-column caption row whose columns are both field labels (`Fund Name:
+	// <gap> Registrant Time Period:`, BofA Funds Series Trust 2012). Cutting at
+	// the FIRST colon reads the second column's own label as this one's value,
+	// which names no series -- and, because an unresolved marker CLEARS, would
+	// stamp the caption text on every row below it as the section's fund. A
+	// trailing colon is the caption's own evidence that the text is a label
+	// awaiting a value, so the line is refused as a marker entirely rather
+	// than read as a section the filing declines to name: the caption opens no
+	// section. An EMPTY value keeps reporting ok, as before.
+	if strings.HasSuffix(value, ":") {
+		return "", false
+	}
+	return value, true
+}
+
+// icrUnderscoreBannerName reads a fund banner printed as a rule of underscores
+// with the name embedded in the MIDDLE of the same line
+// (`___________BofA California Tax- Exempt Reserves____________`, BofA Funds
+// Series Trust 2012). icrUnderscoreRule recognises only a FULLY BLANK rule and
+// the rung that reads a name above one never looks inside the rule itself, so
+// this vendor's sections opened on no rung at all.
+//
+// The shape is the marker: a leading run of underscores and a trailing run of
+// underscores with text between them. Stripping both runs yields the candidate
+// name; a blank rule strips to nothing and is left to the blank-rule rung. The
+// name is only a banner when it resolves against a series the header declares,
+// exactly as every other fund-name rung here requires.
+func icrUnderscoreBannerName(line string) (string, bool) {
+	if len(line) < 20 || line[0] != '_' || line[len(line)-1] != '_' {
+		return "", false
+	}
+	name := strings.TrimSpace(strings.Trim(line, "_"))
+	if name == "" {
+		return "", false
+	}
+	for _, r := range name {
+		if unicode.IsLetter(r) {
+			return name, true
+		}
+	}
+	return "", false
 }
 
 // icrJoinWrappedFundValue reads the continuation of a wrapped `Fund Name:`
