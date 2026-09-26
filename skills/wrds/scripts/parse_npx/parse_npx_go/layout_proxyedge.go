@@ -232,6 +232,18 @@ func peWrappedProse(lines []string, tbl []int, whole []bool) []bool {
 			end++
 		}
 		if end-i+1 >= peWrapRun {
+			// The run is a paragraph. Its END is where peWrapContinues lost the
+			// thread, which is not the same place the paragraph ends: the test is
+			// indexed on the PAIR, so one line whose own tail reads as a sentence's
+			// close (`Company)`) parts the paragraph into two runs, and the line
+			// after it becomes a run's first line, which nothing below marks. Past
+			// a paragraph already proven by peWrapRun, the tail is walked with
+			// peWrapTail instead, which asks of each line whether IT is a fragment
+			// rather than whether its predecessor promised one.
+			for end+1 < len(lines) && whole[end+1] && tbl[end+1] == tbl[i] &&
+				peWrapTail(lines[end], lines[end+1]) {
+				end++
+			}
 			for k := i + 1; k <= end; k++ {
 				out[k] = true
 			}
@@ -273,14 +285,50 @@ func peWrapContinues(prev, next string) bool {
 	if c := prev[len(prev)-1]; peWordBreak(c) && c != ',' && c != ';' && c != '-' && c != '\'' {
 		return false
 	}
-	switch c := next[0]; {
-	case c >= 'a' && c <= 'z':
+	if peWrapOpens(next) {
 		return true
-	case c < 'A' || c > 'Z':
-		return true
-	default:
-		return peWrapLine(next) && peWrapClause(next)
 	}
+	return peWrapLine(next) && peWrapClause(next)
+}
+
+// peWrapOpens reports a line opening where a name does not: on a lower-case
+// word, or on something that is not a letter at all. The vendor's fund and
+// issuer banners are names, and a name opens upper-case.
+func peWrapOpens(s string) bool {
+	c := s[0]
+	return c < 'A' || c > 'Z'
+}
+
+// peWrapTail reports that next is still inside a paragraph peWrapRun has
+// already proven, having walked to prev. peWrapContinues answers a harder
+// question -- may a run START here -- and to answer it safely it reads prev's
+// tail, refusing any successor to a line the vendor's column happened to break
+// after a close-paren or a period. Inside a paragraph already established that
+// tail says much less: a resolution enumerates counterparties `(Open Joint
+// Stock Company)` and cites `U.S. Dollars` mid-sentence, and the line after
+// either is prose, not the banner of a fund.
+//
+// So the tail is walked on the SUCCESSOR's shape. A line that opens where a
+// name does not is a fragment however prev ended (Guinness Atkinson 2012 item
+// 9, `regarding receipt by OAO Gazprom of funds with a`). An upper-case opener
+// is the shape a banner shares, and two things part it from one here: the
+// banner is a name, printed short, so a long line is already unlike one; and a
+// paragraph's last line is short by construction, so a long line standing after
+// ANOTHER long line that broke off mid-word -- no punctuation ended it at all
+// -- is the next line of that same break, not a heading the vendor printed
+// between two ballots (item 10, `Gazprom of funds with a maximum amount of one
+// billion`, which carries none of the `;:()"` peWrapClause demands).
+func peWrapTail(prev, next string) bool {
+	if peWrapContinues(prev, next) {
+		return true
+	}
+	if prev == "" || next == "" || !peWrapLine(next) {
+		return false
+	}
+	if peWrapOpens(next) {
+		return true
+	}
+	return peWrapLine(prev) && !peWordBreak(prev[len(prev)-1])
 }
 
 // peWrapClause reports the punctuation a clause of a proposal carries and a
