@@ -196,6 +196,15 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// elimination against the declared set once the file is read.
 		brandOnlyFund string
 		brandOnlyRows []int
+		// trustNameFund is a `Name of Fund:` masthead whose value names the
+		// registrant ITSELF rather than any declared sleeve, and trustNameRows the
+		// rows standing under it: the look-AHEAD mirror of icrCaptionFundAbove,
+		// answered by the NEXT masthead when that one resolves to exactly one of
+		// this filing's own declarations and no other banner intervenes (Masters
+		// Select Funds Trust 2010, `Masters' Select Funds` against a conformed
+		// name of `MASTERS SELECT FUNDS TRUST`, 720 blank rows over two filings).
+		trustNameFund string
+		trustNameRows []int
 	)
 
 	for {
@@ -204,6 +213,14 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			break
 		}
 		cells := row.cells
+
+		// A bare-trust-name block is answered only by the masthead that comes
+		// NEXT. Any other heading that claims the standing fund in between is a
+		// real banner, and the block it opens is not the trust block's, so the
+		// look-ahead is withdrawn rather than reaching across it.
+		if trustNameFund != "" && curFund != trustNameFund {
+			trustNameFund, trustNameRows = "", nil
+		}
 
 		// One ballot printed over two <tr>s: the upper carries the item and the
 		// proposal, the lower the nominee and the vote words (Dominion Funds
@@ -316,10 +333,30 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			if bannerFund && strings.HasPrefix(strings.ToLower(strings.TrimSpace(label)), "institution account") {
 				continue
 			}
+			// The look-ahead stamp: this masthead names one of the filing's own
+			// declared sleeves outright, so it answers the bare-trust-name block
+			// standing immediately above it. The target must be a HEADER
+			// declaration -- nothing here licenses reaching a name only the corpus
+			// dictionary knows, or a sibling registrant's.
+			if id != "" && trustNameFund != "" {
+				if htmlFilingDeclaresSeries(meta.SeriesDecls, id) {
+					for _, k := range trustNameRows {
+						out[k].SeriesID = id
+					}
+				}
+				trustNameFund, trustNameRows = "", nil
+			}
 			// A registrant or sleeve label cannot erase a proven outer section.
 			if id != "" || !outerSection {
 				curFund, curSeries, outerSection, windowed = value, id, false, nil
 				bannerFund = false
+				// This masthead's value resolves to no sleeve and is the
+				// registrant's own name with only its entity words left off, so it
+				// names no fund at all. The rows under it are held for the next
+				// masthead to answer instead of being given away here.
+				if id == "" && htmlMastheadBareRegistrantName(seriesIx, value) {
+					trustNameFund, trustNameRows = value, nil
+				}
 			}
 			continue
 		}
@@ -811,6 +848,9 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 					if brandOnlyFund != "" && r.SeriesID == "" && r.FundName == brandOnlyFund {
 						brandOnlyRows = append(brandOnlyRows, len(out))
 					}
+					if trustNameFund != "" && r.SeriesID == "" && r.FundName == trustNameFund {
+						trustNameRows = append(trustNameRows, len(out))
+					}
 					if u := htmlUnstackFirstItem(r); u != nil {
 						r = *u
 					}
@@ -899,6 +939,64 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 // Two distinct headings in one filing cannot be the same series. That is
 // decidable from the filing alone and needs no guess about which id the dropped
 // word names, so the inexact section is left blank rather than moved.
+// htmlEntityWords are the words a registrant's conformed name carries beyond the
+// umbrella name its own mastheads print: the legal form and the collective noun.
+// Nothing here is a fund's distinguishing word, which is why a value that reaches
+// the conformed name by leaving only these off names no sleeve.
+var htmlEntityWords = map[string]bool{
+	"trust": true, "trusts": true, "fund": true, "funds": true,
+	"inc": true, "incorporated": true, "corp": true, "corporation": true,
+	"company": true, "co": true, "llc": true, "lp": true, "plc": true,
+	"ltd": true, "limited": true, "group": true, "series": true,
+}
+
+// htmlMastheadBareRegistrantName reports whether a masthead value that resolved
+// to no declared sleeve is the registrant's OWN name, printed without the entity
+// words the SGML header's COMPANY CONFORMED NAME carries (`Masters' Select Funds`
+// against `MASTERS SELECT FUNDS TRUST`). Exact equality is not this function's
+// business: the reader above refuses that value outright.
+//
+// At most two such words may be missing and the value must still carry two words
+// of its own, so a one-word brand never passes for the registrant.
+func htmlMastheadBareRegistrantName(ix *issSeriesIndex, value string) bool {
+	if ix == nil || ix.registrantKey == "" {
+		return false
+	}
+	key := normalizeSeriesName(value)
+	if len(strings.Fields(key)) < 2 {
+		return false
+	}
+	rest, ok := strings.CutPrefix(ix.registrantKey, key+" ")
+	if !ok {
+		return false
+	}
+	missing := strings.Fields(rest)
+	if len(missing) == 0 || len(missing) > 2 {
+		return false
+	}
+	for _, w := range missing {
+		if !htmlEntityWords[w] {
+			return false
+		}
+	}
+	return true
+}
+
+// htmlFilingDeclaresSeries reports whether the filing's own SGML header declared
+// this series id. The look-ahead stamp may reach nothing else: a dictionary or
+// cross-CIK answer is not a declaration this filing made.
+func htmlFilingDeclaresSeries(decls []SeriesDecl, id string) bool {
+	if id == "" {
+		return false
+	}
+	for _, d := range decls {
+		if d.SeriesID == id {
+			return true
+		}
+	}
+	return false
+}
+
 func htmlRefuseInexactSiblingHeading(out []VoteRow, ix *issSeriesIndex) {
 	if ix == nil {
 		return
