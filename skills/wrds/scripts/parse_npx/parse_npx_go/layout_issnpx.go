@@ -4664,10 +4664,8 @@ func issBrandCompactedDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		if !ok {
 			continue
 		}
-		if stem != rest {
-			if dropped, cut := issDropTypeWord(stem); !cut || dropped != rest {
-				continue
-			}
+		if stem != rest && !issBrandCompactedStemMatch(ix, key, rest, stem, d) {
+			continue
 		}
 		if hit != nil && hit.SeriesID != d.SeriesID {
 			return nil
@@ -4675,6 +4673,26 @@ func issBrandCompactedDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		hit = d
 	}
 	return hit
+}
+
+// issBrandCompactedStemMatch is issBrandCompactedDecl's tail comparison once
+// the brand is off both sides: the heading's remainder against one declared
+// stem. The heading may DROP the declaration's trailing type word, and it may
+// print a type word OF ITS OWN in its place -- `GROWTH PORTFOLIO` for a
+// declared `SM&R Growth Fund` -- in which case the word comes off both sides.
+// The substitution is only read where issTierMismatch already says it is the
+// vendor's word rather than a tier the registrant keeps apart, so a two-tier
+// trust declaring both words still holds its banners separate.
+func issBrandCompactedStemMatch(ix *issSeriesIndex, key, rest, stem string, d *SeriesDecl) bool {
+	if dropped, cut := issDropTypeWord(stem); cut && dropped == rest {
+		return true
+	}
+	bare, cut := issDropTypeWord(rest)
+	if !cut || issTierMismatch(ix, key, d) {
+		return false
+	}
+	dropped, cut := issDropTypeWord(stem)
+	return cut && dropped == bare
 }
 
 // issTypoTypeWordDecl reads a heading whose type word the DECLARATION spells
