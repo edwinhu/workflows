@@ -1,0 +1,290 @@
+<SEC-DOCUMENT>0000935069-07-001948.txt : 20070828
+<SEC-HEADER>0000935069-07-001948.hdr.sgml : 20070828
+<ACCEPTANCE-DATETIME>20070828102302
+ACCESSION NUMBER:		0000935069-07-001948
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20070630
+FILED AS OF DATE:		20070828
+DATE AS OF CHANGE:		20070828
+EFFECTIVENESS DATE:		20070828
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			WESTWOOD FUNDS
+		CENTRAL INDEX KEY:			0000796229
+		IRS NUMBER:				133625130
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0930
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-04719
+		FILM NUMBER:		071082387
+
+	BUSINESS ADDRESS:	
+		STREET 1:		ONE CORPORATE CENTER
+		CITY:			RYE
+		STATE:			NY
+		ZIP:			10580
+		BUSINESS PHONE:		8004223554
+
+	MAIL ADDRESS:	
+		STREET 1:		ONE CORPORATE CENTER
+		CITY:			RYE
+		STATE:			NY
+		ZIP:			10580
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	GABELLI WESTWOOD FUNDS
+		DATE OF NAME CHANGE:	19980304
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	WESTWOOD FUNDS
+		DATE OF NAME CHANGE:	19920703
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	MARQUIS FUND
+		DATE OF NAME CHANGE:	19861228
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000796229
+<SERIES-ID>S000001080
+<SERIES-NAME>WESTWOOD BALANCED FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002911
+<CLASS-CONTRACT-NAME>CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>WEBCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002912
+<CLASS-CONTRACT-NAME>CLASS AAA
+<CLASS-CONTRACT-TICKER-SYMBOL>WEBAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002913
+<CLASS-CONTRACT-NAME>CLASS B
+<CLASS-CONTRACT-TICKER-SYMBOL>WBCBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002914
+<CLASS-CONTRACT-NAME>CLASS C
+<CLASS-CONTRACT-TICKER-SYMBOL>WBCCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000796229
+<SERIES-ID>S000001081
+<SERIES-NAME>WESTWOOD EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002915
+<CLASS-CONTRACT-NAME>CLASS B
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002916
+<CLASS-CONTRACT-NAME>CLASS C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002917
+<CLASS-CONTRACT-NAME>CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>WEECX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002918
+<CLASS-CONTRACT-NAME>CLASS AAA
+<CLASS-CONTRACT-TICKER-SYMBOL>WESWX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000796229
+<SERIES-ID>S000001082
+<SERIES-NAME>WESTWOOD INCOME FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002919
+<CLASS-CONTRACT-NAME>CLASS A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002920
+<CLASS-CONTRACT-NAME>CLASS B
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002921
+<CLASS-CONTRACT-NAME>CLASS C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002922
+<CLASS-CONTRACT-NAME>CLASS AAA
+<CLASS-CONTRACT-TICKER-SYMBOL>WESRX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000796229
+<SERIES-ID>S000001083
+<SERIES-NAME>WESTWOOD INTERMEDIATE BOND FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002923
+<CLASS-CONTRACT-NAME>CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>WEAIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002924
+<CLASS-CONTRACT-NAME>CLASS AAA
+<CLASS-CONTRACT-TICKER-SYMBOL>WEIBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002925
+<CLASS-CONTRACT-NAME>CLASS B
+<CLASS-CONTRACT-TICKER-SYMBOL>WEBIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002926
+<CLASS-CONTRACT-NAME>CLASS C
+<CLASS-CONTRACT-TICKER-SYMBOL>WECIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000796229
+<SERIES-ID>S000001084
+<SERIES-NAME>WESTWOOD MIGHTY MITES FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002927
+<CLASS-CONTRACT-NAME>CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>WMMAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002928
+<CLASS-CONTRACT-NAME>CLASS AAA
+<CLASS-CONTRACT-TICKER-SYMBOL>WEMMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002929
+<CLASS-CONTRACT-NAME>CLASS B
+<CLASS-CONTRACT-TICKER-SYMBOL>WMMBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002930
+<CLASS-CONTRACT-NAME>CLASS C
+<CLASS-CONTRACT-TICKER-SYMBOL>WMMCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000796229
+<SERIES-ID>S000001085
+<SERIES-NAME>WESTWOOD SMALL CAP EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002931
+<CLASS-CONTRACT-NAME>CLASS A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002932
+<CLASS-CONTRACT-NAME>CLASS B
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002933
+<CLASS-CONTRACT-NAME>CLASS C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002934
+<CLASS-CONTRACT-NAME>CLASS AAA
+<CLASS-CONTRACT-TICKER-SYMBOL>WESCX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>thewestwoodfunds.txt
+<DESCRIPTION>GABELLI WESTWOOD FUNDS NPX 0607
+<TEXT>
+<PAGE>
+
+ProxyEdge - Investment Company Report
+Meeting Date Range: 07/01/2006 to 06/30/2007             Report Date: 07/03/2007
+Selected Accounts: NPX GABELLI WESTWOOD MMITES FD                   Page 1 of 63
+
+<TABLE>
+<S>       <C>                                                                  <C>            <C>      <C>
+- ------------------------------------------------------------------------------------------------------------------------------------
+WILLAMETTE VALLEY VINEYARDS, INC.                                              WVVI                  ANNUAL MEETING DATE: 07/16/2006
+
+ISSUER: 969136100                ISIN:
+
+SEDOL:
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+VOTE GROUP: GLOBAL
+
+Proposal                                                                       Proposal       Vote     For or Against
+ Number   Proposal                                                             Type           Cast     Management
+- ------------------------------------------------------------------------------------------------------------------------------------
+   01     DIRECTOR                                                             Management      For
+                                                JAMES W. BERNAU                Management      For     For
+                                                JAMES L. ELLIS                 Management      For     For
+                                                THOMAS M. BRIAN                Management      For     For
+                                                DELNA L. JONES                 Management      For     For
+                                                LISA M. MATICH                 Management      For     For
+                                               BETTY M. O'BRIEN                Management      For     For
+                                                 STAN G. TUREL                 Management      For     For
+   02     RATIFICATION OF APPOINTMENT OF MOSS ADAMS, LLP                       Management      For     For
+          AS AUDITORS.
+
+- ------------------------------------------------------------------------------------------------------------------------------------
+PALM HARBOR HOMES, INC.                                                        PHHM                  ANNUAL MEETING DATE: 07/26/2006
+
+ISSUER: 696639103                ISIN:
+
+SEDOL:
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+VOTE GROUP: GLOBAL
+
+Proposal                                                                       Proposal       Vote     For or Against
+ Number   Proposal                                                             Type           Cast     Management
+- ------------------------------------------------------------------------------------------------------------------------------------
+   01     DIRECTOR                                                             Management      For
+                                                LARRY H. KEENER                Management      For     For
+                                                   LEE POSEY                   Management      For     For
+                                               JERRY D. MALLONEE               Management      For     For
+                                              FREDERICK R. MEYER               Management      For     For
+                                              ELYSIA HOLT RAGUSA               Management      For     For
+                                            WALTER D. ROSENBERG, JR            Management      For     For
+                                               A. GARY SHILLING                Management      For     For
+                                               WILLIAM R. THOMAS               Management      For     For
+                                            W. CHRISTOPHER WELLBORN            Management      For     For
+                                                JOHN H. WILSON                 Management      For     For
+   02     RATIFICATION OF THE APPOINTMENT OF ERNST & YOUNG                     Management      For     For
+          LLP AS THE INDEPENDENT AUDITORS FOR THE FISCAL
+          YEAR ENDING MARCH 30, 2007.
+
+- ------------------------------------------------------------------------------------------------------------------------------------
+STOLT OFFSHORE S.A.                                                            SOSA                  ANNUAL MEETING DATE: 08/01/2006
+
+ISSUER: 861567105                ISIN:
+
+SEDOL:
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+VOTE GROUP: GLOBAL
+
+Proposal                                                                       Proposal       Vote     For or Against
+ Number   Proposal                                                             Type           Cast     Management
+- ------------------------------------------------------------------------------------------------------------------------------------
+   01     APPROVAL OF ANNUAL MEETING DATE                                      Management      For     For
+
+   02     APPROVAL OF CONSOLIDATED FINANCIAL STATEMENT                         Management      For     For
+
+   03     APPROVAL OF UNCONSOLIDATED BALANCE SHEET AND                         Management      For     For
+          STATEMENT OF PROFIT AND LOSS OF THE COMPANY
+   04     APPROVAL OF THE CONSOLIDATED BALANCE SHEET AND                       Management      For     For
+          STATEMENTS OF OPERATIONS OF THE COMPANY
+   05     DISCHARGE OF THE BOARD OF DIRECTORS AND STATUTORY                    Management      For     For
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
