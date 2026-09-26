@@ -5862,11 +5862,31 @@ func htmlLabelledCells(cells []string) (label, value string, ok bool) {
 	if len(vals) == 4 && htmlFundLabelled(vals[0]) && strings.HasSuffix(vals[2], ":") {
 		vals = vals[:2]
 	}
+	// The label may stand ALONE in a cell of its own with the fund in the next,
+	// in a row trailing scaffolding none of the rules above name: `Registrant:
+	// Mutual Fund Series Trust` | `Fund Name -` | `Catalyst Groesbeck Growth of
+	// Income Fund` | `Exhibit 1` (Mutual Fund Series Trust 2017, 1,289 of 1,830
+	// rows with no fund name and no series). Two guards keep it off the vote
+	// table's own COLUMN HEADER row, which names `Fund Name` as one heading
+	// among thirteen: the row must open with the registrant cell, and the label
+	// cell must be NOTHING but the label and its separator.
+	if len(vals) > 2 && strings.HasPrefix(strings.ToLower(vals[0]), "registrant:") {
+		for i, v := range vals[1 : len(vals)-1] {
+			if reHTMLBareFundNameLabel.MatchString(v) {
+				vals = []string{v, vals[i+2]}
+				break
+			}
+		}
+	}
 	if len(vals) != 2 {
 		return "", "", false
 	}
 	return vals[0], vals[1], true
 }
+
+// reHTMLBareFundNameLabel matches a masthead cell holding nothing but the fund
+// label and an optional separator: `Fund Name -`, `Fund Name:`, `Fund Name`.
+var reHTMLBareFundNameLabel = regexp.MustCompile(`(?i)^fund name\s*[-–—:]?$`)
 
 // isBannerNumericAccountCode reports whether a banner cell is nothing but a
 // hyphenated run of digits, the shape of the internal account code some filers
