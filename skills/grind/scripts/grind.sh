@@ -612,10 +612,12 @@ run_loop() {
     cmd=("$runner" -p "$prompt")
     [ -n "$model" ] && cmd+=(--model "$model")
     warn "iteration $i: ${#FLOOR_KEYS[@]} floors, $SCAN_STALL since progress"
-    # The marker that tells `stop` it is being run by an iteration rather than by the operator. It
-    # is scoped to this one command, so it reaches the runner and everything the runner spawns and
-    # nothing else; the operator's own shell never has it, which is why their stop still works.
-    GRIND_ITERATION=$i "${cmd[@]}"
+    # The markers that tell `stop` it is being run by an iteration rather than by the operator, and
+    # that an iteration is itself a delegated worker — functionally a farm-out child, so the
+    # main-thread guards exempt it the same way and it must not farm out its own bookkeeping again.
+    # Both are scoped to this one command, so they reach the runner and everything the runner spawns
+    # and nothing else; the operator's own shell never has them, which is why their stop still works.
+    GRIND_ITERATION=$i FARM_OUT_CHILD=1 "${cmd[@]}"
     rc=$?
     journal_append "$journal" "{\"kind\":\"iter_end\",\"i\":$i,\"exit\":$rc,\"ts\":\"$(now)\"}"
   done
