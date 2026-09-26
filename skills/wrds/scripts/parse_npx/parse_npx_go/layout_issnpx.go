@@ -2600,6 +2600,73 @@ func issVowelDroppedAbbrev(ix *issSeriesIndex, key string) *SeriesDecl {
 	return hit
 }
 
+// issContractedWordPairDecl reads the vendor's CONTRACTION of two adjacent
+// declared words -- the first collapsed to its initial and glued straight onto
+// the second, kept whole: `WESTWOOD MMITES FD` for the declared `Westwood Mighty
+// Mites Fund` (S000001084, CIK 796229's 20070630 ProxyEdge report, whose only
+// account banner is `Selected Accounts: NPX GABELLI WESTWOOD MMITES FD`; 397
+// rows with no series). The per-word rungs above are word-to-word, so `mmites`
+// abbreviates neither `mighty` nor `mites` and none of them sees it.
+//
+// Narrow by construction: exactly ONE printed token may be the contraction, the
+// two declared words it spells must be ADJACENT, its tail must equal the second
+// of them exactly and its first letter the first's initial, and once expanded
+// the declared name must be the TAIL of the printed tokens -- so only a house
+// brand printed ahead of the name (`GABELLI` here) is tolerated, never a printed
+// word the declaration does not carry. Two series answering refuse.
+func issContractedWordPairDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(normalizeSeriesName(key))
+	if len(toks) < 2 {
+		return nil
+	}
+	var hit *SeriesDecl
+	for name, d := range ix.byName {
+		if d == nil {
+			continue
+		}
+		dt := strings.Fields(name)
+		// Two contracted words plus the type word: shorter than that and the
+		// contraction would be the whole name.
+		if len(dt) < 3 || len(dt) > len(toks)+1 || len(toks) > len(dt)+1 {
+			continue
+		}
+		for i := 0; i+1 < len(dt); i++ {
+			first, second := dt[i], dt[i+1]
+			if len(first) < 2 || len(second) < 2 {
+				continue
+			}
+			glued := first[:1] + second
+			for j, t := range toks {
+				if t != glued {
+					continue
+				}
+				exp := append(append(append([]string{}, toks[:j]...), first, second), toks[j+1:]...)
+				if len(exp) < len(dt) || len(exp) > len(dt)+2 || !issTokensEqual(exp[len(exp)-len(dt):], dt) {
+					continue
+				}
+				if hit != nil && hit.SeriesID != d.SeriesID {
+					return nil
+				}
+				hit = d
+			}
+		}
+	}
+	return hit
+}
+
+// issTokensEqual reports that two token runs are the same words in order.
+func issTokensEqual(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
 // issDeclaredAbbrevWord finds the one declared name that differs from key in
 // exactly one token, where the declared token is an abbreviation of the printed
 // one. It mirrors htmlDictAbbrevWord in the other direction and refuses on any
@@ -3476,6 +3543,13 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 		return banner, d
 	}
 	if d := issDeclaredAbbrevWord(ix, normalizeSeriesName(banner)); d != nil {
+		return banner, d
+	}
+	// The same shape one step further: the heading CONTRACTS two adjacent
+	// declared words into one token, keeping the first's initial and the second
+	// whole (`WESTWOOD MMITES FD` for `Westwood Mighty Mites Fund`). Word-to-word
+	// rungs cannot see it; the guards live in issContractedWordPairDecl.
+	if d := issContractedWordPairDecl(ix, banner); d != nil {
 		return banner, d
 	}
 	// A SUB-ADVISER's brand printed in front of the registrant's own acronym:
