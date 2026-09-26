@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"regexp"
 	"testing"
 )
 
@@ -35,11 +36,24 @@ import (
 //	HARTFORD SMALLCAP VALUE HLS FUND
 //	(This portion sub-advised by Metropolitan West Capital Management, LLC)
 //
-// and that form resolves: measured on HEAD with no dictionary and no overlay
-// loaded, 65 of the 94 rows this cut yields already carry S000004109. Only
-// the ALL-CAPS spelling at line 30675 is misread as a fund banner of its own.
-// It matches nothing, so series_id is blanked for every vote row that follows
-// it until the next real banner.
+// and that form resolves: measured with no dictionary and no overlay loaded,
+// every vote row this cut yields from the first banner onward carries
+// S000004109. Only the ALL-CAPS spelling at line 30675 is misread as a fund
+// banner of its own. It matches nothing, so series_id is blanked for every
+// vote row that follows it until the next real banner.
+//
+// THE CONTROL IS COUNTED OVER BALLOTS, NOT OVER ROWS. This guard read
+// `resolved < 60` until family NS-1053425-icr-g1-tail-banner stopped the icr
+// reader emitting settlement tables as ballots. 89 of the 90 rows that count
+// was measured over were exactly those: rows of the Kayne section's `ACCOUNT
+// NUMBER / CUSTODIAN / BALLOT SHARES / SHARES / VOTE DATE / DATE CONFIRMED`
+// footer, carrying a confirmation date in how_voted. The threshold was
+// counting the defect, so correcting the defect broke it on a fixture whose
+// fund association was perfectly intact. The cut yields 5 vote rows: the four
+// ZEP INC. rows ahead of the first banner, which no banner governs, and one
+// under a banner -- the STANDARD MICROSYSTEMS CORP. row the defect below is
+// asserted on. Both halves are pinned, and no count here can be inflated by a
+// row that is not a ballot.
 //
 // EVERY BANNER IN THIS CUT IS THE SAME FUND. Between source lines 27228 and
 // 30680 the filing prints exactly three fund banners (27251, 28204, 30674) and
@@ -65,14 +79,16 @@ import (
 //
 // WHY THE FIXTURE IS `.npx` AND NOT `.txt`. Same reason as family VS1:
 // TestHowVotedVocabularyInvariant sweeps every `*.txt` under testdata/ and
-// asserts no emitted how_voted is a non-vote. Once the ZEP INC. header opens
-// the icr reader, it also reads the broadridge ACCOUNT NUMBER / VOTE DATE
+// asserts no emitted how_voted is a non-vote. Once the ZEP INC. header opened
+// the icr reader, it also read the broadridge ACCOUNT NUMBER / VOTE DATE
 // footer tables of the Kayne section as vote rows (measured: 89 rows with
-// how_voted spellings like `26-May-2009` and description `837`). That is a
-// third defect in these same bytes; it cannot be cut away without losing the
-// icr opener and with it the reproduction, so the fixture is kept out of that
-// invariant's corpus rather than the invariant being weakened. Nothing in
-// processFile keys on the extension.
+// how_voted spellings like `26-May-2009` and description `837`) -- a third
+// defect in these same bytes, which could not be cut away without losing the
+// icr opener and with it the reproduction. Family
+// NS-1053425-icr-g1-tail-banner fixed that defect, and the assertion below now
+// states its absence by name rather than leaving it to a corpus sweep. The
+// extension is left as it is because renaming a fixture is a change to the
+// fixture; nothing in processFile keys on it.
 func TestFamilyNS790558SubadvisedCaption(t *testing.T) {
 	oldDict, oldMap := cikDict, seriesMap
 	t.Cleanup(func() { cikDict, seriesMap = oldDict, oldMap })
@@ -111,15 +127,35 @@ func TestFamilyNS790558SubadvisedCaption(t *testing.T) {
 
 	// The control: the parenthesized spelling of the SAME banner, twice in
 	// these same bytes, resolves today. If this ever stops holding, the cut is
-	// broken and the assertion below proves nothing.
-	resolved := 0
+	// broken and the assertion below proves nothing. Counted over BALLOTS --
+	// every row the cut yields that a banner governs -- so that no settlement
+	// row can stand in for one.
+	settlementVote := regexp.MustCompile(`^\d{2}-[A-Z][a-z]{2}-\d{4}$`)
+	banneredRows, resolved, unbannered := 0, 0, 0
 	for _, r := range rows {
+		if settlementVote.MatchString(r.HowVoted) {
+			t.Errorf("row item=%q desc=%q how_voted=%q fund=%q -- a row of the Kayne section's `ACCOUNT NUMBER / CUSTODIAN / BALLOT SHARES / SHARES / VOTE DATE / DATE CONFIRMED` footer read as a ballot; these bytes must yield none",
+				r.ItemSeq, r.VoteDescription, r.HowVoted, r.FundName)
+			continue
+		}
+		if r.FundName == "" {
+			unbannered++ // the ZEP INC. tail ahead of the first banner
+			continue
+		}
+		banneredRows++
+		if r.FundName != "HARTFORD SMALLCAP VALUE HLS FUND" {
+			t.Errorf("item %q (%q): fund=%q -- every one of the three banners in this cut reads `HARTFORD SMALLCAP VALUE HLS FUND`, so no row it governs may carry another name",
+				r.ItemSeq, r.VoteDescription, r.FundName)
+		}
 		if r.SeriesID == "S000004109" {
 			resolved++
 		}
 	}
-	if resolved < 60 {
-		t.Fatalf("fixture guard: only %d of %d rows resolve to S000004109, want at least 60 -- the parenthesized banners at source lines 27251 and 28204 stopped reading, so the cut is broken rather than the grammar", resolved, len(rows))
+	if unbannered != 4 {
+		t.Fatalf("fixture guard: %d rows sit ahead of the first banner, want the 4 of the ZEP INC. meeting at source lines 27228-27247 -- the cut is broken rather than the grammar", unbannered)
+	}
+	if banneredRows < 1 || resolved != banneredRows {
+		t.Fatalf("fixture guard: %d of %d bannered vote rows resolve to S000004109, want all of them and at least one -- the parenthesized banners at source lines 27251 and 28204 stopped reading, so the cut is broken rather than the grammar", resolved, banneredRows)
 	}
 
 	// The defect: the first vote row of the STANDARD MICROSYSTEMS CORP. meeting
