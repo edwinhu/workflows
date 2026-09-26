@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -352,6 +354,19 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			if name, id, ok := htmlBareFundLine(seriesIx, joined, dict); ok {
 				curFund, curSeries, outerSection, windowed = name, id, id != "", nil
 				bannerFund = id != "" && htmlExplicitFundBanner(joined)
+				continue
+			}
+		}
+		// The same cover row with the label AND the registrant in one cell, but
+		// the sleeve's name split off into a bold cell of its own: the bold cell
+		// ends AT the dash, with nothing after it, and the fund is printed a few
+		// cells later in the same <TR> (Mutual Fund Series Trust 2017-2018, which
+		// prints both spellings inside one filing). Read as one line, the row says
+		// what the inline spelling says.
+		if split, ok := htmlRegistrantEmptySuffixFund(cells, row.raw); ok {
+			if name, id, ok := htmlBareFundLine(seriesIx, split, dict); ok {
+				curFund, curSeries, outerSection, windowed = name, id, id != "", nil
+				bannerFund = id != "" && htmlExplicitFundBanner(split)
 				continue
 			}
 		}
@@ -993,8 +1008,14 @@ type htmlRowFeed struct {
 // "zero cells" because the two mean opposite things to the nil-report test: a
 // row with no cells is evidence of no table, and a row we could not cut is
 // evidence of a table we cannot read.
+//
+// raw is the row's own markup, the same bytes the cells were decoded from. It
+// is a slice of the source, never a copy, and it is kept because one reading
+// needs a distinction the decoded text cannot carry: which cell of a masthead
+// row was printed BOLD (htmlRegistrantEmptySuffixFund).
 type htmlFeedRow struct {
 	cells    []string
+	raw      []byte
 	pre      string
 	newTable bool
 	uncut    bool
@@ -1143,6 +1164,7 @@ func (f *htmlRowFeed) scan() (htmlFeedRow, bool) {
 	cells, cuttable := htmlRowCells(seg[start:])
 	return htmlFeedRow{
 		cells:    cells,
+		raw:      seg[start:],
 		pre:      htmlPreText(seg[:start]),
 		newTable: newTable,
 		uncut:    !cuttable,
@@ -1442,8 +1464,18 @@ func htmlSplitHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHead
 		if len(fragment) != len(cells) {
 			break
 		}
-		for i := range joined {
-			joined[i] = htmlFlat(joined[i] + " " + fragment[i])
+		if htmlLetteredRestatement(joined, fragment) {
+			// The row below names the same columns again rather than completing
+			// them; only the columns the lettered row left blank take its text.
+			for i := range joined {
+				if htmlFlat(joined[i]) == "" {
+					joined[i] = htmlFlat(fragment[i])
+				}
+			}
+		} else {
+			for i := range joined {
+				joined[i] = htmlFlat(joined[i] + " " + fragment[i])
+			}
 		}
 		if _, _, headerLike := htmlHeaderShape(joined); headerLike {
 			best = append([]string(nil), joined...)
@@ -2677,8 +2709,15 @@ func htmlBuildFieldOrder(want []string) []string {
 //
 // Each field is claimed by at most one column and each column carries at most
 // one field.
+var mappingDbg map[string]int
+
 func htmlMapFields(cells []string) map[string]int {
+	if os.Getenv("NPXDBG") != "" {
+		fmt.Fprintf(os.Stderr, "MAPFIELDS cells=%q\n", cells)
+		defer func() { fmt.Fprintf(os.Stderr, "  -> %v\n", mappingDbg) }()
+	}
 	mapping := make(map[string]int, len(cells))
+	mappingDbg = mapping
 	claimed := make([]bool, len(cells))
 	canon := make([]string, len(cells))
 
@@ -2927,6 +2966,47 @@ func htmlLetteredLabel(s string) (label string, letter byte, ok bool) {
 		return s, 0, false
 	}
 	return strings.TrimSpace(s[3:]), letter, true
+}
+
+// htmlLetteredRestatement reports that the lower header row names the upper
+// row's columns a SECOND time in the filer's own short labels, rather than
+// continuing labels the upper row left unfinished. The SEC's lettered Item 1
+// wording is a complete label by construction -- "(h) Vote Cast" wants no
+// continuation -- so a row of short names beneath it restates the grid.
+//
+// Joining the two column-wise is what the wrapped-header reader does otherwise,
+// and on this shape it produced "(g) Voted Y" and "(h) Vote Cast Vote Cast".
+// Neither is the bare "(g) Voted" that htmlIsGateLabel refuses, so the
+// whether-voted flag claimed the vote field on the word-sequence fallback and
+// every row reported how_voted = "Y" -- a value no filing records.
+//
+// Two conditions keep a lettered header whose labels genuinely wrap onto the
+// next row from being read as a restatement: the lower row must be a header in
+// its own right (three or more of its columns name a field unaided), and every
+// column the two rows share must carry a lettered label above, so a continuation
+// word beneath a plain label still joins.
+func htmlLetteredRestatement(upper, lower []string) bool {
+	if len(upper) != len(lower) {
+		return false
+	}
+	lettered := 0
+	for i := range upper {
+		u := htmlFlat(upper[i])
+		if u == "" {
+			continue
+		}
+		if _, _, ok := htmlLetteredLabel(u); ok {
+			lettered++
+			continue
+		}
+		if htmlFlat(lower[i]) != "" {
+			return false
+		}
+	}
+	if lettered < 2 {
+		return false
+	}
+	return len(htmlMapFields(lower)) >= 3
 }
 
 // htmlCanonLabel renders a header cell as a comparable label: the SEC's
@@ -6656,6 +6736,142 @@ func htmlRegistrantSplitCells(cells []string) (string, bool) {
 		return "", false
 	}
 	return filled[0] + " " + value, true
+}
+
+// reHTMLRegistrantEmptySuffix matches a `Registrant:` cell that names the
+// registrant and then ENDS at the separating dash, with no sleeve after it:
+// `Registrant: Mutual Fund Series Trust- ` and its &nbsp;-padded twin. The
+// registrant part must be non-empty, so a bare `Registrant: -` is not this
+// shape.
+var reHTMLRegistrantEmptySuffix = regexp.MustCompile(`(?i)^Registrant:\s*\S.*[-\x{2013}\x{2014}]$`)
+
+// reHTMLRegistrantRowMarker matches the form-item marker that closes this cover
+// row (`Item 1`, `Exhibit 1`). It is not part of any fund's name, and it is not
+// told from the name by boldness -- the same registrant prints the marker bold
+// in one filing and plain in the next -- so it is excluded by what it says.
+var reHTMLRegistrantRowMarker = regexp.MustCompile(`(?i)^(Exhibit|Item)\s*[0-9]{1,3}$`)
+
+// htmlRegistrantEmptySuffixFund reads the sleeve out of a cover row whose
+// `Registrant:` cell carries the registrant but no sleeve, the sleeve being
+// printed BOLD in a later cell of the same row. Boldness is the evidence: the
+// row's remaining filled cells are spacers and the form-item marker, and only
+// the name is set in the same bold run as the `Registrant:` label itself. The
+// first bold cell after
+// the label that is not the form-item marker is the name; the ORDER is what
+// holds across this registrant's filings, so the marker is skipped rather than
+// relied on to come last.
+func htmlRegistrantEmptySuffixFund(cells []string, raw []byte) (string, bool) {
+	label := ""
+	for _, cell := range cells {
+		if v := htmlFlat(cell); v != "" {
+			if !reHTMLRegistrantEmptySuffix.MatchString(v) {
+				return "", false
+			}
+			label = v
+			break
+		}
+	}
+	if label == "" {
+		return "", false
+	}
+	seen := false
+	for _, seg := range htmlRawCells(raw) {
+		text := htmlFlat(htmlCellText(seg))
+		if !seen {
+			seen = text == label
+			continue
+		}
+		bold := htmlFlat(htmlCellBoldText(seg))
+		if bold == "" || reHTMLRegistrantRowMarker.MatchString(bold) {
+			continue
+		}
+		return bold, true
+	}
+	return "", false
+}
+
+// htmlRawCells walks a row's markup and yields each cell's inner markup in
+// printed order. Unlike htmlRowCells it does not decode, expand colspan or
+// align anything on the logical grid: the readers here need the bytes a cell
+// was printed from, and they need them in the order the row printed them.
+func htmlRawCells(seg []byte) [][]byte {
+	var f htmlBoundaryFinder
+	var out [][]byte
+	pos, open := 0, -1
+	for len(out) < htmlMaxCells {
+		at, after, isClose, ok := f.next(seg, pos)
+		if !ok {
+			break
+		}
+		start := open
+		if isClose && start < 0 {
+			start = pos
+		}
+		if start >= 0 {
+			if at-start > htmlMaxCellBytes {
+				return nil
+			}
+			out = append(out, seg[start:at])
+		}
+		if isClose {
+			open, pos = -1, after
+		} else {
+			open, pos = after, after
+		}
+	}
+	if open >= 0 && open < len(seg) && len(out) < htmlMaxCells && len(seg)-open <= htmlMaxCellBytes {
+		out = append(out, seg[open:])
+	}
+	return out
+}
+
+// htmlCellBoldText renders the text of a cell's bold runs, and nothing else.
+// An empty result means the cell printed no bold text at all -- which is how a
+// spacer cell is told from a named one in a masthead row.
+func htmlCellBoldText(seg []byte) string {
+	var parts []string
+	for _, name := range [2]string{"b", "strong"} {
+		openTag, closeTag := "<"+name, "</"+name
+		for pos := 0; pos < len(seg); {
+			at := indexFrom(seg, pos, openTag)
+			if at < 0 || !htmlTagNameEnds(seg, at+len(openTag)) {
+				break
+			}
+			gt := indexByteFrom(seg, at, '>')
+			if gt < 0 {
+				break
+			}
+			end := gt + 1
+			for {
+				c := indexFrom(seg, end, closeTag)
+				if c < 0 {
+					break
+				}
+				if htmlTagNameEnds(seg, c+len(closeTag)) {
+					end = c
+					break
+				}
+				end = c + len(closeTag)
+			}
+			if end <= gt {
+				break
+			}
+			if t := htmlCellText(seg[gt+1 : end]); t != "" {
+				parts = append(parts, t)
+			}
+			pos = end + 1
+		}
+	}
+	return strings.TrimSpace(strings.Join(parts, " "))
+}
+
+// htmlTagNameEnds reports a tag name ending at i, so `<b` does not match the
+// `<br>` and `<big>` that share its first byte.
+func htmlTagNameEnds(seg []byte, i int) bool {
+	if i >= len(seg) {
+		return false
+	}
+	return seg[i] == '>' || seg[i] == '/' || htmlIsSpace(seg[i])
 }
 
 // htmlBrandOnlyHeading reads a section heading that names the registrant's own
