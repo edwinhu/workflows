@@ -6219,6 +6219,34 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 				}
 			}
 		}
+		// `Vote Summary-Small-Cap Growth Fund` (Roxbury Funds 2010, 531 rows):
+		// the vendor caption is printed BEFORE the fund name and glued to it by
+		// a hyphen with no space, where the sibling banner of the same filing
+		// prints the same caption AFTER it -- `All Cap Fund Vote Summary` -- and
+		// resolves. The difference is position alone, so the caption is moved to
+		// the end for the lookup only, and only when the moved candidate
+		// resolves: the printed heading is what gets recorded.
+		if _, d := issResolveFund(ix, candidate); d == nil {
+			if moved, ok := htmlMoveGluedCaptionPrefix(candidate); ok {
+				if _, md := issResolveFund(ix, moved); md != nil {
+					candidate = moved
+				}
+			}
+		}
+		// `Roxbury/Hood River Small-Cap Growth Proxy Voting Summary` (Roxbury
+		// Funds 2014, 454 rows): the banner drops the type word the declared
+		// name carries right before the trailing vendor caption, where the
+		// sibling banner of the same filing prints it -- `Roxbury/Mar Vista
+		// Strategic Growth Fund Proxy Voting Summary` -- and resolves. The word
+		// is put back for the lookup only, and only when the result resolves:
+		// the edit htmlDictTypeWordAdded already makes on the dictionary side.
+		if _, d := issResolveFund(ix, candidate); d == nil {
+			if try, ok := htmlCaptionTypeWordAdded(candidate); ok {
+				if _, td := issResolveFund(ix, try); td != nil {
+					candidate = try
+				}
+			}
+		}
 		if _, d := issResolveFund(ix, candidate); d != nil {
 			// A banner wrapped over two elements resolves TWICE -- once per
 			// half -- and the later half wins by standing last: `Portfolio I`
@@ -6313,6 +6341,58 @@ func htmlCutFormItemSuffix(candidate string) string {
 		return strings.TrimSpace(candidate[:k])
 	}
 	return candidate
+}
+
+// htmlVendorCaptions are the report captions this grammar's vendors print on the
+// fund banner itself, in the two spellings measured on it. Only these, because
+// both readings below treat a caption as decoration rather than as part of the
+// name, and a longer vocabulary would start trading away words registrants
+// actually declare.
+var htmlVendorCaptions = [...]string{"proxy voting summary", "vote summary"}
+
+// htmlMoveGluedCaptionPrefix moves a vendor caption printed in FRONT of the fund
+// name, glued to it by a hyphen with no space, to the end of the heading: `Vote
+// Summary-Small-Cap Growth Fund` is read as `Small-Cap Growth Fund Vote
+// Summary`, which is how the sibling banner of the same filing spells it. The
+// hyphen must carry no space on either side, which is what separates a caption
+// glued to the name from a name whose own words follow a spaced dash, and two
+// tokens at least must remain in front of the moved caption.
+func htmlMoveGluedCaptionPrefix(candidate string) (string, bool) {
+	c := strings.TrimSpace(candidate)
+	for _, capt := range htmlVendorCaptions {
+		if len(c) <= len(capt)+1 || !strings.EqualFold(c[:len(capt)], capt) || c[len(capt)] != '-' {
+			continue
+		}
+		rest := c[len(capt)+1:]
+		if rest == "" || rest[0] == ' ' || len(strings.Fields(rest)) < 2 {
+			continue
+		}
+		return rest + " " + c[:len(capt)], true
+	}
+	return "", false
+}
+
+// htmlCaptionTypeWordAdded puts back the type word a banner drops right before a
+// TRAILING vendor caption: `Roxbury/Hood River Small-Cap Growth Proxy Voting
+// Summary` for a declared `Roxbury/Hood River Small-Cap Growth Fund -
+// Institutional Shares`. Only where the banner carries no type word of its own
+// in that slot -- one that already prints `Fund` before the caption is left
+// alone -- and two tokens at least must precede the caption, so a bare caption
+// line is never turned into a fund name.
+func htmlCaptionTypeWordAdded(candidate string) (string, bool) {
+	c := strings.TrimSpace(candidate)
+	for _, capt := range htmlVendorCaptions {
+		if len(c) <= len(capt)+1 || !strings.EqualFold(c[len(c)-len(capt):], capt) {
+			continue
+		}
+		head := strings.TrimSpace(c[:len(c)-len(capt)])
+		f := strings.Fields(head)
+		if len(f) < 2 || issTypeWord(strings.ToLower(f[len(f)-1])) {
+			continue
+		}
+		return head + " Fund " + c[len(c)-len(capt):], true
+	}
+	return "", false
 }
 
 // htmlSplitGluedDashRun puts a space between a leading run of dashes and the
