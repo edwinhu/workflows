@@ -6333,7 +6333,8 @@ func issNearMiss(banner, decl []string) bool {
 }
 
 // issOneTokenEdit reports two token runs of equal length that agree everywhere
-// but at most one position, and there by a single character.
+// but at most one position, and there by a single character or by one swap of
+// an adjacent PAIR of characters.
 func issOneTokenEdit(a, b []string) bool {
 	diff := -1
 	for i := range a {
@@ -6352,7 +6353,37 @@ func issOneTokenEdit(a, b []string) bool {
 	if len(x) < issNearMissMinEdit || len(y) < issNearMissMinEdit {
 		return false
 	}
-	return issEditDistanceOne(x, y)
+	return issEditDistanceOne(x, y) || issAdjacentTransposition(x, y)
+}
+
+// issAdjacentTransposition reports two tokens of the SAME length that agree
+// everywhere but at one adjacent pair of characters, swapped: `managemetn` for
+// `management`, `sheilds` for `shields`. It is the one typing slip
+// issEditDistanceOne cannot see -- a swap is two substitutions -- and CIK
+// 0000931491 prints it in the vote-table banner of two filings nine years and
+// two vendors apart, each time of a name its own SEC-HEADER declares on the
+// line above (`Capital Managemetn Mid-Cap Fund` for S000010456 in 2010,
+// `WELLINGTON SHEILDS SMALL-CAP FUND` for S000010455 in 2019); the corpus
+// carries a third instance under another registrant (`SDPR` for `SPDR`).
+//
+// It admits strictly less than an edit of distance two: the multiset of
+// characters is unchanged, the length is unchanged, and the two moved
+// characters must be neighbours. Its callers apply it token by token with every
+// other token matching exactly, under issNearMissMinEdit, and against the
+// registrant's OWN declared names only -- a swap inside a short token, where
+// `Fund A` and `Fund B` live, is never reached.
+func issAdjacentTransposition(x, y string) bool {
+	if len(x) != len(y) {
+		return false
+	}
+	i := 0
+	for i < len(x) && x[i] == y[i] {
+		i++
+	}
+	if i+1 >= len(x) {
+		return false // equal, or a single trailing character differs
+	}
+	return x[i] == y[i+1] && x[i+1] == y[i] && x[i+2:] == y[i+2:]
 }
 
 // issCutNearMissBrand cuts a leading brand the heading MISSPELLS: the brand must
