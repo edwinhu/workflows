@@ -5155,6 +5155,20 @@ func issSleeveStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		ordinal = tail[0]
 	}
 	var found *SeriesDecl
+	// An EXACT stem -- a declared name that is the heading's stem token for token,
+	// with nothing inserted -- is not one reading among several: it is the name the
+	// heading prints. The scan being a subsequence test, a sibling that INSERTS a
+	// word answers the same stem, and letting that looser hit collide the exact one
+	// away discards the only candidate the heading actually spells. Williamsburg
+	// Investment Trust (CIK 842512, filing 0001111830-08-000971.txt) declares both
+	// `Jamestown Equity Fund` (S000001564) and `Jamestown International Equity Fund`
+	// (S000001566); the banner's stem `jamestown equity fund` is exact against the
+	// first and reached only by passing over `international` in the second, and the
+	// collision nulled all 904 rows of that section -- the whole no-series count
+	// this CIK carries. So exact candidates are tallied apart, and one exact hit
+	// wins outright over any number of word-skipping ones.
+	var exact *SeriesDecl
+	exactN, collide := 0, false
 	for name, d := range ix.byName {
 		if d == nil {
 			continue
@@ -5194,10 +5208,22 @@ func issSleeveStemDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		if ordinal == "" && len(cand) > 1 && issRomanNumeral(cand[len(cand)-1]) {
 			continue
 		}
+		if skipAt < 0 {
+			if exact == nil || exact.SeriesID != d.SeriesID {
+				exactN++
+			}
+			exact = d
+		}
 		if found != nil && found.SeriesID != d.SeriesID {
-			return nil
+			collide = true
 		}
 		found = d
+	}
+	if exactN == 1 {
+		return exact
+	}
+	if collide {
+		return nil
 	}
 	return found
 }

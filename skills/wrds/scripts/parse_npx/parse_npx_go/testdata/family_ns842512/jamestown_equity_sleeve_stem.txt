@@ -1,0 +1,381 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ CJrhDtfzGAV7tBJZ+NOfftNewTNTyoxYmpSn48rZxTYVkiEgj4lFl30pRPqE5lDg
+ 3dLCSKfseFhbog5EZClO/g==
+
+<SEC-DOCUMENT>0001111830-08-000971.txt : 20080819
+<SEC-HEADER>0001111830-08-000971.hdr.sgml : 20080819
+<ACCEPTANCE-DATETIME>20080819131335
+ACCESSION NUMBER:		0001111830-08-000971
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20080630
+FILED AS OF DATE:		20080819
+DATE AS OF CHANGE:		20080819
+EFFECTIVENESS DATE:		20080819
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			WILLIAMSBURG INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000842512
+		IRS NUMBER:				566344591
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0331
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-05685
+		FILM NUMBER:		081026995
+
+	BUSINESS ADDRESS:	
+		STREET 1:		C/O ULTIMUS FUND SOLUTIONS, LLC
+		STREET 2:		225 PICTORIA DRIVE, SUITE 450
+		CITY:			CINCINNATI
+		STATE:			OH
+		ZIP:			45246
+		BUSINESS PHONE:		513-587-3400
+
+	MAIL ADDRESS:	
+		STREET 1:		C/O ULTIMUS FUND SOLUTIONS, LLC
+		STREET 2:		225 PICTORIA DRIVE, SUITE 450
+		CITY:			CINCINNATI
+		STATE:			OH
+		ZIP:			45246
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	NOTTINGHAM INVESTMENT TRUST /NC/
+		DATE OF NAME CHANGE:	19940125
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	NOTTINGHAM INVESTMENT TRUST
+		DATE OF NAME CHANGE:	19940125
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000842512
+<SERIES-ID>S000001557
+<SERIES-NAME>Government Street Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000004216
+<CLASS-CONTRACT-NAME>Government Street Equity Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>GVEQX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000842512
+<SERIES-ID>S000001558
+<SERIES-NAME>FBP Balanced Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000004217
+<CLASS-CONTRACT-NAME>FBP Balanced Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FBPBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000842512
+<SERIES-ID>S000001559
+<SERIES-NAME>Davenport Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000004218
+<CLASS-CONTRACT-NAME>Davenport Equity Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>DAVPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000842512
+<SERIES-ID>S000001561
+<SERIES-NAME>Alabama Tax-Free Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000004220
+<CLASS-CONTRACT-NAME>Alabama Tax-Free Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>ALABX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000842512
+<SERIES-ID>S000001562
+<SERIES-NAME>Government Street Mid-Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000004221
+<CLASS-CONTRACT-NAME>Government Street Mid-Cap Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>GVMCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000842512
+<SERIES-ID>S000001563
+<SERIES-NAME>Jamestown Balanced Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000004222
+<CLASS-CONTRACT-NAME>Jamestown Balanced Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>JAMBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000842512
+<SERIES-ID>S000001564
+<SERIES-NAME>Jamestown Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000004223
+<CLASS-CONTRACT-NAME>Jamestown Equity Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>JAMEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000842512
+<SERIES-ID>S000001565
+<SERIES-NAME>Jamestown Tax-Exempt Virginia Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000004224
+<CLASS-CONTRACT-NAME>Jamestown Tax-Exempt Virginia Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>JTEVX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000842512
+<SERIES-ID>S000001566
+<SERIES-NAME>Jamestown International Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000004225
+<CLASS-CONTRACT-NAME>Jamestown International Equity Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>JAMIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000842512
+<SERIES-ID>S000001567
+<SERIES-NAME>FBP Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000004226
+<CLASS-CONTRACT-NAME>FBP Value Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FBPEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000842512
+<SERIES-ID>S000013560
+<SERIES-NAME>Jamestown Select Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000036767
+<CLASS-CONTRACT-NAME>Jamestown Select Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>JEDIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx-0608.txt
+<DESCRIPTION>WILLIAMSBURG INVESTMENT TRUST - FORM N-PX
+<TEXT>
+
+
+================================================================================
+          JAMESTOWN BALANCED FUND PROXY VOTING RECORD 7/01/07-6/30/08
+================================================================================
+
+<TABLE>
+<CAPTION>
+TEREX CORPORATION
+- ----------------------------------------------------------------------------------------------------------
+SECURITY           880779103                             MEETING TYPE             Special
+TICKER SYMBOL      TEX                                   MEETING DATE             17-Jul-2007
+ISIN                                                     AGENDA                   932743936 - Management
+- ----------------------------------------------------------------------------------------------------------
+ITEM     PROPOSAL                                              TYPE             VOTE           FOR/AGAINST
+                                                                                               MANAGEMENT
+- ----------------------------------------------------------------------------------------------------------
+<C>      <C>                                                   <C>              <C>            <C>
+01       AMENDMENT OF TEREX CERTIFICATE OF INCORPORATION       Management       Against        Against
+         TO INCREASE NUMBER OF AUTHORIZED SHARES OF
+         COMMON STOCK.
+- ----------------------------------------------------------------------------------------------------------
+ACCOUNT NUMBER           CUSTODIAN         BALLOT SHARES     UNAVAILABLE   VOTE DATE     DATE CONFIRMED
+                                                             SHARES
+- ----------------------------------------------------------------------------------------------------------
+19-4050                  3S7               5100              0             26-Jun-2007   26-Jun-2007
+- ----------------------------------------------------------------------------------------------------------
+
+TEVA PHARMACEUTICAL INDUSTRIES LIMITED
+- ----------------------------------------------------------------------------------------------------------
+SECURITY           881624209                             MEETING TYPE             Annual
+TICKER SYMBOL      TEVA                                  MEETING DATE             17-Jul-2007
+ISIN                                                     AGENDA                   932745081 - Management
+- ----------------------------------------------------------------------------------------------------------
+ITEM     PROPOSAL                                              TYPE             VOTE           FOR/AGAINST
+                                                                                               MANAGEMENT
+- ----------------------------------------------------------------------------------------------------------
+01       TO RECEIVE AND DISCUSS THE COMPANY'S                  Management       For            For
+         CONSOLIDATED BALANCE SHEET, ALL AS MORE FULLY
+         DESCRIBED IN THE PROXY STATEMENT.
+02       TO APPROVE THE BOARD OF DIRECTORS'                    Management       For            For
+         RECOMMENDATION THAT THE CASH DIVIDEND FOR THE
+         YEAR ENDED DECEMBER 31, 2006, WHICH WAS PAID IN
+         FOUR INSTALLMENTS AND AGGREGATED NIS 1.36
+         (APPROXIMATELY US$0.31) PER ORDINARY SHARE (OR
+         ADR), BE DECLARED FINAL.
+3A       TO ELECT ABRAHAM E. COHEN AS A DIRECTOR.              Management       Abstain        Against
+3B       TO ELECT PROF. ROGER D. KORNBERG AS A DIRECTOR        Management       For            For
+3C       TO ELECT PROF. MOSHE MANY AS A DIRECTOR.              Management       For            For
+3D       TO ELECT DAN PROPPER AS A DIRECTOR.                   Management       For            For
+04       TO APPROVE THE PURCHASE OF DIRECTORS' AND             Management       For            For
+         OFFICERS' LIABILITY INSURANCE FOR THE DIRECTORS
+         AND OFFICERS OF THE COMPANY AND ITS SUBSIDIARIES,
+         ALL AS FULLY DESCRIBED IN THE PROXY STATEMENT.
+05       TO APPOINT KESSELMAN & KESSELMAN, A MEMBER OF         Management       For            For
+         PRICEWATERHOUSECOOPERS INTERNATIONAL LTD., AS
+         THE COMPANY'S INDEPENDENT REGISTERED PUBLIC
+         ACCOUNTING FIRM UNTIL THE 2008 ANNUAL MEETING OF
+         SHAREHOLDERS AND TO AUTHORIZE THE AUDIT
+         COMMITTEE TO DETERMINE THEIR COMPENSATION AND
+         THE BOARD OF DIRECTORS TO RATIFY SUCH
+         DETERMINATION.
+- ----------------------------------------------------------------------------------------------------------
+ACCOUNT NUMBER           CUSTODIAN         BALLOT SHARES     UNAVAILABLE   VOTE DATE     DATE CONFIRMED
+                                                             SHARES
+- ----------------------------------------------------------------------------------------------------------
+19-4050                  3S7               11000             0             21-Jun-2007   21-Jun-2007
+- ----------------------------------------------------------------------------------------------------------
+</TABLE>
+<PAGE>
+
+================================================================================
+JAMESTOWN EQUITY FUND PROXY VOTING RECORD 7/01/07 - 6/30/08
+================================================================================
+
+<TABLE>
+<CAPTION>
+TEREX CORPORATION
+- ----------------------------------------------------------------------------------------------------------
+SECURITY           880779103                             MEETING TYPE             Special
+TICKER SYMBOL      TEX                                   MEETING DATE             17-Jul-2007
+ISIN                                                     AGENDA                   932743936 - Management
+- ----------------------------------------------------------------------------------------------------------
+ITEM     PROPOSAL                                              TYPE             VOTE           FOR/AGAINST
+                                                                                               MANAGEMENT
+- ----------------------------------------------------------------------------------------------------------
+<C>      <C>                                                   <C>              <C>            <C>
+01       AMENDMENT OF TEREX CERTIFICATE OF INCORPORATION       Management       Against        Against
+         TO INCREASE NUMBER OF AUTHORIZED SHARES OF
+         COMMON STOCK.
+- ----------------------------------------------------------------------------------------------------------
+ACCOUNT NUMBER           CUSTODIAN         BALLOT SHARES     UNAVAILABLE   VOTE DATE     DATE CONFIRMED
+                                                             SHARES
+- ----------------------------------------------------------------------------------------------------------
+19-4051                  3S7               6600              0             26-Jun-2007   26-Jun-2007
+- ----------------------------------------------------------------------------------------------------------
+
+TEVA PHARMACEUTICAL INDUSTRIES LIMITED
+- ----------------------------------------------------------------------------------------------------------
+SECURITY           881624209                             MEETING TYPE             Annual
+TICKER SYMBOL      TEVA                                  MEETING DATE             17-Jul-2007
+ISIN                                                     AGENDA                   932745081 - Management
+- ----------------------------------------------------------------------------------------------------------
+ITEM     PROPOSAL                                              TYPE             VOTE           FOR/AGAINST
+                                                                                               MANAGEMENT
+- ----------------------------------------------------------------------------------------------------------
+01       TO RECEIVE AND DISCUSS THE COMPANY'S                  Management       For            For
+         CONSOLIDATED BALANCE SHEET, ALL AS MORE FULLY
+         DESCRIBED IN THE PROXY STATEMENT.
+02       TO APPROVE THE BOARD OF DIRECTORS'                    Management       For            For
+         RECOMMENDATION THAT THE CASH DIVIDEND FOR THE
+         YEAR ENDED DECEMBER 31, 2006, WHICH WAS PAID IN
+         FOUR INSTALLMENTS AND AGGREGATED NIS 1.36
+         (APPROXIMATELY US$0.31) PER ORDINARY SHARE (OR
+         ADR), BE DECLARED FINAL.
+3A       TO ELECT ABRAHAM E. COHEN AS A DIRECTOR.              Management       Abstain        Against
+3B       TO ELECT PROF. ROGER D. KORNBERG AS A DIRECTOR        Management       For            For
+3C       TO ELECT PROF. MOSHE MANY AS A DIRECTOR.              Management       For            For
+3D       TO ELECT DAN PROPPER AS A DIRECTOR.                   Management       For            For
+04       TO APPROVE THE PURCHASE OF DIRECTORS' AND             Management       For            For
+         OFFICERS' LIABILITY INSURANCE FOR THE DIRECTORS
+         AND OFFICERS OF THE COMPANY AND ITS SUBSIDIARIES,
+         ALL AS FULLY DESCRIBED IN THE PROXY STATEMENT.
+05       TO APPOINT KESSELMAN & KESSELMAN, A MEMBER OF         Management       For            For
+         PRICEWATERHOUSECOOPERS INTERNATIONAL LTD., AS
+         THE COMPANY'S INDEPENDENT REGISTERED PUBLIC
+         ACCOUNTING FIRM UNTIL THE 2008 ANNUAL MEETING OF
+         SHAREHOLDERS AND TO AUTHORIZE THE AUDIT
+         COMMITTEE TO DETERMINE THEIR COMPENSATION AND
+         THE BOARD OF DIRECTORS TO RATIFY SUCH
+         DETERMINATION.
+- ----------------------------------------------------------------------------------------------------------
+ACCOUNT NUMBER           CUSTODIAN         BALLOT SHARES     UNAVAILABLE   VOTE DATE     DATE CONFIRMED
+                                                             SHARES
+- ----------------------------------------------------------------------------------------------------------
+19-4051                  3S7               14000             0             21-Jun-2007   21-Jun-2007
+- ----------------------------------------------------------------------------------------------------------
+</TABLE>
+<PAGE>
+
+================================================================================
+          JAMESTOWN SELECT FUND PROXY VOTING RECORD 7/01/07 - 6/30/08
+================================================================================
+
+<TABLE>
+<CAPTION>
+TEREX CORPORATION
+- ----------------------------------------------------------------------------------------------------------
+SECURITY           880779103                             MEETING TYPE             Special
+TICKER SYMBOL      TEX                                   MEETING DATE             17-Jul-2007
+ISIN                                                     AGENDA                   932743936 - Management
+- ----------------------------------------------------------------------------------------------------------
+ITEM     PROPOSAL                                              TYPE             VOTE           FOR/AGAINST
+                                                                                               MANAGEMENT
+- ----------------------------------------------------------------------------------------------------------
+<C>      <C>                                                   <C>              <C>            <C>
+01       AMENDMENT OF TEREX CERTIFICATE OF INCORPORATION       Management       Against        Against
+         TO INCREASE NUMBER OF AUTHORIZED SHARES OF
+         COMMON STOCK.
+- ----------------------------------------------------------------------------------------------------------
+ACCOUNT NUMBER           CUSTODIAN         BALLOT SHARES     UNAVAILABLE   VOTE DATE     DATE CONFIRMED
+                                                             SHARES
+- ----------------------------------------------------------------------------------------------------------
+19-4055                  3S7               4660              0             26-Jun-2007   26-Jun-2007
+- ----------------------------------------------------------------------------------------------------------
+
+MCKESSON CORPORATION
+- ----------------------------------------------------------------------------------------------------------
+SECURITY           58155Q103                             MEETING TYPE             Annual
+TICKER SYMBOL      MCK                                   MEETING DATE             25-Jul-2007
+ISIN                                                     AGENDA                   932746095 - Management
+- ----------------------------------------------------------------------------------------------------------
+ITEM     PROPOSAL                                              TYPE             VOTE           FOR/AGAINST
+                                                                                               MANAGEMENT
+- ----------------------------------------------------------------------------------------------------------
+1A       ELECTION OF DIRECTOR: JOHN H. HAMMERGREN              Management       For            For
+1B       ELECTION OF DIRECTOR: M. CHRISTINE JACOBS             Management       For            For
+02       APPROVE AMENDMENTS TO THE COMPANY'S RESTATED          Management       For            For
+         CERTIFICATE OF INCORPORATION TO DECLASSIFY THE
+         BOARD OF DIRECTORS.
+03       APPROVE AN AMENDMENT TO THE COMPANY'S 2005            Management       For            For
+         STOCK PLAN TO INCREASE THE NUMBER OF SHARES OF
+         COMMON STOCK RESERVED FOR ISSUANCE UNDER THE
+         PLAN BY 15,000,000.
+04       APPROVE AN AMENDMENT TO THE COMPANY'S 2000            Management       For            For
+         EMPLOYEE STOCK PURCHASE PLAN TO INCREASE THE
+         NUMBER OF SHARES OF COMMON STOCK RESERVED FOR
+         ISSUANCE UNDER THE PLAN BY 5,000,000.
+05       RATIFY THE APPOINTMENT OF DELOITTE & TOUCHE LLP AS    Management       For            For
+         THE COMPANY'S INDEPENDENT REGISTERED PUBLIC
+         ACCOUNTING FIRM FOR THE FISCAL YEAR ENDING MARCH
+         31, 2008.
+- ----------------------------------------------------------------------------------------------------------
+ACCOUNT NUMBER           CUSTODIAN         BALLOT SHARES     UNAVAILABLE   VOTE DATE     DATE CONFIRMED
+                                                             SHARES
+- ----------------------------------------------------------------------------------------------------------
+19-4055                  3S7               5140              0             26-Jun-2007   26-Jun-2007
+- ----------------------------------------------------------------------------------------------------------
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
