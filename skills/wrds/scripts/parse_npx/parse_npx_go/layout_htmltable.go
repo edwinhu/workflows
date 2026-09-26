@@ -448,7 +448,8 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			// adopted instead -- the registrant's FORMER CONFORMED NAME, which
 			// names no series at all (124 rows of that one filing).
 			notHeading := identityCell || htmlWrappedProseCell(cells) ||
-				(bannerFund && htmlBallotIssuerOverColumnHeader(feed, cells))
+				(bannerFund && htmlBallotIssuerOverColumnHeader(feed, cells)) ||
+				htmlWrappedProposalWordCell(seriesIx, cells, bannerFund)
 			if titles := htmlDatedTitles(seriesIx, heading, dict); titles != nil && !notHeading {
 				curFund, curSeries, outerSection, windowed = titles[0].name, titles[0].id, true, titles
 				bannerFund = false
@@ -4325,6 +4326,45 @@ func htmlWrappedProseCell(cells []string) bool {
 		}
 	}
 	return true
+}
+
+// reHTMLBareWord is one unpunctuated word and nothing else.
+var reHTMLBareWord = regexp.MustCompile(`^[A-Za-z]+$`)
+
+// htmlWrappedProposalWordCell reads the OTHER half of the wrapped-sentence
+// shape htmlWrappedProseCell refuses: not a stack of uncapitalised lines inside
+// one cell, but a single word left alone on its own row because the vendor
+// hard-wrapped a proposal across sibling rows and this is the tail of it
+// (`... Receive Proposal on Allocation of 2010` / `Income`, Principal Funds
+// 2011, source line 125831). One word is never a fund name the registrant
+// declared, and the only thing that can make it resolve is the CROSS-FILING
+// dictionary -- this CIK declared `Income Fund` for S000014242 in a different
+// filing, and adopting it both misfiles the fragment and clears bannerFund,
+// after which the `Institution Account(s): PIF INTERNATIONAL FUND I EMMK` cell
+// the banner guard was skipping is adopted on every continuation page instead
+// (901 rows of that one filing with no series at all).
+//
+// The refusal is scoped to exactly that: an explicit `FUND:` banner is standing
+// (bannerFund), so a section is open and no boundary was marked between it and
+// this row, and the word is NOT one of the series this filing's own SGML header
+// declares. A word the header declares still opens its section, and with no
+// banner standing a lone word is read as before.
+func htmlWrappedProposalWordCell(ix *issSeriesIndex, cells []string, bannerFund bool) bool {
+	if !bannerFund || htmlFilledCells(cells) != 1 {
+		return false
+	}
+	var word string
+	for _, cell := range cells {
+		if v := htmlFlat(cell); v != "" {
+			word = v
+			break
+		}
+	}
+	if !reHTMLBareWord.MatchString(word) {
+		return false
+	}
+	_, declared := lookupSeriesEntry(ix.byName, word)
+	return !declared
 }
 
 // htmlBannerSharedTokenMin is how many of a declared name's own distinctive
