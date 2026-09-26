@@ -1,0 +1,840 @@
+<SEC-DOCUMENT>0001104659-12-057737.txt : 20120814
+<SEC-HEADER>0001104659-12-057737.hdr.sgml : 20120814
+<ACCEPTANCE-DATETIME>20120814141058
+ACCESSION NUMBER:		0001104659-12-057737
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20120630
+FILED AS OF DATE:		20120814
+DATE AS OF CHANGE:		20120814
+EFFECTIVENESS DATE:		20120814
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			BofA Funds Series Trust
+		CENTRAL INDEX KEY:			0001477434
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0831
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22357
+		FILM NUMBER:		121031702
+
+	BUSINESS ADDRESS:	
+		STREET 1:		100 FEDERAL STREET
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02110
+		BUSINESS PHONE:		617-434-5801
+
+	MAIL ADDRESS:	
+		STREET 1:		100 FEDERAL STREET
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02110
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	Columbia Funds Series Trust III
+		DATE OF NAME CHANGE:	20091123
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001477434
+<SERIES-ID>S000027908
+<SERIES-NAME>BofA Cash Reserves
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084762
+<CLASS-CONTRACT-NAME>Investor II Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NPRXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084763
+<CLASS-CONTRACT-NAME>Daily Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NSHXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084764
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PCMXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084765
+<CLASS-CONTRACT-NAME>Trust Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NRSXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084766
+<CLASS-CONTRACT-NAME>Liquidity Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NCLXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084767
+<CLASS-CONTRACT-NAME>Capital Class
+<CLASS-CONTRACT-TICKER-SYMBOL>CPMXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084768
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NCIXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084769
+<CLASS-CONTRACT-NAME>Adviser Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NCRXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084770
+<CLASS-CONTRACT-NAME>Marsico Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NMOXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000106835
+<CLASS-CONTRACT-NAME>Institutional Capital Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BOIXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001477434
+<SERIES-ID>S000027909
+<SERIES-NAME>BofA Massachusetts Municipal Reserves
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000106836
+<CLASS-CONTRACT-NAME>Capital Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BOMXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000106837
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BOSXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001477434
+<SERIES-ID>S000027910
+<SERIES-NAME>BofA Government Plus Reserves
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084777
+<CLASS-CONTRACT-NAME>Institutional Capital
+<CLASS-CONTRACT-TICKER-SYMBOL>CVTXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084778
+<CLASS-CONTRACT-NAME>Trust Class
+<CLASS-CONTRACT-TICKER-SYMBOL>CGPXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084779
+<CLASS-CONTRACT-NAME>Liquidity Class
+<CLASS-CONTRACT-TICKER-SYMBOL>CLQXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084780
+<CLASS-CONTRACT-NAME>Capital Class
+<CLASS-CONTRACT-TICKER-SYMBOL>GIGXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084781
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>CVIXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084782
+<CLASS-CONTRACT-NAME>Adviser Class
+<CLASS-CONTRACT-TICKER-SYMBOL>GGCXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000106838
+<CLASS-CONTRACT-NAME>Daily Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BOTXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000106839
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BOPXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000106840
+<CLASS-CONTRACT-NAME>Investor II Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BOGXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001477434
+<SERIES-ID>S000027912
+<SERIES-NAME>BofA Money Market Reserves
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084785
+<CLASS-CONTRACT-NAME>Liquidity Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NRLXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084786
+<CLASS-CONTRACT-NAME>Capital Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NMCXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084787
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NRIXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084788
+<CLASS-CONTRACT-NAME>Adviser Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NRAXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084789
+<CLASS-CONTRACT-NAME>Institutional Capital Class
+<CLASS-CONTRACT-TICKER-SYMBOL>CVGXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084791
+<CLASS-CONTRACT-NAME>Trust Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NRTXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001477434
+<SERIES-ID>S000027913
+<SERIES-NAME>BofA Treasury Reserves
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084792
+<CLASS-CONTRACT-NAME>Investor II Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NTSXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084793
+<CLASS-CONTRACT-NAME>Capital Class
+<CLASS-CONTRACT-TICKER-SYMBOL>CPLXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084794
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NTIXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084795
+<CLASS-CONTRACT-NAME>Adviser Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NTRXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084796
+<CLASS-CONTRACT-NAME>Daily Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NDLXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084797
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PHGXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084798
+<CLASS-CONTRACT-NAME>Trust Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NTTXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084799
+<CLASS-CONTRACT-NAME>Liquidity Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NTLXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000106841
+<CLASS-CONTRACT-NAME>Institutional Capital Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BOUXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001477434
+<SERIES-ID>S000027914
+<SERIES-NAME>BofA Government Reserves
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084801
+<CLASS-CONTRACT-NAME>Trust Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NGOXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084802
+<CLASS-CONTRACT-NAME>Liquidity Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NGLXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084803
+<CLASS-CONTRACT-NAME>Capital Class
+<CLASS-CONTRACT-TICKER-SYMBOL>CGCXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084804
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NVIXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084805
+<CLASS-CONTRACT-NAME>Adviser Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NGRXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084806
+<CLASS-CONTRACT-NAME>Investor II Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NGAXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084807
+<CLASS-CONTRACT-NAME>Institutional Capital Class
+<CLASS-CONTRACT-TICKER-SYMBOL>CGGXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084808
+<CLASS-CONTRACT-NAME>Daily Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NRDXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084809
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PGHXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001477434
+<SERIES-ID>S000027915
+<SERIES-NAME>BofA Municipal Reserves
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084810
+<CLASS-CONTRACT-NAME>Capital Class
+<CLASS-CONTRACT-TICKER-SYMBOL>CAFXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084811
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NMIXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084812
+<CLASS-CONTRACT-NAME>Adviser Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NMRXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084814
+<CLASS-CONTRACT-NAME>Daily Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NMDXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084815
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PHPXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084816
+<CLASS-CONTRACT-NAME>Trust Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NMSXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084817
+<CLASS-CONTRACT-NAME>Liquidity Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NMLXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000106842
+<CLASS-CONTRACT-NAME>Institutional Capital Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BORXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001477434
+<SERIES-ID>S000027916
+<SERIES-NAME>BofA Tax-Exempt Reserves
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084819
+<CLASS-CONTRACT-NAME>Trust Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NTXXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084820
+<CLASS-CONTRACT-NAME>Liquidity Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NELXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084821
+<CLASS-CONTRACT-NAME>Capital Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NRCXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084822
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NEIXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084823
+<CLASS-CONTRACT-NAME>Adviser Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NTAXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084825
+<CLASS-CONTRACT-NAME>Institutional Capital Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CXGXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084826
+<CLASS-CONTRACT-NAME>Daily Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NEDXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084827
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NECXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001477434
+<SERIES-ID>S000027917
+<SERIES-NAME>BofA California Tax-Exempt Reserves
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084828
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NCTXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084829
+<CLASS-CONTRACT-NAME>Adviser Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NARXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084830
+<CLASS-CONTRACT-NAME>Daily Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NADXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084831
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>CFTXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084832
+<CLASS-CONTRACT-NAME>Trust Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NATXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084833
+<CLASS-CONTRACT-NAME>Liquidity Class
+<CLASS-CONTRACT-TICKER-SYMBOL>CCLXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084834
+<CLASS-CONTRACT-NAME>Capital Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NCAXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001477434
+<SERIES-ID>S000027918
+<SERIES-NAME>BofA New York Tax-Exempt Reserves
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084836
+<CLASS-CONTRACT-NAME>Capital Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NNYXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084837
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NYIXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000084842
+<CLASS-CONTRACT-NAME>Trust Class
+<CLASS-CONTRACT-TICKER-SYMBOL>NYRXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000106843
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BOYXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001477434
+<SERIES-ID>S000027919
+<SERIES-NAME>BofA Connecticut Municipal Reserves
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000106844
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BONXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000106845
+<CLASS-CONTRACT-NAME>Capital Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BOCXX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>a12-16071_1npx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+
+
+<html>
+<head>
+
+  </head>
+<body lang="EN-US">
+<div>
+<br clear="all" style="page-break-before:always;">
+<div>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">Item 1. Proxy Voting Record</font></b></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+<div style="margin:0in 0in .0001pt;"><hr size="3" width="100%" noshade color="#010101" align="left"></div>
+</div>
+<!-- SEQ.=1,FOLIO='',FILE='C:\JMS\105568\12-16071-1\task5490516\16071-1-bg.htm',USER='105568',CD='Aug  8 15:13 2012' -->
+
+
+<br clear="all" style="page-break-before:always;">
+<div>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">_______________________________________________________________________________</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">The following list of funds and their respective reporting periods have no </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">reportable data as did not vote proxies relating to portfolio securities during </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">the period covered by this report.</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Fund Name:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Registrant Time Period:</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">BofA Cash Reserves&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; 07.01.2011-06.30.2012</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">BofA Government Reserves&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; 07.01.2011-06.30.2012</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">BofA Government Plus Reserves&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; 07.01.2011-06.30.2012</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">BofA Money Market Reserves&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; 07.01.2011-06.30.2012</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">BofA Tax-Exempt Reserves&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; 07.01.2011-06.30.2012</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">BofA Treasury Reserves&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160; 07.01.2011-06.30.2012</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">________________________________________________________________________________</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">___________________BofA California Tax- Exempt Reserves_________________________</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Nuveen California Investment Quality Municipal Fund</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker&#160;&#160;&#160;&#160; Security ID:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Meeting Date&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Meeting Status</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">NQC&#160;&#160;&#160;&#160;&#160;&#160;&#160; CUSIP 67062A408&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; 03/14/2012&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Voted</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Type&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Country of Trade</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; United States</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Issue No.&#160; Description&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Proponent&#160; Mgmt Rec&#160;&#160; Vote Cast&#160; For/Against</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.1&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect John Amboian&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160; &#160;&#160;&#160;&#160;For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.2&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Robert Bremner&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.3&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Jack Evans&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.4&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect David Kundert&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.5&#160;&#160;&#160; &#160;&#160;&#160;&#160;Elect Judith Stockdale&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.6&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Carole Stone&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.7&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Virginia Stringer&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.8&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Terence Toth&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160; &#160;&#160;&#160;For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.9&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect William Hunter&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.10&#160;&#160;&#160;&#160;&#160;&#160; Elect William Schneider&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">2&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elimination of&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Relating to Fund's</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Ability to Make</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Loans</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">3&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Approval of Investment&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Policy Relating to</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Fund's Ability to Make</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Loans</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">  </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">4&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elimination of&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Relating to Municipal</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Securities and Below</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Grade</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Securities</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">5&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Approval of Investment&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Policy Relating to</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Municipal</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Securities</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">6&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elimination of&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Relating to</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;Commodities</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">7&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Approval of Investment&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Policy Relating to</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Commodities</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">8&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elimination of&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;Relating to</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Derivatives and Short</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Sales</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">9&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elimination of&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Prohibiting Investment</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; in other Investment</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Companies</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">________________________________________________________________________________</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Nuveen California Performance Municipal Fund</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker&#160;&#160;&#160;&#160; Security ID:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Meeting Date&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Meeting Status</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">NCP&#160;&#160;&#160;&#160;&#160;&#160;&#160; CUSIP 67062Q502&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; 03/14/2012&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Voted</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Type&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Country of Trade</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; United States</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Issue No.&#160; Description&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Proponent&#160; Mgmt Rec&#160;&#160; Vote Cast&#160; For/Against</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Mgmt</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.1&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect John Amboian&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.2&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Robert Bremner&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.3&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Jack Evans&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.4&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect David Kundert&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.5&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Judith Stockdale&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.6&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Carole Stone&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.7&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Virginia Stringer&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160; &#160;&#160;&#160;For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.8&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Terence Toth&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.9&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect William Hunter&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.10&#160;&#160;&#160;&#160;&#160;&#160; Elect William Schneider&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">2&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elimination of&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Relating to Fund's</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Ability to Make</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Loans</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">  </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">3&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Approval of Investment&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Policy Relating to</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Fund's Ability to Make</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Loans</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">4&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elimination of&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Relating to Municipal</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Securities and Below</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Grade</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Securities</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">5&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Approval of Investment&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Policy Relating to</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Municipal</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Securities</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">6&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elimination of&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Relating to</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Commodities</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">7&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Approval of Investment&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Policy Relating to</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Commodities</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">8&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elimination of&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Relating to</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Derivatives and Short</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Sales</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">9&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elimination of&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Prohibiting Investment</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; in other Investment</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Companies</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">________________________________________________________________________________</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Nuveen California&#160; Quality Income Municipal Fund.</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker&#160;&#160;&#160;&#160; Security ID:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Meeting Date&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;Meeting Status</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">NUC&#160;&#160;&#160;&#160;&#160;&#160;&#160; CUSIP 670985506&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; 03/14/2012&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Voted</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Type&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Country of Trade</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; United States</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Issue No.&#160; Description&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Proponent&#160; Mgmt Rec&#160;&#160; Vote Cast&#160; For/Against</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.1&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect John Amboian&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.2&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Robert Bremner&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.3&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Jack Evans&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.4&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect David Kundert&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.5&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Judith Stockdale&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.6&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Carole Stone&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.7&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Virginia Stringer&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.8&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Terence Toth&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.9&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect William Hunter&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.10&#160;&#160;&#160;&#160;&#160;&#160; Elect William Schneider&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">  </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">2&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elimination of&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Relating to Fund's</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Ability to Make</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Loans</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">3&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Approval of Investment&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Policy Relating to</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Fund's Ability to Make</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Loans</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">________________________________________________________________________________</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Nuveen California Select Quality Municipal Fund, Inc.</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker&#160;&#160;&#160;&#160; Security ID:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Meeting Date&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Meeting Status</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">NVC&#160;&#160;&#160;&#160;&#160;&#160;&#160; CUSIP 670975507&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; 03/14/2012&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Voted</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Type&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Country of Trade</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; United States</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Issue No.&#160; Description&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Proponent&#160; Mgmt Rec&#160;&#160; Vote Cast&#160; For/Against</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.1&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect John Amboian&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.2&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Robert Bremner&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.3&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Jack Evans&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.4&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect David Kundert&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.5&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Judith Stockdale&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160; &#160;&#160;&#160;For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.6&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Carole Stone&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.7&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Virginia Stringer&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.8&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Terence Toth&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.9&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect William Hunter&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.10&#160;&#160;&#160;&#160;&#160;&#160; Elect William Schneider&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">2&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elimination of&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Relating to Fund's</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;Ability to Make</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Loans</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">3&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Approval of Investment&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Policy Relating to</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Fund's Ability to Make</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Loans</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">________________________________________________________________________________</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Nuveen Insured California Premium Income Municipal Fund</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker&#160;&#160;&#160;&#160; Security ID:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Meeting Date&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Meeting Status</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">NPC&#160;&#160;&#160;&#160;&#160;&#160;&#160; CUSIP 67061X300&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; 03/30/2012&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Voted</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Type&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Country of Trade</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; United States</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Issue No.&#160; Description&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Proponent&#160; Mgmt Rec&#160;&#160; Vote Cast&#160; For/Against</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.1&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect John Amboian&#160;&#160;&#160;&#160; &#160;&#160;Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.2&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Robert Bremner&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.3&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Jack Evans&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.4&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect David Kundert&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">  </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.5&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Judith Stockdale&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.6&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Carole Stone&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.7&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Virginia Stringer&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.8&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Terence Toth&#160;&#160;&#160; &#160;&#160;&#160;Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.9&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect William Hunter&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.10&#160;&#160;&#160;&#160;&#160;&#160; Elect William Schneider&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">2&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Reorganization&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">3&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elimination of&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Related to Investment</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; of at Least 80% of</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Fund's</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Assets</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">4&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Approval of New&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160; &#160;For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Related to Investment</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; of at Least 80% of</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Fund's</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Assets</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">5&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elimination of&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Related to Fund's</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Ability to Make</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Loans</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">6&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Approval of New&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Related to Fund's</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Ability to Make</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;Loans</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">  </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">__________________BofA Connecticut Municipal Reserves________________________</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Nuveen Premier Insured Municipal Income Fund</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker&#160;&#160;&#160;&#160; Security ID:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Meeting Date&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Meeting Status</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">NIF&#160;&#160;&#160;&#160;&#160;&#160;&#160; CUSIP 670987502&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; 03/30/2012&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Voted</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Type&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Country of Trade</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; United States</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Issue No.&#160; Description&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Proponent&#160; Mgmt Rec&#160;&#160; Vote Cast&#160; For/Against</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Mgmt</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.1&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect John Amboian&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.2&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect David Kundert&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.3&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Terence Toth&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.4&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect William Hunter&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.5&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect William Schneider&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.6&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Carole Stone&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.7&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Virginia Stringer&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160; &#160;&#160;&#160;&#160;&#160;For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.8&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Terence Toth&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.9&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect William Hunter&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.10&#160;&#160;&#160;&#160;&#160;&#160; Elect William Schneider&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">2&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elimination of&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Relating to Fund's</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Ability to Make</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Loans</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">3&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Approval of Investment&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Policy Relating to</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Fund's Ability to Make</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Loans</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">  </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">___________________BofA Massachusetts Municipal Reserves_______________________</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Nuveen Premier Insured Municipal Income Fund</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker&#160;&#160;&#160;&#160; Security ID:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Meeting Date&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Meeting Status</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">NIF&#160;&#160;&#160;&#160;&#160;&#160;&#160; CUSIP 670987502&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; 11/16/2011&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Voted</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Type&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Country of Trade</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; United States</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Issue No.&#160; Description&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Proponent&#160; Mgmt Rec&#160;&#160; Vote Cast&#160; For/Against</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.1&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect John Amboian&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.2&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect David Kundert&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.3&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Terence Toth&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.4&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect William Hunter&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.5&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect William Schneider&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.6&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Carole Stone&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160; &#160;&#160;&#160;&#160;&#160;For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.7&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Virginia Stringer&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.8&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect Terence Toth&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.9&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elect William Hunter&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.10&#160;&#160;&#160;&#160;&#160;&#160; Elect William Schneider&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">2&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Elimination of&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Policy</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Relating to Fund's</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Ability to Make</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Loans</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">3&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Approval of Investment&#160;&#160; Mgmt&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; For</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Policy Relating to</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Fund's Ability to Make</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Loans</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+</body>
+</html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
