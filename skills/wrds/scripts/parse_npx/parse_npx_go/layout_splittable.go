@@ -338,7 +338,14 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 			case bytes.EqualFold(trimmed, []byte("<TABLE>")):
 				if len(group) == 0 {
 					groupCtx = ctx
-					groupCtx.bare = lastBare
+					// The raw last bare line is the candidate ONLY while no
+					// banner the reader already resolved is open. A section
+					// whose fund was named once, several issuer blocks above,
+					// would otherwise lose it to the issuer heading printed
+					// one line before this table.
+					if !ctx.bareFund {
+						groupCtx.bare = lastBare
+					}
 				}
 				cur, header, haveRule, sawType = &spTable{}, nil, false, false
 			case len(trimmed) == 0:
@@ -394,7 +401,24 @@ func parseSplitTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error
 					spReadProxyEdgeHeading(l, &ctx, &groupCtx, lastBare)
 					continue
 				}
-				lastBare = spReadContext(string(trimmed), &ctx, lastBare)
+				next := spReadContext(string(trimmed), &ctx, lastBare)
+				// A line spReadContext hands back as the new bare candidate is
+				// the only out-of-table line this layout reads as free text --
+				// no pair, no rule, no tag. The tagged-`<TABLE>` path of this
+				// vendor's report prints the FUND there, once, above a run of
+				// issuer blocks that never reprint it, and `lastBare` is a
+				// single slot the first of those issuer headings overwrites.
+				// Putting the candidate through the same shared chain the
+				// `<PRE>` path uses is what keeps the fund: it is adopted only
+				// when it resolves exactly to a series this filing declares, so
+				// an issuer heading or any other prose leaves it untouched, and
+				// it then persists until the NEXT line that resolves.
+				if next == string(trimmed) {
+					if fund := spBannerFund(next, seriesIdx, resolved); fund != "" {
+						ctx.bare, ctx.bareFund = fund, true
+					}
+				}
+				lastBare = next
 			}
 			continue
 		}

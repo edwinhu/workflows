@@ -1,0 +1,107 @@
+<SEC-DOCUMENT>0000950135-06-005380.txt : 20060824
+<SEC-HEADER>0000950135-06-005380.hdr.sgml : 20060824
+<ACCEPTANCE-DATETIME>20060824161929
+ACCESSION NUMBER:		0000950135-06-005380
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20060630
+FILED AS OF DATE:		20060824
+DATE AS OF CHANGE:		20060824
+EFFECTIVENESS DATE:		20060824
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			HARTFORD HLS SERIES FUND II INC
+		CENTRAL INDEX KEY:			0000790558
+		IRS NUMBER:				411600027
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-04615
+		FILM NUMBER:		061053296
+
+	BUSINESS ADDRESS:	
+		STREET 1:		P O BOX 2999
+		CITY:			HARTFORD
+		STATE:			CT
+		ZIP:			06104-2999
+		BUSINESS PHONE:		860-843-9934
+
+	MAIL ADDRESS:	
+		STREET 1:		200 HOPMEADOW STREET
+		CITY:			SIMSBURY
+		STATE:			CT
+		ZIP:			06089
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000790558
+<SERIES-ID>S000004105
+<SERIES-NAME>HARTFORD INTERNATIONAL STOCK HLS FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011520
+<CLASS-CONTRACT-NAME>IA
+<CLASS-CONTRACT-TICKER-SYMBOL>HAISX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>b61938a1nvpx.txt
+<DESCRIPTION>THE HARTFORD SERIES FUND II, INC.
+<TEXT>
+<PAGE>
+
+                          HARTFORD INTL STOCK HLS FUND
+
+ALLIANZ AG (FORMERLY ALLIANZ HOLDING AG)
+
+Ticker:                                 Security ID: D03080112
+Meeting Date: MAY 3, 2006               Meeting Type: Annual
+Record Date:
+
+<TABLE>
+<CAPTION>
+#      Proposal                                   Mgt Rec  Vote Cast  Sponsor
+- -----  --------                                   -------  ---------  ----------
+<S>    <C>                                        <C>      <C>        <C>
+1      Receive Financial Statements and           None     None       Management
+       Statutory Reports for Fiscal 2005
+2      Approve Allocation of Income and           For      For        Management
+       Dividends of EUR 2.00 per Share
+3      Approve Discharge of Management Board for  For      For        Management
+       Fiscal 2005
+4      Approve Discharge of Supervisory Board     For      For        Management
+       for Fiscal 2005
+5      Approve Affiliation Agreement with         For      For        Management
+       Subsidiary Allianz Alternative Assets
+       Holding GmbH
+</TABLE>
+
+- --------------------------------------------------------------------------------
+
+ASSICURAZIONI GENERALI SPA
+
+Ticker:                                 Security ID: T05040109
+Meeting Date: APR 27, 2006              Meeting Type: Annual/Special
+Record Date:  APR 24, 2006
+
+<TABLE>
+<CAPTION>
+#      Proposal                                   Mgt Rec  Vote Cast  Sponsor
+- -----  --------                                   -------  ---------  ----------
+<S>    <C>                                        <C>      <C>        <C>
+1      Accept Financial Statements and Statutory  For      Did Not    Management
+       Reports at Dec. 31, 2005                            Vote
+2      Elect One Director                         For      Did Not    Management
+                                                           Vote
+</TABLE>
+</TEXT>
+</DOCUMENT>
