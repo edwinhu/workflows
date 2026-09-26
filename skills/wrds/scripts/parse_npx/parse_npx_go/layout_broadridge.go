@@ -1197,7 +1197,28 @@ func brStraySlot(ix *issSeriesIndex, rule, slot string) bool {
 	}
 	for _, t := range toks {
 		if brFundTypeWords[t] {
-			return false
+			// A fund word inside a corporate-form name is only a fund signal
+			// when this filing's OWN header names the line: `ASHFORD
+			// HOSPITALITY TRUST, INC.` is a REIT in the issuer column of
+			// Capital Management Investment Trust 2011, whose two declared
+			// series are `Capital Management Small-Cap Fund` and `... Mid-Cap
+			// Fund`, and reading its `trust` as a heading clears the banner
+			// that opened the section and files 12 rows under the issuer.
+			// `B&G FOODS, INC.` one section down carries no fund word, is read
+			// as the issuer it is, and keeps its banner -- the two blocks are
+			// identical in every other respect.
+			//
+			// Declared rather than resolved is the test, and it is the one the
+			// crossedBlank branch above already applies: brResolveHeading has
+			// refused this slot by the time we are here, so a header that
+			// spells this name for two distinct series still answers declared
+			// and is still evidence the line names a fund of this
+			// registrant's. Only a name the filing never spells falls through
+			// to the issuer reading.
+			if _, declared := lookupSeriesTolerantEntry(ix.byName, slot); declared {
+				return false
+			}
+			break
 		}
 	}
 	return true
