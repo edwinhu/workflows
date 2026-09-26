@@ -1,0 +1,387 @@
+<SEC-DOCUMENT>0001580642-17-004563.txt : 20170824
+<SEC-HEADER>0001580642-17-004563.hdr.sgml : 20170824
+<ACCEPTANCE-DATETIME>20170824112257
+ACCESSION NUMBER:		0001580642-17-004563
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20170630
+FILED AS OF DATE:		20170824
+DATE AS OF CHANGE:		20170824
+EFFECTIVENESS DATE:		20170824
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Mutual Fund & Variable Insurance Trust
+		CENTRAL INDEX KEY:			0000810695
+		IRS NUMBER:				043023766
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-05010
+		FILM NUMBER:		171048624
+
+	BUSINESS ADDRESS:	
+		STREET 1:		2960 N. MERIDIAN STREET
+		STREET 2:		SUITE 300
+		CITY:			INDIANAPOLIS
+		STATE:			IN
+		ZIP:			46208
+		BUSINESS PHONE:		800-253-0412
+
+	MAIL ADDRESS:	
+		STREET 1:		2960 N. MERIDIAN STREET
+		STREET 2:		SUITE 300
+		CITY:			INDIANAPOLIS
+		STATE:			IN
+		ZIP:			46208
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	HUNTINGTON FUNDS
+		DATE OF NAME CHANGE:	20040922
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	HUNTINGTON FUNDS /MA/
+		DATE OF NAME CHANGE:	19990106
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	MONITOR FUNDS
+		DATE OF NAME CHANGE:	19920703
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000810695
+<SERIES-ID>S000005856
+<SERIES-NAME>Rational Dividend Capture Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016036
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HDCAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016038
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HDCTX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000135443
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HDCEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000190775
+<CLASS-CONTRACT-NAME>Rational Dividend Capture Fund Class T Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000810695
+<SERIES-ID>S000005874
+<SERIES-NAME>Rational Defensive Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016090
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HSUAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016092
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HSUTX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000135444
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HSUCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000190776
+<CLASS-CONTRACT-NAME>Rational Defensive Growth Fund Class T Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000810695
+<SERIES-ID>S000014025
+<SERIES-NAME>Rational Dividend Capture VA Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038324
+<CLASS-CONTRACT-NAME>Rational Dividend Capture VA Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000810695
+<SERIES-ID>S000014032
+<SERIES-NAME>Rational Insider Buying VA Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038331
+<CLASS-CONTRACT-NAME>Rational Insider Buying VA Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000810695
+<SERIES-ID>S000017165
+<SERIES-NAME>Rational Real Strategies Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000047568
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HRSAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000047570
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HRSTX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000169250
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HRSFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000190777
+<CLASS-CONTRACT-NAME>Rational Real Strategies Fund Class T Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000810695
+<SERIES-ID>S000026200
+<SERIES-NAME>Rational Strategic Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000078667
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HBAFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000169251
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>RHSCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000169252
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>RHSIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000190778
+<CLASS-CONTRACT-NAME>Rational Strategic Allocation Fund Class T Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000810695
+<SERIES-ID>S000027209
+<SERIES-NAME>Rational Risk Managed Emerging Markets Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082132
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HGSAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082133
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HGSIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000169253
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HGSCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000190779
+<CLASS-CONTRACT-NAME>Rational Risk Managed Emerging Markets Fund Class T Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000810695
+<SERIES-ID>S000052919
+<SERIES-NAME>Rational Dynamic Momentum VA Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000166461
+<CLASS-CONTRACT-NAME>Rational Dynamic Momentum VA Fund Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000166462
+<CLASS-CONTRACT-NAME>Rational Dynamic Momentum VA Fund Institutional Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000810695
+<SERIES-ID>S000055002
+<SERIES-NAME>Rational Dynamic Momentum Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000172993
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>RDMAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000172994
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>RDMCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000172995
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>RDMIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000190780
+<CLASS-CONTRACT-NAME>Rational Dynamic Momentum Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000810695
+<SERIES-ID>S000055104
+<SERIES-NAME>Rational Iron Horse Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000173374
+<CLASS-CONTRACT-NAME>Rational Iron Horse Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>IRHAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000173375
+<CLASS-CONTRACT-NAME>Rational Iron Horse Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>IRHCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000173376
+<CLASS-CONTRACT-NAME>Rational Iron Horse Fund Institutional
+<CLASS-CONTRACT-TICKER-SYMBOL>IRHIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000190781
+<CLASS-CONTRACT-NAME>Rational Iron Horse Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000810695
+<SERIES-ID>S000057627
+<SERIES-NAME>Rational Select Asset Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000184036
+<CLASS-CONTRACT-NAME>Rational Select Asset Fund Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000184037
+<CLASS-CONTRACT-NAME>Rational Select Asset Fund Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000184038
+<CLASS-CONTRACT-NAME>Rational Select Asset Fund Institutional Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000192794
+<CLASS-CONTRACT-NAME>Rational Select Asset Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000810695
+<SERIES-ID>S000058066
+<SERIES-NAME>Rational Income Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000190076
+<CLASS-CONTRACT-NAME>Rational Income Opportunities Fund Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000190077
+<CLASS-CONTRACT-NAME>Rational Income Opportunities Fund Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000190078
+<CLASS-CONTRACT-NAME>Rational Income Opportunities Fund Class T
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000190079
+<CLASS-CONTRACT-NAME>Rational Income Opportunities Fund Institutional Class
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>mfvitnpx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 10pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD COLSPAN="5"><B>Registrant:  Mutual Fund &amp; Variable Insurance Trust-&nbsp;&nbsp;Rational Dividend Capture Fund&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</B></TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: center"><B>Rational Dividend Capture Fund</B></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif">Exhibit 1</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD COLSPAN="5"><B>Investment Company 1940 Act File # 811-05010</B></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD COLSPAN="6"><B>Reporting Period: July 1, 2016 through June 30, 2017</B></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 18%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD>
+    <TD STYLE="width: 5%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD>
+    <TD STYLE="width: 5%">&nbsp;</TD>
+    <TD STYLE="width: 4%">&nbsp;</TD>
+    <TD STYLE="width: 39%">&nbsp;</TD>
+    <TD STYLE="width: 5%">&nbsp;</TD>
+    <TD STYLE="width: 3%">&nbsp;</TD>
+    <TD STYLE="width: 4%">&nbsp;</TD>
+    <TD STYLE="width: 5%">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="border-top: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: black 1pt solid; border-right: black 1pt solid; border-bottom: black 1pt solid">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>Company Name</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>Ticker</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>CUSIP</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>Meeting Date</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>Meeting Type</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>Proposal Number</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>Description</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>Proposal Type</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>Y</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>Vote Cast</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>FOR/ Against Mgmt</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; border-left: black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>Accenture PLC</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>ACN</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>G1151C 10 1</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>2/10/2017</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>Annual</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>1</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>Approve all directors</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>MGMT</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>Y</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>FOR</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>FOR</B></FONT></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
