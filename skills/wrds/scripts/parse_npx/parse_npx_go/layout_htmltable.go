@@ -6444,6 +6444,18 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 				}
 			}
 		}
+		// `Investment Company Report - Worldwide` (IVA Fiduciary Trust 2012,
+		// 1,110 rows with no series and no fund name): after the vendor caption
+		// prefix the banner prints only the ONE word that tells this
+		// registrant's two declared funds apart, where the sibling banner of the
+		// same filing spells `IVA International Fund` in full and resolves.
+		if _, d := issResolveFund(ix, candidate); d == nil {
+			if cid := htmlCaptionWordFund(ix, candidate); cid != "" {
+				name, id, ok = line, cid, true
+				adoptedAt, adoptedLine = li, line
+				continue
+			}
+		}
 		if _, d := issResolveFund(ix, candidate); d != nil {
 			// A banner wrapped over two elements resolves TWICE -- once per
 			// half -- and the later half wins by standing last: `Portfolio I`
@@ -6590,6 +6602,82 @@ func htmlCaptionTypeWordAdded(candidate string) (string, bool) {
 		return head + " Fund " + c[len(c)-len(capt):], true
 	}
 	return "", false
+}
+
+// htmlCaptionWordFund resolves a banner that prints the ICR vendor caption and
+// then only the single WORD distinguishing the registrant's declared funds:
+// `Investment Company Report - Worldwide` for a declared `IVA Worldwide Fund`
+// (S000023283). The resolver's leading-token walk already strips the caption and
+// looks the remainder up, but a one-word remainder is no declared name and the
+// heading is dropped, section and all.
+//
+// THE FILING'S OWN DECLARATIONS ARE THE ONLY EVIDENCE ADMITTED, and exactly one
+// of them may carry the word as a whole TOKEN -- two carrying it refuse rather
+// than pick, which is what keeps a word this short from being a guess. The
+// caption prefix is required, so an ordinary one-word heading never reaches
+// here, and a type word (`Fund`, `Trust`) is refused because nearly every
+// declared name carries one. A registrant declaring a single series is refused
+// too: there the word distinguishes nothing, and any word at all would stamp it.
+func htmlCaptionWordFund(ix *issSeriesIndex, candidate string) string {
+	if ix == nil {
+		return ""
+	}
+	rest, ok := htmlCutICRCaptionPrefix(candidate)
+	if !ok {
+		return ""
+	}
+	toks := strings.Fields(normalizeSeriesName(rest))
+	if len(toks) != 1 || issTypeWord(toks[0]) {
+		return ""
+	}
+	// The filing's own header, unwidened by the corpus dictionary: hdrOnly holds
+	// that set when a dictionary was folded in, and ix IS it otherwise.
+	hdr := ix.hdrOnly
+	if hdr == nil {
+		hdr = ix
+	}
+	found, distinct := "", map[string]bool{}
+	for i := range hdr.decls {
+		d := &hdr.decls[i]
+		if d.SeriesID == "" || icrFutureDeclName(hdr, d) {
+			continue
+		}
+		distinct[d.SeriesID] = true
+		for _, t := range hdr.declToks(i) {
+			if t != toks[0] {
+				continue
+			}
+			if found != "" && found != d.SeriesID {
+				return "" // two declared funds carry this word; refuse to pick
+			}
+			found = d.SeriesID
+			break
+		}
+	}
+	if len(distinct) < 2 {
+		return ""
+	}
+	return found
+}
+
+// htmlCutICRCaptionPrefix strips the ISS `Investment Company Report` caption
+// printed in FRONT of the fund name, in the two separator spellings this
+// grammar's banners carry -- ` - ` and ` --` glued to the word after it -- and
+// reports whether the caption was there at all.
+func htmlCutICRCaptionPrefix(candidate string) (string, bool) {
+	c := strings.TrimSpace(candidate)
+	if len(c) <= len(icrReportLine) || !strings.EqualFold(c[:len(icrReportLine)], icrReportLine) {
+		return "", false
+	}
+	rest := strings.TrimLeft(c[len(icrReportLine):], " ")
+	if rest == "" || rest[0] != '-' {
+		return "", false
+	}
+	rest = strings.TrimSpace(strings.TrimLeft(rest, "-"))
+	if rest == "" {
+		return "", false
+	}
+	return rest, true
 }
 
 // htmlSplitGluedDashRun puts a space between a leading run of dashes and the

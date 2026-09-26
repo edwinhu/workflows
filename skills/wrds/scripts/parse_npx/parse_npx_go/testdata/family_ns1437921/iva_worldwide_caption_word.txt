@@ -1,0 +1,512 @@
+<SEC-DOCUMENT>0000949377-12-000533.txt : 20120831
+<SEC-HEADER>0000949377-12-000533.hdr.sgml : 20120831
+<ACCEPTANCE-DATETIME>20120831100750
+ACCESSION NUMBER:		0000949377-12-000533
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20120630
+FILED AS OF DATE:		20120831
+DATE AS OF CHANGE:		20120831
+EFFECTIVENESS DATE:		20120831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			IVA Fiduciary Trust
+		CENTRAL INDEX KEY:			0001437921
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22211
+		FILM NUMBER:		121067350
+
+	BUSINESS ADDRESS:	
+		STREET 1:		717 FIFTH AVENUE, 10TH FLOOR
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10022
+		BUSINESS PHONE:		212-584-3570
+
+	MAIL ADDRESS:	
+		STREET 1:		717 FIFTH AVENUE, 10TH FLOOR
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10022
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001437921
+<SERIES-ID>S000023282
+<SERIES-NAME>IVA International Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000068088
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>IVIOX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000068089
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>IVICX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000068090
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>IVIQX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001437921
+<SERIES-ID>S000023283
+<SERIES-NAME>IVA Worldwide Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000068091
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>IVWAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000068092
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>IVWCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000068093
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>IVWIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>e14202.htm
+<TEXT>
+<p align="center"><font face="Arial" size="2">UNITED STATES
+<br>SECURITIES AND EXCHANGE COMMISSION<br>Washington, D.C. 20549</font></p>
+<p align="center"><font face="Arial" size="2">FORM N-PX</font></p>
+<p align="center"><font face="Arial" size="2">ANNUAL REPORT
+ OF PROXY VOTING RECORD OF REGISTERED<br>MANAGEMENT INVESTMENT COMPANY</font></p>
+<p align="center"><font face="Arial" size="2">Investment
+ Company Act file number: 811-22211<br>______________________________________________</font></p>
+<div align="center"><font face="Arial" size="2">IVA FIDUCIARY
+ TRUST</font></div>
+<div align="center"><font face="Arial" size="2">______________________________________________________________________</font></div>
+<div align="center"><font face="Arial" size="2">(Exact name
+ of registrant as specified in charter)</font></div>
+<br>
+<div align="center"><font face="Arial" size="2">717 Fifth
+ Avenue, 10th Floor, New York, NY 10022</font></div>
+<div align="center"><font face="Arial" size="2">______________________________________________________________________</font></div>
+<div align="center"><font face="Arial" size="2">(Address of
+ principal executive offices) (zip code)</font></div>
+<p align="center"><font face="Arial" size="2">Michael W.
+ Malafronte<br>International Value Advisers, LLC<br>717 Fifth Avenue<br>10th Floor
+<br>New York, NY 10022</font></p>
+<p align="center"><font face="Arial" size="2">(Name and address of agent for service) 	</font></p>
+<p align="center"><font face="Arial" size="2">Copy to: </font></p>
+<p align="center"><font face="Arial" size="2">Stuart E. Fross,
+ Esq. 	<br>K&#038;L Gates LLP<br>State Street Financial Center<br>One Lincoln Street
+<br>Boston, Massachusetts 02111-2950</font></p>
+<p align="center"><font face="Arial" size="2">Brian F. Link,
+ Esq.<br>State Street Bank and Trust Company<br>Mail Code: JHT 1732<br>200 Clarendon
+ Street<br>Boston, MA 02116</font></p>
+<p align="center" align="right"><font face="Arial" size="2">Registrant&#146;s telephone
+ number, including area code: (212) 584-3570</font></p>
+<p><font face="Arial" size="2">Date of fiscal year end: September 30<br>
+Date of reporting period: July 1, 2011 - June 30, 2012</font></p>
+<hr noshade size="2" color="#000000">
+<br clear="all" style="page-break-before:always;">
+<!--page-->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="bottom" colspan="2" align="left"><font face="Arial" size="2">
+<b><u>Item 1. Proxy Voting Record.</u></b></font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td width="2%" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td valign="bottom" align="left"><font face="Arial" size="2">Note: When
+ the CUSIP (Committee on Uniform Securities Identification Procedures) is not available,
+ an alternate identifier, e.g., ISIN (International Securities Identification Number),
+ will be provided.</font></td>
+</tr>
+</table>
+<p align="center"><font face="Arial" size="3"><i><b><u>Investment Company Report - Worldwide</u></b></i></font></p>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr bgcolor="#004f75">
+<td style="BORDER-BOTTOM: black 1px solid" valign="TOP" colspan="7" align="left"><font color="#ffffff" face="Arial" size="2"><b>KANGWON
+ LAND INC, CHONGSON</b></font></td>
+</tr>
+<tr>
+<td width="23%" valign="top" align="justify"><font face="Arial" size="2"><b>Security</b></font></td>
+<td width="2%"><font face="Arial" size="1">&#160;</font></td>
+<td width="23%" valign="top" align="justify"><font face="Arial" size="2">Y4581L105</font></td>
+<td width="2%"><font face="Arial" size="1">&#160;</font></td>
+<td width="23%" valign="top" align="justify"><font face="Arial" size="2"><b>Meeting Type</b></font></td>
+<td width="2%"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">ExtraOrdinary General Meeting</font></td>
+</tr>
+<tr>
+<td valign="top" align="justify"><font face="Arial" size="2"><b>Ticker Symbol</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2"><b>Meeting Date</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">12-Jul-2011</font></td>
+</tr>
+<tr>
+<td valign="top" align="justify"><font face="Arial" size="2"><b>ISIN</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">KR7035250000</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2"><b>Agenda</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">703185074 - Management</font></td>
+</tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr bgcolor="#004f75">
+<td width="4%" valign="top" align="justify"><font face="Arial" size="2" color="#ffffff"><b>Item</b></font></td>
+<td width="2%"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2" color="#ffffff"><b>Proposal</b></font></td>
+<td width="2%"><font face="Arial" size="1">&#160;</font></td>
+<td width="8%" valign="top" align="justify"><font face="Arial" size="2" color="#ffffff"><b>Type</b></font></td>
+<td width="4%"><font face="Arial" size="1">&#160;</font></td>
+<td width="6%" valign="top" align="justify"><font face="Arial" size="2" color="#ffffff"><b>Vote</b></font></td>
+<td width="4%"><font face="Arial" size="1">&#160;</font></td>
+<td width="8%" valign="top" align="justify"><font face="Arial" size="2" color="#ffffff"><b>For/Against</b></font></td>
+</tr>
+<tr bgcolor="#004f75">
+<td style="BORDER-BOTTOM: black 1px solid" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td style="BORDER-BOTTOM: black 1px solid" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td style="BORDER-BOTTOM: black 1px solid" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td style="BORDER-BOTTOM: black 1px solid" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td style="BORDER-BOTTOM: black 1px solid" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td style="BORDER-BOTTOM: black 1px solid" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td style="BORDER-BOTTOM: black 1px solid" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td style="BORDER-BOTTOM: black 1px solid" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td style="BORDER-BOTTOM: black 1px solid" valign="top" align="justify"><font face="Arial" size="2" color="#ffffff"><b>Management</b></font></td>
+</tr>
+<tr bgcolor="#cceeff">
+<td valign="top" align="left"><font face="Arial" size="2">1.1.1</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">Election
+ of executive director (representative director): Sung Jae Lee</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+</tr>
+<tr>
+<td valign="top" align="left"><font face="Arial" size="2">1.1.2</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">Election
+ of executive director (representative Director): Kyu Hyung Cho</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td nowrap valign="top" align="left"><font face="Arial" size="2">Did Not Vote</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td nowrap valign="top" align="left"><font face="Arial" size="2">Did Not Vote</font></td>
+</tr>
+<tr bgcolor="#cceeff">
+<td valign="top" align="left"><font face="Arial" size="2">1.1.3</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">Election
+ of executive director(representative Director): Sang Ku Cha</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td nowrap valign="top" align="left"><font face="Arial" size="2">Did Not Vote</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td nowrap valign="top" align="left"><font face="Arial" size="2">Did Not Vote</font></td>
+</tr>
+<tr>
+<td valign="top" align="left"><font face="Arial" size="2">1.1.4</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">Election
+ of executive director(representative Director): Heung Jip Choi</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td nowrap valign="top" align="left"><font face="Arial" size="2">Did Not Vote</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td nowrap valign="top" align="left"><font face="Arial" size="2">Did Not Vote</font></td>
+</tr>
+<tr bgcolor="#cceeff">
+<td valign="top" align="left"><font face="Arial" size="2">1.2.1</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">Election
+ of executive director (senior managing director): Sung Won Kim</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Abstain</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Against</font></td>
+</tr>
+<tr>
+<td valign="top" align="left"><font face="Arial" size="2">1.2.2</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">Election
+ of executive director (senior managing director): Won Chang Kim</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Abstain</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Against</font></td>
+</tr>
+<tr bgcolor="#cceeff">
+<td valign="top" align="left"><font face="Arial" size="2">1.2.3</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">Election
+ of executive director (senior managing director): Jung Sik Kim</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Abstain</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Against</font></td>
+</tr>
+<tr>
+<td valign="top" align="left"><font face="Arial" size="2">1.2.4</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">Election
+ of executive director (senior managing director): Hee Jin Lim</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+</tr>
+<tr bgcolor="#cceeff">
+<td valign="top" align="justify"><font face="Arial" size="2">2.1</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">Election
+ of non executive director: Kyu Sub Kwon</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">For</font></td>
+</tr>
+<tr>
+<td valign="top" align="justify"><font face="Arial" size="2">2.2</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">Election
+ of non executive director: Si Young Mun</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="justify"><font face="Arial" size="2">For</font></td>
+</tr>
+</table>
+<br>
+<hr noshade size="2" color="#000000">
+<br clear="all" style="page-break-before:always;">
+<!--page-->
+<p align="center"><font face="Arial" size="3"><u><b>IVA International Fund</b></u></font></p>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr bgcolor="#004f75">
+<td style="BORDER-BOTTOM: black 1px solid" nowrap colspan="7" align="left"><font face="Arial" size="2" color="#ffffff"><b>KANGWON LAND INC, CHONGSON</b></font></td>
+</tr>
+<tr>
+<td width="23%" valign="top" align="left"><font face="Arial" size="2"><b>Security</b></font></td>
+<td width="2%" ><font face="Arial" size="1">&#160;</font></td>
+<td width="23%" valign="top" align="left"><font face="Arial" size="2">Y4581L105</font></td>
+<td width="2%" ><font face="Arial" size="1">&#160;</font></td>
+<td width="23%" valign="top" align="left"><font face="Arial" size="2"><b>Meeting Type</b></font></td>
+<td width="2%" ><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">ExtraOrdinary
+ General Meeting</font></td>
+</tr>
+<tr>
+<td valign="top" align="left"><font face="Arial" size="2"><b>Ticker
+ Symbol</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2"><b>Meeting
+ Date</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">12-Jul-2011</font></td>
+</tr>
+<tr>
+<td valign="top" align="left"><font face="Arial" size="2"><b>ISIN</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">KR7035250000</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2"><b>Agenda</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">703185074
+ - Management</font></td>
+</tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr bgcolor="#004f75">
+<td valign="top" align="left"><font face="Arial" size="2" color="#ffffff"><b>Item</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2" color="#ffffff"><b>Proposal
+</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2" color="#ffffff"><b>Type</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2" color="#ffffff"><b>Vote</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2" color="#ffffff"><b>For/Against
+</b></font></td>
+</tr>
+<tr bgcolor="#004f75">
+<td style="BORDER-BOTTOM: black 1px solid" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td style="BORDER-BOTTOM: black 1px solid" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td style="BORDER-BOTTOM: black 1px solid" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td style="BORDER-BOTTOM: black 1px solid" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td style="BORDER-BOTTOM: black 1px solid" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td style="BORDER-BOTTOM: black 1px solid" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td style="BORDER-BOTTOM: black 1px solid" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td style="BORDER-BOTTOM: black 1px solid" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td style="BORDER-BOTTOM: black 1px solid" valign="top" align="justify"><font face="Arial" size="2" color="#ffffff"><b>Management</b></font></td>
+</tr>
+<tr bgcolor="#cceeff">
+<td width="4%" valign="top" align="left"><font face="Arial" size="2">1.1.1</font></td>
+<td width="2%"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Election of executive director (representative director): Sung Jae Lee</font></td>
+<td width="2%"><font face="Arial" size="1">&#160;</font></td>
+<td width="8%" valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td width="4%"><font face="Arial" size="1">&#160;</font></td>
+<td width="6%" valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td width="4%"><font face="Arial" size="1">&#160;</font></td>
+<td width="8%" valign="top" align="left"><font face="Arial" size="2">For</font></td>
+</tr>
+<tr>
+<td valign="top" align="left"><font face="Arial" size="2">1.1.2</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Election of
+ executive director (representative Director):
+ Kyu Hyung Cho</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left" nowrap><font face="Arial" size="2">Did not vote</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td nowrap valign="top" align="left"><font face="Arial" size="2">Did not vote</font></td>
+</tr>
+<tr bgcolor="#cceeff">
+<td valign="top" align="left"><font face="Arial" size="2">1.1.3</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Election of
+ executive director (representative Director): Sang Ku Cha</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td nowrap valign="top" align="left"><font face="Arial" size="2">Did not
+ vote</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left" nowrap><font face="Arial" size="2">Did not
+ vote</font></td>
+</tr>
+<tr>
+<td valign="top" align="left"><font face="Arial" size="2">1.1.4</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Election of
+ executive director (representative Director): Heung Jip Choi</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td nowrap valign="top" align="left"><font face="Arial" size="2">Did not
+ vote</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td nowrap valign="top" align="left"><font face="Arial" size="2">Did not
+ vote</font></td>
+</tr>
+<tr bgcolor="#cceeff">
+<td valign="top" align="left"><font face="Arial" size="2">1.2.1</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Election of
+ executive director (senior managing director): Sung Won Kim</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Abstain</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Against</font></td>
+</tr>
+<tr>
+<td valign="top" align="left"><font face="Arial" size="2">1.2.2</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Election of
+ executive director (senior managing director): Won Chang Kim</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Abstain</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Against</font></td>
+</tr>
+<tr bgcolor="#cceeff">
+<td valign="top" align="left"><font face="Arial" size="2">1.2.3</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Election of
+ executive director (senior managing director): Jung Sik Kim</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Abstain</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Against</font></td>
+</tr>
+<tr>
+<td valign="top" align="left"><font face="Arial" size="2">1.2.4</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Election of
+ executive director (senior managing director): Hee Jin Lim</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+</tr>
+<tr bgcolor="#cceeff">
+<td valign="top" align="left"><font face="Arial" size="2">2.1</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Election of
+ non executive director: Kyu Sub Kwon</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+</tr>
+<tr>
+<td valign="top" align="left"><font face="Arial" size="2">2.2</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Election of
+ non executive director: Si Young Mun</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Management</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+</tr>
+</table>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
