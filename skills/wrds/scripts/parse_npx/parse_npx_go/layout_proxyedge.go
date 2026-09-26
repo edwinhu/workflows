@@ -519,7 +519,14 @@ func peCount(s string) (string, bool) {
 // peFundName reports a line that names a fund. The vendor prints the fund
 // heading and the issuer heading identically -- both are bare lines above the
 // identity labels -- so the fund is told from the issuer by its own name.
+//
+// A name is also told from a SENTENCE by its shape, which is what peBallotProse
+// asks first: a cell carrying a fund word may still be a ballot's own
+// resolution text rather than a banner the vendor printed.
 func peFundName(s string) bool {
+	if peBallotProse(s) {
+		return false
+	}
 	up := strings.ToUpper(s)
 	for _, w := range []string{"FUND", "PORTFOLIO", "TRUST", "ETF", "SERIES"} {
 		if peFundWord(up, w) {
@@ -527,6 +534,80 @@ func peFundName(s string) bool {
 		}
 	}
 	return false
+}
+
+// peHeadingRunes and peHeadingWords are the most a fund banner runs to. The
+// longest names this vendor prints are of the order of `Guinness Atkinson Asia
+// Pacific Dividend Builder Fund` (51 characters, 7 words) and
+// `Investment Managers Series Trust - AXS Sustainable Income Fund`; the
+// resolutions that defect here run to thousands of characters, because they are
+// paragraphs.
+const (
+	peHeadingRunes = 90
+	peHeadingWords = 14
+)
+
+// peBallotProse reports a whole cell that reads as a ballot's own text rather
+// than as the NAME of a fund. peWholeCells, peSummaryBody and peWrappedProse
+// each disqualify a cell by where it stands -- hard-wrapped, inside a summary
+// grid's body, a fragment of a paragraph broken across containers -- and none of
+// them can reach a genuine whole, un-wrapped cell that the vendor printed as one
+// wide <td> of prose. That is how a foreign ballot's resolution arrives
+// (CapitaLand Mall Trust's general mandate in Guinness Atkinson Funds 2017 is
+// one 2.4 KB cell, and `THE TRUST DEED DATED 29 OCTOBER 2001` inside it
+// satisfies peFundWord), and taking one for a banner clears the section's fund
+// and blanks the series for every row after it.
+//
+// What parts the two is the shape of the text, not its words. A banner is a
+// name: short, a handful of words, no clause punctuation and no enumeration. A
+// resolution is a sentence: long, and it semicolons, quotes and numbers its own
+// sub-paragraphs.
+func peBallotProse(s string) bool {
+	if len([]rune(s)) > peHeadingRunes || len(strings.Fields(s)) > peHeadingWords {
+		return true
+	}
+	// A semicolon parts one clause of a resolution from the next, and a quote
+	// opens a defined term (`(THE "TRUST DEED")`). A fund's name carries neither.
+	if strings.ContainsAny(s, ";\"") {
+		return true
+	}
+	return peClauseNumber(s)
+}
+
+// peClauseNumber reports the parenthesised enumerator a resolution numbers its
+// sub-paragraphs with -- `(1)`, `(A)`, `(II)`. A fund name parenthesises only
+// words (`(Class A)`, `(formerly ABC Fund)`), so only a SHORT all-alphanumeric
+// parenthesis counts, and it must not merely be a number the name itself carries
+// in a longer phrase.
+func peClauseNumber(s string) bool {
+	for off := 0; off < len(s); {
+		open := strings.IndexByte(s[off:], '(')
+		if open < 0 {
+			return false
+		}
+		open += off
+		shut := strings.IndexByte(s[open:], ')')
+		if shut < 0 {
+			return false
+		}
+		if inner := s[open+1 : open+shut]; len(inner) > 0 && len(inner) <= 3 && peAlnum(inner) {
+			return true
+		}
+		off = open + 1
+	}
+	return false
+}
+
+// peAlnum reports a run of letters and digits alone.
+func peAlnum(s string) bool {
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' {
+			continue
+		}
+		return false
+	}
+	return true
 }
 
 // peFundWord reports that w stands as a WORD of up, not merely as a substring
