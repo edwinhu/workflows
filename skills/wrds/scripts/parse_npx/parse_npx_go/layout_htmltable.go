@@ -426,7 +426,19 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			// word-wrapped run of the vendor's own rationale prose, stacked
 			// uncapitalised inside one merged cell. Nothing in such a cell is
 			// offered to the resolver either.
-			notHeading := identityCell || htmlWrappedProseCell(cells)
+			// And one more, in the vintage that prints the registrant's own
+			// `FUND:` banner once and carries it across the run's pages: the
+			// centred bold name that OPENS A BALLOT, standing directly over
+			// that ballot's own column header (`Ticker | Meeting Date |
+			// Country | Security ID | ...`). It names the company being voted,
+			// not a section (`STEC, Inc.`, Principal Funds 2011, resolved onto
+			// S000007211 through a fund this run never held). Adopting it both
+			// misfiles its own rows and clears bannerFund, after which the
+			// `Institution Account(s):` cell the banner guard was skipping is
+			// adopted instead -- the registrant's FORMER CONFORMED NAME, which
+			// names no series at all (124 rows of that one filing).
+			notHeading := identityCell || htmlWrappedProseCell(cells) ||
+				(bannerFund && htmlBallotIssuerOverColumnHeader(feed, cells))
 			if titles := htmlDatedTitles(seriesIx, heading, dict); titles != nil && !notHeading {
 				curFund, curSeries, outerSection, windowed = titles[0].name, titles[0].id, true, titles
 				bannerFund = false
@@ -4441,6 +4453,53 @@ func htmlIdentityStripFollows(feed *htmlRowFeed, cells []string, pre string) boo
 		}
 	}
 	return false
+}
+
+// htmlBallotIssuerOverColumnHeader reports a bare one-cell heading whose next
+// filled row is the ballot's OWN identity column header -- every filled cell a
+// known identity label, carrying a meeting date and a security id or ticker.
+// A section banner opens a section, and a section's first row is its ballot's
+// name, not the ballot's column header; a name printed hard against that header
+// is the issuer the columns describe. htmlIdentityStripFollows reads the
+// labelled `Ticker:` strip of the same position under this vendor's dashed
+// rule; this reads the unlabelled column header that carries no rule at all,
+// and is asked only where a `FUND:` banner is already standing.
+func htmlBallotIssuerOverColumnHeader(feed *htmlRowFeed, cells []string) bool {
+	if feed == nil || htmlFilledCells(cells) != 1 {
+		return false
+	}
+	for i := 0; i < htmlIdentityStripLookahead; i++ {
+		row, ok := feed.peek(i)
+		if !ok || row.newTable {
+			return false
+		}
+		if htmlFilledCells(row.cells) == 0 {
+			continue
+		}
+		return htmlIdentityColumnHeader(row.cells)
+	}
+	return false
+}
+
+// htmlIdentityColumnHeader reports a row whose every filled cell is a known
+// identity label and which names, between them, both a meeting date and the
+// security -- the header of a vote table's identity columns.
+func htmlIdentityColumnHeader(cells []string) bool {
+	seen := map[string]bool{}
+	filled := 0
+	for _, cell := range cells {
+		flat := htmlFlat(cell)
+		if flat == "" {
+			continue
+		}
+		canon, known := htmlStackedLabelSet[htmlStackedLabelKey(flat)]
+		if !known {
+			return false
+		}
+		seen[canon] = true
+		filled++
+	}
+	return filled >= 3 && seen["MEETING DATE"] && (seen["CUSIP"] || seen["TICKER"])
 }
 
 // htmlDashedRuleMin is the shortest dash run read as a rule; this vendor's is 80
