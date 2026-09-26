@@ -578,6 +578,72 @@ func brBannerAboveProse(ix *issSeriesIndex, lines []string, i int) (string, stri
 	return "", ""
 }
 
+// brSilentProseRun is how many lines of the no-activity disclaimer the upward
+// walk of brBannerAboveSilentProse may read before the rule under the banner.
+// The sentence wraps onto two lines and occasionally three, the same span
+// brSilentLookahead allows the downward test.
+const brSilentProseRun = brSilentLookahead
+
+// brBannerAboveSilentProse returns the section banner of a block whose heading
+// slot holds the LAST LINE of the no-activity disclaimer, with the banner's own
+// rule between them:
+//
+//	AMG Aston/Cornerstone Large Cap Value Fund
+//	------------------------------------------
+//	 The fund held no voting securities during the reporting period and did not vote any securities or have
+//	 any securities that were subject to a vote during the reporting period.
+//	------------------------------------------
+//	 FEDEX CORPORATION                     Agenda Number:  934470218
+//
+// The disclaimer is BOILERPLATE this registrant prints under every banner, not
+// a terminal statement: real ballots follow it in the same section. The slot
+// therefore holds a sentence, and `any securities that were subject to a vote
+// during the reporting period.` was filed as the fund name of every row under
+// six banners of AMG Funds IV 2017 (Anchor Capital, Barings International,
+// Cornerstone, Harrison Street, Herndon, TCH Fixed Income).
+//
+// brBannerAboveProse reads the same shape without the intervening rule and
+// stops at one, so nothing reaches this banner. The rule may be crossed only
+// because the run below it is the disclaimer: the run must be unbroken, at most
+// brSilentProseRun lines, and must carry one of brSilentNeedles. A section that
+// states it held nothing AND has no ballots never reaches here at all -- no
+// `Agenda Number` line opens under it, so brSilentSection still clears the
+// state for that one dormant fund.
+//
+// The banner is returned unresolved on purpose: this registrant's dictionary
+// rung stamps it at row level, the way it does for every other banner the
+// header does not declare.
+func brBannerAboveSilentProse(lines []string, i int) string {
+	var run strings.Builder
+	for j, steps := i-2, 0; j >= 0 && steps <= brSilentProseRun; j, steps = j-1, steps+1 {
+		cand := strings.TrimSpace(lines[j])
+		if cand == "" || brVoteRowSlot(cand) {
+			return ""
+		}
+		if !brDashRule(cand) {
+			run.WriteString(cand)
+			run.WriteByte(' ')
+			continue
+		}
+		if steps == 0 || !containsAnyFolded(run.String(), brSilentNeedles) {
+			return ""
+		}
+		k := j - 1
+		for blanks := 0; k >= 0 && blanks < brHeadingBlankWalk && strings.TrimSpace(lines[k]) == ""; blanks++ {
+			k--
+		}
+		if k < 0 {
+			return ""
+		}
+		banner := strings.TrimSpace(lines[k])
+		if banner == "" || brDashRule(banner) || brVoteRowSlot(banner) || brProseSentenceSlot(banner) {
+			return ""
+		}
+		return banner
+	}
+	return ""
+}
+
 // brProseSentenceSlot reports a candidate heading that is a SENTENCE IN FLIGHT:
 // it ends on a lower-case word, so the paragraph continues on the next line.
 // American AAdvantage Funds 2004 prints an explanatory paragraph under each
@@ -1807,6 +1873,17 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 						if curSeries == "" {
 							if banner, id := brBannerAboveProse(seriesIx, lines, i); id != "" {
 								curSeries, curFund = id, banner
+							}
+						}
+						// The prose may be the no-activity disclaimer printed
+						// UNDER the banner's own rule, with real ballots after
+						// it. The banner is one rule further up, and is taken
+						// whether or not the header declares it -- the sentence
+						// the slot holds is never a fund name.
+						if curSeries == "" {
+							if banner := brBannerAboveSilentProse(lines, i); banner != "" {
+								curFund = banner
+								curSeries = brResolveHeading(seriesIx, banner)
 							}
 						}
 					}

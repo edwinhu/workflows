@@ -597,6 +597,22 @@ func (f *dictFallback) apply(r *VoteRow) {
 			r.SeriesID = d.SeriesID
 		}
 	}
+	// The mirror of the rung above: the HEADING carries a leading brand token
+	// the dictionary name of an earlier vintage does not: `AMG Aston/Cornerstone
+	// Large Cap Value Fund` for `ASTON/CORNERSTONE LARGE CAP VALUE FUND`
+	// (S000001119, AMG Funds IV 2017, six banners of one filing rebranded from
+	// `Aston Funds`). brandPrefixed prepends a prefix the DICTIONARY keeps, and
+	// dictInternalTokenDrop cuts indices 1..len-2 only, so nothing reaches a
+	// dropped FIRST token. Exactly one token comes off, the remainder must be
+	// this registrant's own dictionary name EXACTLY, and a name two series
+	// answer to refuses -- `AMG Managers LMCG Emerging Markets Fund` leaves
+	// `Managers LMCG Emerging Markets Fund`, which is no dictionary name of this
+	// CIK, and stays refused.
+	if r.SeriesID == "" {
+		if d := f.headingLeadingTokenDrop(r.FundName); d != nil {
+			r.SeriesID = d.SeriesID
+		}
+	}
 	// Last of all: the heading names a fund of a SIBLING registrant, exactly
 	// and uniquely corpus-wide. Consulted whether the rungs above refused or
 	// answered INEXACTLY -- the exact rung returns early above, so every id
@@ -627,6 +643,33 @@ func (f *dictFallback) brandPrefixed(heading string) *SeriesDecl {
 		hit = d
 	}
 	return hit
+}
+
+// headingLeadingTokenDrop drops ONE leading token from the printed heading and
+// answers only when the remainder is a dictionary name of this same registrant,
+// EXACTLY. One drop, never two: the token that comes off is the brand the
+// registrant took at a rebrand, and a second drop would start eating the name
+// itself. The remainder must keep at least two tokens, and an ambiguous key is
+// recorded nil by seriesByName and refuses here the way every other rung
+// refuses.
+//
+// The exact remainder is NOT on its own evidence that the first token is a
+// brand: `Growth Emerging Markets Portfolio` leaves a dictionary `Emerging
+// Markets Portfolio` (SunAmerica Series Trust), and `Growth` is a word of the
+// name. So the dropped token must be the registrant's own -- the opening token
+// of the filing's COMPANY CONFORMED NAME, `AMG` of `AMG Funds IV` -- which is
+// the same registrant-supplied evidence dictBrandPrefixes reads in the opposite
+// direction.
+func (f *dictFallback) headingLeadingTokenDrop(heading string) *SeriesDecl {
+	reg := strings.Fields(f.registrantKey)
+	if len(reg) == 0 {
+		return nil
+	}
+	toks := strings.Fields(normalizeSeriesName(heading))
+	if len(toks) < 3 || toks[0] != reg[0] {
+		return nil
+	}
+	return f.byName[strings.Join(toks[1:], " ")]
 }
 
 // dictBrandPrefixes collects the registrant-brand prefixes a heading may have
