@@ -2133,6 +2133,9 @@ func htmlHeaderShapeStrict(cells []string) (map[string]int, string, bool) {
 		strings.HasPrefix(htmlCanonLabel(cells[i]), "CUSIP") {
 		mapping[htmlFieldCUSIPPrinted] = i
 	}
+	if i, ok := htmlLetteredBallotColumn(cells, mapping); ok {
+		mapping[htmlFieldLetteredBallot] = i
+	}
 	return mapping, htmlHeaderKey(cells), true
 }
 
@@ -2364,6 +2367,52 @@ func htmlIsVoteValue(flat string) bool {
 	return false
 }
 
+// htmlLetteredBallotVotes are the one-letter ballots of the Item 1 lettered grid
+// (`G. Voted by Registrant | H. Registrant Vote`), whose ballot column prints `F`
+// where it elsewhere prints `Abstain` in full. The expansion is deliberately NOT
+// a widening of htmlValueVotes: a bare `F` or `A` admitted to the global
+// vocabulary would let a stray initial anywhere in the corpus prove a row is data
+// and claim a vote column. It is applied only to the shape in htmlLetteredBallot,
+// so the vintages that print a verbatim single-letter vote keep it verbatim.
+var htmlLetteredBallotVotes = map[string]string{"F": "For", "A": "Abstain"}
+
+// htmlLetteredBallotColumn reports the vote column of a header that letters its
+// whether-voted flag and its ballot as CONSECUTIVE Item 1 columns, the flag
+// immediately left of the vote: `G. Voted by Registrant | H. Registrant Vote`.
+// The lettering is what limits the shape. Tributary Funds 2021 also prints a
+// flag beside its vote (`Did Fund Cast Vote on Matter (Y/N) | How Vote was Cast
+// (F=For, ...)`) and its one-letter votes are recorded verbatim, so mere
+// adjacency cannot be the test.
+func htmlLetteredBallotColumn(cells []string, mapping map[string]int) (int, bool) {
+	vote, hasVote := mapping[htmlFieldVote]
+	flag, hasFlag := mapping[htmlFieldVotedFlag]
+	if !hasVote || !hasFlag || flag+1 != vote || vote >= len(cells) {
+		return 0, false
+	}
+	_, flagLetter, flagOK := htmlLetteredLabel(cells[flag])
+	_, voteLetter, voteOK := htmlLetteredLabel(cells[vote])
+	if !flagOK || !voteOK || flagLetter+1 != voteLetter {
+		return 0, false
+	}
+	return vote, true
+}
+
+// htmlLetteredBallot expands a one-letter ballot for the header shape
+// htmlLetteredBallotColumn recognised, where the Yes/No answer to "did the
+// registrant vote" is a lettered column of its own and the lettered column
+// beside it can only be the choice. Every other shape, and every other letter,
+// is verbatim.
+func htmlLetteredBallot(vote string, mapping map[string]int) string {
+	col, marked := mapping[htmlFieldLetteredBallot]
+	if !marked || col != mapping[htmlFieldVote] {
+		return vote
+	}
+	if w, ok := htmlLetteredBallotVotes[htmlUpperASCII(strings.TrimSpace(vote))]; ok {
+		return w
+	}
+	return vote
+}
+
 // htmlValueCanon renders a cell for vocabulary comparison: parenthesised
 // footnote markers dropped, everything but letters, digits, '/' and space folded
 // to a space, uppercased and collapsed. "For*", "FOR (1)" and "for." all reduce
@@ -2547,6 +2596,13 @@ const (
 	// own: it records which claim the header made about the column it shares
 	// with htmlFieldCUSIP, so a short id can be kept as printed there.
 	htmlFieldCUSIPPrinted = "cusipprinted"
+	// htmlFieldLetteredBallot marks the vote column of the Item 1 lettered grid
+	// whose whether-voted flag is the lettered column immediately left of it
+	// (`G. Voted by Registrant | H. Registrant Vote`). Like
+	// htmlFieldCUSIPPrinted it is not a column of its own: it records that the
+	// header named the ballot beside its own flag, which is what makes that
+	// column's one-letter cells expandable. See htmlLetteredBallot.
+	htmlFieldLetteredBallot = "letteredballot"
 )
 
 // htmlSynonyms is the canonical label vocabulary, keyed by schema field. Labels
@@ -2595,6 +2651,12 @@ var htmlSynonyms = map[string][]string{
 	},
 	htmlFieldVote: {
 		"VOTE CAST", "VOTES CAST", "REGISTRANT VOTED", "FUND VOTE", "HOW VOTED",
+		// `H. Registrant Vote`, the ballot column of the Item 1 lettered grid,
+		// printed one column right of `G. Voted by Registrant`, the Yes/No flag.
+		// A strong name is what keeps the flag from claiming the vote: both
+		// labels carry a vote word, and the word-sequence fallback scans left to
+		// right, so the flag is reached first.
+		"REGISTRANT VOTE",
 		"VOTE", "CAST", "VOTED", "VOTE CASTS", "VOTE INSTRUCTION", "HOW VOTE WAS CAST",
 		// Item 1(e) as Carillon Series Trust 2020 spells it.
 		"HOW THE FUND CAST ITS VOTE",
@@ -2790,7 +2852,7 @@ func htmlMapFields(cells []string) map[string]int {
 	}
 	if _, taken := mapping[htmlFieldVote]; taken {
 		for i, lab := range canon {
-			if (lab == "VOTED" || (strings.HasPrefix(lab, "DID ") && strings.Contains(lab, "VOTE"))) && !claimed[i] {
+			if htmlVotedFlagLabel(lab) && !claimed[i] {
 				mapping[htmlFieldVotedFlag] = i
 				claimed[i] = true
 				break
@@ -2894,7 +2956,16 @@ func htmlMapFields(cells []string) map[string]int {
 func htmlWeakVoteLabel(canon string) bool {
 	// `Did Fund Cast Vote on Matter (Y/N)` (Tributary Funds 2021) asks WHETHER
 	// the fund voted; it is the voted flag, never the vote.
-	return canon == "VOTED" || canon == "CAST" || strings.HasPrefix(canon, "DID ")
+	return canon == "VOTED" || canon == "CAST" || strings.HasPrefix(canon, "DID ") ||
+		strings.HasPrefix(canon, "VOTED BY ")
+}
+
+// htmlVotedFlagLabel names the did-the-fund-vote column. `Voted by Registrant`
+// is the participle form of the same question -- its cells are Yes and No -- and
+// it is the label the Item 1 lettered grid prints beside the ballot.
+func htmlVotedFlagLabel(canon string) bool {
+	return canon == "VOTED" || strings.HasPrefix(canon, "VOTED BY ") ||
+		(strings.HasPrefix(canon, "DID ") && strings.Contains(canon, "VOTE"))
 }
 
 // htmlIsGateLabel reports whether a header cell asks a yes/no QUESTION about the
@@ -2967,16 +3038,31 @@ func htmlContainsWords(lab, sub string) bool {
 // htmlLetteredLabel removes the SEC Item 1 prefix from a printed label and
 // returns its letter. The prefix is evidence about the label -- notably (g)
 // Voted is a gate -- but is not itself part of any synonym.
+// The letter is written either as the form prints it, `(g) Voted`, or with a
+// period, `G. Voted by Registrant` (Northern Lights Fund Trust IV 2022 and its
+// vendor's siblings). Both spell the same Item 1 column; leaving the dotted form
+// unstripped left the letter standing as a WORD in the canonical label, which
+// hid the gate from htmlIsGateLabel and let the word-sequence fallback read
+// `G VOTED BY REGISTRANT` as the vote.
 func htmlLetteredLabel(s string) (label string, letter byte, ok bool) {
 	s = htmlFlat(s)
-	if len(s) < 3 || s[0] != '(' || s[2] != ')' {
-		return s, 0, false
+	if len(s) >= 3 && s[0] == '(' && s[2] == ')' {
+		letter = lowerASCII(s[1])
+		if letter < 'a' || letter > 'i' {
+			return s, 0, false
+		}
+		return strings.TrimSpace(s[3:]), letter, true
 	}
-	letter = lowerASCII(s[1])
-	if letter < 'a' || letter > 'i' {
-		return s, 0, false
+	// A space after the period is required: it is what separates a lettered
+	// column from an abbreviation glued to the next word.
+	if len(s) >= 3 && s[1] == '.' && s[2] == ' ' {
+		letter = lowerASCII(s[0])
+		if letter < 'a' || letter > 'i' {
+			return s, 0, false
+		}
+		return strings.TrimSpace(s[2:]), letter, true
 	}
-	return strings.TrimSpace(s[3:]), letter, true
+	return s, 0, false
 }
 
 // htmlLetteredRestatement reports that the lower header row names the upper
@@ -5725,7 +5811,7 @@ func htmlDataRow(cells []string, mapping map[string]int, headerArity int, ctx ht
 		return htmlFlat(cells[i])
 	}
 
-	vote := at(htmlFieldVote)
+	vote := htmlLetteredBallot(at(htmlFieldVote), mapping)
 	votedFlag := ""
 	blankVote := false
 	if vote == "" {
