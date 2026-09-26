@@ -861,6 +861,35 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 			}
 			continue
 		}
+		// The same bare heading, printed by a vendor that hard-wrapped it inside
+		// ONE container: `BBH` / `INTERNATIONAL EQUITY FUND` is a single div of
+		// two source lines, so peWholeCells marks neither of them whole and the
+		// test above cannot fire on either half. The heading is the cell, not
+		// the line -- which is how the issuer scan above already reads exactly
+		// this shape -- so the cell is joined and the name tested against the
+		// JOIN. Only the cell's own start line may open it, and only a cell of
+		// two lines: three or more is the paragraph run peWrappedProse refuses,
+		// and reading a fragment of one as a name is the defect that gate
+		// exists for. Every guard above is asked of the START line, as the
+		// issuer scan asks them.
+		// A section that prints its own name a second time -- this vendor
+		// repeats it inside the sub-adviser stack under the banner, in a
+		// different case -- is not opening a new section, so the banner's own
+		// spelling stands rather than the restatement's.
+		if run[i] == i && cellEnd == i+1 && !summary[i] && !wrapped[i] &&
+			!peItemCell(lines, tbl, i-1, i, labels) && peFundName(cell) {
+			if fund != "" && normalizeSeriesName(cell) == normalizeSeriesName(fund) {
+				i = cellEnd
+				continue
+			}
+			fund = cell
+			fundSeries = icrResolveFundShared(seriesIx, cell)
+			if fundSeries == "" {
+				fundSeries = htmlDictionaryFund(seriesIx, dict, cell)
+			}
+			i = cellEnd
+			continue
+		}
 	}
 
 	if len(rows) == 0 {
