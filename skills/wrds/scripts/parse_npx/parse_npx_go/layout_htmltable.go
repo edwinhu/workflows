@@ -381,6 +381,16 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				continue
 			}
 		}
+		// The same glued banner standing FIRST in its own row, with nothing
+		// behind it but the sleeve printed a second time and the form-item
+		// marker: three filled cells, so it too misses the reader below.
+		if heading, ok := htmlRegistrantLeadGluedBanner(cells); ok {
+			if name, id, ok := htmlBareFundLine(seriesIx, heading, dict); ok {
+				curFund, curSeries, outerSection, windowed = name, id, id != "", nil
+				bannerFund = id != "" && htmlExplicitFundBanner(heading)
+				continue
+			}
+		}
 		if htmlFilledCells(cells) <= 2 {
 			heading := strings.Join(cells, "\n")
 			registrantSection := false
@@ -7045,6 +7055,101 @@ func htmlRegistrantMastheadBanner(cells []string) (string, bool) {
 		}
 	}
 	return label, true
+}
+
+// htmlRegistrantLeadGluedBanner reads the same `Registrant: <registrant> -
+// <sleeve>` banner when the glued cell is the row's OWN first filled cell, so
+// there is no masthead scaffolding in front of it to decide the shape by
+// (Mutual Fund & Variable Insurance Trust 2017, four sections of one filing,
+// 938 rows -- 356 blank and 582 stamped with the previous section's sleeve):
+//
+//	<TD COLSPAN="5"><B>Registrant:  Mutual Fund &amp; Variable Insurance Trust-&nbsp;&nbsp;Rational Dividend Capture Fund</B></TD>
+//	<TD>&nbsp;</TD><TD><B>Rational Dividend Capture Fund</B></TD>
+//	... spacers ... <TD>Exhibit 1</TD>
+//
+// Three filled cells, so the two-cell heading reader never sees it, and the
+// leading cell is not the bare label htmlRegistrantSplitCells requires nor the
+// dash-terminated one htmlRegistrantEmptySuffixFund requires. What decides the
+// shape here is that NOTHING trailing the banner adds a second candidate name:
+// each later cell is either the form-item marker or the banner's own sleeve
+// printed again, which the glued cell already ends with. A trailing cell that
+// says anything else is a different row and is refused.
+//
+// The dash is returned RE-SPACED to ` - `. The shared reader splits a
+// `Registrant:` line on that spelling alone, and only the half after the dash
+// may name a fund; a dash glued to the registrant would hand it the whole line.
+func htmlRegistrantLeadGluedBanner(cells []string) (string, bool) {
+	var filled []string
+	for _, cell := range cells {
+		if v := htmlFlat(cell); v != "" {
+			filled = append(filled, v)
+		}
+	}
+	if len(filled) < 2 {
+		return "", false
+	}
+	label := filled[0]
+	if !reHTMLMastheadRegistrant.MatchString(label) {
+		return "", false
+	}
+	// A second glued banner in the same row means two candidate sleeves.
+	for _, v := range filled[1:] {
+		if reHTMLMastheadRegistrant.MatchString(v) {
+			return "", false
+		}
+	}
+	lower := strings.ToLower(label)
+	for _, v := range filled[1:] {
+		if reHTMLRegistrantRowMarker.MatchString(v) || reHTMLSplitExhibit.MatchString(v) {
+			continue
+		}
+		// The repeated sleeve: the banner already ends with this exact name.
+		if strings.HasSuffix(lower, strings.ToLower(v)) {
+			continue
+		}
+		return "", false
+	}
+	if respaced, ok := htmlRespaceGluedRegistrantDash(label); ok {
+		return respaced, true
+	}
+	return label, true
+}
+
+// reHTMLGluedRegistrantDash finds the boundary of a `Registrant:` cell whose
+// separating dash is glued to the registrant name and followed by the sleeve:
+// the LAST dash that a space separates from what follows it. A hyphen inside a
+// word (`Small-Cap`) is not followed by a space and so is never the boundary.
+var reHTMLGluedRegistrantDash = regexp.MustCompile(`[-\x{2013}\x{2014}]\s+`)
+
+// htmlRespaceGluedRegistrantDash rewrites `Registrant: X-  Y` as
+// `Registrant: X - Y`, leaving a cell that already spells the separator with a
+// space on both sides untouched. It reports false when no boundary dash carries
+// a non-empty name on each side.
+func htmlRespaceGluedRegistrantDash(label string) (string, bool) {
+	if strings.Contains(label, " - ") {
+		return "", false
+	}
+	loc := reHTMLGluedRegistrantDash.FindStringIndex(label)
+	if loc == nil {
+		return "", false
+	}
+	for {
+		next := reHTMLGluedRegistrantDash.FindStringIndex(label[loc[1]:])
+		if next == nil {
+			break
+		}
+		loc = []int{loc[1] + next[0], loc[1] + next[1]}
+	}
+	head := strings.TrimSpace(label[:loc[0]])
+	tail := strings.TrimSpace(label[loc[1]:])
+	if tail == "" || strings.TrimSpace(strings.TrimSuffix(head, ":")) == "" {
+		return "", false
+	}
+	colon := strings.IndexByte(head, ':')
+	if colon < 0 || strings.TrimSpace(head[colon+1:]) == "" {
+		return "", false
+	}
+	return head + " - " + tail, true
 }
 
 // reHTMLRegistrantEmptySuffix matches a `Registrant:` cell that names the
