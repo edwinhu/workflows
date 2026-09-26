@@ -230,6 +230,11 @@ const peWrapRun = 3
 // Only the continuations are marked, never the run's first line: that line does
 // begin a cell, and a banner the vendor happened to print above a wrapped
 // paragraph is still a banner.
+//
+// The run test is anchored on cells the vendor printed ENTIRE, so a paragraph
+// wrapped TWO lines to a container offers it no anchor anywhere and nothing here
+// can mark one. peItemCell reads that shape off the line the paragraph broke on
+// instead.
 func peWrappedProse(lines []string, tbl []int, whole []bool) []bool {
 	out := make([]bool, len(lines))
 	for i := 0; i < len(lines); i++ {
@@ -711,21 +716,58 @@ func peRegistrantFund(value, company string) string {
 	return v
 }
 
-// peItemCell reports that line i is a bare item number printed under a header
-// band -- the cell that opens a ballot row, whatever follows it. The claim is
-// about the ballot line `heading` stands in, so both lines must stand in the
-// same table run: a count in the PREVIOUS table is the tail of a ballot that
-// closed with `</table>`, and the centred banner the vendor prints between two
-// sections is a fund heading, not the continuation of a row (CSOP ETF Trust
-// 2016 opens each of its three sleeves that way, and reading table 1's last
-// `Take No Action` count as this heading's item cell stamped all three sleeves
-// with sleeve 1's series).
+// peItemCell reports that `heading` stands INSIDE a ballot row already open
+// under a header band rather than being a heading the vendor printed between two
+// rows. The claim is about the ballot line `heading` stands in, so both lines
+// must stand in the same table run: a count in the PREVIOUS table is the tail of
+// a ballot that closed with `</table>`, and the centred banner the vendor prints
+// between two sections is a fund heading, not the continuation of a row (CSOP
+// ETF Trust 2016 opens each of its three sleeves that way, and reading table 1's
+// last `Take No Action` count as this heading's item cell stamped all three
+// sleeves with sleeve 1's series).
+//
+// Two shapes of open row are recognised, and line i -- the line before the
+// heading -- is what tells them apart.
+//
+// A bare item number, or any share count, is the cell that opens such a row, so
+// whatever follows it is one of that row's own columns.
+//
+// A line the vendor's COLUMN broke off mid-sentence says the same thing about
+// the Proposal column: the row is open and the heading is a further container of
+// its resolution text. Some templates print that text as sibling containers of
+// two physical lines each (Guinness Atkinson Funds 2009 prints YANZHOU COAL's
+// item 4 as sixteen such <div>s, breaking on the bare word `of` before
+// `Insurance Fund Administrative` / `Services Agreement`). peWrappedProse cannot
+// reach that shape -- it anchors its runs on cells the vendor printed entire and
+// a paragraph wrapped two lines to a container has none -- so without this the
+// fragment satisfies peFundName and clears the section's fund for every row
+// after it.
+//
+// What the vendor prints ahead of a real banner is none of these: a table
+// boundary, an identity label, an issuer's name, a count, or a heading of its
+// own. A banner that OPENS its table is already refused by the table test above.
 func peItemCell(lines []string, tbl []int, i, heading int, labels []string) bool {
 	if labels == nil || i < 0 || tbl[i] != tbl[heading] {
 		return false
 	}
-	_, ok := peCount(lines[i])
-	return ok
+	if _, ok := peCount(lines[i]); ok {
+		return true
+	}
+	return peBrokenOffMidWord(lines[i])
+}
+
+// peBrokenOffMidWord reports a line the vendor's column ended rather than its
+// own text: it closes on a lower-case letter, so no punctuation finished it and
+// the word it closes on is not the last word of a name. peWrapContinues asks a
+// wider question of the same tail -- it admits a comma, a semicolon and a hyphen
+// -- because it is walking a run already known to be prose; here the tail is the
+// ONLY evidence, so only the shape that cannot be anything else counts.
+func peBrokenOffMidWord(s string) bool {
+	if s == "" {
+		return false
+	}
+	c := s[len(s)-1]
+	return c >= 'a' && c <= 'z'
 }
 
 // peIdentityLabel reports a line that opens a ballot's identity block, and
