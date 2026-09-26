@@ -439,6 +439,10 @@ type dictFallback struct {
 	// its undotted spelling, for a heading that prints the same initialism
 	// without its periods. Consulted only after byName has failed.
 	byUndotted map[string]*SeriesDecl
+	// byOrdinal keys the dictionary names carrying an ordinal under its
+	// spelled-out spelling, for a heading that prints the same ordinal
+	// abbreviated. Consulted only after byName has failed.
+	byOrdinal map[string]*SeriesDecl
 	// brandPrefixes are the registrant-brand prefixes the DICTIONARY spells and
 	// a heading may drop, normalised. Two sources, both the registrant's own
 	// evidence: the leading token run every dictionary name of this CIK shares
@@ -484,7 +488,7 @@ func (d *cikSeries) exactFallback(meta FilingMeta) *dictFallback {
 		// rung reads no row of this registrant at all and still applies.
 		return &dictFallback{byName: map[string]*SeriesDecl{}, corpus: d, cik: meta.CIK, period: metaPeriod(meta), registrantKey: normalizeSeriesName(meta.CompanyName)}
 	}
-	f := &dictFallback{byName: seriesByName(extra), byUndotted: map[string]*SeriesDecl{}, corpus: d, cik: meta.CIK, period: metaPeriod(meta), registrantKey: normalizeSeriesName(meta.CompanyName)}
+	f := &dictFallback{byName: seriesByName(extra), byUndotted: map[string]*SeriesDecl{}, byOrdinal: seriesByOrdinal(extra), corpus: d, cik: meta.CIK, period: metaPeriod(meta), registrantKey: normalizeSeriesName(meta.CompanyName)}
 	// The dictionary spells an initialism with its periods where the heading
 	// spells it without: `Vesper U.S. Large Cap Short-Term Reversal Strategy ETF`
 	// (S000063053) for a banner `Vesper US ...`. Only the names whose two
@@ -571,6 +575,15 @@ func (f *dictFallback) apply(r *VoteRow) {
 	if r.SeriesID == "" {
 		if d := f.byUndotted[normalizeSeriesName(r.FundName)]; d != nil {
 			r.SeriesID = d.SeriesID
+		}
+	}
+	// The dictionary's spelled-out ordinal against the heading's abbreviated
+	// one, and the reverse -- both sides fold onto the word.
+	if r.SeriesID == "" {
+		if k := normalizeOrdinalSeriesName(r.FundName); k != "" {
+			if d := f.byOrdinal[k]; d != nil {
+				r.SeriesID = d.SeriesID
+			}
 		}
 	}
 	// One word the HEADING inserts that the dictionary name does not carry:
