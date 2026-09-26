@@ -631,8 +631,14 @@ func (f *dictFallback) apply(r *VoteRow) {
 	// answered INEXACTLY -- the exact rung returns early above, so every id
 	// still live here came from a cut of the printed name, and an exact,
 	// corpus-unique, contemporaneous sibling outranks it.
-	if d := f.corpus.crossCIK(f.cik, r.FundName, f.period, f.registrantKey); d != nil {
-		r.SeriesID = d.SeriesID
+	// A fund name read off the row's own account-name cell is not a masthead and
+	// carries no claim that this filing reports for another registrant, so the
+	// sibling rung is not licensed on it: see htmlFundCellSeries, which withholds
+	// it on the layout's own route for the same reason.
+	if !r.FundFromAccountCell {
+		if d := f.corpus.crossCIK(f.cik, r.FundName, f.period, f.registrantKey); d != nil {
+			r.SeriesID = d.SeriesID
+		}
 	}
 }
 
