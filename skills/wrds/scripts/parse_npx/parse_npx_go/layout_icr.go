@@ -610,6 +610,19 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 					curFund, curSeries = joined, id
 				}
 			}
+			// THE LABEL'S OWN VALUE NAMES NO DECLARED SLEEVE. One vendor
+			// template drops the fund and interpolates the TRUST instead
+			// (`Fund Name : Absolute Forum Funds_Sub Advised` over an empty
+			// `Registrant :`, Forum Funds 2009, 746 rows), and the real fund is
+			// printed on the caption line above the section's item heading in
+			// this filing's own `<FUND> - <SUB-ADVISER>` shape. Read only when
+			// the labelled value resolves nothing, so a section that already
+			// resolves is never re-read from prose above it.
+			if curSeries == "" {
+				if caption, id := icrCaptionFundAbove(seriesIx, lines, i); id != "" {
+					curFund, curSeries = caption, id
+				}
+			}
 		} else if icrUnderscoreRule(line) && lineAbove != "" && !(lastRow >= 0 && lineAboveIdx == lastLine) && icrResolveFundShared(seriesIx, lineAbove) != "" {
 			// Another vintage names the fund on the bare line ABOVE a rule of
 			// underscores (T. Rowe Price Index Trust, 2026-09-02). The rule is
@@ -920,6 +933,108 @@ func icrHeadingBelowMarker(lines []string, i int) (string, bool) {
 		return name, true
 	}
 	return "", false
+}
+
+// icrItemHeadingLine recognises the ITEM 1 heading a vendor section opens with
+// in its printed rather than canonical spelling (`Item 1: Proxy Voting Record -
+// Item1 Proxy Voting Record -`). Looser than icrItemOneMarker, which demands
+// exact equality, because this one is only ever used to LOCATE the caption above
+// a section whose own labelled fund value resolved nothing.
+func icrItemHeadingLine(line string) bool {
+	up := strings.ToUpper(strings.Join(strings.Fields(line), " "))
+	return strings.HasPrefix(up, "ITEM 1") && strings.Contains(up, "PROXY VOTING RECORD")
+}
+
+// icrCaptionSeps are the delimiters a `<FUND> - <SUB-ADVISER>` caption puts
+// between the two halves: the spaced hyphen and the dashes the vendor's
+// `&#151;`/`&#150;` entities decode to, which carry no spaces.
+var icrCaptionSeps = []string{" - ", "—", "–"}
+
+// icrCaptionFundAbove reads the sub-adviser caption printed above a section's
+// item heading and returns its FUND half with the series it names, or "" when
+// there is no such caption or its fund half names no declared sleeve.
+//
+// The walk is anchored on the item heading, not on adjacency to the label line:
+// between the two sit the vendor's own `Registrant :` line and blank lines. Only
+// the first nonblank line above the heading is offered, so the block's own
+// preamble prose is never mined for a name.
+func icrCaptionFundAbove(ix *issSeriesIndex, lines []string, i int) (string, string) {
+	heading := -1
+	for k, seen := i-1, 0; k >= 0 && seen < 4; k-- {
+		line := strings.TrimSpace(lines[k])
+		if line == "" {
+			continue
+		}
+		seen++
+		if icrItemHeadingLine(line) {
+			heading = k
+			break
+		}
+	}
+	if heading < 0 {
+		return "", ""
+	}
+	caption := ""
+	for k := heading - 1; k >= 0 && k >= heading-3; k-- {
+		if line := strings.TrimSpace(lines[k]); line != "" {
+			caption = line
+			break
+		}
+	}
+	if caption == "" || len(caption) > 200 || strings.ContainsAny(caption, ":<") {
+		return "", ""
+	}
+	for _, sep := range icrCaptionSeps {
+		cut := strings.Index(caption, sep)
+		if cut <= 0 || strings.TrimSpace(caption[cut+len(sep):]) == "" {
+			continue
+		}
+		head := strings.TrimSpace(caption[:cut])
+		if len(strings.Fields(head)) < icrMinSuffixWords {
+			continue
+		}
+		if id := icrResolveFundShared(ix, head); id != "" {
+			return head, id
+		}
+		// The caption drops the declared name's trailing noun (`ABSOLUTE
+		// STRATEGIES` for the declared `Absolute Strategies Fund`), which no rung
+		// of the shared chain cuts: every one of them trims the PRINTED name.
+		if id := icrResolveDeclaredPrefix(ix, head); id != "" {
+			return head, id
+		}
+	}
+	return "", ""
+}
+
+// icrResolveDeclaredPrefix answers a printed name that is the LEADING words of
+// exactly one declared name, the mirror of icrResolveDeclaredSuffix and refusing
+// on the same terms: a spelling the filing could not have known is skipped, and
+// two declared funds sharing the prefix refuse rather than pick. The filing's own
+// declarations answer first, as everywhere in this chain.
+func icrResolveDeclaredPrefix(ix *issSeriesIndex, printed string) string {
+	if ix == nil {
+		return ""
+	}
+	if ix.hdrOnly != nil {
+		if id := icrResolveDeclaredPrefix(ix.hdrOnly, printed); id != "" {
+			return id
+		}
+	}
+	key := normalizeSeriesName(printed)
+	if len(strings.Fields(key)) < icrMinSuffixWords {
+		return ""
+	}
+	found := ""
+	for declaredName, d := range ix.byName {
+		if d == nil || !strings.HasPrefix(declaredName, key+" ") || icrFutureDeclName(ix, d) {
+			continue
+		}
+		if found != "" && found != d.SeriesID {
+			return "" // more than one declared fund begins this way; refuse to pick
+		}
+		found = d.SeriesID
+	}
+	return found
 }
 
 // icrHeadingAbovePeriod returns the nearest nonblank line above a reporting
