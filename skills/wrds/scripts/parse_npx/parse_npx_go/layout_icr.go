@@ -205,6 +205,34 @@ func icrBlockHeader(cells []string) bool {
 	return label(0) == "TICKER" && label(1) == "SECURITY ID" && label(2) == "MEETING DATE"
 }
 
+// icrSettlementHeader recognises the column header of the delivery record this
+// grammar closes a meeting with:
+//
+//	ACCOUNT NUMBER   CUSTODIAN   BALLOT SHARES   SHARES   VOTE DATE   DATE CONFIRMED
+//
+// Anchored on the first two labels as a JOINED prefix rather than on cell
+// positions, for the same reason icrBlockHeader anchors on its first three: one
+// vintage prints a wide gap inside a label, so `ACCOUNT NUMBER` may arrive as
+// one cell or as two and neither spelling may decide whether the table is seen.
+func icrSettlementHeader(cells []string) bool {
+	if len(cells) < 2 {
+		return false
+	}
+	return strings.HasPrefix(strings.ToUpper(strings.Join(cells, " ")), "ACCOUNT NUMBER CUSTODIAN")
+}
+
+// icrSettlementRow reports a row of that table: the last two columns are the
+// `VOTE DATE` and `DATE CONFIRMED` the header names, and a ballot never prints
+// a date in either of the two columns this grammar votes in. It is asked only
+// of the lines walked forward from a settlement header, so the shape decides
+// where the table ENDS and never what a line elsewhere in the body is.
+func icrSettlementRow(cells []string) bool {
+	if len(cells) < 3 {
+		return false
+	}
+	return htmlDate(cells[len(cells)-1]) != "" && htmlDate(cells[len(cells)-2]) != ""
+}
+
 // icrIdentity reads the values line under a block header. It anchors on the
 // DATE rather than on cell position: a blank ticker column collapses away
 // entirely, so `CUSIP G87621101  02-Jul-10  Voted` and `MMM  CUSIP 88579Y101
@@ -598,11 +626,25 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 			// resolves is not evidence that it is one.
 			curFund = lineAbove
 			curSeries = icrResolveFundShared(seriesIx, lineAbove)
-		} else if strings.EqualFold(line, icrReportLine) && lineAbove != "" {
+		} else if strings.EqualFold(line, icrReportLine) && lineAbove != "" && !(lastRow >= 0 && lineAboveIdx == lastLine) {
 			// One vintage names the fund on a bare line ABOVE its `Investment
 			// Company Report` line (Hartford Mutual Funds, ~180k rows with no
 			// fund read, 2026-09-02). The report line is the marker; the line
 			// above it is the name, resolved like any other heading.
+			//
+			// A line that belongs to the proposal row still open is refused
+			// BEFORE it is read as a name, exactly as it is at the underscore
+			// rule above. Hartford Series Fund 2007 (CIK 1053425,
+			// 0000950135-07-005427) alternates two grammars, and at every
+			// seam from the paginated `PROXY VOTING RECORD` grammar into this
+			// one the line the marker sits under is the last thing the vote
+			// table above printed -- a wrapped description tail (`ERNST &
+			// YOUNG LLP.`) at source line 83468 and a COMPLETE vote row
+			// (`3  Transaction of Other Business  Mgmt  For  Against
+			// Against`) at source line 57262. The banner this vintage prints
+			// sits BELOW the marker, not above it, so there is no name to
+			// take here at all: a line the filing printed inside a vote table
+			// is never a fund banner, whatever it resolves to.
 			curFund = lineAbove
 			if icrSectionNote(lines, lineAboveIdx) {
 				// A note -- a merger successor, a sub-adviser attribution, in or
@@ -699,6 +741,41 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 			}
 			continue
 		}
+
+		// THE SETTLEMENT TABLE IS NOT A BALLOT TABLE. This grammar closes a
+		// meeting with a delivery record -- how the ballot reached the
+		// custodian, not how it was voted:
+		//
+		//	ACCOUNT NUMBER   CUSTODIAN   BALLOT SHARES   SHARES   VOTE DATE     DATE CONFIRMED
+		//	997QR1E          837         2376550         0        17-Jul-2006   17-Jul-2006
+		//
+		// Six cells with an item-shaped first one, so icrVoteRow reads every
+		// one of them as a vote: item_seq is a custodian account code,
+		// description is the custodian and how_voted is a confirmation date.
+		// Measured over 0000950135-07-005427 (CIK 1053425) on 2026-09-26, 780
+		// of that filing's 812 blank-series rows are these, and the vote they
+		// are misread as was already read correctly out of the ITEM/PROPOSAL
+		// table above them.
+		//
+		// The header is the marker and the table is stepped over whole, up to
+		// the first line that is neither furniture nor a row of it. Nothing
+		// about the open section is touched: the fund banner, the meeting and
+		// its identity all still govern the blocks that follow, so this is a
+		// refusal to emit and not a section boundary.
+		if icrSettlementHeader(cells) {
+			last := i
+			for k := i + 1; k < len(lines); k++ {
+				next := strings.TrimSpace(lines[k])
+				if next != "" && strings.Trim(next, "-=_ ") != "" && !icrSettlementRow(icrCells(next)) {
+					break
+				}
+				last = k
+			}
+			i = last
+			lastRow, lastLine = -1, -2
+			continue
+		}
+
 		if !haveMtg {
 			continue
 		}
