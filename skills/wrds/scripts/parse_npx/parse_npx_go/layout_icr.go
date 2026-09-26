@@ -516,11 +516,6 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		// row of the section so an unattributed section is still visible as
 		// unmatched rather than unnamed.
 		curFund string
-		// fundFromBanner records that the carried fund came from a '=====' banner
-		// rule, the one grammar in which a bare rule is a section end. Under the
-		// labelled grammar a bare rule is the divider between issuer blocks
-		// (Royce Fund 2011) and must not clear the fund.
-		fundFromBanner bool
 		// prevText is the previous non-blank line, for the vintage that names
 		// the fund on the line above its Investment Company Report line, and
 		// prevTextLine the line it was read from, so a heading test can tell
@@ -587,7 +582,6 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 					curFund, curSeries = joined, id
 				}
 			}
-			fundFromBanner = false
 		} else if icrUnderscoreRule(line) && lineAbove != "" && !(lastRow >= 0 && lineAboveIdx == lastLine) && icrResolveFundShared(seriesIx, lineAbove) != "" {
 			// Another vintage names the fund on the bare line ABOVE a rule of
 			// underscores (T. Rowe Price Index Trust, 2026-09-02). The rule is
@@ -632,14 +626,23 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 			// The '=====' banner rule the ISS report opens a fund with, printed
 			// by one registrant in this grammar too (the College Retirement
 			// Equities Fund, 6.2M rows with no fund name read, 2026-09-02). A
-			// structural marker, resolved like the labelled line; a bare rule
-			// with no name clears a fund a banner set, and is only the divider
-			// between issuer blocks under a `Fund Name :` label.
+			// structural marker, resolved like the labelled line.
+			//
+			// A BARE rule -- no name inside it -- is an ISSUER DIVIDER in this
+			// grammar and never a section end, whichever marker opened the
+			// section. Homestead Funds, Inc. 2011 (CIK 865733, its only
+			// in-scope filing) opens each of its four sections with a banner and
+			// then divides the issuer blocks INSIDE two of them with bare rules
+			// of '=' (source lines 4731 and 5887); clearing the fund on those
+			// two lines orphaned 1,017 of the filing's 2,840 rows, one whole
+			// section included, since no banner reopens the fund until the next
+			// section. Nothing in the corpus points the other way: the only
+			// evidence a section ended is a new marker, and every filing that
+			// prints a section end prints the next section's banner with it, so
+			// clearing here buys nothing and costs every bare divider printed
+			// under a banner-opened section.
 			if name != "" {
 				curFund, curSeries = name, icrResolveFundShared(seriesIx, name)
-				fundFromBanner = true
-			} else if fundFromBanner {
-				curFund, curSeries = "", ""
 			}
 			continue
 		} else if icrItemOneMarker(line) {
@@ -653,7 +656,6 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 			if name, ok := icrHeadingBelowMarker(lines, i); ok {
 				if id := icrResolveFundShared(seriesIx, name); id != "" {
 					curFund, curSeries = name, id
-					fundFromBanner = false
 				}
 			}
 		} else if icrReportPeriodLine(line) {
@@ -671,7 +673,6 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 			if name, ok := icrHeadingAbovePeriod(lines, i); ok {
 				if id := icrResolveFundShared(seriesIx, name); id != "" {
 					curFund, curSeries = name, id
-					fundFromBanner = false
 				}
 			}
 		}

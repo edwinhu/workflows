@@ -1,0 +1,279 @@
+<SEC-DOCUMENT>0000865733-11-000029.txt : 20110831
+<SEC-HEADER>0000865733-11-000029.hdr.sgml : 20110831
+<ACCEPTANCE-DATETIME>20110831163411
+ACCESSION NUMBER:		0000865733-11-000029
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20110630
+FILED AS OF DATE:		20110831
+DATE AS OF CHANGE:		20110831
+EFFECTIVENESS DATE:		20110831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			HOMESTEAD FUNDS INC
+		CENTRAL INDEX KEY:			0000865733
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-06136
+		FILM NUMBER:		111068842
+
+	BUSINESS ADDRESS:	
+		STREET 1:		4301 WILSON BLVD
+		STREET 2:		C/O NATIONAL RURAL ELEC COOPERATIVE ASSO
+		CITY:			ARLINGTON
+		STATE:			VA
+		ZIP:			22203
+		BUSINESS PHONE:		8002583030
+
+	MAIL ADDRESS:	
+		STREET 1:		4301 WILSON BLVD
+		CITY:			ARLINGTON
+		STATE:			VA
+		ZIP:			22203
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000865733
+<SERIES-ID>S000010524
+<SERIES-NAME>Daily Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000029057
+<CLASS-CONTRACT-NAME>Daily Income Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>HDIXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000865733
+<SERIES-ID>S000010525
+<SERIES-NAME>Short-Term Government Securities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000029058
+<CLASS-CONTRACT-NAME>Short-Term Government Securities Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>HOSGX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000865733
+<SERIES-ID>S000010526
+<SERIES-NAME>Short-Term Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000029059
+<CLASS-CONTRACT-NAME>Short-Term Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>HOSBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000865733
+<SERIES-ID>S000010527
+<SERIES-NAME>Stock Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000029060
+<CLASS-CONTRACT-NAME>Stock Index Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>HSTIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000865733
+<SERIES-ID>S000010528
+<SERIES-NAME>Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000029061
+<CLASS-CONTRACT-NAME>Value Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>HOVLX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000865733
+<SERIES-ID>S000010529
+<SERIES-NAME>Small-Company Stock Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000029062
+<CLASS-CONTRACT-NAME>Small-Company Stock Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>HSCSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000865733
+<SERIES-ID>S000010530
+<SERIES-NAME>International Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000029063
+<CLASS-CONTRACT-NAME>International Value Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>HISIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000865733
+<SERIES-ID>S000010531
+<SERIES-NAME>Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000029064
+<CLASS-CONTRACT-NAME>Growth Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>HNASX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>homestead2011npx.txt
+<DESCRIPTION>FORM N-PX FP 7-1-2010 - 6-30-2011
+<TEXT>
+N-PX posted on August 29, 2011 on the SEC's website at www.sec.gov under CIK
+number 0000915092, File number 811-08162 and Series Identifier S000004285.
+
+================================================================================
+
+====================== Homestead Growth Fund ======================
+
+
+3M COMPANY
+
+Ticker:       MMM            Security ID:   88579Y101
+Meeting Date: MAY 10, 2011   Meeting Type: Annual
+Record Date:  MAR 11, 2011
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Elect Director Linda G. Alvarado	      For	For	     Management
+2     Elect Director George W. Buckley	      For	For	     Management
+3     Elect Director Vance D. Coffman	      For	For	     Management
+4     Elect Director Michael L. Eskew	      For	For	     Management
+5     Elect Director W. James Farrell	      For	For	     Management
+6     Elect Director Herbert L. Henkel	      For	For	     Management
+7     Elect Director Edward M. Liddy	      For	For	     Management
+8     Elect Director Robert S. Morrison	      For	For	     Management
+9     Elect Director Aulana L. Peters	      For	For	     Management
+10    Elect Director Robert J. Ulrich	      For	For	     Management
+11    Ratify Auditors			      For	For	     Management
+12    Advisory Vote to Ratify Named 	      For	For	     Management
+      Executive Officers'Compensation
+13    Advisory Vote on Say on Pay Frequency   One Year  One Year     Management
+14    Report on Political Contributions	      Against	Against	     Share Holder
+
+--------------------------------------------------------------------------------
+
+====================== Homestead Small Company Stock Fund ======================
+
+
+================================================================================
+<TABLE>
+<S>              <C>                                   <C>                      <C>
+ALBERTO-CULVER CO
+Ticker           Security ID:                          Meeting Date             Meeting Status
+ACV              CUSIP 013078100                       12/17/2010               Voted
+Meeting Type     Country of Trade
+Special          United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Approve Merger with Unilever NV       Mgmt        For         For         For
+2                Approve Adjournment of Meeting        Mgmt        For         For         For
+
+
+Alberto-Culver
+ Company
+
+Ticker           Security ID:                          Meeting Date             Meeting Status
+ACV              CUSIP  013078100                      02/24/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1.1              Elect Thomas Dattilo                  Mgmt        For         For         For
+1.2              Elect Jim Edgar                       Mgmt        For         For         For
+1.3              Elect Sam Susser                      Mgmt        For         For         For
+2                Advisory Vote on Executive            Mgmt        For         For         For
+                  Compensation
+
+3                Frequency of Advisory Vote on         Mgmt        3 Years     1 Year      Against
+                  Executive
+                  Compensation
+
+
+===================================================================================================
+APPLIED
+ INDUSTRIAL TECH
+ INC
+
+Ticker           Security ID:                          Meeting Date             Meeting Status
+AIT              CUSIP 03820C105                       10/26/2010               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1.1              Elect Nominee - WILLIAM G. BARES      Mgmt        For         For         For
+1.2              Elect Nominee - L. THOMAS HILTZ       Mgmt        For         For         For
+1.3              Elect Nominee - EDITH KELLY-GREEN     Mgmt        For         For         For
+2                Ratify Appointment of Auditors        Mgmt        For         For         For
+
+
+
+====================== Homestead Value Fund ======================
+
+
+
+Abbott
+ Laboratories
+
+Ticker           Security ID:                          Meeting Date             Meeting Status
+ABT              CUSIP  002824100                      04/29/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1.1              Elect Robert Alpern                   Mgmt        For         For         For
+1.2              Elect Roxanne Austin                  Mgmt        For         For         For
+1.3              Elect W. James Farrell                Mgmt        For         For         For
+1.4              Elect H. Laurance Fuller              Mgmt        For         For         For
+1.5              Elect Edward Liddy                    Mgmt        For         For         For
+1.6              Elect Phebe Novakovic                 Mgmt        For         For         For
+1.7              Elect William Osborn                  Mgmt        For         For         For
+1.8              Elect Samuel Scott III                Mgmt        For         For         For
+1.9              Elect Glenn Tilton                    Mgmt        For         For         For
+1.10             Elect Miles White                     Mgmt        For         For         For
+2                Ratification of Auditor               Mgmt        For         For         For
+3                Advisory Vote on Executive            Mgmt        For         Against     Against
+                  Compensation
+
+4                Frequency of Advisory Vote on         Mgmt        1 Year      1 Year      For
+                  Executive
+                  Compensation
+
+5                Shareholder Proposal Regarding        ShrHldr     Against     Against     For
+                  Pharmaceutical Price
+                  Restraints
+
+=====================================================================================================
+
+APPLIED
+ INDUSTRIAL TECH
+ INC
+
+Ticker           Security ID:                          Meeting Date             Meeting Status
+AIT              CUSIP 03820C105                       10/26/2010               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1.1              Elect Nominee - WILLIAM G. BARES      Mgmt        For         For         For
+1.2              Elect Nominee - L. THOMAS HILTZ       Mgmt        For         For         For
+1.3              Elect Nominee - EDITH KELLY-GREEN     Mgmt        For         For         For
+2                Ratify Appointment of Auditors        Mgmt        For         For         For
+
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
