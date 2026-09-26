@@ -250,7 +250,9 @@ NOTE_MAX=10
 # newest subjects, because the block is a working set rather than a history -- the journal is the
 # history. The excerpt is cut so one chatty attempt cannot crowd out twenty-nine other subjects.
 SUBJECT_MAX=30
-SUBJECT_LAST_MAX=200
+# Also caps a floor's `why` in the prompt: floors are never retired, so unbounded reasons are the
+# one block that grows until the whole -p argument overruns MAX_ARG_STRLEN and every exec fails.
+PROMPT_EXCERPT_MAX=200
 
 # Attempts on ONE subject since its last reset before the prompt stops offering it. 0 disables the
 # feature outright: every subject stays open however many passes it has cost.
@@ -283,7 +285,7 @@ scan_journal() {
   # never runs jq at all, so there is no exit status of jq's to read. `--` for the same reason the
   # rest of this file uses it -- a path may begin with a dash.
   out=$(jq -Rrn --arg own "$LOOP_KINDS" --arg notemax "$NOTE_MAX" \
-    --arg subjmax "$SUBJECT_MAX" --arg lastmax "$SUBJECT_LAST_MAX" "$JQ_SCAN" -- "$j" 2>/dev/null); rc=$?
+    --arg subjmax "$SUBJECT_MAX" --arg lastmax "$PROMPT_EXCERPT_MAX" "$JQ_SCAN" -- "$j" 2>/dev/null); rc=$?
   if [ "$rc" -ne 0 ]; then
     warn "journal scan of $j failed (jq exit $rc); refusing to reset state"
     return 1
@@ -345,7 +347,7 @@ build_prompt() {
   else
     printf 'GRIND_FLOORS: these keys are CLOSED. Do NOT re-attempt, re-diagnose or re-open them.\n'
     for n in "${!FLOOR_KEYS[@]}"; do
-      printf '  %s\t%s\n' "${FLOOR_KEYS[$n]}" "${FLOOR_WHY[$n]}"
+      printf '  %s\t%s\n' "${FLOOR_KEYS[$n]}" "${FLOOR_WHY[$n]:0:$PROMPT_EXCERPT_MAX}"
     done
   fi
   # What earlier iterations already tried, grouped by subject. Without it an attempt record is
