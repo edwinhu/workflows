@@ -36,8 +36,16 @@ var peVocabulary = map[string]string{
 	"MANAGEMENT":     peMgmtRec,
 	"TYPE":           peBy,
 	"PROPONENT":      peBy,
+	"PROPOSED BY":    peBy,
 	"VOTE":           peVote,
 	"VOTE CAST":      peVote,
+	// Whether the fund's ballot agreed with management -- a restatement of the
+	// vote read against the proponent, not the vote itself and not a count. It
+	// is in the vocabulary only so the band walk does not break on it and so
+	// peVoteRow steps over its cell positionally; peVoteRow reads it into no
+	// field (Guinness Atkinson 2017's `Item | Proposal | Proposed by | Vote |
+	// For/Against Management` band).
+	"FOR/AGAINST MANAGEMENT": peAgree,
 	// The broker's standing instruction on this ballot -- what would have been
 	// cast absent one. It is neither the management recommendation nor the
 	// fund's ballot, so it has a role of its own and peVoteRow reads it into no
@@ -92,6 +100,7 @@ const (
 	peMgmtRec     = "mgmtrec"
 	peBy          = "by"
 	peVote        = "vote"
+	peAgree       = "agree"
 	peDefault     = "default"
 	peDisposition = "disposition"
 )
@@ -366,8 +375,12 @@ type peHeader struct {
 
 // peHeaderAt returns the header band starting at i, or nil when there is none
 // there. The band must open on the item column, name what was voted on, and
-// carry at least two disposition columns -- one alone could be a tally rather
-// than a ballot.
+// then EITHER carry at least two disposition columns -- one alone could be a
+// tally rather than a ballot -- OR name the vote outright in a single vote
+// column. The second shape has no share counts at all (foreign ballots, where
+// the `Vote` cell carries `For`/`Against` verbatim), so the disposition rule
+// can never be satisfied by it; a lone tally column still cannot pass, because
+// a tally is a disposition and one disposition is still one.
 func peHeaderAt(lines []string, i int) *peHeader {
 	if role, ok := peVocabulary[strings.ToUpper(lines[i])]; !ok || role != peItem {
 		return nil
@@ -394,16 +407,18 @@ func peHeaderAt(lines []string, i int) *peHeader {
 		}
 		break
 	}
-	desc, dispositions := false, 0
+	desc, dispositions, votes := false, 0, 0
 	for _, lab := range h.labels {
 		switch peVocabulary[strings.ToUpper(lab)] {
 		case peDesc:
 			desc = true
 		case peDisposition:
 			dispositions++
+		case peVote:
+			votes++
 		}
 	}
-	if !desc || dispositions < 2 {
+	if !desc || (dispositions < 2 && !(dispositions == 0 && votes == 1)) {
 		return nil
 	}
 	return h
@@ -491,8 +506,15 @@ func matchProxyEdge(head string) bool {
 		if !band && peHeaderAt(lines, i) != nil {
 			band = true
 		}
-		if !identity && peIdentityLabel(lines[i]) {
-			identity = true
+		// Dispatch keeps the colon. Inside a filing already known to be this
+		// vendor's a bare `Security` is unambiguous, but as the test that
+		// CLAIMS a document for this layout it would be one common English
+		// word standing alone, so the colon-less spelling is read only after
+		// the match, not to make it.
+		if !identity && strings.HasSuffix(lines[i], ":") {
+			if _, ok := peIdentityLabel(lines[i]); ok {
+				identity = true
+			}
 		}
 		if band && identity {
 			return true
@@ -514,6 +536,19 @@ func peCount(s string) (string, bool) {
 		}
 	}
 	return v, true
+}
+
+// peItemNumber reports a cell that prints a ballot's item number: one short
+// token carrying a digit, which is what parts `1`, `4` and `2a` from the
+// sentence a wrapped resolution's tail puts in the same position. It is asked
+// only of the band that names its vote and counts nothing, where there is no
+// share count to refuse a non-row with.
+func peItemNumber(s string) bool {
+	v := strings.TrimSpace(s)
+	if v == "" || len(v) > 8 || strings.ContainsAny(v, " \t") {
+		return false
+	}
+	return strings.ContainsAny(v, "0123456789")
 }
 
 // peFundName reports a line that names a fund. The vendor prints the fund
@@ -693,17 +728,26 @@ func peItemCell(lines []string, tbl []int, i, heading int, labels []string) bool
 	return ok
 }
 
-// peIdentityLabel reports a line that opens a ballot's identity block.
-func peIdentityLabel(line string) bool {
-	if !strings.HasSuffix(line, ":") {
-		return false
+// peIdentityLabel reports a line that opens a ballot's identity block, and
+// returns the label's own name with the colon taken off.
+//
+// The colon is the vendor's ordinary spelling but not its only one: from its
+// later template onward the same block prints `Security` / `Ticker Symbol` /
+// `Meeting Date` bare (Guinness Atkinson 2017, from the Asia Pacific section
+// onward, in the same filing whose first section printed them with colons).
+// The colon-less form is accepted only for THIS closed set of names, which is
+// what keeps the issuer scan's guard intact: what the scan needs of the cell
+// below a heading is that it be one of these labels, and the colon was never
+// more than one way of telling that. Any other bare cell is still no label, so
+// a heading standing above ordinary prose is still not an issuer.
+func peIdentityLabel(line string) (string, bool) {
+	name := strings.ToUpper(strings.TrimSuffix(line, ":"))
+	switch name {
+	case "TICKER", "TICKER SYMBOL", "SECURITY", "SECURITY ID",
+		"SECURITY ID ON BALLOT", "ISIN", "MEETING DATE", "MEETING TYPE":
+		return name, true
 	}
-	switch strings.ToUpper(strings.TrimSuffix(line, ":")) {
-	case "TICKER", "SECURITY", "SECURITY ID", "SECURITY ID ON BALLOT", "ISIN",
-		"MEETING DATE", "MEETING TYPE":
-		return true
-	}
-	return false
+	return "", false
 }
 
 // parseProxyEdge reads the raw markup rather than the stripped text: this is a
@@ -745,22 +789,38 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// are each read whole, since this vendor hard-wraps either of them
 		// across source lines (`Meeting` / `Type:`).
 		labelText, labelEnd := line, i
-		if !strings.HasSuffix(line, ":") && run[i] == i && cellEnd > i && peIdentityLabel(cell) {
-			labelText, labelEnd = cell, cellEnd
+		if !strings.HasSuffix(line, ":") && run[i] == i && cellEnd > i {
+			if _, ok := peIdentityLabel(cell); ok {
+				labelText, labelEnd = cell, cellEnd
+			}
 		}
+		// A label is a cell ending in a colon, or one of the identity labels
+		// this vendor also prints without one.
+		label, isLabel := "", false
 		if strings.HasSuffix(labelText, ":") {
-			label := strings.ToUpper(strings.TrimSuffix(labelText, ":"))
+			label, isLabel = strings.ToUpper(strings.TrimSuffix(labelText, ":")), true
+		} else if name, ok := peIdentityLabel(labelText); ok && run[i] == i {
+			label, isLabel = name, true
+		}
+		if isLabel {
 			i = labelEnd
 			value := ""
 			if i+1 < len(lines) && peHeaderAt(lines, i+1) == nil {
 				next, nextEnd := peCellAt(lines, run, i+1)
-				if !strings.HasSuffix(next, ":") {
+				// A label's value is never another label. With the colon gone
+				// that test cannot be the colon's absence: this block leaves a
+				// label empty whenever the ballot carries no such id (the
+				// foreign ballots print `Ticker Symbol` with nothing under it),
+				// and reading the NEXT label as the value would eat that
+				// label's own value one cell later.
+				_, nextIsLabel := peIdentityLabel(next)
+				if !strings.HasSuffix(next, ":") && !nextIsLabel {
 					value = next
 					i = nextEnd
 				}
 			}
 			switch label {
-			case "TICKER":
+			case "TICKER", "TICKER SYMBOL":
 				ticker = value
 			case "SECURITY", "SECURITY ID", "SECURITY ID ON BALLOT":
 				cusip = value
@@ -831,7 +891,8 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// the filing. The heading is the whole CELL: the tail of a hard-wrapped
 		// cell is not a heading, and the reset below must never fire on one.
 		if run[i] == i && cellEnd+1 < len(lines) {
-			if next, _ := peCellAt(lines, run, cellEnd+1); peIdentityLabel(next) {
+			next, _ := peCellAt(lines, run, cellEnd+1)
+			if _, ok := peIdentityLabel(next); ok {
 				issuer = cell
 				ticker, cusip, isin, mtgDate, mtgType = "", "", "", "", ""
 				i = cellEnd
@@ -940,7 +1001,27 @@ func peVoteRow(lines []string, run []int, i int, labels []string) (VoteRow, int,
 			}
 		}
 	}
-	if dispositions == 0 || row.ItemSeq == "" || row.VoteDescription == "" {
+	// A band with no disposition column at all is the vote-named shape
+	// peHeaderAt admits alongside the counted one: the vote came straight from
+	// the `Vote` cell above and there is no share count to report, so
+	// shares_voted stays empty.
+	//
+	// That shape has no counts, so it also loses what the count check above is
+	// doing for every other band: REFUSING the cells that are not a row. The
+	// vendor prints a wrapped resolution's tail, and its `CMMT` note, as <tr>s
+	// of fewer cells, and consumed positionally either one reads as a ballot
+	// whose item cell is a sentence and whose columns are the NEXT row's. What
+	// stands in for the count here is the two cells the shape does define: the
+	// vote column prints its value verbatim, so a cell there naming no vote is
+	// not this band's row, and the item column prints a number. (Without the
+	// first, the tail of item 3 claims item 4's cells and item 4 is never read;
+	// without the second, the tail of item 4 claims the `CMMT` note's, emitting
+	// a ballot whose description is `CMMT` and eating the next issuer's banner
+	// as its last column.)
+	if dispositions == 0 && (!htmlIsVoteValue(row.HowVoted) || !peItemNumber(row.ItemSeq)) {
+		return VoteRow{}, i, false
+	}
+	if row.ItemSeq == "" || row.VoteDescription == "" {
 		return VoteRow{}, i, false
 	}
 	if row.HowVoted == "" {
