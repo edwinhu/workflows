@@ -1,0 +1,609 @@
+<SEC-DOCUMENT>0001580642-22-003900.txt : 20220804
+<SEC-HEADER>0001580642-22-003900.hdr.sgml : 20220804
+<ACCEPTANCE-DATETIME>20220804172503
+ACCESSION NUMBER:		0001580642-22-003900
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20220630
+FILED AS OF DATE:		20220804
+DATE AS OF CHANGE:		20220804
+EFFECTIVENESS DATE:		20220804
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Northern Lights Fund Trust IV
+		CENTRAL INDEX KEY:			0001644419
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0916
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-23066
+		FILM NUMBER:		221137831
+
+	BUSINESS ADDRESS:	
+		STREET 1:		225 PICTORIA DRIVE
+		STREET 2:		SUITE 450
+		CITY:			CINCINNATI
+		STATE:			OH
+		ZIP:			45246
+		BUSINESS PHONE:		402-895-1600
+
+	MAIL ADDRESS:	
+		STREET 1:		17605 WRIGHT STREET
+		STREET 2:		SUITE 200
+		CITY:			OMAHA
+		STATE:			NE
+		ZIP:			68154-1150
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001644419
+<SERIES-ID>S000056116
+<SERIES-NAME>Inspire Corporate Bond ESG ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176728
+<CLASS-CONTRACT-NAME>Inspire Corporate Bond ESG ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>IBD
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001644419
+<SERIES-ID>S000056117
+<SERIES-NAME>Inspire Global Hope ESG ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176729
+<CLASS-CONTRACT-NAME>Inspire Global Hope ESG ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>BLES
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001644419
+<SERIES-ID>S000056118
+<SERIES-NAME>Inspire Small/Mid Cap ESG ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176730
+<CLASS-CONTRACT-NAME>Inspire Small/Mid Cap ESG ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>ISMD
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001644419
+<SERIES-ID>S000059335
+<SERIES-NAME>Inspire 100 ESG ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000194706
+<CLASS-CONTRACT-NAME>Inspire 100 ESG ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>BIBL
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001644419
+<SERIES-ID>S000066581
+<SERIES-NAME>Inspire International ESG ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000214760
+<CLASS-CONTRACT-NAME>Inspire International ESG ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>WWJD
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001644419
+<SERIES-ID>S000068946
+<SERIES-NAME>Inspire Tactical Balanced ESG ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000220340
+<CLASS-CONTRACT-NAME>Inspire Tactical Balanced ESG ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>RISN
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001644419
+<SERIES-ID>S000070124
+<SERIES-NAME>Inspire Faithward Large Cap Momentum ESG ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000223047
+<CLASS-CONTRACT-NAME>Inspire Faithward Large Cap Momentum ESG ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>FEVR
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001644419
+<SERIES-ID>S000070125
+<SERIES-NAME>Inspire Faithward Mid Cap Momentum ESG ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000223048
+<CLASS-CONTRACT-NAME>Inspire Faithward Mid Cap Momentum ESG ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>GLRY
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>inspirenpx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-indent: 2in"></P>
+
+<TABLE CELLPADDING="0" CELLSPACING="0" STYLE="border-collapse: collapse; font: 12pt Times New Roman, Times, Serif; width: 100%">
+<TR STYLE="vertical-align: top; text-align: left">
+  <TD STYLE="width: 75%">&nbsp;</TD>
+  <TD STYLE="width: 25%"><P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-indent: 2in">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">--------------------------</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">OMB APPROVAL</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">--------------------------</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">OMB Number: 3235-0582</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">Expires: July 31, 2024</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">Estimated average burden</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">hours per response&#8230;4
+ ---------------------------</P>
+</TD></TR>
+</TABLE>
+
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">UNITED STATES</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">SECURITIES AND EXCHANGE COMMISSION</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">Washington, DC 20549</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">FORM N-PX</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED
+MANAGEMENT INVESTMENT COMPANY</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">Investment Company Act file number: 811- 23066</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>Northern Lights Fund Trust IV</B></P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">________________________________________________________________________</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">(Exact
+name of registrant as specified in charter)</P>
+
+<P STYLE="font: 10pt Garamond, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Garamond, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">225 Pictoria Drive, Suite 450</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">Cincinnati, OH 45246</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">________________________________________________________________________</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0 0 0 99pt">(Address of principal executive offices) (Zip code)</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">The Corporation Trust Company</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">1209 Orange Street</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">Wilmington, DE 19801</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">________________________________________________________________________</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">(Name and address of agent for service)</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">Registrant's telephone number, including area code: (631) 470-2600</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">Date of fiscal year end: November 30</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">Date of reporting period: July 1, 2021- June 30, 2022</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: justify">ITEM 1. PROXY VOTING RECORD:</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: justify; text-indent: 0.5in">Appended hereto as Exhibits 10
+through 17 is the following information indicating for each matter relating to a portfolio security owned by the Registrant considered
+at any shareholder meeting held during the twelve month period ended June 30, 2022 with respect to which the Registrant was entitled to
+vote:</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-indent: 0.5in">(a) The name of the issuer of the portfolio security;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-indent: 0.5in">(b) The exchange ticker symbol of the portfolio security;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-indent: 0.5in">(c) The Council on Uniform Securities Identification
+Procedures (&quot;CUSIP&quot;) number for the portfolio security;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-indent: 0.5in">(d) The shareholder meeting date;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-indent: 0.5in">(e) A brief identification of the matter voted on;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-indent: 0.5in">(f) Whether the matter was proposed by the issuer or
+by a security holder;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-indent: 0.5in">(g) Whether the Registrant cast its vote on the matter;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-indent: 0.5in">(h) How the Registrant
+cast its vote (e.g., for or against proposal, or abstain; for or withhold regarding election of directors); and</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-indent: 0.5in">(i) Whether the Registrant cast its vote for or against
+management.</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 11pt Calibri, Helvetica, Sans-Serif">
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 11%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 4%">&nbsp;</TD>
+    <TD STYLE="width: 5%">&nbsp;</TD>
+    <TD STYLE="text-align: right; width: 5%">&nbsp;</TD>
+    <TD STYLE="width: 5%">&nbsp;</TD>
+    <TD STYLE="width: 12%">&nbsp;</TD>
+    <TD STYLE="width: 18%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD>
+    <TD STYLE="width: 5%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>Inspire Proxy Record</TD>
+    <TD>N-PX</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD COLSPAN="2">Registrant: NORTHERN LIGHTS FUND TRUST IV - Inspire 100 ETF</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>Item 1, Exhibit&nbsp;&nbsp;10</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>Data: 7-1-2021 to 6-30-2022</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD COLSPAN="2">Investment Company Act file number: 811-23066</TD>
+    <TD>&nbsp;</TD>
+    <TD COLSPAN="3">No* = could not vote due to shares out on loan</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD COLSPAN="2">Reporting Period: July 1, 2021 through June 30, 2022</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: #3366FF">
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border: Black 0.5pt solid">A. Company Name</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">B. Primary Ticker Symbol</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">C. Security ID</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">D. Meeting Type</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">D. Meeting Date</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">E. Proposal Number</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">E. Description</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">E. Description</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">F. Proposed By Management or Shareholder</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">G. Voted by Registrant</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">H. Registrant Vote</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">I.&nbsp;&nbsp;For/Against Management Recommended Vote</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Management's Recommended Vote</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt">ALBEMARLE CORPORATION</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">ALB</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">012653101</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Annual</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: right; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">03-May-2022</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">1</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">14A Executive Compensation</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">To consider and vote on a non-binding advisory resolution approving the compensation of our named executive officers.&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Management</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Yes</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt">ALBEMARLE CORPORATION</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">ALB</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">012653101</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Annual</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: right; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">03-May-2022</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">2</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Election of Directors (Majority Voting)</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Election of Director: Mary Lauren Brlas&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Management</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Yes</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt">ALBEMARLE CORPORATION</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">ALB</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">012653101</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Annual</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: right; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">03-May-2022</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">3</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Election of Directors (Majority Voting)</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Election of Director: Ralf H. Cramer&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Management</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Yes</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD></TR>
+  </TABLE>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="6" STYLE="font-weight: bold">Registrant: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 700"><U>NORTHERN LIGHTS FUND TRUST IV - Inspire Corporate Bond Impact ETF</U></FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">Item 1, Exhibit 11</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font-weight: bold">Investment Company Act file number: 811-23066</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font-weight: bold">Reporting Period: <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 400">July 1, 2021 through June 30, 2022</FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 1%">&nbsp;</TD>
+    <TD STYLE="width: 9%">&nbsp;</TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 11%">&nbsp;</TD>
+    <TD STYLE="width: 3%">&nbsp;</TD>
+    <TD STYLE="width: 22%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD>
+    <TD STYLE="width: 11%">&nbsp;</TD>
+    <TD STYLE="width: 11%">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="font-size: 14pt; font-weight: bold; text-decoration: underline; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</TD></TR>
+  <TR STYLE="vertical-align: middle">
+    <TD STYLE="border: Black 0.5pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center">(a) Issuer's Name</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(b) Exchange Ticker Symbol</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(c)&quot;CUSIP&quot; #</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(d) Shareholder Meeting Date</TD>
+    <TD COLSPAN="2" STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(e) Matter Identification</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(f) Proposal Type</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(g) Voted (Y/N)</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(h) Fund Vote</TD>
+    <TD STYLE="font-size: 9pt; font-weight: bold; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center">(i) For/Against Management Recommendation</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-left: Black 0.5pt solid; text-align: right">1</TD>
+    <TD STYLE="border-top: Black 0.5pt solid; border-left: Black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 0.5pt solid; border-right: Black 0.5pt solid">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-left: Black 0.5pt solid; text-align: right">2</TD>
+    <TD STYLE="border-left: Black 0.5pt solid">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD COLSPAN="5" STYLE="font-weight: bold">No proxies voted, The Fund did not receive any proxies for the Period July 1, 2021 to June 30, 2022</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-left: Black 0.5pt solid; text-align: right">3</TD>
+    <TD STYLE="border-left: Black 0.5pt solid">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid">&nbsp;</TD></TR>
+  </TABLE>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 11pt Calibri, Helvetica, Sans-Serif">
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 11%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 4%">&nbsp;</TD>
+    <TD STYLE="width: 5%">&nbsp;</TD>
+    <TD STYLE="text-align: right; width: 5%">&nbsp;</TD>
+    <TD STYLE="width: 5%">&nbsp;</TD>
+    <TD STYLE="width: 12%">&nbsp;</TD>
+    <TD STYLE="width: 18%">&nbsp;</TD>
+    <TD STYLE="width: 8%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD>
+    <TD STYLE="width: 5%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>Inspire Proxy Record</TD>
+    <TD>N-PX</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD COLSPAN="3">Registrant: NORTHERN LIGHTS FUND TRUST IV - Inspire Faithward Large Cap Momentum ESG ETF</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>Item 1, Exhibit 12</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>Data: 7-1-2021 to 6-30-2022</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD COLSPAN="2">Investment Company Act file number: 811-23066</TD>
+    <TD>&nbsp;</TD>
+    <TD COLSPAN="3">No* = could not vote due to shares out on loan</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD COLSPAN="2">Reporting Period: July 1, 2021 through June 30, 2022</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: #3366FF">
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border: Black 0.5pt solid">A. Company Name</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">B. Primary Ticker Symbol</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">C. Security ID</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">D. Meeting Type</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">D. Meeting Date</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">E. Proposal Number</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">E. Description</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">E. Description</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">F. Proposed By Management or Shareholder</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">G. Voted by Registrant</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">H. Registrant Vote</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">I.&nbsp;&nbsp;For/Against Management Recommended Vote</TD>
+    <TD STYLE="color: white; font: bold 10pt Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Management's Recommended Vote</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt">ALIGN TECHNOLOGY, INC.</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: left; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">ALGN</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">016255101</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Annual</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: right; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">18-May-2022</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">1</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Election of Directors (Majority Voting)</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Election of Director: Kevin J. Dallas&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Management</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Yes</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt">ALIGN TECHNOLOGY, INC.</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: left; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">ALGN</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">016255101</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Annual</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: right; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">18-May-2022</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">2</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Election of Directors (Majority Voting)</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Election of Director: Joseph M. Hogan&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Management</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Yes</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt">ALIGN TECHNOLOGY, INC.</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: left; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">ALGN</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">016255101</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Annual</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: right; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">18-May-2022</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">3</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Election of Directors (Majority Voting)</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Election of Director: Joseph Lacob&nbsp;</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Management</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Yes</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">F</TD></TR>
+  </TABLE>
+
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
