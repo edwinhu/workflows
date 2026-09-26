@@ -1481,10 +1481,16 @@ type issSeriesIndex struct {
 	// every map here, nil on collision, so two declared names that agree after
 	// the cut stay unresolved rather than guessed.
 	lessLeadToken map[string]*SeriesDecl
-	lessParen     map[string]*SeriesDecl   // declared names with a trailing parenthetical removed
-	classPairs    map[string][]*SeriesDecl // the declared names behind a lessParen collision that differ only by a class marker
-	decls         []SeriesDecl
-	brands        []string
+	// byOrdinal keys the declared names carrying an ordinal under its
+	// spelled-out spelling, for a banner that prints the same ordinal
+	// abbreviated (`Dow Target 10 - 1st Quarter Portfolio` for the declared
+	// `... First Quarter Portfolio`, S000007939). Consulted only after the
+	// exact declared names have failed.
+	byOrdinal  map[string]*SeriesDecl
+	lessParen  map[string]*SeriesDecl   // declared names with a trailing parenthetical removed
+	classPairs map[string][]*SeriesDecl // the declared names behind a lessParen collision that differ only by a class marker
+	decls      []SeriesDecl
+	brands     []string
 	// lessSuffix keys the declared names with their common last word removed,
 	// built ONLY when every declared name (two at least) ends in the same word:
 	// the College Retirement Equities Fund declares `<name> Account` throughout
@@ -1704,6 +1710,7 @@ func issDeclAliases(decls []SeriesDecl, cik, period string) []SeriesDecl {
 func newISSSeriesIndex(decls []SeriesDecl, registrantKey string) *issSeriesIndex {
 	ix := &issSeriesIndex{
 		byName:            seriesByName(decls),
+		byOrdinal:         seriesByOrdinal(decls),
 		registrantKey:     registrantKey,
 		byHistoricalBrand: make(map[string]*SeriesDecl),
 		byCompact:         make(map[string]*SeriesDecl, len(decls)),
@@ -3357,6 +3364,18 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	if d == nil && !declared {
 		if a := ix.aliases[normalizeSeriesName(banner)]; a != nil {
 			return banner, a
+		}
+	}
+
+	// The banner and the declaration spell the same ordinal two ways -- `1st`
+	// against `First` -- and differ in nothing else. Read before any cut, since
+	// it is a difference in how the SAME name was printed; keyed only for names
+	// carrying an ordinal on both sides, and nil on collision.
+	if d == nil && !declared {
+		if k := normalizeOrdinalSeriesName(banner); k != "" {
+			if od := ix.byOrdinal[k]; od != nil && !issFutureVintage(ix, od) {
+				return banner, od
+			}
 		}
 	}
 

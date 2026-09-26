@@ -347,6 +347,75 @@ func normalizeUndottedSeriesName(s string) string {
 	return normalizeSeriesName(u)
 }
 
+// seriesOrdinalWord maps the two spellings of an ordinal onto one token. Both
+// directions are covered by folding BOTH sides onto the spelled-out word, so it
+// does not matter which spelling the filing prints and which the dictionary
+// carries: Dow Target Variable Fund LLC (CIK 1071056) declares `Dow Target 10 -
+// First Quarter Portfolio` (S000007939) and prints `Dow Target 10 - 1st Quarter
+// Portfolio` in every one of its eight vote-table banners.
+//
+// An ordinal is the one word whose two spellings cannot name two different
+// funds -- `1st` is not an abbreviation of `First`, it IS `First` -- which is
+// why this folds and no other word-level equivalence does. It is still a RETRY
+// key, keyed and consulted only for names that carry an ordinal on BOTH sides,
+// and collision refuses the way seriesByName refuses.
+var seriesOrdinalWord = map[string]string{
+	"1st": "first", "2nd": "second", "3rd": "third", "4th": "fourth",
+	"5th": "fifth", "6th": "sixth", "7th": "seventh", "8th": "eighth",
+	"9th": "ninth", "10th": "tenth", "11th": "eleventh", "12th": "twelfth",
+	"first": "first", "second": "second", "third": "third", "fourth": "fourth",
+	"fifth": "fifth", "sixth": "sixth", "seventh": "seventh", "eighth": "eighth",
+	"ninth": "ninth", "tenth": "tenth", "eleventh": "eleventh", "twelfth": "twelfth",
+}
+
+// normalizeOrdinalSeriesName is normalizeSeriesName with every ordinal token
+// folded onto its spelled-out word. It returns "" when the name carries no
+// ordinal at all, so a caller keys and queries only the names for which the two
+// spellings can actually differ.
+func normalizeOrdinalSeriesName(s string) string {
+	key := normalizeSeriesName(s)
+	if key == "" {
+		return ""
+	}
+	toks := strings.Fields(key)
+	found := false
+	for i, t := range toks {
+		if w, ok := seriesOrdinalWord[t]; ok {
+			toks[i] = w
+			found = true
+		}
+	}
+	if !found {
+		return ""
+	}
+	return strings.Join(toks, " ")
+}
+
+// seriesByOrdinal keys each declared name that carries an ordinal under its
+// ordinal-folded spelling, refusing on collision the way seriesByName does.
+func seriesByOrdinal(decls []SeriesDecl) map[string]*SeriesDecl {
+	out := make(map[string]*SeriesDecl)
+	for i := range decls {
+		d := &decls[i]
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		key := normalizeOrdinalSeriesName(d.Name)
+		if key == "" {
+			continue
+		}
+		prev, seen := out[key]
+		if !seen {
+			out[key] = d
+			continue
+		}
+		if prev != nil && prev.SeriesID != d.SeriesID {
+			out[key] = nil // ambiguous: two series answer to this spelling
+		}
+	}
+	return out
+}
+
 var seriesPunctReplacer = strings.NewReplacer(
 	"&", " and ",
 	"?", " ",
