@@ -67,8 +67,9 @@ var peSummaryVocabulary = map[string]bool{
 	"COMPANY NAME": true, "ISSUER NAME": true, "SECURITY NAME": true,
 	"TICKER": true, "COUNTRY": true, "SECURITY ID": true, "CUSIP": true,
 	"PROVIDER SECURITY ID": true, "SECURITY ID ON BALLOT": true, "ISIN": true,
-	"MEETING TYPE": true, "MEETING DATE": true, "RECORD DATE": true,
-	"PROPONENT": true, "PROPOSAL NUMBER": true, "PROPOSAL TEXT": true,
+	"PRIMARY ISIN": true, "MEETING TYPE": true, "MEETING DATE": true,
+	"RECORD DATE": true, "PROPONENT": true, "PROPOSAL NUMBER": true,
+	"PROPOSAL CODE CATEGORY": true, "PROPOSAL TEXT": true,
 	"PROPOSAL": true, "MANAGEMENT RECOMMENDATION": true, "VOTE INSTRUCTION": true,
 	"VOTED": true, "VOTE AGAINST MANAGEMENT": true, "SHARES VOTED": true,
 	"SHARES ON LOAN": true, "VOTE CAST": true,
@@ -410,20 +411,39 @@ func peHeaderAt(lines []string, i int) *peHeader {
 
 // peSummaryHeaderAt returns the number of lines the summary grid's header band
 // at i occupies, or 0 when there is none there. The band opens on the
-// issuer-name column, runs over whole cells of the summary vocabulary in one
-// table, and must name at least peSummaryColumns of them.
-func peSummaryHeaderAt(lines []string, tbl []int, whole []bool, i int) int {
-	if !whole[i] || !peSummaryOpener[strings.ToUpper(lines[i])] {
+// issuer-name column, runs over CELLS of the summary vocabulary in one table,
+// and must name at least peSummaryColumns of them.
+//
+// The band is read one CELL at a time, not one line: this vendor hard-wraps a
+// column label inside its own <td> exactly as it wraps a proposal's text
+// (Aspiriant Trust 2023 prints `<B>Company` / `Name</B>`, and every one of that
+// grid's seven labels is wrapped that way), and a band read line-wise breaks on
+// the first half of the first label -- leaving the grid's own body unmarked, so
+// that every data cell in it is offered to the bare-heading scan. A proposal
+// cell reaching that scan is taken for a fund banner the moment its prose
+// happens to carry a fund word (`... Procedures for Lending Funds to Other
+// Parties ...` blanked the series on all 1,133 rows of that filing).
+//
+// The count returned stays a LINE count: it is what peSummaryBody steps over to
+// reach the body, and a wrapped band occupies more lines than it names columns.
+func peSummaryHeaderAt(lines []string, run []int, tbl []int, i int) int {
+	if run[i] != i {
 		return 0
 	}
-	n := 0
-	for k := i; k < len(lines) && tbl[k] == tbl[i] && whole[k]; k++ {
-		if !peSummaryVocabulary[strings.ToUpper(lines[k])] {
+	if opener, _ := peCellAt(lines, run, i); !peSummaryOpener[strings.ToUpper(opener)] {
+		return 0
+	}
+	n, columns := 0, 0
+	for k := i; k < len(lines) && tbl[k] == tbl[i] && run[k] == k; {
+		cell, end := peCellAt(lines, run, k)
+		if !peSummaryVocabulary[strings.ToUpper(cell)] {
 			break
 		}
-		n++
+		columns++
+		n += end - k + 1
+		k = end + 1
 	}
-	if n < peSummaryColumns {
+	if columns < peSummaryColumns {
 		return 0
 	}
 	return n
@@ -440,10 +460,10 @@ func peSummaryHeaderAt(lines []string, tbl []int, whole []bool, i int) int {
 //
 // Only the body is marked, never the whole run: a vendor that prints the fund
 // banner as a spanning row ABOVE this header is still naming a fund there.
-func peSummaryBody(lines []string, tbl []int, whole []bool) []bool {
+func peSummaryBody(lines []string, run []int, tbl []int) []bool {
 	out := make([]bool, len(lines))
 	for i := 0; i < len(lines); i++ {
-		n := peSummaryHeaderAt(lines, tbl, whole, i)
+		n := peSummaryHeaderAt(lines, run, tbl, i)
 		if n == 0 {
 			continue
 		}
@@ -611,7 +631,7 @@ func peIdentityLabel(line string) bool {
 func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 	lines, run, tbl := peCellLines(string(stripHTMLCells(raw)))
 	whole := peWholeCells(run)
-	summary := peSummaryBody(lines, tbl, whole)
+	summary := peSummaryBody(lines, run, tbl)
 	wrapped := peWrappedProse(lines, tbl, whole)
 	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(seriesIx, meta.FormerNames)
