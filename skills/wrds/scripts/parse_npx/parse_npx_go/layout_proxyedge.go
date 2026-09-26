@@ -746,6 +746,9 @@ func peRegistrantFund(value, company string) string {
 // What the vendor prints ahead of a real banner is none of these: a table
 // boundary, an identity label, an issuer's name, a count, or a heading of its
 // own. A banner that OPENS its table is already refused by the table test above.
+//
+// Neither shape reaches the SECOND continuation row of a run, which is what
+// peBandCell is for.
 func peItemCell(lines []string, tbl []int, i, heading int, labels []string) bool {
 	if labels == nil || i < 0 || tbl[i] != tbl[heading] {
 		return false
@@ -754,6 +757,33 @@ func peItemCell(lines []string, tbl []int, i, heading int, labels []string) bool
 		return true
 	}
 	return peBrokenOffMidWord(lines[i])
+}
+
+// peBandCell reports that `heading` stands inside the proposal grid itself --
+// the very table the open header band was printed in -- and so is one column of
+// one of that grid's rows rather than a heading the vendor printed between them.
+//
+// This is peItemCell's claim made of a CONTINUATION RUN instead of an immediate
+// predecessor. This vendor wraps a long proposal over several ITEM ROWS, each
+// printing an empty Item cell and the next slice of the description. peItemCell
+// holds on the FIRST such row, whose predecessor is the wrapped row's own item
+// number; it cannot hold on the SECOND, whose predecessor is the first
+// continuation cell's prose -- upper case, finished on a word, neither a count
+// nor broken off mid-word -- and an empty Item cell leaves no line at all for it
+// to look at, since peCellLines drops a blank cell. Two Roads Shared Trust 2021
+// wraps ZHUZHOU CRRC TIMES ELECTRIC's proposal 29 that way, and `FROM
+// APPROPRIATING / FUNDS` carries a fund word: read as a banner it cleared the
+// section's series for the 730 rows after it, a regression that arrived with the
+// joining of hard-wrapped cells.
+//
+// The row structure that would settle it is gone by this point, so the table
+// stands in for it: inside the grid every cell is a column of some row, because
+// the grid holds the ballot's rows and nothing else. A banner between two
+// sections is printed outside that table (Two Roads prints its `Registrant:`
+// banner in a table of its own), which is the same boundary peItemCell's own
+// table test already rests on -- so a real banner is untouched by this.
+func peBandCell(tbl []int, band, heading int, labels []string) bool {
+	return labels != nil && band >= 0 && tbl[heading] == band
 }
 
 // peBrokenOffMidWord reports a line the vendor's column ended rather than its
@@ -792,6 +822,28 @@ func peIdentityLabel(line string) (string, bool) {
 	return "", false
 }
 
+// peFieldLabel reports a label name the label branch of parseProxyEdge has a
+// case for, and so the only names for which a colon-terminated cell may consume
+// the cell after it as its value.
+//
+// The colon alone is not evidence of a label. `ITEM 1. PROXY VOTING RECORD:` is
+// the N-PX item heading -- a document marker printed once on the cover page, not
+// a field -- and Two Roads Shared Trust 2021 prints it in the cell immediately
+// above section 1's `Registrant:` banner. Read as a label it swallowed that
+// banner as its value, no case matched, and the whole section's 573 rows kept
+// the fund the cover page's agent-for-service paragraph had left behind. An
+// unrecognised colon cell has no value to take: it falls through as an ordinary
+// cell and the cell after it is read on its own terms.
+func peFieldLabel(name string) bool {
+	switch name {
+	case "TICKER", "TICKER SYMBOL", "SECURITY", "SECURITY ID",
+		"SECURITY ID ON BALLOT", "ISIN", "MEETING DATE", "MEETING TYPE",
+		"FUND NAME", "PORTFOLIO NAME", "REGISTRANT":
+		return true
+	}
+	return false
+}
+
 // parseProxyEdge reads the raw markup rather than the stripped text: this is a
 // <table> grammar, and which lines belong to which cell is a fact only the
 // markup holds.
@@ -815,12 +867,18 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		mtgDate    string
 		mtgType    string
 		labels     []string
+		// band is the table the open header band was printed in, i.e. the
+		// proposal grid whose rows are being read. Every cell inside it is one
+		// column of one row, which is what tells a wrapped proposal's
+		// continuation cell from a fund banner (peBandCell).
+		band = -1
 	)
 
 	for i := 0; i < len(lines); i++ {
 		line := lines[i]
 		if h := peHeaderAt(lines, i); h != nil {
 			labels = h.labels
+			band = tbl[i]
 			i += h.consumed - 1
 			continue
 		}
@@ -837,10 +895,15 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 			}
 		}
 		// A label is a cell ending in a colon, or one of the identity labels
-		// this vendor also prints without one.
+		// this vendor also prints without one -- and in either spelling only a
+		// name the switch below has a case for, since an unrecognised label
+		// consuming the next cell hides whatever the vendor printed there
+		// (peFieldLabel).
 		label, isLabel := "", false
 		if strings.HasSuffix(labelText, ":") {
-			label, isLabel = strings.ToUpper(strings.TrimSuffix(labelText, ":")), true
+			if name := strings.ToUpper(strings.TrimSuffix(labelText, ":")); peFieldLabel(name) {
+				label, isLabel = name, true
+			}
 		} else if name, ok := peIdentityLabel(labelText); ok && run[i] == i {
 			label, isLabel = name, true
 		}
@@ -956,7 +1019,11 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// reached at all only because peVoteRow refused the row it splits, and
 		// clearing the open fund on a sentence fragment blanks the series for
 		// every row after it.
-		if whole[i] && !summary[i] && !wrapped[i] && !peItemCell(lines, tbl, i-1, i, labels) && peFundName(line) {
+		// Nor is any cell of the open proposal grid itself: the second and later
+		// continuation rows of a wrapped proposal are reached by neither of the
+		// two tests above, so the grid's own table is the boundary (peBandCell).
+		if whole[i] && !summary[i] && !wrapped[i] && !peItemCell(lines, tbl, i-1, i, labels) &&
+			!peBandCell(tbl, band, i, labels) && peFundName(line) {
 			fund = line
 			fundSeries = icrResolveFundShared(seriesIx, line)
 			if fundSeries == "" {
@@ -980,7 +1047,8 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// different case -- is not opening a new section, so the banner's own
 		// spelling stands rather than the restatement's.
 		if run[i] == i && cellEnd == i+1 && !summary[i] && !wrapped[i] &&
-			!peItemCell(lines, tbl, i-1, i, labels) && peFundName(cell) {
+			!peItemCell(lines, tbl, i-1, i, labels) && !peBandCell(tbl, band, i, labels) &&
+			peFundName(cell) {
 			if fund != "" && normalizeSeriesName(cell) == normalizeSeriesName(fund) {
 				i = cellEnd
 				continue
