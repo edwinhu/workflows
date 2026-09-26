@@ -659,6 +659,9 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 		if !ok {
 			name, ok = issOpenBanner(line, lines, i)
 		}
+		if !ok {
+			name, ok = issTruncatedBannerOpener(line, lines, i)
+		}
 		if ok && name == "" {
 			// A bare rule is a boundary with no name -- unless the fund is
 			// printed between it and the next bare rule.
@@ -9558,6 +9561,49 @@ func issMonthWord(w string) bool {
 		return true
 	}
 	return false
+}
+
+// issTruncatedBannerOpener reads the FIRST line of a two-line '=' band that the
+// filer's own wrapping cut one column short of its closing border (BlackRock
+// Variable Series Funds 2007, source lines 42845-42846):
+//
+//	========= BlackRock VARIABLE SERIES FUNDS, INC.: BlackRock LARGE CAP CORE V.I.
+//	=========                             FUND                             =========
+//
+// The opener carries no closing run, so issFundSeparator does not see a band and
+// issOpenBanner -- which wants a BARE rule below -- refuses the complete rule
+// that follows. The continuation then stands as a banner of its own whose whole
+// name is the stray word `FUND`, and the 1,128 rows beneath it file under that
+// with no series at all.
+//
+// Narrow on purpose: the line must open on a full rule, must NOT end on '=' (so
+// every properly bordered band, one-line or two-line, is still read by
+// issFundSeparator before this is ever reached), its text must hold no '=' and
+// must be name-like, and the very next line -- no blank gap -- must itself be a
+// complete band carrying text, which is the continuation this opener is missing.
+func issTruncatedBannerOpener(line string, lines []string, i int) (string, bool) {
+	n := len(line)
+	if n == 0 || line[0] != '=' || line[n-1] == '=' {
+		return "", false
+	}
+	lead := 0
+	for lead < n && line[lead] == '=' {
+		lead++
+	}
+	if lead < issBannerMinEquals {
+		return "", false
+	}
+	name := strings.TrimSpace(line[lead:])
+	if name == "" || strings.Contains(name, "=") || !issNameLike(name) {
+		return "", false
+	}
+	if i+1 >= len(lines) {
+		return "", false
+	}
+	if cont, ok := issFundSeparator(strings.TrimSpace(lines[i+1])); !ok || cont == "" {
+		return "", false
+	}
+	return name, true
 }
 
 // issOpenBanner reads a banner whose closing rule wrapped onto the next line:
