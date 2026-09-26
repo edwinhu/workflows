@@ -669,6 +669,21 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 				mtgDate = htmlDate(value)
 			case "MEETING TYPE":
 				mtgType = value
+			case "FUND NAME", "PORTFOLIO NAME":
+				// The same section banner the bare-heading scan below reads,
+				// printed instead as a label cell and a value cell
+				// (`<TD><B>Fund Name:</B></TD><TD COLSPAN="3"><B>...</B></TD>`,
+				// Investment Managers Series Trust 2018). The label branch has
+				// already consumed the value, so the bare-heading scan never
+				// sees it; without this case the value is dropped and every row
+				// keeps the registrant-level fund the cover page left behind.
+				if name := strings.TrimSpace(value); name != "" {
+					fund = name
+					fundSeries = icrResolveFundShared(seriesIx, name)
+					if fundSeries == "" {
+						fundSeries = htmlDictionaryFund(seriesIx, dict, name)
+					}
+				}
 			case "REGISTRANT":
 				// The banner that opens a section. It names the section's fund
 				// outright, so it overrides whatever the bare-heading scan took
