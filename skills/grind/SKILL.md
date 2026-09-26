@@ -150,6 +150,9 @@ bash ${CLAUDE_SKILL_DIR}/scripts/grind.sh append --journal "$GRIND_JOURNAL" \
   '{"kind":"floor","key":"1934-paper-scans","why":"no machine-readable text in the source"}'
 ```
 
+Iterations run with `FARM_OUT_CHILD=1`, so an iteration writes and commits directly; farm out only
+work the prompt itself asks to delegate.
+
 An operator steers a running loop with the same channel: append `{"kind":"note","key":"...",
 "note":"..."}` and the newest ten notes are printed as `GRIND_NOTES` in every later prompt, newest
 last, outranking the prompt's own ranking. No iteration opens the journal file, so a note that is
