@@ -370,6 +370,17 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				continue
 			}
 		}
+		// The same banner printed INSIDE the vendor's masthead preamble row,
+		// behind its report title and the form type: four filled cells, so it
+		// never reaches the two-cell heading reader below, and every section
+		// after the first keeps the fund the previous section named.
+		if heading, ok := htmlRegistrantMastheadBanner(cells); ok {
+			if name, id, ok := htmlBareFundLine(seriesIx, heading, dict); ok {
+				curFund, curSeries, outerSection, windowed = name, id, id != "", nil
+				bannerFund = id != "" && htmlExplicitFundBanner(heading)
+				continue
+			}
+		}
 		if htmlFilledCells(cells) <= 2 {
 			heading := strings.Join(cells, "\n")
 			registrantSection := false
@@ -6736,6 +6747,71 @@ func htmlRegistrantSplitCells(cells []string) (string, bool) {
 		return "", false
 	}
 	return filled[0] + " " + value, true
+}
+
+// reHTMLMastheadScaffold matches the vendor-scaffolding cells that may stand
+// AHEAD of the `Registrant:` cell in a masthead banner row: the report's own
+// title (`Inspire Proxy Record`) and the form type it reports on (`N-PX`).
+// Nothing else is allowed in front of the label, so an ordinary cover row that
+// happens to carry two values is not read as a masthead.
+var reHTMLMastheadScaffold = regexp.MustCompile(`(?i)^(N-PX(/A)?|.*\bProxy Record)$`)
+
+// reHTMLMastheadRegistrant matches the masthead's own `Registrant:` cell,
+// capturing the `<registrant> - <sleeve>` value. Both halves must be non-empty:
+// the sleeve is the fund this section is filed under, and a cell that ends at
+// the dash belongs to htmlRegistrantEmptySuffixFund instead.
+var reHTMLMastheadRegistrant = regexp.MustCompile(`(?i)^Registrant:\s*\S.*[-\x{2013}\x{2014}]\s*\S`)
+
+// htmlRegistrantMastheadBanner reads the sleeve out of a fund-boundary banner
+// this vendor prints INSIDE its own masthead preamble row, behind two cells of
+// scaffolding (Northern Lights Fund Trust IV 2022, seven of eight sections
+// filed under a fund the filing never named there):
+//
+//	<TD>Inspire Proxy Record</TD><TD>N-PX</TD> ... spacers ...
+//	<TD COLSPAN="2">Registrant: NORTHERN LIGHTS FUND TRUST IV - Inspire 100 ETF</TD>
+//	... spacers ... <TD>Item 1, Exhibit 10</TD>
+//
+// Four filled cells, so the row never reaches the two-cell heading reader, and
+// its leading cell is not the bare `Registrant` label htmlRegistrantSplitCells
+// requires. The shape is decided by what the other filled cells SAY: everything
+// ahead of the label is the report title and the form type, everything after it
+// is the form-item marker. The `Registrant:` cell is returned as one line, read
+// by the same resolver as every other heading.
+func htmlRegistrantMastheadBanner(cells []string) (string, bool) {
+	var filled []string
+	for _, cell := range cells {
+		if v := htmlFlat(cell); v != "" {
+			filled = append(filled, v)
+		}
+	}
+	if len(filled) < 3 {
+		return "", false
+	}
+	label, at := "", -1
+	for i, v := range filled {
+		if !reHTMLMastheadRegistrant.MatchString(v) {
+			continue
+		}
+		if at >= 0 {
+			return "", false
+		}
+		label, at = v, i
+	}
+	// The label standing first is the shape the readers above already own.
+	if at < 1 {
+		return "", false
+	}
+	for _, v := range filled[:at] {
+		if !reHTMLMastheadScaffold.MatchString(v) {
+			return "", false
+		}
+	}
+	for _, v := range filled[at+1:] {
+		if !reHTMLSplitExhibit.MatchString(v) {
+			return "", false
+		}
+	}
+	return label, true
 }
 
 // reHTMLRegistrantEmptySuffix matches a `Registrant:` cell that names the
