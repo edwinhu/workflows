@@ -8381,6 +8381,32 @@ func issCoverRenameAliases(ix *issSeriesIndex, lines []string) {
 // wiring unchanged -- issAuditedRenameAliases is called from issFilingIndex,
 // which broadridge builds like every other layout -- so no new broadridge-side
 // plumbing is needed.
+//
+// American Independence Funds Trust (CIK 0001324443) is the table's SIMPLEST
+// shape, because the successor is declared in the lossy filing's OWN SGML
+// header. Both of this registrant's in-scope filings print one banner, `Rx
+// Dynamic Stock Fund` -- line 4769 of 000132/1324443/0001438934-16-000780.txt
+// (period 20160630) and line 5745 of 0001438934-17-000220.txt -- for the fund
+// the dictionary spells `American Independence Stock Fund` at vintage 20110630
+// and `American Independence Navellier Defensive Alpha Fund` at 20160630, both
+// series S000011458 of this same CIK. The rename is documented by the
+// registrant's OWN 497 supplement 0001324443-15-000180, filed 2015-12-15:
+// `RX DYNAMIC STOCK FUND (formerly, the American Independence Stock Fund)
+// (Ticker Symbols: IFCSX, FMGRX, FMGCX)`, and those three tickers are exactly
+// the class contracts the 2016 filing's header declares for S000011458
+// (C000031686 FMGRX, C000031722 IFCSX, C000031723 FMGCX). So the printed name
+// is an INTERIM 2015-2016 spelling that fell between two N-PX snapshots and was
+// never itself captured as a dictionary row. No name rung can reach it -- the
+// two names share no distinctive word, and `Rx Dynamic Stock` appears in NO
+// dictionary row of this registrant at any vintage (corpus-wide the only
+// `Rx Dynamic` rows belong to CIK 1464413, Starboard Investment Trust, a
+// different registrant, which a cross-registrant rung would MISLINK). 276 rows
+// with no series across the two filings -- this CIK's whole remaining
+// known-registrant residue after c0c1d907 resolved the 34 under its `AI `
+// brand-acronym banners. Unlike the Roundhill entry above, the successor needs
+// no dictionary rung: it is in the filing's own header pool, so
+// issAuditedRenameAliases resolves it on the first lookupSeriesEntry(ix.byName,
+// succ).
 var issRegistrantRenames = map[string]map[string]string{
 	"0001385533": {
 		"tdax independence 2010 etf composite":      "TDX Independence 2010 Exchange-Traded Fund",
@@ -8474,6 +8500,9 @@ var issRegistrantRenames = map[string]map[string]string{
 	},
 	"0001683471": {
 		"roundhill mvp etf": "Roundhill Pro Sports, Media & Apparel ETF",
+	},
+	"0001324443": {
+		"rx dynamic stock fund": "American Independence Navellier Defensive Alpha Fund",
 	},
 	"0000809593": {
 		"american aadvantage balanced fund":                                "American Beacon Balanced Fund",

@@ -1,0 +1,384 @@
+<SEC-DOCUMENT>0001438934-16-000780.txt : 20160825
+<SEC-HEADER>0001438934-16-000780.hdr.sgml : 20160825
+<ACCEPTANCE-DATETIME>20160825131331
+ACCESSION NUMBER:		0001438934-16-000780
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20160630
+FILED AS OF DATE:		20160825
+DATE AS OF CHANGE:		20160825
+EFFECTIVENESS DATE:		20160825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			American Independence Funds Trust
+		CENTRAL INDEX KEY:			0001324443
+		IRS NUMBER:				113728400
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-21757
+		FILM NUMBER:		161850967
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1345 AVENUE OF THE AMERICAS
+		STREET 2:		2ND FLOOR
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10105
+		BUSINESS PHONE:		212-488-1331
+
+	MAIL ADDRESS:	
+		STREET 1:		1345 AVENUE OF THE AMERICAS
+		STREET 2:		2ND FLOOR
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10105
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	American Independence Financial Services, LLC
+		DATE OF NAME CHANGE:	20060317
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	Arrivato Funds Trust
+		DATE OF NAME CHANGE:	20050728
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	Adventus Funds Trust
+		DATE OF NAME CHANGE:	20050420
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011458
+<SERIES-NAME>American Independence Navellier Defensive Alpha Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031686
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>FMGRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031722
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>IFCSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031723
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FMGCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011459
+<SERIES-NAME>American Independence Navellier International Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031687
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>IMSSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031724
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>IIESX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011460
+<SERIES-NAME>American Independence Boyd Watterson Short-Term Enhanced Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031688
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>ISBSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031726
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>ISTSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011461
+<SERIES-NAME>American Independence Boyd Watterson Core Plus Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031689
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>IIISX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031728
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>IBFSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011462
+<SERIES-NAME>American Independence Kansas Tax-Exempt Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031690
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>SEKSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031691
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>IKSTX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031721
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>IKTEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000021676
+<SERIES-NAME>American Independence U.S. Inflation-Protected Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000062133
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FNIHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000062134
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FCIHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000062135
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>FFIHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000125523
+<CLASS-CONTRACT-NAME>Premier Class
+<CLASS-CONTRACT-TICKER-SYMBOL>AIIPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000042029
+<SERIES-NAME>American Independence JAForlines Risk-Managed Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000130573
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>RMAIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000130574
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>AARMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000130575
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>ACRMX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>BRDTY2_0001324443_2016.txt
+<DESCRIPTION>BRDTY2_0001324443_2016.TXT
+<TEXT>
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              WASHINGTON, D.C. 20549
+
+                                   FORM N-PX
+
+    ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT
+                                     COMPANY
+
+ INVESTMENT COMPANY ACT FILE NUMBER:     811-21757
+
+ NAME OF REGISTRANT:                     American Independence Funds
+                                         Trust
+
+
+
+ ADDRESS OF PRINCIPAL EXECUTIVE OFFICES: 1345 Avenue of the Americas
+                                         2nd Floor
+                                         New York, NY 10105
+
+ NAME AND ADDRESS OF AGENT FOR SERVICE:  Eric M. Rubin
+                                         1345 Avenue of the Americas
+                                         2nd Floor
+                                         New York, NY 10105
+
+ REGISTRANT'S TELEPHONE NUMBER:          646-747-3477
+
+ DATE OF FISCAL YEAR END:                10/31
+
+ DATE OF REPORTING PERIOD:               07/01/2015 - 06/30/2016
+
+
+<PAGE>
+
+<TABLE>
+<S>    <C>                                                       <C>           <C>                            <C>
+
+AI Boyd Watterson Core Plus Fund
+--------------------------------------------------------------------------------------------------------------------------
+ The fund held no voting securities during the reporting period and did not vote any securities or have
+ any securities that were subject to a vote during the reporting period.
+
+
+AI Hillcrest Small Cap Value Fund
+--------------------------------------------------------------------------------------------------------------------------
+ ABM INDUSTRIES INCORPORATED                                                                 Agenda Number:  934326592
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  000957100
+    Meeting Type:  Annual
+    Meeting Date:  09-Mar-2016
+          Ticker:  ABM
+            ISIN:  US0009571003
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1.     DIRECTOR
+       LUKE S. HELMS                                             Mgmt          For                            For
+       SUDHAKAR KESAVAN                                          Mgmt          For                            For
+       LAURALEE E. MARTIN                                        Mgmt          For                            For
+
+2.     PROPOSAL TO RATIFY THE SELECTION OF KPMG                  Mgmt          For                            For
+       LLP AS ABM INDUSTRIES INCORPORATED'S
+       INDEPENDENT REGISTERED PUBLIC ACCOUNTING
+       FIRM FOR FISCAL YEAR 2016.
+
+
+
+Rx Dynamic Stock Fund
+--------------------------------------------------------------------------------------------------------------------------
+ ACE LIMITED                                                                                 Agenda Number:  934280710
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  H0023R105
+    Meeting Type:  Special
+    Meeting Date:  22-Oct-2015
+          Ticker:  ACE
+            ISIN:  CH0044328745
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1.     AMENDMENT OF ACE'S ARTICLES OF ASSOCIATION                Mgmt          For                            For
+       RELATING TO AUTHORIZED SHARE CAPITAL FOR
+       GENERAL PURPOSES
+
+2.     AMENDMENT OF ACE'S ARTICLES OF ASSOCIATION                Mgmt          For                            For
+       TO CHANGE ACE ...(DUE TO SPACE LIMITS, SEE
+       PROXY STATEMENT FOR FULL PROPOSAL).
+
+3.     APPROVAL OF ISSUANCE OF NEW SHARES OF ACE                 Mgmt          For                            For
+       FOR PURPOSES OF THE MERGER WITH CHUBB
+
+4A.    ELECTION OF ADDITIONAL MEMBER OF ACE BOARD                Mgmt          For                            For
+       OF DIRECTORS (SUBJECT TO COMPLETION OF THE
+       MERGER WITH CHUBB): SHEILA P. BURKE
+
+4B.    ELECTION OF ADDITIONAL MEMBER OF ACE BOARD                Mgmt          For                            For
+       OF DIRECTORS (SUBJECT TO COMPLETION OF THE
+       MERGER WITH CHUBB): JAMES I. CASH, JR.
+
+4C.    ELECTION OF ADDITIONAL MEMBER OF ACE BOARD                Mgmt          For                            For
+       OF DIRECTORS (SUBJECT TO COMPLETION OF THE
+       MERGER WITH CHUBB): LAWRENCE W. KELLNER
+
+4D.    ELECTION OF ADDITIONAL MEMBER OF ACE BOARD                Mgmt          For                            For
+       OF DIRECTORS (SUBJECT TO COMPLETION OF THE
+       MERGER WITH CHUBB): JAMES M. ZIMMERMAN
+
+5.     APPROVAL OF THE INCREASED MAXIMUM                         Mgmt          For                            For
+       COMPENSATION OF THE BOARD OF DIRECTORS
+       UNTIL THE NEXT ANNUAL GENERAL MEETING
+       (SUBJECT TO COMPLETION OF THE MERGER WITH
+       CHUBB)
+
+6.     IF A NEW AGENDA ITEM OR A NEW PROPOSAL FOR                Mgmt          Abstain
+       AN EXISTING AGENDA ITEM IS PUT BEFORE THE
+       MEETING, I/WE HEREBY AUTHORIZE AND INSTRUCT
+       THE INDEPENDENT PROXY TO VOTE AS FOLLOWS:
+       MARK "FOR" TO VOTE IN ACCORDANCE WITH THE
+       POSITION OF THE BOARD OF DIRECTORS; MARK
+       "AGAINST" TO VOTE AGAINST NEW ITEMS AND
+       PROPOSALS; MARK "ABSTAIN" TO ABSTAIN
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+ AETNA INC.                                                                                  Agenda Number:  934282005
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  00817Y108
+    Meeting Type:  Special
+    Meeting Date:  19-Oct-2015
+          Ticker:  AET
+            ISIN:  US00817Y1082
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1.     TO APPROVE THE ISSUANCE OF AETNA INC.                     Mgmt          For                            For
+       COMMON SHARES, PAR VALUE $0.01 PER SHARE
+       ("AETNA COMMON SHARES"), TO HUMANA INC.
+       STOCKHOLDERS IN THE MERGER BETWEEN ECHO
+       MERGER SUB, INC., A DELAWARE CORPORATION
+       AND WHOLLY OWNED SUBSIDIARY OF AETNA INC.,
+       AND HUMANA INC. PURSUANT TO THE AGREEMENT
+       AND PLAN OF MERGER, DATED AS OF JULY 2,
+       2015, AMONG AETNA INC., ECHO MERGER SUB,
+       INC., ECHO MERGER SUB, LLC, A DELAWARE
+       LIMITED LIABILITY COMPANY AND WHOLLY OWNED
+       SUBSIDIARY OF AETNA INC., AND HUMANA INC.,
+       AS IT MAY BE AMENDED FROM TIME TO TIME (THE
+       "MERGER AGREEMENT").
+
+2.     TO APPROVE THE ADJOURNMENT OF THE SPECIAL                 Mgmt          For                            For
+       MEETING OF SHAREHOLDERS OF AETNA INC. IF
+       NECESSARY TO SOLICIT ADDITIONAL PROXIES IF
+       THERE ARE NOT SUFFICIENT VOTES TO APPROVE
+       THE ISSUANCE OF AETNA COMMON SHARES
+       PURSUANT TO THE MERGER AGREEMENT AT THE
+       TIME OF THE SPECIAL MEETING OF SHAREHOLDERS
+       OF AETNA INC.
+
+
+
+
+
+
+* Management position unknown
+
+</TABLE>
+
+<PAGE>
+
+SIGNATURES
+
+Pursuant to the requirements of the Investment Company Act of 1940, the
+registrant has duly caused this report to be signed on its behalf by the
+undersigned, thereunto duly authorized.
+
+(Registrant)         American Independence Funds Trust
+By (Signature)       /s/ John J. Pileggi
+Name                 John J. Pileggi
+Title                President
+Date                 08/25/2016
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
