@@ -6926,6 +6926,21 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 				continue
 			}
 		}
+		// `FTVIPT - Franklin Allocation VIP Fund -Named changed from Franklin
+		// Founding Funds Allocation VIP Fund effective 5/1/19` (Franklin
+		// Templeton Variable Insurance Products Trust 2019, 283 rows with no
+		// series and no fund name): the rename annotation lives in a sibling <i>
+		// element that carries no whitespace of its own, so tag stripping welds
+		// it onto the banner behind a bare hyphen and the line resolves to
+		// nothing. The clause is prose ABOUT the name, not part of it, so the cut
+		// head is what gets recorded.
+		if _, d := issResolveFund(ix, candidate); d == nil {
+			if head, hd := htmlCutRenameAnnotation(ix, candidate); hd != nil {
+				name, id, ok = head, hd.SeriesID, true
+				adoptedAt, adoptedLine = li, head
+				continue
+			}
+		}
 		if _, d := issResolveFund(ix, candidate); d != nil {
 			// A banner wrapped over two elements resolves TWICE -- once per
 			// half -- and the later half wins by standing last: `Portfolio I`
@@ -7049,6 +7064,55 @@ func htmlMoveGluedCaptionPrefix(candidate string) (string, bool) {
 		return rest + " " + c[:len(capt)], true
 	}
 	return "", false
+}
+
+// htmlRenameAnnotationClauses open the editorial clause a registrant welds onto
+// a fund banner to report a name change. Only clause OPENINGS, because the clause
+// must be recognised by what it announces and not by any word it happens to
+// contain -- the retired name it quotes is itself a fund name.
+var htmlRenameAnnotationClauses = [...]string{
+	"name changed", "named changed", "name change", "renamed",
+	"formerly", "f/k/a", "fka",
+}
+
+// htmlCutRenameAnnotation cuts a trailing rename annotation off a banner at a
+// ` -` boundary and answers with the head and the series it resolves to: `FTVIPT
+// - Franklin Allocation VIP Fund -Named changed from Franklin Founding Funds
+// Allocation VIP Fund effective 5/1/19` is read as `FTVIPT - Franklin Allocation
+// VIP Fund`, the declared S000017299.
+//
+// Three conditions together, so this never becomes a truncate-at-the-first-hyphen
+// rule: it is asked only after the banner AS PRINTED has failed to resolve; the
+// clause behind the boundary must OPEN with one of the announcements above, which
+// a hyphenated fund name (`Small-Mid Cap Growth`) does not; and the head must
+// itself name a declared series. The head is the longest one that answers, so an
+// annotation carrying a ` -` of its own cannot shorten the name.
+func htmlCutRenameAnnotation(ix *issSeriesIndex, candidate string) (string, *SeriesDecl) {
+	c := strings.TrimSpace(candidate)
+	for i := 0; i+1 < len(c); i++ {
+		if c[i] != ' ' || c[i+1] != '-' {
+			continue
+		}
+		head := strings.TrimSpace(c[:i])
+		tail := strings.ToLower(strings.TrimSpace(strings.TrimLeft(c[i+1:], "- ")))
+		if head == "" || tail == "" {
+			continue
+		}
+		announced := false
+		for _, p := range htmlRenameAnnotationClauses {
+			if strings.HasPrefix(tail, p) {
+				announced = true
+				break
+			}
+		}
+		if !announced {
+			continue
+		}
+		if _, d := issResolveFund(ix, head); d != nil {
+			return head, d
+		}
+	}
+	return "", nil
 }
 
 // htmlCaptionTypeWordAdded puts back the type word a banner drops right before a
