@@ -210,6 +210,11 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// first use: the ticker-cell masthead resolves against these and nothing
 		// wider (htmlRegistrantTickerCellFund).
 		hdrNameIx map[string]*SeriesDecl
+
+		// ballotRow indexes the row in out that the IMMEDIATELY PRECEDING feed
+		// row emitted, or -1: what a wrapped proposal's continuation table
+		// appends its text to (htmlWrappedProposalTailRow).
+		ballotRow = -1
 	)
 
 	for {
@@ -218,6 +223,8 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			break
 		}
 		cells := row.cells
+		prevBallotRow := ballotRow
+		ballotRow = -1
 
 		// A bare-trust-name block is answered only by the masthead that comes
 		// NEXT. Any other heading that claims the standing fund in between is a
@@ -263,6 +270,21 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				carry = false
 			} else {
 				mapping, headerArity, carry = nil, 0, false
+			}
+		}
+
+		// The wrapped tail of the proposal above, printed as a standalone table
+		// because the generator laid every printed LINE of a wrapped cell out as
+		// its own <table> (Unified Series Trust 2008, `Approve Plan of
+		// Arrangement Penn West` / `Energy Trust`). It carries no item, no vote
+		// and no sponsor, so it is neither a ballot nor a heading: it belongs to
+		// the row the table before it emitted.
+		if prevBallotRow >= 0 && mapping != nil {
+			if tail, ok := htmlWrappedProposalTailRow(row, cells, mapping); ok {
+				out[prevBallotRow].VoteDescription = strings.TrimSpace(out[prevBallotRow].VoteDescription + " " + tail)
+				// A proposal may wrap over more than two printed lines.
+				ballotRow = prevBallotRow
+				continue
 			}
 		}
 
@@ -881,6 +903,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 					}
 					out = append(out, r)
 					sawData, emitted = true, true
+					ballotRow = len(out) - 1
 					// Grouped exports print the identity on a meeting's first
 					// row and leave it blank on the rest (JPMorgan China Region,
 					// Nuveen Investment Trust 2008): a row's own identity
@@ -1821,7 +1844,7 @@ func htmlHeaderMapping(cells []string, feed *htmlRowFeed, repeats *htmlHeaderRep
 	}
 	below, crossed := htmlHasTableBelow(len(cells), feed)
 	if !below && !repeats.has(key) {
-		if !htmlHasPartitionedVotes(mapping, len(cells), feed) {
+		if !htmlHasPartitionedVotes(mapping, key, len(cells), feed) {
 			return nil, false, false, false
 		}
 		partitioned = true
@@ -1955,15 +1978,26 @@ func htmlShiftToFilledNeighbour(mapping map[string]int, arity int, feed *htmlRow
 // row. Crossing boundaries is safe only with stronger evidence than the normal
 // arity witness: three rows must print a known vote in the mapped vote column
 // and carry an item or description through the same mapping.
-func htmlHasPartitionedVotes(mapping map[string]int, arity int, feed *htmlRowFeed) bool {
+//
+// A later occurrence of the candidate's OWN header tuple does not stop the scan:
+// the same labels reprinted over the next meeting are this grammar continuing,
+// not a different table, so the votes beneath them count. A meeting whose only
+// ballot is the last row before that reprint (Unified Series Trust 2008,
+// CANETIC RESOURCES TRUST with one proposal) supplies one row of the three by
+// itself and would otherwise lose its whole block. Any header with a DIFFERENT
+// tuple still ends the scan.
+func htmlHasPartitionedVotes(mapping map[string]int, key string, arity int, feed *htmlRowFeed) bool {
 	seen := 0
 	for i := 0; i < htmlHeaderLookahead; i++ {
 		row, ok := feed.peek(i)
 		if !ok {
 			break
 		}
-		if _, _, isHeader := htmlHeaderShape(row.cells); isHeader {
-			break
+		if _, k, isHeader := htmlHeaderShape(row.cells); isHeader {
+			if k != key {
+				break
+			}
+			continue
 		}
 		if !htmlComparableArity(len(row.cells), arity) ||
 			!htmlMappedVoteValue(row.cells, mapping, arity) {
@@ -4449,6 +4483,46 @@ func htmlWrappedProseCell(cells []string) bool {
 		}
 	}
 	return true
+}
+
+// htmlWrappedProposalTailRow reads the continuation TABLE of a proposal whose
+// description wrapped: the EDGAR Ease Plus generator lays every printed line of
+// a wrapped cell out as its own <table>, so the tail of a long proposal arrives
+// as a sibling element rather than a sibling row (Unified Series Trust 2008,
+// accession 0001035449-08-000455: `1 | Approve Plan of Arrangement Penn West |
+// For | For | Management` closes, and a standalone table then prints `Energy
+// Trust` alone). Read as a row of its own it is neither ballot nor heading, and
+// the printed proposal is silently truncated at the line break.
+//
+// The shape is the evidence, and every part of it is required:
+//   - the row OPENS a table (the ballot's own table closed) with NOTHING printed
+//     between the two, so no heading, rule or page break intervenes;
+//   - exactly one cell is filled, and it is NOT the first -- the generator pads
+//     the continuation with the leading columns' spacers, which is what tells a
+//     wrapped tail from a one-cell issuer heading, and those always start at
+//     column 0;
+//   - that cell sits at the mapped DESCRIPTION column, so the text continues the
+//     description and not some other field;
+//   - it prints no item number and no vote or sponsor word, so no ballot data is
+//     being discarded by folding it into the row above.
+func htmlWrappedProposalTailRow(row htmlFeedRow, cells []string, mapping map[string]int) (string, bool) {
+	desc, mapped := mapping[htmlFieldDesc]
+	if !row.newTable || !mapped || htmlFlat(row.pre) != "" {
+		return "", false
+	}
+	if htmlFilledCells(cells) != 1 {
+		return "", false
+	}
+	at := htmlFirstFilled(cells)
+	if at <= 0 || at != desc {
+		return "", false
+	}
+	tail := htmlFlat(cells[at])
+	if tail == "" || htmlIsItemNumber(tail) || htmlIsVoteValue(tail) ||
+		htmlProponentWord(tail) || htmlIsBareLabel(tail) || htmlIsGateLabel(tail) {
+		return "", false
+	}
+	return tail, true
 }
 
 // reHTMLBareWord is one unpunctuated word and nothing else.

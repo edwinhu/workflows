@@ -1,0 +1,778 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ K1ha2/vbjhW4EXcgiAUOAbOnpO5l/HEv3v9X6VLPVZI5wHY6uKwjU9KL5H4LjRZQ
+ c9KnJqAqvQnAimf7Fbtr4g==
+
+<SEC-DOCUMENT>0001035449-08-000455.txt : 20080829
+<SEC-HEADER>0001035449-08-000455.hdr.sgml : 20080829
+<ACCEPTANCE-DATETIME>20080829093546
+ACCESSION NUMBER:		0001035449-08-000455
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20080630
+FILED AS OF DATE:		20080829
+DATE AS OF CHANGE:		20080829
+EFFECTIVENESS DATE:		20080829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			UNIFIED SERIES TRUST
+		CENTRAL INDEX KEY:			0001199046
+		IRS NUMBER:				000000000
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-21237
+		FILM NUMBER:		081047172
+
+	BUSINESS ADDRESS:	
+		STREET 1:		431 N PENNSYLVANIA ST
+		CITY:			INDIANAPOLIS
+		STATE:			IN
+		ZIP:			46204
+		BUSINESS PHONE:		317-917-7000
+
+	MAIL ADDRESS:	
+		STREET 1:		431 N PENNSYLVANIA ST
+		CITY:			INDIANAPOLIS
+		STATE:			IN
+		ZIP:			46204
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000000521
+<SERIES-NAME>BECKER VALUE EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001407
+<CLASS-CONTRACT-NAME>BECKER VALUE EQUITY FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>BVEFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000000522
+<SERIES-NAME>IMS CAPITAL VALUE FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001408
+<CLASS-CONTRACT-NAME>IMS CAPITAL VALUE FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>IMSCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000000523
+<SERIES-NAME>IMS STRATEGIC ALLOCATION FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001409
+<CLASS-CONTRACT-NAME>IMS STRATEGIC ALLOCATION FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>IMSAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000000524
+<SERIES-NAME>IMS STRATEGIC INCOME FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001410
+<CLASS-CONTRACT-NAME>IMS STRATEGIC INCOME FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>IMSIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000000525
+<SERIES-NAME>MARATHON VALUE PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001411
+<CLASS-CONTRACT-NAME>MARATHON VALUE PORTFOLIO
+<CLASS-CONTRACT-TICKER-SYMBOL>MVPFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000000526
+<SERIES-NAME>MARCO TARGETED RETURN FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001412
+<CLASS-CONTRACT-NAME>MARCO TARGETED RETURN FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>MARTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000000528
+<SERIES-NAME>STONERIDGE SMALL CAP GROWTH FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001414
+<CLASS-CONTRACT-NAME>STONERIDGE SMALL CAP GROWTH FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>SRSCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000000532
+<SERIES-NAME>BECKER SMALL CAP VALUE EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001418
+<CLASS-CONTRACT-NAME>BECKER SMALL CAP VALUE EQUITY FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>BVESX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000000533
+<SERIES-NAME>CHINOOK EMERGING GROWTH FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001419
+<CLASS-CONTRACT-NAME>CHINOOK EMERGING GROWTH FUND CLASS I
+<CLASS-CONTRACT-TICKER-SYMBOL>CHEGX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000000534
+<SERIES-NAME>CRAWFORD DIVIDEND GROWTH FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001420
+<CLASS-CONTRACT-NAME>CRAWFORD DIVIDEND GROWTH FUND - CLASS C
+<CLASS-CONTRACT-TICKER-SYMBOL>CDGCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001421
+<CLASS-CONTRACT-NAME>CRAWFORD DIVIDEND GROWTH FUND - CLASS I
+<CLASS-CONTRACT-TICKER-SYMBOL>CDGIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000000538
+<SERIES-NAME>GJMB GROWTH FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000001425
+<CLASS-CONTRACT-NAME>GJMB GROWTH FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>GJMBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000002749
+<SERIES-NAME>ROOSEVELT MULTI-CAP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000007545
+<CLASS-CONTRACT-NAME>ROOSEVELT MULTI-CAP FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>BULLX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000002750
+<SERIES-NAME>IRON MARKET OPPORTUNITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000007546
+<CLASS-CONTRACT-NAME>IRON MARKET OPPORTUNITY FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>IRONX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000002754
+<SERIES-NAME>POLYNOUS GROWTH FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000007550
+<CLASS-CONTRACT-NAME>POLYNOUS GROWTH FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>PAGFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000002755
+<SERIES-NAME>ARCHER BALANCED FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000007551
+<CLASS-CONTRACT-NAME>ARCHER BALANCED FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>ARCHX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000002756
+<SERIES-NAME>FCI BOND FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000007552
+<CLASS-CONTRACT-NAME>FCI BOND FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>FCIZX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000002757
+<SERIES-NAME>FCI EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000007553
+<CLASS-CONTRACT-NAME>FCI EQUITY FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>FCIEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000009502
+<SERIES-NAME>QCM ABSOLUTE RETURN FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025985
+<CLASS-CONTRACT-NAME>QCM ABSOLUTE RETURN FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>QARFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000009503
+<SERIES-NAME>SOUND MIND INVESTING FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025986
+<CLASS-CONTRACT-NAME>SOUND MIND INVESTING FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>SMIFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000012703
+<SERIES-NAME>Toreador Large Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000034233
+<CLASS-CONTRACT-NAME>Toreador Large Cap Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000012822
+<SERIES-NAME>IRON STRATEGIC INCOME FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000034668
+<CLASS-CONTRACT-NAME>IRON STRATEGIC INCOME FUND
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000013449
+<SERIES-NAME>NS Small Cap Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000036286
+<CLASS-CONTRACT-NAME>NS Small Cap Growth Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000014541
+<SERIES-NAME>Leeb Focus Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000039569
+<CLASS-CONTRACT-NAME>Leeb Focus Fund Class I
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000014625
+<SERIES-NAME>Appleseed Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000040026
+<CLASS-CONTRACT-NAME>Appleseed Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000014640
+<SERIES-NAME>Symons Alpha Growth Institutional Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000040084
+<CLASS-CONTRACT-NAME>Symons Alpha Growth Institutional Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000014641
+<SERIES-NAME>Symons Alpha Value Institutional Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000040085
+<CLASS-CONTRACT-NAME>Symons Alpha Value Institutional Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000015010
+<SERIES-NAME>Sound Mind Investing Managed Volatility Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000040851
+<CLASS-CONTRACT-NAME>Sound Mind Investing Managed Volatility Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000016034
+<SERIES-NAME>Dean Large Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000044154
+<CLASS-CONTRACT-NAME>Dean Large Cap Value Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000016035
+<SERIES-NAME>Dean Small Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000044155
+<CLASS-CONTRACT-NAME>Dean Small Cap Value Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000016036
+<SERIES-NAME>Dean International Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000044156
+<CLASS-CONTRACT-NAME>Dean International Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000018117
+<SERIES-NAME>MIRZAM CAPITAL APPRECIATION FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000050127
+<CLASS-CONTRACT-NAME>MIRZAM CAPITAL APPRECIATION FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>MIRZX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000020370
+<SERIES-NAME>BELL WORLDWIDE TRENDS FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000057168
+<CLASS-CONTRACT-NAME>BELL WORLDWIDE TRENDS FUND
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000020468
+<SERIES-NAME>3 to 1 Diversified Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000057415
+<CLASS-CONTRACT-NAME>3 to 1 Diversified Equity Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000020469
+<SERIES-NAME>3 to 1 Strategic Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000057416
+<CLASS-CONTRACT-NAME>3 to 1 Strategic Income Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000020493
+<SERIES-NAME>AUER GROWTH FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000057444
+<CLASS-CONTRACT-NAME>AUER GROWTH FUND
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001199046
+<SERIES-ID>S000022336
+<SERIES-NAME>Symons Small Cap Institutional Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064216
+<CLASS-CONTRACT-NAME>Symons Small Cap Institutional Fund
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>unpx2.htm
+<DESCRIPTION>UNIFIED NPX 2007 2008
+<TEXT>
+<html>
+    <head>
+        <title></title>
+        <!-- Created by EDGAR Ease Plus (EDGAR Ease+) -->
+        <!-- Control Number:                                                                  -->
+        <!-- Rev Number:                                                                      -->
+        <!-- Client Name:                                                                     -->
+        <!-- Project Name:                                                                    -->
+        <!-- Firm Name:                                                                       -->
+    </head>
+
+    <body text="#000000" vlink="#800000" link="#0000ff" bgcolor="#ffffff">
+        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; TEXT-ALIGN: center"><font size="2">N-PX</font></p>
+
+        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; LINE-HEIGHT: 150%; TEXT-ALIGN: left"><font size="2">Quarterly Report of Proxy Voting Record Fund/Fund Family Name: </font><font><b>IMS Strategic Income Fund</b></font></p>
+
+        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; LINE-HEIGHT: 150%; TEXT-ALIGN: left"><font size="2">Name of Fiscal Year End:</font><u><font size="2">6/30</font></u></p>
+
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="265" border="0">
+                <tr>
+                    <td valign="top" nowrap width="265">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 162%; TEXT-ALIGN: left"><font size="2">Date of Reporting Period:</font> <u><font size="2">07/01/2007 - 06/30/2008</font></u></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="184" border="0">
+                <tr>
+                    <td valign="top" nowrap width="184">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">CANETIC RESOURCES TRUST</font></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; TEXT-ALIGN: left">&nbsp;</p>
+
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="259" border="0">
+                <tr>
+                    <td valign="top" nowrap width="55">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Ticker:</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="65">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">CNE.U</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="139">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Security ID: 137513107</font></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="272" border="0">
+                <tr>
+                    <td valign="top" nowrap width="144">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Meeting Date: JAN 9, 2008</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="128">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Meeting Type: Special</font></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="160" border="0">
+                <tr>
+                    <td valign="top" nowrap width="160">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Record Date: NOV 30, 2007</font></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; TEXT-ALIGN: left">&nbsp;</p>
+
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="636" border="0">
+                <tr>
+                    <td valign="top" nowrap width="20">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">#</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="364">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Proposal</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="96">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Mgt Rec</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="96">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Vote Cast</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="60">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Sponsor</font></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; TEXT-ALIGN: left">&nbsp;</p>
+
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="657" border="0">
+                <tr>
+                    <td valign="top" nowrap width="20">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">1</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="364">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Approve Plan of Arrangement Penn West</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="96">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">For</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="96">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">For</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="81">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Management</font></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="100" border="0">
+                <tr>
+                    <td valign="top" nowrap width="17">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left">&nbsp;</p>
+                    </td>
+
+                    <td valign="top" nowrap width="83">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Energy Trust</font></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; TEXT-ALIGN: left">&nbsp;</p>
+
+        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; TEXT-ALIGN: left">&nbsp;</p>
+
+        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; TEXT-ALIGN: left"><font size="2">--------------------------------------------------------------------------------</font></p>
+
+        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; TEXT-ALIGN: left">&nbsp;</p>
+
+        <div TITLE="EE+ Page Break" STYLE="PAGE-BREAK-AFTER: always"><HR noshade align="center" width="100%" size="2">
+</DIV>
+
+        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; TEXT-ALIGN: left"><font size="2">DUKE ENERGY CORP.</font></p>
+
+        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; TEXT-ALIGN: left">&nbsp;</p>
+
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="257" border="0">
+                <tr>
+                    <td valign="top" nowrap width="55">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Ticker:</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="61">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">DUK</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="141">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Security ID: 26441C105</font></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="279" border="0">
+                <tr>
+                    <td valign="top" nowrap width="149">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Meeting Date: MAY 8, 2008</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="129">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Meeting Type: Annual</font></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="161" border="0">
+                <tr>
+                    <td valign="top" nowrap width="161">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Record Date: MAR 13, 2008</font></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; TEXT-ALIGN: left">&nbsp;</p>
+
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="636" border="0">
+                <tr>
+                    <td valign="top" nowrap width="20">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">#</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="364">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Proposal</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="96">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Mgt Rec</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="96">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Vote Cast</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="60">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Sponsor</font></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; TEXT-ALIGN: left">&nbsp;</p>
+
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="657" border="0">
+                <tr>
+                    <td valign="top" nowrap width="22">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">1.1</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="362">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Elect Director William Barnet, III</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="96">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">For</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="96">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">For</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="81">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Management</font></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="657" border="0">
+                <tr>
+                    <td valign="top" nowrap width="22">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">1.2</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="362">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Elect Director G. Alex Bernhardt, Sr.</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="96">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">For</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="96">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">For</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="81">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Management</font></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="657" border="0">
+                <tr>
+                    <td valign="top" nowrap width="22">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">1.3</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="362">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Elect Director Michael G. Browning</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="96">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">For</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="96">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">For</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="81">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Management</font></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="657" border="0">
+                <tr>
+                    <td valign="top" nowrap width="22">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">1.4</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="362">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Elect Director Daniel R. DiMicco</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="96">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">For</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="96">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">For</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="81">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Management</font></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div align="left">
+            <table style="MARGIN-LEFT: 0pt; BORDER-COLLAPSE: collapse" cellspacing="0" cellpadding="0" width="657" border="0">
+                <tr>
+                    <td valign="top" nowrap width="22">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">1.5</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="362">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Elect Director Ann Maynard Gray</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="96">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">For</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="96">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">For</font></p>
+                    </td>
+
+                    <td valign="top" nowrap width="81">
+                        <p style="MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; TEXT-ALIGN: left"><font size="2">Management</font></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
