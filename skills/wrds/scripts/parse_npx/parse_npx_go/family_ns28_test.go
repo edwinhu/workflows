@@ -147,3 +147,74 @@ func TestFamilyNS28DelawareREITAkaBannerLine(t *testing.T) {
 		}
 	}
 }
+
+// 000087/875352/0001104659-17-054410.txt: the fixture keeps the SEC document
+// opener through the registrant's EFFECTIVENESS DATE, the registrant block
+// through its FORMER CONFORMED NAME (`DELAWARE POOLED TRUST INC`), the filing's
+// whole `<SERIES-AND-CLASSES-CONTRACTS-DATA>` block verbatim -- all ten
+// `<SERIES>` declarations with their `<CLASS-CONTRACT>` children, S000003937
+// named exactly `DELAWARE REIT FUND` among them -- the header closer and the
+// `FORM N-PX` cover, then a jump straight to the one vote-table section under
+// test: the REIT fund's two-line ruled banner and the AMERICAN CAMPUS
+// COMMUNITIES and APARTMENT INVESTMENT AND MANAGEMENT blocks under it, plus the
+// filing's own closing tags. Every byte is verbatim. Dispatches to `issnpx`
+// (the precondition asserts it), 15 rows as cut.
+//
+// Delaware Pooled Trust, period 20170630, `issnpx`. This is a BLANK series.
+// The banner's two ruled lines, verbatim (fixture lines 302-303, tags stripped
+// and `&#160;` rendered):
+//
+//	============== Delaware REIT Fund  (f/k/a/ DPT - The Real Estate  ==============
+//	==============            Investment Trust Portfolio)             ==============
+//
+// The banner leads with the CURRENT declared name -- `Delaware REIT Fund` is
+// S000003937, declared by this filing's own header -- and then annotates the
+// fund's former spelling in a parenthetical marked `f/k/a/` (the filing's own
+// typo, an extra trailing slash after `f/k/a`). The two ruled lines are ONE
+// heading and the joined text already reaches fund_name, measured on HEAD:
+//
+//	"Delaware REIT Fund  (f/k/a/ DPT - The Real Estate Investment Trust Portfolio)"
+//
+// so the current name is present in the bytes the resolver is handed. Real
+// behavior on HEAD is nevertheless a blank series id on all 15 rows; it should
+// be S000003937 on all 15.
+//
+// Root cause, for the record: `issTierWordSwap` (`layout_issnpx.go`) computes
+// its heading key from the FULL banner including the `(f/k/a/ ...)`
+// parenthetical, whose trailing word is `portfolio` (from the former name
+// `... Investment Trust Portfolio`). That trailing word disagrees with the
+// resolved declaration's own trailing word `fund` (`DELAWARE REIT FUND`), and
+// because this registrant also carries a real `...PORTFOLIO` series
+// (S000003933, `THE REAL ESTATE INVESTMENT TRUST PORTFOLIO II`, reached through
+// the dictionary rather than this filing's header), `issTierMismatch` reads it
+// as a genuine tier substitution and nils the answer at the outer call in
+// `issResolveFund` -- even though the correct match was already found moments
+// earlier in the same call, by `issCutTrailingParenthetical` stripping the
+// parenthetical down to the bare declared name `Delaware REIT Fund`.
+func TestFamilyNS28DelawareFKATrailingParenthetical(t *testing.T) {
+	rows := familyNS28Dispatch(t, "delaware_reit_fka_trailing_2017.txt", "delaware_dict.tsv", "issnpx", 15)
+	const wantFund = "Delaware REIT Fund  (f/k/a/ DPT - The Real Estate Investment Trust Portfolio)"
+	wantIssuer := map[string]int{
+		"AMERICAN CAMPUS COMMUNITIES, INC.":           11,
+		"APARTMENT INVESTMENT AND MANAGEMENT COMPANY": 4,
+	}
+	gotIssuer := map[string]int{}
+	for _, r := range rows {
+		gotIssuer[r.IssuerName]++
+		if r.FundName != wantFund {
+			t.Errorf("the banner's two ruled lines are one heading and join to the current declared name plus its f/k/a annotation: fund=%q want %q", r.FundName, wantFund)
+		}
+		if r.SeriesID != "S000003937" {
+			t.Errorf("the banner LEADS with the filing's own declared `DELAWARE REIT FUND` (S000003937) and only then annotates the former spelling in a `(f/k/a/ ...)` parenthetical, so the trailing `portfolio` is the OLD name's type word and not a tier substitution: fund=%q issuer=%q cusip=%q date=%q desc=%q series=%q want S000003937",
+				r.FundName, r.IssuerName, r.CUSIP, r.MeetingDate, r.VoteDescription, r.SeriesID)
+		}
+	}
+	for issuer, want := range wantIssuer {
+		if gotIssuer[issuer] != want {
+			t.Errorf("issuer row count: %q got %d want %d", issuer, gotIssuer[issuer], want)
+		}
+	}
+	if len(gotIssuer) != len(wantIssuer) {
+		t.Errorf("issuers in section: got %v want exactly %v", gotIssuer, wantIssuer)
+	}
+}

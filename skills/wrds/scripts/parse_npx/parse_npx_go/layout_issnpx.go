@@ -2215,6 +2215,34 @@ func issCutTrailingParenthetical(name string) (string, bool) {
 	return head, true
 }
 
+// issFormerNameParenthetical returns the banner's HEAD when its trailing
+// parenthetical is a FORMER-name annotation: `Delaware REIT Fund  (f/k/a/ DPT -
+// The Real Estate Investment Trust Portfolio)` (Delaware Pooled Trust 2017),
+// where the head is the name the filing declares today and the parenthetical
+// spells the retired one. The marker is what makes this an annotation about a
+// past spelling rather than a sleeve qualifier or a second tier the registrant
+// is naming, which is why the outer guards must not read the parenthetical's
+// own trailing type word as the heading's tier. Matched on the folded inner text
+// so the filing's punctuation -- `f/k/a`, `f/k/a/` with the corpus's extra
+// slash, `(Formerly, ...)` -- makes no difference.
+func issFormerNameParenthetical(name string) (string, bool) {
+	head, ok := issCutTrailingParenthetical(name)
+	if !ok {
+		return "", false
+	}
+	s := strings.TrimSpace(name)
+	i := strings.LastIndex(s, "(")
+	inner := normalizeSeriesName(s[i+1 : len(s)-1])
+	for _, marker := range []string{"f k a", "n k a", "formerly", "previously"} {
+		// The marker is a whole leading token run and the old name follows it;
+		// a parenthetical that is nothing but the marker names nothing.
+		if rest, ok := strings.CutPrefix(inner, marker+" "); ok && rest != "" {
+			return head, true
+		}
+	}
+	return "", false
+}
+
 // issAKAParenthetical returns the name inside a trailing parenthetical the
 // filing OPENS with an alias marker: `THE REAL ESTATE INVESTMENT TRUST
 // PORTFOLIO (a/k/a DELAWARE REIT FUND)` (Delaware Pooled Trust 2004, the second
@@ -2889,7 +2917,27 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// it declares none the substitution is the vendor's, not the registrant's,
 	// and `AMERITAS SMALL CAP FUND` for a declared `Ameritas Small Cap
 	// Portfolio` still resolves.
-	if d != nil && outer && issTierMismatch(ix, normalizeSeriesName(banner), d) {
+	// The banner the outer guards below judge. Normally the heading AS PRINTED,
+	// but a trailing FORMER-name parenthetical is an annotation about a spelling
+	// the registrant RETIRED, so its own trailing type word is the old name's
+	// and not a tier this filing is naming: `Delaware REIT Fund  (f/k/a/ DPT -
+	// The Real Estate Investment Trust Portfolio)` leads with the declared
+	// `DELAWARE REIT FUND` (S000003937) and the `portfolio` the guards would
+	// read belongs to the retired name. Substituted only where the cut head is
+	// what actually answered, so a heading whose answer came from some other
+	// rung keeps being judged on every word it prints.
+	guard := banner
+	if d != nil && outer {
+		if head, ok := issFormerNameParenthetical(banner); ok {
+			ix.depth++
+			_, hd := issResolveFundMemo(ix, head)
+			ix.depth--
+			if hd != nil && hd.SeriesID == d.SeriesID {
+				guard = head
+			}
+		}
+	}
+	if d != nil && outer && issTierMismatch(ix, normalizeSeriesName(guard), d) {
 		return banner, nil
 	}
 	// Last of all: the heading names a fund of a SIBLING registrant of the same
@@ -2923,9 +2971,9 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// (19,014 rows of American Century Capital Portfolios' 20100630 report filed
 	// under two other sponsors' funds). The Victory shape above is the opposite:
 	// `VIP Series` are words the declaration does not carry at all.
-	if outer && !issBannerDeclaredExact(ix, banner) && !issOwnBrandInfixDecl(ix, banner, d) &&
-		!issTierRenameKept(ix, normalizeSeriesName(banner), d) && !issHeadingWithinDecl(banner, d) {
-		if alt := issIndexDict(ix).crossCIK(ix.cik, banner, ix.period, ix.registrantKey); alt != nil {
+	if outer && !issBannerDeclaredExact(ix, guard) && !issOwnBrandInfixDecl(ix, guard, d) &&
+		!issTierRenameKept(ix, normalizeSeriesName(guard), d) && !issHeadingWithinDecl(guard, d) {
+		if alt := issIndexDict(ix).crossCIK(ix.cik, guard, ix.period, ix.registrantKey); alt != nil {
 			return banner, alt
 		}
 	}
