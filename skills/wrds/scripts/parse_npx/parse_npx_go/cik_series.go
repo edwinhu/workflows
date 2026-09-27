@@ -483,6 +483,12 @@ func (d *cikSeries) exactFallback(meta FilingMeta) *dictFallback {
 			extra = append(extra, x)
 		}
 	}
+	// Two dictionary rows of this CIK can spell ONE name for two ids at two
+	// vintages -- the collision poolFor already resolves by period. Filter the
+	// same way here, before any rung keys off extra, so byName/byUndotted/
+	// byOrdinal/brandPrefixes all read the disambiguated pool rather than a list
+	// seriesByName would refuse wholesale.
+	extra = dictContemporaneous(extra, metaPeriod(meta))
 	if len(extra) == 0 {
 		// The registrant-scoped rungs have nothing to read, but the cross-CIK
 		// rung reads no row of this registrant at all and still applies.
@@ -610,6 +616,20 @@ func (f *dictFallback) apply(r *VoteRow) {
 			r.SeriesID = d.SeriesID
 		}
 	}
+	// The heading prints the registrant's OWN ACRONYM where the dictionary name
+	// prints the brand that acronym stands for: `TFGT Small Cap Fund` for a
+	// dictionary `Touchstone Small Cap Fund` (S000026601, Touchstone Funds Group
+	// Trust 20170630), whose sibling banners resolve on the header's own
+	// declarations and this one only through the dictionary. Both edits are ones
+	// this file already makes separately -- the acronym token comes off the
+	// heading (issRegistrantAcronym, every token of the registrant's name spelled
+	// in order, three letters at least) and a dictionary brand prefix goes back on
+	// (brandPrefixed, which refuses two prefixes naming two series).
+	if r.SeriesID == "" {
+		if d := f.acronymForBrand(r.FundName); d != nil {
+			r.SeriesID = d.SeriesID
+		}
+	}
 	// The mirror of the rung above: the HEADING carries a leading brand token
 	// the dictionary name of an earlier vintage does not: `AMG Aston/Cornerstone
 	// Large Cap Value Fund` for `ASTON/CORNERSTONE LARGE CAP VALUE FUND`
@@ -640,6 +660,20 @@ func (f *dictFallback) apply(r *VoteRow) {
 			r.SeriesID = d.SeriesID
 		}
 	}
+}
+
+// acronymForBrand answers a heading whose FIRST token is the registrant's own
+// acronym standing in for the brand the dictionary name spells out. Exactly one
+// token comes off, it must spell the registrant's every token in order, at least
+// two tokens must remain, and the remainder plus a dictionary brand prefix must
+// be a dictionary name of this registrant EXACTLY -- brandPrefixed refuses an
+// ambiguous one the way every other rung here refuses.
+func (f *dictFallback) acronymForBrand(heading string) *SeriesDecl {
+	toks := strings.Fields(normalizeSeriesName(heading))
+	if len(toks) < 3 || !issRegistrantAcronym(toks[0], f.registrantKey) {
+		return nil
+	}
+	return f.brandPrefixed(strings.Join(toks[1:], " "))
 }
 
 func (f *dictFallback) brandPrefixed(heading string) *SeriesDecl {
