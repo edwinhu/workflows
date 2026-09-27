@@ -1274,6 +1274,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 
 	issFillBlankIdentity(rows, blankIDRows)
 	issResidualEliminate(rows, seriesIx)
+	issSleeveRosterSeatClaim(rows, seriesIx)
 
 	// A ZERO-ROW CLAIM IS NOT A RESULT. Measured 2026-08-31, this layout claimed
 	// 3,722 filings and read nothing out of any of them, and each was recorded as
@@ -1359,6 +1360,275 @@ func issResidualEliminate(rows []VoteRow, ix *issSeriesIndex) {
 			rows[i].ClassIDs = strings.Join(left.ClassIDs, MultiValueSep)
 		}
 	}
+}
+
+// issSleeveRosterSeatClaim stamps a banner whose fund-name slot is GARBLED --
+// spell-matching no declared series because the vendor spliced a word into it --
+// by reading the filing's own SLEEVE ROSTER rather than the name. Strategic
+// Partners Asset Allocation Funds (CIK 1067442) declares exactly three series in
+// its 20060630 report and prints one `=`-ruled banner per sub-advised sleeve,
+// `<declared name> - <sleeve> - ADVISOR: <manager>`, 36 of them. One reads
+//
+//	STRATEGIC PARTNERS CONSERVATIVE GROWTH ALLOCATION FUND -
+//	     SMALL CAP VALUE SLEEVE - ADVISOR: NFJ
+//
+// with GROWTH spliced into CONSERVATIVE ALLOCATION FUND. No spelling rung can
+// settle it and none should try: the token run contains BOTH declared names as a
+// subsequence (STRATEGIC PARTNERS [CONSERVATIVE] GROWTH ALLOCATION FUND and
+// STRATEGIC PARTNERS CONSERVATIVE [GROWTH] ALLOCATION FUND), so CONSERVATIVE and
+// GROWTH are equally good on the words alone and 214 rows go out blank.
+//
+// What settles it is the ACCOUNTING over the SUFFIX, the discipline
+// issResidualEliminate keeps over a whole filing narrowed to one sleeve. The
+// suffix `SMALL CAP VALUE SLEEVE - ADVISOR: NFJ` is printed verbatim by two
+// OTHER banners of this same filing, and those two resolved independently to two
+// DIFFERENT declared series (S000004705 GROWTH, S000004704 MODERATE), one apiece.
+// Three declared series, two seats taken, one sleeve roster with exactly one
+// empty seat -- S000004703 CONSERVATIVE -- and exactly one banner left holding
+// that suffix unresolved. One seat, one claimant, and the books balance.
+//
+// A series id is a link key, so every count is exact and any slack refuses:
+//
+//   - the suffix must appear on at least TWO other banners of the filing, each
+//     resolved, each to a DIFFERENT series and no series twice. One peer is not a
+//     roster, and a suffix printed under one fund twice is not an inventory of
+//     seats;
+//   - exactly ONE declared series of the filing's own closed header may lack the
+//     suffix. Two empty seats is a guess between them;
+//   - no OTHER unresolved banner of the filing may carry the same suffix, or the
+//     seat could be either one's;
+//   - and the fund-name slot must not exact-name a series some OTHER registrant
+//     declares. The same filing prints `STRATEGIC PARTNERS LARGE CAPITALIZATION
+//     VALUE FUND - ADVISOR: NFJ`, which is CIK 1090155's declared S000004719
+//     pasted in by the filer agent (the 757-line section under it is byte-
+//     identical to that registrant's own copy in the accession lodged the same
+//     day); its 8 rows are floor and must stay blank. The suffix accounting
+//     already refuses it -- no sibling banner prints `ADVISOR: NFJ` alone -- and
+//     this guard refuses it a second way, on the evidence that it is a name and
+//     not a garble.
+//
+// SECTION POSITION IS NOT EVIDENCE and is not read. The filing's 36 sections are
+// in ASCII order of their own banner text, so the Conservative sections that
+// surround the garbled one surround it because of how the garbled string sorts.
+// A bracketing rung would be measuring the sort key, not the filing.
+//
+// Scope is the filing's OWN header (hdrOnly, the dictionary unreadable for the
+// answer) and its OWN banners: nothing here can move a vote onto another
+// registrant's fund, and the corpus dictionary is read only to REFUSE. Fills a
+// blank only; a banner the chain answered is left exactly as it is.
+func issSleeveRosterSeatClaim(rows []VoteRow, ix *issSeriesIndex) {
+	if ix == nil || len(rows) == 0 {
+		return
+	}
+	// The filing's own declarations, with the dictionary and its aliases
+	// unreadable: eliminating against this registrant's full 2006-2018
+	// dictionary (the TARGET/PRUDENTIAL/PGIM-era renames included) would leave
+	// seats unclaimed and the argument would say nothing.
+	own := ix
+	if ix.hdrOnly != nil {
+		own = ix.hdrOnly
+	}
+	declOf := map[string]*SeriesDecl{}
+	var declIDs []string
+	for i := range own.decls {
+		d := &own.decls[i]
+		if d.SeriesID == "" || declOf[d.SeriesID] != nil {
+			continue
+		}
+		declOf[d.SeriesID] = d
+		declIDs = append(declIDs, d.SeriesID)
+	}
+	// Two peers and one empty seat is the smallest roster this can read.
+	if len(declIDs) < 3 {
+		return
+	}
+
+	// Each banner's own answer, read off the rows the loop stamped. A banner
+	// whose rows disagree with themselves is no evidence either way and is
+	// dropped from the accounting entirely.
+	const ambiguous = "\x00"
+	byFund := map[string]string{}
+	var funds []string
+	for _, r := range rows {
+		if r.FundName == "" {
+			continue
+		}
+		prev, seen := byFund[r.FundName]
+		if !seen {
+			byFund[r.FundName] = r.SeriesID
+			funds = append(funds, r.FundName)
+			continue
+		}
+		if prev != r.SeriesID {
+			byFund[r.FundName] = ambiguous
+		}
+	}
+
+	// The roster, keyed by suffix: which series the resolved banners seat, and
+	// which banners are still holding the suffix open.
+	type issSleeveSeats struct {
+		taken      map[string]bool
+		takenBy    int
+		unresolved []string
+		slot       map[string]string
+	}
+	roster := map[string]*issSleeveSeats{}
+	for _, f := range funds {
+		id := byFund[f]
+		if id == ambiguous {
+			continue
+		}
+		slot, suffix, ok := issSleeveSuffixSplit(f)
+		if !ok {
+			continue
+		}
+		seats := roster[suffix]
+		if seats == nil {
+			seats = &issSleeveSeats{taken: map[string]bool{}, slot: map[string]string{}}
+			roster[suffix] = seats
+		}
+		if id == "" {
+			seats.unresolved = append(seats.unresolved, f)
+			seats.slot[f] = slot
+			continue
+		}
+		seats.taken[id] = true
+		seats.takenBy++
+	}
+
+	fill := map[string]*SeriesDecl{}
+	for _, seats := range roster {
+		// Exactly one claimant, and at least two peers seated one apiece.
+		if len(seats.unresolved) != 1 || len(seats.taken) < 2 || seats.takenBy != len(seats.taken) {
+			continue
+		}
+		f := seats.unresolved[0]
+		// The fund-name slot must be a garble and not a name: a slot some OTHER
+		// registrant declares exactly is a paste, not a seat of this roster.
+		if issSlotNamesOtherCIK(ix, seats.slot[f]) {
+			continue
+		}
+		var left *SeriesDecl
+		for _, id := range declIDs {
+			if seats.taken[id] {
+				continue
+			}
+			if left != nil {
+				left = nil // two empty seats: a guess between them, refuse
+				break
+			}
+			left = declOf[id]
+		}
+		if left != nil {
+			fill[f] = left
+		}
+	}
+	if len(fill) == 0 {
+		return
+	}
+	for i := range rows {
+		if rows[i].SeriesID != "" {
+			continue
+		}
+		if d := fill[rows[i].FundName]; d != nil {
+			rows[i].SeriesID = d.SeriesID
+			rows[i].ClassIDs = strings.Join(d.ClassIDs, MultiValueSep)
+		}
+	}
+}
+
+// issSleeveSuffixSplit cuts a sub-advised sleeve banner into the fund-name slot
+// the vendor prints first and the sleeve/advisor suffix that follows it, keyed
+// the way two banners of one filing are compared -- `STRATEGIC PARTNERS MODERATE
+// ALLOC. FUND - SMALL CAP VALUE SLEEVE - ADVISOR: NFJ` into that registrant's
+// own name and `small cap value sleeve advisor nfj`.
+//
+// The dash must be SET OFF by spaces, so a hyphenated name (`PHOENIX-ABERDEEN
+// INTERNATIONAL`, `SMALL-CAP GROWTH`) is not cut, and the suffix must name a
+// sleeve or an adviser: a banner merely carrying a spaced dash is not a roster
+// seat, and the roster accounting has no meaning over an arbitrary tail.
+func issSleeveSuffixSplit(banner string) (slot, suffix string, ok bool) {
+	fields := issSleeveDashSplit(banner)
+	if len(fields) < 2 {
+		return "", "", false
+	}
+	slot = strings.TrimSpace(fields[0])
+	key := normalizeSeriesName(strings.Join(fields[1:], " - "))
+	if slot == "" || key == "" {
+		return "", "", false
+	}
+	named := false
+	for _, t := range strings.Fields(key) {
+		if t == "sleeve" || t == "advisor" || t == "adviser" || t == "subadvised" {
+			named = true
+			break
+		}
+	}
+	if !named {
+		return "", "", false
+	}
+	return slot, key, true
+}
+
+// issSleeveDashSplit splits on a dash SET OFF by whitespace, the separator this
+// vendor prints between a fund's name, its sleeve and its adviser. En and em
+// dashes read the same way; a dash inside a token does not separate anything.
+func issSleeveDashSplit(banner string) []string {
+	var out []string
+	rest := banner
+	for {
+		cut := -1
+		width := 0
+		for i := 0; i < len(rest); i++ {
+			var w int
+			switch {
+			case rest[i] == '-':
+				w = 1
+			case strings.HasPrefix(rest[i:], "–"), strings.HasPrefix(rest[i:], "—"):
+				w = 3
+			default:
+				continue
+			}
+			if i == 0 || i+w >= len(rest) {
+				continue
+			}
+			if !isSpaceByte(rest[i-1]) || !isSpaceByte(rest[i+w]) {
+				continue
+			}
+			cut, width = i, w
+			break
+		}
+		if cut < 0 {
+			out = append(out, rest)
+			return out
+		}
+		out = append(out, rest[:cut])
+		rest = rest[cut+width:]
+	}
+}
+
+func isSpaceByte(b byte) bool { return b == ' ' || b == '\t' }
+
+// issSlotNamesOtherCIK reports whether the corpus dictionary declares this
+// fund-name slot, exactly, under a registrant that is not this filing's own --
+// the filer-agent paste issSleeveRosterSeatClaim must refuse. A name the corpus
+// holds ambiguously (two series or two registrants, indexed nil) refuses too:
+// the slot is then demonstrably a real fund name somewhere, which is exactly
+// what disqualifies it from being read as a garble.
+func issSlotNamesOtherCIK(ix *issSeriesIndex, slot string) bool {
+	d := issIndexDict(ix)
+	if d == nil || ix.cik == "" {
+		return false
+	}
+	key := normalizeSeriesName(slot)
+	if key == "" {
+		return false
+	}
+	e, indexed := d.byNameAll[key]
+	if !indexed {
+		return false
+	}
+	return e == nil || e.cik != ix.cik
 }
 
 // issFillBlankIdentity fills the ticker and CUSIP of the rows a BLANK identity
