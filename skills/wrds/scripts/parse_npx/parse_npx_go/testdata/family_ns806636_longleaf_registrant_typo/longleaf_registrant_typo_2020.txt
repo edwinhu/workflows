@@ -1,0 +1,234 @@
+<SEC-DOCUMENT>0001193125-20-234605.txt : 20200828
+<SEC-HEADER>0001193125-20-234605.hdr.sgml : 20200828
+<ACCEPTANCE-DATETIME>20200828153303
+ACCESSION NUMBER:		0001193125-20-234605
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20200630
+FILED AS OF DATE:		20200828
+DATE AS OF CHANGE:		20200828
+EFFECTIVENESS DATE:		20200828
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			LONGLEAF PARTNERS FUNDS TRUST
+		CENTRAL INDEX KEY:			0000806636
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			TN
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-04923
+		FILM NUMBER:		201147641
+
+	BUSINESS ADDRESS:	
+		STREET 1:		C/O SOUTHEASTERN ASSET MANAGEMENT
+		STREET 2:		6410 POPLAR AVE, SUITE 900
+		CITY:			MEMPHIS
+		STATE:			TN
+		ZIP:			38119
+		BUSINESS PHONE:		9017612474
+
+	MAIL ADDRESS:	
+		STREET 1:		C/O SOUTHEASTERN ASSET MANAGEMENT
+		STREET 2:		6410 POPLAR AVE, SUITE 900
+		CITY:			MEMPHIS
+		STATE:			TN
+		ZIP:			38119
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	SOUTHEASTERN ASSET MANAGEMENT FUNDS TRUST
+		DATE OF NAME CHANGE:	19920703
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	SOUTHEASTERN ASSET MANAGEMENT VALUE TRUST
+		DATE OF NAME CHANGE:	19881220
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000806636
+<SERIES-ID>S000009311
+<SERIES-NAME>Longleaf Partners Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025443
+<CLASS-CONTRACT-NAME>Longleaf Partners Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>llpfx
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000806636
+<SERIES-ID>S000009312
+<SERIES-NAME>Longleaf Partners Small-Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025444
+<CLASS-CONTRACT-NAME>Longleaf Partners Small-Cap Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>llscx
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000806636
+<SERIES-ID>S000009313
+<SERIES-NAME>Longleaf Partners International Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025445
+<CLASS-CONTRACT-NAME>Longleaf Partners International Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>llinx
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000806636
+<SERIES-ID>S000038187
+<SERIES-NAME>Longleaf Partners Global Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000117771
+<CLASS-CONTRACT-NAME>Longleaf Partners Global Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>llglx
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d43113dnpx.htm
+<DESCRIPTION>ANNUAL REPORT OF PROXY VOTING RECORD
+<TEXT>
+<HTML><HEAD>
+<TITLE>Annual Report of Proxy Voting Record</TITLE>
+</HEAD>
+ <BODY BGCOLOR="WHITE">
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman"><B>Longeaf Partners Fund&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For the Period July&nbsp;1 2019 to
+June&nbsp;30, 2020 </B></P> <P STYLE="font-size:4pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:8pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="20%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="31%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="bottom" NOWRAP><B>Issuer of Security</B></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center"><B>Ticker&nbsp;Symbol</B></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center"><B>CUSIP</B></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center"><B>Meeting&nbsp;Date</B></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center"><B>Matter Voted</B></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center"><B>Proposed&nbsp;By</B></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center"><B>Vote&nbsp;Cast</B></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center"><B>Fund&nbsp;Vote</B></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center"><B>For&nbsp;or&nbsp;Against<BR>Management</B></TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:8pt; font-family:Times New Roman">FedEx Corporation</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">FDX</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">23-Sep-19</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Elect Director John A. Edwardson</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">Management</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">Yes</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">For</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:8pt; font-family:Times New Roman">FedEx Corporation</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">FDX</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">23-Sep-19</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Elect Director Marvin R. Ellison</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">Management</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">Yes</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">For</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:8pt; font-family:Times New Roman">FedEx Corporation</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">FDX</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">23-Sep-19</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Elect Director Susan Patricia Griffith</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">Management</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">Yes</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">For</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:8pt; font-family:Times New Roman">FedEx Corporation</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">FDX</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">23-Sep-19</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Elect Director John C. (Chris) Inglis</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">Management</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">Yes</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" ALIGN="center">For</TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
