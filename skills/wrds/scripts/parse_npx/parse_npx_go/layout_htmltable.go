@@ -205,6 +205,11 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// name of `MASTERS SELECT FUNDS TRUST`, 720 blank rows over two filings).
 		trustNameFund string
 		trustNameRows []int
+
+		// The filing's OWN <SERIES-NAME> declarations indexed by name, built on
+		// first use: the ticker-cell masthead resolves against these and nothing
+		// wider (htmlRegistrantTickerCellFund).
+		hdrNameIx map[string]*SeriesDecl
 	)
 
 	for {
@@ -426,6 +431,25 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 				curFund, curSeries, outerSection, windowed = name, id, id != "", nil
 				bannerFund = id != "" && htmlExplicitFundBanner(heading)
 				continue
+			}
+		}
+		// The same cover row with a share-class TICKER where the registrant and
+		// the sleeve normally stand, and the fund's own name in a later cell of
+		// the row (Mutual Fund Series Trust 2012, the CPEAX section). The name is
+		// adopted only on an exact, unambiguous match against one of THIS
+		// filing's own <SERIES-NAME> declarations, and only while the ticker cell
+		// itself names nothing: a ticker is evidence of which section this is,
+		// never licence to reach the corpus dictionary or a sibling registrant.
+		if label, candidate, ok := htmlRegistrantTickerCellFund(cells); ok {
+			if _, _, resolved := htmlBareFundLine(seriesIx, label, dict); !resolved {
+				if hdrNameIx == nil {
+					hdrNameIx = seriesByName(meta.SeriesDecls)
+				}
+				if d := lookupSeriesByName(hdrNameIx, candidate); d != nil {
+					curFund, curSeries, outerSection, windowed = d.Name, d.SeriesID, true, nil
+					bannerFund = false
+					continue
+				}
 			}
 		}
 		if htmlFilledCells(cells) <= 2 {
@@ -7353,6 +7377,56 @@ var reHTMLRegistrantEmptySuffix = regexp.MustCompile(`(?i)^Registrant:\s*\S.*[-\
 // told from the name by boldness -- the same registrant prints the marker bold
 // in one filing and plain in the next -- so it is excluded by what it says.
 var reHTMLRegistrantRowMarker = regexp.MustCompile(`(?i)^(Exhibit|Item)\s*[0-9]{1,3}$`)
+
+// reHTMLRegistrantTicker matches a `Registrant:` cell whose whole value is a
+// mutual-fund share-class TICKER rather than a name: three to six letters, no
+// space, no dash (`Registrant: CPEAX`). A dash-bearing cell belongs to the
+// readers above, and a value of more than one word is a name, not a symbol.
+var reHTMLRegistrantTicker = regexp.MustCompile(`(?i)^Registrant:\s*([A-Za-z]{3,6})$`)
+
+// htmlRegistrantTickerCellFund reads the fund out of a cover row whose
+// `Registrant:` cell carries only a share-class TICKER, the fund's own name
+// standing in a LATER cell of the same row (Mutual Fund Series Trust 2012,
+// 0000910472-12-002620: `<B>Registrant:</B> CPEAX` beside a second colspan cell
+// reading `Catalyst/CP core equity fund`, the filing's own declared
+// S000035242 spelled in lower case). The same registrant prints the empty-suffix
+// and the inline `<registrant>- <fund>` spellings elsewhere in its own filings;
+// this is the third, and the only one whose label cell names no registrant at
+// all.
+//
+// The shape is decided by what the other filled cells SAY: the label cell is a
+// bare ticker, and exactly one remaining cell is neither a spacer nor the
+// form-item marker, so there is exactly one candidate name. The caller resolves
+// that candidate against the filing's OWN <SERIES-NAME> declarations under exact
+// (case-insensitive) equality and nothing wider -- a ticker is not evidence for
+// reaching the corpus dictionary or a sibling registrant.
+func htmlRegistrantTickerCellFund(cells []string) (label, candidate string, ok bool) {
+	var filled []string
+	for _, cell := range cells {
+		if v := htmlFlat(cell); v != "" {
+			filled = append(filled, v)
+		}
+	}
+	if len(filled) < 3 {
+		return "", "", false
+	}
+	if !reHTMLRegistrantTicker.MatchString(filled[0]) {
+		return "", "", false
+	}
+	for _, v := range filled[1:] {
+		if reHTMLRegistrantRowMarker.MatchString(v) || reHTMLSplitExhibit.MatchString(v) {
+			continue
+		}
+		if candidate != "" {
+			return "", "", false // two candidate names: not this shape
+		}
+		candidate = v
+	}
+	if candidate == "" {
+		return "", "", false
+	}
+	return filled[0], candidate, true
+}
 
 // htmlRegistrantEmptySuffixFund reads the sleeve out of a cover row whose
 // `Registrant:` cell carries the registrant but no sleeve, the sleeve being
