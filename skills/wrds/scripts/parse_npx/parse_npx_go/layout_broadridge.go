@@ -1192,7 +1192,18 @@ func brStraySlot(ix *issSeriesIndex, rule, slot string) bool {
 	// all. Furniture ("SEDOL(S) QUICK CODE") carries neither and still clears,
 	// because a rejected candidate is a section boundary all the same.
 	toks := strings.Fields(normalizeSeriesName(slot))
-	if len(toks) < 2 || !brCorporateSuffixes[toks[len(toks)-1]] {
+	if len(toks) < 2 {
+		return false
+	}
+	// A dotted multi-letter abbreviation (`CRUCELL N.V.`) normalizes to two
+	// separate single-letter tokens, so the joined pair is what the map holds.
+	// Exactly the trailing two, and only beside the single-token lookup.
+	last := toks[len(toks)-1]
+	joined := ""
+	if prev := toks[len(toks)-2]; len(last) == 1 && len(prev) == 1 {
+		joined = prev + last
+	}
+	if !brCorporateSuffixes[last] && (joined == "" || !brCorporateSuffixes[joined]) {
 		return false
 	}
 	for _, t := range toks {
@@ -1229,7 +1240,8 @@ func brStraySlot(ix *issSeriesIndex, rule, slot string) bool {
 var brCorporateSuffixes = map[string]bool{
 	"se": true, "sa": true, "ag": true, "nv": true, "bv": true, "plc": true,
 	"spa": true, "ab": true, "asa": true, "oyj": true, "as": true, "kgaa": true,
-	"inc": true, "corp": true, "co": true, "ltd": true, "llc": true, "lp": true,
+	"inc": true, "corp": true, "corporation": true, "co": true, "company": true,
+	"ltd": true, "llc": true, "lp": true,
 }
 
 // brResolveColonBanner resolves such a banner: the colon comes off, and then the
