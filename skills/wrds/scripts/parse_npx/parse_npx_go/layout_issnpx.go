@@ -4719,6 +4719,16 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	if d := issBrandCompactedDecl(ix, key); d != nil {
 		return banner, d
 	}
+	// The declared name with the registrant's own leading words taken off AND
+	// one internal qualifier dropped: `Large Cap Growth Fund` for a declared
+	// `CNI CHARTER LARGE CAP GROWTH EQUITY FUND` (S000005827, CNI Charter Funds
+	// 2007/2008, 570 rows with no series across three banners), whose sibling
+	// `RCB Small Cap Value Fund` resolves beside it through the brand cut alone.
+	// Last in the chain, so it can never outrank a reading any rung above gives
+	// the same banner, and it reads only the filing's own header declarations.
+	if d := issRegistrantLeadInternalDropDecl(ix, key); d != nil {
+		return banner, d
+	}
 	return banner, nil
 }
 
@@ -5766,6 +5776,82 @@ func issInternalTokenDropDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 			return nil
 		}
 		out = d
+	}
+	return out
+}
+
+// issRegistrantLeadInternalDropDecl is the DECLARED-side peer of
+// issInternalTokenDropDecl, read against ix.lessRegistrantLead's own cut: the
+// banner prints the declared name with the registrant's own leading words taken
+// off AND one internal qualifier dropped. CNI Charter Funds (CIK 1026977)
+// declares `CNI CHARTER LARGE CAP GROWTH EQUITY FUND` (S000005827) and heads its
+// section `Large Cap Growth Fund`; the sibling `CNI CHARTER RCB SMALL CAP VALUE
+// FUND` prints as `RCB Small Cap Value Fund` and already resolves through
+// lessRegistrantLead, because there the brand cut is the WHOLE edit. Three
+// banners of that registrant need the one further internal word, and every rung
+// that drops a word inside a name drops it from the HEADING, which here is the
+// shorter of the two strings.
+//
+// Filing-scoped by construction: only declarations the filing's own SGML header
+// carries are read (a dictionary decl carries a DeclDate and a header decl never
+// does), so the corpus dictionary and a sibling CIK are both out of reach. The
+// leading run cut must be non-empty and every token of it a token of the
+// registrant's own conformed name, exactly one token is dropped, that token must
+// be INTERNAL to the remainder -- never its leading token, which the brand cut
+// already owns, and never its trailing type noun, which lessAnyType owns -- and
+// two declarations answering the same banner refuse, as does a banner the un-cut
+// or brand-only reading already gives to a different series.
+func issRegistrantLeadInternalDropDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	regToks := issRegistrantTokens(ix.registrantKey)
+	if len(regToks) == 0 || len(strings.Fields(key)) < 2 {
+		return nil
+	}
+	var out *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		// A dictionary alias carries the period it was declared in; the
+		// filing's own header declares the filing it sits in and carries none.
+		if d.SeriesID == "" || d.Name == "" || d.DeclDate != "" || i >= len(ix.normToks) {
+			continue
+		}
+		dt := ix.normToks[i]
+		if n := len(dt); n > 0 && issCorporateSuffixWord[dt[n-1]] {
+			dt = dt[:n-1]
+		}
+		for k := 1; k < len(dt); k++ {
+			if !regToks[dt[k-1]] {
+				break
+			}
+			rest := dt[k:]
+			// Something internal has to exist to drop, and two tokens at least
+			// must survive it.
+			if len(rest) < 3 {
+				continue
+			}
+			for j := 1; j < len(rest)-1; j++ {
+				alt := append(append([]string{}, rest[:j]...), rest[j+1:]...)
+				if strings.Join(alt, " ") != key {
+					continue
+				}
+				if out != nil && out.SeriesID != d.SeriesID {
+					return nil
+				}
+				out = d
+			}
+		}
+	}
+	if out == nil {
+		return nil
+	}
+	// The readings this rung is a widening of: a declared name spelled as the
+	// banner outright, and the brand-only cut. Either naming a DIFFERENT series
+	// means the banner is already answered and the internal drop is a second,
+	// contradictory answer.
+	if d, seen := lookupSeriesEntry(ix.byName, key); seen && (d == nil || d.SeriesID != out.SeriesID) {
+		return nil
+	}
+	if d, seen := ix.lessRegistrantLead[key]; seen && (d == nil || d.SeriesID != out.SeriesID) {
+		return nil
 	}
 	return out
 }
