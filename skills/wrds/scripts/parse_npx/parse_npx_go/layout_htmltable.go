@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode"
 )
 
 // htmltable is the generic HTML <table> layout: the residue of the legacy era
@@ -343,6 +344,15 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			curSeries = icrResolveFundShared(seriesIx, name)
 			outerSection, windowed = curSeries != "", nil
 			bannerFund = false
+		}
+		// The `Voting Agent: <fund>` masthead in a plain cover cell. It is read
+		// before every reader below because it is a section BOUNDARY on its own
+		// terms: a banner whose fund the filing declares nowhere still closes the
+		// section above it rather than lending that fund's series to its rows.
+		if name, id, ok := htmlVotingAgentBanner(meta.SeriesDecls, cells); ok {
+			curFund, curSeries, outerSection, windowed = name, id, id != "", nil
+			bannerFund = false
+			continue
 		}
 		// One vintage prints the labelled heading as TWO CELLS of a table row,
 		// `Fund Name :` beside the name (Putnam, ~1M rows): the label is the
@@ -6548,6 +6558,109 @@ func htmlFormNPXSleeveBanner(ix *issSeriesIndex, pre string) (name, id string, o
 		}
 	}
 	return "", "", false
+}
+
+// reHTMLVotingAgentBanner matches the masthead this vendor prints over each
+// fund's vote table, inside a plain cell of the cover row that carries `Number
+// of Meetings:` beside it. The filing agent word-wraps the cell, so the label
+// and its value are read off the FLATTENED cell rather than a source line.
+var reHTMLVotingAgentBanner = regexp.MustCompile(`(?i)^Voting\s+Agent:\s*(.+)$`)
+
+// htmlVotingAgentBanner reads the `Voting Agent: <fund>` masthead Penn Street
+// Fund, Inc. (CIK 948666) heads each of its four vote tables with in 2006
+// (0001144204-06-036627.txt): `Voting Agent: Penn Street Sector Rotational
+// Portfolio`, `Voting Agent: Berkshire Advisors / Select Equity Portfolio`,
+// `Voting Agent: McGlinn Balanced Portfolio`, `Voting Agent: Baldwin Large Cap
+// Growth`. It is the sibling of htmlFormNPXSleeveBanner, which reads the same
+// registrant's 2004 sleeve banner printed BETWEEN the tables instead of inside
+// one.
+//
+// The banner is a section BOUNDARY whether or not its name resolves, which is
+// the half of this that costs rows: the third and fourth banners name funds the
+// filing declares nowhere and the corpus dictionary carries at no CIK, so they
+// are floor -- but leaving the section above them open credited their 76 rows to
+// `Berkshire Advisors Select Equity Portfolio`, a fund this filing does not
+// attribute them to. Returning ok with an empty id closes the section and lets
+// those rows read as floor.
+//
+// Resolution is against THIS FILING'S OWN declarations only, exactly, or under
+// one tolerance: the printed name may be a word subsequence of a declared name
+// missing a SINGLE word, and only when exactly one declared series matches that
+// way. The first banner prints `Penn Street Sector Rotational Portfolio` where
+// the header declares `Penn Street Advisors Sector Rotational Portfolio`
+// (S000001801) -- one dropped word, and the other declared series (S000001802
+// `Berkshire Advisors Select Equity Portfolio`) shares none of the printed
+// words, so the match is an elimination rather than a guess. Nothing here
+// reaches the corpus dictionary, a sibling registrant or another vintage.
+//
+// A value that spells no name at all is not a banner: Stratus Fund prints
+// `Voting Agent: 00001`, the vendor's own numeric agent code, and a cell like
+// that must neither resolve nor close anything.
+func htmlVotingAgentBanner(decls []SeriesDecl, cells []string) (name, id string, ok bool) {
+	for _, cell := range cells {
+		m := reHTMLVotingAgentBanner.FindStringSubmatch(htmlFlat(cell))
+		if m == nil {
+			continue
+		}
+		printed := strings.TrimSpace(m[1])
+		words := strings.Fields(normalizeSeriesName(printed))
+		if len(words) < 2 {
+			return "", "", false
+		}
+		named := false
+		for _, w := range words {
+			if len(w) >= 3 && strings.IndexFunc(w, unicode.IsLetter) >= 0 {
+				named = true
+			}
+		}
+		if !named {
+			return "", "", false
+		}
+		if d := lookupSeriesByName(seriesByName(decls), printed); d != nil {
+			return printed, d.SeriesID, true
+		}
+		var hit *SeriesDecl
+		for i := range decls {
+			d := &decls[i]
+			if d.SeriesID == "" || d.Name == "" {
+				continue
+			}
+			if !htmlWordsDropOne(words, strings.Fields(normalizeSeriesName(d.Name))) {
+				continue
+			}
+			if hit != nil && hit.SeriesID != d.SeriesID {
+				return printed, "", true // two declared names answer to it: refuse, but still close
+			}
+			hit = d
+		}
+		if hit != nil {
+			return printed, hit.SeriesID, true
+		}
+		return printed, "", true
+	}
+	return "", "", false
+}
+
+// htmlWordsDropOne reports whether printed is declared with exactly ONE word
+// left out. An equal-length match is not this rung's business (the exact
+// lookup above already answered it), and dropping two words would let a
+// two-word banner reach a four-word declaration, which is a guess.
+func htmlWordsDropOne(printed, declared []string) bool {
+	if len(declared) != len(printed)+1 {
+		return false
+	}
+	skipped := false
+	for i, j := 0, 0; j < len(declared); j++ {
+		if i < len(printed) && printed[i] == declared[j] {
+			i++
+			continue
+		}
+		if skipped {
+			return false
+		}
+		skipped = true
+	}
+	return skipped
 }
 
 // htmlCustodianAbbrevs is the closed vocabulary the HSBC Middle Office Services
