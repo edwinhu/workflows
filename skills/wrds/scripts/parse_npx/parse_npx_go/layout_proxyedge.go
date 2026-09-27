@@ -587,6 +587,50 @@ const (
 	peHeadingWords = 14
 )
 
+// peRuleRunes is the least number of consecutive `=` characters that reads as a
+// vendor rule rather than as text. One or two equals signs can stand inside a
+// name or a resolution; a run of three or more is decoration, and no fund name
+// or ballot sentence in this corpus opens or closes with one.
+const peRuleRunes = 3
+
+// peRuleStrip cuts a leading and/or trailing rule run off a line -- the equals
+// signs some ProxyEdge exports centre a fund banner between (`========== Javelin
+// Exchange-Traded Trust - JETS Contrarian Opportunities Index Fund ==========`)
+// -- together with the whitespace immediately inside them. The rule is the
+// vendor's, not the name's: charged against peHeadingRunes it costs 22 runes of
+// a budget chosen for the fund name alone, which is what refused both of Javelin
+// Exchange-Traded Trust's (CIK 1411903) banners and blanked every row of its
+// 2010 and 2011 filings. Only the two ends are cut, so a run standing INSIDE the
+// text still counts against the length, and the resolver is unaffected either
+// way -- it already reads these banners with the rules attached.
+func peRuleStrip(s string) string {
+	s = strings.TrimSpace(s)
+	for _, end := range []bool{false, true} {
+		n := 0
+		for n < len(s) {
+			var c byte
+			if end {
+				c = s[len(s)-1-n]
+			} else {
+				c = s[n]
+			}
+			if c != '=' {
+				break
+			}
+			n++
+		}
+		if n < peRuleRunes {
+			continue
+		}
+		if end {
+			s = strings.TrimRight(s[:len(s)-n], " \t")
+		} else {
+			s = strings.TrimLeft(s[n:], " \t")
+		}
+	}
+	return s
+}
+
 // peBallotProse reports a whole cell that reads as a ballot's own text rather
 // than as the NAME of a fund. peWholeCells, peSummaryBody and peWrappedProse
 // each disqualify a cell by where it stands -- hard-wrapped, inside a summary
@@ -603,6 +647,7 @@ const (
 // resolution is a sentence: long, and it semicolons, quotes and numbers its own
 // sub-paragraphs.
 func peBallotProse(s string) bool {
+	s = peRuleStrip(s)
 	if len([]rune(s)) > peHeadingRunes || len(strings.Fields(s)) > peHeadingWords {
 		return true
 	}
