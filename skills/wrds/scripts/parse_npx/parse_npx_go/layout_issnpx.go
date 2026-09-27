@@ -2929,7 +2929,97 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			return banner, alt
 		}
 	}
+	// Nothing above reached it: the banner may be a declared name printed with a
+	// retail brand word in front of it and a generic type noun behind it. Last
+	// of all, and only for a heading the whole chain leaves blank.
+	if outer && d == nil {
+		if alt := issBrandPrefixGenericSuffixSeries(ix, banner); alt != nil {
+			return banner, alt
+		}
+	}
 	return name, d
+}
+
+// issBrandPrefixGenericSuffixSeries resolves a fund banner that is a series the
+// FILING'S OWN HEADER declares wrapped in one leading brand token and one
+// trailing generic type noun -- `SIGNAL LARGE CAP GROWTH FUND` printed for a
+// declared `Large Cap Growth` (CIK 882748, S000008177, 20060630 N-PX: eleven of
+// the body's twelve banners resolve and this one's 634 rows do not). The
+// registrant registered four of its series under bare, unbranded names while the
+// vendor's plain-text banner prints the retail product name, which carries both
+// the brand and the noun.
+//
+// This is the issnpx peer of tbGenericTypeNounSeries (layout_twoband.go), which
+// folds a trailing noun only, and it keeps that rung's discipline exactly:
+//
+//   - the candidate is read against the filing's OWN declarations alone (the
+//     header-only index), never the corpus dictionary and never a sibling CIK,
+//     because folding a type noun or a brand globally would merge genuinely
+//     distinct registered series elsewhere in the corpus;
+//   - the trailing token must be one of the same two generic nouns, and the
+//     declared stem must be matched VERBATIM and whole, in order;
+//   - the stem must be two tokens at least, so this never fires on a brand plus
+//     one word;
+//   - the leading token is read as whatever is not part of the matched stem, with
+//     no brand, registrant or product name special-cased anywhere;
+//   - and the strip must be unambiguous. If the banner ALSO names a declared
+//     series with the noun dropped and no brand cut, the filing has given two
+//     answers and this rung takes neither; likewise two declared series
+//     answering the same cut stem collide and withdraw the claim.
+//
+// Returns the declaration to stamp, or nil -- the chain's own currency, since a
+// series id alone cannot be stamped.
+func issBrandPrefixGenericSuffixSeries(ix *issSeriesIndex, banner string) *SeriesDecl {
+	if ix == nil {
+		return nil
+	}
+	// The filing's own header declarations, with the dictionary unreadable.
+	own := ix
+	if ix.hdrOnly != nil {
+		own = ix.hdrOnly
+	}
+	toks := strings.Fields(normalizeSeriesName(banner))
+	// one brand token + the minimum stem + the trailing noun
+	if len(toks) < tbGenericTypeNounMinStem+2 {
+		return nil
+	}
+	if !tbGenericFundTypeNouns[toks[len(toks)-1]] {
+		return nil
+	}
+	// The claimed reading (brand cut) and the reading that leaves the leading
+	// token inside the stem, which is consulted only to detect ambiguity.
+	cut := strings.Join(toks[1:len(toks)-1], " ")
+	kept := strings.Join(toks[:len(toks)-1], " ")
+	var claim *SeriesDecl
+	keptID := ""
+	for i := range own.decls {
+		d := &own.decls[i]
+		if d.SeriesID == "" {
+			continue
+		}
+		dn := own.declNorm(i)
+		if dn == kept {
+			if keptID != "" && keptID != d.SeriesID {
+				return nil // the un-cut reading is itself ambiguous
+			}
+			keptID = d.SeriesID
+			continue
+		}
+		if dn != cut || len(own.declToks(i)) < tbGenericTypeNounMinStem {
+			continue
+		}
+		if claim != nil && claim.SeriesID != d.SeriesID {
+			return nil // two declared series answer this stem; refuse
+		}
+		claim = d
+	}
+	if claim == nil {
+		return nil
+	}
+	if keptID != "" && keptID != claim.SeriesID {
+		return nil // the leading token could be part of the stem; refuse
+	}
+	return claim
 }
 
 // issHeadingWithinDecl reports that the heading says nothing this declaration
