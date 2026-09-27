@@ -330,6 +330,9 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			if id != "" && htmlBannerBlock(row.pre) {
 				reportFund, reportSeries = name, id
 			}
+		} else if name, id, ok := htmlCustodianAbbrevBanner(&hdrNameIx, meta.SeriesDecls, row.pre); ok {
+			curFund, curSeries, outerSection, windowed = name, id, true, nil
+			bannerFund = false
 		} else if name, ok := htmlFundHeading(row.pre); ok && (name != "" || curSeries == "") {
 			curFund = name
 			curSeries = icrResolveFundShared(seriesIx, name)
@@ -6532,6 +6535,92 @@ func htmlFormNPXSleeveBanner(ix *issSeriesIndex, pre string) (name, id string, o
 		}
 	}
 	return "", "", false
+}
+
+// htmlCustodianAbbrevs is the closed vocabulary the HSBC Middle Office Services
+// banners abbreviate their sleeve names through. It carries the three tokens
+// those banners actually print and nothing else: an abbreviation guessed rather
+// than read would expand a name no filing spells.
+var htmlCustodianAbbrevs = map[string]string{
+	"FD":   "Fund",
+	"OPPS": "Opportunities",
+	"MKTS": "Markets",
+}
+
+// htmlCustodianAccountCode reports the custodian's internal sub-account number
+// as it trails a sleeve banner: a bare run of four to six digits. Shorter is an
+// ordinal or a share class, longer is a security id.
+func htmlCustodianAccountCode(s string) bool {
+	if len(s) < 4 || len(s) > 6 {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		if s[i] < '0' || s[i] > '9' {
+			return false
+		}
+	}
+	return true
+}
+
+// htmlExpandCustodianAbbrevs rewrites each vocabulary token of a banner into the
+// word it abbreviates, and reports whether any token was one. A banner that
+// abbreviates nothing is not this shape and is left to the readers above.
+func htmlExpandCustodianAbbrevs(words []string) (string, bool) {
+	out := make([]string, len(words))
+	abbreviated := false
+	for i, w := range words {
+		if full, hit := htmlCustodianAbbrevs[strings.ToUpper(w)]; hit {
+			out[i], abbreviated = full, true
+			continue
+		}
+		out[i] = w
+	}
+	return strings.Join(out, " "), abbreviated
+}
+
+// htmlCustodianAbbrevBanner reads the sleeve banner HSBC Middle Office Services
+// prints at the head of each of its sub-reports: `ABERDEEN CHINA OPPS FD 61410`
+// (Aberdeen Funds 2009, all 355 rows across the filing's five sub-reports read
+// as registrant-wide rows naming no sleeve). The trailing digit run is the
+// custodian's INTERNAL SUB-ACCOUNT CODE and no part of any fund name -- the same
+// shape NS-790558-account-number-banner carries on the proxyedge side -- and the
+// words before it abbreviate one of the filing's own <SERIES-NAME> declarations
+// through htmlCustodianAbbrevs.
+//
+// Every side of the reading is the filing's OWN header: the expanded candidate
+// must equal one declared name exactly under the shared normalisation, and a
+// candidate two declarations answer to stamps nothing. Nothing here reaches the
+// corpus dictionary or a sibling registrant. The exactness is load-bearing --
+// this header declares both `Aberdeen International Equity Fund` (S000020291)
+// and `Aberdeen International Equity Institutional Fund` (S000025404), and
+// `ABERDEEN INTERNATIONAL EQUITY FD 61300` names the first alone.
+//
+// The text between two tables can carry several banners; the sleeve that follows
+// is the nearest one above the table, so the last match wins. The header index
+// is built through hdr on first need, so a filing that prints no banner of this
+// shape -- every filing but this family's -- pays only the field scan.
+func htmlCustodianAbbrevBanner(hdr *map[string]*SeriesDecl, decls []SeriesDecl, pre string) (name, id string, ok bool) {
+	if pre == "" || len(decls) == 0 {
+		return "", "", false
+	}
+	for _, line := range strings.Split(pre, "\n") {
+		line = strings.TrimSpace(line)
+		f := strings.Fields(line)
+		if len(f) < 2 || !htmlCustodianAccountCode(f[len(f)-1]) {
+			continue
+		}
+		expanded, abbreviated := htmlExpandCustodianAbbrevs(f[:len(f)-1])
+		if !abbreviated {
+			continue
+		}
+		if *hdr == nil {
+			*hdr = seriesByName(decls)
+		}
+		if d := lookupSeriesByName(*hdr, expanded); d != nil {
+			name, id, ok = line, d.SeriesID, true
+		}
+	}
+	return name, id, ok
 }
 
 // htmlSameFundBlock reports a row whose blank fund cell repeats the fund above
