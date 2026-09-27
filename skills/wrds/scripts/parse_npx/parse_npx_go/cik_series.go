@@ -630,6 +630,19 @@ func (f *dictFallback) apply(r *VoteRow) {
 			r.SeriesID = d.SeriesID
 		}
 	}
+	// The same edit, but the acronym stands for the registrant's BRAND alone --
+	// the leading words of its name before the generic entity-type words it
+	// closes on: `AI Hillcrest Small Cap Value Fund` for a dictionary `American
+	// Independence Hillcrest Small Cap Value Fund` (S000052272, American
+	// Independence Funds Trust 20160630), the one banner of that filing whose
+	// series its header does not declare. The abbreviation is the registrant's
+	// own: this same CIK's dictionary rows print it themselves at the next
+	// vintage (`AI International Fund`, `AI Large Cap Growth Fund`).
+	if r.SeriesID == "" {
+		if d := f.brandAcronymForBrand(r.FundName); d != nil {
+			r.SeriesID = d.SeriesID
+		}
+	}
 	// The mirror of the rung above: the HEADING carries a leading brand token
 	// the dictionary name of an earlier vintage does not: `AMG Aston/Cornerstone
 	// Large Cap Value Fund` for `ASTON/CORNERSTONE LARGE CAP VALUE FUND`
@@ -674,6 +687,45 @@ func (f *dictFallback) acronymForBrand(heading string) *SeriesDecl {
 		return nil
 	}
 	return f.brandPrefixed(strings.Join(toks[1:], " "))
+}
+
+// brandAcronymForBrand answers a heading whose FIRST token is an acronym of the
+// registrant's BRAND -- the leading tokens of its name before the generic
+// entity-type words it closes on -- standing in for the brand the dictionary
+// name spells out.
+//
+// acronymForBrand cannot read this shape twice over. issRegistrantAcronym
+// demands a letter for EVERY token of the registrant's name, so `american
+// independence funds trust` demands `aift` and the printed `ai` is refused; and
+// brandPrefixed could not put the brand back anyway, because the prefix this
+// dictionary yields carries the entity word too (`american independence funds`),
+// which is no prefix of any name of this CIK. So the brand comes off the
+// registrant's OWN name with its trailing entity words cut -- at least two
+// tokens must remain, at least one must have been cut, which is what keeps this
+// rung disjoint from the whole-name one above -- and the acronym must spell
+// every one of those tokens in order. The restored name must then be a
+// dictionary name of this registrant EXACTLY; a name two series answer to is
+// recorded nil by seriesByName and refuses here the way every other rung
+// refuses.
+func (f *dictFallback) brandAcronymForBrand(heading string) *SeriesDecl {
+	all := strings.Fields(f.registrantKey)
+	reg := all
+	for len(reg) > 0 && issEntityTypeWord(reg[len(reg)-1]) {
+		reg = reg[:len(reg)-1]
+	}
+	if len(reg) < 2 || len(reg) == len(all) {
+		return nil
+	}
+	toks := strings.Fields(normalizeSeriesName(heading))
+	if len(toks) < 3 || len(toks[0]) != len(reg) {
+		return nil
+	}
+	for i := range reg {
+		if reg[i] == "" || reg[i][0] != toks[0][i] {
+			return nil
+		}
+	}
+	return f.byName[strings.Join(reg, " ")+" "+strings.Join(toks[1:], " ")]
 }
 
 func (f *dictFallback) brandPrefixed(heading string) *SeriesDecl {
