@@ -786,6 +786,33 @@ func peBandCell(tbl []int, band, heading int, labels []string) bool {
 	return labels != nil && band >= 0 && tbl[heading] == band
 }
 
+// peNumberedRowCell reports that `heading` is the cell standing immediately
+// after an item NUMBER in the same table -- the Proposal column of a numbered
+// ballot row -- whether or not a header band was ever read for that grid.
+//
+// peItemCell asks the same question of the same predecessor but only under an
+// open band, and peBandCell needs a band to have been read at all: both are
+// silent in a grid whose header row this layout never recognised. This vendor
+// prints such a grid (First Investors Life Series Funds 2012 prints its first
+// ballot table with no header row of its own), so every cell of it is reached by
+// the heading scans with labels still nil, and a two-line-wrapped proposal there
+// -- `Amend` / `Sasol Inzalo Foundation Trust Deed` -- satisfies peFundName and
+// clears the section's banner for every row after it.
+//
+// The item number is the structural evidence, not the vocabulary: a bare count
+// standing in the cell before this one, inside the same table, is the ballot's
+// own numbering, and what follows it is that ballot's description. A banner the
+// vendor printed between two sections never has one before it -- it stands
+// outside the grid's table (BBH Trust prints its wrapped banner in a div between
+// two tables, after the registrant name), which the table test refuses.
+func peNumberedRowCell(lines []string, tbl []int, i, heading int) bool {
+	if i < 0 || tbl[i] != tbl[heading] {
+		return false
+	}
+	_, ok := peCount(lines[i])
+	return ok
+}
+
 // peBrokenOffMidWord reports a line the vendor's column ended rather than its
 // own text: it closes on a lower-case letter, so no punctuation finished it and
 // the word it closes on is not the last word of a name. peWrapContinues asks a
@@ -1046,9 +1073,13 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// repeats it inside the sub-adviser stack under the banner, in a
 		// different case -- is not opening a new section, so the banner's own
 		// spelling stands rather than the restatement's.
+		// Nor is the Proposal column of a numbered ballot row in a grid whose
+		// header row was never read: with labels still nil neither peItemCell
+		// nor peBandCell can refuse it, so the item number before it does
+		// (peNumberedRowCell).
 		if run[i] == i && cellEnd == i+1 && !summary[i] && !wrapped[i] &&
 			!peItemCell(lines, tbl, i-1, i, labels) && !peBandCell(tbl, band, i, labels) &&
-			peFundName(cell) {
+			!peNumberedRowCell(lines, tbl, i-1, i) && peFundName(cell) {
 			if fund != "" && normalizeSeriesName(cell) == normalizeSeriesName(fund) {
 				i = cellEnd
 				continue
