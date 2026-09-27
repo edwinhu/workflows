@@ -576,6 +576,54 @@ func peFundName(s string) bool {
 	return false
 }
 
+// peTypeDropDeclaredFund reports the declaration a bare heading names when the
+// vendor printed the declared name with its TRAILING TYPE WORD DROPPED, which is
+// a shape peFundName cannot see at all: its test is pure vocabulary (FUND,
+// PORTFOLIO, TRUST, ETF, SERIES standing as a word), so a banner whose only such
+// word was the dropped one is not a banner to it, however exactly it names a
+// series the filing declares. Guinness Atkinson Funds (CIK 919160) opens its
+// 2017 filing's first section `Guinness Atkinson Alternative Energy` for the
+// declared `Guinness Atkinson Alternative Energy Fund` (S000009156) and spells
+// the other six sections' names in full.
+//
+// The filing's own header settles the name with no inference: one type word from
+// the closed vocabulary issDropTypeWord owns is appended back by dropping the
+// same word from each DECLARED name and comparing stems, so the match is exact,
+// never a spell-match. Reads only the filing's own declarations -- dictionary
+// rows carry a DeclDate and are skipped -- never a sibling CIK. Two declarations
+// reducing to the banner's stem refuse rather than pick, and the banner must not
+// carry a type word itself (that shape is the existing arm's, which had its say).
+func peTypeDropDeclaredFund(ix *issSeriesIndex, heading string) *SeriesDecl {
+	if ix == nil || peFundName(heading) || peBallotProse(heading) {
+		return nil
+	}
+	key := normalizeSeriesName(heading)
+	// A one-word stem is not a name this rung may claim: appending a type word to
+	// it would match any declaration of two tokens whose first happens to agree.
+	if len(strings.Fields(key)) < 2 {
+		return nil
+	}
+	if _, typed := issDropTypeWord(key); typed {
+		return nil
+	}
+	var found *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || d.DeclDate != "" {
+			continue
+		}
+		stem, typed := issDropTypeWord(ix.declNorm(i))
+		if !typed || stem != key {
+			continue
+		}
+		if found != nil && found.SeriesID != d.SeriesID {
+			return nil // two declarations share the stem; neither is the answer
+		}
+		found = d
+	}
+	return found
+}
+
 // peHeadingRunes and peHeadingWords are the most a fund banner runs to. The
 // longest names this vendor prints are of the order of `Guinness Atkinson Asia
 // Pacific Dividend Builder Fund` (51 characters, 7 words) and
@@ -1172,6 +1220,23 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 				fundSeries = htmlDictionaryFund(seriesIx, dict, line)
 			}
 			continue
+		}
+		// The same bare heading, with the trailing type word of the declared name
+		// dropped: peFundName sees no fund word, so the arm above cannot fire,
+		// however exactly the line names a series this filing declares. Every
+		// other guard of that arm is asked unchanged; only the name test differs,
+		// and it is an EXACT match against the filing's OWN header declarations
+		// after one type word is dropped from each (peTypeDropDeclaredFund), which
+		// is why the same block's other bold lines -- a meeting date range,
+		// `Selected Accounts` -- cannot open a section and clear the fund this
+		// just resolved.
+		if whole[i] && !summary[i] && !wrapped[i] && !peItemCell(lines, tbl, i-1, i, labels) &&
+			!peBandCell(tbl, band, i, labels) {
+			if d := peTypeDropDeclaredFund(seriesIx, line); d != nil {
+				fund = line
+				fundSeries = d.SeriesID
+				continue
+			}
 		}
 		// The same bare heading, printed by a vendor that hard-wrapped it inside
 		// ONE container: `BBH` / `INTERNATIONAL EQUITY FUND` is a single div of
