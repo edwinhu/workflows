@@ -141,6 +141,9 @@ func parseTwoBand(text string, meta FilingMeta) ([]VoteRow, error) {
 				if fundSeries == "" {
 					fundSeries = htmlDictionaryFund(seriesIx, dict, fund)
 				}
+				if fundSeries == "" {
+					fundSeries = tbGenericTypeNounSeries(seriesIx, fund)
+				}
 				haveMtg, inMeeting, inItem = false, false, false
 			}
 			ruleAt = i
@@ -248,4 +251,78 @@ func tbVoteRow(fields []string, meeting pvTextMeeting) (VoteRow, bool) {
 		HowVoted:                 vote,
 		VoteSource:               fields[n-1],
 	}, true
+}
+
+// tbGenericFundTypeNouns are the two trailing generic nouns this filer's own
+// section headings and its SGML header interchange. `etf` is deliberately NOT a
+// type word of the shared vocabulary (issDropTypeWord) and is not added there:
+// the fold below is per-filing and refuses on collision, whereas a shared
+// vocabulary entry would widen every registrant-scoped rung in the corpus.
+var tbGenericFundTypeNouns = map[string]bool{"fund": true, "etf": true}
+
+// tbGenericTypeNounMinStem is the shortest stem the fold accepts, in tokens, so
+// a heading is never resolved on a generic noun plus one word.
+const tbGenericTypeNounMinStem = 2
+
+// tbGenericTypeNounSeries resolves a fund banner that differs from a series the
+// FILING'S OWN HEADER declares by exactly its trailing generic noun -- `First
+// Trust Eurozone AlphaDEX(R) Fund` printed for a declared `First Trust Eurozone
+// AlphaDEX ETF` (CIK 1510337, S000047035, 2015 N-PX: one banner, 19 declared
+// series, every row blank). The registrant renamed its own product mid-life and
+// the vendor's plain-text template kept the older house style; normalizeSeriesName
+// folds the `(R)` but by design never a suffix noun, because folding one globally
+// would merge genuinely distinct registered series elsewhere in the corpus.
+//
+// The claim is narrow by construction and never leaves the filing:
+//
+//   - the candidate is read against the filing's OWN declarations alone (the
+//     header-only index), never the corpus dictionary and never a sibling CIK;
+//   - only the single TRAILING token folds, and only within the two nouns above;
+//   - the stem must be two tokens at least;
+//   - the noun must actually differ, so this adds nothing an exact match already
+//     reached;
+//   - and EXACTLY ONE declared series may answer. Two declared names sharing a
+//     stem under different nouns are two registered series, and the collision
+//     withdraws the claim rather than choosing between them.
+func tbGenericTypeNounSeries(ix *issSeriesIndex, banner string) string {
+	if ix == nil {
+		return ""
+	}
+	// The filing's own header declarations, with the dictionary unreadable.
+	own := ix
+	if ix.hdrOnly != nil {
+		own = ix.hdrOnly
+	}
+	toks := strings.Fields(normalizeSeriesName(banner))
+	if len(toks) < tbGenericTypeNounMinStem+1 {
+		return ""
+	}
+	noun := toks[len(toks)-1]
+	if !tbGenericFundTypeNouns[noun] {
+		return ""
+	}
+	stem := strings.Join(toks[:len(toks)-1], " ")
+	id := ""
+	for i := range own.decls {
+		d := &own.decls[i]
+		if d.SeriesID == "" {
+			continue
+		}
+		dt := own.declToks(i)
+		if len(dt) < tbGenericTypeNounMinStem+1 {
+			continue
+		}
+		dn := dt[len(dt)-1]
+		if dn == noun || !tbGenericFundTypeNouns[dn] {
+			continue
+		}
+		if strings.Join(dt[:len(dt)-1], " ") != stem {
+			continue
+		}
+		if id != "" && id != d.SeriesID {
+			return "" // two declared series answer this stem; refuse
+		}
+		id = d.SeriesID
+	}
+	return id
 }
