@@ -887,8 +887,12 @@ func peWordBreak(c byte) bool {
 // own name -- otherwise the banner is handed over whole, since nothing says
 // which side of the dash is the brand. A banner naming the registrant alone
 // names no fund and leaves the section's fund where it was.
+// A trailing form-item pointer (`Dunham Monthly Distribution Fund  Item 1,
+// Exhibit J`, Dunham Funds 2010) is cut first, by the same reading the htmltable
+// vintage of this vendor already uses: it points at the section of the form, not
+// at the fund, and left on the name it resolves against nothing.
 func peRegistrantFund(value, company string) string {
-	v := strings.TrimSpace(value)
+	v := strings.TrimSpace(htmlCutFormItemSuffix(strings.TrimSpace(value)))
 	if v == "" {
 		return ""
 	}
@@ -902,6 +906,23 @@ func peRegistrantFund(value, company string) string {
 		return ""
 	}
 	return v
+}
+
+// peGluedRegistrantBanner returns the value of a `Registrant:` banner this
+// vendor prints as ONE cell, the label glued to the value rather than standing
+// on a cell of its own (`Registrant:  Dunham Monthly Distribution Fund  Item 1,
+// Exhibit J`, Dunham Funds 2010). Only the cell's own head may be the label, so
+// a ballot's resolution text naming the registrant is not one.
+func peGluedRegistrantBanner(cell string) (string, bool) {
+	const label = "registrant:"
+	c := strings.TrimSpace(cell)
+	if len(c) <= len(label) || !strings.EqualFold(c[:len(label)], label) {
+		return "", false
+	}
+	if v := strings.TrimSpace(c[len(label):]); v != "" {
+		return v, true
+	}
+	return "", false
 }
 
 // peItemCell reports that `heading` stands INSIDE a ballot row already open
@@ -1386,6 +1407,24 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 				if d := brResolveLabelledFund(seriesIx, value); d != nil {
 					fund, fundSeries = value, d.SeriesID
 					continue
+				}
+			}
+		}
+		// The section banner with the `Registrant:` label and the section's
+		// form-item pointer glued into the SAME cell as the fund's name (Dunham
+		// Funds 2010). The cell does not END with the colon, so the label branch
+		// above never reads it as a label and the bare-heading scan below takes
+		// the whole cell -- label, name and pointer -- for the fund, which
+		// resolves against nothing. As with the labelled cover line above, only a
+		// value resolving against THIS filing's own declarations acts.
+		if run[i] == i {
+			if value, ok := peGluedRegistrantBanner(cell); ok {
+				if name := peRegistrantFund(value, meta.CompanyName); name != "" {
+					if _, d := issResolveFund(seriesIx, name); d != nil {
+						fund, fundSeries = name, d.SeriesID
+						i = cellEnd
+						continue
+					}
 				}
 			}
 		}

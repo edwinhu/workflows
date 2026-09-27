@@ -1,0 +1,223 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ WdzK9DnInM39QATcIoZIlMhcaHIYo9bDJUj1d7opcKJkI33RU81PzQMveQXuXoJM
+ 0HmJuVv1XQ/VdsCQI3qbZA==
+
+<SEC-DOCUMENT>0000910472-10-000863.txt : 20100830
+<SEC-HEADER>0000910472-10-000863.hdr.sgml : 20100830
+<ACCEPTANCE-DATETIME>20100830110356
+ACCESSION NUMBER:		0000910472-10-000863
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20100830
+FILED AS OF DATE:		20100830
+DATE AS OF CHANGE:		20100830
+EFFECTIVENESS DATE:		20100830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Dunham Funds
+		CENTRAL INDEX KEY:			0001420040
+		IRS NUMBER:				000000000
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22153
+		FILM NUMBER:		101045793
+
+	BUSINESS ADDRESS:	
+		STREET 1:		10251 VISTA SORRENTO PARKWAY
+		STREET 2:		SUITE 200
+		CITY:			SAN DIEGO
+		STATE:			CA
+		ZIP:			92121
+		BUSINESS PHONE:		858-964-0500
+
+	MAIL ADDRESS:	
+		STREET 1:		10251 VISTA SORRENTO PARKWAY
+		STREET 2:		SUITE 200
+		CITY:			SAN DIEGO
+		STATE:			CA
+		ZIP:			92121
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001420040
+<SERIES-ID>S000020971
+<SERIES-NAME>Dunham Real Estate Stock Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059508
+<CLASS-CONTRACT-NAME>Dunham Real Estate Stock Fund Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059509
+<CLASS-CONTRACT-NAME>Dunham Real Estate Stock Fund Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059510
+<CLASS-CONTRACT-NAME>Dunham Real Estate Stock Fund Class N
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001420040
+<SERIES-ID>S000020973
+<SERIES-NAME>Dunham Small Cap Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059514
+<CLASS-CONTRACT-NAME>Dunham Small Cap Growth Fund Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059515
+<CLASS-CONTRACT-NAME>Dunham Small Cap Growth Fund Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000059516
+<CLASS-CONTRACT-NAME>Dunham Small Cap Growth Fund Class N
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001420040
+<SERIES-ID>S000022888
+<SERIES-NAME>Dunham Monthly Distribution Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000066378
+<CLASS-CONTRACT-NAME>Dunham Monthly Distribution Fund- Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000066379
+<CLASS-CONTRACT-NAME>Dunham Monthly Distribution Fund- Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000066380
+<CLASS-CONTRACT-NAME>Dunham Monthly Distribution Fund- Class N
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001420040
+<SERIES-ID>S000028743
+<SERIES-NAME>Dunham Loss Averse Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000087895
+<CLASS-CONTRACT-NAME>Dunham Loss Averse Growth Fund Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000087896
+<CLASS-CONTRACT-NAME>Dunham Loss Averse Growth Fund Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000087897
+<CLASS-CONTRACT-NAME>Dunham Loss Averse Growth Fund Class N
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npxcover.htm
+<DESCRIPTION>DUNHAM FUNDS
+<TEXT>
+<!doctype html public "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>GemCom, LLC</TITLE>
+<META NAME="author" CONTENT="Joseph Miola">
+<META NAME="date" CONTENT="08/24/2010">
+</HEAD>
+<BODY style="margin-top:0;font-family:Times New Roman; font-size:10pt; color:#000000" BGCOLOR=#FFFFFF>
+<P style="margin:0px" align=right>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT style="font-size:11pt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--------------------------</FONT></P>
+<TABLE style="margin-top:0px; font-size:10pt" cellpadding=0 cellspacing=0><TR height=0 style="font-size:0"><TD width=14.8 /><TD width=102.333 /><TD width=20.333 /><TD width=14.8 /><TD width=169.667 /><TD width=230.067 /><TD width=240.667 /><TD width=28 /><TD width=22 /><TD width=148.267 /><TD width=37.333 /><TD width=81.333 /><TD width=153.333 /></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=990.933 colspan=10><P style="margin:0px; font-size:12pt"><B>Registrant: &nbsp;&nbsp;&nbsp;Dunham Monthly Distribution Fund &nbsp;&nbsp;Item 1, Exhibit J &nbsp;&nbsp;&nbsp;&nbsp;</B><FONT style="font-family:Arial; font-size:10pt"><B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</B></FONT></P>
+</TD><TD style="margin-top:0px" valign=bottom width=37.333><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=81.333><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=153.333><P style="margin:0px; padding:0px">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=990.933 colspan=10><P style="margin:0px; font-size:12pt"><B>Investment Company Act file number: &nbsp;811-22153</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=37.333><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=81.333><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=153.333><P style="margin:0px; padding:0px">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=990.933 colspan=10><P style="margin:0px; font-size:12pt"><B>Reporting Period: July 1, 2009 through June 30, 2010</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=37.333><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=81.333><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=153.333><P style="margin:0px; padding:0px">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=14.8><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=102.333><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=20.333><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=14.8><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=169.667><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=230.067><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=240.667><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=28><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=22><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=148.267><P style="margin:0px; padding:0px">&
+nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=37.333><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=81.333><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=153.333><P style="margin:0px; padding:0px">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=14.8><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=1094.8 colspan=11><P style="margin:0px; padding:0px; font-size:9pt">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=153.333><P style="margin:0px; padding:0px">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=14.8><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=1094.8 colspan=11><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt"><B>Selected Accounts</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=153.333><P style="margin:0px; padding:0px">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=14.8><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px; background-color:#004F75; border-left:1px solid #000000; border-top:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=976.133 colspan=9><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt; color:#FFFFFF"><B>DATA DOMAIN, INC.</B></P>
+</TD><TD style="margin-top:0px; background-color:#004F75; border-top:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=37.333><P style="margin:0px; font-family:Arial">&nbsp;</P>
+</TD><TD style="margin-top:0px; background-color:#004F75; border-top:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=81.333><P style="margin:0px; font-family:Arial">&nbsp;</P>
+</TD><TD style="margin-top:0px; background-color:#004F75; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=153.333><P style="margin:0px; font-family:Arial">&nbsp;</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=14.8><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=137.467 colspan=3><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt"><B>Security:</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=640.4 colspan=3><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">23767P109</P>
+</TD><TD style="margin-top:0px" valign=bottom width=28><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=207.6 colspan=3><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt"><B>Meeting Type:</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=234.667 colspan=2><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">Annual</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=14.8><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=137.467 colspan=3><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt"><B>Ticker:</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=640.4 colspan=3><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">DDUP</P>
+</TD><TD style="margin-top:0px" valign=bottom width=28><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=207.6 colspan=3><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt"><B>Meeting Date:</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=234.667 colspan=2><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">02-Jul-2009</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=14.8><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=137.467 colspan=3><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt"><B>ISIN</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=640.4 colspan=3><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">US23767P1093</P>
+</TD><TD style="margin-top:0px" valign=bottom width=28><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=207.6 colspan=3><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt"><B>Vote Deadline Date:</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=234.667 colspan=2><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">01-Jul-2009</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=14.8><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=137.467 colspan=3><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt"><B>Agenda</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=169.667><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">933112815</P>
+</TD><TD style="margin-top:0px" valign=bottom width=230.067><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">Management</P>
+</TD><TD style="margin-top:0px" valign=bottom width=240.667><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=28><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=207.6 colspan=3><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt"><B>Total Ballot Shares:</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=234.667 colspan=2><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">1213600</P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=14.8><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=137.467 colspan=3><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt"><B>Last Vote Date:</B></P>
+</TD><TD style="margin-top:0px" valign=bottom width=399.733 colspan=2><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">01-Jul-2009</P>
+</TD><TD style="margin-top:0px" valign=bottom width=240.667><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=28><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=22><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=148.267><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=37.333><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=81.333><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=153.333><P style="margin:0px; padding:0px">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=14.8><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px; background-color:#004F75; border-left:1px solid #000000; border-top:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=102.333><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt; color:#FFFFFF"><B>Item</B></P>
+</TD>
+	<TD style="margin-top:0px; background-color:#004F75; border-top:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=434.867 colspan=4><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt; color:#FFFFFF"><B>Proposal</B></P>
+</TD>
+	<TD style="margin-top:0px; background-color:#004F75; border-top:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=240.667><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt; color:#FFFFFF"><B>Recommendation</B></P>
+</TD>
+	<TD style="margin-top:0px; background-color:#004F75; border-top:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=50 colspan=2><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt; color:#FFFFFF"><B>For</B></P>
+</TD>
+	<TD style="margin-top:0px; background-color:#004F75; border-top:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=148.267><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt; color:#FFFFFF"><B>Against</B></P>
+</TD>
+	<TD style="margin-top:0px; background-color:#004F75; border-top:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=118.667 colspan=2><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt; color:#FFFFFF"><B>Abstain</B></P>
+</TD>
+	<TD style="margin-top:0px; background-color:#004F75; border-top:1px solid #000000; border-right:1px solid #000000; border-bottom:1px solid #000000" valign=bottom width=153.333><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:9pt; color:#FFFFFF"><B>Take No Action</B></P>
+</TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=14.8><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=102.333><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">1</P>
+</TD><TD style="margin-top:0px" valign=bottom width=434.867 colspan=4><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">DIRECTOR</P>
+</TD><TD style="margin-top:0px" valign=bottom width=240.667><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt" align=center>For</P>
+</TD><TD style="margin-top:0px" valign=bottom width=28><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=22><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=148.267><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=37.333><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=81.333><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=153.333><P style="margin:0px; padding:0px">&nbsp;</P></TD></TR>
+<TR><TD style="margin-top:0px" valign=bottom width=14.8><P style="margin:0px; padding:0px">&nbsp;</P></TD><TD style="margin-top:0px" valign=bottom width=102.333><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=20.333><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">1</P>
+</TD><TD style="margin-top:0px" valign=bottom width=414.533 colspan=3><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">RONALD D. BERNAL</P>
+</TD><TD style="margin-top:0px" valign=bottom width=240.667><P style="margin:0px; padding:0px">&nbsp;</P></TD>
+	<TD style="margin-top:0px" valign=bottom width=50 colspan=2><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">46300</P>
+</TD><TD style="margin-top:0px" valign=bottom width=148.267><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">0</P>
+</TD><TD style="margin-top:0px" valign=bottom width=118.667 colspan=2><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">0</P>
+</TD><TD style="margin-top:0px" valign=bottom width=153.333><P style="margin:0px; font-family:Arial Unicode MS,Arial; font-size:8pt">0</P>
+</TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
