@@ -604,7 +604,13 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 	issCoverRenameAliases(seriesIx, lines)
 	// Read AFTER the cover's aliases are folded in, so the accounting below
 	// sees exactly the answers the loop will reach.
-	bannerRename = issRenamedBannerFill(lines, seriesIx)
+	bannerKeys, bannerPrinted := issFilingBanners(lines)
+	bannerClaimed, bannerOpen := issBannerClaims(seriesIx, bannerKeys, bannerPrinted)
+	bannerRename = issRenamedBannerFill(bannerKeys, bannerClaimed, bannerOpen, seriesIx)
+	// A banner that prints only the lead every one of this filing's own
+	// declarations shares is a name for none of them; when the filing's other
+	// banners leave exactly one declared series unclaimed, it is that one.
+	bannerRename = issSharedPrefixResidualFill(bannerRename, bannerKeys, bannerOpen, seriesIx)
 	// A filer agent may abandon this grammar mid-document for Broadridge
 	// meeting blocks (MFS Series Trust XI 2004: 52 issuers under a bare fund
 	// line, none of them read). The remainder of the body is handed to the
@@ -3223,14 +3229,11 @@ const issRenamedBannerMinToken = 5
 // Scope: the filing's OWN header (ix.decls) and its OWN body, so nothing here
 // can move a vote onto another registrant's fund, and a banner the chain already
 // answers is left exactly as it is -- this only ever fills a blank.
-func issRenamedBannerFill(lines []string, ix *issSeriesIndex) map[string]*SeriesDecl {
-	if ix == nil || len(ix.decls) == 0 {
-		return nil
-	}
-	// The filing's banners, in document order, deduplicated on the key the fill
-	// is read back on in commitBanner.
-	var keys, printed []string
-	toks := map[string][]string{}
+// issFilingBanners returns the filing's section banners in document order, both
+// as printed and keyed the way commitBanner reads a fill back on
+// (normalizeSeriesName), deduplicated on that key.
+func issFilingBanners(lines []string) (keys, printed []string) {
+	seen := map[string]bool{}
 	for i, raw := range lines {
 		l := strings.TrimSpace(raw)
 		if l == "" {
@@ -3247,33 +3250,33 @@ func issRenamedBannerFill(lines []string, ix *issSeriesIndex) map[string]*Series
 			continue
 		}
 		k := normalizeSeriesName(name)
-		if k == "" {
+		if k == "" || seen[k] {
 			continue
 		}
-		if _, dup := toks[k]; dup {
-			continue
-		}
-		toks[k] = issDedupTokens(strings.Fields(k))
+		seen[k] = true
 		keys = append(keys, k)
 		printed = append(printed, name)
 	}
-	if len(keys) == 0 {
-		return nil
-	}
+	return keys, printed
+}
 
-	// Which declared series the body already claims, read on the banner AS
-	// PRINTED so the answer is the one the loop itself will reach. The memo is
-	// swapped out for the duration: the loop may still teach this index a brand
-	// (issItemFamilyBrand), and a pre-pass answer cached ahead of that would
-	// then be read back as though it were the loop's own.
+// issBannerClaims reports which declared series the body already claims and
+// which banner keys the chain leaves open, read on the banner AS PRINTED so the
+// answer is the one the loop itself will reach. The memo is swapped out for the
+// duration: the loop may still teach this index a brand (issItemFamilyBrand),
+// and a pre-pass answer cached ahead of that would then be read back as though
+// it were the loop's own.
+func issBannerClaims(ix *issSeriesIndex, keys, printed []string) (claimed map[string]bool, open []string) {
+	if ix == nil || len(keys) == 0 {
+		return map[string]bool{}, nil
+	}
 	saved, savedHdr := ix.resolved, map[string]issResolved(nil)
 	ix.resolved = map[string]issResolved{}
 	if ix.hdrOnly != nil {
 		savedHdr = ix.hdrOnly.resolved
 		ix.hdrOnly.resolved = map[string]issResolved{}
 	}
-	claimed := map[string]bool{}
-	var open []string
+	claimed = map[string]bool{}
 	for i, k := range keys {
 		if _, d := issResolveFund(ix, printed[i]); d != nil {
 			claimed[d.SeriesID] = true
@@ -3285,8 +3288,222 @@ func issRenamedBannerFill(lines []string, ix *issSeriesIndex) map[string]*Series
 	if ix.hdrOnly != nil {
 		ix.hdrOnly.resolved = savedHdr
 	}
-	if len(open) == 0 {
+	return claimed, open
+}
+
+// issSharedPrefixResidualFill claims, by elimination, a banner that prints
+// nothing but the lead the filing's OWN declarations all share. Phoenix Asset
+// Trust (CIK 1018593) heads the first section of its 20060630 report
+// `=========== PHOENIX ===========` and nothing more, for a header declaring
+// five series every one of which begins with that word. A lead five candidates
+// answer at once is a name for none of them, so every spelling-based rung of the
+// chain refuses by construction and all 562 rows of the section go out blank --
+// the whole of this CIK's known-registrant no_series residue.
+//
+// What settles it is not the heading's spelling but the filing's own
+// bookkeeping. The body prints four further banners, and they name four of the
+// five declared series (S000001377, S000001376, S000001373, S000001374), leaving
+// PHOENIX OVERSEAS FUND (S000001375) the one claim nobody spoke. The vendor's
+// rule simply never printed the word OVERSEAS.
+//
+// The books must balance, so the licence is exactly one residual candidate:
+//
+//   - the heading must be a strict token PREFIX of EVERY series the filing
+//     declares -- a lead shared by all of them and a name for none, never a
+//     heading that merely leads some of them, which would be evidence about
+//     those and silence about the rest;
+//   - exactly ONE banner of the filing may be open. A second unresolved banner
+//     and the leftover could belong to either, and there is no tiebreak, because
+//     a series id is a link key and a wrong one is worse than a blank;
+//   - exactly ONE declared series may be unclaimed, counting what
+//     issRenamedBannerFill pairs as claimed too;
+//   - and the evidence is the filing's OWN header (hdrOnly, the dictionary
+//     unreadable) and its OWN banners alone. Eliminating against this
+//     registrant's 2006-2019 dictionary rows would leave dozens of Virtus-era
+//     series unclaimed and the argument would say nothing.
+//
+// Fills a blank only, into the map commitBanner already reads renames back from.
+func issSharedPrefixResidualFill(rename map[string]*SeriesDecl, keys, open []string, ix *issSeriesIndex) map[string]*SeriesDecl {
+	if ix == nil || len(keys) < 2 {
+		return rename
+	}
+	// The filing's own declarations, with the dictionary and its aliases
+	// unreadable.
+	own := ix
+	if ix.hdrOnly != nil {
+		own = ix.hdrOnly
+	}
+	declSet := map[string]map[string]bool{}
+	declOrd := []int{}
+	ids := map[string]bool{}
+	for i := range own.decls {
+		d := &own.decls[i]
+		if d.SeriesID == "" || ids[d.SeriesID] {
+			continue
+		}
+		ids[d.SeriesID] = true
+		set := map[string]bool{}
+		for _, t := range own.declToks(i) {
+			set[t] = true
+		}
+		if len(set) == 0 {
+			return rename
+		}
+		declSet[d.SeriesID] = set
+		declOrd = append(declOrd, i)
+	}
+	if len(declOrd) < 2 {
+		return rename
+	}
+	// A word no declaration of this filing spells belongs to no fund of it: the
+	// vendor's closing rule `===== END NPX REPORT =====` is banner-shaped and
+	// names nothing, and a banner like it neither claims a series nor withholds
+	// the claim below.
+	names := func(set map[string]bool) bool {
+		for _, s := range declSet {
+			for t := range set {
+				if s[t] {
+					return true
+				}
+			}
+		}
+		return false
+	}
+	bannerSet := map[string]map[string]bool{}
+	for _, k := range keys {
+		set := map[string]bool{}
+		for _, t := range strings.Fields(k) {
+			set[t] = true
+		}
+		bannerSet[k] = set
+	}
+	// The one banner the chain leaves open. Every OTHER open banner that names
+	// anything of this filing withdraws the claim: the leftover could be its
+	// series instead, and there is no tiebreak.
+	openKey := map[string]bool{}
+	for _, k := range open {
+		openKey[k] = true
+	}
+	key := ""
+	for _, k := range open {
+		if rename[k] != nil || !names(bannerSet[k]) {
+			continue
+		}
+		if key != "" {
+			return rename
+		}
+		key = k
+	}
+	if key == "" {
+		return rename
+	}
+	// The heading must be the lead EVERY declaration shares and a name for
+	// none: a lead that leads only some of them is evidence about those and
+	// silence about the rest.
+	lead := strings.Fields(key)
+	if len(lead) == 0 {
+		return rename
+	}
+	for _, i := range declOrd {
+		dt := own.declToks(i)
+		if len(dt) <= len(lead) || !issTokensEqual(dt[:len(lead)], lead) {
+			return rename
+		}
+	}
+	// What the filing's other banners claim, read as the declaration each one
+	// most nearly SPELLS rather than the id the chain reached for it: two
+	// banners of this filing can reach one id by tolerance (`PHOENIX CALIFORNIA
+	// INTERMEDIATE TAX-FREE BOND FUND` and `PHOENIX INTERMEDIATE BOND FUND`
+	// both answer S000001376, the second exactly), and an accounting that
+	// double-counts a series cannot balance. The nearest declaration is the one
+	// sharing the largest fraction of the two names' words, and it must be
+	// strictly nearest -- a tie decides nothing and refuses -- and the
+	// assignment must be one-to-one.
+	claim := map[string]bool{}
+	for _, k := range keys {
+		if k == key {
+			continue
+		}
+		var pick string
+		if d := rename[k]; d != nil {
+			pick = d.SeriesID
+		} else {
+			if openKey[k] || !names(bannerSet[k]) {
+				continue
+			}
+			best, runnerUp := -1.0, -1.0
+			for _, id := range declOrdIDs(own, declOrd) {
+				j := issNameOverlap(bannerSet[k], declSet[id])
+				if j > best {
+					best, runnerUp, pick = j, best, id
+				} else if j > runnerUp {
+					runnerUp = j
+				}
+			}
+			if pick == "" || best <= runnerUp {
+				return rename // no strictly nearest declaration; refuse
+			}
+		}
+		if claim[pick] {
+			return rename // two banners on one series: the books do not balance
+		}
+		claim[pick] = true
+	}
+	var left *SeriesDecl
+	for _, i := range declOrd {
+		d := &own.decls[i]
+		if claim[d.SeriesID] {
+			continue
+		}
+		if left != nil {
+			return rename // two series left over: refuse
+		}
+		left = d
+	}
+	if left == nil {
+		return rename
+	}
+	if rename == nil {
+		rename = map[string]*SeriesDecl{}
+	}
+	rename[key] = left
+	return rename
+}
+
+// declOrdIDs lists the series ids of the declarations issSharedPrefixResidualFill
+// indexed, in header order.
+func declOrdIDs(own *issSeriesIndex, declOrd []int) []string {
+	out := make([]string, 0, len(declOrd))
+	for _, i := range declOrd {
+		out = append(out, own.decls[i].SeriesID)
+	}
+	return out
+}
+
+// issNameOverlap is the share of the two names' distinct words that both spell
+// (Jaccard): 1 when the banner and the declaration print the same words, and
+// falling as either side carries words the other does not.
+func issNameOverlap(a, b map[string]bool) float64 {
+	both := 0
+	for t := range a {
+		if b[t] {
+			both++
+		}
+	}
+	union := len(a) + len(b) - both
+	if union == 0 {
+		return 0
+	}
+	return float64(both) / float64(union)
+}
+
+func issRenamedBannerFill(keys []string, claimed map[string]bool, open []string, ix *issSeriesIndex) map[string]*SeriesDecl {
+	if ix == nil || len(ix.decls) == 0 || len(keys) == 0 || len(open) == 0 {
 		return nil
+	}
+	toks := map[string][]string{}
+	for _, k := range keys {
+		toks[k] = issDedupTokens(strings.Fields(k))
 	}
 
 	// How many of the filing's banners print each word, and which single series
