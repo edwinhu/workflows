@@ -704,7 +704,32 @@ func peBallotProse(s string) bool {
 	if strings.ContainsAny(s, ";\"") {
 		return true
 	}
+	if peDefinedTermBracket(s) {
+		return true
+	}
 	return peClauseNumber(s)
+}
+
+// peDefinedTermBracket reports the SQUARE-bracketed defined term a ballot closes
+// a list of counterparties with -- `... Mezhregiongaz and Gazpromipoteka Fund
+// [the Licensees]`, one wrapped line of item 7.101 of a GAZPROM O A O ballot in
+// Market Vectors ETF Trust's (CIK 1137360) 2009 filing. The line is short, has
+// no semicolon, no quote and no parenthesis, so nothing else in peBallotProse
+// reaches it, and `Fund` standing as a word carried it into peFundName as a
+// masthead -- resetting the open GOLD MINERS FUND section and blanking 553 rows.
+//
+// The bracket is the whole test, and a square one only: this vendor annotates a
+// fund's name with ROUND brackets (`(Class A)`, `(formerly ABC Fund)`, a ticker
+// code), never square ones, so a `[` ... `]` pair anywhere in the cell is the
+// ballot's own drafting convention rather than a name. Kept narrow in the same
+// sense peClauseNumber is -- it reads only bracket shape, never vocabulary, and
+// says nothing about a line whose bracket is round.
+func peDefinedTermBracket(s string) bool {
+	open := strings.IndexByte(s, '[')
+	if open < 0 {
+		return false
+	}
+	return strings.IndexByte(s[open:], ']') > 0
 }
 
 // peClauseNumber reports the parenthesised enumerator a resolution numbers its
