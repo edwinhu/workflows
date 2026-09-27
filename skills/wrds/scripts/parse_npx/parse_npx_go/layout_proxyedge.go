@@ -616,9 +616,19 @@ func peBallotProse(s string) bool {
 
 // peClauseNumber reports the parenthesised enumerator a resolution numbers its
 // sub-paragraphs with -- `(1)`, `(A)`, `(II)`. A fund name parenthesises only
-// words (`(Class A)`, `(formerly ABC Fund)`), so only a SHORT all-alphanumeric
-// parenthesis counts, and it must not merely be a number the name itself carries
-// in a longer phrase.
+// words (`(Class A)`, `(formerly ABC Fund)`), so only a SHORT parenthesis
+// counts, and it must not merely be a number the name itself carries in a
+// longer phrase.
+//
+// Short is not enough on its own. A short alphanumeric parenthesis is also how
+// this vendor prints two things that number nothing: the account or ticker code
+// glued to the end of a fund's name (`Aspiriant Risk-Managed Global Equity Fund
+// (GMV)`), and the English plural marker inside its own field labels
+// (`Institution Account(s):`). Aspiriant Trust's 2017 N-PX carries both on the
+// one line that is the whole document's only route to a fund, and taking that
+// line for a ballot's prose blanked all 4,059 of its rows. So the test is the
+// FORM an enumerator actually takes -- digits, one ordinal letter, or a roman
+// numeral -- rather than the length of the run.
 func peClauseNumber(s string) bool {
 	for off := 0; off < len(s); {
 		open := strings.IndexByte(s[off:], '(')
@@ -630,7 +640,7 @@ func peClauseNumber(s string) bool {
 		if shut < 0 {
 			return false
 		}
-		if inner := s[open+1 : open+shut]; len(inner) > 0 && len(inner) <= 3 && peAlnum(inner) {
+		if peEnumerator(s[open+1 : open+shut]) {
 			return true
 		}
 		off = open + 1
@@ -638,16 +648,76 @@ func peClauseNumber(s string) bool {
 	return false
 }
 
-// peAlnum reports a run of letters and digits alone.
-func peAlnum(s string) bool {
-	for i := 0; i < len(s); i++ {
-		c := s[i]
-		if c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' {
-			continue
-		}
+// peEnumerator reports the three forms a resolution's sub-paragraph label takes
+// inside its parentheses:
+//
+//	(1), (12)     a numbered clause -- digits alone
+//	(A), (a), (i) a lettered clause -- ONE letter, and never `s`, which is the
+//	              plural marker the vendor glues to a label's own word
+//	(II), (IV)    a roman ordinal -- and a GENUINE one, so a code that merely
+//	              borrows roman letters (`(MVC)`) is refused along with one that
+//	              carries a letter no roman numeral holds (`(GMV)`)
+//
+// Everything else -- a two-to-four letter account or ticker code at the end of a
+// name, a word, anything mixing letters and digits -- numbers nothing.
+func peEnumerator(s string) bool {
+	if s == "" {
 		return false
 	}
-	return true
+	if peDigits(s) {
+		return true
+	}
+	if len(s) == 1 {
+		c := s[0]
+		if c == 's' || c == 'S' {
+			return false
+		}
+		return c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z'
+	}
+	return peRoman(s)
+}
+
+// peDigits reports a run of decimal digits alone.
+func peDigits(s string) bool {
+	for i := 0; i < len(s); i++ {
+		if s[i] < '0' || s[i] > '9' {
+			return false
+		}
+	}
+	return len(s) > 0
+}
+
+// peRoman reports a valid roman numeral in canonical form -- thousands, then
+// hundreds, then tens, then units, each written the way the numeral system
+// writes it. Membership in the alphabet I V X L C D M is NOT enough: `MVC` and
+// `IIII` are made only of roman letters and neither is a number, and an account
+// code that happens to avoid the other twenty letters must not read as one. The
+// case must be uniform, since the vendor's codes are all-caps and a resolution's
+// ordinals are written one way within a document.
+func peRoman(s string) bool {
+	lower := s == strings.ToLower(s)
+	upper := s == strings.ToUpper(s)
+	if !lower && !upper {
+		return false
+	}
+	rest := strings.ToUpper(s)
+	// Each group is read greedily, longest form first; what a group cannot
+	// account for is left for the next, and anything left at the end is not a
+	// numeral.
+	for _, group := range [][]string{
+		{"MMM", "MM", "M"},
+		{"CM", "CD", "DCCC", "DCC", "DC", "D", "CCC", "CC", "C"},
+		{"XC", "XL", "LXXX", "LXX", "LX", "L", "XXX", "XX", "X"},
+		{"IX", "IV", "VIII", "VII", "VI", "V", "III", "II", "I"},
+	} {
+		for _, form := range group {
+			if strings.HasPrefix(rest, form) {
+				rest = rest[len(form):]
+				break
+			}
+		}
+	}
+	return rest == ""
 }
 
 // peFundWord reports that w stands as a WORD of up, not merely as a substring
