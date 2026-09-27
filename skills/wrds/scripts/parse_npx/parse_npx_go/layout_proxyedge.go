@@ -976,6 +976,51 @@ func peNumberedRowCell(lines []string, tbl []int, i, heading int) bool {
 	return ok
 }
 
+// peBallotRowCell reports that `heading` is the PROPOSAL column of a ballot row
+// the vendor printed ENTIRE on one table row, rather than a heading standing
+// alone between two of them.
+//
+// peItemCell, peBandCell and peNumberedRowCell all answer this question from the
+// item NUMBER or the open header band, and a grid this layout never recognised
+// the header of offers neither: Unified Series Trust 2008 prints its Quixote
+// Capital Management section under a `Company Name | Ticker | Security
+// ID/Cusip | Meeting Date | Issue | ...` header peHeaderAt does not read, so the
+// band still belongs to a previous table and every cell of the grid is reached by
+// the heading scans. One of them is ACM Managed Income Fund's own proposal --
+// `Approve Liquidation and Dissolution of the Fund`, a closed-end fund voting to
+// liquidate itself -- which peFundName accepts on the word FUND and peBallotProse
+// does not refuse at 47 runes and 7 words: read as a banner it set fund_name to
+// that sentence and cleared the series for the 386 rows after it.
+//
+// What settles it is the row the cell stands in. This vendor's grid prints the
+// Proposal column BETWEEN the Meeting Date column and the `Proposed by Mgmt (M)
+// /Sh (S)` column, so a cell holding nothing but a date on one side and nothing
+// but that one-letter sponsor code on the other is one column of a row whose
+// other columns were all printed -- the ballot names itself, and needs no banner.
+// A banner the vendor printed between two sections never stands in that position:
+// it is a name in a cell of its own with the section's furniture around it, not a
+// date and a vote code.
+func peBallotRowCell(lines []string, run, tbl []int, heading, headingEnd int) bool {
+	before := heading - 1
+	if before < 0 || run[before] != before || tbl[before] != tbl[heading] {
+		return false
+	}
+	// Nothing but a date: htmlDate reads a meeting TYPE printed beside one, and
+	// a cell carrying more than the date is not the column this is looking for.
+	if len(strings.Fields(lines[before])) != 1 || htmlDate(lines[before]) == "" {
+		return false
+	}
+	after := headingEnd + 1
+	if after >= len(lines) || run[after] != after || tbl[after] != tbl[heading] {
+		return false
+	}
+	switch strings.ToUpper(lines[after]) {
+	case "M", "S":
+		return true
+	}
+	return false
+}
+
 // peBrokenOffMidWord reports a line the vendor's column ended rather than its
 // own text: it closes on a lower-case letter, so no punctuation finished it and
 // the word it closes on is not the last word of a name. peWrapContinues asks a
@@ -1295,6 +1340,30 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 				continue
 			}
 		}
+		// The section banner printed as a LABEL AND ITS VALUE ON ONE LINE, which
+		// is neither shape the two branches above read: the label branch needs the
+		// label in a cell of its own with the value in the next, and the
+		// bare-heading scans need the name to stand alone. Unified Series Trust
+		// 2008 prints `Fund/Fund Family Name: Roosevelt Multi-Cap Fund` inside one
+		// <p> whose second line is `Name of Fiscal Year End: November 30,`, so the
+		// cell is two lines -- no scan here can fire on either, and the section's
+		// rows kept the fund of the section before it.
+		//
+		// The label vocabulary and the resolution are the ones broadridge and
+		// issnpx already read this same cover line with (brLabelledFundLine,
+		// brResolveLabelledFund): only the line's own head may be the label, and
+		// only a value that resolves against THIS filing's declarations acts, so a
+		// cover naming a fund FAMILY rather than a series leaves the open section
+		// standing rather than clearing it. The line must open its cell, as every
+		// other banner scan here requires of the line it reads.
+		if run[i] == i {
+			if value, ok := brLabelledFundLine(line); ok {
+				if d := brResolveLabelledFund(seriesIx, value); d != nil {
+					fund, fundSeries = value, d.SeriesID
+					continue
+				}
+			}
+		}
 		// The issuer heading is the bare line standing above the ballot's
 		// identity block. Requiring that block to follow is what tells it from
 		// the other bare cells this template prints between ballots -- the
@@ -1347,8 +1416,13 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// Nor is any cell of the open proposal grid itself: the second and later
 		// continuation rows of a wrapped proposal are reached by neither of the
 		// two tests above, so the grid's own table is the boundary (peBandCell).
+		// Nor is the Proposal column of a ballot row the vendor printed entire,
+		// whose own Meeting Date and sponsor-code columns stand on either side of
+		// it: that row names itself and no band or item number is there to say so
+		// (peBallotRowCell).
 		if whole[i] && !summary[i] && !wrapped[i] && !peItemCell(lines, tbl, i-1, i, labels) &&
-			!peBandCell(tbl, band, i, labels) && peFundName(line) {
+			!peBandCell(tbl, band, i, labels) && !peBallotRowCell(lines, run, tbl, i, i) &&
+			peFundName(line) {
 			fund = line
 			fundSeries = icrResolveFundShared(seriesIx, line)
 			if fundSeries == "" {
