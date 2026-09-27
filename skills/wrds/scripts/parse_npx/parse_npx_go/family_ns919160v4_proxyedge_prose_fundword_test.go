@@ -149,12 +149,17 @@ func TestFamilyNS919160V4ProseFundWordIsNotAFundHeading(t *testing.T) {
 	}
 
 	// The Alternative Energy rows stand upstream of every heading below: they say
-	// the cut parses, and their blank series is a separate cause (the cover page's
-	// bare registrant name is what `fund` holds there).
+	// the cut parses. Their own banner (source line 294) is the filing's declared
+	// series with its trailing type word dropped, and the section resolves: the
+	// banner text is the fund name and S000009156 the series.
 	for i, r := range alt {
-		if r.FundName != "GUINNESS ATKINSON FUNDS" {
-			t.Errorf("Alternative Energy row %d: fund_name=%q want %q -- this section is upstream of every heading in the cut, so it must still carry the cover page's registrant name",
-				i, r.FundName, "GUINNESS ATKINSON FUNDS")
+		if r.FundName != "Guinness Atkinson Alternative Energy" {
+			t.Errorf("Alternative Energy row %d: fund_name=%q want %q -- the banner at source line 294 is this filing's own declared series with its trailing type word dropped, so the section must resolve to the banner text",
+				i, r.FundName, "Guinness Atkinson Alternative Energy")
+		}
+		if r.SeriesID != "S000009156" {
+			t.Errorf("Alternative Energy row %d: series_id=%q want %q -- the banner names the filing's declared Guinness Atkinson Alternative Energy Fund",
+				i, r.SeriesID, "S000009156")
 		}
 	}
 
