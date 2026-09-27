@@ -215,6 +215,11 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// row emitted, or -1: what a wrapped proposal's continuation table
 		// appends its text to (htmlWrappedProposalTailRow).
 		ballotRow = -1
+
+		// rowOff is where each emitted row's markup stands in the body, parallel
+		// to out: what places a row against the footnotes printed between and
+		// after the tables (htmlStampFootnoteAttributedTables).
+		rowOff []int
 	)
 
 	for {
@@ -905,6 +910,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 						r = *u
 					}
 					out = append(out, r)
+					rowOff = append(rowOff, row.off)
 					sawData, emitted = true, true
 					ballotRow = len(out) - 1
 					// Grouped exports print the identity on a meeting's first
@@ -977,6 +983,7 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 	}
 	htmlStampBrandOnlyByElimination(out, brandOnlyRows, meta.SeriesDecls)
 	htmlRefuseInexactSiblingHeading(out, seriesIx)
+	htmlStampFootnoteAttributedTables(out, rowOff, body, meta.SeriesDecls)
 	return out, nil
 }
 
@@ -1196,10 +1203,15 @@ type htmlRowFeed struct {
 // is a slice of the source, never a copy, and it is kept because one reading
 // needs a distinction the decoded text cannot carry: which cell of a masthead
 // row was printed BOLD (htmlRegistrantEmptySuffixFund).
+// off is where this row's own markup begins in the feed's source, so a reading
+// that has to place a row against text no row carries -- a footnote printed
+// AFTER the last table (htmlStampFootnoteAttributedTables) -- can compare the
+// two in one coordinate system.
 type htmlFeedRow struct {
 	cells    []string
 	raw      []byte
 	pre      string
+	off      int
 	newTable bool
 	uncut    bool
 }
@@ -1349,6 +1361,7 @@ func (f *htmlRowFeed) scan() (htmlFeedRow, bool) {
 		cells:    cells,
 		raw:      seg[start:],
 		pre:      htmlPreText(seg[:start]),
+		off:      segStart + start,
 		newTable: newTable,
 		uncut:    !cuttable,
 	}, true
@@ -6696,6 +6709,18 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 	for li, line := range lines {
 		line = strings.TrimSpace(line)
 		if line == "" {
+			continue
+		}
+		// A complete prose statement about a fund's voting activity is a
+		// FOOTNOTE, not a masthead: `The Micro Cap Fund was liquidated and
+		// ceased operations after the close of trading on November 15, 2011.`
+		// (Ziegler Lotsoff Capital Management Investment Trust 2012) resolves to
+		// S000000850 because the fund's name stands inside it, and the sentence
+		// sits between the two tables -- so adopting it opened a section over
+		// the OTHER fund's 22 rows and stamped them with this fund's id. A
+		// footnote is read where footnotes are evidence, by
+		// htmlStampFootnoteAttributedTables, and nowhere else.
+		if htmlFundFootnoteSentence(line) {
 			continue
 		}
 		// `===== Clarion Global Real Estate Portfolio =====`: the ISS banner

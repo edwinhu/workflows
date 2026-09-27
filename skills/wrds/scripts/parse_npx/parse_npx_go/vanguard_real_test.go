@@ -297,6 +297,12 @@ var howVotedVocabulary = map[string]bool{
 	// spelling is not the same as relaxing this invariant: junk like `31,` or
 	// `#160;`, which is what this test was built to catch, is still rejected.
 	"AGNST": true, "FOR ALL-DIRS": true,
+	// Ziegler Lotsoff Capital Management Investment Trust (CIK 1261788, filing
+	// 0001398344-12-002719.txt) prints a bare `*` in the Vote column for 3 of its
+	// director-election rows, referencing a footnote elsewhere in the same filing.
+	// The footnote marker itself is what the filing printed in that column, and
+	// how_voted is verbatim by contract.
+	"*": true,
 }
 
 // isVoteValue consults the PARSERS' OWN validators before falling back to the static
