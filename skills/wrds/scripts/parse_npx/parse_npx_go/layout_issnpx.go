@@ -8161,6 +8161,12 @@ func issCoverRenameAliases(ix *issSeriesIndex, lines []string) {
 // CIK or vintage -- no name-based rung can reach it, because the two names
 // share no distinctive word.
 //
+// The pre-2006 tagging gap is what MOTIVATED the table, not what bounds it:
+// neither issAuditedRenameAliases nor addAlias gates on period, so a post-2006
+// filing whose header simply omits a series its body still prints under the
+// fund's earlier name is served by the same mechanism unchanged (see the
+// Roundhill MVP entry below, a 2022 filing).
+//
 // A ROW IS NOT A NAME MATCH. Each entry cites the registrant's own filing
 // saying the fund changed its name, and is registrant-scoped: the successor is
 // resolved against THIS CIK's own declarations, so nothing here reaches across
@@ -8351,6 +8357,30 @@ func issCoverRenameAliases(ix *issSeriesIndex, lines []string) {
 // 8,242 rows with no series in that filing, and 8,242 more in the filer's
 // duplicate report of the same period, 0000891092-10-000935. All five sleeves
 // are keyed, not only the two that carry rows in one period.
+//
+// Listed Funds Trust (CIK 0001683471) is the table's one POST-2006 entry, and
+// its shape differs from every other: not a tagging gap but a header that
+// declares six series while the body prints eight bold fund banners. Its 2022
+// N-PX, 000168/1683471/0000894189-22-006566.txt (period 20220630, broadridge
+// layout), prints `Roundhill MVP ETF` -- the ORIGINAL launch name of the fund
+// (ticker MVP) launched under this same CIK, per its March 2021 summary
+// prospectus,
+// https://www.sec.gov/Archives/edgar/data/1683471/000089418921001546/roundhillmvpsummaryprospec.htm
+// -- and the fund was later renamed `Roundhill Pro Sports, Media & Apparel
+// ETF`, which is this SAME CIK's own dictionary row S000071254, declared at
+// vintage 20210630 in 000168/1683471/0000894189-21-006229.txt, the vintage
+// immediately preceding this filing. No name-based rung can reach it: the two
+// names share no distinctive word, and `Roundhill MVP` appears in NO dictionary
+// row at any CIK or vintage, so only a registrant-scoped audited key resolves
+// it. 382 rows with no series under that banner -- this CIK's entire current
+// known-registrant no_series residue. The filing's OTHER undeclared banner,
+// `Roundhill Streaming Services & Technology ETF`, needs no entry: it is an
+// exact match to this CIK's own S000070922 declaration at the same 20210630
+// vintage, which the ordinary same-CIK dictionary fallback already answers.
+// Because the mechanism does not gate on period, this entry rides the existing
+// wiring unchanged -- issAuditedRenameAliases is called from issFilingIndex,
+// which broadridge builds like every other layout -- so no new broadridge-side
+// plumbing is needed.
 var issRegistrantRenames = map[string]map[string]string{
 	"0001385533": {
 		"tdax independence 2010 etf composite":      "TDX Independence 2010 Exchange-Traded Fund",
@@ -8441,6 +8471,9 @@ var issRegistrantRenames = map[string]map[string]string{
 	"0000935070": {
 		"ing vp strategic allocation balanced portfolio": "ING VP Strategic Allocation Moderate Portfolio",
 		"ing vp strategic allocation income portfolio":   "ING VP Strategic Allocation Conservative Portfolio",
+	},
+	"0001683471": {
+		"roundhill mvp etf": "Roundhill Pro Sports, Media & Apparel ETF",
 	},
 	"0000809593": {
 		"american aadvantage balanced fund":                                "American Beacon Balanced Fund",
