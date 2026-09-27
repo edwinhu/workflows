@@ -558,6 +558,20 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		// append that prose to the last row of the block above it.
 		lastRow  = -1
 		lastLine = -2
+		// THE POOLED SUB-ADVISER SLEEVE. An unresolved `Fund Name :` marker whose
+		// value names no declared series clears the fund (the rule below), and
+		// normally that is the end of it. One vintage wedges such a marker INSIDE a
+		// resolved section's run -- a sub-adviser's pooled cross-account label,
+		// slash-joined and cut off by the vendor's field width, with no page break
+		// and no heading separating it from the sleeve above (Hartford Series Fund
+		// 2011, 1,978 rows). pooledSeries is the series the section immediately
+		// ABOVE the marker resolved to and pooledFrom the first row index the
+		// marker governs: the look-BEHIND half of the bracket, held until the next
+		// resolving marker either agrees with it -- the look-AHEAD half, the mirror
+		// of the stamp family NS-1020425 added to the htmltable layout -- or names
+		// something else and withdraws it. -1 means nothing is held.
+		pooledSeries string
+		pooledFrom   = -1
 	)
 
 	for i := 0; i < len(lines); i++ {
@@ -581,6 +595,10 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		if isISSReportBanner(line) {
 			haveMtg = false
 			lastRow, lastLine = -1, -2
+			// A real section end between the two halves of the bracket. The block
+			// held is not enclosed by anything after this line, so the look-behind
+			// is withdrawn rather than reaching across it.
+			pooledSeries, pooledFrom = "", -1
 			continue
 		}
 
@@ -595,6 +613,10 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		// said a new section began, so whatever governed the section above cannot
 		// govern this one. Carrying it forward is precisely the silent transfer
 		// between funds this rule exists to prevent.
+		// The fund standing before any marker on this line is read, so a marker
+		// that clears it can still see what the section above it resolved to.
+		seriesBefore := curSeries
+
 		if name, ok := icrFundName(line); ok {
 			curFund = name
 			curSeries = icrResolveFundShared(seriesIx, name)
@@ -621,6 +643,23 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 			if curSeries == "" {
 				if caption, id := icrCaptionFundAbove(seriesIx, lines, i); id != "" {
 					curFund, curSeries = caption, id
+				}
+			}
+			// NOTHING ANSWERED THE MARKER, so the fund is cleared above and the
+			// block it opens would be emitted blank. Open the look-behind hold
+			// when, and only when, the section immediately above it resolved to
+			// exactly one series the FILING'S OWN HEADER declared and emitted rows
+			// under that id right up to this line -- a dictionary, overlay or
+			// cross-CIK answer is not a declaration this filing made, and a marker
+			// that follows no rows of a resolved section is not wedged inside one.
+			// Everything else leaves the block blank, which is what any hold still
+			// standing must now become too: a second unresolved marker is a new
+			// section, not a continuation of the one held.
+			if curSeries == "" {
+				pooledSeries, pooledFrom = "", -1
+				if seriesBefore != "" && htmlFilingDeclaresSeries(meta.SeriesDecls, seriesBefore) &&
+					len(rows) > 0 && rows[len(rows)-1].SeriesID == seriesBefore {
+					pooledSeries, pooledFrom = seriesBefore, len(rows)
 				}
 			}
 		} else if icrUnderscoreRule(line) && lineAbove != "" && !(lastRow >= 0 && lineAboveIdx == lastLine) && icrResolveFundShared(seriesIx, lineAbove) != "" {
@@ -739,6 +778,25 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 					curFund, curSeries = name, id
 				}
 			}
+		}
+
+		// THE LOOK-AHEAD HALF OF THE BRACKET. A marker has just named a fund, so
+		// the block held above it is closed and the two sides can be compared. They
+		// AGREE -- the same one declared series encloses the held block before and
+		// after, with no other marker and no section end in between, every one of
+		// those conditions having been checked as it was passed -- so the sleeve is
+		// a sleeve of that fund and its rows are stamped. Disagreement stamps
+		// nothing: a wrong series id is worse than a blank one, and the rule that
+		// cleared the marker in the first place stands.
+		if pooledFrom >= 0 && curSeries != "" {
+			if curSeries == pooledSeries {
+				for k := pooledFrom; k < len(rows); k++ {
+					if rows[k].SeriesID == "" {
+						rows[k].SeriesID = pooledSeries
+					}
+				}
+			}
+			pooledSeries, pooledFrom = "", -1
 		}
 
 		if icrBlockHeader(cells) {
@@ -869,6 +927,19 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		if lastRow >= 0 && i == lastLine+1 && len(cells) == 1 {
 			rows[lastRow].VoteDescription += " " + cells[0]
 			lastLine = i
+		}
+	}
+
+	// THE HELD BLOCK RUNS TO THE END OF THE DOCUMENT. Nothing after the marker
+	// named a different fund, ended the section or opened another one, so the
+	// look-behind was never contradicted and the trailing sleeve is stamped on the
+	// same evidence as a two-sided bracket: the last thing this filing said about
+	// which fund these rows belong to is the section they are wedged into.
+	if pooledFrom >= 0 {
+		for k := pooledFrom; k < len(rows); k++ {
+			if rows[k].SeriesID == "" {
+				rows[k].SeriesID = pooledSeries
+			}
 		}
 	}
 
