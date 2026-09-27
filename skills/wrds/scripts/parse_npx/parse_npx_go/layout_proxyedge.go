@@ -1012,6 +1012,126 @@ func peIdentityLabel(line string) (string, bool) {
 	return "", false
 }
 
+// peGridLabel reports a label of the LABELLED-CELL identity grid and returns its
+// canonical name. It is peIdentityLabel's vocabulary plus the share and status
+// columns that grid interleaves with the identity ones -- `Shares Voted`,
+// `Shares`, `Record Date`, `Meeting Status`. Those four carry nothing this layout
+// reads, but the grid pairs label with value SIDEWAYS, so a label the walk cannot
+// name is a pair it cannot step over, and the value beside it is what the issuer
+// scan then mistakes for the next issuer heading. Only the colon-less spelling is
+// a grid label: the colon form is the stacked block, and peIdentityLabel owns it.
+func peGridLabel(cell string) (string, bool) {
+	if strings.HasSuffix(cell, ":") {
+		return "", false
+	}
+	if name, ok := peIdentityLabel(cell); ok {
+		return name, true
+	}
+	switch name := strings.ToUpper(cell); name {
+	case "SHARES VOTED", "SHARES", "RECORD DATE", "MEETING STATUS":
+		return name, true
+	}
+	return "", false
+}
+
+// peGridIdentity is the ballot identity a labelled-cell grid carries.
+type peGridIdentity struct {
+	ticker  string
+	cusip   string
+	isin    string
+	mtgDate string
+	mtgType string
+}
+
+// peLabelledCellGrid reads the identity grid one sub-adviser vintage prints as
+// label/value cell pairs ACROSS a pair of table rows rather than stacked one
+// label per cell above the ballots -- BBH Trust 2007's Mondrian Investment
+// Partners section (CIK 1342947, 0001318148-07-001391.txt), whose meeting block
+// is a bare bold issuer cell followed by
+//
+//	`Shares Voted` | 271,297 | `Security` | G12517119
+//	`Meeting Date` | 07/04/2006 | `Shares` | 271,297 | `Meeting Type` | EGM | `Record Date` | N/A
+//
+// where the same filing's sibling sections print the colon-suffixed stacked
+// block the rest of this layout reads (and are what claim the document for it).
+// Read cell by cell the grid's FIRST pair is not an identity label, so the issuer
+// scan cannot open on the heading; the walk then reaches the repeated share count
+// standing before `Security`/`Meeting Type` and takes THAT for the issuer
+// heading, discarding the real one and wiping the id and date it had just read.
+// htmltable already reads this exact shape correctly (htmlSecurityLabelGridIssuer),
+// which is why a cut of the block alone parses right and the whole filing does not.
+//
+// start is the first cell AFTER the issuer heading. The grid is walked in pairs
+// and returns the last line it consumed, so parseProxyEdge steps over the whole
+// block in one move and no cell inside it is read again as a heading. It is the
+// grid's own shape that admits it: pairs only, every label in the vocabulary
+// above and colon-less, every value not a label, all inside ONE table, and among
+// them a `Security` bearing an id-shaped value AND a `Meeting Date` bearing a
+// readable date. A block that pairs no id with no date is not this grid.
+func peLabelledCellGrid(lines []string, run, tbl []int, start int) (peGridIdentity, int, bool) {
+	var id peGridIdentity
+	pairs, last := 0, start-1
+	for pos := start; pos < len(lines); {
+		if run[pos] != pos || tbl[pos] != tbl[start] {
+			break
+		}
+		label, labelEnd := peCellAt(lines, run, pos)
+		name, ok := peGridLabel(label)
+		if !ok {
+			break
+		}
+		vpos := labelEnd + 1
+		if vpos >= len(lines) || run[vpos] != vpos || tbl[vpos] != tbl[start] {
+			break
+		}
+		value, valueEnd := peCellAt(lines, run, vpos)
+		// Two labels running: the pairing this reading depends on does not hold,
+		// so the grid ends here rather than being read out of step.
+		if _, isLabel := peGridLabel(value); isLabel || strings.HasSuffix(value, ":") {
+			break
+		}
+		switch name {
+		case "TICKER", "TICKER SYMBOL":
+			id.ticker = value
+		case "SECURITY", "SECURITY ID", "SECURITY ID ON BALLOT":
+			if pvTextCUSIP(value) || isinToken(value) {
+				id.cusip = value
+			}
+		case "ISIN":
+			if isinToken(value) {
+				id.isin = value
+			}
+		case "MEETING DATE":
+			id.mtgDate = htmlDate(value)
+		case "MEETING TYPE":
+			id.mtgType = value
+		}
+		pairs++
+		last, pos = valueEnd, valueEnd+1
+	}
+	if pairs < 2 || id.cusip == "" || id.mtgDate == "" {
+		return peGridIdentity{}, start - 1, false
+	}
+	return id, last, true
+}
+
+// peGridIssuerHeading reports a cell that may stand as the issuer heading of a
+// labelled-cell grid: a name, not one of the grid's own labels and not a value
+// it prints -- a share count or an item number, either of which sits beside a
+// label inside the grid itself.
+func peGridIssuerHeading(cell string) bool {
+	if cell == "" || strings.HasSuffix(cell, ":") || len(strings.Fields(cell)) > 8 {
+		return false
+	}
+	if _, ok := peGridLabel(cell); ok {
+		return false
+	}
+	if _, ok := peCount(cell); ok {
+		return false
+	}
+	return !peItemNumber(cell)
+}
+
 // peFieldLabel reports a label name the label branch of parseProxyEdge has a
 // case for, and so the only names for which a colon-terminated cell may consume
 // the cell after it as its value.
@@ -1191,6 +1311,21 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 				issuer = cell
 				ticker, cusip, isin, mtgDate, mtgType = "", "", "", "", ""
 				i = cellEnd
+				continue
+			}
+		}
+		// The same heading, above the LABELLED-CELL grid instead of the stacked
+		// block: the cell after it is not an identity label but the first label of
+		// a sideways label/value grid, so the scan above cannot open on it. The
+		// grid is read and consumed whole, which is also what keeps the repeated
+		// share count inside it from being taken for the next issuer heading
+		// (peLabelledCellGrid).
+		if run[i] == i && cellEnd+1 < len(lines) && !summary[i] && !wrapped[i] && peGridIssuerHeading(cell) {
+			if id, gridEnd, ok := peLabelledCellGrid(lines, run, tbl, cellEnd+1); ok {
+				issuer = cell
+				ticker, cusip, isin = id.ticker, id.cusip, id.isin
+				mtgDate, mtgType = id.mtgDate, id.mtgType
+				i = gridEnd
 				continue
 			}
 		}
