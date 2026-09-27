@@ -1,0 +1,346 @@
+<SEC-DOCUMENT>0001445546-15-003840.txt : 20150805
+<SEC-HEADER>0001445546-15-003840.hdr.sgml : 20150805
+<ACCEPTANCE-DATETIME>20150805085830
+ACCESSION NUMBER:		0001445546-15-003840
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20150630
+FILED AS OF DATE:		20150805
+DATE AS OF CHANGE:		20150805
+EFFECTIVENESS DATE:		20150805
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			FIRST TRUST EXCHANGE-TRADED ALPHADEX FUND II
+		CENTRAL INDEX KEY:			0001510337
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22519
+		FILM NUMBER:		151027617
+
+	BUSINESS ADDRESS:	
+		STREET 1:		120 EAST LIBERTY DRIVE, SUITE 400
+		CITY:			WHEATON
+		STATE:			IL
+		ZIP:			60187
+		BUSINESS PHONE:		630-765-8000
+
+	MAIL ADDRESS:	
+		STREET 1:		120 EAST LIBERTY DRIVE, SUITE 400
+		CITY:			WHEATON
+		STATE:			IL
+		ZIP:			60187
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000031795
+<SERIES-NAME>First Trust Emerging Markets AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099049
+<CLASS-CONTRACT-NAME>First Trust Emerging Markets AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FEM
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000031796
+<SERIES-NAME>First Trust Europe AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099050
+<CLASS-CONTRACT-NAME>First Trust Europe AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FEP
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000031797
+<SERIES-NAME>First Trust Latin America AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099051
+<CLASS-CONTRACT-NAME>First Trust Latin America AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FLN
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000031798
+<SERIES-NAME>First Trust Brazil AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099052
+<CLASS-CONTRACT-NAME>First Trust Brazil AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FBZ
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000031799
+<SERIES-NAME>First Trust China AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099053
+<CLASS-CONTRACT-NAME>First Trust China AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FCA
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000031800
+<SERIES-NAME>First Trust Japan AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099054
+<CLASS-CONTRACT-NAME>First Trust Japan AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FJP
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000031801
+<SERIES-NAME>First Trust South Korea AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099055
+<CLASS-CONTRACT-NAME>First Trust South Korea AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FKO
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000031802
+<SERIES-NAME>First Trust Developed Markets Ex-US AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099056
+<CLASS-CONTRACT-NAME>First Trust Developed Markets Ex-US AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FDT
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000031803
+<SERIES-NAME>First Trust Asia Pacific Ex-Japan AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099057
+<CLASS-CONTRACT-NAME>First Trust Asia Pacific Ex-Japan AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FPA
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000036501
+<SERIES-NAME>First Trust Australia AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111806
+<CLASS-CONTRACT-NAME>First Trust Australia AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FAUS
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000036502
+<SERIES-NAME>First Trust Canada AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111807
+<CLASS-CONTRACT-NAME>First Trust Canada AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FCAN
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000036503
+<SERIES-NAME>First Trust Germany AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111808
+<CLASS-CONTRACT-NAME>First Trust Germany AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FGM
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000036504
+<SERIES-NAME>First Trust Hong Kong AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111809
+<CLASS-CONTRACT-NAME>First Trust Hong Kong AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FHK
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000036505
+<SERIES-NAME>First Trust Switzerland AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111810
+<CLASS-CONTRACT-NAME>First Trust Switzerland AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FSZ
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000036506
+<SERIES-NAME>First Trust Taiwan AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111811
+<CLASS-CONTRACT-NAME>First Trust Taiwan AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FTW
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000036507
+<SERIES-NAME>First Trust United Kingdom AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111812
+<CLASS-CONTRACT-NAME>First Trust United Kingdom AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FKU
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000036654
+<SERIES-NAME>First Trust Developed Markets ex-US Small Cap AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000112036
+<CLASS-CONTRACT-NAME>First Trust Developed Markets ex-US Small Cap AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FDTS
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000036655
+<SERIES-NAME>First Trust Emerging Markets Small Cap AlphaDEX Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000112037
+<CLASS-CONTRACT-NAME>First Trust Emerging Markets Small Cap AlphaDEX Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>FEMS
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001510337
+<SERIES-ID>S000047035
+<SERIES-NAME>First Trust Eurozone AlphaDEX ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000147004
+<CLASS-CONTRACT-NAME>First Trust Eurozone AlphaDEX ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>FEUZ
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>adex2_npx.txt
+<DESCRIPTION>PROXY VOTING RECORD
+<TEXT>
+                                 UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              Washington, DC 20549
+
+                                    FORM N-PX
+
+         ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT
+                               INVESTMENT COMPANY
+
+                    Investment Company Act File No. 811-22519
+
+
+                  First Trust Exchange-Traded AlphaDEX(R) Fund II
+          -------------------------------------------------------------
+          Exact Name of Registrant as Specified in Declaration of Trust
+
+
+           120 East Liberty Drive, Suite 400, Wheaton, Illinois 60187
+ ------------------------------------------------------------------------------
+ Address of Principal Executive Offices (Number, Street, City, State, Zip Code)
+
+
+                                W. Scott Jardine
+                          First Trust Portfolios L.P.
+                        120 East Liberty Drive, Suite 400
+                             Wheaton, Illinois 60187
+  -----------------------------------------------------------------------------
+  Name and Address (Number, Street, City, State, Zip Code) of Agent for Service
+
+
+                                 (630) 765-8000
+               --------------------------------------------------
+               Registrant's Telephone Number, including Area Code
+
+
+                      Date of fiscal year end: December 31
+                                               -----------
+
+
+             Date of reporting period: July 1, 2014 - June 30, 2015
+                                       ----------------------------
+
+
+Form N-PX is to be used by a registered management investment company, other
+than a small business investment company registered on Form N-5 (ss.ss. 239.24
+and 274.5 of this chapter), to file reports with the Commission, not later than
+August 31 of each year, containing the registrant's proxy voting record for the
+most recent twelve-month period ended June 30, pursuant to section 30 of the
+Investment Company Act of 1940 and rule 30b1-4 thereunder (17 CFR 270.30b1-4).
+The Commission may use the information provided on Form N-PX in its regulatory,
+disclosure review, inspection, and policymaking roles.
+
+A registrant is required to disclose the information specified by Form N-PX, and
+the Commission will make this information public. A registrant is not required
+to respond to the collection of information contained in Form N-PX unless the
+Form displays a currently valid Office of Management and Budget ("OMB") control
+number. Please direct comments concerning the accuracy of the information
+collection burden estimate and any suggestions for reducing the burden to the
+Secretary, Securities and Exchange Commission, 100 F Street, N.E., Washington
+D.C. 20549. The OMB has reviewed this collection of information under the
+clearance requirements of 44 U.S.C. Section 3507.
+
+
+<PAGE>
+
+
+Item 1.  Proxy Voting Record
+
+--------------------------------------------------------------------------------
+First Trust Eurozone AlphaDEX(R) Fund
+--------------------------------------------------------------------------------
+<TABLE>
+<CAPTION>
+<S>            <C>                                                                  <C>         <C>         <C>
+MEETING DATE   COMPANY                                                              TICKER      SECURITY ID
+11/04/14       GTECH SpA                                                            GTK         T6326Y108
+
+ITEM NUMBER    AGENDA ITEM                                                          MGMT REC    VOTE CAST   PROPONENT
+1              Approve Acquisition of GTECH S.p.a by Georgia Worldwide Plc          For         For         Mgmt
+
+MEETING DATE   COMPANY                                                              TICKER      SECURITY ID
+11/07/14       National Bank of Greece SA                                           ETE.GA      X56533114
+
+ITEM NUMBER    AGENDA ITEM                                                          MGMT REC    VOTE CAST   PROPONENT
+1              Approve Inclusion of the Bank in a special Legal Framework           For         For         Mgmt
+               Regarding the Conversion of Deferred Tax Assets into Claims Against
+               the Hellenic Republic, the Formation of a Special Reserve, and the
+               Free Issue of Warrants
+2              Authorize the Board to take the Necessary Actions in Implementation  For         For         Mgmt
+               of Item 1
+3              Various Announcements and Approvals                                  For         Against     Mgmt
+
+MEETING DATE   COMPANY                                                              TICKER      SECURITY ID
+11/26/14       Ackermans & Van Haaren                                               ACKB.BB     B01165156
+
+ITEM NUMBER    AGENDA ITEM                                                          MGMT REC    VOTE CAST   PROPONENT
+1              Receive Special Board Report Re: Item 2                                                      Mgmt
+2              Authorize Board to Issue Shares in the Event of a Public Tender      For         Against     Mgmt
+               Offer or Share Exchange Offer and Renew Authorization to Increase
+               Share Capital within the Framework of Authorized Capital
+3              Authorize Board to Repurchase Shares in the Event of a Serious and   For         Against     Mgmt
+               Imminent Harm and Under Normal Conditions
+4              Amend Articles 6 and 31 Re: Delete References to Bearer Shares       For         For         Mgmt
+5              Coordination of the Articles of Association                                                  Mgmt
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
