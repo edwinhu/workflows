@@ -1381,6 +1381,15 @@ type brRowBuf struct {
 	typ      string
 	vote     string
 	forAgnst string
+	// drop marks a row that is not a proposal at all but a SECTION BANNER the
+	// item-token reader opened by mistake, and that flush must therefore
+	// discard rather than emit. It is not the same as never opening the row:
+	// the banner's own continuation lines -- the no-activity disclaimer a
+	// silent sleeve prints under it -- have to be absorbed by something, and a
+	// row left un-opened hands them to the free-standing-text reader, which
+	// closes the meeting table that the next real section of the same page
+	// still belongs to.
+	drop bool
 }
 
 // brNumericBannerCode reports whether a section slot is a bare vendor code: an
@@ -1656,6 +1665,11 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 		sawTable bool
 		cur      *brRowBuf
 
+		// silentRun is set by a fund banner that states the sleeve held nothing
+		// to vote, and stays set until a real meeting block or table opens. It
+		// is what marks a row as brRowBuf.drop; see the run below.
+		silentRun bool
+
 		// framed records that the meeting's identity came from a rule-framed
 		// block (brRuleFramedIdentity), which states the issuer outright. The
 		// free-standing furniture this vintage prints under that block -- `VOTE
@@ -1680,6 +1694,12 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 	// uncertain field is left EMPTY; the row is never discarded.
 	flush := func() {
 		if cur == nil {
+			return
+		}
+		if cur.drop {
+			// A banner, not a proposal: emit nothing and leave lastItem alone,
+			// so no later un-numbered line hangs under the banner's own code.
+			cur = nil
 			return
 		}
 		if cur.item != "" {
@@ -1762,6 +1782,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 			pendingIssuer = ""
 			issuer, ticker, cusip, mtgDate = id.issuer, id.ticker, id.cusip, id.mtgDate
 			framed = true
+			silentRun = false
 			framedUntil = id.end
 			continue
 		}
@@ -1807,6 +1828,10 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 					curSeries, curFund = d.SeriesID, slot
 				}
 			} else if brAgendaOpener(line) {
+				// THE RUN ENDS HERE. A meeting block is opening, so whatever
+				// this line's own item token turns out to be, it is not the
+				// leftover of a silent banner; see the silent-section branch.
+				silentRun = false
 				// The fund name may share the block-opener's line, printed to
 				// the left of the `Agenda Number:` label (Calamos Investment
 				// Trust 2004, 4,144 rows with neither fund nor series). That
@@ -1936,6 +1961,26 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 				flush()
 				curSeries = ""
 				curFund = ""
+				// THE RUN OPENS HERE. A silent sleeve reports nothing, so its
+				// banner has no proposal to contribute -- but this registrant
+				// prefixes each banner with the sleeve's own code (`2A55 JHVIT
+				// Total Bond Market A Trust`), which inside the table the
+				// section above left open reads as an item token. The banner was
+				// therefore opened as a proposal row and emitted carrying the
+				// disclaimer as its text, with a blank series, a blank fund and
+				// the last REAL issuer of the section above -- one fabricated
+				// row per silent banner, and, because nothing between two
+				// consecutive silent banners closes that table, through the next
+				// GENUINE banner as well (John Hancock Variable Insurance Trust
+				// 2012: 2A55, 2A56 and then 2A57, whose own 11 ballots resolve
+				// correctly below it).
+				//
+				// The row is still OPENED rather than refused: the disclaimer
+				// lines under the banner have to be absorbed by something, and
+				// handing them to the free-standing-text reader closes the
+				// meeting table that the run's next real section still needs.
+				// brRowBuf.drop withholds the row at flush instead.
+				silentRun = true
 			}
 
 			// The section the branches above recorded may be a bare vendor
@@ -1965,6 +2010,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 			// `preliminary prospectus, the prospectus,` opened no meeting of
 			// its own and closed Air China's).
 			repeatHeader = sawTable
+			silentRun = false
 			headerText = strings.Join(append(spill, line), " ")
 			colMap = brBuildColumnMap(line, spill)
 			spill = nil
@@ -1994,6 +2040,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 					inTable = false
 					spill = nil
 					pendingIssuer = ""
+					silentRun = false
 					for j, f := range fields {
 						switch f {
 						case "ISSUER":
@@ -2169,6 +2216,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 				boundary()
 				inTable = false
 				spill = nil
+				silentRun = false
 				// A block whose identity was stated outright keeps it: the
 				// free-standing `VOTE GROUP: GLOBAL` beneath it is the report's
 				// own furniture, and the `AGENDA:` line below promotes whatever
@@ -2245,7 +2293,7 @@ func parseBroadridge(text string, meta FilingMeta) ([]VoteRow, error) {
 
 		flush()
 		repeatHeader = false
-		cur = &brRowBuf{item: brNormalizeItem(item)}
+		cur = &brRowBuf{item: brNormalizeItem(item), drop: silentRun}
 		brAbsorb(cur, rest, hasType, maxVote)
 	}
 	flush()
