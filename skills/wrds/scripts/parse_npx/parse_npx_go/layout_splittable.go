@@ -1170,7 +1170,12 @@ func spReadContext(line string, ctx *spContext, lastBare string) string {
 			ctx.cusip = p.value
 		case p.label == "SELECTED ACCOUNTS":
 			// The ProxyEdge text report names the account this page belongs to
-			// in its banner, above every meeting on the page.
+			// in its banner, above every meeting on the page. A page-2-and-later
+			// repeat names it by its internal NUMBER instead, which is no fund
+			// name: the sleeve already established carries forward.
+			if spIsAccountNumber(p.value) {
+				break
+			}
 			ctx.fund = p.value
 			// The banner opens a new section, so the page banner the previous
 			// section left behind is not evidence for this one: a cover-page
@@ -1191,6 +1196,22 @@ func spSelectedAccounts(line string) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+// spIsAccountNumber reports whether a `Selected Accounts:` value is the
+// vendor's internal account number rather than a fund name -- bare digits, the
+// shape the ProxyEdge page header repeats after every `<PAGE>`.
+func spIsAccountNumber(value string) bool {
+	t := strings.TrimSpace(value)
+	if t == "" {
+		return false
+	}
+	for _, r := range t {
+		if r < '0' || r > '9' {
+			return false
+		}
+	}
+	return true
 }
 
 // spAccountFund reads the `Account -  <name>` banner the banner-stripped
