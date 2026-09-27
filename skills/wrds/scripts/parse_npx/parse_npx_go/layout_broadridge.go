@@ -1241,7 +1241,7 @@ var brCorporateSuffixes = map[string]bool{
 	"se": true, "sa": true, "ag": true, "nv": true, "bv": true, "plc": true,
 	"spa": true, "ab": true, "asa": true, "oyj": true, "as": true, "kgaa": true,
 	"inc": true, "corp": true, "corporation": true, "co": true, "company": true,
-	"ltd": true, "llc": true, "lp": true,
+	"ltd": true, "llc": true, "lp": true, "partners": true,
 }
 
 // brResolveColonBanner resolves such a banner: the colon comes off, and then the
