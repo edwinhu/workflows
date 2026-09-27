@@ -5254,6 +5254,14 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	if d := issBrandCompactedDecl(ix, key); d != nil {
 		return banner, d
 	}
+	// The declared name with its TRAILING NUMERAL dropped: `PROFUND VP ASIA`
+	// for the declared `PROFUND VP ASIA 30` (S000003952, ProFunds, 842 rows
+	// across five filings). Near the tail of the chain, so it can never outrank
+	// a reading any rung above gives the same banner, and it reads only the
+	// filing's own header declarations.
+	if d := issNumeralDropDeclaredSeries(ix, key); d != nil {
+		return banner, d
+	}
 	// The declared name with the registrant's own leading words taken off AND
 	// one internal qualifier dropped: `Large Cap Growth Fund` for a declared
 	// `CNI CHARTER LARGE CAP GROWTH EQUITY FUND` (S000005827, CNI Charter Funds
@@ -6389,6 +6397,60 @@ func issRegistrantLeadInternalDropDecl(ix *issSeriesIndex, key string) *SeriesDe
 		return nil
 	}
 	return out
+}
+
+// issNumeralDropDeclaredSeries reads a banner the vendor printed with the
+// declared name's TRAILING NUMERAL dropped: ProFunds (CIK 1039803) heads the
+// section for its declared S000003952 `PROFUND VP ASIA 30` with the bare
+// `PROFUND VP ASIA`, in five filings from 2011 to 2023 (842 rows with no
+// series). No rung above drops a number -- issDropTypeWord's vocabulary is
+// fund/portfolio/trust/account/series and `30` is none of them -- so the banner
+// resolves to nothing.
+//
+// The filing's own header settles it with no inference: the banner must be an
+// exact token-for-token prefix of a DECLARED name that carries exactly ONE more
+// token, and that token must be all digits. Reads only the filing's own
+// declarations -- dictionary rows carry a DeclDate and are skipped -- never a
+// sibling CIK.
+//
+// A trailing number is a sleeve discriminator (issSleeveTokenContradiction),
+// which is precisely why two declarations answering refuse rather than pick: the
+// `Maxim Index 400` / `Maxim Index 600` shape stays blank here. The banner must
+// not end in a numeral itself, so a heading that already prints one is never
+// handed a second.
+func issNumeralDropDeclaredSeries(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 2 || issNumericToken(toks[len(toks)-1]) {
+		return nil
+	}
+	var found *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		// A dictionary alias carries the period it was declared in; the
+		// filing's own header declares the filing it sits in and carries none.
+		if d.SeriesID == "" || d.Name == "" || d.DeclDate != "" {
+			continue
+		}
+		dt := ix.declToks(i)
+		if len(dt) != len(toks)+1 || !issNumericToken(dt[len(dt)-1]) {
+			continue
+		}
+		same := true
+		for j, t := range toks {
+			if dt[j] != t {
+				same = false
+				break
+			}
+		}
+		if !same {
+			continue
+		}
+		if found != nil && found.SeriesID != d.SeriesID {
+			return nil // two declarations differ only in the dropped numeral
+		}
+		found = d
+	}
+	return found
 }
 
 // issHyphenGluedRegistrantPrefix cuts a hyphen-glued prefix built entirely from
