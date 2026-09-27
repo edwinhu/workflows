@@ -1,0 +1,492 @@
+<SEC-DOCUMENT>0001206774-21-002147.txt : 20210813
+<SEC-HEADER>0001206774-21-002147.hdr.sgml : 20210813
+<ACCEPTANCE-DATETIME>20210813140325
+ACCESSION NUMBER:		0001206774-21-002147
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20210630
+FILED AS OF DATE:		20210813
+DATE AS OF CHANGE:		20210813
+EFFECTIVENESS DATE:		20210813
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			HSBC FUNDS
+		CENTRAL INDEX KEY:			0000798290
+		IRS NUMBER:				043084306
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-04782
+		FILM NUMBER:		211171359
+
+	BUSINESS ADDRESS:	
+		STREET 1:		C/O HSBC FUNDS
+		STREET 2:		452 FIFTH AVENUE
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			11108
+		BUSINESS PHONE:		614-470-8000
+
+	MAIL ADDRESS:	
+		STREET 1:		C/O CITI
+		STREET 2:		4400 EASTON COMMONS, SUITE 200
+		CITY:			COLUMBUS
+		STATE:			OH
+		ZIP:			43219-3035
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	HSBC INVESTOR FUNDS
+		DATE OF NAME CHANGE:	20010531
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	REPUBLIC FUNDS
+		DATE OF NAME CHANGE:	19941013
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	FUNDTRUST /NY
+		DATE OF NAME CHANGE:	19920703
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000798290
+<SERIES-ID>S000005038
+<SERIES-NAME>HSBC Opportunity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013749
+<CLASS-CONTRACT-NAME>A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HSOAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013751
+<CLASS-CONTRACT-NAME>C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HOPCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000798290
+<SERIES-ID>S000005047
+<SERIES-NAME>HSBC U.S. Government Money Market Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013783
+<CLASS-CONTRACT-NAME>A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTRXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013784
+<CLASS-CONTRACT-NAME>Y Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>RGYXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013785
+<CLASS-CONTRACT-NAME>B Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HUBXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013786
+<CLASS-CONTRACT-NAME>C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HUMXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013787
+<CLASS-CONTRACT-NAME>D Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HGDXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013788
+<CLASS-CONTRACT-NAME>I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HGIXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000081883
+<CLASS-CONTRACT-NAME>E Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000167214
+<CLASS-CONTRACT-NAME>Intermediary Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000167215
+<CLASS-CONTRACT-NAME>Intermediary Service Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000798290
+<SERIES-ID>S000005052
+<SERIES-NAME>HSBC U.S. Treasury Money Market Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013808
+<CLASS-CONTRACT-NAME>A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HWAXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013809
+<CLASS-CONTRACT-NAME>Y Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HTYXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013810
+<CLASS-CONTRACT-NAME>B Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HTBXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013811
+<CLASS-CONTRACT-NAME>C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HUCXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013812
+<CLASS-CONTRACT-NAME>D Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HTDXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000013813
+<CLASS-CONTRACT-NAME>I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HBIXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000081886
+<CLASS-CONTRACT-NAME>E Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000167218
+<CLASS-CONTRACT-NAME>Intermediary Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000167219
+<CLASS-CONTRACT-NAME>Intermediary Service Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000798290
+<SERIES-ID>S000048474
+<SERIES-NAME>HSBC Strategic Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000152924
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000152925
+<CLASS-CONTRACT-NAME>Class I
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000798290
+<SERIES-ID>S000048475
+<SERIES-NAME>HSBC High Yield Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000152926
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000152927
+<CLASS-CONTRACT-NAME>Class I
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000798290
+<SERIES-ID>S000053727
+<SERIES-NAME>HSBC Opportunity Fund Class I
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000168898
+<CLASS-CONTRACT-NAME>Class I
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000798290
+<SERIES-ID>S000055061
+<SERIES-NAME>HSBC Opportunity Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000173143
+<CLASS-CONTRACT-NAME>Master Portfolio
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000798290
+<SERIES-ID>S000065486
+<SERIES-NAME>HSBC Ultra Short Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000211786
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000211787
+<CLASS-CONTRACT-NAME>Class I
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000798290
+<SERIES-ID>S000068529
+<SERIES-NAME>HSBC ESG Prime Money Market Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000219152
+<CLASS-CONTRACT-NAME>Intermediary Service Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000219153
+<CLASS-CONTRACT-NAME>Intermediary Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000219154
+<CLASS-CONTRACT-NAME>Class D
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000219155
+<CLASS-CONTRACT-NAME>Class I
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000219156
+<CLASS-CONTRACT-NAME>Class Y
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>hsbc3941081-npx.htm
+<DESCRIPTION>ANNUAL REPORT OF PROXY VOTING RECORD
+<TEXT>
+
+<HTML>
+<HEAD>
+   <TITLE></TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<div>
+<P align=center><b><FONT face="Times New Roman">UNITED STATES <BR></FONT><FONT face="Times New Roman">SECURITIES AND EXCHANGE COMMISSION<BR>Washington, DC
+20549 </FONT></b></P>
+<P align=center><B><FONT face="Times New Roman">FORM N-PX </FONT></B></P>
+<P align=center><B><FONT face="Times New Roman">ANNUAL REPORT OF PROXY VOTING
+RECORD OF REGISTERED<BR>MANAGEMENT INVESTMENT COMPANY</FONT></B></P>
+<DIV align=center>
+<TABLE CELLSPACING="0" CELLPADDING="0" BORDER="0" STYLE="line-height: 14pt; border-collapse: collapse; width: 700px">
+
+  <TR vAlign=bottom>
+    <TD STYLE="white-space: nowrap; text-align: left; width: 1%"><FONT face="Times New Roman">Investment Company Act
+      file number&nbsp; </FONT></TD>
+    <TD STYLE="border-bottom: #000000 1pt solid; white-space: nowrap; text-align: center; width: 1%"><FONT face="Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;811-04782&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD>
+    <TD STYLE="width: 98%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD></TR></TABLE></DIV><BR>
+<DIV align=center>
+<TABLE style="LINE-HEIGHT: 14pt; BORDER-COLLAPSE: collapse;  width: 700px" cellSpacing=0 cellPadding=0 border=0>
+
+  <TR vAlign=bottom>
+    <TD style="BORDER-BOTTOM: #000000 1pt solid" noWrap align=center width="100%"><FONT face="Times New Roman">HSBC Funds</FONT></TD></TR>
+  <TR vAlign=bottom>
+    <TD style="text-align: center" width="100%"><FONT face="Times New Roman">(Exact name of
+      registrant as specified in charter)</FONT></TD></TR>
+  <TR>
+    <TD width="100%">&nbsp;</TD></TR>
+  <TR vAlign=bottom>
+    <TD style="BORDER-BOTTOM: #000000 1pt solid" noWrap align=center width="100%"><FONT face="Times New Roman">4400 Easton Commons, Suite 200, Columbus, Ohio 43219-3035</FONT></TD></TR>
+  <TR vAlign=bottom>
+    <TD style="text-align: center" width="100%"><FONT face="Times New Roman">(Address of principal
+      executive offices) (Zip code)</FONT></TD></TR>
+  <TR>
+    <TD width="100%">&nbsp;</TD></TR>
+  <TR vAlign=bottom>
+    <TD style="text-align: center" width="100%"><FONT face="Times New Roman">&nbsp;</FONT></TD></TR>
+  <TR vAlign=bottom>
+    <TD style="text-align: center" width="100%"><FONT face="Times New Roman">HSBC Global Asset
+      Management (USA) Inc.</FONT></TD></TR>
+  <TR vAlign=bottom>
+    <TD style="BORDER-BOTTOM: #000000 1pt solid" noWrap align=center width="100%"><FONT face="Times New Roman">452 Fifth Avenue, New York, New York 10018-2786</FONT></TD></TR>
+  <TR vAlign=bottom>
+    <TD style="text-align: center" width="100%"><FONT face="Times New Roman">(Name and address of
+      agent for service)</FONT></TD></TR></TABLE></DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>
+<TABLE CELLSPACING="0" CELLPADDING="0" BORDER="0" STYLE="line-height: 14pt; border-collapse: collapse; width: 700px">
+
+  <TR vAlign=bottom>
+    <TD STYLE="white-space: nowrap; text-align: left; width: 1%"><FONT face="Times New Roman">Registrant&rsquo;s telephone
+      number, including area code:</FONT></TD>
+    <TD STYLE="border-bottom: #000000 1pt solid; white-space: nowrap; text-align: center; width: 1%"><FONT face="Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1-800-782-8183&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD>
+    <TD STYLE="width: 98%">&nbsp;</TD></TR></TABLE></DIV><BR>
+<DIV align=center>
+<TABLE CELLSPACING="0" CELLPADDING="0" BORDER="0" STYLE="line-height: 14pt; border-collapse: collapse; width: 700px">
+
+  <TR vAlign=bottom>
+    <TD STYLE="white-space: nowrap; text-align: left; width: 1%"><FONT face="Times New Roman">Date of
+      fiscal year end: </FONT></TD>
+    <TD STYLE="border-bottom: #000000 1pt solid; white-space: nowrap; text-align: center; width: 1%"><FONT face="Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;October 31&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD>
+    <TD STYLE="width: 98%">&nbsp;</TD></TR></TABLE></DIV><BR>
+<DIV align=center>
+<TABLE CELLSPACING="0" CELLPADDING="0" BORDER="0" STYLE="line-height: 14pt; border-collapse: collapse; width: 700px">
+
+  <TR vAlign=bottom>
+    <TD STYLE="white-space: nowrap; text-align: left; width: 1%"><FONT face="Times New Roman">Date of
+      reporting period:</FONT></TD>
+    <TD STYLE="border-bottom: #000000 1pt solid; white-space: nowrap; text-align: center; width: 1%"><FONT face="Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;July 1, 2020 &ndash; June 30, 2021&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD>
+    <TD STYLE="width: 98%">&nbsp;</TD></TR></TABLE></DIV>
+<P STYLE="text-align: justify; text-indent: 15pt"><FONT size=3 face="Times New Roman">Form N-PX is to be used by a registered management investment company, other than a small business investment company registered
+on Form N-5 (&sect;&sect; 239.24 and 274.5 of this chapter), to file reports with the Commission, not later than August 31
+of each year, containing the registrant's proxy voting record for the most recent twelve-month period ended June 30, pursuant
+to section 30 of the Investment Company Act of 1940 and rule 30b1-4 thereunder (17 CFR 270.30b1-4). The Commission may use
+the information provided on Form N-PX in its regulatory, disclosure review, inspection, and policymaking roles.</FONT></P>
+
+<P STYLE="text-align: justify; text-indent: 15pt"><FONT size=3 face="Times New Roman">A registrant is required to disclose the information specified by Form N-PX, and the Commission will make this information
+public. A registrant is not required to respond to the collection of information contained in Form N-PX unless the Form displays
+a currently valid Office of Management and Budget ("OMB") control number. Please direct comments concerning the accuracy of
+the information collection burden estimate and any suggestions for reducing the burden to the Secretary, Securities and Exchange
+Commission, 450 Fifth Street, NW, Washington, DC 20549-0609. The OMB has reviewed this collection of information under the
+clearance requirements of 44 U.S.C. &sect; 3507.</FONT></P>
+
+<HR align=center width="100%" noShade size="2">
+
+
+
+<DIV style="PAGE-BREAK-BEFORE: always"></DIV>
+
+
+
+<P style="TEXT-ALIGN: justify"><B><FONT size=2 face="Times New Roman">Item 1. Proxy Voting Record</FONT></B></P>
+
+<p style="TEXT-ALIGN: center"><B><FONT size=2 face="Times New Roman">PROXY VOTING RECORD<BR></FONT></B><B><FONT size=2 face="Times New Roman">FOR PERIOD JULY 1, 2020 TO JUNE 30, 2021</FONT></B></p>
+
+<pre>============================= HSBC High Yield Fund =============================
+
+There is no proxy voting activity for the fund, as the fund did not hold any
+votable positions during the reporting period.
+
+
+
+========= HSBC Opportunity Fund (Class A, C &amp; I Shares) and Portfolio ==========
+
+
+ACCELERON PHARMA INC.
+
+Ticker:       XLRN           Security ID:  00434H108
+Meeting Date: JUN 16, 2021   Meeting Type: Annual
+Record Date:  APR 19, 2021
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Habib J. Dable           For       For          Management
+1b    Elect Director Terrence C. Kearney      For       For          Management
+1c    Elect Director Karen L. Smith           For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Advisory Vote on Say on Pay Frequency   One Year  One Year     Management
+4     Ratify Ernst &amp; Young LLP as Auditors    For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+ADVANCED DRAINAGE SYSTEMS, INC.
+
+Ticker:       WMS            Security ID:  00790R104
+Meeting Date: JUL 23, 2020   Meeting Type: Annual
+Record Date:  MAY 29, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director D. Scott Barbour         For       For          Management
+1b    Elect Director Michael B. Coleman       For       For          Management
+1c    Elect Director Tanya D. Fratto          For       For          Management
+1d    Elect Director Carl A. Nelson, Jr.      For       For          Management
+1e    Elect Director Anesa T. Chaibi          For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify Deloitte &amp; Touche LLP as         For       For          Management
+      Auditors
+4     Declassify the Board of Directors       For       For          Management
+5     Eliminate Supermajority Vote            For       For          Management
+      Requirement to Amend Certain
+      Provisions of the Certificate of
+      Incorporation
+
+
+--------------------------------------------------------------------------------
+========== END NPX REPORT
+</pre>
+
+<HR align=center width="100%" noShade size="2">
+
+
+
+<DIV style="PAGE-BREAK-BEFORE: always"></DIV>
+
+
+
+<P style="TEXT-ALIGN: center"><B><FONT size=2 face="Times New Roman">SIGNATURES</FONT></B></P>
+
+<P style="TEXT-ALIGN: justify"><FONT size=2 face="Times New Roman">Pursuant to the requirements of the Investment Company Act of 1940, the registrant has duly caused this report to be signed on its behalf by the undersigned, thereunto duly authorized.</FONT></P>
+
+<TABLE style="WIDTH: 50%; LINE-HEIGHT: 14pt; BORDER-COLLAPSE: COLLAPSE" cellSpacing=0 cellPadding=0 border=0>
+
+
+
+<TR vAlign=bottom>
+
+   <TD width="1%" noWrap align=left><FONT size=2 face="Times New Roman">(Registrant)&nbsp;&nbsp;</FONT></TD>
+
+   <TD style="BORDER-BOTTOM: #000000 1pt solid" width="99%" noWrap align=left><FONT size=2 face="Times New Roman">HSBC Funds</FONT></TD></TR>
+
+<TR>
+
+   <TD width="100%" colSpan=2>&nbsp;</TD></TR></TABLE>
+
+<TABLE style="WIDTH: 50%; LINE-HEIGHT: 14pt; BORDER-COLLAPSE: COLLAPSE" cellSpacing=0 cellPadding=0 border=0>
+
+
+
+<TR vAlign=bottom>
+
+   <TD width="1%" noWrap align=left><FONT size=2 face="Times New Roman">By (Signature and Title)*&nbsp;&nbsp;</FONT></TD>
+
+   <TD style="BORDER-BOTTOM: #000000 1pt solid" width="99%" noWrap align=left><FONT size=2 face="Times New Roman">/s/Stefano R. Michelagnoli</FONT></TD></TR>
+
+<TR vAlign=bottom>
+
+   <TD width="1%" noWrap align=left></TD>
+
+   <TD width="99%" noWrap align=left><FONT size=2 face="Times New Roman">Stefano R. Michelagnoli, President</FONT></TD></TR>
+
+<TR vAlign=bottom>
+
+   <TD width="1%" noWrap align=left>&nbsp;</TD>
+
+   <TD width="99%" noWrap align=left></TD></TR></TABLE>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" BORDER="0" STYLE="width: 50%; line-height: 14pt; border-collapse: collapse">
+
+
+
+<TR vAlign=bottom>
+
+   <TD STYLE="width: 1%; white-space: nowrap; text-align: left"><FONT size=2 face="Times New Roman">Date&nbsp;&nbsp;</FONT></TD>
+
+   <TD STYLE="border-bottom: #000000 1pt solid; width: 99%; white-space: nowrap; text-align: left"><FONT size=2 face="Times New Roman">August 13, 2021</FONT></TD></TR>
+
+<TR vAlign=bottom>
+
+   <TD STYLE="white-space: nowrap; text-align: left">&nbsp;</TD>
+
+   <TD STYLE="white-space: nowrap; text-align: left"></TD></TR>
+</TABLE>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" BORDER="0" STYLE="width: 100%; line-height: 14pt; border-collapse: collapse">
+
+
+<TR vAlign=bottom>
+
+   <TD STYLE="white-space: nowrap; text-align: left"><FONT size=2 face="Times New Roman">* Print the name and title of each signing officer under his or her signature.</FONT></TD></TR></TABLE>
+
+<BR>
+
+<HR align=center width="100%" noShade size="2">
+
+</div>
+
+</BODY>
+
+</HTML>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

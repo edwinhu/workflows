@@ -8374,7 +8374,47 @@ func issTierWordSwap(ix *issSeriesIndex, key string, d *SeriesDecl) (swap bool, 
 	}
 	f, df := strings.Fields(key), strings.Fields(declKey)
 	tw, declTW = f[len(f)-1], df[len(df)-1]
+	if issTierConjunctNames(f, declTW) {
+		return false, "", ""
+	}
 	return tw != declTW && issDeclaresTypeWord(ix, tw), tw, declTW
+}
+
+// issTierConjunctNames reports that the heading's trailing type word is a SECOND
+// TIER hung off the declared name by a bare `and`, rather than a substitution for
+// the declared one: HSBC Funds heads the one book of proxies it votes for its
+// retail S000005038 `HSBC Opportunity Fund`, that fund's Class I sleeve and the
+// master `HSBC Opportunity Portfolio` with `HSBC Opportunity Fund (Class A, C & I
+// Shares) and Portfolio`, and the chain reads the declared fund off it once the
+// share-class parenthetical comes away (585 rows, the CIK's whole
+// known-registrant no_series residue in scope).
+//
+// The tier guard exists for the OPPOSITE shape, where a heading prints one tier
+// word and the candidate declares another (`SUMMIT RUSSELL 2000 SMALL CAP INDEX
+// FUND` against a declared `... INDEX PORTFOLIO`), and the registrant keeps both
+// tiers apart. Here the heading prints the declaration's OWN tier word too, in
+// front of the conjunct, so it contradicts nothing the registrant declared -- it
+// names two tiers where the guard assumes a swap of one.
+//
+// Read on the heading's own tokens and the candidate's declared name only, never
+// the dictionary: the declared type word must stand somewhere before an `and`
+// that the trailing type word immediately follows. A heading whose trailing tier
+// merely sits after some earlier `and` (`growth and income fund`) has no second
+// tier and is left to the guard.
+func issTierConjunctNames(headToks []string, declTW string) bool {
+	// the declared tier word + the conjunct + the second tier word
+	if len(headToks) < 3 || declTW == "" {
+		return false
+	}
+	if !issTypeWord(headToks[len(headToks)-1]) || headToks[len(headToks)-2] != "and" {
+		return false
+	}
+	for _, t := range headToks[:len(headToks)-2] {
+		if t == declTW {
+			return true
+		}
+	}
+	return false
 }
 
 // issDeclaresTypeWord reports whether any declared name is itself typed with
