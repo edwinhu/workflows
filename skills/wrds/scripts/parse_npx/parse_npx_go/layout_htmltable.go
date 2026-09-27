@@ -7054,6 +7054,9 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 				continue
 			}
 		}
+		// The value the chain below reaches, so the typo rung after it can tell a
+		// line that adopted nothing from one that did.
+		wasName, wasID := name, id
 		if _, d := issResolveFund(ix, candidate); d != nil {
 			// A banner wrapped over two elements resolves TWICE -- once per
 			// half -- and the later half wins by standing last: `Portfolio I`
@@ -7103,8 +7106,135 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 				}
 			}
 		}
+		// Every rung above has refused this line, including the corpus-wide
+		// dictionary lookups: last of all, the banner may MISSPELL one of the
+		// names this filing's own header declares. Longleaf Partners Funds Trust
+		// 2020 heads its flagship section `Longeaf Partners Fund` -- the second
+		// `l` dropped by the filing agent -- for the declared `Longleaf Partners
+		// Fund` (S000009311, 251 rows with no series). The declared spelling is
+		// what gets recorded, since the printed one is the defect.
+		if name == wasName && id == wasID {
+			if td := htmlTypoDeclaredName(ix, candidate); td != nil {
+				name, id, ok = td.Name, td.SeriesID, true
+				adoptedAt, adoptedLine = li, td.Name
+			}
+		}
 	}
 	return name, id, ok
+}
+
+// htmlTypoWordMin is the shortest word a misspelling may be read inside. One
+// character is the whole difference this rung tolerates, so in a shorter word it
+// is most of the word: `ii` against `vi`, `2` against `3`. A registrant tells
+// sleeves apart by exactly such tokens, and folding them would answer the wrong
+// series rather than none.
+const htmlTypoWordMin = 4
+
+// htmlTypoDeclaredName reads a banner that MISSPELLS one of the names this
+// filing's own SEC-HEADER declares: `Longeaf Partners Fund` for the declared
+// `Longleaf Partners Fund` (S000009311, Longleaf Partners Funds Trust 2020,
+// 0001193125-20-234605, 251 rows with no series). It answers the declared
+// SeriesDecl, whose name is the spelling to record -- the printed one is the
+// defect being corrected.
+//
+// Everything about it is narrow, and every narrowing is load-bearing.
+//
+// The pool is THIS FILING'S OWN declarations, read off hdrOnly where a
+// dictionary is loaded so no corpus row of a sibling registrant or a later
+// vintage widens it. A misspelling is not evidence about which registrant filed;
+// it is only ever evidence about which of the funds this header names.
+//
+// Exactly ONE declared name may be within one edit, and a banner two answer to
+// resolves to nothing: ambiguity here is not a fix target. A banner that equals
+// a declared name refuses too -- the exact rungs above own that, and reaching
+// here means they refused it (a name two series share, say), which this rung
+// must not overturn.
+//
+// The edit must sit INSIDE a word, not add or drop one: both keys carry the same
+// word count, exactly one word differs, that word is letters alone in both
+// spellings, and the longer runs htmlTypoWordMin or more. A whole token is how
+// registrants distinguish sleeves (`Portfolio` against `Portfolio I`, `Fund 2000`
+// against `Fund 3000`), so trading one is a wrong id, not a typo.
+//
+// And never in the LAST word, the name's TYPE word. One character there is a
+// plural or a tier, not a misspelling, and it is what turns a TRUST's name into
+// a sibling fund's: The Westport Funds heads its single undivided table with the
+// trust name over a header declaring `Westport Fund` (S000003152) and `Westport
+// Select Cap Fund` (S000003153), and half of those 746 rows are the other
+// fund's. A heading that names the trust must stay blank.
+func htmlTypoDeclaredName(ix *issSeriesIndex, candidate string) *SeriesDecl {
+	if ix == nil {
+		return nil
+	}
+	key := normalizeSeriesName(candidate)
+	// The reporting period this vintage prints beside the fund on the banner
+	// line, which the exact chain cuts for its own lookup too.
+	if head, cut := issCutReportingPeriodTail(key); cut {
+		key = head
+	}
+	words := strings.Fields(key)
+	if len(words) < 2 || key == ix.registrantKey {
+		return nil
+	}
+	decls := ix.decls
+	if ix.hdrOnly != nil {
+		decls = ix.hdrOnly.decls
+	}
+	var hit *SeriesDecl
+	for i := range decls {
+		d := &decls[i]
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		dw := strings.Fields(normalizeSeriesName(d.Name))
+		if len(dw) != len(words) {
+			continue
+		}
+		diff := -1
+		for j := range dw {
+			if dw[j] == words[j] {
+				continue
+			}
+			if diff >= 0 {
+				diff = -2
+				break
+			}
+			diff = j
+		}
+		if diff == -1 {
+			return nil // the banner spells this declared name exactly; not this rung's business
+		}
+		if diff < 0 || diff == len(dw)-1 {
+			continue
+		}
+		x, y := words[diff], dw[diff]
+		if len(x) < htmlTypoWordMin && len(y) < htmlTypoWordMin {
+			continue
+		}
+		if !htmlLettersOnly(x) || !htmlLettersOnly(y) || !issEditDistanceOne(x, y) {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	return hit
+}
+
+// htmlLettersOnly reports a normalised word carrying no digit. A digit is how a
+// registrant numbers a sleeve or an index, never a letter the filing agent
+// mistyped.
+func htmlLettersOnly(w string) bool {
+	if w == "" {
+		return false
+	}
+	for _, r := range w {
+		if !unicode.IsLetter(r) {
+			return false
+		}
+	}
+	return true
 }
 
 // htmlDictionaryFund only admits names the header does not declare, even
