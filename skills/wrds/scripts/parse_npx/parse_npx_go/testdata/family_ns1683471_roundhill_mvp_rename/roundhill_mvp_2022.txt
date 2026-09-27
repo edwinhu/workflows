@@ -1,0 +1,307 @@
+<SEC-DOCUMENT>0000894189-22-006566.txt : 20220830
+<SEC-HEADER>0000894189-22-006566.hdr.sgml : 20220830
+<ACCEPTANCE-DATETIME>20220830144820
+ACCESSION NUMBER:		0000894189-22-006566
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20220630
+FILED AS OF DATE:		20220830
+DATE AS OF CHANGE:		20220830
+EFFECTIVENESS DATE:		20220830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Listed Funds Trust
+		CENTRAL INDEX KEY:			0001683471
+		IRS NUMBER:				826272597
+		FISCAL YEAR END:			0831
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-23226
+		FILM NUMBER:		221214106
+
+	BUSINESS ADDRESS:	
+		STREET 1:		615 E. MICHIGAN STREET
+		CITY:			MILWAUKEE
+		STATE:			WI
+		ZIP:			53202
+		BUSINESS PHONE:		414-765-5144
+
+	MAIL ADDRESS:	
+		STREET 1:		615 E. MICHIGAN STREET
+		CITY:			MILWAUKEE
+		STATE:			WI
+		ZIP:			53202
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	Active Weighting Funds ETF Trust
+		DATE OF NAME CHANGE:	20160830
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001683471
+<SERIES-ID>S000065293
+<SERIES-NAME>Roundhill BITKRAFT Esports & Digital Entertainment ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000211351
+<CLASS-CONTRACT-NAME>Roundhill BITKRAFT Esports & Digital Entertainment ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>NERD
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001683471
+<SERIES-ID>S000068603
+<SERIES-NAME>Roundhill Sports Betting & iGaming ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000219509
+<CLASS-CONTRACT-NAME>Roundhill Sports Betting & iGaming ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>BETZ
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001683471
+<SERIES-ID>S000072321
+<SERIES-NAME>Roundhill Ball Metaverse ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000228445
+<CLASS-CONTRACT-NAME>Roundhill Ball Metaverse ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>METV
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001683471
+<SERIES-ID>S000073924
+<SERIES-NAME>Roundhill IO Digital Infrastructure ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000231200
+<CLASS-CONTRACT-NAME>Roundhill IO Digital Infrastructure ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>BYTE
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001683471
+<SERIES-ID>S000074090
+<SERIES-NAME>Roundhill Cannabis ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000231570
+<CLASS-CONTRACT-NAME>Roundhill Cannabis ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>WEED
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001683471
+<SERIES-ID>S000074284
+<SERIES-NAME>Roundhill MEME ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000231929
+<CLASS-CONTRACT-NAME>Roundhill MEME ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>MEME
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>lift-roundhill3_npx.txt
+<DESCRIPTION>ANNUAL REPORT FOR N-PX
+<TEXT>
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              WASHINGTON, D.C. 20549
+
+                                   FORM N-PX
+
+    ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT
+                                     COMPANY
+
+ INVESTMENT COMPANY ACT FILE NUMBER:     811-23226
+
+ NAME OF REGISTRANT:                     Listed Funds Trust
+
+
+
+ ADDRESS OF PRINCIPAL EXECUTIVE OFFICES: 615 East Michigan Street
+                                         Milwaukee, WI 53202
+
+ NAME AND ADDRESS OF AGENT FOR SERVICE:  Gregory Bakken, President/Principal
+                                         Executive Officer
+                                         c/o U.S. Bancorp Fund Services,
+                                         LLC
+                                         811 East Wisconsin Avenue
+                                         Milwaukee, WI 53202
+
+ REGISTRANT'S TELEPHONE NUMBER:          414-765-4711
+
+ DATE OF FISCAL YEAR END:                12/31
+
+ DATE OF REPORTING PERIOD:               07/01/2021 - 06/30/2022
+
+
+<PAGE>
+
+<TABLE>
+<S>    <C>                                                       <C>           <C>                            <C>
+
+
+
+
+Roundhill MVP ETF
+--------------------------------------------------------------------------------------------------------------------------
+ AFC AJAX N.V.                                                                               Agenda Number:  714715678
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  N01011118
+    Meeting Type:  AGM
+    Meeting Date:  12-Nov-2021
+          Ticker:
+            ISIN:  NL0000018034
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+CMMT   VOTING MUST BE LODGED WITH BENEFICIAL OWNER               Non-Voting
+       DETAILS AS PROVIDED BY YOUR CUSTODIAN BANK.
+       IF NO BENEFICIAL OWNER DETAILS ARE
+       PROVIDED, YOUR INSTRUCTIONS MAY BE REJECTED
+
+CMMT   VOTING MUST BE LODGED WITH SHAREHOLDER                    Non-Voting
+       DETAILS AS PROVIDED BY YOUR CUSTODIAN BANK.
+       IF NO SHAREHOLDER DETAILS ARE PROVIDED,
+       YOUR INSTRUCTIONS MAY BE REJECTED
+
+1.     OPENING                                                   Non-Voting
+
+2.     TREATMENT OF THE MANAGEMENT REPORT FOR THE                Non-Voting
+       FINANCIAL YEAR 2020/2021
+
+3.     ANNUAL ACCOUNTS 2020/2021                                 Non-Voting
+
+3.a.   ADVISORY VOTE ON THE REMUNERATION REPORT                  Mgmt          Against                        Against
+
+3.b.   ADOPTION OF THE ANNUAL ACCOUNTS FOR THE                   Mgmt          For                            For
+       FINANCIAL YEAR 2020/2021
+
+4.     DIVIDEND                                                  Non-Voting
+
+4.a.   TREATMENT OF THE RESERVATION AND DIVIDEND                 Non-Voting
+       POLICY
+
+4.b.   DETERMINATION OF THE DIVIDEND FOR THE                     Mgmt          For                            For
+       2020/2021 FINANCIAL YEAR
+
+5.     DISCHARGE MANAGEMENT                                      Mgmt          For                            For
+
+6.     DISCHARGE OF THE SUPERVISORY BOARD                        Mgmt          For                            For
+
+7.     AUTHORIZATION TO THE BOARD OF DIRECTORS TO                Mgmt          For                            For
+       BUY BACK OWN SHARES
+
+8.     APPOINTMENT OF THE EXTERNAL AUDITOR FOR THE               Mgmt          For                            For
+       2021/2022 FINANCIAL YEAR
+
+9.     ANY OTHER BUSINESS AND CLOSING                            Non-Voting
+
+CMMT   INTERMEDIARY CLIENTS ONLY - PLEASE NOTE                   Non-Voting
+       THAT IF YOU ARE CLASSIFIED AS AN
+       INTERMEDIARY CLIENT UNDER THE SHAREHOLDER
+       RIGHTS DIRECTIVE II, YOU SHOULD BE
+       PROVIDING THE UNDERLYING SHAREHOLDER
+       INFORMATION AT THE VOTE INSTRUCTION LEVEL.
+       IF YOU ARE UNSURE ON HOW TO PROVIDE THIS
+       LEVEL OF DATA TO BROADRIDGE OUTSIDE OF
+       PROXYEDGE, PLEASE SPEAK TO YOUR DEDICATED
+       CLIENT SERVICE REPRESENTATIVE FOR
+       ASSISTANCE
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+ AFC AJAX N.V.                                                                               Agenda Number:  714987382
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  N01011118
+    Meeting Type:  EGM
+    Meeting Date:  28-Jan-2022
+          Ticker:
+            ISIN:  NL0000018034
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+CMMT   VOTING MUST BE LODGED WITH BENEFICIAL OWNER               Non-Voting
+       DETAILS AS PROVIDED BY YOUR CUSTODIAN BANK.
+       IF NO BENEFICIAL OWNER DETAILS ARE
+       PROVIDED, YOUR INSTRUCTIONS MAY BE
+       REJECTED.
+
+CMMT   VOTING MUST BE LODGED WITH SHAREHOLDER                    Non-Voting
+       DETAILS AS PROVIDED BY YOUR CUSTODIAN BANK.
+       IF NO SHAREHOLDER DETAILS ARE PROVIDED,
+       YOUR INSTRUCTIONS MAY BE REJECTED.
+
+1.     OPENING                                                   Non-Voting
+
+2.     COMPOSITION OF THE SUPERVISORY BOARD:                     Mgmt          For                            For
+       APPOINTMENT OF MS. GEORGETTE SCHLICK AS
+       SUPERVISORY DIRECTOR
+
+3.     COMPOSITION OF THE MANAGING BOARD                         Non-Voting
+
+3.a.   NOTIFICATION OF THE PROPOSED REAPPOINTMENT                Non-Voting
+       OF MS. SUSAN LENDERINK AS A MANAGING
+       DIRECTOR
+
+3.b.   NOTIFICATION OF THE PROPOSED REAPPOINTMENT                Non-Voting
+       OF MENNO GEELEN AS MEMBER OF THE MANAGING
+       BOARD
+
+3.c.   ACKNOWLEDGEMENT OF THE PROPOSED                           Non-Voting
+       REAPPOINTMENT OF MARC OVERMARS AS MEMBER OF
+       THE MANAGING BOARD
+
+4.     CLOSING OF THE MEETING                                    Non-Voting
+
+CMMT   INTERMEDIARY CLIENTS ONLY - PLEASE NOTE                   Non-Voting
+       THAT IF YOU ARE CLASSIFIED AS AN
+       INTERMEDIARY CLIENT UNDER THE SHAREHOLDER
+       RIGHTS DIRECTIVE II, YOU SHOULD BE
+       PROVIDING THE UNDERLYING SHAREHOLDER
+       INFORMATION AT THE VOTE INSTRUCTION LEVEL.
+       IF YOU ARE UNSURE ON HOW TO PROVIDE THIS
+       LEVEL OF DATA TO BROADRIDGE OUTSIDE OF
+       PROXYEDGE, PLEASE SPEAK TO YOUR DEDICATED
+       CLIENT SERVICE REPRESENTATIVE FOR
+       ASSISTANCE
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+* Management position unknown
+
+</TABLE>
+
+<PAGE>
+
+SIGNATURES
+
+Pursuant to the requirements of the Investment Company Act of 1940, the
+registrant has duly caused this report to be signed on its behalf by the
+undersigned, thereunto duly authorized.
+
+(Registrant)         Listed Funds Trust
+By (Signature)       /s/ Gregory Bakken
+Name                 Gregory Bakken
+Title                President Principal Executive Officer
+Date                 08/30/2022
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
