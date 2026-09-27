@@ -1019,6 +1019,69 @@ func pvTextResolveAccount(ix *issSeriesIndex, name string) *SeriesDecl {
 	return d
 }
 
+// pvTextTypeNounSwapDecl resolves a pvtext banner that spells one of the
+// FILING'S OWN declared series names exactly except for the trailing generic
+// type noun: Advisors' Inner Circle Fund (CIK 878719) declares S000006442 as
+// `FMA SMALL COMPANY PORTFOLIO` and heads that fund's vote table
+// `FMA SMALL COMPANY FUND`, so every rung of the pvtext chain -- each of which
+// matches on spelling -- refuses and the section's 371 rows fall through blank.
+//
+// The issnpx layout meets the same substitution and reads it (`AMERITAS SMALL
+// CAP FUND` for a declared `Ameritas Small Cap Portfolio`), but its
+// dropped-type-word rung is guarded by issTierMismatch, which nils the answer
+// wherever the registrant also declares a series on the HEADING's tier -- the
+// Summit two-tier shape, where `SUMMIT RUSSELL 2000 SMALL CAP INDEX FUND` and
+// `SUMMIT RUSSELL SMALL CAP INDEX PORTFOLIO` are different funds. This
+// registrant declares 30-odd ...FUND series, so that guard fires here too.
+//
+// What makes the swap safe here is narrower than the tier guard's condition:
+// everything BEFORE the type noun must match a declaration token for token,
+// which is exactly what the Summit pair does not do (`russell 2000 small cap
+// index` against `russell small cap index`). Both type nouns come from the
+// closed vocabulary issDropTypeWord already owns, the banner must not name a
+// declared series as printed, and two declarations sharing the banner's stem
+// under different type nouns refuse rather than pick. Reads only the filing's
+// own header declarations -- dictionary rows carry a DeclDate and are skipped --
+// never a sibling CIK.
+func pvTextTypeNounSwapDecl(ix *issSeriesIndex, banner string) *SeriesDecl {
+	if ix == nil {
+		return nil
+	}
+	key := normalizeSeriesName(banner)
+	stem, typed := issDropTypeWord(key)
+	if !typed || stem == "" {
+		return nil
+	}
+	keyToks := strings.Fields(key)
+	tw := keyToks[len(keyToks)-1]
+	// The banner as printed already names a series: nothing to swap.
+	if _, declared := lookupSeriesEntry(ix.byName, banner); declared {
+		return nil
+	}
+	if _, d := issResolveFund(ix, banner); d != nil {
+		return nil
+	}
+	var found *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || d.DeclDate != "" {
+			continue
+		}
+		declStem, declTyped := issDropTypeWord(normalizeSeriesName(d.Name))
+		if !declTyped || declStem != stem {
+			continue
+		}
+		if f := ix.declToks(i); len(f) == 0 || f[len(f)-1] == tw {
+			continue // the same type noun: not a swap, and the chain had its say
+		}
+		if found != nil && found.SeriesID != d.SeriesID {
+			return nil // two declarations share the stem; neither is the answer
+		}
+		found = d
+	}
+	return found
+}
+
 // pvTextVendorAccountCode reports a leading token that is the custodian's own
 // account code rather than a word of the fund's name: it is hyphenated, it
 // changes case inside itself the way no printed fund word does, and no name
@@ -1303,6 +1366,13 @@ func parsePVTextSEI(lines []string, meta FilingMeta) []VoteRow {
 					if prev != fund {
 						fund = prev
 						fundSeries = icrResolveFundShared(seriesIx, prev)
+						// The filing's own header answers before the corpus
+						// dictionary does; see pvTextTypeNounSwapDecl.
+						if fundSeries == "" {
+							if d := pvTextTypeNounSwapDecl(seriesIx, prev); d != nil {
+								fundSeries = d.SeriesID
+							}
+						}
 						if fundSeries == "" {
 							fundSeries = htmlDictionaryFund(seriesIx, dict, prev)
 						}
