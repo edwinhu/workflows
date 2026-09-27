@@ -1,0 +1,720 @@
+<SEC-DOCUMENT>0001137439-19-000407.txt : 20190828
+<SEC-HEADER>0001137439-19-000407.hdr.sgml : 20190828
+<ACCEPTANCE-DATETIME>20190828163404
+ACCESSION NUMBER:		0001137439-19-000407
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20190630
+FILED AS OF DATE:		20190828
+DATE AS OF CHANGE:		20190828
+EFFECTIVENESS DATE:		20190828
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			FRANKLIN TEMPLETON VARIABLE INSURANCE PRODUCTS TRUST
+		CENTRAL INDEX KEY:			0000837274
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-05583
+		FILM NUMBER:		191062360
+
+	BUSINESS ADDRESS:	
+		STREET 1:		ONE FRANKLIN PARKWAY
+		CITY:			SAN MATEO
+		STATE:			CA
+		ZIP:			94403-1906
+		BUSINESS PHONE:		650-312-2000
+
+	MAIL ADDRESS:	
+		STREET 1:		ONE FRANKLIN PARKWAY
+		CITY:			SAN MATEO
+		STATE:			CA
+		ZIP:			94403-1906
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	FRANKLIN VALUEMARK FUNDS
+		DATE OF NAME CHANGE:	19920703
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	FRANKLIN VALUEMARK ANNUITY FUNDS
+		DATE OF NAME CHANGE:	19881129
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000007312
+<SERIES-NAME>FRANKLIN FLEX CAP GROWTH VIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020093
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061775
+<CLASS-CONTRACT-NAME>CLASS 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000007313
+<SERIES-NAME>FRANKLIN RISING DIVIDENDS VIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020094
+<CLASS-CONTRACT-NAME>CLASS 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020095
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061776
+<CLASS-CONTRACT-NAME>CLASS 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000007314
+<SERIES-NAME>FRANKLIN SMALL-MID CAP GROWTH VIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020096
+<CLASS-CONTRACT-NAME>CLASS 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020097
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061777
+<CLASS-CONTRACT-NAME>CLASS 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000007315
+<SERIES-NAME>FRANKLIN SMALL CAP VALUE VIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020098
+<CLASS-CONTRACT-NAME>CLASS 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020099
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061778
+<CLASS-CONTRACT-NAME>CLASS 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000007316
+<SERIES-NAME>FRANKLIN STRATEGIC INCOME VIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020100
+<CLASS-CONTRACT-NAME>CLASS 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020101
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061779
+<CLASS-CONTRACT-NAME>CLASS 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000007317
+<SERIES-NAME>FRANKLIN U.S. GOVERNMENT SECURITIES VIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020102
+<CLASS-CONTRACT-NAME>CLASS 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020103
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000007319
+<SERIES-NAME>FRANKLIN MUTUAL GLOBAL DISCOVERY VIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020106
+<CLASS-CONTRACT-NAME>CLASS 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020107
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061781
+<CLASS-CONTRACT-NAME>CLASS 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000007320
+<SERIES-NAME>FRANKLIN MUTUAL SHARES VIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020108
+<CLASS-CONTRACT-NAME>CLASS 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020109
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061782
+<CLASS-CONTRACT-NAME>CLASS 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000007321
+<SERIES-NAME>TEMPLETON DEVELOPING MARKETS VIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020110
+<CLASS-CONTRACT-NAME>CLASS 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020111
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061783
+<CLASS-CONTRACT-NAME>CLASS 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000007322
+<SERIES-NAME>TEMPLETON FOREIGN VIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020113
+<CLASS-CONTRACT-NAME>CLASS 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020114
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061784
+<CLASS-CONTRACT-NAME>CLASS 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000007325
+<SERIES-NAME>TEMPLETON GLOBAL BOND VIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020120
+<CLASS-CONTRACT-NAME>CLASS 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020121
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061787
+<CLASS-CONTRACT-NAME>CLASS 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000007326
+<SERIES-NAME>TEMPLETON GROWTH VIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020123
+<CLASS-CONTRACT-NAME>CLASS 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020124
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061788
+<CLASS-CONTRACT-NAME>CLASS 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000007327
+<SERIES-NAME>FRANKLIN GROWTH AND INCOME VIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020125
+<CLASS-CONTRACT-NAME>CLASS 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020126
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000007329
+<SERIES-NAME>FRANKLIN INCOME VIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020129
+<CLASS-CONTRACT-NAME>CLASS 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020130
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061791
+<CLASS-CONTRACT-NAME>CLASS 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000007330
+<SERIES-NAME>FRANKLIN LARGE CAP GROWTH VIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020131
+<CLASS-CONTRACT-NAME>CLASS 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020132
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000007333
+<SERIES-NAME>FRANKLIN GLOBAL REAL ESTATE VIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020136
+<CLASS-CONTRACT-NAME>CLASS 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000020137
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000017299
+<SERIES-NAME>Franklin Allocation VIP Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000047853
+<CLASS-CONTRACT-NAME>CLASS 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000047854
+<CLASS-CONTRACT-NAME>CLASS 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061795
+<CLASS-CONTRACT-NAME>CLASS 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000837274
+<SERIES-ID>S000040299
+<SERIES-NAME>Franklin VolSmart Allocation VIP Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000125189
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000125190
+<CLASS-CONTRACT-NAME>Class 5
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>ftviptnpx2019.htm
+<TEXT>
+<html>
+  <head>
+    <title></title>
+    <!-- Licensed to: Stradley
+         Document created using EDGARfilings PROfile 6.2.1.0
+         Copyright 1995 - 2019 Broadridge -->
+  </head>
+<body bgcolor="#ffffff" style="font-family: 'Times New Roman', Times, serif; font-size: 10pt; text-align: left; color: #000000;">
+  <div>
+    <table cellspacing="0" cellpadding="0" border="0" class="MsoTableGrid" style="border-collapse:collapse;border:none;mso-yfti-tbllook:1184;mso-padding-alt: 0in 5.4pt 0in 5.4pt;mso-border-insideh:none;mso-border-insidev:none">
+
+        <tr style="mso-yfti-irow:0;mso-yfti-firstrow:yes">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p class="MsoTitle" style="text-align: center; font-weight: bold;">UNITED STATES</p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:1">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p align="center" class="MsoNormal" style="text-align:center"><b><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'">SECURITIES AND EXCHANGE COMMISSION </font></b></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:2">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p align="center" class="MsoNormal" style="text-align:center"><b><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'">Washington, DC 20549</font></b></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:3">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p align="center" class="MsoNormal" style="text-align:center"><b><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'">&#160;</font></b></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:4">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p align="center" class="MsoNormal" style="text-align:center"><b><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'">&#160;</font></b></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:5">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p align="center" class="MsoNormal" style="text-align:center"><b><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'">FORM N-PX</font></b></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:6">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New'">&#160;</font></b></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:7">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p align="center" class="MsoNormal" style="text-align:center"><b><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'">ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT COMPANY</font></b></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:8">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">&#160;</font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:9">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Investment Company Act file number <u>811-05583<font style="mso-tab-count:1">&#160;&#160;&#160; </font></u></font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:10">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">&#160;</font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:11">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <h1 align="center" style="text-align:center">Franklin Templeton Variable Insurance Products Trust</h1>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:12">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p align="center" class="MsoNormal" style="text-align:center"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New';color:#454545">(Exact name of registrant as specified in charter)</font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:13">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">&#160;</font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:14">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <h1 align="center" style="text-align:center">One Franklin Parkway, San Mateo, CA 94403-1906</h1>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:15">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p align="center" class="MsoNormal" style="text-align:center"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New';color:#454545">(Address of principal executive offices) (Zip code)</font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:16">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">&#160;</font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:17">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <h1 align="center" style="text-align:center">Craig S. Tyle, One Franklin Parkway, San Mateo, CA 94403-1906</h1>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:18">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p align="center" class="MsoNormal" style="text-align:center"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New';color:#454545">(Name and address of agent for service)</font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:19">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">&#160;</font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:20">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Registrant's telephone number, including area code: <u>(650) 312-2000</u></font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:21">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">&#160;</font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:22">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Date of fiscal year end: <u><font style="mso-tab-count:1">&#160;&#160;&#160;&#160; </font>12/31<font style="mso-tab-count:1"> </font></u></font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:23">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">&#160;</font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:24">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Date of reporting period: <u><font style="mso-spacerun:yes">&#160;&#160;</font>6/30/19<font style="mso-tab-count:1"> </font></u></font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:25">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">&#160;</font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:26;mso-yfti-lastrow:yes">
+          <td width="798" valign="top" style="width:6.65in;padding:0in 5.4pt 0in 5.4pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New'">Item 1. Proxy Voting Records.</font></b></p>
+          </td>
+        </tr>
+
+    </table>
+    <p class="MsoNoSpacing"><font style="font-size:10.0pt">&#160;</font></p>
+    <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">&#160;</font></p>
+    <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">FTVIPT - Franklin Allocation VIP Fund -<i>Named changed from Franklin Founding Funds Allocation VIP Fund effective 5/1/19</i></font></p>
+    <table width="100%" cellspacing="0" cellpadding="0" border="1" class="MsoNormalTable" style="width:100.0%;mso-cellspacing:0in;mso-yfti-tbllook:1184;mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt">
+
+        <tr style="mso-yfti-irow:0;mso-yfti-firstrow:yes">
+          <td colspan="5" style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">&#160;</font></b></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:1">
+          <td colspan="5" style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">ALTABA INC. <br>
+                  Meeting Date:&#160;&#160;JUN 27, 2019 <br>
+                  Record Date:&#160;&#160;MAY 16, 2019 <br>
+                  Meeting Type:&#160;&#160;SPECIAL </font></b></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:2">
+          <td colspan="5" style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Ticker:&#160;&#160;AABA <br>
+                Security ID:&#160;&#160;021346101 </font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:3">
+          <td width="10%" style="width:10.0%;padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">Proposal No</font></b></p>
+          </td>
+          <td width="55%" style="width:55.0%;padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">Proposal</font></b></p>
+          </td>
+          <td width="15%" style="width:15.0%;padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">Proposed By</font></b></p>
+          </td>
+          <td width="15%" style="width:15.0%;padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">Management Recommendation</font></b></p>
+          </td>
+          <td width="10%" style="width:10.0%;padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">Vote Cast</font></b></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:4">
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">1</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Approve Plan of Liquidation</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Management</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">For</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">For</font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:5;mso-yfti-lastrow:yes">
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">2</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Adjourn Meeting</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Management</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">For</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">For</font></p>
+          </td>
+        </tr>
+
+    </table>
+    <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545;display:none;mso-hide:all">&#160;</font></p>
+    <table width="100%" cellspacing="0" cellpadding="0" border="1" class="MsoNormalTable" style="width:100.0%;mso-cellspacing:0in;mso-yfti-tbllook:1184;mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt">
+
+        <tr style="mso-yfti-irow:0;mso-yfti-firstrow:yes">
+          <td colspan="5" style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">&#160;</font></b></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:1">
+          <td colspan="5" style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">BNP PARIBAS SA <br>
+                  Meeting Date:&#160;&#160;MAY 23, 2019 <br>
+                  Record Date:&#160;&#160;MAY 20, 2019 <br>
+                  Meeting Type:&#160;&#160;ANNUAL/SPECIAL </font></b></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:2">
+          <td colspan="5" style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Ticker:&#160;&#160;BNP <br>
+                Security ID:&#160;&#160;F1058Q238 </font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:3">
+          <td width="10%" style="width:10.0%;padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">Proposal No</font></b></p>
+          </td>
+          <td width="55%" style="width:55.0%;padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">Proposal</font></b></p>
+          </td>
+          <td width="15%" style="width:15.0%;padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">Proposed By</font></b></p>
+          </td>
+          <td width="15%" style="width:15.0%;padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">Management Recommendation</font></b></p>
+          </td>
+          <td width="10%" style="width:10.0%;padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">Vote Cast</font></b></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:4">
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">1</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Approve Financial Statements and Statutory Reports</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Management</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">For</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">For</font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:5">
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">2</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Approve Consolidated Financial Statements and Statutory Reports</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Management</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">For</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">For</font></p>
+          </td>
+        </tr>
+
+    </table>
+    <font style="font-size:10.0pt;font-family:'Courier New';mso-fareast-font-family: 'Times New Roman';color:#454545;mso-ansi-language:EN-US;mso-fareast-language: EN-US;mso-bidi-language:AR-SA"><br clear="all" style="page-break-before:always">
+    </font>
+    <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">FTVIPT - Franklin Flex Cap Growth VIP Fund</font></p>
+    <table width="100%" cellspacing="0" cellpadding="0" border="1" class="MsoNormalTable" style="width:100.0%;mso-cellspacing:0in;mso-yfti-tbllook:1184;mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt">
+
+        <tr style="mso-yfti-irow:0;mso-yfti-firstrow:yes">
+          <td colspan="5" style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">&#160;</font></b></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:1">
+          <td colspan="5" style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">ADOBE INC. <br>
+                  Meeting Date:&#160;&#160;APR 11, 2019 <br>
+                  Record Date:&#160;&#160;FEB 13, 2019 <br>
+                  Meeting Type:&#160;&#160;ANNUAL </font></b></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:2">
+          <td colspan="5" style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Ticker:&#160;&#160;ADBE <br>
+                Security ID:&#160;&#160;00724F101 </font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:3">
+          <td width="10%" style="width:10.0%;padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">Proposal No</font></b></p>
+          </td>
+          <td width="55%" style="width:55.0%;padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">Proposal</font></b></p>
+          </td>
+          <td width="15%" style="width:15.0%;padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">Proposed By</font></b></p>
+          </td>
+          <td width="15%" style="width:15.0%;padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">Management Recommendation</font></b></p>
+          </td>
+          <td width="10%" style="width:10.0%;padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><b><font style="font-size:10.0pt;mso-bidi-font-family: 'Courier New';color:#454545">Vote Cast</font></b></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:4">
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">1a</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Elect Director Amy L. Banse</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Management</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">For</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">For</font></p>
+          </td>
+        </tr>
+        <tr style="mso-yfti-irow:5">
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">1b</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Elect Director Frank A. Calderoni</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Management</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">For</font></p>
+          </td>
+          <td style="padding:1.0pt 1.0pt 1.0pt 1.0pt">
+            <p class="MsoNormal"><font style="font-size:10.0pt;mso-bidi-font-family:'Courier New'; color:#454545">Against</font></p>
+          </td>
+        </tr>
+
+    </table>
+</body>
+</html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
