@@ -1,0 +1,2271 @@
+<SEC-DOCUMENT>0001193125-20-219113.txt : 20200813
+<SEC-HEADER>0001193125-20-219113.hdr.sgml : 20200813
+<ACCEPTANCE-DATETIME>20200813155825
+ACCESSION NUMBER:		0001193125-20-219113
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20200630
+FILED AS OF DATE:		20200813
+DATE AS OF CHANGE:		20200813
+EFFECTIVENESS DATE:		20200813
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PROSHARES TRUST
+		CENTRAL INDEX KEY:			0001174610
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0531
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-21114
+		FILM NUMBER:		201099163
+
+	BUSINESS ADDRESS:	
+		STREET 1:		7501 WISCONSIN AVENUE
+		STREET 2:		SUITE 1000
+		CITY:			BETHESDA
+		STATE:			MD
+		ZIP:			20814
+		BUSINESS PHONE:		240-497-6400
+
+	MAIL ADDRESS:	
+		STREET 1:		7501 WISCONSIN AVENUE
+		STREET 2:		SUITE1000
+		CITY:			BETHESDA
+		STATE:			MD
+		ZIP:			20814
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	XTRASHARES TRUST
+		DATE OF NAME CHANGE:	20030409
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PROFUNDS ETF TRUST
+		DATE OF NAME CHANGE:	20020531
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<SERIES>
+<OWNER-CIK>0001174610
+<SERIES-ID>S000014252
+<SERIES-NAME>ProShares Ultra Financials
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038811
+<CLASS-CONTRACT-NAME>ProShares Ultra Financials
+<CLASS-CONTRACT-TICKER-SYMBOL>UYG
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001174610
+<SERIES-ID>S000037029
+<SERIES-NAME>ProShares UltraPro Financial Select Sector
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000113858
+<CLASS-CONTRACT-NAME>ProShares UltraPro Financial Select Sector
+<CLASS-CONTRACT-TICKER-SYMBOL>FINU
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d20725dnpx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML><HEAD>
+<TITLE>N-PX</TITLE>
+</HEAD>
+ <BODY BGCOLOR="WHITE">
+ <P STYLE="line-height:1.0pt;margin-top:0pt;margin-bottom:0pt;border-bottom:1px solid #000000">&nbsp;</P>
+<P STYLE="line-height:3.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1px solid #000000">&nbsp;</P> <P STYLE="margin-top:4pt; margin-bottom:0pt; font-size:18pt; font-family:Times New Roman" ALIGN="center"><B>UNITED STATES </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:18pt; font-family:Times New Roman" ALIGN="center"><B>SECURITIES AND EXCHANGE COMMISSION </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:12pt; font-family:Times New Roman" ALIGN="center"><B>Washington, DC 20549 </B></P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center>
+<P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center> <P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:18pt; font-family:Times New Roman" ALIGN="center"><B>FORM <FONT
+STYLE="white-space:nowrap">N-PX</FONT> </B></P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center>
+<P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center> <P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:12pt; font-family:Times New Roman" ALIGN="center"><B>ANNUAL REPORT
+OF PROXY VOTING RECORD OF REGISTERED </B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:12pt; font-family:Times New Roman" ALIGN="center"><B>MANAGEMENT INVESTMENT COMPANY </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Investment Company Act file number: <FONT STYLE="white-space:nowrap">811-21114</FONT> </B></P>
+<P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center> <P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:24pt; font-family:Times New Roman" ALIGN="center"><B>ProShares Trust </B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>(Exact
+name of registrant as specified in charter) </B></P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center>
+<P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center> <P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>7501
+Wisconsin Avenue, Suite 1000 </B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Bethesda, Maryland 20814 </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>(Address of principal executive offices, zip code) </B></P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center>
+<P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center> <P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B><I>With copy
+to: </I></B></P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="34%"></TD>
+
+<TD VALIGN="bottom"></TD>
+<TD WIDTH="32%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="32%"></TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top" ALIGN="center"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Michael L. Sapir</B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Chairman</B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>ProFund Advisors
+LLC</B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>7501 Wisconsin Avenue, Suite 1000</B></P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Bethesda, Maryland 20814</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>John Loder</B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Ropes&nbsp;&amp; Gray LLP</B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>800 Boylston Street</B></P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Boston, MA 02199</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Jennifer English</B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Citi Fund Services</B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>800
+Boylston Street, 24<SUP STYLE="font-size:85%; vertical-align:top">th</SUP> Floot</B></P> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Boston, MA 02199</B></P></TD></TR>
+</TABLE> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>(Name and address of agent for service) </B></P>
+<P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center> <P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Registrant&#146;s telephone number, including area code: (240) <FONT STYLE="white-space:nowrap">497-6400</FONT> </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Date of fiscal year end: May&nbsp;31 </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Date of reporting period: July&nbsp;1, 2019 to June<U></U>&nbsp;30, 2020 </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>PROXY VOTING RECORD FOR </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>PERIOD JULY&nbsp;1, 2019 TO JUNE&nbsp;30, 2020 </B></P> <P STYLE="font-size:10pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<P STYLE="line-height:1.0pt;margin-top:0pt;margin-bottom:0pt;border-bottom:1px solid #000000">&nbsp;</P> <P STYLE="line-height:3.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1px solid #000000">&nbsp;</P>
+
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+======================== ProShares UltraPro Financials =========================
+
+
+AFLAC INCORPORATED
+
+Ticker:       AFL            Security ID:  001055102
+Meeting Date: MAY 04, 2020   Meeting Type: Annual
+Record Date:  FEB 25, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Daniel P. Amos           For       For          Management
+1b    Elect Director W. Paul Bowers           For       For          Management
+1c    Elect Director Toshihiko Fukuzawa       For       For          Management
+1d    Elect Director Thomas J. Kenny          For       For          Management
+1e    Elect Director Georgette D. Kiser       For       For          Management
+1f    Elect Director Karole F. Lloyd          For       For          Management
+1g    Elect Director Nobuchika Mori           For       For          Management
+1h    Elect Director Joseph L. Moskowitz      For       For          Management
+1i    Elect Director Barbara K. Rimer         For       For          Management
+1j    Elect Director Katherine T. Rohrer      For       For          Management
+1k    Elect Director Melvin T. Stith          For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify KPMG LLP as Auditors             For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+AMERICAN EXPRESS COMPANY
+
+Ticker:       AXP            Security ID:  025816109
+Meeting Date: MAY 05, 2020   Meeting Type: Annual
+Record Date:  MAR 09, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Charlene Barshefsky      For       For          Management
+1b    Elect Director John J. Brennan          For       For          Management
+1c    Elect Director Peter Chernin            For       For          Management
+1d    Elect Director Ralph de la Vega         For       For          Management
+1e    Elect Director Anne Lauvergeon          For       For          Management
+1f    Elect Director Michael O. Leavitt       For       For          Management
+1g    Elect Director Theodore J. Leonsis      For       For          Management
+1h    Elect Director Karen L. Parkhill        For       For          Management
+1i    Elect Director Lynn A. Pike             For       For          Management
+1j    Elect Director Stephen J. Squeri        For       For          Management
+1k    Elect Director Daniel L. Vasella        For       For          Management
+1l    Elect Director Ronald A. Williams       For       For          Management
+1m    Elect Director Christopher D. Young     For       For          Management
+2     Ratify PricewaterhouseCoopers LLP as    For       For          Management
+      Auditors
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+4     Amend Omnibus Stock Plan                For       For          Management
+5     Provide Right to Act by Written Consent Against   For          Shareholder
+6     Report on Gender/Racial Pay Gap         Against   Against      Shareholder
+
+
+--------------------------------------------------------------------------------
+
+AMERICAN INTERNATIONAL GROUP, INC.
+
+Ticker:       AIG            Security ID:  026874784
+Meeting Date: MAY 13, 2020   Meeting Type: Annual
+Record Date:  MAR 18, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director W. Don Cornwell          For       For          Management
+1b    Elect Director Brian Duperreault        For       For          Management
+1c    Elect Director John H. Fitzpatrick      For       For          Management
+1d    Elect Director William G. Jurgensen     For       For          Management
+1e    Elect Director Christopher S. Lynch     For       For          Management
+1f    Elect Director Henry S. Miller          For       For          Management
+1g    Elect Director Linda A. Mills           For       For          Management
+1h    Elect Director Thomas F. Motamed        For       For          Management
+1i    Elect Director Peter R. Porrino         For       For          Management
+1j    Elect Director Amy L. Schioldager       For       For          Management
+1k    Elect Director Douglas M. Steenland     For       For          Management
+1l    Elect Director Therese M. Vaughan       For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Amend Securities Transfer Restrictions  For       For          Management
+4     Ratify NOL Rights Plan (NOL Pill)       For       For          Management
+5     Ratify PricewaterhouseCoopers LLP as    For       For          Management
+      Auditors
+6     Reduce Ownership Threshold for          Against   For          Shareholder
+      Shareholders to Call Special Meeting
+
+
+--------------------------------------------------------------------------------
+
+AMERIPRISE FINANCIAL, INC.
+
+Ticker:       AMP            Security ID:  03076C106
+Meeting Date: APR 29, 2020   Meeting Type: Annual
+Record Date:  MAR 02, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director James M. Cracchiolo      For       For          Management
+1b    Elect Director Dianne Neal Blixt        For       For          Management
+1c    Elect Director Amy DiGeso               For       For          Management
+1d    Elect Director Lon R. Greenberg         For       For          Management
+1e    Elect Director Jeffrey Noddle           For       For          Management
+1f    Elect Director Robert F. Sharpe, Jr.    For       For          Management
+1g    Elect Director Brian T. Shea            For       For          Management
+1h    Elect Director W. Edward Walter, III    For       For          Management
+1i    Elect Director Christopher J. Williams  For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify PricewaterhouseCoopers LLP as    For       For          Management
+      Auditors
+
+
+--------------------------------------------------------------------------------
+
+AON PLC
+
+Ticker:       AON            Security ID:  G0408V102
+Meeting Date: FEB 04, 2020   Meeting Type: Special
+Record Date:  JAN 31, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Approve Scheme of Arrangement           For       For          Management
+2     Approve Reduction of Share Capital and  For       For          Management
+      Creation of Distributable Profits
+3     Approve Terms of an Off-Exchange        For       For          Management
+      Buyback and Cancellation of Class B
+      Ordinary Shares
+4     Approve Delisting of Shares from the    For       For          Management
+      New York Stock Exchange
+5     Adjourn Meeting                         For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+AON PLC
+
+Ticker:       AON            Security ID:  G0408V111
+Meeting Date: FEB 04, 2020   Meeting Type: Court
+Record Date:  JAN 31, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Approve Scheme of Arrangement           For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+ARTHUR J. GALLAGHER &amp; CO.
+
+Ticker:       AJG            Security ID:  363576109
+Meeting Date: MAY 12, 2020   Meeting Type: Annual
+Record Date:  MAR 20, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Sherry S. Barrat         For       For          Management
+1b    Elect Director William L. Bax           For       For          Management
+1c    Elect Director D. John Coldman          For       For          Management
+1d    Elect Director Frank E. English, Jr.    For       For          Management
+1e    Elect Director J. Patrick Gallagher,    For       For          Management
+      Jr.
+1f    Elect Director David S. Johnson         For       For          Management
+1g    Elect Director Kay W. McCurdy           For       For          Management
+1h    Elect Director Christopher C. Miskel    For       For          Management
+1i    Elect Director Ralph J. Nicoletti       For       For          Management
+1j    Elect Director Norman L. Rosenthal      For       For          Management
+2     Ratify Ernst &amp; Young LLP as Auditors    For       For          Management
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+4     Adopt a Policy on Board Diversity       Against   Against      Shareholder
+
+
+--------------------------------------------------------------------------------
+
+ASSURANT, INC.
+
+Ticker:       AIZ            Security ID:  04621X108
+Meeting Date: MAY 07, 2020   Meeting Type: Annual
+Record Date:  MAR 13, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Elaine D. Rosen          For       For          Management
+1b    Elect Director Paget L. Alves           For       For          Management
+1c    Elect Director Juan N. Cento            For       For          Management
+1d    Elect Director Alan B. Colberg          For       For          Management
+1e    Elect Director Harriet Edelman          For       For          Management
+1f    Elect Director Lawrence V. Jackson      For       For          Management
+1g    Elect Director Jean-Paul L. Montupet    For       For          Management
+1h    Elect Director Debra J. Perry           For       For          Management
+1i    Elect Director Ognjen (Ogi) Redzic      For       For          Management
+1j    Elect Director Paul J. Reilly           For       For          Management
+1k    Elect Director Robert W. Stein          For       For          Management
+2     Ratify PricewaterhouseCoopers LLP as    For       For          Management
+      Auditors
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+
+
+--------------------------------------------------------------------------------
+
+BANK OF AMERICA CORPORATION
+
+Ticker:       BAC            Security ID:  060505104
+Meeting Date: APR 22, 2020   Meeting Type: Annual
+Record Date:  MAR 02, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Sharon L. Allen          For       For          Management
+1b    Elect Director Susan S. Bies            For       For          Management
+1c    Elect Director Jack O. Bovender, Jr.    For       For          Management
+1d    Elect Director Frank P. Bramble, Sr.    For       For          Management
+1e    Elect Director Pierre J.P. de Weck      For       For          Management
+1f    Elect Director Arnold W. Donald         For       For          Management
+1g    Elect Director Linda P. Hudson          For       For          Management
+1h    Elect Director Monica C. Lozano         For       For          Management
+1i    Elect Director Thomas J. May            For       For          Management
+1j    Elect Director Brian T. Moynihan        For       For          Management
+1k    Elect Director Lionel L. Nowell, III    For       For          Management
+1l    Elect Director Denise L. Ramos          For       For          Management
+1m    Elect Director Clayton S. Rose          For       For          Management
+1n    Elect Director Michael D. White         For       For          Management
+1o    Elect Director Thomas D. Woods          For       For          Management
+1p    Elect Director R. David Yost            For       For          Management
+1q    Elect Director Maria T. Zuber           For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify PricewaterhouseCoopers LLP as    For       For          Management
+      Auditors
+4     Amend Proxy Access Right                Against   For          Shareholder
+5     Provide Right to Act by Written Consent Against   For          Shareholder
+6     Report on Gender Pay Gap                Against   Against      Shareholder
+7     Review of Statement of the Purpose of   Against   Against      Shareholder
+      a Corporation and Report on
+      Recommended Changes to Governance
+      Documents, Policies, and Practices
+
+
+--------------------------------------------------------------------------------
+
+BB&amp;T CORPORATION
+
+Ticker:       BBT            Security ID:  054937107
+Meeting Date: JUL 30, 2019   Meeting Type: Special
+Record Date:  JUN 24, 2019
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Issue Shares in Connection with Merger  For       For          Management
+2     Change Company Name to Truist           For       For          Management
+      Financial Corporation
+3     Adjourn Meeting                         For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+BERKSHIRE HATHAWAY INC.
+
+Ticker:       BRK.B          Security ID:  084670702
+Meeting Date: MAY 02, 2020   Meeting Type: Annual
+Record Date:  MAR 04, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Warren E. Buffett        For       For          Management
+1.2   Elect Director Charles T. Munger        For       For          Management
+1.3   Elect Director Gregory E. Abel          For       For          Management
+1.4   Elect Director Howard G. Buffett        For       For          Management
+1.5   Elect Director Stephen B. Burke         For       For          Management
+1.6   Elect Director Kenneth I. Chenault      For       For          Management
+1.7   Elect Director Susan L. Decker          For       For          Management
+1.8   Elect Director David S. Gottesman       For       For          Management
+1.9   Elect Director Charlotte Guyman         For       For          Management
+1.10  Elect Director Ajit Jain                For       For          Management
+1.11  Elect Director Thomas S. Murphy         For       For          Management
+1.12  Elect Director Ronald L. Olson          For       For          Management
+1.13  Elect Director Walter Scott, Jr.        For       For          Management
+1.14  Elect Director Meryl B. Witmer          For       For          Management
+2     Advisory Vote to Ratify Named           For       Against      Management
+      Executive Officers' Compensation
+3     Advisory Vote on Say on Pay Frequency   Three     One Year     Management
+                                              Years
+4     Adopt a Policy on Board Diversity       Against   Against      Shareholder
+
+
+--------------------------------------------------------------------------------
+
+BLACKROCK, INC.
+
+Ticker:       BLK            Security ID:  09247X101
+Meeting Date: MAY 21, 2020   Meeting Type: Annual
+Record Date:  MAR 23, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Bader M. Alsaad          For       For          Management
+1b    Elect Director Mathis Cabiallavetta     For       For          Management
+1c    Elect Director Pamela Daley             For       For          Management
+1d    Elect Director William S. Demchak       For       For          Management
+1e    Elect Director Jessica P. Einhorn       For       For          Management
+1f    Elect Director Laurence D. Fink         For       For          Management
+1g    Elect Director William E. Ford          For       For          Management
+1h    Elect Director Fabrizio Freda           For       For          Management
+1i    Elect Director Murry S. Gerber          For       For          Management
+1j    Elect Director Margaret L. Johnson      For       For          Management
+1k    Elect Director Robert S. Kapito         For       For          Management
+1l    Elect Director Cheryl D. Mills          For       For          Management
+1m    Elect Director Gordon M. Nixon          For       For          Management
+1n    Elect Director Charles H. Robbins       For       For          Management
+1o    Elect Director Marco Antonio Slim Domit For       For          Management
+1p    Elect Director Susan L. Wagner          For       For          Management
+1q    Elect Director Mark Wilson              For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify Deloitte LLP as Auditors         For       For          Management
+4     Report on the Statement on the Purpose  Against   Against      Shareholder
+      of a Corporation
+
+
+--------------------------------------------------------------------------------
+
+CAPITAL ONE FINANCIAL CORPORATION
+
+Ticker:       COF            Security ID:  14040H105
+Meeting Date: APR 30, 2020   Meeting Type: Annual
+Record Date:  MAR 03, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Richard D. Fairbank      For       For          Management
+1b    Elect Director Aparna Chennapragada     For       For          Management
+1c    Elect Director Ann Fritz Hackett        For       For          Management
+1d    Elect Director Peter Thomas Killalea    For       For          Management
+1e    Elect Director Cornelis "Eli" Leenaars  For       For          Management
+1f    Elect Director Pierre E. Leroy          For       For          Management
+1g    Elect Director Francois Locoh-Donou     For       For          Management
+1h    Elect Director Peter E. Raskind         For       For          Management
+1i    Elect Director Eileen Serra             For       For          Management
+1j    Elect Director Mayo A. Shattuck, III    For       For          Management
+1k    Elect Director Bradford H. Warner       For       For          Management
+1l    Elect Director Catherine G. West        For       For          Management
+2     Ratify Ernst &amp; Young LLP as Auditors    For       For          Management
+3     Advisory Vote to Ratify Named           For       Against      Management
+      Executive Officers' Compensation
+4     Provide Right to Act by Written Consent For       For          Management
+5     Require Independent Board Chairman      Against   For          Shareholder
+
+
+--------------------------------------------------------------------------------
+
+CBOE GLOBAL MARKETS, INC.
+
+Ticker:       CBOE           Security ID:  12503M108
+Meeting Date: MAY 12, 2020   Meeting Type: Annual
+Record Date:  MAR 19, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Edward T. Tilly          For       For          Management
+1b    Elect Director Eugene S. Sunshine       For       For          Management
+1c    Elect Director William M. Farrow, III   For       For          Management
+1d    Elect Director Edward J. Fitzpatrick    For       For          Management
+1e    Elect Director Janet P. Froetscher      For       For          Management
+1f    Elect Director Jill R. Goodman          For       For          Management
+1g    Elect Director Roderick A. Palmore      For       For          Management
+1h    Elect Director James E. Parisi          For       For          Management
+1i    Elect Director Joseph P. Ratterman      For       For          Management
+1j    Elect Director Michael L. Richter       For       For          Management
+1k    Elect Director Jill E. Sommers          For       For          Management
+1l    Elect Director Fredric J. Tomczyk       For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify KPMG LLP as Auditors             For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+CINCINNATI FINANCIAL CORPORATION
+
+Ticker:       CINF           Security ID:  172062101
+Meeting Date: MAY 02, 2020   Meeting Type: Annual
+Record Date:  MAR 04, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Thomas J. Aaron          For       For          Management
+1.2   Elect Director William F. Bahl          For       For          Management
+1.3   Elect Director Linda W. Clement-Holmes  For       For          Management
+1.4   Elect Director Dirk J. Debbink          For       For          Management
+1.5   Elect Director Steven J. Johnston       For       For          Management
+1.6   Elect Director Kenneth C. Lichtendahl   For       For          Management
+1.7   Elect Director Jill P. Meyer            For       For          Management
+1.8   Elect Director David P. Osborn          For       For          Management
+1.9   Elect Director Gretchen W. Price        For       For          Management
+1.10  Elect Director Thomas R. Schiff         For       For          Management
+1.11  Elect Director Douglas S. Skidmore      For       For          Management
+1.12  Elect Director John F. Steele, Jr.      For       For          Management
+1.13  Elect Director Larry R. Webb            For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify Deloitte &amp; Touche LLP as         For       For          Management
+      Auditors
+
+
+--------------------------------------------------------------------------------
+
+CITIGROUP INC.
+
+Ticker:       C              Security ID:  172967424
+Meeting Date: APR 21, 2020   Meeting Type: Annual
+Record Date:  FEB 24, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Michael L. Corbat        For       For          Management
+1b    Elect Director Ellen M. Costello        For       For          Management
+1c    Elect Director Grace E. Dailey          For       For          Management
+1d    Elect Director Barbara J. Desoer        For       For          Management
+1e    Elect Director John C. Dugan            For       For          Management
+1f    Elect Director Duncan P. Hennes         For       For          Management
+1g    Elect Director Peter B. Henry           For       For          Management
+1h    Elect Director S. Leslie Ireland        For       For          Management
+1i    Elect Director Lew W. (Jay) Jacobs, IV  For       For          Management
+1j    Elect Director Renee J. James           For       For          Management
+1k    Elect Director Gary M. Reiner           For       For          Management
+1l    Elect Director Diana L. Taylor          For       For          Management
+1m    Elect Director James S. Turley          For       For          Management
+1n    Elect Director Deborah C. Wright        For       For          Management
+1o    Elect Director Alexander R. Wynaendts   For       For          Management
+1p    Elect Director Ernesto Zedillo Ponce    For       For          Management
+      de Leon
+2     Ratify KPMG LLP as Auditors             For       For          Management
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+4     Amend Omnibus Stock Plan                For       For          Management
+5     Amend Proxy Access Right                Against   For          Shareholder
+6     Review on Governance Documents          Against   Against      Shareholder
+7     Report on Lobbying Payments and Policy  Against   Against      Shareholder
+
+
+--------------------------------------------------------------------------------
+
+CITIZENS FINANCIAL GROUP, INC.
+
+Ticker:       CFG            Security ID:  174610105
+Meeting Date: APR 23, 2020   Meeting Type: Annual
+Record Date:  FEB 25, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Bruce Van Saun           For       For          Management
+1.2   Elect Director Christine M. Cumming     For       For          Management
+1.3   Elect Director William P. Hankowsky     For       For          Management
+1.4   Elect Director Howard W. Hanna, III     For       For          Management
+1.5   Elect Director Leo I. ("Lee") Higdon    For       For          Management
+1.6   Elect Director Edward J. ("Ned")        For       For          Management
+      Kelly, III
+1.7   Elect Director Charles J. ("Bud") Koch  For       For          Management
+1.8   Elect Director Robert G. Leary          For       For          Management
+1.9   Elect Director Terrance J. Lillis       For       For          Management
+1.10  Elect Director Shivan Subramaniam       For       For          Management
+1.11  Elect Director Wendy A. Watson          For       For          Management
+1.12  Elect Director Marita Zuraitis          For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify Deloitte &amp; Touche LLP as         For       For          Management
+      Auditors
+4     Provide Right to Call Special Meeting   For       For          Management
+5     Amend Certificate of Incorporation to   For       For          Management
+      Remove Non-Operative Provisions
+
+
+--------------------------------------------------------------------------------
+
+CME GROUP INC.
+
+Ticker:       CME            Security ID:  12572Q105
+Meeting Date: MAY 06, 2020   Meeting Type: Annual
+Record Date:  MAR 09, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Terrence A. Duffy        For       For          Management
+1b    Elect Director Timothy S. Bitsberger    For       For          Management
+1c    Elect Director Charles P. Carey         For       For          Management
+1d    Elect Director Dennis H. Chookaszian    For       For          Management
+1e    Elect Director Bryan T. Durkin          For       For          Management
+1f    Elect Director Ana Dutra                For       For          Management
+1g    Elect Director Martin J. Gepsman        For       For          Management
+1h    Elect Director Larry G. Gerdes          For       For          Management
+1i    Elect Director Daniel R. Glickman       For       For          Management
+1j    Elect Director Daniel G. Kaye           For       For          Management
+1k    Elect Director Phyllis M. Lockett       For       For          Management
+1l    Elect Director Deborah J. Lucas         For       For          Management
+1m    Elect Director Terry L. Savage          For       For          Management
+1n    Elect Director Rahael Seifu             For       For          Management
+1o    Elect Director William R. Shepard       For       For          Management
+1p    Elect Director Howard J. Siegel         For       For          Management
+1q    Elect Director Dennis A. Suskind        For       For          Management
+2     Ratify Ernst &amp; Young as Auditors        For       For          Management
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+
+
+--------------------------------------------------------------------------------
+
+COMERICA INCORPORATED
+
+Ticker:       CMA            Security ID:  200340107
+Meeting Date: APR 28, 2020   Meeting Type: Annual
+Record Date:  FEB 28, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Michael E. Collins       For       For          Management
+1.2   Elect Director Roger A. Cregg           For       For          Management
+1.3   Elect Director T. Kevin DeNicola        For       For          Management
+1.4   Elect Director Curtis C. Farmer         For       For          Management
+1.5   Elect Director Jacqueline P. Kane       For       For          Management
+1.6   Elect Director Richard G. Lindner       For       For          Management
+1.7   Elect Director Barbara R. Smith         For       For          Management
+1.8   Elect Director Robert S. Taubman        For       For          Management
+1.9   Elect Director Reginald M. Turner, Jr.  For       For          Management
+1.10  Elect Director Nina G. Vaca             For       For          Management
+1.11  Elect Director Michael G. Van de Ven    For       For          Management
+2     Ratify Ernst &amp; Young LLP as Auditors    For       For          Management
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+
+
+--------------------------------------------------------------------------------
+
+DISCOVER FINANCIAL SERVICES
+
+Ticker:       DFS            Security ID:  254709108
+Meeting Date: MAY 14, 2020   Meeting Type: Annual
+Record Date:  MAR 16, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Jeffrey S. Aronin        For       For          Management
+1.2   Elect Director Mary K. Bush             For       For          Management
+1.3   Elect Director Gregory C. Case          For       For          Management
+1.4   Elect Director Candace H. Duncan        For       For          Management
+1.5   Elect Director Joseph F. Eazor          For       For          Management
+1.6   Elect Director Cynthia A. Glassman      For       For          Management
+1.7   Elect Director Roger C. Hochschild      For       For          Management
+1.8   Elect Director Thomas G. Maheras        For       For          Management
+1.9   Elect Director Michael H. Moskow        For       For          Management
+1.10  Elect Director Mark A. Thierer          For       For          Management
+1.11  Elect Director Lawrence A. Weinbach -   None      None         Management
+      Withdrawn Resolution
+1.12  Elect Director Jennifer L. Wong         For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify Deloitte &amp; Touche LLP as         For       For          Management
+      Auditors
+
+
+--------------------------------------------------------------------------------
+
+E*TRADE FINANCIAL CORPORATION
+
+Ticker:       ETFC           Security ID:  269246401
+Meeting Date: MAY 07, 2020   Meeting Type: Annual
+Record Date:  MAR 11, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Richard J. Carbone       For       For          Management
+1b    Elect Director Robert J. Chersi         For       For          Management
+1c    Elect Director Jaime W. Ellertson       For       For          Management
+1d    Elect Director James P. Healy           For       For          Management
+1e    Elect Director Kevin T. Kabat           For       For          Management
+1f    Elect Director James Lam                For       For          Management
+1g    Elect Director Rodger A. Lawson         For       For          Management
+1h    Elect Director Shelley B. Leibowitz     For       For          Management
+1i    Elect Director Michael A. Pizzi         For       For          Management
+1j    Elect Director Rebecca Saeger           For       For          Management
+1k    Elect Director Donna L. Weaver          For       For          Management
+1l    Elect Director Joshua A. Weinreich      For       For          Management
+2     Advisory Vote to Ratify Named           For       Against      Management
+      Executive Officers' Compensation
+3     Ratify Deloitte &amp; Touche LLP as         For       For          Management
+      Auditors
+4     Adopt Simple Majority Vote              None      For          Shareholder
+
+
+--------------------------------------------------------------------------------
+
+EVEREST RE GROUP, LTD.
+
+Ticker:       RE             Security ID:  G3223R108
+Meeting Date: MAY 11, 2020   Meeting Type: Annual
+Record Date:  MAR 16, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director John J. Amore            For       For          Management
+1.2   Elect Director Juan C. Andrade          For       For          Management
+1.3   Elect Director William F. Galtney, Jr.  For       For          Management
+1.4   Elect Director John A. Graf             For       For          Management
+1.5   Elect Director Meryl Hartzband          For       For          Management
+1.6   Elect Director Gerri Losquadro          For       For          Management
+1.7   Elect Director Roger M. Singer          For       For          Management
+1.8   Elect Director Joseph V. Taranto        For       For          Management
+1.9   Elect Director John A. Weber            For       For          Management
+2     Approve PricewaterhouseCoopers LLP as   For       For          Management
+      Auditors and Authorize Board to Fix
+      Their Remuneration
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+4     Approve Omnibus Stock Plan              For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+FIFTH THIRD BANCORP
+
+Ticker:       FITB           Security ID:  316773100
+Meeting Date: APR 14, 2020   Meeting Type: Annual
+Record Date:  FEB 21, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Nicholas K. Akins        For       For          Management
+1.2   Elect Director B. Evan Bayh, III        For       For          Management
+1.3   Elect Director Jorge L. Benitez         For       For          Management
+1.4   Elect Director Katherine B. Blackburn   For       For          Management
+1.5   Elect Director Emerson L. Brumback      For       For          Management
+1.6   Elect Director Jerry W. Burris          For       For          Management
+1.7   Elect Director Greg D. Carmichael       For       For          Management
+1.8   Elect Director C. Bryan Daniels         For       For          Management
+1.9   Elect Director Thomas H. Harvey         For       For          Management
+1.10  Elect Director Gary R. Heminger         For       For          Management
+1.11  Elect Director Jewell D. Hoover         For       For          Management
+1.12  Elect Director Eileen A. Mallesch       For       For          Management
+1.13  Elect Director Michael B. McCallister   For       For          Management
+1.14  Elect Director Marsha C. Williams       For       For          Management
+2     Ratify Deloitte &amp; Touche LLP as         For       For          Management
+      Auditors
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+4     Advisory Vote on Say on Pay Frequency   One Year  One Year     Management
+
+
+--------------------------------------------------------------------------------
+
+FIRST REPUBLIC BANK
+
+Ticker:       FRC            Security ID:  33616C100
+Meeting Date: MAY 12, 2020   Meeting Type: Annual
+Record Date:  MAR 13, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director James H. Herbert, II     For       For          Management
+1b    Elect Director Katherine August-deWilde For       For          Management
+1c    Elect Director Hafize Gaye Erkan        For       For          Management
+1d    Elect Director Frank J. Fahrenkopf, Jr. For       For          Management
+1e    Elect Director Boris Groysberg          For       For          Management
+1f    Elect Director Sandra R. Hernandez      For       For          Management
+1g    Elect Director Pamela J. Joyner         For       For          Management
+1h    Elect Director Reynold Levy             For       For          Management
+1i    Elect Director Duncan L. Niederauer     For       For          Management
+1j    Elect Director George G.C. Parker       For       For          Management
+2     Ratify KPMG LLP as Auditors             For       For          Management
+3     Amend Omnibus Stock Plan                For       For          Management
+4     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+
+
+--------------------------------------------------------------------------------
+
+FRANKLIN RESOURCES, INC.
+
+Ticker:       BEN            Security ID:  354613101
+Meeting Date: FEB 11, 2020   Meeting Type: Annual
+Record Date:  DEC 13, 2019
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Peter K. Barker          For       For          Management
+1b    Elect Director Mariann Byerwalter       For       For          Management
+1c    Elect Director Gregory E. Johnson       For       For          Management
+1d    Elect Director Jennifer M. Johnson      For       For          Management
+1e    Elect Director Rupert H. Johnson, Jr.   For       For          Management
+1f    Elect Director Anthony J. Noto          For       For          Management
+1g    Elect Director Mark C. Pigott           For       For          Management
+1h    Elect Director Laura Stein              For       For          Management
+1i    Elect Director Seth H. Waugh            For       For          Management
+1j    Elect Director Geoffrey Y. Yang         For       For          Management
+2     Ratify PricewaterhouseCoopers LLP as    For       For          Management
+      Auditors
+3     Amend Qualified Employee Stock          For       For          Management
+      Purchase Plan
+4     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+
+
+--------------------------------------------------------------------------------
+
+GLOBE LIFE INC.
+
+Ticker:       GL             Security ID:  37959E102
+Meeting Date: APR 30, 2020   Meeting Type: Annual
+Record Date:  MAR 03, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Charles E. Adair         For       For          Management
+1.2   Elect Director Linda L. Addison         For       For          Management
+1.3   Elect Director Marilyn A. Alexander     For       For          Management
+1.4   Elect Director Cheryl D. Alston         For       For          Management
+1.5   Elect Director Jane M. Buchan           For       For          Management
+1.6   Elect Director Gary L. Coleman          For       For          Management
+1.7   Elect Director Larry M. Hutchison       For       For          Management
+1.8   Elect Director Robert W. Ingram         For       For          Management
+1.9   Elect Director Steven P. Johnson        For       For          Management
+1.10  Elect Director Darren M. Rebelez        For       For          Management
+1.11  Elect Director Mary E. Thigpen          For       For          Management
+2     Ratify Deloitte &amp; Touche LLP as Auditor For       For          Management
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+
+
+--------------------------------------------------------------------------------
+
+HUNTINGTON BANCSHARES INCORPORATED
+
+Ticker:       HBAN           Security ID:  446150104
+Meeting Date: APR 22, 2020   Meeting Type: Annual
+Record Date:  FEB 18, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Lizabeth Ardisana        For       For          Management
+1.2   Elect Director Alanna Y. Cotton         For       For          Management
+1.3   Elect Director Ann B. "Tanny" Crane     For       For          Management
+1.4   Elect Director Robert S. Cubbin         For       For          Management
+1.5   Elect Director Steven G. Elliott        For       For          Management
+1.6   Elect Director Gina D. France           For       For          Management
+1.7   Elect Director J. Michael Hochschwender For       For          Management
+1.8   Elect Director John C. "Chris" Inglis   For       For          Management
+1.9   Elect Director Katherine M. A. "Allie"  For       For          Management
+      Kline
+1.10  Elect Director Richard W. Neu           For       For          Management
+1.11  Elect Director Kenneth J. Phelan        For       For          Management
+1.12  Elect Director David L. Porteous        For       For          Management
+1.13  Elect Director Stephen D. Steinour      For       For          Management
+2     Ratify PricewaterhouseCoopers LLP as    For       For          Management
+      Auditor
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+
+
+--------------------------------------------------------------------------------
+
+INTERCONTINENTAL EXCHANGE, INC.
+
+Ticker:       ICE            Security ID:  45866F104
+Meeting Date: MAY 15, 2020   Meeting Type: Annual
+Record Date:  MAR 17, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Sharon Y. Bowen          For       For          Management
+1b    Elect Director Charles R. Crisp         For       For          Management
+1c    Elect Director Duriya M. Farooqui       For       For          Management
+1d    Elect Director Jean-Marc Forneri        For       For          Management
+1e    Elect Director The Right Hon. the Lord  For       For          Management
+      Hague of Richmond
+1f    Elect Director Frederick W. Hatfield    For       For          Management
+1g    Elect Director Thomas E. Noonan         For       For          Management
+1h    Elect Director Frederic V. Salerno      For       For          Management
+1i    Elect Director Jeffrey C. Sprecher      For       For          Management
+1j    Elect Director Judith A. Sprieser       For       For          Management
+1k    Elect Director Vincent Tese             For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify Ernst &amp; Young LLP as Auditors    For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+INVESCO LTD.
+
+Ticker:       IVZ            Security ID:  G491BT108
+Meeting Date: MAY 14, 2020   Meeting Type: Annual
+Record Date:  MAR 12, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Sarah E. Beshar          For       For          Management
+1.2   Elect Director Martin L. Flanagan       For       For          Management
+1.3   Elect Director William F. Glavin, Jr.   For       For          Management
+1.4   Elect Director C. Robert Henrikson      For       For          Management
+1.5   Elect Director Denis Kessler            For       For          Management
+1.6   Elect Director Nigel Sheinwald          For       For          Management
+1.7   Elect Director G. Richard Wagoner, Jr.  For       For          Management
+1.8   Elect Director Phoebe A. Wood           For       For          Management
+2     Advisory Vote to Ratify Named           For       Against      Management
+      Executive Officers' Compensation
+3     Ratify PricewaterhouseCoopers LLP as    For       For          Management
+      Auditors
+
+
+--------------------------------------------------------------------------------
+
+JPMORGAN CHASE &amp; CO.
+
+Ticker:       JPM            Security ID:  46625H100
+Meeting Date: MAY 19, 2020   Meeting Type: Annual
+Record Date:  MAR 20, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Linda B. Bammann         For       For          Management
+1b    Elect Director Stephen B. Burke         For       For          Management
+1c    Elect Director Todd A. Combs            For       For          Management
+1d    Elect Director James S. Crown           For       For          Management
+1e    Elect Director James Dimon              For       For          Management
+1f    Elect Director Timothy P. Flynn         For       For          Management
+1g    Elect Director Mellody Hobson           For       For          Management
+1h    Elect Director Michael A. Neal          For       For          Management
+1i    Elect Director Lee R. Raymond           For       For          Management
+1j    Elect Director Virginia M. Rometty      For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify PricewaterhouseCoopers LLP as    For       For          Management
+      Auditor
+4     Require Independent Board Chair         Against   For          Shareholder
+5     Report on Reputational Risk Related to  Against   Against      Shareholder
+      Canadian Oil Sands, Oil Sands Pipeline
+      Companies and Arctic Oil and Gas
+      Exploration and Production.
+6     Report on Climate Change                Against   For          Shareholder
+7     Amend Shareholder Written Consent       Against   Against      Shareholder
+      Provisions
+8     Report on Charitable Contributions      Against   Against      Shareholder
+9     Report on Gender/Racial Pay Gap         Against   Against      Shareholder
+
+
+--------------------------------------------------------------------------------
+
+LOEWS CORPORATION
+
+Ticker:       L              Security ID:  540424108
+Meeting Date: MAY 12, 2020   Meeting Type: Annual
+Record Date:  MAR 17, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Ann E. Berman            For       For          Management
+1b    Elect Director Joseph L. Bower          For       For          Management
+1c    Elect Director Charles D. Davidson      For       For          Management
+1d    Elect Director Charles M. Diker         For       For          Management
+1e    Elect Director Paul J. Fribourg         For       For          Management
+1f    Elect Director Walter L. Harris         For       Against      Management
+1g    Elect Director Philip A. Laskawy        For       For          Management
+1h    Elect Director Susan P. Peters          For       For          Management
+1i    Elect Director Andrew H. Tisch          For       For          Management
+1j    Elect Director James S. Tisch           For       For          Management
+1k    Elect Director Jonathan M. Tisch        For       For          Management
+1l    Elect Director Anthony Welters          For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify Deloitte &amp; Touche LLP as Auditor For       For          Management
+4     Report on Political Contributions       Against   For          Shareholder
+
+
+--------------------------------------------------------------------------------
+
+M&amp;T BANK CORPORATION
+
+Ticker:       MTB            Security ID:  55261F104
+Meeting Date: APR 21, 2020   Meeting Type: Annual
+Record Date:  FEB 25, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director C. Angela Bontempo       For       For          Management
+1.2   Elect Director Robert T. Brady          For       For          Management
+1.3   Elect Director T. Jefferson             For       For          Management
+      Cunningham, III
+1.4   Elect Director Gary N. Geisel           For       For          Management
+1.5   Elect Director Richard S. Gold          For       For          Management
+1.6   Elect Director Richard A. Grossi        For       For          Management
+1.7   Elect Director John D. Hawke, Jr.       For       For          Management
+1.8   Elect Director Rene F. Jones            For       For          Management
+1.9   Elect Director Richard H. Ledgett, Jr.  For       For          Management
+1.10  Elect Director Newton P.S. Merrill      For       For          Management
+1.11  Elect Director Kevin J. Pearson         For       For          Management
+1.12  Elect Director Melinda R. Rich          For       For          Management
+1.13  Elect Director Robert E. Sadler, Jr.    For       For          Management
+1.14  Elect Director Denis J. Salamone        For       Withhold     Management
+1.15  Elect Director John R. Scannell         For       For          Management
+1.16  Elect Director David S. Scharfstein     For       For          Management
+1.17  Elect Director Herbert L. Washington    For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify PricewaterhouseCoopers LLP as    For       For          Management
+      Auditors
+
+
+--------------------------------------------------------------------------------
+
+MARSH &amp; MCLENNAN COMPANIES, INC.
+
+Ticker:       MMC            Security ID:  571748102
+Meeting Date: MAY 21, 2020   Meeting Type: Annual
+Record Date:  MAR 23, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Anthony K. Anderson      For       For          Management
+1b    Elect Director Oscar Fanjul             For       For          Management
+1c    Elect Director Daniel S. Glaser         For       For          Management
+1d    Elect Director H. Edward Hanway         For       For          Management
+1e    Elect Director Deborah C. Hopkins       For       For          Management
+1f    Elect Director Tamara Ingram            For       For          Management
+1g    Elect Director Jane H. Lute             For       For          Management
+1h    Elect Director Steven A. Mills          For       For          Management
+1i    Elect Director Bruce P. Nolop           For       For          Management
+1j    Elect Director Marc D. Oken             For       For          Management
+1k    Elect Director Morton O. Schapiro       For       For          Management
+1l    Elect Director Lloyd M. Yates           For       For          Management
+1m    Elect Director R. David Yost            For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify Deloitte &amp; Touche LLP as Auditor For       For          Management
+4     Approve Omnibus Stock Plan              For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+MOODY'S CORPORATION
+
+Ticker:       MCO            Security ID:  615369105
+Meeting Date: APR 21, 2020   Meeting Type: Annual
+Record Date:  FEB 24, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Basil L. Anderson        For       For          Management
+1b    Elect Director Jorge A. Bermudez        For       For          Management
+1c    Elect Director Therese Esperdy          For       For          Management
+1d    Elect Director Vincent A. Forlenza      For       For          Management
+1e    Elect Director Kathryn M. Hill          For       For          Management
+1f    Elect Director Raymond W. McDaniel, Jr. For       For          Management
+1g    Elect Director Henry A. McKinnell, Jr.  For       For          Management
+1h    Elect Director Leslie F. Seidman        For       For          Management
+1i    Elect Director Bruce Van Saun           For       For          Management
+2a    Eliminate Supermajority Vote            For       For          Management
+      Requirements to Amend Charter and
+      Bylaws
+2b    Eliminate Supermajority Vote            For       For          Management
+      Requirement to Remove Directors
+2c    Eliminate Supermajority Vote            For       For          Management
+      Requirement for Filling Open Board
+      Seats
+3     Ratify KPMG LLP as Auditors             For       For          Management
+4     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+
+
+--------------------------------------------------------------------------------
+
+MORGAN STANLEY
+
+Ticker:       MS             Security ID:  617446448
+Meeting Date: MAY 21, 2020   Meeting Type: Annual
+Record Date:  MAR 23, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Elizabeth Corley         For       For          Management
+1b    Elect Director Alistair Darling         For       For          Management
+1c    Elect Director Thomas H. Glocer         For       For          Management
+1d    Elect Director James P. Gorman          For       For          Management
+1e    Elect Director Robert H. Herz           For       For          Management
+1f    Elect Director Nobuyuki Hirano          For       For          Management
+1g    Elect Director Stephen J. Luczo         For       For          Management
+1h    Elect Director Jami Miscik              For       For          Management
+1i    Elect Director Dennis M. Nally          For       For          Management
+1j    Elect Director Takeshi Ogasawara        For       For          Management
+1k    Elect Director Hutham S. Olayan         For       For          Management
+1l    Elect Director Mary L. Schapiro         For       For          Management
+1m    Elect Director Perry M. Traquina        For       For          Management
+1n    Elect Director Rayford Wilkins, Jr.     For       For          Management
+2     Ratify Deloitte &amp; Touche LLP as         For       For          Management
+      Auditors
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+
+
+--------------------------------------------------------------------------------
+
+MSCI INC.
+
+Ticker:       MSCI           Security ID:  55354G100
+Meeting Date: APR 28, 2020   Meeting Type: Annual
+Record Date:  MAR 03, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Henry A. Fernandez       For       For          Management
+1b    Elect Director Robert G. Ashe           For       For          Management
+1c    Elect Director Benjamin F. duPont       For       For          Management
+1d    Elect Director Wayne Edmunds            For       For          Management
+1e    Elect Director Catherine R. Kinney      For       For          Management
+1f    Elect Director Jacques P. Perold        For       For          Management
+1g    Elect Director Sandy C. Rattray         For       For          Management
+1h    Elect Director Linda H. Riefler         For       For          Management
+1i    Elect Director Marcus L. Smith          For       For          Management
+1j    Elect Director Paula Volent             For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify PricewaterhouseCoopers LLP as    For       For          Management
+      Auditors
+
+
+--------------------------------------------------------------------------------
+
+NASDAQ, INC.
+
+Ticker:       NDAQ           Security ID:  631103108
+Meeting Date: MAY 19, 2020   Meeting Type: Annual
+Record Date:  MAR 23, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Melissa M. Arnoldi       For       For          Management
+1b    Elect Director Charlene T. Begley       For       For          Management
+1c    Elect Director Steven D. Black          For       For          Management
+1d    Elect Director Adena T. Friedman        For       For          Management
+1e    Elect Director Essa Kazim               For       For          Management
+1f    Elect Director Thomas A. Kloet          For       For          Management
+1g    Elect Director John D. Rainey           For       For          Management
+1h    Elect Director Michael R. Splinter      For       For          Management
+1i    Elect Director Jacob Wallenberg         For       For          Management
+1j    Elect Director Alfred W. Zollar         For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Amend Qualified Employee Stock          For       For          Management
+      Purchase Plan
+4     Ratify Ernst &amp; Young LLP as Auditors    For       For          Management
+5     Provide Right to Act by Written Consent Against   For          Shareholder
+
+
+--------------------------------------------------------------------------------
+
+NORTHERN TRUST CORPORATION
+
+Ticker:       NTRS           Security ID:  665859104
+Meeting Date: APR 21, 2020   Meeting Type: Annual
+Record Date:  FEB 24, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Linda Walker Bynoe       For       For          Management
+1b    Elect Director Susan Crown              For       For          Management
+1c    Elect Director Dean M. Harrison         For       For          Management
+1d    Elect Director Jay L. Henderson         For       For          Management
+1e    Elect Director Marcy S. Klevorn         For       For          Management
+1f    Elect Director Siddharth N. "Bobby"     For       For          Management
+      Mehta
+1g    Elect Director Michael G. O'Grady       For       For          Management
+1h    Elect Director Jose Luis Prado          For       For          Management
+1i    Elect Director Thomas E. Richards       For       For          Management
+1j    Elect Director Martin P. Slark          For       For          Management
+1k    Elect Director David H. B. Smith, Jr.   For       For          Management
+1l    Elect Director Donald Thompson          For       For          Management
+1m    Elect Director Charles A. Tribbett, III For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify KPMG LLP as Auditors             For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+PRINCIPAL FINANCIAL GROUP, INC.
+
+Ticker:       PFG            Security ID:  74251V102
+Meeting Date: MAY 19, 2020   Meeting Type: Annual
+Record Date:  MAR 25, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Jonathan S. Auerbach     For       For          Management
+1.2   Elect Director Jocelyn Carter-Miller    For       For          Management
+1.3   Elect Director Scott M. Mills           For       For          Management
+2     Approve Non-Employee Director Omnibus   For       For          Management
+      Stock Plan
+3     Amend Qualified Employee Stock          For       For          Management
+      Purchase Plan
+4     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+5     Ratify Ernst &amp; Young LLP as Auditors    For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+PRUDENTIAL FINANCIAL, INC.
+
+Ticker:       PRU            Security ID:  744320102
+Meeting Date: MAY 12, 2020   Meeting Type: Annual
+Record Date:  MAR 13, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Thomas J. Baltimore, Jr. For       For          Management
+1.2   Elect Director Gilbert F. Casellas      For       For          Management
+1.3   Elect Director Robert M. Falzon         For       For          Management
+1.4   Elect Director Martina Hund-Mejean      For       For          Management
+1.5   Elect Director Karl J. Krapek           For       For          Management
+1.6   Elect Director Peter R. Lighte          For       For          Management
+1.7   Elect Director Charles F. Lowrey        For       For          Management
+1.8   Elect Director George Paz               For       For          Management
+1.9   Elect Director Sandra Pianalto          For       For          Management
+1.10  Elect Director Christine A. Poon        For       For          Management
+1.11  Elect Director Douglas A. Scovanner     For       For          Management
+1.12  Elect Director Michael A. Todman        For       For          Management
+2     Ratify PricewaterhouseCoopers LLP as    For       For          Management
+      Auditors
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+4     Require Independent Board Chairman      Against   For          Shareholder
+
+
+--------------------------------------------------------------------------------
+
+RAYMOND JAMES FINANCIAL, INC.
+
+Ticker:       RJF            Security ID:  754730109
+Meeting Date: FEB 20, 2020   Meeting Type: Annual
+Record Date:  DEC 23, 2019
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Charles G. von           For       For          Management
+      Arentschildt
+1.2   Elect Director Robert M. Dutkowsky      For       For          Management
+1.3   Elect Director Jeffrey N. Edwards       For       For          Management
+1.4   Elect Director Benjamin C. Esty         For       For          Management
+1.5   Elect Director Anne Gates               For       For          Management
+1.6   Elect Director Francis S. Godbold       For       For          Management
+1.7   Elect Director Thomas A. James          For       For          Management
+1.8   Elect Director Gordon L. Johnson        For       For          Management
+1.9   Elect Director Roderick C. McGeary      For       For          Management
+1.10  Elect Director Paul C. Reilly           For       For          Management
+1.11  Elect Director Raj Seshadri             For       For          Management
+1.12  Elect Director Susan N. Story           For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Amend Omnibus Stock Plan                For       For          Management
+4     Ratify KPMG LLP as Auditors             For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+REGIONS FINANCIAL CORPORATION
+
+Ticker:       RF             Security ID:  7591EP100
+Meeting Date: APR 22, 2020   Meeting Type: Annual
+Record Date:  FEB 24, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Carolyn H. Byrd          For       For          Management
+1b    Elect Director Don DeFosset             For       For          Management
+1c    Elect Director Samuel A. Di Piazza, Jr. For       For          Management
+1d    Elect Director Zhanna Golodryga         For       For          Management
+1e    Elect Director John D. Johns            For       For          Management
+1f    Elect Director Ruth Ann Marshall        For       For          Management
+1g    Elect Director Charles D. McCrary       For       For          Management
+1h    Elect Director James T. Prokopanko      For       For          Management
+1i    Elect Director Lee J. Styslinger, III   For       For          Management
+1j    Elect Director Jose S. Suquet           For       For          Management
+1k    Elect Director John M. Turner, Jr.      For       For          Management
+1l    Elect Director Timothy Vines            For       For          Management
+2     Ratify Ernst &amp; Young LLP as Auditors    For       For          Management
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+
+
+--------------------------------------------------------------------------------
+
+S&amp;P GLOBAL INC.
+
+Ticker:       SPGI           Security ID:  78409V104
+Meeting Date: MAY 13, 2020   Meeting Type: Annual
+Record Date:  MAR 23, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Marco Alvera             For       For          Management
+1.2   Elect Director William J. Amelio        For       For          Management
+1.3   Elect Director William D. Green         For       For          Management
+1.4   Elect Director Charles E. Haldeman, Jr. For       For          Management
+1.5   Elect Director Stephanie C. Hill        For       For          Management
+1.6   Elect Director Rebecca J. Jacoby        For       For          Management
+1.7   Elect Director Monique F. Leroux        For       For          Management
+1.8   Elect Director Maria R. Morris          For       For          Management
+1.9   Elect Director Douglas L. Peterson      For       For          Management
+1.10  Elect Director Edward B. Rust, Jr.      For       For          Management
+1.11  Elect Director Kurt L. Schmoke          For       For          Management
+1.12  Elect Director Richard E. Thornburgh    For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Provide Directors May Be Removed With   For       For          Management
+      or Without Cause
+4     Ratify Ernst &amp; Young LLP as Auditors    For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+STATE STREET CORPORATION
+
+Ticker:       STT            Security ID:  857477103
+Meeting Date: MAY 20, 2020   Meeting Type: Annual
+Record Date:  MAR 11, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Patrick de Saint-Aignan  For       For          Management
+1b    Elect Director Marie A. Chandoha        For       For          Management
+1c    Elect Director Lynn A. Dugle            For       For          Management
+1d    Elect Director Amelia C. Fawcett        For       For          Management
+1e    Elect Director William C. Freda         For       For          Management
+1f    Elect Director Sara Mathew              For       For          Management
+1g    Elect Director William L. Meaney        For       For          Management
+1h    Elect Director Ronald P. O'Hanley       For       For          Management
+1i    Elect Director Sean O'Sullivan          For       For          Management
+1j    Elect Director Richard P. Sergel        For       For          Management
+1k    Elect Director Gregory L. Summe         For       For          Management
+2     Advisory Vote to Ratify Named           For       Against      Management
+      Executive Officers' Compensation
+3     Ratify Ernst &amp; Young LLP as Auditors    For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+SUNTRUST BANKS, INC.
+
+Ticker:       STI            Security ID:  867914103
+Meeting Date: JUL 30, 2019   Meeting Type: Special
+Record Date:  JUN 24, 2019
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Approve Merger Agreement                For       For          Management
+2     Advisory Vote on Golden Parachutes      For       For          Management
+3     Adjourn Meeting                         For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+SVB FINANCIAL GROUP
+
+Ticker:       SIVB           Security ID:  78486Q101
+Meeting Date: APR 23, 2020   Meeting Type: Annual
+Record Date:  FEB 24, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Greg W. Becker           For       For          Management
+1.2   Elect Director Eric A. Benhamou         For       For          Management
+1.3   Elect Director John S. Clendening       For       For          Management
+1.4   Elect Director Roger F. Dunbar          For       For          Management
+1.5   Elect Director Joel P. Friedman         For       For          Management
+1.6   Elect Director Jeffrey N. Maggioncalda  For       For          Management
+1.7   Elect Director Kay Matthews             For       For          Management
+1.8   Elect Director Mary J. Miller           For       For          Management
+1.9   Elect Director Kate D. Mitchell         For       For          Management
+1.10  Elect Director John F. Robinson         For       For          Management
+1.11  Elect Director Garen K. Staglin         For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify KPMG LLP as Auditors             For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+SYNCHRONY FINANCIAL
+
+Ticker:       SYF            Security ID:  87165B103
+Meeting Date: MAY 21, 2020   Meeting Type: Annual
+Record Date:  MAR 26, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Margaret M. Keane        For       For          Management
+1b    Elect Director Fernando Aguirre         For       For          Management
+1c    Elect Director Paget L. Alves           For       For          Management
+1d    Elect Director Arthur W. Coviello, Jr.  For       For          Management
+1e    Elect Director William W. Graylin       For       For          Management
+1f    Elect Director Roy A. Guthrie           For       For          Management
+1g    Elect Director Richard C. Hartnack      For       For          Management
+1h    Elect Director Jeffrey G. Naylor        For       For          Management
+1i    Elect Director Laurel J. Richie         For       For          Management
+1j    Elect Director Olympia J. Snowe         For       For          Management
+1k    Elect Director Ellen M. Zane            For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify KPMG LLP as Auditors             For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+T. ROWE PRICE GROUP, INC.
+
+Ticker:       TROW           Security ID:  74144T108
+Meeting Date: MAY 12, 2020   Meeting Type: Annual
+Record Date:  MAR 11, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Mark S. Bartlett         For       For          Management
+1b    Elect Director Mary K. Bush             For       For          Management
+1c    Elect Director Dina Dublon              For       For          Management
+1d    Elect Director  Freeman A. Hrabowski,   For       For          Management
+      III
+1e    Elect Director Robert F. MacLellan      For       For          Management
+1f    Elect Director Olympia J. Snowe         For       For          Management
+1g    Elect Director Robert J. Stevens        For       For          Management
+1h    Elect Director William J. Stromberg     For       For          Management
+1i    Elect Director Richard R. Verma         For       For          Management
+1j    Elect Director Sandra S. Wijnberg       For       For          Management
+1k    Elect Director Alan D. Wilson           For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify KPMG LLP as Auditors             For       For          Management
+4     Approve Omnibus Stock Plan              For       For          Management
+5     Report on and Assess Proxy Voting       Against   Against      Shareholder
+      Policies in Relation to Climate Change
+      Position
+
+
+--------------------------------------------------------------------------------
+
+THE ALLSTATE CORPORATION
+
+Ticker:       ALL            Security ID:  020002101
+Meeting Date: MAY 19, 2020   Meeting Type: Annual
+Record Date:  MAR 20, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Kermit R. Crawford       For       For          Management
+1b    Elect Director Michael L. Eskew         For       For          Management
+1c    Elect Director Margaret M. Keane        For       For          Management
+1d    Elect Director Siddharth N. (Bobby)     For       For          Management
+      Mehta
+1e    Elect Director Jacques P. Perold        For       For          Management
+1f    Elect Director Andrea Redmond           For       For          Management
+1g    Elect Director Gregg M. Sherrill        For       For          Management
+1h    Elect Director Judith A. Sprieser       For       For          Management
+1i    Elect Director Perry M. Traquina        For       For          Management
+1j    Elect Director Thomas J. Wilson         For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify Deloitte &amp; Touche LLP as         For       For          Management
+      Auditors
+
+
+--------------------------------------------------------------------------------
+
+THE BANK OF NEW YORK MELLON CORPORATION
+
+Ticker:       BK             Security ID:  064058100
+Meeting Date: APR 15, 2020   Meeting Type: Annual
+Record Date:  FEB 18, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Linda Z. Cook            For       For          Management
+1b    Elect Director Joseph J. Echevarria     For       For          Management
+1c    Elect Director Thomas P. "Todd" Gibbons For       For          Management
+1d    Elect Director Jeffrey A. Goldstein     For       For          Management
+1e    Elect Director Edmund F. "Ted" Kelly    For       For          Management
+1f    Elect Director Jennifer B. Morgan       For       For          Management
+1g    Elect Director Elizabeth E. Robinson    For       For          Management
+1h    Elect Director Samuel C. Scott, III     For       For          Management
+1i    Elect Director Frederick O. Terrell     For       For          Management
+1j    Elect Director Alfred W. "AI" Zollar    For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify KPMG LLP as Auditors             For       For          Management
+4     Report on Gender Pay Gap                Against   Against      Shareholder
+5     Require Shareholder Approval of Bylaw   Against   Against      Shareholder
+      Amendments Adopted by the Board of
+      Directors
+
+
+--------------------------------------------------------------------------------
+
+THE CHARLES SCHWAB CORPORATION
+
+Ticker:       SCHW           Security ID:  808513105
+Meeting Date: MAY 12, 2020   Meeting Type: Annual
+Record Date:  MAR 16, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director William S. Haraf         For       For          Management
+1b    Elect Director Frank C. Herringer       For       For          Management
+1c    Elect Director Roger O. Walther         For       For          Management
+2     Ratify Deloitte &amp; Touche LLP as         For       For          Management
+      Auditors
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+4     Amend Omnibus Stock Plan                For       For          Management
+5     Provide Proxy Access Right              For       For          Management
+6     Adopt Policy to Annually Disclose       Against   For          Shareholder
+      EEO-1 Data
+7     Report on Lobbying Payments and Policy  Against   For          Shareholder
+
+
+--------------------------------------------------------------------------------
+
+THE GOLDMAN SACHS GROUP, INC.
+
+Ticker:       GS             Security ID:  38141G104
+Meeting Date: APR 30, 2020   Meeting Type: Annual
+Record Date:  MAR 02, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director M. Michele Burns         For       For          Management
+1b    Elect Director Drew G. Faust            For       For          Management
+1c    Elect Director Mark A. Flaherty         For       For          Management
+1d    Elect Director Ellen J. Kullman         For       For          Management
+1e    Elect Director Lakshmi N. Mittal        For       For          Management
+1f    Elect Director Adebayo O. Ogunlesi      For       For          Management
+1g    Elect Director Peter Oppenheimer        For       For          Management
+1h    Elect Director David M. Solomon         For       For          Management
+1i    Elect Director Jan E. Tighe             For       For          Management
+1j    Elect Director David A. Viniar          For       For          Management
+1k    Elect Director Mark O. Winkelman        For       For          Management
+2     Advisory Vote to Ratify Named           For       Against      Management
+      Executive Officers' Compensation
+3     Ratify PricewaterhouseCoopers LLP as    For       For          Management
+      Auditors
+4     Provide Right to Act by Written Consent Against   For          Shareholder
+5     Review of Statement on the Purpose of   Against   Against      Shareholder
+      a Corporation
+
+
+--------------------------------------------------------------------------------
+
+THE HARTFORD FINANCIAL SERVICES GROUP, INC.
+
+Ticker:       HIG            Security ID:  416515104
+Meeting Date: MAY 20, 2020   Meeting Type: Annual
+Record Date:  MAR 23, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Robert B. Allardice, III For       For          Management
+1b    Elect Director Larry D. De Shon         For       For          Management
+1c    Elect Director Carlos Dominguez         For       For          Management
+1d    Elect Director Trevor Fetter            For       For          Management
+1e    Elect Director Kathryn A. Mikells       For       For          Management
+1f    Elect Director Michael G. Morris        For       For          Management
+1g    Elect Director Teresa W. Roseborough    For       For          Management
+1h    Elect Director Virginia P. Ruesterholz  For       For          Management
+1i    Elect Director Christopher J. Swift     For       For          Management
+1j    Elect Director Matt Winter              For       For          Management
+1k    Elect Director Greig Woodring           For       For          Management
+2     Ratify Deloitte &amp; Touche LLP as         For       For          Management
+      Auditors
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+4     Approve Omnibus Stock Plan              For       For          Management
+
+
+--------------------------------------------------------------------------------
+
+THE PNC FINANCIAL SERVICES GROUP, INC.
+
+Ticker:       PNC            Security ID:  693475105
+Meeting Date: APR 28, 2020   Meeting Type: Annual
+Record Date:  JAN 31, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Joseph Alvarado          For       For          Management
+1.2   Elect Director Charles E. Bunch         For       For          Management
+1.3   Elect Director Debra A. Cafaro          For       For          Management
+1.4   Elect Director Marjorie Rodgers         For       For          Management
+      Cheshire
+1.5   Elect Director William S. Demchak       For       For          Management
+1.6   Elect Director Andrew T. Feldstein      For       For          Management
+1.7   Elect Director Richard J. Harshman      For       For          Management
+1.8   Elect Director Daniel R. Hesse          For       For          Management
+1.9   Elect Director Linda R. Medler          For       For          Management
+1.10  Elect Director Martin Pfinsgraff        For       For          Management
+1.11  Elect Director Toni Townes-Whitley      For       For          Management
+1.12  Elect Director Michael J. Ward          For       For          Management
+2     Ratify PricewaterhouseCoopers LLP as    For       For          Management
+      Auditors
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+4     Amend Qualified Employee Stock          For       For          Management
+      Purchase Plan
+
+
+--------------------------------------------------------------------------------
+
+THE PROGRESSIVE CORPORATION
+
+Ticker:       PGR            Security ID:  743315103
+Meeting Date: MAY 08, 2020   Meeting Type: Annual
+Record Date:  MAR 13, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Philip Bleser            For       For          Management
+1b    Elect Director Stuart B. Burgdoerfer    For       For          Management
+1c    Elect Director Pamela J. Craig          For       For          Management
+1d    Elect Director Charles A. Davis         For       For          Management
+1e    Elect Director Roger N. Farah           For       For          Management
+1f    Elect Director Lawton W. Fitt           For       For          Management
+1g    Elect Director Susan Patricia Griffith  For       For          Management
+1h    Elect Director Jeffrey D. Kelly         For       For          Management
+1i    Elect Director Patrick H. Nettles       For       For          Management
+1j    Elect Director Barbara R. Snyder        For       For          Management
+1k    Elect Director Jan E. Tighe             For       For          Management
+1l    Elect Director Kahina Van Dyke          For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify PricewaterhouseCoopers LLP as    For       For          Management
+      Auditor
+
+
+--------------------------------------------------------------------------------
+
+THE TRAVELERS COMPANIES, INC.
+
+Ticker:       TRV            Security ID:  89417E109
+Meeting Date: MAY 21, 2020   Meeting Type: Annual
+Record Date:  MAR 24, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Alan L. Beller           For       For          Management
+1b    Elect Director Janet M. Dolan           For       For          Management
+1c    Elect Director Patricia L. Higgins      For       For          Management
+1d    Elect Director William J. Kane          For       For          Management
+1e    Elect Director Clarence Otis, Jr.       For       For          Management
+1f    Elect Director Elizabeth E. Robinson    For       For          Management
+1g    Elect Director Philip T. (Pete)         For       For          Management
+      Ruegger, III
+1h    Elect Director Todd C. Schermerhorn     For       For          Management
+1i    Elect Director Alan D. Schnitzer        For       For          Management
+1j    Elect Director Donald J. Shepard        For       For          Management
+1k    Elect Director Laurie J. Thomsen        For       For          Management
+2     Ratify KPMG LLP as Auditors             For       For          Management
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+
+
+--------------------------------------------------------------------------------
+
+TRUIST FINANCIAL CORPORATION
+
+Ticker:       TFC            Security ID:  89832Q109
+Meeting Date: APR 28, 2020   Meeting Type: Annual
+Record Date:  FEB 21, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Jennifer S. Banner       For       For          Management
+1.2   Elect Director K. David Boyer, Jr.      For       For          Management
+1.3   Elect Director Agnes Bundy Scanlan      For       For          Management
+1.4   Elect Director Anna R. Cablik           For       For          Management
+1.5   Elect Director Dallas S. Clement        For       For          Management
+1.6   Elect Director Paul D. Donahue          For       For          Management
+1.7   Elect Director Paul R. Garcia           For       For          Management
+1.8   Elect Director Patrick C. Graney, III   For       For          Management
+1.9   Elect Director Linnie M. Haynesworth    For       For          Management
+1.10  Elect Director Kelly S. King            For       For          Management
+1.11  Elect Director Easter A. Maynard        For       For          Management
+1.12  Elect Director Donna S. Morea           For       For          Management
+1.13  Elect Director Charles A. Patton        For       For          Management
+1.14  Elect Director Nido R. Qubein           For       For          Management
+1.15  Elect Director David M. Ratcliffe       For       For          Management
+1.16  Elect Director William H. Rogers, Jr.   For       For          Management
+1.17  Elect Director Frank P. Scruggs, Jr.    For       For          Management
+1.18  Elect Director Christine Sears          For       For          Management
+1.19  Elect Director Thomas E. Skains         For       For          Management
+1.20  Elect Director Bruce L. Tanner          For       For          Management
+1.21  Elect Director Thomas N. Thompson       For       For          Management
+1.22  Elect Director Steven C. Voorhees       For       For          Management
+2     Ratify PricewaterhouseCoopers LLP as    For       For          Management
+      Auditors
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+4     Require Independent Board Chairman      Against   For          Shareholder
+
+
+--------------------------------------------------------------------------------
+
+U.S. BANCORP
+
+Ticker:       USB            Security ID:  902973304
+Meeting Date: APR 21, 2020   Meeting Type: Annual
+Record Date:  FEB 25, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Warner L. Baxter         For       For          Management
+1b    Elect Director Dorothy J. Bridges       For       For          Management
+1c    Elect Director Elizabeth L. Buse        For       For          Management
+1d    Elect Director Marc N. Casper           For       For          Management
+1e    Elect Director Andrew Cecere            For       For          Management
+1f    Elect Director Kimberly J. Harris       For       For          Management
+1g    Elect Director Roland A. Hernandez      For       For          Management
+1h    Elect Director Olivia F. Kirtley        For       For          Management
+1i    Elect Director Karen S. Lynch           For       For          Management
+1j    Elect Director Richard P. McKenney      For       For          Management
+1k    Elect Director Yusuf I. Mehdi           For       For          Management
+1l    Elect Director John P. Wiehoff          For       For          Management
+1m    Elect Director Scott W. Wine            For       For          Management
+2     Ratify Ernst &amp; Young LLP as Auditors    For       For          Management
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+
+
+--------------------------------------------------------------------------------
+
+WELLS FARGO &amp; COMPANY
+
+Ticker:       WFC            Security ID:  949746101
+Meeting Date: APR 28, 2020   Meeting Type: Annual
+Record Date:  FEB 28, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Steven D. Black          For       For          Management
+1b    Elect Director Celeste A. Clark         For       For          Management
+1c    Elect Director Theodore F. Craver, Jr.  For       For          Management
+1d    Elect Director Wayne M. Hewett          For       For          Management
+1e    Elect Director  Donald M. James         For       For          Management
+1f    Elect Director Maria R. Morris          For       For          Management
+1g    Elect Director Charles H. Noski         For       For          Management
+1h    Elect Director Richard B. Payne, Jr.    For       For          Management
+1i    Elect Director Juan A. Pujadas          For       For          Management
+1j    Elect Director Ronald L. Sargent        For       For          Management
+1k    Elect Director Charles W. Scharf        For       For          Management
+1l    Elect Director Suzanne M. Vautrinot     For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify KPMG LLP as Auditors             For       For          Management
+4     Require Shareholder Approval of Bylaw   Against   Against      Shareholder
+      Amendments Adopted by the Board of
+      Directors
+5     Report on Incentive-Based Compensation  Against   For          Shareholder
+      and Risks of Material Losses
+6     Report on Global Median Gender Pay Gap  Against   Against      Shareholder
+
+
+--------------------------------------------------------------------------------
+
+WILLIS TOWERS WATSON PUBLIC LIMITED COMPANY
+
+Ticker:       WLTW           Security ID:  G96629103
+Meeting Date: JUN 10, 2020   Meeting Type: Annual
+Record Date:  MAR 20, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Anna C. Catalano         For       For          Management
+1b    Elect Director Victor F. Ganzi          For       For          Management
+1c    Elect Director John J. Haley            For       For          Management
+1d    Elect Director Wendy E. Lane            For       For          Management
+1e    Elect Director Brendan R. O'Neill       For       For          Management
+1f    Elect Director Jaymin B. Patel          For       For          Management
+1g    Elect Director Linda D. Rabbitt         For       For          Management
+1h    Elect Director Paul D. Thomas           For       For          Management
+1i    Elect Director Wilhelm Zeller           For       For          Management
+2     Ratify the Appointment of Deloitte &amp;    For       For          Management
+      Touche LLP as Auditor and Deloitte
+      Ireland LLP to audit the Irish
+      Statutory Accounts, and Authorize the
+      Board to Fix Their Remuneration
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+4     Renew the Board's Authority to Issue    For       For          Management
+      Shares Under Irish Law
+5     Renew the Board's Authority to Opt-Out  For       For          Management
+      of Statutory Pre-Emptions Rights
+
+
+--------------------------------------------------------------------------------
+
+ZIONS BANCORPORATION, N.A.
+
+Ticker:       ZION           Security ID:  989701107
+Meeting Date: MAY 01, 2020   Meeting Type: Annual
+Record Date:  FEB 27, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Jerry C. Atkin           For       For          Management
+1b    Elect Director Gary L. Crittenden       For       For          Management
+1c    Elect Director Suren K. Gupta           For       For          Management
+1d    Elect Director J. David Heaney          For       For          Management
+1e    Elect Director Vivian S. Lee            For       For          Management
+1f    Elect Director Scott J. McLean          For       For          Management
+1g    Elect Director Edward F. Murphy         For       For          Management
+1h    Elect Director Stephen D. Quinn         For       For          Management
+1i    Elect Director Harris H. Simmons        For       For          Management
+1j    Elect Director Aaron B. Skonnard        For       For          Management
+1k    Elect Director Barbara A. Yastine       For       For          Management
+2     Ratify Ernst &amp; Young LLP as Auditors    For       For          Management
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+
+
+
+
+========== END NPX REPORT</PRE>
+ </DIV>
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>PROSHARES TRUST </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>PROXY VOTING RECORD </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>FOR PERIOD JULY&nbsp;1, 2019 TO JUNE&nbsp;30, 2020 </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman"><B>The following Portfolios did not hold any voting securities and accordingly did not vote any proxies during the reporting period: </B></P>
+<P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short <FONT STYLE="white-space:nowrap">7-10</FONT> Year Treasury </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short 20+ Year Treasury </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short Basic Materials </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short Dow30<SUP STYLE="font-size:85%; vertical-align:top">SM</SUP> </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short Financials </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short FTSE China 50 </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short High Yield </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short MidCap400 </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short MSCI EAFE </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short MSCI Emerging Markets </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short Oil&nbsp;&amp; Gas </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short QQQ </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short Real Estate </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short Russell 2000 </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short S&amp;P500 </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short SmallCap600 </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Ultra <FONT STYLE="white-space:nowrap">7-10</FONT> Year Treasury </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Ultra 20+ Year Treasury </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Ultra FTSE China 50 </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Ultra FTSE Europe </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Ultra Gold Miners </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Ultra High Yield </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Ultra MSCI Brazil Capped </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Ultra MSCI EAFE </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Ultra MSCI Emerging Markets </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Ultra MSCI Japan </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraPro Short 20+ Year Treasury </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraPro Short Communication Services Select Sector </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraPro Short Dow30<SUP STYLE="font-size:85%; vertical-align:top">SM</SUP> </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraPro Short Financial Select Sector </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraPro Short MidCap400 </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraPro Short Nasdaq Biotechnology </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraPro Short QQQ </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraPro Short Russell2000 </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraPro Short S&amp;P500 </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort <FONT STYLE="white-space:nowrap">7-10</FONT> Year Treasury </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort 20+ Year Treasury </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort Basic Materials </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort Communication Services Select Sector </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort Consumer Goods </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort Consumer Services </P></TD></TR></TABLE>
+
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort Dow30<SUP STYLE="font-size:85%; vertical-align:top">SM</SUP> </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort Financials </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort FTSE China 50 </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort FTSE Europe </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort Gold Miners </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort Health Care </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort Industrials </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort MidCap400 </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort MSCI Brazil Capped </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort MSCI EAFE </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort MSCI Emerging Markets </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort MSCI Japan </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort Nasdaq Biotechnology </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort Oil&nbsp;&amp; Gas </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort QQQ </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort Real Estate </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort Russell2000 </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort S&amp;P500 </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort Semiconductors </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort SmallCap600 </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort Technology </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">UltraShort Utilities </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">CDS Short North American HY Credit ETF </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">High Yield Interest Rate Hedged </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Inflation Expectations ETF </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Investment Grade&#151;Interest Rate Hedged </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt"><FONT STYLE="white-space:nowrap">K-1</FONT> Free Crude Oil Strategy ETF </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Managed Futures Strategy ETF </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Morningstar Alternative Solutions ETF </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">S&amp;P 500 Bond ETF </P></TD></TR></TABLE> <P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Short Term USD Emerging Markets Bond ETF </P></TD></TR></TABLE>
+<P STYLE="font-size:0pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">&#149;</TD>
+<TD WIDTH="1%" VALIGN="top">&nbsp;</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="left" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Decline of the Retail Store ETF </P></TD></TR></TABLE>
+
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman">SIGNATURES </P>
+<P STYLE="margin-top:6pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman">Pursuant to the requirements of the Investment Company Act of 1940, the registrant has duly caused this report to be signed on its behalf by the undersigned,
+thereunto duly authorized. </P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="40%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt">
+
+
+<TR>
+
+<TD WIDTH="100%"></TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE="margin-top:0pt; margin-bottom:1pt; border-bottom:1px solid #000000; font-size:10pt; font-family:Times New Roman">ProShares Trust</P></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">(Registrant)</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="16"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">By: /s/ Todd B. Johnson</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE="line-height:3.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1px solid #000000">&nbsp;</P></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:10pt; font-family:Times New Roman">Todd B. Johnson </P></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">President</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="16"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">Date: August 11, 2020</TD></TR>
+</TABLE>
+</BODY></HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

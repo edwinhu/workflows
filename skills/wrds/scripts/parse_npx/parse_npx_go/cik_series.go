@@ -213,6 +213,17 @@ func (d *cikSeries) indexCorpusNames() {
 // already superseded by it. The earliest vintage spelling the heading is the
 // one dated, so a long-held name is judged by when it was adopted.
 func (d *cikSeries) sameCIK(cik, heading, period string) *SeriesDecl {
+	return d.sameCIKOver(cik, heading, period, nil)
+}
+
+// sameCIKOver is sameCIK told WHAT IT IS BEING ASKED TO OUTRANK: the inexact
+// answer the caller's chain already reached for this heading. The abandonment
+// half of the guard reads a later same-series rename as the registrant's own
+// statement that the name is no longer this sleeve's, which is right when the
+// question is whether the heading still NAMES that sleeve today -- but it is not
+// a reason to hand the heading to a DIFFERENT sleeve the registrant never spelled
+// it for. A caller with no incumbent passes nil and the guard is unchanged.
+func (d *cikSeries) sameCIKOver(cik, heading, period string, rival *SeriesDecl) *SeriesDecl {
 	if d == nil || cik == "" || heading == "" {
 		return nil
 	}
@@ -240,10 +251,39 @@ func (d *cikSeries) sameCIK(cik, heading, period string) *SeriesDecl {
 	if len(period) == 8 && len(hit.DeclDate) == 8 && hit.DeclDate > period {
 		return nil
 	}
-	if d.abandonedByPeriod(&corpusName{cik: cik, decl: hit}, key, period) {
+	if d.abandonedByPeriod(&corpusName{cik: cik, decl: hit}, key, period) && !d.outranksNamelessRival(cik, key, hit, rival) {
 		return nil
 	}
 	return hit
+}
+
+// outranksNamelessRival reports whether an abandoned-by-period exact hit is
+// still the better answer than the incumbent the caller reached: the incumbent
+// is a DIFFERENT sleeve of this same registrant whose dictionary rows never
+// spell this heading at ANY vintage, so the caller's answer is a tolerance
+// rung's near miss while the hit is the registrant's own exact spelling, merely
+// a superseded one. ProShares Trust's 20200630 report still heads a section
+// `ProShares UltraPro Financials`, S000037029's own 20140630 dictionary name,
+// four years after the 20160630 rename to `ProShares UltraPro Financial Select
+// Sector`; the only surviving alternative is the sibling S000014252 `ProShares
+// Ultra Financials`, one glued token away and never declared under the banner
+// (family MISLINK27).
+//
+// It narrows nothing else. With no incumbent, or an incumbent that IS the hit,
+// or one the registrant's own dictionary does spell this heading for, the
+// abandonment refusal stands exactly as it did: the shapes that guard was built
+// for -- a banner reaching a sleeve renamed away from it long ago, with no
+// rival exact reading to prefer -- still refuse.
+func (d *cikSeries) outranksNamelessRival(cik, key string, hit, rival *SeriesDecl) bool {
+	if d == nil || hit == nil || rival == nil || rival.SeriesID == "" || rival.SeriesID == hit.SeriesID {
+		return false
+	}
+	for _, x := range d.byCIK[cik] {
+		if x.SeriesID == rival.SeriesID && normalizeSeriesName(x.Name) == key {
+			return false // the registrant does spell this heading for the incumbent
+		}
+	}
+	return true
 }
 
 func (d *cikSeries) crossCIK(cik, heading, period, registrantKey string) *SeriesDecl {
