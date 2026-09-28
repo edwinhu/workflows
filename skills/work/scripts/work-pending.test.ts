@@ -14,11 +14,19 @@
  *
  * Run: bun test ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-pending.test.ts
  */
-import { afterAll, describe, expect, test } from 'bun:test'
+import { afterAll, describe, expect, test, setDefaultTimeout } from 'bun:test'
 import { execFileSync } from 'node:child_process'
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+
+// Tests in this file drive work-dispatch.sh as a real bash subprocess. Bun's 5s per-test default
+// is a budget for that subprocess plus whatever else the machine is doing, so under parallel load
+// these go red at exactly [5000.xx ms] — contention reported as a defect in the code under test.
+// 60s does not hide a hang (a hang never returns and is caught by any finite ceiling); it stops
+// standing in for a latency budget this suite never had. Set per file because bun 1.4.0 ignores
+// `[test] timeout` in bunfig.toml and applies a preload's setDefaultTimeout to the first file only.
+setDefaultTimeout(60_000)
 
 const SCRIPTS = import.meta.dir
 const PENDING = join(SCRIPTS, 'work-pending.sh')
