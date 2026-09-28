@@ -314,16 +314,21 @@ export function parseNoul(
   }
 }
 
-function judgeViaDecisions(
+/**
+ * The Decisions transport, and the ONLY place it is spelled: URL, model, token resolution and the
+ * curl invocation. `judgeViaDecisions` below asks it one question; `skills/work/scripts/jev-rank.ts`
+ * asks it N. A second copy of this would be a second set of env-var names and a second way for the
+ * token lookup to go stale.
+ *
+ * `questions` is the Decisions `questions` map verbatim — each entry {type, instructions}. Returns
+ * raw stdout on success, or an `unavailable` reason. It NEVER throws and never interprets an answer.
+ */
+export function decisionsCall(
   state: string,
-  goal: string,
-): { verdict: 'MET' | 'UNMET' | 'UNAVAILABLE'; reason: string } {
+  questions: Record<string, { type: string; instructions: string }>,
+): { stdout: string; unavailable: null } | { stdout: null; unavailable: string } {
   const url = process.env.HOUND_DECISIONS_URL || 'https://openrouter.ai/api/alpha/decisions'
   const model = process.env.HOUND_DECISIONS_MODEL || 'typesafe/jev-1.13'
-  // The threshold is DELIBERATELY high. Releasing a hold ends the work, so "probably done" is not
-  // done: an uncertain answer should keep the session working, which is the failure this whole
-  // mechanism exists to prevent.
-  const threshold = Number(process.env.HOUND_DECISIONS_THRESHOLD || 0.8)
 
   let token = process.env.HOUND_JUDGE_TOKEN || ''
   if (!token) {
@@ -331,31 +336,39 @@ function judgeViaDecisions(
     try {
       token = readFileSync(`${runtime}/agenix/openrouter-api-key`, 'utf8').trim()
     } catch {
-      return { verdict: 'UNAVAILABLE', reason: 'no openrouter key (agenix secret not present)' }
+      return { stdout: null, unavailable: 'no openrouter key (agenix secret not present)' }
     }
   }
-  if (!token) return { verdict: 'UNAVAILABLE', reason: 'empty openrouter key' }
+  if (!token) return { stdout: null, unavailable: 'empty openrouter key' }
 
-  const body = {
-    state,
-    model,
-    questions: {
-      met: {
-        type: 'noul',
-        instructions: `This goal has been fully met, with nothing outstanding, blocked or only partly done: ${goal}`,
-      },
-    },
-  }
   const r = spawnSync(
     'curl',
     ['-sS', '--max-time', '60', '-X', 'POST', url,
      '-H', `Authorization: Bearer ${token}`,
      '-H', 'Content-Type: application/json',
      '--data-binary', '@-'],
-    { encoding: 'utf8', input: JSON.stringify(body), timeout: 90_000 },
+    { encoding: 'utf8', input: JSON.stringify({ state, model, questions }), timeout: 90_000 },
   )
-  if (r.error || r.status !== 0) return { verdict: 'UNAVAILABLE', reason: 'decisions endpoint unreachable' }
-  return parseNoul(r.stdout || '', 'met', threshold)
+  if (r.error || r.status !== 0) return { stdout: null, unavailable: 'decisions endpoint unreachable' }
+  return { stdout: r.stdout || '', unavailable: null }
+}
+
+function judgeViaDecisions(
+  state: string,
+  goal: string,
+): { verdict: 'MET' | 'UNMET' | 'UNAVAILABLE'; reason: string } {
+  // The threshold is DELIBERATELY high. Releasing a hold ends the work, so "probably done" is not
+  // done: an uncertain answer should keep the session working, which is the failure this whole
+  // mechanism exists to prevent.
+  const threshold = Number(process.env.HOUND_DECISIONS_THRESHOLD || 0.8)
+  const r = decisionsCall(state, {
+    met: {
+      type: 'noul',
+      instructions: `This goal has been fully met, with nothing outstanding, blocked or only partly done: ${goal}`,
+    },
+  })
+  if (r.stdout === null) return { verdict: 'UNAVAILABLE', reason: r.unavailable }
+  return parseNoul(r.stdout, 'met', threshold)
 }
 
 function judgeGoal(
