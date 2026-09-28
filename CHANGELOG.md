@@ -49,6 +49,16 @@
 - **Review moved to the skill's Phase 5, after the goal clears**, with the two rules the episode actually taught: deliver first, because a PASS means the suite is green and not that the real claim holds; and never block delivery on the TUI. Work that cannot be undone — a one-way migration, a deletion — is still worth reviewing before shipping, but that is now a judgement the orchestrator makes out loud with the user, not a gate imposed on every run.
 - **The goal's wall-clock ceiling is denominated in minutes, default 10** (`CRAFT_GOAL_MAX_MINUTES`; `CRAFT_GOAL_MAX_HOURS` still honoured and converted). It bounds how long a session may WAIT, not how long it may work — the Stop hook gates stopping, never working — and an hours-scale default bought nothing but hours spent sitting on an absent human.
 
+## [6.27.1] - 2026-09-28
+
+### Fixed
+
+- **`work-pending.sh` reads `.craft/` again, as permanent dispatch HISTORY — v6.27.0 made every plan dispatched before the rename look armed and undispatched.** The removal narrowed both the `*/args.json` spec-hash lookup and the `abandoned` lookup to `.work/` alone. But a run's dispatch record is written once and never moved: every plan dispatched before the rename has its `args.json` only under `.craft/`, and those same plans were migrated to the `work:dispatch` marker the same day — so each one re-armed. `hooks/main-thread-guard.sh` calls this script, so the consequence was a blocked `Stop` ("A craft run is armed and undispatched: …") and denied `Edit`/`Write` in every affected project. Measured 2026-09-28 across `~/projects` and `~/areas`: **8 projects** — `board-structuring`, `crumb`, `mail-bridge`, `morgen-cli`, `npx-reconcile`, `opv`, `pollev-cli` and this repo. All 8 now exit 1 (not owed), and the fixed script reproduces the v6.26.3 verdict on all ten roots checked, including the two (`~/areas/colloquium`, `~/projects/teaching`) that were owed *before* the regression and remain owed for reasons of their own.
+
+  **History, not a transition shim.** The two roots are read at both lookup sites — the local root and a foreign `projectDir` — and `.craft/` is read *only* to answer "was this spec ever dispatched or abandoned?". Nothing is ever written there, and a `.craft/` run is never treated as in flight.
+
+  **The liveness readers deliberately stay `.work/`-only**: `RUN_ROOTS` in `hooks/cron-delete-guard.ts` and `hooks/session-start.ts`, and the `~/dotfiles` `work-goal-resend.sh` SessionStart reporter. (`farm-alive.sh` is unaffected — it keys on `$TMPDIR/farm-events/` and names no run root at all.) Those ask "is a run in flight *now*", and no `.craft/` run is — all 131 were retired with a `result.json` before the v6.27.0 removal. Reviving one there would report a run nobody is running. `work-goal-resend.test.ts` now pins that asymmetry with a `.craft/` run in the in-flight shape (`args.json`, no `result.json`) that must stay invisible.
+
 ## [6.27.0] - 2026-09-28
 
 ### Removed

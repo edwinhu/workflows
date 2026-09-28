@@ -220,8 +220,10 @@ on purpose, while the discriminating input is `f`, a fixture built from `ACCRETE
 and `ESCALATING_TASK` in another. Identically, `tests/farm-runner.test.ts:34` calls `runFarm('out.md',
 { writeRelative: 'out.md' })` while the paired test six lines below at line 40 calls
 `runFarm('out.md')` with no options — the whole point of the pair is the second argument, which the
-rule does not count. `skills/work/scripts/work-pending.test.ts:88` passes runId `'r'` across five
-calls (lines 80, 101, 123, 159, 198) while varying the specHash and the directory. The rule sees
+rule does not count. `skills/work/scripts/work-pending.test.ts:113` is `'f'.repeat(64)`, one of two
+calls passing the same `64` (lines 113, 240); that literal is only the width of a sha256 and is
+constant on purpose, while the discriminating input is the run root the record lands in — `.work` at
+line 113, `.craft` at line 240. The rule sees
 literal arguments only, so any test that varies its input through a variable, a fixture builder, a
 temp path or an options object reads as undistinguished.
 

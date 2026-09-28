@@ -61,10 +61,14 @@ function specHash(root: string, plansDir = '.claude/plans'): string {
   }).trim()
 }
 
-/** Record a dispatch of `hash` in `<dir>/.work/<runId>/args.json`, as work-dispatch.sh would. */
-function recordDispatch(dir: string, runId: string, hash: string) {
-  mkdirSync(join(dir, '.work', runId), { recursive: true })
-  writeFileSync(join(dir, '.work', runId, 'args.json'), JSON.stringify({ specHash: hash }))
+/**
+ * Record a dispatch of `hash` in `<dir>/<root>/<runId>/args.json`, as work-dispatch.sh would.
+ * `root` is `.work` for every new run; `.craft` is the pre-rename spelling, which only ever
+ * appears as history already on disk.
+ */
+function recordDispatch(dir: string, runId: string, hash: string, root = '.work') {
+  mkdirSync(join(dir, root, runId), { recursive: true })
+  writeFileSync(join(dir, root, runId, 'args.json'), JSON.stringify({ specHash: hash }))
 }
 
 /**
@@ -183,6 +187,70 @@ describe('work-pending: the root-relative path is untouched', () => {
   test('a root with no .claude/plans is not pending', () => {
     const root = join(TMP, 'bare')
     mkdirSync(root, { recursive: true })
+    expect(pending(root)).toBe('')
+  })
+})
+
+/**
+ * v6.27.0 narrowed the dispatch lookup to `.work/` alone. Every plan dispatched before the rename
+ * has its record only under `.craft/`, and those plans were migrated to the `work:dispatch` marker
+ * the same day — so each one re-armed, and main-thread-guard.sh began refusing Stop and Edit in
+ * every project holding one. Measured across ~/projects and ~/areas: 8 projects. `.craft/` is
+ * therefore read forever, as HISTORY: dispatch records are permanent, and a plan's dispatch does
+ * not un-happen because the directory it was written to got a new name.
+ */
+describe('work-pending: .craft/ is read as permanent dispatch history', () => {
+  test('a plan whose only args.json is under .craft/ is NOT owed', () => {
+    const root = plantPlan('craft-history', JSON.stringify({ runId: 'r', args: { goal: 'g' } }))
+    recordDispatch(root, 'r', specHash(root), '.craft')
+    expect(pending(root)).toBe('')
+  })
+
+  test('a hash listed only in .craft/abandoned is NOT owed', () => {
+    const root = plantPlan('craft-abandoned', JSON.stringify({ runId: 'r', args: { goal: 'g' } }))
+    mkdirSync(join(root, '.craft'), { recursive: true })
+    writeFileSync(join(root, '.craft/abandoned'), `${specHash(root)}\n`)
+    expect(pending(root)).toBe('')
+  })
+
+  test('a .craft/ record under a FOREIGN projectDir is NOT owed either', () => {
+    const elsewhere = join(TMP, 'elsewhere-craft')
+    mkdirSync(elsewhere, { recursive: true })
+    const root = plantPlan(
+      'craft-foreign',
+      JSON.stringify({ runId: 'r', args: { projectDir: elsewhere, goal: 'g' } }),
+    )
+    recordDispatch(elsewhere, 'r', specHash(root), '.craft')
+    expect(pending(root)).toBe('')
+  })
+
+  test('a foreign .craft/abandoned releases the hold', () => {
+    const elsewhere = join(TMP, 'elsewhere-craft-abandoned')
+    mkdirSync(join(elsewhere, '.craft'), { recursive: true })
+    const root = plantPlan(
+      'craft-foreign-abandoned',
+      JSON.stringify({ runId: 'r', args: { projectDir: elsewhere, goal: 'g' } }),
+    )
+    writeFileSync(join(elsewhere, '.craft/abandoned'), `${specHash(root)}\n`)
+    expect(pending(root)).toBe('')
+  })
+
+  test('a .craft/ record of a DIFFERENT spec does not disarm — history is matched by hash', () => {
+    const root = plantPlan('craft-stale', JSON.stringify({ runId: 'r', args: { goal: 'g' } }))
+    recordDispatch(root, 'r', 'f'.repeat(64), '.craft')
+    expect(pending(root)).toBe(join(root, '.claude/plans/p.md'))
+  })
+
+  test('a genuinely new plan with no record in EITHER root is still owed', () => {
+    const root = plantPlan('no-record-anywhere', JSON.stringify({ runId: 'r', args: { goal: 'g' } }))
+    mkdirSync(join(root, '.craft'), { recursive: true })
+    mkdirSync(join(root, '.work'), { recursive: true })
+    expect(pending(root)).toBe(join(root, '.claude/plans/p.md'))
+  })
+
+  test('.work/ records still disarm — the new root is unaffected', () => {
+    const root = plantPlan('work-still-works', JSON.stringify({ runId: 'r', args: { goal: 'g' } }))
+    recordDispatch(root, 'r', specHash(root), '.work')
     expect(pending(root)).toBe('')
   })
 })

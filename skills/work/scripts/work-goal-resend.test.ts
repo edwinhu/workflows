@@ -126,6 +126,28 @@ describe('an owed run is REPORTED, never sent', () => {
     expect(r.code).toBe(0)
     expect(r.out.trim()).toBe('')
   })
+
+  /**
+   * This hook reports runs IN FLIGHT, and `.craft/` holds none — every pre-rename run was retired
+   * with a result.json before the transition code came out. So `.work/`-only is correct HERE, and
+   * deliberately unlike work-pending.sh, which answers "was this plan ever dispatched?" and must
+   * read `.craft/` forever as history. A `.craft/` run that merely LOOKS in-flight (args.json with
+   * no result.json) must stay invisible: reviving one would report a run nobody is running.
+   */
+  test('a .craft/ run with no result.json is NOT reported — liveness reads .work/ only', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'work-resend-craft-'))
+    scratch.push(dir)
+    const R = join(dir, '.craft', 'craft-era-run')
+    mkdirSync(R, { recursive: true })
+    const plan = join(dir, 'plan.md')
+    writeFileSync(plan, '# Plan\n')
+    writeFileSync(join(R, 'args.json'), JSON.stringify({
+      projectDir: dir, goal: 'finish the thing', planPath: plan,
+    }))
+    const r = fire({ dir })
+    expect(r.code).toBe(0)
+    expect(r.out.trim()).toBe('')
+  })
 })
 
 /**

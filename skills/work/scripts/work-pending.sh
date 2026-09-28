@@ -4,9 +4,14 @@
 # Armed  = the newest plan carries a `<!-- work:dispatch … -->` block. Writing that block is
 #          what arms the run, and the plan is the only file plan mode may write — which is also
 #          the only thing that survives the context clear on plan approval.
-# Undispatched = no .work/*/args.json records this plan's CURRENT spec hash, and that hash is
-#          not listed in .work/abandoned. The hash is over the dispatch block's canonical JSON,
-#          so editing the prose around it does not read as an un-dispatched amendment.
+# Undispatched = no <root>/*/args.json records this plan's CURRENT spec hash, and that hash is
+#          not listed in <root>/abandoned, for <root> in .work and .craft. The hash is over the
+#          dispatch block's canonical JSON, so editing the prose around it does not read as an
+#          un-dispatched amendment.
+#          `.craft/` is the pre-rename run directory and is read here PERMANENTLY, as history: a
+#          plan dispatched before the rename has its only record there, forever, so reading only
+#          .work/ reports every such plan as owed. History only — nothing is ever written to
+#          .craft/, and a .craft/ run is never treated as in flight.
 #
 # Prints "<planPath>\t<runId>" and exits 0 when a dispatch is owed; silent exit 1 otherwise.
 # Called per Edit/Write by main-thread-guard.sh, so the negative path must stay cheap: the
@@ -53,14 +58,22 @@ grep -qE '<!-- work:dispatch' "$plan" || exit 1
 
 hash=$(bash "$SCRIPTS/work-dispatch.sh" --spec-hash "$plan" 2>/dev/null) || exit 1
 
-# Abandoned: one hash per line, appended by `work-dispatch.sh --abandon`.
-if [ -f .work/abandoned ] && grep -qxF "$hash" .work/abandoned; then exit 1; fi
+# HISTORY_ROOTS: .work is where every new run is written; .craft is the pre-rename spelling, read
+# forever because the dispatch record of a plan dispatched before the rename exists nowhere else.
+HISTORY_ROOTS=(.work .craft)
+
+# Abandoned: one hash per line, appended by `work-dispatch.sh --abandon` (to .work only).
+for r in "${HISTORY_ROOTS[@]}"; do
+  if [ -f "$r/abandoned" ] && grep -qxF "$hash" "$r/abandoned"; then exit 1; fi
+done
 
 # Dispatched: some run dir already wrote args for this exact spec. A re-hash after a FAIL-loop
 # amendment therefore re-arms the run, which is correct — the amended spec has not been dispatched.
-for a in .work/*/args.json; do
-  [ -f "$a" ] || continue
-  grep -qF "\"$hash\"" "$a" && exit 1
+for r in "${HISTORY_ROOTS[@]}"; do
+  for a in "$r"/*/args.json; do
+    [ -f "$a" ] || continue
+    grep -qF "\"$hash\"" "$a" && exit 1
+  done
 done
 
 # The run dir need not live under this root. A dispatch block may name a `projectDir` elsewhere —
@@ -83,10 +96,12 @@ PY
 ) || projdir=""
 
 if [ -n "$projdir" ] && [ "$projdir" != "$PWD" ]; then
-  if [ -f "$projdir/.work/abandoned" ] && grep -qxF "$hash" "$projdir/.work/abandoned"; then exit 1; fi
-  for a in "$projdir"/.work/*/args.json; do
-    [ -f "$a" ] || continue
-    grep -qF "\"$hash\"" "$a" && exit 1
+  for r in "${HISTORY_ROOTS[@]}"; do
+    if [ -f "$projdir/$r/abandoned" ] && grep -qxF "$hash" "$projdir/$r/abandoned"; then exit 1; fi
+    for a in "$projdir/$r"/*/args.json; do
+      [ -f "$a" ] || continue
+      grep -qF "\"$hash\"" "$a" && exit 1
+    done
   done
 fi
 
