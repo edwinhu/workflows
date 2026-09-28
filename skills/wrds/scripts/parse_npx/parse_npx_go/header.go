@@ -260,6 +260,22 @@ func seriesIDs(sc []SeriesClass) []string {
 // distance does merge such pairs — "PIMCO Low Duration Fund" and "PIMCO Low
 // Duration Portfolio" are different registered series — and must not be added.
 func normalizeSeriesName(s string) string {
+	// A trailing `(C)` is ambiguous in the bytes: it is the ASCII copyright mark
+	// seriesMarkReplacer exists to delete, and it is also a share-class marker,
+	// which every other class letter -- `(A)`, `(B)`, `(I)` -- survives folding as
+	// a trailing token. When the RAW name ends in a share-class marker per
+	// issClassMarker and that marker is exactly `(c)`, hold it back from the
+	// replacer and re-attach it as that same trailing token, so `Jackson
+	// Perspective 5 Fund (C)` (S000014531) no longer folds onto its `(A)`
+	// sibling's bare eventual name. Every other `(c)` -- mid-name, or trailing on
+	// a name the class predicate refuses -- is deleted exactly as before.
+	if rest, ok := cutTrailingClassCMarker(s); ok {
+		base := normalizeSeriesName(rest)
+		if base == "" {
+			return "c"
+		}
+		return base + " c"
+	}
 	s = strings.ToLower(s)
 	// An SGML header can carry an ampersand encoded once or twice
 	// (`S&amp;amp;P 500`); decode until stable so it folds like the body's `&`.
@@ -301,6 +317,29 @@ func normalizeSeriesName(s string) string {
 		return rest
 	}
 	return b.String()
+}
+
+// cutTrailingClassCMarker reports a name whose trailing parenthetical is a
+// share-class marker per issClassMarker AND is exactly `(c)`/`(C)` -- the one
+// class letter whose spelling collides with the ASCII copyright mark -- and
+// returns the name with that marker cut off. The class predicate is applied to
+// the RAW name, before lower-casing, exactly as layout_issnpx.go applies it.
+func cutTrailingClassCMarker(name string) (string, bool) {
+	s := strings.TrimRight(name, " \t")
+	if !strings.HasSuffix(s, ")") {
+		return "", false
+	}
+	i := strings.LastIndex(s, "(")
+	if i < 0 {
+		return "", false
+	}
+	if !strings.EqualFold(strings.TrimSpace(s[i+1:len(s)-1]), "c") {
+		return "", false
+	}
+	if !issClassMarker(name) {
+		return "", false
+	}
+	return s[:i], true
 }
 
 // seriesMarkReplacer deletes the registered/trademark marks. The ASCII spellings
