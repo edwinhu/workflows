@@ -3464,13 +3464,13 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// a sibling registrant's, so it is asked first, and only where the chain
 	// answered INEXACTLY -- an exact same-CIK answer is untouched, and a heading
 	// the chain left blank stays the blank-heading rungs' business.
-	if outer && d != nil && !issBannerDeclaredExact(ix, guard) && !issOwnBrandInfixDecl(ix, guard, d) &&
+	if outer && d != nil && !issBannerDeclaredExactAs(ix, guard, d) && !issOwnBrandInfixDecl(ix, guard, d) &&
 		!issTierRenameKept(ix, normalizeSeriesName(guard), d) && !issHeadingWithinDecl(guard, d) {
 		if alt := issIndexDict(ix).sameCIK(ix.cik, guard, ix.period); alt != nil && alt.SeriesID != d.SeriesID {
 			return banner, alt
 		}
 	}
-	if outer && !issBannerDeclaredExact(ix, guard) && !issOwnBrandInfixDecl(ix, guard, d) &&
+	if outer && !issBannerDeclaredExactAs(ix, guard, d) && !issOwnBrandInfixDecl(ix, guard, d) &&
 		!issTierRenameKept(ix, normalizeSeriesName(guard), d) && !issHeadingWithinDecl(guard, d) {
 		if alt := issIndexDict(ix).crossCIK(ix.cik, guard, ix.period, ix.registrantKey); alt != nil {
 			return banner, alt
@@ -3599,16 +3599,37 @@ func issHeadingWithinDecl(banner string, d *SeriesDecl) bool {
 // tolerance rung in the chain runs after. An answer reached any other way is a
 // tolerance and may be outranked by an exact sibling hit.
 func issBannerDeclaredExact(ix *issSeriesIndex, banner string) bool {
+	return issBannerDeclaredExactSeries(ix, banner) != nil
+}
+
+// issBannerDeclaredExactSeries is issBannerDeclaredExact with the identity it
+// found: the ONE series the filing's own header spells this banner for.
+func issBannerDeclaredExactSeries(ix *issSeriesIndex, banner string) *SeriesDecl {
 	if ix == nil {
-		return false
+		return nil
 	}
 	if d, _ := lookupSeriesEntry(ix.byName, banner); d != nil {
-		return true
+		return d
 	}
 	if d, _ := lookupSeriesEntry(ix.aliases, banner); d != nil {
-		return true
+		return d
 	}
-	return issDeclaredClassContract(ix, banner) != nil
+	return issDeclaredClassContract(ix, banner)
+}
+
+// issBannerDeclaredExactAs reports whether the filing's own header spells this
+// banner for THE ANSWER THE CHAIN REACHED. An exact declaration that names a
+// DIFFERENT series than d is not evidence for d: it is evidence against it, and
+// must not suppress the guards that would correct d. ProShares Trust's 20160630
+// report heads its section with `ProShares UltraPro Financials`, which this
+// filing's own rename alias declares for S000037029 while the chain's tolerance
+// reached the one-token-nearer sibling S000014252 (family MISLINK26).
+func issBannerDeclaredExactAs(ix *issSeriesIndex, banner string, d *SeriesDecl) bool {
+	ex := issBannerDeclaredExactSeries(ix, banner)
+	if ex == nil {
+		return false
+	}
+	return d == nil || ex.SeriesID == d.SeriesID
 }
 
 // issDeclaredClassContract returns the one series whose header block declares
