@@ -134,9 +134,9 @@ path look right — start a new session.
 ## Step (c) — Check the Main-Thread Guard's Allowlist (REPORT ONLY)
 
 **Why.** `~/.claude/hooks/main-thread-guard.sh` denies loose `Agent` dispatches and reroutes
-them to `farm.sh`. That is intended for the user-tier personas (`ds`, `writing`, `teaching`, …):
-a `farm.sh` row with `"agent"` runs `claude --agent`, which loads the real persona, so a persona
-absent from the allowlist is NOT a defect. What must hold is that `workflows:*` stays allowed and
+them to `farm.sh`. That is intended for the bare user-tier personas this plugin ships under
+`user-agents/`: a `farm.sh` row with `"agent"` runs `claude --agent`, which loads the real
+persona, so a persona absent from the allowlist is NOT a defect. What must hold is that `workflows:*` stays allowed and
 the deny message still names `farm.sh` — the `guard-allowlist` block of
 `references/install-check.md`.
 
