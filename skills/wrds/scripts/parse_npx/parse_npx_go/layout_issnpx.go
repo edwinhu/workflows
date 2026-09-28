@@ -4401,8 +4401,15 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 		// chain instead, the way issBrandCutStem already sends the remainder
 		// of a registrant-prefixed heading. Every hop drops a leading token,
 		// so the re-read terminates.
+		//
+		// The brand run is cut UNREAD, so the cut carries family MISLINK2's
+		// guard the way issBrandRunRemainder's does -- here in its dictionary
+		// half (family MISLINK24): a banner the registrant's own dictionary
+		// spells verbatim, contemporaneously, for a DIFFERENT series than the
+		// stem reaches is already answered, and the brand cut is a second,
+		// contradictory answer. See issUneditedNamesSibling.
 		if stem := issHistoricalBrandStem(key); stem != "" && stem != normalizeSeriesName(banner) {
-			if _, d := issResolveFund(ix, stem); d != nil {
+			if _, d := issResolveFund(ix, stem); d != nil && !issUneditedNamesSibling(ix, normalizeSeriesName(banner), d) {
 				return banner, d
 			}
 		}
@@ -6610,7 +6617,12 @@ func issDictInsertedWordDecl(ix *issSeriesIndex, dict *dictFallback, banner stri
 // The token must be distinctive on its own terms: a type word, a registrant
 // token and anything shorter than issDistinctiveTokenMin are shared vocabulary
 // and say nothing about which series is meant.
-func issDroppedTokenNamesSibling(ix *issSeriesIndex, tok string, hit *SeriesDecl) bool {
+//
+// `key` is the UN-EDITED banner, which issUneditedNamesSibling reads against the
+// registrant's own dictionary vocabulary -- the half of that vocabulary the
+// header the filing happens to carry no longer spells. Callers with no un-edited
+// banner to offer pass "".
+func issDroppedTokenNamesSibling(ix *issSeriesIndex, tok, key string, hit *SeriesDecl) bool {
 	if hit == nil || hit.SeriesID == "" || len(tok) < issDistinctiveTokenMin || issTypeWord(tok) {
 		return false
 	}
@@ -6625,7 +6637,39 @@ func issDroppedTokenNamesSibling(ix *issSeriesIndex, tok string, hit *SeriesDecl
 			return true
 		}
 	}
-	return false
+	return issUneditedNamesSibling(ix, key, hit)
+}
+
+// issUneditedNamesSibling is the same refusal read off the registrant's own
+// DICTIONARY vocabulary instead of the header it filed today: the UN-EDITED
+// banner is, verbatim and contemporaneously, this CIK's dictionary name for a
+// series OTHER than the one a subset-token drop reached. The dropped run is then
+// again a choice between two of the registrant's series, and the un-edited
+// reading is the stronger of the two by construction -- it is the string as
+// printed, while the hit is an EDIT of a declared name.
+//
+// Family MISLINK24. Goldman Sachs Trust (CIK 0000822977) heads a 2013 section
+// `Goldman Sachs Structured Large Cap Value Fund`; cutting the audited
+// historical brand `goldman sachs structured ` leaves `large cap value fund`,
+// which resolves to the sibling S000009317 -- a fund that was never named
+// `Structured` anything and that prints its own separate banner in the same
+// filing. `Structured` is the pre-rename name of S000009326, renamed to `...
+// Insights Fund` effective this filing's own period end, so NO current declared
+// name spells the token and the header-side loop above cannot see the collision;
+// cik_series.tsv carries the banner verbatim for S000009326 at this CIK.
+//
+// The dictionary is read from cikDict directly rather than through issIndexDict,
+// so this holds on the header-only index too. noDict keeps a dictionary rung
+// from STAMPING an id the filing's own header does not reach; this one stamps
+// nothing and only WITHHOLDS a header id a rung would otherwise have invented by
+// editing a declared name. Were it silenced there, hdrOnly would keep answering
+// the sibling and its answer outranks the outer chain's.
+func issUneditedNamesSibling(ix *issSeriesIndex, key string, hit *SeriesDecl) bool {
+	if ix == nil || key == "" || ix.cik == "" || hit == nil || hit.SeriesID == "" || cikDict == nil {
+		return false
+	}
+	x := cikDict.registrantExactName(ix.cik, key, ix.period)
+	return x != nil && x.SeriesID != "" && x.SeriesID != hit.SeriesID
 }
 
 func issInternalTokenDropDecl(ix *issSeriesIndex, key string) *SeriesDecl {
@@ -6640,7 +6684,7 @@ func issInternalTokenDropDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		if d == nil {
 			continue
 		}
-		if issDroppedTokenNamesSibling(ix, f[i], d) {
+		if issDroppedTokenNamesSibling(ix, f[i], key, d) {
 			return nil
 		}
 		if out != nil && out.SeriesID != d.SeriesID {
@@ -7015,7 +7059,7 @@ func issBrandRunRemainder(ix *issSeriesIndex, rest string, run []string) *Series
 			return false
 		}
 		for _, t := range run {
-			if issDroppedTokenNamesSibling(ix, t, d) {
+			if issDroppedTokenNamesSibling(ix, t, "", d) {
 				return false
 			}
 		}
