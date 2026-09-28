@@ -3391,6 +3391,25 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// (19,014 rows of American Century Capital Portfolios' 20100630 report filed
 	// under two other sponsors' funds). The Victory shape above is the opposite:
 	// `VIP Series` are words the declaration does not carry at all.
+	//
+	// The same reasoning reaches the filer's OWN sleeves first. A registrant
+	// that splits one period across two accessions leaves each header short of
+	// the other's series while both bodies print every banner they cover, so an
+	// exact, registrant-unique dictionary name of THIS cik may belong to a
+	// series this header never declared (cikSeries.sameCIK): Nationwide Variable
+	// Insurance Trust's 20140630 banner `NVIT International Index Fund` is
+	// S000012313, declared for that period by the sibling accession, and the
+	// chain above reaches it only by trading `Index` for the declared
+	// `NVIT International Equity Fund`. An own-registrant reading is nearer than
+	// a sibling registrant's, so it is asked first, and only where the chain
+	// answered INEXACTLY -- an exact same-CIK answer is untouched, and a heading
+	// the chain left blank stays the blank-heading rungs' business.
+	if outer && d != nil && !issBannerDeclaredExact(ix, guard) && !issOwnBrandInfixDecl(ix, guard, d) &&
+		!issTierRenameKept(ix, normalizeSeriesName(guard), d) && !issHeadingWithinDecl(guard, d) {
+		if alt := issIndexDict(ix).sameCIK(ix.cik, guard, ix.period); alt != nil && alt.SeriesID != d.SeriesID {
+			return banner, alt
+		}
+	}
 	if outer && !issBannerDeclaredExact(ix, guard) && !issOwnBrandInfixDecl(ix, guard, d) &&
 		!issTierRenameKept(ix, normalizeSeriesName(guard), d) && !issHeadingWithinDecl(guard, d) {
 		if alt := issIndexDict(ix).crossCIK(ix.cik, guard, ix.period, ix.registrantKey); alt != nil {

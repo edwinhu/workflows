@@ -1269,7 +1269,14 @@ func icrResolveFundShared(ix *issSeriesIndex, name string) string {
 		// Its own first rung is the exact route; every rung after it cuts the
 		// printed name. An INEXACT answer of this registrant's own does not
 		// outrank an exact, corpus-unique, contemporaneous sibling hit.
+		// The exact hit may be this registrant's OWN sleeve, declared for this
+		// period by a sibling accession and so absent from this filing's header
+		// (cikSeries.sameCIK); that reading is nearer than a sibling
+		// registrant's, so it is asked first.
 		if !issBannerDeclaredExact(ix, name) {
+			if d := issIndexDict(ix).sameCIK(ix.cik, name, ix.period); d != nil {
+				return d.SeriesID
+			}
 			if d := issIndexDict(ix).crossCIK(ix.cik, name, ix.period, ix.registrantKey); d != nil {
 				return d.SeriesID
 			}
