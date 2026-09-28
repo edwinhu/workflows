@@ -995,8 +995,25 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   const setup = readFileSync(join(SKILLS, 'setup', 'SKILL.md'), 'utf8')
   ok('the setup skill enumerates agents at runtime rather than naming them',
      /readdirSync\(/.test(setup))
-  ok('the setup skill checks user scope, not just the shipped file',
-     /realpathSync\(/.test(setup) && /\.claude", "agents"/.test(setup))
+  // The check itself lives in a runnable reference, not inline in SKILL.md (a9047507). So look at
+  // the skill's own surface — SKILL.md plus skills/setup/references/ — and additionally require
+  // that SKILL.md actually invokes whichever reference carries the markers: a reference nobody
+  // runs is not a check.
+  {
+    const refsDir = join(SKILLS, 'setup', 'references')
+    const surface = [['SKILL.md', setup]]
+    if (existsSync(refsDir))
+      for (const e of readdirSync(refsDir, { withFileTypes: true }))
+        if (e.isFile()) surface.push([e.name, readFileSync(join(refsDir, e.name), 'utf8')])
+    const carriers = surface.filter(([, t]) =>
+      /realpathSync\(/.test(t) && /\.claude", "agents"/.test(t))
+    const invoked = carriers.filter(([name]) =>
+      name === 'SKILL.md' || setup.includes(`references/${name}`))
+    ok('the setup skill checks user scope, not just the shipped file',
+       invoked.length > 0,
+       `markers in: ${carriers.map(c => c[0]).join(', ') || '(none)'}; ` +
+       `invoked by SKILL.md: ${invoked.map(c => c[0]).join(', ') || '(none)'}`)
+  }
   ok('the setup skill enumerates the user-scoped directory by name',
      /user-agents/.test(setup))
   for (const a of ROSTER.map(x => x.name)) {
