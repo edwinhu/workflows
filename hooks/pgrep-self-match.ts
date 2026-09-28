@@ -1,7 +1,39 @@
 #!/usr/bin/env bun
 /**
- * PreToolUse (Bash|Monitor) BLOCKING GATE: stop a `pgrep -f` / `pkill -f` whose pattern will match
- * the invoking shell's own command line.
+ * PreToolUse (Bash|Monitor) BLOCKING GATE over Bash command TEXT. Two rules, each one a command
+ * whose failure mode is a hang or a suicide rather than an error:
+ *
+ *   1. `pgrep -f` / `pkill -f` whose pattern matches the invoking shell's own command line.
+ *   2. `rg` / `rga` with no path argument, in a segment nothing pipes into.
+ *
+ * The file keeps its original name: rule 1 is the one with the incident history below, and the
+ * hook path is wired in hooks.json and referenced by the test.
+ *
+ * ── RULE 2: `rg` WITH NO PATH ───────────────────────────────────────────────────────────────────
+ *
+ * ripgrep searches STDIN when it is given no path and stdin is not a terminal. Under the Bash tool
+ * stdin is never a terminal, so a path-less `rg` reads a pipe that no one will ever close. Measured
+ * 2026-09-28 on ripgrep 15.2.0, stdin a fifo held open by a sleeping writer:
+ *
+ *     rg foo                          -> blocked until killed   (timeout, exit 124)
+ *     rg foo .                        -> exit 0, immediate
+ *     rg -e foo                       -> blocked
+ *     rg -e foo .                     -> exit 0
+ *     rg -f patterns                  -> blocked  (-f gives the pattern; there is still no path)
+ *     rg --files / --type-list        -> exit 0   (no-pattern modes never read stdin)
+ *     rg (no pattern at all)          -> exit 2   (usage error; rg never gets as far as stdin)
+ *
+ * The incident: a farmed agent ran
+ *     rg -n -i craft --hidden -g '!.git' -g '!CHANGELOG.md' -c | sort
+ * with no path. It hung for 34 minutes until killed. Note the pipe is on the WRONG SIDE — the
+ * segment pipes OUT to sort and nothing pipes IN, so rg's stdin was still the tool's own.
+ *
+ * Parsing rg's flags is the whole difficulty, because a value-taking flag's operand is not a path:
+ * in `-g '!.git' foo` the only positional is the pattern. So the value-taking flags are enumerated
+ * from `rg -h` rather than guessed, and `-e`/`-f` are tracked separately because they supply the
+ * pattern, which makes the FIRST positional already a path.
+ *
+ * ── RULE 1: pgrep/pkill SELF-MATCH ──────────────────────────────────────────────────────────────
  *
  * `-f` matches the FULL command line, and the shell running the pgrep is itself in the process table
  * carrying that pattern in its argv. So `while pgrep -f myjob; do sleep 5; done` finds itself every
@@ -169,6 +201,110 @@ interface Invocation {
 export interface Analysis {
   /** Invocations whose pattern MATCHES the command string itself — certain, no model needed. */
   selfMatches: Invocation[];
+  /** `rg`/`rga` segments with no path and no incoming pipe or redirect — they read a live stdin. */
+  pathlessRg: string[];
+}
+
+// ── rg FLAG TABLE (enumerated from `rg -h`, ripgrep 15.2.0) ─────────────────────────────────────
+
+/** Short flags whose operand is the NEXT token (or the rest of the cluster): -A3, -g '!x', -tpy. */
+const RG_VALUE_SHORT = "ABCdeEfgjmMrtT";
+
+/** Long flags whose operand is the next token when not spelled `--flag=value`. */
+const RG_VALUE_LONG = new Set([
+  "--after-context", "--before-context", "--color", "--colors", "--context",
+  "--context-separator", "--dfa-size-limit", "--encoding", "--engine", "--file",
+  "--field-context-separator", "--field-match-separator", "--generate", "--glob",
+  "--hostname-bin", "--hyperlink-format", "--iglob", "--ignore-file", "--max-columns",
+  "--max-count", "--max-depth", "--max-filesize", "--path-separator", "--pre", "--pre-glob",
+  "--regexp", "--regex-size-limit", "--replace", "--sort", "--sortr", "--threads", "--type",
+  "--type-add", "--type-clear", "--type-not",
+]);
+
+/** Flags that supply the PATTERN, which makes the first positional already a PATH. */
+const RG_PATTERN_FLAGS = new Set(["-e", "--regexp", "-f", "--file"]);
+
+/** Modes that take no pattern and never read stdin — verified empirically, see the header. */
+const RG_NO_PATTERN_MODE = new Set(["--files", "--type-list", "--version", "--help", "--generate"]);
+
+/** An unquoted redirect token: `<`, `<<EOF`, `<<<x`, `2>`, `>out`, `<&3`. */
+function redirectKind(w: Word): "in" | "out" | null {
+  if (w.quoted) return null;
+  if (/^\d*<|^<</.test(w.text)) return "in";
+  if (/^\d*>/.test(w.text)) return "out";
+  return null;
+}
+
+/**
+ * Decide whether one segment is an `rg`/`rga` that will read a stdin nobody closes.
+ *
+ * Returns the offending segment's text, or null. A segment fed by a pipe or by ANY input redirect
+ * is fine — stdin is then a real, finite source, which is ripgrep's documented streaming mode.
+ */
+function pathlessRgSegment(seg: { words: Word[]; piped: boolean }): string | null {
+  const ci = commandWordIndex(seg.words);
+  if (ci < 0) return null;
+  const word = seg.words[ci];
+  if (word.quoted) return null; // came out of quotes; not a command position
+  const name = word.text.split("/").pop();
+  if (name !== "rg" && name !== "rga") return null;
+  if (seg.piped) return null; // `cmd | rg foo` — stdin is the pipe, and it ends
+
+  const args = seg.words.slice(ci + 1);
+  let positionals = 0;
+  let patternFromFlag = false;
+  let noPatternMode = false;
+  let endOfFlags = false;
+
+  for (let i = 0; i < args.length; i++) {
+    const w = args[i];
+    const t = w.text;
+
+    if (!endOfFlags) {
+      const redir = redirectKind(w);
+      if (redir === "in") return null; // `rg foo < file`, heredoc, here-string
+      if (redir === "out") {
+        // A bare `>` / `2>` carries its operand in the next token; `>out.txt` carries its own.
+        if (/^\d*>>?$/.test(t)) i++;
+        continue;
+      }
+      if (t === "--") {
+        endOfFlags = true;
+        continue;
+      }
+      if (t.startsWith("--")) {
+        const long = t.split("=")[0];
+        if (RG_NO_PATTERN_MODE.has(long)) noPatternMode = true;
+        if (RG_PATTERN_FLAGS.has(long)) patternFromFlag = true;
+        if (RG_VALUE_LONG.has(long) && !t.includes("=")) i++;
+        continue;
+      }
+      if (t.length > 1 && t.startsWith("-")) {
+        const chars = t.slice(1);
+        for (let c = 0; c < chars.length; c++) {
+          const ch = chars[c];
+          if (RG_VALUE_SHORT.includes(ch)) {
+            if (ch === "e" || ch === "f") patternFromFlag = true;
+            if (c === chars.length - 1) i++; // operand is the next word
+            break; // rest of this token is the operand
+          }
+        }
+        continue;
+      }
+      if (t === "-") return null; // `-` is the explicit "read stdin" spelling; deliberate
+    }
+    positionals++;
+  }
+
+  if (noPatternMode) return null; // --files / --type-list / --version: no pattern, no stdin read
+  // Without -e/-f the first positional is the PATTERN, so a path needs a SECOND one. With -e/-f the
+  // pattern is already in hand, so the first positional is a path.
+  const paths = patternFromFlag ? positionals : positionals - 1;
+  if (paths > 0) return null;
+  // No pattern anywhere: rg exits 2 on a usage error without ever reaching stdin.
+  if (!patternFromFlag && positionals === 0) return null;
+
+  return seg.words.map(x => x.text).join(" ");
 }
 
 /**
@@ -242,7 +378,13 @@ function parseInvocation(seg: { words: Word[] }): { inv: Invocation; full: boole
  */
 export function analyze(command: string): Analysis {
   const segs = segments(command);
-  if (excludesSelf(segs)) return { selfMatches: [] };
+  const pathlessRg: string[] = [];
+  for (const seg of segs) {
+    const bad = pathlessRgSegment(seg);
+    if (bad) pathlessRg.push(bad);
+  }
+
+  if (excludesSelf(segs)) return { selfMatches: [], pathlessRg };
   const selfMatches: Invocation[] = [];
 
   for (const seg of segs) {
@@ -253,7 +395,7 @@ export function analyze(command: string): Analysis {
     const re = compilePattern(inv.pattern);
     if (re && re.test(command)) selfMatches.push(inv);
   }
-  return { selfMatches };
+  return { selfMatches, pathlessRg };
 }
 
 /** Truncate an untrusted pattern before echoing it back into the model's context. */
@@ -278,7 +420,17 @@ const toolInput = (payload.tool_input ?? {}) as Record<string, unknown>;
 const command = typeof toolInput.command === "string" ? toolInput.command : "";
 if (!command) allow();
 
-const { selfMatches } = analyze(command);
+const { selfMatches, pathlessRg } = analyze(command);
+
+// A path-less rg reads the tool's own stdin, which never closes: the process hangs rather than
+// erroring, so nothing downstream ever reports it.
+if (pathlessRg.length) {
+  deny(
+    "🛑 " +
+      pathlessRg.map(s => `\`${show(s)}\` has no path argument.`).join("\n") +
+      "\nrg reads stdin when given no path and stdin is not a terminal; pass a path, e.g. `rg PATTERN .`",
+  );
+}
 
 // Any self-match denies: a self-matching kill takes out its own shell, and a self-matching wait loop
 // never exits.
