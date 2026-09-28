@@ -7125,6 +7125,15 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 				// is what gets recorded.
 				name, id, ok = dd.Name, dd.SeriesID, true
 				adoptedAt, adoptedLine = li, dd.Name
+			} else if sd := htmlSubsequenceDeclaredName(ix, candidate); sd != nil {
+				// The same slip several words wide: Hennessy Funds Trust heads its
+				// 2011 and 2012 Cornerstone sections `Hennessy Cornerstone Growth
+				// II` for the declared `HENNESSY CORNERSTONE GROWTH FUND, SERIES
+				// II` (S000000837, 225 rows with no series), dropping the interior
+				// `Fund` and `Series` at once. The declared spelling is what gets
+				// recorded.
+				name, id, ok = sd.Name, sd.SeriesID, true
+				adoptedAt, adoptedLine = li, sd.Name
 			}
 		}
 	}
@@ -7319,6 +7328,131 @@ func htmlDroppedWordDeclaredName(ix *issSeriesIndex, candidate string) *SeriesDe
 		}
 	}
 	return hit
+}
+
+// htmlSubsequenceDeclaredName reads a banner that drops SEVERAL whole interior
+// words of a name this filing's own SEC-HEADER declares: `Hennessy Cornerstone
+// Growth II` for the declared `HENNESSY CORNERSTONE GROWTH FUND, SERIES II`
+// (S000000837, Hennessy Funds Trust 2011 and 2012, 0000894189-11-003395 and
+// 0000894189-12-004512, 225 rows with no series), where both `Fund` and `Series`
+// are gone and the roman numeral is left glued onto `Growth`. It answers the
+// declared SeriesDecl, whose name is the spelling to record.
+//
+// It runs last, after htmlDroppedWordDeclaredName, and is that rung read as an
+// IN-ORDER SUBSEQUENCE rather than a single deletion: the declared name's tokens,
+// left to right, must contain the banner's in order. Every narrowing of the
+// one-word rung is carried over unchanged and for the same reasons -- the pool is
+// THIS FILING'S OWN declarations off hdrOnly, a banner that spells a declared name
+// exactly refuses, the banner is never the registrant's own name, each skipped
+// token is letters alone and runs htmlTypoWordMin or more (a digit or a short token
+// is how a registrant numbers or tiers a sleeve, so dropping one answers a
+// different fund), and neither the FIRST token (the family brand) nor the LAST (the
+// type word, whose absence turns a fund into a trust) may be skipped.
+//
+// Only banners two or more words short reach here; one word short is the rung
+// above's business and its MML refusal is left intact.
+//
+// The ambiguity guard is the one-word rung's, widened to the same subsequence
+// reading and to the registrant's whole candidate set rather than the header alone:
+// if any OTHER series declared for this CIK at any vintage also admits the banner's
+// tokens in order -- tested loosely, ignoring the token-shape restrictions above,
+// so the guard is never narrower than the match -- the banner is naming sleeves
+// apart rather than slipping, and it stays blank.
+func htmlSubsequenceDeclaredName(ix *issSeriesIndex, candidate string) *SeriesDecl {
+	if ix == nil {
+		return nil
+	}
+	key := normalizeSeriesName(candidate)
+	// The reporting period this vintage prints beside the fund on the banner
+	// line, which the exact chain cuts for its own lookup too.
+	if head, cut := issCutReportingPeriodTail(key); cut {
+		key = head
+	}
+	words := strings.Fields(key)
+	if len(words) < 2 || key == ix.registrantKey {
+		return nil
+	}
+	decls := ix.decls
+	if ix.hdrOnly != nil {
+		decls = ix.hdrOnly.decls
+	}
+	var hit *SeriesDecl
+	for i := range decls {
+		d := &decls[i]
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		dw := strings.Fields(normalizeSeriesName(d.Name))
+		if len(dw) == len(words) && htmlSameWords(dw, words) {
+			return nil // the banner spells this declared name exactly; not this rung's business
+		}
+		if len(dw) < len(words)+2 {
+			continue // one word short is htmlDroppedWordDeclaredName's business
+		}
+		if !htmlDroppedWordsYielding(dw, words) {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	if hit == nil {
+		return nil
+	}
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || d.SeriesID == hit.SeriesID || d.Name == "" {
+			continue
+		}
+		if htmlTokensSubsequence(words, strings.Fields(normalizeSeriesName(d.Name))) {
+			return nil
+		}
+	}
+	return hit
+}
+
+// htmlDroppedWordsYielding reports banner as an in-order subsequence of the longer
+// decl where every UNMATCHED decl token is letters alone, runs htmlTypoWordMin or
+// more, and is neither decl's first token nor its last. Alignment is a table rather
+// than a greedy walk: a repeated token (`fund` inside a name that also closes on it)
+// admits several alignments and only some satisfy the shape restrictions.
+func htmlDroppedWordsYielding(decl, banner []string) bool {
+	n, m := len(decl), len(banner)
+	if n <= m || m == 0 {
+		return false
+	}
+	// reach[j] -- decl[:i] can yield banner[:j]; rolled over i.
+	reach := make([]bool, m+1)
+	reach[0] = true
+	for i := 0; i < n; i++ {
+		droppable := i != 0 && i != n-1 && len(decl[i]) >= htmlTypoWordMin && htmlLettersOnly(decl[i])
+		for j := m; j >= 0; j-- {
+			next := false
+			if j > 0 && reach[j-1] && decl[i] == banner[j-1] {
+				next = true
+			}
+			if !next && reach[j] && droppable {
+				next = true
+			}
+			reach[j] = next
+		}
+	}
+	return reach[m]
+}
+
+// htmlTokensSubsequence reports the tokens of a in order within b, with any tokens
+// of b interspersed. It carries none of htmlDroppedWordsYielding's shape
+// restrictions, so it admits everything that rung does and more -- which is what an
+// ambiguity guard wants.
+func htmlTokensSubsequence(a, b []string) bool {
+	j := 0
+	for _, t := range b {
+		if j < len(a) && t == a[j] {
+			j++
+		}
+	}
+	return j == len(a)
 }
 
 // htmlDiffersOnlyAt reports two normalised token slices of the same length that
