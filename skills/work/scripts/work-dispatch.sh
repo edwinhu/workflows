@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Phase 3 + Phase 4, mechanically: hash the plan, dispatch workflow.js detached, and arm the HOLD on
 # this session — the goal check when the plan states one, Jev alone on the goal when it does not.
-# The wake is the farm-runs plugin monitor; a CronCreate fallback poll is printed only with --cron.
+# The primary wake is the farm-runs plugin monitor; an hourly CronCreate backstop is printed by
+# default (--no-cron opts out), because a cron survives --resume/--continue and a dead watcher.
 #
 # Everything it needs is in the plan's `<!-- work:dispatch … -->` block, so a session that has
 # lost its context — the clear on plan approval, /clear, a restart — can run this and be correct
@@ -16,9 +17,9 @@
 #   work-dispatch.sh --no-suite-lint  skip only the suite-lint report; keep every gate
 #   work-dispatch.sh --run-dir DIR    put args/result/log under DIR/<run-id> instead of $PWD/.work/
 #   work-dispatch.sh --provider claude|codex|gemini  the whole spine's provider (default claude)
-#   work-dispatch.sh --cron           also print the CronCreate call for a FALLBACK poll (default
-#                                      60 minutes). Off unless asked: the farm-runs plugin monitor is
-#                                      the wake, and a cron on top of it wakes the session for nothing
+#   work-dispatch.sh --no-cron        do NOT print the CronCreate call; the farm-runs plugin monitor
+#                                      becomes the only wake (and it dies with the session)
+#   work-dispatch.sh --cron           accepted no-op alias — the cron is the default
 #   work-dispatch.sh --loops N        after dispatching, run the continuation loop (work-loop.sh)
 #                                      DETACHED instead of printing it: this script returns at once,
 #                                      the loop logs to <run-dir>/loop.log and leaves its exit code
@@ -34,7 +35,7 @@
 #   WORK_DISPATCH_DRYRUN=1            build + lint + probe + size, stop before dispatching
 #   WORK_GOAL_PRINT=1                 print the composed objective, then
 #                                      stop: writes no args.json, runs no probe, dispatches nothing
-#   WORK_LOOP_INTERVAL_MINUTES=30     fallback-poll period, as whole minutes; setting it also OPTS IN
+#   WORK_LOOP_INTERVAL_MINUTES=30     heartbeat period, as whole minutes (default 60)
 #   WORK_NO_SCOPE=1                   force the plain setsid dispatch, skipping the transient scope
 #   WORK_SYSTEMD_RUN=PATH             the systemd-run binary the scope probe uses (default systemd-run)
 #   WORK_RED_PROBE_TIMEOUT=300        per-command probe timeout in seconds
@@ -533,7 +534,7 @@ if [ "${1:-}" = "--red-probe" ]; then
 fi
 
 mode=dispatch
-cron=0
+cron=1
 lint=1
 redprobe=1
 mechprobe=1
@@ -554,7 +555,9 @@ while :; do
                case "$provider" in claude|codex|gemini) ;;
                  *) echo "--provider must be claude|codex|gemini, got: $provider" >&2; exit 2 ;; esac ;;
     --abandon) mode=abandon; shift ;;
+    # --cron is the default now; kept as an accepted no-op so existing callers don't break.
     --cron)    cron=1; shift ;;
+    --no-cron) cron=0; shift ;;
     --print)   mode=print;   shift ;;
     --no-lint) lint=0; redprobe=0; mechprobe=0; suitelint=0; shift ;;
     --no-red-probe) redprobe=0; shift ;;
@@ -750,11 +753,11 @@ echo "args:  $out"
 # session is woken by the RUN rather than by a clock, and a cron on top of that is a wake for nothing:
 # AGK 2026-09-27, 14 ticks inside one round, each re-entering a 113 KB plan and a 276 KB run dir.
 #
-# THE CRON IS THEREFORE OPTIONAL — a dumb fallback poll for a monitor that died, hourly by default,
-# and printed only on --cron or with WORK_LOOP_INTERVAL_MINUTES set.
+# THE CRON IS THE BACKSTOP, AND IT IS ON BY DEFAULT (--no-cron opts out): a cron survives
+# --resume/--continue and a watcher that died or was never armed; the monitor does not. The tick is a
+# few words, and a tick mid-round is allowed through uncounted by the hold, so hourly is cheap.
 cron_minutes=${WORK_LOOP_INTERVAL_MINUTES:-60}
 case "$cron_minutes" in ''|*[!0-9]*|0) cron_minutes=60 ;; esac
-[ -n "${WORK_LOOP_INTERVAL_MINUTES:-}" ] && cron=1
 # Minute 7 rather than 0 or 30: every fleet-wide "hourly" lands on the same instant otherwise.
 if [ "$cron_minutes" -lt 60 ]; then
   cron_expr="7-59/$cron_minutes * * * *"
@@ -774,14 +777,15 @@ cron_prompt="and? (work run $runid)"
 print_cron_instruction() {
   if [ "$cron" != 1 ]; then
     echo
-    echo "wake: the farm-runs monitor watches this run and wakes this session on its milestones, its verdict, and on a run that dies without one. Pass --cron (or set WORK_LOOP_INTERVAL_MINUTES) for a fallback poll on top of it."
+    echo "wake: --no-cron, so the farm-runs monitor is the ONLY wake — it watches this run and wakes this session on its milestones, its verdict, and on a run that dies without one. It does not survive --resume/--continue; drop --no-cron for the hourly backstop."
     return 0
   fi
   cat <<CRONMSG
 
 ======================================================================
-REQUIRED, THIS TURN: ARM THE FALLBACK POLL WITH THE CronCreate TOOL.
-The farm-runs monitor is the wake; this is the poll for when it dies.
+REQUIRED, THIS TURN: ARM THE HEARTBEAT POLL WITH THE CronCreate TOOL.
+The farm-runs monitor is the primary wake; this cron is the backstop —
+it survives --resume/--continue and a monitor that died or never armed.
 CronCreate is a model tool — no shell, including this one, can call it.
 Call it now, before your next action, with exactly:
 
