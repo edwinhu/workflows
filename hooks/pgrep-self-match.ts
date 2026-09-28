@@ -20,62 +20,17 @@
  * test subsumes both old exemptions — '[m]yproc' does not match its own text and passes, an absolute
  * path does match its own text and is a real self-match.
  *
- * TWO LAYERS.
- *   1. DETERMINISTIC (certain, no model): pattern-vs-command-string. A match denies, whether the
- *      result feeds a kill or only a read — a self-matching wait loop never exits either.
- *   2. JEV (for what text cannot settle): no self-match, but the command still uses `-f` or pipes
- *      pgrep into kill. One `noul` question about whether the pattern will hit a process other than
- *      the intended one — a parent agent session, a farmed child whose prompt carries the pattern
- *      text, another session's job. Over threshold: DENY when a kill is involved, warn when it is a
- *      read. Jev unavailable is never a deny — the guard must not inherit the endpoint's uptime.
+ * ONE LAYER, DETERMINISTIC. A model layer that judged over-breadth was built and measured, and
+ * dropped: it scored the incident and a harmless tail alike.
  *
  * CRASH POLICY. `denyOnCrash`, matching every other blocking gate here (image-read-guard,
  * cron-delete-guard, find-slide-page-inject): a non-zero exit is treated as NON-BLOCKING by Claude
- * Code, i.e. a silent allow. The Jev phase is exempt by construction — it sits inside its own
- * try/catch and every failure becomes "unavailable", so the model leg can never produce a denial.
+ * Code, i.e. a silent allow.
  */
-import { appendFileSync, mkdirSync } from "node:fs";
-import { createHash } from "node:crypto";
-import { spawnSync } from "node:child_process";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { allow, context, deny, denyOnCrash, parsePayload, sessionFlagKey } from "./_gate_common.ts";
+import { allow, deny, denyOnCrash, parsePayload } from "./_gate_common.ts";
 
-/**
- * The question, asked of Jev as a `noul` (return the probability that this is true).
- * Exported so a test can assert the wording the threshold was chosen against.
- */
-export const OVERBROAD_QUESTION =
-  "Running this command will signal or match a process other than the one the author intends — " +
-  "e.g. this shell, a parent agent session, a farmed child whose prompt or arguments contain the " +
-  "pattern text, or another session's job — because the pattern is broad or matches text that " +
-  "appears in other processes' command lines.";
-
-// ── CHILD MODE: the Jev ask ─────────────────────────────────────────────────────────────────────
-// Isolated in a subprocess so the PARENT can time-box it. `decisionsCall` spends up to 60s inside
-// curl, which is fine for a Stop hook and far too long for a gate standing in front of every Bash
-// call; a subprocess is the only way to bound a synchronous spawnSync from outside.
-// NOTE: registered BEFORE denyOnCrash — the child must never emit a permission decision.
-if (process.argv.includes("--jev-ask")) {
-  let out = '{"unavailable": "ask child produced nothing"}';
-  try {
-    const req = JSON.parse(await Bun.stdin.text()) as {
-      state: string;
-      questions: Record<string, { type: string; instructions: string }>;
-    };
-    // Dynamic: only the child pays hound's import cost, and the path is spelled once.
-    const { decisionsCall } = await import("./hound.ts");
-    const r = decisionsCall(req.state, req.questions);
-    out = JSON.stringify(r.stdout === null ? { unavailable: r.unavailable } : { stdout: r.stdout });
-  } catch (e) {
-    out = JSON.stringify({ unavailable: `ask child failed: ${String(e)}` });
-  }
-  console.log(out);
-  process.exit(0);
-}
-
-// FIRST STATEMENT WITH AN EFFECT in gate mode: a throw below becomes a schema-valid deny rather than
-// an exit-1, which Claude Code treats as non-blocking — a silent allow in a PreToolUse gate.
+// FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny rather than an exit-1,
+// which Claude Code treats as non-blocking — a silent allow in a PreToolUse gate.
 denyOnCrash("PGREP GUARD");
 
 /** Short options that consume a value (pgrep/pkill: -d delim, -u/-U uid, -P ppid, ...). */
@@ -206,52 +161,21 @@ function excludesSelf(segs: { words: Word[]; piped: boolean }[]): boolean {
   return false;
 }
 
-/**
- * Would a pid this command finds be SIGNALLED?
- *
- * Deliberately coarse: any `kill`/`pkill` command word anywhere in the command, including as an
- * `xargs` argument. It covers `pgrep | xargs kill`, `kill $(pgrep ...)`, `kill \`pgrep ...\`` and a
- * loop body that kills, and it errs towards "yes", which is the direction that costs a warning
- * rather than an unnoticed dead shell.
- */
-function killsSomething(segs: { words: Word[]; piped: boolean }[]): boolean {
-  const isKill = (t: string) => {
-    const n = t.split("/").pop();
-    return n === "kill" || n === "pkill";
-  };
-  for (const seg of segs) {
-    const ci = commandWordIndex(seg.words);
-    if (ci < 0) continue;
-    const w = seg.words[ci];
-    if (w.quoted) continue;
-    if (isKill(w.text)) return true;
-    if (w.text.split("/").pop() === "xargs" && seg.words.slice(ci + 1).some(a => isKill(a.text))) return true;
-  }
-  return false;
-}
-
 interface Invocation {
   tool: "pgrep" | "pkill";
   pattern: string | null;
-  /** The pattern would not compile as a regex, so self-match cannot be decided from text. */
-  uncompilable: boolean;
 }
 
 export interface Analysis {
   /** Invocations whose pattern MATCHES the command string itself — certain, no model needed. */
   selfMatches: Invocation[];
-  /** `-f` invocations with no deterministic verdict, plus kill-fed pgreps: the Jev layer's input. */
-  candidates: Invocation[];
-  /** True when a matched pid would be signalled. */
-  killShaped: boolean;
 }
 
 /**
  * Compile a pgrep pattern the way pgrep does — as an extended regex.
  *
  * JS RegExp is ERE plus extensions, which is the right direction for a guard: it accepts everything
- * pgrep accepts except POSIX character classes (`[[:alpha:]]`), which land in `uncompilable` and are
- * handed to the Jev layer rather than waved through.
+ * pgrep accepts except POSIX character classes (`[[:alpha:]]`), which fail to compile here.
  */
 function compilePattern(pattern: string): RegExp | null {
   try {
@@ -304,43 +228,32 @@ function parseInvocation(seg: { words: Word[] }): { inv: Invocation; full: boole
   }
 
   if (exact) return null; // -x is a whole-name match; it cannot pick up a pattern from an argv
-  return {
-    inv: { tool: name, pattern, uncompilable: pattern !== null && compilePattern(pattern) === null },
-    full,
-  };
+  return { inv: { tool: name, pattern }, full };
 }
 
 /**
  * Classify every pgrep/pkill in one Bash command string.
  *
- * The deterministic test is the whole point: each pattern is compiled and matched against
+ * The deterministic test is the whole point: each `-f` pattern is compiled and matched against
  * `command`, which is what the shell's own argv will carry. A hit means the process will find
- * itself, and that is certain rather than judged.
+ * itself, and that is certain rather than judged. Anything the text cannot settle — no `-f`, a
+ * pattern from a variable, a pattern that will not compile — is allowed silently: an uncompilable
+ * `-f` pattern is an error pgrep itself will report, and this gate exists only for the certain case.
  */
 export function analyze(command: string): Analysis {
   const segs = segments(command);
-  const selfExcluded = excludesSelf(segs);
-  const killShaped = killsSomething(segs);
+  if (excludesSelf(segs)) return { selfMatches: [] };
   const selfMatches: Invocation[] = [];
-  const candidates: Invocation[] = [];
 
   for (const seg of segs) {
     const parsed = parseInvocation(seg);
     if (!parsed) continue;
     const { inv, full } = parsed;
-    // A pgrep with neither -f nor a kill downstream reads process NAMES only: out of scope.
-    if (!full && !killShaped) continue;
-
-    if (full && inv.pattern !== null && !inv.uncompilable && !selfExcluded) {
-      const re = compilePattern(inv.pattern)!;
-      if (re.test(command)) {
-        selfMatches.push(inv);
-        continue;
-      }
-    }
-    candidates.push(inv);
+    if (!full || inv.pattern === null) continue; // a name-only match cannot pick the pattern out of an argv
+    const re = compilePattern(inv.pattern);
+    if (re && re.test(command)) selfMatches.push(inv);
   }
-  return { selfMatches, candidates, killShaped };
+  return { selfMatches };
 }
 
 /** Truncate an untrusted pattern before echoing it back into the model's context. */
@@ -355,79 +268,6 @@ const FIX =
   "Fix: bracket the pattern ('[m]yproc') AND make sure that literal text appears nowhere " +
   "else in the command — or better, signal exact pids, use `pgrep -x <name>` without -f, or a pidfile.";
 
-// ── THE JEV LAYER ───────────────────────────────────────────────────────────────────────────────
-
-/**
- * Ask Jev one question about the command. NEVER throws, NEVER denies; returns a probability or a
- * reason it is unavailable.
- *
- * `PGREP_GUARD_JEV_REPLY` is a TEST SEAM: the raw Decisions reply to use instead of calling out
- * (the literal `UNAVAILABLE` simulates an unreachable endpoint). It cannot weaken the deterministic
- * layer, which is the part that carries the incident, and anyone able to set it could equally set
- * `PGREP_GUARD_JEV_THRESHOLD=2` — the model layer is advisory reinforcement, not the lock.
- */
-export function askJev(state: string): { p: number | null; unavailable: string | null } {
-  let body: string | null = null;
-  const stub = process.env.PGREP_GUARD_JEV_REPLY;
-  if (stub !== undefined) {
-    if (stub === "UNAVAILABLE") return { p: null, unavailable: "stubbed unavailable" };
-    body = stub;
-  } else {
-    const r = spawnSync("bun", [import.meta.path, "--jev-ask"], {
-      input: JSON.stringify({
-        state,
-        questions: { overbroad: { type: "noul", instructions: OVERBROAD_QUESTION } },
-      }),
-      encoding: "utf8",
-      timeout: Number(process.env.PGREP_GUARD_JEV_TIMEOUT_MS || 3000),
-    });
-    if (r.error || r.status !== 0 || !r.stdout) {
-      return { p: null, unavailable: "the ask subprocess failed or timed out" };
-    }
-    try {
-      const o = JSON.parse(r.stdout) as { stdout?: string; unavailable?: string };
-      if (o.unavailable) return { p: null, unavailable: o.unavailable };
-      body = String(o.stdout ?? "");
-    } catch {
-      return { p: null, unavailable: "the ask subprocess reply was not parsable json" };
-    }
-  }
-  try {
-    const d = JSON.parse(body as string) as { answers?: Record<string, { noul?: unknown }> };
-    const v = d?.answers?.overbroad?.noul;
-    if (typeof v !== "number" || !Number.isFinite(v)) {
-      return { p: null, unavailable: "the decision reply carried no noul answer" };
-    }
-    return { p: v, unavailable: null };
-  } catch {
-    return { p: null, unavailable: "the decision reply was not parsable json" };
-  }
-}
-
-/**
- * One JSONL line per Jev decision under $TMPDIR, so the threshold can be audited later.
- *
- * Session-scoped and high-frequency, so it belongs in the temp dir, never in a project state file.
- * The command is recorded as a digest: the log must be safe to read and must not become a second
- * copy of every command the session ran.
- */
-function logDecision(session: string, command: string, record: Record<string, unknown>): void {
-  try {
-    const dir = join(process.env.TMPDIR || tmpdir(), "pgrep-guard");
-    mkdirSync(dir, { recursive: true });
-    appendFileSync(
-      join(dir, `${session}.jsonl`),
-      JSON.stringify({
-        ts: new Date().toISOString(),
-        cmd_sha256: createHash("sha256").update(command, "utf8").digest("hex").slice(0, 16),
-        ...record,
-      }) + "\n",
-    );
-  } catch {
-    /* the audit trail is not the gate: a log that cannot be written must not change a decision */
-  }
-}
-
 // ── GATE ────────────────────────────────────────────────────────────────────────────────────────
 
 // A PreToolUse GATE DENIES ON A PAYLOAD IT CANNOT READ — a local `catch { exit 0 }` here would be
@@ -438,14 +278,10 @@ const toolInput = (payload.tool_input ?? {}) as Record<string, unknown>;
 const command = typeof toolInput.command === "string" ? toolInput.command : "";
 if (!command) allow();
 
-const event = typeof payload.hook_event_name === "string" && payload.hook_event_name
-  ? payload.hook_event_name
-  : "PreToolUse";
+const { selfMatches } = analyze(command);
 
-const { selfMatches, candidates, killShaped } = analyze(command);
-
-// LAYER 1 — certain. Any self-match denies: a self-matching kill takes out its own shell, and a
-// self-matching wait loop never exits.
+// Any self-match denies: a self-matching kill takes out its own shell, and a self-matching wait loop
+// never exits.
 if (selfMatches.length) {
   deny(
     "🛑 " +
@@ -460,56 +296,4 @@ if (selfMatches.length) {
   );
 }
 
-if (!candidates.length) allow();
-
-// LAYER 2 — judged. A crash in here is an UNAVAILABLE, never a denial.
-const threshold = Number(process.env.PGREP_GUARD_JEV_THRESHOLD || 0.6);
-const cwd = typeof payload.cwd === "string" ? payload.cwd : "";
-const state = `cwd: ${cwd}\ncommand:\n${command}`;
-let verdict: { p: number | null; unavailable: string | null };
-try {
-  verdict = askJev(state);
-} catch (e) {
-  verdict = { p: null, unavailable: `the jev check crashed: ${String(e)}` };
-}
-
-const session = sessionFlagKey(payload);
-const over = verdict.p !== null && verdict.p >= threshold;
-logDecision(session, command, {
-  session,
-  p: verdict.p,
-  threshold,
-  kill_shaped: killShaped,
-  unavailable: verdict.unavailable,
-  decision: verdict.unavailable ? "allow-unavailable" : over ? (killShaped ? "deny" : "warn") : "allow",
-});
-
-if (verdict.unavailable) {
-  // Never a deny: the guard must not inherit the endpoint's uptime.
-  if (killShaped) {
-    context(
-      event,
-      `This command signals processes matched by pattern, and the Jev over-breadth check did not run ` +
-        `(${verdict.unavailable}). Nothing verified that the pattern hits only the intended process.\n${FIX}`,
-    );
-  }
-  allow();
-}
-
-if (!over) allow();
-
-const pct = Math.round((verdict.p as number) * 100);
-const patterns = candidates.map(c => `${c.tool} -f '${show(c.pattern)}'`).join(", ");
-if (killShaped) {
-  deny(
-    `🛑 ${patterns}: the judge puts it at ${pct}% (threshold ${Math.round(threshold * 100)}%) that this ` +
-      `pattern will signal a process other than the intended one — this shell, a parent agent session, ` +
-      `a farmed child carrying the pattern text in its argv, or another session's job.\n${FIX}`,
-  );
-}
-context(
-  event,
-  `${patterns}: the judge puts it at ${pct}% (threshold ${Math.round(threshold * 100)}%) that this pattern ` +
-    `matches processes other than the intended one, so the result may include this shell or another ` +
-    `session's job. Reading is not fatal; acting on the pids would be.\n${FIX}`,
-);
+allow();
