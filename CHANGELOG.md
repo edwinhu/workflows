@@ -49,6 +49,18 @@
 - **Review moved to the skill's Phase 5, after the goal clears**, with the two rules the episode actually taught: deliver first, because a PASS means the suite is green and not that the real claim holds; and never block delivery on the TUI. Work that cannot be undone — a one-way migration, a deletion — is still worth reviewing before shipping, but that is now a judgement the orchestrator makes out loud with the user, not a gate imposed on every run.
 - **The goal's wall-clock ceiling is denominated in minutes, default 10** (`CRAFT_GOAL_MAX_MINUTES`; `CRAFT_GOAL_MAX_HOURS` still honoured and converted). It bounds how long a session may WAIT, not how long it may work — the Stop hook gates stopping, never working — and an hours-scale default bought nothing but hours spent sitting on an absent human.
 
+## [6.27.2] - 2026-09-28
+
+### Fixed
+
+- **`suite-lint-report.test.ts` audits only the files THIS repository tracks, so submodule checkout state cannot move the counts.** The suite recomputed its measurement with `lintCorpus`, a filesystem walk, so its corpus silently grew by whatever happened to be on disk. `skills/bmll` and `external/anthropic-skills` are submodules: in a fresh clone or worktree that has not run `git submodule update --init` the walk reports **210** findings, and in one that has, **213** to **342** depending on what those submodules hold. Three tests failed in the uninitialized case — the audited-corpus recomputation, the cited-findings check and the per-rule citation check — because the report cited `skills/bmll/scripts/test_bmll_impact.py:54`, a finding that does not exist unless the submodule is checked out. Same class as the gitignored-`scratch/` citation fixed in v6.26.2, and fixed the same way.
+
+  Every recomputation is now scoped to `git ls-files` **without** `--recurse-submodules`, which excludes both classes by one mechanism: a submodule is a single mode-160000 gitlink entry, so nothing under it is tracked here, and a gitignored path is not tracked either. The tracked count is **210 in all three checkout states**, with identical per-rule counts. There is no filesystem fallback if `git` is unavailable — a silent one would restore exactly the checkout-dependence this removes.
+
+  **The filter is in the test, not in `lintCorpus`, because the other two callers want the opposite.** `work-dispatch.sh`'s TIER 3 must lint the test an implementer just wrote and has not committed, and `suite-lint-corpus.test.ts` lints mktemp trees that are not git repositories at all. The walker still lints `scratch/` and an initialized submodule when present; only what the report *recomputes* is scoped.
+
+  The committed report was corrected against a live run over the new universe: the `skills/bmll` citation is withdrawn — no tracked file was found carrying the same shape, and the `suite-lint.test.ts:462` reading already establishes the point — the audited corpus is **23 files** rather than 24, and `single-distinct-literal`'s audited count is **43** rather than 45, the difference being the two findings in that submodule file. Every other rule's count is unchanged, and each rule that still fires keeps at least two verified citations.
+
 ## [6.27.1] - 2026-09-28
 
 ### Fixed

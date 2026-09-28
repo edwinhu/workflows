@@ -13,26 +13,39 @@ argue with a specific row.
 | rule id | audited corpus | raw findings | false positives | true positives |
 |---|---|---|---|---|
 | positive-match-failure-vocabulary | 15 | 26 | 23 | 3 |
-| single-distinct-literal | 45 | 208 | 191 | 17 |
+| single-distinct-literal | 43 | 208 | 191 | 17 |
 | existence-only-artifact | 1 | 1 | 1 | 0 |
 | injected-key-never-varied | 17 | 44 | 44 | 0 |
 
 **The audited-corpus column is the one this repository's suite pins, and the only one re-executed on
-every run.** The *audited corpus* is the 24 files this investigation actually read and cites by
+every run.** The *audited corpus* is the 23 files this investigation actually read and cites by
 `file:line` below. `suite-lint-report.test.ts` re-runs the lint and requires these four counts back
 exactly, so a rule that stops firing, fires wider, or reclassifies a file the investigation examined
 turns the suite red.
 
-**Every `file:line` cited below is a TRACKED file, and that is a requirement rather than a
-coincidence.** The audited corpus is derived from the citations, and the suite re-executes it, so a
-citation into a gitignored path — `scratch/` above all — made the suite pass on the one machine that
-happened to hold that file and fail in a fresh clone, a worktree, or CI. One such citation existed
-a `phase_gate_guard_test.py` line under `scratch/python-suite-head/`, cited by
-`injected-key-never-varied`; it is gone, and the paragraph that rested on it is rewritten around a
-tracked example. The walker
-still lints `scratch/` when it is present, which is why the raw column's snapshot below discusses it
-— but nothing this document *cites*, and therefore nothing the suite recomputes, depends on an
-untracked file.
+**Every `file:line` cited below is a file THIS REPOSITORY TRACKS, and that is a requirement rather
+than a coincidence.** The audited corpus is derived from the citations, and the suite re-executes it,
+so a citation into a path that is present on some checkouts and absent on others made the suite pass
+on the machine that happened to hold the file and fail in a fresh clone, a worktree, or CI. Two
+classes of such path have been removed:
+
+- **Gitignored.** A `phase_gate_guard_test.py` line under `scratch/python-suite-head/`, cited by
+  `injected-key-never-varied`; it is gone, and the paragraph that rested on it is rewritten around a
+  tracked example.
+- **Inside a submodule.** A `skills/bmll/scripts/test_bmll_impact.py` line cited by
+  `single-distinct-literal`. `skills/bmll` and `external/anthropic-skills` are submodules, so whether
+  their contents exist is decided by `git submodule update --init` rather than by this repository:
+  the filesystem walk reports 342 findings in a checkout that has run it and 210 in one that has not.
+  That citation is gone, the audited count for the rule moved 45 → 43 with the two findings in that
+  file, and the audited file count 24 → 23.
+
+`suite-lint-report.test.ts` now scopes every recomputation to `git ls-files` *without*
+`--recurse-submodules`, which excludes both classes by one mechanism: a submodule is a single
+mode-160000 gitlink entry, so nothing under it is tracked here, and a gitignored path is not tracked
+either. The walker still lints `scratch/` and an initialized submodule when they are present, which
+is why the raw column's snapshot below discusses `scratch/` — but nothing this document *cites*, and
+therefore nothing the suite recomputes, depends on a file whose presence is a property of the
+checkout.
 
 **The raw column is a whole-repository snapshot, as of 2026-09-17, and is deliberately NOT pinned.**
 It counts every suite file in the tree, so it moved every time this repo gained an unrelated test
@@ -237,7 +250,7 @@ neighbouring test, calls `isAffordablePair('a*b', n)` for `n` in 80, 200 and 1,0
 The file distinguishes the two behaviours about as loudly as a file can; it just does not do it
 through a differing literal in the same argument position.
 
-The audited-corpus count for this rule is 45 rather than 43 because
+The audited-corpus count for this rule is 43 rather than 41 because
 `skills/grind/scripts/grind.test.ts` joined the audited corpus through the
 `existence-only-artifact` citation below, and a file entering the corpus brings *every* finding in it,
 not only the one that was cited. Both are the dominant shape and both were read.
@@ -269,10 +282,13 @@ the end of this run's own work: `execFileSync('bun', …)` at lines 462 and 486,
 budget tests, flagged for the name of the interpreter. Those two tests differ in the fixture file they
 write — one unanchored pattern against a 400 KB literal, versus twenty guard-defeating patterns
 against twenty literals — and in their kill deadlines, 10 s and 20 s. Neither difference is a literal
-argument to `execFileSync`. `skills/bmll/scripts/test_bmll_impact.py:54` is the most instructive:
-`np.allclose(pre, 0)` is flagged for the constant `0` while line 52 asserts `(post > 0).all()` on the
-same curve, so the file does distinguish the two behaviours — just not through a literal argument to
-the same callee.
+argument to `execFileSync`, and that is the general case: the two calls a finding pairs can
+distinguish real behaviours while the literal they share distinguishes nothing.
+
+A `skills/bmll/scripts/test_bmll_impact.py` line once illustrated that last point from the other
+side. It is withdrawn, not replaced: `skills/bmll` is a submodule, so the finding exists only in a
+checkout that initialized it, and no tracked file in the corpus was found to carry the same shape.
+The `suite-lint.test.ts:462` reading above establishes the point without it.
 
 ## existence-only-artifact
 
