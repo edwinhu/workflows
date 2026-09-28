@@ -3,8 +3,8 @@
  *
  * The hold lives in the dispatching (main) session: it survives a run that dies, and the judge rules
  * on the user's own objective rather than on a round verdict. `--run` is what makes a stop legal
- * while the round is in flight. The cron is a FALLBACK POLL and is printed only when asked for —
- * AGK 2026-09-27, a cron woke the session 14 times inside one round while the monitor already had it.
+ * while the round is in flight. The hourly cron is the BACKSTOP and is printed by default: it survives
+ * --resume/--continue and a watcher that died or was never armed, where the monitor does not.
  *
  * Run: bun test /home/eh/projects/workflows/tests/dispatch-hold-and-heartbeat.test.ts
  */
@@ -178,17 +178,18 @@ describe('half one: the HOLD is armed by the dispatch, in this session', () => {
 })
 
 /**
- * HALF TWO: THE WAKE. The `farm-runs` plugin monitor watches the run for the whole session, so the
- * cron is a FALLBACK POLL and off by default: measured AGK 2026-09-27, a cron woke the session 14
- * times inside one round, each tick re-entering a 113 KB plan and a 276 KB run dir.
+ * HALF TWO: THE WAKE. The `farm-runs` plugin monitor watches the run for the whole session and is the
+ * PRIMARY wake — but it dies with the session, and on 2026-09-27 a session restarted a loop at 23:14
+ * with no watcher re-armed. A cron survives `--resume`/`--continue` and a watcher that never armed, so
+ * the hourly heartbeat is the BACKSTOP and is on by DEFAULT; `--no-cron` opts out.
  */
-describe('half two: the cron is OPTIONAL, and the monitor is the wake', () => {
+describe('half two: the cron is the DEFAULT backstop, the monitor is the primary wake', () => {
   const r = dispatch(fixture())
 
-  test('no cron is printed by default — one line names the monitor instead', () => {
-    expect(r.out).not.toContain('CronCreate')
-    expect(r.out).toMatch(/farm-runs monitor/)
-    expect(r.out).toMatch(/--cron/)
+  test('the hourly CronCreate call is printed by default, off the :00 mark', () => {
+    expect(r.out).toContain('CronCreate')
+    expect(r.out).toMatch(/REQUIRED, THIS TURN/)
+    expect(/cron:\s+(\S.*)$/m.exec(r.out)![1].trim()).toBe('7 * * * *')
   })
 
   test('the farm-runs monitor runs for the whole session, not on skill invoke', () => {
@@ -196,22 +197,27 @@ describe('half two: the cron is OPTIONAL, and the monitor is the wake', () => {
     expect(m.find((x: any) => x.name === 'farm-runs').when).toBe('always')
   })
 
-  test('--cron prints the CronCreate call, hourly, off the :00 mark', () => {
+  test('--no-cron prints no cron — one line names the monitor as the only wake', () => {
+    const c = dispatch(fixture(), {}, ['--no-cron'])
+    expect(c.out).not.toContain('CronCreate')
+    expect(c.out).toMatch(/farm-runs monitor/)
+    expect(c.out).toMatch(/--no-cron/)
+  }, 60_000)
+
+  test('--cron still works: an accepted no-op alias, same output as the default', () => {
     const c = dispatch(fixture(), {}, ['--cron'])
     expect(c.out).toContain('CronCreate')
-    expect(c.out).toMatch(/REQUIRED, THIS TURN/)
     expect(/cron:\s+(\S.*)$/m.exec(c.out)![1].trim()).toBe('7 * * * *')
   }, 60_000)
 
-  test('WORK_LOOP_INTERVAL_MINUTES opts in too, and sets the period', () => {
+  test('WORK_LOOP_INTERVAL_MINUTES sets the period', () => {
     const c = dispatch(fixture(), { WORK_LOOP_INTERVAL_MINUTES: '120' })
     expect(c.out).toContain('CronCreate')
     expect(/cron:\s+(\S.*)$/m.exec(c.out)![1].trim()).toBe('7 */2 * * *')
   }, 60_000)
 
   test('the prompt is a nudge: short, and naming no plan path, check or authority', () => {
-    const c = dispatch(fixture(), {}, ['--cron'])
-    const prompt = /prompt:\s+(\S.*)$/m.exec(c.out)![1].trim()
+    const prompt = /prompt:\s+(\S.*)$/m.exec(r.out)![1].trim()
     expect(prompt).toBe('and? (work run hb-run)')
     expect(prompt.length).toBeLessThan(60)
     expect(prompt).not.toMatch(/plan\.md|work-result\.sh|result\.json|\.work|CronDelete|authority|blocker/i)

@@ -24,10 +24,10 @@ ceilings that can disagree is a bug, and the prose one is the bug.
 `--run <run-dir>` names a work run: while it is in flight (`args.json`, no non-empty `result.json`) a
 stop is allowed and costs no round.
 
-## The cron prompt — a nudge, and only when nothing else wakes the session
+## The cron prompt — a nudge, and armed by default
 
-A `work` dispatch is watched by the `farm-runs` monitor, so it needs no cron. When nothing watches the
-work, the whole template is:
+A `work` dispatch is watched by the `farm-runs` monitor, but that monitor dies with the session, so an
+hourly cron is armed as the backstop unless `--no-cron` is passed. The whole template is:
 
 ```
 and? (<run id or one-line subject>)
