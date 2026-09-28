@@ -32,6 +32,13 @@ type Plan = {
   /** Paths the plan authors BEFORE dispatch; the guard lets the main thread write these. */
   scaffoldPaths?: string[]
   mechanicalChecks: { name: string; cmd: string }[]
+  /**
+   * `args.goalCheck` — the ONE command that settles the whole plan's objective, which the dispatch
+   * arms a hound hold on. Optional: a plan that states none gets a check-less, judge-only hold.
+   * Never a round verdict; `hold-lint.ts` refuses that as CRITICAL and R22 below reports it here,
+   * one dispatch earlier than the arm would.
+   */
+  goalCheck?: string
   reviewLenses: Lens[]
   successCriteria: string[]
   verification: string[]
@@ -262,6 +269,8 @@ const parseArgs = (j: any): Plan => ({
     name: m.name ?? m.key ?? '',
     cmd: m.cmd ?? '',
   })),
+  // Absent is the common case and legal; a present-but-unusable value is a finding, not a silent ''.
+  goalCheck: j.goalCheck === undefined || j.goalCheck === null ? undefined : String(j.goalCheck),
   reviewLenses: (j.reviewLenses ?? []).map((l: any) => ({ key: l.key ?? '', text: l.prompt ?? '' })),
   successCriteria: [],
   verification: [],
@@ -792,7 +801,58 @@ const lint = (p: Plan): Finding[] => {
         )
     })
 
+  // R22 — `goalCheck` is the string the dispatch ARMS A HOLD ON, so it is linted by the linter that
+  // owns holds rather than by a second copy of those rules here. Only CRITICAL findings block: the
+  // rest are hold-lint's advisory tier and the arm prints them itself. Reported at dispatch because
+  // the arm happens after the run is already detached — a refusal there would leave the run with no
+  // hold and nothing saying so.
+  if (p.goalCheck !== undefined) {
+    const gc = p.goalCheck.trim()
+    if (!gc)
+      add(
+        'goalcheck-empty',
+        'critical',
+        'args.goalCheck',
+        'goalCheck is declared but empty; omit the field for a judge-only hold rather than arming on nothing',
+      )
+    else for (const x of holdLintCriticals(gc)) add(x.rule, 'critical', 'args.goalCheck', x.message, gc)
+  }
+
   return f
+}
+
+/**
+ * hold-lint's CRITICAL findings for one check string — the hound linter, run as a process.
+ *
+ * Out of process on purpose: `hold-lint.ts` is a script that parses argv and exits at import, so
+ * importing it here would run it. String rules only — no `--probe`, which would EXECUTE the check at
+ * lint time, before the plan's own gates have been probed.
+ *
+ * FAILS CLOSED: a lint that cannot run is reported as a critical rather than passed over, because the
+ * alternative is a dispatch that arms a hold on an unlinted string and says nothing.
+ */
+const holdLintCriticals = (check: string): { rule: string; message: string }[] => {
+  const { spawnSync } = require('node:child_process')
+  const lint = require('node:path').join(import.meta.dir, '..', '..', 'hound', 'scripts', 'hold-lint.ts')
+  const r = spawnSync('bun', [lint, check], { encoding: 'utf8', timeout: 60_000 })
+  if (r.error || r.status === null || r.status > 1)
+    return [{
+      rule: 'goalcheck-unlintable',
+      message:
+        `hold-lint.ts could not lint this goalCheck (${r.error?.message ?? `exit ${r.status}`}), so nothing ` +
+        'has checked the string the dispatch will arm a hold on',
+    }]
+  const out: { rule: string; message: string }[] = []
+  const lines = (r.stdout ?? '').split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    const m = /^CRITICAL\s+(\S.*)$/.exec(lines[i])
+    if (!m) continue
+    out.push({
+      rule: `goalcheck-${m[1].trim().replace(/\s*\(check\)$/, '')}`,
+      message: `hold-lint CRITICAL on args.goalCheck: ${(lines[i + 1] ?? '').trim()}`,
+    })
+  }
+  return out
 }
 
 // ---------------------------------------------------------------- run context

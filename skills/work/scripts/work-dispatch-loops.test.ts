@@ -82,9 +82,9 @@ function fixture(extraArgs: Record<string, unknown> = {}) {
 }
 
 /**
- * CLAUDE_CODE_SESSION_ID is blanked so hound-arm.sh refuses at its identity check (exit 2) BEFORE
- * writing anything. A hold's state file is keyed by session id, so without this a test dispatch
- * would arm a real hold on whatever live session is running the suite.
+ * CLAUDE_CODE_SESSION_ID is blanked so nothing session-scoped this dispatch touches can reach the
+ * live session running the suite: the dispatch DOES arm a hound hold, and with no session id
+ * `hound-arm.sh` refuses rather than writing state anywhere this suite could reach.
  */
 function dispatch(f: { dir: string; plan: string }, env: Record<string, string>, ...extra: string[]) {
   try {

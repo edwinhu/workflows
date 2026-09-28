@@ -3,6 +3,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
+import { hermeticEnv } from './helpers/hermetic-env'
 
 const HOOK = join(import.meta.dir, '..', 'hooks', 'cron-delete-guard.ts')
 
@@ -25,11 +26,15 @@ function newCwd() {
   return mkdtempSync(join(tmpdir(), 'cronguard-'))
 }
 
+/**
+ * The run-based rule only: a payload with NO session_id, and a fresh TMPDIR, so no ambient hound
+ * ledger can reach the hook and decide the case before the .craft scan does.
+ */
 function guard(cwd: string, id: string, env: Record<string, string> = {}) {
   const r = spawnSync('bun', [HOOK], {
     input: JSON.stringify({ hook_event_name: 'PreToolUse', tool_name: 'CronDelete', cwd, tool_input: { id } }),
     encoding: 'utf8',
-    env: { ...process.env, ...env },
+    env: hermeticEnv(mkdtempSync(join(tmpdir(), 'cronguard-tmp-')), env),
   })
   const decision = r.stdout.trim() ? JSON.parse(r.stdout).hookSpecificOutput.permissionDecision : 'allow'
   return { ...r, decision, reason: r.stdout.trim() ? JSON.parse(r.stdout).hookSpecificOutput.permissionDecisionReason : '' }
@@ -41,7 +46,7 @@ function record(cwd: string, prompt: string, response: unknown) {
       hook_event_name: 'PostToolUse', tool_name: 'CronCreate', cwd,
       tool_input: { prompt, cron: '*/7 * * * *' }, tool_response: response,
     }),
-    encoding: 'utf8', env: { ...process.env },
+    encoding: 'utf8', env: hermeticEnv(mkdtempSync(join(tmpdir(), 'cronguard-tmp-'))),
   })
 }
 
@@ -141,5 +146,115 @@ describe('record mode', () => {
     expect(record(cwd, '.craft/run-a', { status: 'ok' }).status).toBe(0)
     expect(record(cwd, 'nothing to do with any run', { id: '541afe58' }).status).toBe(0)
     expect(crons(cwd, 'run-a')).toBeUndefined()
+  })
+})
+
+// ------------------------------------------------------ DONE MEANS THE GOAL IS MET, NOT CHECK GREEN
+//
+// The bug this closes: a work run armed with no `--goal` released the hound hold on
+// `work-result.sh` exiting 0, the heartbeat's teardown clause read a green check as the goal
+// closing, and the loop was deleted with the user's actual objective untouched. This guard now
+// reads the hold's OWN release verb out of the same per-session ledger hooks/hound.ts writes.
+
+/** A hound ledger for `session` under a TMPDIR the hook will look in. */
+function hound(entries: [string, string][], opts: { armed?: boolean } = {}) {
+  const dir = mkdtempSync(join(tmpdir(), 'houndgate-'))
+  const sid = 'gate-session'
+  if (entries.length)
+    writeFileSync(join(dir, `hound-${sid}.releases.log`),
+      entries.map(([verb, payload], i) => `2026-09-26T00:00:0${i}\t${verb}\t${payload}`).join('\n') + '\n')
+  if (opts.armed)
+    writeFileSync(join(dir, `hound-${sid}.json`), JSON.stringify({
+      check: 'false', goal: 'the estimate lands inside the published interval',
+      startedAt: 1, ceilingMinutes: 720, maxRounds: 8, rounds: 0,
+    }))
+  return { dir, sid }
+}
+
+function guardIn(cwd: string, id: string, h: { dir: string; sid: string }, env: Record<string, string> = {}) {
+  const r = spawnSync('bun', [HOOK], {
+    input: JSON.stringify({
+      hook_event_name: 'PreToolUse', tool_name: 'CronDelete', cwd,
+      session_id: h.sid, tool_input: { id },
+    }),
+    encoding: 'utf8',
+    env: hermeticEnv(h.dir, env),
+  })
+  const parsed = r.stdout.trim() ? JSON.parse(r.stdout).hookSpecificOutput : null
+  return { ...r, decision: parsed?.permissionDecision ?? 'allow', reason: parsed?.permissionDecisionReason ?? '' }
+}
+
+describe('the hound gate: CronDelete waits on an ARMED hold, and on nothing else', () => {
+  // A cwd with nothing in flight, so the run-based rule allows and the hound gate is what decides.
+  const quietCwd = () => {
+    const cwd = newCwd()
+    mkRun(cwd, 'run-a', { crons: ['541afe58'], finished: true })
+    return cwd
+  }
+
+  test('an ARMED hold denies, and names work-abandon.sh as the escape', () => {
+    const r = guardIn(quietCwd(), '541afe58', hound([['armed', '{"check":"false"}']], { armed: true }))
+    expect(r.decision).toBe('deny')
+    expect(r.reason).toContain('ARMED')
+    expect(r.reason).toContain('work-abandon.sh')
+  })
+
+  // A RELEASED hold is not this gate's business, whatever verb it released on. `passed-unjudged`
+  // used to deny here, which held the heartbeat open on a run the user had already walked away
+  // from while saying nothing a re-arm could not say (AGK 2026-09-27).
+  test('every RELEASED verb allows, including passed-unjudged, declined and the legacy passed', () => {
+    for (const verb of [
+      'passed-unjudged', 'passed-goal-met', 'expired', 'released by user',
+      'declined', 'passed', 'refused (no tty)', 'abandoned by user',
+    ]) {
+      const r = guardIn(quietCwd(), '541afe58', hound([
+        ['armed', '{"check":"bash work-result.sh result.json"}'],
+        [verb, 'bash work-result.sh result.json'],
+      ]))
+      expect(r.decision).toBe('allow')
+    }
+  })
+
+  test('the override allows through the hound gate too', () => {
+    const h = hound([['armed', '{"check":"false"}']], { armed: true })
+    expect(guardIn(quietCwd(), '541afe58', h).decision).toBe('deny')
+    expect(guardIn(quietCwd(), '541afe58', h, { CRAFT_ALLOW_CRON_DELETE: '1' }).decision).toBe('allow')
+  })
+
+  test('NO ledger for the session keeps the old run-based rule, both ways', () => {
+    const none = hound([])
+    expect(guardIn(quietCwd(), '541afe58', none).decision).toBe('allow')
+    const busy = newCwd()
+    mkRun(busy, 'run-b', { crons: ['ab12cd34'] })
+    expect(guardIn(busy, 'ab12cd34', none).decision).toBe('deny')
+    expect(guardIn(busy, 'ab12cd34', none).reason).toContain('.craft/run-b/args.json')
+  })
+
+  /**
+   * The identity comes from the PAYLOAD and from nowhere else. An ambient CLAUDE_CODE_SESSION_ID
+   * used to be read when the payload named no session, so the hook answered about whatever session
+   * merely LAUNCHED it — measured 2026-09-27, four tests above denied with the reason quoting the
+   * live session's own ledger and a `.craft` run in an unrelated repository.
+   */
+  test('an ambient CLAUDE_CODE_SESSION_ID is NOT a session — the payload is the only source', () => {
+    const h = hound([['passed-unjudged', 'false']], { armed: true })
+    // Same ledger, same TMPDIR, same everything — only the payload's session_id differs.
+    expect(guardIn(quietCwd(), '541afe58', h).decision).toBe('deny')
+    const r = spawnSync('bun', [HOOK], {
+      input: JSON.stringify({
+        hook_event_name: 'PreToolUse', tool_name: 'CronDelete', cwd: quietCwd(), tool_input: { id: '541afe58' },
+      }),
+      encoding: 'utf8',
+      env: { ...hermeticEnv(h.dir), CLAUDE_CODE_SESSION_ID: h.sid },
+    })
+    expect(r.stdout.trim()).toBe('') // allow: the hound gate never ran
+  })
+
+  test('a settled hold still does not strand an in-flight run — the two rules are independent', () => {
+    const busy = newCwd()
+    mkRun(busy, 'run-b', { crons: ['ab12cd34'] })
+    const r = guardIn(busy, 'ab12cd34', hound([['passed-goal-met', 'false']]))
+    expect(r.decision).toBe('deny')
+    expect(r.reason).toContain('still in flight')
   })
 })

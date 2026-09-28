@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Watch every farm-out run in this session. One line per milestone.
 #
-# Declared in monitors/monitors.json as `on-skill-invoke:farm-out`, so it starts
-# the first time the skill is dispatched and runs for the session. It takes NO
+# Declared in monitors/monitors.json as `always`, so it runs for the whole
+# session — monitors are not restored on resume, and `on-skill-invoke` would
+# leave the wake dead until the skill happened to run again. It takes NO
 # arguments — a plugin monitor's command is fixed — so it watches a conventional
 # directory instead of a log path a caller passes.
 #

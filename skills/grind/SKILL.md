@@ -181,6 +181,7 @@ grep '"kind":"iter_end"' "$J" | jq -r 'select(.exit != 0) | .i'
 | Hand an iteration a key an earlier one closed | it re-diagnoses the same dead family every pass, and the loop never converges | read `GRIND_FLOORS` before choosing work; file a `floor` the first time a key dies |
 | Append a whole report as one record | over the single-write bound it is refused, and splitting it would leave a log nobody can replay | a key and a one-line note; write the report to a file and name its path |
 | Add a pidfile, a progress file or a notes file beside the journal | two files that can disagree about one fact, and the tiebreak rule is the bug | append a record; derive the pid, the counter and the floors from the journal |
+| Arm a hound hold in a session while a grind loop works the same objective | the hold blocks that session's stop while the grind's gate waits for no round in flight: each waits for the other and neither moves (AGK 2026-09-27) | one driver per objective — grind owns a long loop, and no session holds alongside it |
 | Foreground the loop from a chat session | the Bash tool call caps out and kills the run mid-flight, and the live session is the cost grind removes | `setsid nohup … &`, then `grind.sh status` when you want to know |
 | `kill -9` the loop to end it | the journal then ends on `iter`, and nothing can tell a kill from a crash | `grind.sh stop`, honoured at the next boundary |
 | Read `iter_end` with exit 0 as progress | it says the process ran, not that anything moved | `progress` records, which are what `--stall-after` counts |
