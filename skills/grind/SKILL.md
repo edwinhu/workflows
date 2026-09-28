@@ -71,7 +71,8 @@ passed through to it; a test or a dry run points `--runner` at a stub instead. E
 `budget`, `stopped` — is announced by default: `agent-msg` to the session that launched the run
 (`--notify-to` names another), plus a herdr popup where herdr is installed. `--notify CMD` replaces
 that and gets `GRIND_STATE`, `GRIND_EXIT` and `GRIND_JOURNAL`; `--notify none` silences it. A failed
-notification never changes the exit code.
+notification never changes the exit code. A loop killed hard reaches no ending, so it also files itself
+in the launching session's farm-events stream, whose monitor reports a pid gone with no `DONE` (`--no-events` opts out).
 
 Then, from anywhere and at any time:
 
