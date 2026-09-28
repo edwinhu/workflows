@@ -5478,7 +5478,110 @@ func issResolveFundUncached(ix *issSeriesIndex, banner string) (string, *SeriesD
 	if d := issRegistrantLeadInternalDropDecl(ix, key); d != nil {
 		return banner, d
 	}
+	// The heading INSERTS one interior word into a declared name AND swaps its
+	// trailing type word, both at once: `BLACK OAK EMERGING TECHNOLOGY SELECT
+	// PORTFOLIO` for a declared `BLACK OAK EMERGING TECHNOLOGY FUND`
+	// (S000006541, Oak Associates Funds 2011, 205 rows). Either edit alone
+	// already answers on a rung above; only the combination falls through. The
+	// declared spelling is restored as the name, the same convention the
+	// htmltable declared-name repair rungs follow.
+	if d := issInsertedWordTypeWordSwapDecl(ix, key); d != nil {
+		return d.Name, d
+	}
 	return banner, nil
+}
+
+// issInsertedWordTypeWordSwapDecl resolves a heading that, against exactly one
+// name this filing's own header declares, runs ONE interior token longer and
+// closes on a DIFFERENT type word. Last in the chain, so it can never outrank a
+// reading any rung above gives the same banner, and it reads only the filing's
+// own declarations -- never the dictionary.
+//
+// The guards keep it off sibling sleeves. The first two tokens -- the brand or
+// stem -- must match exactly, and the inserted token must fall strictly inside
+// the name, so neither the brand nor the type word may be the difference. Both
+// trailing words must be type words, so a swap that changes the SUBJECT of the
+// fund cannot reach here. Two declared names sharing the heading's first-two
+// token stem refuse outright, and so does a second declaration reachable the
+// same way: which id the heading names must be an elimination over the header,
+// not a choice between sleeves.
+func issInsertedWordTypeWordSwapDecl(ix *issSeriesIndex, key string) *SeriesDecl {
+	toks := strings.Fields(key)
+	if len(toks) < 5 || !issTypeWord(toks[len(toks)-1]) || issTypeWord(toks[1]) {
+		return nil
+	}
+	stem := 0
+	var hit *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		want := ix.declToks(i)
+		if len(want) < 2 || want[0] != toks[0] || want[1] != toks[1] {
+			continue
+		}
+		stem++
+		if len(want) != len(toks)-1 || !issTypeWord(want[len(want)-1]) {
+			continue
+		}
+		if want[len(want)-1] == toks[len(toks)-1] {
+			// No type-word swap: a pure insertion is another rung's shape.
+			continue
+		}
+		if !issOneInteriorInsertion(toks[:len(toks)-1], want[:len(want)-1]) {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit = d
+	}
+	if hit == nil || stem != 1 {
+		return nil
+	}
+	return hit
+}
+
+// issOneInteriorInsertion reports that `long` is `short` with exactly one extra
+// token inserted strictly after the leading pair. The inserted token must be
+// letters alone and must be no type word, so a heading cannot reach a declared
+// name by gaining a class word.
+func issOneInteriorInsertion(long, short []string) bool {
+	if len(long) != len(short)+1 || len(short) < 2 {
+		return false
+	}
+	j := 0
+	for j < len(short) && long[j] == short[j] {
+		j++
+	}
+	if j < 2 {
+		return false
+	}
+	ins := long[j]
+	if issTypeWord(ins) || !issAllLetters(ins) {
+		return false
+	}
+	for ; j < len(short); j++ {
+		if long[j+1] != short[j] {
+			return false
+		}
+	}
+	return true
+}
+
+// issAllLetters reports a token made of ASCII letters alone.
+func issAllLetters(s string) bool {
+	if s == "" {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if (c < 'a' || c > 'z') && (c < 'A' || c > 'Z') {
+			return false
+		}
+	}
+	return true
 }
 
 // issCompactKey squeezes a normalised key down to its letters and digits, with

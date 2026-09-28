@@ -7077,8 +7077,20 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 					continue
 				}
 			}
-			name, id, ok = line, d.SeriesID, true
-			adoptedAt, adoptedLine = li, line
+			// The banner INSERTS one interior word into a declared name and
+			// swaps its type word at once: Oak Associates Funds 2011 heads its
+			// `BLACK OAK EMERGING TECHNOLOGY SELECT PORTFOLIO` section for the
+			// declared `BLACK OAK EMERGING TECHNOLOGY FUND` (S000006541, 205
+			// rows with no series). That is the last rung of issResolveFund's
+			// chain, and like the declared-name repairs below it the DECLARED
+			// spelling is what gets recorded, since the printed one is the
+			// defect.
+			adopted := line
+			if wd := issInsertedWordTypeWordSwapDecl(ix, normalizeSeriesName(candidate)); wd != nil && wd.SeriesID == d.SeriesID {
+				adopted = wd.Name
+			}
+			name, id, ok = adopted, d.SeriesID, true
+			adoptedAt, adoptedLine = li, adopted
 		} else if dictID := htmlDictionaryFund(ix, dict, candidate); dictID != "" {
 			name, id, ok = line, dictID, true
 		} else if labelled {
