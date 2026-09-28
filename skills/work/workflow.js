@@ -372,7 +372,8 @@ const fanOutFloor = Object.values(fanOut).reduce((a, b) => a + b, 0)
 if (fanOutFloor > maxAgents) {
   throw new Error(
     `work: fan-out floor ${fanOutFloor} exceeds maxAgents ${maxAgents} — ` +
-    `${JSON.stringify(fanOut)} (lens-finding refuters are ON TOP of this, up to ${REFUTERS_PER_LENS} per lens). ` +
+    `${JSON.stringify(fanOut)} (lens-finding refuters are ON TOP of this, up to ${REFUTERS_PER_LENS} per lens, ` +
+    `plus one refuter-ordering leg per lens that OVERFLOWS that cap). ` +
     'This is a sizing decision and it belongs to the user at plan-approval time, not to the dispatcher. ' +
     'Split into sequenced work runs, cut priorFindings/lenses in the plan and re-hash, or pass an explicit maxAgents.'
   )
@@ -469,12 +470,20 @@ const VERIFY_SCHEMA = {
     failures: { type: 'array', items: { type: 'string' } },
   },
 }
+// A lens has TWO output channels, and the split is the point. `findings` is defect claims only;
+// `dispositions` is "I checked X and it holds". Measured 2026-09-27 over 3,137 refuted findings: 2.8%
+// were lenses filing "satisfied / no violation found / no finding / recorded as a positive check"
+// into `findings`, because `findings` was the only channel there was. A refuter cannot refute a TRUE
+// statement, so it returned refuted:false, and ~47 non-defects reached `survivingBlocking` and gated
+// runs. The bug is not the refuter's judgement — it is that the schema had nowhere else to put a
+// satisfied check.
 const LENS_SCHEMA = {
   type: 'object',
   required: ['findings'],
   properties: {
     findings: {
       type: 'array',
+      description: 'DEFECT CLAIMS ONLY. Every entry asserts something is wrong. A satisfied check belongs in dispositions.',
       items: {
         type: 'object',
         required: ['title', 'severity', 'detail'],
@@ -483,11 +492,76 @@ const LENS_SCHEMA = {
           severity: { type: 'string', enum: ['critical', 'major', 'minor'] },
           file: { type: 'string' },
           detail: { type: 'string' },
+          // The structural backstop. A lens that files a satisfied check here anyway can say so, and
+          // the JS routes it to dispositions instead of spending a refuter on it and then gating.
+          defect: { type: 'boolean', description: 'false ONLY if this entry is not a defect claim — a satisfied check reported for completeness. Such an entry is moved to dispositions and never gates. Omit it (or set true) for a real defect.' },
+        },
+      },
+    },
+    dispositions: {
+      type: 'array',
+      description: 'Checks you performed that HOLD — "I looked at X and it is fine". No severity: a disposition is not a defect. These are reported to the user and never refuted, never gated.',
+      items: {
+        type: 'object',
+        required: ['title', 'detail'],
+        properties: {
+          title: { type: 'string' },
+          file: { type: 'string' },
+          detail: { type: 'string', description: 'the evidence the check holds' },
         },
       },
     },
   },
 }
+// Backstop for a lens that used neither channel correctly: it filed a satisfied check as a finding
+// and did not set defect:false. These ROUTE, they never delete — a matched entry lands in
+// `dispositions`, which is reported in full, so a misrouted real defect is visible rather than gone.
+//
+// Deliberately narrow: both patterns require an EXPLICIT self-label ("— satisfied", "no violations
+// found", "MODEL-EVALUATED (… not a defect)", "no finding", "recorded as a positive check"), not a
+// cheerful-sounding title. Measured over all 3,137 findings in the 2026-09-27 corpus: 11 matches, all
+// 11 genuine positive dispositions on manual read, 0 false matches, and all 5 of the study's
+// hand-read direction-A examples caught. Widening these is a change that must be re-measured against
+// that corpus, not an obvious improvement.
+const DISPOSITION_TITLE_RE = new RegExp(
+  // "no <up-to-3-words> violation/finding/drift/... found|detected|identified|observed"
+  '(?:^|[\\s(\\[—:-])no\\s+(?:\\w+[\\s-]){0,3}(?:violation|finding|defect|issue|problem|drift|breach|regression|gap|discrepanc)\\w*\\b[^.]{0,60}?\\b(?:found|detected|identified|observed)\\b' +
+  // a trailing "— satisfied" / ": no finding" / "— disposition supported" verdict clause
+  '|(?:—|–|--|:)\\s*(?:satisfied|compliant|disposition\\s+supported|no\\s+finding|positive\\s+check|not\\s+a\\s+defect)\\s*$' +
+  '|\\b(?:evidence-based|positive)\\s+disposition\\b',
+  'i'
+)
+// A bare leading '^no finding|satisfied|compliant' alternative was tried and DROPPED: it matched the
+// real defect title "No finding is recorded for D19, but the chain does not close" while adding no
+// corpus hit. Removing it left the measurement unchanged at 11/3,137 with all five direction-A rows
+// still caught — a self-label needs its verdict clause ("— satisfied", "found"), not just the word.
+// Anchored to the OPENING of the detail (first ~200 chars), where a lens puts its self-label. Not
+// anywhere in the body: a real defect's detail may well argue "this is not a defect in X, but in Y".
+const DISPOSITION_DETAIL_HEAD_RE = new RegExp(
+  '^[\\s\\S]{0,200}?(?:MODEL-EVALUATED\\s*\\([^)]{0,120}?\\bnot\\s+a\\s+(?:real\\s+)?defect\\b' +
+  '|\\bno\\s+finding\\b|\\brecorded\\s+as\\s+a\\s+positive\\s+check\\b)',
+  'i'
+)
+// Why this entry is not a defect claim, or null if it is one. The boolean the lens set wins over the
+// text patterns: a structural signal beats a guess about wording.
+const dispositionReason = f => {
+  if (!f) return null
+  if (f.defect === false) return 'the lens set defect:false on this entry — its own report says it is not a defect claim'
+  if (DISPOSITION_TITLE_RE.test(f.title || '')) return 'the title self-labels a satisfied check rather than a defect (no refuter can refute a true statement, so this would have gated the run)'
+  if (DISPOSITION_DETAIL_HEAD_RE.test(f.detail || '')) return 'the detail opens by self-labelling this as not a defect (no refuter can refute a true statement, so this would have gated the run)'
+  return null
+}
+// A finding routed out of the gate, carried in `dispositions` with the severity it CLAIMED and the
+// reason it was routed. Nothing is dropped and nothing is rewritten.
+const routedDisposition = (f, key, why) => ({
+  title: f.title,
+  ...(f.file ? { file: f.file } : {}),
+  detail: f.detail,
+  lens: key,
+  routedFromFinding: true,
+  claimedSeverity: f.severity,
+  routedBecause: why,
+})
 const REFUTE_SCHEMA = {
   type: 'object',
   required: ['refuted', 'reason'],
@@ -561,6 +635,101 @@ const THIRD_PARTY_SCHEMA = {
   },
 }
 
+// ---------------------------------------------------------------- refuter ordering (Jev)
+// WHY THIS IS AN AGENT LEG AND NOT A FUNCTION CALL. The Workflow tool's script sandbox has no network
+// and no Node API. Probed 2026-09-28 with a zero-agent workflow: `fetch`, `process`, `require`,
+// `crypto`, `URL`, `TextEncoder`, `Buffer` are all `undefined`, and `import()` is rejected before the
+// script launches ("import() is not available in workflow scripts"). Only `setTimeout` and the six
+// hooks exist. So this file cannot call an HTTP API at all, and the only way out is `agent()`.
+//
+// That makes ordering worth a leg only where the ordering CHANGES something. It changes something
+// exactly when a lens overflows REFUTERS_PER_LENS, so the leg is dispatched only then: on every run
+// where no lens overflows, zero extra agents and the order is byte-identical to severity-only.
+// When one does overflow, ONE ranker leg (one batched Decisions request, ~$0.00003) steers
+// REFUTERS_PER_LENS × ~71.5k tokens of refutation. The agent is a command-runner like `mechanical:*`
+// and `red:*` — it shells out to jev-rank.ts and reports stdout; it renders no judgement itself.
+//
+// Jev NEVER settles or drops a finding. Measured 2026-09-27 over 3,137 findings: AUC 0.639 against
+// refuter verdicts — enough to rank, nowhere near enough to adjudicate (at its most confident bin the
+// refuter upheld only 53.7%). Findings past the cap keep today's fail-closed treatment regardless.
+const REFUTER_RANKERS = ['jev', 'severity']
+const refuterRanker = args.refuterRanker === undefined ? 'jev' : args.refuterRanker
+if (!REFUTER_RANKERS.includes(refuterRanker)) {
+  throw new Error(`work: refuterRanker must be one of ${REFUTER_RANKERS.join('|')}: ${JSON.stringify(args.refuterRanker)}`)
+}
+const RANKER_SCHEMA = {
+  type: 'object',
+  required: ['ok'],
+  properties: {
+    ok: { type: 'boolean', description: 'the ok field of the script\'s JSON output, verbatim' },
+    reason: { type: 'string', description: 'the reason field when ok is false, verbatim' },
+    scores: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['index', 'p'],
+        properties: {
+          index: { type: 'number', description: 'the 0-based index from the script output, verbatim' },
+          p: { type: ['number', 'null'], description: 'the probability from the script output, verbatim — null if the script emitted null' },
+        },
+      },
+    },
+  },
+}
+const JEV_RANK_SCRIPT = `${skillRoot}/scripts/jev-rank.ts`
+/**
+ * Probabilities for `findings`, aligned to their indices, or null to mean "use today's order".
+ * Returns null — never throws and never reorders anything itself — when the ranker is off, when
+ * nothing would be truncated, or when Jev is unavailable, unparseable or dead.
+ */
+const rankWithinSeverity = async (findings, key) => {
+  if (refuterRanker !== 'jev') return null
+  // Nothing is truncated, so the order cannot change which findings get a refuter. Do not spend a leg.
+  if (findings.length <= REFUTERS_PER_LENS) return null
+  const payload = JSON.stringify({
+    findings: findings.map(f => ({ title: f.title, severity: f.severity, detail: f.detail, ...(f.file ? { file: f.file } : {}), lens: key })),
+  })
+  const out = await agent(
+    [
+      AUTHORITY,
+      '',
+      `You are a COMMAND RUNNER for the refuter-ordering step of lens "${key}". You are not a reviewer, you judge nothing, and you fix nothing.`,
+      'Run this command VERBATIM via Bash, from the project directory, and report its JSON output field-for-field:',
+      '',
+      `cat <<'WORK_JEV_RANK_EOF' | bun ${JEV_RANK_SCRIPT}\n${payload}\nWORK_JEV_RANK_EOF`,
+      '',
+      'Rules:',
+      '- Run it EXACTLY as written. Do not edit the payload, do not re-order it, do not drop entries.',
+      '- Report `ok`, `reason` and `scores` exactly as the script printed them. Never invent a probability, never substitute your own opinion of a finding, never fill in a null.',
+      '- If the command fails to run at all, report ok=false with the error text as `reason`.',
+    ].join('\n'),
+    { label: `rank:${key}`, phase: 'Verify', schema: RANKER_SCHEMA, ...optIf('model', probeModel), ...optIf('effort', thirdPartyEffort) }
+  )
+  // Every failure path lands here and logs once, because a silent fallback would make a ranked run
+  // and an unranked one indistinguishable in the transcript.
+  if (!out) {
+    log(`refuter ordering: lens "${key}" — ranker leg died; falling back to severity-only order`)
+    return null
+  }
+  if (!out.ok || !Array.isArray(out.scores)) {
+    log(`refuter ordering: lens "${key}" — Jev unavailable (${out.reason || 'no reason given'}); falling back to severity-only order`)
+    return null
+  }
+  const pOf = new Array(findings.length).fill(null)
+  for (const s of out.scores) {
+    if (s && Number.isInteger(s.index) && s.index >= 0 && s.index < findings.length && typeof s.p === 'number' && Number.isFinite(s.p)) {
+      pOf[s.index] = s.p
+    }
+  }
+  const scored = pOf.filter(p => p !== null).length
+  if (!scored) {
+    log(`refuter ordering: lens "${key}" — Jev returned no usable probabilities; falling back to severity-only order`)
+    return null
+  }
+  log(`refuter ordering: lens "${key}" — ${findings.length} findings over the ${REFUTERS_PER_LENS} refuter cap, ${scored} scored by Jev; ranking within severity by likeliest-real`)
+  return pOf
+}
+
 // ---------------------------------------------------------------- lens leg
 // Dispatch the lens array, adversarially refute what each lens returns, fail closed on a lens that
 // never reported.
@@ -577,6 +746,11 @@ const runLensLeg = async lenses => {
     how: DEAD_LENS_HOW,
   })
   const deadLenses = new Map()
+  // Positive dispositions, from BOTH channels: the `dispositions` array a lens filled in, plus any
+  // finding the backstop routed out of the gate. Collected here rather than returned through the
+  // pipeline because the pipeline's per-item value is the findings array, and dispositions are not
+  // findings — threading them through would make the two look like one channel again.
+  const dispositions = []
   const lensResults = await pipeline(
     lenses,
     (lens, _orig, lensIndex) => agent(
@@ -588,6 +762,8 @@ const runLensLeg = async lenses => {
         ...refLines(lens.refs, JUDGE_REFS_INTRO),
         '',
         'Rules: modify nothing; cite files/lines; report findings only for this lens; an empty findings list is a valid answer.',
+        'A FINDING IS A DEFECT CLAIM AND NOTHING ELSE. Every entry in `findings` must assert that something is WRONG. "I checked X and it holds", "constraint Y is satisfied", "no violation found", "recorded for completeness" — none of those are findings, and filing one as a finding gates the run on a true statement, because a refuter cannot refute something that is true.',
+        'Put every satisfied check in `dispositions` instead. It is REPORTED to the user in full, so the obligation to show what you examined is discharged there, not by inflating the findings list. If you must file a non-defect under `findings` anyway, set `defect: false` on it.',
       ].join('\n'),
       // Per-lens model and effort. A lens's own value wins over lensModel so one run can mix
       // providers — cheap lenses on a small model, expensive ones on a large one. Effort resolves
@@ -603,14 +779,39 @@ const runLensLeg = async lenses => {
       if (!review) deadLenses.set(lensIndex, lensLabel(lens, lensIndex))
       return review
     }),
-    (review, lens) => {
+    async (review, lens) => {
+      // The two output channels, joined into one disposition pool. A lens's own `dispositions` are
+      // taken as given; a satisfied check it filed under `findings` is ROUTED here instead of being
+      // refuted and then gated. Nothing is deleted on either path — every entry is reported.
+      for (const d of review?.dispositions || []) {
+        if (d && d.title) dispositions.push({ title: d.title, ...(d.file ? { file: d.file } : {}), detail: d.detail, lens: lens.key })
+      }
+      const claimed = [...(review?.findings || [])]
+      const defectClaims = []
+      for (const f of claimed) {
+        const why = dispositionReason(f)
+        if (why) dispositions.push(routedDisposition(f, lens.key, why))
+        else defectClaims.push(f)
+      }
+
       // Refuters per lens are the one UNBOUNDED term in the fan-out: the arg-validation cap can
       // count everything else up front, but not how many findings a lens will return. Bound it here,
       // severity-first so the cap can never spend its budget on minors and drop a critical.
       const RANK = { critical: 0, major: 1, minor: 2 }
-      const ordered = [...(review?.findings || [])].sort(
-        (a, b) => (RANK[a.severity] ?? 3) - (RANK[b.severity] ?? 3)
-      )
+      // WITHIN a severity, likeliest-real first, so a cap that truncates spends its slots on the
+      // findings most likely to be defects. Severity still dominates — a ranked minor never displaces
+      // a critical. Jev settles nothing: past the cap a finding keeps today's fail-closed treatment.
+      const pOf = await rankWithinSeverity(defectClaims, lens.key)
+      const ordered = defectClaims
+        .map((f, i) => ({ f, i, p: pOf ? pOf[i] : null }))
+        .sort((a, b) =>
+          ((RANK[a.f.severity] ?? 3) - (RANK[b.f.severity] ?? 3)) ||
+          // Higher p first. A finding Jev could not score sorts after every scored sibling in its
+          // severity but ahead of nothing else — it keeps its incoming order among the unscored.
+          ((b.p ?? -1) - (a.p ?? -1)) ||
+          (a.i - b.i)
+        )
+        .map(x => x.f)
       const judged = ordered.slice(0, REFUTERS_PER_LENS)
       const overflow = ordered.slice(REFUTERS_PER_LENS)
       // `.then(r => r || keptFinding(...))` per slot: `parallel()` converts a REJECTED thunk — and a
@@ -660,12 +861,16 @@ const runLensLeg = async lenses => {
   // Synthesized last so real findings keep their existing order. With every lens returning normally
   // deadLenses is empty, this is a concat of [], and `findings` is byte-identical to before.
   const findings = [...reported, ...[...deadLenses].map(([, label]) => deadLensFinding(label.key, label.how))]
-  return { findings, lensesRun: lenses.length, lensesReported: lenses.length - deadLenses.size }
+  return { findings, dispositions, lensesRun: lenses.length, lensesReported: lenses.length - deadLenses.size }
 }
 // The whole-leg-died fallback, from the SAME helper so the dead wording cannot drift from the
 // in-leg synthesis: every lens is dead rather than clean, named by the same identity rule.
+// dispositions is [] here for the same reason findings is all-dead: nothing reported, so there is no
+// satisfied check to report either. An empty list is the honest answer, not a clean one — the dead
+// criticals carry the failure.
 const deadLensLeg = (lenses, how) => ({
   findings: lenses.map((l, i) => deadLensFinding((l && l.key) || `${UNATTRIBUTED}#${i}`, how)),
+  dispositions: [],
   lensesRun: lenses.length,
   lensesReported: 0,
 })
@@ -975,7 +1180,7 @@ const thirdPartyLeg = async () => {
 const [verifyOut, mechanicalOut, thirdPartyOut, priorFindingsOut, scoredOut] = await parallel([verifyLeg, mechanicalLeg, thirdPartyLeg, priorFindingsLeg, scoredLeg])
 // Fail closed at the leg level too: if the whole verify leg died, no lens reported, so every lens
 // is dead rather than clean.
-const { verified, findings: lensFindings, lensesRun, lensesReported } = verifyOut || {
+const { verified, findings: lensFindings, dispositions: lensDispositions, lensesRun, lensesReported } = verifyOut || {
   // readOnly dispatched no verifiers, so there is nothing to fail closed on for tasks; the lens
   // dimension still fails closed below.
   verified: readOnly ? [] : activeTasks.map(t => ({ id: t.id, pass: false, evidence: '', failures: ['verify leg failed'] })),
@@ -1023,6 +1228,11 @@ const taskDims = readOnly ? null : {
   redGateFailed: allRed.filter(r => r.verdict !== RED_VERDICT_OK).map(r => r.id),
   redMissing: redGatedAll.filter(t => !allRed.some(r => r.id === t.id)).map(t => t.id),
 }
+// Satisfied checks a lens reported, plus any it filed as a finding and the backstop routed out.
+// Deliberately absent from `findings` and from every conjunct in overallPass: a disposition asserts
+// nothing is wrong, so a refuter cannot refute it and a gate must not block on it. [] on every run
+// where no lens reported one, which is every run before this channel existed.
+const dispositionPool = lensDispositions || []
 const surviving = findings.filter(f => !f.refuted)
 const isBlocking = f => f.severity === 'critical' || f.severity === 'major'
 // Under freezeFindingSet the blocking channel is the CARRIED set only: a surviving lens finding is
@@ -1091,7 +1301,14 @@ const lensNote = lensesReported < lensesRun ? `; ${lensesRun - lensesReported} o
 const freezeNote = freezeFindingSet
   ? `; finding set FROZEN — ${survivingBlocking.length} carried finding(s) still stand, ${residue.length} fresh blocking finding(s) held as residue`
   : ''
-log(`gate: ${overallPass ? 'PASS' : 'FAIL'} — ${judged}${redNote}${mechNote}${lensNote}${freezeNote}`)
+// Silent when no lens reported a satisfied check, so an existing caller's log line is unchanged. When
+// one did, the routed count is named: a non-zero routed count is a lens whose prompt is not landing,
+// and it would otherwise be invisible behind a PASS.
+const routedCount = dispositionPool.filter(d => d.routedFromFinding).length
+const dispNote = dispositionPool.length
+  ? `; ${dispositionPool.length} positive disposition(s) reported, not gated${routedCount ? ` (${routedCount} routed out of findings — a lens filed a satisfied check as a defect)` : ''}`
+  : ''
+log(`gate: ${overallPass ? 'PASS' : 'FAIL'} — ${judged}${redNote}${mechNote}${lensNote}${dispNote}${freezeNote}`)
 
 return {
   overallPass,
@@ -1125,6 +1342,12 @@ return {
     // Counted from the severity, not as "everything left over": under freezeFindingSet the residue
     // is blocking-severity and out of survivingBlocking, and a subtraction would file it as minor.
     survivingMinor: surviving.filter(f => !isBlocking(f)).length,
+    // Satisfied checks — the second lens channel. NOT part of any conjunct above: a disposition is
+    // the absence of a defect, so gating on one would gate on a true statement, which is the leak this
+    // channel exists to close. `dispositionsRoutedFromFindings` is how many arrived as findings and
+    // were routed out; a non-zero value means a lens is still mis-filing and its prompt is not landing.
+    dispositions: dispositionPool.length,
+    dispositionsRoutedFromFindings: dispositionPool.filter(d => d.routedFromFinding).length,
     // Absent entirely without the flag, so the table is unchanged for every existing caller.
     ...(freezeFindingSet ? { residue: residue.length } : {}),
     // Absent entirely when no priorFindings were supplied, so the table is unchanged for every
@@ -1166,6 +1389,11 @@ return {
   // as priorResults.red so a carried task keeps its adjudication instead of re-reading as unproven.
   ...(redGatedAll.length ? { red: allRed } : {}),
   findings: surviving,
+  // The second lens channel, REPORTED IN FULL and never gated. Each entry carries its `lens`; one
+  // routed out of `findings` also carries routedFromFinding/claimedSeverity/routedBecause, so a
+  // misrouted real defect is visible to the human reviewer rather than deleted. [] when no lens
+  // reported a satisfied check.
+  dispositions: dispositionPool,
   // Absent entirely without freezeFindingSet. Blocking-severity lens findings raised THIS round that
   // the freeze excluded from the verdict: real, reported, and the input to a follow-up run's
   // priorFindings — never silently dropped.
