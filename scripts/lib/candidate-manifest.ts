@@ -48,6 +48,13 @@ export interface CaptureCandidateOptions {
   capturedAt?: string;
   exclusions?: readonly { path: string; representation: CandidateRepresentation; rationale: string }[];
   binaryInventory?: readonly CandidateBinaryDispositionV1[];
+  // Opt-in. Without it, a binary the caller's inventory does not bind — by absence OR by a digest
+  // that no longer matches the captured bytes — throws here, inside capture, before any scan can
+  // report it. That fails closed but it also fails LOUD on ordinary tree state: rebuilding a
+  // tracked binary changes its worktree digest while the caller's pin is necessarily static.
+  // Supplying a fallback keeps the manifest complete and honest (the digest is always the captured
+  // one) and moves the accept/reject decision to the caller, which can report it as a finding.
+  binaryFallbackDisposition?: string;
 }
 
 export interface CapturedCandidate {
@@ -393,6 +400,22 @@ export function captureCandidate(options: CaptureCandidateOptions): CapturedCand
     if (!target || !target.binary) return [];
     return [{ ...item, path }];
   }).sort(compareLogical);
+  const fallback = options.binaryFallbackDisposition;
+  if (fallback !== undefined) {
+    if (typeof fallback !== "string" || fallback.trim() !== fallback || fallback.length === 0) throw new Error("binaryFallbackDisposition must be a non-empty trimmed string");
+    const bound = new Map(binaryInventory.map((item) => [entryKey(item.path, item.representation), item]));
+    const rebound: CandidateBinaryDispositionV1[] = [];
+    for (const entry of entries) {
+      if (!entry.binary) continue;
+      const key = entryKey(entry.path, entry.representation);
+      const authorized = bound.get(key);
+      rebound.push(authorized && authorized.digest === entry.digest
+        ? authorized
+        : { path: entry.path, representation: entry.representation, digest: entry.digest, disposition: fallback });
+    }
+    binaryInventory.length = 0;
+    binaryInventory.push(...rebound.sort(compareLogical));
+  }
 
   const manifest = parseCandidateManifest({ schemaVersion: 1, repositoryRoot: root, baseCommit, headCommit, entries, exclusions, binaryInventory });
   const manifestDigest = digestCandidateManifest(manifest);
