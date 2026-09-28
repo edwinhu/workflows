@@ -139,10 +139,107 @@ test("a POSIX character class does not crash the gate", () => {
   expect(r.stdout).toBe("");
 });
 
+// ── rg WITH NO PATH: IT READS A STDIN THAT NEVER CLOSES ────────────────────────────────────────
+// Measured 2026-09-28, ripgrep 15.2.0, stdin a fifo held open by a sleeping writer: `rg foo` blocks
+// until killed (exit 124) and `rg foo .` exits 0 immediately. See the hook header.
+
+/** The exact 2026-09-28 command that hung for 34 minutes. Note the pipe is on the WRONG side. */
+const RG_INCIDENT = "rg -n -i craft --hidden -g '!.git' -g '!CHANGELOG.md' -c | sort";
+
+test("the rg incident command denies with the one-line fix", () => {
+  const r = run(RG_INCIDENT);
+  expect(r.decision).toBe("deny");
+  expect(r.reason).toContain("no path argument");
+  expect(r.reason).toContain("rg reads stdin when given no path");
+  expect(r.reason).toContain("rg PATTERN .");
+});
+
+test("a path argument allows", () => {
+  expect(run("rg -n foo .").stdout).toBe("");
+  expect(run("rg -n foo src tests").stdout).toBe("");
+});
+
+test("a segment fed by a pipe allows — stdin is a source that ends", () => {
+  expect(run("echo x | rg foo").stdout).toBe("");
+  expect(run("cmd | rg -c foo | sort").stdout).toBe("");
+});
+
+test("an input redirect allows", () => {
+  expect(run("rg foo < file").stdout).toBe("");
+  expect(run("rg foo <file").stdout).toBe("");
+  expect(run("rg foo <<< \"$text\"").stdout).toBe("");
+});
+
+test("-e/-f supply the pattern, so the FIRST positional is already a path", () => {
+  // No positional at all: the pattern came from the flag and there is still no path.
+  expect(run("rg -e foo -e bar").decision).toBe("deny");
+  expect(run("rg -f patterns.txt").decision).toBe("deny");
+  // One positional IS the path.
+  expect(run("rg -e foo src").stdout).toBe("");
+  expect(run("rg -f patterns.txt src").stdout).toBe("");
+});
+
+test("a value-taking flag's operand is not a path", () => {
+  expect(run("rg -g '!x' foo").decision).toBe("deny");
+  expect(run("rg -t py foo").decision).toBe("deny");
+  expect(run("rg -C 3 foo").decision).toBe("deny");
+  expect(run("rg --max-depth 2 foo").decision).toBe("deny");
+  expect(run("rg --glob=*.ts foo").decision).toBe("deny");
+  // ...and the same flags allow once a real path follows.
+  expect(run("rg -g '!x' foo .").stdout).toBe("");
+  expect(run("rg -C 3 foo src").stdout).toBe("");
+});
+
+test("no-pattern modes never read stdin and are allowed", () => {
+  expect(run("rg --files").stdout).toBe("");
+  expect(run("rg --files -g '*.ts'").stdout).toBe("");
+  expect(run("rg --version").stdout).toBe("");
+  expect(run("rg --help").stdout).toBe("");
+  expect(run("rg --type-list").stdout).toBe("");
+});
+
+test("rg with no pattern at all is a usage error, not a hang", () => {
+  // Verified: exit 2, immediate — rg never reaches stdin.
+  expect(run("rg").stdout).toBe("");
+  expect(run("rg -c").stdout).toBe("");
+});
+
+test("an explicit `-` is the deliberate read-stdin spelling", () => {
+  expect(run("rg foo -").stdout).toBe("");
+});
+
+test("rga is guarded the same way", () => {
+  expect(run("rga -i foo").decision).toBe("deny");
+  expect(run("rga -i foo .").stdout).toBe("");
+});
+
+test("rg text inside quotes is not a command position", () => {
+  expect(run('echo "rg foo"').stdout).toBe("");
+  expect(run("printf '%s\\n' 'rg foo'").stdout).toBe("");
+});
+
+test("an output redirect is not a path", () => {
+  expect(run("rg foo > out.txt").decision).toBe("deny");
+  expect(run("rg foo 2>/dev/null").decision).toBe("deny");
+  expect(run("rg foo . > out.txt").stdout).toBe("");
+});
+
+test("`--` ends the flags and the positionals still count", () => {
+  expect(run("rg -- -foo").decision).toBe("deny");
+  expect(run("rg -- -foo .").stdout).toBe("");
+});
+
+test("a command with no rg at all is untouched", () => {
+  expect(run("grep -r foo").stdout).toBe("");
+  expect(run("xargs rg foo").stdout).toBe("");
+});
+
 // ── PAYLOAD SHAPES ─────────────────────────────────────────────────────────────────────────────
 
 test("reads the Monitor tool payload the same way", () => {
   expect(run("pkill -f myjob", "Monitor").decision).toBe("deny");
+  expect(run(RG_INCIDENT, "Monitor").decision).toBe("deny");
+  expect(run("rg -n foo .", "Monitor").stdout).toBe("");
 });
 
 test("silent when tool_input carries no command", () => {
