@@ -272,9 +272,11 @@ func (d *cikSeries) crossCIK(cik, heading, period, registrantKey string) *Series
 
 // abandonedByPeriod reports whether the matched decl's name had been superseded
 // by the filing's period: the SAME series id, under the SAME registrant, carries
-// another dictionary row declared strictly after the matched one and at or
+// another dictionary row declared strictly after the matched one and strictly
 // before period, under a different normalised name. A missing or malformed date
 // on either side is read as contemporaneous, the way the guard above reads it.
+// A superseding row declared AT the period itself does not count: the rename and
+// this filing coincide, so its body cannot yet be expected to print the new name.
 func (d *cikSeries) abandonedByPeriod(e *corpusName, key, period string) bool {
 	if e == nil || e.decl == nil || len(period) != 8 || len(e.decl.DeclDate) != 8 {
 		return false
@@ -283,7 +285,7 @@ func (d *cikSeries) abandonedByPeriod(e *corpusName, key, period string) bool {
 		if x.SeriesID != e.decl.SeriesID || len(x.DeclDate) != 8 {
 			continue
 		}
-		if x.DeclDate <= e.decl.DeclDate || x.DeclDate > period {
+		if x.DeclDate <= e.decl.DeclDate || x.DeclDate >= period {
 			continue
 		}
 		if normalizeSeriesName(x.Name) != key {
