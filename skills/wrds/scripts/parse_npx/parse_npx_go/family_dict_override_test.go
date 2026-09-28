@@ -122,3 +122,38 @@ func TestFamilyDictOverrideTIAACREFEnhancedLargeCapValue(t *testing.T) {
 		t.Fatalf("fixture precondition: no Abbott Laboratories (002824100) rows among %d", len(rows))
 	}
 }
+
+// 000035/353905/0001193125-14-316607.txt: Nationwide Variable Insurance Trust,
+// period 20140630, htmltable layout. This registrant splits its many series
+// across TWO accessions for the same period -- a declaring pool. This
+// accession's own header declares ~44 series including S000005402
+// `NVIT International Equity Fund`, but NOT S000012313; the sibling accession
+// 0001193125-14-378648.txt is the one that declares S000012313
+// `NVIT International Index Fund`. The body of THIS accession nonetheless
+// prints a section banner `NVIT International Index Fund` verbatim.
+//
+// icrResolveFundShared falls through its inexact same-CIK near-miss rung --
+// dropping `Index` for `Equity` -- and stamps every row of that section with
+// S000005402, whose own declared name has never carried `Index` at any
+// vintage. The banner is an EXACT, and uniquely exact, hit on S000012313's own
+// dictionary name for this CIK. Same family as the TIAA-CREF case above (an
+// inexact same-CIK near-miss must not outrank an exact, unique dictionary hit),
+// but a harder sub-case: the correct series is not in THIS filing's header at
+// all, only in its sibling accession's.
+func TestFamilyDictOverrideNVITInternationalIndexSiblingAccession(t *testing.T) {
+	rows := familyDictOverrideDispatch(t, "nvit_international_index_vs_equity.txt", "htmltable")
+	n := 0
+	for _, r := range rows {
+		if r.CUSIP != "G88473148" { // 3I GROUP PLC
+			continue
+		}
+		n++
+		if r.SeriesID != "S000012313" {
+			t.Errorf("NVIT International Index Fund: fund=%q series=%q want S000012313 (exact, unique dictionary name for CIK 353905), not S000005402 (inexact same-CIK near-miss on the header-declared `NVIT International Equity Fund`)",
+				r.FundName, r.SeriesID)
+		}
+	}
+	if n == 0 {
+		t.Fatalf("fixture precondition: no 3I GROUP PLC (G88473148) rows among %d", len(rows))
+	}
+}

@@ -186,6 +186,66 @@ func (d *cikSeries) indexCorpusNames() {
 // names at one inserted registrant-brand token is the filer's own sleeve
 // printed short of its brand, so the sibling's identically-spelled retail
 // series is the wrong answer and the heading stays blank.
+// sameCIK is crossCIK's mirror on the filer's OWN CIK: the heading is spelled
+// exactly as ONE series of this registrant's own dictionary, at some vintage,
+// and that series is one the filing's own header never declared. A registrant
+// that splits a period's sleeves across TWO accessions -- a declaring pool --
+// leaves each accession's header short of the other's series while both bodies
+// still print every banner they cover. Nationwide Variable Insurance Trust
+// (CIK 353905, 20140630) declares S000005402 `NVIT International Equity Fund`
+// and prints a section headed `NVIT International Index Fund`, which is
+// S000012313's own dictionary name, declared for the same period by the sibling
+// accession. The registrant-scoped near-miss rungs reach that banner by
+// swapping `Index` for `Equity` and stamp the wrong sleeve; the dictionary
+// spells it right.
+//
+// EXACTNESS AND REGISTRANT-WIDE UNIQUENESS ARE THE GUARD, as they are on
+// crossCIK. The normalised heading must be answered by exactly one series id of
+// this CIK across EVERY vintage -- a name two of the registrant's own sleeves
+// have carried settles nothing and falls through to the chain's existing
+// behaviour unchanged. registrantExactName is the neighbouring rung and is not
+// this one: it reads the contemporaneous pool through seriesByName, so a name
+// the registrant reused years apart survives its refusal via
+// dictContemporaneous's tiebreak. Nothing here is stemmed, cut or widened.
+//
+// CONTEMPORANEITY AND ABANDONMENT ARE READ THE SAME WAY crossCIK reads them: a
+// name adopted after the period is refused, as is one the registrant had
+// already superseded by it. The earliest vintage spelling the heading is the
+// one dated, so a long-held name is judged by when it was adopted.
+func (d *cikSeries) sameCIK(cik, heading, period string) *SeriesDecl {
+	if d == nil || cik == "" || heading == "" {
+		return nil
+	}
+	key := normalizeSeriesName(heading)
+	if key == "" {
+		return nil
+	}
+	var hit *SeriesDecl
+	own := d.byCIK[cik]
+	for i := range own {
+		x := &own[i]
+		if x.SeriesID == "" || normalizeSeriesName(x.Name) != key {
+			continue
+		}
+		if hit != nil && hit.SeriesID != x.SeriesID {
+			return nil // two of this registrant's own sleeves answer to it
+		}
+		if hit == nil || (len(x.DeclDate) == 8 && (len(hit.DeclDate) != 8 || x.DeclDate < hit.DeclDate)) {
+			hit = x
+		}
+	}
+	if hit == nil {
+		return nil
+	}
+	if len(period) == 8 && len(hit.DeclDate) == 8 && hit.DeclDate > period {
+		return nil
+	}
+	if d.abandonedByPeriod(&corpusName{cik: cik, decl: hit}, key, period) {
+		return nil
+	}
+	return hit
+}
+
 func (d *cikSeries) crossCIK(cik, heading, period, registrantKey string) *SeriesDecl {
 	if d == nil || cik == "" || heading == "" {
 		return nil
