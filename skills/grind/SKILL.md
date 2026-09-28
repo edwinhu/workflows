@@ -74,6 +74,13 @@ that and gets `GRIND_STATE`, `GRIND_EXIT` and `GRIND_JOURNAL`; `--notify none` s
 notification never changes the exit code. A loop killed hard reaches no ending, so it also files itself
 in the launching session's farm-events stream, whose monitor reports a pid gone with no `DONE` (`--no-events` opts out).
 
+**If this session will ACT on the result** (restart the loop, read the floors, ship the fix), CronCreate
+an hourly heartbeat in the same turn as the launch — cron `7 * * * *`, prompt a few words naming the
+journal, e.g. `and? (grind run.jsonl)`; each tick just runs `grind.sh status --journal <j>`. The
+farm-events monitor is the primary wake; the cron is the backstop that survives a `--resume`, which
+monitors and background tasks do not. CronDelete it once the loop has ended — `done`, `stalled`,
+`budget` or `stopped`.
+
 Then, from anywhere and at any time:
 
 ```bash
@@ -186,4 +193,5 @@ grep '"kind":"iter_end"' "$J" | jq -r 'select(.exit != 0) | .i'
 | Foreground the loop from a chat session | the Bash tool call caps out and kills the run mid-flight, and the live session is the cost grind removes | `setsid nohup … &`, then `grind.sh status` when you want to know |
 | `kill -9` the loop to end it | the journal then ends on `iter`, and nothing can tell a kill from a crash | `grind.sh stop`, honoured at the next boundary |
 | Read `iter_end` with exit 0 as progress | it says the process ran, not that anything moved | `progress` records, which are what `--stall-after` counts |
+| Launch a loop you will act on without a heartbeat | a `--resume` restores no monitor and no background task, so a resumed session never hears it end | CronCreate an hourly tick at launch; CronDelete it at the ending |
 | Reach for the work hold to keep this going | the hold keeps a SESSION alive, which is the thing this loop exists to avoid | the hold while a session must live; grind when none should |
