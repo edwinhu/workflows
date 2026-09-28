@@ -149,6 +149,91 @@ describe('record mode', () => {
   })
 })
 
+// ------------------------------------------------------------------ A GRIND HEARTBEAT IS NOT A RUN
+//
+// grind runs OUTSIDE every session, so its hourly backstop is claimed by no `.work` run. Under the
+// fallback rule ("no run claims this id, and some run is in flight → deny") a project that has ever
+// dispatched work refuses to let that heartbeat go. `--record` marks such an id instead.
+
+/** record + guard sharing one TMPDIR and one session, which is how a real session uses them. */
+function grindPair(cwd: string, id: string, prompt: string) {
+  const dir = mkdtempSync(join(tmpdir(), 'grindcron-'))
+  const sid = 'grind-session'
+  const rec = spawnSync('bun', [HOOK, '--record'], {
+    input: JSON.stringify({
+      hook_event_name: 'PostToolUse', tool_name: 'CronCreate', cwd, session_id: sid,
+      tool_input: { prompt, cron: '7 * * * *' }, tool_response: { id },
+    }),
+    encoding: 'utf8', env: hermeticEnv(dir),
+  })
+  const g = spawnSync('bun', [HOOK], {
+    input: JSON.stringify({
+      hook_event_name: 'PreToolUse', tool_name: 'CronDelete', cwd, session_id: sid, tool_input: { id },
+    }),
+    encoding: 'utf8', env: hermeticEnv(dir),
+  })
+  const parsed = g.stdout.trim() ? JSON.parse(g.stdout).hookSpecificOutput : null
+  return { rec, dir, sid, decision: parsed?.permissionDecision ?? 'allow', reason: parsed?.permissionDecisionReason ?? '' }
+}
+
+describe('a grind heartbeat is claimed by no run, and deletes anyway', () => {
+  test('the hourly backstop deletes while an unrelated work run is in flight', () => {
+    const cwd = newCwd()
+    mkRun(cwd, 'run-b') // in flight, claims nothing
+    const r = grindPair(cwd, '9f0c1a22', 'and? (grind npx-residue.jsonl)')
+    expect(r.rec.status).toBe(0)
+    expect(r.rec.stdout.trim()).toBe('') // record mode never prints a decision
+    expect(r.decision).toBe('allow')
+  })
+
+  test('a prompt naming grind.sh status marks it too', () => {
+    const cwd = newCwd()
+    mkRun(cwd, 'run-b')
+    expect(grindPair(cwd, 'aa11bb22', 'check grind.sh status --journal /abs/run.jsonl').decision).toBe('allow')
+  })
+
+  test('an unmarked unclaimed id is still refused — the fallback rule is unchanged', () => {
+    const cwd = newCwd()
+    mkRun(cwd, 'run-b')
+    const r = grindPair(cwd, 'deadbeef', 'and? (the tasklist)')
+    expect(r.decision).toBe('deny')
+    expect(r.reason).toContain('no run')
+  })
+
+  test('marking does not reach a run that claims the id — that deny is unchanged', () => {
+    const cwd = newCwd()
+    mkRun(cwd, 'run-b', { crons: ['ab12cd34'] })
+    const r = grindPair(cwd, 'ab12cd34', 'and? (grind run.jsonl) for .work/run-b')
+    expect(r.decision).toBe('deny')
+    expect(r.reason).toContain('.work/run-b/args.json')
+  })
+
+  test('marking does not reach the ARMED-hold deny', () => {
+    const cwd = newCwd()
+    mkRun(cwd, 'run-a', { finished: true })
+    const dir = mkdtempSync(join(tmpdir(), 'grindcron-'))
+    const sid = 'gate-session'
+    writeFileSync(join(dir, `work-hold-${sid}.json`), JSON.stringify({
+      check: 'false', goal: 'g', startedAt: 1, ceilingMinutes: 720, maxRounds: 8, rounds: 0,
+    }))
+    spawnSync('bun', [HOOK, '--record'], {
+      input: JSON.stringify({
+        hook_event_name: 'PostToolUse', tool_name: 'CronCreate', cwd, session_id: sid,
+        tool_input: { prompt: 'and? (grind run.jsonl)' }, tool_response: { id: '9f0c1a22' },
+      }),
+      encoding: 'utf8', env: hermeticEnv(dir),
+    })
+    const g = spawnSync('bun', [HOOK], {
+      input: JSON.stringify({
+        hook_event_name: 'PreToolUse', tool_name: 'CronDelete', cwd, session_id: sid, tool_input: { id: '9f0c1a22' },
+      }),
+      encoding: 'utf8', env: hermeticEnv(dir),
+    })
+    expect(JSON.parse(g.stdout).hookSpecificOutput.permissionDecision).toBe('deny')
+    expect(JSON.parse(g.stdout).hookSpecificOutput.permissionDecisionReason).toContain('ARMED')
+  })
+})
+
 // ------------------------------------------------------ DONE MEANS THE GOAL IS MET, NOT CHECK GREEN
 //
 // The bug this closes: a work run armed with no `--goal` released the hold on

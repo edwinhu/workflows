@@ -12,7 +12,8 @@
  * that the run is over, which is exactly where the judgement failed (measured 2026-09-14: a loop
  * deleted at round 2 of 6 with the goal unmet, on the reasoning that the run had been halted).
  */
-import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { allow, deny, denyOnCrash, parsePayload } from "./_gate_common.ts";
 import { statePath } from "./work-hold.ts";
@@ -76,6 +77,28 @@ function runsUnder(cwd: string): Run[] | null {
   return sawRoot ? runs : null;
 }
 
+// ------------------------------------------------------------- heartbeats that belong to no run
+//
+// grind runs OUTSIDE every session, so the hourly backstop a launching session keeps for it is
+// claimed by no `.work` run and falls to the rule "nobody claims this id, and something is in
+// flight -> deny". That is a misfire: in any project that has ever dispatched work, the grind
+// heartbeat could not be deleted when the loop ended. `--record` marks such an id here, beside the
+// hold ledger the guard already reads, so no project file and no per-workflow state is added.
+const GRIND_PROMPT = /\bgrind\b/i;
+
+function markedPath(session: string): string {
+  return join(process.env.TMPDIR || tmpdir(), `work-cron-nonrun-${session}.txt`);
+}
+
+function isMarked(session: string, id: string): boolean {
+  if (!session) return false;
+  try {
+    return readFileSync(markedPath(session), "utf8").split("\n").includes(id);
+  } catch {
+    return false;
+  }
+}
+
 // ---------------------------------------------------------------- record mode (PostToolUse)
 
 /**
@@ -99,7 +122,16 @@ if (process.argv.includes("--record")) {
     if (!JOB_ID.test(id)) process.exit(0);
 
     const cwd = String(payload?.cwd ?? "") || process.cwd();
-    for (const run of runsUnder(cwd) ?? []) {
+    const runs = runsUnder(cwd) ?? [];
+
+    // A prompt that names a run belongs to that run, whatever else it says; only an id NO run
+    // claims can be a grind heartbeat.
+    const session = String(payload?.session_id ?? "");
+    if (session && GRIND_PROMPT.test(prompt) && !runs.some(r => r.name && prompt.includes(r.name))) {
+      if (!isMarked(session, id)) appendFileSync(markedPath(session), id + "\n");
+    }
+
+    for (const run of runs) {
       if (!run.name || !prompt.includes(run.name)) continue;
       if (run.crons.includes(id)) continue; // idempotent
       const raw = readFileSync(run.argsPath, "utf8");
@@ -172,6 +204,11 @@ if (runs === null) allow();
 // A run that CLAIMS this id answers the question by itself: a heartbeat recorded for run A says
 // nothing about run B, so an unrelated in-flight run must not hold A's finished loop open.
 const claiming = deleteId ? runs.filter(r => r.crons.includes(deleteId)) : [];
+
+// A heartbeat recorded as belonging to no run -- a grind backstop -- is not a work run's loop, so
+// an unrelated in-flight run says nothing about it. A run that CLAIMS the id still wins.
+if (!claiming.length && isMarked(session, deleteId)) allow();
+
 const candidates = claiming.length ? claiming : runs;
 
 // The newest in-flight run among the candidates, by args.json mtime -- the file the dispatch writes.
