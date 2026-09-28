@@ -34,7 +34,7 @@ type Plan = {
   mechanicalChecks: { name: string; cmd: string }[]
   /**
    * `args.goalCheck` — the ONE command that settles the whole plan's objective, which the dispatch
-   * arms a hound hold on. Optional: a plan that states none gets a check-less, judge-only hold.
+   * arms a hold on. Optional: a plan that states none gets a check-less, judge-only hold.
    * Never a round verdict; `hold-lint.ts` refuses that as CRITICAL and R22 below reports it here,
    * one dispatch earlier than the arm would.
    */
@@ -822,7 +822,7 @@ const lint = (p: Plan): Finding[] => {
 }
 
 /**
- * hold-lint's CRITICAL findings for one check string — the hound linter, run as a process.
+ * hold-lint's CRITICAL findings for one check string — the hold linter, run as a process.
  *
  * Out of process on purpose: `hold-lint.ts` is a script that parses argv and exits at import, so
  * importing it here would run it. String rules only — no `--probe`, which would EXECUTE the check at
@@ -833,7 +833,7 @@ const lint = (p: Plan): Finding[] => {
  */
 const holdLintCriticals = (check: string): { rule: string; message: string }[] => {
   const { spawnSync } = require('node:child_process')
-  const lint = require('node:path').join(import.meta.dir, '..', '..', 'hound', 'scripts', 'hold-lint.ts')
+  const lint = require('node:path').join(import.meta.dir, '..', '..', 'work', 'scripts', 'hold-lint.ts')
   const r = spawnSync('bun', [lint, check], { encoding: 'utf8', timeout: 60_000 })
   if (r.error || r.status === null || r.status > 1)
     return [{

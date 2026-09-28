@@ -9,9 +9,9 @@ import {
   transcriptContext, renderHistory, pushRound,
   lastLedgerEntry, ledgerPath, ABANDONED, inFlight, ceilingReached, redispatchLine,
   PASSED_GOAL_MET, PASSED_UNJUDGED,
-} from '../hooks/hound'
+} from '../hooks/work-hold'
 
-const HOOK = join(import.meta.dir, '..', 'hooks', 'hound.ts')
+const HOOK = join(import.meta.dir, '..', 'hooks', 'work-hold.ts')
 
 const state = (o: Partial<Parameters<typeof decide>[0]> = {}) => ({
   check: 'false', startedAt: 1_000_000, ceilingMinutes: 720, maxRounds: 8, rounds: 0, ...o,
@@ -58,14 +58,14 @@ describe('the decision, separated from the IO so every branch is reachable', () 
 // ---------------------------------------------------------------- the hook end to end
 
 function run(payload: object, st?: object) {
-  const dir = mkdtempSync(join(tmpdir(), 'hound-'))
+  const dir = mkdtempSync(join(tmpdir(), 'work-hold-'))
   const sid = 'test-session'
-  if (st) writeFileSync(join(dir, `hound-${sid}.json`), JSON.stringify(st))
+  if (st) writeFileSync(join(dir, `work-hold-${sid}.json`), JSON.stringify(st))
   const r = spawnSync('bun', [HOOK], {
     input: JSON.stringify({ session_id: sid, ...payload }),
     encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: dir },
   })
-  return { ...r, dir, path: join(dir, `hound-${sid}.json`) }
+  return { ...r, dir, path: join(dir, `work-hold-${sid}.json`) }
 }
 
 describe('the hook', () => {
@@ -104,26 +104,26 @@ describe('the hook', () => {
   })
 
   test('an unreadable state file releases rather than holds on unreadable terms', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'hound-'))
-    writeFileSync(join(dir, 'hound-test-session.json'), '{not json')
+    const dir = mkdtempSync(join(tmpdir(), 'work-hold-'))
+    writeFileSync(join(dir, 'work-hold-test-session.json'), '{not json')
     const r = spawnSync('bun', [HOOK], {
       input: JSON.stringify({ session_id: 'test-session' }),
       encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: dir },
     })
     expect(r.status).toBe(0)
-    expect(existsSync(join(dir, 'hound-test-session.json'))).toBe(false)
+    expect(existsSync(join(dir, 'work-hold-test-session.json'))).toBe(false)
   })
 
   // A session that cannot argue its way out could still `rm` its way out, so a state file that
   // vanished while the ledger's last word is `armed` is RESTORED. The cap bookkeeping now appends a
   // `capped` line AFTER the arm, and that must not read as the ledger's last word.
   test('a deleted state file is restored, even with a `capped` line after the arm', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'hound-'))
+    const dir = mkdtempSync(join(tmpdir(), 'work-hold-'))
     const armedState = {
       check: 'exit 1', startedAt: Math.floor(Date.now() / 1000),
       ceilingMinutes: 720, maxRounds: 8, rounds: 0,
     }
-    writeFileSync(join(dir, 'hound-test-session.releases.log'),
+    writeFileSync(join(dir, 'work-hold-test-session.releases.log'),
       `2026-09-25T00:00:00\tarmed\t${JSON.stringify(armedState)}\n` +
       `2026-09-25T00:00:01\tcapped\t${JSON.stringify({ path: '/x', window: 250000, prior: null, created: true })}\n`)
     const r = spawnSync('bun', [HOOK], {
@@ -132,7 +132,7 @@ describe('the hook', () => {
     })
     expect(JSON.parse(r.stdout).decision).toBe('block')
     expect(JSON.parse(r.stdout).reason).toContain('restored')
-    expect(existsSync(join(dir, 'hound-test-session.json'))).toBe(true)
+    expect(existsSync(join(dir, 'work-hold-test-session.json'))).toBe(true)
   })
 
   test('statePath is per SESSION, so arming one does not hold another', () => {
@@ -163,7 +163,7 @@ describe('the block message carries the news, not the boilerplate', () => {
     expect(reason).toContain(CONTINUATION)
     // and it still leads with the news
     expect(reason.split('\n')[0]).toBe(
-      'hound: `exit 1` exits 1 — not met. Round 1/8, 720 min left. Act now: fix the cause; do not loosen the check.',
+      'hold: `exit 1` exits 1 — not met. Round 1/8, 720 min left. Act now: fix the cause; do not loosen the check.',
     )
   })
 
@@ -172,7 +172,7 @@ describe('the block message carries the news, not the boilerplate', () => {
     const reason = JSON.parse(r.stdout).reason
     expect(reason).not.toContain(AUTHORITY)
     expect(reason).not.toContain(CONTINUATION)
-    expect(reason).not.toContain('hound-test-session.json')
+    expect(reason).not.toContain('work-hold-test-session.json')
     expect(reason).not.toContain('Read tool')
     expect(reason).toContain('Round 2/8')
   })
@@ -189,8 +189,8 @@ describe('the block message carries the news, not the boilerplate', () => {
 
 describe('--brief — where the clauses and the path DO belong', () => {
   test('SessionStart re-injects the path, the authority and the continuation rule', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'hound-brief-'))
-    const path = join(dir, 'hound-test-session.json')
+    const dir = mkdtempSync(join(tmpdir(), 'work-hold-brief-'))
+    const path = join(dir, 'work-hold-test-session.json')
     writeFileSync(path, JSON.stringify({
       check: 'exit 1', goal: 'ship the thing', startedAt: Math.floor(Date.now() / 1000),
       ceilingMinutes: 720, maxRounds: 8, rounds: 3,
@@ -211,8 +211,8 @@ describe('--brief — where the clauses and the path DO belong', () => {
   // EVERY heartbeat tick re-enters this brief, so the record is paid for on each one. The state
   // keeps 20 rounds for the judge; the brief shows the last 5.
   test('ROUNDS SO FAR renders only the last five, however many the state holds', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'hound-brief-'))
-    writeFileSync(join(dir, 'hound-test-session.json'), JSON.stringify({
+    const dir = mkdtempSync(join(tmpdir(), 'work-hold-brief-'))
+    writeFileSync(join(dir, 'work-hold-test-session.json'), JSON.stringify({
       check: 'exit 1', startedAt: Math.floor(Date.now() / 1000),
       ceilingMinutes: 720, maxRounds: 20, rounds: 12,
       history: Array.from({ length: 12 }, (_, i) => ({ round: i + 1, at: 1_700_000_000, exit: 1 })),
@@ -263,14 +263,14 @@ describe('a hold counts and blocks every red Stop', () => {
   })
 })
 
-describe('hound-arm.sh no longer takes --background', () => {
-  const ARM = join(import.meta.dir, '..', 'skills', 'hound', 'scripts', 'hound-arm.sh')
+describe('work-hold.sh no longer takes --background', () => {
+  const ARM = join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'work-hold.sh')
   const arm = (args: string[]) => {
-    const dir = mkdtempSync(join(tmpdir(), 'hound-arm-'))
+    const dir = mkdtempSync(join(tmpdir(), 'work-hold-'))
     const sid = `arm-${Math.random().toString(36).slice(2)}`
     const r = spawnSync('bash', [ARM, 'exit 1', ...args], {
       encoding: 'utf8',
-      env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: sid, HOUND_COMPACT_WINDOW: '0' },
+      env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: sid, WORK_HOLD_COMPACT_WINDOW: '0' },
     })
     return { r, dir, sid }
   }
@@ -283,13 +283,13 @@ describe('hound-arm.sh no longer takes --background', () => {
 
   test('the state records no background key at all', () => {
     const { dir, sid } = arm([])
-    const st = JSON.parse(readFileSync(join(dir, `hound-${sid}.json`), 'utf8'))
+    const st = JSON.parse(readFileSync(join(dir, `work-hold-${sid}.json`), 'utf8'))
     expect('background' in st).toBe(false)
   })
 
   test('the defaults are the SHORT ceilings a hold is for: 4 rounds, 120 minutes', () => {
     const { dir, sid } = arm([])
-    const st = JSON.parse(readFileSync(join(dir, `hound-${sid}.json`), 'utf8'))
+    const st = JSON.parse(readFileSync(join(dir, `work-hold-${sid}.json`), 'utf8'))
     expect(st.maxRounds).toBe(4)
     expect(st.ceilingMinutes).toBe(120)
   })
@@ -457,13 +457,13 @@ describe('the round record — no new file, and bounded on write', () => {
 
 // ---------------------------------------------------------------- --status is a position, not a dump
 
-describe('hound-arm.sh --status', () => {
-  const ARM = join(import.meta.dir, '..', 'skills', 'hound', 'scripts', 'hound-arm.sh')
+describe('work-hold.sh --status', () => {
+  const ARM = join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'work-hold.sh')
 
   test('prints the hold as labelled lines and only the last 5 ledger events, no JSON', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'houndstatus-'))
+    const dir = mkdtempSync(join(tmpdir(), 'holdstatus-'))
     const armed = {
-      check: 'bun test tests/hound.test.ts', goal: 'the suite is green',
+      check: 'bun test tests/work-hold.test.ts', goal: 'the suite is green',
       startedAt: Math.floor(Date.now() / 1000) - 30 * 60,
       ceilingMinutes: 720, maxRounds: 8, rounds: 3,
       authority: 'AUTHORITY CLAUSE', continuation: 'CONTINUATION CLAUSE',
@@ -473,21 +473,21 @@ describe('hound-arm.sh --status', () => {
         { round: 3, at: 4, exit: 0, note: 'judge UNMET: still red' },
       ],
     }
-    writeFileSync(join(dir, 'hound-status-test.json'), JSON.stringify(armed))
+    writeFileSync(join(dir, 'work-hold-status-test.json'), JSON.stringify(armed))
     const ledger = [
       ...Array.from({ length: 7 }, (_, i) =>
         `2026-09-25T0${i}:00:00-04:00\tarmed\t${JSON.stringify(armed)}`),
       `2026-09-25T09:00:00-04:00\tcapped\t${JSON.stringify({ path: '/x/settings.local.json', window: 250000, prior: null, created: true })}`,
-      '2026-09-25T10:00:00-04:00\tdeclined\tbun test tests/hound.test.ts',
+      '2026-09-25T10:00:00-04:00\tdeclined\tbun test tests/work-hold.test.ts',
     ].join('\n') + '\n'
-    writeFileSync(join(dir, 'hound-status-test.releases.log'), ledger)
+    writeFileSync(join(dir, 'work-hold-status-test.releases.log'), ledger)
 
     const r = spawnSync('bash', [ARM, '--status'], {
       encoding: 'utf8',
       env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'status-test' },
     })
     expect(r.status).toBe(0)
-    expect(r.stdout).toContain('check:   bun test tests/hound.test.ts')
+    expect(r.stdout).toContain('check:   bun test tests/work-hold.test.ts')
     expect(r.stdout).toContain('rounds:  3 of 8 used')
     expect(r.stdout).toMatch(/minutes: 69\d left of 720/)
     // the LAST 3 rounds
@@ -501,19 +501,19 @@ describe('hound-arm.sh --status', () => {
     // five ledger events, each timestamp + event + check
     const events = r.stdout.split('\n').filter((l) => /^ {4}2026-09-25T/.test(l))
     expect(events.length).toBe(5)
-    expect(events[4]).toBe('    2026-09-25T10:00:00-04:00  declined  bun test tests/hound.test.ts')
+    expect(events[4]).toBe('    2026-09-25T10:00:00-04:00  declined  bun test tests/work-hold.test.ts')
     expect(events[3]).toBe('    2026-09-25T09:00:00-04:00  capped  /x/settings.local.json')
     // the whole thing stays short enough to read at a glance
     expect(r.stdout.trim().split('\n').length).toBeLessThanOrEqual(14)
   })
 
   test('says so plainly when nothing is armed', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'houndstatus-'))
+    const dir = mkdtempSync(join(tmpdir(), 'holdstatus-'))
     const r = spawnSync('bash', [ARM, '--status'], {
       encoding: 'utf8',
       env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'status-none' },
     })
-    expect(r.stdout.trim()).toBe('hound: not armed')
+    expect(r.stdout.trim()).toBe('hold: not armed')
   })
 })
 
@@ -525,11 +525,11 @@ describe('hound-arm.sh --status', () => {
  * warning exists so that cost is visible at the moment the ceilings are chosen; it never refuses,
  * because the ceilings are the user's.
  */
-describe('hound-arm.sh warns on a LONG hold and hands over the grind command', () => {
-  const ARM = join(import.meta.dir, '..', 'skills', 'hound', 'scripts', 'hound-arm.sh')
+describe('work-hold.sh warns on a LONG hold and hands over the grind command', () => {
+  const ARM = join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'work-hold.sh')
 
   const arm = (extra: string[]) => {
-    const dir = mkdtempSync(join(tmpdir(), 'houndlong-'))
+    const dir = mkdtempSync(join(tmpdir(), 'holdlong-'))
     const sid = `long-${Math.random().toString(36).slice(2)}`
     // A check that RUNS and exits 1 — arming refuses anything else, so the warning is never reached.
     mkdirSync(join(dir, 'scripts'), { recursive: true })
@@ -537,9 +537,9 @@ describe('hound-arm.sh warns on a LONG hold and hands over the grind command', (
     const r = spawnSync('bash', [ARM, 'bash scripts/measure.sh --rate-below 0.01', ...extra], {
       encoding: 'utf8',
       cwd: dir,
-      env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: sid, HOUND_COMPACT_WINDOW: '0' },
+      env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: sid, WORK_HOLD_COMPACT_WINDOW: '0' },
     })
-    return { ...r, dir, sid, state: join(dir, `hound-${sid}.json`) }
+    return { ...r, dir, sid, state: join(dir, `work-hold-${sid}.json`) }
   }
 
   for (const extra of [['--minutes', '480'], ['--rounds', '15'], ['--rounds', '15', '--minutes', '600']]) {
@@ -594,19 +594,19 @@ describe('hound-arm.sh warns on a LONG hold and hands over the grind command', (
 
 // ------------------------------------------------- arming warns about an uncapped context window
 
-describe('hound-arm.sh and the auto-compact cap', () => {
-  const ARM = join(import.meta.dir, '..', 'skills', 'hound', 'scripts', 'hound-arm.sh')
+describe('work-hold.sh and the auto-compact cap', () => {
+  const ARM = join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'work-hold.sh')
 
   // Neither transport exists here, so the cap cannot reach the session -- which is the point:
   // arming must still succeed and say what to do by hand. Both are pinned to absent values because
   // the suite inherits the REAL session's env, where a live bridge id would make this send for
   // real. The opt-outs are asserted on the line they print.
   function arm(extra: Record<string, string>) {
-    const dir = mkdtempSync(join(tmpdir(), 'houndarm-'))
+    const dir = mkdtempSync(join(tmpdir(), 'holdarm-'))
     const env: Record<string, string> = {
       ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'arm-cap-test',
-      HOUND_HERDR: '/nonexistent-herdr', HOUND_SETTLE_MS: '0',
-      CLAUDE_CODE_BRIDGE_SESSION_ID: '', HOUND_AGENT_MSG: '/nonexistent-agent-msg',
+      WORK_HOLD_HERDR: '/nonexistent-herdr', WORK_HOLD_SETTLE_MS: '0',
+      CLAUDE_CODE_BRIDGE_SESSION_ID: '', WORK_HOLD_AGENT_MSG: '/nonexistent-agent-msg',
       CLAUDE_CODE_AUTO_COMPACT_WINDOW: '', ...extra,
     }
     const r = spawnSync('bash', [ARM, 'exit 1', '--minutes', '720'], { encoding: 'utf8', env })
@@ -618,11 +618,11 @@ describe('hound-arm.sh and the auto-compact cap', () => {
     expect(r.status).toBe(0)
     expect(r.stdout).toContain('no Herdr pane')
     expect(r.stdout).toContain('settings.local.json')
-    expect(existsSync(join(r.dir, 'hound-arm-cap-test.json'))).toBe(true)
+    expect(existsSync(join(r.dir, 'work-hold-arm-cap-test.json'))).toBe(true)
   })
 
-  test('HOUND_COMPACT_WINDOW=0 opts out', () => {
-    expect(arm({ HOUND_COMPACT_WINDOW: '0' }).stdout).toContain('not capped')
+  test('WORK_HOLD_COMPACT_WINDOW=0 opts out', () => {
+    expect(arm({ WORK_HOLD_COMPACT_WINDOW: '0' }).stdout).toContain('not capped')
   })
 
   test('CLAUDE_CODE_AUTO_COMPACT_WINDOW wins, so the cap stands down', () => {
@@ -656,8 +656,8 @@ socketserver.TCPServer(("127.0.0.1", ${port}), H).serve_forever()
 
 /** A pass-branch run with its own TMPDIR, a transcript for the judge, and the ledger it wrote. */
 function passRun(sid: string, st: object, env: Record<string, string> = {}) {
-  const dir = mkdtempSync(join(tmpdir(), 'houndverb-'))
-  writeFileSync(join(dir, `hound-${sid}.json`), JSON.stringify({
+  const dir = mkdtempSync(join(tmpdir(), 'holdverb-'))
+  writeFileSync(join(dir, `work-hold-${sid}.json`), JSON.stringify({
     check: 'true', startedAt: Math.floor(Date.now() / 1000),
     ceilingMinutes: 720, maxRounds: 8, rounds: 0, ...st,
   }))
@@ -672,12 +672,12 @@ function passRun(sid: string, st: object, env: Record<string, string> = {}) {
       // Both judges DEAD by default, so nothing here makes a billed call and an unstubbed test
       // exercises the UNAVAILABLE path deliberately rather than by accident.
       XDG_RUNTIME_DIR: '/nonexistent-so-no-agenix-key',
-      HOUND_DECISIONS_URL: 'http://127.0.0.1:1/decisions',
-      HOUND_JUDGE_URL: 'http://127.0.0.1:1/v1/chat/completions',
+      WORK_HOLD_DECISIONS_URL: 'http://127.0.0.1:1/decisions',
+      WORK_HOLD_JUDGE_URL: 'http://127.0.0.1:1/v1/chat/completions',
       ...env,
     },
   })
-  const log = join(dir, `hound-${sid}.releases.log`)
+  const log = join(dir, `work-hold-${sid}.releases.log`)
   return { ...r, dir, log, entry: lastLedgerEntry(log) }
 }
 
@@ -702,8 +702,8 @@ describe('the pass branch writes DISTINCT verbs, because a green check is not a 
     const srv = stubDecisions(port, 0.96)
     await Bun.sleep(700)
     const r = passRun('verb-met', { goal: 'the estimate lands inside the published interval' }, {
-      HOUND_JUDGE_TOKEN: 'test-token',
-      HOUND_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
+      WORK_HOLD_JUDGE_TOKEN: 'test-token',
+      WORK_HOLD_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
     })
     srv.kill()
     expect(r.entry?.verb).toBe(PASSED_GOAL_MET)
@@ -719,8 +719,8 @@ describe('the pass branch writes DISTINCT verbs, because a green check is not a 
     const srv = stubDecisions(port, 0.04)
     await Bun.sleep(700)
     const r = passRun('verb-unmet', { goal: 'every suite is green' }, {
-      HOUND_JUDGE_TOKEN: 'test-token',
-      HOUND_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
+      WORK_HOLD_JUDGE_TOKEN: 'test-token',
+      WORK_HOLD_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
     })
     srv.kill()
     expect(JSON.parse(r.stdout).decision).toBe('block')
@@ -745,7 +745,7 @@ function runDir(dir: string, opts: { args?: boolean; result?: string | null } = 
 }
 
 describe('inFlight — the filesystem test, not a belief about the run', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'houndflight-'))
+  const dir = mkdtempSync(join(tmpdir(), 'holdflight-'))
 
   test('no run at all is never in flight', () => {
     expect(inFlight({})).toBe(false)
@@ -795,24 +795,24 @@ describe('the hook allows a stop while the watched run is IN FLIGHT', () => {
   const now = Math.floor(Date.now() / 1000)
 
   test('no block, no round counted, and the state file is untouched', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'houndinflight-'))
+    const dir = mkdtempSync(join(tmpdir(), 'holdinflight-'))
     const r = runDir(dir)
     const st = { check: 'exit 1', startedAt: now, ceilingMinutes: 720, maxRounds: 8, rounds: 0, run: r }
-    writeFileSync(join(dir, 'hound-inflight.json'), JSON.stringify(st))
+    writeFileSync(join(dir, 'work-hold-inflight.json'), JSON.stringify(st))
     const out = spawnSync('bun', [HOOK], {
       input: JSON.stringify({ session_id: 'inflight' }), encoding: 'utf8',
       env: { ...HERMETIC_ENV, TMPDIR: dir },
     })
     expect(out.status).toBe(0)
     expect(out.stdout.trim()).toBe('')                                  // no block
-    expect(JSON.parse(readFileSync(join(dir, 'hound-inflight.json'), 'utf8')).rounds).toBe(0)
+    expect(JSON.parse(readFileSync(join(dir, 'work-hold-inflight.json'), 'utf8')).rounds).toBe(0)
   })
 
   /** The clock does NOT stop for a run in flight, or an abandoned run would hold a session forever. */
   test('but the MINUTES ceiling still releases it, UNMET', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'houndinflight-'))
+    const dir = mkdtempSync(join(tmpdir(), 'holdinflight-'))
     const r = runDir(dir)
-    writeFileSync(join(dir, 'hound-expflight.json'), JSON.stringify({
+    writeFileSync(join(dir, 'work-hold-expflight.json'), JSON.stringify({
       check: 'exit 1', startedAt: now - 3600, ceilingMinutes: 10, maxRounds: 8, rounds: 0, run: r,
     }))
     const out = spawnSync('bun', [HOOK], {
@@ -821,14 +821,14 @@ describe('the hook allows a stop while the watched run is IN FLIGHT', () => {
     })
     expect(out.stderr).toContain('still in flight')
     expect(out.stderr).toContain('UNMET')
-    expect(existsSync(join(dir, 'hound-expflight.json'))).toBe(false)
-    expect(lastLedgerEntry(join(dir, 'hound-expflight.releases.log'))?.verb).toBe('expired')
+    expect(existsSync(join(dir, 'work-hold-expflight.json'))).toBe(false)
+    expect(lastLedgerEntry(join(dir, 'work-hold-expflight.releases.log'))?.verb).toBe('expired')
   })
 
   test('a run that is NOT in flight blocks on a red check as it always did', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'houndinflight-'))
+    const dir = mkdtempSync(join(tmpdir(), 'holdinflight-'))
     const r = runDir(dir, { result: '[{"overallPass":false}]' })
-    writeFileSync(join(dir, 'hound-landed.json'), JSON.stringify({
+    writeFileSync(join(dir, 'work-hold-landed.json'), JSON.stringify({
       check: 'exit 1', startedAt: now, ceilingMinutes: 720, maxRounds: 8, rounds: 0, run: r,
     }))
     const out = spawnSync('bun', [HOOK], {
@@ -850,8 +850,8 @@ describe('a CHECK-LESS hold: Jev alone on the goal', () => {
     const srv = stubDecisions(port, 0.97)
     await Bun.sleep(700)
     const r = passRun('cl-met', { check: '', goal: 'every suite is green' }, {
-      HOUND_JUDGE_TOKEN: 'test-token',
-      HOUND_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
+      WORK_HOLD_JUDGE_TOKEN: 'test-token',
+      WORK_HOLD_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
     })
     srv.kill()
     expect(r.entry?.verb).toBe(PASSED_GOAL_MET)
@@ -864,8 +864,8 @@ describe('a CHECK-LESS hold: Jev alone on the goal', () => {
     const srv = stubDecisions(port, 0.03)
     await Bun.sleep(700)
     const r = passRun('cl-unmet', { check: '', goal: 'every suite is green' }, {
-      HOUND_JUDGE_TOKEN: 'test-token',
-      HOUND_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
+      WORK_HOLD_JUDGE_TOKEN: 'test-token',
+      WORK_HOLD_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
     })
     srv.kill()
     const out = JSON.parse(r.stdout)
@@ -911,7 +911,7 @@ describe('the Jev question asks for the goal AND nothing obvious left open', () 
 describe('--brief names the run and whether it is in flight', () => {
   const now = Math.floor(Date.now() / 1000)
   const brief = (st: object, dir: string) => {
-    writeFileSync(join(dir, 'hound-b.json'), JSON.stringify({
+    writeFileSync(join(dir, 'work-hold-b.json'), JSON.stringify({
       check: 'false', startedAt: now, ceilingMinutes: 720, maxRounds: 8, rounds: 0, ...st,
     }))
     return spawnSync('bun', [HOOK, '--brief'], {
@@ -921,7 +921,7 @@ describe('--brief names the run and whether it is in flight', () => {
   }
 
   test('in flight is said so, with the reason a stop was allowed', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'houndbrief-'))
+    const dir = mkdtempSync(join(tmpdir(), 'holdbrief-'))
     const out = brief({ run: runDir(dir) }, dir)
     expect(out).toContain('RUN: ')
     expect(out).toContain('IN FLIGHT')
@@ -929,25 +929,25 @@ describe('--brief names the run and whether it is in flight', () => {
   })
 
   test('a landed verdict is said so too', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'houndbrief-'))
+    const dir = mkdtempSync(join(tmpdir(), 'holdbrief-'))
     expect(brief({ run: runDir(dir, { result: '[{}]' }) }, dir)).toContain('not in flight')
   })
 
   test('no run, no RUN line', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'houndbrief-'))
+    const dir = mkdtempSync(join(tmpdir(), 'holdbrief-'))
     expect(brief({}, dir)).not.toContain('RUN: ')
   })
 
   test('a check-less hold says the judge is the whole hold', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'houndbrief-'))
+    const dir = mkdtempSync(join(tmpdir(), 'holdbrief-'))
     expect(brief({ check: '', goal: 'g' }, dir)).toContain('CHECK: none')
   })
 })
 
 describe('the ledger readers handle the new verbs', () => {
   test('lastLedgerEntry returns them, and still reads `capped` lines through', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'houndledger-'))
-    const log = join(dir, 'hound-x.releases.log')
+    const dir = mkdtempSync(join(tmpdir(), 'holdledger-'))
+    const log = join(dir, 'work-hold-x.releases.log')
     writeFileSync(log,
       `2026-09-26T00:00:00\tarmed\t{"check":"false"}\n` +
       `2026-09-26T00:00:01\t${PASSED_GOAL_MET}\tbun test\n` +
@@ -961,8 +961,8 @@ describe('the ledger readers handle the new verbs', () => {
   })
 
   test('a hold abandoned by the user is INERT, not restored on the next Stop', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'houndledger-'))
-    writeFileSync(join(dir, 'hound-aband.releases.log'),
+    const dir = mkdtempSync(join(tmpdir(), 'holdledger-'))
+    writeFileSync(join(dir, 'work-hold-aband.releases.log'),
       `2026-09-27T00:00:00\tarmed\t{"check":"false","startedAt":1,"ceilingMinutes":720,"maxRounds":8,"rounds":0}\n` +
       `2026-09-27T00:00:01\t${ABANDONED}\tthe user walked away\n`)
     const r = spawnSync('bun', [HOOK], {
@@ -971,14 +971,14 @@ describe('the ledger readers handle the new verbs', () => {
     })
     expect(r.status).toBe(0)
     expect(r.stdout.trim()).toBe('')
-    expect(existsSync(join(dir, 'hound-aband.json'))).toBe(false)
+    expect(existsSync(join(dir, 'work-hold-aband.json'))).toBe(false)
   })
 
   // The restore-on-delete rule reads the last entry's verb: a PASSING verb must not look like an
   // arm, or a released hold would be resurrected on the next Stop.
   test('a state file gone after `passed-goal-met` stays gone — the hook is inert, not restoring', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'houndledger-'))
-    writeFileSync(join(dir, 'hound-gone.releases.log'),
+    const dir = mkdtempSync(join(tmpdir(), 'holdledger-'))
+    writeFileSync(join(dir, 'work-hold-gone.releases.log'),
       `2026-09-26T00:00:00\tarmed\t{"check":"false","startedAt":1,"ceilingMinutes":720,"maxRounds":8,"rounds":0}\n` +
       `2026-09-26T00:00:01\t${PASSED_GOAL_MET}\tfalse\n`)
     const r = spawnSync('bun', [HOOK], {
@@ -987,7 +987,7 @@ describe('the ledger readers handle the new verbs', () => {
     })
     expect(r.status).toBe(0)
     expect(r.stdout.trim()).toBe('')
-    expect(existsSync(join(dir, 'hound-gone.json'))).toBe(false)
+    expect(existsSync(join(dir, 'work-hold-gone.json'))).toBe(false)
   })
 })
 
@@ -999,7 +999,7 @@ describe('the ledger readers handle the new verbs', () => {
 
 describe('the redispatch sentence, for a hold armed with --run', () => {
   const landed = (o: object = {}) => {
-    const dir = mkdtempSync(join(tmpdir(), 'houndrun-'))
+    const dir = mkdtempSync(join(tmpdir(), 'holdrun-'))
     const runDir = join(dir, 'run')
     mkdirSync(runDir, { recursive: true })
     writeFileSync(join(runDir, 'args.json'), JSON.stringify({ planPath: '/p/PLAN.md', ...o }))
@@ -1022,7 +1022,7 @@ describe('the redispatch sentence, for a hold armed with --run', () => {
   })
 
   test('falls back to a placeholder plan when the args cannot be read', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'houndrun-'))
+    const dir = mkdtempSync(join(tmpdir(), 'holdrun-'))
     expect(redispatchLine({ run: dir })).toContain('work-redispatch.sh <plan.md>')
   })
 
@@ -1041,7 +1041,7 @@ describe('the redispatch sentence, for a hold armed with --run', () => {
 
   test('--brief carries it too, which is where a compacted session re-reads it', () => {
     const { dir, runDir } = landed()
-    writeFileSync(join(dir, 'hound-test-session.json'), JSON.stringify({
+    writeFileSync(join(dir, 'work-hold-test-session.json'), JSON.stringify({
       check: 'exit 1', run: runDir, startedAt: Math.floor(Date.now() / 1000),
       ceilingMinutes: 720, maxRounds: 8, rounds: 3,
       authority: 'AUTHORITY CLAUSE', continuation: 'CONTINUATION CLAUSE',
@@ -1064,17 +1064,17 @@ describe('the redispatch sentence, for a hold armed with --run', () => {
 
 // ------------------------------------------------- the continuation clause names the hold's own instrument
 
-describe('hound-arm.sh composes the continuation clause per mode', () => {
-  const ARM = join(import.meta.dir, '..', 'skills', 'hound', 'scripts', 'hound-arm.sh')
+describe('work-hold.sh composes the continuation clause per mode', () => {
+  const ARM = join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'work-hold.sh')
 
   const arm = (argv: string[]) => {
-    const dir = mkdtempSync(join(tmpdir(), 'houndcont-'))
+    const dir = mkdtempSync(join(tmpdir(), 'holdcont-'))
     const sid = `cont-${Math.random().toString(36).slice(2)}`
     const r = spawnSync('bash', [ARM, ...argv], {
       encoding: 'utf8', cwd: dir,
-      env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: sid, HOUND_COMPACT_WINDOW: '0' },
+      env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: sid, WORK_HOLD_COMPACT_WINDOW: '0' },
     })
-    const state = join(dir, `hound-${sid}.json`)
+    const state = join(dir, `work-hold-${sid}.json`)
     return { ...r, state, json: existsSync(state) ? JSON.parse(readFileSync(state, 'utf8')) : null }
   }
 

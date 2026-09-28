@@ -1,6 +1,6 @@
 # The continuation invariant, shared by every regime that composes an objective.
 #
-# compose-goal.sh (work) and hound-arm.sh (the hold) both state a continuation clause, and their
+# compose-goal.sh (work) and work-hold.sh (the hold) both state a continuation clause, and their
 # first sentences legitimately differ -- the work skill reacts to a FAIL by re-dispatching, the hold reacts
 # to a failing check by re-running. Everything AFTER that sentence was byte-identical in both, and
 # it is the part that was measured to matter: without it a run "stops at its FIRST stopping point

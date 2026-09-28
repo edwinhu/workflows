@@ -3,16 +3,16 @@
 ## The check command, and the goal beside it
 
 ```bash
-bash ${CLAUDE_SKILL_DIR}/scripts/hound-arm.sh '<CHECK>' --goal '<OBJECTIVE>' \
+bash ${CLAUDE_SKILL_DIR}/scripts/work-hold.sh '<CHECK>' --goal '<OBJECTIVE>' \
   [--run <run-dir>] --rounds <N> --minutes <M>
-bash ${CLAUDE_SKILL_DIR}/scripts/hound-arm.sh --goal '<OBJECTIVE>' [--run <run-dir>]   # check-less
+bash ${CLAUDE_SKILL_DIR}/scripts/work-hold.sh --goal '<OBJECTIVE>' [--run <run-dir>]   # check-less
 ```
 
 `<CHECK>` is the floor: one clause per claim, red at the moment you arm it, runnable in this session's
 cwd, no apostrophes. `<OBJECTIVE>` is what the judge rules on. Filled in, for an unattended night:
 
 ```bash
-bash skills/hound/scripts/hound-arm.sh \
+bash skills/work/scripts/work-hold.sh \
   'bash skills/wrds/scripts/parse_npx/measure.sh --xml-error-rate-below 0.01' \
   --goal 'the XML error rate is under 1 percent across the whole corpus' \
   --rounds 15 --minutes 480
@@ -84,7 +84,7 @@ asked whether to amend and re-dispatch or read the findings first, and slept 4h1
 Rewrite — the verdict file, read for PASS rather than for existence:
 
 ```bash
-bash skills/hound/scripts/hound-arm.sh \
+bash skills/work/scripts/work-hold.sh \
   'bash skills/wrds/scripts/parse_npx/measure.sh --unreconciled-below 5000' \
   --goal 'fewer than 5000 rows are unreconciled' --run .craft/npx-reconcile \
   --rounds 6 --minutes 480
@@ -107,7 +107,7 @@ questions: push three green commits, and how far to take a fix already diagnosed
 Rewrite — armed when the recon is dispatched, not after it lands:
 
 ```bash
-bash skills/hound/scripts/hound-arm.sh \
+bash skills/work/scripts/work-hold.sh \
   'bun test tests/ambiguous-settlement.test.ts' --rounds 4 --minutes 300
 ```
 

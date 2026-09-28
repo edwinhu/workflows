@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/hound.ts --brief"
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-hold.ts --brief"
           }
         ]
       }
@@ -137,7 +137,7 @@
           },
           {
             "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/hound.ts"
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-hold.ts"
           }
         ]
       }

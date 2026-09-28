@@ -22,8 +22,8 @@
  * INERT unless armed. The state file is per session, so this fires for exactly one session
  * rather than every session in the project.
  *
- *   arm:     hound-arm.sh '<check command>' [--goal '<objective>'] [--run DIR] [--rounds N] [--minutes M]
- *            hound-arm.sh --goal '<objective>' [--run DIR] …    a CHECK-LESS hold: the judge alone
+ *   arm:     work-hold.sh '<check command>' [--goal '<objective>'] [--run DIR] [--rounds N] [--minutes M]
+ *            work-hold.sh --goal '<objective>' [--run DIR] …    a CHECK-LESS hold: the judge alone
  *   release: the check passes AND the judge agrees the goal is met, a ceiling is reached, or the USER
  *            confirms `--disarm` at a terminal. Deleting the state file is not a release: the ledger
  *            beside it records the arm, and this hook restores a hold that vanished without one.
@@ -70,11 +70,11 @@ export interface RoundRecord {
 }
 
 export function statePath(session: string): string {
-  return join(process.env.TMPDIR || tmpdir(), `hound-${session}.json`)
+  return join(process.env.TMPDIR || tmpdir(), `work-hold-${session}.json`)
 }
 
 /**
- * The ledger beside the state file. `hound-arm.sh` appends `armed` here when it arms and
+ * The ledger beside the state file. `work-hold.sh` appends `armed` here when it arms and
  * `released by user` / `declined` / `refused` when release is attempted; this hook appends
  * the PASSED_GOAL_MET / PASSED_UNJUDGED verbs and `expired`. It exists because the state file alone
  * made the hold `rm`-able: a session that could not argue its way out could still delete its way
@@ -82,7 +82,7 @@ export function statePath(session: string): string {
  * something other than the two sanctioned exits, and it is RESTORED rather than honoured.
  */
 export function ledgerPath(session: string): string {
-  return join(process.env.TMPDIR || tmpdir(), `hound-${session}.releases.log`)
+  return join(process.env.TMPDIR || tmpdir(), `work-hold-${session}.releases.log`)
 }
 
 /**
@@ -284,7 +284,7 @@ export function pushRound(s: State, r: RoundRecord, max = 20): void {
  * Ask an INDEPENDENT model whether the goal is met, reading the transcript.
  *
  * `/goal` installed a Stop hook "judged by a model reading the transcript" (compose-goal.sh), and
- * hound replaced it with a command because a transcript judge can be satisfied by saying the right
+ * the hold replaced it with a command because a transcript judge can be satisfied by saying the right
  * things. Both halves are real, so this runs IN ADDITION to the check, never instead: the check is
  * the executable floor, and the judge catches the case the floor cannot see — a narrow check going
  * green while the stated objective is untouched. It is a SEPARATE process on a haiku-class model,
@@ -393,10 +393,10 @@ export function decisionsCall(
   state: string,
   questions: Record<string, { type: string; instructions: string }>,
 ): { stdout: string; unavailable: null } | { stdout: null; unavailable: string } {
-  const url = process.env.HOUND_DECISIONS_URL || 'https://openrouter.ai/api/alpha/decisions'
-  const model = process.env.HOUND_DECISIONS_MODEL || 'typesafe/jev-1.13'
+  const url = process.env.WORK_HOLD_DECISIONS_URL || 'https://openrouter.ai/api/alpha/decisions'
+  const model = process.env.WORK_HOLD_DECISIONS_MODEL || 'typesafe/jev-1.13'
 
-  let token = process.env.HOUND_JUDGE_TOKEN || ''
+  let token = process.env.WORK_HOLD_JUDGE_TOKEN || ''
   if (!token) {
     const runtime = process.env.XDG_RUNTIME_DIR || '/run/user/1000'
     try {
@@ -426,7 +426,7 @@ function judgeViaDecisions(
   // The threshold is DELIBERATELY high. Releasing a hold ends the work, so "probably done" is not
   // done: an uncertain answer should keep the session working, which is the failure this whole
   // mechanism exists to prevent.
-  const threshold = Number(process.env.HOUND_DECISIONS_THRESHOLD || 0.8)
+  const threshold = Number(process.env.WORK_HOLD_DECISIONS_THRESHOLD || 0.8)
   const r = decisionsCall(state, {
     met: {
       // TWO CLAUSES, because the stall this exists to stop happens at a moment of legitimate
@@ -451,8 +451,8 @@ function judgeGoal(
   // Sending 12000 characters of transcript to get back "MET" is paying for input to produce a bit.
   // 4000 covers the recent turns a verdict rests on, and the compaction summary covers the run they
   // sit in; both are overridable when a goal needs more.
-  const TAIL_CHARS = Number(process.env.HOUND_JUDGE_TAIL_CHARS || 4000)
-  const SUMMARY_CHARS = Number(process.env.HOUND_JUDGE_SUMMARY_CHARS || 3000)
+  const TAIL_CHARS = Number(process.env.WORK_HOLD_JUDGE_TAIL_CHARS || 4000)
+  const SUMMARY_CHARS = Number(process.env.WORK_HOLD_JUDGE_SUMMARY_CHARS || 3000)
   let ctx: { summary: string; tail: string }
   try {
     ctx = transcriptContext(readFileSync(transcriptPath, 'utf8'), TAIL_CHARS, SUMMARY_CHARS)
@@ -499,9 +499,9 @@ function judgeGoal(
   // wrappers load the CLAUDE.md, hooks and skills of whatever directory they start in and answer
   // AS that agent -- the same prompt returned "UNMET" from /tmp and "work run abandoned..." from
   // a repo carrying work context. An HTTP call has no cwd and no persona to inherit.
-  const url = process.env.HOUND_JUDGE_URL || 'http://127.0.0.1:8317/v1/chat/completions'
-  const token = process.env.HOUND_JUDGE_TOKEN || 'sk-local-claude-proxy'
-  const model = process.env.HOUND_JUDGE_MODEL || 'gpt-5.6-luna'
+  const url = process.env.WORK_HOLD_JUDGE_URL || 'http://127.0.0.1:8317/v1/chat/completions'
+  const token = process.env.WORK_HOLD_JUDGE_TOKEN || 'sk-local-claude-proxy'
+  const model = process.env.WORK_HOLD_JUDGE_MODEL || 'gpt-5.6-luna'
 
   const body = {
     model,
@@ -572,7 +572,7 @@ function judgeGoal(
 
 /** The file `/autocompact` writes to. Resolved through symlinks — it is usually stowed. */
 export function userSettingsPath(): string {
-  const p = process.env.HOUND_USER_SETTINGS || join(homedir(), '.claude', 'settings.json')
+  const p = process.env.WORK_HOLD_USER_SETTINGS || join(homedir(), '.claude', 'settings.json')
   try {
     return realpathSync(p)
   } catch {
@@ -613,8 +613,8 @@ export interface CapRecord {
 }
 
 /**
- * Evidence that HOUND — not the user — is why `WINDOW_KEY` already equals the cap, and what was in
- * the file before hound first put it there.
+ * Evidence that THE HOLD — not the user — is why `WINDOW_KEY` already equals the cap, and what was in
+ * the file before the hold first put it there.
  *
  * A cap left behind by a hold that was re-armed or whose release was skipped is indistinguishable,
  * by value alone, from a setting the user chose. Observed 2026-09-25: arming in
@@ -622,7 +622,7 @@ export interface CapRecord {
  * though it were the user's, which blocked `/autocompact auto`.
  *
  * Two sources, both already on disk and neither a new file: a LIVE state object still holding a
- * CapRecord for this path and window, and the `capped` lines hound appends to its own per-session
+ * CapRecord for this path and window, and the `capped` lines the hold appends to its own per-session
  * ledgers. The live record wins — it is the hold that still owns the key.
  */
 export function capProvenance(path: string, window: number, dir?: string): CapRecord | null {
@@ -635,7 +635,7 @@ export function capProvenance(path: string, window: number, dir?: string): CapRe
   }
   let fromLedger: CapRecord | null = null
   for (const name of names.sort()) {
-    if (!name.startsWith('hound-')) continue
+    if (!name.startsWith('work-hold-')) continue
     const full = join(d, name)
     if (name.endsWith('.json')) {
       try {
@@ -663,7 +663,7 @@ export function capProvenance(path: string, window: number, dir?: string): CapRe
 /**
  * Put the cap in the local file, preserving every other key and its order.
  *
- * When the key is ALREADY the cap value, `prior` is only believable if hound did not write it — so
+ * When the key is ALREADY the cap value, `prior` is only believable if the hold did not write it — so
  * `provenance` (from `capProvenance`) carries the earlier record's prior forward instead. With no
  * provenance the old behaviour stands and the cap value is recorded as the prior: a value that is
  * there for a reason nobody can establish is treated as the user's, which is the safe direction.
@@ -710,7 +710,7 @@ export function restoreLocal(rec: CapRecord): void {
 /** This session's own Herdr pane, matched on the agent session id. Null rather than throwing. */
 export function selfPane(session: string): string | null {
   try {
-    const r = spawnSync(process.env.HOUND_HERDR || 'herdr', ['agent', 'list'], {
+    const r = spawnSync(process.env.WORK_HOLD_HERDR || 'herdr', ['agent', 'list'], {
       encoding: 'utf8',
       timeout: 20_000,
     })
@@ -730,16 +730,16 @@ export function selfCse(): string | null {
   return bridge ? bridge.replace(/^session_/, 'cse_') : null
 }
 
-// The user permissions.ask matches any Bash command naming a hound-*.json path, so a cat of the
+// The user permissions.ask matches any Bash command naming a work-hold-*.json path, so a cat of the
 // state prompts them; the Read tool and --status do not. BRIEF ONLY — a block message repeats every
 // round, and the path does not change, so it is noise there and orientation here.
-const stateRef = (path: string) => `(state: ${path} — inspect it with the Read tool, Read(file_path: "${path}"), or \`hound-arm.sh --status\`; never name this path in a Bash command, which prompts the user)`
+const stateRef = (path: string) => `(state: ${path} — inspect it with the Read tool, Read(file_path: "${path}"), or \`work-hold.sh --status\`; never name this path in a Bash command, which prompts the user)`
 
 /**
  * The standing authority and the continuation rule — ONCE PER HOLD, on the first counted block.
  *
  * compose-goal.sh put them in the goal because the goal was "the one text it re-reads every turn",
- * and hound inherited that by printing them on every block. They are long, identical each round, and
+ * and the hold inherited that by printing them on every block. They are long, identical each round, and
  * already on disk: `--brief` re-injects them at SessionStart, which is the one moment the session
  * has actually lost them. `first` is derived from the round counter, so it records no new state.
  */
@@ -770,7 +770,7 @@ export function redispatchLine(s: { run?: string }): string {
   )
 }
 
-const agentMsgBin = () => process.env.HOUND_AGENT_MSG || 'agent-msg'
+const agentMsgBin = () => process.env.WORK_HOLD_AGENT_MSG || 'agent-msg'
 
 /** The Remote Control target, but only when the id AND the binary are both there. */
 function agentMsgTarget(cse?: string | null): string | null {
@@ -800,7 +800,7 @@ export function applyWindow(session: string, cse?: string | null): string {
     const target = agentMsgTarget(cse)
     const pane = target ? null : selfPane(session)
     if (!target && !pane) return 'no transport into this session; window unchanged'
-    const settle = Number(process.env.HOUND_SETTLE_MS ?? 2000)
+    const settle = Number(process.env.WORK_HOLD_SETTLE_MS ?? 2000)
     if (settle > 0) spawnSync('sleep', [String(settle / 1000)])
     // NEVER a bare `/autocompact` — with no argument it opens an interactive picker.
     const arg = globalArg()
@@ -814,7 +814,7 @@ export function applyWindow(session: string, cse?: string | null): string {
     const p = pane ?? selfPane(session)
     if (!p) return 'agent-msg refused the /autocompact send and there is no pane; window unchanged'
     const r = spawnSync(
-      process.env.HOUND_HERDR || 'herdr',
+      process.env.WORK_HOLD_HERDR || 'herdr',
       ['agent', 'prompt', p, `/autocompact ${arg}`],
       { encoding: 'utf8', timeout: 20_000 },
     )
@@ -832,7 +832,7 @@ function capCli(): void {
   const path = statePath(session)
   if (!existsSync(path)) return say('no armed hold; not capped')
 
-  if (process.env.HOUND_COMPACT_WINDOW === '0') return say('HOUND_COMPACT_WINDOW=0; not capped')
+  if (process.env.WORK_HOLD_COMPACT_WINDOW === '0') return say('WORK_HOLD_COMPACT_WINDOW=0; not capped')
   if (process.env.CLAUDE_CODE_AUTO_COMPACT_WINDOW)
     return say('CLAUDE_CODE_AUTO_COMPACT_WINDOW is set; it wins and /autocompact refuses. Not capped')
 
@@ -851,14 +851,14 @@ function capCli(): void {
         `${local} and run \`/autocompact auto\` yourself. Not capped`,
     )
 
-  const raw = Number(process.env.HOUND_COMPACT_WINDOW || 250_000)
+  const raw = Number(process.env.WORK_HOLD_COMPACT_WINDOW || 250_000)
   const window = Math.min(1_000_000, Math.max(100_000, Number.isFinite(raw) ? raw : 250_000))
 
   s.compact = writeLocalCap(local, window, capProvenance(local, window))
   if (cse) s.compact.cse = cse
   writeFileSync(path, JSON.stringify(s))
   // The cap record, in the ledger that already sits beside the state file — so a LATER arm can tell
-  // a cap hound left behind from a window the user chose, even after this state file is gone.
+  // a cap the hold left behind from a window the user chose, even after this state file is gone.
   appendFileSync(ledgerPath(session), `${new Date().toISOString()}\tcapped\t${JSON.stringify(s.compact)}\n`)
 
   const status = applyWindow(session, cse)
@@ -940,7 +940,7 @@ function main(): void {
     rmSync(path, { force: true })
     const moved = rubricDrift(s)
     process.stderr.write(
-      `until: ${message}` +
+      `hold: ${message}` +
         (moved.length
           ? ` The check's own files changed while armed (${moved.join(', ')}) — the objective moved during the hold, so say what it says now.`
           : '') +
@@ -1005,8 +1005,8 @@ function main(): void {
           )
         block(
           (checkless
-            ? `hound: the goal is judged NOT met: ${j.reason}`
-            : `hound: \`${s.check}\` exits 0 but the goal is judged NOT met: ${j.reason}`) +
+            ? `hold: the goal is judged NOT met: ${j.reason}`
+            : `hold: \`${s.check}\` exits 0 but the goal is judged NOT met: ${j.reason}`) +
             `\nGoal: ${s.goal}\nRound ${s.rounds + 1}/${s.maxRounds}.`,
           `judge UNMET: ${j.reason}`,
         )
@@ -1025,13 +1025,13 @@ function main(): void {
                 `a heartbeat cron exists, end it with CronDelete now.`,
             )
           block(
-            `hound: judge unavailable (${j.reason}), and this hold has no check — nothing has ` +
+            `hold: judge unavailable (${j.reason}), and this hold has no check — nothing has ` +
               `confirmed the goal, so the session keeps working.\nGoal: ${s.goal}\n` +
               `Round ${s.rounds + 1}/${s.maxRounds}.`,
             `judge unavailable: ${j.reason}`,
           )
         }
-        process.stderr.write(`until: goal judge unavailable (${j.reason}); releasing on the check alone.\n`)
+        process.stderr.write(`hold: goal judge unavailable (${j.reason}); releasing on the check alone.\n`)
       }
       if (j.verdict === 'MET') judged = j.reason
     }
@@ -1073,7 +1073,7 @@ function main(): void {
     : ''
   process.stdout.write(JSON.stringify({
     decision: 'block',
-    reason: `hound: ${d.reason}${goalB}${noteB}${clausesB ? `\n${clausesB}` : ''}`,
+    reason: `hold: ${d.reason}${goalB}${noteB}${clausesB ? `\n${clausesB}` : ''}`,
   }))
   process.exit(0)
 }
@@ -1106,7 +1106,7 @@ function brief(): void {
   // the recent rounds tried, not the whole run.
   const rounds = renderHistory((s.history ?? []).slice(-5))
   const out = [
-    '# HOUND — this session is under an armed hold',
+    '# WORK HOLD — this session is under an armed hold',
     `Read this hold rather than remembering it — the context it was in has just been summarised or cleared. ${stateRef(path)}`,
     s.goal ? `GOAL: ${s.goal}` : '',
     s.check

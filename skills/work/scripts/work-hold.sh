@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Arm the until Stop hook on THIS session: hold the turn until a command exits 0.
 #
-# No transport: a state file is written here and read by hooks/hound.ts on every Stop. Anything
+# No transport: a state file is written here and read by hooks/work-hold.ts on every Stop. Anything
 # that has to be TYPED into the session instead needs the pane idle, and a session working
 # back-to-back never goes idle, so it never lands.
 #
-#   hound-arm.sh '<check command>' [--goal '<objective>'] [--run DIR] [--rounds N] [--minutes M]
-#   hound-arm.sh --goal '<objective>' [--run DIR] [--rounds N] [--minutes M]
-#   hound-arm.sh --status | --disarm
+#   work-hold.sh '<check command>' [--goal '<objective>'] [--run DIR] [--rounds N] [--minutes M]
+#   work-hold.sh --goal '<objective>' [--run DIR] [--rounds N] [--minutes M]
+#   work-hold.sh --status | --disarm
 #
 # The SECOND form is CHECK-LESS: the judge alone on the goal. A plan that states no computable goal
 # check still needs a hold, and inventing one would be a check nobody wrote. The arm-time refusals
@@ -24,26 +24,26 @@
 set -uo pipefail
 
 SID="${CLAUDE_CODE_SESSION_ID-}"
-[ -n "$SID" ] || { echo "hound-arm: no CLAUDE_CODE_SESSION_ID — cannot arm a session-scoped hold" >&2; exit 2; }
-STATE="${TMPDIR:-/tmp}/hound-$SID.json"
-HOOK="$(cd "$(dirname "$(readlink -f "$0")")/../../.." && pwd)/hooks/hound.ts"
+[ -n "$SID" ] || { echo "work-hold: no CLAUDE_CODE_SESSION_ID — cannot arm a session-scoped hold" >&2; exit 2; }
+STATE="${TMPDIR:-/tmp}/work-hold-$SID.json"
+HOOK="$(cd "$(dirname "$(readlink -f "$0")")/../../.." && pwd)/hooks/work-hold.ts"
 
 case "${1-}" in
   --status)
     # A FEW LABELLED LINES. This used to `cat` the state and then every ledger line ever written for
     # the session, each carrying the whole armed JSON -- dozens of lines in which the hold's actual
     # position was the hardest thing to find.
-    [ -f "$STATE" ] || { echo "hound: not armed"; exit 0; }
+    [ -f "$STATE" ] || { echo "hold: not armed"; exit 0; }
     python3 - "$STATE" "${STATE%.json}.releases.log" <<'PY'
 import json, os, sys, time
 state, log = sys.argv[1], sys.argv[2]
 try:
     s = json.load(open(state))
 except Exception:
-    print(f"hound: ARMED — state unreadable ({state})"); raise SystemExit(0)
+    print(f"hold: ARMED — state unreadable ({state})"); raise SystemExit(0)
 
 left = int(s.get("ceilingMinutes", 0)) - int((time.time() - s.get("startedAt", 0)) // 60)
-print("hound: ARMED")
+print("hold: ARMED")
 print(f"  check:   {s.get('check') or '(none — the judge alone on the goal)'}")
 if s.get("goal"):
     print(f"  goal:    {s['goal']}")
@@ -92,16 +92,16 @@ PY
     # read from /dev/tty can only be answered by a human at a terminal, so this fails closed for an
     # agent and stays one keystroke for the user. Every attempt is logged either way.
     LOG="${STATE%.json}.releases.log"
-    if [ ! -f "$STATE" ]; then echo "hound: not armed"; exit 0; fi
+    if [ ! -f "$STATE" ]; then echo "hold: not armed"; exit 0; fi
     if [ ! -r /dev/tty ] || [ ! -t 0 ] && ! { exec 3</dev/tty; } 2>/dev/null; then
       printf '%s\trefused (no tty)\t%s\n' "$(date -Is)" "$(jq -r .check "$STATE" 2>/dev/null)" >> "$LOG"
-      echo "hound-arm: --disarm needs the USER to confirm at a terminal, and there is none here." >&2
+      echo "work-hold: --disarm needs the USER to confirm at a terminal, and there is none here." >&2
       echo "  The hold is not yours to release: ask the user, or arm a different check instead." >&2
       echo "  A gate that measures the wrong property is replaced by arming the right one, not by stopping." >&2
       exit 2
     fi
     exec 3</dev/tty
-    printf 'hound: release the hold on `%s`? [y/N] ' "$(jq -r .check "$STATE" 2>/dev/null)" > /dev/tty
+    printf 'hold: release the hold on `%s`? [y/N] ' "$(jq -r .check "$STATE" 2>/dev/null)" > /dev/tty
     read -r ans <&3 || ans=""
     exec 3<&-
     case "$ans" in
@@ -109,18 +109,18 @@ PY
         printf '%s\treleased by user\t%s\n' "$(date -Is)" "$(jq -r .check "$STATE" 2>/dev/null)" >> "$LOG"
         # Restore the window BEFORE the state file goes: the cap record lives in it.
         [ -r "$HOOK" ] && command -v bun >/dev/null 2>&1 && bun "$HOOK" --uncap
-        rm -f "$STATE"; echo "hound: disarmed (user confirmed)"; exit 0 ;;
+        rm -f "$STATE"; echo "hold: disarmed (user confirmed)"; exit 0 ;;
       *)
         printf '%s\tdeclined\t%s\n' "$(date -Is)" "$(jq -r .check "$STATE" 2>/dev/null)" >> "$LOG"
-        echo "hound: still armed"; exit 2 ;;
+        echo "hold: still armed"; exit 2 ;;
     esac ;;
   # A leading --goal is the CHECK-LESS form. Every other leading flag is still a usage error, so a
   # typo cannot silently arm a hold with no check.
   --goal) ;;
   "" | -*)
-    echo "usage: hound-arm.sh '<check command>' [--goal '<objective>'] [--run DIR] [--rounds N] [--minutes M]" >&2
-    echo "       hound-arm.sh --goal '<objective>' [--run DIR] [--rounds N] [--minutes M]   (check-less)" >&2
-    echo "       hound-arm.sh --status | --disarm" >&2
+    echo "usage: work-hold.sh '<check command>' [--goal '<objective>'] [--run DIR] [--rounds N] [--minutes M]" >&2
+    echo "       work-hold.sh --goal '<objective>' [--run DIR] [--rounds N] [--minutes M]   (check-less)" >&2
+    echo "       work-hold.sh --status | --disarm" >&2
     exit 2 ;;
 esac
 
@@ -134,12 +134,12 @@ while [ $# -gt 0 ]; do
     --run)     RUN="${2-}"; shift 2 ;;
     --rounds)  ROUNDS="${2-}"; shift 2 ;;
     --minutes) MINUTES="${2-}"; shift 2 ;;
-    *) echo "hound-arm: unknown flag $1" >&2; exit 2 ;;
+    *) echo "work-hold: unknown flag $1" >&2; exit 2 ;;
   esac
 done
 
 if [ -z "$CHECK" ] && [ -z "$GOAL" ]; then
-  echo "hound-arm: a check-less hold is the judge alone on --goal, so --goal is required. Not armed." >&2
+  echo "work-hold: a check-less hold is the judge alone on --goal, so --goal is required. Not armed." >&2
   exit 2
 fi
 
@@ -150,12 +150,12 @@ if [ -n "$CHECK" ]; then
   # forever on a broken command. Both are facts about a COMMAND, so neither applies check-less.
   OUT=$(bash -lc "$CHECK" 2>&1); RC=$?
   if [ "$RC" -eq 0 ]; then
-    echo "hound-arm: that check ALREADY exits 0 — nothing to hold. Not armed." >&2; exit 2
+    echo "work-hold: that check ALREADY exits 0 — nothing to hold. Not armed." >&2; exit 2
   fi
   if [ "$RC" -gt 1 ]; then
-    echo "hound-arm: that check exits $RC, which is could-not-run rather than a verdict." >&2
+    echo "work-hold: that check exits $RC, which is could-not-run rather than a verdict." >&2
     printf '%s\n' "$OUT" | tail -3 >&2
-    echo "hound-arm: fix the command first. Not armed." >&2; exit 2
+    echo "work-hold: fix the command first. Not armed." >&2; exit 2
   fi
 fi
 
@@ -169,7 +169,7 @@ fi
 # record why each one exists: without CONTINUATION a run "stops at its FIRST stopping point rather
 # than its ceiling", which is "the whole difference between a session that spends its budget and one
 # that reports a verdict and goes quiet with hours left". Those clauses lived in the goal because
-# the goal was "the one text it re-reads every turn" -- and in hound that text is the hold's block
+# the goal was "the one text it re-reads every turn" -- and in the hold that text is its block
 # message, which carried none of them.
 AUTHORITY_CLAUSE='You may decide alone, without asking: which finding to fix first, whether to commit what is green (explicit paths, never push), and what to pick up next.'
 # shellcheck source=../../../lib/goal-clauses.sh
@@ -245,7 +245,7 @@ if [ -r "$LINT" ] && command -v bun >/dev/null 2>&1; then
       # pinned from the same parse), and leaving it behind on a refusal arms the hold anyway: the
       # Stop hook reads the file, not this exit code. No ledger line exists yet, so nothing restores it.
       rm -f "$STATE"
-      echo "hound-arm: fix the critical finding(s) above first. Not armed." >&2
+      echo "work-hold: fix the critical finding(s) above first. Not armed." >&2
       exit 2
     fi
   fi
@@ -285,9 +285,9 @@ case "$MINUTES$ROUNDS" in *[!0-9]*) ;; *)
 esac
 
 if [ -n "$CHECK" ]; then
-  echo "hound: ARMED on \`$CHECK\` (currently exits $RC)"
+  echo "hold: ARMED on \`$CHECK\` (currently exits $RC)"
 else
-  echo "hound: ARMED check-less — the judge alone on the goal"
+  echo "hold: ARMED check-less — the judge alone on the goal"
 fi
 echo "  ceiling: $ROUNDS rounds or $MINUTES minutes, whichever first"
 [ -n "$RUN" ] && echo "  run:     $RUN (a stop is allowed while this run is in flight)"

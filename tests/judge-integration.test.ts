@@ -29,7 +29,7 @@ socketserver.TCPServer(("127.0.0.1", ${port}), H).serve_forever()
 }
 
 function runHook(env: Record<string, string>, payload: unknown) {
-  const p = Bun.spawnSync(["bun", "hooks/hound.ts"], {
+  const p = Bun.spawnSync(["bun", "hooks/work-hold.ts"], {
     stdin: Buffer.from(JSON.stringify(payload)),
     // Jev is tried BEFORE the chat judge, and it reads the agenix key out of XDG_RUNTIME_DIR --
     // which process.env carries in. Without these two the suite silently made real billed calls
@@ -38,7 +38,7 @@ function runHook(env: Record<string, string>, payload: unknown) {
     env: {
       ...process.env,
       XDG_RUNTIME_DIR: "/nonexistent-so-no-agenix-key",
-      HOUND_DECISIONS_URL: "http://127.0.0.1:1/decisions",
+      WORK_HOLD_DECISIONS_URL: "http://127.0.0.1:1/decisions",
       ...env,
     },
     stdout: "pipe",
@@ -48,8 +48,8 @@ function runHook(env: Record<string, string>, payload: unknown) {
 }
 
 function fixture(session: string, goal: string, extra: Record<string, unknown> = {}) {
-  const dir = mkdtempSync(join(tmpdir(), "houndit-"));
-  writeFileSync(join(dir, `hound-${session}.json`), JSON.stringify({
+  const dir = mkdtempSync(join(tmpdir(), "holdit-"));
+  writeFileSync(join(dir, `work-hold-${session}.json`), JSON.stringify({
     check: "true",                    // exits 0: the floor is met
     goal,
     startedAt: Math.floor(Date.now() / 1000),
@@ -72,7 +72,7 @@ test("a GREEN check with an UNMET goal blocks, carrying goal, evidence and conti
     continuation: "Report at the ceiling, not at the first stopping point.",
   });
   const r = runHook(
-    { TMPDIR: dir, HOUND_JUDGE_URL: `http://127.0.0.1:${port}/v1/chat/completions` },
+    { TMPDIR: dir, WORK_HOLD_JUDGE_URL: `http://127.0.0.1:${port}/v1/chat/completions` },
     { session_id: "it-unmet", transcript_path: transcript },
   );
   srv.kill();
@@ -88,7 +88,7 @@ test("a GREEN check with a MET goal releases the hold", async () => {
   await settle();
   const { dir, transcript } = fixture("it-met", "every suite is green");
   const r = runHook(
-    { TMPDIR: dir, HOUND_JUDGE_URL: `http://127.0.0.1:${port}/v1/chat/completions` },
+    { TMPDIR: dir, WORK_HOLD_JUDGE_URL: `http://127.0.0.1:${port}/v1/chat/completions` },
     { session_id: "it-met", transcript_path: transcript },
   );
   srv.kill();
@@ -101,7 +101,7 @@ test("an UNREACHABLE judge releases rather than trapping the session", async () 
   // that lets a turn end on the check alone.
   const { dir, transcript } = fixture("it-down", "anything at all");
   const r = runHook(
-    { TMPDIR: dir, HOUND_JUDGE_URL: "http://127.0.0.1:1/v1/chat/completions" },
+    { TMPDIR: dir, WORK_HOLD_JUDGE_URL: "http://127.0.0.1:1/v1/chat/completions" },
     { session_id: "it-down", transcript_path: transcript },
   );
   expect(r.out).not.toContain('"decision":"block"');
@@ -132,11 +132,11 @@ test("Jev below the threshold blocks, and reports the probability it gave", asyn
   const r = runHook(
     {
       TMPDIR: dir,
-      HOUND_JUDGE_TOKEN: "test-token",
-      HOUND_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
+      WORK_HOLD_JUDGE_TOKEN: "test-token",
+      WORK_HOLD_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
       // Deliberately dead: if Jev were skipped, this would fail OPEN and the test would pass
       // for the wrong reason. Blocking proves the verdict came from the Decisions path.
-      HOUND_JUDGE_URL: "http://127.0.0.1:1/v1/chat/completions",
+      WORK_HOLD_JUDGE_URL: "http://127.0.0.1:1/v1/chat/completions",
     },
     { session_id: "it-jev-low", transcript_path: transcript },
   );
@@ -153,9 +153,9 @@ test("Jev above the threshold releases the hold", async () => {
   const r = runHook(
     {
       TMPDIR: dir,
-      HOUND_JUDGE_TOKEN: "test-token",
-      HOUND_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
-      HOUND_JUDGE_URL: "http://127.0.0.1:1/v1/chat/completions",
+      WORK_HOLD_JUDGE_TOKEN: "test-token",
+      WORK_HOLD_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
+      WORK_HOLD_JUDGE_URL: "http://127.0.0.1:1/v1/chat/completions",
     },
     { session_id: "it-jev-high", transcript_path: transcript },
   );
@@ -214,11 +214,11 @@ test("the compaction summary REACHES the judge — a marker only in it flips the
   await settle();
   const env = (dir: string) => ({
     TMPDIR: dir,
-    HOUND_JUDGE_TOKEN: "test-token",
-    HOUND_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
+    WORK_HOLD_JUDGE_TOKEN: "test-token",
+    WORK_HOLD_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
     // Deliberately dead, so a skipped Decisions call would fail OPEN and be visible as a release
     // for the wrong reason rather than passing quietly.
-    HOUND_JUDGE_URL: "http://127.0.0.1:1/v1/chat/completions",
+    WORK_HOLD_JUDGE_URL: "http://127.0.0.1:1/v1/chat/completions",
   });
 
   const withIt = fixture("it-sum-yes", "every suite is green");
@@ -247,9 +247,9 @@ test("the round record travels to the judge too", async () => {
                { round: 2, at: 1_700_003_600, exit: 0, note: marker }],
   });
   const r = runHook(
-    { TMPDIR: dir, HOUND_JUDGE_TOKEN: "test-token",
-      HOUND_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
-      HOUND_JUDGE_URL: "http://127.0.0.1:1/v1/chat/completions" },
+    { TMPDIR: dir, WORK_HOLD_JUDGE_TOKEN: "test-token",
+      WORK_HOLD_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
+      WORK_HOLD_JUDGE_URL: "http://127.0.0.1:1/v1/chat/completions" },
     { session_id: "it-hist", transcript_path: transcript },
   );
   srv.kill();
@@ -259,7 +259,7 @@ test("the round record travels to the judge too", async () => {
 // ------------------------------------------------- the SessionStart briefing after a compaction
 
 function runBrief(dir: string, session: string) {
-  const p = Bun.spawnSync(["bun", "hooks/hound.ts", "--brief"], {
+  const p = Bun.spawnSync(["bun", "hooks/work-hold.ts", "--brief"], {
     stdin: Buffer.from(JSON.stringify({ session_id: session, source: "compact" })),
     env: { ...process.env, TMPDIR: dir },
     stdout: "pipe",
@@ -269,7 +269,7 @@ function runBrief(dir: string, session: string) {
 }
 
 test("--brief is SILENT on a session that is not armed", () => {
-  const dir = mkdtempSync(join(tmpdir(), "houndit-"));
+  const dir = mkdtempSync(join(tmpdir(), "holdit-"));
   const r = runBrief(dir, "never-armed");
   expect(r.out.trim()).toBe("");
   expect(r.code).toBe(0);

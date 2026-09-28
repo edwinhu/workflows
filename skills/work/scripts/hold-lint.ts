@@ -7,7 +7,7 @@
  * the objective, so every rule about the objective — milestone phrasing, a human-closed clause, a
  * turn count, success stated as a judgement — is here, over the check and the `--goal` text both.
  *
- * `hound-arm.sh` already refuses a check that is green (nothing to hold) or that cannot run
+ * `work-hold.sh` already refuses a check that is green (nothing to hold) or that cannot run
  * (exit > 1 is not a verdict). Those are runtime facts. This lints the check as a SPECIFICATION,
  * which is where 2026-09-21 went wrong: two gates passed arm-time validation and were still
  * mis-specified — one measured a pager whose discreteness is intended, the other asserted a
@@ -68,9 +68,9 @@ if (/work-result\.sh|result\.json|(^|[\s"'`/])\.craft\//.test(check)) {
   )
 }
 
-// R2 APOSTROPHE. hound-arm takes the check as one single-quoted argument; an apostrophe ends it.
+// R2 APOSTROPHE. work-hold takes the check as one single-quoted argument; an apostrophe ends it.
 if (check.includes("'")) {
-  add('critical', 'apostrophe', 'an apostrophe ends the single quote hound-arm.sh wraps this in; rewrite the word without it')
+  add('critical', 'apostrophe', 'an apostrophe ends the single quote work-hold.sh wraps this in; rewrite the word without it')
 }
 
 // R3 FOREIGN PATHS. A check whose paths live in another repo can never be met where it runs.
@@ -102,7 +102,7 @@ const EXIT_CODE = /exit(s|ed)?\s+(code\s+)?[0-9]|\bPASS\b|\breturns 0\b/i
 /** A clause only a human can close. Measured 2026-08-22: an 18-hour wait on one of these. */
 const HUMAN_DEP =
   /\b(user|human|you|I)\s+(has\s+)?(approve[sd]?|confirm(s|ed)?|sign(s|ed)?[- ]off|repl(y|ies|ied)|respond(s|ed)?|says?|okays?|greenlights?)\b|\bhuman review\b|\btuicr\b|\bmanual(ly)? (review|approv)/i
-/** Nothing in the harness counts turns; the ceilings are hound-arm.sh --rounds and --minutes. */
+/** Nothing in the harness counts turns; the ceilings are work-hold.sh --rounds and --minutes. */
 const TURN_COUNT = /\bstop after\b[^.]{0,24}\bturns?\b|\b\d+\s+turns?\b/i
 /**
  * Success stated as a feeling rather than a measurement. `work` is deliberately NOT here: it is a
@@ -136,7 +136,7 @@ for (const [surface, text] of [
     add(
       'critical',
       `turn-count (${surface})`,
-      'nothing in the harness counts turns — no num_turns, no turn_count — so a turn ceiling is prose re-adjudicated every round; the ceilings are hound-arm.sh --rounds N --minutes M, which the Stop hook enforces',
+      'nothing in the harness counts turns — no num_turns, no turn_count — so a turn ceiling is prose re-adjudicated every round; the ceilings are work-hold.sh --rounds N --minutes M, which the Stop hook enforces',
     )
   }
   if (VAGUE.test(text) && !measured) {

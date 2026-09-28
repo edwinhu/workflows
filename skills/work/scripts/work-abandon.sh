@@ -5,7 +5,7 @@
 #
 # A run the user walks away from leaves two things behind that outlive it: a run dir with no
 # result.json, which `cron-delete-guard.ts` reads as in-flight forever, and (if one was armed) a
-# hound hold nothing will ever release. The escape used to be an env var the SESSION sets for
+# hold nothing will ever release. The escape used to be an env var the SESSION sets for
 # itself, which is not a user decision at all. This is: gate it with a `permissions.ask` rule and
 # the abandonment reaches the user wherever they are.
 #
@@ -48,23 +48,23 @@ PY
   echo "work-abandon: wrote $RESULT (overallPass=false, abandoned=true)"
 fi
 
-# (b) THE HOLD. Same state and ledger paths hooks/hound.ts computes; the ledger line goes down
+# (b) THE HOLD. Same state and ledger paths hooks/work-hold.ts computes; the ledger line goes down
 # BEFORE the state file is removed, so there is no window in which the hook sees a hold that
 # vanished with `armed` still the last word and restores it.
 SID="${CLAUDE_CODE_SESSION_ID-}"
 if [ -n "$SID" ]; then
-  STATE="${TMPDIR:-/tmp}/hound-$SID.json"
+  STATE="${TMPDIR:-/tmp}/work-hold-$SID.json"
   LOG="${STATE%.json}.releases.log"
   if [ -f "$STATE" ]; then
-    HOOK="$(cd "$(dirname "$(readlink -f "$0")")/../../.." && pwd)/hooks/hound.ts"
+    HOOK="$(cd "$(dirname "$(readlink -f "$0")")/../../.." && pwd)/hooks/work-hold.ts"
     printf '%s\tabandoned by user\t%s\n' "$AT" "$WHY" >> "$LOG"
     # Restore the compact window BEFORE the state goes: the cap record lives inside it, exactly as
     # --disarm and every release in the hook do it.
     [ -r "$HOOK" ] && command -v bun >/dev/null 2>&1 && bun "$HOOK" --uncap
     rm -f "$STATE"
-    echo "work-abandon: hound hold released (ledger: abandoned by user)"
+    echo "work-abandon: hold released (ledger: abandoned by user)"
   else
-    echo "work-abandon: no hound hold armed for this session."
+    echo "work-abandon: no hold armed for this session."
   fi
 else
   echo "work-abandon: no CLAUDE_CODE_SESSION_ID — no session-scoped hold to release."

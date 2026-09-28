@@ -15,7 +15,7 @@
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { allow, deny, denyOnCrash, parsePayload } from "./_gate_common.ts";
-import { statePath } from "./hound.ts";
+import { statePath } from "./work-hold.ts";
 
 /** A cron job id as CronCreate mints them: 8 lowercase hex chars. */
 const JOB_ID = /\b[0-9a-f]{8}\b/;
@@ -122,14 +122,14 @@ if (process.env.CRAFT_ALLOW_CRON_DELETE === "1") allow();
 const cwd = String(hookInput?.cwd ?? "") || process.cwd();
 const deleteId = String(((hookInput?.tool_input ?? {}) as Record<string, unknown>)?.id ?? "");
 
-// ------------------------------------------------------------ the hound gate: DONE MEANS GOAL MET
+// ------------------------------------------------------------ the hold gate: DONE MEANS GOAL MET
 //
 // The heartbeat's teardown clause fires on "this goal closes", and the session decides that from
 // what it can see -- which used to be a green check and nothing else. Measured 2026-09-26: a work
-// run armed with no `--goal`, `work-result.sh` exited 0, hound released on the check alone, and the
+// run armed with no `--goal`, `work-result.sh` exited 0, the hold released on the check alone, and the
 // loop was deleted with the user's actual objective (an estimate landing inside the published
 // interval) untouched. So the authority on "closed" is the HOLD'S OWN RELEASE, read from the same
-// per-session ledger hound.ts writes -- not this hook's opinion and not the session's.
+// per-session ledger work-hold.ts writes -- not this hook's opinion and not the session's.
 // ONLY the payload. A PreToolUse payload always carries session_id, so an ambient fallback buys
 // nothing and costs correctness: measured 2026-09-27, `CLAUDE_CODE_SESSION_ID` leaking in from the
 // session that merely LAUNCHED the process made this gate answer about that session's hold instead
@@ -143,10 +143,10 @@ const deleteId = String(((hookInput?.tool_input ?? {}) as Record<string, unknown
 const session = String(hookInput?.session_id ?? "");
 if (session && existsSync(statePath(session))) {
   deny(
-    "A hound hold is ARMED for this session, so its objective has not closed yet. The heartbeat " +
+    "A hold is ARMED for this session, so its objective has not closed yet. The heartbeat " +
       "is what re-enters the session while the hold is working; deleting it now leaves the hold " +
       "with nothing to wake it. Let the hold release itself (the check goes green AND the " +
-      "classifier judges the goal met), or have the USER confirm `hound-arm.sh --disarm` at a " +
+      "classifier judges the goal met), or have the USER confirm `work-hold.sh --disarm` at a " +
       "terminal. If the USER has abandoned this run, retire it with " +
       "`work-abandon.sh <run-dir> --why '<reason>'`: it writes the run's verdict, releases the " +
       "hold, and this delete is then allowed.",

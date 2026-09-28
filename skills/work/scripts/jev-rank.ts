@@ -27,7 +27,7 @@
  */
 
 import { readFileSync } from 'node:fs'
-import { decisionsCall } from '../../../hooks/hound.ts'
+import { decisionsCall } from '../../../hooks/work-hold.ts'
 
 interface Finding { title?: string; severity?: string; detail?: string; file?: string; lens?: string }
 

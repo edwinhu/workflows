@@ -225,7 +225,7 @@ while fixing a typo in the rationale costs nothing.
 
 ## Phase 3 — THE HOLD
 
-**The dispatch arms a hound hold ON THIS SESSION** — in the main chat, not in the farmed child, which
+**The dispatch arms a hold ON THIS SESSION** — in the main chat, not in the farmed child, which
 runs one `workflow.js` and exits. The hold is what carries the outer loop (gate FAIL → fix → re-run;
 tuicr findings → fix → re-review): on every Stop it blocks while the goal is not met, and it survives a
 run that dies.
@@ -240,6 +240,65 @@ run that dies.
 never a fresh `work-dispatch.sh`** — the first re-runs only the tasks that flagged and their dependents
 and carries the rest; the second re-runs every task, throwing away the round's verified work. The
 hold's first counted block and its `--brief` say so with the paths filled in.
+
+### The check command — the rules `hold-lint.ts` enforces
+
+The check is the executable FLOOR; `args.goal` is the objective and the judge rules on it. Arm both
+where both exist.
+
+- **RED when armed, and able to run.** `work-hold.sh` refuses exit 0 (a hold on a passing check holds
+  nothing) and exit above 1 (could-not-run is not a verdict, and would hold forever on a typo).
+- **It names and prints the goal state** — a suite passing, a rate under a number, a count at zero —
+  **never a milestone** (`test -f report.md` is true while the objective is unmet) and **never a round
+  verdict** (`work-result.sh`, `result.json`: green on a FAIL the loop was going to fix, and it
+  outlives an abandoned run).
+- **One clause per claim**, so a failure names which half. **Runs in this session's own cwd** — a check
+  whose paths live in another repo can only be released unmet. **Broad enough that one edit cannot
+  close it.** **No apostrophes**: the check is one single-quoted argument.
+
+`hold-lint.ts` settles the decidable part of that on the check and the goal text both; `plan-lint`
+runs it one dispatch before the arm, and a CRITICAL blocks. `--probe` also RUNS the check twice —
+two runs that disagree is an instrument, not a gate — and prices it, since the hook runs it on every Stop.
+
+```bash
+bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/hold-lint.ts '<CHECK>' --goal '<OBJECTIVE>' [--probe]
+```
+
+### Arming by hand, when no dispatch is doing it
+
+A session that is not dispatching — an overnight hunt, a spawned agent's caller, a `visual-verify`
+loop — arms the same hold itself:
+
+```bash
+A=${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-hold.sh
+bash $A '<CHECK>' --goal '<OBJECTIVE>' --rounds 4 --minutes 120
+bash $A --goal '<OBJECTIVE>'    # CHECK-LESS: the judge alone, and an UNAVAILABLE judge BLOCKS
+bash $A --status                # armed? check, run, rounds used, minutes left, recent exits, ledger
+bash $A --disarm                # THE USER releases it, confirming at a terminal; an agent gets exit 2
+```
+
+Defaults are 4 rounds and 120 minutes; above either, the arm prints the per-wake context cost and the
+equivalent `grind` command, then arms. Arming caps this session's auto-compact window at 250000
+through `.claude/settings.local.json`, and every release restores it (`WORK_HOLD_COMPACT_WINDOW=0`
+opts out). Templates for the check, the nudge and an unattended brief:
+[`references/hold-templates.md`](${CLAUDE_PLUGIN_ROOT}/skills/work/references/hold-templates.md).
+
+**Release is not the session's to take.** Three layers, none sufficient alone: the tty prompt inside
+`--disarm` (a human at THAT terminal), the hook restoring a state file deleted without a sanctioned
+release, and `permissions.ask` on `*work-hold-*.json*` / `*work-hold-*.releases.log*`. The honest move
+for a gate you think is wrong is to arm the right one, not to stop.
+
+**Done means the goal is met, not that the check is green.** The hold releases `passed-goal-met` only
+when the judge agreed; `passed-unjudged` (no goal, or the judge was unreachable with a check to fall
+back on) means nobody confirmed the objective — say so rather than reporting it as done, and leave any
+heartbeat cron alive.
+
+**The continuation rule, which the arm states on the first counted block and in `--brief`: when a
+sub-run returns and the check still fails, TAKE the next action — do not propose it.** Every measured
+stall happened at a moment of legitimate completion, which is the moment with the most information the
+session will ever have. Two branches open: pick one, say why in a line, do it. The arm states the
+standing authority with it — what the session may decide alone, unasked — because every decision left
+open becomes a question asked into an empty room.
 
 A round verdict is not the hold's business in either direction — it goes green on a FAIL the loop was
 going to fix, and it outlives a run the user abandons (AGK 2026-09-27). For a long loop whose target is
@@ -316,7 +375,7 @@ and `work-elapsed.sh`.
 `bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-abandon.sh <run-dir> --why '<reason>'`: it writes
 the run's verdict (`overallPass=false, abandoned=true`), releases the hold, and allows the `CronDelete`
 a `cron-delete-guard` deny would otherwise refuse. It is the only sanctioned way out of an armed hold
-short of the user confirming `hound-arm.sh --disarm` at a terminal.
+short of the user confirming `work-hold.sh --disarm` at a terminal.
 
 **Name the plan by PATH, never by a fixed sha256.** A pinned digest self-invalidates the first time
 the FAIL loop does what this file prescribes: fix, **amend the plan, re-hash**, re-dispatch. The run
@@ -437,7 +496,7 @@ make the result unverified, not a PASS.
 
 | param | type | effect |
 |---|---|---|
-| `goalCheck` | `string` (optional) | The ONE command that settles the whole PLAN — not a round. `workflow.js` never reads it; `work-dispatch.sh` arms the hound hold on it, so it is a specification and is linted as one: `plan-lint` runs it through `hold-lint.ts` and a CRITICAL (a round verdict, an apostrophe, milestone phrasing, a human-closed clause) BLOCKS the dispatch, one step before the arm. Omit it when the plan has no such command and the hold becomes the judge alone on `goal`; a declared-but-empty string is refused rather than read as absent. |
+| `goalCheck` | `string` (optional) | The ONE command that settles the whole PLAN — not a round. `workflow.js` never reads it; `work-dispatch.sh` arms the hold on it, so it is a specification and is linted as one: `plan-lint` runs it through `hold-lint.ts` and a CRITICAL (a round verdict, an apostrophe, milestone phrasing, a human-closed clause) BLOCKS the dispatch, one step before the arm. Omit it when the plan has no such command and the hold becomes the judge alone on `goal`; a declared-but-empty string is refused rather than read as absent. |
 | `readOnly` | `boolean` (default `false`) | Audit mode. **No Implement phase and no per-task verifiers are dispatched**, so `tasks[]` may be empty or absent (it is still required when `readOnly` is false). Lenses ∥ mechanical ∥ third-party run as usual, and **every dispatched leg** — lenses, refuters, mechanical probes and third-party runners — defaults to the `Explore` agent type, structurally no Edit/Write, unless a per-lens `agentType` says otherwise. `Explore` keeps `Bash`, so a probe can still run its command. **Residuals**, all from `Bash`, and this list is open rather than exhaustive: a `mechanicalChecks` `cmd` runs VERBATIM; any reference this spine tells a leg to follow can itself instruct a write; and `authorityExtra` and `reviewLenses[].prompt` are caller-supplied free text handed to every Bash-capable leg. What the agent type pins is the agent's volition — never what it is *told* to do. Anything a `readOnly` run hands a leg must itself be read-only. `meta.phases` is a **static five-entry literal** (`Implement, Verify, Mechanical, Third-party, Gate`) in both modes — the harness parses `meta` without running the script and rejects any computed value, so a mode-specific phase list is not expressible. `Implement` is therefore advertised and then never opened on a `readOnly` run; that is `workflow.js`'s own progress display and is cosmetic. `work`'s lifecycle **Phase 1–5** (CLARIFY, PLAN, GOAL, workflow.js, HUMAN REVIEW) is a different axis and is unaffected. The task dimensions become **n/a** (`null`), not empty-and-clean: see the score-table note below. |
 | `priorFindings` | `[{title, severity, detail, file?, lens?}]` | Findings discovered **outside** this run — typically by a main-chat agent team. They are not trusted: each is refuted by the same adversarial path a lens finding takes (same schema, same default-to-refuted-when-ambiguous, same fail-closed rule that a dead refuter keeps the finding), and only survivors reach the gate, where they are gated identically to lens findings. An entry with no `lens` is attributed to the reserved key `unattributed` — the same key an unkeyed `reviewLenses` entry falls back to, since it is the same situation — so a survivor always names a `lensesThatFlagged` entry. Set `lens` explicitly to get a more specific label. **`file?` is the path the finding is _about_** — it is rendered into the refuter's prompt as `[path]` for context and is never opened by `work`. It is **not** a location `work` reads findings from; for where a team actually writes them, see *Where the agent team lives*. `severity` must be `critical｜major｜minor`; a malformed entry throws at arg-validation, before any agent is dispatched. An optional `agentType` on an entry overrides the refuter's agent type for that finding alone. **Each entry costs one refuter agent**, and the fan-out is bounded by nothing but the array you pass — so the count feeds the ~50-agent ceiling below. A `minor` entry cannot change the verdict (only `critical｜major` reach `survivingBlocking`), so it spends a full agent to move a display counter: submit `critical`/`major` unless you specifically want the minor counted. `scoreTable` then carries `priorFindingsSubmitted` / `priorFindingsSurviving`. |
 | `mechanicalChecks` | `[{name: string, cmd: string}]` | Adds a `Mechanical` phase running in parallel with Verify. One low-effort probe agent per check runs `cmd` **verbatim** and reports `{name, exitCode, output}`; **the JS reads the exit code** — no agent asserts a pass. Fail closed: a dead or skipped probe is `exitCode: -1`, which counts as failed. Missing `name` or `cmd` throws. **A probe's report is still a claim, and the claim is adjudicated in a shell**: work-result.sh re-runs EVERY declared check — a claimed failure included, since the file is a model's transcription of the gate object — and refuses (exit 2) when the observed exit code disagrees, or when a claimed non-zero exit sits beside `overallPass: true`. The refusal names **which direction** the disagreement went, because they mean opposite things: a claimed FAILURE that passes on re-run is a probe-side flake — re-run the gate, do not re-plan — while a claimed PASS that fails on re-run is the case the adjudicator exists for. Both still exit 2; passing a non-reproducing failure would wave a genuinely flaky gate through. Re-running one command to confirm a claim is cheap and re-running N is not — which is why a workflow declares **one** mechanical entry point whose exit code is its whole mechanical verdict, never a list of commands (a list also drops a check silently, and nothing reports a check it never knew about). **A check's `cmd` must finish inside ~10 minutes, because it is run TWICE by two different callers that both cap there**: a probe agent runs it through its Bash tool (hard ceiling 600s, not tunable) and `work-result.sh` re-runs it to adjudicate the claim. A check that outlives that returns 124/137/143 — a kill, not an exit — which scored as a *failing gate* until work-result.sh learned to refuse it. Anything genuinely long (a scale run, a soak) goes **behind** the gate, not inside it: run it detached (`run_in_background`, or a `Monitor` when you want per-event notice) writing an artifact, and let `cmd` be the fast read of that artifact. **`overallPass` in `result.json` is NOT the verdict and must never be read directly, without exception** — the verdict is `work-result.sh`'s exit code (0 pass, 1 fail, 2 refused), and any caller that reads the file another way is a defect. |
@@ -804,9 +863,17 @@ descope with the user rather than guessing a third time.
 | Write `args.goalCheck` as this run's `work-result.sh` / `result.json` | "that is what settles the run" | a round verdict cannot certify the goal and outlives an abandoned run; `plan-lint` runs it through `hold-lint.ts` and blocks. State the plan's own measurement, or state none and let the judge rule on `args.goal` |
 | Dispatch printed a `CronCreate` block (`--cron`) | scroll past it; the monitor covers it | you asked for the fallback poll, so nothing has raised it. Call `CronCreate` this turn and report the job id; `CronList` is what proves it |
 | A stop is allowed mid-round and you read that as the hold being broken | re-arm, or treat the run as over | the run is IN FLIGHT: `args.json` with no verdict beside it, worked by a detached process. The clock still runs and the next Stop after the verdict blocks again |
-| About to self-send a `/goal` or `/loop` into this session | any transport — herdr, agent-msg, a drainer | none of them land: a typed send needs the pane IDLE and a dispatching session never is. `hound-arm.sh` writes a file and `CronCreate` is a tool call; both land inside the turn |
+| About to self-send a `/goal` or `/loop` into this session | any transport — herdr, agent-msg, a drainer | none of them land: a typed send needs the pane IDLE and a dispatching session never is. `work-hold.sh` writes a file and `CronCreate` is a tool call; both land inside the turn |
 | Session opens on `Implement the following plan:` | implement it in the main thread | the context was cleared at approval — this is Phase 4, not the work. The plan's frontmatter `workflow:` names the skill to invoke first; then dispatch. `work-dispatch.sh` needs nothing you lost. Same answer when an Edit is denied for an armed run |
 | A stopping condition is a claim, not a command | "the tests in the plan pass" | a check is RUN — give it a command whose exit code is the verdict |
+| Treat a stopping condition you WROTE DOWN as binding on yourself | prose you can re-adjudicate away | only the hook blocks a stop. Measured 2026-09-02: a session wrote "I'm treating that as binding regardless" and idled three hours later. Arm it, confirm with `--status` |
+| Arm a check that already exits 0 | it holds nothing, and teaches the session the hold is noise | `work-hold.sh` refuses it; pick the check that is red now |
+| Disarm your own hold because the gate looks wrong | "this gate measures the wrong property" | that is the same sentence a session uses when the gate is merely hard. `--disarm` refuses without a tty and the hook restores a deleted state file — arm the RIGHT check, or ask the user to confirm |
+| Arm a hold while a grind loop works the same objective | two drivers on one objective | the hold blocks this session's stop while grind's gate waits for no round in flight: each waits for the other (AGK 2026-09-27). Pick one — grind for a long loop, the hold for short work this session drives |
+| Arm a hold on YOUR OWN session to try the hook out | it then blocks your own stop until the check passes | read `tests/work-hold.test.ts`, or arm a check you can satisfy on demand |
+| End a turn with a question mark under an armed hold | offer the user a menu | at 02:00 that is a five-hour pause — answer it in one line and act. Same for "when done or blocked, notify and stop": enumerate the terminal blockers; the rest is the next task |
+| Finish the hunt with a report and stop, or stop at N of M rounds | "the check went green" / "the budget says N" | the hold self-cleared, so nothing gates stopping — arm the next red check before the turn ends. The budget was the authorization, not a ceiling on ambition: spend it, or say why the remainder is unusable |
+| Put "and the user has approved" in the objective, or hold a green commit because the user is asleep | wait for the human | a session cannot close a human clause by working (measured 18h) — `hold-lint` refuses it; review after the hold releases. The standing authority pre-authorized the commit; it is reversible, the silence is not |
 | Recon would flood the conversation | read every file into this context | scout with a subagent during CLARIFY/PLAN — graded work still goes through workflow.js |
 | One small task, workflow feels heavy | dispatch a lone subagent and accept its report | still workflow.js with one task — a self-report is not a verification |
 | Tasks look like they need to talk to each other | reach for agent teams | **On a run that writes, no teams** — for the mechanical reason given under *IMPLEMENT runs in waves* above, not as a style preference. Tasks needing to talk means the plan under-specifies the boundary; fix the task table, re-hash. **The ban does not apply to `readOnly`**, where nothing writes and a team is the default (CLARIFY axis 7); see *Where the agent team lives* |

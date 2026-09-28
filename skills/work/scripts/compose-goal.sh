@@ -59,7 +59,7 @@ case "$MAX_MINUTES" in
 esac
 
 # `--minutes` prints that ceiling and nothing else, for a caller that needs the number rather than the
-# clause stating it: work-dispatch.sh passes it to `hound-arm.sh --minutes`, so the hold's wall clock
+# clause stating it: work-dispatch.sh passes it to `work-hold.sh --minutes`, so the hold's wall clock
 # and the clause the goal states are ONE number rather than two that can drift — the drift this file's
 # header records between the default here and work-elapsed.sh's.
 if [ "${1-}" = "--minutes" ]; then printf '%s\n' "$MAX_MINUTES"; exit 0; fi

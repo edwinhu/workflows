@@ -2,8 +2,8 @@
 // script sandbox has no network (probed 2026-09-28: fetch/process/require/crypto all undefined,
 // import() rejected at parse).
 //
-// The transport is NOT exercised here: it is `decisionsCall` in hooks/hound.ts, shared with the
-// hound Stop hook, and a test that hit the live endpoint would fail on a machine with no key. What is
+// The transport is NOT exercised here: it is `decisionsCall` in hooks/work-hold.ts, shared with the
+// work hold Stop hook, and a test that hit the live endpoint would fail on a machine with no key. What is
 // tested is the batching and the parsing — the two places a wrong answer becomes a wrong ORDER.
 //
 // Run: bun test ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/jev-rank.test.ts
