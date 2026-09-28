@@ -27,7 +27,7 @@ function newCwd() {
 }
 
 /**
- * The run-based rule only: a payload with NO session_id, and a fresh TMPDIR, so no ambient hound
+ * The run-based rule only: a payload with NO session_id, and a fresh TMPDIR, so no ambient hold
  * ledger can reach the hook and decide the case before the .craft scan does.
  */
 function guard(cwd: string, id: string, env: Record<string, string> = {}) {
@@ -151,20 +151,20 @@ describe('record mode', () => {
 
 // ------------------------------------------------------ DONE MEANS THE GOAL IS MET, NOT CHECK GREEN
 //
-// The bug this closes: a work run armed with no `--goal` released the hound hold on
+// The bug this closes: a work run armed with no `--goal` released the hold on
 // `work-result.sh` exiting 0, the heartbeat's teardown clause read a green check as the goal
 // closing, and the loop was deleted with the user's actual objective untouched. This guard now
-// reads the hold's OWN release verb out of the same per-session ledger hooks/hound.ts writes.
+// reads the hold's OWN release verb out of the same per-session ledger hooks/work-hold.ts writes.
 
-/** A hound ledger for `session` under a TMPDIR the hook will look in. */
-function hound(entries: [string, string][], opts: { armed?: boolean } = {}) {
-  const dir = mkdtempSync(join(tmpdir(), 'houndgate-'))
+/** A hold ledger for `session` under a TMPDIR the hook will look in. */
+function holdLedger(entries: [string, string][], opts: { armed?: boolean } = {}) {
+  const dir = mkdtempSync(join(tmpdir(), 'holdgate-'))
   const sid = 'gate-session'
   if (entries.length)
-    writeFileSync(join(dir, `hound-${sid}.releases.log`),
+    writeFileSync(join(dir, `work-hold-${sid}.releases.log`),
       entries.map(([verb, payload], i) => `2026-09-26T00:00:0${i}\t${verb}\t${payload}`).join('\n') + '\n')
   if (opts.armed)
-    writeFileSync(join(dir, `hound-${sid}.json`), JSON.stringify({
+    writeFileSync(join(dir, `work-hold-${sid}.json`), JSON.stringify({
       check: 'false', goal: 'the estimate lands inside the published interval',
       startedAt: 1, ceilingMinutes: 720, maxRounds: 8, rounds: 0,
     }))
@@ -184,8 +184,8 @@ function guardIn(cwd: string, id: string, h: { dir: string; sid: string }, env: 
   return { ...r, decision: parsed?.permissionDecision ?? 'allow', reason: parsed?.permissionDecisionReason ?? '' }
 }
 
-describe('the hound gate: CronDelete waits on an ARMED hold, and on nothing else', () => {
-  // A cwd with nothing in flight, so the run-based rule allows and the hound gate is what decides.
+describe('the hold gate: CronDelete waits on an ARMED hold, and on nothing else', () => {
+  // A cwd with nothing in flight, so the run-based rule allows and the hold gate is what decides.
   const quietCwd = () => {
     const cwd = newCwd()
     mkRun(cwd, 'run-a', { crons: ['541afe58'], finished: true })
@@ -193,7 +193,7 @@ describe('the hound gate: CronDelete waits on an ARMED hold, and on nothing else
   }
 
   test('an ARMED hold denies, and names work-abandon.sh as the escape', () => {
-    const r = guardIn(quietCwd(), '541afe58', hound([['armed', '{"check":"false"}']], { armed: true }))
+    const r = guardIn(quietCwd(), '541afe58', holdLedger([['armed', '{"check":"false"}']], { armed: true }))
     expect(r.decision).toBe('deny')
     expect(r.reason).toContain('ARMED')
     expect(r.reason).toContain('work-abandon.sh')
@@ -207,7 +207,7 @@ describe('the hound gate: CronDelete waits on an ARMED hold, and on nothing else
       'passed-unjudged', 'passed-goal-met', 'expired', 'released by user',
       'declined', 'passed', 'refused (no tty)', 'abandoned by user',
     ]) {
-      const r = guardIn(quietCwd(), '541afe58', hound([
+      const r = guardIn(quietCwd(), '541afe58', holdLedger([
         ['armed', '{"check":"bash work-result.sh result.json"}'],
         [verb, 'bash work-result.sh result.json'],
       ]))
@@ -215,14 +215,14 @@ describe('the hound gate: CronDelete waits on an ARMED hold, and on nothing else
     }
   })
 
-  test('the override allows through the hound gate too', () => {
-    const h = hound([['armed', '{"check":"false"}']], { armed: true })
+  test('the override allows through the hold gate too', () => {
+    const h = holdLedger([['armed', '{"check":"false"}']], { armed: true })
     expect(guardIn(quietCwd(), '541afe58', h).decision).toBe('deny')
     expect(guardIn(quietCwd(), '541afe58', h, { CRAFT_ALLOW_CRON_DELETE: '1' }).decision).toBe('allow')
   })
 
   test('NO ledger for the session keeps the old run-based rule, both ways', () => {
-    const none = hound([])
+    const none = holdLedger([])
     expect(guardIn(quietCwd(), '541afe58', none).decision).toBe('allow')
     const busy = newCwd()
     mkRun(busy, 'run-b', { crons: ['ab12cd34'] })
@@ -237,7 +237,7 @@ describe('the hound gate: CronDelete waits on an ARMED hold, and on nothing else
    * live session's own ledger and a `.craft` run in an unrelated repository.
    */
   test('an ambient CLAUDE_CODE_SESSION_ID is NOT a session — the payload is the only source', () => {
-    const h = hound([['passed-unjudged', 'false']], { armed: true })
+    const h = holdLedger([['passed-unjudged', 'false']], { armed: true })
     // Same ledger, same TMPDIR, same everything — only the payload's session_id differs.
     expect(guardIn(quietCwd(), '541afe58', h).decision).toBe('deny')
     const r = spawnSync('bun', [HOOK], {
@@ -247,13 +247,13 @@ describe('the hound gate: CronDelete waits on an ARMED hold, and on nothing else
       encoding: 'utf8',
       env: { ...hermeticEnv(h.dir), CLAUDE_CODE_SESSION_ID: h.sid },
     })
-    expect(r.stdout.trim()).toBe('') // allow: the hound gate never ran
+    expect(r.stdout.trim()).toBe('') // allow: the hold gate never ran
   })
 
   test('a settled hold still does not strand an in-flight run — the two rules are independent', () => {
     const busy = newCwd()
     mkRun(busy, 'run-b', { crons: ['ab12cd34'] })
-    const r = guardIn(busy, 'ab12cd34', hound([['passed-goal-met', 'false']]))
+    const r = guardIn(busy, 'ab12cd34', holdLedger([['passed-goal-met', 'false']]))
     expect(r.decision).toBe('deny')
     expect(r.reason).toContain('still in flight')
   })

@@ -54,7 +54,7 @@ function fixture(extraArgs: Record<string, unknown> = {}) {
 }
 
 /**
- * A real dispatch, with a real (fabricated) session id and a private TMPDIR — so hound-arm.sh
+ * A real dispatch, with a real (fabricated) session id and a private TMPDIR — so work-hold.sh
  * writes a real state file this test can read, and cannot touch the hold of the live session
  * running the suite. CRAFT_FARM is stubbed so nothing is farmed out for real.
  */
@@ -106,7 +106,7 @@ describe('the self-send transport is gone, not merely unused', () => {
 
 /** The state file a dispatch armed, parsed. */
 function holdState(r: { tmp: string; sid: string }): any {
-  const p = join(r.tmp, `hound-${r.sid}.json`)
+  const p = join(r.tmp, `work-hold-${r.sid}.json`)
   return existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : null
 }
 
@@ -127,8 +127,8 @@ describe('half one: the HOLD is armed by the dispatch, in this session', () => {
   })
 
   test('a state file exists for THIS session, with a ledger beside it', () => {
-    expect(existsSync(join(r.tmp, `hound-${r.sid}.json`))).toBe(true)
-    expect(readFileSync(join(r.tmp, `hound-${r.sid}.releases.log`), 'utf8')).toContain('armed')
+    expect(existsSync(join(r.tmp, `work-hold-${r.sid}.json`))).toBe(true)
+    expect(readFileSync(join(r.tmp, `work-hold-${r.sid}.releases.log`), 'utf8')).toContain('armed')
   })
 
   test('the plan states no goalCheck, so the hold is CHECK-LESS: the judge alone on args.goal', () => {
@@ -168,12 +168,12 @@ describe('half one: the HOLD is armed by the dispatch, in this session', () => {
     const g = dispatch(f)
     expect(g.code).toBe(0)
     expect(g.out).toContain('hold: NOT armed')
-    expect(existsSync(join(g.tmp, `hound-${g.sid}.json`))).toBe(false)
+    expect(existsSync(join(g.tmp, `work-hold-${g.sid}.json`))).toBe(false)
   }, 60_000)
 
   test('a readOnly dispatch arms the hold too', () => {
     const ro = dispatch(fixture({ readOnly: true }))
-    expect(existsSync(join(ro.tmp, `hound-${ro.sid}.json`))).toBe(true)
+    expect(existsSync(join(ro.tmp, `work-hold-${ro.sid}.json`))).toBe(true)
   }, 60_000)
 })
 

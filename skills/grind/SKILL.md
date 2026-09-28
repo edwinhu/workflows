@@ -1,6 +1,6 @@
 ---
 name: grind
-description: "Use when work has to keep going with NO session alive — \"run this in a loop overnight\", \"grind loop\", \"start the loop and go to bed\", \"keep iterating hound the check passes without me\", \"a fresh agent every iteration\", \"loop on this for days\", \"the orchestrator session is burning tokens on status reports\", \"wake it only when the grid job lands\", \"what has the loop done so far\", \"stop the loop\", \"it keeps re-diagnosing the same dead item\". Use proactively when a hill-climb needs many cheap passes over hours or days and each pass costs more to supervise than to run. NEGATIVE ROUTING: a stopping condition for a session that stays ALIVE — a Stop-hook hold, a cron heartbeat, an overnight brief — is hound; one delegated piece of work handed to another model and waited on is farm-out; starting a persistent interactive session is agent-spawn. This skill owns the out-of-session loop, the append-only journal that is its whole memory, and the shell gate that decides when a model call is worth spending."
+description: "Use when work has to keep going with NO session alive — \"run this in a loop overnight\", \"grind loop\", \"start the loop and go to bed\", \"keep iterating until the check passes without me\", \"a fresh agent every iteration\", \"loop on this for days\", \"the orchestrator session is burning tokens on status reports\", \"wake it only when the grid job lands\", \"what has the loop done so far\", \"stop the loop\", \"it keeps re-diagnosing the same dead item\". Use proactively when a hill-climb needs many cheap passes over hours or days and each pass costs more to supervise than to run. NEGATIVE ROUTING: a stopping condition for a session that stays ALIVE — a Stop-hook hold, a cron heartbeat, an overnight brief — is the work hold; one delegated piece of work handed to another model and waited on is farm-out; starting a persistent interactive session is agent-spawn. This skill owns the out-of-session loop, the append-only journal that is its whole memory, and the shell gate that decides when a model call is worth spending."
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob]
 ---
 
@@ -94,9 +94,9 @@ operator started. The guard closes the documented path and claims nothing beyond
 runs bash and can still `kill` the pid recorded in `start`, so this prevents a good-faith mistake
 rather than guaranteeing the loop cannot be stopped from inside.
 
-## Against hound — the difference is whether anything stays alive
+## Against the work hold — the difference is whether anything stays alive
 
-|  | hound | grind |
+|  | the work hold | grind |
 |---|---|---|
 | what stays alive | a chat session, held open by a Stop hook and re-woken by a cron heartbeat | nothing — a bash loop outside every session |
 | the memory | that session's context, which grows with every turn | one journal; each iteration is a fresh process that starts empty |
@@ -181,8 +181,8 @@ grep '"kind":"iter_end"' "$J" | jq -r 'select(.exit != 0) | .i'
 | Hand an iteration a key an earlier one closed | it re-diagnoses the same dead family every pass, and the loop never converges | read `GRIND_FLOORS` before choosing work; file a `floor` the first time a key dies |
 | Append a whole report as one record | over the single-write bound it is refused, and splitting it would leave a log nobody can replay | a key and a one-line note; write the report to a file and name its path |
 | Add a pidfile, a progress file or a notes file beside the journal | two files that can disagree about one fact, and the tiebreak rule is the bug | append a record; derive the pid, the counter and the floors from the journal |
-| Arm a hound hold in a session while a grind loop works the same objective | the hold blocks that session's stop while the grind's gate waits for no round in flight: each waits for the other and neither moves (AGK 2026-09-27) | one driver per objective — grind owns a long loop, and no session holds alongside it |
+| Arm a hold in a session while a grind loop works the same objective | the hold blocks that session's stop while the grind's gate waits for no round in flight: each waits for the other and neither moves (AGK 2026-09-27) | one driver per objective — grind owns a long loop, and no session holds alongside it |
 | Foreground the loop from a chat session | the Bash tool call caps out and kills the run mid-flight, and the live session is the cost grind removes | `setsid nohup … &`, then `grind.sh status` when you want to know |
 | `kill -9` the loop to end it | the journal then ends on `iter`, and nothing can tell a kill from a crash | `grind.sh stop`, honoured at the next boundary |
 | Read `iter_end` with exit 0 as progress | it says the process ran, not that anything moved | `progress` records, which are what `--stall-after` counts |
-| Reach for hound's hold to keep this going | the hold keeps a SESSION alive, which is the thing this loop exists to avoid | hound while a session must live; grind when none should |
+| Reach for the work hold to keep this going | the hold keeps a SESSION alive, which is the thing this loop exists to avoid | the hold while a session must live; grind when none should |

@@ -3,7 +3,7 @@ import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileS
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
-import { capProvenance, globalArg, restoreLocal, writeLocalCap } from "../hooks/hound.ts";
+import { capProvenance, globalArg, restoreLocal, writeLocalCap } from "../hooks/work-hold.ts";
 import { HERMETIC_ENV } from "./helpers/hermetic-env";
 
 const REPO = join(import.meta.dir, "..");
@@ -15,7 +15,7 @@ function tmp(prefix: string): string {
 // ------------------------------------------------------------------ unit: the local settings file
 
 test("no local file -> created, and removed again on restore", () => {
-  const d = tmp("houndcap-");
+  const d = tmp("holdcap-");
   const p = join(d, ".claude", "settings.local.json");
   const rec = writeLocalCap(p, 250_000);
   expect(rec).toEqual({ path: p, window: 250_000, prior: null, created: true });
@@ -25,7 +25,7 @@ test("no local file -> created, and removed again on restore", () => {
 });
 
 test("other keys and their order survive the round trip", () => {
-  const d = tmp("houndcap-");
+  const d = tmp("holdcap-");
   const p = join(d, "settings.local.json");
   writeFileSync(p, JSON.stringify({ zeta: 1, permissions: { allow: ["Bash(ls)"] }, alpha: "x" }, null, 2));
   const rec = writeLocalCap(p, 250_000);
@@ -41,7 +41,7 @@ test("other keys and their order survive the round trip", () => {
 });
 
 test("a prior window is put back, not deleted", () => {
-  const d = tmp("houndcap-");
+  const d = tmp("holdcap-");
   const p = join(d, "settings.local.json");
   writeFileSync(p, JSON.stringify({ autoCompactWindow: 400_000 }));
   const rec = writeLocalCap(p, 250_000);
@@ -51,7 +51,7 @@ test("a prior window is put back, not deleted", () => {
 });
 
 test("a window changed mid-run is left alone", () => {
-  const d = tmp("houndcap-");
+  const d = tmp("holdcap-");
   const p = join(d, "settings.local.json");
   const rec = writeLocalCap(p, 250_000);
   writeFileSync(p, JSON.stringify({ autoCompactWindow: 600_000 }));
@@ -60,14 +60,14 @@ test("a window changed mid-run is left alone", () => {
 });
 
 test("a malformed local file does not make a release throw", () => {
-  const d = tmp("houndcap-");
+  const d = tmp("holdcap-");
   const p = join(d, "settings.local.json");
   writeFileSync(p, "{not json");
   expect(() => restoreLocal({ path: p, window: 250_000, prior: null, created: false })).not.toThrow();
   expect(() => restoreLocal({ path: join(d, "gone.json"), window: 1, prior: null, created: true })).not.toThrow();
 });
 
-// ------------------------------------------------------- a cap hound itself left behind is not a prior
+// ------------------------------------------------------- a cap the hold itself left behind is not a prior
 //
 // THE BUG THIS EXISTS FOR. A hold that was re-armed, or whose release was skipped, leaves the cap
 // value in the local file; the next arm read it back as `prior` and the release then "restored" it
@@ -75,17 +75,17 @@ test("a malformed local file does not make a release throw", () => {
 // file was rewritten to {"autoCompactWindow": 250000} at release, which blocked `/autocompact auto`.
 
 test("a cap value with no provenance is still treated as the user's", () => {
-  const d = tmp("houndcap-prov-");
+  const d = tmp("holdcap-prov-");
   const p = join(d, "settings.local.json");
   writeFileSync(p, JSON.stringify({ autoCompactWindow: 250_000 }));
   expect(writeLocalCap(p, 250_000, null).prior).toBe(250_000);
 });
 
 test("a LIVE CapRecord in another hold's state carries its prior forward", () => {
-  const d = tmp("houndcap-prov-");
+  const d = tmp("holdcap-prov-");
   const p = join(d, "settings.local.json");
   writeFileSync(p, JSON.stringify({ autoCompactWindow: 250_000 }));
-  writeFileSync(join(d, "hound-other.json"), JSON.stringify({
+  writeFileSync(join(d, "work-hold-other.json"), JSON.stringify({
     check: "exit 1", startedAt: 1, ceilingMinutes: 720, maxRounds: 8, rounds: 0,
     compact: { path: p, window: 250_000, prior: 400_000, created: false },
   }));
@@ -95,12 +95,12 @@ test("a LIVE CapRecord in another hold's state carries its prior forward", () =>
   expect(JSON.parse(readFileSync(p, "utf8")).autoCompactWindow).toBe(400_000);
 });
 
-test("a `capped` ledger line proves hound wrote it, and the key is removed on restore", () => {
-  const d = tmp("houndcap-prov-");
+test("a `capped` ledger line proves the hold wrote it, and the key is removed on restore", () => {
+  const d = tmp("holdcap-prov-");
   const p = join(d, "settings.local.json");
   writeFileSync(p, JSON.stringify({ autoCompactWindow: 250_000 }));
   const rec0 = { path: p, window: 250_000, prior: null, created: true };
-  writeFileSync(join(d, "hound-gone.releases.log"),
+  writeFileSync(join(d, "work-hold-gone.releases.log"),
     `2026-09-25T00:00:00\tarmed\t{}\n2026-09-25T00:00:01\tcapped\t${JSON.stringify(rec0)}\n`);
   const rec = writeLocalCap(p, 250_000, capProvenance(p, 250_000, d));
   expect(rec.prior).toBeNull();
@@ -110,9 +110,9 @@ test("a `capped` ledger line proves hound wrote it, and the key is removed on re
 });
 
 test("provenance only counts for the same file and the same window", () => {
-  const d = tmp("houndcap-prov-");
+  const d = tmp("holdcap-prov-");
   const p = join(d, "settings.local.json");
-  writeFileSync(join(d, "hound-other.json"), JSON.stringify({
+  writeFileSync(join(d, "work-hold-other.json"), JSON.stringify({
     compact: { path: join(d, "elsewhere.json"), window: 250_000, prior: 400_000, created: false },
   }));
   expect(capProvenance(p, 250_000, d)).toBeNull();
@@ -121,22 +121,22 @@ test("provenance only counts for the same file and the same window", () => {
 });
 
 test("an unreadable state file or ledger is not evidence, and does not throw", () => {
-  const d = tmp("houndcap-prov-");
-  writeFileSync(join(d, "hound-bad.json"), "{not json");
-  writeFileSync(join(d, "hound-bad.releases.log"), "2026-09-25\tcapped\t{not json\n");
+  const d = tmp("holdcap-prov-");
+  writeFileSync(join(d, "work-hold-bad.json"), "{not json");
+  writeFileSync(join(d, "work-hold-bad.releases.log"), "2026-09-25\tcapped\t{not json\n");
   expect(capProvenance(join(d, "settings.local.json"), 250_000, d)).toBeNull();
   expect(capProvenance("/whatever", 250_000, join(d, "nonexistent-dir"))).toBeNull();
 });
 
 test("globalArg reports the user file's current value, or auto when absent", () => {
-  const d = tmp("houndcap-");
+  const d = tmp("holdcap-");
   const p = join(d, "settings.json");
   writeFileSync(p, JSON.stringify({ theme: "dark" }));
-  process.env.HOUND_USER_SETTINGS = p;
+  process.env.WORK_HOLD_USER_SETTINGS = p;
   expect(globalArg()).toBe("auto");
   writeFileSync(p, JSON.stringify({ autoCompactWindow: 300_000 }));
   expect(globalArg()).toBe("300000");
-  delete process.env.HOUND_USER_SETTINGS;
+  delete process.env.WORK_HOLD_USER_SETTINGS;
 });
 
 // ---------------------------------------------------------------- integration: arm.sh -> Stop hook
@@ -145,7 +145,7 @@ test("globalArg reports the user file's current value, or auto when absent", () 
  * A fake `herdr` that imitates Claude Code's `/autocompact`.
  *
  * It answers `agent list` with JSON naming the test session, and on `agent prompt <pane>
- * "/autocompact X"` writes X into HOUND_USER_SETTINGS (deleting the key for `auto`) and then logs
+ * "/autocompact X"` writes X into WORK_HOLD_USER_SETTINGS (deleting the key for `auto`) and then logs
  * the MERGED value it would have applied -- the local file's key when present, else X. That log is
  * the only direct evidence the running session was capped.
  */
@@ -226,24 +226,24 @@ function env(dir: string, session: string, herdr: string, user: string, project:
     CLAUDE_CODE_SESSION_ID: session,
     TMPDIR: dir,
     CLAUDE_PROJECT_DIR: project,
-    HOUND_HERDR: herdr,
-    HOUND_USER_SETTINGS: user,
-    HOUND_SETTLE_MS: "0",
+    WORK_HOLD_HERDR: herdr,
+    WORK_HOLD_USER_SETTINGS: user,
+    WORK_HOLD_SETTLE_MS: "0",
     // The suite inherits the REAL session's env, where a live bridge id plus a real agent-msg on
     // PATH would send `/autocompact` into the session running the tests. Both are pinned absent
     // here; the transport tests below opt back in explicitly.
     CLAUDE_CODE_BRIDGE_SESSION_ID: "",
-    HOUND_AGENT_MSG: "/nonexistent-agent-msg",
+    WORK_HOLD_AGENT_MSG: "/nonexistent-agent-msg",
     // Never a real billed judge call, and never the real agenix key -- see runHook in
     // tests/judge-integration.test.ts.
     XDG_RUNTIME_DIR: "/nonexistent-so-no-agenix-key",
-    HOUND_DECISIONS_URL: "http://127.0.0.1:1/decisions",
+    WORK_HOLD_DECISIONS_URL: "http://127.0.0.1:1/decisions",
     CLAUDE_CODE_AUTO_COMPACT_WINDOW: "",
   } as Record<string, string>;
 }
 
 test("arming caps the session locally and every release puts it back", () => {
-  const dir = tmp("houndcap-it-");
+  const dir = tmp("holdcap-it-");
   const project = join(dir, "project");
   mkdirSync(project, { recursive: true });
   const session = "cap-it-1";
@@ -256,7 +256,7 @@ test("arming caps the session locally and every release puts it back", () => {
   const flag = join(dir, "flag");
 
   const arm = Bun.spawnSync(
-    ["bash", join(REPO, "skills/hound/scripts/hound-arm.sh"), `test -f ${flag}`, "--rounds", "8"],
+    ["bash", join(REPO, "skills/work/scripts/work-hold.sh"), `test -f ${flag}`, "--rounds", "8"],
     { env: env(dir, session, herdr, user, project), stdout: "pipe", stderr: "pipe" },
   );
   const armOut = arm.stdout.toString() + arm.stderr.toString();
@@ -268,12 +268,12 @@ test("arming caps the session locally and every release puts it back", () => {
   expect(readFileSync(applied, "utf8").trim().split("\n")).toEqual(["250000"]);
   expect(readFileSync(user, "utf8")).toBe(seed);
   expect(JSON.parse(readFileSync(local, "utf8")).autoCompactWindow).toBe(250_000);
-  const state = JSON.parse(readFileSync(join(dir, `hound-${session}.json`), "utf8"));
+  const state = JSON.parse(readFileSync(join(dir, `work-hold-${session}.json`), "utf8"));
   expect(state.compact).toEqual({ path: local, window: 250_000, prior: null, created: true });
 
   // Now make the check pass and run the REAL Stop hook.
   writeFileSync(flag, "");
-  const stop = Bun.spawnSync(["bun", join(REPO, "hooks/hound.ts")], {
+  const stop = Bun.spawnSync(["bun", join(REPO, "hooks/work-hold.ts")], {
     stdin: Buffer.from(JSON.stringify({ session_id: session, transcript_path: join(dir, "none.jsonl") })),
     env: env(dir, session, herdr, user, project),
     stdout: "pipe",
@@ -286,7 +286,7 @@ test("arming caps the session locally and every release puts it back", () => {
 });
 
 test("the expired release restores the window too", () => {
-  const dir = tmp("houndcap-it-");
+  const dir = tmp("holdcap-it-");
   const project = join(dir, "project");
   mkdirSync(project, { recursive: true });
   const session = "cap-it-2";
@@ -299,7 +299,7 @@ test("the expired release restores the window too", () => {
   const flag = join(dir, "never");
 
   const arm = Bun.spawnSync(
-    ["bash", join(REPO, "skills/hound/scripts/hound-arm.sh"), `test -f ${flag}`, "--rounds", "1"],
+    ["bash", join(REPO, "skills/work/scripts/work-hold.sh"), `test -f ${flag}`, "--rounds", "1"],
     { env: env(dir, session, herdr, user, project), stdout: "pipe", stderr: "pipe" },
   );
   expect(arm.stdout.toString()).toContain("capped at 250000");
@@ -307,11 +307,11 @@ test("the expired release restores the window too", () => {
   expect(readFileSync(applied, "utf8").trim().split("\n")).toEqual(["250000"]);
 
   // rounds=1 with a red check: the first Stop is already at the ceiling.
-  const state = join(dir, `hound-${session}.json`);
+  const state = join(dir, `work-hold-${session}.json`);
   const s = JSON.parse(readFileSync(state, "utf8"));
   s.rounds = 1;
   writeFileSync(state, JSON.stringify(s));
-  const stop = Bun.spawnSync(["bun", join(REPO, "hooks/hound.ts")], {
+  const stop = Bun.spawnSync(["bun", join(REPO, "hooks/work-hold.ts")], {
     stdin: Buffer.from(JSON.stringify({ session_id: session })),
     env: env(dir, session, herdr, user, project),
     stdout: "pipe",
@@ -323,8 +323,8 @@ test("the expired release restores the window too", () => {
   expect(readFileSync(user, "utf8")).toBe(seed);
 });
 
-test("RE-ARMING does not turn hound's own cap into the user's setting", () => {
-  const dir = tmp("houndcap-it-");
+test("RE-ARMING does not turn the hold's own cap into the user's setting", () => {
+  const dir = tmp("holdcap-it-");
   const project = join(dir, "project");
   mkdirSync(project, { recursive: true });
   const session = "cap-it-3";
@@ -337,7 +337,7 @@ test("RE-ARMING does not turn hound's own cap into the user's setting", () => {
   const e = env(dir, session, herdr, user, project);
   const armOnce = () =>
     Bun.spawnSync(
-      ["bash", join(REPO, "skills/hound/scripts/hound-arm.sh"), `test -f ${flag}`, "--rounds", "8"],
+      ["bash", join(REPO, "skills/work/scripts/work-hold.sh"), `test -f ${flag}`, "--rounds", "8"],
       { env: e, stdout: "pipe", stderr: "pipe" },
     );
 
@@ -347,11 +347,11 @@ test("RE-ARMING does not turn hound's own cap into the user's setting", () => {
   // The second arm finds the cap still in the file. Before the fix it recorded prior=250000, and
   // the release then wrote {"autoCompactWindow": 250000} back as the user's own setting.
   expect(armOnce().stdout.toString()).toContain("capped at 250000");
-  const state = JSON.parse(readFileSync(join(dir, `hound-${session}.json`), "utf8"));
+  const state = JSON.parse(readFileSync(join(dir, `work-hold-${session}.json`), "utf8"));
   expect(state.compact.prior).toBeNull();
 
   writeFileSync(flag, "");
-  Bun.spawnSync(["bun", join(REPO, "hooks/hound.ts")], {
+  Bun.spawnSync(["bun", join(REPO, "hooks/work-hold.ts")], {
     stdin: Buffer.from(JSON.stringify({ session_id: session })),
     env: e, stdout: "pipe", stderr: "pipe",
   });
@@ -362,7 +362,7 @@ test("RE-ARMING does not turn hound's own cap into the user's setting", () => {
 
 /** Arm with both fakes installed, then run the real Stop hook on a check that has gone green. */
 function armAndRelease(session: string, bridge: string, agentMsgFails: boolean) {
-  const dir = tmp("houndcap-tx-");
+  const dir = tmp("holdcap-tx-");
   const project = join(dir, "project");
   mkdirSync(project, { recursive: true });
   const applied = join(dir, "applied.log");
@@ -376,20 +376,20 @@ function armAndRelease(session: string, bridge: string, agentMsgFails: boolean) 
   const e = {
     ...env(dir, session, herdr, user, project),
     CLAUDE_CODE_BRIDGE_SESSION_ID: bridge,
-    HOUND_AGENT_MSG: agentMsg,
+    WORK_HOLD_AGENT_MSG: agentMsg,
   };
 
   const arm = Bun.spawnSync(
-    ["bash", join(REPO, "skills/hound/scripts/hound-arm.sh"), `test -f ${flag}`, "--rounds", "8"],
+    ["bash", join(REPO, "skills/work/scripts/work-hold.sh"), `test -f ${flag}`, "--rounds", "8"],
     { env: e, stdout: "pipe", stderr: "pipe" },
   );
   const armOut = arm.stdout.toString() + arm.stderr.toString();
   const armLog = readFileSync(applied, "utf8").trim().split("\n");
   // Read before the release: a passed hold deletes its own state file.
-  const state = JSON.parse(readFileSync(join(dir, `hound-${session}.json`), "utf8"));
+  const state = JSON.parse(readFileSync(join(dir, `work-hold-${session}.json`), "utf8"));
 
   writeFileSync(flag, "");
-  const stop = Bun.spawnSync(["bun", join(REPO, "hooks/hound.ts")], {
+  const stop = Bun.spawnSync(["bun", join(REPO, "hooks/work-hold.ts")], {
     stdin: Buffer.from(JSON.stringify({ session_id: session })),
     env: e,
     stdout: "pipe",
@@ -430,14 +430,14 @@ test("an agent-msg that refuses falls back to the herdr pane", () => {
 });
 
 test("no transport at all skips the cap and writes no local file", () => {
-  const dir = tmp("houndcap-tx-");
+  const dir = tmp("holdcap-tx-");
   const project = join(dir, "project");
   mkdirSync(project, { recursive: true });
   const session = "cap-tx-3";
   const user = join(dir, "settings.json");
   writeFileSync(user, "{}\n");
   const arm = Bun.spawnSync(
-    ["bash", join(REPO, "skills/hound/scripts/hound-arm.sh"), "exit 1", "--rounds", "8"],
+    ["bash", join(REPO, "skills/work/scripts/work-hold.sh"), "exit 1", "--rounds", "8"],
     {
       env: { ...env(dir, session, "/nonexistent-herdr", user, project) },
       stdout: "pipe",

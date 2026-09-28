@@ -2,7 +2,7 @@
  * work-abandon.sh — the sanctioned way to retire a run the USER abandoned.
  *
  * A run walked away from leaves two things behind that outlive it: a run dir with no result.json,
- * which cron-delete-guard.ts reads as in-flight forever, and (if one was armed) a hound hold nothing
+ * which cron-delete-guard.ts reads as in-flight forever, and (if one was armed) a hold nothing
  * will ever release. The escape used to be CRAFT_ALLOW_CRON_DELETE, an env var the SESSION sets for
  * itself — which is not a user decision at all.
  *
@@ -30,10 +30,10 @@ function fixture(opts: { result?: string; armed?: boolean } = {}) {
   if (opts.result !== undefined) writeFileSync(join(run, 'result.json'), opts.result)
   const sid = 'abandon-session'
   if (opts.armed) {
-    writeFileSync(join(tmp, `hound-${sid}.json`), JSON.stringify({
+    writeFileSync(join(tmp, `work-hold-${sid}.json`), JSON.stringify({
       check: 'false', goal: 'the thing', startedAt: 1, ceilingMinutes: 720, maxRounds: 4, rounds: 0,
     }))
-    writeFileSync(join(tmp, `hound-${sid}.releases.log`),
+    writeFileSync(join(tmp, `work-hold-${sid}.releases.log`),
       `2026-09-27T00:00:00\tarmed\t{"check":"false"}\n`)
   }
   return { tmp, cwd, run, sid }
@@ -42,7 +42,7 @@ function fixture(opts: { result?: string; armed?: boolean } = {}) {
 const abandon = (f: ReturnType<typeof fixture>, args: string[], session = f.sid) =>
   spawnSync('bash', [ABANDON, f.run, ...args], {
     encoding: 'utf8',
-    env: { ...HERMETIC_ENV, TMPDIR: f.tmp, CLAUDE_CODE_SESSION_ID: session, HOUND_COMPACT_WINDOW: '0' },
+    env: { ...HERMETIC_ENV, TMPDIR: f.tmp, CLAUDE_CODE_SESSION_ID: session, WORK_HOLD_COMPACT_WINDOW: '0' },
   })
 
 describe('the verdict it writes', () => {
@@ -104,8 +104,8 @@ describe('the hold it releases', () => {
     const f = fixture({ armed: true })
     const r = abandon(f, ['--why', 'the user walked away'])
     expect(r.status).toBe(0)
-    expect(existsSync(join(f.tmp, `hound-${f.sid}.json`))).toBe(false)
-    const log = readFileSync(join(f.tmp, `hound-${f.sid}.releases.log`), 'utf8').trim().split('\n')
+    expect(existsSync(join(f.tmp, `work-hold-${f.sid}.json`))).toBe(false)
+    const log = readFileSync(join(f.tmp, `work-hold-${f.sid}.releases.log`), 'utf8').trim().split('\n')
     expect(log.at(-1)).toContain('abandoned by user')
     expect(log.at(-1)).toContain('the user walked away')
   })
@@ -114,7 +114,7 @@ describe('the hold it releases', () => {
     const f = fixture()
     const r = abandon(f, ['--why', 'x'])
     expect(r.status).toBe(0)
-    expect(r.stdout).toContain('no hound hold armed')
+    expect(r.stdout).toContain('no hold armed')
   })
 
   test('it says CronDelete is now allowed', () => {

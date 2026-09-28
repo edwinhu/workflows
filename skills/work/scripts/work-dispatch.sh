@@ -802,10 +802,10 @@ CRONMSG
 # would leave a live run with no hold and nothing saying so — the reason is printed and the dispatch
 # stands.
 arm_hold() {
-  local hound goal goalcheck minutes rc
-  hound="$SKILL/../hound/scripts/hound-arm.sh"
-  if [ ! -r "$hound" ]; then
-    echo "hold: not armed — $hound is not readable"
+  local hold goal goalcheck minutes rc
+  hold="$SKILL/scripts/work-hold.sh"
+  if [ ! -r "$hold" ]; then
+    echo "hold: not armed — $hold is not readable"
     return 0
   fi
   goal=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("goal") or "")' "$out" 2>/dev/null)
@@ -813,17 +813,17 @@ arm_hold() {
   minutes=$("$SKILL/scripts/compose-goal.sh" --minutes 2>/dev/null)
   case "$minutes" in ''|*[!0-9]*) minutes=720 ;; esac
   if [ -n "$goalcheck" ]; then
-    bash "$hound" "$goalcheck" --goal "$goal" --run "$R" --rounds "$maxrounds" --minutes "$minutes"
+    bash "$hold" "$goalcheck" --goal "$goal" --run "$R" --rounds "$maxrounds" --minutes "$minutes"
     rc=$?
   elif [ -n "$goal" ]; then
     # CHECK-LESS: Jev alone on the goal, bounded by the same two ceilings.
-    bash "$hound" --goal "$goal" --run "$R" --rounds "$maxrounds" --minutes "$minutes"
+    bash "$hold" --goal "$goal" --run "$R" --rounds "$maxrounds" --minutes "$minutes"
     rc=$?
   else
     echo "hold: not armed — the plan states neither args.goalCheck nor args.goal, so there is nothing to hold on."
     return 0
   fi
-  [ "$rc" -ne 0 ] && echo "hold: NOT armed (hound-arm.sh exited $rc, and said why on stderr) — the dispatch stands; nothing will block this session's stop."
+  [ "$rc" -ne 0 ] && echo "hold: NOT armed (work-hold.sh exited $rc, and said why on stderr) — the dispatch stands; nothing will block this session's stop."
   return 0
 }
 

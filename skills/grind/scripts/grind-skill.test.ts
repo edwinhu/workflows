@@ -21,7 +21,7 @@ import { join, resolve } from 'node:path'
 const SKILL_DIR = resolve(import.meta.dir, '..')
 const SKILL_MD = join(SKILL_DIR, 'SKILL.md')
 const GRIND = join(SKILL_DIR, 'scripts', 'grind.sh')
-const HOUND_MD = resolve(import.meta.dir, '..', '..', 'hound', 'SKILL.md')
+const WORK_HOLD_MD = resolve(import.meta.dir, '..', '..', 'work', 'SKILL.md')
 
 const body = () => readFileSync(SKILL_MD, 'utf8')
 
@@ -65,15 +65,15 @@ describe('skills/grind/SKILL.md', () => {
   test('description routes away from the skills grind is not', () => {
     const md = body()
     const fm = md.slice(4, md.indexOf('\n---', 4))
-    // hound holds a live session open; grind exists so that no session lives at all. A reader who
+    // holds a live session open; grind exists so that no session lives at all. A reader who
     // cannot tell them apart reaches for the wrong one.
     expect(fm).toContain('NEGATIVE ROUTING')
-    expect(fm).toMatch(/hound/)
+    expect(fm).toMatch(/hold/)
   })
 
-  test('carries the skill-toc bang line, byte-identical to the one in hound', () => {
+  test('carries the skill-toc bang line, byte-identical to the one in work', () => {
     const ours = tocBang(body())
-    const theirs = tocBang(readFileSync(HOUND_MD, 'utf8'))
+    const theirs = tocBang(readFileSync(WORK_HOLD_MD, 'utf8'))
     expect(theirs).toBeDefined()
     expect(ours).toBe(theirs)
   })

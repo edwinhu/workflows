@@ -819,7 +819,7 @@ test('a goalCheck that reads a ROUND VERDICT is critical — hold-lint refuses i
   expect(f!.message).toContain('ROUND VERDICT')
 })
 
-test('an APOSTROPHE in the goalCheck is critical too — it ends the quote hound-arm wraps it in', () => {
+test('an APOSTROPHE in the goalCheck is critical too — it ends the quote work-hold wraps it in', () => {
   const p = base({
     mechanicalChecks: [{ name: 'm', cmd: 'bun test' }],
     goalCheck: "bash scripts/check.sh --lint vendor-lint.sh's exemption",
