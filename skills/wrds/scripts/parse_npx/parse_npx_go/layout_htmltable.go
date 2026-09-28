@@ -7117,6 +7117,14 @@ func htmlBareFundLine(ix *issSeriesIndex, pre string, fallback ...*dictFallback)
 			if td := htmlTypoDeclaredName(ix, candidate); td != nil {
 				name, id, ok = td.Name, td.SeriesID, true
 				adoptedAt, adoptedLine = li, td.Name
+			} else if dd := htmlDroppedWordDeclaredName(ix, candidate); dd != nil {
+				// The same slip one whole word wide: World Funds Inc /MD/ heads
+				// both its 2013 and 2014 REMS sections `REMS Real Estate 50/50
+				// Fund` for the declared `REMS Real Estate Income 50/50 Fund`
+				// (S000008412, 230 rows with no series). The declared spelling
+				// is what gets recorded.
+				name, id, ok = dd.Name, dd.SeriesID, true
+				adoptedAt, adoptedLine = li, dd.Name
 			}
 		}
 	}
@@ -7220,6 +7228,142 @@ func htmlTypoDeclaredName(ix *issSeriesIndex, candidate string) *SeriesDecl {
 		hit = d
 	}
 	return hit
+}
+
+// htmlDroppedWordDeclaredName reads a banner that DROPS one whole interior word
+// of a name this filing's own SEC-HEADER declares: `REMS Real Estate 50/50 Fund`
+// for the declared `REMS Real Estate Income 50/50 Fund` (S000008412, World Funds
+// Inc /MD/ 2013 and 2014, 0001209286-13-000352 and 0001209286-14-000485, 230 rows
+// with no series). It answers the declared SeriesDecl, whose name is the spelling
+// to record -- the printed one is the defect being corrected.
+//
+// It runs after htmlTypoDeclaredName and carries the same narrowings, for the same
+// reasons: the pool is THIS FILING'S OWN declarations off hdrOnly, a banner that
+// spells a declared name exactly refuses (the rungs above own that), the banner is
+// never the registrant's own name, and exactly ONE declared series may answer --
+// two refuse, since choosing between them moves one fund's votes onto another.
+//
+// What is specific to a dropped word:
+//
+// The declared name must run exactly one word longer, and deleting exactly one
+// INTERIOR word of it must leave the banner token for token. Never the first word
+// (the family brand, which every sleeve shares) and never the last (the type word,
+// whose absence turns a fund into a trust).
+//
+// The dropped word is letters alone and runs htmlTypoWordMin or more. A digit or a
+// short token is how a registrant numbers or tiers a sleeve (`Fund II`, `Series
+// 2000`), so dropping one answers a different fund rather than repairing a slip.
+//
+// And it refuses when the BANNER ITSELF reads as another of this registrant's
+// declared sleeves -- when some other declared name runs the banner's own length
+// and differs from it at the dropped position alone. `MML Small Cap Equity Fund`
+// reaches the declared `MML Small Cap Growth Equity Fund` (S000003827) only by
+// dropping `Growth`, and the same registrant declares `MML Small Cap Value Fund`
+// and `MML Small Cap Index Fund`, which the banner matches slot for slot but for
+// that one word. The dropped word is then what names this registrant's sleeves
+// apart, so the banner is a sleeve of its own, not a slip -- and the same filing
+// prints and resolves the Growth banner in full elsewhere. The refusal pool is the
+// registrant's whole candidate set, not just the header, since a name that shows
+// the scheme refutes the slip wherever it is declared.
+func htmlDroppedWordDeclaredName(ix *issSeriesIndex, candidate string) *SeriesDecl {
+	if ix == nil {
+		return nil
+	}
+	key := normalizeSeriesName(candidate)
+	// The reporting period this vintage prints beside the fund on the banner
+	// line, which the exact chain cuts for its own lookup too.
+	if head, cut := issCutReportingPeriodTail(key); cut {
+		key = head
+	}
+	words := strings.Fields(key)
+	if len(words) < 2 || key == ix.registrantKey {
+		return nil
+	}
+	decls := ix.decls
+	if ix.hdrOnly != nil {
+		decls = ix.hdrOnly.decls
+	}
+	var hit *SeriesDecl
+	hitDrop := -1
+	for i := range decls {
+		d := &decls[i]
+		if d.SeriesID == "" || d.Name == "" {
+			continue
+		}
+		dw := strings.Fields(normalizeSeriesName(d.Name))
+		if len(dw) == len(words) && htmlSameWords(dw, words) {
+			return nil // the banner spells this declared name exactly; not this rung's business
+		}
+		if len(dw) != len(words)+1 {
+			continue
+		}
+		drop := htmlDropAtYielding(dw, words)
+		if drop < 0 {
+			continue
+		}
+		if hit != nil && hit.SeriesID != d.SeriesID {
+			return nil
+		}
+		hit, hitDrop = d, drop
+	}
+	if hit == nil {
+		return nil
+	}
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || d.SeriesID == hit.SeriesID || d.Name == "" {
+			continue
+		}
+		if htmlDiffersOnlyAt(strings.Fields(normalizeSeriesName(d.Name)), words, hitDrop) {
+			return nil
+		}
+	}
+	return hit
+}
+
+// htmlDiffersOnlyAt reports two normalised token slices of the same length that
+// disagree at position j and nowhere else.
+func htmlDiffersOnlyAt(a, b []string, j int) bool {
+	if len(a) != len(b) || j < 0 || j >= len(a) || a[j] == b[j] {
+		return false
+	}
+	for i := range a {
+		if i != j && a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// htmlDropAtYielding is the interior position of decl whose deletion leaves banner
+// token for token, or -1 when no single interior deletion does. The dropped word
+// must be letters alone and run htmlTypoWordMin or more.
+func htmlDropAtYielding(decl, banner []string) int {
+	if len(decl) != len(banner)+1 {
+		return -1
+	}
+	for j := 1; j < len(decl)-1; j++ {
+		if len(decl[j]) < htmlTypoWordMin || !htmlLettersOnly(decl[j]) {
+			continue
+		}
+		if htmlSameWords(append(append([]string{}, decl[:j]...), decl[j+1:]...), banner) {
+			return j
+		}
+	}
+	return -1
+}
+
+// htmlSameWords reports two normalised token slices equal token for token.
+func htmlSameWords(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }
 
 // htmlLettersOnly reports a normalised word carrying no digit. A digit is how a
