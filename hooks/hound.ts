@@ -76,10 +76,10 @@ export function statePath(session: string): string {
 /**
  * The ledger beside the state file. `hound-arm.sh` appends `armed` here when it arms and
  * `released by user` / `declined` / `refused` when release is attempted; this hook appends
- * `passed-goal-met` / `passed-unjudged` and `expired`. It exists because the state file alone made
- * the hold `rm`-able: a session that could not argue its way out could still delete its way out. If
- * the state file is gone while the ledger's last word is `armed`, the hold was removed by something
- * other than the two sanctioned exits, and it is RESTORED rather than honoured.
+ * the PASSED_GOAL_MET / PASSED_UNJUDGED verbs and `expired`. It exists because the state file alone
+ * made the hold `rm`-able: a session that could not argue its way out could still delete its way
+ * out. If the state file is gone while the ledger's last word is `armed`, the hold was removed by
+ * something other than the two sanctioned exits, and it is RESTORED rather than honoured.
  */
 export function ledgerPath(session: string): string {
   return join(process.env.TMPDIR || tmpdir(), `hound-${session}.releases.log`)
@@ -1035,8 +1035,8 @@ function main(): void {
       }
       if (j.verdict === 'MET') judged = j.reason
     }
-    // TWO VERBS, because a release says two different things. `passed-goal-met` is the classifier
-    // agreeing the goal is met; `passed-unjudged` is the check alone, with nobody having confirmed
+    // TWO VERBS, because a release says two different things. PASSED_GOAL_MET is the classifier
+    // agreeing the goal is met; PASSED_UNJUDGED is the check alone, with nobody having confirmed
     // the objective.
     if (judged === null)
       release(
