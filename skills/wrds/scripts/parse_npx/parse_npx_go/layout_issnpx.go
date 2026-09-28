@@ -2808,12 +2808,72 @@ func issClassPairDecl(ix *issSeriesIndex, key, banner string) *SeriesDecl {
 	if n != len(pairs) {
 		return nil
 	}
+	// The registrant's own dictionary may already have settled which class the
+	// bare banner names, at another vintage; a fusion is then a guess over
+	// evidence.
+	if d := issClassPairBareDictDecl(ix, key, banner, pairs); d != nil {
+		return d
+	}
 	ids := make([]string, 0, len(pairs))
 	for _, d := range pairs {
 		ids = append(ids, d.SeriesID)
 	}
 	sort.Strings(ids)
 	return &SeriesDecl{SeriesID: strings.Join(ids, MultiValueSep), Name: banner}
+}
+
+// issClassPairBareDictDecl answers a class-pair collision the registrant's own
+// dictionary has already settled: exactly ONE of the colliding series is
+// declared, at some vintage of this CIK, under the BARE name the banner spells
+// -- no trailing parenthetical at all -- and no sibling of the pair carries such
+// a declaration. JNL Investors Series Trust (CIK 0001121257) declares
+// `Jackson Perspective 5 Fund (A)` for S000014530 and `... (C)` for S000014531
+// in its 20070630 report, whose body prints one bare `JACKSON PERSPECTIVE 5
+// FUND` banner; cik_series.tsv carries S000014530 REDECLARED with that bare name
+// at 20080630 and carries no bare name for S000014531 at any vintage, so the
+// bare spelling is S000014530's own eventual canonical name and the section is
+// its vote, not a consolidated vote of both classes.
+//
+// When BOTH or NEITHER sibling carries such a bare declaration there is no such
+// evidence and the fusion stands, which is the genuinely consolidated case (JNL
+// Series Trust's `JNL/AIM LARGE CAP GROWTH FUND (A)`/`(B)`).
+//
+// The dictionary is read from cikDict directly rather than through issIndexDict,
+// so this holds on the header-only index too: the fusion is that index's own
+// answer and outranks the outer chain's, so silencing this there would leave the
+// fused pair stamped. Nothing is invented -- the id returned is one of the two
+// the fusion would have joined, and it is the filing's own declared series.
+func issClassPairBareDictDecl(ix *issSeriesIndex, key, banner string, pairs []*SeriesDecl) *SeriesDecl {
+	if ix == nil || ix.cik == "" || key == "" || cikDict == nil {
+		return nil
+	}
+	member := map[string]bool{}
+	for _, d := range pairs {
+		if d == nil || d.SeriesID == "" {
+			return nil
+		}
+		member[d.SeriesID] = true
+	}
+	hit := ""
+	for _, x := range cikDict.byCIK[ix.cik] {
+		if x.SeriesID == "" || !member[x.SeriesID] {
+			continue
+		}
+		if _, cut := issCutTrailingParenthetical(x.Name); cut {
+			continue
+		}
+		if normalizeSeriesName(x.Name) != key {
+			continue
+		}
+		if hit != "" && hit != x.SeriesID {
+			return nil
+		}
+		hit = x.SeriesID
+	}
+	if hit == "" {
+		return nil
+	}
+	return &SeriesDecl{SeriesID: hit, Name: banner}
 }
 
 // issCutSubAdviser removes the labelled sub-adviser clause one registrant
