@@ -652,8 +652,16 @@ const THIRD_PARTY_SCHEMA = {
 // Jev NEVER settles or drops a finding. Measured 2026-09-27 over 3,137 findings: AUC 0.639 against
 // refuter verdicts — enough to rank, nowhere near enough to adjudicate (at its most confident bin the
 // refuter upheld only 53.7%). Findings past the cap keep today's fail-closed treatment regardless.
+//
+// DEFAULT IS 'severity', because the ranking has nothing to rank with. Measured 2026-09-28 over 894
+// findings in 65 batches: batching does not degrade Jev (batched AUC 0.637 vs 0.619 single-call,
+// Spearman 0.79), but on the 18 REAL overflowing lens batches batched Jev moved −0.001 refuter-upheld
+// findings into the top 8 against a random within-severity draw, CI [−0.064, +0.060]. The ceiling is
+// arithmetic: 9.8 findings for 8 slots leaves ~0.6 upheld findings in play per overflow, so a perfect
+// ranker could rescue ~0.6 and an AUC-0.63 one rescued +0.06. That is not worth an agent leg. 'jev'
+// stays accepted as an opt-in — the path is written, tested, and costs nothing while unselected.
 const REFUTER_RANKERS = ['jev', 'severity']
-const refuterRanker = args.refuterRanker === undefined ? 'jev' : args.refuterRanker
+const refuterRanker = args.refuterRanker === undefined ? 'severity' : args.refuterRanker
 if (!REFUTER_RANKERS.includes(refuterRanker)) {
   throw new Error(`work: refuterRanker must be one of ${REFUTER_RANKERS.join('|')}: ${JSON.stringify(args.refuterRanker)}`)
 }
