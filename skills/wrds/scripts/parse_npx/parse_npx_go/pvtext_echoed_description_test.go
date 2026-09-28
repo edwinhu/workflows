@@ -17,9 +17,9 @@ func TestPVTextEchoedDescriptionIsNotAContinuation(t *testing.T) {
 	}
 	rows := runISSNPXDoc(t, string(b))
 	want := map[string]string{
-		"ELECT DIRECTOR DOUGLAS D. FRENCH":                               "FOR",
-		"RATIFY AUDITORS":                                                "FOR",
-		"ELECT DIRECTOR P.C. GODSOE":                                     "AGNST",
+		"ELECT DIRECTOR DOUGLAS D. FRENCH": "FOR",
+		"RATIFY AUDITORS":                  "FOR",
+		"ELECT DIRECTOR P.C. GODSOE":       "AGNST",
 		"ADOPTION OF AMENDED AND RESTATED INCENTIVE STOCK PLAN OF 1998.": "AGNST",
 	}
 	seen := map[string]bool{}
