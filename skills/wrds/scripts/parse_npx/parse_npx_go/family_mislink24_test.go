@@ -106,33 +106,33 @@ func familyMislink24Dispatch(t *testing.T, fixture, dict, layout string, count i
 // (`newISSSeriesIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName))`,
 // 2 decls) and on this filing's own `cikDict.exactFallback(meta)`:
 //
-//	issResolveFundUncached      "Goldman Sachs Structured Large Cap Value Fund" -> S000009317 "Goldman Sachs Large Cap Value Fund"
-//	issInternalTokenDropDecl    "goldman sachs structured large cap value fund" -> S000009317 "Goldman Sachs Large Cap Value Fund"
-//	issDroppedTokenNamesSibling (ix, "structured", thatHit)                     -> false      (the guard does not fire)
-//	dictFallback.apply          "Goldman Sachs Structured Large Cap Value Fund" -> S000009326  (the dictionary answers it)
+//		issResolveFundUncached      "Goldman Sachs Structured Large Cap Value Fund" -> S000009317 "Goldman Sachs Large Cap Value Fund"
+//		issInternalTokenDropDecl    "goldman sachs structured large cap value fund" -> S000009317 "Goldman Sachs Large Cap Value Fund"
+//		issDroppedTokenNamesSibling (ix, "structured", thatHit)                     -> false      (the guard does not fire)
+//		dictFallback.apply          "Goldman Sachs Structured Large Cap Value Fund" -> S000009326  (the dictionary answers it)
 //
-//  1. `layout_issnpx.go`, `issInternalTokenDropDecl` (line 6631). It drops one
-//     INTERIOR token from the banner and looks the remainder up in `ix.byName`
-//     -- this filing's own header-declared names and nothing else. Dropping
-//     `structured` leaves `goldman sachs large cap value fund`, which is
-//     S000009317's declared name exactly, so the rung claims the row for
-//     S000009317: a different fund that was never named `Structured` anything
-//     and that already has its own separate banner and its own rows in this same
-//     filing.
-//  2. Its sibling-collision guard `issDroppedTokenNamesSibling` (line 6613)
-//     refuses a drop only when the dropped token is spelled in some OTHER
-//     CURRENT header-declared name of this registrant. The 2013 header spells
-//     S000009326 as `... Insights Fund`, so the token `structured` appears in no
-//     declared name at all and the guard returns false (probe above). It never
-//     consults `cik_series.tsv`, so it cannot see that `Structured` is itself
-//     the distinctive pre-rename name of a DIFFERENT series of this same CIK.
-//  3. The row therefore leaves `issResolveFundUncached` with a non-empty
-//     SeriesID, and `cik_series.go`'s `dictFallback.apply` (line 585) opens with
-//     `if f == nil || r.SeriesID != "" || r.FundName == "" { return }` -- so the
-//     dictionary's EXACT vintage match for S000009326 is never consulted,
-//     although it answers on its own the moment it is asked (fourth probe; the
-//     same row also answers `cikSeries.registrantExactName` at this filing's
-//     period).
+//	 1. `layout_issnpx.go`, `issInternalTokenDropDecl` (line 6631). It drops one
+//	    INTERIOR token from the banner and looks the remainder up in `ix.byName`
+//	    -- this filing's own header-declared names and nothing else. Dropping
+//	    `structured` leaves `goldman sachs large cap value fund`, which is
+//	    S000009317's declared name exactly, so the rung claims the row for
+//	    S000009317: a different fund that was never named `Structured` anything
+//	    and that already has its own separate banner and its own rows in this same
+//	    filing.
+//	 2. Its sibling-collision guard `issDroppedTokenNamesSibling` (line 6613)
+//	    refuses a drop only when the dropped token is spelled in some OTHER
+//	    CURRENT header-declared name of this registrant. The 2013 header spells
+//	    S000009326 as `... Insights Fund`, so the token `structured` appears in no
+//	    declared name at all and the guard returns false (probe above). It never
+//	    consults `cik_series.tsv`, so it cannot see that `Structured` is itself
+//	    the distinctive pre-rename name of a DIFFERENT series of this same CIK.
+//	 3. The row therefore leaves `issResolveFundUncached` with a non-empty
+//	    SeriesID, and `cik_series.go`'s `dictFallback.apply` (line 585) opens with
+//	    `if f == nil || r.SeriesID != "" || r.FundName == "" { return }` -- so the
+//	    dictionary's EXACT vintage match for S000009326 is never consulted,
+//	    although it answers on its own the moment it is asked (fourth probe; the
+//	    same row also answers `cikSeries.registrantExactName` at this filing's
+//	    period).
 //
 // Same class as family MISLINK23 (2e2ec1c5, `give dictFB a chance before the
 // single-series chassis stamp`) -- a rung that resolves inside the layout
