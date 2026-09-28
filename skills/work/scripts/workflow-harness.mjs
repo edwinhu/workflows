@@ -82,8 +82,11 @@ export const task = (over = {}) => ({ id: 'T1', name: 'n', work: 'w', acceptance
 /**
  * Default replies: everything succeeds. Override per label to model failure or death.
  * @param over  {label-prefix or exact label: result|null}, plus `red: {before, after}` exit codes.
+ *              `rank` stubs the Jev refuter-ordering leg: a RANKER_SCHEMA object, or null for a dead
+ *              leg. Defaults to null — the fallback path — so a test that does not care about
+ *              ordering never accidentally asserts on a ranking it did not mean to create.
  */
-export function replies({ red = {}, impl = {}, verify = {}, lens = {}, mech = {}, refute } = {}) {
+export function replies({ red = {}, impl = {}, verify = {}, lens = {}, mech = {}, refute, rank } = {}) {
   return (label, _prompt, _opts) => {
     const [kind, rest] = [label.split(':')[0], label.split(':').slice(1).join(':')]
     if (kind === 'implement') return impl[rest] !== undefined ? impl[rest] : { id: rest, done: true, changedFiles: ['x'], evidence: 'e' }
@@ -100,6 +103,10 @@ export function replies({ red = {}, impl = {}, verify = {}, lens = {}, mech = {}
       return v === null ? null : { name: rest, exitCode: v, output: 'o' }
     }
     if (kind === 'refute') return refute !== undefined ? refute : { refuted: true, reason: 'r' }
+    if (kind === 'rank') {
+      if (rank === undefined) return null
+      return typeof rank === 'function' ? rank(rest) : rank
+    }
     return null
   }
 }
