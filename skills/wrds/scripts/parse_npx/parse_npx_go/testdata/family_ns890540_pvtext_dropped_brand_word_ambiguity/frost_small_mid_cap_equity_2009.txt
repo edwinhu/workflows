@@ -1,0 +1,1261 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ Mik8N8CiFt6S4rym2Ho8XpBSKXdK+aHp0pQN262ZA3QqOojriYBHPj4y/bfWTEcH
+ ntmJb9nzWUJIaK0I2nSq1w==
+
+<SEC-DOCUMENT>0001135428-09-000435.txt : 20090831
+<SEC-HEADER>0001135428-09-000435.hdr.sgml : 20090831
+<ACCEPTANCE-DATETIME>20090831160435
+ACCESSION NUMBER:		0001135428-09-000435
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20090630
+FILED AS OF DATE:		20090831
+DATE AS OF CHANGE:		20090831
+EFFECTIVENESS DATE:		20090831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Advisors Inner Circle Fund II
+		CENTRAL INDEX KEY:			0000890540
+		IRS NUMBER:				233040006
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0131
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07102
+		FILM NUMBER:		091046145
+
+	BUSINESS ADDRESS:	
+		STREET 1:		ONE FREEDOM VALLEY DRIVE
+		CITY:			OAKS
+		STATE:			PA
+		ZIP:			19456
+		BUSINESS PHONE:		6106761000
+
+	MAIL ADDRESS:	
+		STREET 1:		ONE FREEDOM VALLEY DRIVE
+		CITY:			OAKS
+		STATE:			PA
+		ZIP:			19456
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	ARBOR FUND
+		DATE OF NAME CHANGE:	19920929
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000005803
+<SERIES-NAME>CHAMPLAIN SMALL COMPANY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015937
+<CLASS-CONTRACT-NAME>ADVISOR SHARES
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000032298
+<CLASS-CONTRACT-NAME>INSTITUTIONAL SHARES
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000006458
+<SERIES-NAME>HANCOCK HORIZON GOVERNMENT MONEY MARKET FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017656
+<CLASS-CONTRACT-NAME>TRUST CLASS SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>HTRXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017657
+<CLASS-CONTRACT-NAME>INSTITUTIONAL SWEEP CLASS SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>HHIXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017658
+<CLASS-CONTRACT-NAME>CLASS A SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>HHAXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000006461
+<SERIES-NAME>HANCOCK HORIZON GROWTH FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017661
+<CLASS-CONTRACT-NAME>TRUST CLASS SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>HHRTX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017662
+<CLASS-CONTRACT-NAME>CLASS A SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>HHRAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017663
+<CLASS-CONTRACT-NAME>CLASS C SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>HHRCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000006462
+<SERIES-NAME>HANCOCK HORIZON STRATEGIC INCOME BOND FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017664
+<CLASS-CONTRACT-NAME>TRUST CLASS SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>HHBTX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017665
+<CLASS-CONTRACT-NAME>CLASS A SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>HHBAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017666
+<CLASS-CONTRACT-NAME>CLASS C SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>HHBCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000006464
+<SERIES-NAME>HANCOCK HORIZON BURKENROAD FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017670
+<CLASS-CONTRACT-NAME>CLASS A SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>HHBUX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017671
+<CLASS-CONTRACT-NAME>CLASS D SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>HYBUX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000006466
+<SERIES-NAME>UTENDAHL INSTITUTIONAL MONEY MARKET FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017673
+<CLASS-CONTRACT-NAME>INSTITUTIONAL SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>UCMXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000006467
+<SERIES-NAME>REAVES SELECT RESEARCH FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017674
+<CLASS-CONTRACT-NAME>INVESTOR CLASS SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>RSRAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017675
+<CLASS-CONTRACT-NAME>INSTITUTIONAL CLASS SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>RSRFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000010248
+<SERIES-NAME>HANCOCK HORIZON PRIME MONEY MARKET FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028333
+<CLASS-CONTRACT-NAME>INSTITUTIONAL CLASS SHARES
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000013626
+<SERIES-NAME>PERIMETER SMALL CAP GROWTH FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000036925
+<CLASS-CONTRACT-NAME>INVESTOR SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>PSCGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000058272
+<CLASS-CONTRACT-NAME>I SHARES
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000014939
+<SERIES-NAME>ABERDEEN EMERGING MARKETS FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000040559
+<CLASS-CONTRACT-NAME>INSTITUTIONAL CLASS SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>ABEMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000040560
+<CLASS-CONTRACT-NAME>ADVISOR CLASS SHARES
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000017483
+<SERIES-NAME>SMARTGROWTH LIPPER(R) OPTIMAL CONSERVATIVE INDEX FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000048337
+<CLASS-CONTRACT-NAME>CLASS A SHARES
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000048338
+<CLASS-CONTRACT-NAME>INSTITUTIONAL CLASS SHARES
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000017484
+<SERIES-NAME>SMARTGROWTH LIPPER(R) OPTIMAL MODERATE INDEX FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000048339
+<CLASS-CONTRACT-NAME>CLASS A SHARES
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000048340
+<CLASS-CONTRACT-NAME>INSTITUTIONAL CLASS SHARES
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000017485
+<SERIES-NAME>SMARTGROWTH LIPPER(R) OPTIMAL GROWTH INDEX FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000048341
+<CLASS-CONTRACT-NAME>CLASS A SHARES
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000048342
+<CLASS-CONTRACT-NAME>INSTITUTIONAL CLASS SHARES
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000021627
+<SERIES-NAME>Frost Core Growth Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061940
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061941
+<CLASS-CONTRACT-NAME>Institutional Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000021628
+<SERIES-NAME>Frost Kempner Treasury and Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061942
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061943
+<CLASS-CONTRACT-NAME>Institutional Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000021629
+<SERIES-NAME>Frost LKCM Multi-Cap Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061944
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061945
+<CLASS-CONTRACT-NAME>Institutional Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000021630
+<SERIES-NAME>Frost LKCM Small-Mid Cap Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061946
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000065022
+<CLASS-CONTRACT-NAME>Institutional Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000021631
+<SERIES-NAME>Frost Dividend Value Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061947
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061948
+<CLASS-CONTRACT-NAME>Institutional Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000021632
+<SERIES-NAME>Frost Kempner Multi-Cap Deep Value Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061949
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061950
+<CLASS-CONTRACT-NAME>Institutional Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000021633
+<SERIES-NAME>Frost Hoover Small-Mid Cap Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061951
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061952
+<CLASS-CONTRACT-NAME>Institutional Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000021634
+<SERIES-NAME>Frost International Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061953
+<CLASS-CONTRACT-NAME>Institutional Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061954
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000021635
+<SERIES-NAME>Frost Low Duration Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061955
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061956
+<CLASS-CONTRACT-NAME>Institutional Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000021636
+<SERIES-NAME>Frost Total Return Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061957
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061958
+<CLASS-CONTRACT-NAME>Institutional Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000021637
+<SERIES-NAME>Frost Municipal Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061959
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061960
+<CLASS-CONTRACT-NAME>Institutional Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000021638
+<SERIES-NAME>Frost Low Duration Municipal Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061961
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061962
+<CLASS-CONTRACT-NAME>Institutional Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000021745
+<SERIES-NAME>Frost Strategic Balanced Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000062363
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000062364
+<CLASS-CONTRACT-NAME>Institutional Class Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000021911
+<SERIES-NAME>GRT Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000062870
+<CLASS-CONTRACT-NAME>Advisor Class Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000022606
+<SERIES-NAME>Champlain Mid Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000065363
+<CLASS-CONTRACT-NAME>Advisor Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000023555
+<SERIES-NAME>Hancock Horizon Diversified International Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000069321
+<CLASS-CONTRACT-NAME>Trust Class Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000069322
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000069323
+<CLASS-CONTRACT-NAME>Class C Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000023556
+<SERIES-NAME>Hancock Horizon Quantitative Long/Short Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000069324
+<CLASS-CONTRACT-NAME>Trust Class Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000069325
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000069326
+<CLASS-CONTRACT-NAME>Class C Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000890540
+<SERIES-ID>S000024083
+<SERIES-NAME>Clear River Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000070767
+<CLASS-CONTRACT-NAME>Investor Shares
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>aiciinpx.txt
+<TEXT>
+
+                                   FORM N-PX
+
+                    ANNUAL REPORT OF PROXY VOTING RECORD OF
+
+                        ADVISORS' INNER CIRCLE FUNDS II
+
+                 Investment Company Act File Number: 811- 07102
+
+                                   REGISTRANT
+                       The Advisors' Inner Circle Fund II
+                         C/O SEI Investment Management
+                            One Freedom Valley Drive
+                                 Oaks, PA 19456
+                                 (610) 676-1000
+
+                               AGENT FOR SERVICE
+                              Philip T. Masterson
+                                   President
+                        The Advisors' Inner Circle Funds
+                         C/O SEI Investment Manager Services
+                            One Freedom Valley Drive
+                                 Oaks, PA 19456
+
+      Clear River, Smart Growth, UCM Funds: Fiscal Year Ending: January 31
+  Champlain, Frost, GRT, Hancock, Perimeter, Reaves Funds: Fiscal Year Ending
+                                    July 31
+                  Aberdeen Fund: Fiscal Year Ending October 31
+
+                 For the Period: July 1, 2008 to June 30, 2009
+
+1
+
+<PAGE>
+
+
+
+                                 FROST HOOVER SMALL-MID CAP EQUITY FUND
+ PROPOSAL                                                 PROPOSED BY MGT. POSITION REGISTRANT VOTED
+ABERCROMBIE & FITCH COMPANY
+ CUSIP: 002896207 TICKER: ANF
+ Meeting Date: 06/10/2009      Meeting Type: Annual
+ 1.1. Elect James Bachmann                                Management     For          Voted - Withhold
+ 1.2. Elect Michael Jeffries                              Management     For          Voted - Withhold
+ 1.3. Elect John Kessler                                  Management     For          Voted - Withhold
+ 2.   Ratification of Auditor                             Management     For          Voted - For
+ 3.   Adoption of Majority Vote for Election of Directors Management     For          Voted - For
+ 4.   Shareholder Proposal Regarding Survivor Benefits
+       (Golden Coffins)                                   Shareholder    Against      Voted - For
+ADVANCE AUTO PARTS INC
+ CUSIP: 00751Y106 TICKER: AAP
+ Meeting Date: 05/20/2009      Meeting Type: Annual
+ 1.1. Elect John Bergstrom                                Management     For          Voted - For
+ 1.2. Elect John Brouillard                               Management     For          Voted - For
+ 1.3. Elect Darren Jackson                                Management     For          Voted - For
+ 1.4. Elect William Oglesby                               Management     For          Voted - For
+ 1.5. Elect Gilbert Ray                                   Management     For          Voted - For
+ 1.6. Elect Carlos Saladrigas                             Management     For          Voted - For
+ 1.7. Elect Francesca Spinelli                            Management     For          Voted - For
+ 2.   Ratification of Auditor                             Management     For          Voted - For
+ADVENT SOFTWARE INC
+ CUSIP: 007974108 TICKER: ADVS
+ Meeting Date: 05/13/2009      Meeting Type: Annual
+ 1.1. Elect John Scully                                   Management     For          Voted - Withhold
+ 1.2. Elect Stephanie DiMarco                             Management     For          Voted - Withhold
+ 1.3. Elect A. George Battle                              Management     For          Voted - For
+ 1.4. Elect Robert Ettl                                   Management     For          Voted - For
+ 1.5. Elect James Kirsner                                 Management     For          Voted - For
+ 1.6. Elect James P. Roemer                               Management     For          Voted - For
+ 1.7. Elect Wendell Van Auken                             Management     For          Voted - For
+ 1.8. Elect Christine Manfredi                            Management     For          Voted - For
+ 2.   Ratification of Auditor                             Management     For          Voted - For
+ 3.   Amendment to the 2002 Stock Plan                    Management     Against      Voted - Against
+AECOM TECHNOLOGY CORPORATION
+ CUSIP: 00766T100 TICKER: ACM
+ Meeting Date: 03/05/2009      Meeting Type: Annual
+ 1.1. Elect James Fordyce                                 Management     For          Voted - For
+ 1.2. Elect Linda Griego                                  Management     For          Voted - For
+ 1.3. Elect Richard Newman                                Management     For          Voted - Withhold
+ 1.4. Elect William Ouchi                                 Management     For          Voted - For
+ 2.   Ratification of Auditor                             Management     For          Voted - For
+
+
+130
+
+<PAGE>
+
+
+
+                                   FROST MULTI CAP EQUITY FUND
+ PROPOSAL                                                   PROPOSED BY MGT. POSITION REGISTRANT VOTED
+ABBOTT LABORATORIES
+ CUSIP: 002824100       TICKER: ABT
+ Meeting Date: 4/24/2009    Meeting Type: Annual
+ 1.1. Elect Director R.J. Alpern                            Management     For          Voted - For
+ 1.2. Elect Director R.S. Austin                            Management     For          Voted - For
+ 1.3. Elect Director W.M. Daley                             Management     For          Voted - For
+ 1.4. Elect Director W.J. Farrell                           Management     For          Voted - For
+ 1.5. Elect Director H.L. Fuller                            Management     For          Voted - For
+ 1.6. Elect Director W.A. Osborn                            Management     For          Voted - For
+ 1.7. Elect Director D.A.L. Owen                            Management     For          Voted - For
+ 1.8. Elect Director W.A. Reynolds                          Management     For          Voted - For
+ 1.9. Elect Director R.S. Roberts                           Management     For          Voted - For
+ 1.10. Elect Director S.C. Scott, III                       Management     For          Voted - For
+ 1.11. Elect Director W.D. Smithburg                        Management     For          Voted - For
+ 1.12. Elect Director G.F. Tilton                           Management     For          Voted - For
+ 1.13. Elect Director M.D. White                            Management     For          Voted - For
+ 2.   Approve Omnibus Stock Plan                            Management     For          Voted - For
+ 3.   Approve Nonqualified Employee Stock Purchase Plan     Management     For          Voted - For
+ 4.   Ratify Auditors                                       Management     For          Voted - For
+ 5.   Report on Animal Testing                              Shareholder    Against      Voted - Against
+ 6.   Adopt Principles for Health Care Reform               Shareholder    Against      Voted - Against
+ 7.   Advisory Vote to Ratify Named Executive Officers'
+       Compensation                                         Shareholder    Against      Voted - For
+ALCON INC.
+ CUSIP: H01301102       TICKER: ACL
+ Meeting Date: 5/5/2009     Meeting Type: Annual
+ 1.   Approval Of The 2008 Annual Report And Accounts Of
+       Alcon, Inc. And The 2008 Consolidated Financial
+       Statements Of Alcon, Inc. And Subsidiaries           Management     For          Voted - For
+ 2.   Appropriation Of Available Earnings And Proposed
+       Dividend To shareholders For The Financial Year 2008 Management     For          Voted - For
+ 3.   Discharge Of The Members Of The Board Of Directors
+       For The financial Year 2008                          Management     For          Voted - For
+ 4.   Election Of KPMGAg, Zug, As Group And Parent
+       Company Auditors                                     Management     For          Voted - For
+ 5.   Election Of Obt Ag, Zurich, As Special Auditors       Management     For          Voted - For
+ 6.   Election To The Board Of Directors: Kevin Buehler     Management     For          Voted - For
+ 7.   Election To The Board Of Directors: Paul Bulcke       Management     For          Voted - Against
+ 8.   Election To The Board Of Directors: Joan Miller,
+       M.D.                                                 Management     For          Voted - For
+ 9.   Election To The Board Of Directors: Hermann Wirz      Management     For          Voted - Against
+ 10.  Approval Of Share Cancellation                        Management     For          Voted - For
+ 11.  Editorial Amendments To The Articles Of Association   Management     For          Voted - For
+
+
+171
+
+<PAGE>
+
+
+
+                              FROST SMALL-MID CAP EQUITY FUND
+ PROPOSAL                                              PROPOSED BY MGT. POSITION REGISTRANT VOTED
+AIRGAS, INC.
+ CUSIP: 009363102       TICKER: ARG
+ Meeting Date: 8/5/2008     Meeting Type: Annual
+ 1.1. Elect Director William O. Albertini              Management     For          Voted - For
+ 1.2. Elect Director Lee M. Thomas                     Management     For          Voted - For
+ 1.3. Elect Director John C. Van Roden, Jr.            Management     For          Voted - For
+ 2.   Ratify Auditors                                  Management     For          Voted - For
+ 3.   Amend Executive Incentive Bonus Plan             Management     For          Voted - For
+AMERICAN EAGLE OUTFITTERS, INC.
+ CUSIP: 02553E106       TICKER: AEO
+ Meeting Date: 6/16/2009    Meeting Type: Annual
+ 1.   Elect Director Janice E. Page                    Management     For          Voted - For
+ 2.   Elect Director J. Thomas Presby                  Management     For          Voted - For
+ 3.   Elect Director Gerald E. Wedren                  Management     For          Voted - For
+ 4.   Amend Omnibus Stock Plan                         Management     For          Voted - For
+ 5.   Ratify Auditors                                  Management     For          Voted - For
+AMETEK, INC.
+ CUSIP: 031100100       TICKER: AME
+ Meeting Date: 4/21/2009    Meeting Type: Annual
+ 1.1. Elect Director James R. Malone                   Management     For          Voted - For
+ 1.2. Elect Director Elizabeth R. Varet                Management     For          Voted - For
+ 1.3. Elect Director Dennis K. Williams                Management     For          Voted - For
+ 2.   Ratify Auditors                                  Management     For          Voted - For
+BE AEROSPACE, INC.
+ CUSIP: 073302101       TICKER: BEAV
+ Meeting Date: 7/31/2008    Meeting Type: Annual
+ 1.1. Elect Director Robert J. Khoury                  Management     For          Voted - For
+ 1.2. Elect Director Jonathan M. Schofield             Management     For          Voted - Withhold
+ 2.   Implement MacBride Principles                    Shareholder    Against      Voted - Against
+BROCADE COMMUNICATIONS SYSTEMS, INC.
+ CUSIP: 111621306       TICKER: BRCD
+ Meeting Date: 4/15/2009    Meeting Type: Annual
+ 1.1. Elect Director Judy Bruner                       Management     For          Voted - For
+ 1.2. Elect Director David L. House                    Management     For          Voted - For
+ 1.3. Elect Director L. William Krause                 Management     For          Voted - For
+ 2.   Approve Omnibus Stock Plan                       Management     For          Voted - For
+ 3.   Approve Non-Employee Director Omnibus Stock Plan Management     For          Voted - For
+
+
+187
+
+<PAGE>
+
+
+
+                                  FROST SMALL-MID CAP EQUITY FUND
+ PROPOSAL                                            PROPOSED BY MGT. POSITION REGISTRANT VOTED
+ 4.   Approve Qualified Employee Stock Purchase Plan Management     For          Voted - For
+ 5.   Ratify Auditors                                Management     For          Voted - For
+ 6.   Reduce Supermajority Vote Requirement          Shareholder    Against      Voted - For
+ 7.   Declassify the Board of Directors              Shareholder    Against      Voted - For
+CABOT OIL & GAS CORP.
+ CUSIP: 127097103       TICKER: COG
+ Meeting Date: 4/28/2009        Meeting Type: Annual
+ 1.1. Elect Director Rhys J. Best                    Management     For          Voted - For
+ 1.2. Elect Director Robert Kelley                   Management     For          Voted - For
+ 1.3. Elect Director P. Dexter Peacock               Management     For          Voted - For
+ 2.   Increase Authorized Common Stock               Management     For          Voted - For
+ 3.   Amend Omnibus Stock Plan                       Management     For          Voted - For
+ 4.   Ratify Auditors                                Management     For          Voted - For
+CERNER CORPORATION
+ CUSIP: 156782104       TICKER: CERN
+ Meeting Date: 5/22/2009        Meeting Type: Annual
+ 1.1. Elect Director Clifford W Illig                Management     For          Voted - For
+ 1.2. Elect Director William B Neaves, Ph.D.         Management     For          Voted - For
+ 2.   Ratify Auditors                                Management     For          Voted - For
+CHARLES RIVER LABORATORIES INTERNATIONAL, INC.
+ CUSIP: 159864107       TICKER: CRL
+ Meeting Date: 5/7/2009         Meeting Type: Annual
+ 1.1. Elect Director James C. Foster                 Management     For          Voted - For
+ 1.2. Elect Director Nancy T. Chang                  Management     For          Voted - For
+ 1.3. Elect Director Stephen D. Chubb                Management     For          Voted - For
+ 1.4. Elect Director Deborah T. Kochevar             Management     For          Voted - For
+ 1.5. Elect Director George E. Massaro               Management     For          Voted - For
+ 1.6. Elect Director George M. Milne, Jr.            Management     For          Voted - For
+ 1.7. Elect Director C. Richard Reese                Management     For          Voted - For
+ 1.8. Elect Director Douglas E. Rogers               Management     For          Voted - For
+ 1.9. Elect Director Samuel O. Thier                 Management     For          Voted - For
+ 1.10. Elect Director William H. Waltrip             Management     For          Voted - For
+ 2.   Amend Omnibus Stock Plan                       Management     For          Voted - For
+ 3.   Ratify Auditors                                Management     For          Voted - For
+CHIPOTLE MEXICAN GRILL INC
+ CUSIP: 169656105       TICKER: CMG
+ Meeting Date: 5/21/2009        Meeting Type: Annual
+ 1.1. Elect Director Steve Ells                      Management     For          Voted - For
+ 1.2. Elect Director Patrick J. Flynn                Management     For          Voted - For
+ 2.   Ratify Auditors                                Management     For          Voted - For
+
+
+188
+
+<PAGE>
+
+
+
+                              FROST SMALL-MID CAP EQUITY FUND
+ PROPOSAL                                              PROPOSED BY MGT. POSITION REGISTRANT VOTED
+CLARCOR, INC.
+ CUSIP: 179895107       TICKER: CLC
+ Meeting Date: 3/23/2009    Meeting Type: Annual
+ 1.1. Elect Director J. Marc Adam                      Management     For          Voted - For
+ 1.2. Elect Director James W. Bradford, Jr.            Management     For          Voted - For
+ 1.3. Elect Director James L. Packard                  Management     For          Voted - For
+ 2.   Approve Omnibus Stock Plan                       Management     For          Voted - For
+ 3.   Ratify Auditors                                  Management     For          Voted - For
+COGNIZANT TECHNOLOGY SOLUTIONS CORP.
+ CUSIP: 192446102       TICKER: CTSH
+ Meeting Date: 6/5/2009     Meeting Type: Annual
+ 1.1. Elect Director Francisco D?Souza                 Management     For          Voted - For
+ 1.2. Elect Director John N. Fox, Jr.                  Management     For          Voted - For
+ 1.3. Elect Director Thomas M. Wendel                  Management     For          Voted - For
+ 2.   Approve Omnibus Stock Plan                       Management     For          Voted - For
+ 3.   Ratify Auditors                                  Management     For          Voted - For
+CONSOL ENERGY, INC.
+ CUSIP: 20854P109       TICKER: CNX
+ Meeting Date: 4/28/2009    Meeting Type: Annual
+ 1.1. Elect Director John Whitmire                     Management     For          Voted - For
+ 1.2. Elect Director J. Brett Harvey                   Management     For          Voted - For
+ 1.3. Elect Director James E. Altmeyer, Sr.            Management     For          Voted - Withhold
+ 1.4. Elect Director Philip W. Baxter                  Management     For          Voted - For
+ 1.5. Elect Director William E. Davis                  Management     For          Voted - For
+ 1.6. Elect Director Raj K. Gupta                      Management     For          Voted - For
+ 1.7. Elect Director Patricia A. Hammick               Management     For          Voted - For
+ 1.8. Elect Director David C. Hardesty, Jr.            Management     For          Voted - For
+ 1.9. Elect Director John T. Mills                     Management     For          Voted - For
+ 1.10. Elect Director William P. Powell                Management     For          Voted - For
+ 1.11. Elect Director Joseph T. Williams               Management     For          Voted - For
+ 2.   Ratify Auditors                                  Management     For          Voted - For
+ 3.   Amend Omnibus Stock Plan                         Management     For          Voted - For
+ 4.   Require a Majority Vote for the Election of
+       Directors                                       Shareholder    Against      Voted - For
+ 5.   Provide Early Disclosure of Shareholder Proposal
+       Voting Results                                  Shareholder    Against      Voted - For
+COPART, INC.
+ CUSIP: 217204106       TICKER: CPRT
+ Meeting Date: 12/11/2008   Meeting Type: Annual
+ 1.1. Elect Director Willis J. Johnson                 Management     For          Voted - For
+ 1.2. Elect Director A. Jayson Adair                   Management     For          Voted - For
+ 1.3. Elect Director James E. Meeks                    Management     For          Voted - For
+ 1.4. Elect Director Steven D. Cohan                   Management     For          Voted - For
+
+
+189
+
+<PAGE>
+
+
+
+                                  FROST SMALL-MID CAP EQUITY FUND
+ PROPOSAL                                                  PROPOSED BY MGT. POSITION REGISTRANT VOTED
+ 1.5. Elect Director Daniel J. Englander                   Management     For          Voted - For
+ 1.6. Elect Director Barry Rosenstein                      Management     For          Voted - For
+ 1.7. Elect Director Thomas W. Smith                       Management     For          Voted - For
+ 2.   Ratify Auditors                                      Management     For          Voted - For
+ Meeting Date: 4/14/2009        Meeting Type: Special
+ 1.   Approve Stock-for-Salary/Bonus Plan                  Management     For          Voted - For
+CORE LABORATORIES N V
+ CUSIP: N22717107 TICKER: CLB
+ Meeting Date: 1/29/2009        Meeting Type: Special
+ 1.   Authorization Of Management Board To Repurchase Up
+       To 25.6% Of Our Issued Share Capital Until July 29,
+       2010.                                               Management     For          Voted - For
+ Meeting Date: 5/14/2009        Meeting Type: Annual
+ 1.1. Elect Richard L. Bergmark as Supervisory Board
+       Member                                              Management     For          Voted - For
+ 1.2. Elect Alexander Vriesendorp as Supervisory Board
+       Member                                              Management     For          Voted - For
+ 2.   Approve Financial Statements and Statutory Reports   Management     For          Voted - For
+ 3.   Grant Board Authority to Issue Shares Up To 20
+       Percent of Issued Capital                           Management     For          Voted - For
+ 4.   Authorize Board to Exclude Preemptive Rights from
+       Issuance under Item 3                               Management     For          Voted - For
+ 5.   Ratify PriceWaterhouseCoopers as Auditors            Management     For          Voted - For
+ 6.   Transact Other Business                              Management     None         Voted - None
+COVANCE INC.
+ CUSIP: 222816100 TICKER: CVD
+ Meeting Date: 5/7/2009         Meeting Type: Annual
+ 1.1. Elect Director Robert Barchi                         Management     For          Voted - For
+ 1.2. Elect Director Sandra L. Helton                      Management     For          Voted - For
+ 1.3. Elect Director Joseph C. Scodari                     Management     For          Voted - For
+ 2.   Ratify Auditors                                      Management     For          Voted - For
+ 3.   Report on Animal Welfare Act Violations              Shareholder    Against      Voted - Against
+DEAN FOODS COMPANY
+ CUSIP: 242370104 TICKER: DF
+ Meeting Date: 5/21/2009        Meeting Type: Annual
+ 1.1. Elect Director Janet Hill                            Management     For          Voted - For
+ 1.2. Elect Director Hector M. Nevares                     Management     For          Voted - For
+ 2.   Amend Omnibus Stock Plan                             Management     For          Voted - Against
+ 3.   Ratify Auditors                                      Management     For          Voted - For
+
+
+190
+
+<PAGE>
+
+
+
+                            FROST SMALL-MID CAP EQUITY FUND
+ PROPOSAL                                      PROPOSED BY MGT. POSITION REGISTRANT VOTED
+DENBURY RESOURCES INC.
+ CUSIP: 247916208 TICKER: DNR
+ Meeting Date: 5/13/2009  Meeting Type: Annual
+ 1.1. Elect Director Wieland F. Wettstein      Management     For          Voted - For
+ 1.2. Elect Director Michael L. Beatty         Management     For          Voted - For
+ 1.3. Elect Director Michael B. Decker         Management     For          Voted - For
+ 1.4. Elect Director Ronald G. Greene          Management     For          Voted - For
+ 1.5. Elect Director David I. Heather          Management     For          Voted - For
+ 1.6. Elect Director Gregory L. McMichael      Management     For          Voted - For
+ 1.7. Elect Director Gareth Roberts            Management     For          Voted - For
+ 1.8. Elect Director Randy Stein               Management     For          Voted - For
+ 2.   Amend Omnibus Stock Plan                 Management     For          Voted - For
+ 3.   Amend Stock Option Plan                  Management     For          Voted - For
+ 4.   Ratify Auditors                          Management     For          Voted - For
+DENTSPLY INTERNATIONAL, INC.
+ CUSIP: 249030107 TICKER: XRAY
+ Meeting Date: 5/12/2009  Meeting Type: Annual
+ 1.1. Elect Director Wendy L Dixon             Management     For          Voted - For
+ 1.2. Elect Director Leslie A. Jones           Management     For          Voted - For
+ 1.3. Elect Director Bret W. Wise              Management     For          Voted - For
+ 2.   Ratify Auditors                          Management     For          Voted - For
+DEVRY INC.
+ CUSIP: 251893103 TICKER: DV
+ Meeting Date: 11/13/2008 Meeting Type: Annual
+ 1.1. Elect Director David S. Brown            Management     For          Voted - For
+ 1.2. Elect Director Lisa W. Pickrum           Management     For          Voted - For
+ 1.3. Elect Director Fernando Ruiz             Management     For          Voted - For
+ 2.   Ratify Auditors                          Management     For          Voted - For
+ENDO PHARMACEUTICALS HOLDINGS INC.
+ CUSIP: 29264F205 TICKER: ENDP
+ Meeting Date: 5/27/2009  Meeting Type: Annual
+ 1.1. Elect Director John J. Delucca           Management     For          Voted - For
+ 1.2. Elect Director David P. Holveck          Management     For          Voted - For
+ 1.3. Elect Director Nancy J Hutson            Management     For          Voted - For
+ 1.4. Elect Director Michael Hyatt             Management     For          Voted - For
+ 1.5. Elect Director Roger H. Kimmel           Management     For          Voted - For
+ 1.6. Elect Director C.A. Meanwell             Management     For          Voted - Withhold
+ 1.7. Elect Director William P. Montague       Management     For          Voted - For
+ 1.8. Elect Director Joseph C. Scodari         Management     For          Voted - For
+ 1.9. Elect Director William F. Spengler       Management     For          Voted - For
+ 2.   Amend Omnibus Stock Plan                 Management     For          Voted - For
+ 3.   Ratify Auditors                          Management     For          Voted - For
+
+
+191
+
+<PAGE>
+
+
+
+                              FROST SMALL-MID CAP EQUITY FUND
+ PROPOSAL                                            PROPOSED BY MGT. POSITION REGISTRANT VOTED
+EXCO RESOURCES, INC.
+ CUSIP: 269279402       TICKER: XCO
+ Meeting Date: 6/4/2009     Meeting Type: Annual
+ 1.1. Elect Director Douglas H. Miller                Management    For          Voted - For
+ 1.2. Elect Director Stephen F. Smith                 Management    For          Voted - For
+ 1.3. Elect Director Jeffrey D. Benjamin              Management    For          Voted - For
+ 1.4. Elect Director Vincent J. Cebula                Management    For          Voted - For
+ 1.5. Elect Director Earl E. Ellis                    Management    For          Voted - For
+ 1.6. Elect Director B. James Ford                    Management    For          Voted - For
+ 1.7. Elect Director T. Boone Pickens                 Management    For          Voted - For
+ 1.8. Elect Director Jeffrey S. Serota                Management    For          Voted - For
+ 1.9. Elect Director Robert L. Stillwell              Management    For          Voted - For
+ 2.   Amend Omnibus Stock Plan                        Management    For          Voted - For
+ 3.   Ratify Auditors                                 Management    For          Voted - For
+F5 NETWORKS, INC.
+ CUSIP: 315616102       TICKER: FFIV
+ Meeting Date: 3/12/2009    Meeting Type: Annual
+ 1.   Elect Director Karl D. Guelich                  Management    For          Voted - For
+ 2.   Amend Omnibus Stock Plan                        Management    For          Voted - For
+ 3.   Amend Qualified Employee Stock Purchase Plan    Management    For          Voted - For
+ 4.   Ratify Auditors                                 Management    For          Voted - For
+FAMILY DOLLAR STORES, INC.
+ CUSIP: 307000109       TICKER: FDO
+ Meeting Date: 1/15/2009    Meeting Type: Annual
+ 1.1. Elect Director Mark R. Bernstein                Management    For          Voted - For
+ 1.2. Elect Director Pamela L. Davies                 Management    For          Voted - For
+ 1.3. Elect Director Sharon Allred Decker             Management    For          Voted - For
+ 1.4. Elect Director Edward C. Dolby                  Management    For          Voted - For
+ 1.5. Elect Director Glenn A. Eisenberg               Management    For          Voted - For
+ 1.6. Elect Director Howard R. Levine                 Management    For          Voted - For
+ 1.7. Elect Director George R. Mahoney, Jr.           Management    For          Voted - For
+ 1.8. Elect Director James G. Martin                  Management    For          Voted - For
+ 1.9. Elect Director Harvey Morgan                    Management    For          Voted - For
+ 1.10. Elect Director Dale C. Pond                    Management    For          Voted - For
+ 2.   Ratify Auditors                                 Management    For          Voted - For
+FIRST HORIZON NATIONAL CORP
+ CUSIP: 320517105       TICKER: FHN
+ Meeting Date: 4/21/2009    Meeting Type: Annual
+ 1.1. Elect Director Mark A. Emkes                    Management    For          Voted - For
+ 1.2. Elect Director D. Bryan Jordan                  Management    For          Voted - For
+ 1.3. Elect Director R. Brad Martin                   Management    For          Voted - For
+ 1.4. Elect Director Vicki R. Palmer                  Management    For          Voted - For
+ 1.5. Elect Director William B. Sansom                Management    For          Voted - For
+                                                   192
+
+
+<PAGE>
+
+
+
+                           FROST SMALL-MID CAP EQUITY FUND
+ PROPOSAL                                               PROPOSED BY MGT. POSITION REGISTRANT VOTED
+ 2.   Ratify Auditors                                   Management     For          Voted - For
+ 3.   Advisory Vote to Ratify Named Executive Officers'
+       Compensation                                     Management     For          Voted - For
+FMC CORP.
+ CUSIP: 302491303 TICKER: FMC
+ Meeting Date: 4/28/2009 Meeting Type: Annual
+ 1.1. Elect Director Patricia A. Buffler                Management     For          Voted - For
+ 1.2. Elect Director G. Peter D'Aloia                   Management     For          Voted - For
+ 1.3. Elect Director C. Scott Greer                     Management     For          Voted - For
+ 1.4. Elect Director Paul J. Norris                     Management     For          Voted - For
+ 1.5. Elect Director Dirk A. Kempthorne                 Management     For          Voted - For
+ 2.   Ratify Auditors                                   Management     For          Voted - For
+FOOT LOCKER INC
+ CUSIP: 344849104 TICKER: FL
+ Meeting Date: 5/20/2009 Meeting Type: Annual
+ 1.1. Elect Director Alan D. Feldman                    Management     For          Voted - For
+ 1.2. Elect Director Jarobin Gilbert Jr.                Management     For          Voted - For
+ 1.3. Elect Director David Y. Schwartz                  Management     For          Voted - For
+ 1.4. Elect Director Cheryl Nido Turpin                 Management     For          Voted - For
+ 2.   Ratify Auditors                                   Management     For          Voted - For
+ 3.   Approve Decrease in Size of Board                 Management     For          Voted - For
+GAMESTOP CORP.
+ CUSIP: 36467W109 TICKER: GME
+ Meeting Date: 6/23/2009 Meeting Type: Annual
+ 1.1. Elect Director Daniel A. DeMatteo                 Management     For          Voted - For
+ 1.2. Elect Director Michael N. Rosen                   Management     For          Voted - For
+ 1.3. Elect Director Edward A. Volkwein                 Management     For          Voted - For
+ 2.   Amend Omnibus Stock Plan                          Management     For          Voted - For
+ 3.   Ratify Auditors                                   Management     For          Voted - For
+HAEMONETICS CORP.
+ CUSIP: 405024100 TICKER: HAE
+ Meeting Date: 7/31/2008 Meeting Type: Annual
+ 1.1. Elect Director Lawrence C. Best                   Management     For          Voted - For
+ 1.2. Elect Director Richard M. Meelia                  Management     For          Voted - For
+ 1.3. Elect Director Ronald L. Merriman                 Management     For          Voted - For
+ 2.   Amend Omnibus Stock Plan                          Management     For          Voted - For
+ 3.   Ratify Auditors                                   Management     For          Voted - For
+
+
+193
+
+<PAGE>
+
+
+
+                              FROST SMALL-MID CAP EQUITY FUND
+ PROPOSAL                                                PROPOSED BY MGT. POSITION REGISTRANT VOTED
+HANSEN NATURAL CORP.
+ CUSIP: 411310105       TICKER: HANS
+ Meeting Date: 6/4/2009     Meeting Type: Annual
+ 1.1. Elect Director Rodney C. Sacks                      Management    For          Voted - For
+ 1.2. Elect Director Hilton H. Schlosberg                 Management    For          Voted - For
+ 1.3. Elect Director Norman C. Epstein                    Management    For          Voted - For
+ 1.4. Elect Director Benjamin M. Polk                     Management    For          Voted - For
+ 1.5. Elect Director Sydney Selati                        Management    For          Voted - For
+ 1.6. Elect Director Harold C. Taber, Jr.                 Management    For          Voted - For
+ 1.7. Elect Director Mark S. Vidergauz                    Management    For          Voted - For
+ 2.   Ratify Auditors                                     Management    For          Voted - For
+ 3.   Approve Non-Employee Director Omnibus Stock Plan    Management    For          Voted - Against
+HARRIS CORP.
+ CUSIP: 413875105       TICKER: HRS
+ Meeting Date: 10/24/2008   Meeting Type: Annual
+ 1.   Elect Director Lewis Hay III                        Management    For          Voted - For
+ 2.   Elect Director Karen Katen                          Management    For          Voted - For
+ 3.   Elect Director Stephen P. Kaufman                   Management    For          Voted - For
+ 4.   Elect Director Hansel E. Tookes II                  Management    For          Voted - For
+ 5.   Ratify Auditors                                     Management    For          Voted - For
+ 6.   Increase Authorized Common Stock                    Management    For          Voted - For
+ 7.   Declassify the Board of Directors                   Management    For          Voted - For
+HCC INSURANCE HOLDINGS, INC.
+ CUSIP: 404132102       TICKER: HCC
+ Meeting Date: 5/21/2009    Meeting Type: Annual
+ 1.1. Elect Director Frank J. Bramanti                    Management    For          Voted - For
+ 1.2. Elect Director Walter M. Duer                       Management    For          Voted - For
+ 1.3. Elect Director Edward H. Ellis, Jr.                 Management    For          Voted - For
+ 1.4. Elect Director James C. Flagg                       Management    For          Voted - For
+ 1.5. Elect Director Thomas M. Hamilton                   Management    For          Voted - For
+ 1.6. Elect Director John N. Molbeck, Jr.                 Management    For          Voted - For
+ 1.7. Elect Director James E. Oesterreicher               Management    For          Voted - For
+ 1.8. Elect Director Robert A. Rosholt                    Management    For          Voted - For
+ 1.9. Elect Director Christopher J. B. Williams           Management    For          Voted - For
+ 1.10. Elect Director Scott W. Wise                       Management    For          Voted - For
+ 2.   Ratify Auditors                                     Management    For          Voted - For
+ITRON, INC.
+ CUSIP: 465741106       TICKER: ITRI
+ Meeting Date: 5/5/2009     Meeting Type: Annual
+ 1.   Elect Director Michael B. Bracy                     Management    For          Voted - For
+ 2.   Elect Director Kirby A. Dyess                       Management    For          Voted - For
+ 3.   Elect Director Graham M. Wilson                     Management    For          Voted - For
+ 4.   Ratify Auditors                                     Management    For          Voted - For
+                                                       194
+
+
+<PAGE>
+
+
+
+                              FROST SMALL-MID CAP EQUITY FUND
+ PROPOSAL                                          PROPOSED BY MGT. POSITION REGISTRANT VOTED
+ITT EDUCATIONAL SERVICES, INC.
+ CUSIP: 45068B109       TICKER: ESI
+ Meeting Date: 5/5/2009     Meeting Type: Annual
+ 1.1. Elect Director Joanna T. Lau                 Management     For          Voted - For
+ 1.2. Elect Director Samuel L. Odle                Management     For          Voted - For
+ 1.3. Elect Director John A. Yena                  Management     For          Voted - For
+ 2.   Ratify Auditors                              Management     For          Voted - For
+J. B. HUNT TRANSPORT SERVICES, INC.
+ CUSIP: 445658107       TICKER: JBHT
+ Meeting Date: 4/30/2009    Meeting Type: Annual
+ 1.1. Elect Director Sharilyn S. Casaway           Management     For          Voted - For
+ 1.2. Elect Director Coleman H. Peterson           Management     For          Voted - For
+ 1.3. Elect Director James L. Robo                 Management     For          Voted - For
+ 2.   Ratify Auditors                              Management     For          Voted - For
+KANSAS CITY SOUTHERN
+ CUSIP: 485170302       TICKER: KSU
+ Meeting Date: 10/7/2008    Meeting Type: Special
+ 1.   Approve Omnibus Stock Plan                   Management     For          Voted - For
+LANDSTAR SYSTEM, INC.
+ CUSIP: 515098101       TICKER: LSTR
+ Meeting Date: 4/30/2009    Meeting Type: Annual
+ 1.1. Elect Director Henry H. Gerkins              Management     For          Voted - For
+ 2.   Ratify Auditors                              Management     For          Voted - For
+ 3.   Amend Omnibus Stock Plan                     Management     For          Voted - For
+LAZARD LTD
+ CUSIP: G54050102       TICKER: LAZ
+ Meeting Date: 4/28/2009    Meeting Type: Annual
+ 1.1. Elect Steven J. Heyer as Director            Management     For          Voted - For
+ 1.2. Elect Sylvia Jay as Director                 Management     For          Voted - For
+ 1.3. Elect Vernon E. Jordan Jr. as Director       Management     For          Voted - For
+ 2.   Ratify Deloitte & Touche LLP as Auditors and
+       Authorize Board to Fix Their Remuneration   Management     For          Voted - For
+LKQ CORP.
+ CUSIP: 501889208       TICKER: LKQX
+ Meeting Date: 5/11/2009    Meeting Type: Annual
+ 1.   Elect Director A. Clinton Allen              Management     For          Voted - For
+ 2.   Elect Director Robert M. Devlin              Management     For          Voted - For
+ 3.   Elect Director Donald F. Flynn               Management     For          Voted - For
+ 4.   Elect Director Kevin F. Flynn                Management     For          Voted - For
+
+
+195
+
+<PAGE>
+
+
+
+                           FROST SMALL-MID CAP EQUITY FUND
+ PROPOSAL                                     PROPOSED BY MGT. POSITION REGISTRANT VOTED
+ 5.   Elect Director Ronald G. Foster         Management     For          Voted - For
+ 6.   Elect Director Joseph M. Holsten        Management     For          Voted - For
+ 7.   Elect Director Paul M. Meister          Management     For          Voted - For
+ 8.   Elect Director John F. O'Brien          Management     For          Voted - For
+ 9.   Elect Director William M. Webster, IV   Management     For          Voted - For
+ 10.  Ratify Auditors                         Management     For          Voted - For
+MANTECH INTERNATIONAL CORPORATION
+ CUSIP: 564563104 TICKER: MANT
+ Meeting Date: 5/14/2009 Meeting Type: Annual
+ 1.1. Elect Director George J. Pedersen       Management     For          Voted - For
+ 1.2. Elect Director Richard L. Armitage      Management     For          Voted - For
+ 1.3. Elect Director Mary K. Bush             Management     For          Voted - For
+ 1.4. Elect Director Barry G. Campbell        Management     For          Voted - For
+ 1.5. Elect Director Robert A. Coleman        Management     For          Voted - For
+ 1.6. Elect Director Walter R. Fatzinger, Jr. Management     For          Voted - For
+ 1.7. Elect Director David E. Jeremiah        Management     For          Voted - For
+ 1.8. Elect Director Richard J. Kerr          Management     For          Voted - For
+ 1.9. Elect Director Kenneth A. Minihan       Management     For          Voted - For
+ 1.10. Elect Director Stephen W. Porter       Management     For          Voted - For
+ 2.   Ratify Auditors                         Management     For          Voted - For
+MORNINGSTAR, INC.
+ CUSIP: 617700109 TICKER: MORN
+ Meeting Date: 5/19/2009 Meeting Type: Annual
+ 1.   Elect Director Joe Mansueto             Management     For          Voted - For
+ 2.   Elect Director Don Phillips             Management     For          Voted - For
+ 3.   Elect Director Cheryl Francis           Management     For          Voted - For
+ 4.   Elect Director Steve Kaplan             Management     For          Voted - For
+ 5.   Elect Director Bill Lyons               Management     For          Voted - For
+ 6.   Elect Director Jack Noonan              Management     For          Voted - For
+ 7.   Elect Director Frank Ptak               Management     For          Voted - For
+ 8.   Elect Director Paul Sturm               Management     For          Voted - For
+ 9.   Approve Executive Incentive Bonus Plan  Management     For          Voted - For
+ 10.  Ratify Auditors                         Management     For          Voted - For
+NATIONAL INSTRUMENTS CORP.
+ CUSIP: 636518102 TICKER: NATI
+ Meeting Date: 5/12/2009 Meeting Type: Annual
+ 1.1. Elect Director Duy-Loan T. Le           Management     For          Voted - For
+NUANCE COMMUNICATIONS, INC.
+ CUSIP: 67020Y100 TICKER: NUAN
+ Meeting Date: 1/30/2009 Meeting Type: Annual
+ 1.1. Elect Director Robert J. Frankenberg    Management     For          Voted - For
+ 1.2. Elect Director Patrick T. Hackett       Management     For          Voted - For
+
+
+196
+
+<PAGE>
+
+
+
+                            FROST SMALL-MID CAP EQUITY FUND
+ PROPOSAL                                         PROPOSED BY MGT. POSITION REGISTRANT VOTED
+ 1.3. Elect Director William H. Janeway           Management     For          Voted - For
+ 1.4. Elect Director Katharine A. Martin          Management     For          Voted - For
+ 1.5. Elect Director Mark B. Myers                Management     For          Voted - For
+ 1.6. Elect Director Philip J. Quigley            Management     For          Voted - For
+ 1.7. Elect Director Paul A. Ricci                Management     For          Voted - For
+ 1.8. Elect Director Robert G. Teresi             Management     For          Voted - For
+ 2.   Amend Omnibus Stock Plan                    Management     For          Voted - For
+ 3.   Ratify Auditors                             Management     For          Voted - For
+PAREXEL INTERNATIONAL CORP.
+ CUSIP: 699462107 TICKER: PRXL
+ Meeting Date: 12/11/2008 Meeting Type: Annual
+ 1.1. Elect Director Patrick J. Fortune           Management     For          Voted - For
+ 1.2. Elect Director Ellen M. Zane                Management     For          Voted - For
+ 2.   Ratify Auditors                             Management     For          Voted - For
+PROSPERITY BANCSHARES, INC.
+ CUSIP: 743606105 TICKER: PRSP
+ Meeting Date: 4/21/2009  Meeting Type: Annual
+ 1.1. Elect Director James A. Bouligny            Management     For          Voted - Withhold
+ 1.2. Elect Director Robert Steelhammer           Management     For          Voted - Withhold
+ 1.3. Elect Director .E. Timanus, Jr              Management     For          Voted - Withhold
+ 1.4. Elect Director Ervan E. Zouzalik            Management     For          Voted - Withhold
+ 2.   Ratify Auditors                             Management     For          Voted - For
+RANGE RESOURCES CORPORATION
+ CUSIP: 75281A109 TICKER: RRC
+ Meeting Date: 5/20/2009  Meeting Type: Annual
+ 1.1. Elect Director Charles L. Blackburn         Management     For          Voted - For
+ 1.2. Elect Director Anthony V. Dub               Management     For          Voted - For
+ 1.3. Elect Director V. Richard Eales             Management     For          Voted - For
+ 1.4. Elect Director Allen Finkelson              Management     For          Voted - For
+ 1.5. Elect Director James M. Funk                Management     For          Voted - For
+ 1.6. Elect Director Jonathan S. Linker           Management     For          Voted - For
+ 1.7. Elect Director Kevin S. McCarthy            Management     For          Voted - For
+ 1.8. Elect Director John H. Pinkerton            Management     For          Voted - For
+ 1.9. Elect Director Jeffrey L. Ventura           Management     For          Voted - For
+ 2.   Amend Omnibus Stock Plan                    Management     For          Voted - For
+ 3.   Ratify Auditors                             Management     For          Voted - For
+ 4.   Other Business                              Management     For          Voted - Against
+REPUBLIC SERVICES, INC.
+ CUSIP: 760759100 TICKER: RSG
+ Meeting Date: 11/14/2008 Meeting Type: Special
+ 1.   Issue Shares in Connection with Acquisition Management     For          Voted - For
+ 2.   Adjourn Meeting                             Management     For          Voted - For
+
+
+197
+
+<PAGE>
+
+
+
+                                FROST SMALL-MID CAP EQUITY FUND
+ PROPOSAL                                          PROPOSED BY MGT. POSITION REGISTRANT VOTED
+SBA COMMUNICATIONS CORP.
+ CUSIP: 78388J106       TICKER: SBAC
+ Meeting Date: 5/7/2009       Meeting Type: Annual
+ 1.1. Elect Director Brian C. Carr                 Management     For          Voted - For
+ 2.   Ratify Auditors                              Management     For          Voted - For
+ 3.   Other Business                               Management     For          Voted - Against
+SONOCO PRODUCTS CO.
+ CUSIP: 835495102       TICKER: SON
+ Meeting Date: 4/15/2009      Meeting Type: Annual
+ 1.1. Elect Director P.L. Davies                   Management     For          Voted - Withhold
+ 1.2. Elect Director H.E. DeLoach                  Management     For          Voted - For
+ 1.3. Elect Director E.H. Lawton                   Management     For          Voted - For
+ 1.4. Elect Director J.E. Linville                 Management     For          Voted - For
+ 1.5. Elect Director J.M. Micali                   Management     For          Voted - Withhold
+ 2.   Ratify Auditors                              Management     For          Voted - For
+TECHNE CORP.
+ CUSIP: 878377100       TICKER: TECH
+ Meeting Date: 10/23/2008     Meeting Type: Annual
+ 1.1. Elect Director Thomas E. Oland               Management     For          Voted - For
+ 1.2. Elect Director Roger C. Lucas                Management     For          Voted - For
+ 1.3. Elect Director Howard V. O'Connell           Management     For          Voted - For
+ 1.4. Elect Director G. Arthur Herbert             Management     For          Voted - For
+ 1.5. Elect Director R.C. Steer                    Management     For          Voted - For
+ 1.6. Elect Director Robert V. Baumgartner         Management     For          Voted - For
+ 1.7. Elect Director C.A. Dinarello                Management     For          Voted - For
+ 1.8. Elect Director K.A. Holbrook                 Management     For          Voted - For
+ 2.   Fix Number of Directors                      Management     For          Voted - For
+TIBCO SOFTWARE, INC.
+ CUSIP: 88632Q103       TICKER: TIBX
+ Meeting Date: 4/8/2009       Meeting Type: Annual
+ 1.1. Elect Director Vivek Y. Ranadive             Management     For          Voted - For
+ 1.2. Elect Director Eric C.W. Dunn                Management     For          Voted - For
+ 1.3. Elect Director Narendra K. Gupta             Management     For          Voted - For
+ 1.4. Elect Director Peter J. Job                  Management     For          Voted - For
+ 1.5. Elect Director Philip K. Wood                Management     For          Voted - For
+ 2    Ratify Auditors                              Management     For          Voted - For
+TRIMBLE NAVIGATION LTD.
+ CUSIP: 896239100       TICKER: TRMB
+ Meeting Date: 5/19/2009      Meeting Type: Annual
+ 1.1. Elect Directors Steven W. Berglund           Management     For          Voted - For
+ 1.2. Elect Directors John B. Goodrich             Management     For          Voted - For
+
+
+198
+
+<PAGE>
+
+
+
+                                       FROST SMALL-MID CAP EQUITY FUND
+ PROPOSAL                                                PROPOSED BY MGT. POSITION REGISTRANT VOTED
+ 1.3. Elect Directors William Hart                       Management     For          Voted - For
+ 1.4. Elect Directors Merit E. Janow                     Management     For          Voted - For
+ 1.5. Elect Directors Ulf J. Johansson                   Management     For          Voted - For
+ 1.6. Elect Directors Bradford W. Parkinson              Management     For          Voted - For
+ 1.7. Elect Directors Nickolas W. Vande Steeg            Management     For          Voted - For
+ 2.   Amend Qualified Employee Stock Purchase Plan       Management     For          Voted - For
+ 3.   Amend Omnibus Stock Plan                           Management     For          Voted - For
+ 4.   Ratify Auditors                                    Management     For          Voted - For
+ 5.   Other Business                                     Management     For          Voted - Against
+UNDER ARMOUR, INC.
+ CUSIP: 904311107       TICKER: UA
+ Meeting Date: 5/5/2009             Meeting Type: Annual
+ 1.1. Elect Director Kevin A. Plank                      Management     For          Voted - For
+ 1.2. Elect Director Byron K. Adams, Jr.                 Management     For          Voted - Withhold
+ 1.3. Elect Director Douglas E. Coltharp                 Management     For          Voted - For
+ 1.4. Elect Director Anthony W. Deering                  Management     For          Voted - For
+ 1.5. Elect Director A.B. Krongard                       Management     For          Voted - For
+ 1.6. Elect Director William R. McDermott                Management     For          Voted - For
+ 1.7. Elect Director Harvey L. Sanders                   Management     For          Voted - For
+ 1.8. Elect Director Thomas J. Sippel                    Management     For          Voted - For
+ 2.   Amend Omnibus Stock Plan                           Management     For          Voted - Against
+ 3.   Ratify Auditors                                    Management     For          Voted - For
+
+
+199
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

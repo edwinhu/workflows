@@ -104,6 +104,11 @@ func parsePVText(text string, meta FilingMeta) ([]VoteRow, error) {
 	// series under the shared rules, as in every other layout.
 	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(seriesIx, meta.FormerNames)
+	// What THIS document's own section banners already spell out in full, before
+	// any banner is resolved: the one rung that reads it (issNearMissDecl's
+	// claimed elimination) needs the whole set, so it cannot be gathered as the
+	// loop goes.
+	issExactBannerClaims(seriesIx, pvTextBanners(lines))
 	// Read definitions before references so a later conflicting definition also
 	// refuses attribution. References are not themselves fund definitions.
 	accounts := make(map[string]*SeriesDecl)
@@ -961,6 +966,64 @@ func pvTextAccountReference(name string) string {
 	return ""
 }
 
+// pvSEIHeadingAbove is the fund heading this SEI page prints directly above the
+// column header at i, on its own line: walking back past blanks and page
+// furniture, the first line that follows must carry a single cell and no label
+// colon. A line with columns on it is the tail of the previous page's table, not
+// a heading, and leaves the fund as it was.
+func pvSEIHeadingAbove(lines []string, i int) (string, bool) {
+	for k := i - 1; k >= 0; k-- {
+		prev := strings.TrimSpace(lines[k])
+		if prev == "" || pvTextPageFurniture(prev) {
+			continue
+		}
+		return prev, len(icrCells(prev)) == 1 && !strings.Contains(prev, ":")
+	}
+	return "", false
+}
+
+// pvSEIBanners returns the page headings of every SEI column header in the
+// document, in document order, read by the same pvSEIHeadingAbove the parse loop
+// itself reads them with, so the set carries exactly the document's own section
+// banners and nothing looser.
+func pvSEIBanners(lines []string) []string {
+	var out []string
+	for i := range lines {
+		if !pvSEIHeaderAt(lines, i) {
+			continue
+		}
+		if h, ok := pvSEIHeadingAbove(lines, i); ok {
+			out = append(out, h)
+		}
+	}
+	return out
+}
+
+// pvTextBanners returns the fund headings this document prints, in document
+// order, under exactly the three forms the parse loop itself treats as a section
+// boundary: the account line's own value, the bare heading closed by a blank or
+// a dashed rule, and the dated heading that precedes a column header. Nothing
+// looser may enter -- a heading set gathered from prose would make every
+// declared name look as though the body had claimed it, which is the opposite of
+// the evidence issExactBannerClaims exists to carry.
+func pvTextBanners(lines []string) []string {
+	var out []string
+	for i := range lines {
+		if f, ok := pvTextAccountFund(lines[i]); ok {
+			out = append(out, f)
+			continue
+		}
+		if line := strings.TrimSpace(lines[i]); line != "" && i+1 < len(lines) && pvTextHeadingTerminator(lines[i+1]) {
+			out = append(out, line)
+			continue
+		}
+		if m := pvTextDatedHeading.FindStringSubmatch(strings.TrimSpace(lines[i])); m != nil && htmlDate(m[2]) != "" && htmlDate(m[3]) != "" {
+			out = append(out, m[1])
+		}
+	}
+	return out
+}
+
 func pvTextResolveAccount(ix *issSeriesIndex, name string) *SeriesDecl {
 	_, d := issResolveFund(ix, name)
 	if _, declared := lookupSeriesEntry(ix.byName, name); d != nil || declared {
@@ -1336,6 +1399,11 @@ func pvSEIFundReprint(lines []string, i int) bool {
 func parsePVTextSEI(lines []string, meta FilingMeta) []VoteRow {
 	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(seriesIx, meta.FormerNames)
+	// What THIS document's own page headings already spell out in full, before
+	// any of them is resolved: the one rung that reads it (issNearMissDecl's
+	// claimed elimination) needs the whole set, so it cannot be gathered as the
+	// loop goes.
+	issExactBannerClaims(seriesIx, pvSEIBanners(lines))
 	dict := cikDict.exactFallback(meta)
 
 	var (
@@ -1357,28 +1425,19 @@ func parsePVTextSEI(lines []string, meta FilingMeta) []VoteRow {
 			// header, on its own line. A line with columns on it is the tail of
 			// the previous page's table, not a heading, and leaves the fund as
 			// it was.
-			for k := i - 1; k >= 0; k-- {
-				prev := strings.TrimSpace(lines[k])
-				if prev == "" || pvTextPageFurniture(prev) {
-					continue
-				}
-				if len(icrCells(prev)) == 1 && !strings.Contains(prev, ":") {
-					if prev != fund {
-						fund = prev
-						fundSeries = icrResolveFundShared(seriesIx, prev)
-						// The filing's own header answers before the corpus
-						// dictionary does; see pvTextTypeNounSwapDecl.
-						if fundSeries == "" {
-							if d := pvTextTypeNounSwapDecl(seriesIx, prev); d != nil {
-								fundSeries = d.SeriesID
-							}
-						}
-						if fundSeries == "" {
-							fundSeries = htmlDictionaryFund(seriesIx, dict, prev)
-						}
+			if prev, ok := pvSEIHeadingAbove(lines, i); ok && prev != fund {
+				fund = prev
+				fundSeries = icrResolveFundShared(seriesIx, prev)
+				// The filing's own header answers before the corpus
+				// dictionary does; see pvTextTypeNounSwapDecl.
+				if fundSeries == "" {
+					if d := pvTextTypeNounSwapDecl(seriesIx, prev); d != nil {
+						fundSeries = d.SeriesID
 					}
 				}
-				break
+				if fundSeries == "" {
+					fundSeries = htmlDictionaryFund(seriesIx, dict, prev)
+				}
 			}
 			inTable = true
 			continue
