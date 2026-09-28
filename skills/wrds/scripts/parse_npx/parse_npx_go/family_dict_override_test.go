@@ -89,3 +89,36 @@ func TestFamilyDictOverrideWellsFargoVintage(t *testing.T) {
 		t.Fatalf("fixture precondition: no ACUITY BRANDS rows among %d", len(rows))
 	}
 }
+
+// 000108/1084380/0000930413-18-002702.txt: TIAA-CREF Funds, period 20180630,
+// icr layout. The header declares, among ~50 series, S000005388
+// `TIAA-CREF Large-Cap Value Index Fund` and S000019658
+// `TIAA-CREF Quant Large-Cap Value Fund` (that series' 2018-vintage name). The
+// body heads its section `TIAA-CREF Enhanced Large-Cap Value Index Fund`, which
+// is NEITHER declaration verbatim -- it is the EXACT 2011-vintage name of
+// S000019658 per the dictionary.
+//
+// hdrOnly reaches the banner only through an inexact near-miss, dropping the
+// word `Enhanced` to land on S000005388 -- a series that has never carried that
+// word at any vintage. icrResolveFundShared returns hdrOnly's answer
+// unconditionally once it is non-empty (family DICT-OVERRIDE, 339d6bf7), so the
+// dictionary rung that would match S000019658 EXACTLY is never reached. The
+// header must outrank the dictionary only where the header is EXACT; an inexact
+// header near-miss must not shield a wrong id from an exact dictionary hit.
+func TestFamilyDictOverrideTIAACREFEnhancedLargeCapValue(t *testing.T) {
+	rows := familyDictOverrideDispatch(t, "tiaacref_enhanced_largecap_value.txt", "icr")
+	n := 0
+	for _, r := range rows {
+		if r.CUSIP != "002824100" { // Abbott Laboratories
+			continue
+		}
+		n++
+		if r.SeriesID != "S000019658" {
+			t.Errorf("TIAA-CREF Enhanced Large-Cap Value Index Fund: fund=%q series=%q want S000019658 (exact 2011 dictionary name), not S000005388 (hdrOnly near-miss dropping `Enhanced`)",
+				r.FundName, r.SeriesID)
+		}
+	}
+	if n == 0 {
+		t.Fatalf("fixture precondition: no Abbott Laboratories (002824100) rows among %d", len(rows))
+	}
+}
