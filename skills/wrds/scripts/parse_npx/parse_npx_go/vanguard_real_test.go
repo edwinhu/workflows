@@ -235,6 +235,9 @@ var howVotedVocabulary = map[string]bool{
 	"WITHHOLD": true, "WITHHELD": true,
 	"ONE YEAR": true, "TWO YEARS": true, "THREE YEARS": true,
 	"1 YEAR": true, "2 YEARS": true, "3 YEARS": true,
+	// Hennessy Funds Trust (CIK 891944, filing 0000894189-12-...txt) prints its
+	// say-on-pay frequency ballot as the singular "3 year" rather than "3 years".
+	"3 YEAR":      true,
 	"DO NOT VOTE": true, "DID NOT VOTE": true, "NO VOTE": true,
 	"TAKE NO ACTION": true, "TAKENOACTION": true, "NO ACTION": true, "TNA": true,
 	"NONE": true, "N/A": true, "UNKNOWN": true, "REFER": true,
