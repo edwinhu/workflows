@@ -1,50 +1,54 @@
 # Check, cron-prompt and brief templates, and the three rewrites
 
-## The check command
+## The check command, and the goal beside it
 
 ```bash
-bash ${CLAUDE_SKILL_DIR}/scripts/hound-arm.sh '<CHECK>' --rounds <N> --minutes <M>
+bash ${CLAUDE_SKILL_DIR}/scripts/hound-arm.sh '<CHECK>' --goal '<OBJECTIVE>' \
+  [--run <run-dir>] --rounds <N> --minutes <M>
+bash ${CLAUDE_SKILL_DIR}/scripts/hound-arm.sh --goal '<OBJECTIVE>' [--run <run-dir>]   # check-less
 ```
 
-`<CHECK>` is the objective. One clause per claim, red at the moment you arm it, runnable in this
-session's cwd, no apostrophes. Filled in, for an unattended night:
+`<CHECK>` is the floor: one clause per claim, red at the moment you arm it, runnable in this session's
+cwd, no apostrophes. `<OBJECTIVE>` is what the judge rules on. Filled in, for an unattended night:
 
 ```bash
 bash skills/hound/scripts/hound-arm.sh \
   'bash skills/wrds/scripts/parse_npx/measure.sh --xml-error-rate-below 0.01' \
+  --goal 'the XML error rate is under 1 percent across the whole corpus' \
   --rounds 15 --minutes 480
 ```
 
 The two ceilings are flags because the hook enforces them. Do not also write them into prose: two
 ceilings that can disagree is a bug, and the prose one is the bug.
 
-## The cron prompt
+`--run <run-dir>` names a work run: while it is in flight (`args.json`, no non-empty `result.json`) a
+stop is allowed and costs no round.
+
+## The cron prompt — a nudge, and only when nothing else wakes the session
+
+A `work` dispatch is watched by the `farm-runs` monitor, so it needs no cron. When nothing watches the
+work, the whole template is:
 
 ```
-Run `<CHECK>` and report its exit code — judge from the command, not from the conversation. If it
-fails, take the next action now rather than proposing it. If it passes, spend the remaining budget:
-hunt for work the check does not cover, fix the largest one, say in one line why you picked it,
-then keep going until the budget is spent, and ARM the hold on what is left before the turn ends --
-the hold self-clears on green, so a hunt that ends in a report ends the loop.
-Standing authority: <what it may decide alone>. The only terminal blockers are <the complete list>;
-everything else is the next task, difficulty included. When the budget is spent, end this heartbeat
-with CronDelete.
+and? (<run id or one-line subject>)
 ```
 
-**The CronDelete sentence is not optional.** A cron outlives the work, `CronDelete` is a model tool
-with no CLI, a session-scoped cron lives in memory rather than on disk, and no hook event fires when
-the objective is met — so nothing but this text is present at the moment it should stop. Measured
-2026-09-16: a heartbeat raised without it re-ran a satisfied check twice more before a human noticed.
+The tick's own Stop runs the check, so the prompt need not name it; the authority, continuation rule
+and budget reach the session from the first counted block and from `--brief`; the teardown reaches it
+from the hook's release message. Anything else re-briefs a session that has just re-entered its whole
+context. No lint.
 
-Lint it:
-
-```bash
-bun skills/hound/scripts/heartbeat-lint.ts "<that text>"
-```
+**Teardown is still not optional**, it is merely elsewhere. A cron outlives the work, `CronDelete` is a
+model tool with no CLI, a session-scoped cron lives in memory rather than on disk, and no hook event
+fires when the objective is met. Measured 2026-09-16: a heartbeat with nothing telling it to stop
+re-ran a satisfied check twice more before a human noticed. The hook says it on release — on
+`passed-goal-met` or expiry, never on `passed-unjudged`, where a green check is all that happened.
+`cron-delete-guard.ts` denies `CronDelete` while the hold is still ARMED, and `work-abandon.sh` is the
+user's way out.
 
 ## The unattended-brief template
 
-A brief given to a spawned agent is a cron prompt with prose around it, and it fails the same ways.
+A brief is the one text a spawned agent has instead of a hold, so it carries what the hold would.
 The four sections below are the ones the failing briefs were missing.
 
 ```markdown
@@ -81,11 +85,13 @@ Rewrite — the verdict file, read for PASS rather than for existence:
 
 ```bash
 bash skills/hound/scripts/hound-arm.sh \
-  'bash skills/work/scripts/work-result.sh .craft/0827-npx-iss/result.json' \
+  'bash skills/wrds/scripts/parse_npx/measure.sh --unreconciled-below 5000' \
+  --goal 'fewer than 5000 rows are unreconciled' --run .craft/npx-reconcile \
   --rounds 6 --minutes 480
 ```
 
-with the cron prompt carrying: *on FAIL, read the surviving blocking findings, amend the plan,
+The run verdict is not the check — `hold-lint.ts` refuses one as CRITICAL — and the continuation
+clause the hold states is: *on FAIL, read the surviving blocking findings, amend the plan,
 re-dispatch — in that order, without asking.*
 
 Would have bought: the four hours, plus the round-2 amendment the session had already written out
@@ -105,7 +111,7 @@ bash skills/hound/scripts/hound-arm.sh \
   'bun test tests/ambiguous-settlement.test.ts' --rounds 4 --minutes 300
 ```
 
-with the cron prompt carrying: *standing authority — commit and push green work, bump the patch
+with the hold carrying: *standing authority — commit and push green work, bump the patch
 version, plan the next round yourself. A recon landing is not a stopping point: write the plan and
 dispatch it in the same turn.*
 

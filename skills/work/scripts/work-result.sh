@@ -60,6 +60,15 @@ fi
 NVALS=$(printf '%s' "$SLURP" | jq 'length')
 [ "$NVALS" = "1" ] || die "$FILE holds $NVALS JSON values, expected exactly 1"
 
+# AN ABANDONED RUN IS A VERDICT, NOT A MALFORMED RETURN. `work-abandon.sh` writes this shape when the
+# USER walks away from a run, and it deliberately carries none of the gate keys — there was no gate.
+# Without this branch it reads as REFUSED (exit 2, could-not-run), which is the one code a caller
+# cannot act on: exit 1 says what is true, the run did not pass.
+if printf '%s' "$SLURP" | jq -e '.[0] | (type == "object") and (.abandoned == true)' >/dev/null 2>&1; then
+  printf '%s' "$SLURP" | jq -r '.[0] | "verdict: ABANDONED by the user — \(.why // "no reason recorded")  (at \(.at // "unknown"))"'
+  exit 1
+fi
+
 PROBLEMS=$(printf '%s' "$SLURP" | jq -r --argjson contract "$CONTRACT" --argjson optional "$OPTIONAL" '
   .[0] as $r
   | if ($r | type) != "object" then

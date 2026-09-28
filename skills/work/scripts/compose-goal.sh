@@ -58,10 +58,10 @@ case "$MAX_MINUTES" in
   ''|*[!0-9]*) die "CRAFT_GOAL_MAX_MINUTES must be a whole number of minutes, got: $MAX_MINUTES" ;;
 esac
 
-# `--minutes` prints that ceiling and nothing else, for the caller that ARMS it rather than states
-# it: `hound-arm.sh --minutes`. The hook enforces the number; the clause below states it. Reading
-# both from here is what stops the armed hold and the stated clause naming different ceilings —
-# the same drift this file's header records between the default here and work-elapsed.sh's.
+# `--minutes` prints that ceiling and nothing else, for a caller that needs the number rather than the
+# clause stating it: work-dispatch.sh passes it to `hound-arm.sh --minutes`, so the hold's wall clock
+# and the clause the goal states are ONE number rather than two that can drift — the drift this file's
+# header records between the default here and work-elapsed.sh's.
 if [ "${1-}" = "--minutes" ]; then printf '%s\n' "$MAX_MINUTES"; exit 0; fi
 
 [ $# -eq 4 ] || die "usage: compose-goal.sh <plan.md> <run-dir> <max-rounds> <readOnly:0|1>"

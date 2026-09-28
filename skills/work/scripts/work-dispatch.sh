@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Phase 3 + Phase 4, mechanically: hash the plan, arm the hold, dispatch workflow.js detached, and
-# PRINT the CronCreate call that arms the heartbeat — a model tool no shell can make for itself.
+# Phase 3 + Phase 4, mechanically: hash the plan, dispatch workflow.js detached, and arm the HOLD on
+# this session — the goal check when the plan states one, Jev alone on the goal when it does not.
+# The wake is the farm-runs plugin monitor; a CronCreate fallback poll is printed only with --cron.
 #
 # Everything it needs is in the plan's `<!-- craft:dispatch … -->` block, so a session that has
 # lost its context — the clear on plan approval, /clear, a restart — can run this and be correct
@@ -15,6 +16,9 @@
 #   work-dispatch.sh --no-suite-lint  skip only the suite-lint report; keep every gate
 #   work-dispatch.sh --run-dir DIR    put args/result/log under DIR/<run-id> instead of $PWD/.craft/
 #   work-dispatch.sh --provider claude|codex|gemini  the whole spine's provider (default claude)
+#   work-dispatch.sh --cron           also print the CronCreate call for a FALLBACK poll (default
+#                                      60 minutes). Off unless asked: the farm-runs plugin monitor is
+#                                      the wake, and a cron on top of it wakes the session for nothing
 #   work-dispatch.sh --loops N        after dispatching, run the continuation loop (work-loop.sh)
 #                                      DETACHED instead of printing it: this script returns at once,
 #                                      the loop logs to <run-dir>/loop.log and leaves its exit code
@@ -28,9 +32,9 @@
 #   work-dispatch.sh --covers PLAN PATH  is PATH inside some task's writablePaths? 0 yes, 1 no,
 #                                      2 undecidable (read by main-thread-guard.sh, which fails closed)
 #   CRAFT_DISPATCH_DRYRUN=1            build + lint + probe + size, stop before dispatching
-#   CRAFT_GOAL_PRINT=1                 print the composed objective (the heartbeat's tick text), then
+#   CRAFT_GOAL_PRINT=1                 print the composed objective, then
 #                                      stop: writes no args.json, runs no probe, dispatches nothing
-#   CRAFT_LOOP_INTERVAL_MINUTES=30     heartbeat period, as whole minutes, for the printed cron
+#   CRAFT_LOOP_INTERVAL_MINUTES=30     fallback-poll period, as whole minutes; setting it also OPTS IN
 #   CRAFT_NO_SCOPE=1                   force the plain setsid dispatch, skipping the transient scope
 #   CRAFT_SYSTEMD_RUN=PATH             the systemd-run binary the scope probe uses (default systemd-run)
 #   CRAFT_RED_PROBE_TIMEOUT=300        per-command probe timeout in seconds
@@ -526,6 +530,7 @@ if [ "${1:-}" = "--red-probe" ]; then
 fi
 
 mode=dispatch
+cron=0
 lint=1
 redprobe=1
 mechprobe=1
@@ -546,6 +551,7 @@ while :; do
                case "$provider" in claude|codex|gemini) ;;
                  *) echo "--provider must be claude|codex|gemini, got: $provider" >&2; exit 2 ;; esac ;;
     --abandon) mode=abandon; shift ;;
+    --cron)    cron=1; shift ;;
     --print)   mode=print;   shift ;;
     --no-lint) lint=0; redprobe=0; mechprobe=0; suitelint=0; shift ;;
     --no-red-probe) redprobe=0; shift ;;
@@ -733,71 +739,46 @@ echo "args:  $out"
 # the run is farmed out. For testing this script itself.
 [ -n "${CRAFT_DISPATCH_DRYRUN:-}" ] && { echo "CRAFT_DISPATCH_DRYRUN: lint passed, nothing dispatched."; exit 0; }
 
-# Phase 3, in two halves, NEITHER of which can be typed into this session. A self-send queues a line
-# a detached drainer types when the pane goes IDLE, and a session dispatching a run is mid-turn and
-# then works back-to-back, so the window never opens: measured 2026-09-16, /goal landed 127 times
-# and missed 36, /loop landed 52 and missed 29. Both halves below land INSIDE this turn instead —
-# one as a file this script writes, one as a tool call only the model can make.
+# Phase 3: the WAKE and the HOLD.
 #
-# HALF ONE, THE HOLD. hooks/hound.ts re-runs $hold_check on every Stop and blocks the stop until it
-# exits 0, which is what the goal's PASS clause meant; the two escapes the goal states as prose are
-# --rounds and --minutes here, enforced by the hook rather than re-adjudicated each turn.
+# THE WAKE is the `farm-runs` plugin monitor (monitors/monitors.json -> farm-out/scripts/farm-monitor.sh).
+# It runs for the whole session, shares $TMPDIR/farm-events/$CLAUDE_CODE_SESSION_ID with the farm.sh
+# this script launches, and reports milestones, the verdict, and a run that dies without one. So the
+# session is woken by the RUN rather than by a clock, and a cron on top of that is a wake for nothing:
+# AGK 2026-09-27, 14 ticks inside one round, each re-entering a 113 KB plan and a 276 KB run dir.
 #
-# The check NORMALISES work-result.sh's exit code to 0/1 on purpose. Before the run returns there is
-# no result.json and work-result.sh exits 2, which hound-arm.sh correctly refuses as could-not-run
-# rather than a verdict — so a bare invocation would refuse to arm at exactly the moment the hold is
-# needed. A readOnly run closes on a verdict of either sign (its gate legitimately FAILs), so it
-# accepts 0 and 1; a writing run closes on PASS alone.
-if [ "$readonly_run" = 1 ]; then
-  hold_check="bash \"$SKILL/scripts/work-result.sh\" \"$R/result.json\"; c=\$?; [ \$c -le 1 ]"
-else
-  hold_check="bash \"$SKILL/scripts/work-result.sh\" \"$R/result.json\"; [ \$? -eq 0 ]"
-fi
-hold_minutes=$("$SKILL/scripts/compose-goal.sh" --minutes) || hold_minutes=720
-bash "$SKILL/../hound/scripts/hound-arm.sh" "$hold_check" --rounds "$maxrounds" --minutes "$hold_minutes"
-hold_rc=$?
-[ $hold_rc -eq 0 ] || echo "hound-arm exited $hold_rc — this session has NO HOLD; it will stop at its first stopping point." >&2
-
-# HALF TWO, THE HEARTBEAT, and this is the structural catch: CronCreate is a MODEL TOOL. There is no
-# cron CLI, and a session-scoped cron lives in memory rather than in .claude/scheduled_tasks.json, so
-# no shell can raise one — which is precisely why this script used to self-send a /loop. It cannot
-# arm this half; it can only instruct, unmissably, and the skill makes acting on it a required step.
-#
-# The hold decides whether to continue; the heartbeat guarantees something ASKS. A hold runs only on
-# a Stop, so it cannot restart a session that has already gone quiet. Measured over 12,654
-# transcripts: 558 of 592 stalls had no standing objective at all and were restarted by a human
-# typing `status` 44 times.
-cron_minutes=${CRAFT_LOOP_INTERVAL_MINUTES:-30}
-case "$cron_minutes" in ''|*[!0-9]*|0) cron_minutes=30 ;; esac
+# THE CRON IS THEREFORE OPTIONAL — a dumb fallback poll for a monitor that died, hourly by default,
+# and printed only on --cron or with CRAFT_LOOP_INTERVAL_MINUTES set.
+cron_minutes=${CRAFT_LOOP_INTERVAL_MINUTES:-60}
+case "$cron_minutes" in ''|*[!0-9]*|0) cron_minutes=60 ;; esac
+[ -n "${CRAFT_LOOP_INTERVAL_MINUTES:-}" ] && cron=1
 # Minute 7 rather than 0 or 30: every fleet-wide "hourly" lands on the same instant otherwise.
 if [ "$cron_minutes" -lt 60 ]; then
   cron_expr="7-59/$cron_minutes * * * *"
+elif [ "$cron_minutes" -lt 120 ]; then
+  cron_expr="7 * * * *"
 else
   cron_expr="7 */$(( cron_minutes / 60 )) * * *"
 fi
-# The tick text is the COMPOSED GOAL, minus its slash prefix: that string already carries the check
-# in backticks, both machine escapes, the standing authority, the continuation rule and the
-# CronDelete teardown, and it is the one text a tick re-enters with when the session is otherwise
-# empty. Composing a second one here is how the two would drift.
-cron_prompt="Heartbeat for craft run $runid. Run \`bash $SKILL/scripts/work-result.sh $R/result.json\` and report its exit code — judge from the command, not from the conversation. The objective, unchanged since dispatch: ${goal#/goal }"
+# THE TICK TEXT IS A NUDGE. It used to be the whole composed goal — the check, both escapes, the
+# authority, the continuation rule, the teardown, and the plan path — and every tick then made the
+# session reorient by re-reading all of it before doing anything. The user's own nudge was "what
+# else?". The run dir is what the session needs to find its way back; everything else is already in
+# the plan and the run's own state.
+cron_prompt="and? (work run $runid)"
 
-# The lint that used to sit on the self-send chokepoint now sits here, on the text that actually
-# re-enters the session. It REPORTS and never refuses: the run is already dispatched by the time a
-# finding could matter, and a refusal here would leave a dispatched run with no heartbeat at all.
-if command -v bun > /dev/null 2>&1 && [ -f "$SKILL/../hound/scripts/heartbeat-lint.ts" ]; then
-  bun "$SKILL/../hound/scripts/heartbeat-lint.ts" "$cron_prompt" > /dev/null 2>&1 \
-    || echo "WARNING: heartbeat-lint has findings on the heartbeat text below — run it yourself: bun $SKILL/../hound/scripts/heartbeat-lint.ts \"\$prompt\"" >&2
-fi
-
-# Printed LAST on every path that dispatches, so nothing scrolls it away. A dispatch that ends with
-# a hold and no heartbeat is the unattended idle this whole mechanism exists to prevent, and the
-# only thing standing between the two is the model reading this block and acting on it.
+# Printed LAST on every path that dispatches, so nothing scrolls it away.
 print_cron_instruction() {
+  if [ "$cron" != 1 ]; then
+    echo
+    echo "wake: the farm-runs monitor watches this run and wakes this session on its milestones, its verdict, and on a run that dies without one. Pass --cron (or set CRAFT_LOOP_INTERVAL_MINUTES) for a fallback poll on top of it."
+    return 0
+  fi
   cat <<CRONMSG
 
 ======================================================================
-REQUIRED, THIS TURN: ARM THE HEARTBEAT WITH THE CronCreate TOOL.
-The hold is armed; a hold cannot restart a session that has gone quiet.
+REQUIRED, THIS TURN: ARM THE FALLBACK POLL WITH THE CronCreate TOOL.
+The farm-runs monitor is the wake; this is the poll for when it dies.
 CronCreate is a model tool — no shell, including this one, can call it.
 Call it now, before your next action, with exactly:
 
@@ -807,9 +788,43 @@ Call it now, before your next action, with exactly:
   prompt:    $cron_prompt
 
 Then say which job id it returned. If CronCreate is unavailable, say so
-in one line rather than proceeding as though the heartbeat were armed.
+in one line rather than proceeding as though the poll were armed.
 ======================================================================
 CRONMSG
+}
+
+# THE HOLD, armed HERE — in the dispatching (main) session, not in the farmed child. It survives a
+# run that dies, and Jev judges against the user's own objective rather than against a round verdict.
+# `--run` is what makes a stop legal while the round is in flight; `args.goalCheck` is the goal check
+# when the plan states one, and with none the hold is Jev alone on `args.goal`.
+#
+# ARMING NEVER ABORTS A DISPATCH. The run is already detached by the time we get here, so a refusal
+# would leave a live run with no hold and nothing saying so — the reason is printed and the dispatch
+# stands.
+arm_hold() {
+  local hound goal goalcheck minutes rc
+  hound="$SKILL/../hound/scripts/hound-arm.sh"
+  if [ ! -r "$hound" ]; then
+    echo "hold: not armed — $hound is not readable"
+    return 0
+  fi
+  goal=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("goal") or "")' "$out" 2>/dev/null)
+  goalcheck=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("goalCheck") or "")' "$out" 2>/dev/null)
+  minutes=$("$SKILL/scripts/compose-goal.sh" --minutes 2>/dev/null)
+  case "$minutes" in ''|*[!0-9]*) minutes=720 ;; esac
+  if [ -n "$goalcheck" ]; then
+    bash "$hound" "$goalcheck" --goal "$goal" --run "$R" --rounds "$maxrounds" --minutes "$minutes"
+    rc=$?
+  elif [ -n "$goal" ]; then
+    # CHECK-LESS: Jev alone on the goal, bounded by the same two ceilings.
+    bash "$hound" --goal "$goal" --run "$R" --rounds "$maxrounds" --minutes "$minutes"
+    rc=$?
+  else
+    echo "hold: not armed — the plan states neither args.goalCheck nor args.goal, so there is nothing to hold on."
+    return 0
+  fi
+  [ "$rc" -ne 0 ] && echo "hold: NOT armed (hound-arm.sh exited $rc, and said why on stderr) — the dispatch stands; nothing will block this session's stop."
+  return 0
 }
 
 # Phase 4. Detached, never foreground: a real gate runs 20-60 min and a foreground call is killed
@@ -890,6 +905,7 @@ if [ "$loops" -gt 0 ]; then
   loop_pid=$!
   disown "$loop_pid" 2> /dev/null || disown 2> /dev/null || :
   echo "loop: detached (pid $loop_pid), log: $R/loop.log — exit code lands in $R/loop.exit"
+  arm_hold
   print_cron_instruction
   exit 0
 fi
@@ -907,4 +923,5 @@ Monitor it (persistent, no deadline) and call work-result.sh when it fires:
   bash $SKILL/scripts/work-result.sh "$R/result.json"
 EOF
 
+arm_hold
 print_cron_instruction
