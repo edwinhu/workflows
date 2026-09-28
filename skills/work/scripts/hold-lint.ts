@@ -60,11 +60,12 @@ if (milestone.test(check)) {
 // result.json sitting there forever, so the hold can neither release nor be argued with. AGK
 // 2026-09-27: a heartbeat armed on `work-result.sh` woke 14 times with no news, each tick
 // re-entering a 113 KB plan and a 276 KB run dir.
-if (/work-result\.sh|result\.json|(^|[\s"'`/])\.craft\//.test(check)) {
+// legacy: `.craft/` is the retired run root and is still MATCHED here during the transition.
+if (/work-result\.sh|result\.json|(^|[\s"'`/])\.(work|craft)\//.test(check)) {
   add(
     'critical',
     'round-verdict',
-    'the check reads a work ROUND VERDICT (work-result.sh / result.json / .craft/). A round verdict cannot certify the goal and outlives an abandoned run; arm on the goal check itself, or use grind for long loops',
+    'the check reads a work ROUND VERDICT (work-result.sh / result.json / .work/). A round verdict cannot certify the goal and outlives an abandoned run; arm on the goal check itself, or use grind for long loops',
   )
 }
 

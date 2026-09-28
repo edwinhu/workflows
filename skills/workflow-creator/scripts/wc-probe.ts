@@ -452,7 +452,7 @@ export function parseExemptions(file: string, text: string): Exemption[] {
 }
 
 /**
- * A P11 declaration: the lens keys two craft-args fences are ALLOWED to differ by.
+ * A P11 declaration: the lens keys two work-args fences are ALLOWED to differ by.
  *
  *     <!-- wc-probe: lens-set-differs scope-fidelity -->
  *     <!-- wc-probe: lens-set-differs scope-fidelity budget -->
@@ -2865,7 +2865,7 @@ export function findKeyValueSpan(
 // ---------------------------------------------------------------- P10 / P11
 
 /** One work args object, as read out of one fenced block of a Markdown file. */
-export interface CraftArgsFence {
+export interface WorkArgsFence {
   /** 1-based file line of the fence's opening delimiter. */
   fenceLine: number
   /** Entries in `mechanicalChecks`, or null when the fence declares no such key. */
@@ -2953,8 +2953,8 @@ export function arrayElementCount(masked: string, span: { start: number; end: nu
  * A CODE fence only (`isCodeFence`), and the object must declare `mechanicalChecks` or
  * `reviewLenses` — the two keys that make an args object the thing the work skill is dispatched with.
  */
-export function craftArgsFences(text: string): CraftArgsFence[] {
-  const out: CraftArgsFence[] = []
+export function workArgsFences(text: string): WorkArgsFence[] {
+  const out: WorkArgsFence[] = []
   for (const block of fencedBlocks(text)) {
     if (!isCodeFence(block)) continue
     const body = block.body
@@ -3077,7 +3077,7 @@ export function checkLoaderEntryPoint(file: string, text: string, exemptions: re
  */
 export function checkSingleEntryPoint(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
   const findings: Finding[] = []
-  for (const f of craftArgsFences(text)) {
+  for (const f of workArgsFences(text)) {
     if (f.mechanicalCount === null || f.mechanicalCount <= 1) continue
     const line = f.mechanicalLine ?? f.fenceLine
     if (isExemptAt(exemptions, 'entry-point', line)) continue
@@ -3086,7 +3086,7 @@ export function checkSingleEntryPoint(file: string, text: string, exemptions: re
       severity: 'major',
       file,
       line,
-      detail: `this craft-args fence declares ${f.mechanicalCount} mechanicalChecks entries, so the mechanical verdict is spread over ${f.mechanicalCount} commands`,
+      detail: `this work-args fence declares ${f.mechanicalCount} mechanicalChecks entries, so the mechanical verdict is spread over ${f.mechanicalCount} commands`,
       remedy:
         'collapse them behind ONE entry point whose exit code is the verdict, or declare the exception with <!-- wc-probe: ignore-entry-point --> and say why — a list of independent commands drops one without reporting it',
     })
@@ -3095,7 +3095,7 @@ export function checkSingleEntryPoint(file: string, text: string, exemptions: re
 }
 
 /**
- * P11 lens-set parity — two craft-args fences in one file declare the same lens set.
+ * P11 lens-set parity — two work-args fences in one file declare the same lens set.
  *
  * A second fence is a near-copy of the first, and a lens present in one and absent from the other is
  * a dimension nobody judges on that branch. An intended difference is declared KEY BY KEY with
@@ -3119,7 +3119,7 @@ export function checkLensSetParity(file: string, text: string): Finding[] {
       remedy: 'write <!-- wc-probe: lens-set-differs <key> [<key>...] --> with the keys the two fences may differ by',
     })
   }
-  const fences = craftArgsFences(text)
+  const fences = workArgsFences(text)
   if (fences.length < 2) return findings
   const declared = new Set(declarations.flatMap(d => d.keys))
   const first = fences[0]
@@ -3135,7 +3135,7 @@ export function checkLensSetParity(file: string, text: string): Finding[] {
       severity: 'major',
       file,
       line: f.fenceLine,
-      detail: `this craft-args fence declares lenses [${f.lensKeys.join(', ')}] where the fence at line ${first.fenceLine} declares [${first.lensKeys.join(', ')}]; no declaration names ${undeclared.map(k => `"${k}"`).join(', ')}`,
+      detail: `this work-args fence declares lenses [${f.lensKeys.join(', ')}] where the fence at line ${first.fenceLine} declares [${first.lensKeys.join(', ')}]; no declaration names ${undeclared.map(k => `"${k}"`).join(', ')}`,
       remedy:
         `make the two lens sets identical, or declare the intended difference with <!-- wc-probe: lens-set-differs ${undeclared.join(' ')} --> — an absent reviewLenses array is not "no lenses", it is the work skill's own defaults, so a silent difference judges the two branches by different standards`,
     })
@@ -3157,7 +3157,7 @@ export function repoRootOf(from: string): string | null {
 }
 
 /**
- * P12 dispatch routing — a file that emits a craft-args fence dispatches work the way `work` says.
+ * P12 dispatch routing — a file that emits a work-args fence dispatches work the way `work` says.
  *
  * (a) CRITICAL. The file names some OTHER runner script and never names `work-dispatch.sh`.
  *     Hand-rolling that line drops everything work-dispatch owns on the way in: TIER 1 `plan-lint`,
@@ -3168,7 +3168,7 @@ export function repoRootOf(from: string): string | null {
  *
  * (b) MAJOR. A fence whose `projectDir` literal lies OUTSIDE the repository containing this file,
  *     with no `--run-dir` anywhere in the file: the work skill then writes `args`/`result`/`log` into a
- *     `.craft/` inside a tree the run was only meant to read.
+ *     `.work/` inside a tree the run was only meant to read.
  *
  * A file naming NEITHER entry point is deliberately not judged. Delegating without naming the entry
  * point is indistinguishable from documenting nothing, and inferring one produces confident findings
@@ -3198,17 +3198,17 @@ export function handRolledRunner(text: string): { name: string; line: number } |
 }
 
 /**
- * P12(a)'s view of "this file emits work args", broader than `craftArgsFences` — which keys on the
- * lens and mechanical declarations P10/P11 measure. A fence LABELLED `craft-args`, or one carrying a
+ * P12(a)'s view of "this file emits work args", broader than `workArgsFences` — which keys on the
+ * lens and mechanical declarations P10/P11 measure. A fence LABELLED `work-args`, or one carrying a
  * `tasks` array, arms a run this rule must judge even when it declares neither of those.
  */
 const TASK_ROW_KEYS = ['acceptance', 'writablePaths', 'redCommand'] as const
 
-export function emitsCraftArgs(text: string): boolean {
-  if (craftArgsFences(text).length > 0) return true
+export function emitsWorkArgs(text: string): boolean {
+  if (workArgsFences(text).length > 0) return true
   for (const block of fencedBlocks(text)) {
     const objs = findObjectLiterals(block.body)
-    // The info string is read as one word, so a ```json craft-args fence arrives labelled `json`:
+    // The info string is read as one word, so a ```json work-args fence arrives labelled `json`:
     // the task rows themselves are the signature, not the label.
     if (!objs.some(o => o.keys.includes('tasks'))) continue
     if (objs.some(o => TASK_ROW_KEYS.some(k => o.keys.includes(k)))) return true
@@ -3218,8 +3218,8 @@ export function emitsCraftArgs(text: string): boolean {
 
 export function checkDispatchRouting(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
   const findings: Finding[] = []
-  const fences = craftArgsFences(text)
-  if (!emitsCraftArgs(text)) return findings
+  const fences = workArgsFences(text)
+  if (!emitsWorkArgs(text)) return findings
 
   const runner = !text.includes('work-dispatch.sh') ? handRolledRunner(text) : null
   if (runner) {
@@ -3231,9 +3231,9 @@ export function checkDispatchRouting(file: string, text: string, exemptions: rea
         file,
         line,
         detail:
-          `this file emits a craft-args fence and names ${runner.name} as the dispatch, never work-dispatch.sh, so the run skips the TIER 1 plan-lint gate, the TIER 2 redCommand probe and TIER 2b plan-preflight`,
+          `this file emits a work-args fence and names ${runner.name} as the dispatch, never work-dispatch.sh, so the run skips the TIER 1 plan-lint gate, the TIER 2 redCommand probe and TIER 2b plan-preflight`,
         remedy:
-          'dispatch through ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-dispatch.sh and put the args in the plan\'s craft:dispatch arming block, or declare the exception with <!-- wc-probe: ignore-dispatch --> — a hand-written runner line reports nothing about the gates it never ran',
+          'dispatch through ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-dispatch.sh and put the args in the plan\'s work:dispatch arming block, or declare the exception with <!-- wc-probe: ignore-dispatch --> — a hand-written runner line reports nothing about the gates it never ran',
       })
     }
   }
@@ -3251,7 +3251,7 @@ export function checkDispatchRouting(file: string, text: string, exemptions: rea
       severity: 'major',
       file,
       line,
-      detail: `this fence dispatches with projectDir "${pd}", outside the repository ${repo} that contains this file, and no --run-dir appears anywhere in it, so the work skill writes its args, result and log into a .craft/ inside that foreign tree`,
+      detail: `this fence dispatches with projectDir "${pd}", outside the repository ${repo} that contains this file, and no --run-dir appears anywhere in it, so the work skill writes its args, result and log into a .work/ inside that foreign tree`,
       remedy:
         'pass --run-dir with an ABSOLUTE path outside the judged tree to work-dispatch.sh, or declare the exception with <!-- wc-probe: ignore-dispatch -->',
     })
@@ -3277,7 +3277,7 @@ export function checkDispatchRouting(file: string, text: string, exemptions: rea
  */
 export function checkTaskRowCoverage(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
   const findings: Finding[] = []
-  for (const f of craftArgsFences(text)) {
+  for (const f of workArgsFences(text)) {
     if (f.taskIds.length === 0) continue
     if (isExemptAt(exemptions, 'task-coverage', f.fenceLine)) continue
     const covered = new Set(f.taskIds.flatMap(id => id.match(/\d+/g) ?? []))
@@ -3288,7 +3288,7 @@ export function checkTaskRowCoverage(file: string, text: string, exemptions: rea
         severity: 'major',
         file,
         line: f.fenceLine,
-        detail: `the craft-args fence at line ${f.fenceLine} enumerates instance "${inst.id}" in ${inst.sources.join(', ')}, and no tasks[].id covers it — the ids declared are [${f.taskIds.join(', ')}]`,
+        detail: `the work-args fence at line ${f.fenceLine} enumerates instance "${inst.id}" in ${inst.sources.join(', ')}, and no tasks[].id covers it — the ids declared are [${f.taskIds.join(', ')}]`,
         remedy: `give "${inst.id}" a task chain in this fence, or drop it from ${inst.sources.join(', ')}, or declare the exception with <!-- wc-probe: ignore-task-coverage --> — an instance the gate judges and no implementer builds fails on an artifact the run never wrote`,
       })
     }

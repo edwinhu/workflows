@@ -86,7 +86,7 @@ Rewrite — the verdict file, read for PASS rather than for existence:
 ```bash
 bash skills/work/scripts/work-hold.sh \
   'bash skills/wrds/scripts/parse_npx/measure.sh --unreconciled-below 5000' \
-  --goal 'fewer than 5000 rows are unreconciled' --run .craft/npx-reconcile \
+  --goal 'fewer than 5000 rows are unreconciled' --run .work/npx-reconcile \
   --rounds 6 --minutes 480
 ```
 

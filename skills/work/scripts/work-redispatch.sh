@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Re-hash an amended plan into an existing args.json, and optionally re-dispatch craft.
+# Re-hash an amended plan into an existing args.json, and optionally re-dispatch work.
 #
 # The FAIL loop is: fix, amend the plan, re-hash, re-dispatch. Doing that by hand is where a
 # specHash gets typed from a stale copy, and where an args file drifts from the plan it names.
-# The hash is over the plan's CANONICAL craft:dispatch spec (work-dispatch.sh --spec-hash), so a
+# The hash is over the plan's CANONICAL work:dispatch spec (work-dispatch.sh --spec-hash), so a
 # prose-only amendment between rounds moves nothing.
 #
-# Re-hashing is not enough on its own, so this also RE-SYNCS the plan's `craft:dispatch` block into
+# Re-hashing is not enough on its own, so this also RE-SYNCS the plan's `work:dispatch` block into
 # the args: `redCommand` is executed from args.json and `work` is what the implementer is handed, so
 # a plan amendment that never reached the args is an amendment that never ran. Run-local keys
 # (onlyTasks, priorResults, priorFindings, freezeFindingSet, maxAgents, maxRounds) are not in the
@@ -18,9 +18,9 @@
 #   work-redispatch.sh … --dispatch --no-lint             # skip BOTH gates below
 #   work-redispatch.sh … --dispatch --no-red-probe        # skip only the red probe; keep plan-lint
 #   work-redispatch.sh … --dispatch --provider codex      # run this round's whole spine on GPT-5.6
-#   CRAFT_REDISPATCH_DRYRUN=1                              # everything but the farm-out
-#   CRAFT_NO_SCOPE=1                                       # force the plain setsid dispatch
-#   CRAFT_SYSTEMD_RUN=PATH                                 # the binary the scope probe uses
+#   WORK_REDISPATCH_DRYRUN=1                              # everything but the farm-out
+#   WORK_NO_SCOPE=1                                       # force the plain setsid dispatch
+#   WORK_SYSTEMD_RUN=PATH                                 # the binary the scope probe uses
 #
 # SELECTIVE RE-RUN, with --dispatch and derived here rather than remembered: `onlyTasks` is the
 # previous verdict's `tasksThatFlagged` CLOSED UNDER TRANSITIVE DEPENDENTS, and `priorResults` (with
@@ -28,7 +28,7 @@
 # soundness condition: a carried "verified" for a task downstream of a re-run one was earned against
 # code that no longer exists. A previous result that is absent, unreadable, or whose
 # `tasksThatFlagged` cannot be parsed falls back to a FULL re-run and says so — a scope built from a
-# verdict nobody could read is the vacuous pass craft exists to prevent. Lenses and mechanical checks
+# verdict nobody could read is the vacuous pass work exists to prevent. Lenses and mechanical checks
 # judge the whole deliverable and are never narrowed.
 #
 # With --dispatch, the run directory is args.json's own directory; result.json there is rotated to
@@ -48,11 +48,14 @@
 # result and does not touch args.json, so the run is left exactly as it was.
 set -euo pipefail
 
+# Promote retired CRAFT_* env vars onto their WORK_* successors (transition shim).
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/legacy-env.sh"
+
 # Self-locating: the skill root is this script's parent, so the copy runs wherever it is installed.
 SKILL=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-# farm-out ships alongside craft; a sibling copy wins, an installed one is the fallback, and
-# CRAFT_FARM overrides both.
-FARM=${CRAFT_FARM:-}
+# farm-out ships alongside work; a sibling copy wins, an installed one is the fallback, and
+# WORK_FARM overrides both.
+FARM=${WORK_FARM:-}
 if [ -z "$FARM" ]; then
   if [ -f "$SKILL/../farm-out/scripts/farm.sh" ]; then
     FARM="$SKILL/../farm-out/scripts/farm.sh"
@@ -98,7 +101,7 @@ ARGS_ABS=$(realpath "$ARGS")
 RUN_DIR=$(dirname "$ARGS_ABS")
 
 NEW_HASH=$(bash "$SKILL/scripts/work-dispatch.sh" --spec-hash "$PLAN_ABS") \
-  || die "cannot hash the plan's craft:dispatch spec — see the message above"
+  || die "cannot hash the plan's work:dispatch spec — see the message above"
 
 # Patch in place via python3: jq is not guaranteed here, and a hand-rolled sed on JSON is how a
 # 64-hex string ends up somewhere it does not belong.
@@ -154,7 +157,7 @@ RUN_LOCAL = {"onlyTasks", "priorResults", "priorFindings", "maxAgents", "rounds"
 synced = []
 try:
     import re
-    block = re.search(r"<!--\s*craft:dispatch\s*\n(.*?)\n-->", open(plan_path).read(), re.S)
+    block = re.search(r"<!--\s*(?:work|craft):dispatch\s*\n(.*?)\n-->", open(plan_path).read(), re.S)  # legacy: the retired craft:dispatch spelling is still READ during the transition
     plan_args = json.loads(block.group(1))["args"] if block else None
 except (json.JSONDecodeError, KeyError, AttributeError) as exc:
     # A malformed block is reported, never silently ignored — but it does not erase the args:
@@ -273,7 +276,7 @@ if [ "$DISPATCH" = "--dispatch" ] && [ "$ROUND" -gt "$MAX_ROUNDS" ]; then
     printf '\nBLOCKED: round %s would exceed maxRounds %s. Nothing dispatched; the run stays armed.\n' "$ROUND" "$MAX_ROUNDS"
     printf 'Nothing was spent: args.json is unchanged, the counters above were NOT written, result.json is unrotated.\n'
     printf 'Take what is still open to HUMAN REVIEW. What survived the last round, as a paste-ready\n'
-    printf 'priorFindings block for a fresh craft run (residue first — those never gated):\n\n'
+    printf 'priorFindings block for a fresh work run (residue first — those never gated):\n\n'
     if [ -n "$PREV_RESULT" ] && [ -f "$PREV_RESULT" ]; then
       python3 -c '
 import json, sys
@@ -309,12 +312,12 @@ fi
 # graph closed over here is the graph that will run. A cycle is refused by falling back, not by
 # laying out half of an unschedulable plan.
 if [ "$DISPATCH" = "--dispatch" ]; then
-  SEL=$(CRAFT_SEL_STAGE="$STAGE" CRAFT_SEL_PREV="$PREV_RESULT" CRAFT_SEL_FULL="$FULL" CRAFT_SKILL="$SKILL" bun -e '
+  SEL=$(WORK_SEL_STAGE="$STAGE" WORK_SEL_PREV="$PREV_RESULT" WORK_SEL_FULL="$FULL" WORK_SKILL="$SKILL" bun -e '
 import { readFileSync, writeFileSync } from "node:fs"
-const { parseArgs, taskGraph } = await import(process.env.CRAFT_SKILL + "/scripts/plan-lint.ts")
+const { parseArgs, taskGraph } = await import(process.env.WORK_SKILL + "/scripts/plan-lint.ts")
 
-const stage = process.env.CRAFT_SEL_STAGE!
-const prevPath = process.env.CRAFT_SEL_PREV || ""
+const stage = process.env.WORK_SEL_STAGE!
+const prevPath = process.env.WORK_SEL_PREV || ""
 const args = JSON.parse(readFileSync(stage, "utf8"))
 
 const commit = (lines: string[]) => {
@@ -328,7 +331,7 @@ const fullRun = (why: string) => {
   commit([`selection: FULL re-run — ${why}`])
 }
 
-if (process.env.CRAFT_SEL_FULL === "1") fullRun("--full was given")
+if (process.env.WORK_SEL_FULL === "1") fullRun("--full was given")
 if (args.readOnly) fullRun("readOnly run — there is no task channel to scope")
 if (!prevPath) fullRun("no previous result.json or result-round<N>.json in the run dir to scope from")
 
@@ -458,7 +461,7 @@ if [ -e "$RESULT" ]; then
 fi
 
 # Exercises everything above — sync, counters, gate, rotation — and stops before farming out.
-[ -n "${CRAFT_REDISPATCH_DRYRUN:-}" ] && { echo "CRAFT_REDISPATCH_DRYRUN: nothing dispatched."; exit 0; }
+[ -n "${WORK_REDISPATCH_DRYRUN:-}" ] && { echo "WORK_REDISPATCH_DRYRUN: nothing dispatched."; exit 0; }
 
 LOG="$RUN_DIR/run-$(date +%H%M%S).log"
 
@@ -467,13 +470,13 @@ LOG="$RUN_DIR/run-$(date +%H%M%S).log"
 # work-dispatch.sh; the continuation is the long unattended part, so it needs the same treatment.
 # PROBED, never assumed — a container or a non-systemd host must still dispatch. Losing the scope is
 # a warning; refusing to run would be the regression.
-SYSTEMD_RUN=${CRAFT_SYSTEMD_RUN:-systemd-run}
+SYSTEMD_RUN=${WORK_SYSTEMD_RUN:-systemd-run}
 RUN_ID=$(basename "$RUN_DIR")
 scope=none
 scope_why=""
 scope_unit=""
-if [ "${CRAFT_NO_SCOPE:-}" = "1" ]; then
-  scope_why="CRAFT_NO_SCOPE=1"
+if [ "${WORK_NO_SCOPE:-}" = "1" ]; then
+  scope_why="WORK_NO_SCOPE=1"
 elif ! command -v "$SYSTEMD_RUN" > /dev/null 2>&1; then
   scope_why="$SYSTEMD_RUN not found"
 elif ! "$SYSTEMD_RUN" --user --scope --quiet --collect -- true > /dev/null 2>&1; then
@@ -483,7 +486,7 @@ else
   # A unit name is a restricted charset; the run id is author-supplied, so map anything else out
   # rather than handing systemd a name it will reject. The pid keeps this round from colliding with
   # a previous one still live.
-  scope_unit="craft-$(printf '%s' "$RUN_ID" | tr -c '[:alnum:]_.\-' '_')-$$.scope"
+  scope_unit="work-$(printf '%s' "$RUN_ID" | tr -c '[:alnum:]_.\-' '_')-$$.scope"
 fi
 
 # One argument vector, so the two dispatch paths cannot drift apart.

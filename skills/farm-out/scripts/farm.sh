@@ -3,7 +3,7 @@
 #
 # THIS IS THE ONLY RUNNER. It replaced an Agent-SDK runner that shelled the
 # wrapper ONLY for `--settings-json`, harvested its env, then reimplemented the
-# client that wrapper already is. That runner was deleted 2026-08-23; craft
+# client that wrapper already is. That runner was deleted 2026-08-23; work
 # dispatch and re-dispatch both come here. Two reasons it went, both measured
 # 2026-08-22:
 #
@@ -84,7 +84,7 @@ if [ -n "$WORKFLOW" ]; then
   fi
   # A workflow picks its agents PER LEG -- `agent(prompt, {agentType: "ds"})` in the
   # script, or implementerAgentType / verifierAgentType / reviewLenses[].agentType in a
-  # craft args file. One top-level persona is the wrong shape: the point is `ds` to
+  # work args file. One top-level persona is the wrong shape: the point is `ds` to
   # implement and `ds-reviewer` or `Explore` to judge. (A sealed persona also has no
   # Workflow tool, so it could not dispatch one anyway.)
   # (no --agent flag exists; a workflow names its agents per leg via agentType)
@@ -114,7 +114,7 @@ verify() {
 }
 
 # ---------------------------------------------------------------- the event stream
-# Read by farm-alive.sh (craft's liveness check) and farm-monitor.sh. Keyed on $$ -- the shell
+# Read by farm-alive.sh (work's liveness check) and farm-monitor.sh. Keyed on $$ -- the shell
 # that lives for the whole dispatch -- because those readers take the pid from the FILENAME and
 # kill -0 it; a per-row subshell pid is dead the instant its row ends and every finished row
 # would report GONE.

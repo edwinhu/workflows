@@ -160,7 +160,7 @@ def _authenticate(project_root: Path, domain: str | None = None) -> None:
     if domain:
         body += f"- Domain: {domain}\n\n"
     body += "## Source Plan\n\n- Bibliography: references/sources.bib\n- Notebook: none\n\n"
-    body += '<!-- craft:dispatch {"runId":"test","args":{"tasks":[]}} -->\n'
+    body += '<!-- work:dispatch {"runId":"test","args":{"tasks":[]}} -->\n'
     (plans / "writing-plan.md").write_text(body)
 
 

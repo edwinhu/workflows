@@ -17,7 +17,7 @@ It is an ADAPTER, never a second authority. Every field is mapped from an approv
 
 What this receipt does NOT assert: a second human review. It satisfies the parser's
 two-distinct-approvals schema, nothing more. The genuine independent review in a
-craft-native flow is the per-task verifier plus the review lenses — they run DOWNSTREAM
+work-native flow is the per-task verifier plus the review lenses — they run DOWNSTREAM
 of this file and gate the result, so they cannot be encoded in something that must exist
 before they run. An earlier draft mapped this field to `work`'s plan-lens review, which
 does not exist at this point (plan lenses run inside the dispatch, after the shim) and may

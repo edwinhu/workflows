@@ -455,11 +455,11 @@ single path: `work` grew a read-only branch, so there is one domain note per bra
   the workflow that was built, not output it produced. Nobody has run it yet.
 - **audit-only** — `work`'s read-only path governs. `-w` over a tree nothing wrote to opens an empty
   diff and returns `unreviewed`, which `work` calls *not approval*, so the orchestrator first writes
-  `.craft/<run-id>/findings.md` from the object `workflow.js` returned and reviews **that** file with
+  `.work/<run-id>/findings.md` from the object `workflow.js` returned and reviews **that** file with
   `--file`. Transcribe, do not grade: counts from `scoreTable`, findings from `findings[]`, verdict
   from `verdict` — the agent that ran the audit must not also summarise it in its own voice. The
   domain note is that the review surface is a diagnosis of a workflow nobody changed, so `findings`
-  from the human are input to a later **improve** run, not edits to make now. `.craft/` is
+  from the human are input to a later **improve** run, not edits to make now. `.work/` is
   gitignored, so an audit worth keeping has to be moved somewhere tracked — say so to the user.
 
 ## Rules and references
@@ -858,9 +858,9 @@ Declare it: `<!-- wc-probe: ignore-returns -->`, file- or region-scoped, which i
 run. Inferring it instead would mean guessing, and a wrong guess **fails silent** — the vacuous pass
 `references/gate-laws.md` L2(a) forbids.
 
-### P12 dispatch routing — how a skill that emits a craft-args fence hands it to `work`
+### P12 dispatch routing — how a skill that emits a work-args fence hands it to `work`
 
-P10 and P11 judge what a craft-args fence *declares*; P12 judges how the file **dispatches** it. Two
+P10 and P11 judge what a work-args fence *declares*; P12 judges how the file **dispatches** it. Two
 clauses, over any file emitting at least one fence:
 
 - **(a) CRITICAL** — the file names some *other* runner script and never names `work-dispatch.sh`.
@@ -871,7 +871,7 @@ clauses, over any file emitting at least one fence:
   dispatch), never on one runner's filename — a name-keyed rule retires itself silently the day the
   runner is renamed.
 - **(b) MAJOR** — a fence whose `projectDir` literal lies outside the repository containing the file,
-  with no `--run-dir` anywhere in it. `work` then writes `args`, `result` and `log` into a `.craft/`
+  with no `--run-dir` anywhere in it. `work` then writes `args`, `result` and `log` into a `.work/`
   inside a tree the run was only meant to read.
 
 A file naming **neither** entry point is not judged: delegating without naming one is
@@ -912,7 +912,7 @@ and what gets reported cannot disagree. A marker inside a fence — or indented 
 example, not a declaration.
 
 **P11 is deliberately outside this grammar.** It polices the one file per skill that emits two
-craft-args fences, so a whole-file `ignore-` marker would disable it exactly where it is the only
+work-args fences, so a whole-file `ignore-` marker would disable it exactly where it is the only
 rule. Its intended differences are named instead:
 `<!-- wc-probe: lens-set-differs <key> [<key>...] -->`, listing the keys allowed to differ. Any
 difference it does not name is still a finding, and the declaration prints like an exemption without

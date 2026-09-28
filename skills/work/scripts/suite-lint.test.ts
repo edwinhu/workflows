@@ -279,17 +279,17 @@ describe('a NEGATED assertion is not a positive match, so R1 must not read it as
 describe(`${R4} — a config key is injected once and nothing ever varies it`, () => {
   const defective = src(
     "test('the runner honours the timeout', () => {",
-    "  const cfg = { CRAFT_ASSERT_TIMEOUT: '30' }",
+    "  const cfg = { WORK_ASSERT_TIMEOUT: '30' }",
     '  expect(run(cfg).ok).toBe(true)',
     '})',
   )
   const correct = src(
     "test('a generous timeout completes', () => {",
-    "  const cfg = { CRAFT_ASSERT_TIMEOUT: '30' }",
+    "  const cfg = { WORK_ASSERT_TIMEOUT: '30' }",
     '  expect(run(cfg).ok).toBe(true)',
     '})',
     "test('a zero timeout gives up', () => {",
-    "  const cfg = { CRAFT_ASSERT_TIMEOUT: '0' }",
+    "  const cfg = { WORK_ASSERT_TIMEOUT: '0' }",
     '  expect(run(cfg).ok).toBe(false)',
     '})',
   )
@@ -298,7 +298,7 @@ describe(`${R4} — a config key is injected once and nothing ever varies it`, (
     const found = await lint('runner.test.ts', defective)
     const f = found.find((x: any) => x.rule === R4)
     expect(f).toBeDefined()
-    expect(f.evidence).toContain('CRAFT_ASSERT_TIMEOUT')
+    expect(f.evidence).toContain('WORK_ASSERT_TIMEOUT')
     expect(f.where).toBe('runner.test.ts:2')
   })
 
@@ -513,24 +513,24 @@ describe(`${R4} counts \`process.env.KEY =\` as the same injection as \`{ KEY: �
   test('fires when the env key is assigned once and never varied', async () => {
     const found = await lint('runner.test.ts', src(
       "test('the runner honours the timeout', () => {",
-      "  process.env.CRAFT_ASSERT_TIMEOUT = '30'",
+      "  process.env.WORK_ASSERT_TIMEOUT = '30'",
       '  expect(run().ok).toBe(true)',
       '})',
     ))
     const f = found.find((x: any) => x.rule === R4)
     expect(f).toBeDefined()
-    expect(f.evidence).toContain('CRAFT_ASSERT_TIMEOUT')
+    expect(f.evidence).toContain('WORK_ASSERT_TIMEOUT')
     expect(f.where).toBe('runner.test.ts:2')
   })
 
   test('silent when the same env key is assigned twice with different values', async () => {
     expect(await ruleIds('runner.test.ts', src(
       "test('a generous timeout completes', () => {",
-      "  process.env.CRAFT_ASSERT_TIMEOUT = '30'",
+      "  process.env.WORK_ASSERT_TIMEOUT = '30'",
       '  expect(run().ok).toBe(true)',
       '})',
       "test('a zero timeout gives up', () => {",
-      "  process.env.CRAFT_ASSERT_TIMEOUT = '0'",
+      "  process.env.WORK_ASSERT_TIMEOUT = '0'",
       '  expect(run().ok).toBe(false)',
       '})',
     ))).not.toContain(R4)
@@ -544,13 +544,13 @@ describe('a correct suite is clean under all four rules at once', () => {
     const found = await ruleIds('clean.test.ts', src(
       "const FAILURE_MESSAGE = 'plan NOT SAVED to disk'",
       "test('a generous timeout writes the report', () => {",
-      "  const cfg = { CRAFT_ASSERT_TIMEOUT: '30' }",
+      "  const cfg = { WORK_ASSERT_TIMEOUT: '30' }",
       '  const out = runHook(cfg, 30)',
       '  expect(out).toMatch(/plan saved to disk/i)',
       "  expect(readFileSync('docs/report.md', 'utf8')).toContain('single-distinct-literal')",
       '})',
       "test('a zero timeout gives up and says so', () => {",
-      "  const cfg = { CRAFT_ASSERT_TIMEOUT: '0' }",
+      "  const cfg = { WORK_ASSERT_TIMEOUT: '0' }",
       '  const out = runHook(cfg, 0)',
       '  expect(out).toContain(FAILURE_MESSAGE)',
       '})',

@@ -284,7 +284,7 @@ const SKIP_DIRS = new Set([
   // Declared temp and episode directories. `scratch/` in particular holds whole snapshot copies of
   // the plugin, so walking it reported every duplicated constraint module as a rival engine — 240
   // I1 findings about files nobody ships.
-  'scratch', 'logs', '.planning', '.tmp', '.base-ast-cache', '.craft',
+  'scratch', 'logs', '.planning', '.tmp', '.base-ast-cache', '.work',
 ])
 
 const SOURCE_EXT_RE = /\.(md|markdown|ts|mts|cts|js|mjs|cjs|sh|bash|py|json)$/i

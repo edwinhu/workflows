@@ -49,14 +49,14 @@ function fixture(extraArgs: Record<string, unknown> = {}) {
     }],
   }
   writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
-    `<!-- craft:dispatch\n${JSON.stringify({ runId: 'hb-run', args }, null, 2)}\n-->\n`)
-  return { dir, plan, runDir: join(dir, '.craft', 'hb-run') }
+    `<!-- work:dispatch\n${JSON.stringify({ runId: 'hb-run', args }, null, 2)}\n-->\n`)
+  return { dir, plan, runDir: join(dir, '.work', 'hb-run') }
 }
 
 /**
  * A real dispatch, with a real (fabricated) session id and a private TMPDIR — so work-hold.sh
  * writes a real state file this test can read, and cannot touch the hold of the live session
- * running the suite. CRAFT_FARM is stubbed so nothing is farmed out for real.
+ * running the suite. WORK_FARM is stubbed so nothing is farmed out for real.
  */
 function dispatch(
   f: { dir: string; plan: string },
@@ -72,7 +72,7 @@ function dispatch(
       encoding: 'utf8', timeout: 180_000, cwd: f.dir,
       env: {
         ...HERMETIC_ENV, CLAUDE_CODE_SESSION_ID: sid, TMPDIR: tmp,
-        CRAFT_NO_SCOPE: '1', CRAFT_FARM: farm, ...extraEnv,
+        WORK_NO_SCOPE: '1', WORK_FARM: farm, ...extraEnv,
       },
     })
     return { code: 0, out, sid, tmp }
@@ -83,7 +83,7 @@ function dispatch(
 
 describe('the self-send transport is gone, not merely unused', () => {
   /**
-   * TRACKED files only. `.craft/` run artifacts, `scratch/` and stale worktrees under
+   * TRACKED files only. `.work/` run artifacts, `scratch/` and stale worktrees under
    * `.claude/worktrees/` are gitignored records of what the transport DID, and rewriting history
    * is not what deleting a mechanism means — but a tracked file naming a script that no longer
    * exists is a dangling reference, and that is what this asserts against.
@@ -203,8 +203,8 @@ describe('half two: the cron is OPTIONAL, and the monitor is the wake', () => {
     expect(/cron:\s+(\S.*)$/m.exec(c.out)![1].trim()).toBe('7 * * * *')
   }, 60_000)
 
-  test('CRAFT_LOOP_INTERVAL_MINUTES opts in too, and sets the period', () => {
-    const c = dispatch(fixture(), { CRAFT_LOOP_INTERVAL_MINUTES: '120' })
+  test('WORK_LOOP_INTERVAL_MINUTES opts in too, and sets the period', () => {
+    const c = dispatch(fixture(), { WORK_LOOP_INTERVAL_MINUTES: '120' })
     expect(c.out).toContain('CronCreate')
     expect(/cron:\s+(\S.*)$/m.exec(c.out)![1].trim()).toBe('7 */2 * * *')
   }, 60_000)
@@ -214,7 +214,7 @@ describe('half two: the cron is OPTIONAL, and the monitor is the wake', () => {
     const prompt = /prompt:\s+(\S.*)$/m.exec(c.out)![1].trim()
     expect(prompt).toBe('and? (work run hb-run)')
     expect(prompt.length).toBeLessThan(60)
-    expect(prompt).not.toMatch(/plan\.md|work-result\.sh|result\.json|\.craft|CronDelete|authority|blocker/i)
+    expect(prompt).not.toMatch(/plan\.md|work-result\.sh|result\.json|\.work|CronDelete|authority|blocker/i)
   }, 60_000)
 
   /**

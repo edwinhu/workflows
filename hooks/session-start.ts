@@ -252,32 +252,37 @@ function truthy(v: string | string[] | undefined): boolean {
   return Array.isArray(v) ? v.length > 0 : v !== "";
 }
 
-/** `.craft/<run>` dirs under `root` holding args.json and no result.json, sorted. */
-function pendingCraftRuns(root: string): string[] {
-  const craftDir = join(root, ".craft");
-  if (!isDir(craftDir)) return [];
-  const pending: string[] = [];
-  try {
-    for (const run of readdirSync(craftDir)) {
-      const dir = join(craftDir, run);
-      if (!isDir(dir) || !existsSync(join(dir, "args.json"))) continue;
-      if (existsSync(join(dir, "result.json"))) continue;
-      pending.push(run);
+/** `.craft/` is the retired run root; it is still READ during the transition, never written. */
+const RUN_ROOTS = [".work", ".craft"];
+
+/** `<root>/<runRoot>/<run>` dirs holding args.json and no result.json, sorted. */
+function pendingWorkRuns(root: string): { run: string; base: string }[] {
+  const pending: { run: string; base: string }[] = [];
+  for (const base of RUN_ROOTS) {
+    const runRoot = join(root, base);
+    if (!isDir(runRoot)) continue;
+    try {
+      for (const run of readdirSync(runRoot)) {
+        const dir = join(runRoot, run);
+        if (!isDir(dir) || !existsSync(join(dir, "args.json"))) continue;
+        if (existsSync(join(dir, "result.json"))) continue;
+        pending.push({ run, base });
+      }
+    } catch {
+      // an unreadable run root claims nothing
     }
-  } catch {
-    return [];
   }
-  return pending.sort();
+  return pending.sort((a, b) => a.run.localeCompare(b.run));
 }
 
 /**
- * The plan's declared owning workflow: `.craft/<run>/args.json` → `planPath` → the plan's YAML
+ * The plan's declared owning workflow: `.work/<run>/args.json` → `planPath` → the plan's YAML
  * frontmatter `workflow:`. "" when anything on that chain is missing or unreadable — a run whose
  * plan declares nothing is `work`'s own and gets the unchanged line.
  */
-function runWorkflowName(root: string, run: string): string {
+function runWorkflowName(root: string, run: string, base = ".work"): string {
   try {
-    const args = JSON.parse(readFileSync(join(root, ".craft", run, "args.json"), "utf8"));
+    const args = JSON.parse(readFileSync(join(root, base, run, "args.json"), "utf8"));
     const planPath = args?.["planPath"];
     if (typeof planPath !== "string" || !planPath.trim()) return "";
     if (!existsSync(planPath)) return "";
@@ -290,7 +295,7 @@ function runWorkflowName(root: string, run: string): string {
 }
 
 /**
- * A work run that is armed but unfinished. `.craft/<run>/args.json` exists once a dispatch was
+ * A work run that is armed but unfinished. `.work/<run>/args.json` exists once a dispatch was
  * armed; a missing `result.json` means the round never landed. The plan is the authority, so it is
  * named rather than summarised — the session reads it.
  *
@@ -299,11 +304,11 @@ function runWorkflowName(root: string, run: string): string {
  * back to generic work and loses the domain's result handling and human review.
  */
 export function buildInProgressSection(root: string = process.cwd()): string {
-  const pending = pendingCraftRuns(root);
+  const pending = pendingWorkRuns(root);
   if (!pending.length) return "";
   const lines = ["## IN-PROGRESS WORK DETECTED", ""];
-  for (const run of pending) {
-    const name = runWorkflowName(root, run);
+  for (const { run, base } of pending) {
+    const name = runWorkflowName(root, run, base);
     if (name) {
       const skill = name.includes(":") ? name : `workflows:${name}`;
       lines.push(
@@ -461,7 +466,7 @@ export function buildSetupSection(
   const usesPlugin =
     existsSync(join(projectRoot, ".claude-workflows.json")) ||
     isDir(join(projectRoot, ".planning")) ||
-    isDir(join(projectRoot, ".craft"));
+    RUN_ROOTS.some(b => isDir(join(projectRoot, b)));
   if (!usesPlugin) return "";
 
   const problems: string[] = [];

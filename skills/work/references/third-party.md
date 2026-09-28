@@ -49,14 +49,14 @@ Runs via `agy` (Antigravity CLI — the gemini binary is sunset; `agy -p` is the
 
 ```bash
 d=$(mktemp -d) && trap 'rm -rf "$d"' EXIT      # NOT a fixed /tmp path — see below
-git diff HEAD > "$d/craft-review.diff"   # uncommitted changes; use the plan's diff scope if different
-wc -c "$d/craft-review.diff"             # if > 200000 bytes, truncate per-file and say so in the prompt
+git diff HEAD > "$d/work-review.diff"   # uncommitted changes; use the plan's diff scope if different
+wc -c "$d/work-review.diff"             # if > 200000 bytes, truncate per-file and say so in the prompt
 timeout 600 agy -p "You are a code reviewer. Review the following unified diff for correctness, safety, and scope. Number each finding, cite file and line, state severity (critical/major/minor). If the diff is clean, say 'No findings.'
 
-$(cat "$d/craft-review.diff")" --print-timeout 9m
+$(cat "$d/work-review.diff")" --print-timeout 9m
 ```
 
-**Why `mktemp -d` and not `/tmp/craft-review.diff`.** This file is read and followed by the
+**Why `mktemp -d` and not `/tmp/work-review.diff`.** This file is read and followed by the
 third-party leg, which under `readOnly` is pinned to `Explore` — no Edit, no Write, but `Bash`
 survives, so a shell redirect in these instructions still lands on disk. A fixed path made that a
 write the CALLER could not prevent: the caller passes the string `"gemini"`, not a command, so

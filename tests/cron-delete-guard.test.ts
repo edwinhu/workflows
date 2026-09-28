@@ -13,7 +13,7 @@ function mkRun(
   name: string,
   opts: { crons?: string[]; finished?: boolean; indent?: string } = {},
 ) {
-  const dir = join(cwd, '.craft', name)
+  const dir = join(cwd, '.work', name)
   mkdirSync(dir, { recursive: true })
   const args: Record<string, unknown> = { projectDir: cwd, planPath: `/plans/${name}.md`, tasks: [] }
   if (opts.crons) args.heartbeatCrons = opts.crons
@@ -28,7 +28,7 @@ function newCwd() {
 
 /**
  * The run-based rule only: a payload with NO session_id, and a fresh TMPDIR, so no ambient hold
- * ledger can reach the hook and decide the case before the .craft scan does.
+ * ledger can reach the hook and decide the case before the .work scan does.
  */
 function guard(cwd: string, id: string, env: Record<string, string> = {}) {
   const r = spawnSync('bun', [HOOK], {
@@ -51,7 +51,7 @@ function record(cwd: string, prompt: string, response: unknown) {
 }
 
 const crons = (cwd: string, name: string) =>
-  JSON.parse(readFileSync(join(cwd, '.craft', name, 'args.json'), 'utf8')).heartbeatCrons
+  JSON.parse(readFileSync(join(cwd, '.work', name, 'args.json'), 'utf8')).heartbeatCrons
 
 describe('the guard is task-specific', () => {
   // The bug: run A finished, its heartbeat kept firing for hours because unrelated run B was live.
@@ -71,7 +71,7 @@ describe('the guard is task-specific', () => {
     mkRun(cwd, 'run-b', { crons: ['ab12cd34'] })
     const r = guard(cwd, 'ab12cd34')
     expect(r.decision).toBe('deny')
-    expect(r.reason).toContain('.craft/run-b/args.json')
+    expect(r.reason).toContain('.work/run-b/args.json')
     expect(r.reason).toContain('heartbeatCrons')
   })
 
@@ -81,7 +81,7 @@ describe('the guard is task-specific', () => {
     const r = guard(cwd, 'deadbeef')
     expect(r.decision).toBe('deny')
     expect(r.reason).toContain('no run')
-    expect(r.reason).toContain('.craft/run-b/args.json')
+    expect(r.reason).toContain('.work/run-b/args.json')
   })
 
   test('an unclaimed id with nothing in flight allows', () => {
@@ -94,7 +94,7 @@ describe('the guard is task-specific', () => {
     const cwd = newCwd()
     mkRun(cwd, 'run-b', { crons: ['ab12cd34'] })
     expect(guard(cwd, 'ab12cd34').decision).toBe('deny')
-    expect(guard(cwd, 'ab12cd34', { CRAFT_ALLOW_CRON_DELETE: '1' }).decision).toBe('allow')
+    expect(guard(cwd, 'ab12cd34', { WORK_ALLOW_CRON_DELETE: '1' }).decision).toBe('allow')
   })
 })
 
@@ -103,7 +103,7 @@ describe('record mode', () => {
     const cwd = newCwd()
     mkRun(cwd, 'run-a')
     mkRun(cwd, 'run-b')
-    const r = record(cwd, 'bash work-loop.sh .craft/run-a', { id: '541afe58' })
+    const r = record(cwd, 'bash work-loop.sh .work/run-a', { id: '541afe58' })
     expect(r.status).toBe(0)
     expect(r.stdout.trim()).toBe('') // never prints a decision
     expect(crons(cwd, 'run-a')).toEqual(['541afe58'])
@@ -113,10 +113,10 @@ describe('record mode', () => {
   test('is idempotent, and preserves the other fields and the file’s formatting', () => {
     const cwd = newCwd()
     mkRun(cwd, 'run-a')
-    const before = readFileSync(join(cwd, '.craft', 'run-a', 'args.json'), 'utf8')
-    record(cwd, 'loop for .craft/run-a', { id: '541afe58' })
-    record(cwd, 'loop for .craft/run-a', { id: '541afe58' })
-    const after = readFileSync(join(cwd, '.craft', 'run-a', 'args.json'), 'utf8')
+    const before = readFileSync(join(cwd, '.work', 'run-a', 'args.json'), 'utf8')
+    record(cwd, 'loop for .work/run-a', { id: '541afe58' })
+    record(cwd, 'loop for .work/run-a', { id: '541afe58' })
+    const after = readFileSync(join(cwd, '.work', 'run-a', 'args.json'), 'utf8')
     expect(JSON.parse(after).heartbeatCrons).toEqual(['541afe58'])
     expect(JSON.parse(after).planPath).toBe('/plans/run-a.md')
     expect(after.split('\n')[1]).toMatch(/^ {2}"/) // same 2-space indent
@@ -127,8 +127,8 @@ describe('record mode', () => {
   test('a second cron for the same run appends rather than replaces', () => {
     const cwd = newCwd()
     mkRun(cwd, 'run-a')
-    record(cwd, '.craft/run-a', { id: '541afe58' })
-    record(cwd, '.craft/run-a', { id: 'ab12cd34' })
+    record(cwd, '.work/run-a', { id: '541afe58' })
+    record(cwd, '.work/run-a', { id: 'ab12cd34' })
     expect(crons(cwd, 'run-a')).toEqual(['541afe58', 'ab12cd34'])
     expect(guard(cwd, 'ab12cd34').decision).toBe('deny')
   })
@@ -136,14 +136,14 @@ describe('record mode', () => {
   test('reads the id out of a STRING tool_response too', () => {
     const cwd = newCwd()
     mkRun(cwd, 'run-a')
-    record(cwd, '.craft/run-a', 'Scheduled job 541afe58 (*/7 * * * *)')
+    record(cwd, '.work/run-a', 'Scheduled job 541afe58 (*/7 * * * *)')
     expect(crons(cwd, 'run-a')).toEqual(['541afe58'])
   })
 
   test('a response with no id, and a prompt naming no run, change nothing and exit 0', () => {
     const cwd = newCwd()
     mkRun(cwd, 'run-a')
-    expect(record(cwd, '.craft/run-a', { status: 'ok' }).status).toBe(0)
+    expect(record(cwd, '.work/run-a', { status: 'ok' }).status).toBe(0)
     expect(record(cwd, 'nothing to do with any run', { id: '541afe58' }).status).toBe(0)
     expect(crons(cwd, 'run-a')).toBeUndefined()
   })
@@ -218,7 +218,7 @@ describe('the hold gate: CronDelete waits on an ARMED hold, and on nothing else'
   test('the override allows through the hold gate too', () => {
     const h = holdLedger([['armed', '{"check":"false"}']], { armed: true })
     expect(guardIn(quietCwd(), '541afe58', h).decision).toBe('deny')
-    expect(guardIn(quietCwd(), '541afe58', h, { CRAFT_ALLOW_CRON_DELETE: '1' }).decision).toBe('allow')
+    expect(guardIn(quietCwd(), '541afe58', h, { WORK_ALLOW_CRON_DELETE: '1' }).decision).toBe('allow')
   })
 
   test('NO ledger for the session keeps the old run-based rule, both ways', () => {
@@ -227,14 +227,14 @@ describe('the hold gate: CronDelete waits on an ARMED hold, and on nothing else'
     const busy = newCwd()
     mkRun(busy, 'run-b', { crons: ['ab12cd34'] })
     expect(guardIn(busy, 'ab12cd34', none).decision).toBe('deny')
-    expect(guardIn(busy, 'ab12cd34', none).reason).toContain('.craft/run-b/args.json')
+    expect(guardIn(busy, 'ab12cd34', none).reason).toContain('.work/run-b/args.json')
   })
 
   /**
    * The identity comes from the PAYLOAD and from nowhere else. An ambient CLAUDE_CODE_SESSION_ID
    * used to be read when the payload named no session, so the hook answered about whatever session
    * merely LAUNCHED it — measured 2026-09-27, four tests above denied with the reason quoting the
-   * live session's own ledger and a `.craft` run in an unrelated repository.
+   * live session's own ledger and a `.work` run in an unrelated repository.
    */
   test('an ambient CLAUDE_CODE_SESSION_ID is NOT a session — the payload is the only source', () => {
     const h = holdLedger([['passed-unjudged', 'false']], { armed: true })

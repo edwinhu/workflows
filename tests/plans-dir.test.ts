@@ -36,7 +36,7 @@ function plantWritingPlan(path: string, domain = 'legal') {
   mkdirSync(dirname(path), { recursive: true })
   writeFileSync(
     path,
-    `# plan\n\n<!-- craft:dispatch {"runId":"r","args":{"goal":"g"}} -->\n\n` +
+    `# plan\n\n<!-- work:dispatch {"runId":"r","args":{"goal":"g"}} -->\n\n` +
       `## Writing Intent\n\n- Domain: ${domain}\n\n## Source Plan\n\n- Notebook: none\n`,
   )
 }

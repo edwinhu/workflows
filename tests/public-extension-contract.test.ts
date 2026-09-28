@@ -41,13 +41,22 @@ const EXPECTED_ROWS: ContractRow[] = [
     compatibility: "API result and existing CLI output remain compatible within contract 1",
   },
   {
-    capability: "craft-spine-runner",
-    descriptorSchema: "craft:dispatch args: projectDir + planPath + specHash + goal + tasks, run under the Workflow runtime",
+    capability: "work-spine-runner",
+    descriptorSchema: "work:dispatch args: projectDir + planPath + specHash + goal + tasks, run under the Workflow runtime",
     contractVersion: "1",
-    discoveryInput: "Explicit projectDir + the plan's canonical craft:dispatch specHash + the approved task list; never discovers planning authority",
+    discoveryInput: "Explicit projectDir + the plan's canonical work:dispatch specHash + the approved task list; never discovers planning authority",
     successEvidence: "{ overallPass, verdict, scoreTable, implemented, verified, findings, refutedFindings, reviews, tasksThatFlagged, carriedForward, domainRun } — the gate computed in JS from raw counts",
     rejectionEvidence: "Thrown Error before any agent is dispatched",
     compatibility: "The spec block in the approved plan is the sole authority and its hash is verified by every dispatched agent; the returned gate keys and the fail-closed-on-dead-agent rule remain compatible within contract 1",
+  },
+  {
+    capability: "craft-spine-runner",
+    descriptorSchema: "DEPRECATED ALIAS of `work-spine-runner` — identical implementation, inputs and evidence",
+    contractVersion: "1",
+    discoveryInput: "Identical to `work-spine-runner`; resolves the same implementation path",
+    successEvidence: "Identical to `work-spine-runner`",
+    rejectionEvidence: "Identical to `work-spine-runner`",
+    compatibility: "Retained only so consumers pinned to the retired `craft` name keep resolving; it will be removed in a later major version — migrate to `work-spine-runner`",
   },
 ];
 
@@ -157,7 +166,7 @@ describe("public extension contract integration", () => {
     // A gitignored scratch path can never be a public consumer's authority.
     expect(documentation).not.toContain(".planning/STAGE1_EVIDENCE.md");
     expect(documentation).not.toContain(".claude/plans/");
-    // The two facts a craft-spine-runner consumer cannot discover for itself.
+    // The two facts a work-spine-runner consumer cannot discover for itself.
     expect(documentation).toContain("specHash");
     expect(documentation).toContain("overallPass");
     // Retired names must stay documented as retired, so a consumer of one learns why it broke.

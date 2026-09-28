@@ -4,7 +4,7 @@
  *
  * The run dir does not have to live under the same root as the plan file. A dispatch block may name
  * a `projectDir` elsewhere, which is correct when the deliverable is a NEW repo that did not exist
- * at plan time; work-dispatch.sh writes .craft/<runId>/ there. Searching only the plan's root then
+ * at plan time; work-dispatch.sh writes .work/<runId>/ there. Searching only the plan's root then
  * found no args.json and reported a RUNNING run as undispatched forever, blocking every turn-end
  * with "the verdict is owed" and inviting a SECOND concurrent dispatch of the same plan.
  *
@@ -37,7 +37,7 @@ mkdirSync(EMPTY_HOME, { recursive: true })
 function plantPlan(name: string, block: string, plansDir = '.claude/plans'): string {
   const root = join(TMP, name)
   mkdirSync(join(root, plansDir), { recursive: true })
-  writeFileSync(join(root, plansDir, 'p.md'), `# ${name}\n\n<!-- craft:dispatch ${block} -->\n`)
+  writeFileSync(join(root, plansDir, 'p.md'), `# ${name}\n\n<!-- work:dispatch ${block} -->\n`)
   return root
 }
 
@@ -53,10 +53,10 @@ function specHash(root: string, plansDir = '.claude/plans'): string {
   }).trim()
 }
 
-/** Record a dispatch of `hash` in `<dir>/.craft/<runId>/args.json`, as work-dispatch.sh would. */
+/** Record a dispatch of `hash` in `<dir>/.work/<runId>/args.json`, as work-dispatch.sh would. */
 function recordDispatch(dir: string, runId: string, hash: string) {
-  mkdirSync(join(dir, '.craft', runId), { recursive: true })
-  writeFileSync(join(dir, '.craft', runId, 'args.json'), JSON.stringify({ specHash: hash }))
+  mkdirSync(join(dir, '.work', runId), { recursive: true })
+  writeFileSync(join(dir, '.work', runId, 'args.json'), JSON.stringify({ specHash: hash }))
 }
 
 /**
@@ -104,12 +104,12 @@ describe('work-pending: a run dispatched under a DIFFERENT projectDir', () => {
 
   test('an abandon recorded under projectDir releases the hold', () => {
     const elsewhere = join(TMP, 'elsewhere-abandoned')
-    mkdirSync(join(elsewhere, '.craft'), { recursive: true })
+    mkdirSync(join(elsewhere, '.work'), { recursive: true })
     const root = plantPlan(
       'abandoned',
       JSON.stringify({ runId: 'r', args: { projectDir: elsewhere, goal: 'g' } }),
     )
-    writeFileSync(join(elsewhere, '.craft/abandoned'), `${specHash(root)}\n`)
+    writeFileSync(join(elsewhere, '.work/abandoned'), `${specHash(root)}\n`)
     expect(pending(root)).toBe('')
   })
 
@@ -212,7 +212,7 @@ describe('work-pending: plansDirectory decides where the plan is', () => {
     const plans = join(TMP, 'abs-plansdir-elsewhere')
     mkdirSync(plans, { recursive: true })
     setPlansDirectory(root, plans)
-    writeFileSync(join(plans, 'p.md'), `# abs\n\n<!-- craft:dispatch ${JSON.stringify({ runId: 'r', args: { goal: 'g' } })} -->\n`)
+    writeFileSync(join(plans, 'p.md'), `# abs\n\n<!-- work:dispatch ${JSON.stringify({ runId: 'r', args: { goal: 'g' } })} -->\n`)
     expect(pending(root)).toBe(join(plans, 'p.md'))
   })
 

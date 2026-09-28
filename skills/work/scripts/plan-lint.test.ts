@@ -383,7 +383,7 @@ afterAll(() => dirs.forEach(d => rmSync(d, { recursive: true, force: true })))
 function dispatch(f: { dir: string; plan: string }) {
   try {
     const stdout = execFileSync('bash', [DISPATCH, f.plan], {
-      encoding: 'utf8', cwd: f.dir, env: { ...process.env, CRAFT_DISPATCH_DRYRUN: '1' },
+      encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1' },
     })
     return { code: 0, out: stdout }
   } catch (e: any) {
@@ -484,7 +484,7 @@ test('an edge to an unknown id is dropped, exactly as workflow.js drops one outs
 })
 
 test('--json carries the graph so a consumer need not recompute it', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'craft-graph-'))
+  const dir = mkdtempSync(join(tmpdir(), 'work-graph-'))
   dirs.push(dir)
   const a = join(dir, 'args.json')
   writeFileSync(a, JSON.stringify({
@@ -507,7 +507,7 @@ test('--json carries the graph so a consumer need not recompute it', () => {
 
 /** A clean multi-task plan whose only interesting property is its dependsOn edges. */
 function graphFixture(spec: [string, string[]][]) {
-  const dir = mkdtempSync(join(tmpdir(), 'craft-graph-'))
+  const dir = mkdtempSync(join(tmpdir(), 'work-graph-'))
   dirs.push(dir)
   redScript(dir)
   const plan = join(dir, 'plan.md')
@@ -524,8 +524,8 @@ function graphFixture(spec: [string, string[]][]) {
       reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' }],
     },
   }
-  writeFileSync(plan, `# Plan\n\n## Run sizing\n\n<!-- craft:dispatch\n${JSON.stringify(block, null, 2)}\n-->\n`)
-  return { dir, plan, args: join(dir, '.craft', RUN_ID, 'args.json') }
+  writeFileSync(plan, `# Plan\n\n## Run sizing\n\n<!-- work:dispatch\n${JSON.stringify(block, null, 2)}\n-->\n`)
+  return { dir, plan, args: join(dir, '.work', RUN_ID, 'args.json') }
 }
 
 test('work-dispatch.sh prints a serial chain as one wave per task', () => {
@@ -810,7 +810,7 @@ test('a clean goalCheck raises nothing', () => {
 test('a goalCheck that reads a ROUND VERDICT is critical — hold-lint refuses it', () => {
   const p = base({
     mechanicalChecks: [{ name: 'm', cmd: 'bun test' }],
-    goalCheck: 'bash skills/work/scripts/work-result.sh .craft/r/result.json',
+    goalCheck: 'bash skills/work/scripts/work-result.sh .work/r/result.json',
   })
   const f = lint(p).find(x => x.rule === 'goalcheck-round-verdict')
   expect(f, 'no goalcheck-round-verdict finding').toBeDefined()

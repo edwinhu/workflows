@@ -19,15 +19,15 @@ afterAll(() => rmSync(TMP, { recursive: true, force: true }));
 function project(name: string, body: string | null, opts: { result?: boolean } = {}): string {
   const dir = join(TMP, name);
   mkdirSync(join(dir, ".claude", "plans"), { recursive: true });
-  mkdirSync(join(dir, ".craft", "0912-run"), { recursive: true });
+  mkdirSync(join(dir, ".work", "0912-run"), { recursive: true });
   let planPath = join(dir, ".claude", "plans", "plan.md");
   if (body === null) {
     planPath = join(dir, ".claude", "plans", "missing.md");
   } else {
     writeFileSync(planPath, body);
   }
-  writeFileSync(join(dir, ".craft", "0912-run", "args.json"), JSON.stringify({ planPath }));
-  if (opts.result) writeFileSync(join(dir, ".craft", "0912-run", "result.json"), "{}");
+  writeFileSync(join(dir, ".work", "0912-run", "args.json"), JSON.stringify({ planPath }));
+  if (opts.result) writeFileSync(join(dir, ".work", "0912-run", "result.json"), "{}");
   return dir;
 }
 

@@ -3014,7 +3014,7 @@ describe('D32 — a HOME-rooted path in prose is resolved, not discarded', () =>
 // ------------------------------------------------------------------ D33
 
 /**
- * A craft-args fence: one `mechanicalChecks` array of `count` entries and one `reviewLenses`
+ * A work-args fence: one `mechanicalChecks` array of `count` entries and one `reviewLenses`
  * array with the given keys. Every lens declares `refs`, so P7 has nothing to say about it.
  */
 const argsFence = (count: number, lensKeys: string[]) =>
@@ -3035,7 +3035,7 @@ const rulesOf = (dir: string, prefix: string) =>
   probe.runProbe(dir).findings.filter((f: any) => String(f.rule).startsWith(prefix))
 
 describe('D33 — P10: a workflow declares ONE mechanical entry point', () => {
-  test('P10 fires on a craft-args fence declaring two mechanicalChecks entries', () => {
+  test('P10 fires on a work-args fence declaring two mechanicalChecks entries', () => {
     const dir = fixture({ 'SKILL.md': `${skillMd('two')}\n${argsFence(2, ['a'])}\n` })
     expect(rulesOf(dir, 'P10').length).toBe(1)
     expect(cli(['--target', dir]).code).toBe(1)
@@ -3072,7 +3072,7 @@ describe('D33 — P10: a workflow declares ONE mechanical entry point', () => {
 
 // ------------------------------------------------------------------ D34
 
-describe('D34 — P11: two craft-args fences declare the same lens set', () => {
+describe('D34 — P11: two work-args fences declare the same lens set', () => {
   test('P11 fires when two fences declare different lens sets and nothing declares why', () => {
     const dir = fixture({
       'SKILL.md': `${skillMd('drift')}\n${argsFence(1, ['gate', 'spine', 'scope'])}\n\nprose\n\n${argsFence(1, ['gate', 'spine'])}\n`,
@@ -3129,7 +3129,7 @@ describe('D34 — P11: two craft-args fences declare the same lens set', () => {
     expect(rulesOf(dir, 'P11').length).toBe(1)
   })
 
-  test('one craft-args fence has nothing to disagree with', () => {
+  test('one work-args fence has nothing to disagree with', () => {
     const dir = fixture({ 'SKILL.md': `${skillMd('single')}\n${argsFence(1, ['gate'])}\n` })
     expect(rulesOf(dir, 'P11')).toEqual([])
   })
@@ -3164,7 +3164,7 @@ describe('D34 — P11: two craft-args fences declare the same lens set', () => {
 
 // ------------------------------------------------------------------ D35
 
-/** A craft-args fence carrying a `projectDir` string literal. */
+/** A work-args fence carrying a `projectDir` string literal. */
 const argsFenceWithProjectDir = (projectDir: string) =>
   [
     '```js',
@@ -3186,7 +3186,7 @@ function repoFixture(files: Record<string, string>): string {
   return dir
 }
 
-describe('D35 — P12: a craft-args fence dispatches through work-dispatch.sh', () => {
+describe('D35 — P12: a work-args fence dispatches through work-dispatch.sh', () => {
   test('(a) naming a runner and never work-dispatch.sh is a CRITICAL', () => {
     const dir = fixture({
       'SKILL.md': `${skillMd('handrolled', 'Dispatch with `farm.sh` and the args file.')}\n${argsFence(1, ['gate'])}\n`,
@@ -3249,7 +3249,7 @@ describe('D35 — P12: a craft-args fence dispatches through work-dispatch.sh', 
     expect(rulesOf(dir, 'P12')).toEqual([])
   })
 
-  test('(a) a file naming a runner but emitting NO craft-args fence is not judged', () => {
+  test('(a) a file naming a runner but emitting NO work-args fence is not judged', () => {
     const dir = fixture({ 'SKILL.md': skillMd('nofence', 'Dispatch with `farm.sh`.') })
     expect(rulesOf(dir, 'P12')).toEqual([])
   })
@@ -3279,7 +3279,7 @@ describe('D35 — P12: a craft-args fence dispatches through work-dispatch.sh', 
   })
 
   test('(b) is clean when the file passes --run-dir somewhere', () => {
-    const body = ['Routed through `work-dispatch.sh`.', '', '    --run-dir /home/user/.local/state/craft'].join('\n')
+    const body = ['Routed through `work-dispatch.sh`.', '', '    --run-dir /home/user/.local/state/work'].join('\n')
     const dir = repoFixture({
       'SKILL.md': `${skillMd('rundir', body)}\n${argsFenceWithProjectDir('/home/user/areas/example')}\n`,
     })
@@ -3308,8 +3308,8 @@ describe('D35 — P12: a craft-args fence dispatches through work-dispatch.sh', 
     expect(rulesOf(dir, 'P12')).toEqual([])
   })
 
-  test('craftArgsFences reports the projectDir literal P12(b) reads', () => {
-    const fences = probe.craftArgsFences(argsFenceWithProjectDir('/home/user/areas/example'))
+  test('workArgsFences reports the projectDir literal P12(b) reads', () => {
+    const fences = probe.workArgsFences(argsFenceWithProjectDir('/home/user/areas/example'))
     expect(fences.length).toBe(1)
     expect(fences[0].projectDir).toBe('/home/user/areas/example')
     expect(fences[0].projectDirLine).toBe(3)
@@ -3324,7 +3324,7 @@ describe('D35 — P12: a craft-args fence dispatches through work-dispatch.sh', 
 // ------------------------------------------------------------------ D36
 
 /**
- * A craft-args fence that enumerates instances three ways — the `--lecture NN:` specs of the one
+ * A work-args fence that enumerates instances three ways — the `--lecture NN:` specs of the one
  * mechanical command, the `scoredChecks[].items` lines, and the numeric suffix of a lens key — over
  * whatever `tasks[]` rows are given.
  */
@@ -3494,8 +3494,8 @@ describe('D36 — P13: every enumerated instance has a task row', () => {
     expect(rulesOf(dir, 'P9')).toEqual([])
   })
 
-  test('craftArgsFences reports the task ids and enumerated instances P13 reads', () => {
-    const fences = probe.craftArgsFences(
+  test('workArgsFences reports the task ids and enumerated instances P13 reads', () => {
+    const fences = probe.workArgsFences(
       argsFenceWithTasks({ taskIds: ['content-18'], lectures: ['18', '19'], scoredIds: ['19'], lensIds: ['19'] }),
     )
     expect(fences.length).toBe(1)

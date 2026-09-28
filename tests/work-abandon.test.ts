@@ -3,7 +3,7 @@
  *
  * A run walked away from leaves two things behind that outlive it: a run dir with no result.json,
  * which cron-delete-guard.ts reads as in-flight forever, and (if one was armed) a hold nothing
- * will ever release. The escape used to be CRAFT_ALLOW_CRON_DELETE, an env var the SESSION sets for
+ * will ever release. The escape used to be WORK_ALLOW_CRON_DELETE, an env var the SESSION sets for
  * itself — which is not a user decision at all.
  *
  * Run: bun test tests/work-abandon.test.ts
@@ -23,7 +23,7 @@ const GUARD = join(import.meta.dir, '..', 'hooks', 'cron-delete-guard.ts')
 function fixture(opts: { result?: string; armed?: boolean } = {}) {
   const tmp = mkdtempSync(join(tmpdir(), 'abandon-'))
   const cwd = mkdtempSync(join(tmpdir(), 'abandon-cwd-'))
-  const run = join(cwd, '.craft', 'r1')
+  const run = join(cwd, '.work', 'r1')
   mkdirSync(run, { recursive: true })
   writeFileSync(join(run, 'args.json'),
     JSON.stringify({ projectDir: cwd, mechanicalChecks: [], heartbeatCrons: ['541afe58'] }))

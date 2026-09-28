@@ -931,7 +931,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   const cleanOut = buildSetupSection(clean, ROOT)
   ok('the detector is SILENT on a healthy project', cleanOut === '', JSON.stringify(cleanOut))
 
-  // Unrelated repo — no governance file, no .planning/, no .craft/: the gate keeps it quiet.
+  // Unrelated repo — no governance file, no .planning/, no .work/: the gate keeps it quiet.
   const unrelated = mkdtempSync(join(tmpdir(), 'setup-unrelated-'))
   ok('the detector does not nag in an unrelated repo', buildSetupSection(unrelated, ROOT) === '')
 

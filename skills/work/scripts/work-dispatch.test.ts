@@ -54,15 +54,15 @@ function fixture(opts: { redCommand: string; extraArgs?: Record<string, unknown>
     ...(opts.extraArgs ?? {}),
   }
   writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
-    `<!-- craft:dispatch\n${JSON.stringify({ runId: 'probe-run', args }, null, 2)}\n-->\n`)
-  return { dir, plan, runDir: join(dir, '.craft', 'probe-run'), argsPath: join(dir, '.craft', 'probe-run', 'args.json') }
+    `<!-- work:dispatch\n${JSON.stringify({ runId: 'probe-run', args }, null, 2)}\n-->\n`)
+  return { dir, plan, runDir: join(dir, '.work', 'probe-run'), argsPath: join(dir, '.work', 'probe-run', 'args.json') }
 }
 
 /** Dispatch, stopped short of the goal self-send and the farm-out. The probe still runs. */
 function dispatch(f: { dir: string; plan: string }, ...extra: string[]) {
   try {
     const stdout = execFileSync('bash', [SCRIPT, ...extra, f.plan], {
-      encoding: 'utf8', cwd: f.dir, env: { ...process.env, CRAFT_DISPATCH_DRYRUN: '1' },
+      encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1' },
     })
     return { code: 0, out: stdout }
   } catch (e: any) {
@@ -78,18 +78,18 @@ describe('the goal names the round budget work actually enforces', () => {
    * maxRounds of 3. The round escape was dead, which is how a 10-minute wall clock became the only
    * escape that ever fired.
    *
-   * CRAFT_GOAL_PRINT composes the goal and stops, running no commands and writing no args.json —
+   * WORK_GOAL_PRINT composes the goal and stops, running no commands and writing no args.json —
    * the goal is otherwise sent as the last act of a real dispatch, where a test cannot observe it.
    */
   function goalOf(f: { dir: string; plan: string }, env: Record<string, string> = {}) {
     return execFileSync('bash', [SCRIPT, f.plan], {
-      // BOTH seams, deliberately. CRAFT_GOAL_PRINT is what this test exercises; CRAFT_DISPATCH_DRYRUN
-      // is the backstop. Observed 2026-08-27: while CRAFT_GOAL_PRINT was still RED, these three
+      // BOTH seams, deliberately. WORK_GOAL_PRINT is what this test exercises; WORK_DISPATCH_DRYRUN
+      // is the backstop. Observed 2026-08-27: while WORK_GOAL_PRINT was still RED, these three
       // tests fell through to a FULL dispatch — a real farm-out against a /tmp fixture, agents paid
       // for, and a `/goal` naming that fixture self-sent into the developer's own session. A test
       // that invokes this script must never be one broken branch away from dispatching.
       encoding: 'utf8', cwd: f.dir,
-      env: { ...process.env, CRAFT_GOAL_PRINT: '1', CRAFT_DISPATCH_DRYRUN: '1', ...env },
+      env: { ...process.env, WORK_GOAL_PRINT: '1', WORK_DISPATCH_DRYRUN: '1', ...env },
     })
   }
 
@@ -386,7 +386,7 @@ describe('the dispatched plan is archived, so a run carries the plan it was appr
   test('--run-dir puts the archive with the run it belongs to, not in the tree the run may not write', () => {
     const f = fixture({ redCommand: 'bash scripts/check.sh' })
     script(f.dir, 'check.sh', 'echo "1 failed"\nexit 1')
-    const elsewhere = mkdtempSync(join(tmpdir(), 'craft-runs-'))
+    const elsewhere = mkdtempSync(join(tmpdir(), 'work-runs-'))
     scratch.push(elsewhere)
     expect(dispatch(f, '--run-dir', elsewhere).code).toBe(0)
     expect(archives(join(elsewhere, 'probe-run'))).toHaveLength(1)
@@ -460,7 +460,7 @@ describe('redDisposition breaks the red deadlock and is echoed, never validated'
  * THE SPEC IS THE AUTHORITY, NOT THE PROSE.
  *
  * Dispatch used to hash the whole plan markdown, so the rationale paragraphs around the
- * `craft:dispatch` block were authenticated too: fixing a typo in prose invalidated a live run and
+ * `work:dispatch` block were authenticated too: fixing a typo in prose invalidated a live run and
  * cost a round. The authored SPEC is the block; the prose explains it. So the hash is over the
  * CANONICAL form of the parsed block — `json.dumps(parsed, sort_keys=True, separators=(',',':'))` —
  * which makes reindenting and key reordering free and any value change loud.
@@ -468,10 +468,10 @@ describe('redDisposition breaks the red deadlock and is echoed, never validated'
 describe('--spec-hash hashes the authored spec, not the bytes around it', () => {
   /** A plan carrying an arbitrary dispatch block plus prose, written to its own temp dir. */
   function planWith(block: unknown, prose = 'Some rationale.\n', indent: number | string = 2) {
-    const dir = mkdtempSync(join(tmpdir(), 'craft-spechash-'))
+    const dir = mkdtempSync(join(tmpdir(), 'work-spechash-'))
     scratch.push(dir)
     const p = join(dir, 'plan.md')
-    writeFileSync(p, `# Plan\n\n${prose}\n<!-- craft:dispatch\n${JSON.stringify(block, null, indent as any)}\n-->\n`)
+    writeFileSync(p, `# Plan\n\n${prose}\n<!-- work:dispatch\n${JSON.stringify(block, null, indent as any)}\n-->\n`)
     return p
   }
   function specHash(plan: string) {
@@ -519,22 +519,22 @@ describe('--spec-hash hashes the authored spec, not the bytes around it', () => 
     expect(specHash(planWith(edited)).out).not.toBe(a.out)
   })
 
-  test('a plan with no craft:dispatch block fails loudly rather than printing a hash', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'craft-spechash-'))
+  test('a plan with no work:dispatch block fails loudly rather than printing a hash', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'work-spechash-'))
     scratch.push(dir)
     const p = join(dir, 'plan.md')
     writeFileSync(p, '# Plan with prose only\n')
     const r = specHash(p)
     expect(r.code).not.toBe(0)
     expect(r.out).not.toMatch(/[0-9a-f]{64}/)
-    expect(r.out).toMatch(/craft:dispatch/)
+    expect(r.out).toMatch(/work:dispatch/)
   })
 
   test('a block that is not valid JSON fails loudly rather than printing a hash', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'craft-spechash-'))
+    const dir = mkdtempSync(join(tmpdir(), 'work-spechash-'))
     scratch.push(dir)
     const p = join(dir, 'plan.md')
-    writeFileSync(p, '# Plan\n\n<!-- craft:dispatch\n{ "runId": "x", oops\n-->\n')
+    writeFileSync(p, '# Plan\n\n<!-- work:dispatch\n{ "runId": "x", oops\n-->\n')
     const r = specHash(p)
     expect(r.code).not.toBe(0)
     expect(r.out).not.toMatch(/[0-9a-f]{64}/)
@@ -587,11 +587,11 @@ describe('dispatch injects specHash, and planHash is gone', () => {
  */
 describe('--covers separates the run\'s own output from what no task may write', () => {
   function planWith(tasks: unknown[], extra: Record<string, unknown> = {}) {
-    const dir = mkdtempSync(join(tmpdir(), 'craft-covers-'))
+    const dir = mkdtempSync(join(tmpdir(), 'work-covers-'))
     scratch.push(dir)
     const p = join(dir, 'plan.md')
     const block = { runId: 'covers-run', args: { projectDir: dir, goal: 'g', tasks, ...extra } }
-    writeFileSync(p, `# Plan\n\n<!-- craft:dispatch\n${JSON.stringify(block, null, 2)}\n-->\n`)
+    writeFileSync(p, `# Plan\n\n<!-- work:dispatch\n${JSON.stringify(block, null, 2)}\n-->\n`)
     return { dir, plan: p }
   }
   /** 0 covered, 1 outside every writable set, 2 undecidable. */
@@ -672,7 +672,7 @@ describe('--covers separates the run\'s own output from what no task may write',
   })
 
   test('--scaffold: an unparseable plan is undecidable, so the guard fails closed there too', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'craft-scaffold-'))
+    const dir = mkdtempSync(join(tmpdir(), 'work-scaffold-'))
     scratch.push(dir)
     const p = join(dir, 'plan.md')
     writeFileSync(p, '# Plan\n\nno dispatch block\n')
@@ -680,10 +680,10 @@ describe('--covers separates the run\'s own output from what no task may write',
   })
 
   test('an unparseable or blockless plan is undecidable, so the guard fails closed', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'craft-covers-'))
+    const dir = mkdtempSync(join(tmpdir(), 'work-covers-'))
     scratch.push(dir)
     const bad = join(dir, 'bad.md')
-    writeFileSync(bad, '# Plan\n\n<!-- craft:dispatch\n{not json,\n-->\n')
+    writeFileSync(bad, '# Plan\n\n<!-- work:dispatch\n{not json,\n-->\n')
     expect(covers(bad, '/tmp/x')).toBe(2)
     const none = join(dir, 'none.md')
     writeFileSync(none, '# Plan\n\nno block here\n')

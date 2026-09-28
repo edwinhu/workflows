@@ -77,8 +77,8 @@ function fixture() {
     }],
   }
   writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
-    `<!-- craft:dispatch\n${JSON.stringify({ runId: 'scope-run', args }, null, 2)}\n-->\n`)
-  return { dir, plan, runDir: join(dir, '.craft', 'scope-run') }
+    `<!-- work:dispatch\n${JSON.stringify({ runId: 'scope-run', args }, null, 2)}\n-->\n`)
+  return { dir, plan, runDir: join(dir, '.work', 'scope-run') }
 }
 
 function dispatch(f: { dir: string; plan: string }, env: Record<string, string>) {
@@ -118,9 +118,9 @@ function awaitResult(path: string, ms = 30_000): boolean {
 }
 
 describe('the dispatch reports which cgroup path it took', () => {
-  test('CRAFT_NO_SCOPE=1 forces the plain detached path and says so', () => {
+  test('WORK_NO_SCOPE=1 forces the plain detached path and says so', () => {
     const f = fixture()
-    const r = dispatch(f, { CRAFT_FARM: stubFarm(f.dir), CRAFT_NO_SCOPE: '1' })
+    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir), WORK_NO_SCOPE: '1' })
     expect(r.code).toBe(0)
     expect(r.out).toMatch(/scope: none/)
     expect(awaitResult(join(f.runDir, 'result.json'))).toBe(true)
@@ -128,7 +128,7 @@ describe('the dispatch reports which cgroup path it took', () => {
 
   test('with no override the runner LANDS in a transient scope when the user manager is reachable', () => {
     const f = fixture()
-    const r = dispatch(f, { CRAFT_FARM: stubFarm(f.dir) })
+    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir) })
     expect(r.code).toBe(0)
     expect(awaitResult(join(f.runDir, 'result.json'))).toBe(true)
 
@@ -147,7 +147,7 @@ describe('the dispatch reports which cgroup path it took', () => {
 
   test('the plain path leaves the runner in the inherited cgroup — the two branches are distinguishable', () => {
     const f = fixture()
-    const r = dispatch(f, { CRAFT_FARM: stubFarm(f.dir), CRAFT_NO_SCOPE: '1' })
+    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir), WORK_NO_SCOPE: '1' })
     expect(r.code).toBe(0)
     expect(awaitResult(join(f.runDir, 'result.json'))).toBe(true)
     // No work unit anywhere in the runner's cgroup: nothing placed it.
@@ -169,7 +169,7 @@ describe('the continuation rounds are scoped too, not just the first dispatch', 
   test('a redispatched round lands in a transient scope when the user manager is reachable', () => {
     const f = fixture()
     // Round 1, plain, to lay down args.json and a verdict for the redispatch to rotate.
-    expect(dispatch(f, { CRAFT_FARM: stubFarm(f.dir), CRAFT_NO_SCOPE: '1' }).code).toBe(0)
+    expect(dispatch(f, { WORK_FARM: stubFarm(f.dir), WORK_NO_SCOPE: '1' }).code).toBe(0)
     expect(awaitResult(join(f.runDir, 'result.json'))).toBe(true)
     rmSync(join(f.runDir, 'result.json.cgroup'), { force: true })
 
@@ -178,7 +178,7 @@ describe('the continuation rounds are scoped too, not just the first dispatch', 
     try {
       out = execFileSync('bash', [REDISPATCH, f.plan, join(f.runDir, 'args.json'), '--dispatch', '--full'], {
         encoding: 'utf8', timeout: 120_000, cwd: f.dir,
-        env: { ...process.env, CLAUDE_CODE_SESSION_ID: '', CRAFT_FARM: stubFarm(f.dir) },
+        env: { ...process.env, CLAUDE_CODE_SESSION_ID: '', WORK_FARM: stubFarm(f.dir) },
       })
     } catch (e: any) {
       code = e.status ?? -1
@@ -203,8 +203,8 @@ describe('losing the scope is a warning, never a refusal', () => {
   test('an unusable systemd-run still dispatches, warns, and exits 0', () => {
     const f = fixture()
     const r = dispatch(f, {
-      CRAFT_FARM: stubFarm(f.dir),
-      CRAFT_SYSTEMD_RUN: join(f.dir, 'no-such-systemd-run'),
+      WORK_FARM: stubFarm(f.dir),
+      WORK_SYSTEMD_RUN: join(f.dir, 'no-such-systemd-run'),
     })
     expect(r.code).toBe(0)
     expect(r.out).toMatch(/scope: none/)

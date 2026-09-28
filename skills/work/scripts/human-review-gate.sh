@@ -31,8 +31,8 @@ BEFORE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 # Newest session for this repo (resolver matches by cwd; falls back to newest mtime file).
 SLUG=$("$RESOLVER" 2>/dev/null || true)
 
-CRAFT_SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-BEFORE="$BEFORE" SLUG="$SLUG" SESSIONS_DIR="$SESSIONS_DIR" CRAFT_SCRIPTS="$CRAFT_SCRIPTS" python3 - "$@" <<'PY'
+WORK_SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+BEFORE="$BEFORE" SLUG="$SLUG" SESSIONS_DIR="$SESSIONS_DIR" WORK_SCRIPTS="$WORK_SCRIPTS" python3 - "$@" <<'PY'
 import glob, json, os, re, subprocess, sys
 
 before = os.environ["BEFORE"]
@@ -80,7 +80,7 @@ for fpath, f in (sess.get("files") or {}).items():
 
 reviewed_count = sum(1 for f in (sess.get("files") or {}).values() if f.get("reviewed"))
 
-_scripts = os.environ["CRAFT_SCRIPTS"]
+_scripts = os.environ["WORK_SCRIPTS"]
 sys.path.insert(0, _scripts)
 from importlib.machinery import SourceFileLoader
 _rv = SourceFileLoader("review_verdict", os.path.join(_scripts, "review-verdict.py")).load_module()

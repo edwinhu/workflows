@@ -13,7 +13,7 @@ function probeOn(body: string) {
   const skill = join(dir, 'handrolled'); mkdirSync(skill, { recursive: true })
   writeFileSync(join(skill, 'SKILL.md'),
     `---\nname: handrolled\ndescription: "x"\n---\n\n# handrolled\n\n${body}\n\n` +
-    '```json craft-args\n{"tasks":[{"id":"T1","name":"n","work":"w","writablePaths":["a"],"acceptance":"gate","refs":[]}]}\n```\n')
+    '```json work-args\n{"tasks":[{"id":"T1","name":"n","work":"w","writablePaths":["a"],"acceptance":"gate","refs":[]}]}\n```\n')
   // --target, not a bare positional: wc-probe's CLI takes no positional argument, and the
   // round-1 version of this test passing one is why an undeclared positional was added to
   // parseArgs at all. The test caused the scope creep it was then used to justify.

@@ -426,7 +426,7 @@ describe('work-result.sh refuses rather than skipping the adjudication', () => {
   })
 
   test('a projectDir that does not exist is REFUSED', () => {
-    const r = runJson(valid(), { args: { projectDir: join(tmpdir(), 'craft-no-such-dir-8b2a'), mechanicalChecks: [] } })
+    const r = runJson(valid(), { args: { projectDir: join(tmpdir(), 'work-no-such-dir-8b2a'), mechanicalChecks: [] } })
     expect(r.code).toBe(2)
   })
 

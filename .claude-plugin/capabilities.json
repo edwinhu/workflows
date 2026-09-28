@@ -16,6 +16,11 @@
       "implementation": "scripts/load-constraints.ts"
     },
     {
+      "name": "work-spine-runner",
+      "contractVersion": 1,
+      "implementation": "skills/work/workflow.js"
+    },
+    {
       "name": "craft-spine-runner",
       "contractVersion": 1,
       "implementation": "skills/work/workflow.js"

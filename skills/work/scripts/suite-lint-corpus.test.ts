@@ -72,7 +72,7 @@ function tree() {
     '})')
   w(join('nested', 'test_r4.py'),
     'def test_the_runner_honours_the_timeout():',
-    "    cfg = {'CRAFT_ASSERT_TIMEOUT': '30'}",
+    "    cfg = {'WORK_ASSERT_TIMEOUT': '30'}",
     '    assert run(cfg).ok')
   w('clean.test.ts',
     "test('a generous timeout writes the report', () => {",

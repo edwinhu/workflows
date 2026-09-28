@@ -15,7 +15,7 @@ import { preflight } from './plan-preflight.ts'
 
 let dir: string
 beforeAll(() => {
-  dir = mkdtempSync(join(tmpdir(), 'craft-preflight-'))
+  dir = mkdtempSync(join(tmpdir(), 'work-preflight-'))
   mkdirSync(join(dir, 'scripts'))
   const sh = (name: string, code: number) => {
     const p = join(dir, 'scripts', name)

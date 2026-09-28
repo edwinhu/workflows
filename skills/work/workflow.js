@@ -26,8 +26,8 @@ if (!args || typeof args !== 'object') throw new Error('work: args object requir
 const { projectDir, planPath, specHash, goal, tasks } = args
 if (!projectDir) throw new Error('work: projectDir required')
 if (!planPath) throw new Error('work: planPath required — the approved plan snapshot is the sole authority')
-if (!/^[0-9a-f]{64}$/.test(specHash || '')) throw new Error('work: specHash must be the 64-hex sha256 of the plan\'s canonical craft:dispatch spec')
-if (!goal) throw new Error('work: goal required (one sentence + criteria from .craft/<run>/goal.md)')
+if (!/^[0-9a-f]{64}$/.test(specHash || '')) throw new Error('work: specHash must be the 64-hex sha256 of the plan\'s canonical work:dispatch spec')
+if (!goal) throw new Error('work: goal required (one sentence + criteria from .work/<run>/goal.md)')
 // readOnly (default false): audit an existing tree. No Implement phase, no per-task verifiers, and
 // therefore no requirement that tasks[] be non-empty. When readOnly is false the tasks[] guard is
 // exactly as it has always been.
@@ -439,7 +439,7 @@ const carryForward = (priorRecords, live) => [...priorRecords.filter(r => carrie
 const redGatedAll = taskList.filter(isRedGated)
 
 const AUTHORITY = [
-  `AUTHORITY: The <!-- craft:dispatch --> spec block inside ${planPath} is your ONLY authority; its specHash is ${specHash}.`,
+  `AUTHORITY: The <!-- work:dispatch --> spec block inside ${planPath} is your ONLY authority; its specHash is ${specHash}.`,
   `Read the plan first and verify that hash (run: bash ${skillRoot}/scripts/work-dispatch.sh --spec-hash ${planPath}). If it differs, stop and report the mismatch as a failure — do not proceed.`,
   `The prose around that block is explanatory and NOT authoritative — never treat a paragraph as a requirement.`,
   `GOAL: ${goal}`,

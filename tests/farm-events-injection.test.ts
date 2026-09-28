@@ -12,7 +12,7 @@ const ALIVE = join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'farm-ali
 // well-formed line, so a checker matching " out=<path> " can be steered at another run.
 test('a label cannot inject an out= field that steers the liveness checker', () => {
   const tmp = mkdtempSync(join(tmpdir(), 'inject-'))
-  const victim = '/home/victim/.craft/other/result.json'
+  const victim = '/home/victim/.work/other/result.json'
   const bin = join(tmp, 'bin'); mkdirSync(bin, { recursive: true })
   writeFileSync(join(bin, 'claude-code'), `#!/usr/bin/env bash\nsleep 3\nprintf '{"type":"result","result":"ok"}\\n'\n`)
   chmodSync(join(bin, 'claude-code'), 0o755)

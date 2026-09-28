@@ -53,7 +53,7 @@ function readDispositions(): Disposition[] {
 
 /**
  * A repo-root constraint is reached when a file under `skills/` names it by its plugin-root path.
- * The craft-era skills read their constraints directly; nothing calls the loader from a SKILL.md,
+ * The work-era skills read their constraints directly; nothing calls the loader from a SKILL.md,
  * so caller-name scanning would report every constraint as an orphan.
  */
 function collectDirectReachability() {

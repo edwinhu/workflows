@@ -37,7 +37,7 @@ blocks itself) and named agent types like Explore/Plan/librarian. Add to its
 branch only redirects delegation you already chose. To make a project refuse
 main-thread implementation outright, set `"farmOutOnly": true` in its committed
 `.claude-workflows.json`; every `Edit`/`Write` there is then denied unless it
-targets that file, `.claude/plans/`, or `.craft/`. Without it the `Edit` branch
+targets that file, `.claude/plans/`, or `.work/`. Without it the `Edit` branch
 allows unconditionally whenever no work dispatch is owed — measured 2026-08-20:
 313 main-thread writes in mail-bridge over 28 hours with the hook enabled, the
 user objecting three times.

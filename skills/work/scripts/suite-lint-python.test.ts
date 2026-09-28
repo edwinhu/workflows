@@ -74,7 +74,7 @@ describe('the four rules are shared; only extraction is dialect-specific', () =>
       'def test_report():',
       "    assert os.path.exists('docs/report.md')",
       'def test_cfg():',
-      "    cfg = {'CRAFT_ASSERT_TIMEOUT': '30'}",
+      "    cfg = {'WORK_ASSERT_TIMEOUT': '30'}",
       '    assert run(cfg).ok',
     ))
     expect(found.length).toBeGreaterThan(0)
@@ -184,22 +184,22 @@ describe(`${R4}, Python`, () => {
   test('fires: the injected key appears in exactly one literal', async () => {
     const found = await lint('test_runner.py', src(
       'def test_the_runner_honours_the_timeout():',
-      "    cfg = {'CRAFT_ASSERT_TIMEOUT': '30'}",
+      "    cfg = {'WORK_ASSERT_TIMEOUT': '30'}",
       '    assert run(cfg).ok',
     ))
     const f = found.find((x: any) => x.rule === R4)
     expect(f).toBeDefined()
     expect(f.where).toBe('test_runner.py:2')
-    expect(f.evidence).toContain('CRAFT_ASSERT_TIMEOUT')
+    expect(f.evidence).toContain('WORK_ASSERT_TIMEOUT')
   })
 
   test('silent: the key is injected twice with different values and different expected outcomes', async () => {
     expect(await ruleIds('test_runner.py', src(
       'def test_a_generous_timeout_completes():',
-      "    cfg = {'CRAFT_ASSERT_TIMEOUT': '30'}",
+      "    cfg = {'WORK_ASSERT_TIMEOUT': '30'}",
       '    assert run(cfg).ok',
       'def test_a_zero_timeout_gives_up():',
-      "    cfg = {'CRAFT_ASSERT_TIMEOUT': '0'}",
+      "    cfg = {'WORK_ASSERT_TIMEOUT': '0'}",
       '    assert not run(cfg).ok',
     ))).not.toContain(R4)
   })
@@ -300,12 +300,12 @@ describe('a correct Python suite is clean under all four rules at once', () => {
     expect(await ruleIds('test_clean.py', src(
       "FAILURE_MESSAGE = 'plan NOT SAVED to disk'",
       'def test_a_generous_timeout_writes_the_report():',
-      "    cfg = {'CRAFT_ASSERT_TIMEOUT': '30'}",
+      "    cfg = {'WORK_ASSERT_TIMEOUT': '30'}",
       '    out = run_hook(cfg, 30)',
       '    assert re.search(r"plan saved to disk", out, re.I)',
       "    assert 'single-distinct-literal' in open('docs/report.md').read()",
       'def test_a_zero_timeout_gives_up_and_says_so():',
-      "    cfg = {'CRAFT_ASSERT_TIMEOUT': '0'}",
+      "    cfg = {'WORK_ASSERT_TIMEOUT': '0'}",
       '    out = run_hook(cfg, 0)',
       '    assert FAILURE_MESSAGE in out',
     ))).toEqual([])

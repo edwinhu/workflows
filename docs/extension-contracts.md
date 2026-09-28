@@ -1,6 +1,6 @@
 # Public Extension Contracts
 
-Version 5.101.0 introduced a domain-neutral capability manifest for plugins that explicitly depend on `workflows`. Version 6.0.0 retired the beat-spine capabilities with the spine itself and published `craft-spine-runner` in their place. Consumers resolve the installed dependency root from an explicit host/installer value or the `workflows-capability-root` executable that Claude Code publishes on `PATH` while the dependency is enabled. These contracts never search upward, inspect cache globs, select a “latest” installation, or assume a marketplace path.
+Version 5.101.0 introduced a domain-neutral capability manifest for plugins that explicitly depend on `workflows`. Version 6.0.0 retired the beat-spine capabilities with the spine itself and published `work-spine-runner` in their place. Consumers resolve the installed dependency root from an explicit host/installer value or the `workflows-capability-root` executable that Claude Code publishes on `PATH` while the dependency is enabled. These contracts never search upward, inspect cache globs, select a “latest” installation, or assume a marketplace path.
 
 ## Discovery
 
@@ -19,7 +19,8 @@ Resolution succeeds only when the manifest and implementation are contained by t
 |---|---|---:|---|---|---|---|
 | `capability-resolver` | capabilities.json schema 1 | `1` | Explicit installed dependency root + capability name | ResolvedDependencyCapability | Thrown Error with stable category text | Additive within contract 1; breaking changes require a new contract version |
 | `constraint-loader` | No descriptor; LoadConstraintsOptions API schema 1 | `1` | Explicit constraint directory + skill name; optional marker path | ConstraintLoadResult with ConstraintLoadEvidence | Thrown Error; CLI exits nonzero with Error text | API result and existing CLI output remain compatible within contract 1 |
-| `craft-spine-runner` | craft:dispatch args: projectDir + planPath + specHash + goal + tasks, run under the Workflow runtime | `1` | Explicit projectDir + the plan's canonical craft:dispatch specHash + the approved task list; never discovers planning authority | { overallPass, verdict, scoreTable, implemented, verified, findings, refutedFindings, reviews, tasksThatFlagged, carriedForward, domainRun } — the gate computed in JS from raw counts | Thrown Error before any agent is dispatched | The spec block in the approved plan is the sole authority and its hash is verified by every dispatched agent; the returned gate keys and the fail-closed-on-dead-agent rule remain compatible within contract 1 |
+| `work-spine-runner` | work:dispatch args: projectDir + planPath + specHash + goal + tasks, run under the Workflow runtime | `1` | Explicit projectDir + the plan's canonical work:dispatch specHash + the approved task list; never discovers planning authority | { overallPass, verdict, scoreTable, implemented, verified, findings, refutedFindings, reviews, tasksThatFlagged, carriedForward, domainRun } — the gate computed in JS from raw counts | Thrown Error before any agent is dispatched | The spec block in the approved plan is the sole authority and its hash is verified by every dispatched agent; the returned gate keys and the fail-closed-on-dead-agent rule remain compatible within contract 1 |
+| `craft-spine-runner` | DEPRECATED ALIAS of `work-spine-runner` — identical implementation, inputs and evidence | `1` | Identical to `work-spine-runner`; resolves the same implementation path | Identical to `work-spine-runner` | Identical to `work-spine-runner` | Retained only so consumers pinned to the retired `craft` name keep resolving; it will be removed in a later major version — migrate to `work-spine-runner` |
 
 ## Evidence and rejection semantics
 
@@ -39,7 +40,7 @@ construction. What it owes a consumer instead is that it parses, and that its ar
 returned gate keys are stable within contract 1.
 
 Required args: `projectDir`, `planPath`, `specHash` (the 64-hex sha256 of the plan's canonical
-`craft:dispatch` block), `goal`, and `tasks`. `readOnly: true` drops the implement leg and the
+`work:dispatch` block), `goal`, and `tasks`. `readOnly: true` drops the implement leg and the
 per-task verifiers, and is the only mode in which an empty `tasks` list is valid. The runner never
 discovers planning authority: a missing or malformed arg throws before any agent is dispatched.
 
@@ -56,7 +57,7 @@ resolve on the installing machine. A caller that builds args by hand and omits i
 
 ## Compatibility
 
-Manifest schema 1 and every capability contract are independently versioned. Additive documentation or implementation changes that preserve a capability's documented inputs, evidence shapes, rejection categories, and fail-closed security invariants may ship under its current contract version. A breaking change requires a new capability contract version (or manifest schema version when discovery itself changes). The beat-spine capabilities — `phase-gate-evaluator`, `approved-artifact-policy`, `workflow-policy-loader`, `beat-implement-runner`, `beat-spine-runner`, `beat-spine-args`, `plan-review-composer`, `tasklist-reconciler` — were removed in 6.0.0 along with their implementations. There is no shim: a consumer resolving one of those names now gets the documented absent-capability rejection from `capability-resolver`, which is the honest answer, and must move to `craft-spine-runner`.
+Manifest schema 1 and every capability contract are independently versioned. Additive documentation or implementation changes that preserve a capability's documented inputs, evidence shapes, rejection categories, and fail-closed security invariants may ship under its current contract version. A breaking change requires a new capability contract version (or manifest schema version when discovery itself changes). The beat-spine capabilities — `phase-gate-evaluator`, `approved-artifact-policy`, `workflow-policy-loader`, `beat-implement-runner`, `beat-spine-runner`, `beat-spine-args`, `plan-review-composer`, `tasklist-reconciler` — were removed in 6.0.0 along with their implementations. There is no shim: a consumer resolving one of those names now gets the documented absent-capability rejection from `capability-resolver`, which is the honest answer, and must move to `work-spine-runner`.
 
 ## Release boundary
 

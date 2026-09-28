@@ -1,6 +1,6 @@
 ---
 name: work
-description: "Use when the user says \"work this\", \"run a work loop\", \"craft this\", \"do this properly\", \"take this through clarify plan and verify\", \"run it through the gate\", \"/work\", \"/craft\", or hands over a substantial change that has no domain workflow of its own and should be planned, approved and independently verified before it lands. NEGATIVE ROUTING: a code change or bug fix is /dev; a dataset, table, figure or number is /ds; long-form prose is /writing; a talk built from a research paper is /workshop; lecture notes or course slides are teaching:notes and teaching:slides; a skill, workflow or plugin in this repo is skill-creator, workflow-creator or plugin-creator. Each of those is this loop plus a domain gate, and work is only the fallback when none of them fits."
+description: "Use when the user says \"work this\", \"run a work loop\", \"do this properly\", \"take this through clarify plan and verify\", \"run it through the gate\", \"/work\", or hands over a substantial change that has no domain workflow of its own and should be planned, approved and independently verified before it lands. NEGATIVE ROUTING: a code change or bug fix is /dev; a dataset, table, figure or number is /ds; long-form prose is /writing; a talk built from a research paper is /workshop; lecture notes or course slides are teaching:notes and teaching:slides; a skill, workflow or plugin in this repo is skill-creator, workflow-creator or plugin-creator. Each of those is this loop plus a domain gate, and work is only the fallback when none of them fits."
 argument-hint: 'the task to run through the loop'
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor, PushNotification]
 ---
@@ -58,19 +58,19 @@ Two locations, one owner each:
 | Path | Holds | Owner |
 |---|---|---|
 | `<plansDirectory>/<slug>.md` | the approved plan — **the run's authority**, the file that gets hashed | plan mode (native); `work` only reads and hashes it |
-| `.craft/<run-id>/` | args, verdict JSON, and `plan-<hash12>.md` — the archived bytes each round ran under | `work` |
+| `.work/<run-id>/` | args, verdict JSON, and `plan-<hash12>.md` — the archived bytes each round ran under | `work` |
 
 `plansDirectory` decides where that plan lives, and `work` **honours whatever it is set to** —
 `"./.claude/plans"` and `"./.planning"` (what the domain workflows use) are
 equally valid. The value is resolved relative to the project root, so the plan is project-local and
 `work` hashes it in place — no copy. Unset at every tier, the default is `.claude/plans`. `run-id` is
-a short date-slug like `0806-fix-auth`. Both `.craft/` and the plans directory want to be
+a short date-slug like `0806-fix-auth`. Both `.work/` and the plans directory want to be
 gitignored — add them before the
-first run if the repo would otherwise track them. Clean up `.craft/<run-id>/` when the run
+first run if the repo would otherwise track them. Clean up `.work/<run-id>/` when the run
 completes, unless the user wants provenance kept; leave the plan file alone either way, it's plan
 mode's. **The plan file is not durable and `work` does not own it** — plan mode memoizes one slug per
 session, so re-entering plan mode overwrites the plan in place, and the directory is gitignored. So
-dispatch archives the bytes it hashed to `.craft/<run-id>/plan-<hash12>.md` (content-addressed: an
+dispatch archives the bytes it hashed to `.work/<run-id>/plan-<hash12>.md` (content-addressed: an
 amended round adds one, never overwrites). That archive is the only copy of what a run was approved
 with — if the plan matters beyond the run, `git add -f` it before cleaning the run dir. There is no `goal.md`: the plan holds the success criteria, and the goal is a
 session-level condition (Phase 3), not a file.
@@ -141,7 +141,7 @@ at dispatch time is what the throw prevents, because sizing is the user's call a
 
 **Sizing lives in the plan because it shapes the gate.** Choosing lenses or dropping a mechanical
 check after approval would weaken the verdict without changing a byte the user signed off on — the
-hash covers the `craft:dispatch` spec block, so anything that decides PASS/FAIL has to be inside it.
+hash covers the `work:dispatch` spec block, so anything that decides PASS/FAIL has to be inside it.
 
 **An audit needs a plan too.** `readOnly` still requires `planPath` + `specHash`, and the plan it
 hashes is a **charter**, not a work order: what is being audited, which lenses judge it, which
@@ -159,7 +159,7 @@ following plan:` prompt shows first, and what routes that session back to the ow
 cannot state its own hash:
 
 ```
-<!-- craft:dispatch
+<!-- work:dispatch
 {"runId": "0813-slug", "goalTurns": 12, "args": { … }}
 -->
 ```
@@ -167,7 +167,7 @@ cannot state its own hash:
 Writing it is what arms the run, and the plan is the only file plan mode may write — which is also
 the only thing that survives approval. **Claude Code clears the context when a plan is approved near
 the ceiling** and re-seeds a bare `Implement the following plan:` session with no `work` in it, which
-will otherwise implement in the main thread. While a plan is armed and no `.craft/*/args.json`
+will otherwise implement in the main thread. While a plan is armed and no `.work/*/args.json`
 records its hash, `~/.claude/hooks/main-thread-guard.sh` denies Edit/Write/Agent in that project —
 resolving the project from the nearest ancestor of `cwd`, so a `cd` cannot disarm it — and blocks the
 turn from ending once; both name the dispatch command. It denies only what some task's
@@ -218,7 +218,7 @@ a session that started before the setting was live still writes to `~/.claude/pl
 the snippet above resolves the real path instead of asserting one. Do not stop the run over it, and
 do not copy the file to make the path look right.
 
-The plan's `craft:dispatch` spec block is the sole authority every dispatched agent gets; the prose
+The plan's `work:dispatch` spec block is the sole authority every dispatched agent gets; the prose
 around it explains but never binds. Nothing re-derives it: the agents re-run `--spec-hash` themselves
 and stop on mismatch, so an amended spec halts the run instead of silently changing the contract,
 while fixing a typo in the rationale costs nothing.
@@ -343,7 +343,7 @@ cmd** at baseline via `plan-preflight.ts --only mechanical`, where only a `criti
 Acceptance commands are `plan-preflight`'s third probe kind and **no dispatch gate runs them** — run
 `--only acceptance` by hand on a quiet tree, before arming.
 `--no-red-probe` drops tier 2, `--no-mech-probe` drops tier 2b, `--no-lint` drops all of them, and
-`CRAFT_RED_PROBE_TIMEOUT` / `CRAFT_MECH_PROBE_TIMEOUT` (300s each) bound their own tier's commands.
+`WORK_RED_PROBE_TIMEOUT` / `WORK_MECH_PROBE_TIMEOUT` (300s each) bound their own tier's commands.
 A task whose work is already COMPLETE can satisfy neither gate —
 a `redCommand` is refused `red-not-red`, omitting it is refused `redcommand-missing` — so it declares
 `redDisposition` instead; both scripts echo `red: N gated, M dispositioned` with each disposition,
@@ -358,7 +358,7 @@ main chat on milestones, on the verdict, and on a run that dies without one.
 
 **A cron on top of that is a wake for nothing** — AGK 2026-09-27: 14 ticks inside a single round, each
 re-entering a 113 KB plan and a 276 KB run dir. So the dispatch prints a `CronCreate` call only with
-`--cron`, or with `CRAFT_LOOP_INTERVAL_MINUTES` set; hourly by default, and the prompt is a nudge
+`--cron`, or with `WORK_LOOP_INTERVAL_MINUTES` set; hourly by default, and the prompt is a nudge
 (`and? (work run <runid>)`). When it prints one, **make that call before your next action and report
 the job id**; `CronList` is the only thing that proves it exists. Otherwise the dispatch says in one
 line that the monitor is the wake.
@@ -434,7 +434,7 @@ dead. `farm.sh` sets `FARM_OUT_CHILD=1`, which is what lets its child make the c
 follows is what it does, for when you are reading its output or a dispatch has gone wrong.
 
 ```bash
-R=.craft/<run-id>; mkdir -p "$R"          # the runner refuses if --out's directory does not exist
+R=.work/<run-id>; mkdir -p "$R"          # the runner refuses if --out's directory does not exist
 # write the args object above to "$R/args.json" as JSON
 # DETACHED, never foreground: a real gate runs 20-60 min and a foreground tool call caps out
 # and kills it mid-run, as does a harness-tracked background task.
@@ -640,14 +640,14 @@ teammates are only spawnable inside a farm-out child. Run it through `farm-team.
 ```bash
 # --cwd places the LEAD; --expect resolves against the CALLER's cwd, so keep those absolute.
 bash ${CLAUDE_PLUGIN_ROOT}/skills/farm-out/scripts/farm-team.sh --cwd "$PWD" \
-  --prompt-file "$PWD"/.craft/<run-id>/team.txt \
-  --expect "$PWD"/.craft/<run-id>/findings/<lens>.json \
-  --expect "$PWD"/.craft/<run-id>/findings/<other-lens>.json
+  --prompt-file "$PWD"/.work/<run-id>/team.txt \
+  --expect "$PWD"/.work/<run-id>/findings/<lens>.json \
+  --expect "$PWD"/.work/<run-id>/findings/<other-lens>.json
 ```
 
 **The file is the record, the message is the signal.** Teammate delivery is not fully reliable
 (`.claude/rules/agent-teams.md`), so each teammate writes **exactly one** file to
-`.craft/<run-id>/findings/<lens>.json` before going idle, holding a JSON array:
+`.work/<run-id>/findings/<lens>.json` before going idle, holding a JSON array:
 
 ```json
 [{ "title": "…", "severity": "critical|major|minor", "detail": "…", "file": "src/app.rs" }]
@@ -798,18 +798,18 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/human-review-gate.sh -w --no-upda
 
 A `readOnly` run changes no files, so `-w` opens an empty diff and tuicr returns `unreviewed`, which
 the table below calls *not approval*. So on a `readOnly` run the orchestrator **first writes
-`.craft/<run-id>/findings.md` from the object `workflow.js` returned**, then reviews that file:
+`.work/<run-id>/findings.md` from the object `workflow.js` returned**, then reviews that file:
 
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/human-review-gate.sh \
-  --file .craft/<run-id>/findings.md --no-update-check
+  --file .work/<run-id>/findings.md --no-update-check
 ```
 
 The orchestrator writes it because **a Workflow script cannot**: its sandbox has no filesystem and no
 Node API — the hooks are `agent`/`parallel`/`pipeline`/`log`/`phase`/`workflow`/`args`/`budget`.
 (`human-review-gate.sh` forwards its args verbatim to tuicr, so `--file` needs no script change.)
 
-`.craft/` is gitignored, so this file does not survive the machine. **A findings document worth
+`.work/` is gitignored, so this file does not survive the machine. **A findings document worth
 keeping must be moved somewhere tracked** — say so to the user when the audit found anything.
 
 ### What the findings file must contain — transcription, not judgement
@@ -834,7 +834,7 @@ Blocks until the user quits tuicr, then prints one verdict JSON:
 
 | verdict | meaning | action |
 |---|---|---|
-| `approved` | files marked reviewed, no new notes | clear goal, clean `.craft/`, done — offer commit/ship |
+| `approved` | files marked reviewed, no new notes | clear goal, clean `.work/`, done — offer commit/ship |
 | `findings` | new human annotations | tactical loop below |
 | `rejected` | a note contains `REJECT`, or PR is request-changes | strategic loop below |
 | `unreviewed` | opened-and-quit, nothing touched | **not approval** — ask the user what they want |
@@ -846,7 +846,7 @@ the workflow); reply to each annotation in-session:
 relaunch the gate script.
 
 **Strategic loop (REJECT):** the interpretation was wrong, not the execution. Clear the goal,
-keep `.craft/<run>/` as provenance, start a fresh run-id, return to Phase 1 CLARIFY with the
+keep `.work/<run>/` as provenance, start a fresh run-id, return to Phase 1 CLARIFY with the
 rejection notes as input. **Cap: two rejections** → stop, summarize both misses, and escalate/
 descope with the user rather than guessing a third time.
 
@@ -886,7 +886,7 @@ descope with the user rather than guessing a third time.
 | `mechanicalRun: 0` in the score table | read it as "mechanics clean" | the phase was skipped; nothing was checked |
 | `lensesReported < lensesRun` in the score table | read the missing lens's zero findings as a clean dimension | that lens never ran; the gate synthesizes a `critical` finding for it and fails. Re-run it — an unreviewed dimension is not a reviewed one |
 | tuicr quit with 0 comments, 0 reviewed files | treat as approval | `unreviewed` — ask the user |
-| Phase 5 on a `readOnly` run | `-w` over a tree nothing wrote to | there is no diff, so that always returns `unreviewed` — write `.craft/<run-id>/findings.md` and review it with `--file`, per *The read-only path* |
+| Phase 5 on a `readOnly` run | `-w` over a tree nothing wrote to | there is no diff, so that always returns `unreviewed` — write `.work/<run-id>/findings.md` and review it with `--file`, per *The read-only path* |
 | A `readOnly` run returned FAIL | send it to the fix loop | that is the audit's successful outcome — it found defects. Take it to Phase 5; fixing is a separate writing run with its own plan and gate |
 | PR review surface mid-loop | push new commits to the branch | don't — tuicr sessions key on head_sha; finish the loop first |
 | Plan edited after approval | keep going | agents will halt on hash mismatch anyway — re-hash and restart Phase 4. `scripts/work-redispatch.sh <plan> <args.json> [--dispatch] [--full] [--no-lint] [--no-red-probe]` does the re-hash, refuses when the args name a different plan, and rotates a stale `result.json` so a previous verdict cannot be read as this run's. With `--dispatch` it runs both dispatch gates on the final args and exits 3 on a major/critical or a refused red probe, and exits 4 past `maxRounds`, spending no round and rotating nothing in either case |
