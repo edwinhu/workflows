@@ -128,10 +128,40 @@ type RunResult = { stdout: string; stderr: string; exit: number; fs: Record<stri
  * differ on every invocation, so the sandbox, the repo and the tmp root are replaced by stable
  * tokens first. Longest first: the sandbox usually lives under the tmp root.
  */
+/**
+ * The using-skills body session-start injects VERBATIM.
+ *
+ * What the hook is on the hook for is that it injects this file, at this position, framed this
+ * way — not the prose inside it. Pinning the prose made every edit to an unrelated skill redden
+ * session-start's goldens: measured 2026-09-28, they had been red since `e07cb59f` and `ef96e460`
+ * edited `skills/using-skills/SKILL.md`, two commits that changed no hook. Replaced by a token
+ * rather than a hash, because a hash of volatile text is just as volatile.
+ */
+function usingSkillsBodies(): string[] {
+  try {
+    const raw = readFileSync(join(REPO, "skills", "using-skills", "SKILL.md"), "utf8")
+      .replaceAll("${CLAUDE_PLUGIN_ROOT}", REPO)
+      .trim();
+    // Hooks emit it inside a JSON payload written with ensure_ascii, so the spelling that actually
+    // appears has both the JSON escapes AND every non-ASCII character as \uXXXX. A needle built
+    // with JSON.stringify alone leaves the em-dashes literal, matches nothing, and the scrub
+    // silently does nothing — the same trap the install-health regex above fell into.
+    const jsonEscaped = JSON.stringify(raw).slice(1, -1);
+    const asciiEscaped = jsonEscaped.replace(/[\u007f-￿]/g, (ch) =>
+      `\\u${ch.charCodeAt(0).toString(16).padStart(4, "0")}`);
+    return [asciiEscaped, jsonEscaped, raw];
+  } catch {
+    return [];
+  }
+}
+const USING_SKILLS = usingSkillsBodies();
+
 function normalise(text: string, dir: string): string {
+  // Before the path pass: the body carries plugin-root paths of its own.
+  const deskilled = USING_SKILLS.reduce((acc, body) => acc.split(body).join("<USING-SKILLS>"), text);
   const pathed = [[dir, "<SANDBOX>"], [REPO, "<REPO>"], [tmpdir(), "<TMP>"]]
     .sort((a, b) => b[0].length - a[0].length)
-    .reduce((acc, [from, to]) => acc.split(from).join(to), text);
+    .reduce((acc, [from, to]) => acc.split(from).join(to), deskilled);
   // session-end stamps the wall clock to the minute; that is the clock, not behaviour.
   const stamped = pathed.replace(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/g, "<TIMESTAMP>");
   // session-start reports INSTALL HEALTH — which ~/.claude/agents symlinks resolve on THIS machine.
@@ -146,7 +176,12 @@ function normalise(text: string, dir: string): string {
   // just been re-recorded on this machine.
   const DASH = "(?:\u2014|\\\\u2014)";
   const NL = "(?:\n|\\\\n)";
-  return stamped.replace(
+  // Tool version banner. `claude plugin validate` runs under mise, which appends
+  // `mise <config> tools: claude@<version>` to the output plugin-validate relays verbatim. That
+  // line names the toolchain pin of the box, so the golden went red on every `claude` upgrade.
+  // The class excluded here is the banner, not the validator's verdict, which is still compared.
+  const unbannered = stamped.replace(new RegExp(`(?:${NL})?mise [^"\\\\\n]*?tools:[^"\\\\\n]*`, "g"), "");
+  return unbannered.replace(
     new RegExp(`## Workflows Install ${DASH} Problems Detected${NL}[\\s\\S]*?Detection only[^\\n]*?${NL}${NL}?`, "g"),
     // The trailing ${NL}? absorbs the blank line the section contributes as a separator: without
     // it a machine WITH problems normalised one newline longer than one without, and the golden
@@ -167,7 +202,10 @@ function snapshot(dir: string): Record<string, string> {
   // hook's real writes are still compared.
   // Files whose CONTENT is environment-derived by design. Presence is still compared.
   const ADVISORY_CACHES = new Set([".planning/.checkall-cache.json"]);
-  const TOOL_CACHES = new Set([".git", ".ruff_cache", "__pycache__", ".mypy_cache", ".pytest_cache", "node_modules"]);
+  // `.bun` is the package manager's own store, not a hook write: its `install/cache/@t@/*.pile`
+  // entries are content-addressed by the machine's module graph, so two boxes — or the same box
+  // after any dependency touch — hash differently for identical hook behaviour.
+  const TOOL_CACHES = new Set([".git", ".ruff_cache", "__pycache__", ".mypy_cache", ".pytest_cache", "node_modules", ".bun"]);
   const walk = (d: string) => {
     for (const entry of readdirSync(d, { withFileTypes: true })) {
       if (TOOL_CACHES.has(entry.name)) continue;
@@ -233,12 +271,26 @@ function reset(dir: string, fixture: Record<string, string> | undefined): void {
   populate(dir, fixture);
 }
 
+/**
+ * Resolve `<REPO>` in a case's inputs to the checkout the harness is running from.
+ *
+ * A case that wants the plugin's own manifest validated used to spell this checkout's absolute
+ * path into `stdin`, which pinned the golden to one directory on one machine: the same commit in
+ * a worktree validated the OTHER checkout's files and read as a behaviour change. The token is
+ * the inverse of the `<REPO>` substitution `normalise()` applies to stdout, so a case round-trips
+ * from whatever path it runs at.
+ */
+function resolveRepoToken<T>(value: T): T {
+  if (value === undefined) return value;
+  return JSON.parse(JSON.stringify(value).split("<REPO>").join(REPO)) as T;
+}
+
 async function run(cmd: string[], c: Case, cwd: string): Promise<RunResult> {
   const before = snapshot(cwd);
   const proc = Bun.spawn(cmd, {
     cwd,
-    env: { ...process.env, ...(c.env ?? {}), CLAUDE_PROJECT_DIR: cwd },
-    stdin: c.stdin === undefined ? "ignore" : new TextEncoder().encode(JSON.stringify(c.stdin)),
+    env: { ...process.env, ...resolveRepoToken(c.env ?? {}), CLAUDE_PROJECT_DIR: cwd },
+    stdin: c.stdin === undefined ? "ignore" : new TextEncoder().encode(JSON.stringify(resolveRepoToken(c.stdin))),
     stdout: "pipe",
     stderr: "pipe",
   });
@@ -278,7 +330,7 @@ async function checkHook(hook: string, record: boolean): Promise<{ ok: boolean; 
   for (const c of golden.cases) {
     const dir = materialize(c.fixture);
     try {
-      const actual = await run(["bun", ts, ...(c.argv ?? [])], c, dir);
+      const actual = await run(["bun", ts, ...resolveRepoToken(c.argv ?? [])], c, dir);
       const got = {
         stdoutSha256: createHash("sha256").update(normalise(actual.stdout, dir)).digest("hex"),
         exit: actual.exit,

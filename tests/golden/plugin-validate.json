@@ -124,7 +124,7 @@
         "hook_event_name": "PostToolUse",
         "tool_name": "Edit",
         "tool_input": {
-          "file_path": "/home/eh/projects/workflows/.claude-plugin/plugin.json"
+          "file_path": "<REPO>/.claude-plugin/plugin.json"
         }
       },
       "tsExpected": {
