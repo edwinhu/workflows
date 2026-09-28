@@ -3463,10 +3463,14 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// `NVIT International Equity Fund`. An own-registrant reading is nearer than
 	// a sibling registrant's, so it is asked first, and only where the chain
 	// answered INEXACTLY -- an exact same-CIK answer is untouched, and a heading
-	// the chain left blank stays the blank-heading rungs' business.
+	// the chain left blank stays the blank-heading rungs' business. The answer
+	// the chain reached is handed to it, since a name the registrant has since
+	// renamed away from is still its own exact spelling of the banner and must
+	// outrank a tolerance rung's near miss to a sleeve that never carried it
+	// (sameCIKOver).
 	if outer && d != nil && !issBannerDeclaredExactAs(ix, guard, d) && !issOwnBrandInfixDecl(ix, guard, d) &&
 		!issTierRenameKept(ix, normalizeSeriesName(guard), d) && !issHeadingWithinDecl(guard, d) {
-		if alt := issIndexDict(ix).sameCIK(ix.cik, guard, ix.period); alt != nil && alt.SeriesID != d.SeriesID {
+		if alt := issIndexDict(ix).sameCIKOver(ix.cik, guard, ix.period, d); alt != nil && alt.SeriesID != d.SeriesID {
 			return banner, alt
 		}
 	}
