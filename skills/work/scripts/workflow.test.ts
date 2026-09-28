@@ -988,3 +988,306 @@ test('per-lens model and effort resolve independently — one lens may carry eit
   expect(opts.get('lens:deep').model).toBe('sonnet')
   expect(opts.get('lens:deep').effort).toBe('xhigh')
 })
+
+// ---------------------------------------------------------------- positive dispositions (the leak)
+// A refuter cannot refute a TRUE statement. So a lens that files "I checked X and it holds" as a
+// FINDING gets refuted:false back, and the non-defect reaches survivingBlocking and fails the run.
+// Measured 2026-09-27 over 3,137 refuted findings: 2.8% were positive dispositions and ~47 survived
+// into gates. The fix is a second output channel, not a smarter refuter — and the backstops ROUTE a
+// misfiled entry into that channel, they never delete it.
+
+// readOnly so the task dimensions are n/a and the verdict turns on the findings alone.
+const lensOnly = (over: any = {}) => ({
+  ...baseArgs, readOnly: true, tasks: [], reviewLenses: [{ key: 'alpha', prompt: 'p' }], ...over,
+})
+// Refuters return refuted:false, which is what they DO return for a true statement. A disposition
+// that reached a refuter under this reply would gate the run, so PASS is the whole assertion.
+const upheld = (lensResult: any) => replies({ lens: { alpha: lensResult }, refute: { refuted: false, reason: 'the claim is true' } })
+
+test('a lens `dispositions` entry is reported, never refuted, and never gates', async () => {
+  const { result, dispatched } = await run(
+    lensOnly(),
+    upheld({ findings: [], dispositions: [{ title: 'constraint A2 holds', detail: 'evidence' }] }))
+  expect(result.overallPass).toBe(true)
+  expect(result.dispositions).toHaveLength(1)
+  expect(result.dispositions[0]).toMatchObject({ title: 'constraint A2 holds', lens: 'alpha' })
+  expect(result.scoreTable.dispositions).toBe(1)
+  // No refuter was spent on it, and it is not in the findings pool at all.
+  expect(dispatched.filter(l => l.startsWith('refute:'))).toEqual([])
+  expect(result.scoreTable.lensFindings).toBe(0)
+  expect(result.findings).toEqual([])
+})
+
+test('defect:false on a finding routes it to dispositions instead of gating — the structural backstop', async () => {
+  const { result, dispatched } = await run(
+    lensOnly(),
+    upheld({ findings: [{ title: 'looks like a defect claim', severity: 'critical', detail: 'd', defect: false }] }))
+  expect(result.overallPass).toBe(true)
+  expect(result.scoreTable.survivingBlocking).toBe(0)
+  expect(dispatched.filter(l => l.startsWith('refute:'))).toEqual([])
+  // Routed, not deleted: the claimed severity and the reason are both preserved for the human.
+  expect(result.dispositions).toHaveLength(1)
+  expect(result.dispositions[0].routedFromFinding).toBe(true)
+  expect(result.dispositions[0].claimedSeverity).toBe('critical')
+  expect(result.dispositions[0].routedBecause).toMatch(/defect:false/)
+  expect(result.scoreTable.dispositionsRoutedFromFindings).toBe(1)
+})
+
+test('defect:true, and an omitted defect key, both leave a finding in the gate', async () => {
+  for (const f of [
+    { title: 'a real defect', severity: 'major', detail: 'd', defect: true },
+    { title: 'a real defect', severity: 'major', detail: 'd' },
+  ]) {
+    const { result, dispatched } = await run(lensOnly(), upheld({ findings: [f] }))
+    expect(result.overallPass).toBe(false)
+    expect(result.scoreTable.survivingBlocking).toBe(1)
+    expect(result.dispositions).toEqual([])
+    expect(dispatched).toContain('refute:alpha')
+  }
+})
+
+// The five hand-read direction-A examples from the 2026-09-27 study (jev-refuter/disagreements.txt):
+// every one is a positive disposition the refuter upheld into a gate. Titles and detail openings are
+// verbatim from that corpus.
+const DIRECTION_A = [
+  {
+    id: '1d18f6aa87cf', severity: 'minor',
+    title: 'No violations found for the constraints this task touches — evidence-based disposition',
+    detail: 'This is a MODEL-EVALUATED disposition, not a computed pass, based on the files actually read: /home/eh/projects/hidden-figures/src/agk_sample.py (full, 790 lines)',
+  },
+  {
+    id: '43e2b9e2556f', severity: 'major',
+    title: 'A2 (SE structure) and A3/A4/A5 (figures) are implemented with matching diagnostics — satisfied',
+    detail: 'MODEL-EVALUATED (satisfied, not a defect, reported for completeness of the constraint list). src/first_stage.py clusters every bridge/deviation regression by config.CLUSTER_VAR',
+  },
+  {
+    id: '17dced0cff55', severity: 'minor',
+    title: 'No prose drift detected: all 39 changed spans lie inside #footnote[...]',
+    detail: 'Verified mechanically. Line count is identical (636 lines at HEAD and in the working tree), so there is no insertion, deletion, or reordering of paragraphs.',
+  },
+  {
+    id: 'c53f97b42630', severity: 'minor',
+    title: 'DEN — every rate in the STALENESS and COVERAGE headlines states its denominator; disposition supported',
+    detail: 'MODEL-EVALUATED (DEN, every rate states its denominator). Supported by the run\'s own output; no finding.',
+  },
+  {
+    id: 'e6459357c0b0', severity: 'minor',
+    title: 'tests/gates/ was not edited by any task',
+    detail: 'No finding on the gate directory, recorded as a positive check because it is the run\'s judging surface. Six gates were authored 22:54-22:56, before the round-1 dispatch',
+  },
+]
+
+test('the text backstop routes all five direction-A examples out of the gate, with no defect flag set', async () => {
+  for (const ex of DIRECTION_A) {
+    const { result, dispatched } = await run(
+      lensOnly(),
+      upheld({ findings: [{ title: ex.title, severity: ex.severity, detail: ex.detail }] }))
+    expect(result.dispositions, `${ex.id} should route`).toHaveLength(1)
+    expect(result.dispositions[0].routedFromFinding).toBe(true)
+    expect(result.findings, `${ex.id} must not reach the gate`).toEqual([])
+    expect(dispatched.filter(l => l.startsWith('refute:')), `${ex.id} must not spend a refuter`).toEqual([])
+  }
+})
+
+// The counter-side of the same rule, and the reason the patterns are narrow rather than clever: real
+// defect titles from the same corpus, including ones that use "no", "not", "missing" and "satisfied"
+// in a DEFECT sense. Measured over all 3,137 rows: 11 matches, 0 of them a real defect. These are the
+// near misses that make that 0 non-trivial.
+const REAL_DEFECT_TITLES = [
+  'T4 was never implemented: trash-plan and trash-apply do not exist anywhere in the tree',
+  'The coverage caveat is undisclosed in every deliverable',
+  'No test covers the zero-args path, so the contract is unproven',
+  'openDelta THREW on the recovered base snapshot token',
+  'The DQ4 identity is not satisfied on 12 of 3,027 rows',
+  'Missing denominator on the STALENESS headline rate',
+  'refresh-drain.test.ts was edited by task T5, which the plan forbids',
+  'The acceptance criterion names no command, so nothing was verified',
+  'A2 is violated: standard errors are not clustered anywhere in first_stage.py',
+  'No finding is recorded for D19, but the chain does not close',
+]
+
+test('real defect titles are NOT routed — including ones containing no/not/missing/satisfied', async () => {
+  for (const title of REAL_DEFECT_TITLES) {
+    const { result } = await run(
+      lensOnly(),
+      upheld({ findings: [{ title, severity: 'major', detail: 'src/x.py:10 — the measured output was wrong.' }] }))
+    expect(result.dispositions, `must not route: ${title}`).toEqual([])
+    expect(result.findings, `must still gate: ${title}`).toHaveLength(1)
+    expect(result.overallPass).toBe(false)
+  }
+})
+
+test('a detail that merely mentions "not a defect" mid-body still gates — the pattern is anchored to the opening', async () => {
+  const detail = 'src/x.py:44 computes the wrong denominator. ' + 'Filler. '.repeat(40) +
+    'Note that the adjacent helper is not a defect; only this line is.'
+  const { result } = await run(
+    lensOnly(),
+    upheld({ findings: [{ title: 'wrong denominator in the coverage rate', severity: 'major', detail }] }))
+  expect(result.dispositions).toEqual([])
+  expect(result.overallPass).toBe(false)
+})
+
+test('dispositions are absent-as-empty, and the gate log stays silent, when no lens reports one', async () => {
+  const { result, logs } = await run(lensOnly(), replies())
+  expect(result.dispositions).toEqual([])
+  expect(result.scoreTable.dispositions).toBe(0)
+  expect(logs.join('\n')).not.toMatch(/disposition/)
+})
+
+test('the gate log names the routed count, so a mis-filing lens is visible behind a PASS', async () => {
+  const { logs } = await run(
+    lensOnly(),
+    upheld({
+      findings: [{ title: 'E1/E4 determinism in the reviewed scripts — satisfied', severity: 'major', detail: 'd' }],
+      dispositions: [{ title: 'A2 holds', detail: 'e' }],
+    }))
+  const gate = logs.find(l => l.startsWith('gate:')) || ''
+  expect(gate).toContain('2 positive disposition(s) reported, not gated')
+  expect(gate).toContain('1 routed out of findings')
+})
+
+test('a dead lens still reports dispositions as [] — an empty list is honest, not clean', async () => {
+  const { result } = await run(lensOnly(), replies({ lens: { alpha: null } }))
+  expect(result.dispositions).toEqual([])
+  // The dimension failed on the synthesized critical, not on a missing disposition list.
+  expect(result.overallPass).toBe(false)
+  expect(result.scoreTable.lensesReported).toBe(0)
+})
+
+// ---------------------------------------------------------------- refuter ordering by Jev (B)
+// The cap truncates; the order decides which findings a refuter actually tests. Severity still
+// dominates — a ranked minor never displaces a critical — and Jev settles nothing: a finding past the
+// cap keeps its fail-closed treatment whatever its probability.
+
+// Nine same-severity findings, so REFUTERS_PER_LENS=8 truncates exactly one.
+const NINE = Array.from({ length: 9 }, (_v, i) => ({ title: `f${i}`, severity: 'major', detail: `d${i}` }))
+const nineLens = (over: any = {}) => lensOnly({ reviewLenses: [{ key: 'alpha', prompt: 'p' }], ...over })
+// Reverse the incoming order: f8 likeliest (p=0.9), f0 least (p=0.1).
+const reverseRank = { ok: true, scores: NINE.map((_f, i) => ({ index: i, p: (i + 1) / 10 })) }
+// `prompts` is a Map keyed by LABEL, and every refuter of one lens shares `refute:<key>` — so it
+// holds only the last. Record each refuter prompt as it is dispatched instead.
+const runRecording = async (args: any, reply: any) => {
+  const refuterPrompts: string[] = []
+  const r = await run(args, (label: string, prompt: string, o: any) => {
+    if (label.startsWith('refute:')) refuterPrompts.push(prompt)
+    return reply(label, prompt, o)
+  })
+  return { ...r, refuterPrompts }
+}
+// Which of the nine findings actually got a refuter, sorted for a stable comparison.
+const refutedTitles = (refuterPrompts: string[]) =>
+  NINE.map(f => f.title).filter(t => refuterPrompts.some(p => p.includes(`  ${t}\n`))).sort()
+
+test('Jev reorders within a severity, so the capped slot falls on the LEAST likely finding', async () => {
+  const { result, refuterPrompts, logs } = await runRecording(
+    nineLens(), replies({ lens: { alpha: { findings: NINE } }, rank: reverseRank }))
+  // f0 is Jev's least likely, so f0 is the one that loses its refuter.
+  expect(refutedTitles(refuterPrompts)).toEqual(['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8'])
+  // Nothing is settled or dropped: all nine are still reported, and the uncapped one stands.
+  expect(result.scoreTable.lensFindings).toBe(9)
+  const overflow = result.findings.find((f: any) => f.title === 'f0')
+  expect(overflow.refuteReason).toMatch(/over the 8-per-lens refuter cap/)
+  expect(logs.join('\n')).toMatch(/9 findings over the 8 refuter cap, 9 scored by Jev/)
+})
+
+test('severity outranks probability — a high-p minor never displaces a low-p critical', async () => {
+  const mixed = [
+    ...Array.from({ length: 8 }, (_v, i) => ({ title: `c${i}`, severity: 'critical', detail: 'd' })),
+    { title: 'm0', severity: 'minor', detail: 'd' },
+  ]
+  const { refuterPrompts } = await runRecording(nineLens(), replies({
+    lens: { alpha: { findings: mixed } },
+    // The minor is Jev's most likely by a mile; every critical is near zero.
+    rank: { ok: true, scores: mixed.map((f, i) => ({ index: i, p: f.severity === 'minor' ? 0.99 : 0.01 })) },
+  }))
+  expect(refuterPrompts).toHaveLength(8)
+  expect(refuterPrompts.some(p => p.includes('  m0\n'))).toBe(false)
+})
+
+test('no ranker leg is dispatched when nothing would be truncated', async () => {
+  const { dispatched } = await run(
+    nineLens(), replies({ lens: { alpha: { findings: NINE.slice(0, 8) } }, rank: reverseRank }))
+  expect(dispatched.filter(l => l.startsWith('rank:'))).toEqual([])
+  expect(dispatched.filter(l => l.startsWith('refute:'))).toHaveLength(8)
+})
+
+test('refuterRanker: "severity" dispatches no ranker and keeps today\'s order', async () => {
+  const { dispatched, refuterPrompts } = await runRecording(
+    nineLens({ refuterRanker: 'severity' }),
+    replies({ lens: { alpha: { findings: NINE } }, rank: reverseRank }))
+  expect(dispatched.filter(l => l.startsWith('rank:'))).toEqual([])
+  // Incoming order: f8 is the one that loses its refuter.
+  expect(refutedTitles(refuterPrompts)).toEqual(['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'])
+})
+
+test('an unknown refuterRanker throws before any agent is dispatched', async () => {
+  const r = await runCatching(nineLens({ refuterRanker: 'coinflip' }), replies())
+  expect(r.threw).toBe(true)
+  expect(String(r.error)).toMatch(/refuterRanker/)
+  expect(r.dispatched).toEqual([])
+})
+
+test('a dead ranker leg falls back to today\'s order and logs one line', async () => {
+  const { refuterPrompts, logs } = await runRecording(
+    nineLens(), replies({ lens: { alpha: { findings: NINE } }, rank: null }))
+  expect(refutedTitles(refuterPrompts)).toEqual(['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'])
+  expect(logs.filter(l => l.includes('ranker leg died'))).toHaveLength(1)
+})
+
+test('ok:false from the script falls back, naming the reason', async () => {
+  const { refuterPrompts, logs } = await runRecording(nineLens(), replies({
+    lens: { alpha: { findings: NINE } },
+    rank: { ok: false, reason: 'decisions endpoint unreachable' },
+  }))
+  expect(refutedTitles(refuterPrompts)).toEqual(['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'])
+  expect(logs.join('\n')).toMatch(/Jev unavailable \(decisions endpoint unreachable\)/)
+})
+
+test('an all-null score set falls back rather than silently ranking on nothing', async () => {
+  const { refuterPrompts, logs } = await runRecording(nineLens(), replies({
+    lens: { alpha: { findings: NINE } },
+    rank: { ok: true, scores: NINE.map((_f, i) => ({ index: i, p: null })) },
+  }))
+  expect(refutedTitles(refuterPrompts)).toEqual(['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'])
+  expect(logs.join('\n')).toMatch(/no usable probabilities/)
+})
+
+test('a partial score set ranks the scored findings and leaves the unscored behind them', async () => {
+  const { refuterPrompts } = await runRecording(nineLens(), replies({
+    lens: { alpha: { findings: NINE } },
+    // Only f7 and f8 scored; the other seven are unscored and keep their incoming order after them.
+    rank: { ok: true, scores: [{ index: 7, p: 0.9 }, { index: 8, p: 0.8 }] },
+  }))
+  // f7, f8 first, then f0..f5 — f6 is the ninth slot and loses its refuter.
+  expect(refutedTitles(refuterPrompts)).toEqual(['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f7', 'f8'])
+})
+
+test('out-of-range and non-numeric indices from the script are ignored, not trusted', async () => {
+  const { refuterPrompts } = await runRecording(nineLens(), replies({
+    lens: { alpha: { findings: NINE } },
+    rank: { ok: true, scores: [{ index: 99, p: 0.99 }, { index: -1, p: 0.99 }, { index: 8, p: 0.9 }] },
+  }))
+  // Only index 8 was usable, so f8 goes first and the last incoming slot (f7) is capped out.
+  expect(refutedTitles(refuterPrompts)).toEqual(['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f8'])
+})
+
+test('the ranker leg is a command runner: it names the script, carries the payload, and asserts nothing', async () => {
+  const { prompts } = await run(
+    nineLens(), replies({ lens: { alpha: { findings: NINE } }, rank: reverseRank }))
+  const p = prompts.get('rank:alpha') || ''
+  expect(p).toContain('scripts/jev-rank.ts')
+  expect(p).toContain('COMMAND RUNNER')
+  expect(p).toContain('you judge nothing')
+  // Every finding reaches the script — a ranker that saw a subset would rank a subset.
+  for (const f of NINE) expect(p).toContain(f.title)
+})
+
+test('dispositions are routed BEFORE ranking, so a satisfied check never consumes a ranked slot', async () => {
+  const { prompts, dispatched } = await run(nineLens(), replies({
+    lens: { alpha: { findings: [...NINE, { title: 'A2 — satisfied', severity: 'critical', detail: 'd' }] } },
+    rank: reverseRank,
+  }))
+  // Ten claims in, one routed out, nine defect claims ranked — so the payload holds nine, not ten.
+  expect(prompts.get('rank:alpha')).not.toContain('A2 — satisfied')
+  expect(dispatched.filter(l => l.startsWith('refute:'))).toHaveLength(8)
+})
