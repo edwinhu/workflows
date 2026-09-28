@@ -4,6 +4,8 @@
 
 ### Changed
 
+- **`work`'s heartbeat cron is ON BY DEFAULT, hourly (`7 * * * *`); `--no-cron` opts out.** A cron survives `--resume`/`--continue` and a watcher that died or was never armed; the `farm-runs` monitor and background tasks do not. The tick is a few-word nudge and a tick mid-round is allowed through uncounted by the hold, so hourly is cheap. `--cron` is still accepted as a no-op alias, and `WORK_LOOP_INTERVAL_MINUTES` still sets the period (`120` → `7 */2 * * *`). With `--no-cron`, the printed wake line says the monitor is the only wake.
+
 - **`craft` is gone as a name; everything it spelled is now `work` — read both spellings, write only the new one.** Renamed across 74 files: the plan arming marker `<!-- craft:dispatch -->` → `<!-- work:dispatch -->`; the run directory `$PWD/.craft/` → `$PWD/.work/`; every `CRAFT_*` environment variable → `WORK_*` (`WORK_FARM`, `WORK_DISPATCH_DRYRUN`, `WORK_GOAL_PRINT`, `WORK_NO_SCOPE`, `WORK_SYSTEMD_RUN`, `WORK_LOOP_POLL`, `WORK_LOOP_SETTLE`, `WORK_LOOP_INTERVAL_MINUTES`, `WORK_GOAL_MAX_HOURS`, `WORK_GOAL_MAX_MINUTES`, `WORK_PLAN_LINT`, `WORK_RED_PROBE_TIMEOUT`, `WORK_MECH_PROBE_TIMEOUT`, `WORK_SUITE_LINT_BUN`, `WORK_SUITE_LINT_TIMEOUT`, `WORK_SUITE_LINT_BUDGET_MS`, `WORK_REDISPATCH_DRYRUN`, `WORK_ALLOW_CRON_DELETE`); the documented scratch root `~/.local/state/craft` → `~/.local/state/work`; and the prose, comments, skill descriptions and marketplace copy. The `"craft this"` and `"/craft"` triggers are removed from `skills/work`'s description.
 
   **The transition is asymmetric by design: every reader accepts BOTH spellings, every writer emits only `work`.** The legacy reads, each commented `legacy:` at its site —

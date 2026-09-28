@@ -356,12 +356,14 @@ has gone quiet. The **`farm-runs` plugin monitor** does: it runs for the whole s
 `$TMPDIR/farm-events/$CLAUDE_CODE_SESSION_ID` with the `farm.sh` this dispatch launches, and wakes the
 main chat on milestones, on the verdict, and on a run that dies without one.
 
-**A cron on top of that is a wake for nothing** — AGK 2026-09-27: 14 ticks inside a single round, each
-re-entering a 113 KB plan and a 276 KB run dir. So the dispatch prints a `CronCreate` call only with
-`--cron`, or with `WORK_LOOP_INTERVAL_MINUTES` set; hourly by default, and the prompt is a nudge
-(`and? (work run <runid>)`). When it prints one, **make that call before your next action and report
-the job id**; `CronList` is the only thing that proves it exists. Otherwise the dispatch says in one
-line that the monitor is the wake.
+**The monitor does not survive the session.** It is gone across `--resume`/`--continue`, and it is
+absent entirely when it was never armed — on 2026-09-27 a session restarted a loop at 23:14 with no
+watcher re-armed and nothing woke it. So the cron is the **backstop, on by default**: the dispatch
+prints an hourly `CronCreate` call (`WORK_LOOP_INTERVAL_MINUTES` sets the period) whose prompt is a
+nudge (`and? (work run <runid>)`) — a few words, and a tick mid-round is allowed through uncounted by
+the hold, so it is cheap. **Make that call before your next action and report the job id**; `CronList`
+is the only thing that proves it exists. `--no-cron` opts out, and then the dispatch says in one line
+that the monitor is the only wake.
 
 Nothing is typed into this session and nothing is queued, so there is no send to verify, no transport
 to fall back to, and no ordering constraint against Phase 4.
@@ -861,7 +863,7 @@ descope with the user rather than guessing a third time.
 | Tasks feel like they could run in parallel | fan out implementers yourself, or give each a worktree | declare `dependsOn` and let IMPLEMENT wave them — concurrent within a wave, and arg-validation refuses a wave whose `writablePaths` overlap, so safety is checked rather than trusted. Worktrees stay out: `workflow.js` cannot merge them (no filesystem), and a merge agent's silent slip reads as an implementer's omission |
 | A task reads a file another task writes | rely on `tasks[]` array order | array order is not a contract the script enforces — declare `dependsOn: ['<id>']`. An unknown id and a cycle both throw before dispatch; an edge to a task outside `onlyTasks` is treated as satisfied, since a prior run put its output on disk |
 | Write `args.goalCheck` as this run's `work-result.sh` / `result.json` | "that is what settles the run" | a round verdict cannot certify the goal and outlives an abandoned run; `plan-lint` runs it through `hold-lint.ts` and blocks. State the plan's own measurement, or state none and let the judge rule on `args.goal` |
-| Dispatch printed a `CronCreate` block (`--cron`) | scroll past it; the monitor covers it | you asked for the fallback poll, so nothing has raised it. Call `CronCreate` this turn and report the job id; `CronList` is what proves it |
+| Dispatch printed a `CronCreate` block (the default) | scroll past it; the monitor covers it | the monitor dies with the session and the cron does not. Call `CronCreate` this turn and report the job id; `CronList` is what proves it |
 | A stop is allowed mid-round and you read that as the hold being broken | re-arm, or treat the run as over | the run is IN FLIGHT: `args.json` with no verdict beside it, worked by a detached process. The clock still runs and the next Stop after the verdict blocks again |
 | About to self-send a `/goal` or `/loop` into this session | any transport — herdr, agent-msg, a drainer | none of them land: a typed send needs the pane IDLE and a dispatching session never is. `work-hold.sh` writes a file and `CronCreate` is a tool call; both land inside the turn |
 | Session opens on `Implement the following plan:` | implement it in the main thread | the context was cleared at approval — this is Phase 4, not the work. The plan's frontmatter `workflow:` names the skill to invoke first; then dispatch. `work-dispatch.sh` needs nothing you lost. Same answer when an Edit is denied for an armed run |
