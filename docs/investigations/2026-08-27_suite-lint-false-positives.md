@@ -13,15 +13,26 @@ argue with a specific row.
 | rule id | audited corpus | raw findings | false positives | true positives |
 |---|---|---|---|---|
 | positive-match-failure-vocabulary | 15 | 26 | 23 | 3 |
-| single-distinct-literal | 42 | 208 | 191 | 17 |
-| existence-only-artifact | 0 | 0 | 0 | 0 |
-| injected-key-never-varied | 18 | 44 | 44 | 0 |
+| single-distinct-literal | 45 | 208 | 191 | 17 |
+| existence-only-artifact | 1 | 1 | 1 | 0 |
+| injected-key-never-varied | 17 | 44 | 44 | 0 |
 
 **The audited-corpus column is the one this repository's suite pins, and the only one re-executed on
-every run.** The *audited corpus* is the 26 files this investigation actually read and cites by
+every run.** The *audited corpus* is the 24 files this investigation actually read and cites by
 `file:line` below. `suite-lint-report.test.ts` re-runs the lint and requires these four counts back
 exactly, so a rule that stops firing, fires wider, or reclassifies a file the investigation examined
 turns the suite red.
+
+**Every `file:line` cited below is a TRACKED file, and that is a requirement rather than a
+coincidence.** The audited corpus is derived from the citations, and the suite re-executes it, so a
+citation into a gitignored path — `scratch/` above all — made the suite pass on the one machine that
+happened to hold that file and fail in a fresh clone, a worktree, or CI. One such citation existed
+a `phase_gate_guard_test.py` line under `scratch/python-suite-head/`, cited by
+`injected-key-never-varied`; it is gone, and the paragraph that rested on it is rewritten around a
+tracked example. The walker
+still lints `scratch/` when it is present, which is why the raw column's snapshot below discusses it
+— but nothing this document *cites*, and therefore nothing the suite recomputes, depends on an
+untracked file.
 
 **The raw column is a whole-repository snapshot, as of 2026-09-17, and is deliberately NOT pinned.**
 It counts every suite file in the tree, so it moved every time this repo gained an unrelated test
@@ -60,8 +71,11 @@ before the row moved, and both were FALSE positives: `text.find("\n", i)` and `m
 scanner internals in a file the walker admitted on its `_test.py` name alone, not assertions whose
 literal could have been varied. Raw 209 to 207, false positives 193 to 191, true positives unmoved.
 
-Unparseable files: 0 of 253 linted. Every file the walker reached was extracted; nothing was dropped
-silently, and no count above is understated by a skipped file.
+Unparseable files: 0. Every file the walker reached was extracted; nothing was dropped
+silently, and no count above is understated by a skipped file. (The file *total* the walker reaches
+is tree-dependent — 139 tracked suites in a clean checkout, 274 in a working tree carrying
+`scratch/` — which is why the count stated here is the unparseable one, the only one the suite
+re-executes.)
 
 Of the 261 findings this investigation audited in August, one survived inspection. The
 2026-09-15 reading above adds one more false positive and no true positive, so that number
@@ -173,7 +187,7 @@ same mechanism produces `skills/workflow-creator/scripts/wc-probe.test.ts:269`,
 `skills/workflow-creator/scripts/wc-probe.test.ts:3273`; both
 `skills/work/scripts/work-dispatch.test.ts:538` and
 `skills/work/scripts/work-dispatch.test.ts:549`, whose matched literal is a malformed-plan fixture
-about 150 lines away at line 682; `tests/public-extension-contract.test.ts:161`, where the assertion
+about 150 lines away at line 682; `tests/public-extension-contract.test.ts:170`, where the assertion
 is `toContain("specHash")` and the matched literal is a prose table cell at line 47 that happens to
 contain the word; and the three cite-check findings
 `skills/cite-check/tests/cite-check.test.ts:1175`, `skills/cite-check/tests/cite-check.test.ts:1179`
@@ -221,6 +235,17 @@ neighbouring test, calls `isAffordablePair('a*b', n)` for `n` in 80, 200 and 1,0
 The file distinguishes the two behaviours about as loudly as a file can; it just does not do it
 through a differing literal in the same argument position.
 
+The audited-corpus count for this rule is 45 rather than 43 because
+`skills/grind/scripts/grind.test.ts` joined the audited corpus through the
+`existence-only-artifact` citation below, and a file entering the corpus brings *every* finding in it,
+not only the one that was cited. Both are the dominant shape and both were read.
+`skills/grind/scripts/grind.test.ts:58` flags `readFileSync(journal, 'utf8')` for sharing `'utf8'`
+across lines 58, 200 and 297; the encoding is not an input at all, and the varying argument is
+`journal`, a per-test temp path. `skills/grind/scripts/grind.test.ts:103` flags two `at(-1)` calls,
+lines 103 and 153, for sharing `-1`: both read the LAST journal record, and the behaviour they
+distinguish is `'done'` versus `'stalled'` in the assertion, not the index. Neither is defective;
+neither moves the true-positive column.
+
 **Variation by absence.** `tests/test_prose_audit.py:66` anchors a group of nine `_audit("tics.md")`
 calls; two of them, at lines 77 and 78, sit inside one test that calls `_audit("tics.md")` and
 `_audit("tics.md", style="legal")` to prove the domain guide is gated by style. The fixture filename
@@ -249,19 +274,36 @@ the same callee.
 
 ## existence-only-artifact
 
-Raw 0, no findings of either sign.
+Raw 1, false positives 1, no true positives.
 
-The rule fires nowhere in this tree. Its one historical finding was a read guard rather than an
-assertion — the last field of a helper's return, where an `existsSync` chose `''` over throwing so
-that the failure would surface at the assertion instead of in the fixture, while the artifact's
-*contents* were asserted twice further down. The mechanism was that the rule scored an `existsSync`
-reference without noticing that the guarded read flows into a variable the assertions consume. That
-file was `tests/goal-send-drain.test.ts`, deleted 2026-09-17 with the `/goal` self-send transport it
-exercised, so the finding is gone with its subject rather than fixed.
+The one finding is `skills/grind/scripts/grind.test.ts:299`, and it is a false positive of a shape the
+rule cannot currently distinguish. The line is
 
-This count has moved 0 → 1 → 0 across three refreshes without the rule changing once: what moved
+```
+expect(existsSync(`${journal}.pid`)).toBe(false)
+```
+
+a NEGATIVE existence assertion: the test's claim, stated in the comment above it, is that the journal
+is the only file the loop writes, so the `.pid` file must *not* exist. The rule's premise — an
+artifact whose existence is checked while its contents are never asserted — presupposes an artifact
+that is supposed to be there. Here there are no contents to assert, and asserting any would falsify
+the test. The rule's own evidence string says as much: "is the only reference to `${journal}.pid` in
+this file" is exactly what a correct absence assertion looks like. The repair the rule wants does not
+exist. (The line immediately above it, `expect(stray.length).toBeGreaterThan(0)`, asserts the
+contents of the artifact that *is* supposed to exist, which the rule does not flag.)
+
+Its earlier finding was a different false positive: a read guard rather than an assertion, the last
+field of a helper's return, where an `existsSync` chose `''` over throwing so that the failure would
+surface at the assertion instead of in the fixture, while the artifact's *contents* were asserted
+twice further down. There the rule scored an `existsSync` reference without noticing that the guarded
+read flows into a variable the assertions consume. That file was `tests/goal-send-drain.test.ts`,
+deleted 2026-09-17 with the `/goal` self-send transport it exercised, so the finding went with its
+subject rather than being fixed.
+
+This count has moved 0 → 1 → 0 → 1 across four refreshes without the rule changing once: what moved
 each time was which files the corpus held. That is the case for pinning the AUDITED CORPUS rather
-than the whole-tree total, which is what `suite-lint-report.test.ts` now does.
+than the whole-tree total, which is what `suite-lint-report.test.ts` now does. Both findings the rule
+has ever produced here were read, and both were false; on this corpus it has never been right.
 
 ## injected-key-never-varied
 
@@ -298,14 +340,20 @@ at `skills/work/scripts/work-goal-resend.test.ts:78`, `CRAFT_FARM: '/bin/false'`
 `GATE_STATUS`, `GATE_BLOCKED_TOOLS` and `GATE_REQUIRE_FIELDS` of the `scratch/` guard suites. A
 dry-run switch has one meaningful value; the varying input is what the harness then feeds the script.
 
-Two of these are worth calling out because they are the rule's own target shape, correctly handled by
+One of these is worth calling out because it is the rule's own target shape, correctly handled by
 the test. `skills/work/scripts/compose-goal.test.ts:142` sets `CRAFT_GOAL_MAX_HOURS: '2'` once, and
 the test directly above it exercises the unset default and asserts a different output
 (`/480 minutes or more/` versus `/120 minutes or more/`). The key **is** varied — across presence and
 absence, which the rule cannot count.
-`scratch/python-suite-head/tests/phase_gate_guard_test.py:135` varies `GATE_REQUIRE_FIELDS` between
-the module constant `FIELDS` and the literal `'codex_second_pass'`; only one of the two is a literal,
-so the occurrence count is one.
+
+A second example of the same shape used to sit here, and it is worth saying what happened to it
+rather than deleting it silently. It cited `scratch/python-suite-head/tests/phase_gate_guard_test.py`
+— a snapshot of an older tree under a gitignored directory — for a `GATE_REQUIRE_FIELDS` injection
+varied between a module constant and a literal, where only the literal is counted. The mechanism is
+real and is the same "variation the rule cannot count" as the `compose-goal` case above, but the
+evidence was unverifiable anywhere but on the machine that held the snapshot, so it cannot stand as a
+citation. No tracked file in this repository reproduces that exact shape, so the section rests on the
+one tracked example rather than on an invented substitute.
 
 ## What a disputer should do
 
