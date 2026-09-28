@@ -22,21 +22,33 @@
  * INERT unless armed. The state file is per session, so this fires for exactly one session
  * rather than every session in the project.
  *
- *   arm:     hound-arm.sh '<check command>' [--rounds N] [--minutes M]
- *   release: the check passes, a ceiling is reached, or the USER confirms `--disarm` at a
- *            terminal. Deleting the state file is not a release: the ledger beside it records
- *            the arm, and this hook restores a hold that vanished without one.
+ *   arm:     hound-arm.sh '<check command>' [--goal '<objective>'] [--run DIR] [--rounds N] [--minutes M]
+ *            hound-arm.sh --goal '<objective>' [--run DIR] …    a CHECK-LESS hold: the judge alone
+ *   release: the check passes AND the judge agrees the goal is met, a ceiling is reached, or the USER
+ *            confirms `--disarm` at a terminal. Deleting the state file is not a release: the ledger
+ *            beside it records the arm, and this hook restores a hold that vanished without one.
+ *
+ * The order, every Stop: the watched run is IN FLIGHT (allow, count nothing, clock still runs) ->
+ * the check is red (block, count a round) -> the check is green or there is none (ask the judge:
+ * MET releases, UNMET blocks) -> a ceiling (release, UNMET).
  */
 
-import { appendFileSync, existsSync, mkdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { join } from 'node:path'
 import { homedir, tmpdir } from 'node:os'
 
 interface State {
+  /** The goal check. EMPTY means a check-less, Jev-only hold: the goal is the whole objective. */
   check: string
   goal?: string
+  /**
+   * The work run this hold watches, absolute. While that run is IN FLIGHT the session may stop:
+   * the round is being worked by a detached process and blocking buys nothing. Absent on a hold
+   * armed outside a work dispatch, which is then never in flight.
+   */
+  run?: string
   authority?: string
   continuation?: string
   goalPrompted?: boolean
@@ -64,21 +76,83 @@ export function statePath(session: string): string {
 /**
  * The ledger beside the state file. `hound-arm.sh` appends `armed` here when it arms and
  * `released by user` / `declined` / `refused` when release is attempted; this hook appends
- * `passed` and `expired`. It exists because the state file alone made the hold `rm`-able: a
- * session that could not argue its way out could still delete its way out. If the state file is
- * gone while the ledger's last word is `armed`, the hold was removed by something other than the
- * two sanctioned exits, and it is RESTORED rather than honoured.
+ * `passed-goal-met` / `passed-unjudged` and `expired`. It exists because the state file alone made
+ * the hold `rm`-able: a session that could not argue its way out could still delete its way out. If
+ * the state file is gone while the ledger's last word is `armed`, the hold was removed by something
+ * other than the two sanctioned exits, and it is RESTORED rather than honoured.
  */
 export function ledgerPath(session: string): string {
   return join(process.env.TMPDIR || tmpdir(), `hound-${session}.releases.log`)
 }
 
-function lastLedgerVerb(ledger: string): string | null {
+/**
+ * The two passing releases, told apart by WHO said the goal was met.
+ *
+ * A green check is a floor, not the objective — so `passed` alone could not distinguish "the
+ * classifier agreed the goal is met" from "there was no goal, or the classifier was unreachable and
+ * we failed open". Measured 2026-09-26: a work run armed with no `--goal` released on
+ * `work-result.sh` exiting 0, the heartbeat's teardown clause read that as done, and the session
+ * ran `CronDelete` while the user's actual objective was untouched. Splitting the verb is what lets
+ * the release message and `cron-delete-guard.ts` disagree with each other's optimism.
+ */
+export const PASSED_GOAL_MET = 'passed-goal-met'
+export const PASSED_UNJUDGED = 'passed-unjudged'
+
+/** The verb `work-abandon.sh` appends when the USER retires a run. */
+export const ABANDONED = 'abandoned by user'
+
+/**
+ * The ledger's last word about the HOLD — `capped` lines are bookkeeping for the context window and
+ * say nothing about whether a hold is armed or released, so they are read through.
+ */
+export function lastLedgerEntry(ledger: string): { verb: string; payload: string } | null {
   if (!existsSync(ledger)) return null
-  const lines = readFileSync(ledger, 'utf8').trim().split('\n').filter(Boolean)
-  const last = lines[lines.length - 1]
-  if (!last) return null
-  return (last.split('\t')[1] || '').trim() || null
+  let out: { verb: string; payload: string } | null = null
+  for (const line of readFileSync(ledger, 'utf8').split('\n')) {
+    if (!line.trim()) continue
+    const f = line.split('\t')
+    const verb = (f[1] || '').trim()
+    if (!verb || verb === 'capped') continue
+    out = { verb, payload: f[2] || '' }
+  }
+  return out
+}
+
+/**
+ * Is the work run this hold watches still IN FLIGHT?
+ *
+ * The same filesystem test `cron-delete-guard.ts` and `work-abandon.sh` use: args.json exists and
+ * no non-empty result.json sits beside it. A round in flight is being worked by a detached process,
+ * so blocking the session's stop buys nothing and costs a wake — AGK 2026-09-27, where a heartbeat
+ * woke 14 times while one round ran. A redispatch rotates result.json away, which makes the run in
+ * flight again by the same test rather than by a second record of it.
+ */
+export function inFlight(s: { run?: string }): boolean {
+  if (!s.run) return false
+  if (!existsSync(join(s.run, 'args.json'))) return false
+  try {
+    return statSync(join(s.run, 'result.json')).size === 0
+  } catch {
+    return true                                   // absent result.json IS the in-flight shape
+  }
+}
+
+/**
+ * A ceiling reached, as a sentence — or null.
+ *
+ * Pulled out of `decide` because the clock has to bind on the paths `decide` never sees: a run in
+ * flight (where no check is run at all) and a judge that keeps saying UNMET over a green check.
+ * A hold that only expires on a red check is a hold with a hole in its clock.
+ */
+export function ceilingReached(
+  s: { startedAt: number; ceilingMinutes: number; rounds: number; maxRounds: number },
+  nowSeconds: number,
+): string | null {
+  const minutes = Math.floor((nowSeconds - s.startedAt) / 60)
+  if (minutes >= s.ceilingMinutes)
+    return `held for ${minutes} min, at or past the ${s.ceilingMinutes} min ceiling`
+  if (s.rounds >= s.maxRounds) return `${s.rounds} rounds, at the ${s.maxRounds} ceiling`
+  return null
 }
 
 /** What the hook decides, separated from the IO so it can be tested. */
@@ -90,23 +164,17 @@ export function decide(
   if (checkExit === 0) return { action: 'pass' }
 
   const minutes = Math.floor((nowSeconds - s.startedAt) / 60)
-  if (minutes >= s.ceilingMinutes) {
-    return {
-      action: 'expired',
-      reason: `held for ${minutes} min, at or past the ${s.ceilingMinutes} min ceiling`,
-    }
-  }
-  if (s.rounds >= s.maxRounds) {
-    return { action: 'expired', reason: `${s.rounds} rounds, at the ${s.maxRounds} ceiling` }
-  }
+  const ceiling = ceilingReached(s, nowSeconds)
+  if (ceiling) return { action: 'expired', reason: ceiling }
+  // ONE LINE. The clauses that used to ride along here are repeated verbatim every round, so the
+  // two facts that actually change — the exit and the budget — were buried in a paragraph the
+  // session had already read five times. They are printed on the first counted block and by
+  // `--brief` after a compaction; everything else is conditional.
   return {
     action: 'block',
     reason:
-      `\`${s.check}\` exits ${checkExit}, so the objective is NOT met. Take the next action ` +
-      `now rather than proposing it — and judge from the command, not from this conversation. ` +
-      `Round ${s.rounds + 1} of ${s.maxRounds}; ${s.ceilingMinutes - minutes} min left of the ` +
-      `ceiling. Nothing is loosened to make it pass: fix the cause, or record why the rule does ` +
-      `not apply, with the reason on the line.`,
+      `\`${s.check}\` exits ${checkExit} — not met. Round ${s.rounds + 1}/${s.maxRounds}, ` +
+      `${s.ceilingMinutes - minutes} min left. Act now: fix the cause; do not loosen the check.`,
   }
 }
 
@@ -135,7 +203,6 @@ function rubricDrift(s: { checkFiles?: Record<string, string> }): string[] {
   }
   return moved
 }
-
 
 /**
  * What the judge reads: the session's own compaction summary, then the turns since it.
@@ -212,7 +279,6 @@ export function renderHistory(h: RoundRecord[] | undefined): string {
 export function pushRound(s: State, r: RoundRecord, max = 20): void {
   s.history = [...(s.history ?? []), r].slice(-max)
 }
-
 
 /**
  * Ask an INDEPENDENT model whether the goal is met, reading the transcript.
@@ -341,8 +407,12 @@ function judgeViaDecisions(
     model,
     questions: {
       met: {
+        // TWO CLAUSES, because the stall this exists to stop happens at a moment of legitimate
+        // completion: the stated goal reads done and the session has just named the next thing it
+        // found. "Met" alone releases there; "met AND nothing obvious left open" does not.
         type: 'noul',
-        instructions: `This goal has been fully met, with nothing outstanding, blocked or only partly done: ${goal}`,
+        instructions:
+          `This goal is met AND no obvious open work remains that the session should do next: ${goal}`,
       },
     },
   }
@@ -390,11 +460,14 @@ function judgeGoal(
     .join('\n\n')
 
   const prompt =
-    `You are judging whether a coding session has MET its stated goal. You are not the session; ` +
-    `judge only from the evidence below.\n\nGOAL: ${goal}\n\n` +
-    `A command called the check already exits 0: ${check}\nThat is a floor, not proof the goal is met.\n\n` +
+    `You are judging whether a coding session has MET its stated goal AND has no obvious open work ` +
+    `left to do next. You are not the session; judge only from the evidence below.\n\nGOAL: ${goal}\n\n` +
+    (check
+      ? `A command called the check already exits 0: ${check}\nThat is a floor, not proof the goal is met.\n\n`
+      : `There is no check command: the goal is the whole objective.\n\n`) +
     `${evidence}\n\n` +
-    `Set met=false if the goal names work that is still outstanding, blocked, or only partly done. ` +
+    `Set met=false if the goal names work that is still outstanding, blocked, or only partly done, ` +
+    `or if the session has itself named an obvious next action it has not taken. ` +
     `Put one sentence of evidence in why.`
 
   // Jev first: a decision model returns a calibrated probability for one typed question, which is
@@ -526,16 +599,76 @@ export interface CapRecord {
   cse?: string
 }
 
-/** Put the cap in the local file, preserving every other key and its order. */
-export function writeLocalCap(path: string, window: number): CapRecord {
+/**
+ * Evidence that HOUND — not the user — is why `WINDOW_KEY` already equals the cap, and what was in
+ * the file before hound first put it there.
+ *
+ * A cap left behind by a hold that was re-armed or whose release was skipped is indistinguishable,
+ * by value alone, from a setting the user chose. Observed 2026-09-25: arming in
+ * /home/eh/projects/hidden-figures recorded prior=250000, and the release then "restored" 250000 as
+ * though it were the user's, which blocked `/autocompact auto`.
+ *
+ * Two sources, both already on disk and neither a new file: a LIVE state object still holding a
+ * CapRecord for this path and window, and the `capped` lines hound appends to its own per-session
+ * ledgers. The live record wins — it is the hold that still owns the key.
+ */
+export function capProvenance(path: string, window: number, dir?: string): CapRecord | null {
+  const d = dir || process.env.TMPDIR || tmpdir()
+  let names: string[]
+  try {
+    names = readdirSync(d)
+  } catch {
+    return null
+  }
+  let fromLedger: CapRecord | null = null
+  for (const name of names.sort()) {
+    if (!name.startsWith('hound-')) continue
+    const full = join(d, name)
+    if (name.endsWith('.json')) {
+      try {
+        const c = (JSON.parse(readFileSync(full, 'utf8')) as State).compact
+        if (c && c.path === path && c.window === window) return c
+      } catch {
+        /* an unreadable state file is not evidence */
+      }
+    } else if (name.endsWith('.releases.log')) {
+      try {
+        for (const line of readFileSync(full, 'utf8').split('\n')) {
+          const [, verb, json] = line.split('\t')
+          if (verb?.trim() !== 'capped' || !json) continue
+          const c = JSON.parse(json) as CapRecord
+          if (c?.path === path && c.window === window) fromLedger = c
+        }
+      } catch {
+        /* an unreadable ledger is not evidence */
+      }
+    }
+  }
+  return fromLedger
+}
+
+/**
+ * Put the cap in the local file, preserving every other key and its order.
+ *
+ * When the key is ALREADY the cap value, `prior` is only believable if hound did not write it — so
+ * `provenance` (from `capProvenance`) carries the earlier record's prior forward instead. With no
+ * provenance the old behaviour stands and the cap value is recorded as the prior: a value that is
+ * there for a reason nobody can establish is treated as the user's, which is the safe direction.
+ */
+export function writeLocalCap(path: string, window: number, provenance?: CapRecord | null): CapRecord {
   const created = !existsSync(path)
   const cur = readSettings(path) ?? {}
   const p = cur[WINDOW_KEY]
-  const prior = typeof p === 'number' && Number.isFinite(p) ? Math.trunc(p) : null
+  let prior = typeof p === 'number' && Number.isFinite(p) ? Math.trunc(p) : null
+  let createdOut = created
+  if (prior === window && provenance) {
+    prior = provenance.prior
+    createdOut = created || provenance.created
+  }
   cur[WINDOW_KEY] = window
   mkdirSync(join(path, '..'), { recursive: true })
   writeFileSync(path, JSON.stringify(cur, null, 2) + '\n')
-  return { path, window, prior, created }
+  return { path, window, prior, created: createdOut }
 }
 
 /**
@@ -585,8 +718,44 @@ export function selfCse(): string | null {
 }
 
 // The user permissions.ask matches any Bash command naming a hound-*.json path, so a cat of the
-// state prompts them; the Read tool and --status do not.
+// state prompts them; the Read tool and --status do not. BRIEF ONLY — a block message repeats every
+// round, and the path does not change, so it is noise there and orientation here.
 const stateRef = (path: string) => `(state: ${path} — inspect it with the Read tool, Read(file_path: "${path}"), or \`hound-arm.sh --status\`; never name this path in a Bash command, which prompts the user)`
+
+/**
+ * The standing authority and the continuation rule — ONCE PER HOLD, on the first counted block.
+ *
+ * compose-goal.sh put them in the goal because the goal was "the one text it re-reads every turn",
+ * and hound inherited that by printing them on every block. They are long, identical each round, and
+ * already on disk: `--brief` re-injects them at SessionStart, which is the one moment the session
+ * has actually lost them. `first` is derived from the round counter, so it records no new state.
+ */
+const clausesFor = (s: State, first: boolean): string =>
+  first ? [s.authority, s.continuation, redispatchLine(s)].filter(Boolean).join(' ') : ''
+
+/**
+ * How to advance a WATCHED run after a failed round — or '' when this hold watches none.
+ *
+ * A session that reads "the round failed" reaches for `work-dispatch.sh`, which re-runs every task;
+ * `work-redispatch.sh` re-runs only the tasks that flagged plus their transitive dependents and
+ * carries the rest, so it is the only advance that does not throw away a round's verified work.
+ * Derived from `s.run` and the plan path already recorded in that run's args.json — no new state.
+ */
+export function redispatchLine(s: { run?: string }): string {
+  if (!s.run) return ''
+  let plan = '<plan.md>'
+  try {
+    const a = JSON.parse(readFileSync(join(s.run, 'args.json'), 'utf8'))
+    if (typeof a.planPath === 'string' && a.planPath) plan = a.planPath
+  } catch {
+    /* the args are the run's, not the hold's: an unreadable one costs the placeholder, not the line */
+  }
+  return (
+    `After a failed round, advance it with \`work-redispatch.sh ${plan} ${join(s.run, 'args.json')} --dispatch\`, ` +
+    'which re-runs only the tasks that flagged and their dependents and carries the rest — not a fresh ' +
+    'work-dispatch.sh, which re-runs every task.'
+  )
+}
 
 const agentMsgBin = () => process.env.HOUND_AGENT_MSG || 'agent-msg'
 
@@ -672,9 +841,12 @@ function capCli(): void {
   const raw = Number(process.env.HOUND_COMPACT_WINDOW || 250_000)
   const window = Math.min(1_000_000, Math.max(100_000, Number.isFinite(raw) ? raw : 250_000))
 
-  s.compact = writeLocalCap(local, window)
+  s.compact = writeLocalCap(local, window, capProvenance(local, window))
   if (cse) s.compact.cse = cse
   writeFileSync(path, JSON.stringify(s))
+  // The cap record, in the ledger that already sits beside the state file — so a LATER arm can tell
+  // a cap hound left behind from a window the user chose, even after this state file is gone.
+  appendFileSync(ledgerPath(session), `${new Date().toISOString()}\tcapped\t${JSON.stringify(s.compact)}\n`)
 
   const status = applyWindow(session, cse)
   say(
@@ -718,13 +890,10 @@ function main(): void {
 
   if (!existsSync(path)) {
     // Gone. Was it one of the sanctioned exits, or did someone delete it?
-    const verb = lastLedgerVerb(ledger)
-    const armed = verb !== null && verb.startsWith('armed')
-    if (!armed) process.exit(0)                   // never armed, or properly released: inert
-    const record = (verb.split('\u0000')[0] || '').slice(0)
-    void record
-    const saved = (readFileSync(ledger, 'utf8').trim().split('\n').filter(Boolean).pop() || '')
-    const json = saved.split('\t')[2] || ''
+    const entry = lastLedgerEntry(ledger)
+    // never armed, or properly released: inert
+    if (!entry || !entry.verb.startsWith('armed')) process.exit(0)
+    const json = entry?.payload ?? ''
     try {
       const restored = JSON.parse(json) as State
       writeFileSync(path, JSON.stringify(restored))
@@ -748,69 +917,151 @@ function main(): void {
     process.exit(0)
   }
 
-  const r = spawnSync('bash', ['-lc', s.check], { encoding: 'utf8', timeout: 900_000 })
-  const exit = r.status ?? 2
-  const d = decide(s, exit, Math.floor(Date.now() / 1000))
+  const now = Math.floor(Date.now() / 1000)
+  const checkless = !s.check?.trim()
 
-  if (d.action === 'pass') {
-    // THE CHECK IS THE FLOOR, THE GOAL IS THE OBJECTIVE. `/goal` stated a broad objective and the
-    // loop kept asking it; that half was lost when the self-send transport was deleted for landing
-    // 127 of 163 (bbad18d4), and what remained was a single command that goes green after one fix.
-    // The state file and this hook need no transport, so the goal travels here instead. On green
-    // with a goal set, block ONCE and restate it: the session must say the goal is met or re-arm on
-    // what is left. Bounded to one extra round by goalPrompted, so it cannot become its own trap.
-    if (s.goal) {
-      const j = judgeGoal(String(payload.transcript_path || ''), s.goal, s.check, s.history)
-      if (j.verdict === 'UNMET') {
-        s.rounds += 1
-        // The judge's reason is the one fact a compaction destroys and nothing else holds: the
-        // check is green, so no later round can rediscover why this one was refused.
-        pushRound(s, { round: s.rounds, at: Math.floor(Date.now() / 1000), exit: 0, note: `judge UNMET: ${j.reason}` })
-        writeFileSync(path, JSON.stringify(s))
-        process.stdout.write(JSON.stringify({
-          decision: 'block',
-          reason:
-            `\`${s.check}\` exits 0, so the CHECK is met — that is the floor, not the objective. ` +
-            `An independent judge read the transcript and says the GOAL is NOT met: ${j.reason} ` +
-            `THE GOAL: ${s.goal} ${[s.authority, s.continuation].filter(Boolean).join(' ')} ${stateRef(path)}`,
-        }))
-        process.exit(0)
-      }
-      if (j.verdict === 'UNAVAILABLE')
-        process.stderr.write(`until: goal judge unavailable (${j.reason}); releasing on the check alone.\n`)
-    }
-    appendFileSync(ledger, `${new Date().toISOString()}\tpassed\t${s.check}\n`)
+  /** Every release goes through here: ledger line, window restored, state gone, one message. */
+  const release = (verb: string, message: string): void => {
+    appendFileSync(ledger, `${new Date().toISOString()}\t${verb}\t${s.check || s.goal || ''}\n`)
     uncap(session, s)
     rmSync(path, { force: true })
     const moved = rubricDrift(s)
-    const note = moved.length
-      ? ` The check's own files changed while armed (${moved.join(', ')}) — the objective moved during the hold, so say what it says now.`
-      : ''
-    process.stderr.write(`until: \`${s.check}\` exits 0 — objective met, hold released.${note}\n`)
-    process.exit(0)
-  }
-  if (d.action === 'expired') {
-    appendFileSync(ledger, `${new Date().toISOString()}\texpired\t${s.check}\n`)
-    uncap(session, s)
-    rmSync(path, { force: true })
-    const movedX = rubricDrift(s)
-    const noteX = movedX.length ? ` (the check's own files also changed while armed: ${movedX.join(', ')})` : ''
-    process.stderr.write(`until: ${d.reason}. Hold released UNMET — say so.${noteX}\n`)
+    process.stderr.write(
+      `until: ${message}` +
+        (moved.length
+          ? ` The check's own files changed while armed (${moved.join(', ')}) — the objective moved during the hold, so say what it says now.`
+          : '') +
+        '\n',
+    )
     process.exit(0)
   }
 
+  /** Block, count the round, and record what refused it. */
+  const block = (reason: string, note: string): void => {
+    const first = s.rounds === 0
+    s.rounds += 1
+    pushRound(s, { round: s.rounds, at: now, exit: 0, note })
+    writeFileSync(path, JSON.stringify(s))
+    const clauses = clausesFor(s, first)
+    process.stdout.write(JSON.stringify({
+      decision: 'block',
+      reason: reason + (clauses ? `\n${clauses}` : ''),
+    }))
+    process.exit(0)
+  }
+
+  // (a) THE RUN IS IN FLIGHT: allow the stop, count nothing. A round is being worked by a detached
+  // process, so there is nothing for this session to do and nothing a block would achieve — AGK
+  // 2026-09-27, 14 wakes inside one round. The CLOCK still runs: an in-flight run is not a licence
+  // to outlive the ceiling, so an expired hold releases here rather than waiting for a verdict that
+  // may never come.
+  if (inFlight(s)) {
+    const c = ceilingReached(s, now)
+    if (c)
+      release(
+        'expired',
+        `${c}, with the run still in flight. Hold released UNMET — say so, and if a heartbeat cron ` +
+          `exists, end it with CronDelete now: a cron outlives the work and nothing else can end it.`,
+      )
+    process.exit(0)
+  }
+
+  const exit = checkless
+    ? 0
+    : (spawnSync('bash', ['-lc', s.check], { encoding: 'utf8', timeout: 900_000 }).status ?? 2)
+  const d: { action: 'pass' | 'block' | 'expired'; reason?: string } =
+    checkless ? { action: 'pass' } : decide(s, exit, now)
+
+  // (c) THE CHECK IS THE FLOOR, THE GOAL IS THE OBJECTIVE — and on a check-less hold the goal is the
+  // whole of it. Jev is asked the same question either way: is the goal met AND is nothing obvious
+  // left open. A green check with a met goal is the only release that says the objective closed.
+  if (d.action === 'pass') {
+    // The classifier's own words when it said MET; null means nobody confirmed the goal.
+    let judged: string | null = null
+    if (s.goal) {
+      const j = judgeGoal(String(payload.transcript_path || ''), s.goal, s.check, s.history)
+      if (j.verdict === 'UNMET') {
+        // (d) The ceilings bind here too. A judge that keeps answering UNMET over a green check is a
+        // hold with no clock unless this is asked before the block.
+        const c = ceilingReached(s, now)
+        if (c)
+          release(
+            'expired',
+            `${c}, with the goal last judged NOT met (${j.reason}). Hold released UNMET — say so, ` +
+              `and if a heartbeat cron exists, end it with CronDelete now.`,
+          )
+        block(
+          (checkless
+            ? `hound: the goal is judged NOT met: ${j.reason}`
+            : `hound: \`${s.check}\` exits 0 but the goal is judged NOT met: ${j.reason}`) +
+            `\nGoal: ${s.goal}\nRound ${s.rounds + 1}/${s.maxRounds}.`,
+          `judge UNMET: ${j.reason}`,
+        )
+      }
+      if (j.verdict === 'UNAVAILABLE') {
+        // A check-ful hold FAILS OPEN — the check is real evidence and a hook that traps a session
+        // because a model was unreachable is worse than one that lets a turn end. A CHECK-LESS hold
+        // has no other evidence at all, so failing open there would release on nothing; it blocks
+        // instead, bounded by the same ceilings.
+        if (checkless) {
+          const c = ceilingReached(s, now)
+          if (c)
+            release(
+              'expired',
+              `${c}, with the goal never judged (${j.reason}). Hold released UNMET — say so, and if ` +
+                `a heartbeat cron exists, end it with CronDelete now.`,
+            )
+          block(
+            `hound: judge unavailable (${j.reason}), and this hold has no check — nothing has ` +
+              `confirmed the goal, so the session keeps working.\nGoal: ${s.goal}\n` +
+              `Round ${s.rounds + 1}/${s.maxRounds}.`,
+            `judge unavailable: ${j.reason}`,
+          )
+        }
+        process.stderr.write(`until: goal judge unavailable (${j.reason}); releasing on the check alone.\n`)
+      }
+      if (j.verdict === 'MET') judged = j.reason
+    }
+    // TWO VERBS, because a release says two different things. `passed-goal-met` is the classifier
+    // agreeing the goal is met; `passed-unjudged` is the check alone, with nobody having confirmed
+    // the objective.
+    if (judged === null)
+      release(
+        PASSED_UNJUDGED,
+        `\`${s.check}\` exits 0 — hold released, but the GOAL IS NOT CONFIRMED` +
+          `${s.goal ? '' : ' (no goal was armed)'}: no classifier verdict, so a green check is all ` +
+          `that happened. Do NOT end the heartbeat with CronDelete; it must stay until the goal is ` +
+          `judged met.`,
+      )
+    release(
+      PASSED_GOAL_MET,
+      (checkless ? `the classifier judged the goal MET (${judged})` : `\`${s.check}\` exits 0 and the classifier judged the goal MET (${judged})`) +
+        ` — objective met, hold released. If a heartbeat cron exists, END IT NOW with CronDelete: a ` +
+        `cron outlives the work and nothing else can end it.`,
+    )
+  }
+  // (d) A ceiling on a red check: released, and the verdict is UNMET.
+  if (d.action === 'expired')
+    release(
+      'expired',
+      `${d.reason}. Hold released UNMET — say so, and if a heartbeat cron exists, end it with ` +
+        `CronDelete now: a cron outlives the work and nothing else can end it.`,
+    )
+
+  const firstB = s.rounds === 0
   s.rounds += 1
-  pushRound(s, { round: s.rounds, at: Math.floor(Date.now() / 1000), exit })
+  pushRound(s, { round: s.rounds, at: now, exit })
   writeFileSync(path, JSON.stringify(s))
   const movedB = rubricDrift(s)
-  const goalB = s.goal ? ` THE GOAL: ${s.goal}` : ''
-  // compose-goal.sh put AUTHORITY and CONTINUATION in the goal because the goal was "the one text
-  // it re-reads every turn". Here that text is this message, so they belong here or nowhere.
-  const clausesB = [s.authority, s.continuation].filter(Boolean).join(' ')
+  const goalB = s.goal ? `\nGoal: ${s.goal}` : ''
+  const clausesB = clausesFor(s, firstB)
   const noteB = movedB.length
-    ? ` The check's own files changed since it was armed (${movedB.join(', ')}): that is the objective moving, not the work — justify it on the line or restore them.`
+    ? `\nThe check's own files changed since it was armed (${movedB.join(', ')}): that is the objective moving, not the work — justify it on the line or restore them.`
     : ''
-  process.stdout.write(JSON.stringify({ decision: 'block', reason: `${d.reason}${goalB}${noteB}${clausesB ? ' ' + clausesB : ''} ${stateRef(path)}` }))
+  process.stdout.write(JSON.stringify({
+    decision: 'block',
+    reason: `hound: ${d.reason}${goalB}${noteB}${clausesB ? `\n${clausesB}` : ''}`,
+  }))
   process.exit(0)
 }
 
@@ -837,14 +1088,24 @@ function brief(): void {
   }
 
   const left = s.ceilingMinutes - Math.floor((Date.now() / 1000 - s.startedAt) / 60)
-  const rounds = renderHistory(s.history)
+  // LAST FIVE ONLY. Every heartbeat tick re-enters this brief, so the record is paid for again on
+  // each one; the state keeps 20 rounds for the judge, but what a session needs on re-entry is what
+  // the recent rounds tried, not the whole run.
+  const rounds = renderHistory((s.history ?? []).slice(-5))
   const out = [
     '# HOUND — this session is under an armed hold',
-    `Read with the Read tool, Read(file_path: "${path}"), not remembered: the context this was in has just been summarised or cleared.`,
+    `Read this hold rather than remembering it — the context it was in has just been summarised or cleared. ${stateRef(path)}`,
     s.goal ? `GOAL: ${s.goal}` : '',
-    `CHECK: \`${s.check}\` — the hold releases when this exits 0${s.goal ? ' AND an independent judge agrees the goal is met' : ''}.`,
+    s.check
+      ? `CHECK: \`${s.check}\` — the hold releases when this exits 0${s.goal ? ' AND an independent judge agrees the goal is met' : ''}.`
+      : 'CHECK: none — this hold is the judge alone on the goal above.',
+    // The run, and whether a round is in flight: while it is, a stop is ALLOWED and costs no round,
+    // so a session that reads this knows the block it did not get was not a bug.
+    s.run
+      ? `RUN: ${s.run} — ${inFlight(s) ? 'IN FLIGHT (a stop is allowed and counts no round; the clock still runs)' : 'not in flight (a verdict is on disk)'}`
+      : '',
     `BUDGET: ${s.rounds} of ${s.maxRounds} rounds used; ${left} min left of the ${s.ceilingMinutes} min ceiling.`,
-    [s.authority, s.continuation].filter(Boolean).join(' '),
+    [s.authority, s.continuation, redispatchLine(s)].filter(Boolean).join(' '),
     rounds ? `ROUNDS SO FAR — do not repeat these:\n${rounds}` : '',
   ].filter(Boolean)
   process.stdout.write(out.join('\n') + '\n')

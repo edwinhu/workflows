@@ -790,3 +790,55 @@ test('an acceptance naming no command at all is not this rule — that is R1', (
   })
   expect(rules(p)).not.toContain('acceptance-is-the-mechanical-check')
 })
+
+// ---------------------------------------------------------------- R22: args.goalCheck
+//
+// The dispatch ARMS A HOLD on this string, so it is linted by hold-lint.ts — the linter that owns
+// holds — rather than by a second copy of its rules here. Only CRITICALs block. Reported at dispatch
+// because the arm happens after the run is detached, where a refusal would leave a live run with no
+// hold and nothing saying so.
+
+test('no goalCheck is the common case and clean: a judge-only hold', () => {
+  expect(rules(base({ mechanicalChecks: [{ name: 'm', cmd: 'bun test' }] }))).not.toContain('goalcheck-empty')
+})
+
+test('a clean goalCheck raises nothing', () => {
+  const p = base({ mechanicalChecks: [{ name: 'm', cmd: 'bun test' }], goalCheck: 'bun test tests/' })
+  expect(rules(p).filter(r => r.startsWith('goalcheck-'))).toEqual([])
+})
+
+test('a goalCheck that reads a ROUND VERDICT is critical — hold-lint refuses it', () => {
+  const p = base({
+    mechanicalChecks: [{ name: 'm', cmd: 'bun test' }],
+    goalCheck: 'bash skills/work/scripts/work-result.sh .craft/r/result.json',
+  })
+  const f = lint(p).find(x => x.rule === 'goalcheck-round-verdict')
+  expect(f, 'no goalcheck-round-verdict finding').toBeDefined()
+  expect(f!.severity).toBe('critical')
+  expect(f!.where).toBe('args.goalCheck')
+  expect(f!.message).toContain('ROUND VERDICT')
+})
+
+test('an APOSTROPHE in the goalCheck is critical too — it ends the quote hound-arm wraps it in', () => {
+  const p = base({
+    mechanicalChecks: [{ name: 'm', cmd: 'bun test' }],
+    goalCheck: "bash scripts/check.sh --lint vendor-lint.sh's exemption",
+  })
+  expect(rules(p)).toContain('goalcheck-apostrophe')
+})
+
+test("hold-lint's non-critical findings do NOT block: the arm prints them itself", () => {
+  // `test -f` is hold-lint's R1 milestone rule, severity MAJOR.
+  const p = base({ mechanicalChecks: [{ name: 'm', cmd: 'bun test' }], goalCheck: 'test -f report.md' })
+  expect(rules(p).filter(r => r.startsWith('goalcheck-'))).toEqual([])
+})
+
+test('a declared-but-empty goalCheck is critical — omit the field instead of arming on nothing', () => {
+  const p = base({ mechanicalChecks: [{ name: 'm', cmd: 'bun test' }], goalCheck: '   ' })
+  expect(rules(p)).toContain('goalcheck-empty')
+})
+
+test('parseArgs reads goalCheck off the args object, and leaves it undefined when absent', () => {
+  expect(parseArgs({ tasks: [], goalCheck: 'bun test' }).goalCheck).toBe('bun test')
+  expect(parseArgs({ tasks: [] }).goalCheck).toBeUndefined()
+})

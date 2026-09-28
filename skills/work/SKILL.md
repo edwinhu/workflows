@@ -35,7 +35,7 @@ built args and `plan-preflight.ts` executing their commands at baseline, enforce
 
 Everything lives in this skill directory — `workflow.js`, `references/third-party.md`,
 `scripts/work-dispatch.sh` (Phase 3+4 in one call), `scripts/work-pending.sh` (is a dispatch
-owed?), `scripts/compose-goal.sh` (the objective, and the ceiling the hold is armed with),
+owed?), `scripts/compose-goal.sh` (the objective and its ceiling),
 `scripts/human-review-gate.sh`, `scripts/work-result.sh`.
 Nothing here depends on any plugin.
 
@@ -222,18 +222,31 @@ around it explains but never binds. Nothing re-derives it: the agents re-run `--
 and stop on mismatch, so an amended spec halts the run instead of silently changing the contract,
 while fixing a typo in the rationale costs nothing.
 
-## Phase 3 — HOLD + HEARTBEAT
+## Phase 3 — THE HOLD
 
-**Arm a hold, not a goal.** No file holds the success criteria — the plan does, and it is what's
-hashed. What the hold adds is mechanical: `hooks/hound.ts` RUNS a check on every Stop, and while it
-exits non-zero **the session starts another turn instead of returning control to the user**. That is
-what runs `work`'s outer loop (gate FAIL → fix → re-run; tuicr findings → fix → re-review) without
-the user prompting each step. `workflow.js` can't do this — it returns a verdict once.
+**The dispatch arms a hound hold ON THIS SESSION** — in the main chat, not in the farmed child, which
+runs one `workflow.js` and exits. The hold is what carries the outer loop (gate FAIL → fix → re-run;
+tuicr findings → fix → re-review): on every Stop it blocks while the goal is not met, and it survives a
+run that dies.
+
+| | |
+|---|---|
+| **`args.goalCheck`** (optional) | the ONE command that settles the whole plan. Armed as the hold's check. NEVER a round verdict — `plan-lint` runs it through `hold-lint.ts` and a CRITICAL blocks the dispatch |
+| no `goalCheck` | the hold is **check-less**: the judge alone on `args.goal`, bounded by `maxRounds` and `compose-goal.sh --minutes` |
+| `--run <run-dir>` | recorded by the arm. While the round is in flight a stop is ALLOWED and costs no round: a detached process is doing the work |
+
+**Under the hold, a failed round advances with `work-redispatch.sh <plan> <run>/args.json --dispatch`,
+never a fresh `work-dispatch.sh`** — the first re-runs only the tasks that flagged and their dependents
+and carries the rest; the second re-runs every task, throwing away the round's verified work. The
+hold's first counted block and its `--brief` say so with the paths filled in.
+
+A round verdict is not the hold's business in either direction — it goes green on a FAIL the loop was
+going to fix, and it outlives a run the user abandons (AGK 2026-09-27). For a long loop whose target is
+a computable command and needs no session, use grind instead.
 
 **`work-dispatch.sh` does Phase 3 and Phase 4 in one call** — it reads the armed plan's dispatch
-block, injects `planPath`/`specHash`, writes `args.json`, arms the hold, prints the `CronCreate`
-call that arms the heartbeat, and starts `workflow.js` detached. Run it, **make the `CronCreate`
-call it prints**, then skip to the Monitor; the rest of these two phases is what it does and why,
+block, injects `planPath`/`specHash`, writes `args.json`, starts `workflow.js` detached and arms the
+hold. Run it, then skip to the Monitor; the rest of these two phases is what it does and why,
 and what to check when it reports something odd:
 
 ```bash
@@ -276,60 +289,46 @@ a `redCommand` is refused `red-not-red`, omitting it is refused `redcommand-miss
 `redDisposition` instead; both scripts echo `red: N gated, M dispositioned` with each disposition,
 beside the wave graph.
 
-### Phase 3 arms TWO halves, and `work-dispatch.sh` can only arm one of them
+### What WAKES the session, once it has gone quiet
 
-**A DISPATCH THAT ENDS WITH A HOLD AND NO HEARTBEAT IS NOT DISPATCHED.** It is the unattended idle
-this mechanism exists to prevent, and it is the likelier of the two failures because the half the
-script cannot arm is the half a model has to notice.
+A Stop hook reaches nothing when no turn is running, so the hold alone cannot restart a session that
+has gone quiet. The **`farm-runs` plugin monitor** does: it runs for the whole session, shares
+`$TMPDIR/farm-events/$CLAUDE_CODE_SESSION_ID` with the `farm.sh` this dispatch launches, and wakes the
+main chat on milestones, on the verdict, and on a run that dies without one.
 
-| half | what it does | who arms it |
-|---|---|---|
-| **HOLD** | `hooks/hound.ts` re-runs the check on every Stop and blocks the stop until it exits 0 | `work-dispatch.sh`, by writing a state file — **no action needed from you** |
-| **HEARTBEAT** | a cron tick that starts a turn in a session that has already gone quiet | **you, with the `CronCreate` tool**, in the dispatch turn |
-
-`CronCreate` is a model tool. There is no cron CLI, and a session-scoped cron lives in memory rather
-than in `.claude/scheduled_tasks.json`, so no shell can raise one — which is why this script used to
-self-send a `/loop` into its own pane instead. That transport is gone: it queued a line a detached
-drainer typed only when the pane went IDLE, and a session working back-to-back never goes idle.
-Measured 2026-09-16: `/goal` landed 127 times and missed 36, `/loop` landed 52 and missed 29.
-
-So `work-dispatch.sh` **prints** the `CronCreate` call, with the exact cron expression and the exact
-prompt text, as the last thing on every path that dispatches. **Make that call before your next
-action, and report the job id it returns.** If `CronCreate` is unavailable, say so in one line —
-never proceed as though the heartbeat were armed.
+**A cron on top of that is a wake for nothing** — AGK 2026-09-27: 14 ticks inside a single round, each
+re-entering a 113 KB plan and a 276 KB run dir. So the dispatch prints a `CronCreate` call only with
+`--cron`, or with `CRAFT_LOOP_INTERVAL_MINUTES` set; hourly by default, and the prompt is a nudge
+(`and? (work run <runid>)`). When it prints one, **make that call before your next action and report
+the job id**; `CronList` is the only thing that proves it exists. Otherwise the dispatch says in one
+line that the monitor is the wake.
 
 Nothing is typed into this session and nothing is queued, so there is no send to verify, no transport
 to fall back to, and no ordering constraint against Phase 4.
 
-**The hold's check is `work-result.sh`, normalised to 0/1.** Before the run returns there is no
-`result.json` and `work-result.sh` exits 2, which `hound-arm.sh` correctly refuses as could-not-run
-rather than a verdict; the dispatch wraps it so the absent verdict reads as RED instead. A writing
-run's hold closes on PASS alone; a `readOnly` run's closes on either verdict, because an audit's gate
-legitimately FAILs and a PASS-conditioned hold would drive at an outcome the run is forbidden to
-produce. The two escapes the objective states as prose — the round counter and the wall clock — are
-also `--rounds` and `--minutes` on the armed hold, enforced by the hook rather than re-adjudicated.
+**`work-result.sh` is the round's verdict, and only the round's.** Exit 0 is PASS, 1 is FAIL, 2 is
+could-not-run; a `readOnly` run closes on either verdict, because an audit's gate legitimately FAILs.
+The escapes the objective states — the round counter and the wall clock — are read from `args.json`
+and `work-elapsed.sh`.
 
-`bash ${CLAUDE_PLUGIN_ROOT}/skills/hound/scripts/hound-arm.sh --status` settles whether the hold is
-live. **`CronList` — the tool, not a shell — settles whether the heartbeat is.** Check both.
+**If the USER abandons the run**, retire it with
+`bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-abandon.sh <run-dir> --why '<reason>'`: it writes
+the run's verdict (`overallPass=false, abandoned=true`), releases the hold, and allows the `CronDelete`
+a `cron-delete-guard` deny would otherwise refuse. It is the only sanctioned way out of an armed hold
+short of the user confirming `hound-arm.sh --disarm` at a terminal.
 
 **Name the plan by PATH, never by a fixed sha256.** A pinned digest self-invalidates the first time
 the FAIL loop does what this file prescribes: fix, **amend the plan, re-hash**, re-dispatch. The run
 then PASSes against a hash the condition does not name, and the evaluator correctly reports the goal
 unmet on finished work. The path is stable; the hash is the thing the loop is expected to change.
 
-**Write the objective so a COMMAND settles it.** The hold runs the check; nothing reads the
-conversation to decide whether the run is done. "The acceptance criteria hold" is unrunnable; a
-`work-result.sh` exit code is the whole verdict. `compose-goal.sh` composes that text, and the
-dispatch reuses it verbatim as the heartbeat's tick prompt — the one string present when a tick
-fires into an otherwise empty session, which is why it carries the standing authority, the
-continuation rule and the `CronDelete` teardown as well as the check.
+**Write `args.goalCheck` so a COMMAND settles the PLAN, not the round.** Nothing reads the
+conversation to decide whether the work is done, and `work-result.sh` settles one round only. A plan
+that has no such command states none and gets the judge-only hold; what it must not state is a check
+reading `result.json`, which `plan-lint` blocks.
 
-The hold **self-clears**: `hooks/hound.ts` removes the state file the moment the check exits 0, so
-the normal ending needs no teardown. The heartbeat does not — a cron outlives the work and only
-`CronDelete` cancels it. That asymmetry is why the tick text ends with the teardown instruction.
-
-Phase 4 dispatches **in the same turn**, immediately after the hold is armed and the `CronCreate`
-call is made. There is no queued message to wait out.
+Phase 4 dispatches **in the same turn** — `work-dispatch.sh` does both, so there is nothing to
+sequence and no queued message to wait out.
 
 ## Phase 4 — workflow.js
 
@@ -414,7 +413,7 @@ runs 20-60. Pass the loop body as Monitor's `command` with `persistent: true` (n
 both terminal states: result written, and process gone without one. Then call `work-result.sh` when
 it fires. Fall back to the loop across turns only where Monitor is unavailable — Bedrock, Vertex,
 Foundry, or `DISABLE_TELEMETRY`/`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` set. A Monitor dies with
-the session; the detached run does not, so the hold and its heartbeat remain what survives a restart.
+the session; the detached run does not, and the hold is a file, so the hold is what survives a restart.
 
 **When `work-result.sh` returns the verdict, send a `PushNotification` carrying the OUTCOME** —
 "elide gate PASS, 33pp, both readings", never "the run finished". A run is a deliverable and takes
@@ -437,6 +436,7 @@ make the result unverified, not a PASS.
 
 | param | type | effect |
 |---|---|---|
+| `goalCheck` | `string` (optional) | The ONE command that settles the whole PLAN — not a round. `workflow.js` never reads it; `work-dispatch.sh` arms the hound hold on it, so it is a specification and is linted as one: `plan-lint` runs it through `hold-lint.ts` and a CRITICAL (a round verdict, an apostrophe, milestone phrasing, a human-closed clause) BLOCKS the dispatch, one step before the arm. Omit it when the plan has no such command and the hold becomes the judge alone on `goal`; a declared-but-empty string is refused rather than read as absent. |
 | `readOnly` | `boolean` (default `false`) | Audit mode. **No Implement phase and no per-task verifiers are dispatched**, so `tasks[]` may be empty or absent (it is still required when `readOnly` is false). Lenses ∥ mechanical ∥ third-party run as usual, and **every dispatched leg** — lenses, refuters, mechanical probes and third-party runners — defaults to the `Explore` agent type, structurally no Edit/Write, unless a per-lens `agentType` says otherwise. `Explore` keeps `Bash`, so a probe can still run its command. **Residuals**, all from `Bash`, and this list is open rather than exhaustive: a `mechanicalChecks` `cmd` runs VERBATIM; any reference this spine tells a leg to follow can itself instruct a write; and `authorityExtra` and `reviewLenses[].prompt` are caller-supplied free text handed to every Bash-capable leg. What the agent type pins is the agent's volition — never what it is *told* to do. Anything a `readOnly` run hands a leg must itself be read-only. `meta.phases` is a **static five-entry literal** (`Implement, Verify, Mechanical, Third-party, Gate`) in both modes — the harness parses `meta` without running the script and rejects any computed value, so a mode-specific phase list is not expressible. `Implement` is therefore advertised and then never opened on a `readOnly` run; that is `workflow.js`'s own progress display and is cosmetic. `work`'s lifecycle **Phase 1–5** (CLARIFY, PLAN, GOAL, workflow.js, HUMAN REVIEW) is a different axis and is unaffected. The task dimensions become **n/a** (`null`), not empty-and-clean: see the score-table note below. |
 | `priorFindings` | `[{title, severity, detail, file?, lens?}]` | Findings discovered **outside** this run — typically by a main-chat agent team. They are not trusted: each is refuted by the same adversarial path a lens finding takes (same schema, same default-to-refuted-when-ambiguous, same fail-closed rule that a dead refuter keeps the finding), and only survivors reach the gate, where they are gated identically to lens findings. An entry with no `lens` is attributed to the reserved key `unattributed` — the same key an unkeyed `reviewLenses` entry falls back to, since it is the same situation — so a survivor always names a `lensesThatFlagged` entry. Set `lens` explicitly to get a more specific label. **`file?` is the path the finding is _about_** — it is rendered into the refuter's prompt as `[path]` for context and is never opened by `work`. It is **not** a location `work` reads findings from; for where a team actually writes them, see *Where the agent team lives*. `severity` must be `critical｜major｜minor`; a malformed entry throws at arg-validation, before any agent is dispatched. An optional `agentType` on an entry overrides the refuter's agent type for that finding alone. **Each entry costs one refuter agent**, and the fan-out is bounded by nothing but the array you pass — so the count feeds the ~50-agent ceiling below. A `minor` entry cannot change the verdict (only `critical｜major` reach `survivingBlocking`), so it spends a full agent to move a display counter: submit `critical`/`major` unless you specifically want the minor counted. `scoreTable` then carries `priorFindingsSubmitted` / `priorFindingsSurviving`. |
 | `mechanicalChecks` | `[{name: string, cmd: string}]` | Adds a `Mechanical` phase running in parallel with Verify. One low-effort probe agent per check runs `cmd` **verbatim** and reports `{name, exitCode, output}`; **the JS reads the exit code** — no agent asserts a pass. Fail closed: a dead or skipped probe is `exitCode: -1`, which counts as failed. Missing `name` or `cmd` throws. **A probe's report is still a claim, and the claim is adjudicated in a shell**: work-result.sh re-runs EVERY declared check — a claimed failure included, since the file is a model's transcription of the gate object — and refuses (exit 2) when the observed exit code disagrees, or when a claimed non-zero exit sits beside `overallPass: true`. The refusal names **which direction** the disagreement went, because they mean opposite things: a claimed FAILURE that passes on re-run is a probe-side flake — re-run the gate, do not re-plan — while a claimed PASS that fails on re-run is the case the adjudicator exists for. Both still exit 2; passing a non-reproducing failure would wave a genuinely flaky gate through. Re-running one command to confirm a claim is cheap and re-running N is not — which is why a workflow declares **one** mechanical entry point whose exit code is its whole mechanical verdict, never a list of commands (a list also drops a check silently, and nothing reports a check it never knew about). **A check's `cmd` must finish inside ~10 minutes, because it is run TWICE by two different callers that both cap there**: a probe agent runs it through its Bash tool (hard ceiling 600s, not tunable) and `work-result.sh` re-runs it to adjudicate the claim. A check that outlives that returns 124/137/143 — a kill, not an exit — which scored as a *failing gate* until work-result.sh learned to refuse it. Anything genuinely long (a scale run, a soak) goes **behind** the gate, not inside it: run it detached (`run_in_background`, or a `Monitor` when you want per-event notice) writing an artifact, and let `cmd` be the fast read of that artifact. **`overallPass` in `result.json` is NOT the verdict and must never be read directly, without exception** — the verdict is `work-result.sh`'s exit code (0 pass, 1 fail, 2 refused), and any caller that reads the file another way is a defect. |
@@ -798,11 +798,12 @@ descope with the user rather than guessing a third time.
 | Sizing not in the approved plan | pick lenses/checks at dispatch time | it shapes the gate — put it in the plan, re-hash, then dispatch |
 | Tasks feel like they could run in parallel | fan out implementers yourself, or give each a worktree | declare `dependsOn` and let IMPLEMENT wave them — concurrent within a wave, and arg-validation refuses a wave whose `writablePaths` overlap, so safety is checked rather than trusted. Worktrees stay out: `workflow.js` cannot merge them (no filesystem), and a merge agent's silent slip reads as an implementer's omission |
 | A task reads a file another task writes | rely on `tasks[]` array order | array order is not a contract the script enforces — declare `dependsOn: ['<id>']`. An unknown id and a cycle both throw before dispatch; an edge to a task outside `onlyTasks` is treated as satisfied, since a prior run put its output on disk |
-| `hound-arm.sh` exits non-zero at dispatch | proceed as though the hold were armed | it is NOT armed — this session stops at its first stopping point. Read the reason it printed (already green, or no session id) and fix it before walking away |
-| Dispatch printed the `CronCreate` block | scroll past it; the hold covers it | the hold cannot restart a session that has gone quiet. Call `CronCreate` this turn and report the job id; `CronList` is what proves it |
+| Write `args.goalCheck` as this run's `work-result.sh` / `result.json` | "that is what settles the run" | a round verdict cannot certify the goal and outlives an abandoned run; `plan-lint` runs it through `hold-lint.ts` and blocks. State the plan's own measurement, or state none and let the judge rule on `args.goal` |
+| Dispatch printed a `CronCreate` block (`--cron`) | scroll past it; the monitor covers it | you asked for the fallback poll, so nothing has raised it. Call `CronCreate` this turn and report the job id; `CronList` is what proves it |
+| A stop is allowed mid-round and you read that as the hold being broken | re-arm, or treat the run as over | the run is IN FLIGHT: `args.json` with no verdict beside it, worked by a detached process. The clock still runs and the next Stop after the verdict blocks again |
 | About to self-send a `/goal` or `/loop` into this session | any transport — herdr, agent-msg, a drainer | none of them land: a typed send needs the pane IDLE and a dispatching session never is. `hound-arm.sh` writes a file and `CronCreate` is a tool call; both land inside the turn |
 | Session opens on `Implement the following plan:` | implement it in the main thread | the context was cleared at approval — this is Phase 4, not the work. The plan's frontmatter `workflow:` names the skill to invoke first; then dispatch. `work-dispatch.sh` needs nothing you lost. Same answer when an Edit is denied for an armed run |
-| Hold's check is a claim, not a command | "the tests in the plan pass" | the hook RUNS the check — give it a command whose exit code is the verdict, and `hound-arm.sh` refuses one that is already green or cannot run |
+| A stopping condition is a claim, not a command | "the tests in the plan pass" | a check is RUN — give it a command whose exit code is the verdict |
 | Recon would flood the conversation | read every file into this context | scout with a subagent during CLARIFY/PLAN — graded work still goes through workflow.js |
 | One small task, workflow feels heavy | dispatch a lone subagent and accept its report | still workflow.js with one task — a self-report is not a verification |
 | Tasks look like they need to talk to each other | reach for agent teams | **On a run that writes, no teams** — for the mechanical reason given under *IMPLEMENT runs in waves* above, not as a style preference. Tasks needing to talk means the plan under-specifies the boundary; fix the task table, re-hash. **The ban does not apply to `readOnly`**, where nothing writes and a team is the default (CLARIFY axis 7); see *Where the agent team lives* |

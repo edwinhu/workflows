@@ -3,7 +3,8 @@ import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileS
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
-import { globalArg, restoreLocal, writeLocalCap } from "../hooks/hound.ts";
+import { capProvenance, globalArg, restoreLocal, writeLocalCap } from "../hooks/hound.ts";
+import { HERMETIC_ENV } from "./helpers/hermetic-env";
 
 const REPO = join(import.meta.dir, "..");
 
@@ -64,6 +65,67 @@ test("a malformed local file does not make a release throw", () => {
   writeFileSync(p, "{not json");
   expect(() => restoreLocal({ path: p, window: 250_000, prior: null, created: false })).not.toThrow();
   expect(() => restoreLocal({ path: join(d, "gone.json"), window: 1, prior: null, created: true })).not.toThrow();
+});
+
+// ------------------------------------------------------- a cap hound itself left behind is not a prior
+//
+// THE BUG THIS EXISTS FOR. A hold that was re-armed, or whose release was skipped, leaves the cap
+// value in the local file; the next arm read it back as `prior` and the release then "restored" it
+// as though the user had chosen it. Observed 2026-09-25 in /home/eh/projects/hidden-figures: the
+// file was rewritten to {"autoCompactWindow": 250000} at release, which blocked `/autocompact auto`.
+
+test("a cap value with no provenance is still treated as the user's", () => {
+  const d = tmp("houndcap-prov-");
+  const p = join(d, "settings.local.json");
+  writeFileSync(p, JSON.stringify({ autoCompactWindow: 250_000 }));
+  expect(writeLocalCap(p, 250_000, null).prior).toBe(250_000);
+});
+
+test("a LIVE CapRecord in another hold's state carries its prior forward", () => {
+  const d = tmp("houndcap-prov-");
+  const p = join(d, "settings.local.json");
+  writeFileSync(p, JSON.stringify({ autoCompactWindow: 250_000 }));
+  writeFileSync(join(d, "hound-other.json"), JSON.stringify({
+    check: "exit 1", startedAt: 1, ceilingMinutes: 720, maxRounds: 8, rounds: 0,
+    compact: { path: p, window: 250_000, prior: 400_000, created: false },
+  }));
+  const rec = writeLocalCap(p, 250_000, capProvenance(p, 250_000, d));
+  expect(rec.prior).toBe(400_000);
+  restoreLocal(rec);
+  expect(JSON.parse(readFileSync(p, "utf8")).autoCompactWindow).toBe(400_000);
+});
+
+test("a `capped` ledger line proves hound wrote it, and the key is removed on restore", () => {
+  const d = tmp("houndcap-prov-");
+  const p = join(d, "settings.local.json");
+  writeFileSync(p, JSON.stringify({ autoCompactWindow: 250_000 }));
+  const rec0 = { path: p, window: 250_000, prior: null, created: true };
+  writeFileSync(join(d, "hound-gone.releases.log"),
+    `2026-09-25T00:00:00\tarmed\t{}\n2026-09-25T00:00:01\tcapped\t${JSON.stringify(rec0)}\n`);
+  const rec = writeLocalCap(p, 250_000, capProvenance(p, 250_000, d));
+  expect(rec.prior).toBeNull();
+  expect(rec.created).toBe(true);     // the earlier cap created the file, so restore removes it
+  restoreLocal(rec);
+  expect(existsSync(p)).toBe(false);
+});
+
+test("provenance only counts for the same file and the same window", () => {
+  const d = tmp("houndcap-prov-");
+  const p = join(d, "settings.local.json");
+  writeFileSync(join(d, "hound-other.json"), JSON.stringify({
+    compact: { path: join(d, "elsewhere.json"), window: 250_000, prior: 400_000, created: false },
+  }));
+  expect(capProvenance(p, 250_000, d)).toBeNull();
+  expect(capProvenance(join(d, "elsewhere.json"), 300_000, d)).toBeNull();
+  expect(capProvenance(join(d, "elsewhere.json"), 250_000, d)?.prior).toBe(400_000);
+});
+
+test("an unreadable state file or ledger is not evidence, and does not throw", () => {
+  const d = tmp("houndcap-prov-");
+  writeFileSync(join(d, "hound-bad.json"), "{not json");
+  writeFileSync(join(d, "hound-bad.releases.log"), "2026-09-25\tcapped\t{not json\n");
+  expect(capProvenance(join(d, "settings.local.json"), 250_000, d)).toBeNull();
+  expect(capProvenance("/whatever", 250_000, join(d, "nonexistent-dir"))).toBeNull();
 });
 
 test("globalArg reports the user file's current value, or auto when absent", () => {
@@ -160,7 +222,7 @@ sys.exit(1)
 
 function env(dir: string, session: string, herdr: string, user: string, project: string) {
   return {
-    ...process.env,
+    ...HERMETIC_ENV,
     CLAUDE_CODE_SESSION_ID: session,
     TMPDIR: dir,
     CLAUDE_PROJECT_DIR: project,
@@ -259,6 +321,41 @@ test("the expired release restores the window too", () => {
   expect(readFileSync(applied, "utf8").trim().split("\n")).toEqual(["250000", "300000"]);
   expect(existsSync(local)).toBe(false);
   expect(readFileSync(user, "utf8")).toBe(seed);
+});
+
+test("RE-ARMING does not turn hound's own cap into the user's setting", () => {
+  const dir = tmp("houndcap-it-");
+  const project = join(dir, "project");
+  mkdirSync(project, { recursive: true });
+  const session = "cap-it-3";
+  const applied = join(dir, "applied.log");
+  const user = join(dir, "settings.json");
+  writeFileSync(user, JSON.stringify({ theme: "dark" }, null, 2) + "\n");
+  const local = join(project, ".claude", "settings.local.json");
+  const herdr = fakeHerdr(dir, session, applied, user, local);
+  const flag = join(dir, "flag");
+  const e = env(dir, session, herdr, user, project);
+  const armOnce = () =>
+    Bun.spawnSync(
+      ["bash", join(REPO, "skills/hound/scripts/hound-arm.sh"), `test -f ${flag}`, "--rounds", "8"],
+      { env: e, stdout: "pipe", stderr: "pipe" },
+    );
+
+  expect(armOnce().stdout.toString()).toContain("capped at 250000");
+  expect(JSON.parse(readFileSync(local, "utf8")).autoCompactWindow).toBe(250_000);
+
+  // The second arm finds the cap still in the file. Before the fix it recorded prior=250000, and
+  // the release then wrote {"autoCompactWindow": 250000} back as the user's own setting.
+  expect(armOnce().stdout.toString()).toContain("capped at 250000");
+  const state = JSON.parse(readFileSync(join(dir, `hound-${session}.json`), "utf8"));
+  expect(state.compact.prior).toBeNull();
+
+  writeFileSync(flag, "");
+  Bun.spawnSync(["bun", join(REPO, "hooks/hound.ts")], {
+    stdin: Buffer.from(JSON.stringify({ session_id: session })),
+    env: e, stdout: "pipe", stderr: "pipe",
+  });
+  expect(existsSync(local)).toBe(false);
 });
 
 // ------------------------------------------------------------------------- transport selection
