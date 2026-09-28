@@ -340,7 +340,7 @@ now has exactly ONE live consumer, `hooks/writing-prose-check.ts`. (`workshop-de
 second one: `skills/workshop/scripts/workshop-deck.py:57-62` runs the typst skill's
 `run-constraints.py`, a different checker over a different directory.) Under `work`, the mechanical
 floor is not a PreToolUse gate at all: it is the
-`mechanicalChecks` list in the plan's `craft:dispatch` block, executed at baseline by
+`mechanicalChecks` list in the plan's `work:dispatch` block, executed at baseline by
 `plan-preflight.ts` before dispatch and again by `workflow.js` in the gate. A check that cannot run
 (exit 127) refuses the dispatch rather than being discovered a round later.
 
@@ -365,6 +365,6 @@ loader, so the property it verified no longer exists.
 
 **The plan lookup changed shape.** `hooks/lib/writing-plan-context.ts` resolved an APPROVED
 receipt-selected plan under `.planning/.state/review.json`. It now walks up to the nearest
-`.claude/plans/*.md` carrying a `craft:dispatch` block and a `## Writing Intent` heading. The plan
+`.claude/plans/*.md` carrying a `work:dispatch` block and a `## Writing Intent` heading. The plan
 grammar it parses — `Domain:` under Writing Intent, `Notebook:` under Source Plan — is unchanged,
 which is why the domain style guides still load for the right drafts.

@@ -41,8 +41,9 @@ function armedWritingPlan(dir: string): string | null {
     } catch {
       continue;
     }
-    // Armed = carries a craft:dispatch spec. A writing plan = declares Writing Intent.
-    if (!text.includes("<!-- craft:dispatch") || !/^##\s+Writing Intent\s*$/mi.test(text)) continue;
+    // Armed = carries a work:dispatch spec. A writing plan = declares Writing Intent.
+    // legacy: the retired `craft:dispatch` spelling is still READ during the transition.
+    if (!/<!--\s*(?:work|craft):dispatch/.test(text) || !/^##\s+Writing Intent\s*$/mi.test(text)) continue;
     const mtime = statSync(path).mtimeMs;
     if (!newest || mtime > newest.mtime) newest = { path, mtime };
   }
@@ -51,7 +52,7 @@ function armedWritingPlan(dir: string): string | null {
 
 /**
  * Find the armed work writing plan governing `path`: the nearest enclosing directory whose
- * configured plans directory (see `resolvePlansDir`) holds a plan carrying a `craft:dispatch`
+ * configured plans directory (see `resolvePlansDir`) holds a plan carrying a `work:dispatch`
  * block and a `## Writing Intent`
  * section. The plan file is the authority — `work` hashes it in place, so there is no separate
  * receipt to consult.

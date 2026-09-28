@@ -5,9 +5,9 @@ surface (§ *Plan review*), and that a plan amended by accretion "manufactures n
 next one" (§ *The FAIL fix loop*). Read this before changing the fix loop, the lens set, or the
 round-exit condition.
 
-Derived from 67 `result*.json` across 19 `.craft/` run directories, 8 multi-round, 240 surviving
+Derived from 67 `result*.json` across 19 `.work/` run directories, 8 multi-round, 240 surviving
 findings, 633 raw lens findings (snapshot 2026-08-14). Full per-run tables and method notes:
-`.craft/CONVERGENCE-ANALYSIS.md` (gitignored, may be gone).
+`.work/CONVERGENCE-ANALYSIS.md` (gitignored, may be gone).
 
 ## The four numbers
 
@@ -61,11 +61,11 @@ The plan is rewritten every round and grows every round (3 of 4 archived plan se
 
 Three findings, each decidable, none of which could exist without the previous round's fix.
 
-**Chain B — a lint rule that eats its own plan** (`0814-craft-cleanup`): round 3, *"R14's widening is
+**Chain B — a lint rule that eats its own plan** (`0814-work-cleanup`): round 3, *"R14's widening is
 inert on project-relative writablePaths"* → widen R14 → round 4, *"Widened R14 has no deletion
 exemption, so **the approved plan now fails its own tier-1 gate** with 2 blocking majors."*
 
-**Chain C — the adjacent sentence** (`0814-craft-cleanup`, final round): *"The rewritten Tier 2 block
+**Chain C — the adjacent sentence** (`0814-work-cleanup`, final round): *"The rewritten Tier 2 block
 still attributes a could-not-run classifier to plan-preflight, **one bullet below the sentence that
 was corrected**."*
 

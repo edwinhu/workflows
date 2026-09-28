@@ -3,7 +3,7 @@
  * PreToolUse on CronDelete: refuse to cancel the loop that drives a work run still in flight.
  *
  * The refusal is TASK-SPECIFIC. `--record` runs as PostToolUse on CronCreate and appends the new
- * job id to `heartbeatCrons` in the args.json of every `.craft/<run>` whose name the prompt names,
+ * job id to `heartbeatCrons` in the args.json of every `.work/<run>` whose name the prompt names,
  * so the guard denies only when a run CLAIMING this id is in flight; an id no run claims falls back
  * to the old rule (deny while any run is in flight).
  *
@@ -20,50 +20,60 @@ import { statePath } from "./work-hold.ts";
 /** A cron job id as CronCreate mints them: 8 lowercase hex chars. */
 const JOB_ID = /\b[0-9a-f]{8}\b/;
 
-/** Run directories under `<cwd>/.craft` that hold an args.json, with what that file says. */
+/** Run directories under `<cwd>/.work` (or the legacy `.craft`) holding an args.json, with what that file says. */
 interface Run {
   name: string;
+  /** The run root this one was found under — `.work`, or the legacy `.craft`. */
+  base: string;
   argsPath: string;
   argsMtime: number;
   inFlight: boolean;
   crons: string[];
 }
 
+/** `.craft/` is the retired run root; it is still READ during the transition, never written. */
+const RUN_ROOTS = [".work", ".craft"];
+
 function runsUnder(cwd: string): Run[] | null {
-  const craftDir = join(cwd, ".craft");
-  let entries: string[];
-  try {
-    entries = readdirSync(craftDir);
-  } catch {
-    return null; // no .craft at all: a determinate "no run here"
-  }
   const runs: Run[] = [];
-  for (const name of entries) {
-    const argsPath = join(craftDir, name, "args.json");
-    let argsMtime: number;
+  let sawRoot = false;
+  for (const base of RUN_ROOTS) {
+    const root = join(cwd, base);
+    let entries: string[];
     try {
-      argsMtime = statSync(argsPath).mtimeMs;
+      entries = readdirSync(root);
     } catch {
-      continue; // not a run directory
+      continue; // this root is absent
     }
-    let inFlight = true;
-    try {
-      if (statSync(join(craftDir, name, "result.json")).size > 0) inFlight = false; // has a verdict
-    } catch {
-      // An absent result.json IS the in-flight shape.
-    }
-    let crons: string[] = [];
-    try {
-      const parsed = JSON.parse(readFileSync(argsPath, "utf8"));
-      if (parsed && typeof parsed === "object" && Array.isArray(parsed.heartbeatCrons)) {
-        crons = parsed.heartbeatCrons.filter((x: unknown) => typeof x === "string");
+    sawRoot = true;
+    for (const name of entries) {
+      const argsPath = join(root, name, "args.json");
+      let argsMtime: number;
+      try {
+        argsMtime = statSync(argsPath).mtimeMs;
+      } catch {
+        continue; // not a run directory
       }
-    } catch {
-      // Unparseable args.json claims nothing; it is still a run directory for the fallback rule.
+      let inFlight = true;
+      try {
+        if (statSync(join(root, name, "result.json")).size > 0) inFlight = false; // has a verdict
+      } catch {
+        // An absent result.json IS the in-flight shape.
+      }
+      let crons: string[] = [];
+      try {
+        const parsed = JSON.parse(readFileSync(argsPath, "utf8"));
+        if (parsed && typeof parsed === "object" && Array.isArray(parsed.heartbeatCrons)) {
+          crons = parsed.heartbeatCrons.filter((x: unknown) => typeof x === "string");
+        }
+      } catch {
+        // Unparseable args.json claims nothing; it is still a run directory for the fallback rule.
+      }
+      runs.push({ name, base, argsPath, argsMtime, inFlight, crons });
     }
-    runs.push({ name, argsPath, argsMtime, inFlight, crons });
   }
-  return runs;
+  // Neither root exists: a determinate "no run here".
+  return sawRoot ? runs : null;
 }
 
 // ---------------------------------------------------------------- record mode (PostToolUse)
@@ -117,7 +127,8 @@ const hookInput: Record<string, unknown> = parsePayload(await Bun.stdin.text());
 if (String(hookInput?.tool_name ?? "") !== "CronDelete") allow();
 
 // The deliberate override, for genuinely abandoning a run.
-if (process.env.CRAFT_ALLOW_CRON_DELETE === "1") allow();
+// legacy: CRAFT_ALLOW_CRON_DELETE is the retired spelling, still READ during the transition.
+if ((process.env.WORK_ALLOW_CRON_DELETE ?? process.env.CRAFT_ALLOW_CRON_DELETE) === "1") allow();
 
 const cwd = String(hookInput?.cwd ?? "") || process.cwd();
 const deleteId = String(((hookInput?.tool_input ?? {}) as Record<string, unknown>)?.id ?? "");
@@ -153,7 +164,7 @@ if (session && existsSync(statePath(session))) {
   );
 }
 
-// No .craft at all is a determinate "no run here", not a failure to decide, so it allows. An
+// No .work at all is a determinate "no run here", not a failure to decide, so it allows. An
 // unreadable directory that EXISTS is a different case and reaches denyOnCrash via the throw.
 const runs = runsUnder(cwd);
 if (runs === null) allow();
@@ -165,31 +176,33 @@ const candidates = claiming.length ? claiming : runs;
 
 // The newest in-flight run among the candidates, by args.json mtime -- the file the dispatch writes.
 let newest = "";
+let newestBase = ".work";
 let newestMtime = 0;
 for (const run of candidates) {
   if (!run.inFlight) continue;
   if (run.argsMtime > newestMtime) {
     newestMtime = run.argsMtime;
     newest = run.name;
+    newestBase = run.base;
   }
 }
 
 if (!newest) allow();
 
-// A run-directory name that is not a plain slug is withheld rather than repeated: .craft can be
+// A run-directory name that is not a plain slug is withheld rather than repeated: .work can be
 // repo-shipped, so the name is untrusted text inside a message the reader acts on.
-const run = /^[A-Za-z0-9._-]+$/.test(newest) ? newest : "(a run under .craft/)";
+const run = /^[A-Za-z0-9._-]+$/.test(newest) ? newest : `(a run under ${newestBase}/)`;
 
 deny(
   (claiming.length
-    ? `The loop you are deleting drives a work run that is still in flight: .craft/${run}/args.json ` +
+    ? `The loop you are deleting drives a work run that is still in flight: ${newestBase}/${run}/args.json ` +
       "records this cron in heartbeatCrons and has no verdict beside it. "
-    : `A work run is still in flight: .craft/${run}/args.json has no verdict beside it, and no run ` +
+    : `A work run is still in flight: ${newestBase}/${run}/args.json has no verdict beside it, and no run ` +
       "claims this cron, so it cannot be told apart from that run's heartbeat. ") +
     "The loop is usually what drives that run to completion -- it is what re-enters the session to " +
     "read the verdict, fix what failed and redispatch. Deleting it now strands the run: the " +
     "dispatch keeps going detached and nothing comes back for it. Let the run finish " +
     "(work-result.sh exits 0, or the round cap or time ceiling is reached), then delete the loop. " +
-    "If you genuinely mean to abandon the run, set CRAFT_ALLOW_CRON_DELETE=1 for the call and say " +
+    "If you genuinely mean to abandon the run, set WORK_ALLOW_CRON_DELETE=1 for the call and say " +
     "so out loud.",
 );

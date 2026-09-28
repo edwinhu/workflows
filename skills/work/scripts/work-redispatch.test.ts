@@ -48,7 +48,7 @@ function fixture(opts: { planWork: string; planRed: string; argsWork: string; ar
       reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'judge' }],
     },
   }
-  writeFileSync(plan, `# Plan\n\n<!-- craft:dispatch\n${JSON.stringify(block, null, 2)}\n-->\n`)
+  writeFileSync(plan, `# Plan\n\n<!-- work:dispatch\n${JSON.stringify(block, null, 2)}\n-->\n`)
   writeFileSync(args, JSON.stringify({
     projectDir: dir,
     planPath: plan,
@@ -134,7 +134,7 @@ describe('work-redispatch.sh syncs the plan dispatch block into args.json', () =
     writeFileSync(f.plan, '# Plan with no dispatch block\n')
     const r = run(f.plan, f.args)
     expect(r.code).not.toBe(0)
-    expect(r.stdout).toMatch(/craft:dispatch/)
+    expect(r.stdout).toMatch(/work:dispatch/)
     expect(readFileSync(f.args, 'utf8')).toBe(before)
   })
 })
@@ -211,7 +211,7 @@ function gateFixture(opts: { dirty?: boolean; uncountable?: boolean } = {}) {
     })
   if (opts.uncountable) { clean.tasks = []; clean.mechanicalChecks = [] }
   writeFileSync(plan, `# Plan\n\n## Run sizing\n\n` +
-    `<!-- craft:dispatch\n${JSON.stringify({ runId: 'gate-run', args: clean }, null, 2)}\n-->\n`)
+    `<!-- work:dispatch\n${JSON.stringify({ runId: 'gate-run', args: clean }, null, 2)}\n-->\n`)
   writeFileSync(args, JSON.stringify({
     ...clean, planPath: plan, specHash: '0'.repeat(64), rounds: 1,
   }, null, 2) + '\n')
@@ -222,7 +222,7 @@ function gateFixture(opts: { dirty?: boolean; uncountable?: boolean } = {}) {
 function redispatch(plan: string, args: string, ...extra: string[]) {
   try {
     const stdout = execFileSync('bash', [SCRIPT, plan, args, '--dispatch', ...extra], {
-      encoding: 'utf8', env: { ...process.env, CRAFT_REDISPATCH_DRYRUN: '1' },
+      encoding: 'utf8', env: { ...process.env, WORK_REDISPATCH_DRYRUN: '1' },
     })
     return { code: 0, out: stdout }
   } catch (e: any) {
@@ -353,7 +353,7 @@ function selFixture(opts: { extra?: Record<string, unknown> } = {}) {
     reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' }],
   }
   writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
-    `<!-- craft:dispatch\n${JSON.stringify({ runId: 'sel-run', args: clean }, null, 2)}\n-->\n`)
+    `<!-- work:dispatch\n${JSON.stringify({ runId: 'sel-run', args: clean }, null, 2)}\n-->\n`)
   writeFileSync(args, JSON.stringify({
     ...clean, planPath: plan, specHash: '0'.repeat(64), rounds: 1, ...(opts.extra ?? {}),
   }, null, 2) + '\n')
@@ -546,12 +546,12 @@ describe('the red column is echoed on re-hash too, from work-dispatch.sh\'s one 
   test('a dispositioned task is counted and its claim printed verbatim', () => {
     const f = fixture({ planWork: 'w', planRed: 'false', argsWork: 'w', argsRed: 'false' })
     const plan = readFileSync(f.plan, 'utf8')
-    const block = JSON.parse(plan.match(/<!--\s*craft:dispatch\s*\n([\s\S]*?)\n-->/)![1])
+    const block = JSON.parse(plan.match(/<!--\s*work:dispatch\s*\n([\s\S]*?)\n-->/)![1])
     block.args.tasks.push({
       id: 't4', name: 'four', work: 'already done', writablePaths: ['b.txt'], refs: [],
       redDisposition: 'work complete round 6; covered by extraction-unity lens', acceptance: 'it passes',
     })
-    writeFileSync(f.plan, `# Plan\n\n<!-- craft:dispatch\n${JSON.stringify(block, null, 2)}\n-->\n`)
+    writeFileSync(f.plan, `# Plan\n\n<!-- work:dispatch\n${JSON.stringify(block, null, 2)}\n-->\n`)
     const r = run(f.plan, f.args)
     expect(r.code).toBe(0)
     expect(r.stdout).toMatch(/red: 1 gated, 1 dispositioned/)
@@ -565,7 +565,7 @@ describe('the red column is echoed on re-hash too, from work-dispatch.sh\'s one 
 })
 
 /**
- * The FAIL loop's re-hash is over the SPEC — the `craft:dispatch` block's canonical JSON — not the
+ * The FAIL loop's re-hash is over the SPEC — the `work:dispatch` block's canonical JSON — not the
  * plan's bytes. So amending a rationale paragraph between rounds moves nothing, while amending the
  * task table moves the hash the agents verify.
  */

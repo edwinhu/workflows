@@ -45,8 +45,10 @@ docs/investigations/
 .staging_proxy/
 .claude/worktrees/
 
-# craft run state: args, results, rotated rounds, logs. Session-scoped and
+# work run state: args, results, rotated rounds, logs. Session-scoped and
 # high-frequency — it belongs in a temp dir, and never in a commit.
+.work/
+# legacy: the retired `.craft/` run root, still read during the transition.
 .craft/
 
 # pixi environment (see pixi.toml)

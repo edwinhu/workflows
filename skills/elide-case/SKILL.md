@@ -170,13 +170,13 @@ both are judgeable from the transcript.
 
 ## Phase 4 — the work call
 
-The args go in the plan's `<!-- craft:dispatch -->` block and the dispatch is `work`'s own
+The args go in the plan's `<!-- work:dispatch -->` block and the dispatch is `work`'s own
 `work-dispatch.sh` — never a hand-written `farm.sh --workflow` line, which drops the TIER 1
 plan-lint gate and both probe gates:
 
 ```bash
 bash ~/.claude/skills/workflows/skills/work/scripts/work-dispatch.sh \
-  --run-dir /home/eh/.local/state/craft "$PLAN"     # ABSOLUTE — never the course tree
+  --run-dir /home/eh/.local/state/work "$PLAN"     # ABSOLUTE — never the course tree
 ```
 
 **Forward the provider.** A provider named in this skill's `$ARGUMENTS`, however it is spelled,
@@ -184,7 +184,7 @@ becomes `--provider codex` on that line. Omitting it runs the user's codex reque
 content-filter facts that make this matter are in `references/retrieval.md`, alongside the other
 reason a run belongs on `--provider gemini`: a source whose text came from OCR.
 
-`--run-dir` is not optional: `work` resolves `.craft/<run-id>` against `$PWD`, which on an elide run is
+`--run-dir` is not optional: `work` resolves `.work/<run-id>` against `$PWD`, which on an elide run is
 the course directory — a tree this run writes only `addenda/`, `output/addenda/` and `docs/` in.
 
 The args object, complete as it stands.
@@ -393,7 +393,7 @@ with one command:
 jq -r '.scores[] | "\(.key)  \(.item)  composite=\(.composite // "null")  itemsChecked=\(.itemsChecked // "n/a")  \(.reason // "")",
        "  components: \(.components // {} | tojson)",
        "  evidence:   \(.evidence   // {} | tojson)"' \
-  /home/eh/.local/state/craft/<run-id>/result.json
+  /home/eh/.local/state/work/<run-id>/result.json
 ```
 
 The field is `composite`, not `score` — `work` emits one `scores[]` entry per (key, item) pair as

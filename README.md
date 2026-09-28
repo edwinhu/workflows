@@ -217,7 +217,7 @@ tool path a persona session needs.
 
 ## Workflow lifecycle architecture
 
-Every workflow runs the same loop, in `skills/work/workflow.js`. The plan's `<!-- craft:dispatch -->`
+Every workflow runs the same loop, in `skills/work/workflow.js`. The plan's `<!-- work:dispatch -->`
 block is the sole authority and its canonical `specHash` is verified by each dispatched agent; the
 gate is computed in JS from raw counts, fails closed on a dead agent, and returns the selector that
 drives the fix loop. A domain workflow contributes its own mechanical checks and review lenses — it
@@ -246,7 +246,7 @@ Hooks auto-run at specific lifecycle events. The table has one row per command t
 ## Session Continuity
 
 A work run keeps two records, one owner each: the approved plan at `.claude/plans/<slug>.md` is the
-run's authority and the file `work` hashes in place, and `.craft/<run-id>/` holds the args, the
+run's authority and the file `work` hashes in place, and `.work/<run-id>/` holds the args, the
 verdict JSON and the plan bytes each round actually ran under. Project auto-memory retains reusable
 facts; project directories retain real inputs and deliverables.
 

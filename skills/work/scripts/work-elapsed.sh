@@ -19,10 +19,13 @@
 # subtract timestamps reliably, but it can read one printed line that already says CEILING REACHED.
 set -euo pipefail
 
+# Promote retired CRAFT_* env vars onto their WORK_* successors (transition shim).
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/legacy-env.sh"
+
 RUN_DIR=${1:?usage: work-elapsed.sh <run-dir> [max-minutes]}
-# CRAFT_GOAL_MAX_HOURS stays honoured so goals composed before the switch still settle.
-_hours_as_min=${CRAFT_GOAL_MAX_HOURS:+$(( CRAFT_GOAL_MAX_HOURS * 60 ))}
-MAX_MINUTES=${2:-${CRAFT_GOAL_MAX_MINUTES:-${_hours_as_min:-10}}}
+# WORK_GOAL_MAX_HOURS stays honoured so goals composed before the switch still settle.
+_hours_as_min=${WORK_GOAL_MAX_HOURS:+$(( WORK_GOAL_MAX_HOURS * 60 ))}
+MAX_MINUTES=${2:-${WORK_GOAL_MAX_MINUTES:-${_hours_as_min:-10}}}
 case "$MAX_MINUTES" in ''|*[!0-9]*) echo "max-minutes must be a whole number, got: $MAX_MINUTES" >&2; exit 2 ;; esac
 [ -d "$RUN_DIR" ] || { echo "no such run dir: $RUN_DIR" >&2; exit 2; }
 

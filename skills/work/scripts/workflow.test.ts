@@ -848,15 +848,15 @@ test('a non-array passthrough throws for THAT reason, not incidentally', async (
 
 // ---------------------------------------------------------------- the spec, not the prose, is authority
 //
-// The hash the work skill pins is over the `craft:dispatch` block's canonical JSON, so the paragraphs around
+// The hash the work skill pins is over the `work:dispatch` block's canonical JSON, so the paragraphs around
 // it are explanatory. An agent that reads a paragraph as a requirement is inventing authority, and
 // an agent that cannot re-derive the hash cannot detect an amendment — so AUTHORITY has to name the
 // field, the verification command, and the prose's status.
 
-test('AUTHORITY names the craft:dispatch spec block as the ONLY authority, with its specHash', async () => {
+test('AUTHORITY names the work:dispatch spec block as the ONLY authority, with its specHash', async () => {
   const { prompts } = await run({ ...baseArgs, tasks: one }, replies())
   for (const [, p] of prompts) {
-    expect(p).toContain('craft:dispatch')
+    expect(p).toContain('work:dispatch')
     expect(p).toContain(baseArgs.specHash)
     expect(p).toMatch(/only authority/i)
   }

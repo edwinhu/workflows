@@ -16,11 +16,14 @@
 # Exit: 0 an AUTO set exists (and was applied under --apply), 7 something escalates (under --apply
 # the plan is left byte-identical), 1 no blocking findings, 2 bad arguments or an unreadable plan.
 #
-# Env: CRAFT_PLAN_LINT overrides the linter path.
+# Env: WORK_PLAN_LINT overrides the linter path.
 set -uo pipefail
 
+# Promote retired CRAFT_* env vars onto their WORK_* successors (transition shim).
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/legacy-env.sh"
+
 SKILL_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-LINT="${CRAFT_PLAN_LINT:-$SKILL_DIR/scripts/plan-lint.ts}"
+LINT="${WORK_PLAN_LINT:-$SKILL_DIR/scripts/plan-lint.ts}"
 
 die() { printf 'work-amend: %s\n' "$1" >&2; exit 2; }
 
@@ -47,16 +50,16 @@ LINT_JSON=$(bun "$LINT" "$ARGS" --json 2>/dev/null)
 LINT_RC=$?
 [ -n "$LINT_JSON" ] || die "plan-lint produced no JSON for $ARGS (exit $LINT_RC)"
 
-CRAFT_AMEND_PLAN="$PLAN" CRAFT_AMEND_ARGS="$ARGS" CRAFT_AMEND_APPLY="$APPLY" \
+WORK_AMEND_PLAN="$PLAN" WORK_AMEND_ARGS="$ARGS" WORK_AMEND_APPLY="$APPLY" \
 python3 - "$LINT_JSON" <<'PY'
 import difflib, json, os, re, sys
 
 AUTO_RULES = ("work-accretion", "redcommand-relative-path")
 BLOCKING = ("critical", "major")
 
-plan_path = os.environ["CRAFT_AMEND_PLAN"]
-args_path = os.environ["CRAFT_AMEND_ARGS"]
-apply = os.environ["CRAFT_AMEND_APPLY"] == "1"
+plan_path = os.environ["WORK_AMEND_PLAN"]
+args_path = os.environ["WORK_AMEND_ARGS"]
+apply = os.environ["WORK_AMEND_APPLY"] == "1"
 
 try:
     findings = json.loads(sys.argv[1]).get("findings", [])
@@ -97,7 +100,7 @@ if not apply:
 
 # ---------------------------------------------------------------- apply
 
-BLOCK = re.compile(r"(<!--\s*craft:dispatch\s*)([\s\S]*?)(-->)")
+BLOCK = re.compile(r"(<!--\s*(?:work|craft):dispatch\s*)([\s\S]*?)(-->)")  # legacy: the retired craft:dispatch spelling is still READ during the transition
 # plan-lint's own marker regex, so the collapse is judged by the rule that raised the finding.
 ROUND_MARKER = re.compile(r"\bROUND \d+\b|\bRound \d+\s*[—–-]")
 # plan-lint's own relative-path probe (R4).
@@ -107,7 +110,7 @@ WHERE_TASK = re.compile(r"task\s+(\S+)")
 before = open(plan_path, encoding="utf-8").read()
 m = BLOCK.search(before)
 if not m:
-    sys.stderr.write("work-amend: %s carries no craft:dispatch block\n" % plan_path)
+    sys.stderr.write("work-amend: %s carries no work:dispatch block\n" % plan_path)
     sys.exit(2)
 try:
     block = json.loads(m.group(2))

@@ -484,7 +484,9 @@ export const isCatastrophicPattern = (src: string): boolean => {
  * Wall-clock ceiling on ONE file's pattern evaluations. The guard decides shapes; this decides that
  * the file terminates whatever the guard concluded, because the next unlisted shape is always free.
  */
-const BUDGET_MS = Number(process.env.CRAFT_SUITE_LINT_BUDGET_MS ?? '') || 1500
+// legacy: CRAFT_SUITE_LINT_BUDGET_MS is the retired spelling, still READ during the transition.
+const BUDGET_MS =
+  Number(process.env.WORK_SUITE_LINT_BUDGET_MS ?? process.env.CRAFT_SUITE_LINT_BUDGET_MS ?? '') || 1500
 
 /**
  * Estimated backtracking positions one pattern may explore against one subject. Refusing a pair

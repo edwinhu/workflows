@@ -58,14 +58,14 @@ function fixture(opts: { redCommand?: string; suites?: Record<string, string> } 
     reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' }],
   }
   writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
-    `<!-- craft:dispatch\n${JSON.stringify({ runId: 'probe-run', args }, null, 2)}\n-->\n`)
-  return { dir, plan, argsPath: join(dir, '.craft', 'probe-run', 'args.json') }
+    `<!-- work:dispatch\n${JSON.stringify({ runId: 'probe-run', args }, null, 2)}\n-->\n`)
+  return { dir, plan, argsPath: join(dir, '.work', 'probe-run', 'args.json') }
 }
 
 function dispatch(f: { dir: string; plan: string }, ...extra: string[]) {
   try {
     const stdout = execFileSync('bash', [SCRIPT, ...extra, f.plan], {
-      encoding: 'utf8', cwd: f.dir, env: { ...process.env, CRAFT_DISPATCH_DRYRUN: '1' },
+      encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1' },
     })
     return { code: 0, out: stdout }
   } catch (e: any) {
@@ -128,7 +128,7 @@ describe('tier 3 reports a seeded defect and dispatches anyway', () => {
       ].join('\n') + '\n',
       'runner.test.ts': [
         "test('the runner honours the timeout', () => {",
-        "  const cfg = { CRAFT_ASSERT_TIMEOUT: '30' }",
+        "  const cfg = { WORK_ASSERT_TIMEOUT: '30' }",
         '  expect(run(cfg).ok).toBe(true)',
         '})',
       ].join('\n') + '\n',
@@ -165,8 +165,8 @@ describe('the tier is BOUNDED and leaves nothing behind', () => {
     return script(dir, 'slow-bun.sh', 'sleep 30')
   }
 
-  test('CRAFT_SUITE_LINT_TIMEOUT bounds the tier, and a timeout still exits 0', () => {
-    // TIER 2 and TIER 2b each have a timeout (CRAFT_RED_PROBE_TIMEOUT, CRAFT_MECH_PROBE_TIMEOUT).
+  test('WORK_SUITE_LINT_TIMEOUT bounds the tier, and a timeout still exits 0', () => {
+    // TIER 2 and TIER 2b each have a timeout (WORK_RED_PROBE_TIMEOUT, WORK_MECH_PROBE_TIMEOUT).
     // TIER 3 reads files it did not write and builds regexes out of them, so it needs its own — and
     // it must expire into a REPORT, never into a refusal.
     const f = fixture({ suites: { 'report.test.ts': EXISTENCE_ONLY } })
@@ -175,7 +175,7 @@ describe('the tier is BOUNDED and leaves nothing behind', () => {
     try {
       const stdout = execFileSync('bash', [SCRIPT, f.plan], {
         encoding: 'utf8', cwd: f.dir,
-        env: { ...process.env, CRAFT_DISPATCH_DRYRUN: '1', CRAFT_SUITE_LINT_BUN: bun, CRAFT_SUITE_LINT_TIMEOUT: '2' },
+        env: { ...process.env, WORK_DISPATCH_DRYRUN: '1', WORK_SUITE_LINT_BUN: bun, WORK_SUITE_LINT_TIMEOUT: '2' },
         timeout: 60_000,
       })
       r = { code: 0, out: stdout }
@@ -196,7 +196,7 @@ describe('the tier is BOUNDED and leaves nothing behind', () => {
     const r = (() => {
       try {
         return { code: 0, out: execFileSync('bash', [SCRIPT, f.plan], {
-          encoding: 'utf8', cwd: f.dir, env: { ...process.env, CRAFT_DISPATCH_DRYRUN: '1', TMPDIR: tmp },
+          encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1', TMPDIR: tmp },
         }) }
       } catch (e: any) { return { code: e.status ?? -1, out: (e.stdout ?? '') + (e.stderr ?? '') } }
     })()
@@ -215,7 +215,7 @@ describe('the tier is BOUNDED and leaves nothing behind', () => {
     const r = (() => {
       try {
         return { code: 0, out: execFileSync('bash', [SCRIPT, f.plan], {
-          encoding: 'utf8', cwd: f.dir, env: { ...process.env, CRAFT_DISPATCH_DRYRUN: '1', TMPDIR: tmp },
+          encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1', TMPDIR: tmp },
         }) }
       } catch (e: any) { return { code: e.status ?? -1, out: (e.stdout ?? '') + (e.stderr ?? '') } }
     })()
@@ -287,7 +287,7 @@ describe('the tier inherits the corpus contract, rather than re-implementing the
       'report.test.ts': EXISTENCE_ONLY,
       'runner.test.ts': [
         "test('the runner honours the timeout', () => {",
-        "  const cfg = { CRAFT_ASSERT_TIMEOUT: '30' }",
+        "  const cfg = { WORK_ASSERT_TIMEOUT: '30' }",
         '  expect(run(cfg).ok).toBe(true)',
         '})',
       ].join('\n') + '\n',
@@ -317,8 +317,8 @@ describe('the --print and dryrun paths are unchanged', () => {
   test('the dryrun path still ends where it always ended, after the tier has reported', () => {
     const f = fixture({ suites: { 'report.test.ts': EXISTENCE_ONLY } })
     const r = dispatch(f)
-    expect(r.out).toContain('CRAFT_DISPATCH_DRYRUN: lint passed, nothing dispatched.')
+    expect(r.out).toContain('WORK_DISPATCH_DRYRUN: lint passed, nothing dispatched.')
     expect(r.out).toContain(R3)
-    expect(r.out.indexOf(R3)).toBeLessThan(r.out.indexOf('CRAFT_DISPATCH_DRYRUN'))
+    expect(r.out.indexOf(R3)).toBeLessThan(r.out.indexOf('WORK_DISPATCH_DRYRUN'))
   })
 })

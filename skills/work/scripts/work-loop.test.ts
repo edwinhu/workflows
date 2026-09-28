@@ -48,7 +48,7 @@ function verdict(pass: boolean, tasksThatFlagged: string[] = []) {
 function runDir(results: Record<string, object>) {
   const dir = mkdtempSync(join(tmpdir(), 'work-loop-'))
   scratch.push(dir)
-  const R = join(dir, '.craft', 'loop-run')
+  const R = join(dir, '.work', 'loop-run')
   mkdirSync(R, { recursive: true })
   const plan = join(dir, 'plan.md')
   const args = {
@@ -63,7 +63,7 @@ function runDir(results: Record<string, object>) {
   }
   writeFileSync(join(R, 'args.json'), JSON.stringify(args, null, 2))
   writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
-    `<!-- craft:dispatch\n${JSON.stringify({ runId: 'loop-run', args }, null, 2)}\n-->\n`)
+    `<!-- work:dispatch\n${JSON.stringify({ runId: 'loop-run', args }, null, 2)}\n-->\n`)
   for (const [name, body] of Object.entries(results))
     writeFileSync(join(R, name), JSON.stringify(body, null, 2))
   writeFileSync(join(R, 'run.log'), 'stub run log\n')
@@ -71,9 +71,9 @@ function runDir(results: Record<string, object>) {
 }
 
 /**
- * CRAFT_LOOP_POLL keeps the poll off the 30s production interval; without it a test would hang.
+ * WORK_LOOP_POLL keeps the poll off the 30s production interval; without it a test would hang.
  *
- * CRAFT_FARM is pinned to /bin/false for every case that is EXPECTED to halt before redispatching.
+ * WORK_FARM is pinned to /bin/false for every case that is EXPECTED to halt before redispatching.
  * Without it, a regression in the halt logic would send these tests through work-redispatch.sh
  * into a real, unstubbed, detached agent run — a test suite that spends money and writes to the
  * repo when the code under test breaks. The stub makes that failure loud and inert instead.
@@ -83,7 +83,7 @@ function loop(f: { plan: string; R: string }, loops: number, extra: string[] = [
     const out = execFileSync('bash', [SCRIPT, '--run-dir', f.R, '--plan', f.plan, '--loops', String(loops), ...extra], {
       encoding: 'utf8',
       timeout: 60_000,
-      env: { ...process.env, CRAFT_LOOP_POLL: '1', CRAFT_FARM: '/bin/false', CLAUDE_CODE_SESSION_ID: '' },
+      env: { ...process.env, WORK_LOOP_POLL: '1', WORK_FARM: '/bin/false', CLAUDE_CODE_SESSION_ID: '' },
     })
     return { code: 0, out }
   } catch (e: any) {
@@ -161,7 +161,7 @@ describe('the liveness leg — the thing the hand-written watcher lacked', () =>
       out = execFileSync('bash', [SCRIPT, '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
         encoding: 'utf8',
         timeout: 60_000,
-        env: { ...process.env, TMPDIR: f.dir, CRAFT_LOOP_POLL: '1', CLAUDE_CODE_SESSION_ID: '' },
+        env: { ...process.env, TMPDIR: f.dir, WORK_LOOP_POLL: '1', CLAUDE_CODE_SESSION_ID: '' },
       })
     } catch (e: any) {
       code = e.status ?? -1
@@ -180,21 +180,21 @@ describe('the liveness leg — the thing the hand-written watcher lacked', () =>
     expect(elapsedMs).toBeGreaterThan(2_500)
   }, 90_000)
 
-  test('CRAFT_LOOP_POLL=0 is refused — a zero interval turns the wait into a fork-per-iteration spin', () => {
+  test('WORK_LOOP_POLL=0 is refused — a zero interval turns the wait into a fork-per-iteration spin', () => {
     const f = runDir({})
     let code = 0
     let out = ''
     try {
       execFileSync('bash', [SCRIPT, '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
         encoding: 'utf8', timeout: 30_000,
-        env: { ...process.env, CRAFT_LOOP_POLL: '0', CLAUDE_CODE_SESSION_ID: '' },
+        env: { ...process.env, WORK_LOOP_POLL: '0', CLAUDE_CODE_SESSION_ID: '' },
       })
     } catch (e: any) {
       code = e.status ?? -1
       out = (e.stdout ?? '') + (e.stderr ?? '')
     }
     expect(code).toBe(2)
-    expect(out).toContain('CRAFT_LOOP_POLL')
+    expect(out).toContain('WORK_LOOP_POLL')
   })
 })
 
@@ -295,8 +295,8 @@ describe('a continuation round actually runs', () => {
     try {
       out = execFileSync('bash', [SCRIPT, '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
         encoding: 'utf8', timeout: 180_000, cwd: f.dir,
-        env: { ...process.env, TMPDIR: f.dir, CRAFT_FARM: farm, CRAFT_LOOP_POLL: '1',
-               CRAFT_NO_SCOPE: '1', CLAUDE_CODE_SESSION_ID: '' },
+        env: { ...process.env, TMPDIR: f.dir, WORK_FARM: farm, WORK_LOOP_POLL: '1',
+               WORK_NO_SCOPE: '1', CLAUDE_CODE_SESSION_ID: '' },
       })
       code = 0
     } catch (e: any) {
@@ -339,8 +339,8 @@ describe('a continuation round actually runs', () => {
     try {
       execFileSync('bash', [SCRIPT, '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
         encoding: 'utf8', timeout: 180_000, cwd: f.dir,
-        env: { ...process.env, TMPDIR: f.dir, CRAFT_FARM: dyingFarm(f.dir), CRAFT_LOOP_POLL: '1',
-               CRAFT_NO_SCOPE: '1', CLAUDE_CODE_SESSION_ID: '' },
+        env: { ...process.env, TMPDIR: f.dir, WORK_FARM: dyingFarm(f.dir), WORK_LOOP_POLL: '1',
+               WORK_NO_SCOPE: '1', CLAUDE_CODE_SESSION_ID: '' },
       })
     } catch (e: any) {
       code = e.status ?? -1
@@ -355,7 +355,7 @@ describe('a continuation round actually runs', () => {
   }, 240_000)
 
   /**
-   * The settle is load-bearing, pinned by CRAFT_LOOP_SETTLE rather than by timing luck. With the
+   * The settle is load-bearing, pinned by WORK_LOOP_SETTLE rather than by timing luck. With the
    * grace set to 0 the loop condemns a round whose runner has not registered yet; with the real
    * grace the same runner survives. Same fixture, same runner, one variable.
    */
@@ -381,8 +381,8 @@ describe('a continuation round actually runs', () => {
     try {
       execFileSync('bash', [SCRIPT, '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
         encoding: 'utf8', timeout: 180_000, cwd: f.dir,
-        env: { ...process.env, TMPDIR: f.dir, CRAFT_FARM: slowStartFarm(f.dir), CRAFT_LOOP_POLL: '1',
-               CRAFT_LOOP_SETTLE: settle, CRAFT_NO_SCOPE: '1', CLAUDE_CODE_SESSION_ID: '' },
+        env: { ...process.env, TMPDIR: f.dir, WORK_FARM: slowStartFarm(f.dir), WORK_LOOP_POLL: '1',
+               WORK_LOOP_SETTLE: settle, WORK_NO_SCOPE: '1', CLAUDE_CODE_SESSION_ID: '' },
       })
       return 0
     } catch (e: any) { return e.status ?? -1 }

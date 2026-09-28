@@ -62,9 +62,9 @@ other; the phases are now beats inside one program, so there is nothing to keep 
 
 Workflows prevent drift by making the current status legible. Use reproducible evidence where it is meaningful, and reserve quality decisions for independent review and the human.
 
-For every workflow, the approved plan's `<!-- craft:dispatch -->` block is the authority and its
+For every workflow, the approved plan's `<!-- work:dispatch -->` block is the authority and its
 canonical `specHash` is the identity: sorted-key JSON of the parsed block, so reordering or a typo
-fix in the surrounding prose moves nothing and changing any executed value moves it. `.craft/<run>/`
+fix in the surrounding prose moves nothing and changing any executed value moves it. `.work/<run>/`
 holds the args, the verdict and the plan bytes each round actually ran under. Human feedback comes
 back through tuicr. These records are distinct because approved intent, what a round executed, and
 human judgment are distinct facts.
@@ -244,7 +244,7 @@ ledger, workshop's overflow probe. Mechanism is code; policy is data in the plan
 The v5 spine got this half right. The mechanisms were shared, but each domain also got its own
 skills to *invoke* them, so the invocation drifted even where the mechanism did not.
 
-The work spine is where this landed: one loop, one authority (the plan's `craft:dispatch` spec and
+The work spine is where this landed: one loop, one authority (the plan's `work:dispatch` spec and
 its hash), and per-domain contribution limited to mechanical checks and review lenses. A domain does
 not get its own lifecycle — see `skills/work/SKILL.md`.
 
@@ -308,7 +308,7 @@ Fresh subagents achieve the same effect within a single session. Each subagent g
 
 **Core principle: Progress lives in files, not in conversation.**
 
-Under `work` the loop is the workflow script: `workflow.js` schedules the task graph, dispatches one fresh agent per beat, and writes the verdict to `.craft/<run>/result.json`. The approved plan holds intent; the result file holds what a round actually did. Neither is a conversation, and there is no second execution driver for any domain.
+Under `work` the loop is the workflow script: `workflow.js` schedules the task graph, dispatches one fresh agent per beat, and writes the verdict to `.work/<run>/result.json`. The approved plan holds intent; the result file holds what a round actually did. Neither is a conversation, and there is no second execution driver for any domain.
 
 ### The Three Topologies
 

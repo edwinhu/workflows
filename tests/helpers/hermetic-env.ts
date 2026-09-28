@@ -4,7 +4,7 @@
  * A suite run from inside a live Claude Code session inherits that session's identity and its
  * TMPDIR, and a hook that reads either answers about the REAL session instead of the fixture.
  * Measured 2026-09-27: four `cron-delete-guard` tests denied, quoting the running session's own
- * hold ledger (`passed`, checking a `.craft` run in an unrelated repo). The hook's ambient
+ * hold ledger (`passed`, checking a `.work` run in an unrelated repo). The hook's ambient
  * fallback was removed; this is the other half, so a future fallback cannot silently re-open it.
  *
  * TMPDIR is NOT defaulted here — session-scoped state is keyed by session id under TMPDIR, so each

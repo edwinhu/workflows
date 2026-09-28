@@ -11,7 +11,7 @@ not touch it. A different model is the only thing that can.
 
 ## What `work` ships
 
-The opt-in is `"thirdParty": ["codex"]` or `["gemini"]` inside the plan's `craft:dispatch` args.
+The opt-in is `"thirdParty": ["codex"]` or `["gemini"]` inside the plan's `work:dispatch` args.
 `workflow.js` runs one runner agent per named model, in parallel with the review leg, after the
 per-task verifiers have passed. Each runner executes ONE external CLI over the working-tree changes,
 parses the result, and returns `{model, status, findings[], raw?}`. The invocation, diff scoping,
@@ -20,7 +20,7 @@ runner at dispatch time.
 
 ## Settled questions
 
-**The choice rides in the approved plan.** It is inside the `craft:dispatch` block, so it is covered
+**The choice rides in the approved plan.** It is inside the `work:dispatch` block, so it is covered
 by the spec hash, visible in plan review, and approved rather than improvised mid-run.
 
 **Default OFF is the absence of the line**, not a line saying no, so a plan that predates the feature

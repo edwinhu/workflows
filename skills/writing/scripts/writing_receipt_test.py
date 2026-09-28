@@ -114,8 +114,8 @@ BIB = "@article{smith2019, title={A Predictable Gap}}\n@book{jones2020, title={A
 PLAN_NAME = "writing-fixture-plan.md"
 APPROVED_AT = "2026-08-10T12:00:00.000Z"
 REVIEWED_AT = "2026-08-10T12:05:00.000Z"
-APPROVED_SESSION = "craft-plan-approval-0001"
-REVIEWER_SESSION = "craft-plan-lens-review-0001"
+APPROVED_SESSION = "work-plan-approval-0001"
+REVIEWER_SESSION = "work-plan-lens-review-0001"
 
 SECTIONS = {
     "Introduction": [],

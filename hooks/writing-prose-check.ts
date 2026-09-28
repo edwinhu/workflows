@@ -384,7 +384,7 @@ async function main(): Promise<void> {
   }
 
   const writingPlan = authenticatedWritingPlan(projectRoot);
-  // STRUCTURAL checks stay gated on an authenticated APPROVED plan — they encode craft-workflow
+  // STRUCTURAL checks stay gated on an authenticated APPROVED plan — they encode work-workflow
   // invariants (outline-sync, anchored-numbers) that are meaningless outside a work run.
   //
   // The PROSE AUDIT is not gated, and used to be. `if (!writingPlan) process.exit(0)` meant a

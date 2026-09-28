@@ -49,7 +49,7 @@ function fixture(task: Record<string, unknown>) {
     tasks: [task],
   }
   writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
-    `<!-- craft:dispatch\n${JSON.stringify({ runId: 'amend-run', args }, null, 2)}\n-->\n`)
+    `<!-- work:dispatch\n${JSON.stringify({ runId: 'amend-run', args }, null, 2)}\n-->\n`)
   writeFileSync(argsPath, JSON.stringify(args, null, 2))
   return { dir, plan, argsPath }
 }
@@ -82,11 +82,11 @@ function amend(f: { plan: string; argsPath: string }, ...extra: string[]) {
   }
 }
 
-/** The task table as it currently stands inside the plan's craft:dispatch block. */
+/** The task table as it currently stands inside the plan's work:dispatch block. */
 function taskInPlan(plan: string): Record<string, any> {
   const src = readFileSync(plan, 'utf8')
-  const m = /<!--\s*craft:dispatch\s*([\s\S]*?)-->/.exec(src)
-  if (!m) throw new Error('plan lost its craft:dispatch block')
+  const m = /<!--\s*work:dispatch\s*([\s\S]*?)-->/.exec(src)
+  if (!m) throw new Error('plan lost its work:dispatch block')
   return JSON.parse(m[1]).args.tasks[0]
 }
 
@@ -139,7 +139,7 @@ describe('application, with --apply', () => {
     const f = fixture(ACCRETED_TASK)
     expect(amend(f, '--apply').code).toBe(0)
     // Re-derive args from the amended plan and re-lint: work-accretion must be gone.
-    const block = JSON.parse(/<!--\s*craft:dispatch\s*([\s\S]*?)-->/.exec(readFileSync(f.plan, 'utf8'))![1])
+    const block = JSON.parse(/<!--\s*work:dispatch\s*([\s\S]*?)-->/.exec(readFileSync(f.plan, 'utf8'))![1])
     writeFileSync(f.argsPath, JSON.stringify(block.args, null, 2))
     let lintOut = ''
     try {
@@ -182,10 +182,10 @@ describe('the second AUTO rule — redcommand-relative-path', () => {
   function relativeFixture() {
     const f = fixture(RELATIVE_TASK)
     const src = readFileSync(f.plan, 'utf8')
-    const block = JSON.parse(/<!--\s*craft:dispatch\s*([\s\S]*?)-->/.exec(src)![1])
+    const block = JSON.parse(/<!--\s*work:dispatch\s*([\s\S]*?)-->/.exec(src)![1])
     block.args.mechanicalChecks = [{ name: 'tests', cmd: `cd ${f.dir} && bun test` }]
     writeFileSync(f.plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
-      `<!-- craft:dispatch\n${JSON.stringify(block, null, 2)}\n-->\n`)
+      `<!-- work:dispatch\n${JSON.stringify(block, null, 2)}\n-->\n`)
     writeFileSync(f.argsPath, JSON.stringify(block.args, null, 2))
     return f
   }

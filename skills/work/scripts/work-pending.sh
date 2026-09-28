@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Is a work run armed but undispatched in this project?
 #
-# Armed  = the newest plan carries a `<!-- craft:dispatch … -->` block. Writing that block is
+# Armed  = the newest plan carries a `<!-- work:dispatch … -->` block. Writing that block is
 #          what arms the run, and the plan is the only file plan mode may write — which is also
 #          the only thing that survives the context clear on plan approval.
-# Undispatched = no .craft/*/args.json records this plan's CURRENT spec hash, and that hash is
-#          not listed in .craft/abandoned. The hash is over the dispatch block's canonical JSON,
+# Undispatched = no .work/*/args.json records this plan's CURRENT spec hash, and that hash is
+#          not listed in .work/abandoned. The hash is over the dispatch block's canonical JSON,
 #          so editing the prose around it does not read as an un-dispatched amendment.
 #
 # Prints "<planPath>\t<runId>" and exits 0 when a dispatch is owed; silent exit 1 otherwise.
@@ -49,29 +49,33 @@ esac
 
 plan=$(ls -t "$plans_dir"/*.md 2>/dev/null | head -1)
 [ -n "$plan" ] || exit 1
-grep -q '<!-- craft:dispatch' "$plan" || exit 1
+# legacy: the retired `craft:dispatch` spelling is still READ during the transition
+grep -qE '<!-- (work|craft):dispatch' "$plan" || exit 1
 
 hash=$(bash "$SCRIPTS/work-dispatch.sh" --spec-hash "$plan" 2>/dev/null) || exit 1
 
 # Abandoned: one hash per line, appended by `work-dispatch.sh --abandon`.
-if [ -f .craft/abandoned ] && grep -qxF "$hash" .craft/abandoned; then exit 1; fi
+# legacy: `.craft/` is the retired run root and is still READ during the transition, never written.
+for root in .work .craft; do
+  if [ -f "$root/abandoned" ] && grep -qxF "$hash" "$root/abandoned"; then exit 1; fi
+done
 
 # Dispatched: some run dir already wrote args for this exact spec. A re-hash after a FAIL-loop
 # amendment therefore re-arms the run, which is correct — the amended spec has not been dispatched.
-for a in .craft/*/args.json; do
+for a in .work/*/args.json .craft/*/args.json; do
   [ -f "$a" ] || continue
   grep -qF "\"$hash\"" "$a" && exit 1
 done
 
 # The run dir need not live under this root. A dispatch block may name a `projectDir` elsewhere —
 # correct when the deliverable is a NEW repo that did not exist at plan time — and work-dispatch.sh
-# writes .craft/<runId>/ there, so the root-relative search above finds nothing and reports a
+# writes .work/<runId>/ there, so the root-relative search above finds nothing and reports a
 # RUNNING run as undispatched forever. Fails CLOSED: an unreadable, unparseable or projectDir-less
 # block yields the empty string, and the verdict rests on the root-relative evidence alone.
 projdir=$(python3 - "$plan" 2>/dev/null <<'PY'
 import json, os, re, sys
 try:
-    m = re.search(r'<!--\s*craft:dispatch\s*(.*?)-->', open(sys.argv[1]).read(), re.S)
+    m = re.search(r'<!--\s*(?:work|craft):dispatch\s*(.*?)-->', open(sys.argv[1]).read(), re.S)  # legacy: the retired craft:dispatch spelling is still READ during the transition
     block = json.loads(m.group(1))
     args = block.get("args") if isinstance(block.get("args"), dict) else {}
     p = args.get("projectDir") or block.get("projectDir")
@@ -83,8 +87,10 @@ PY
 ) || projdir=""
 
 if [ -n "$projdir" ] && [ "$projdir" != "$PWD" ]; then
-  if [ -f "$projdir/.craft/abandoned" ] && grep -qxF "$hash" "$projdir/.craft/abandoned"; then exit 1; fi
-  for a in "$projdir"/.craft/*/args.json; do
+  for root in "$projdir/.work" "$projdir/.craft"; do   # legacy: .craft is still READ, never written
+    if [ -f "$root/abandoned" ] && grep -qxF "$hash" "$root/abandoned"; then exit 1; fi
+  done
+  for a in "$projdir"/.work/*/args.json "$projdir"/.craft/*/args.json; do
     [ -f "$a" ] || continue
     grep -qF "\"$hash\"" "$a" && exit 1
   done

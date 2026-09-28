@@ -6,7 +6,7 @@
  *
  * The backward-compatibility half matters as much as the feature: --loops 0 must be today's
  * behaviour to the byte (the heredoc prints, the script exits 0), and the two paths that return
- * BEFORE the dispatch — --print and CRAFT_DISPATCH_DRYRUN — must be untouched, because every
+ * BEFORE the dispatch — --print and WORK_DISPATCH_DRYRUN — must be untouched, because every
  * existing test in this directory drives the script through the second one.
  *
  * Run: bun test /home/eh/projects/workflows/skills/work/scripts/work-dispatch-loops.test.ts
@@ -30,7 +30,7 @@ function script(dir: string, name: string, body: string) {
 }
 
 /**
- * A stand-in for farm.sh, reached through CRAFT_FARM (work-dispatch.sh:64). It writes the verdict
+ * A stand-in for farm.sh, reached through WORK_FARM (work-dispatch.sh:64). It writes the verdict
  * the case needs to the --out path it was handed, which is exactly the contract the real runner has
  * with work — so the loop under test polls a real file written by a real detached process.
  */
@@ -77,8 +77,8 @@ function fixture(extraArgs: Record<string, unknown> = {}) {
     }],
   }
   writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
-    `<!-- craft:dispatch\n${JSON.stringify({ runId: 'loops-run', args }, null, 2)}\n-->\n`)
-  return { dir, plan, runDir: join(dir, '.craft', 'loops-run') }
+    `<!-- work:dispatch\n${JSON.stringify({ runId: 'loops-run', args }, null, 2)}\n-->\n`)
+  return { dir, plan, runDir: join(dir, '.work', 'loops-run') }
 }
 
 /**
@@ -92,7 +92,7 @@ function dispatch(f: { dir: string; plan: string }, env: Record<string, string>,
       encoding: 'utf8',
       timeout: 120_000,
       cwd: f.dir,
-      env: { ...process.env, CLAUDE_CODE_SESSION_ID: '', CRAFT_LOOP_POLL: '1', CRAFT_NO_SCOPE: '1', ...env },
+      env: { ...process.env, CLAUDE_CODE_SESSION_ID: '', WORK_LOOP_POLL: '1', WORK_NO_SCOPE: '1', ...env },
     })
     return { code: 0, out }
   } catch (e: any) {
@@ -124,7 +124,7 @@ function loopExit(runDir: string, timeoutMs = 120_000): string {
 describe('--loops 0 is today\'s behaviour, unchanged', () => {
   test('the wait heredoc still prints and the script still exits 0', () => {
     const f = fixture()
-    const r = dispatch(f, { CRAFT_FARM: stubFarm(f.dir, true) }, '--loops', '0')
+    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir, true) }, '--loops', '0')
     expect(r.code).toBe(0)
     expect(r.out).toMatch(HEREDOC)
   })
@@ -139,7 +139,7 @@ describe('the default when --loops is omitted is the plan\'s maxRounds', () => {
    */
   test('a plan carrying maxRounds loops rather than printing, and honours that number', () => {
     const f = fixture({ maxRounds: 1 })
-    const r = dispatch(f, { CRAFT_FARM: stubFarm(f.dir, false) })   // no --loops at all
+    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir, false) })   // no --loops at all
     expect(r.out).not.toMatch(HEREDOC)
     expect(r.out).toMatch(DETACHED)
     expect(r.code).toBe(0)                    // the hand-off succeeded; the verdict is the loop's
@@ -148,7 +148,7 @@ describe('the default when --loops is omitted is the plan\'s maxRounds', () => {
 
   test('a plan with no maxRounds falls back to 3 rather than to zero or to unbounded', () => {
     const f = fixture()
-    const r = dispatch(f, { CRAFT_FARM: stubFarm(f.dir, true) })    // no --loops at all
+    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir, true) })    // no --loops at all
     expect(r.out).not.toMatch(HEREDOC)
     expect(r.out).toMatch(DETACHED)
     expect(r.code).toBe(0)
@@ -159,7 +159,7 @@ describe('the default when --loops is omitted is the plan\'s maxRounds', () => {
 describe('--loops N > 0 hands the driver off DETACHED instead of printing', () => {
   test('the heredoc is NOT printed, the script returns at once, and the detached loop reaches the PASS verdict', () => {
     const f = fixture()
-    const r = dispatch(f, { CRAFT_FARM: stubFarm(f.dir, true) }, '--loops', '2')
+    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir, true) }, '--loops', '2')
     expect(r.out).not.toMatch(HEREDOC)
     expect(r.out).toMatch(DETACHED)
     expect(r.code).toBe(0)
@@ -185,8 +185,8 @@ describe('--loops N > 0 hands the driver off DETACHED instead of printing', () =
     ], {
       encoding: 'utf8',
       cwd: f.dir,
-      env: { ...process.env, CLAUDE_CODE_SESSION_ID: '', CRAFT_LOOP_POLL: '1', CRAFT_NO_SCOPE: '1',
-             CRAFT_FARM: stubFarm(f.dir, true, 4) },
+      env: { ...process.env, CLAUDE_CODE_SESSION_ID: '', WORK_LOOP_POLL: '1', WORK_NO_SCOPE: '1',
+             WORK_FARM: stubFarm(f.dir, true, 4) },
     }).trim()
 
     const deadline = Date.now() + 120_000
@@ -203,7 +203,7 @@ describe('--loops N > 0 hands the driver off DETACHED instead of printing', () =
 
   test('a failing gate at the loop cap surfaces the driver\'s halt code in loop.exit, not a bare 0', () => {
     const f = fixture()
-    const r = dispatch(f, { CRAFT_FARM: stubFarm(f.dir, false) }, '--loops', '1')
+    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir, false) }, '--loops', '1')
     expect(r.code).toBe(0)
     expect(loopExit(f.runDir)).toBe('6')
   })
@@ -212,7 +212,7 @@ describe('--loops N > 0 hands the driver off DETACHED instead of printing', () =
 describe('--loops validation', () => {
   test('a non-numeric value is refused with exit 2 naming the flag, before anything is dispatched', () => {
     const f = fixture()
-    const r = dispatch(f, { CRAFT_FARM: stubFarm(f.dir, true) }, '--loops', 'lots')
+    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir, true) }, '--loops', 'lots')
     expect(r.code).toBe(2)
     expect(r.out).toContain('--loops')
     expect(existsSync(join(f.runDir, 'args.json'))).toBe(false)
@@ -220,7 +220,7 @@ describe('--loops validation', () => {
 
   test('a missing value is refused with exit 2 rather than swallowing the plan path as the count', () => {
     const f = fixture()
-    const r = dispatch(f, { CRAFT_FARM: stubFarm(f.dir, true) }, '--loops')
+    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir, true) }, '--loops')
     expect(r.code).toBe(2)
   })
 })
@@ -235,11 +235,11 @@ describe('the paths that return before the dispatch are untouched', () => {
     expect(existsSync(join(f.runDir, 'args.json'))).toBe(false)
   })
 
-  test('CRAFT_DISPATCH_DRYRUN still stops after the gates, even with --loops set', () => {
+  test('WORK_DISPATCH_DRYRUN still stops after the gates, even with --loops set', () => {
     const f = fixture()
-    const r = dispatch(f, { CRAFT_DISPATCH_DRYRUN: '1' }, '--loops', '3')
+    const r = dispatch(f, { WORK_DISPATCH_DRYRUN: '1' }, '--loops', '3')
     expect(r.code).toBe(0)
-    expect(r.out).toContain('CRAFT_DISPATCH_DRYRUN: lint passed, nothing dispatched.')
+    expect(r.out).toContain('WORK_DISPATCH_DRYRUN: lint passed, nothing dispatched.')
     expect(r.out).not.toMatch(HEREDOC)
     expect(existsSync(join(f.runDir, 'result.json'))).toBe(false)
   })

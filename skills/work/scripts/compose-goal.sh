@@ -36,6 +36,9 @@
 #   declares instead of a red gate; the removal is dated 2026-08-23.
 set -euo pipefail
 
+# Promote retired CRAFT_* env vars onto their WORK_* successors (transition shim).
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/legacy-env.sh"
+
 die() { printf 'compose-goal: %s\n' "$1" >&2; exit 2; }
 
 # The wall-clock ceiling the goal may not outlive. Overridable, never absent: a goal with no time
@@ -52,10 +55,10 @@ die() { printf 'compose-goal: %s\n' "$1" >&2; exit 2; }
 # ordinary case, which inverts which escape is doing the work. 12h also spans a real overnight —
 # the three stalls of 2026-08-27/28 cost 14h43m between them, every hour of it inside a window a
 # ceiling this size covers.
-_hours_as_min="${CRAFT_GOAL_MAX_HOURS:+$(( CRAFT_GOAL_MAX_HOURS * 60 ))}"
-MAX_MINUTES="${CRAFT_GOAL_MAX_MINUTES:-${_hours_as_min:-720}}"
+_hours_as_min="${WORK_GOAL_MAX_HOURS:+$(( WORK_GOAL_MAX_HOURS * 60 ))}"
+MAX_MINUTES="${WORK_GOAL_MAX_MINUTES:-${_hours_as_min:-720}}"
 case "$MAX_MINUTES" in
-  ''|*[!0-9]*) die "CRAFT_GOAL_MAX_MINUTES must be a whole number of minutes, got: $MAX_MINUTES" ;;
+  ''|*[!0-9]*) die "WORK_GOAL_MAX_MINUTES must be a whole number of minutes, got: $MAX_MINUTES" ;;
 esac
 
 # `--minutes` prints that ceiling and nothing else, for a caller that needs the number rather than the
@@ -79,7 +82,7 @@ SKILL_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 # it at the other. It already accepts the ceiling as $2, so passing it makes the clause
 # self-describing and leaves that default as a fallback for hand invocation only.
 #
-# The two machine escapes, identical in every regime. `rounds` is the per-round counter craft-
+# The two machine escapes, identical in every regime. `rounds` is the per-round counter work-
 # redispatch increments and hard-stops at `maxRounds` (exit 4 beyond it), so this clause MUST be
 # composed against maxRounds. Composed against anything larger it is unreachable, and the run is
 # left with the wall clock as its only working escape.

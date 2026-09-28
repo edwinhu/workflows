@@ -23,9 +23,9 @@ const lint = (check: string, ...extra: string[]) =>
 
 describe('R1b round-verdict — CRITICAL', () => {
   for (const check of [
-    'bash skills/work/scripts/work-result.sh .craft/run/result.json; [ $? -eq 0 ]',
+    'bash skills/work/scripts/work-result.sh .work/run/result.json; [ $? -eq 0 ]',
     'test -s run/result.json && jq -e .overallPass run/result.json',
-    'bash .craft/hb-run/gate.sh',
+    'bash .work/hb-run/gate.sh',
   ]) {
     test(`refuses: ${check.slice(0, 44)}`, () => {
       const r = lint(check)
@@ -42,7 +42,7 @@ describe('R1b round-verdict — CRITICAL', () => {
     expect(r.stdout).toContain('hold-lint: clean')
   })
 
-  // "results.json" and "craft/" without the dot are not the run artefacts; the rule must not
+  // "results.json" and "work/" without the dot are not the run artefacts; the rule must not
   // swallow every path that merely looks similar.
   test('a near-miss path is not a round verdict', () => {
     expect(lint('bash scripts/gate.sh data/results.json').status).toBe(0)

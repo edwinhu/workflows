@@ -3,7 +3,7 @@
 # this session — the goal check when the plan states one, Jev alone on the goal when it does not.
 # The wake is the farm-runs plugin monitor; a CronCreate fallback poll is printed only with --cron.
 #
-# Everything it needs is in the plan's `<!-- craft:dispatch … -->` block, so a session that has
+# Everything it needs is in the plan's `<!-- work:dispatch … -->` block, so a session that has
 # lost its context — the clear on plan approval, /clear, a restart — can run this and be correct
 # without re-deriving anything, and without re-exploring the tree the plan was built from.
 #
@@ -14,7 +14,7 @@
 #   work-dispatch.sh --no-red-probe   skip only the red-gate probe; keep plan-lint
 #   work-dispatch.sh --no-mech-probe  skip only the mechanical baseline probe; keep plan-lint
 #   work-dispatch.sh --no-suite-lint  skip only the suite-lint report; keep every gate
-#   work-dispatch.sh --run-dir DIR    put args/result/log under DIR/<run-id> instead of $PWD/.craft/
+#   work-dispatch.sh --run-dir DIR    put args/result/log under DIR/<run-id> instead of $PWD/.work/
 #   work-dispatch.sh --provider claude|codex|gemini  the whole spine's provider (default claude)
 #   work-dispatch.sh --cron           also print the CronCreate call for a FALLBACK poll (default
 #                                      60 minutes). Off unless asked: the farm-runs plugin monitor is
@@ -31,19 +31,19 @@
 #   work-dispatch.sh --scaffold PLAN PATH is PATH declared in scaffoldPaths? 0 yes, 1 no, 2 undecidable
 #   work-dispatch.sh --covers PLAN PATH  is PATH inside some task's writablePaths? 0 yes, 1 no,
 #                                      2 undecidable (read by main-thread-guard.sh, which fails closed)
-#   CRAFT_DISPATCH_DRYRUN=1            build + lint + probe + size, stop before dispatching
-#   CRAFT_GOAL_PRINT=1                 print the composed objective, then
+#   WORK_DISPATCH_DRYRUN=1            build + lint + probe + size, stop before dispatching
+#   WORK_GOAL_PRINT=1                 print the composed objective, then
 #                                      stop: writes no args.json, runs no probe, dispatches nothing
-#   CRAFT_LOOP_INTERVAL_MINUTES=30     fallback-poll period, as whole minutes; setting it also OPTS IN
-#   CRAFT_NO_SCOPE=1                   force the plain setsid dispatch, skipping the transient scope
-#   CRAFT_SYSTEMD_RUN=PATH             the systemd-run binary the scope probe uses (default systemd-run)
-#   CRAFT_RED_PROBE_TIMEOUT=300        per-command probe timeout in seconds
-#   CRAFT_MECH_PROBE_TIMEOUT=300       per-check mechanical baseline timeout in seconds
-#   CRAFT_SUITE_LINT_TIMEOUT=300       suite-lint report timeout in seconds; expiring REPORTS, never refuses
-#   CRAFT_SUITE_LINT_BUN=bun           the runtime the suite-lint report is executed with
+#   WORK_LOOP_INTERVAL_MINUTES=30     fallback-poll period, as whole minutes; setting it also OPTS IN
+#   WORK_NO_SCOPE=1                   force the plain setsid dispatch, skipping the transient scope
+#   WORK_SYSTEMD_RUN=PATH             the systemd-run binary the scope probe uses (default systemd-run)
+#   WORK_RED_PROBE_TIMEOUT=300        per-command probe timeout in seconds
+#   WORK_MECH_PROBE_TIMEOUT=300       per-check mechanical baseline timeout in seconds
+#   WORK_SUITE_LINT_TIMEOUT=300       suite-lint report timeout in seconds; expiring REPORTS, never refuses
+#   WORK_SUITE_LINT_BUN=bun           the runtime the suite-lint report is executed with
 #
 # --run-dir exists for a readOnly run whose projectDir is a tree it must NOT write to. The run dir
-# defaulted to $PWD/.craft/, and $PWD is also passed as the runner's --cwd, so the two were coupled: a
+# defaulted to $PWD/.work/, and $PWD is also passed as the runner's --cwd, so the two were coupled: a
 # skill judging ~/areas/secreg had no way to dispatch from there without dropping args.json,
 # result.json and run.log into the tree it promises not to touch. --run-dir separates them; --cwd
 # stays $PWD so dispatched agents keep resolving relative paths the way they always have.
@@ -51,7 +51,7 @@
 # TIER 1 GATE: plan-lint.ts runs on the built args before args.json is written, and a major/critical
 # finding aborts with the run still armed. It fails CLOSED — a verdict it cannot count blocks too.
 #
-# TIER 2 GATE: every active task's `redCommand` is EXECUTED here, before args.json is written. craft
+# TIER 2 GATE: every active task's `redCommand` is EXECUTED here, before args.json is written. work
 # already reports `red-not-red` and `green-not-green` — but only after the implementers, verifiers,
 # lenses and mechanical checks have run. Both are decidable from the same command at dispatch, one
 # round and ~34 agents earlier, and a command that could not run at all is not a verdict of any kind.
@@ -67,7 +67,7 @@
 # gate that is wrong once costs a whole dispatch. Whether it ever gates is a later decision, made on
 # that measurement rather than here.
 #
-# THE SPEC IS THE AUTHORITY. The hash is over the CANONICAL JSON of the `craft:dispatch` block
+# THE SPEC IS THE AUTHORITY. The hash is over the CANONICAL JSON of the `work:dispatch` block
 # (sorted keys, no whitespace), never the plan's bytes: the block is what was authored and executed,
 # the prose around it explains it. Hashing the whole file made a typo fix in rationale invalidate a
 # live run and cost a round. Reformatting or reordering the block therefore moves nothing; changing
@@ -76,17 +76,20 @@
 # planPath and specHash are injected here, never read from the block: a block cannot state its own
 # hash without changing it.
 #
-# THE PLAN IS ARCHIVED into the run dir, because craft does not own the file it hashes. `.claude/plans/`
+# THE PLAN IS ARCHIVED into the run dir, because work does not own the file it hashes. `.claude/plans/`
 # is gitignored scratch, and re-entering plan mode OVERWRITES the plan in place. The archive is named
 # by the spec hash, so an amended spec adds a file and can never destroy the bytes an earlier round
 # ran under.
 set -uo pipefail
 
+# Promote retired CRAFT_* env vars onto their WORK_* successors (transition shim).
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/legacy-env.sh"
+
 # Self-locating: the skill root is this script's parent, so the copy runs wherever it is installed.
 SKILL=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-# farm-out ships alongside craft; a sibling copy wins, an installed one is the fallback, and
-# CRAFT_FARM overrides both.
-FARM=${CRAFT_FARM:-}
+# farm-out ships alongside work; a sibling copy wins, an installed one is the fallback, and
+# WORK_FARM overrides both.
+FARM=${WORK_FARM:-}
 if [ -z "$FARM" ]; then
   if [ -f "$SKILL/../farm-out/scripts/farm.sh" ]; then
     FARM="$SKILL/../farm-out/scripts/farm.sh"
@@ -112,13 +115,13 @@ try:
     src = open(plan).read()
 except OSError as exc:
     sys.exit(f"spec-hash: cannot read {plan} ({exc})")
-m = re.search(r'<!--\s*craft:dispatch\s*(.*?)-->', src, re.S)
+m = re.search(r'<!--\s*(?:work|craft):dispatch\s*(.*?)-->', src, re.S)  # legacy: the retired craft:dispatch spelling is still READ during the transition
 if not m:
-    sys.exit("spec-hash: plan carries no <!-- craft:dispatch --> block: " + plan)
+    sys.exit("spec-hash: plan carries no <!-- work:dispatch --> block: " + plan)
 try:
     parsed = json.loads(m.group(1))
 except json.JSONDecodeError as exc:
-    sys.exit(f"spec-hash: craft:dispatch block is not valid JSON ({exc}): {plan}")
+    sys.exit(f"spec-hash: work:dispatch block is not valid JSON ({exc}): {plan}")
 canon = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
 print(hashlib.sha256(canon.encode("utf-8")).hexdigest())
 PY
@@ -146,7 +149,7 @@ try:
     src = open(plan).read()
 except OSError:
     raise SystemExit(2)
-m = re.search(r'<!--\s*craft:dispatch\s*(.*?)-->', src, re.S)
+m = re.search(r'<!--\s*(?:work|craft):dispatch\s*(.*?)-->', src, re.S)  # legacy: the retired craft:dispatch spelling is still READ during the transition
 if not m:
     raise SystemExit(2)
 try:
@@ -186,7 +189,7 @@ try:
     src = open(plan).read()
 except OSError:
     raise SystemExit(2)
-m = re.search(r'<!--\s*craft:dispatch\s*(.*?)-->', src, re.S)
+m = re.search(r'<!--\s*(?:work|craft):dispatch\s*(.*?)-->', src, re.S)  # legacy: the retired craft:dispatch spelling is still READ during the transition
 if not m:
     raise SystemExit(2)
 try:
@@ -253,7 +256,7 @@ if not gated:
 
 cwd = a.get("projectDir") or os.getcwd()
 try:
-    timeout = float(os.environ.get("CRAFT_RED_PROBE_TIMEOUT", "300"))
+    timeout = float(os.environ.get("WORK_RED_PROBE_TIMEOUT", "300"))
 except ValueError:
     timeout = 300.0
 
@@ -333,7 +336,7 @@ for tid, verdict, shown, why, cmd, tail in refusals:
     print(f"\n  {tid}: {verdict} (exit {shown}) — {why}", file=w)
     print(f"    command: {cmd}", file=w)
     print("    output:  " + (tail.replace("\n", "\n             ") if tail else "(nothing)"), file=w)
-print("\ncraft would have reached the same verdict a round later, after paying for the implementers,"
+print("\nwork would have reached the same verdict a round later, after paying for the implementers,"
       "\nverifiers, lenses and mechanical checks. Run the command by hand to see what it needs, fix it"
       "\nin the plan, and re-hash.", file=w)
 print("Override (probes nothing, gates nothing): --no-red-probe, or --no-lint to drop both gates.", file=w)
@@ -358,7 +361,7 @@ mech_probe_gate() {
   js="$(mktemp 2>/dev/null)" || js=""
   [ -n "$js" ] || js="$(dirname "$args")/.mech-probe.$$.json"
   bun "$SKILL/scripts/plan-preflight.ts" "$args" --cwd "$PWD" --json --only mechanical \
-      --timeout "${CRAFT_MECH_PROBE_TIMEOUT:-300}" > "$js" 2>"$js.err"
+      --timeout "${WORK_MECH_PROBE_TIMEOUT:-300}" > "$js" 2>"$js.err"
   rc=$?
   if [ "$rc" -gt 1 ]; then
     echo "  mech-probe: plan-preflight could not run (exit $rc) — refusing to dispatch unprobed" >&2
@@ -397,7 +400,7 @@ PY
   if [ "$rc" -ne 0 ]; then
     echo "
 BLOCKED: a mechanicalCheck cannot run at BASELINE. Nothing dispatched; the run stays armed.
-craft would have reached this same verdict a round later, after paying for the implementers,
+work would have reached this same verdict a round later, after paying for the implementers,
 verifiers and lenses. Fix the command in the plan and re-hash.
 Override (probes nothing, gates nothing): --no-mech-probe, or --no-lint to drop every gate." >&2
     return 3
@@ -422,8 +425,8 @@ suite_lint_report() {
   root=$(python3 -c 'import json,sys; a=json.load(open(sys.argv[1])); print(a.get("projectDir") or "")' \
     "$args" 2>/dev/null)
   [ -n "$root" ] && [ -d "$root" ] || root="$PWD"
-  bun_bin="${CRAFT_SUITE_LINT_BUN:-bun}"
-  timeout_s="${CRAFT_SUITE_LINT_TIMEOUT:-300}"
+  bun_bin="${WORK_SUITE_LINT_BUN:-bun}"
+  timeout_s="${WORK_SUITE_LINT_TIMEOUT:-300}"
   case "$timeout_s" in ''|*[!0-9]*) timeout_s=300 ;; esac
   td="$(mktemp -d 2>/dev/null)" || {
     echo "  suite-lint: no temp directory could be created — tier skipped, reporting nothing, gating nothing"
@@ -576,16 +579,16 @@ done
 plan="${1:-}"
 if [ -z "$plan" ]; then
   plan=$(bash "$SKILL/scripts/work-pending.sh" "$PWD" | cut -f1)
-  [ -n "$plan" ] || { echo "no armed craft run in $PWD (and no plan given)" >&2; exit 2; }
+  [ -n "$plan" ] || { echo "no armed work run in $PWD (and no plan given)" >&2; exit 2; }
 fi
 [ -f "$plan" ] || { echo "no such plan: $plan" >&2; exit 2; }
 plan=$(realpath "$plan")
 hash=$(spec_hash "$plan") || exit 1
 
 if [ "$mode" = abandon ]; then
-  mkdir -p .craft && printf '%s\n' "$hash" >> .craft/abandoned
+  mkdir -p .work && printf '%s\n' "$hash" >> .work/abandoned
   echo "abandoned: $plan"
-  echo "  hash $hash recorded in $PWD/.craft/abandoned — the guard no longer holds writes."
+  echo "  hash $hash recorded in $PWD/.work/abandoned — the guard no longer holds writes."
   echo "  Editing the spec re-arms it (new hash); dispatch with: work-dispatch.sh $plan"
   exit 0
 fi
@@ -596,21 +599,21 @@ run=$(python3 - "$plan" "$hash" "$SKILL" <<'PY'
 import json, re, sys
 plan, hash_, skill_root = sys.argv[1], sys.argv[2], sys.argv[3]
 src = open(plan).read()
-m = re.search(r'<!--\s*craft:dispatch\s*(.*?)-->', src, re.S)
+m = re.search(r'<!--\s*(?:work|craft):dispatch\s*(.*?)-->', src, re.S)  # legacy: the retired craft:dispatch spelling is still READ during the transition
 if not m:
-    sys.exit("plan carries no <!-- craft:dispatch --> block: " + plan)
+    sys.exit("plan carries no <!-- work:dispatch --> block: " + plan)
 try:
     block = json.loads(m.group(1))
 except json.JSONDecodeError as e:
-    sys.exit(f"craft:dispatch block is not valid JSON ({e}): {plan}")
+    sys.exit(f"work:dispatch block is not valid JSON ({e}): {plan}")
 run_id = block.get("runId")
 args = block.get("args")
 if not run_id or not isinstance(args, dict):
-    sys.exit("craft:dispatch block needs a runId and an args object: " + plan)
+    sys.exit("work:dispatch block needs a runId and an args object: " + plan)
 for k in ("planPath", "planHash", "specHash", "skillRoot"):
     args.pop(k, None)          # injected below; a stale one in the block would be a lie
 args["planPath"], args["specHash"] = plan, hash_
-# Where craft is installed, so the prompts workflow.js builds name paths that exist here.
+# Where work is installed, so the prompts workflow.js builds name paths that exist here.
 args["skillRoot"] = skill_root
 args.setdefault("projectDir", block.get("projectDir") or __import__("os").getcwd())
 print(json.dumps({"runId": run_id, "turns": block.get("goalTurns", 12),
@@ -625,12 +628,12 @@ turns=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["turns"])' "$
 # 2026-08-27, "reads 24 or more" against a maxRounds of 3 — leaving the wall clock as the only live
 # escape. goalTurns still governs the turn budget; it is not a round budget.
 maxrounds=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["maxRounds"])' "$run")
-R="${rundir:-$PWD/.craft}/$runid"
+R="${rundir:-$PWD/.work}/$runid"
 mkdir -p "$R" || exit 1
 
 # The goal is a pure function of the plan path, the run dir and the round budget, so it is composed
 # HERE — before anything is written or probed — and merely SENT at the end. That makes it readable:
-# CRAFT_GOAL_PRINT shows the exact line craft would self-send and then stops, writing no args.json
+# WORK_GOAL_PRINT shows the exact line work would self-send and then stops, writing no args.json
 # and dispatching nothing. Emitted only at the send, as it used to be, no test can observe it, which
 # is how it named an unreachable round budget for weeks.
 if python3 -c 'import json,sys; sys.exit(0 if json.loads(sys.argv[1])["args"].get("readOnly") else 1)' "$run"; then
@@ -639,7 +642,7 @@ else
   readonly_run=0
 fi
 goal=$("$SKILL/scripts/compose-goal.sh" "$plan" "$R" "$maxrounds" "$readonly_run")
-[ -n "${CRAFT_GOAL_PRINT:-}" ] && { printf '%s\n' "$goal"; exit 0; }
+[ -n "${WORK_GOAL_PRINT:-}" ] && { printf '%s\n' "$goal"; exit 0; }
 
 # args.json is what disarms the guard, so a preview must NOT write it — otherwise --print would
 # release the hold having dispatched nothing.
@@ -737,7 +740,7 @@ echo "args:  $out"
 [ "$mode" = print ] && { echo "--print: nothing dispatched."; exit 0; }
 # Exercises everything above — arg build, lint gate, sizing — and stops before the goal is sent and
 # the run is farmed out. For testing this script itself.
-[ -n "${CRAFT_DISPATCH_DRYRUN:-}" ] && { echo "CRAFT_DISPATCH_DRYRUN: lint passed, nothing dispatched."; exit 0; }
+[ -n "${WORK_DISPATCH_DRYRUN:-}" ] && { echo "WORK_DISPATCH_DRYRUN: lint passed, nothing dispatched."; exit 0; }
 
 # Phase 3: the WAKE and the HOLD.
 #
@@ -748,10 +751,10 @@ echo "args:  $out"
 # AGK 2026-09-27, 14 ticks inside one round, each re-entering a 113 KB plan and a 276 KB run dir.
 #
 # THE CRON IS THEREFORE OPTIONAL — a dumb fallback poll for a monitor that died, hourly by default,
-# and printed only on --cron or with CRAFT_LOOP_INTERVAL_MINUTES set.
-cron_minutes=${CRAFT_LOOP_INTERVAL_MINUTES:-60}
+# and printed only on --cron or with WORK_LOOP_INTERVAL_MINUTES set.
+cron_minutes=${WORK_LOOP_INTERVAL_MINUTES:-60}
 case "$cron_minutes" in ''|*[!0-9]*|0) cron_minutes=60 ;; esac
-[ -n "${CRAFT_LOOP_INTERVAL_MINUTES:-}" ] && cron=1
+[ -n "${WORK_LOOP_INTERVAL_MINUTES:-}" ] && cron=1
 # Minute 7 rather than 0 or 30: every fleet-wide "hourly" lands on the same instant otherwise.
 if [ "$cron_minutes" -lt 60 ]; then
   cron_expr="7-59/$cron_minutes * * * *"
@@ -771,7 +774,7 @@ cron_prompt="and? (work run $runid)"
 print_cron_instruction() {
   if [ "$cron" != 1 ]; then
     echo
-    echo "wake: the farm-runs monitor watches this run and wakes this session on its milestones, its verdict, and on a run that dies without one. Pass --cron (or set CRAFT_LOOP_INTERVAL_MINUTES) for a fallback poll on top of it."
+    echo "wake: the farm-runs monitor watches this run and wakes this session on its milestones, its verdict, and on a run that dies without one. Pass --cron (or set WORK_LOOP_INTERVAL_MINUTES) for a fallback poll on top of it."
     return 0
   fi
   cat <<CRONMSG
@@ -835,12 +838,12 @@ arm_hold() {
 # transient scope under the user manager is a cgroup of its own, so the run is no longer collateral.
 # The capability is PROBED, never assumed: a container, a non-systemd host or a shell with no user
 # manager must still DISPATCH. Losing the scope is a warning; refusing to run would be the regression.
-SYSTEMD_RUN=${CRAFT_SYSTEMD_RUN:-systemd-run}
+SYSTEMD_RUN=${WORK_SYSTEMD_RUN:-systemd-run}
 scope=none
 scope_why=""
 scope_unit=""
-if [ "${CRAFT_NO_SCOPE:-}" = "1" ]; then
-  scope_why="CRAFT_NO_SCOPE=1"
+if [ "${WORK_NO_SCOPE:-}" = "1" ]; then
+  scope_why="WORK_NO_SCOPE=1"
 elif ! command -v "$SYSTEMD_RUN" > /dev/null 2>&1; then
   scope_why="$SYSTEMD_RUN not found"
 elif ! "$SYSTEMD_RUN" --user --scope --quiet --collect -- true > /dev/null 2>&1; then
@@ -850,7 +853,7 @@ else
   # A unit name is a restricted charset; the run id is author-supplied, so map anything else out
   # rather than handing systemd a name it will reject. The pid keeps a re-dispatch of the same run
   # from colliding with one still live.
-  scope_unit="craft-$(printf '%s' "$runid" | tr -c '[:alnum:]_.\-' '_')-$$.scope"
+  scope_unit="work-$(printf '%s' "$runid" | tr -c '[:alnum:]_.\-' '_')-$$.scope"
 fi
 
 # One argument vector, so the two dispatch paths cannot drift apart.
@@ -878,7 +881,7 @@ else
   echo "WARNING: no live dispatch for $runid two seconds in — check $R/run.log" >&2
 fi
 
-# The count, resolved only now: --print and CRAFT_DISPATCH_DRYRUN both returned above, so neither
+# The count, resolved only now: --print and WORK_DISPATCH_DRYRUN both returned above, so neither
 # path can be changed by it. An unstated --loops takes the plan's own maxRounds, and 6 when the plan
 # states none.
 if [ -z "$loops" ]; then

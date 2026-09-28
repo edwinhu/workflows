@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * plan-lint.ts — TIER 1 of craft's plan review: the decidable part, computed.
+ * plan-lint.ts — TIER 1 of work's plan review: the decidable part, computed.
  *
  *   bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/plan-lint.ts <plan.md | args.json> [--json]
  *
@@ -10,7 +10,7 @@
  * repo access. A rule belongs here only if two readers must reach the same verdict from the plan
  * text alone; anything needing the tree is TIER 2 (pre-flight execution).
  *
- * Accepts a craft args object as well as a plan file so a round's dispatched arguments can be
+ * Accepts a work args object as well as a plan file so a round's dispatched arguments can be
  * linted directly — that is also what the rule corpus was validated against.
  */
 
@@ -328,7 +328,7 @@ const coveredByMechanical = (clause: string, mech: { cmd: string }[]): boolean =
   return tokens.some(t => mech.some(m => m.cmd.toLowerCase().includes(t.toLowerCase())))
 }
 
-/** Acceptance cells are semicolon-delimited by craft's own plan convention. */
+/** Acceptance cells are semicolon-delimited by work's own plan convention. */
 const clausesOf = (acceptance: string): string[] => {
   const text = acceptance ?? ''
   const sentences = text.split(/(?<=\.)\s+(?=[A-Z`])/).filter(s => s.trim())
@@ -441,8 +441,19 @@ const lint = (p: Plan): Finding[] => {
   // R0 — scaffoldPaths is a hole in the write guard, so a scaffold that swallows a whole task's
   // writable surface is a blanket disarm wearing a declaration. The legitimate shape is narrow: the
   // one stub a redCommand needs in order to fail behaviourally instead of failing to import.
-  // Callers construct Plan objects directly (the tests, and craft's own round linting), so this
+  // Callers construct Plan objects directly (the tests, and work's own round linting), so this
   // key is not guaranteed present even though the type declares it.
+  // R-legacy — the plan is armed with the retired `craft:dispatch` spelling. Every reader still
+  // accepts it during the transition, so this NEVER blocks; it only points at the migration.
+  if (p.planText && /<!--\s*craft:dispatch/.test(p.planText))
+    add(
+      'legacy-dispatch-marker',
+      'minor',
+      'plan',
+      'the arming block uses the retired `craft:dispatch` marker; every reader still accepts it, but rewrite it to `work:dispatch` (scripts/migrate-craft-to-work.sh --apply <root>)',
+      '<!-- craft:dispatch',
+    )
+
   const scaffold = p.scaffoldPaths ?? []
   // Containment, not overlap: `coveredBy` is symmetric, so a stub `src/stub.py` would read as
   // "covering" the directory `src/` and flag the very shape this rule is meant to permit.
@@ -548,7 +559,7 @@ const lint = (p: Plan): Finding[] => {
           'gate-shell-operator',
           'major',
           where,
-          'redCommand contains a shell operator; craft rejects every one of `; & | ` $ > < ( ) { }` and newline at arg-validation, wrapper or not — the gate must be a single invocation',
+          'redCommand contains a shell operator; work rejects every one of `; & | ` $ > < ( ) { }` and newline at arg-validation, wrapper or not — the gate must be a single invocation',
           rc,
         )
 
@@ -669,7 +680,7 @@ const lint = (p: Plan): Finding[] => {
         if (t.includes('-->')) inComment = false
         continue
       }
-      if (/<!--\s*craft:dispatch/.test(t)) {
+      if (/<!--\s*(?:work|craft):dispatch/.test(t)) {  // legacy: the retired craft:dispatch spelling is still READ during the transition
         inComment = !t.includes('-->')
         continue
       }
@@ -745,7 +756,7 @@ const lint = (p: Plan): Finding[] => {
         'lens-missing-severity',
         'major',
         `review lens ${l.key}`,
-        'lens states no severity; craft blocks only on critical|major, so a lens without one is decorative',
+        'lens states no severity; work blocks only on critical|major, so a lens without one is decorative',
       )
   }
 

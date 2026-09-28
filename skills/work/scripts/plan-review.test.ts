@@ -16,8 +16,8 @@ import { join } from 'node:path'
 import { type Plan } from './plan-lint.ts'
 import * as preflightMod from './plan-preflight.ts'
 
-const CRAFT = `${import.meta.dir}/..`
-const SCRIPTS = join(CRAFT, 'scripts')
+const WORK = `${import.meta.dir}/..`
+const SCRIPTS = join(WORK, 'scripts')
 
 const base = (over: Partial<Plan> = {}): Plan => ({
   tasks: [],
@@ -51,7 +51,7 @@ const task = (over: Partial<Plan['tasks'][0]> = {}) => ({
 
 let dir: string
 beforeAll(() => {
-  dir = mkdtempSync(join(tmpdir(), 'craft-plan-review-'))
+  dir = mkdtempSync(join(tmpdir(), 'work-plan-review-'))
   mkdirSync(join(dir, 'scripts'))
   for (const [name, code] of [['green.sh', 0], ['red.sh', 1]] as const) {
     const p = join(dir, 'scripts', name)
@@ -96,7 +96,7 @@ test('preflight: a task WITH a redCommand carries the proof already — a green 
 // ---------------------------------------------------------------- deletion: the judged layer is gone
 
 test('deletion:workflow — workflow.js carries no plan-lens layer', () => {
-  const src = readFileSync(join(CRAFT, 'workflow.js'), 'utf8')
+  const src = readFileSync(join(WORK, 'workflow.js'), 'utf8')
   for (const token of ['planLenses', 'PLAN_LENS_SCHEMA', 'planThatFlagged', 'planSurviving'])
     expect(src).not.toContain(token)
   expect(src).not.toMatch(/title:\s*['"]Plan review['"]/)
@@ -122,6 +122,6 @@ test('deletion:scripts — plan-lint.ts still carries out.planText, the prose-co
 })
 
 test('deletion:docs — SKILL.md and references/ no longer describe plan lenses', () => {
-  expect(readFileSync(join(CRAFT, 'SKILL.md'), 'utf8').toLowerCase()).not.toContain('planlens')
-  expect(existsSync(join(CRAFT, 'references', 'plan-review-convergence.md'))).toBe(false)
+  expect(readFileSync(join(WORK, 'SKILL.md'), 'utf8').toLowerCase()).not.toContain('planlens')
+  expect(existsSync(join(WORK, 'references', 'plan-review-convergence.md'))).toBe(false)
 })

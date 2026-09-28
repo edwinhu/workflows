@@ -119,7 +119,7 @@ Three domain requirements on the table:
 
 ## Phase 4 — the work call
 
-The args go in the plan's `<!-- craft:dispatch -->` arming block, and the dispatch is **`work`'s own
+The args go in the plan's `<!-- work:dispatch -->` arming block, and the dispatch is **`work`'s own
 `work-dispatch.sh`** — never a hand-written runner line. That script owns the TIER 1 plan-lint
 gate, which refuses to dispatch on a `major`/`critical` plan finding and fails CLOSED on a verdict it
 cannot count; hand-rolling the invocation silently drops it. `work` owns the wait, the result handling

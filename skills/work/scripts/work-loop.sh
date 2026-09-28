@@ -18,9 +18,12 @@
 # converge-check's exit 2 ("fewer than two readable result files") is KEEP GOING, never a halt:
 # every round 1 returns it, so reading it as a halt would stop every run before it began.
 #
-# Env: CRAFT_LOOP_POLL overrides the poll interval in seconds (default 30; must be >= 1).
-#      CRAFT_LOOP_SETTLE overrides the post-dispatch settle in seconds (default 2).
+# Env: WORK_LOOP_POLL overrides the poll interval in seconds (default 30; must be >= 1).
+#      WORK_LOOP_SETTLE overrides the post-dispatch settle in seconds (default 2).
 set -uo pipefail
+
+# Promote retired CRAFT_* env vars onto their WORK_* successors (transition shim).
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/legacy-env.sh"
 
 SKILL=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 
@@ -45,24 +48,24 @@ done
 # is an unbounded loop over somebody's typo.
 case "$LOOPS" in ''|*[!0-9]*) die "--loops must be a whole number, got: $LOOPS" ;; esac
 
-POLL=${CRAFT_LOOP_POLL:-30}
-case "$POLL" in ''|*[!0-9]*) die "CRAFT_LOOP_POLL must be a whole number of seconds, got: $POLL" ;; esac
+POLL=${WORK_LOOP_POLL:-30}
+case "$POLL" in ''|*[!0-9]*) die "WORK_LOOP_POLL must be a whole number of seconds, got: $POLL" ;; esac
 # Zero is digits-only but not an interval: 'sleep 0' turns the wait into a spin that forks
 # farm-alive.sh and realpath every iteration for the whole run.
-[ "$POLL" -gt 0 ] || die "CRAFT_LOOP_POLL must be at least 1 second, got: $POLL"
+[ "$POLL" -gt 0 ] || die "WORK_LOOP_POLL must be at least 1 second, got: $POLL"
 
 # A detached runner registers in farm-events a moment AFTER its dispatcher returns, so a liveness
 # check taken at that instant correctly reports no live run for a round that is perfectly healthy.
 # work-dispatch.sh settles before its own check; every round here gets the same grace.
-SETTLE=${CRAFT_LOOP_SETTLE:-2}
-case "$SETTLE" in ''|*[!0-9]*) die "CRAFT_LOOP_SETTLE must be a whole number of seconds, got: $SETTLE" ;; esac
+SETTLE=${WORK_LOOP_SETTLE:-2}
+case "$SETTLE" in ''|*[!0-9]*) die "WORK_LOOP_SETTLE must be a whole number of seconds, got: $SETTLE" ;; esac
 
 [ -d "$RUN_DIR" ] || die "run dir not found: $RUN_DIR"
 # The plan is what work-redispatch.sh re-hashes and re-syncs, so a missing one is a round that
 # cannot happen — refuse up front rather than after a wait.
 [ -f "$PLAN" ] || die "plan not found: $PLAN"
 ARGS="$RUN_DIR/args.json"
-[ -f "$ARGS" ] || die "no args.json in $RUN_DIR — that directory is not a craft run"
+[ -f "$ARGS" ] || die "no args.json in $RUN_DIR — that directory is not a work run"
 
 case "$PROVIDER" in ''|claude|codex|gemini) ;;
   *) die "--provider must be claude|codex|gemini, got: $PROVIDER" ;;
