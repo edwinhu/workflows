@@ -140,7 +140,7 @@ standard-library callee, which is definitionally not the input under test.
 
 Raw 24, false positives 23, one true positive.
 
-The one that survives is `skills/work/scripts/work-redispatch.test.ts:776`:
+The one that survives is `skills/work/scripts/work-redispatch.test.ts:784`:
 
 ```
 expect(r.out).toContain('CONVERGING')
@@ -164,15 +164,15 @@ defective one above it.
 **File-wide literal pooling across unrelated tests (22 findings).** The rule collects failure-
 vocabulary literals from the whole file and matches any positive assertion against all of them, so a
 fixture string defined for one test taints an assertion belonging to another that can never see it.
-`skills/workflow-creator/scripts/wc-probe.test.ts:419` asserts `findings[0].detail` contains
+`skills/workflow-creator/scripts/wc-probe.test.ts:427` asserts `findings[0].detail` contains
 `guard.ts`; the matched "failure" literal is a fixture at line 470 belonging to a different test
 (`'Do NOT use guard.ts; it was deleted from the hook config.'`), which never reaches `detail`. The
-same mechanism produces `skills/workflow-creator/scripts/wc-probe.test.ts:261`,
-`skills/workflow-creator/scripts/wc-probe.test.ts:755`,
-`skills/workflow-creator/scripts/wc-probe.test.ts:3220` and
-`skills/workflow-creator/scripts/wc-probe.test.ts:3265`; both
-`skills/work/scripts/work-dispatch.test.ts:530` and
-`skills/work/scripts/work-dispatch.test.ts:541`, whose matched literal is a malformed-plan fixture
+same mechanism produces `skills/workflow-creator/scripts/wc-probe.test.ts:269`,
+`skills/workflow-creator/scripts/wc-probe.test.ts:763`,
+`skills/workflow-creator/scripts/wc-probe.test.ts:3228` and
+`skills/workflow-creator/scripts/wc-probe.test.ts:3273`; both
+`skills/work/scripts/work-dispatch.test.ts:538` and
+`skills/work/scripts/work-dispatch.test.ts:549`, whose matched literal is a malformed-plan fixture
 about 150 lines away at line 682; `tests/public-extension-contract.test.ts:161`, where the assertion
 is `toContain("specHash")` and the matched literal is a prose table cell at line 47 that happens to
 contain the word; and the three cite-check findings
@@ -200,13 +200,13 @@ value, no input in the file distinguishes the behaviours the tests claim differ.
 premise held in none of the 193 cases, for three reasons.
 
 **The varying input is not a literal (the dominant case).**
-`skills/work/scripts/work-amend.test.ts:127` is `amend(f, '--apply')`, one of five calls passing the
+`skills/work/scripts/work-amend.test.ts:135` is `amend(f, '--apply')`, one of five calls passing the
 same `'--apply'` (lines 127, 140, 155, 162, 202); that string is the mode under test and is constant
 on purpose, while the discriminating input is `f`, a fixture built from `ACCRETED_TASK` in one test
 and `ESCALATING_TASK` in another. Identically, `tests/farm-runner.test.ts:34` calls `runFarm('out.md',
 { writeRelative: 'out.md' })` while the paired test six lines below at line 40 calls
 `runFarm('out.md')` with no options — the whole point of the pair is the second argument, which the
-rule does not count. `skills/work/scripts/work-pending.test.ts:80` passes runId `'r'` across five
+rule does not count. `skills/work/scripts/work-pending.test.ts:88` passes runId `'r'` across five
 calls (lines 80, 101, 123, 159, 198) while varying the specHash and the directory. The rule sees
 literal arguments only, so any test that varies its input through a variable, a fixture builder, a
 temp path or an options object reads as undistinguished.
@@ -226,7 +226,7 @@ calls; two of them, at lines 77 and 78, sit inside one test that calls `_audit("
 `_audit("tics.md", style="legal")` to prove the domain guide is gated by style. The fixture filename
 is deliberately constant *so that* style is the only difference. The rule flags the constant and
 misses that the variation is the presence of a second argument.
-`skills/workflow-creator/scripts/wc-probe.test.ts:416` is the same shape and worse: its call group
+`skills/workflow-creator/scripts/wc-probe.test.ts:424` is the same shape and worse: its call group
 (lines 416, 424, 470) is a defective/correct **pair**, the exact test structure the vendored doctrine
 asks for, where the fixture hook command is held identical and the second fixture adds the missing
 file. The rule penalises the control.
@@ -272,8 +272,8 @@ Three mechanisms, and the first is an extraction defect rather than a rule-desig
 **A ternary parsed as a key-value pair (8 findings).**
 `skills/work/scripts/converge-check.test.ts:48` contains `verdict: r.blocking === 0 ? 'PASS' : 'FAIL'`
 and is reported as the key `PASS` with the value `'FAIL'`. There is no such key. The same misparse
-produces the `PASS: 'FAIL'` findings at `skills/work/scripts/work-dispatch-loops.test.ts:40`,
-`skills/work/scripts/work-loop.test.ts:31` and `skills/work/scripts/work-result.test.ts:654`, and
+produces the `PASS: 'FAIL'` findings at `skills/work/scripts/work-dispatch-loops.test.ts:48`,
+`skills/work/scripts/work-loop.test.ts:39` and `skills/work/scripts/work-result.test.ts:654`, and
 the `ACTIVE: "PROCESSING"` finding at `skills/cite-check/tests/gemini.test.ts:109`
 (`state: getCalls >= 2 ? "ACTIVE" : "PROCESSING"`) together with its three `scratch/` copies. The
 gemini case is doubly wrong: that line exists precisely to vary the state across polls.
@@ -288,13 +288,13 @@ the very sentence documenting the absence of the thing.
 
 **Harness plumbing, correctly held constant (31 findings).** The remainder are environment keys a test
 sets to configure its own harness rather than to exercise a branch: `CRAFT_DISPATCH_DRYRUN: '1'` (at
-`skills/work/scripts/plan-lint.test.ts:386`,
-`skills/work/scripts/work-dispatch-loops.test.ts:240`), `CRAFT_GOAL_PRINT: '1'` at
-`skills/work/scripts/work-dispatch.test.ts:92`, `CLAUDE_CODE_SESSION_ID: ''`
+`skills/work/scripts/plan-lint.test.ts:394`,
+`skills/work/scripts/work-dispatch-loops.test.ts:248`), `CRAFT_GOAL_PRINT: '1'` at
+`skills/work/scripts/work-dispatch.test.ts:100`, `CLAUDE_CODE_SESSION_ID: ''`
 at `skills/work/scripts/work-goal-resend.test.ts:78`, `CRAFT_FARM: '/bin/false'` at
-`skills/work/scripts/work-loop.test.ts:86`, `CRAFT_REDISPATCH_DRYRUN: '1'` at
-`skills/work/scripts/work-redispatch.test.ts:225`, `PATH` (four files) and `FARM_OUT_CHILD` (two),
-`CRAFT_SUITE_LINT_TIMEOUT: '2'` at `skills/work/scripts/suite-lint-dispatch.test.ts:178`, and the
+`skills/work/scripts/work-loop.test.ts:94`, `CRAFT_REDISPATCH_DRYRUN: '1'` at
+`skills/work/scripts/work-redispatch.test.ts:233`, `PATH` (four files) and `FARM_OUT_CHILD` (two),
+`CRAFT_SUITE_LINT_TIMEOUT: '2'` at `skills/work/scripts/suite-lint-dispatch.test.ts:186`, and the
 `GATE_STATUS`, `GATE_BLOCKED_TOOLS` and `GATE_REQUIRE_FIELDS` of the `scratch/` guard suites. A
 dry-run switch has one meaningful value; the varying input is what the harness then feeds the script.
 
@@ -318,7 +318,7 @@ What `suite-lint-report.test.ts` re-executes, and therefore what cannot silently
 firmer than a whole-tree total: the audited-corpus counts above, reproduced exactly; every
 `path:line` cited in this document, confirmed to be a finding the tool really reports **under the
 rule in whose section it is cited**; and the one true positive this investigation found by reading,
-`skills/work/scripts/work-redispatch.test.ts:776`, confirmed still to fire under
+`skills/work/scripts/work-redispatch.test.ts:784`, confirmed still to fire under
 `positive-match-failure-vocabulary`. That re-execution is not decorative: it has caught drift three
 separate times, twice from edits landing while a run was still in flight, on documents whose prose
 was otherwise still accurate.

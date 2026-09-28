@@ -4,6 +4,22 @@ set -euo pipefail
 INSTALL_DIR="${INSTALL_DIR:-$HOME/.local/bin}"
 mkdir -p "$INSTALL_DIR"
 
+# Node dependencies, derived from the tree: every skill that declares a package.json owns its own
+# lockfile and its own node_modules (which is gitignored and never shipped). Run before the gh gate
+# below, so a machine without gh still gets them. Skipped, not fatal, when bun is absent.
+PLUGIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if command -v bun &>/dev/null; then
+  for pkg in "$PLUGIN_ROOT"/skills/*/package.json; do
+    [[ -e "$pkg" ]] || continue
+    d="$(dirname "$pkg")"
+    echo "bun install: skills/$(basename "$d")"
+    frozen=(); [[ -e "$d/bun.lock" ]] && frozen=(--frozen-lockfile)
+    (cd "$d" && bun install "${frozen[@]}" 2>&1 | sed 's/^/  /')
+  done
+else
+  echo "warn: bun not found — skill node dependencies not installed" >&2
+fi
+
 OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
 ARCH="$(uname -m)"
 

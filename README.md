@@ -8,7 +8,8 @@ A curated collection of development, data science, writing, workshop, legal, and
 # 1. Install the plugin
 /plugin marketplace add edwinhu/workflows
 
-# 2. (Optional) Install CLI dependencies for knowledge management, email, and calendar
+# 2. Install dependencies — per-skill node packages (bun), plus the optional CLIs for
+#    knowledge management, email, and calendar
 bash ~/.claude/plugins/cache/edwinhu-plugins/workflows/*/bin/install-deps.sh
 
 # 3. (Optional) Live marimo kernel work — only needed by the `marimo` skill
@@ -21,7 +22,12 @@ uninstalled dependency stops the *whole* plugin from loading, and one skill shou
 take the other sixty with it. The `marimo` skill routes live-kernel work to
 `Skill(skill="marimo-pair:marimo-pair")` and works for notebook authoring without it.
 
-The install script is only needed for skills that use the external tools below. The plugin's own TypeScript hooks and JavaScript/TypeScript workflow runners use Bun; the core workflows do not require the optional CLIs installed by this script.
+The script's first step runs `bun install` in every skill that ships a `package.json` —
+`cite-check`, `deep-research` and `farm-out` at the time of writing, each with its own lockfile.
+`node_modules/` is gitignored and never shipped, so a fresh clone or a fresh plugin install has no
+node dependencies until this runs, and those skills' own test suites cannot even resolve their
+imports before it. The rest of the script is only needed for skills that use the external tools
+below. The plugin's own TypeScript hooks and JavaScript/TypeScript workflow runners use Bun; the core workflows do not require the optional CLIs installed by this script.
 
 The script recognizes macOS, Linux, and Windows-like environments on x64 or arm64 and attempts to download matching pre-built binaries from GitHub Releases. If a tool does not publish an asset for the detected platform, the script warns and skips it:
 
