@@ -48,7 +48,7 @@ docs/investigations/
 # work run state: args, results, rotated rounds, logs. Session-scoped and
 # high-frequency — it belongs in a temp dir, and never in a commit.
 .work/
-# legacy: the retired `.craft/` run root, still read during the transition.
+# the retired `.craft/` run root: no longer written, but old run dirs are still on disk.
 .craft/
 
 # pixi environment (see pixi.toml)

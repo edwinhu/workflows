@@ -19,8 +19,6 @@
 # Env: WORK_PLAN_LINT overrides the linter path.
 set -uo pipefail
 
-# Promote retired CRAFT_* env vars onto their WORK_* successors (transition shim).
-. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/legacy-env.sh"
 
 SKILL_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 LINT="${WORK_PLAN_LINT:-$SKILL_DIR/scripts/plan-lint.ts}"
@@ -100,7 +98,7 @@ if not apply:
 
 # ---------------------------------------------------------------- apply
 
-BLOCK = re.compile(r"(<!--\s*(?:work|craft):dispatch\s*)([\s\S]*?)(-->)")  # legacy: the retired craft:dispatch spelling is still READ during the transition
+BLOCK = re.compile(r"(<!--\s*work:dispatch\s*)([\s\S]*?)(-->)")
 # plan-lint's own marker regex, so the collapse is judged by the rule that raised the finding.
 ROUND_MARKER = re.compile(r"\bROUND \d+\b|\bRound \d+\s*[—–-]")
 # plan-lint's own relative-path probe (R4).

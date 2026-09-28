@@ -42,8 +42,7 @@ function armedWritingPlan(dir: string): string | null {
       continue;
     }
     // Armed = carries a work:dispatch spec. A writing plan = declares Writing Intent.
-    // legacy: the retired `craft:dispatch` spelling is still READ during the transition.
-    if (!/<!--\s*(?:work|craft):dispatch/.test(text) || !/^##\s+Writing Intent\s*$/mi.test(text)) continue;
+    if (!/<!--\s*work:dispatch/.test(text) || !/^##\s+Writing Intent\s*$/mi.test(text)) continue;
     const mtime = statSync(path).mtimeMs;
     if (!newest || mtime > newest.mtime) newest = { path, mtime };
   }

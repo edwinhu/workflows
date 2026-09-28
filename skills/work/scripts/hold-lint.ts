@@ -60,7 +60,7 @@ if (milestone.test(check)) {
 // result.json sitting there forever, so the hold can neither release nor be argued with. AGK
 // 2026-09-27: a heartbeat armed on `work-result.sh` woke 14 times with no news, each tick
 // re-entering a 113 KB plan and a 276 KB run dir.
-// legacy: `.craft/` is the retired run root and is still MATCHED here during the transition.
+// `.craft/` is the retired run root: a check reading one is still a round verdict, so keep refusing it.
 if (/work-result\.sh|result\.json|(^|[\s"'`/])\.(work|craft)\//.test(check)) {
   add(
     'critical',

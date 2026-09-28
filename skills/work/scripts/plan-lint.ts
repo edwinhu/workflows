@@ -443,17 +443,6 @@ const lint = (p: Plan): Finding[] => {
   // one stub a redCommand needs in order to fail behaviourally instead of failing to import.
   // Callers construct Plan objects directly (the tests, and work's own round linting), so this
   // key is not guaranteed present even though the type declares it.
-  // R-legacy — the plan is armed with the retired `craft:dispatch` spelling. Every reader still
-  // accepts it during the transition, so this NEVER blocks; it only points at the migration.
-  if (p.planText && /<!--\s*craft:dispatch/.test(p.planText))
-    add(
-      'legacy-dispatch-marker',
-      'minor',
-      'plan',
-      'the arming block uses the retired `craft:dispatch` marker; every reader still accepts it, but rewrite it to `work:dispatch` (scripts/migrate-craft-to-work.sh --apply <root>)',
-      '<!-- craft:dispatch',
-    )
-
   const scaffold = p.scaffoldPaths ?? []
   // Containment, not overlap: `coveredBy` is symmetric, so a stub `src/stub.py` would read as
   // "covering" the directory `src/` and flag the very shape this rule is meant to permit.
@@ -680,7 +669,7 @@ const lint = (p: Plan): Finding[] => {
         if (t.includes('-->')) inComment = false
         continue
       }
-      if (/<!--\s*(?:work|craft):dispatch/.test(t)) {  // legacy: the retired craft:dispatch spelling is still READ during the transition
+      if (/<!--\s*work:dispatch/.test(t)) {
         inComment = !t.includes('-->')
         continue
       }

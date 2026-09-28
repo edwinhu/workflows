@@ -162,18 +162,17 @@ describe('the goal carries a wall-clock escape, not only a round count', () => {
     expect(out).toMatch(/work-elapsed\.sh \S+ 90/)
   })
 
-  // TRANSITION. `craft` was renamed to `work`, and legacy-env.sh promotes each still-set CRAFT_*
-  // name onto its WORK_* successor. Two representative vars, because the shim is generic: if it
-  // works for one prefix-stripped name it works for all of them, and if it is ever deleted both of
-  // these go red together.
-  test('a legacy CRAFT_ env var still reaches the goal through the shim', () => {
+  // The retired `CRAFT_*` spelling is now INERT: no shim promotes it, so a caller still setting one
+  // gets the default ceiling rather than the value it names. Both vars, because a partial revival
+  // (one name re-read, the other not) is the failure this pins.
+  test('a retired CRAFT_ env var is ignored', () => {
     expect(compose({ rounds: '4', env: { CRAFT_GOAL_MAX_MINUTES: '45' } }).out)
-      .toMatch(/45 minutes or more/)
+      .not.toMatch(/45 minutes or more/)
     expect(compose({ rounds: '4', env: { CRAFT_GOAL_MAX_HOURS: '2' } }).out)
-      .toMatch(/120 minutes or more/)
+      .not.toMatch(/120 minutes or more/)
   })
 
-  test('the WORK_ name wins when both spellings are set', () => {
+  test('the WORK_ name is the only one read when both spellings are set', () => {
     expect(compose({ rounds: '4', env: { WORK_GOAL_MAX_MINUTES: '90', CRAFT_GOAL_MAX_MINUTES: '45' } }).out)
       .toMatch(/90 minutes or more/)
   })

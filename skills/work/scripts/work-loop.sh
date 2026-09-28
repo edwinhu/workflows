@@ -22,8 +22,6 @@
 #      WORK_LOOP_SETTLE overrides the post-dispatch settle in seconds (default 2).
 set -uo pipefail
 
-# Promote retired CRAFT_* env vars onto their WORK_* successors (transition shim).
-. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/legacy-env.sh"
 
 SKILL=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 
