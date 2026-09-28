@@ -49,6 +49,15 @@
         ]
       },
       {
+        "matcher": "Bash|Monitor",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/pgrep-self-match.ts"
+          }
+        ]
+      },
+      {
         "matcher": "CronDelete",
         "hooks": [
           {
