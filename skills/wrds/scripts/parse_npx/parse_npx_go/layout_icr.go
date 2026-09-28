@@ -1236,9 +1236,33 @@ func icrResolveFundShared(ix *issSeriesIndex, name string) string {
 	// The filing's own declarations answer first, with the dictionary
 	// unreadable: a dictionary rung may only fill a heading they leave blank.
 	// See issSeriesIndex.hdrOnly.
+	//
+	// That precedence holds OUTRIGHT only when the header chain's answer is the
+	// EXACT route -- the banner spelled as this filing declares it. Every rung
+	// after the exact one cuts or bends the printed name, and an INEXACT
+	// header-chain answer is not a declaration the filing made: it is a guess of
+	// the same kind the dictionary chain makes, and it must not outrank an exact
+	// dictionary hit for a DIFFERENT sleeve of the same registrant (TIAA-CREF
+	// `Enhanced Large-Cap Value Index Fund`, whose near-miss drops `Enhanced` to
+	// reach S000005388 while the 2011 dictionary vintage names S000019658
+	// exactly). A wrong id is worse than a blank, so when hdrOnly's answer is
+	// inexact the dictionary-aware chain below runs first and the inexact
+	// header answer is kept only as the fallback -- a same-CIK near miss still
+	// beats nothing.
+	//
+	// Exactness is read off hdrOnly, not the outer ix: issDeclAliases folds this
+	// CIK's dictionary names for series the header already declares INTO the
+	// outer index's declarations, so issBannerDeclaredExact(ix, ...) answers
+	// true for a name only the dictionary spells -- which is precisely the case
+	// this narrowing exists to refuse. hdrOnly carries the header's own
+	// declarations and nothing else.
+	hdrOnlyID := ""
 	if ix != nil && ix.hdrOnly != nil {
 		if id := icrResolveFundShared(ix.hdrOnly, name); id != "" {
-			return id
+			if issBannerDeclaredExact(ix.hdrOnly, name) {
+				return id
+			}
+			hdrOnlyID = id
 		}
 	}
 	if id := icrResolveFundVintage(ix, ix.byName, name); id != "" {
@@ -1261,7 +1285,9 @@ func icrResolveFundShared(ix *issSeriesIndex, name string) string {
 	if d := issIndexDict(ix).crossCIK(ix.cik, name, ix.period, ix.registrantKey); d != nil {
 		return d.SeriesID
 	}
-	return ""
+	// Nothing the dictionary knows answers this banner either, so the inexact
+	// header-chain answer held back above is the best evidence there is.
+	return hdrOnlyID
 }
 
 // icrMinSuffixWords is the shortest declared name a printed fund name may be
