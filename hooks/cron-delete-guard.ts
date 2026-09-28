@@ -136,7 +136,7 @@ const deleteId = String(((hookInput?.tool_input ?? {}) as Record<string, unknown
 // of the one the call belongs to -- four tests denied by the real ledger of the shell's own session.
 //
 // SCOPE: an ARMED hold only. A RELEASED hold is not this gate's business, whatever verb it released
-// on -- `passed-unjudged` used to deny too, and that was wrong in both directions: it held the
+// on -- the PASSED_UNJUDGED verb used to deny too, and that was wrong in both directions: it held the
 // heartbeat open on a run the user had already walked away from, while saying nothing a re-arm
 // could not say. The sanctioned escape is `work-abandon.sh`, which settles the run and releases the
 // hold in one step, rather than an env var the session sets for itself.
