@@ -19,8 +19,6 @@
 # subtract timestamps reliably, but it can read one printed line that already says CEILING REACHED.
 set -euo pipefail
 
-# Promote retired CRAFT_* env vars onto their WORK_* successors (transition shim).
-. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/legacy-env.sh"
 
 RUN_DIR=${1:?usage: work-elapsed.sh <run-dir> [max-minutes]}
 # WORK_GOAL_MAX_HOURS stays honoured so goals composed before the switch still settle.

@@ -21,10 +21,10 @@ import { statePath } from "./work-hold.ts";
 /** A cron job id as CronCreate mints them: 8 lowercase hex chars. */
 const JOB_ID = /\b[0-9a-f]{8}\b/;
 
-/** Run directories under `<cwd>/.work` (or the legacy `.craft`) holding an args.json, with what that file says. */
+/** Run directories under `<cwd>/.work` holding an args.json, with what that file says. */
 interface Run {
   name: string;
-  /** The run root this one was found under — `.work`, or the legacy `.craft`. */
+  /** The run root this one was found under. */
   base: string;
   argsPath: string;
   argsMtime: number;
@@ -32,8 +32,7 @@ interface Run {
   crons: string[];
 }
 
-/** `.craft/` is the retired run root; it is still READ during the transition, never written. */
-const RUN_ROOTS = [".work", ".craft"];
+const RUN_ROOTS = [".work"];
 
 function runsUnder(cwd: string): Run[] | null {
   const runs: Run[] = [];
@@ -159,8 +158,7 @@ const hookInput: Record<string, unknown> = parsePayload(await Bun.stdin.text());
 if (String(hookInput?.tool_name ?? "") !== "CronDelete") allow();
 
 // The deliberate override, for genuinely abandoning a run.
-// legacy: CRAFT_ALLOW_CRON_DELETE is the retired spelling, still READ during the transition.
-if ((process.env.WORK_ALLOW_CRON_DELETE ?? process.env.CRAFT_ALLOW_CRON_DELETE) === "1") allow();
+if (process.env.WORK_ALLOW_CRON_DELETE === "1") allow();
 
 const cwd = String(hookInput?.cwd ?? "") || process.cwd();
 const deleteId = String(((hookInput?.tool_input ?? {}) as Record<string, unknown>)?.id ?? "");

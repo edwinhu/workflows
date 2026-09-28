@@ -83,8 +83,6 @@
 # ran under.
 set -uo pipefail
 
-# Promote retired CRAFT_* env vars onto their WORK_* successors (transition shim).
-. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/legacy-env.sh"
 
 # Self-locating: the skill root is this script's parent, so the copy runs wherever it is installed.
 SKILL=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
@@ -116,7 +114,7 @@ try:
     src = open(plan).read()
 except OSError as exc:
     sys.exit(f"spec-hash: cannot read {plan} ({exc})")
-m = re.search(r'<!--\s*(?:work|craft):dispatch\s*(.*?)-->', src, re.S)  # legacy: the retired craft:dispatch spelling is still READ during the transition
+m = re.search(r'<!--\s*work:dispatch\s*(.*?)-->', src, re.S)
 if not m:
     sys.exit("spec-hash: plan carries no <!-- work:dispatch --> block: " + plan)
 try:
@@ -150,7 +148,7 @@ try:
     src = open(plan).read()
 except OSError:
     raise SystemExit(2)
-m = re.search(r'<!--\s*(?:work|craft):dispatch\s*(.*?)-->', src, re.S)  # legacy: the retired craft:dispatch spelling is still READ during the transition
+m = re.search(r'<!--\s*work:dispatch\s*(.*?)-->', src, re.S)
 if not m:
     raise SystemExit(2)
 try:
@@ -190,7 +188,7 @@ try:
     src = open(plan).read()
 except OSError:
     raise SystemExit(2)
-m = re.search(r'<!--\s*(?:work|craft):dispatch\s*(.*?)-->', src, re.S)  # legacy: the retired craft:dispatch spelling is still READ during the transition
+m = re.search(r'<!--\s*work:dispatch\s*(.*?)-->', src, re.S)
 if not m:
     raise SystemExit(2)
 try:
@@ -602,7 +600,7 @@ run=$(python3 - "$plan" "$hash" "$SKILL" <<'PY'
 import json, re, sys
 plan, hash_, skill_root = sys.argv[1], sys.argv[2], sys.argv[3]
 src = open(plan).read()
-m = re.search(r'<!--\s*(?:work|craft):dispatch\s*(.*?)-->', src, re.S)  # legacy: the retired craft:dispatch spelling is still READ during the transition
+m = re.search(r'<!--\s*work:dispatch\s*(.*?)-->', src, re.S)
 if not m:
     sys.exit("plan carries no <!-- work:dispatch --> block: " + plan)
 try:

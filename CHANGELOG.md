@@ -49,6 +49,19 @@
 - **Review moved to the skill's Phase 5, after the goal clears**, with the two rules the episode actually taught: deliver first, because a PASS means the suite is green and not that the real claim holds; and never block delivery on the TUI. Work that cannot be undone — a one-way migration, a deletion — is still worth reviewing before shipping, but that is now a judgement the orchestrator makes out loud with the user, not a gate imposed on every run.
 - **The goal's wall-clock ceiling is denominated in minutes, default 10** (`CRAFT_GOAL_MAX_MINUTES`; `CRAFT_GOAL_MAX_HOURS` still honoured and converted). It bounds how long a session may WAIT, not how long it may work — the Stop hook gates stopping, never working — and an hours-scale default bought nothing but hours spent sitting on an absent human.
 
+## [6.27.0] - 2026-09-28
+
+### Removed
+
+- **The `craft` → `work` transition code. Every reader now accepts only the `work` spelling.** Both conditions the v6.25.0 entry set for this removal were re-verified on 2026-09-28 before anything was deleted: `scripts/migrate-craft-to-work.sh ~/projects ~/areas` reported **0 files to rewrite** (30 skipped — 25 worktree, 1 changelog, 1 docs, 3 skills), and every one of the **131** `.craft/<run>/args.json` under those roots had a non-empty `result.json` beside it, the last seven having been retired with `work-abandon.sh`. What came out:
+  - **marker**: the `(?:work|craft):dispatch` alternations in `work-dispatch.sh` (4 parse sites), `work-redispatch.sh`, `work-pending.sh` (regex + `grep -E`), `work-amend.sh`, `plan-lint.ts` and `hooks/lib/writing-plan-context.ts` are now `work:dispatch` only. A plan still carrying `<!-- craft:dispatch -->` no longer dispatches at all.
+  - **run directory**: `RUN_ROOTS` is `[".work"]` in both `hooks/cron-delete-guard.ts` and `hooks/session-start.ts`; `work-pending.sh` reads `abandoned` and `*/args.json` under `.work/` alone, for the local root and for a `projectDir` elsewhere. `hold-lint.ts`'s round-verdict rule **still refuses `.craft/`** — a check reading a retired run directory is still a round verdict, and the reason it cannot release is the reason the rule exists.
+  - **env vars**: `skills/work/scripts/legacy-env.sh` is deleted along with the six `source` lines that pulled it in (`work-dispatch.sh`, `work-redispatch.sh`, `work-loop.sh`, `work-elapsed.sh`, `work-amend.sh`, `compose-goal.sh`), and the two inline TypeScript fallbacks go with it — `WORK_ALLOW_CRON_DELETE` and `WORK_SUITE_LINT_BUDGET_MS` no longer read their `CRAFT_*` predecessors. A caller still setting a `CRAFT_*` name now gets the default, silently; `compose-goal.test.ts` asserts that inertness rather than the old promotion.
+  - **plan-lint**: the advisory `legacy-dispatch-marker` rule is gone. It pointed at a migration that no longer has a script to run.
+  - **migration script**: `scripts/migrate-craft-to-work.sh` and `tests/migrate-craft-to-work.test.ts` are deleted — their job is done. **To recover either if a straggler plan ever turns up**, `git show 46772c4d:scripts/migrate-craft-to-work.sh` (and `:tests/migrate-craft-to-work.test.ts`) prints the last shipped version; a one-off `perl -0pi -e 's/\bcraft:dispatch\b/work:dispatch/g'` over the file is the whole of what it did.
+  - **KEPT**: `.gitignore`'s `.craft/` entry, because old run directories are still on disk in users' projects and must stay untracked; and the `craft-spine-runner` capability alias in `.claude-plugin/capabilities.json`, documented in `docs/extension-contracts.md` and asserted by `tests/public-extension-contract.test.ts`, which comes out at the next major version and not before.
+  - **Still outside this repo**: `~/dotfiles/.claude/hooks/work-goal-resend.sh` reads both run roots and both `*_SKILL_DIR` spellings. Not touched here. `skills/work/scripts/work-goal-resend.test.ts` now exercises it through the `work` spelling, which that hook accepts.
+
 ## [6.26.3] - 2026-09-28
 
 ### Changed

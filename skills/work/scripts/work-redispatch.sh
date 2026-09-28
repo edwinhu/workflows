@@ -48,8 +48,6 @@
 # result and does not touch args.json, so the run is left exactly as it was.
 set -euo pipefail
 
-# Promote retired CRAFT_* env vars onto their WORK_* successors (transition shim).
-. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/legacy-env.sh"
 
 # Self-locating: the skill root is this script's parent, so the copy runs wherever it is installed.
 SKILL=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
@@ -157,7 +155,7 @@ RUN_LOCAL = {"onlyTasks", "priorResults", "priorFindings", "maxAgents", "rounds"
 synced = []
 try:
     import re
-    block = re.search(r"<!--\s*(?:work|craft):dispatch\s*\n(.*?)\n-->", open(plan_path).read(), re.S)  # legacy: the retired craft:dispatch spelling is still READ during the transition
+    block = re.search(r"<!--\s*work:dispatch\s*\n(.*?)\n-->", open(plan_path).read(), re.S)
     plan_args = json.loads(block.group(1))["args"] if block else None
 except (json.JSONDecodeError, KeyError, AttributeError) as exc:
     # A malformed block is reported, never silently ignored — but it does not erase the args:

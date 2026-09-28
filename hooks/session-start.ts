@@ -252,8 +252,7 @@ function truthy(v: string | string[] | undefined): boolean {
   return Array.isArray(v) ? v.length > 0 : v !== "";
 }
 
-/** `.craft/` is the retired run root; it is still READ during the transition, never written. */
-const RUN_ROOTS = [".work", ".craft"];
+const RUN_ROOTS = [".work"];
 
 /** `<root>/<runRoot>/<run>` dirs holding args.json and no result.json, sorted. */
 function pendingWorkRuns(root: string): { run: string; base: string }[] {

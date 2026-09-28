@@ -49,20 +49,16 @@ esac
 
 plan=$(ls -t "$plans_dir"/*.md 2>/dev/null | head -1)
 [ -n "$plan" ] || exit 1
-# legacy: the retired `craft:dispatch` spelling is still READ during the transition
-grep -qE '<!-- (work|craft):dispatch' "$plan" || exit 1
+grep -qE '<!-- work:dispatch' "$plan" || exit 1
 
 hash=$(bash "$SCRIPTS/work-dispatch.sh" --spec-hash "$plan" 2>/dev/null) || exit 1
 
 # Abandoned: one hash per line, appended by `work-dispatch.sh --abandon`.
-# legacy: `.craft/` is the retired run root and is still READ during the transition, never written.
-for root in .work .craft; do
-  if [ -f "$root/abandoned" ] && grep -qxF "$hash" "$root/abandoned"; then exit 1; fi
-done
+if [ -f .work/abandoned ] && grep -qxF "$hash" .work/abandoned; then exit 1; fi
 
 # Dispatched: some run dir already wrote args for this exact spec. A re-hash after a FAIL-loop
 # amendment therefore re-arms the run, which is correct — the amended spec has not been dispatched.
-for a in .work/*/args.json .craft/*/args.json; do
+for a in .work/*/args.json; do
   [ -f "$a" ] || continue
   grep -qF "\"$hash\"" "$a" && exit 1
 done
@@ -75,7 +71,7 @@ done
 projdir=$(python3 - "$plan" 2>/dev/null <<'PY'
 import json, os, re, sys
 try:
-    m = re.search(r'<!--\s*(?:work|craft):dispatch\s*(.*?)-->', open(sys.argv[1]).read(), re.S)  # legacy: the retired craft:dispatch spelling is still READ during the transition
+    m = re.search(r'<!--\s*work:dispatch\s*(.*?)-->', open(sys.argv[1]).read(), re.S)
     block = json.loads(m.group(1))
     args = block.get("args") if isinstance(block.get("args"), dict) else {}
     p = args.get("projectDir") or block.get("projectDir")
@@ -87,10 +83,8 @@ PY
 ) || projdir=""
 
 if [ -n "$projdir" ] && [ "$projdir" != "$PWD" ]; then
-  for root in "$projdir/.work" "$projdir/.craft"; do   # legacy: .craft is still READ, never written
-    if [ -f "$root/abandoned" ] && grep -qxF "$hash" "$root/abandoned"; then exit 1; fi
-  done
-  for a in "$projdir"/.work/*/args.json "$projdir"/.craft/*/args.json; do
+  if [ -f "$projdir/.work/abandoned" ] && grep -qxF "$hash" "$projdir/.work/abandoned"; then exit 1; fi
+  for a in "$projdir"/.work/*/args.json; do
     [ -f "$a" ] || continue
     grep -qF "\"$hash\"" "$a" && exit 1
   done

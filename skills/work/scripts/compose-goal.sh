@@ -36,8 +36,6 @@
 #   declares instead of a red gate; the removal is dated 2026-08-23.
 set -euo pipefail
 
-# Promote retired CRAFT_* env vars onto their WORK_* successors (transition shim).
-. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/legacy-env.sh"
 
 die() { printf 'compose-goal: %s\n' "$1" >&2; exit 2; }
 
