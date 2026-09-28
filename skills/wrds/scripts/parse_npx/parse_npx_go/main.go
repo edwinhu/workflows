@@ -473,10 +473,48 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 		// header whether it names a series for the heading the map claims.
 		overlayHdr = newOverlayHeaderIndex(h.SeriesDecls)
 	}
+	// The names THIS filing's own header prints -- series names and class-contract
+	// names alike, before cikDict.back backfills the dictionary into h.SeriesDecls.
+	// A banner spelled by the registrant itself in this document is stronger
+	// evidence than any CIK-wide dictionary row, so it is the one shape the
+	// dictionary is not allowed to answer ahead of the chassis stamp below.
+	headerNames := map[string]bool{}
+	if _, ownDecls := parseSeriesDecls(head); seriesRow != "" {
+		for _, d := range ownDecls {
+			if k := normalizeSeriesName(d.Name); k != "" {
+				headerNames[k] = true
+			}
+			for _, cn := range d.ClassNames {
+				if k := normalizeSeriesName(cn); k != "" {
+					headerNames[k] = true
+				}
+			}
+		}
+	}
+
 	dictFB := cikDict.exactFallback(parseMeta)
 	stamp := func(r VoteRow) error {
-		if r.SeriesID == "" {
-			r.SeriesID = seriesRow
+		if r.SeriesID == "" && seriesRow != "" {
+			// The chassis stamp answers a row the parser left unnamed with the one
+			// series this filing's header declares -- but the header of an AMENDMENT
+			// declares only the sleeve being amended while the body reprints the whole
+			// complex (CIK 1081400, 0001193125-06-183294.txt, a ruled
+			// `WELLS FARGO ADVANTAGE C&B MID CAP VALUE FUND` banner under a header
+			// declaring S000007347 alone). dictFallback.apply bails on any non-empty
+			// SeriesID, so stamping first STARVES it on every such filing. Give it the
+			// row first: a banner whose own name is an exact, unambiguous dictionary
+			// name of THIS CIK at THIS vintage takes that id, and only a banner the
+			// dictionary cannot answer falls back to the header's lone declaration.
+			// Scoped to rows the chassis would have claimed, so nothing else moves,
+			// and refused for a banner the registrant itself spells in THIS header --
+			// a declared class-contract name outranks any CIK-wide dictionary row
+			// (MISLINK21, Pacific Select `EMERGING MARKETS PORTFOLIO`).
+			if !headerNames[normalizeSeriesName(r.FundName)] {
+				dictFB.apply(&r)
+			}
+			if r.SeriesID == "" {
+				r.SeriesID = seriesRow
+			}
 		}
 		if r.SeriesID == "" && r.FundName == "" {
 			r.SeriesID = registrantSeries
