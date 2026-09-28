@@ -11,6 +11,18 @@
  * This suite runs the corpus mode itself and compares, so the document cannot drift from the tool:
  * a stale report fails here rather than being believed.
  *
+ * THE AUDITED UNIVERSE IS WHAT THIS REPOSITORY TRACKS
+ * `lintCorpus` walks the filesystem, so its raw output depends on what happens to be on disk: a
+ * gitignored `scratch/` snapshot, or an initialized `skills/bmll` submodule, each add suites nobody
+ * audited. Recomputing against the filesystem therefore made this suite pass or fail on checkout
+ * state rather than on the lint — three tests failed in a worktree without `git submodule update
+ * --init` and passed in one with it. Every recomputation below is scoped to `git ls-files` (no
+ * `--recurse-submodules`): a submodule is one mode-160000 gitlink entry, so nothing inside it is
+ * tracked by THIS repo, and gitignored paths are excluded by the same mechanism. The filter belongs
+ * here and not in `lintCorpus`, whose other two callers want the opposite: the dispatch tier
+ * (`work-dispatch.sh` TIER 3) must lint the test an implementer just wrote and has not committed,
+ * and `suite-lint-corpus.test.ts` lints mktemp trees that are not git repositories at all.
+ *
  * WHAT IS PINNED, AND WHY IT IS NOT THE WHOLE-TREE TOTAL
  * The report's raw column counts every suite file in the repository, so it moves when any unrelated
  * test file is added — it was hand-corrected three times in a fortnight, each correction a commit
@@ -28,6 +40,7 @@
  *     disputes it
  */
 import { describe, expect, test } from 'bun:test'
+import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
@@ -35,6 +48,32 @@ const REPO = join(import.meta.dir, '..', '..', '..')
 const REPORT = join(REPO, 'docs/investigations/2026-08-27_suite-lint-false-positives.md')
 const md = () => readFileSync(REPORT, 'utf8')
 const mod = () => import('./suite-lint.ts')
+
+/**
+ * Root-relative paths this repository tracks. `git ls-files` WITHOUT `--recurse-submodules` reports a
+ * submodule as one mode-160000 gitlink entry and nothing under it, so an initialized `skills/bmll` or
+ * `external/anthropic-skills` contributes no suite files here whether or not it is checked out. A
+ * gitignored `scratch/` is excluded by the same call. No fallback if git is missing: a silent
+ * filesystem fallback is exactly the checkout-dependence this scoping exists to remove, so a broken
+ * `git` must fail the suite loudly.
+ */
+function trackedFiles(): Set<string> {
+  const out = execFileSync('git', ['-C', REPO, 'ls-files', '-z'], { encoding: 'utf8', maxBuffer: 64 << 20 })
+  return new Set(out.split('\0').filter(Boolean))
+}
+
+/**
+ * The corpus run, restricted to the tracked universe. Both halves are filtered: an unparseable file
+ * inside a submodule would otherwise move the stated unparseable count the same way a finding does.
+ */
+function auditedRun(lintCorpus: (root: string) => any) {
+  const tracked = trackedFiles()
+  expect(tracked.size).toBeGreaterThan(0)
+  const s = lintCorpus(REPO)
+  const findings = (s.findings as any[]).filter(f => tracked.has(fileOf(String(f.where))))
+  const unparseableFiles = (s.unparseableFiles as string[]).filter(f => tracked.has(f))
+  return { findings, unparseableFiles, unparseable: unparseableFiles.length }
+}
 
 type Row = { cells: string[] }
 function tableRows(text: string): { header: string[]; rows: Row[] }[] {
@@ -96,7 +135,7 @@ describe('the report measures what the gating decision needs', () => {
     // cites, so it is invariant under repo growth and moves only when the LINT's behaviour over
     // those files moves: a rule that stops firing drops to 0, a rule that fires wider goes up.
     const { lintCorpus, RULE_IDS } = await mod()
-    const fresh = lintCorpus(REPO)
+    const fresh = auditedRun(lintCorpus)
     const files = auditedFiles(md())
     expect(files.size).toBeGreaterThan(0)
     const counts = Object.fromEntries(RULE_IDS.map((id: string) => [id, 0])) as Record<string, number>
@@ -124,7 +163,7 @@ describe('the report measures what the gating decision needs', () => {
     // a rule change that silently stopped reporting it would gut the report while leaving every
     // count plausible.
     const { lintCorpus } = await mod()
-    const fresh = lintCorpus(REPO)
+    const fresh = auditedRun(lintCorpus)
     const tp = fresh.findings.find((f: any) =>
       String(f.where) === 'skills/work/scripts/work-redispatch.test.ts:784')
     expect(tp?.rule).toBe('positive-match-failure-vocabulary')
@@ -156,7 +195,7 @@ describe('the report measures what the gating decision needs', () => {
     // or citing lines that no run ever produced, would pass a suite that only checks the raw
     // column by recomputation. Here the evidence itself has to survive re-execution.
     const { lintCorpus } = await mod()
-    const real = new Set(lintCorpus(REPO).findings.map((f: any) => String(f.where)))
+    const real = new Set(auditedRun(lintCorpus).findings.map((f: any) => String(f.where)))
     const cited = [...new Set(md().match(CITE) ?? [])]
     expect(cited.length).toBeGreaterThan(0)
     const invented = cited.filter(c => !real.has(c))
@@ -165,7 +204,7 @@ describe('the report measures what the gating decision needs', () => {
 
   test('each rule that fired at all shows its work — at least two verified citations in its own section', async () => {
     const { lintCorpus, RULE_IDS } = await mod()
-    const fresh = lintCorpus(REPO)
+    const fresh = auditedRun(lintCorpus)
     const byRule = new Map<string, Set<string>>()
     for (const id of RULE_IDS) byRule.set(id, new Set())
     for (const f of fresh.findings as any[]) byRule.get(f.rule)?.add(String(f.where))
@@ -196,7 +235,7 @@ describe('the report measures what the gating decision needs', () => {
     const { lintCorpus } = await mod()
     const stated = /unparseable[^\n\d]*(\d+)/i.exec(md()) ?? /(\d+)[^\n]*unparseable/i.exec(md())
     expect(stated).not.toBeNull()
-    expect(Number(stated![1])).toBe(lintCorpus(REPO).unparseable)
+    expect(Number(stated![1])).toBe(auditedRun(lintCorpus).unparseable)
   })
 
   test('the method names the command and the root, so a doubter can re-run it', () => {
