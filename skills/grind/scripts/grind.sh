@@ -58,6 +58,9 @@ grind.sh -- an unattended loop whose only memory is one append-only journal.
                   --push also sends every announcement as a phone push (claude -p calling
                   PushNotification), because agent-msg to an idle session can be stored and
                   never delivered. Opt-in, so test runs never reach a phone.
+                  [--no-events] stops writing the farm-events record the launching session's
+                  farm-runs monitor reads; on by default, and a loop that dies hard is only
+                  noticed because that record is there.
   grind.sh append --journal J '{"kind":"progress","key":"..."}'
   grind.sh floors --journal J
   grind.sh status --journal J
@@ -411,6 +414,51 @@ EOF
 # function still owns the terminal announcement, so the loop's returns stay the source of the outcome.
 NOTIFY= NOTIFY_TO= NOTIFY_JOURNAL= PUSH=
 
+# ---------------------------------------------------------------- the event stream
+# The notification above only fires when the loop reaches an ending. A loop killed hard -- reboot,
+# OOM, kill -9 -- reaches none, writes no terminal journal record either, and nothing ever says so.
+# The launching session already runs a watcher for exactly that shape: farm-monitor.sh tails
+# $TMPDIR/farm-events/<session>/<pid>.ndjson and reports any file whose pid is gone with no DONE
+# line. So the loop files itself there.
+#
+# ONE protocol, not two: line shape, percent encoding and write discipline are farm.sh's
+# (skills/farm-out/scripts/farm.sh:116-134), and the file is keyed on the LOOP's pid because that
+# is the pid the monitor kill -0's. Fields are named `journal=`, never `out=` or `path=` --
+# farm-alive.sh matches those two by value to decide a dispatch is alive.
+#
+# The session is captured HERE, at process start, and never re-read: an iteration is a fresh claude
+# with its own CLAUDE_CODE_SESSION_ID, and keying on that would file the loop's ending in a
+# directory the launching session's monitor does not watch.
+GRIND_LAUNCH_SESSION=${CLAUDE_CODE_SESSION_ID:-}
+EVENTS=       # the event file, once started; empty means every emit is a no-op
+EVENTS_OFF=   # --no-events
+
+# Byte-identical to farm.sh's and farm-alive.sh's copies: the three are one protocol. Encoding
+# space, tab, = and % is what stops a journal path spelling a second field inside a well-formed line.
+enc() {
+  local s=${1-}
+  s=${s//%/%25}; s=${s// /%20}; s=${s//$'\t'/%09}; s=${s//=/%3D}
+  printf '%s' "$s"
+}
+
+# Same discipline as journal_append: one printf, O_APPEND, no lock, errors swallowed. This stream is
+# a courtesy to a watcher and must never be the thing that changes a week-long run's verdict.
+emit_event() { [ -n "$EVENTS" ] || return 0; printf 'grind: %s\n' "$*" >>"$EVENTS" 2>/dev/null || true; }
+
+events_start() {
+  local journal=$1 dir
+  [ -z "$EVENTS_OFF" ] || return 0
+  dir="${TMPDIR:-/tmp}/farm-events${GRIND_LAUNCH_SESSION:+/$GRIND_LAUNCH_SESSION}"
+  mkdir -p "$dir" 2>/dev/null || return 0
+  EVENTS="$dir/$$.ndjson"
+  emit_event "START $(enc "grind $(basename -- "$journal")") cwd=$(enc "$PWD") journal=$(enc "$journal") "
+}
+
+# EVERY exit from a started run emits exactly one DONE, the signal trap included: stalled, budget and
+# stopped are endings, and a monitor that saw only START would report them as deaths. Clearing EVENTS
+# makes the second call a no-op, so the trap and cmd_run cannot both write one.
+emit_done() { emit_event "DONE $(enc "${1:-unknown}") rc=${2:-0}"; EVENTS=; }
+
 cmd_run() {
   local rc=0
   NOTIFY= NOTIFY_TO=${CLAUDE_CODE_SESSION_ID:-} NOTIFY_JOURNAL= PUSH=
@@ -418,8 +466,9 @@ cmd_run() {
   local state
   case "$rc" in
     0) state=done ;; 3) state=stalled ;; 4) state=budget ;; 5) state=stopped ;;
-    *) return "$rc" ;;
+    *) emit_done "exit$rc" "$rc"; return "$rc" ;;
   esac
+  emit_done "$state" "$rc"
   export GRIND_STATE=$state GRIND_EXIT=$rc GRIND_JOURNAL=$NOTIFY_JOURNAL
   case "$NOTIFY" in
     none) ;;
@@ -499,6 +548,7 @@ run_loop() {
       --notify-to)   NOTIFY_TO=${2:?--notify-to needs a value};     shift 2 ;;
       --wait-alert)  want_int --wait-alert "${2:-}"; wait_alert=$2; shift 2 ;;
       --push)        PUSH=1;                                         shift ;;
+      --no-events)   EVENTS_OFF=1;                                   shift ;;
       --journal)     journal=${2:?--journal needs a value};         shift 2 ;;
       --check)       check=${2:?--check needs a value};             shift 2 ;;
       --gate)        gate=${2:?--gate needs a value};               shift 2 ;;
@@ -537,9 +587,13 @@ run_loop() {
     '{kind:"start",pid:$pid,ts:$ts,check:$check,gate:$gate,runner:$runner,model:$model,prompt:$prompt}')" \
     || warn "start record refused; status will not be able to name this run's pid"
 
+  # After the journal's own start record, so a loop that cannot record itself never announces itself
+  # to a watcher either.
+  events_start "$journal"
+
   # A run killed by the operator otherwise vanishes with `iter` as its last word, and status cannot
   # tell that from a crash. One record makes the journal honest about how the run ended.
-  trap 'journal_append "$journal" "{\"kind\":\"stopped\",\"ts\":\"$(now)\",\"why\":\"signal\"}"; exit 5' INT TERM
+  trap 'journal_append "$journal" "{\"kind\":\"stopped\",\"ts\":\"$(now)\",\"why\":\"signal\"}"; emit_done stopped 5; exit 5' INT TERM
 
   local passes=0 i rc prompt waits=0 gate_out= gate_rc why=
   local -a cmd
@@ -590,6 +644,9 @@ run_loop() {
         # Every Nth wait, not just the Nth: a gate stuck shut for a week is worth saying twice.
         if [ "$wait_alert" -gt 0 ] && [ "$((waits % wait_alert))" -eq 0 ]; then
           notify_waiting "$waits" "$why" "$journal"
+          # Same cadence, deliberately: a line per wait would bury the monitor under a gate that
+          # stays shut for a week, which is the case this whole stream exists to survive.
+          emit_event "WAIT waits=$waits why=$(enc "${why:-}") "
         fi
         [ "$sleep_s" -gt 0 ] && sleep "$sleep_s"
         continue
@@ -620,6 +677,7 @@ run_loop() {
     GRIND_ITERATION=$i FARM_OUT_CHILD=1 "${cmd[@]}"
     rc=$?
     journal_append "$journal" "{\"kind\":\"iter_end\",\"i\":$i,\"exit\":$rc,\"ts\":\"$(now)\"}"
+    emit_event "ITER i=$i exit=$rc "
   done
 }
 
