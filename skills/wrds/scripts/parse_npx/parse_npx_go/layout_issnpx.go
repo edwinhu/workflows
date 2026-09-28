@@ -3468,9 +3468,25 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 	// renamed away from is still its own exact spelling of the banner and must
 	// outrank a tolerance rung's near miss to a sleeve that never carried it
 	// (sameCIKOver).
+	//
+	// The within-declaration reading is the one guard this rung asks AFTER the
+	// dictionary rather than before it. `the heading says nothing this
+	// declaration does not` is a claim about a heading whose only evidence is
+	// its own brevity, and it stops being true the moment those fewer words are
+	// a DIFFERENT same-CIK sleeve's own exact spelling: Allianz Variable
+	// Insurance Products Trust's 20100630 body rules its one section
+	// `AZL NACM INTERNATIONAL FUND` while the header declares only
+	// S000025368 `AZL NACM International Growth Fund`, and the banner is that
+	// name minus `Growth` -- but it is also, verbatim, S000017468's own
+	// 20070630 dictionary name (family MISLINK28). So the subset reading is
+	// skipped exactly where the dictionary answers the banner EXACTLY for
+	// another sleeve, and is otherwise untouched: `Equity Index` under a
+	// declared `EQUITY INDEX FUND` that no other sleeve of this registrant
+	// spells still refuses.
 	if outer && d != nil && !issBannerDeclaredExactAs(ix, guard, d) && !issOwnBrandInfixDecl(ix, guard, d) &&
-		!issTierRenameKept(ix, normalizeSeriesName(guard), d) && !issHeadingWithinDecl(guard, d) {
-		if alt := issIndexDict(ix).sameCIKOver(ix.cik, guard, ix.period, d); alt != nil && alt.SeriesID != d.SeriesID {
+		!issTierRenameKept(ix, normalizeSeriesName(guard), d) {
+		if alt := issIndexDict(ix).sameCIKOver(ix.cik, guard, ix.period, d); alt != nil && alt.SeriesID != d.SeriesID &&
+			(normalizeSeriesName(alt.Name) == normalizeSeriesName(guard) || !issHeadingWithinDecl(guard, d)) {
 			return banner, alt
 		}
 	}
