@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -686,7 +687,70 @@ func (f *dictFallback) acronymForBrand(heading string) *SeriesDecl {
 	if len(toks) < 3 || !issRegistrantAcronym(toks[0], f.registrantKey) {
 		return nil
 	}
-	return f.brandPrefixed(strings.Join(toks[1:], " "))
+	rest := strings.Join(toks[1:], " ")
+	if d := f.brandPrefixed(rest); d != nil {
+		return d
+	}
+	return f.brandPrefixedTypeWord(rest)
+}
+
+// brandPrefixedTypeWord is acronymForBrand's second reach, for a heading that
+// stops at the fund's stem and prints NO type word at all where the dictionary
+// name closes on one: `TFGT Small Cap` for a dictionary `TOUCHSTONE SMALL CAP
+// FUND` (S000005843, Touchstone Funds Group Trust 20070630). The acronym has
+// already come off and brandPrefixed has already failed its exact match on the
+// bare remainder, so the only edit left is the one the heading itself made --
+// a single trailing entity word dropped.
+//
+// The word put back is not from a general vocabulary: it must be a word THIS
+// registrant's own contemporaneous dictionary names actually close on, and the
+// remainder must not already end on one (a heading that prints its own type
+// word is the exact case brandPrefixed owns). Ambiguity refuses the way every
+// other rung here refuses, and refuses harder: two candidate words that both
+// match refuse even when they name the same series, since which word the
+// heading dropped would then be a guess. Vintage is not this rung's problem --
+// f.byName reads the pool dictContemporaneous already disambiguated, so a name
+// two series declared years apart answers with the one nearest this filing's
+// period before this rung ever sees it.
+func (f *dictFallback) brandPrefixedTypeWord(remainder string) *SeriesDecl {
+	key := normalizeSeriesName(remainder)
+	toks := strings.Fields(key)
+	if len(toks) < 2 || issEntityTypeWord(toks[len(toks)-1]) {
+		return nil
+	}
+	var hit *SeriesDecl
+	for _, w := range f.dictTypeWords() {
+		d := f.brandPrefixed(key + " " + w)
+		if d == nil {
+			continue
+		}
+		if hit != nil {
+			return nil
+		}
+		hit = d
+	}
+	return hit
+}
+
+// dictTypeWords are the entity words this registrant's own contemporaneous
+// dictionary names close on, sorted so the scan is deterministic.
+func (f *dictFallback) dictTypeWords() []string {
+	seen := map[string]bool{}
+	var out []string
+	for name := range f.byName {
+		toks := strings.Fields(name)
+		if len(toks) == 0 {
+			continue
+		}
+		w := toks[len(toks)-1]
+		if !issEntityTypeWord(w) || seen[w] {
+			continue
+		}
+		seen[w] = true
+		out = append(out, w)
+	}
+	sort.Strings(out)
+	return out
 }
 
 // brandAcronymForBrand answers a heading whose FIRST token is an acronym of the
