@@ -6,125 +6,176 @@ import { dirname, join } from "node:path";
 const ROOT = dirname(import.meta.dir);
 const HOOK = join(ROOT, "hooks", "pgrep-self-match.ts");
 
-/** Run the hook over a raw stdin string; return its exit code and stdout. */
-function runRaw(stdin: string): { status: number; stdout: string } {
+interface Result {
+  status: number;
+  stdout: string;
+  decision: string | null;
+  reason: string | null;
+  warning: string | null;
+  ms: number;
+}
+
+function runRaw(stdin: string): Result {
+  const t0 = Date.now();
   const r = spawnSync("bun", [HOOK], { input: stdin, encoding: "utf8" });
-  return { status: r.status ?? -1, stdout: r.stdout ?? "" };
+  const ms = Date.now() - t0;
+  const stdout = r.stdout ?? "";
+  let decision: string | null = null;
+  let reason: string | null = null;
+  let warning: string | null = null;
+  if (stdout.trim()) {
+    const o = JSON.parse(stdout).hookSpecificOutput;
+    decision = o.permissionDecision ?? null;
+    reason = o.permissionDecisionReason ?? null;
+    warning = o.additionalContext ?? null;
+  }
+  return { status: r.status ?? -1, stdout, decision, reason, warning, ms };
 }
 
-function run(command: string, toolName = "Bash"): { status: number; stdout: string } {
-  return runRaw(JSON.stringify({
-    hook_event_name: "PreToolUse",
-    tool_name: toolName,
-    tool_input: { command },
-  }));
+function run(command: string, toolName = "Bash"): Result {
+  const res = runRaw(
+    JSON.stringify({
+      hook_event_name: "PreToolUse",
+      tool_name: toolName,
+      cwd: "/home/eh/projects/workflows",
+      session_id: "test-session",
+      tool_input: { command },
+    }),
+  );
+  // A hook that exits non-zero is treated as NON-BLOCKING; a gate must never do that.
+  expect(res.status).toBe(0);
+  return res;
 }
 
-/** The warning text, or null when the hook stayed silent. */
-function warning(command: string, toolName = "Bash"): string | null {
-  const { status, stdout } = run(command, toolName);
-  expect(status).toBe(0);
-  if (!stdout.trim()) return null;
-  const parsed = JSON.parse(stdout);
-  // WARN-ONLY: never a decision, on any input.
-  expect(parsed.hookSpecificOutput.permissionDecision).toBeUndefined();
-  expect(parsed.hookSpecificOutput.hookEventName).toBe("PreToolUse");
-  return parsed.hookSpecificOutput.additionalContext as string;
-}
+/** The exact 2026-09-28 incident: both patterns bracketed, and it killed the invoking shell. */
+const INCIDENT =
+  "pkill -f '[f]arm.sh --tasks .*tasks11.json'; sleep 2; pgrep -f '[t]asks11.json' | xargs -r kill";
 
-// ── FLAGGED ────────────────────────────────────────────────────────────────────────────────────
+// ── THE SELF-TEST DENIES ───────────────────────────────────────────────────────────────────────
 
-test("flags the wait loop that never exits", () => {
-  const w = warning("while pgrep -f worker.py; do sleep 5; done");
-  expect(w).toContain("worker.py");
-  expect(w).toContain("own command line");
-  expect(w).toContain("[x]yz");
+test("the incident command denies", () => {
+  const r = run(INCIDENT);
+  expect(r.decision).toBe("deny");
+  // The bracketed spelling, not the bare literal: the gate's own message must not carry text that
+  // would itself match the pattern being complained about.
+  expect(r.reason).toContain("[t]asks11.json");
+  expect(r.reason).not.toContain("'tasks11.json'");
+  expect(r.reason).toContain("own text");
+  expect(r.reason).toContain("bracket the pattern");
 });
 
-test("flags pkill -f", () => {
-  expect(warning("pkill -f myjob")).toContain("pkill -f 'myjob'");
+test("a self-matching wait loop denies (it would never exit)", () => {
+  const r = run("while pgrep -f worker.py; do sleep 5; done");
+  expect(r.decision).toBe("deny");
+  expect(r.reason).toContain("worker.py");
+  expect(r.reason).toContain("never exits");
 });
 
-test("flags combined short flags containing f", () => {
-  expect(warning("pgrep -af 'claude -p'")).toContain("claude -p");
+test("bare pkill -f denies and says it kills its own shell", () => {
+  const r = run("pkill -f myjob");
+  expect(r.decision).toBe("deny");
+  expect(r.reason).toContain("kill it");
 });
 
-test("flags --full", () => {
-  expect(warning("pgrep --full foo")).toContain("pgrep -f 'foo'");
+test("an absolute-path pattern is a self-match too (the old exemption was wrong)", () => {
+  expect(run("pgrep -f /usr/bin/worker").decision).toBe("deny");
 });
 
-test("flags -fl", () => {
-  expect(warning("pgrep -fl worker")).toContain("worker");
+test("combined short flags and --full are parsed", () => {
+  expect(run("pgrep -af 'claude -p'").decision).toBe("deny");
+  expect(run("pgrep --full foo").decision).toBe("deny");
+  expect(run("set -e; pgrep -fl myjob | wc -l").decision).toBe("deny");
 });
 
-test("flags a pgrep buried later in a pipeline", () => {
-  expect(warning("set -e; pgrep -f myjob | wc -l")).toContain("myjob");
+// ── NO SELF-MATCH: SILENT ALLOW ────────────────────────────────────────────────────────────────
+
+test("a bracketed pattern that does not self-match is allowed silently", () => {
+  expect(run("pgrep -f '[w]orker.py'").stdout).toBe("");
 });
 
-// ── NOT FLAGGED ────────────────────────────────────────────────────────────────────────────────
-
-test("does not flag the bracket-class form", () => {
-  expect(warning("pgrep -f '[w]orker.py'")).toBeNull();
+test("a bracketed pkill is allowed silently", () => {
+  expect(run("pkill -f '[w]orker'").stdout).toBe("");
 });
 
-test("does not flag -x (not a -f match at all)", () => {
-  expect(warning("pgrep -x worker")).toBeNull();
+test("a bracketed pgrep fed into kill is allowed silently", () => {
+  expect(run("pgrep -f '[w]orker' | xargs -r kill").stdout).toBe("");
+  expect(run("kill $(pgrep -f '[w]orker')").stdout).toBe("");
 });
 
-test("does not flag pgrep without -f", () => {
-  expect(warning("pgrep worker")).toBeNull();
+test("pgrep -x is untouched", () => {
+  expect(run("pgrep -x worker").stdout).toBe("");
+  expect(run("pkill -x worker").stdout).toBe("");
 });
 
-test("does not flag an absolute-path anchored pattern", () => {
-  expect(warning("pgrep -f /usr/bin/worker")).toBeNull();
+test("pgrep without -f is untouched", () => {
+  expect(run("pgrep worker").stdout).toBe("");
+  expect(run("pgrep worker | xargs -r kill").stdout).toBe("");
 });
 
-test("does not flag a command with no pgrep at all", () => {
-  expect(warning("ls -la && echo done")).toBeNull();
+test("a command with no pgrep at all is untouched", () => {
+  expect(run("ls -la && echo done").stdout).toBe("");
 });
 
-test("does not flag an explicit $$ exclusion", () => {
-  expect(warning("pgrep -f myjob | grep -v $$")).toBeNull();
+test("pgrep text inside quotes is not a command position", () => {
+  expect(run('echo "pgrep -f x"').stdout).toBe("");
+  expect(run("printf '%s\\n' 'pgrep -f x'").stdout).toBe("");
 });
 
-test("does not flag pgrep text quoted inside echo", () => {
-  expect(warning('echo "pgrep -f x"')).toBeNull();
+test("an explicit $$ exclusion suppresses the deny", () => {
+  expect(run("pgrep -f myjob | grep -v $$").stdout).toBe("");
 });
 
-test("does not flag pgrep text in a single-quoted argument", () => {
-  expect(warning("printf '%s\\n' 'pgrep -f x'")).toBeNull();
+// ── PATTERNS THE TEXT CANNOT SETTLE: ALLOW SILENTLY ────────────────────────────────────────────
+// pgrep itself reports an uncompilable pattern; with no model layer left there is nothing to judge.
+
+test("a pattern that will not compile is allowed silently", () => {
+  expect(run("pgrep -f '[unclosed'").stdout).toBe("");
+  expect(run("pkill -f '[unclosed'").stdout).toBe("");
+});
+
+test("a POSIX character class does not crash the gate", () => {
+  const r = run("pgrep -f '[[:alpha:]]+job'");
+  expect(r.status).toBe(0);
+  expect(r.stdout).toBe("");
 });
 
 // ── PAYLOAD SHAPES ─────────────────────────────────────────────────────────────────────────────
 
 test("reads the Monitor tool payload the same way", () => {
-  expect(warning("pgrep -f myjob", "Monitor")).toContain("myjob");
+  expect(run("pkill -f myjob", "Monitor").decision).toBe("deny");
 });
 
 test("silent when tool_input carries no command", () => {
-  const { status, stdout } = runRaw(JSON.stringify({ tool_name: "Bash", tool_input: {} }));
-  expect(status).toBe(0);
-  expect(stdout).toBe("");
+  const r = runRaw(JSON.stringify({ tool_name: "Bash", tool_input: {} }));
+  expect(r.status).toBe(0);
+  expect(r.stdout).toBe("");
 });
 
-// ── CRASH PATH: FAIL OPEN ──────────────────────────────────────────────────────────────────────
+// ── CRASH POLICY: A BLOCKING GATE DENIES ON A PAYLOAD IT CANNOT READ ───────────────────────────
 
-test("malformed JSON exits 0 with no output", () => {
-  const { status, stdout } = runRaw("not json at all {");
-  expect(status).toBe(0);
-  expect(stdout).toBe("");
+test("malformed JSON denies rather than silently allowing", () => {
+  const r = runRaw("not json at all {");
+  expect(r.status).toBe(0);
+  expect(r.decision).toBe("deny");
 });
 
-test("a non-object payload exits 0 with no output", () => {
-  const { status, stdout } = runRaw("[1,2,3]");
-  expect(status).toBe(0);
-  expect(stdout).toBe("");
+test("a non-object payload denies", () => {
+  expect(runRaw("[1,2,3]").decision).toBe("deny");
 });
 
-test("empty stdin exits 0 with no output", () => {
-  const { status, stdout } = runRaw("");
-  expect(status).toBe(0);
-  expect(stdout).toBe("");
+// ── NO MODEL LAYER ─────────────────────────────────────────────────────────────────────────────
+
+test("the hook consults nothing: no hound import, no decisions call, no child process", () => {
+  const src = readFileSync(HOOK, "utf8");
+  for (const needle of ["hound", "decisions", "decisionsCall", "jev", "Jev", "JEV", "spawnSync", "child_process", "fetch("]) {
+    expect(src).not.toContain(needle);
+  }
+});
+
+test("a decision is text-only and returns fast", () => {
+  // A network or subprocess leg cost seconds; the whole gate is now bun startup plus a regex.
+  expect(run(INCIDENT).ms).toBeLessThan(3000);
+  expect(run("pkill -f '[w]orker'").ms).toBeLessThan(3000);
 });
 
 // ── REGISTRATION ───────────────────────────────────────────────────────────────────────────────
