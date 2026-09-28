@@ -1,31 +1,23 @@
 /**
- * Phase 3 has two halves and work-dispatch.sh can only ARM one of them.
+ * Phase 3 arms the HOLD in this session, and the WAKE is the farm-runs monitor.
  *
- * The self-send transport this replaced queued a `/goal` or `/loop` into the dispatching session's
- * own pane, and a detached drainer typed it when the pane went IDLE. A session that has just
- * dispatched a run is mid-turn and then works back-to-back, so the window frequently never opened:
- * measured 2026-09-16, `/goal` landed 127 times and missed 36, `/loop` landed 52 and missed 29.
- * Both halves now land INSIDE the dispatching turn — the HOLD as a state file hound-arm.sh writes,
- * the HEARTBEAT as a CronCreate call only the model can make.
- *
- * That second half is the one this file exists for. A shell cannot call CronCreate, so the script
- * can only INSTRUCT, and a dispatch that ends with a hold and no heartbeat is exactly the
- * unattended idle the mechanism exists to prevent. The instruction must therefore be present,
- * complete (cron expression AND prompt text), and last.
+ * The hold lives in the dispatching (main) session: it survives a run that dies, and the judge rules
+ * on the user's own objective rather than on a round verdict. `--run` is what makes a stop legal
+ * while the round is in flight. The cron is a FALLBACK POLL and is printed only when asked for —
+ * AGK 2026-09-27, a cron woke the session 14 times inside one round while the monitor already had it.
  *
  * Run: bun test /home/eh/projects/workflows/tests/dispatch-hold-and-heartbeat.test.ts
  */
 import { describe, expect, test, afterAll } from 'bun:test'
 import { execFileSync } from 'node:child_process'
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync, chmodSync, readFileSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync, chmodSync, readFileSync, existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { lint } from '../skills/hound/scripts/heartbeat-lint'
+import { HERMETIC_ENV } from './helpers/hermetic-env'
 
 const REPO = join(import.meta.dir, '..')
 const SKILL = join(REPO, 'skills/work')
 const DISPATCH = join(SKILL, 'scripts/work-dispatch.sh')
-const COMPOSE = join(SKILL, 'scripts/compose-goal.sh')
 const scratch: string[] = []
 afterAll(() => scratch.forEach(d => rmSync(d, { recursive: true, force: true })))
 
@@ -66,16 +58,20 @@ function fixture(extraArgs: Record<string, unknown> = {}) {
  * writes a real state file this test can read, and cannot touch the hold of the live session
  * running the suite. CRAFT_FARM is stubbed so nothing is farmed out for real.
  */
-function dispatch(f: { dir: string; plan: string }, extraEnv: Record<string, string> = {}) {
+function dispatch(
+  f: { dir: string; plan: string },
+  extraEnv: Record<string, string> = {},
+  extraArgs: string[] = [],
+) {
   const sid = `hb-test-${Math.random().toString(36).slice(2)}`
   const tmp = mkdtempSync(join(tmpdir(), 'hold-tmpdir-'))
   scratch.push(tmp)
   const farm = script(f.dir, 'stub-farm.sh', 'exit 0')
   try {
-    const out = execFileSync('bash', [DISPATCH, '--loops', '0', f.plan], {
+    const out = execFileSync('bash', [DISPATCH, '--loops', '0', ...extraArgs, f.plan], {
       encoding: 'utf8', timeout: 180_000, cwd: f.dir,
       env: {
-        ...process.env, CLAUDE_CODE_SESSION_ID: sid, TMPDIR: tmp,
+        ...HERMETIC_ENV, CLAUDE_CODE_SESSION_ID: sid, TMPDIR: tmp,
         CRAFT_NO_SCOPE: '1', CRAFT_FARM: farm, ...extraEnv,
       },
     })
@@ -84,9 +80,6 @@ function dispatch(f: { dir: string; plan: string }, extraEnv: Record<string, str
     return { code: e.status ?? -1, out: (e.stdout ?? '') + (e.stderr ?? ''), sid, tmp }
   }
 }
-
-const holdState = (r: { sid: string; tmp: string }) =>
-  JSON.parse(readFileSync(join(r.tmp, `hound-${r.sid}.json`), 'utf8'))
 
 describe('the self-send transport is gone, not merely unused', () => {
   /**
@@ -111,94 +104,131 @@ describe('the self-send transport is gone, not merely unused', () => {
   })
 })
 
-describe('half one: the HOLD is armed by the script itself', () => {
-  const r = dispatch(fixture())
+/** The state file a dispatch armed, parsed. */
+function holdState(r: { tmp: string; sid: string }): any {
+  const p = join(r.tmp, `hound-${r.sid}.json`)
+  return existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : null
+}
+
+/**
+ * HALF ONE: THE HOLD, armed in the DISPATCHING session.
+ *
+ * Not in the farmed child, which runs one workflow.js and exits, and not on the round verdict —
+ * `hold-lint.ts` refuses that as CRITICAL, because a verdict goes green on a FAIL the loop was going
+ * to fix and outlives a run the user abandons. What is armed is the plan's own `args.goalCheck`, or
+ * with none, the judge alone on `args.goal`.
+ */
+describe('half one: the HOLD is armed by the dispatch, in this session', () => {
+  const f = fixture()
+  const r = dispatch(f)
 
   test('the dispatch succeeds', () => {
     expect(`code ${r.code}\n${r.out}`).toStartWith('code 0')
   })
 
-  test('a state file exists for THIS session — no transport, nothing typed', () => {
-    expect(() => holdState(r)).not.toThrow()
+  test('a state file exists for THIS session, with a ledger beside it', () => {
+    expect(existsSync(join(r.tmp, `hound-${r.sid}.json`))).toBe(true)
+    expect(readFileSync(join(r.tmp, `hound-${r.sid}.releases.log`), 'utf8')).toContain('armed')
   })
 
-  test('the check is a command, and it is work-result.sh on this run', () => {
-    expect(holdState(r).check).toContain('work-result.sh')
-    expect(holdState(r).check).toContain('result.json')
+  test('the plan states no goalCheck, so the hold is CHECK-LESS: the judge alone on args.goal', () => {
+    const s = holdState(r)
+    expect(s.check).toBe('')
+    expect(s.goal).toBe('make the thing right')
+    expect(r.out).toContain('ARMED check-less')
   })
+
+  /** `--run` is the whole in-flight rule: without it every stop mid-round would block. */
+  test('it records the RUN DIR, absolute, so the hook can see a round in flight', () => {
+    expect(holdState(r).run).toBe(f.runDir)
+  })
+
+  test('the ceilings are the plan maxRounds and compose-goal.sh --minutes', () => {
+    const minutes = execFileSync('bash', [join(SKILL, 'scripts/compose-goal.sh'), '--minutes'],
+      { encoding: 'utf8' }).trim()
+    const s = holdState(r)
+    expect(s.maxRounds).toBe(4)
+    expect(s.ceilingMinutes).toBe(Number(minutes))
+  })
+
+  test('a plan that DOES state args.goalCheck arms on that command', () => {
+    const f = fixture({ goalCheck: 'bash scripts/check.sh' })
+    const g = dispatch(f)
+    expect(holdState(g).check).toBe('bash scripts/check.sh')
+    expect(g.out).toContain('ARMED on `bash scripts/check.sh`')
+  }, 60_000)
 
   /**
-   * work-result.sh exits 2 when there is no result.json, and hound-arm.sh correctly refuses an
-   * exit above 1 as could-not-run rather than a verdict. Unwrapped, the arm would therefore fail
-   * at exactly the moment the hold is needed — before the run has returned anything.
+   * ARMING NEVER ABORTS A DISPATCH. The run is detached before the arm, so a refusal that exited
+   * would leave a live run with no hold and nothing saying so. A goalCheck that is already GREEN is
+   * exactly that refusal, and it must print and stand.
    */
-  test('the check normalises to 0/1, so an absent verdict reads RED rather than could-not-run', () => {
-    const rc = execFileSync('bash', ['-lc', `${holdState(r).check}; echo "rc=$?"`], { encoding: 'utf8' })
-    expect(rc.trim().split('\n').pop()).toBe('rc=1')
-  })
+  test('an arm-time refusal is printed and the dispatch still succeeds', () => {
+    const f = fixture({ goalCheck: 'true' })
+    const g = dispatch(f)
+    expect(g.code).toBe(0)
+    expect(g.out).toContain('hold: NOT armed')
+    expect(existsSync(join(g.tmp, `hound-${g.sid}.json`))).toBe(false)
+  }, 60_000)
 
-  test('the ceilings are the hook-enforced flags, taken from the plan and compose-goal.sh', () => {
-    expect(holdState(r).maxRounds).toBe(4)
-    expect(String(holdState(r).ceilingMinutes))
-      .toBe(execFileSync('bash', [COMPOSE, '--minutes'], { encoding: 'utf8' }).trim())
-  })
-
-  test('a readOnly run closes on either verdict, because its gate legitimately FAILs', () => {
+  test('a readOnly dispatch arms the hold too', () => {
     const ro = dispatch(fixture({ readOnly: true }))
-    expect(holdState(ro).check).toMatch(/-le 1/)
-  })
+    expect(existsSync(join(ro.tmp, `hound-${ro.sid}.json`))).toBe(true)
+  }, 60_000)
 })
 
-describe('half two: the HEARTBEAT is INSTRUCTED, because no shell can call CronCreate', () => {
+/**
+ * HALF TWO: THE WAKE. The `farm-runs` plugin monitor watches the run for the whole session, so the
+ * cron is a FALLBACK POLL and off by default: measured AGK 2026-09-27, a cron woke the session 14
+ * times inside one round, each tick re-entering a 113 KB plan and a 276 KB run dir.
+ */
+describe('half two: the cron is OPTIONAL, and the monitor is the wake', () => {
   const r = dispatch(fixture())
 
-  test('the instruction names the tool and demands it this turn', () => {
-    expect(r.out).toContain('CronCreate')
-    expect(r.out).toMatch(/REQUIRED, THIS TURN/)
+  test('no cron is printed by default — one line names the monitor instead', () => {
+    expect(r.out).not.toContain('CronCreate')
+    expect(r.out).toMatch(/farm-runs monitor/)
+    expect(r.out).toMatch(/--cron/)
   })
 
-  test('it carries a cron expression off the :00 and :30 marks the whole fleet lands on', () => {
-    const cron = /cron:\s+(\S.*)$/m.exec(r.out)
-    expect(cron, 'no cron expression in the dispatch output').not.toBeNull()
-    expect(cron![1].trim()).toBe('7-59/30 * * * *')
+  test('the farm-runs monitor runs for the whole session, not on skill invoke', () => {
+    const m = JSON.parse(readFileSync(join(REPO, 'monitors/monitors.json'), 'utf8'))
+    expect(m.find((x: any) => x.name === 'farm-runs').when).toBe('always')
   })
 
-  test('the period is configurable and reaches the printed expression', () => {
-    const hourly = dispatch(fixture(), { CRAFT_LOOP_INTERVAL_MINUTES: '120' })
-    expect(/cron:\s+(\S.*)$/m.exec(hourly.out)![1].trim()).toBe('7 */2 * * *')
-  })
+  test('--cron prints the CronCreate call, hourly, off the :00 mark', () => {
+    const c = dispatch(fixture(), {}, ['--cron'])
+    expect(c.out).toContain('CronCreate')
+    expect(c.out).toMatch(/REQUIRED, THIS TURN/)
+    expect(/cron:\s+(\S.*)$/m.exec(c.out)![1].trim()).toBe('7 * * * *')
+  }, 60_000)
 
-  test('it carries the exact prompt text, so nothing has to be composed at call time', () => {
-    const prompt = /prompt:\s+(\S.*)$/m.exec(r.out)
-    expect(prompt, 'no prompt text in the dispatch output').not.toBeNull()
-    expect(prompt![1]).toContain('work-result.sh')
-  })
+  test('CRAFT_LOOP_INTERVAL_MINUTES opts in too, and sets the period', () => {
+    const c = dispatch(fixture(), { CRAFT_LOOP_INTERVAL_MINUTES: '120' })
+    expect(c.out).toContain('CronCreate')
+    expect(/cron:\s+(\S.*)$/m.exec(c.out)![1].trim()).toBe('7 */2 * * *')
+  }, 60_000)
 
-  /**
-   * The lint that used to gate the self-send chokepoint now governs this text — the only string
-   * present when a tick fires into an otherwise empty session. An ungated checker is what the old
-   * arrangement degenerated into once its one caller stopped landing anything.
-   */
-  test('the prompt text passes heartbeat-lint clean', () => {
-    const prompt = /prompt:\s+(\S.*)$/m.exec(r.out)![1]
-    expect(lint(prompt).map(f => `${f.rule}: ${f.message}`)).toEqual([])
-  })
-
-  test('the instruction is the LAST thing printed, so nothing scrolls it away', () => {
-    const lines = r.out.trimEnd().split('\n')
-    expect(lines[lines.length - 1]).toMatch(/^=+$/)
-  })
+  test('the prompt is a nudge: short, and naming no plan path, check or authority', () => {
+    const c = dispatch(fixture(), {}, ['--cron'])
+    const prompt = /prompt:\s+(\S.*)$/m.exec(c.out)![1].trim()
+    expect(prompt).toBe('and? (work run hb-run)')
+    expect(prompt.length).toBeLessThan(60)
+    expect(prompt).not.toMatch(/plan\.md|work-result\.sh|result\.json|\.craft|CronDelete|authority|blocker/i)
+  }, 60_000)
 
   /**
    * EVERY path that dispatches, not only the printed-wait one. --loops N returns through its own
-   * `exit 0` after handing off to the detached loop, which is a second place the instruction can be
-   * missed — and a run dispatched with a loop is precisely the unattended one.
+   * `exit 0` after handing off to the detached loop, which is a second place both the hold and the
+   * wake line can be missed — and a run dispatched with a loop is precisely the unattended one.
    */
-  test('both dispatching exits emit it', () => {
+  test('both dispatching exits arm the hold and print the wake line', () => {
     const s = readFileSync(DISPATCH, 'utf8')
     expect(s.match(/^\s*print_cron_instruction$/gm)?.length).toBe(2)
+    expect(s.match(/^\s*arm_hold$/gm)?.length).toBe(2)
     const detachedExit = s.indexOf('loop: detached (pid $loop_pid)')
     expect(detachedExit).toBeGreaterThan(-1)
+    expect(s.indexOf('arm_hold', detachedExit)).toBeLessThan(s.indexOf('print_cron_instruction', detachedExit))
     expect(s.indexOf('print_cron_instruction', detachedExit))
       .toBeLessThan(s.indexOf('exit 0', detachedExit))
   })
