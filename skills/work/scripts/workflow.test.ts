@@ -10,8 +10,16 @@
 // Run: bun test ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/workflow.test.ts
 // (absolute or ./-prefixed — a bare relative path is read as a NAME FILTER and exits 1 having
 // matched nothing, which is byte-identical to a real failure.)
-import { test, expect } from 'bun:test'
+import { test, expect, setDefaultTimeout } from 'bun:test'
 import { run, runCatching, baseArgs, task, replies } from './workflow-harness.mjs'
+
+// Tests in this file drive work-dispatch.sh as a real bash subprocess. Bun's 5s per-test default
+// is a budget for that subprocess plus whatever else the machine is doing, so under parallel load
+// these go red at exactly [5000.xx ms] — contention reported as a defect in the code under test.
+// 60s does not hide a hang (a hang never returns and is caught by any finite ceiling); it stops
+// standing in for a latency budget this suite never had. Set per file because bun 1.4.0 ignores
+// `[test] timeout` in bunfig.toml and applies a preload's setDefaultTimeout to the first file only.
+setDefaultTimeout(60_000)
 
 const one = [task()]
 

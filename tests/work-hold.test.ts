@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, test, setDefaultTimeout } from 'bun:test'
 import { mkdtempSync, mkdirSync, writeFileSync, existsSync, readFileSync, renameSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -10,6 +10,14 @@ import {
   lastLedgerEntry, ledgerPath, ABANDONED, inFlight, ceilingReached, redispatchLine,
   PASSED_GOAL_MET, PASSED_UNJUDGED,
 } from '../hooks/work-hold'
+
+// Tests in this file drive work-dispatch.sh as a real bash subprocess. Bun's 5s per-test default
+// is a budget for that subprocess plus whatever else the machine is doing, so under parallel load
+// these go red at exactly [5000.xx ms] — contention reported as a defect in the code under test.
+// 60s does not hide a hang (a hang never returns and is caught by any finite ceiling); it stops
+// standing in for a latency budget this suite never had. Set per file because bun 1.4.0 ignores
+// `[test] timeout` in bunfig.toml and applies a preload's setDefaultTimeout to the first file only.
+setDefaultTimeout(60_000)
 
 const HOOK = join(import.meta.dir, '..', 'hooks', 'work-hold.ts')
 
@@ -642,6 +650,7 @@ describe('work-hold.sh and the auto-compact cap', () => {
 function stubDecisions(port: number, noul: number) {
   const code = `
 import json, http.server, socketserver
+
 class H(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
         b = json.dumps({"answers":{"met":{"type":"noul","noul":${noul}}}}).encode()
