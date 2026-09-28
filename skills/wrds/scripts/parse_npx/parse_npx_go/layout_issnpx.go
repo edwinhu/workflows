@@ -1972,6 +1972,14 @@ type issSeriesIndex struct {
 	// repeat is recomputation and never new evidence. Per-filing and
 	// single-goroutine, so no lock.
 	resolved map[string]issResolved
+	// exactBanner holds the series ids this filing's OWN body claims EXACTLY: a
+	// section banner whose text IS a declared name token for token, never a
+	// tolerance. It is evidence about the DOCUMENT rather than the header, which
+	// is why a per-banner rung cannot derive it, and it is read only by
+	// issNearMissClaimedElimination. Populated by the layout, which alone knows
+	// what a banner looks like in its own grammar; nil where no layout supplies
+	// it, and every reader must behave exactly as it did before when it is nil.
+	exactBanner map[string]bool
 }
 
 // issResolved is one memoised issResolveFund answer.
@@ -3664,6 +3672,68 @@ func issFilingBanners(lines []string) (keys, printed []string) {
 		printed = append(printed, name)
 	}
 	return keys, printed
+}
+
+// issExactBannerClaims records, on the index and on its header-only twin, the
+// declared series this filing's own banners claim EXACTLY -- the banner text IS
+// a declared name, token for token, under the same normalised equality every
+// exact rung demands. An ambiguous key answers nil in byName and so claims
+// nothing, the way every map on this index refuses a collision.
+//
+// It is called with the section banners the LAYOUT found, because what a banner
+// is belongs to the vendor grammar; passing it prose would make every declared
+// name look claimed. Adding claims invalidates memoised answers for the same
+// reason a former key does.
+func issExactBannerClaims(ix *issSeriesIndex, banners []string) {
+	if ix == nil || len(banners) == 0 {
+		return
+	}
+	if ix.hdrOnly != nil {
+		issExactBannerClaims(ix.hdrOnly, banners)
+	}
+	for _, b := range banners {
+		d, _ := lookupSeriesEntry(ix.byName, b)
+		if d == nil || d.SeriesID == "" {
+			continue
+		}
+		if ix.exactBanner == nil {
+			ix.exactBanner = map[string]bool{}
+		}
+		ix.exactBanner[d.SeriesID] = true
+	}
+	clear(ix.resolved)
+}
+
+// issNearMissClaimedElimination breaks issNearMissDecl's two-candidate refusal
+// in the one shape the DOCUMENT settles and the header cannot: of the two
+// declared names that reach the banner by dropping exactly one interior token
+// each, one is already spoken for by a banner of this same filing that spells
+// its declared name IN FULL, which leaves exactly one seat for the shortened
+// banner.
+//
+// Measured on The Advisors' Inner Circle Fund II (CIK 890540) 20090630, pvtext:
+// `FROST SMALL-MID CAP EQUITY FUND` is one dropped token from both the declared
+// `Frost LKCM Small-Mid Cap Equity Fund` (S000021630) and `Frost Hoover
+// Small-Mid Cap Equity Fund` (S000021633), and the same filing heads a separate
+// section `FROST HOOVER SMALL-MID CAP EQUITY FUND`, exact, so the shortened
+// banner is the LKCM sleeve (213 rows).
+//
+// This is elimination by full accounting, the arithmetic issResidualEliminate
+// already keeps, not a preference for the unclaimed arm: a third candidate, both
+// arms claimed, neither arm claimed, or an arm that reaches the banner by
+// something other than a dropped interior token all keep the refusal.
+func issNearMissClaimedElimination(ix *issSeriesIndex, a, b *SeriesDecl, dropA, dropB int) *SeriesDecl {
+	if len(ix.exactBanner) == 0 || a == nil || b == nil || dropA < 1 || dropB < 1 {
+		return nil
+	}
+	ca, cb := ix.exactBanner[a.SeriesID], ix.exactBanner[b.SeriesID]
+	switch {
+	case ca && !cb:
+		return b
+	case cb && !ca:
+		return a
+	}
+	return nil
 }
 
 // issBannerClaims reports which declared series the body already claims and
@@ -7159,7 +7229,8 @@ func issNearMissDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 	if key == ix.registrantKey {
 		return nil
 	}
-	var hit *SeriesDecl
+	var hit, second *SeriesDecl
+	hitDrop, secondDrop := -1, -1
 	for i := range ix.decls {
 		d := &ix.decls[i]
 		if d.SeriesID == "" || d.Name == "" {
@@ -7179,13 +7250,30 @@ func issNearMissDecl(ix *issSeriesIndex, key string) *SeriesDecl {
 		// behind the brand (`MASSMUTUAL AGGRESIVE GROWTH FUND` for a declared
 		// `MassMutual Select Aggressive Growth Fund`) shares nothing but the
 		// family name and stays readable.
-		if j := issNearMissDropAt(banner, ix.declToks(i)); j >= 2 && issStemHasSibling(ix, banner[:j], d.SeriesID) {
+		j := issNearMissDropAt(banner, ix.declToks(i))
+		if j >= 2 && issStemHasSibling(ix, banner[:j], d.SeriesID) {
 			return nil
 		}
 		if hit != nil && hit.SeriesID != d.SeriesID {
+			// A second candidate is the refusal above, and still is unless the
+			// document itself accounts for one of the two; a THIRD ends it
+			// outright, since no elimination leaves one seat out of three.
+			if second != nil && second.SeriesID != d.SeriesID {
+				return nil
+			}
+			if second == nil {
+				second, secondDrop = d, j
+			}
+			continue
+		}
+		if hit == nil {
+			hit, hitDrop = d, j
+		}
+	}
+	if second != nil {
+		if hit = issNearMissClaimedElimination(ix, hit, second, hitDrop, secondDrop); hit == nil {
 			return nil
 		}
-		hit = d
 	}
 	if issFutureVintage(ix, hit) {
 		return nil
