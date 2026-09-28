@@ -1169,7 +1169,10 @@ test('a dead lens still reports dispositions as [] — an empty list is honest, 
 
 // Nine same-severity findings, so REFUTERS_PER_LENS=8 truncates exactly one.
 const NINE = Array.from({ length: 9 }, (_v, i) => ({ title: `f${i}`, severity: 'major', detail: `d${i}` }))
-const nineLens = (over: any = {}) => lensOnly({ reviewLenses: [{ key: 'alpha', prompt: 'p' }], ...over })
+// Jev is the OPT-IN ranker, so every Jev-behaviour case below asks for it explicitly. The default is
+// asserted on its own, below, by omitting the key entirely.
+const nineLens = (over: any = {}) =>
+  lensOnly({ reviewLenses: [{ key: 'alpha', prompt: 'p' }], refuterRanker: 'jev', ...over })
 // Reverse the incoming order: f8 likeliest (p=0.9), f0 least (p=0.1).
 const reverseRank = { ok: true, scores: NINE.map((_f, i) => ({ index: i, p: (i + 1) / 10 })) }
 // `prompts` is a Map keyed by LABEL, and every refuter of one lens shares `refute:<key>` — so it
@@ -1225,6 +1228,16 @@ test('refuterRanker: "severity" dispatches no ranker and keeps today\'s order', 
     replies({ lens: { alpha: { findings: NINE } }, rank: reverseRank }))
   expect(dispatched.filter(l => l.startsWith('rank:'))).toEqual([])
   // Incoming order: f8 is the one that loses its refuter.
+  expect(refutedTitles(refuterPrompts)).toEqual(['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'])
+})
+
+test('the DEFAULT ranker is "severity" — an overflowing lens dispatches no ranker leg', async () => {
+  // No `refuterRanker` key at all: the default alone decides. Jev is opt-in, so an overflow that
+  // WOULD have been reordered (reverseRank is offered and ignored) keeps the incoming order.
+  const { dispatched, refuterPrompts } = await runRecording(
+    lensOnly({ reviewLenses: [{ key: 'alpha', prompt: 'p' }] }),
+    replies({ lens: { alpha: { findings: NINE } }, rank: reverseRank }))
+  expect(dispatched.filter(l => l.startsWith('rank:'))).toEqual([])
   expect(refutedTitles(refuterPrompts)).toEqual(['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'])
 })
 
