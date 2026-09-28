@@ -213,7 +213,7 @@ describe("public privacy scanner", () => {
     } finally { await rm(root, { recursive: true, force: true }); }
   });
 
-  test("fails closed on an unclassified tracked binary file", async () => {
+  test("fails closed on an unclassified tracked binary file, as a finding rather than a crash", async () => {
     const root = await mkdtemp(join(tmpdir(), "privacy-binary-"));
     try {
       await Bun.$`git -C ${root} init -q`;
@@ -223,7 +223,11 @@ describe("public privacy scanner", () => {
       await Bun.$`git -C ${root} -c user.name=test -c user.email=test@example.com commit -qm baseline`;
       await writeFile(join(root, "opaque.bin"), Buffer.from([0, 255, 1, 254, 2, 253]));
       await Bun.$`git -C ${root} add policy/public-privacy.json opaque.bin`;
-      await expect(scanTrackedTree(root)).rejects.toThrow(/binary inventory.*opaque\.bin|unclassified binary.*opaque\.bin/i);
+      const findings = await scanTrackedTree(root);
+      const reported = findings.filter((finding) => finding.path === "opaque.bin");
+      expect(reported.length).toBeGreaterThan(0);
+      expect(reported.every((finding) => finding.ruleId === "unreviewed-binary")).toBe(true);
+      expect(reported.some((finding) => finding.representation === "index")).toBe(true);
     } finally { await rm(root, { recursive: true, force: true }); }
   });
 
@@ -300,14 +304,59 @@ describe("public privacy scanner", () => {
         await Bun.$`mkdir -p ${join(absolute, "..")} `;
         await writeFile(absolute, bytes);
         await Bun.$`git -C ${root} add .`;
-        try {
-          const findings = await scanTrackedTree(root, "policy.json");
-          expect(findings.some((finding) => finding.path === path && finding.match === DEBT_PLUGIN)).toBe(true);
-        } catch (error) {
-          expect(String(error)).toMatch(/binary inventory|binary.*digest|unclassified binary/i);
-        }
+        // Substituted bytes at a reviewed path no longer bind the pinned digest, so the scan
+        // completes and reports it rather than aborting: either the payload text itself is found,
+        // or the path is flagged as an unreviewed binary. Both block publication.
+        const findings = await scanTrackedTree(root, "policy.json");
+        expect(findings.some((finding) => finding.path === path
+          && (finding.match === DEBT_PLUGIN || finding.ruleId === "unreviewed-binary"))).toBe(true);
       } finally { await rm(root, { recursive: true, force: true }); }
     }
+  });
+
+  // The scan used to abort inside captureCandidate the moment a reviewed tracked binary was rebuilt
+  // in the working tree, because the code-owned digest pin can only ever match ONE representation.
+  test("a modified tracked binary neither aborts the scan nor hides a text finding", async () => {
+    const reviewed = "skills/wrds/scripts/parse_13f/parse_13f_go/parse_13f_go";
+    const root = await mkdtemp(join(tmpdir(), "privacy-dirty-binary-"));
+    try {
+      // Copy the real pinned binary in, so its committed bytes bind a PRESERVED_BINARIES digest.
+      const pinned = await readFile(join(import.meta.dir, "..", reviewed));
+      await Bun.$`git -C ${root} init -q`;
+      await Bun.$`mkdir -p ${join(root, reviewed, "..")} ${join(root, "policy")}`;
+      await writeFile(join(root, reviewed), pinned);
+      await writeFile(join(root, "policy/public-privacy.json"), JSON.stringify(basePolicy()));
+      await writeFile(join(root, "notes.md"), "clean\n");
+      await Bun.$`git -C ${root} add .`;
+      await Bun.$`git -C ${root} -c user.name=test -c user.email=test@example.com commit -qm baseline`;
+
+      // Dirty the tracked binary in the working tree only, and inject a private string into text.
+      await writeFile(join(root, reviewed), Buffer.concat([pinned, Buffer.from([0x00])]));
+      await writeFile(join(root, "notes.md"), `${DEBT_PLUGIN}\n`);
+
+      const findings = await scanTrackedTree(root);
+      // The text finding survives: a dirty binary must never suppress a text scan.
+      expect(findings.some((finding) => finding.path === "notes.md" && finding.match === DEBT_PLUGIN)).toBe(true);
+      // The unstaged rebuild does not publish, so it is skipped rather than reported or crashed on.
+      expect(findings.some((finding) => finding.path === reviewed)).toBe(false);
+
+      // The CLI completes with findings (exit 1), not the exit-2 error path, and logs the skip.
+      const cli = Bun.spawnSync(["bun", join(import.meta.dir, "../scripts/scan-public-privacy.ts"), root], { stdout: "pipe", stderr: "pipe" });
+      expect(cli.stderr.toString()).not.toMatch(/public privacy scan error/);
+      expect(cli.stderr.toString()).toMatch(new RegExp(`skipped ${reviewed} \\(worktree\\)`));
+      expect(cli.exitCode).toBe(1);
+
+      // STAGING those same bytes moves them into what a push carries, and that is a finding.
+      await Bun.$`git -C ${root} add ${reviewed}`;
+      const staged = await scanTrackedTree(root);
+      const binaryFindings = staged.filter((finding) => finding.path === reviewed);
+      // Both representations now carry the same unreviewed bytes, so the tree scan's existing
+      // digest-keyed dedup collapses them to one report.
+      expect(binaryFindings.map((finding) => [finding.representation, finding.ruleId])).toEqual([
+        ["index", "unreviewed-binary"],
+      ]);
+      expect(staged.some((finding) => finding.path === "notes.md" && finding.match === DEBT_PLUGIN)).toBe(true);
+    } finally { await rm(root, { recursive: true, force: true }); }
   });
 
   test("rejects stale, substituted, and reordered candidate manifests before scanning", async () => {

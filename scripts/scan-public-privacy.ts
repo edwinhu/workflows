@@ -8,6 +8,7 @@ import {
   digestCandidateManifest,
   parseCandidateManifest,
   type CapturedCandidate,
+  type CandidateManifestV1,
   type CandidateRepresentation,
   type CandidateState,
 } from "./lib/candidate-manifest";
@@ -73,10 +74,13 @@ const DEBT_COMMAND_PATTERN = ["teaching", ":find-slide-page"].join("");
 const DEBT_PLUGIN_PATTERN = ["teaching", "-plugin"].join("");
 const TEACHING_CACHE_PATTERN = ["teaching", "teaching"].join("\\/");
 const ACCEPTED_BINARY_DISPOSITIONS = new Set(["preserve"]);
+// Assigned by captureCandidate to any binary whose captured bytes no reviewed digest below binds.
+const UNREVIEWED_BINARY_DISPOSITION = "unreviewed";
 // Code-owned: the only tracked binaries this repo may publish, each pinned to its REVIEWED sha256.
-// A binary outside this list has no disposition and fails the scan; a listed one whose bytes change
-// fails on the digest. Both are the point — a preserved binary is never text-scanned, so the digest
-// is the only thing standing between a payload and publication. Re-review before repinning.
+// A binary outside this list, or a listed one whose STAGED bytes no longer match, is reported as an
+// `unreviewed-binary` finding. That is the point — a preserved binary is never text-scanned, so the
+// digest is the only thing standing between a payload and publication. Re-review before repinning.
+// An unstaged working-tree rebuild is skipped instead; see classifyBinary for why.
 const PRESERVED_BINARIES: ReadonlyArray<{ path: string; digest: string }> = [
   { path: "skills/law-econ-docx/examples/sample/figure1.png", digest: "70a977e0f296010321ccf92afa731b46d9e66dc52efbb7067474efaccb21f775" },
   { path: "skills/workshop/fixtures/clean/presentation/notes.pdf", digest: "a75cde5738b43c406c2df69436bc37efbbe573e83fbdde0c3b92597410220016" },
@@ -267,7 +271,21 @@ export function scanCapturedCandidate(input: PrivacyPolicy, candidate: CapturedC
       throw new PrivacyPolicyError(`captured bytes digest does not match candidate entry: ${entry.path} (${entry.representation})`);
     }
     if (entry.binary) {
-      requireReviewedBinary(candidate, entry.path, entry.representation, entry.digest);
+      const verdict = classifyBinary(manifest, entry.path, entry.representation, entry.digest);
+      if (verdict.kind === "skip") {
+        console.error(`public privacy scan skipped ${entry.path} (${entry.representation}): ${verdict.reason}`);
+      } else if (verdict.kind === "finding") {
+        results.push({
+          candidateDigest: candidate.manifestDigest,
+          path: entry.path,
+          representation: entry.representation,
+          state: entry.state,
+          byteDigest: entry.digest,
+          location: null,
+          ruleId: "unreviewed-binary",
+          match: verdict.reason,
+        });
+      }
       continue;
     }
     const decoded = decodeTextCandidate(entry.path, bytes, entry.representation);
@@ -299,15 +317,44 @@ function digest(bytes: Uint8Array): string {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
-function requireReviewedBinary(candidate: CapturedCandidate, path: string, representation: CandidateRepresentation, byteDigest: string): void {
-  const matches = candidate.manifest.binaryInventory.filter((item) => item.path === path && item.representation === representation);
-  if (matches.length === 0) throw new PrivacyPolicyError(`binary inventory missing disposition for ${path} (${representation})`);
-  if (matches.length > 1) throw new PrivacyPolicyError(`duplicate binary inventory entry for ${path} (${representation})`);
-  const disposition = matches[0]!;
-  if (disposition.digest !== byteDigest) throw new PrivacyPolicyError(`binary inventory digest does not bind candidate entry: ${path} (${representation})`);
-  if (!ACCEPTED_BINARY_DISPOSITIONS.has(disposition.disposition)) {
+type BinaryVerdict =
+  | { kind: "reviewed" }
+  | { kind: "skip"; reason: string }
+  | { kind: "finding"; reason: string };
+
+// What this scanner guards is PUBLICATION, and publication is what Git ships: the staged/committed
+// bytes. So the reviewed-digest pin governs the `index` representation, which is what a push
+// carries. A tracked binary rebuilt in the working tree but not staged has an `index` copy that is
+// still the reviewed one — its `worktree` bytes are local build output that no `git push` can
+// publish, so it is skipped with the reason logged rather than crashing the scan or being silently
+// waved through. A STAGED change to that binary moves the unreviewed bytes into the index, where
+// this reports a finding. An unreviewed binary with no reviewed index counterpart (a new file, or
+// one whose committed bytes were repinned without review) is likewise a finding.
+function classifyBinary(
+  manifest: Readonly<CandidateManifestV1>,
+  path: string,
+  representation: CandidateRepresentation,
+  byteDigest: string,
+): BinaryVerdict {
+  const disposition = manifest.binaryInventory.find((item) => item.path === path && item.representation === representation);
+  // parseCandidateManifest guarantees one digest-bound disposition per binary entry.
+  if (!disposition || disposition.digest !== byteDigest) {
+    return { kind: "finding", reason: `no binary inventory disposition binds the captured bytes of ${path} (${representation})` };
+  }
+  if (ACCEPTED_BINARY_DISPOSITIONS.has(disposition.disposition)) return { kind: "reviewed" };
+  // An unrecognized disposition string cannot arise from tree state — captureCandidate writes only
+  // the caller's reviewed dispositions or the fallback — so it means a tampered or malformed
+  // manifest, and that stays a hard error.
+  if (disposition.disposition !== UNREVIEWED_BINARY_DISPOSITION) {
     throw new PrivacyPolicyError(`invalid binary inventory disposition for ${path} (${representation})`);
   }
+  if (representation === "worktree") {
+    const staged = manifest.binaryInventory.find((item) => item.path === path && item.representation === "index");
+    if (staged && ACCEPTED_BINARY_DISPOSITIONS.has(staged.disposition)) {
+      return { kind: "skip", reason: "working-tree bytes differ from the reviewed index copy; only the index copy publishes" };
+    }
+  }
+  return { kind: "finding", reason: `binary content is not pinned to a reviewed digest (sha256 ${byteDigest})` };
 }
 
 function decodeTextCandidate(path: string, bytes: Buffer, representation?: CandidateRepresentation): string {
@@ -358,7 +405,12 @@ async function captureAndScanTrackedTree(
   // it actually captured, and a path this candidate does not carry contributes nothing.
   const binaryInventory = PRESERVED_BINARIES.flatMap(({ path, digest: reviewed }) =>
     (["index", "worktree"] as const).map((representation) => ({ path, representation, digest: reviewed, disposition: "preserve" })));
-  const candidate = captureCandidate({ repositoryRoot: canonicalRoot, baseRef: "HEAD", binaryInventory });
+  const candidate = captureCandidate({
+    repositoryRoot: canonicalRoot,
+    baseRef: "HEAD",
+    binaryInventory,
+    binaryFallbackDisposition: UNREVIEWED_BINARY_DISPOSITION,
+  });
   await options.afterCapture?.(candidate);
   const findings: CandidatePrivacyFinding[] = [];
   const seen = new Set<string>();
