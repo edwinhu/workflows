@@ -1274,6 +1274,7 @@ func parseISSNPX(text string, meta FilingMeta) ([]VoteRow, error) {
 
 	issFillBlankIdentity(rows, blankIDRows)
 	issResidualEliminate(rows, seriesIx)
+	issEmptyBannerSubPortfolioFill(rows, seriesIx, bannerKeys, bannerPrinted)
 	issSleeveRosterSeatClaim(rows, seriesIx)
 
 	// A ZERO-ROW CLAIM IS NOT A RESULT. Measured 2026-08-31, this layout claimed
@@ -1354,6 +1355,141 @@ func issResidualEliminate(rows []VoteRow, ix *issSeriesIndex) {
 	if left == nil {
 		return
 	}
+	for i := range rows {
+		if rows[i].SeriesID == "" {
+			rows[i].SeriesID = left.SeriesID
+			rows[i].ClassIDs = strings.Join(left.ClassIDs, MultiValueSep)
+		}
+	}
+}
+
+// issEmptyBannerSubPortfolioFill keeps issResidualEliminate's accounting for the
+// one shape that rung must refuse: a declared series whose OWN banner carries no
+// rows, followed immediately by its own sub-portfolio headings. Purisima Funds
+// (CIK 1019946) declares exactly two series in its 20060630 report and prints
+// four banners --
+//
+//	PURISIMA ALL PURPOSE FUND   (resolves to S000005936, then four empty lines)
+//	PURISIMA PURE AMERICAN      (157 rows, names no declared series)
+//	PURISIMA PURE FOREIGN       ( 82 rows, names no declared series)
+//	PURISIMA TOTAL RETURN       (1042 rows, resolves to S000005935)
+//
+// -- so 239 of 1281 rows, 19% of the filing, go out blank. The arithmetic is the
+// same one issResidualEliminate already keeps and it balances: two declared
+// series, S000005935 fully accounted for by its own banner, exactly one left
+// over. That rung refuses only on its one-unresolved-name guard, which is right
+// in general -- two unresolved headings against one leftover seat is normally a
+// guess between them -- and wrong here, because the two headings are not
+// competing for the seat. They are sleeves of the banner that already holds it,
+// printed under it and reporting nothing of its own.
+//
+// So the guard is kept and the exemption is named exactly, on the filing's own
+// banner order rather than on the headings' spelling:
+//
+//   - the books must balance the way issResidualEliminate demands them to --
+//     every resolved banner on a DIFFERENT declared series, no fund name
+//     resolved in one place and blank in another, and exactly ONE declared
+//     series of the filing's own closed header left unclaimed;
+//   - exactly one banner of the filing may resolve to that leftover series while
+//     heading ZERO rows. Two such banners is a guess between them, and a banner
+//     that heads rows of its own is not an empty host;
+//   - every unresolved heading that HEADS ROWS must lie in that banner's OWN
+//     trailing run: reading forward from it in document order, every heading up
+//     to the next one that names a declared series. One row-bearing unresolved
+//     heading outside the run refuses -- the seat could be either one's. An
+//     unresolved heading that heads NOTHING claims no seat and is not a
+//     competitor, so it does not refuse.
+//
+// SECTION POSITION IS NOT THE EVIDENCE. The closed two-series header, the other
+// series' complete accounting and the host banner's zero rows are; adjacency
+// only says WHICH headings the empty banner owns. Scope is the filing's own
+// header and its own banners, and this fills a blank only.
+func issEmptyBannerSubPortfolioFill(rows []VoteRow, ix *issSeriesIndex, bannerKeys, bannerPrinted []string) {
+	if ix == nil || len(ix.decls) < 2 || len(bannerKeys) == 0 {
+		return
+	}
+	claimed := make(map[string]bool)
+	byFund := make(map[string]string)
+	rowKeys := make(map[string]bool)
+	openKeys := make(map[string]bool)
+	for _, r := range rows {
+		if r.FundName == "" {
+			return
+		}
+		k := normalizeSeriesName(r.FundName)
+		if k == "" {
+			return
+		}
+		rowKeys[k] = true
+		if r.SeriesID == "" {
+			openKeys[k] = true
+			continue
+		}
+		if prev, seen := byFund[k]; seen && prev != r.SeriesID {
+			return
+		}
+		byFund[k] = r.SeriesID
+		claimed[r.SeriesID] = true
+	}
+	// One unresolved heading is issResidualEliminate's own case and stays its
+	// own; this rung exists only for the several-sleeve shape it must refuse.
+	if len(openKeys) < 2 || len(byFund) == 0 || len(byFund) != len(claimed) {
+		return
+	}
+	for k := range openKeys {
+		if _, resolvedToo := byFund[k]; resolvedToo {
+			return
+		}
+	}
+	var left *SeriesDecl
+	for i := range ix.decls {
+		if claimed[ix.decls[i].SeriesID] {
+			continue
+		}
+		if left != nil {
+			return
+		}
+		left = &ix.decls[i]
+	}
+	if left == nil {
+		return
+	}
+
+	// The host: the one banner naming the leftover series and heading no rows.
+	host := -1
+	for i, k := range bannerKeys {
+		if rowKeys[k] {
+			continue
+		}
+		if _, d := issResolveFund(ix, bannerPrinted[i]); d == nil || d.SeriesID != left.SeriesID {
+			continue
+		}
+		if host >= 0 {
+			return
+		}
+		host = i
+	}
+	if host < 0 {
+		return
+	}
+
+	// Its own trailing run. Every unresolved heading that HEADS ROWS must fall
+	// inside it; an unresolved heading heading nothing claims no seat and is not
+	// a competitor (this filing closes on `END NPX REPORT`, which issFilingBanners
+	// reads as a banner like any other).
+	trailing := make(map[string]bool)
+	for i := host + 1; i < len(bannerKeys); i++ {
+		if _, d := issResolveFund(ix, bannerPrinted[i]); d != nil {
+			break
+		}
+		trailing[bannerKeys[i]] = true
+	}
+	for k := range openKeys {
+		if !trailing[k] {
+			return
+		}
+	}
+
 	for i := range rows {
 		if rows[i].SeriesID == "" {
 			rows[i].SeriesID = left.SeriesID
