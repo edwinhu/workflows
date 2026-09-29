@@ -12,14 +12,20 @@
 #   GOLD_DIR     gold sets              (default /data/def14a_own/gold)
 #   WRDS_HOST    ssh alias              (default wrds)
 #   DEF14A_FILELIST  which filelist under $GOLD_DIR to submit
-#                    (default gold_filelist.tsv; gold_filelist_all.tsv adds the
-#                     ISS-linked filings written by gold/sample_gold_iss.py)
+#                    (default gold_filelist_all.tsv — the UNION of the
+#                     blockw/factset filelist and the ISS one)
 #
-# The gold filelist (dev AND holdout filings — the parser sees both, the SCORER
-# sees dev only) is $GOLD_DIR/gold_filelist.tsv, written by gold/make_holdout.py.
-# Extending it is additive: score.py keys on (cik, accession) and ignores rows for
-# filings that are not in the gold set it is scoring, so a superset filelist leaves
-# every existing metric unchanged.
+# EVERY ROUND PARSES BOTH GOLD FILELISTS. `iss_director_recall` is gated as of
+# 2026-09-29, and a gated recall scored over only the ISS filings that happened to
+# be submitted is a recall over a denominator the round chose. The submitted
+# filelist is therefore asserted below to cover both
+# $GOLD_DIR/gold_filelist.tsv (blockw/factset, dev AND holdout filings — the
+# parser sees both, the SCORER sees dev only) and $GOLD_DIR/gold_iss_filelist.tsv
+# (ISS, likewise dev and holdout), and the run aborts if it does not.
+#
+# Extending the filelist is additive: score.py keys on (cik, accession) and
+# ignores rows for filings that are not in the gold set it is scoring, so a
+# superset filelist leaves every existing metric unchanged.
 
 set -euo pipefail
 
@@ -28,12 +34,33 @@ ROOT="${DEF14A_ROOT:-/scratch/nyu/eddyhu/parse_def14a_own}"
 WORK="${DEF14A_WORK:-/data/def14a_own/work}"
 GOLD="${GOLD_DIR:-/data/def14a_own/gold}"
 HOST="${WRDS_HOST:-wrds}"
-FILELIST="${DEF14A_FILELIST:-gold_filelist.tsv}"
+FILELIST="${DEF14A_FILELIST:-gold_filelist_all.tsv}"
 
 # The grind --gate watches this marker: while a round is in flight it is absent,
-# the loop records a `wait` and spends no model call.
+# the loop records a `wait` and spends no model call. It is re-created at the end
+# of EVERY round, including a round whose scorer reports a gated metric short.
 mkdir -p "$WORK/out"
 rm -f "$WORK/out/round-ready"
+
+echo "== filelist coverage =="
+# Both gold filelists must be covered, or the round scores a gated ISS recall
+# over a partial denominator. Compared on the archive path (column 1) because the
+# union file tags the 90 shared filings with their blockw/factset source, so the
+# whole LINE differs for a filing that is present in both.
+for req in gold_filelist.tsv gold_iss_filelist.tsv; do
+    if [[ ! -f "$GOLD/$req" ]]; then
+        echo "ERROR: required gold filelist $GOLD/$req is missing" >&2
+        exit 1
+    fi
+    n_missing=$(comm -23 <(cut -f1 "$GOLD/$req" | sort -u) \
+                         <(cut -f1 "$GOLD/$FILELIST" | sort -u) | wc -l)
+    echo "  $req: $(wc -l < "$GOLD/$req") filings, $n_missing not covered by $FILELIST"
+    if [[ "$n_missing" != "0" ]]; then
+        echo "ERROR: $FILELIST does not cover $req ($n_missing filings missing)." >&2
+        echo "       Every round must parse BOTH gold filelists; use gold_filelist_all.tsv." >&2
+        exit 1
+    fi
+done
 
 echo "== build =="
 (cd "$HERE/parse_def14a_own_go" && go vet ./... && go test ./... &&
@@ -79,6 +106,11 @@ if [[ "$MAN" != "$FILES_IN" ]]; then
 fi
 
 echo "== score (dev) =="
+# The scorer's exit code is captured rather than allowed to abort the script: a
+# round whose gated metric is short (exit 1 under --check) has still produced the
+# output the loop must be able to read, so the marker is written either way and
+# the scorer's code is propagated afterwards.
+set +e
 python3 "$HERE/scorer/score.py" \
     --rows "$WORK/out/*[0-9].tsv.gz" \
     --manifest "$WORK/out/*.manifest.tsv.gz" \
@@ -86,10 +118,14 @@ python3 "$HERE/scorer/score.py" \
     --thresholds "$HERE/thresholds.json" \
     --lock "$HERE/lock.sha256" \
     --miss-report "$WORK/miss_dev.tsv" \
+    --iss-miss-report "$WORK/miss_iss_dev.tsv" \
     --json-out "$WORK/metrics_dev.json" \
     "$@"
+SCORE_EXIT=$?
+set -e
 
 # The grind --gate waits on this marker: while it is absent the loop records a
 # `wait` and spends nothing.
 touch "$WORK/out/round-ready"
-echo "== done: $WORK/out/round-ready =="
+echo "== done: $WORK/out/round-ready (score exit $SCORE_EXIT) =="
+exit "$SCORE_EXIT"
