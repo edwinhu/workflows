@@ -830,7 +830,7 @@ func textStickyLabels(clean []string, block []int) map[int]string {
 	found := false
 	for ln := lo; ln <= hi && ln < len(clean); ln++ {
 		t := strings.TrimSpace(clean[ln])
-		if t != "" && !reTextDigit.MatchString(t) && reTextStickyLabel.MatchString(t) {
+		if t != "" && !reTextValueish.MatchString(t) && reTextStickyLabel.MatchString(t) {
 			ind := len(clean[ln]) - len(strings.TrimLeft(clean[ln], " "))
 			var keep []int
 			for _, k := range indents {
@@ -860,4 +860,7 @@ func textStickyLabels(clean []string, block []int) map[int]string {
 	return out
 }
 
-var reTextDigit = regexp.MustCompile(`[0-9]`)
+// A label line may carry a YEAR — every target-date fund is named for one
+// ("LIVESTRONG 2015 Portfolio") — so only a line that carries a VALUE is
+// excluded: a percent, a comma-grouped number or a decimal.
+var reTextValueish = regexp.MustCompile(`%|\d{1,3}(?:,\d{3})+|\d+\.\d`)
