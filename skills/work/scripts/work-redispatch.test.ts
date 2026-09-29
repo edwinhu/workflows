@@ -226,8 +226,33 @@ function gateFixture(opts: { dirty?: boolean; uncountable?: boolean } = {}) {
   return { dir, plan, args, result: join(dir, 'result.json') }
 }
 
-/** --dispatch, stopped short of farming out. Rotation and the args write still happen. */
+/**
+ * A REAL --dispatch, with farm.sh swapped for a stub. Rotation, the args write and the plan archive
+ * all happen, which is what these tests are about — they used to ride on WORK_REDISPATCH_DRYRUN, which
+ * committed everything and only skipped the farm-out. That flag is now a true dry run (nothing
+ * written), so observing the commit path means dispatching for real against a farm that does nothing.
+ */
+const FARM_STUB = (() => {
+  const dir = mkdtempSync(join(tmpdir(), 'work-redispatch-farm-'))
+  scratch.push(dir)
+  const p = join(dir, 'farm-stub.sh')
+  writeFileSync(p, '#!/usr/bin/env bash\nexit 0\n')
+  chmodSync(p, 0o755)
+  return p
+})()
+
 function redispatch(plan: string, args: string, ...extra: string[]) {
+  const env = { ...process.env, WORK_FARM: FARM_STUB, WORK_NO_SCOPE: '1' }
+  try {
+    const stdout = execFileSync('bash', [SCRIPT, plan, args, '--dispatch', ...extra], { encoding: 'utf8', env })
+    return { code: 0, out: stdout }
+  } catch (e: any) {
+    return { code: e.status ?? -1, out: (e.stdout ?? '') + (e.stderr ?? '') }
+  }
+}
+
+/** The dry run: every gate above, nothing on disk. */
+function dryRun(plan: string, args: string, ...extra: string[]) {
   try {
     const stdout = execFileSync('bash', [SCRIPT, plan, args, '--dispatch', ...extra], {
       encoding: 'utf8', env: { ...process.env, WORK_REDISPATCH_DRYRUN: '1' },
@@ -237,6 +262,72 @@ function redispatch(plan: string, args: string, ...extra: string[]) {
     return { code: e.status ?? -1, out: (e.stdout ?? '') + (e.stderr ?? '') }
   }
 }
+
+/**
+ * WORK_REDISPATCH_DRYRUN is the flag someone reaches for to see what a round WOULD do. It used to
+ * commit everything and skip only the farm-out: the staged args landed over args.json with `rounds`
+ * advanced, result.json was rotated away, the plan was archived — and then it printed "nothing
+ * dispatched". So looking spent the round and destroyed the verdict the next round scopes from, and a
+ * second look ran against state the first look had already moved.
+ */
+describe('WORK_REDISPATCH_DRYRUN writes nothing', () => {
+  test('args.json and result.json are byte-identical after a dry run', () => {
+    const f = gateFixture()
+    priorResult(f.dir)
+    const argsBefore = readFileSync(f.args, 'utf8')
+    const resultBefore = readFileSync(f.result, 'utf8')
+
+    const r = dryRun(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(readFileSync(f.args, 'utf8')).toBe(argsBefore)
+    expect(readFileSync(f.result, 'utf8')).toBe(resultBefore)
+    expect(existsSync(join(f.dir, 'result-round1.json'))).toBe(false)
+  })
+
+  test('the staged args file is cleaned up, not left behind as a half-committed round', () => {
+    const f = gateFixture()
+    priorResult(f.dir)
+    dryRun(f.plan, f.args)
+    expect(existsSync(join(f.dir, '.args.redispatch.json'))).toBe(false)
+  })
+
+  test('it says what it WOULD have advanced and rotated — skipped silently is no better than done silently', () => {
+    const f = gateFixture()
+    priorResult(f.dir)
+    const out = dryRun(f.plan, f.args).out
+    expect(out).toMatch(/WOULD advance: rounds -> 2/)
+    expect(out).toMatch(/WOULD rotate:\s+result\.json -> result-round1\.json/)
+    expect(out).toContain('nothing written')
+  })
+
+  test('with no result.json to rotate it says nothing about rotation', () => {
+    const f = gateFixture()
+    const out = dryRun(f.plan, f.args, '--no-lint').out
+    expect(out).not.toContain('WOULD rotate')
+    expect(out).toMatch(/WOULD advance/)
+  })
+
+  // The gates are the whole point of the flag: a dry run that skipped them would report a round as
+  // dispatchable when plan-lint refuses it.
+  test('the tier-1 gate still runs and still refuses under a dry run', () => {
+    const f = gateFixture({ dirty: true })
+    priorResult(f.dir)
+    const r = dryRun(f.plan, f.args)
+    expect(r.code).toBe(3)
+    expect(r.out).toContain('BLOCKED')
+  })
+
+  // The contrast that makes the fix legible: a REAL dispatch does commit all three.
+  test('a real dispatch still advances, rotates and archives', () => {
+    const f = gateFixture()
+    priorResult(f.dir)
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(readArgs(f.args).rounds).toBe(2)
+    expect(existsSync(join(f.dir, 'result-round1.json'))).toBe(true)
+    expect(existsSync(f.result)).toBe(false)
+  })
+})
 
 describe('the tier-1 plan gate on re-dispatch', () => {
   test('a clean plan lints, dispatches, and increments rounds as before', () => {

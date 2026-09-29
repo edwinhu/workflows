@@ -18,7 +18,9 @@
 #   work-redispatch.sh … --dispatch --no-lint             # skip BOTH gates below
 #   work-redispatch.sh … --dispatch --no-red-probe        # skip only the red probe; keep plan-lint
 #   work-redispatch.sh … --dispatch --provider codex      # run this round's whole spine on GPT-5.6
-#   WORK_REDISPATCH_DRYRUN=1                              # everything but the farm-out
+#   WORK_REDISPATCH_DRYRUN=1                              # gates only: writes NOTHING, prints what would
+#                                                         # be advanced, archived and rotated
+#   WORK_FARM=PATH                                        # the farm.sh a real dispatch invokes
 #   WORK_NO_SCOPE=1                                       # force the plain setsid dispatch
 #   WORK_SYSTEMD_RUN=PATH                                 # the binary the scope probe uses
 #
@@ -435,6 +437,29 @@ if [ "$DISPATCH" = "--dispatch" ] && [ "$REDPROBE" = 1 ]; then
   }
 fi
 
+# A DRY RUN COMMITS NOTHING. It used to commit everything but the farm-out: the staged args landed
+# over args.json with `rounds` advanced, result.json was rotated to result-round<n>.json, and the plan
+# was archived — then it printed "nothing dispatched". So the one command someone reaches for to see
+# what a round WOULD do spent the round and destroyed the verdict the next round needed to scope from,
+# and a second look had to be taken against state the first look had already moved.
+#
+# Reported, not silently skipped: the staged args exist and the round number is known, so what would
+# have been written is printed instead of written. The gates above have all run by now — the whole
+# point of the flag — and a refusal there exits before reaching this.
+if [ -n "${WORK_REDISPATCH_DRYRUN:-}" ] && [ "$DISPATCH" = "--dispatch" ]; then
+  bash "$SKILL/scripts/work-dispatch.sh" --red-summary "$STAGE"
+  printf 'WOULD advance: rounds -> %s in %s\n' "$ROUND" "$ARGS_ABS"
+  printf 'WOULD archive: the plan at %s beside the run\n' "$PLAN_ABS"
+  if [ -e "$RUN_DIR/result.json" ]; then
+    n=1
+    while [ -e "$RUN_DIR/result-round$n.json" ]; do n=$((n+1)); done
+    printf 'WOULD rotate:  result.json -> result-round%s.json\n' "$n"
+  fi
+  rm -f "$STAGE"
+  echo "WORK_REDISPATCH_DRYRUN: nothing dispatched, and nothing written — args.json and result.json are untouched."
+  exit 0
+fi
+
 mv "$STAGE" "$ARGS_ABS"
 
 # The plan, archived with the round that will run under it — the FAIL loop amends the plan every
@@ -457,9 +482,6 @@ if [ -e "$RESULT" ]; then
     mv "$RESULT" "$RUN_DIR/result-round$n.json"
     printf 'rotated:  result.json -> result-round%s.json\n' "$n"
 fi
-
-# Exercises everything above — sync, counters, gate, rotation — and stops before farming out.
-[ -n "${WORK_REDISPATCH_DRYRUN:-}" ] && { echo "WORK_REDISPATCH_DRYRUN: nothing dispatched."; exit 0; }
 
 LOG="$RUN_DIR/run-$(date +%H%M%S).log"
 
