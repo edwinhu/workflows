@@ -60,8 +60,18 @@ func ScreenRows(rows []Row) []Row {
 	// here, after every drop rule: the screens read ShareClass, so populating
 	// the grain key must not be able to change which rows survive.
 	for i := range out {
-		if out[i].ShareClass == "" && out[i].classHint != "" {
+		if out[i].classHint == "" {
+			continue
+		}
+		// The hint COMPOSES with the class the extractor already named: a fund
+		// family states the fund in a heading and the class in the column
+		// header, and "Class A" alone is one key for every fund in the
+		// document. Runs after every drop rule, so populating the grain key
+		// still cannot change which rows survive.
+		if out[i].ShareClass == "" {
 			out[i].ShareClass = out[i].classHint
+		} else if !strings.Contains(out[i].ShareClass, out[i].classHint) {
+			out[i].ShareClass = withSeries(out[i].classHint, out[i].ShareClass)
 		}
 	}
 	return out
