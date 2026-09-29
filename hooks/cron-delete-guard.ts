@@ -83,7 +83,11 @@ function runsUnder(cwd: string): Run[] | null {
 // flight -> deny". That is a misfire: in any project that has ever dispatched work, the grind
 // heartbeat could not be deleted when the loop ended. `--record` marks such an id here, beside the
 // hold ledger the guard already reads, so no project file and no per-workflow state is added.
-const GRIND_PROMPT = /\bgrind\b/i;
+//
+// farm.sh --workflow prints the same hourly backstop, naming its own run directory -- which is not a
+// `.work` run either whenever the caller is not work-dispatch.sh. The parenthesised nudge is matched,
+// not the bare word: "farm out the review" is prose about delegating, not a heartbeat.
+const NONRUN_PROMPT = /\bgrind\b|\(farm [^)\n]+\)/i;
 
 function markedPath(session: string): string {
   return join(process.env.TMPDIR || tmpdir(), `work-cron-nonrun-${session}.txt`);
@@ -124,9 +128,9 @@ if (process.argv.includes("--record")) {
     const runs = runsUnder(cwd) ?? [];
 
     // A prompt that names a run belongs to that run, whatever else it says; only an id NO run
-    // claims can be a grind heartbeat.
+    // claims can be a grind or farm heartbeat.
     const session = String(payload?.session_id ?? "");
-    if (session && GRIND_PROMPT.test(prompt) && !runs.some(r => r.name && prompt.includes(r.name))) {
+    if (session && NONRUN_PROMPT.test(prompt) && !runs.some(r => r.name && prompt.includes(r.name))) {
       if (!isMarked(session, id)) appendFileSync(markedPath(session), id + "\n");
     }
 
@@ -217,7 +221,7 @@ if (runs === null) allow();
 // nothing about run B, so an unrelated in-flight run must not hold A's finished loop open.
 const claiming = deleteId ? runs.filter(r => r.crons.includes(deleteId)) : [];
 
-// A heartbeat recorded as belonging to no run -- a grind backstop -- is not a work run's loop, so
+// A heartbeat recorded as belonging to no run -- a grind or farm backstop -- is not a work run's loop, so
 // an unrelated in-flight run says nothing about it. A run that CLAIMS the id still wins.
 if (!claiming.length && isMarked(session, deleteId)) allow();
 

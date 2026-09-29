@@ -208,6 +208,32 @@ describe('a grind heartbeat is claimed by no run, and deletes anyway', () => {
     expect(r.reason).toContain('.work/run-b/args.json')
   })
 
+  // A farm.sh --workflow heartbeat is the same shape of misfire: the run it names is a farm run
+  // dir, not a `.work` run, so no run claims the id and the fallback rule refuses it forever.
+  test('a farm heartbeat deletes while an unrelated work run is in flight', () => {
+    const cwd = newCwd()
+    mkRun(cwd, 'run-b')
+    const r = grindPair(cwd, '7a0b1c2d', 'and? (farm run-7f3a)')
+    expect(r.rec.status).toBe(0)
+    expect(r.decision).toBe('allow')
+  })
+
+  test('a farm heartbeat naming a .work run in flight is still refused', () => {
+    const cwd = newCwd()
+    mkRun(cwd, 'run-b')
+    const r = grindPair(cwd, '7a0b1c2e', 'and? (farm run-b)')
+    expect(r.decision).toBe('deny')
+    expect(r.reason).toContain('.work/run-b/args.json')
+  })
+
+  test('a bare mention of farming is NOT the heartbeat shape', () => {
+    const cwd = newCwd()
+    mkRun(cwd, 'run-b')
+    const r = grindPair(cwd, '7a0b1c2f', 'and? farm out the review')
+    expect(r.decision).toBe('deny')
+    expect(r.reason).toContain('no run')
+  })
+
   test('marking does not reach the ARMED-hold deny', () => {
     const cwd = newCwd()
     mkRun(cwd, 'run-a', { finished: true })
