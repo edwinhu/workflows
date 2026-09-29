@@ -2060,3 +2060,77 @@ func keysOf(m map[string]*Row) []string {
 	}
 	return out
 }
+
+// A proxy prints an OPTION-DETAIL table under its ownership table -- shares
+// owned, exercisable options, the option price RANGE, the average option price,
+// the weighted average remaining contractual life, the "in-the-money" options
+// and the net shares from exercising them -- once for exercisable options and
+// again for outstanding ones. Its header says "Shares Owned", so reOwnCue fires
+// and reCompCue's escape hatch lets it through as an ownership table: the same
+// director is emitted once per copy and the rows collapse onto one grain key.
+const optionDetailTableHTML = `<html><body>
+<p>Security Ownership of Certain Beneficial Owners and Management</p>
+<table>
+<tr><th>Name and Address of Beneficial Owner</th><th>Shares Beneficially Owned (1)</th><th>Percentage Beneficially Owned (1)</th></tr>
+<tr><td>State of Wisconsin Investment Board (2)</td><td>9,365,182</td><td>18.2</td></tr>
+<tr><td>William A. Aylesworth (6)</td><td>353,577</td><td>1.2</td></tr>
+<tr><td>A. Barr Dolan (6)(7)</td><td>6,399,809</td><td>12.3</td></tr>
+</table>
+<table>
+<tr><th>Name</th><th>Shares Owned (1)</th><th>Exercisable Options (2)</th><th>Exercisable Option Price Range (3)</th><th>Exercisable Option Average Price (4)</th><th>Weighted Average Remaining Contractual Life (5)</th><th>Exercisable "In-the money" Options (6)</th><th>Net Shares from Exercisable Options (7)</th></tr>
+<tr><td>William A. Aylesworth</td><td>20,000</td><td>333,577</td><td>$0.38-4.12</td><td>$1.35</td><td>5.90</td><td>191,765</td><td>61,150</td></tr>
+<tr><td>A. Barr Dolan (8)</td><td>6,012,717</td><td>387,092</td><td>$0.38-13.75</td><td>$1.42</td><td>6.18</td><td>225,982</td><td>70,599</td></tr>
+</table></body></html>`
+
+func TestOptionDetailTableIsNotOwnership(t *testing.T) {
+	rows := ScreenRows(run(t, optionDetailTableHTML))
+	tabs := map[int]bool{}
+	n := 0
+	for _, r := range rows {
+		if r.HolderName == "William A. Aylesworth" {
+			n++
+			tabs[r.TableIndex] = true
+		}
+	}
+	if n == 0 {
+		t.Fatalf("the real ownership table stopped emitting: %d rows", len(rows))
+	}
+	if len(tabs) != 1 {
+		t.Fatalf("option-detail table read as ownership: %d rows over %d tables", n, len(tabs))
+	}
+}
+
+// A fund-family proxy states each trustee's holding as a DOLLAR RANGE -- the
+// Form N-1A disclosure, "Dollar Range of Shares Owned in the Funds" -- with one
+// line per fund under the trustee's name. The ASCII path read "$10,001 -
+// $50,000" as a share count of 50,000 and the FUND NAME as the holder, so one
+// document emitted dozens of rows whose holder is a fund and whose shares are
+// money, and those rows collapse onto one grain key across the trustees.
+const asciiDollarRangeTable = `
+Nominees/Trustees ownership of shares in the Funds and in the Huntington
+Family of Investment Companies(1) as of December 31, 2005
+
+- ------------------------------------------------------------------------------
+Name of Nominee/Trustee  Dollar Range of        Aggregate Dollar Range of
+                         Shares Owned           Equity Securities in All
+                         in the Funds           Registered Investment Companies
+- ------------------------------------------------------------------------------
+David S. Schoedinger                                     Over $100,000
+  Dividend Capture Fund    $10,001 - $50,000
+  Growth Fund              $10,001 - $50,000
+  Mid Corp America Fund    $10,001 - $50,000
+  New Economy Fund            $1 - $10,000
+  Situs Small Cap Fund     $10,001 - $50,000
+`
+
+func TestASCIIDollarRangeIsNotShares(t *testing.T) {
+	rows := ScreenRows(run(t, asciiDollarRangeTable))
+	for _, r := range rows {
+		if r.Shares != nil && *r.Shares == 50000 {
+			t.Fatalf("a dollar range was read as a share count: %+v", r)
+		}
+	}
+	if len(rows) != 0 {
+		t.Fatalf("a dollar-range table is not an ownership table, got %d rows: %+v", len(rows), rows)
+	}
+}
