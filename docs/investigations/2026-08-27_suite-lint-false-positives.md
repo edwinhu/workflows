@@ -15,7 +15,7 @@ argue with a specific row.
 | positive-match-failure-vocabulary | 15 | 26 | 23 | 3 |
 | single-distinct-literal | 43 | 208 | 191 | 17 |
 | existence-only-artifact | 1 | 1 | 1 | 0 |
-| injected-key-never-varied | 17 | 44 | 44 | 0 |
+| injected-key-never-varied | 18 | 44 | 44 | 0 |
 
 **The audited-corpus column is the one this repository's suite pins, and the only one re-executed on
 every run.** The *audited corpus* is the 23 files this investigation actually read and cites by
@@ -167,7 +167,7 @@ standard-library callee, which is definitionally not the input under test.
 
 Raw 24, false positives 23, one true positive.
 
-The one that survives is `skills/work/scripts/work-redispatch.test.ts:784`:
+The one that survives is `skills/work/scripts/work-redispatch.test.ts:1045`:
 
 ```
 expect(r.out).toContain('CONVERGING')
@@ -333,7 +333,7 @@ Three mechanisms, and the first is an extraction defect rather than a rule-desig
 `skills/work/scripts/converge-check.test.ts:48` contains `verdict: r.blocking === 0 ? 'PASS' : 'FAIL'`
 and is reported as the key `PASS` with the value `'FAIL'`. There is no such key. The same misparse
 produces the `PASS: 'FAIL'` findings at `skills/work/scripts/work-dispatch-loops.test.ts:48`,
-`skills/work/scripts/work-loop.test.ts:39` and `skills/work/scripts/work-result.test.ts:654`, and
+`skills/work/scripts/work-loop.test.ts:39` and `skills/work/scripts/work-result.test.ts:739`, and
 the `ACTIVE: "PROCESSING"` finding at `skills/cite-check/tests/gemini.test.ts:109`
 (`state: getCalls >= 2 ? "ACTIVE" : "PROCESSING"`) together with its three `scratch/` copies. The
 gemini case is doubly wrong: that line exists precisely to vary the state across polls.
@@ -352,11 +352,16 @@ sets to configure its own harness rather than to exercise a branch: `CRAFT_DISPA
 `skills/work/scripts/work-dispatch-loops.test.ts:248`), `CRAFT_GOAL_PRINT: '1'` at
 `skills/work/scripts/work-dispatch.test.ts:100`, `CLAUDE_CODE_SESSION_ID: ''`
 at `skills/work/scripts/work-goal-resend.test.ts:78`, `CRAFT_FARM: '/bin/false'` at
-`skills/work/scripts/work-loop.test.ts:94`, `CRAFT_REDISPATCH_DRYRUN: '1'` at
-`skills/work/scripts/work-redispatch.test.ts:233`, `PATH` (four files) and `FARM_OUT_CHILD` (two),
+`skills/work/scripts/work-loop.test.ts:94`, `WORK_REDISPATCH_DRYRUN: '1'` and `WORK_NO_SCOPE: '1'` at
+`skills/work/scripts/work-redispatch.test.ts:258` and
+`skills/work/scripts/work-redispatch.test.ts:245`, `PATH` (four files) and `FARM_OUT_CHILD` (two),
 `CRAFT_SUITE_LINT_TIMEOUT: '2'` at `skills/work/scripts/suite-lint-dispatch.test.ts:186`, and the
 `GATE_STATUS`, `GATE_BLOCKED_TOOLS` and `GATE_REQUIRE_FIELDS` of the `scratch/` guard suites. A
-dry-run switch has one meaningful value; the varying input is what the harness then feeds the script.
+dry-run switch has one meaningful value, and a scope opt-out has none at all; the varying input is what
+the harness then feeds the script. The audited count moved 17 → 18 on 2026-09-28 when that suite
+stopped using the dry-run flag as its way of observing the committed round and began dispatching for
+real against a stub farm, which needs `WORK_NO_SCOPE` alongside `WORK_FARM` — one more key held
+constant for the same reason as the rest, read and false like them.
 
 One of these is worth calling out because it is the rule's own target shape, correctly handled by
 the test. `skills/work/scripts/compose-goal.test.ts:142` sets `CRAFT_GOAL_MAX_HOURS: '2'` once, and
@@ -384,7 +389,7 @@ What `suite-lint-report.test.ts` re-executes, and therefore what cannot silently
 firmer than a whole-tree total: the audited-corpus counts above, reproduced exactly; every
 `path:line` cited in this document, confirmed to be a finding the tool really reports **under the
 rule in whose section it is cited**; and the one true positive this investigation found by reading,
-`skills/work/scripts/work-redispatch.test.ts:784`, confirmed still to fire under
+`skills/work/scripts/work-redispatch.test.ts:1045`, confirmed still to fire under
 `positive-match-failure-vocabulary`. That re-execution is not decorative: it has caught drift three
 separate times, twice from edits landing while a run was still in flight, on documents whose prose
 was otherwise still accurate.

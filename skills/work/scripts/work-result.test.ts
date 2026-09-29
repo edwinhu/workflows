@@ -237,7 +237,8 @@ describe('work-result.sh unwraps the Workflow tool envelope', () => {
     }, null, 2))
     const r = runOn(file)
     expect(r.code).toBe(2)
-    expect(r.stderr).toContain('claimed PASS does not reproduce')
+    expect(r.stderr).toContain('REFUSED — mechanical check')
+    expect(r.stderr).toContain('the shell observed 3')
   })
 
   // The discriminator is "no gate keys at the top, all of them one level down". A top level that
