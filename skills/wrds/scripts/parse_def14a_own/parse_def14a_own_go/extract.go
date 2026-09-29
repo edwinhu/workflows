@@ -70,7 +70,7 @@ var (
 	// genuine "shares beneficially owned" column out of this.
 	reHdrMoney = regexp.MustCompile(`(?i)compensation|fees\s+earned|\bsalary\b|\bbonus\b|dollar\s+(?:range|value|amount)`)
 	reHdrOwned = regexp.MustCompile(`(?i)shares?\s+(?:owned|held|beneficially)|beneficially\s+owned|percent`)
-	reSkipName  = regexp.MustCompile(`(?i)^(name|names?\s+(and\s+address\s+)?of\s+.*|(name\s+of\s+)?beneficial\s+owners?|title\s+of\s+class|total|subtotal|directors?|non-?employee\s+directors?|executive\s+officers?|named\s+executive\s+officers?|nominees?|continuing\s+directors?|other\s+executive\s+officers?|5%\s+.*|principal\s+.*holders?|common\s+stock|class\s+[a-d].*)$`)
+	reSkipName = regexp.MustCompile(`(?i)^(name|names?\s+(and\s+address\s+)?of\s+.*|(name\s+of\s+)?beneficial\s+owners?|title\s+of\s+class|total|subtotal|directors?|non-?employee\s+directors?|executive\s+officers?|named\s+executive\s+officers?|nominees?|continuing\s+directors?|other\s+executive\s+officers?|5%\s+.*|principal\s+.*holders?|common\s+stock|class\s+[a-d].*)$`)
 	// The table must look like an ownership table, not an equity-comp-plan or
 	// compensation table that also carries share counts.
 	reOwnCue = regexp.MustCompile(`(?i)beneficial|percent\s*(?:age)?\s*of\s*(?:class|shares|common|outstanding)|amount\s+and\s+nature|%\s*of\s*class|shares\s+owned|owned\s+of\s+record|as\s+a\s+group|principal\s+(?:stock|share)holders`)
@@ -83,11 +83,11 @@ var (
 type colRole struct {
 	role   string // "name" | "shares" | "pct" | "class" | "other"
 	header string
-	// deep is the DEEPEST non-empty header cell over this column and deepAt the
-	// header row it came from. It is what tells two otherwise unlabelled value
-	// columns apart ("Total" against "combined voting power").
-	deep   string
-	deepAt int
+	// hdrCells is this column's cell in EVERY header row, kept so a column
+	// pair's label can be chosen from the header row that distinguishes it from
+	// its siblings, and so a continuation table that inherits these roles
+	// inherits the headers with them.
+	hdrCells []string
 }
 
 type compacted struct {
@@ -287,18 +287,19 @@ func (c *compacted) analyze() {
 	c.roles = make([]colRole, ncol)
 	for j := 0; j < ncol; j++ {
 		var hdr []string
-		deep, deepAt := "", -1
+		cells := make([]string, 0, c.nHeader)
 		for i := 0; i < c.nHeader && i < len(c.rows); i++ {
-			if j < len(c.rows[i]) && c.rows[i][j] != "" {
-				v := flat(c.rows[i][j])
+			v := ""
+			if j < len(c.rows[i]) {
+				v = flat(c.rows[i][j])
+			}
+			cells = append(cells, v)
+			if v != "" {
 				hdr = append(hdr, v)
-				if v != "" {
-					deep, deepAt = v, i
-				}
 			}
 		}
 		c.roles[j].header = strings.Join(uniq(hdr), " | ")
-		c.roles[j].deep, c.roles[j].deepAt = deep, deepAt
+		c.roles[j].hdrCells = cells
 	}
 	nameCol := -1
 	for j := 0; j < ncol; j++ {
@@ -307,7 +308,7 @@ func (c *compacted) analyze() {
 			if j >= len(c.rows[i]) {
 				continue
 			}
-			cell := flat(c.rows[i][j])
+			cell := stackFirst(c.rows[i][j])
 			if cell == "" {
 				continue
 			}
@@ -514,6 +515,55 @@ func (c *compacted) seriesRowLabel(r []string) string {
 	return lbl
 }
 
+// splitStack breaks a cell into its non-empty lines. EDGAR proxies STACK one
+// value per share class inside a single cell, separated by <br>.
+func splitStack(raw string) []string {
+	var out []string
+	for _, l := range strings.Split(raw, "\n") {
+		if v := norm(l); v != "" {
+			out = append(out, v)
+		}
+	}
+	return out
+}
+
+// stackFirst reduces a stacked VALUE cell to its first line, so a column's role
+// is voted on one value rather than on the concatenation of several — flattening
+// "33,870,629 / 712,172 / 631,060" yields a share count that cannot exist.
+// Only a cell whose every line is a number, a dash or a short class token
+// qualifies: a name-and-address cell is also multi-line and must keep all of it.
+func stackFirst(raw string) string {
+	lines := splitStack(raw)
+	if len(lines) < 2 {
+		return flat(raw)
+	}
+	for _, l := range lines {
+		if l == "-" || len(l) <= 4 {
+			continue
+		}
+		if _, ok := ParseShares(l); ok {
+			continue
+		}
+		if _, _, _, pi := ParsePercent(l); pi {
+			continue
+		}
+		return flat(raw)
+	}
+	return lines[0]
+}
+
+// subStack picks sub-row `sub` out of a label that is itself stacked the same
+// way ("A B C" after flattening), and leaves an unstacked label alone.
+func subStack(label string, nsub, sub int) string {
+	parts := strings.Split(label, " | ")
+	for i, p := range parts {
+		if f := strings.Fields(p); len(f) == nsub {
+			parts[i] = f[sub]
+		}
+	}
+	return strings.Join(parts, " | ")
+}
+
 // cleanClassLabel trims a column header down to something usable as a class
 // label: one line, no trailing footnote reference.
 func cleanClassLabel(s string) string {
@@ -524,27 +574,59 @@ func cleanClassLabel(s string) string {
 	return s
 }
 
-// pairLabel is the fallback identity of a (shares, percent) column pair whose
-// header names no share class: the DEEPEST header cell standing over it, which
-// is the one that distinguishes it from its siblings ("Total", "Percentage of
-// combined voting power"). Used only where a table emits more than one pair per
-// holder row, which is exactly where an unlabelled pair collapses onto its
-// sibling's key.
-func (c *compacted) pairLabel(p pair) string {
-	cols := []int{}
-	if p.shares >= 0 {
-		cols = append(cols, p.shares)
+// pairLabels names each (shares, percent) column pair from the header row that
+// DISTINGUISHES it from its siblings. The deepest header row is usually the
+// column TYPE ("Shares Held", "As % of shares outstanding"), identical over
+// every pair and useless as a key; the row above it carries the class or the
+// fund. Where no header row separates the pairs, the deepest non-empty cell is
+// used, which is what tells "Total" from "combined voting power".
+//
+// Reads the recorded header cells rather than the rows, so a continuation table
+// that inherited its columns is labelled too.
+func (c *compacted) pairLabels(ps []pair) []string {
+	out := make([]string, len(ps))
+	at := func(p pair, i int) string {
+		for _, j := range []int{p.pct, p.shares} {
+			if j < 0 || j >= len(c.roles) || i >= len(c.roles[j].hdrCells) {
+				continue
+			}
+			if v := c.roles[j].hdrCells[i]; v != "" {
+				return v
+			}
+		}
+		return ""
 	}
-	if p.pct >= 0 {
-		cols = append(cols, p.pct)
-	}
-	best, bestAt := "", -1
-	for _, j := range cols {
-		if j < len(c.roles) && c.roles[j].deepAt >= bestAt && c.roles[j].deep != "" {
-			best, bestAt = c.roles[j].deep, c.roles[j].deepAt
+	nh := 0
+	for _, r := range c.roles {
+		if len(r.hdrCells) > nh {
+			nh = len(r.hdrCells)
 		}
 	}
-	return cleanClassLabel(best)
+	for i := nh - 1; i >= 0; i-- {
+		vals := make([]string, len(ps))
+		distinct := map[string]bool{}
+		for k, p := range ps {
+			vals[k] = at(p, i)
+			if vals[k] != "" {
+				distinct[vals[k]] = true
+			}
+		}
+		if len(distinct) >= 2 {
+			for k := range vals {
+				out[k] = cleanClassLabel(vals[k])
+			}
+			return out
+		}
+	}
+	for k, p := range ps {
+		for i := nh - 1; i >= 0; i-- {
+			if v := at(p, i); v != "" {
+				out[k] = cleanClassLabel(v)
+				break
+			}
+		}
+	}
+	return out
 }
 
 type pair struct{ shares, pct int }
@@ -800,6 +882,7 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 	if len(ps) == 0 {
 		return nil, c
 	}
+	plabels := c.pairLabels(ps)
 	var out []Row
 	lastName, lastSeries := "", ""
 	lastClass := make([]string, len(c.hdrClassCols))
@@ -859,55 +942,87 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 			continue
 		}
 		grp, gn := isGroupRow(name)
-		for _, p := range ps {
-			rw := base
-			rw.TableIndex = tableIdx
-			rw.RowIndex = i
-			rw.HolderName = name
-			rw.IsGroupRow = grp
-			rw.GroupN = gn
-			rw.Parser = "html_dom"
-			allFns := append([]string{}, fns...)
+		for pi, p := range ps {
+			// A STACKED cell holds one value per share class, on its own line,
+			// in every value column of the row at once. Flattening it
+			// concatenates the digits into a share count that cannot exist and
+			// collapses the classes onto one key, so the lines are taken apart.
+			shLines, pcLines := []string{}, []string{}
 			if p.shares >= 0 && p.shares < len(r) {
-				if v, ok := ParseShares(r[p.shares]); ok {
-					vv := v
-					rw.Shares = &vv
-				}
-				if _, f := StripFootnotes(r[p.shares]); len(f) > 0 {
-					allFns = append(allFns, f...)
-				}
+				shLines = splitStack(r[p.shares])
 			}
 			if p.pct >= 0 && p.pct < len(r) {
-				v, ok, mk, _ := ParsePercent(r[p.pct])
-				if ok {
-					vv := v
-					rw.Percent = &vv
+				pcLines = splitStack(r[p.pct])
+			}
+			nsub := 1
+			if len(shLines) > 1 && len(shLines) == len(pcLines) {
+				nsub = len(shLines)
+			}
+			for sub := 0; sub < nsub; sub++ {
+				shCell, pcCell := "", ""
+				if p.shares >= 0 && p.shares < len(r) {
+					shCell = r[p.shares]
 				}
-				rw.PctMarker = mk
+				if p.pct >= 0 && p.pct < len(r) {
+					pcCell = r[p.pct]
+				}
+				if nsub > 1 {
+					shCell, pcCell = shLines[sub], pcLines[sub]
+				}
+				rw := base
+				rw.TableIndex = tableIdx
+				rw.RowIndex = i
+				rw.HolderName = name
+				rw.IsGroupRow = grp
+				rw.GroupN = gn
+				rw.Parser = "html_dom"
+				allFns := append([]string{}, fns...)
+				if shCell != "" {
+					if v, ok := ParseShares(shCell); ok {
+						vv := v
+						rw.Shares = &vv
+					}
+					if _, f := StripFootnotes(shCell); len(f) > 0 {
+						allFns = append(allFns, f...)
+					}
+				}
+				if pcCell != "" {
+					v, ok, mk, _ := ParsePercent(pcCell)
+					if ok {
+						vv := v
+						rw.Percent = &vv
+					}
+					rw.PctMarker = mk
+				}
+				if rw.Shares == nil && rw.Percent == nil && rw.PctMarker == "" {
+					continue
+				}
+				cl := c.classLabel(p)
+				hint := rowHint
+				if nsub > 1 {
+					// The class column is stacked the same way: line `sub`
+					// names this sub-row's class.
+					hint = subStack(hint, nsub, sub)
+				}
+				if cl == "" && rowClass != "" {
+					cl = rowClass
+				}
+				// Several value column pairs per holder row and no class-shaped
+				// header over them: the header row that tells the pairs apart
+				// names them, and it composes with a fund label rather than
+				// replacing it.
+				if cl == "" && len(ps) > 1 {
+					hint = withSeries(hint, plabels[pi])
+				}
+				if lastSeries != "" {
+					hint = withSeries(lastSeries, hint)
+					rw.seriesLocal = true
+				}
+				rw.ShareClass = cl
+				rw.classHint = cleanClassLabel(hint)
+				rw.Footnotes = strings.Join(uniq(allFns), ",")
+				out = append(out, rw)
 			}
-			if rw.Shares == nil && rw.Percent == nil && rw.PctMarker == "" {
-				continue
-			}
-			cl := c.classLabel(p)
-			hint := rowHint
-			if cl == "" && rowClass != "" {
-				cl = rowClass
-			}
-			// Several value column pairs per holder row and no class-shaped
-			// header over them: the pair's own deepest header is what tells
-			// them apart, and it composes with a fund label rather than
-			// replacing it.
-			if cl == "" && len(ps) > 1 {
-				hint = withSeries(hint, c.pairLabel(p))
-			}
-			if lastSeries != "" {
-				hint = withSeries(lastSeries, hint)
-				rw.seriesLocal = true
-			}
-			rw.ShareClass = cl
-			rw.classHint = cleanClassLabel(hint)
-			rw.Footnotes = strings.Join(uniq(allFns), ",")
-			out = append(out, rw)
 		}
 	}
 	return out, c
