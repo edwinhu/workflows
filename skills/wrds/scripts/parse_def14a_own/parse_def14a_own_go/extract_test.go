@@ -1664,3 +1664,52 @@ func TestASCIIDatedFundLabelLines(t *testing.T) {
 		}
 	}
 }
+
+// A fund-family proxy states each board member's holding in ONE COLUMN PER FUND
+// with no percent anywhere, and when the funds outrun the page width it repeats
+// its title and a NEW column header INSIDE the same table for the next batch.
+// Read as components of one holding, only the first column was emitted and every
+// member came back once per batch on one empty key.
+const perFundColumnsHTML = `<html><body>
+<p>Security Ownership of Certain Beneficial Owners and Management</p>
+<table>
+<tr><td colspan="4">Fund Shares Owned by Board Members and Officers</td></tr>
+<tr><td>Board Member/Nominees</td><td>All Cap Energy</td><td>Core Equity</td><td>Credit Strategies</td></tr>
+<tr><td colspan="4">Board Members/Nominees who are not interested persons of the Funds</td></tr>
+<tr><td>Jack B. Evans</td><td>0</td><td>0</td><td>1,600</td></tr>
+<tr><td>Judith M. Stockdale</td><td>0</td><td>1,130</td><td>2,652</td></tr>
+<tr><td>All Board Members and Officers as a group (11 persons)</td><td>0</td><td>1,130</td><td>4,252</td></tr>
+<tr><td colspan="4">Fund Shares Owned by Board Members and Officers</td></tr>
+<tr><td>Board Member/Nominees</td><td>Global Equity</td><td>Maryland Premium</td><td>Missouri Premium</td></tr>
+<tr><td>Jack B. Evans</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>Judith M. Stockdale</td><td>11,000</td><td>0</td><td>0</td></tr>
+<tr><td>All Board Members and Officers as a group (11 persons)</td><td>13,000</td><td>2,500</td><td>0</td></tr>
+</table></body></html>`
+
+func TestPerFundColumnsAndInteriorHeader(t *testing.T) {
+	rows := ScreenRows(run(t, perFundColumnsHTML))
+	seen := map[string]int{}
+	vals := map[string]float64{}
+	for _, r := range rows {
+		if r.HolderName == "Judith M. Stockdale" {
+			seen[r.ShareClass]++
+			if r.Shares != nil {
+				vals[r.ShareClass] = *r.Shares
+			}
+		}
+	}
+	if len(seen) != 6 {
+		t.Fatalf("want one labelled row per fund column across BOTH header blocks, got %v", seen)
+	}
+	for cls, n := range seen {
+		if n > 1 {
+			t.Errorf("share_class %q emitted %d times: %v", cls, n, seen)
+		}
+		if cls == "" {
+			t.Errorf("a per-fund row carries no share_class: %v", seen)
+		}
+	}
+	if vals["Core Equity"] != 1130 || vals["Global Equity"] != 11000 {
+		t.Errorf("fund columns mislabelled: %v", vals)
+	}
+}

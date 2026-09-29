@@ -53,6 +53,12 @@ var (
 	// The arithmetic glue of an additive table: a column holding nothing but a
 	// bare "+" or "=" between the component columns it adds up.
 	reArithGlue = regexp.MustCompile(`^\s*[+=]\s*$`)
+	// A share column that is a COMPONENT of one holding — sole and shared power,
+	// options, deferred or restricted units, the total — rather than a holding of
+	// its own. Read only where the table states no percent at all, to tell J&J's
+	// directors table (common shares, deferred units, options, total) from a
+	// fund-family table with one column per fund.
+	reComponentCol = regexp.MustCompile(`(?i)total|option|deferred|restricted|unvested|underlying|exercisab|\bunits?\b|\bsole\b|shared|voting|disposit|investment\s+power|\bdirect|\bindirect|aggregate|percent|\bplan\b|award|\bvested\b|\bheld\b|\bother\b`)
 	reHdrShares = regexp.MustCompile(`(?i)shares|amount|number|beneficially\s+owned|ownership|aggregate`)
 	reHdrClass  = regexp.MustCompile(`(?i)\bclass\s+[a-d]\b|common\s+stock|series\s+[a-z0-9]+\s+(?:common|preferred)|preferred\s+stock|ordinary\s+shares|\bclass\s+[a-d]$`)
 	// reHdrNameCol matches the header of the column that names the HOLDER.
@@ -626,6 +632,48 @@ func cleanClassLabel(s string) string {
 	return s
 }
 
+// interiorHeader reports a row INSIDE the data block that is a second column
+// header: every value column holds text rather than a number, at least two of
+// them differ, and none of them parses as a share count or a percent. A
+// fund-family table that runs out of page width repeats its header for the next
+// batch of funds, and the rows under it belong to THOSE funds.
+func (c *compacted) interiorHeader(r []string, ps []pair) ([]string, bool) {
+	if len(ps) < 2 || isSpanRow(r) {
+		return nil, false
+	}
+	out := make([]string, len(ps))
+	n := 0
+	distinct := map[string]bool{}
+	for k, p := range ps {
+		v := ""
+		for _, j := range []int{p.shares, p.pct} {
+			if j >= 0 && j < len(r) && flat(r[j]) != "" {
+				v = flat(r[j])
+				break
+			}
+		}
+		if v == "" {
+			continue
+		}
+		if _, ok := ParseShares(v); ok {
+			return nil, false
+		}
+		if _, _, _, pi := ParsePercent(v); pi {
+			return nil, false
+		}
+		if !hasWords(v, 1) {
+			return nil, false
+		}
+		out[k] = cleanClassLabel(v)
+		distinct[out[k]] = true
+		n++
+	}
+	if n < 2 || len(distinct) < 2 {
+		return nil, false
+	}
+	return out, true
+}
+
 // splitTiedLabels separates two pairs that the chosen header row gives the SAME
 // name. A multi-class table often states the class one row up and the QUANTITY
 // one row down — "Series A and Series B" over both a share Number column and a
@@ -759,6 +807,26 @@ func (c *compacted) pairs() []pair {
 		}
 	}
 	if nPct == 0 && len(shareCols) > 1 {
+		// ... unless the header names every column with something that is not a
+		// component of one holding. A fund-family proxy states each board
+		// member's holding in one column per FUND, and those are separate
+		// holdings that collapse onto one key if only the first is emitted.
+		per := make([]pair, len(shareCols))
+		for i, j := range shareCols {
+			per[i] = pair{j, -1}
+		}
+		labs := c.pairLabels(per)
+		distinct, seen := true, map[string]bool{}
+		for _, l := range labs {
+			if l == "" || seen[l] || reComponentCol.MatchString(l) {
+				distinct = false
+				break
+			}
+			seen[l] = true
+		}
+		if distinct {
+			return per
+		}
 		best := shareCols[len(shareCols)-1]
 		for _, j := range shareCols {
 			if regexp.MustCompile(`(?i)total|beneficially\s+owned`).MatchString(c.roles[j].header) {
@@ -1059,6 +1127,18 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 	}
 	for i := c.nHeader; i < len(c.rows); i++ {
 		r := c.rows[i]
+		// When the funds outrun the page width a fund-family table repeats its
+		// COLUMN HEADER inside itself for the next batch of funds. Without this
+		// the second batch is labelled with the first batch's funds and every
+		// holder is emitted twice on one key.
+		if lbls, ok := c.interiorHeader(r, ps); ok {
+			for k := range plabels {
+				if lbls[k] != "" {
+					plabels[k] = lbls[k]
+				}
+			}
+			continue
+		}
 		// A full-width label row naming one of the filing's funds separates the
 		// funds a single table covers. It names no holder and carries no number.
 		if lbl := c.seriesRowLabel(r); lbl != "" {
