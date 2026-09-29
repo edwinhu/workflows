@@ -374,3 +374,124 @@ func TestParseHelpers(t *testing.T) {
 		t.Errorf("isGroupRow = %v %v", g, n)
 	}
 }
+
+// SEC rules make a proxy print the 5% holder's ADDRESS, and ASCII proxies put
+// it on the lines underneath the name, with a blank line before the next
+// holder. Transcribed from 0000930661-00-000895 (cik 202890), where the block
+// scan died after one row and the filing scored no_table_found_plain_text.
+var asciiAddressBlock = `
+                       VOTING AND PRINCIPAL STOCKHOLDERS
+
+  The following table sets forth as of March 17, 2000, certain information with
+regard to the beneficial ownership of Common Stock by (i) all persons known by
+the Corporation to be the beneficial owner of more than 5% of the outstanding
+Common Stock of the Corporation; (ii) each director and nominee for director of
+the Corporation; and (iv) all executive officers and directors as a group.
+
+<TABLE>
+<CAPTION>
+                             Number       Shares Underlying    Total    Percent
+         Name of               of        Options Exercisable Beneficial   of
+     Beneficial Owner       Shares(1)      Within 60 Days    Ownership   Class
+     ----------------       ---------    ------------------- ---------- -------
+<S>                         <C>          <C>                 <C>        <C>
+Don V. Ingram.............  1,261,710(2)        414,787      1,676,497   10.7%
+ 2200 Ross Ave., Suite
+  4500-E
+ L.B. 170
+ Dallas, Texas 75201
+
+William Warshauer.........  1,135,743(3)          3,000      1,138,743    7.5%
+ 430 W. Garfield Ave.
+ Coldwater, Michigan 49036
+
+Mellon Financial
+ Corporation..............  1,339,369(4)            -0-      1,339,369    8.8%
+ One Mellon Bank Center
+ Pittsburgh, PA 15258
+</TABLE>
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIIAddressBlockDoesNotEndTable(t *testing.T) {
+	rows := run(t, asciiAddressBlock)
+	for _, want := range []struct {
+		name string
+		pct  float64
+	}{
+		{"Don V. Ingram", 10.7},
+		{"William Warshauer", 7.5},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil {
+			t.Fatalf("%s missing; parsed: %v", want.name, holderNames(rows))
+		}
+		if r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("%s percent = %v, want %v", want.name, r.Percent, want.pct)
+		}
+	}
+	// A street address is not a holder.
+	for _, r := range rows {
+		if strings.Contains(r.HolderName, "Ross Ave") || strings.Contains(r.HolderName, "Coldwater") {
+			t.Errorf("address line emitted as a holder: %q", r.HolderName)
+		}
+	}
+}
+
+// ParsePercent already accepts + # † ‡ as less-than-1% markers, but the ASCII
+// row regex's numeric-tail character class did not, so every row carrying one
+// failed to parse at all. Transcribed from 0000891618-99-001377 (cik 837991),
+// where nine of ten rows used "+" and the filing scored
+// no_table_found_plain_text.
+var asciiPlusMarker = `
+                             PRINCIPAL STOCKHOLDERS
+
+     The following table sets forth certain information regarding the
+beneficial ownership of the Company's Common Stock by each person known to
+own more than 5%, each director, and all directors and executive officers
+as a group.
+
+<TABLE>
+<CAPTION>
+                                                   COMMON         APPROXIMATE
+                                                   STOCK            PERCENT
+                                                BENEFICIALLY      BENEFICIALLY
+               BENEFICIAL OWNER                    OWNED             OWNED
+<S>                                             <C>               <C>
+Mark B. Logan.................................    343,345(1)          1.1%
+Elizabeth H. Davila...........................    183,382(2)            +
+Glendon E. French.............................     14,290(3)            +
+John W. Galiardo..............................     25,791(4)            +
+Jay T. Holmes.................................     35,190(5)            +
+All directors and executive officers as a
+  group (14 persons)..........................    828,513(10)         2.6%
+</TABLE>
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIIPlusLessThanMarker(t *testing.T) {
+	rows := run(t, asciiPlusMarker)
+	d := find(rows, "Elizabeth H. Davila", "")
+	if d == nil {
+		t.Fatalf("row with a + marker never parsed; parsed: %v", holderNames(rows))
+	}
+	if d.Shares == nil || *d.Shares != 183382 {
+		t.Errorf("Davila shares = %v, want 183382", d.Shares)
+	}
+	if d.PctMarker != "*" {
+		t.Errorf("Davila marker = %q, want %q (less-than-1%%)", d.PctMarker, "*")
+	}
+	if d.Percent != nil {
+		t.Errorf("a + marker is not a numeric percent, got %v", *d.Percent)
+	}
+	if r := find(rows, "Mark B. Logan", ""); r == nil || r.Percent == nil || *r.Percent != 1.1 {
+		t.Errorf("Logan row: %+v", r)
+	}
+	var g *Row
+	for i := range rows {
+		if rows[i].IsGroupRow {
+			g = &rows[i]
+		}
+	}
+	if g == nil || g.Percent == nil || *g.Percent != 2.6 || g.GroupN != 14 {
+		t.Fatalf("group row: %+v", g)
+	}
+}

@@ -13,10 +13,14 @@ import (
 var (
 	reTxtTag = regexp.MustCompile(`(?i)</?(TABLE|CAPTION|S|C|PRE|PAGE|FN)[^>]*>`)
 	reAnyTag = regexp.MustCompile(`<[^>]*>`)
-	// The numeric tail must START with a number, $, ( or *, so the split lands
-	// at the last text-to-number boundary: "Dr.  Paula Stern   300   *" is one
-	// name and one tail, not the name "Dr." and a tail beginning "Paula".
-	reTxtRow     = regexp.MustCompile(`^\s*(\S.*?\S)\s{2,}([\$\(\*0-9][\$\(\)0-9,\.\*\-\s%a-zA-Z]{0,79})$`)
+	// The numeric tail must START with a number, $, ( or a less-than-1%
+	// marker, so the split lands at the last text-to-number boundary:
+	// "Dr.  Paula Stern   300   *" is one name and one tail, not the name
+	// "Dr." and a tail beginning "Paula". ParsePercent accepts + # * and the
+	// dagger family as that marker, so the tail class must carry all of them:
+	// a proxy that marks small holders with "+" otherwise fails to parse
+	// EVERY row that carries one.
+	reTxtRow     = regexp.MustCompile(`^\s*(\S.*?\S)\s{2,}([\$\(\*\+#†‡0-9][\$\(\)0-9,\.\*\+#†‡\-\s%a-zA-Z]{0,79})$`)
 	reBigNum     = regexp.MustCompile(`[0-9][0-9,]{2,}`)
 	rePctTok     = regexp.MustCompile(`([0-9]{1,3}(?:\.[0-9]+)?)\s*%|(\*)|(?:^|\s)([0-9]{1,2}\.[0-9])(?:\s|$)`)
 	reDotLeader  = regexp.MustCompile(`\.{3,}`)
@@ -26,6 +30,11 @@ var (
 	reClassOnly  = regexp.MustCompile(`(?i)^(class\s+[a-d](?:\s+common(?:\s+stock)?)?|common\s+stock|common|series\s+[a-z0-9]+(?:\s+\w+)?|preferred(?:\s+stock)?|ordinary\s+shares)$`)
 )
 
+// maxLinesSinceRow caps the combined run of blank and non-row lines between
+// two table rows. A four-line address plus its blank separator is five;
+// anything past this is the table having ended.
+const maxLinesSinceRow = 12
+
 // holding is one (shares, percent) column pair recovered from an ASCII row.
 type holding struct {
 	shares *float64
@@ -33,7 +42,17 @@ type holding struct {
 	marker string
 }
 
-var reNumTok = regexp.MustCompile(`[0-9][0-9,]*(?:\.[0-9]+)?\s*%|[0-9][0-9,]*(?:\.[0-9]+)?|\*`)
+var reNumTok = regexp.MustCompile(`[0-9][0-9,]*(?:\.[0-9]+)?\s*%|[0-9][0-9,]*(?:\.[0-9]+)?|\*|(?:^|\s)[\+#†‡](?:\s|$)`)
+
+// isStarMarker reports the less-than-1% glyphs as a standalone column value.
+// They are normalised to "*" downstream so consumers see one marker, not five.
+func isStarMarker(t string) bool {
+	switch t {
+	case "*", "+", "#", "†", "‡":
+		return true
+	}
+	return false
+}
 
 // textTokens reads the numeric tail of an ASCII table row left to right and
 // pairs each percent with the share count immediately to its left — which in
@@ -49,7 +68,7 @@ func textTokens(rest string) []holding {
 	for _, tok := range reNumTok.FindAllString(rest, -1) {
 		t := strings.TrimSpace(tok)
 		switch {
-		case t == "*":
+		case isStarMarker(t):
 			anyPct = true
 			out = append(out, holding{shares: pendShares, marker: "*"})
 			pendShares = nil
@@ -149,19 +168,28 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		}
 		var block []int
 		var header []string
-		gap := 0
+		// Three counters, not one. A 5% holder's ADDRESS sits on the lines under
+		// its name with a blank line before the next holder, so a shared counter
+		// reaches the blank-line limit on the first holder and ends the table
+		// after one row. blankRun ends it only on a real run of blank lines,
+		// nonRowRun on a run of prose, sinceRow caps the two together.
+		blankRun, nonRowRun, sinceRow := 0, 0, 0
 		for ; j < limit; j++ {
 			if consumed[j] {
 				continue
 			}
 			lt := strings.TrimSpace(clean[j])
 			if lt == "" {
-				gap++
-				if len(block) > 0 && gap > 4 {
-					break
+				blankRun++
+				if len(block) > 0 {
+					sinceRow++
+					if blankRun >= 3 || sinceRow >= maxLinesSinceRow {
+						break
+					}
 				}
 				continue
 			}
+			blankRun = 0
 			if reHdrLineCue.MatchString(lt) && len(block) == 0 {
 				header = append(header, clean[j])
 			}
@@ -170,10 +198,11 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 			}
 			if _, _, ok := parseTextRow(clean[j]); ok {
 				block = append(block, j)
-				gap = 0
+				nonRowRun, sinceRow = 0, 0
 			} else if len(block) > 0 {
-				gap++
-				if gap > 6 {
+				nonRowRun++
+				sinceRow++
+				if nonRowRun > 6 || sinceRow >= maxLinesSinceRow {
 					break
 				}
 			}
