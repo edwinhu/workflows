@@ -1181,3 +1181,32 @@ func TestFundAndClassColumnsBothReachShareClass(t *testing.T) {
 		}
 	}
 }
+
+// The class column's header is often more than the bare keyword ("Fund and
+// Share Class", "Fund/Share Class"), and a table also carries a full-width
+// sub-heading row that colspan expansion repeats across every column. Neither
+// may cost the row-level class column its role.
+const fundShareClassHeaderHTML = `<html><body>
+<p>Beneficial Ownership of Certain Beneficial Owners</p>
+<table>
+<tr><td>Fund and Share Class</td><td>Name of Beneficial Owner</td><td>Shares</td><td>Percent of Class</td></tr>
+<tr><td colspan="4">Board Members/Nominees who are not interested persons of the Funds</td></tr>
+<tr><td>Senior Income (NSL) - Common Shares</td><td>Jack B. Evans</td><td>10,000</td><td>6.1%</td></tr>
+<tr><td>Floating Rate Income (JRO) - Common Shares</td><td>Jack B. Evans</td><td>1,600</td><td>5.4%</td></tr>
+</table></body></html>`
+
+func TestFundShareClassHeaderKeepsClassRole(t *testing.T) {
+	rows := ScreenRows(run(t, fundShareClassHeaderHTML))
+	seen := map[string]int{}
+	for _, r := range rows {
+		if r.HolderName == "Jack B. Evans" {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) != 2 {
+		t.Fatalf("two funds, want 2 distinct share_class, got %v (rows %v)", seen, rows)
+	}
+	if seen[""] > 0 {
+		t.Errorf("a row was emitted with no class though the table states one: %v", seen)
+	}
+}
