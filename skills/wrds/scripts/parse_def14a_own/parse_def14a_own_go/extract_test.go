@@ -1920,3 +1920,44 @@ func TestIdenticalRecordsFromOneRowCollapse(t *testing.T) {
 		t.Errorf("rows carrying DIFFERENT values must not be collapsed, got %d", m)
 	}
 }
+
+// A fund-family proxy that declares no series names each fund in a short TEXT
+// line above its table rather than in a row inside it. Every fund's record
+// holders otherwise collapse onto one key per share class.
+const fundHeadingAboveTableHTML = `<html><body>
+<p>Principal Shareholders of the Funds</p>
+<p>Invesco American Franchise Fund</p>
+<table>
+<tr><th>Name and Address of Principal Holder</th><th colspan="2">Amount of Shares Owned / Percent of Class</th></tr>
+<tr><th></th><th>Class A</th><th>Class Y</th></tr>
+<tr><td>EDWARD D JONES &amp; CO</td><td>35.85%</td><td>—</td></tr>
+<tr><td>LPL FINANCIAL</td><td>6.64%</td><td>—</td></tr>
+</table>
+<p>Invesco Global Core Equity Fund</p>
+<table>
+<tr><th>Name and Address of Principal Holder</th><th colspan="2">Amount of Shares Owned / Percent of Class</th></tr>
+<tr><th></th><th>Class A</th><th>Class Y</th></tr>
+<tr><td>EDWARD D JONES &amp; CO</td><td>26.86%</td><td>—</td></tr>
+<tr><td>LPL FINANCIAL</td><td>6.92%</td><td>—</td></tr>
+</table></body></html>`
+
+func TestFundHeadingAboveTable(t *testing.T) {
+	rows := ScreenRows(run(t, fundHeadingAboveTableHTML))
+	seen := map[string]int{}
+	for _, r := range rows {
+		if r.HolderName == "EDWARD D JONES & CO" {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) < 2 {
+		t.Fatalf("want a key per fund, got %v (%v)", seen, holderNames(rows))
+	}
+	for cls, n := range seen {
+		if n > 1 {
+			t.Errorf("share_class %q emitted %d times: %v", cls, n, seen)
+		}
+		if !strings.Contains(cls, "Fund") {
+			t.Errorf("share_class %q does not name the fund heading: %v", cls, seen)
+		}
+	}
+}

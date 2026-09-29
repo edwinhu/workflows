@@ -100,8 +100,13 @@ func classHeadingLabels(items []Item) []string {
 	for i, it := range items {
 		if it.Kind == "text" {
 			t := strings.TrimSpace(it.Text)
-			if len(t) <= 60 && len(strings.Fields(t)) <= 7 &&
-				reHdrClass.MatchString(t) && !reClassHeadingNo.MatchString(t) {
+			// ... or the FUND, for a family that declares no series: a short
+			// line ending in the fund noun, with the same prose guard the label
+			// rows use.
+			classish := reHdrClass.MatchString(t) && !reClassHeadingNo.MatchString(t)
+			fundish := len(strings.Fields(t)) >= 2 && reFundLabelLine.MatchString(t) &&
+				!reFundLabelNo.MatchString(t)
+			if len(t) <= 60 && len(strings.Fields(t)) <= 7 && (classish || fundish) {
 				cur, at = strings.TrimRight(t, ":."), i
 			}
 		}
@@ -240,8 +245,12 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 			}
 			for i := range g.rows {
 				g.rows[i].TableKind = kd
-				if g.rows[i].ShareClass == "" && g.rows[i].classHint == "" {
-					g.rows[i].classHint = g.class
+				// The heading above the table names the class or the FUND; it
+				// composes with whatever the table's own columns named, since
+				// "Class A" alone is one key for every fund in the document.
+				if g.class != "" && !strings.Contains(g.rows[i].classHint, g.class) &&
+					!strings.Contains(g.rows[i].ShareClass, g.class) {
+					g.rows[i].classHint = withSeries(g.class, g.rows[i].classHint)
 				}
 				if !g.rows[i].seriesLocal && !namesSeries(sset, g.rows[i].classHint) {
 					g.rows[i].classHint = withSeries(g.series, g.rows[i].classHint)
