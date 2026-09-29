@@ -1069,8 +1069,11 @@ var reClassInValue = regexp.MustCompile(`(?i)\bclass\s+[a-z0-9]{1,3}\b|\bseries\
 // holder named on the row above.
 var reParenOnlyName = regexp.MustCompile(`^\s*\([^()]*\)\s*$`)
 
-// holderName takes the first line of a 5% holder's cell when the lines that
-// follow are the mailing address EDGAR proxies put under the name.
+// holderName takes the lines of a 5% holder's cell that come BEFORE the mailing
+// address EDGAR proxies put under the name. The name itself routinely wraps
+// ("State of" / "Wisconsin Investment Board (2)" / "P.O. Box 7842" / "Madison,
+// WI 53707"), so stopping at line one both truncates the holder and collides
+// every holder whose first line is as generic as "State of".
 func holderName(cell string) string {
 	lines := strings.Split(cell, "\n")
 	if len(lines) < 2 {
@@ -1080,12 +1083,26 @@ func holderName(cell string) string {
 	if !hasWords(first, 1) {
 		return flat(cell)
 	}
-	for _, l := range lines[1:] {
-		if reAddrLine.MatchString(strings.TrimSpace(l)) {
-			return first
+	addr := -1
+	for i := 1; i < len(lines); i++ {
+		if reAddrLine.MatchString(strings.TrimSpace(lines[i])) {
+			addr = i
+			break
 		}
 	}
-	return flat(cell)
+	if addr < 0 {
+		return flat(cell) // no address under the name: the cell is the name
+	}
+	// Everything before the address is the name, capped at three lines so a
+	// footnote sentence written above an address cannot be read as one.
+	end := min(addr, 3)
+	var head []string
+	for i := 0; i < end; i++ {
+		if t := strings.TrimSpace(lines[i]); t != "" {
+			head = append(head, t)
+		}
+	}
+	return flat(strings.Join(head, " "))
 }
 
 // dropAddress trims a mailing address that a proxy wrote inline with the name:
