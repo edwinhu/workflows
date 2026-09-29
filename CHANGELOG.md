@@ -49,6 +49,12 @@
 - **Review moved to the skill's Phase 5, after the goal clears**, with the two rules the episode actually taught: deliver first, because a PASS means the suite is green and not that the real claim holds; and never block delivery on the TUI. Work that cannot be undone — a one-way migration, a deletion — is still worth reviewing before shipping, but that is now a judgement the orchestrator makes out loud with the user, not a gate imposed on every run.
 - **The goal's wall-clock ceiling is denominated in minutes, default 10** (`CRAFT_GOAL_MAX_MINUTES`; `CRAFT_GOAL_MAX_HOURS` still honoured and converted). It bounds how long a session may WAIT, not how long it may work — the Stop hook gates stopping, never working — and an hours-scale default bought nothing but hours spent sitting on an absent human.
 
+## [6.27.3] - 2026-09-28
+
+### Fixed
+
+- **`farm-monitor.sh` exits when the session that started it is gone.** `monitors/monitors.json` has declared it `when: "always"` since v6.26.0, so every session that ends abnormally leaks one: found 2026-09-28, a monitor had been running **11 days** reparented to init, polling a dead session's `farm-events` directory every 20 s with nobody left to read a line of it. At startup it now walks the ancestor chain to the nearest process whose **executable** basename is `claude` — the harness runs monitors under a bash wrapper whose args carry `.claude/shell-snapshots`, so matching a substring of the command line finds the wrapper instead of the session, and `readlink /proc/<pid>/exe` is what distinguishes them. With no `claude` in the chain (a hand-run monitor, a test harness) it falls back to the direct parent. Each poll iteration exits 0 silently if that pid is gone, or if its own live ppid is 1 — reparenting means the harness went away even where the owner lookup fell back. Nothing else changed: the farm and grind event rendering and the GONE detection are byte-identical, and no state file was added. The poll interval is overridable via `FARM_MONITOR_POLL_SECONDS` for tests only; the shipped default is still 20 s, which `tests/farm-monitor-session-lifetime.test.ts` asserts alongside the three exit paths (owner dead with the parent still alive, orphaned with the owner still alive, and silence on exit).
+
 ## [6.27.2] - 2026-09-28
 
 ### Fixed
