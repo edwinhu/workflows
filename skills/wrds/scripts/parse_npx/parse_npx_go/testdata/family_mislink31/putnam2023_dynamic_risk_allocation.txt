@@ -1,0 +1,857 @@
+<SEC-DOCUMENT>0000928816-23-001200.txt : 20230823
+<SEC-HEADER>0000928816-23-001200.hdr.sgml : 20230823
+<ACCEPTANCE-DATETIME>20230823092526
+ACCESSION NUMBER:		0000928816-23-001200
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		2
+CONFORMED PERIOD OF REPORT:	20230630
+FILED AS OF DATE:		20230823
+DATE AS OF CHANGE:		20230823
+EFFECTIVENESS DATE:		20230823
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PUTNAM FUNDS TRUST
+		CENTRAL INDEX KEY:			0001005942
+		IRS NUMBER:				043299786
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07513
+		FILM NUMBER:		231195430
+
+	BUSINESS ADDRESS:	
+		STREET 1:		100 FEDERAL STREET
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02110
+		BUSINESS PHONE:		6177601000
+
+	MAIL ADDRESS:	
+		STREET 1:		100 FEDERAL STREET
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02110
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001005942
+<SERIES-ID>S000000773
+<SERIES-NAME>Putnam Floating Rate Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002278
+<CLASS-CONTRACT-NAME>Class B shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002279
+<CLASS-CONTRACT-NAME>Class C shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002281
+<CLASS-CONTRACT-NAME>Class R shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002282
+<CLASS-CONTRACT-NAME>Class Y shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002283
+<CLASS-CONTRACT-NAME>Class A shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PFLRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000203062
+<CLASS-CONTRACT-NAME>Class R6 Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001005942
+<SERIES-ID>S000000775
+<SERIES-NAME>Putnam International Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002290
+<CLASS-CONTRACT-NAME>Class Y shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002291
+<CLASS-CONTRACT-NAME>Class A shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PNGAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002292
+<CLASS-CONTRACT-NAME>Class B shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PGNBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002293
+<CLASS-CONTRACT-NAME>Class C shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PIGRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002295
+<CLASS-CONTRACT-NAME>Class R shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PIIRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000136806
+<CLASS-CONTRACT-NAME>Class R6
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001005942
+<SERIES-ID>S000000777
+<SERIES-NAME>Putnam Small Cap Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002301
+<CLASS-CONTRACT-NAME>Class C shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002302
+<CLASS-CONTRACT-NAME>Class Y shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002303
+<CLASS-CONTRACT-NAME>Class A shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PNSAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002304
+<CLASS-CONTRACT-NAME>Class B shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PNSBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002306
+<CLASS-CONTRACT-NAME>Class R shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PSGRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000158897
+<CLASS-CONTRACT-NAME>Class R6 Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001005942
+<SERIES-ID>S000023000
+<SERIES-NAME>PUTNAM EMERGING MARKETS EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000066853
+<CLASS-CONTRACT-NAME>CLASS A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000066854
+<CLASS-CONTRACT-NAME>CLASS B
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000066855
+<CLASS-CONTRACT-NAME>CLASS C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000066857
+<CLASS-CONTRACT-NAME>CLASS R
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000066858
+<CLASS-CONTRACT-NAME>CLASS Y
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000203063
+<CLASS-CONTRACT-NAME>Class R6 Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001005942
+<SERIES-ID>S000024246
+<SERIES-NAME>Putnam Focused Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071529
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071530
+<CLASS-CONTRACT-NAME>Class B
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071531
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071533
+<CLASS-CONTRACT-NAME>Class R
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071534
+<CLASS-CONTRACT-NAME>Class Y
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000203064
+<CLASS-CONTRACT-NAME>Class R6 Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001005942
+<SERIES-ID>S000024247
+<SERIES-NAME>Putnam Global Technology Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071535
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071537
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071539
+<CLASS-CONTRACT-NAME>Class R
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071540
+<CLASS-CONTRACT-NAME>Class Y
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000203065
+<CLASS-CONTRACT-NAME>Class R6 Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001005942
+<SERIES-ID>S000024274
+<SERIES-NAME>Putnam Short Duration Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071705
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071706
+<CLASS-CONTRACT-NAME>Class B
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071707
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071709
+<CLASS-CONTRACT-NAME>Class R
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071710
+<CLASS-CONTRACT-NAME>Class Y
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000118004
+<CLASS-CONTRACT-NAME>Class R6
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001005942
+<SERIES-ID>S000024275
+<SERIES-NAME>Putnam Core Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071712
+<CLASS-CONTRACT-NAME>Class R
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071713
+<CLASS-CONTRACT-NAME>Class Y
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071714
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071715
+<CLASS-CONTRACT-NAME>Class B
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000071716
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000118006
+<CLASS-CONTRACT-NAME>Class R6
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000174702
+<CLASS-CONTRACT-NAME>Class P Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001005942
+<SERIES-ID>S000024760
+<SERIES-NAME>Putnam Dynamic Asset Allocation Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000073568
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000073569
+<CLASS-CONTRACT-NAME>Class Y
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000170451
+<CLASS-CONTRACT-NAME>Class P Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001005942
+<SERIES-ID>S000029796
+<SERIES-NAME>PUTNAM CORE EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000091525
+<CLASS-CONTRACT-NAME>CLASS A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000091526
+<CLASS-CONTRACT-NAME>CLASS B
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000091527
+<CLASS-CONTRACT-NAME>CLASS C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000091529
+<CLASS-CONTRACT-NAME>CLASS R
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000091530
+<CLASS-CONTRACT-NAME>CLASS Y
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000203066
+<CLASS-CONTRACT-NAME>Class R6 Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001005942
+<SERIES-ID>S000034192
+<SERIES-NAME>Putnam Ultra Short Duration Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000105375
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000105376
+<CLASS-CONTRACT-NAME>Class B
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000105377
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000105379
+<CLASS-CONTRACT-NAME>Class R
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000105380
+<CLASS-CONTRACT-NAME>Class Y
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000118012
+<CLASS-CONTRACT-NAME>Class R6
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000207666
+<CLASS-CONTRACT-NAME>Class N Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001005942
+<SERIES-ID>S000039730
+<SERIES-NAME>Putnam Short Term Investment Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000123084
+<CLASS-CONTRACT-NAME>Class P
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000219759
+<CLASS-CONTRACT-NAME>Class G Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001005942
+<SERIES-ID>S000039833
+<SERIES-NAME>Putnam Short-Term Municipal Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000123516
+<CLASS-CONTRACT-NAME>CLASS A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000123518
+<CLASS-CONTRACT-NAME>CLASS C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000123520
+<CLASS-CONTRACT-NAME>CLASS Y
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000202822
+<CLASS-CONTRACT-NAME>Class R6 Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001005942
+<SERIES-ID>S000039834
+<SERIES-NAME>Putnam Intermediate-Term Municipal Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000123521
+<CLASS-CONTRACT-NAME>CLASS Y
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000123522
+<CLASS-CONTRACT-NAME>CLASS A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000123523
+<CLASS-CONTRACT-NAME>CLASS B
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000123524
+<CLASS-CONTRACT-NAME>CLASS C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000202823
+<CLASS-CONTRACT-NAME>Class R6 Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001005942
+<SERIES-ID>S000048370
+<SERIES-NAME>PUTNAM MORTGAGE OPPORTUNITIES FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000152757
+<CLASS-CONTRACT-NAME>CLASS I
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000213253
+<CLASS-CONTRACT-NAME>Class Y Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000213254
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000213255
+<CLASS-CONTRACT-NAME>Class C Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000219743
+<CLASS-CONTRACT-NAME>Class R6 Shares
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>a_funds_trust_npx.htm
+<DESCRIPTION>PUTNAM FUNDS TRUST
+<TEXT>
+<html>
+
+	<head>
+		<title>Putnam Funds Trust 811-07513_Revised</title>
+	</head>
+	<body>
+
+
+	<FONT size=2 face=sans-serif>
+
+
+
+
+
+<TABLE cellpadding=6 border=0 width="95%">
+<TR height=30><TD width="5%"></TD><TD width="35%"></TD><TD width="60%"></TD></TR>
+
+<TR Height=9><TD></TD><TD colSpan=9>
+ <HR SIZE=4 noShade>
+<BR><BR></TD></TR>
+
+
+
+<TR vAlign=top><TD></TD><TD colspan=2 align=center><FONT size=6><B>UNITED STATES<BR>SECURITIES AND EXCHANGE COMMISSION</B><BR><BR><FONT SIze=2>Washington, DC 20549-<BR><BR><FONT size=6>FORM N-PX<BR><BR><FONT size=4><B>ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED <BR>MANAGEMENT INVESTMENT COMPANY</B></FONT><Br><BR></B></TD></TR>
+<TR><TD><BR><BR></TD></TR><TR vAlign=top><TD></TD><TD>Investment Company Act File Number :</TD>	<TD><B>811-07513</B></TD></TR>
+<TR><TD><BR><BR></TD></TR><TR vAlign=bottom><TD></TD><TD>Name of Registrant:</TD>	<TD><FONT size=5><B>Putnam Funds Trust</B></FONT></TD></TR>
+<TR><TD><BR><BR></TD></TR><TR vAlign=top><TD></TD><TD>Address of Principal Executive Offices:</TD>	<TD><B>100 Federal Street</B></TD></TR>
+<TR vAlign=top><TD></TD><TD></TD>	<TD><B>Boston, Massachusetts 02110</B></TD></TR>
+<TR><TD><BR><BR></TD></TR><TR vAlign=top><TD></TD><TD>Name and address of agent of service:</TD>	<TD><B>Stephen J. Tate, Vice President and Chief Legal Officer</B></TD></TR>
+<TR vAlign=top><TD></TD><TD></TD>	<TD><B>Putnam Funds Trust</B></TD></TR>
+<TR vAlign=top><TD></TD><TD></TD>	<TD><B>100 Federal Street</B></TD></TR>
+<TR vAlign=top><TD></TD><TD></TD>	<TD><B>Boston, Massachusetts 02110</B></TD></TR>
+<TR><TD><BR><BR></TD></TR><TR vAlign=top><TD></TD><TD>CC:</TD>	<TD><B>Bryan Chegwidden, Esq.</B></TD></TR>
+<TR vAlign=top><TD></TD><TD></TD>	<TD><B>Ropes & Gray LLP</B></TD></TR>
+<TR vAlign=top><TD></TD><TD></TD>	<TD><B>1211 Avenue of the Americas</B></TD></TR>
+<TR vAlign=top><TD></TD><TD></TD>	<TD><B>New York, New York</B></TD></TR>
+<TR><TD><BR><BR></TD></TR><TR vAlign=top><TD></TD><TD>Registrant's telephone number including area code:</TD>	<TD><B>617-292-1000</B></TD></TR>
+<TR><TD><BR><BR></TD></TR><TR vAlign=top><TD></TD><TD>Date of fiscal year end:</TD>	<TD><B>02/28, 04/30, 05/31, 06/30, 07/31, 08/31, 10/31, 11/30</B></TD></TR>
+<TR><TD><BR><BR></TD></TR><TR vAlign=top><TD></TD><TD>Date of reporting period:</TD>	<TD><B>07/01/2022 - 06/30/2023</B></TD></TR>
+
+</TABLE>
+
+
+<BR><BR><BR>
+
+
+
+
+
+
+
+
+
+
+<BR><BR><BR><BR><BR><BR><BR><BR> <HR SIZE=2 noShade> <BR><BR><BR><BR><BR><BR>
+
+
+
+<TABLE cellpadding=6 border=0 width="95%">
+<TR height=30><TD width="5%"></TD><TD width="15%"></TD><TD width="80%"></TD></TR>
+
+<TR Height=9><TD></TD><TD colSpan=9>
+ <HR SIZE=4 noShade>
+<BR><BR></TD></TR>
+					<TR vAlign=top><TD></TD><TD><B>Registrant Name :</B></TD><TD> Putnam Funds Trust</TD></TR>
+<TR vAlign=top><TD></TD><TD><B>Fund Name :</B></TD><TD> Putnam Floating Rate Income Fund</TD></TR>
+<TR vAlign=top><TD></TD><TD></TD><TD><FONT size=+1><BR><BR>The fund did not vote proxies relating to portfolio securities during the period covered by this report.</FONT></TD></TR>
+
+<TR Height=9><TD></TD><TD colSpan=9> <BR><BR><BR><BR>
+ <HR SIZE=4 noShade>
+<BR><BR></TD></TR>
+
+	</TABLE>
+
+	</FONT>
+
+
+
+	<BR><BR><BR><BR><BR><BR>
+
+
+
+
+
+
+<BR><BR><BR><BR><BR><BR><BR><BR> <HR SIZE=2 noShade> <BR><BR><BR><BR><BR><BR>
+
+
+
+<TABLE cellpadding=6 border=0 width="95%">
+<TR height=30><TD width="5%"></TD><TD width="15%"></TD><TD width="80%"></TD></TR>
+
+<TR Height=9><TD></TD><TD colSpan=9>
+ <HR SIZE=4 noShade>
+<BR><BR></TD></TR>
+					<TR vAlign=top><TD></TD><TD><B>Registrant Name :</B></TD><TD> Putnam Funds Trust</TD></TR>
+<TR vAlign=top><TD></TD><TD><B>Fund Name :</B></TD><TD> Putnam Intermediate-Term Municipal Income Fund</TD></TR>
+<TR vAlign=top><TD></TD><TD></TD><TD><FONT size=+1><BR><BR>The fund did not vote proxies relating to portfolio securities during the period covered by this report.</FONT></TD></TR>
+
+<TR Height=9><TD></TD><TD colSpan=9> <BR><BR><BR><BR>
+ <HR SIZE=4 noShade>
+<BR><BR></TD></TR>
+
+	</TABLE>
+
+	</FONT>
+
+
+
+	<BR><BR><BR><BR><BR><BR>
+
+
+
+
+
+
+<BR><BR><BR><BR><BR><BR><BR><BR> <HR SIZE=2 noShade> <BR><BR><BR><BR><BR><BR>
+
+
+
+<TABLE cellpadding=6 border=0 width="95%">
+<TR height=30><TD width="5%"></TD><TD width="15%"></TD><TD width="80%"></TD></TR>
+
+<TR Height=9><TD></TD><TD colSpan=9>
+ <HR SIZE=4 noShade>
+<BR><BR></TD></TR>
+					<TR vAlign=top><TD></TD><TD><B>Registrant Name :</B></TD><TD> Putnam Funds Trust</TD></TR>
+<TR vAlign=top><TD></TD><TD><B>Fund Name :</B></TD><TD> Putnam Mortgage Opportunities Fund</TD></TR>
+<TR vAlign=top><TD></TD><TD></TD><TD><FONT size=+1><BR><BR>The fund did not vote proxies relating to portfolio securities during the period covered by this report.</FONT></TD></TR>
+
+<TR Height=9><TD></TD><TD colSpan=9> <BR><BR><BR><BR>
+ <HR SIZE=4 noShade>
+<BR><BR></TD></TR>
+
+	</TABLE>
+
+	</FONT>
+
+
+
+	<BR><BR><BR><BR><BR><BR>
+
+
+
+
+
+
+<BR><BR><BR><BR><BR><BR><BR><BR> <HR SIZE=2 noShade> <BR><BR><BR><BR><BR><BR>
+
+
+
+<TABLE cellpadding=6 border=0 width="95%">
+<TR height=30><TD width="5%"></TD><TD width="15%"></TD><TD width="80%"></TD></TR>
+
+<TR Height=9><TD></TD><TD colSpan=9>
+ <HR SIZE=4 noShade>
+<BR><BR></TD></TR>
+					<TR vAlign=top><TD></TD><TD><B>Registrant Name :</B></TD><TD> Putnam Funds Trust</TD></TR>
+<TR vAlign=top><TD></TD><TD><B>Fund Name :</B></TD><TD> Putnam Short Duration Bond Fund</TD></TR>
+<TR vAlign=top><TD></TD><TD></TD><TD><FONT size=+1><BR><BR>The fund did not vote proxies relating to portfolio securities during the period covered by this report.</FONT></TD></TR>
+
+<TR Height=9><TD></TD><TD colSpan=9> <BR><BR><BR><BR>
+ <HR SIZE=4 noShade>
+<BR><BR></TD></TR>
+
+	</TABLE>
+
+	</FONT>
+
+
+
+	<BR><BR><BR><BR><BR><BR>
+
+
+
+
+
+
+<BR><BR><BR><BR><BR><BR><BR><BR> <HR SIZE=2 noShade> <BR><BR><BR><BR><BR><BR>
+
+
+
+<TABLE cellpadding=6 border=0 width="95%">
+<TR height=30><TD width="5%"></TD><TD width="15%"></TD><TD width="80%"></TD></TR>
+
+<TR Height=9><TD></TD><TD colSpan=9>
+ <HR SIZE=4 noShade>
+<BR><BR></TD></TR>
+					<TR vAlign=top><TD></TD><TD><B>Registrant Name :</B></TD><TD> Putnam Funds Trust</TD></TR>
+<TR vAlign=top><TD></TD><TD><B>Fund Name :</B></TD><TD> Putnam Short Term Investment Fund</TD></TR>
+<TR vAlign=top><TD></TD><TD></TD><TD><FONT size=+1><BR><BR>The fund did not vote proxies relating to portfolio securities during the period covered by this report.</FONT></TD></TR>
+
+<TR Height=9><TD></TD><TD colSpan=9> <BR><BR><BR><BR>
+ <HR SIZE=4 noShade>
+<BR><BR></TD></TR>
+
+	</TABLE>
+
+	</FONT>
+
+
+
+	<BR><BR><BR><BR><BR><BR>
+
+
+
+
+
+
+<BR><BR><BR><BR><BR><BR><BR><BR> <HR SIZE=2 noShade> <BR><BR><BR><BR><BR><BR>
+
+
+
+<TABLE cellpadding=6 border=0 width="95%">
+<TR height=30><TD width="5%"></TD><TD width="15%"></TD><TD width="80%"></TD></TR>
+
+<TR Height=9><TD></TD><TD colSpan=9>
+ <HR SIZE=4 noShade>
+<BR><BR></TD></TR>
+					<TR vAlign=top><TD></TD><TD><B>Registrant Name :</B></TD><TD> Putnam Funds Trust</TD></TR>
+<TR vAlign=top><TD></TD><TD><B>Fund Name :</B></TD><TD> Putnam Short-Term Municipal Income Fund</TD></TR>
+<TR vAlign=top><TD></TD><TD></TD><TD><FONT size=+1><BR><BR>The fund did not vote proxies relating to portfolio securities during the period covered by this report.</FONT></TD></TR>
+
+<TR Height=9><TD></TD><TD colSpan=9> <BR><BR><BR><BR>
+ <HR SIZE=4 noShade>
+<BR><BR></TD></TR>
+
+	</TABLE>
+
+	</FONT>
+
+
+
+	<BR><BR><BR><BR><BR><BR>
+
+
+
+
+
+
+<BR><BR><BR><BR><BR><BR><BR><BR> <HR SIZE=2 noShade> <BR><BR><BR><BR><BR><BR>
+
+
+
+<TABLE cellpadding=6 border=0 width="95%">
+<TR height=30><TD width="5%"></TD><TD width="15%"></TD><TD width="80%"></TD></TR>
+
+<TR Height=9><TD></TD><TD colSpan=9>
+ <HR SIZE=4 noShade>
+<BR><BR></TD></TR>
+					<TR vAlign=top><TD></TD><TD><B>Registrant Name :</B></TD><TD> Putnam Funds Trust</TD></TR>
+<TR vAlign=top><TD></TD><TD><B>Fund Name :</B></TD><TD> Putnam Ultra Short Duration Income Fund</TD></TR>
+<TR vAlign=top><TD></TD><TD></TD><TD><FONT size=+1><BR><BR>The fund did not vote proxies relating to portfolio securities during the period covered by this report.</FONT></TD></TR>
+
+<TR Height=9><TD></TD><TD colSpan=9> <BR><BR><BR><BR>
+ <HR SIZE=4 noShade>
+<BR><BR></TD></TR>
+
+	</TABLE>
+
+	</FONT>
+
+
+
+	<BR><BR><BR><BR><BR><BR>
+
+
+
+
+
+
+<FONT size=3 face=sans-serif>
+
+<BR><BR><BR><BR> <HR SIZE=2 noShade> <BR><BR>
+
+<TABLE cellpadding=2 border=0 width="95%">
+<TR  height=30>
+<TD width="5%"></TD>
+<TD width="18%"></TD>
+<TD width="10%"></TD>
+<TD width="25%"></TD>
+
+<TD width="2%"></TD>
+
+<TD width="10%"></TD>
+<TD width="10%"></TD>
+<TD width="10%"></TD>
+<TD width="10%"></TD>
+</TR>
+
+
+
+ <TR vAlign=top><TD></TD><TD><B>Registrant :</B></TD><TD colspan=4> Putnam Funds Trust</TD><TD></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD><B>Fund Name :</B></TD><TD colspan=4> Putnam Dynamic Risk Allocation Fund</TD><TD></TD><TD></TD><TD></TD></TR>
+ <TR height=50><TD></TD><TD  colspan=8><HR noShade size=2></TD> <TR>
+	<TD></TD> <TR vAlign=top><TD></TD><TD><B>Bank Leumi Le-Israel Ltd.</B></TD><TD></TD><TD></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD><B>Ticker</B></TD><TD><B>Security ID:</B></TD><TD></TD><TD><B>Meeting Date</B></TD><TD></TD><TD><B>Meeting Status</B></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>LUMI</TD><TD>CINS M16043107</TD><TD></TD><TD>08/04/2022</TD><TD></TD><TD>Take No Action</TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD><B>Meeting Type</B></TD><TD><B>Country of Trade</B></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>Annual/Special</TD><TD>Israel</TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD><B>Issue No.</B></TD><TD><B>Description</B></TD><TD></TD><TD><B>Proponent</B></TD><TD><B>Mgmt Rec</B></TD><TD><B>Vote Cast</B></TD><TD><B>For/Agnst Mgmt</B></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>1</TD><TD>Discuss Financial Statements and the Report of the Board</TD><TD></TD><TD>Mgmt</TD><TD>N/A</TD><TD>TNA</TD><TD>N/A</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>2</TD><TD>Reappoint Somekh Chaikin (KPMG) and Brightman Almagor Zohar and Co. (Deloitte) as Joint Auditors and Authorize Board to Fix Their Remuneration</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>TNA</TD><TD>N/A</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>3</TD><TD>Elect Dan Laluz as External Director</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>TNA</TD><TD>N/A</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>4</TD><TD>Elect Zvi Nagan as External Director</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>TNA</TD><TD>N/A</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>5</TD><TD>Elect Esther Eldan as Director</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>TNA</TD><TD>N/A</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>6</TD><TD>Elect Esther Dominisini as Director</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>TNA</TD><TD>N/A</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>7</TD><TD>Elect Irit Shlomi as Director</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>TNA</TD><TD>N/A</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>8</TD><TD>Amend Bank Articles</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>TNA</TD><TD>N/A</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>9</TD><TD>Approve Amended Compensation Policy for the Directors and Officers of the Company</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>TNA</TD><TD>N/A</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>10</TD><TD>Vote FOR if you are a controlling shareholder or have a personal interest in one or several resolutions, as indicated in the proxy card; otherwise, vote AGAINST. You may not abstain. If you vote FOR, please provide an explanation to your account manager</TD><TD></TD><TD>Mgmt</TD><TD>None</TD><TD>TNA</TD><TD>N/A</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>11</TD><TD>If you are an Interest Holder as defined in Section 1 of the Securities Law, 1968, vote FOR. Otherwise, vote against.</TD><TD></TD><TD>Mgmt</TD><TD>None</TD><TD>TNA</TD><TD>N/A</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>12</TD><TD>If you are a Senior Officer as defined in Section 37(D) of the Securities Law, 1968, vote FOR. Otherwise, vote against.</TD><TD></TD><TD>Mgmt</TD><TD>None</TD><TD>TNA</TD><TD>N/A</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>13</TD><TD>If you are an Institutional Investor as defined in Regulation 1 of the Supervision Financial Services Regulations 2009 or a Manager of a Joint Investment Trust Fund as defined in the Joint Investment Trust Law, 1994, vote FOR. Otherwise, vote against.</TD><TD></TD><TD>Mgmt</TD><TD>None</TD><TD>TNA</TD><TD>N/A</TD></TR>
+ <TR height=50><TD></TD><TD  colspan=8><HR noShade size=2></TD> <TR>
+	<TD></TD> <TR vAlign=top><TD></TD><TD><B>Barratt Developments Plc</B></TD><TD></TD><TD></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD><B>Ticker</B></TD><TD><B>Security ID:</B></TD><TD></TD><TD><B>Meeting Date</B></TD><TD></TD><TD><B>Meeting Status</B></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>BDEV</TD><TD>CINS G08288105</TD><TD></TD><TD>10/17/2022</TD><TD></TD><TD>Voted</TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD><B>Meeting Type</B></TD><TD><B>Country of Trade</B></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>Annual</TD><TD>United Kingdom</TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD><B>Issue No.</B></TD><TD><B>Description</B></TD><TD></TD><TD><B>Proponent</B></TD><TD><B>Mgmt Rec</B></TD><TD><B>Vote Cast</B></TD><TD><B>For/Agnst Mgmt</B></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>1</TD><TD>Accept Financial Statements and Statutory Reports</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>2</TD><TD>Approve Remuneration Report</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>3</TD><TD>Approve Final Dividend</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>4</TD><TD>Elect Mike Scott as Director</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>5</TD><TD>Re-elect John Allan as Director</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>6</TD><TD>Re-elect David Thomas as Director</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>7</TD><TD>Re-elect Steven Boyes as Director</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>8</TD><TD>Re-elect Katie Bickerstaffe as Director</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>9</TD><TD>Re-elect Jock Lennox as Director</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>10</TD><TD>Re-elect Chris Weston as Director</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>11</TD><TD>Re-elect Sharon White as Director</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>12</TD><TD>Reappoint Deloitte LLP as Auditors</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>13</TD><TD>Authorise the Audit Committee to Fix Remuneration of Auditors</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>14</TD><TD>Authorise UK Political Donations and Expenditure</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>15</TD><TD>Authorise Issue of Equity</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>16</TD><TD>Authorise Issue of Equity without Pre-emptive Rights</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>17</TD><TD>Authorise Market Purchase of Ordinary Shares</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>18</TD><TD>Authorise the Company to Call General Meeting with Two Weeks' Notice</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>Against</TD><TD>Against</TD></TR>
+	</TABLE>
+
+	</FONT>
+	</TABLE>
+
+	</FONT>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<BR><BR><BR><BR> <HR SIZE=2 noShade> <BR><BR>
+
+
+<TABLE cellpadding=6 border=0 width="95%">
+<TR height=30><TD width="5%"></TD><TD width="35%"></TD><TD width="60%"></TD></TR>
+
+
+
+
+<TR valign=top align=left><TD></TD><TD colspan=2> Pursuant to the requirements of the Investment Company Act of 1940,the registrant has duly caused this report to be signed on its behalf by the undersigned,thereunto duly authorised.</TD></TR>
+<TR valign=top align=left><TD></TD><TD><BR></TD></TR>
+<TR valign=top align=left><TD></TD><TD align=right>Registrant:</TD>	<TD><B>Putnam Funds Trust</B></TD></TR><TR height=3><TD></TD><TD></TD><TD><HR size=2 ></TD></TR>
+<TR valign=top align=left><TD></TD><TD><BR></TD></TR>
+<TR valign=top align=left><TD></TD><TD align=right>By:</TD>	<TD><B>/s/Stephen J. Tate</B></TD></TR><TR height=3><TD></TD><TD></TD><TD><HR size=2 ></TD></TR>
+<TR valign=top align=left><TD></TD><TD><BR></TD></TR>
+<TR valign=top align=left><TD></TD><TD align=right>Name:</TD>	<TD><B>Stephen J. Tate</B></TD></TR><TR height=3><TD></TD><TD></TD><TD><HR size=2 ></TD></TR>
+<TR valign=top align=left><TD></TD><TD><BR></TD></TR>
+<TR valign=top align=left><TD></TD><TD align=right>Title:</TD>	<TD><B>Vice President, Chief Legal Officer of Putnam Funds Trust</B></TD></TR><TR height=3><TD></TD><TD></TD><TD><HR size=2 ></TD></TR>
+<TR valign=top align=left><TD></TD><TD><BR></TD></TR>
+<TR valign=top align=left><TD></TD><TD align=right>Date:</TD>	<TD><B>August 23, 2023</B></TD></TR><TR height=3><TD></TD><TD></TD><TD><HR size=2 ></TD></TR></TABLE>
+
+<BR><BR><BR>
+
+
+  <HR SIZE=4 noShade width="100%">
+
+
+<BR><BR><BR>
+
+
+
+
+
+
+
+
+
+
+	</FONT>
+	</body>
+</html>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

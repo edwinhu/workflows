@@ -1268,21 +1268,44 @@ func icrResolveFundShared(ix *issSeriesIndex, name string) string {
 	// And the displacement is symmetric. What may take an inexact header answer
 	// away from it is an EXACT dictionary hit -- the registrant's dictionary
 	// spelling this banner as printed, which issBannerDeclaredExact reads off
-	// the outer ix because issDeclAliases has folded those names in. A
-	// dictionary TOLERANCE rung is a guess of exactly the same kind as the
-	// header's near miss, and it is the weaker of the two: the header's guess
-	// is anchored on a name THIS filing declares for THIS period, while the
-	// dictionary's is anchored on whatever else the registrant ever named.
-	// TIAA-CREF's 20200630 report heads four sections `TC Quant Large-Cap Value
-	// Fund` and the like -- its own declared `TIAA-CREF Quant Large-Cap Value
-	// Fund` with the house prefix swapped, inexact by that prefix alone -- and
-	// each has a same-CIK sibling whose name is the banner minus `Quant`. Let a
-	// tolerance rung run and it drops the one discriminating token and stamps
-	// the sibling (family MISLINK30). Nothing the dictionary spells inexactly
-	// outranks the header, so return the header's answer.
-	if hdrOnlyID != "" && !issBannerDeclaredExact(ix, name) {
+	// the outer ix because issDeclAliases has folded those names in.
+	//
+	// Everything else is a guess against a guess, and NEITHER blanket
+	// precedence is right: the corpus carries banners of both shapes. The
+	// header's near miss is anchored on a name THIS filing declares for THIS
+	// period, and the dictionary's on whatever else the registrant ever named,
+	// so the two are compared on the only evidence that separates them --
+	// whether the candidate's own declared name ACCOUNTS FOR the banner's
+	// distinctive words (icrDictAccountsBetter). TIAA-CREF's 20200630 `TC Quant
+	// Large-Cap Value Fund` is its declared `TIAA-CREF Quant Large-Cap Value
+	// Fund` with the house prefix swapped, and the dictionary's sibling is the
+	// banner minus `Quant`: the header accounts for every word and keeps the
+	// section (family MISLINK30). American Funds' `International Fund` banner
+	// is answered by the header only through a `Managed Risk International
+	// Fund` sibling that ADDS two words the banner never prints, while the
+	// dictionary spells the banner itself: there the dictionary takes it
+	// (family MISLINK31). A tie changes nothing -- the header's answer stands,
+	// since a series id is a link key and must never be guessed more loosely
+	// than it already is.
+	dictID := icrResolveFundDictChain(ix, name)
+	if hdrOnlyID != "" && dictID != hdrOnlyID && !issBannerDeclaredExact(ix, name) &&
+		!icrDictAccountsBetter(ix, name, hdrOnlyID, dictID) {
 		return hdrOnlyID
 	}
+	if dictID != "" {
+		return dictID
+	}
+	// Nothing the dictionary knows answers this banner either, so the inexact
+	// header-chain answer held back above is the best evidence there is.
+	return hdrOnlyID
+}
+
+// icrResolveFundDictChain is the dictionary-aware half of icrResolveFundShared:
+// the registrant's own vintage-checked declarations, then the dictionary's
+// same-CIK and cross-CIK rungs. It is exactly the chain that ran here before,
+// lifted out so the caller can WEIGH its answer against the header's instead of
+// having to commit to one of them before seeing the other.
+func icrResolveFundDictChain(ix *issSeriesIndex, name string) string {
 	if id := icrResolveFundVintage(ix, ix.byName, name); id != "" {
 		// Its own first rung is the exact route; every rung after it cuts the
 		// printed name. An INEXACT answer of this registrant's own does not
@@ -1310,9 +1333,169 @@ func icrResolveFundShared(ix *issSeriesIndex, name string) string {
 	if d := issIndexDict(ix).crossCIK(ix.cik, name, ix.period, ix.registrantKey); d != nil {
 		return d.SeriesID
 	}
-	// Nothing the dictionary knows answers this banner either, so the inexact
-	// header-chain answer held back above is the best evidence there is.
-	return hdrOnlyID
+	return ""
+}
+
+// icrDictAccountsBetter reports whether the dictionary chain's answer explains
+// the banner BETTER than the filing's own inexact header answer does. Both are
+// guesses, and the comparison is the same one a reader makes: set the banner's
+// distinctive words beside each candidate's declared name and count what does
+// not line up. A candidate that DROPS a banner word (the non-Quant TIAA-CREF
+// sibling) and a candidate that ADDS one the banner never prints (American
+// Funds' `Managed Risk` sleeve) are both weaker for it, so the count is the
+// symmetric difference and the smaller count wins.
+//
+// Two asymmetries stand outside the count:
+//
+//   - A FOREIGN registrant's series never displaces the filing's own header
+//     answer, however well its name reads. SEI's 2023 report heads a section
+//     `Extended Market Index Fund` for its own declared `SIIT Extended Market
+//     Index Fund`, and the USAA/Victory fund of exactly that bare name spells
+//     the banner no better than the house prefix explains it does -- handing
+//     the rows over would give one registrant's votes to a fund it does not
+//     own.
+//   - A TIE keeps the header's answer, which is what the caller already
+//     returns; this only ever says "displace it".
+func icrDictAccountsBetter(ix *issSeriesIndex, banner, hdrID, dictID string) bool {
+	if ix == nil || hdrID == "" || dictID == "" || hdrID == dictID {
+		return false
+	}
+	want := icrDistinctiveWords(ix, banner)
+	if len(want) == 0 {
+		return false
+	}
+	// The dictionary's answer must be a series of THIS registrant: its names
+	// are read off this CIK's own declarations and dictionary rows, and a
+	// candidate none of them name is a foreign one.
+	dictMiss, ok := icrCandidateMiss(ix, want, icrSeriesNamesHere(ix, dictID))
+	if !ok {
+		return false
+	}
+	hdrMiss, ok := icrCandidateMiss(ix, want, icrSeriesNamesHere(ix, hdrID))
+	if !ok {
+		return false
+	}
+	return dictMiss < hdrMiss
+}
+
+// icrSeriesNamesHere is every name THIS filing's registrant has for a series id
+// -- the header's own declarations, the index's folded aliases and the
+// registrant's dictionary rows -- with the vintages this filing could not have
+// known dropped, the way the resolution chain drops them. Empty means the id is
+// not this registrant's.
+func icrSeriesNamesHere(ix *issSeriesIndex, id string) []string {
+	if ix == nil || id == "" {
+		return nil
+	}
+	var out []string
+	add := func(decls []SeriesDecl) {
+		for i := range decls {
+			d := &decls[i]
+			if d.SeriesID != id || d.Name == "" {
+				continue
+			}
+			if d.DeclDate != "" && ix.period != "" && d.DeclDate > ix.period {
+				continue
+			}
+			out = append(out, d.Name)
+		}
+	}
+	add(ix.decls)
+	if ix.hdrOnly != nil {
+		add(ix.hdrOnly.decls)
+	}
+	if dict := issIndexDict(ix); dict != nil && ix.cik != "" {
+		add(dict.byCIK[ix.cik])
+	}
+	return out
+}
+
+// icrCandidateMiss counts, over every name the registrant has for a candidate,
+// the fewest distinctive words that fail to line up with the banner's. A series
+// renamed between vintages is one fund under either spelling, so the BEST of
+// its names is the one the comparison is entitled to, not the first.
+func icrCandidateMiss(ix *issSeriesIndex, want map[string]bool, names []string) (int, bool) {
+	best, ok := 0, false
+	for _, n := range names {
+		got := icrDistinctiveWords(ix, n)
+		if len(got) == 0 {
+			continue
+		}
+		miss := 0
+		for w := range want {
+			if !got[w] {
+				miss++
+			}
+		}
+		for g := range got {
+			if !want[g] {
+				miss++
+			}
+		}
+		if !ok || miss < best {
+			best, ok = miss, true
+		}
+	}
+	return best, ok
+}
+
+// icrDistinctiveWords is the set of words a printed name actually distinguishes
+// a fund by: the name normalised the way every lookup here normalises it, with
+// the registrant's own house prefix or brand cut off the front (issCutAnyBrand
+// over the brands the index already built) and the trailing boilerplate that is
+// not part of any fund's name removed -- the ISS report's `Reporting Period :
+// ...` tail and a trailing parenthetical, which in this corpus spells a ticker
+// (`(BCGDX)`), a former name (`(fka ...)`, `(formerly, ...)`) or a wrapped
+// banner's unclosed opening of one.
+func icrDistinctiveWords(ix *issSeriesIndex, printed string) map[string]bool {
+	key := normalizeSeriesName(icrCutBannerBoilerplate(printed))
+	if key == "" {
+		return nil
+	}
+	for p := 0; p <= issBrandRecutPasses; p++ {
+		rest, ok := issCutAnyBrand(key, ix.brands)
+		if !ok || strings.TrimSpace(rest) == "" {
+			break
+		}
+		key = rest
+	}
+	w := map[string]bool{}
+	for _, t := range strings.Fields(key) {
+		if icrGenericTypeWord[t] {
+			continue
+		}
+		w[t] = true
+	}
+	return w
+}
+
+// icrGenericTypeWord is the vocabulary every registrant's sleeves are named out
+// of, so it distinguishes none of them: SEI's header declares `SIIT WORLD
+// EQUITY EX-US` for a section headed `WORLD EQUITY EX-US FUND`, and counting
+// the type word the header simply does not spell would put that exact answer
+// level with a `SCREENED` sibling. Same list issSeedableBrandCut refuses a
+// brand residue on.
+var icrGenericTypeWord = map[string]bool{
+	"fund": true, "funds": true, "portfolio": true, "portfolios": true,
+	"trust": true, "trusts": true, "account": true, "accounts": true,
+	"series": true,
+}
+
+// icrCutBannerBoilerplate removes what a banner prints AROUND the fund's name.
+func icrCutBannerBoilerplate(printed string) string {
+	s := strings.TrimSpace(printed)
+	if i := strings.Index(strings.ToLower(s), "reporting period"); i > 0 {
+		s = strings.TrimSpace(s[:i])
+	}
+	if head, ok := issCutTrailingParenthetical(s); ok {
+		return head
+	}
+	// A banner the filing wraps mid-parenthetical opens one and never closes
+	// it: `Transamerica International Growth (fka Transamerica International`.
+	if i := strings.LastIndex(s, "("); i > 0 && !strings.Contains(s[i:], ")") {
+		return strings.TrimSpace(s[:i])
+	}
+	return s
 }
 
 // icrMinSuffixWords is the shortest declared name a printed fund name may be
