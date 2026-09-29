@@ -1093,6 +1093,11 @@ func holderName(cell string) string {
 	if addr < 0 {
 		return flat(cell) // no address under the name: the cell is the name
 	}
+	// The line the address starts on may CARRY part of the name: a fund named
+	// for a year ("2010 Target Date Retirement Fund, Norfolk, VA") opens with a
+	// digit, so reAddrLine calls the whole line an address and dropping it
+	// leaves every target-date fund with the same name.
+	carry := nameBeforeCity(strings.TrimSpace(lines[addr]))
 	// Everything before the address is the name, capped at three lines so a
 	// footnote sentence written above an address cannot be read as one.
 	end := min(addr, 3)
@@ -1102,7 +1107,53 @@ func holderName(cell string) string {
 			head = append(head, t)
 		}
 	}
+	if carry != "" {
+		head = append(head, carry)
+	}
 	return flat(strings.Join(head, " "))
+}
+
+var (
+	// A trailing city or state part of a "Name, City, ST" line.
+	reCityOrState = regexp.MustCompile(`^(?:[A-Z]{2}|[A-Z][A-Za-z.\-]*(?:\s+[A-Z][A-Za-z.\-]*)?)(?:\s+\d{5}(?:-\d{4})?)?$`)
+	// A line whose HEAD is a real street address or post-office box: nothing in
+	// it is part of a holder's name.
+	reAddrHead = regexp.MustCompile(`(?i)^(?:\d{1,5}\s+[\w.'& -]*\b(?:street|st|avenue|ave|road|rd|boulevard|blvd|drive|dr|` +
+		`lane|ln|place|pl|plaza|way|parkway|pkwy|highway|hwy|circle|court|ct|square|sq|building|bldg|tower|` +
+		`center|centre|floor|fl|broadway|park|row|terrace)\b|p\.?\s?o\.?\s+box|c/o\b|one\s)`)
+	// A street that the line runs into without a comma: "... Karpus Investment
+	// Management 183 Sully's Trail Pittsford". Nothing after it is a name.
+	reAddrTail = regexp.MustCompile(`(?i)\b(?:street|avenue|ave|road|boulevard|blvd|drive|lane|place|plaza|way|` +
+		`parkway|pkwy|highway|hwy|circle|court|square|building|bldg|tower|center|centre|floor|broadway|park|` +
+		`row|terrace|trail|turnpike|tpke|harbor|harbour|wharf)\b[^,]*$`)
+)
+
+// nameBeforeCity returns the part of a line that precedes a trailing "City, ST"
+// or "City, ST ZIP". It returns "" when the line has no comma, when its head is
+// itself a street address or a box, or when nothing but one word is left -- so a
+// city can never become a holder.
+func nameBeforeCity(line string) string {
+	parts := strings.Split(line, ", ")
+	if len(parts) < 2 {
+		return ""
+	}
+	end := len(parts)
+	for end > 1 && reCityOrState.MatchString(strings.Trim(strings.TrimSpace(parts[end-1]), ",.")) {
+		end--
+	}
+	if end == len(parts) {
+		return ""
+	}
+	head := strings.Trim(strings.TrimSpace(strings.Join(parts[:end], ", ")), ",")
+	if head == "" || len(strings.Fields(head)) < 2 {
+		return ""
+	}
+	// Nothing is carried out of a line whose head is a street address or box,
+	// nor out of one that RUNS INTO a street with no comma before it.
+	if reAddrHead.MatchString(head) || reAddrTail.MatchString(head) {
+		return ""
+	}
+	return head
 }
 
 // dropAddress trims a mailing address that a proxy wrote inline with the name:

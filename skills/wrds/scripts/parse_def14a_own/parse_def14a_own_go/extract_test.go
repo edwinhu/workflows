@@ -2357,3 +2357,33 @@ func TestWrappedNameCellKeepsTheWholeName(t *testing.T) {
 		}
 	}
 }
+
+// A fund complex's record-holder table names the holder and its city on ONE
+// line: "American Funds 2010 Target Date Retirement Fund, Norfolk, VA". The line
+// opens with a four-digit YEAR, so reAddrLine reads it as a street address and
+// holderName dropped it, leaving every target-date fund called "American Funds" -
+// one key for all of them, and a holder that does not exist.
+const nameWithCityOnOneLineHTML = `<html><body>
+<p>Principal Shareholders: 5% Record Holders of each Fund</p>
+<table>
+<tr><td>Name and<br>Address</td><td>Ownership</td><td>Class</td><td>Shares Beneficially Owned</td><td>Percent of Class</td></tr>
+<tr><td>American Funds<br>2010 Target Date Retirement Fund, Norfolk, VA</td><td>Record</td><td>R-6</td><td>4,523,020</td><td>41.42</td></tr>
+<tr><td>American Funds<br>2015 Target Date Retirement Fund, Norfolk, VA</td><td>Record</td><td>R-6</td><td>4,658,739</td><td>42.66</td></tr>
+<tr><td>American Funds<br>2020 Target Date Retirement Fund, Norfolk, VA</td><td>Record</td><td>R-6</td><td>1,713,302</td><td>15.69</td></tr>
+</table></body></html>`
+
+func TestNameAndCityOnOneLine(t *testing.T) {
+	rows := ScreenRows(run(t, nameWithCityOnOneLineHTML))
+	keys := map[string]int{}
+	for _, r := range rows {
+		keys[r.HolderName+"\x00"+r.ShareClass]++
+	}
+	if len(keys) != 3 {
+		t.Fatalf("want one key per target-date fund, got %d: %v", len(keys), keys)
+	}
+	for _, r := range rows {
+		if strings.Contains(r.HolderName, ", VA") || strings.Contains(r.HolderName, "Norfolk") {
+			t.Errorf("the city reached the holder name: %q", r.HolderName)
+		}
+	}
+}
