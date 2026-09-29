@@ -1389,3 +1389,57 @@ func TestFundCarriesToTheNextPageOfTheSameTable(t *testing.T) {
 		t.Errorf("the class-R row on page two did not inherit the fund from page one: %v", seen)
 	}
 }
+
+// An ASCII fund-family proxy writes the fund and the share class on LABEL LINES
+// of their own, indented to show which contains which. They carry no number, so
+// they are not table rows at all and their identity was simply lost: one record
+// holder of three classes of one fund collapsed onto one key.
+var asciiFundClassLabels = `
+                            PRINCIPAL SHAREHOLDERS
+
+                                           PERCENTAGE OF
+FUND/                                      OUTSTANDING
+CLASS      SHAREHOLDER                     SHARES OWNED OF RECORD
+- --------------------------------------------------------------------------------
+LIVESTRONG Income Portfolio
+- --------------------------------------------------------------------------------
+  Investor Class
+           The Chase Manhattan Bank NA     7%
+           JPMorgan Chase Bank Trustee     34%
+  Institutional Class
+           The Chase Manhattan Bank NA     24%
+           JPMorgan Chase Bank Trustee     21%
+  R Class
+           The Chase Manhattan Bank NA     50%
+           JPMorgan Chase Bank Trustee     11%
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIIFundAndClassLabelLines(t *testing.T) {
+	rows := ScreenRows(run(t, asciiFundClassLabels))
+	seen := map[string]int{}
+	for _, r := range rows {
+		if strings.HasPrefix(r.HolderName, "JPMorgan Chase") {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) == 0 {
+		t.Fatalf("holder lost: %v", holderNames(rows))
+	}
+	for cls, n := range seen {
+		if n > 1 {
+			t.Errorf("share_class %q emitted %d times for one holder: %v", cls, n, seen)
+		}
+	}
+	got := 0
+	for cls := range seen {
+		if strings.Contains(cls, "Class") {
+			got++
+		}
+		if !strings.Contains(cls, "LIVESTRONG") {
+			t.Errorf("share_class %q does not name the fund the class sits under", cls)
+		}
+	}
+	if got < 2 {
+		t.Errorf("want the class label on at least two of the holder's rows, got %v", seen)
+	}
+}
