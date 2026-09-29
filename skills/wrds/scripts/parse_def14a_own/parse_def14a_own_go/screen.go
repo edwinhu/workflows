@@ -133,6 +133,9 @@ func screenNames(rows []Row) []Row {
 			}
 			seen[sig] = true
 		}
+		// The cell names the holder AND says who he is; only the name is the
+		// holder. Runs last so every drop rule above still sees the raw cell.
+		r.HolderName = cleanHolderName(r.HolderName)
 		out = append(out, r)
 	}
 	return out
