@@ -92,6 +92,62 @@ Output lands in `$ROOT/out/<shard>.tsv.gz` plus a matching
 `.manifest.tsv.gz`. For the gold-linked subset the whole sequence is one
 command: `bash run_baseline.sh`.
 
+### Full archive, 1994-2026
+
+`make_filelists.sas` takes `-sysparm "OUTDIR|D0|D1"` (defaults reproduce the
+gold-linked 1996-2021 range), passed as `run_sas.sh`'s second argument. Use a
+SEPARATE `$ROOT` so the gold run's filelists and outputs are not clobbered:
+
+```bash
+ROOT=/scratch/nyu/eddyhu/def14a_full
+qsub -pe onenode 2 -l m_mem_free=8G -o $ROOT/logs/ -e $ROOT/logs/ \
+     sge/run_sas.sh $ROOT/sge/make_filelists.sas "$ROOT/filelists|01JAN1994|31DEC2026"
+qsub -pe onenode 2 -l m_mem_free=8G -o $ROOT/logs/scan_sizes.out -j y \
+     sge/run_python.sh $ROOT/sge/scan_sizes.py $ROOT/filelists
+python3 sge/build_shards.py filelists/sizes.tsv filelists/shards --target-mb 400
+qsub -cwd -t 1-1004 -tc 10 -l m_mem_free=16G -pe onenode 1 -o $ROOT/logs/ -j y \
+     -v DEF14A_ROOT=$ROOT,SHARD_LIST=$ROOT/filelists/shards/chunks.txt,\
+SHARD_DIR=$ROOT/filelists/shards,OUT_DIR=$ROOT/out,BIN=$ROOT/bin/parse_def14a_own_go,\
+ARCHIVE_ROOT=/wrds/sec/archives,CONCURRENCY=4 \
+     sge/scan_shard.sh
+```
+
+`scan_shard.sh` and `submit_shards.sh` carry no `#$ -cwd`, so `qsub -cwd` and a
+path relative to `$ROOT` are required; `submit_shards.sh`'s hard-coded `#$ -o`
+points at the gold root, which is why the full run bypasses it and qsubs
+`scan_shard.sh` directly with `-v`.
+
+**`m_mem_free=16G` and `CONCURRENCY=4` are not optional at this scale.** The
+full archive contains a **558.4 MB** filing (`0000028412-24-000226`) and 1,090
+filings over 50 MB; `x/net/html` builds a DOM several times the source size, and
+the gold run's `4G`/`8` would run four of those concurrently.
+
+**Measured, 2026-09-29, SGE array 40330353** (commit `4b36a962`, binary rebuilt
+from source, sha256 `8236f718…`):
+
+```
+filelist:  207,912 DEF 14A filings, 1994-08-30 .. 2026-09-25, 33 year buckets
+sizes:     files=207912 missing=0 total_gb=391.36 mean_kb=1973.8
+shards:    shards=1004 bytes_min=227.9MB max=605.8MB mean=418.5MB imbalance=44.7%
+run:       1004/1004 status=0, 0 failed, 0 resubmitted
+           files=207912 rows=2903798 manifest=207912
+           wall 2,618 s (43 min 38 s) at -tc 10; Σ task wall 22,907 s; longest task 320 s
+```
+
+Panel-wide `filing_yield_parsed_percent` **0.8454** and
+`group_row_detection_rate` **0.7838**, both below the gold dev split (0.8921 /
+0.9067) — the gold sets are built from Blockholders / FactSet / ISS and
+under-represent 1994-1996 entirely. Full per-year table, spot checks and the
+duplicate-row diagnostic: `~/projects/r2000/scratch/def14a_full_run.md`.
+
+**Known defect 4 is bigger than it reads above.** Exact-key duplicate rows —
+same `(accession, cik, holder_name, share_class)` — are **9.00%** of the panel,
+and 32.65% in 2009, 19.93% in 2018, 18.75% in 2024. The mechanism seen in hand
+checks is an *additive* table layout (`Shares Owned + Acquirable = Total |
+Percent`) read as multiple share classes, emitting the sub-component as a second
+row with no percent. Deduplicate on that key, preferring the row with a
+non-empty `percent`, before summing `shares`.
+
 ### The filelist carries metadata, unlike parse_13f's
 
 `parse_13f`'s filelists are bare archive paths because a 13F carries its own
@@ -104,6 +160,20 @@ relpath <TAB> cik <TAB> accession <TAB> form <TAB> fdate [<TAB> company]
 
 A bare path list still works — `cik` and `accession` are recovered from the path
 — but `filing_date` and `proxy_year` come out empty.
+
+**The `put` statements need `+(-1)` before every tab.** SAS list output inserts a
+blank after each item, so without it every field — the archive path included —
+carries a trailing space and nothing stats. Fixed 2026-09-29; before that the
+SAS generator had never been run end to end (the gold filelist was built in
+Python), and the first full-archive size scan reported all 207,898 files
+missing. Do NOT add `+(-1)` after a quoted literal: PUT writes those with no
+trailing blank, so it eats the last character.
+
+**The grain is `(cik, accession)`, not `accession`.** 1,798 accessions in
+1994-2026 appear under more than one CIK — co-registrant proxies, stored once
+per CIK directory in the archive — so the same document is parsed twice and
+contributes two identical row sets under different `cik`s. Deduplicate on
+`accession` before any firm-level count.
 
 ## Output contract
 
