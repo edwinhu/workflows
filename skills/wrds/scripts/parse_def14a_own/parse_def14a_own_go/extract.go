@@ -50,6 +50,9 @@ type Row struct {
 
 var (
 	reHdrPct    = regexp.MustCompile(`(?i)percent|%|of\s+class|of\s+outstanding`)
+	// The arithmetic glue of an additive table: a column holding nothing but a
+	// bare "+" or "=" between the component columns it adds up.
+	reArithGlue = regexp.MustCompile(`^\s*[+=]\s*$`)
 	reHdrShares = regexp.MustCompile(`(?i)shares|amount|number|beneficially\s+owned|ownership|aggregate`)
 	reHdrClass  = regexp.MustCompile(`(?i)\bclass\s+[a-d]\b|common\s+stock|series\s+[a-z0-9]+\s+(?:common|preferred)|preferred\s+stock|ordinary\s+shares|\bclass\s+[a-d]$`)
 	// reHdrNameCol matches the header of the column that names the HOLDER.
@@ -70,6 +73,10 @@ var (
 	// genuine "shares beneficially owned" column out of this.
 	reHdrMoney = regexp.MustCompile(`(?i)compensation|fees\s+earned|\bsalary\b|\bbonus\b|dollar\s+(?:range|value|amount)`)
 	reHdrOwned = regexp.MustCompile(`(?i)shares?\s+(?:owned|held|beneficially)|beneficially\s+owned|percent`)
+	// A share column's header that says the shares are OWNED rather than merely
+	// counted. Read only where the table has no percent column (see
+	// looksLikeOwnership).
+	reHdrOwnedShares = regexp.MustCompile(`(?i)\bowned\b|\bowns\b|ownership|\bheld\b|\bholdings?\b|beneficial|\bvot(?:ing|es)\b|\binterest\b`)
 	reSkipName = regexp.MustCompile(`(?i)^(name|names?\s+(and\s+address\s+)?of\s+.*|(name\s+of\s+)?beneficial\s+owners?|title\s+of\s+class|total|subtotal|directors?|non-?employee\s+directors?|executive\s+officers?|named\s+executive\s+officers?|nominees?|continuing\s+directors?|other\s+executive\s+officers?|5%\s+.*|principal\s+.*holders?|common\s+stock|class\s+[a-d].*)$`)
 	// The table must look like an ownership table, not an equity-comp-plan or
 	// compensation table that also carries share counts.
@@ -310,6 +317,7 @@ func (c *compacted) analyze() {
 	nameCol := -1
 	for j := 0; j < ncol; j++ {
 		words, strongPct, bigNum, pctish, classish, seriesish, n := 0, 0, 0, 0, 0, 0, 0
+		glue := 0
 		for i := c.nHeader; i < len(c.rows); i++ {
 			if j >= len(c.rows[i]) {
 				continue
@@ -325,6 +333,9 @@ func (c *compacted) analyze() {
 			// the single "%" that belongs to all of its lines.
 			val := stackFirst(c.rows[i][j])
 			n++
+			if reArithGlue.MatchString(cell) {
+				glue++
+			}
 			if hasWords(cell, 2) {
 				words++
 			}
@@ -347,6 +358,13 @@ func (c *compacted) analyze() {
 		hdr := c.roles[j].header
 		switch {
 		case n == 0:
+			c.roles[j].role = "other"
+		case glue == n && !reHdrPct.MatchString(hdr):
+			// An ADDITIVE table spells its arithmetic out in columns of its own:
+			// record shares + plan shares + deferred shares = total. A lone "+"
+			// is also the footnote / star marker, so such a column otherwise
+			// votes itself a PERCENT column and the holder is emitted once per
+			// component pair.
 			c.roles[j].role = "other"
 		case reHdrMoney.MatchString(hdr) && !reHdrOwned.MatchString(hdr):
 			// Money, not shares. Runs before the numeric votes so a dollar
@@ -793,10 +811,32 @@ func (c *compacted) looksLikeOwnership(tableText string) bool {
 		return false
 	}
 	hasP := false
+	nPct, nOwned, nShares := 0, 0, 0
 	for _, r := range c.roles {
 		if r.role == "pct" || r.role == "shares" {
 			hasP = true
 		}
+		if r.role == "pct" {
+			nPct++
+		}
+		if r.role == "shares" {
+			nShares++
+			if reHdrOwnedShares.MatchString(flat(r.header)) {
+				nOwned++
+			}
+		}
+	}
+	// A table with no percent column of its own has to say, in a share column's
+	// own header, that the shares are OWNED. An award or plan-benefits table
+	// ("Option Shares", "Number of Shares Underlying SSAR/Option Grants", "Share
+	// Investment") repeats the ownership table's people with a different count
+	// and no percent, so both rows land on one exact key; a genuine ownership
+	// table that states no percent (J&J's directors table: common shares,
+	// deferred units, options, total) always names the holding as owned, held or
+	// beneficial. Restricted to percent-less tables so that no filing can lose a
+	// parsed percent by this rule.
+	if nPct == 0 && nShares > 0 && nOwned == 0 {
+		return false
 	}
 	return hasP
 }
