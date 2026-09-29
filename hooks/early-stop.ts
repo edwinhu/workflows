@@ -1,0 +1,317 @@
+#!/usr/bin/env bun
+/**
+ * Stop hook: refuse an EARLY stop — a turn that ends while work the user asked for is still owed.
+ *
+ * The four endings this exists to catch are the user's own rule, verbatim: a summary that announces
+ * the next step instead of taking it; an offer to carry on "unless you'd prefer otherwise"; a list
+ * of decisions none of which blocks the rest; stopping because a milestone felt like a good place to
+ * report. A message with no tool call stops the work until the user comes back, so each of them
+ * costs a round trip that the session could have spent working.
+ *
+ * WHO IT NEVER FIRES FOR. Unattended children carry the standing instruction in their prompt
+ * instead: `FARM_OUT_CHILD=1` (farm-out and farm-team runners) and `GRIND_ITERATION` (a grind
+ * iteration) allow immediately, before anything else is read. A child blocked by a judge nobody is
+ * watching is a loop with no operator in it.
+ *
+ * WHAT MAKES IT SAFE rather than a trap, in the order the code checks them:
+ *
+ *   1. FAILS OPEN EVERYWHERE. No judge, no key, no network, an unparsable answer, an unreadable
+ *      transcript, a counter that cannot be read or written — every one of them allows the stop. The
+ *      harness's own 20 s hook timeout is the outer bound: a killed hook emits nothing, also an allow.
+ *   2. BOUNDED. At most MAX_BLOCKS_PER_TURN blocks per USER turn, counted per session in TMPDIR.
+ *      The bound is the counter rather than `stop_hook_active` because it is strictly stronger: it
+ *      caps every stop in the turn, not just the ones that directly follow a block. The turn marker
+ *      is the last genuine user message's uuid, and hook feedback is NOT one — the harness records a
+ *      blocked stop as a `type:"user"` entry with `isMeta:true`, which `latestUserTurn` skips, so
+ *      this hook's own blocks cannot rotate the key that caps them.
+ *   3. NEVER DOUBLE-BLOCKS WITH `work-hold`. An armed hold is already holding the session on an
+ *      objective and speaks for itself; this one stands down for the duration.
+ *
+ * The judge is the one `work-hold.ts` already uses — Jev, through the Decisions API — reached
+ * through that file's exported `decisionsCall`/`parseNoul`. There is exactly one Decisions transport
+ * in this plugin and this hook does not add a second.
+ *
+ * Opt out for a session with `EARLY_STOP_HOOK=0`. Tune the bar with `EARLY_STOP_THRESHOLD`.
+ */
+
+import { appendFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { join } from 'node:path'
+import { tmpdir } from 'node:os'
+import { decisionsCall, lastLedgerEntry, ledgerPath, parseNoul, statePath } from './work-hold.ts'
+
+/** Blocks allowed per user turn. Two is one more chance than the session gets by itself. */
+export const MAX_BLOCKS_PER_TURN = 2
+
+/** The Decisions question key. One question, one bit. */
+export const QUESTION_KEY = 'early_stop'
+
+/** Characters of the user's request and of the final message the judge is shown. */
+export const REQUEST_CHARS = 2000
+export const MESSAGE_CHARS = 4000
+
+const tmp = (): string => process.env.TMPDIR || tmpdir()
+
+/**
+ * The per-session block counter.
+ *
+ * A session id is opaque, and this is a FILENAME component, so anything that could introduce a path
+ * separator or a `..` is replaced by a digest of the raw id rather than deleted — deletion is not
+ * injective and would let two sessions share one counter (the `sessionFlagKey` lesson in
+ * `_gate_common.ts`). A real session id survives unchanged, so the file is the documented
+ * `early-stop-<session>.json`.
+ */
+export function counterPath(session: string): string {
+  const safe = session.replace(/[^A-Za-z0-9._-]/g, '')
+  const name =
+    safe === session && safe
+      ? session
+      : `${safe.slice(0, 64)}-${createHash('sha256').update(session, 'utf8').digest('hex').slice(0, 32)}`
+  return join(tmp(), `early-stop-${name}.json`)
+}
+
+/** One line per decision, for reading back what this hook did and why. */
+export function auditPath(): string {
+  return join(tmp(), 'early-stop.log')
+}
+
+export interface Turn {
+  /** The user message's uuid: the key the per-turn cap is counted against. */
+  marker: string
+  /** What the user actually asked for. */
+  request: string
+}
+
+/**
+ * The latest GENUINE user request, by the turn-boundary rule `teammate-idle-report-check.sh`
+ * documents: a `type:"user"` entry whose `.message.content` is a STRING, with `.isMeta` falsey and
+ * no `.toolUseResult`. The other two shapes are system injections and tool results, and the first of
+ * those is what a blocked stop is recorded as — counting it as a new turn would uncap this hook.
+ *
+ * Scanned from the END: the newest boundary is normally within the last few entries, and a
+ * transcript is megabytes by mid-session.
+ */
+export function latestUserTurn(jsonl: string): Turn | null {
+  const lines = jsonl.split('\n')
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const line = lines[i]
+    if (!line.trim()) continue
+    let e: Record<string, unknown>
+    try {
+      e = JSON.parse(line)
+    } catch {
+      continue
+    }
+    if (e?.type !== 'user') continue
+    const msg = e?.message as { content?: unknown } | undefined
+    if (typeof msg?.content !== 'string') continue
+    if (e?.isMeta) continue
+    if (e?.toolUseResult !== undefined && e?.toolUseResult !== null) continue
+    return { marker: typeof e.uuid === 'string' && e.uuid ? e.uuid : 'unknown', request: msg.content }
+  }
+  return null
+}
+
+/**
+ * Is a `work-hold` armed for this session?
+ *
+ * The state file OR a ledger whose last word is `armed` — the second is the hold that was deleted
+ * without a sanctioned release, which `work-hold.ts` restores and blocks on. Both are it speaking;
+ * neither is this hook's business to speak over.
+ */
+export function workHoldArmed(session: string): boolean {
+  try {
+    if (existsSync(statePath(session))) return true
+    return lastLedgerEntry(ledgerPath(session))?.verb.startsWith('armed') === true
+  } catch {
+    return false
+  }
+}
+
+/** The tail of a string, marked when it was cut — the tell is at the END of a turn-ending message. */
+function tail(s: string, n: number): string {
+  const t = s.trim()
+  return t.length > n ? `…${t.slice(-n)}` : t
+}
+
+/** What the judge reads: what was asked, and the message that ends the turn. */
+export function judgeState(request: string, message: string): string {
+  return [
+    "THE USER'S LATEST REQUEST:",
+    tail(request, REQUEST_CHARS),
+    '',
+    "THE ASSISTANT'S FINAL MESSAGE, which ENDS the turn:",
+    tail(message, MESSAGE_CHARS),
+  ].join('\n')
+}
+
+/** The question. Both halves matter: a legitimate ending must not read as one of the four. */
+export const INSTRUCTIONS =
+  'The assistant message below ends the turn. This is true: the assistant ends its turn while work ' +
+  'the user asked for is still owed, in one of these four ways — (1) a summary that announces the ' +
+  'next step instead of taking it; (2) an offer to carry on unless the user would prefer otherwise; ' +
+  '(3) a list of decisions, none of which blocks the rest of the work; (4) stopping because a ' +
+  'milestone felt like a good place to report. It is FALSE when the assistant asks a genuinely ' +
+  'blocking question, reports work that is actually finished, is waiting on a background job that is ' +
+  'still running, or when the message is a plan approval or an AskUserQuestion hand-off.'
+
+/** The CLAUDE.md rule in two sentences, then what to do instead of stopping. */
+export const BLOCK_REASON =
+  'Do not end a turn while work the user asked for is still owed. A message with no tool call stops ' +
+  'the work until they come back. Take the next step now; if nothing can move without the user, say ' +
+  'what blocks and use AskUserQuestion.'
+
+interface Counter {
+  turn: string
+  blocks: number
+}
+
+/**
+ * What the counter file says — with ABSENT and UNREADABLE told apart, because only one of them is
+ * evidence of anything.
+ *
+ * A missing file is the ordinary first stop of a turn: nothing has been spent, and blocking is safe
+ * because the write that follows will record it. A file that EXISTS and cannot be read or parsed is
+ * the opposite — the cap is already broken, and treating it as zero would block, fail to record it,
+ * and arrive at the next stop reading zero again. That is the unbounded loop
+ * `teammate-idle-report-check.sh` measured at 2,2,2,2,2,2 and fixed by failing open instead.
+ */
+export type CounterRead =
+  | { kind: 'absent' }
+  | { kind: 'spent'; blocks: number }
+  | { kind: 'unreadable'; reason: string }
+
+export function readCounter(path: string, turn: string): CounterRead {
+  let raw: string
+  try {
+    raw = readFileSync(path, 'utf8')
+  } catch (e) {
+    // ONLY ENOENT is "nothing spent yet". EACCES, EISDIR, EIO and the rest all mean a counter is
+    // there and this hook cannot see it, so it cannot cap itself.
+    const code = (e as NodeJS.ErrnoException)?.code
+    if (code === 'ENOENT') return { kind: 'absent' }
+    return { kind: 'unreadable', reason: code || 'read failed' }
+  }
+  let c: Counter
+  try {
+    c = JSON.parse(raw) as Counter
+  } catch {
+    return { kind: 'unreadable', reason: 'not parsable json' }
+  }
+  if (typeof c?.blocks !== 'number' || typeof c?.turn !== 'string')
+    return { kind: 'unreadable', reason: 'no {turn, blocks} in the counter' }
+  // A counter for an EARLIER turn parsed fine; it simply says nothing about this one.
+  return { kind: 'spent', blocks: c.turn === turn ? c.blocks : 0 }
+}
+
+/** The probability Jev gave, off `parseNoul`'s own sentence — the first percentage is the answer. */
+function pctOf(reason: string): string {
+  return reason.match(/(\d+)%/)?.[1] ?? '-'
+}
+
+function audit(session: string, turn: string, p: string, verdict: string, note: string): void {
+  try {
+    appendFileSync(
+      auditPath(),
+      `${new Date().toISOString()}\t${session || '-'}\t${turn}\t${p}\t${verdict}\t${note}\n`,
+    )
+  } catch {
+    /* an audit line is a record, never a reason to block or to crash */
+  }
+}
+
+function main(): void {
+  // A child is a no-op. Checked before the payload is even parsed, so there is no path through a
+  // parse failure into a judge call for a session nobody is watching.
+  if (process.env.FARM_OUT_CHILD === '1')
+    return allowNow('-', '-', 'FARM_OUT_CHILD=1: unattended child, instruction not hook')
+  if ((process.env.GRIND_ITERATION || '') !== '')
+    return allowNow('-', '-', `GRIND_ITERATION=${process.env.GRIND_ITERATION}: grind iteration`)
+  if (process.env.EARLY_STOP_HOOK === '0') return allowNow('-', '-', 'EARLY_STOP_HOOK=0: opted out')
+
+  let payload: Record<string, unknown> = {}
+  try {
+    payload = JSON.parse(readFileSync(0, 'utf8') || '{}')
+  } catch {
+    return allowNow('-', '-', 'unparsable hook payload')
+  }
+
+  const session =
+    (typeof payload.session_id === 'string' && payload.session_id) ||
+    process.env.CLAUDE_CODE_SESSION_ID ||
+    ''
+  // No session id, no per-session counter — and an uncapped block is the loop this must not become.
+  if (!session) return allowNow('-', '-', 'no session id: the per-turn cap cannot be keyed')
+
+  if (workHoldArmed(session))
+    return allowNow(session, '-', 'a work-hold is armed: it speaks for this session')
+
+  const message = typeof payload.last_assistant_message === 'string' ? payload.last_assistant_message : ''
+  if (!message.trim()) return allowNow(session, '-', 'empty last_assistant_message')
+
+  const transcriptPath = typeof payload.transcript_path === 'string' ? payload.transcript_path : ''
+  let turn: Turn | null = null
+  try {
+    turn = transcriptPath ? latestUserTurn(readFileSync(transcriptPath, 'utf8')) : null
+  } catch {
+    turn = null
+  }
+  // Without a boundary there is neither a request to judge against nor a key to cap on.
+  if (!turn) return allowNow(session, '-', 'no genuine user request in the transcript')
+
+  const counter = counterPath(session)
+  const read = readCounter(counter, turn.marker)
+  if (read.kind === 'unreadable')
+    return allowNow(session, turn.marker, `counter unreadable (${read.reason}): cannot cap, so not blocking`)
+  const spent = read.kind === 'spent' ? read.blocks : 0
+  if (spent >= MAX_BLOCKS_PER_TURN)
+    return allowNow(session, turn.marker, `cap: ${spent} blocks already this turn`)
+
+  const threshold = Number(process.env.EARLY_STOP_THRESHOLD || 0.8)
+  const r = decisionsCall(judgeState(turn.request, message), {
+    [QUESTION_KEY]: { type: 'noul', instructions: INSTRUCTIONS },
+  })
+  if (r.stdout === null) return allowNow(session, turn.marker, `judge unavailable: ${r.unavailable}`)
+
+  const v = parseNoul(r.stdout, QUESTION_KEY, threshold)
+  const p = pctOf(v.reason)
+  if (v.verdict !== 'MET')
+    return allowNow(
+      session,
+      turn.marker,
+      v.verdict === 'UNAVAILABLE' ? `judge unavailable: ${v.reason}` : `below threshold: ${v.reason}`,
+    )
+
+  // The counter is written BEFORE the block. An unwritable counter cannot cap, and an uncapped
+  // block is an infinite loop — the lesson `teammate-idle-report-check.sh` paid for.
+  try {
+    writeFileSync(counter, JSON.stringify({ turn: turn.marker, blocks: spent + 1 } satisfies Counter))
+  } catch {
+    return allowNow(session, turn.marker, 'counter unwritable: cannot cap, so not blocking')
+  }
+
+  audit(session, turn.marker, p, 'block', `${spent + 1}/${MAX_BLOCKS_PER_TURN} this turn`)
+  process.stdout.write(JSON.stringify({ decision: 'block', reason: BLOCK_REASON }))
+  process.exit(0)
+}
+
+/** Every allow goes through here, so every decision leaves a line. */
+function allowNow(session: string, turn: string, note: string): never {
+  audit(session, turn, '-', 'allow', note)
+  process.exit(0)
+}
+
+if (import.meta.main) {
+  try {
+    main()
+  } catch (e) {
+    // An unexpected throw must not be the one path that ends differently. Nothing on stdout is an
+    // allow; the note says what happened for anyone reading the log.
+    try {
+      audit('-', '-', '-', 'allow', `hook error: ${e instanceof Error ? e.message : String(e)}`)
+    } catch {
+      /* ignore */
+    }
+    process.exit(0)
+  }
+}
