@@ -22,6 +22,7 @@ import { spawnSync } from 'node:child_process'
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync, symlinkSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { grindEnv } from './grind-test-env'
 
 const GRIND = `${import.meta.dir}/grind.sh`
 
@@ -52,9 +53,20 @@ function notifier(dir: string): { path: string; out: string } {
   return { path, out }
 }
 
-function run(args: string[], env?: Record<string, string>) {
+/**
+ * Every loop started here writes its START/ITER/DONE events to "$TMPDIR/farm-events/<session>", so
+ * `d` -- this test's own scratch directory -- is forced in as TMPDIR on BOTH paths. Inheriting the
+ * caller's TMPDIR and session id put throwaway rows into the running session's own event stream,
+ * where its farm-runs monitor read them as real dispatches.
+ *
+ * With no env the child also gets grindEnv(): no session identity, no reachable notifier. The tests
+ * that ASSERT the default notifier pass their own stubPath env instead, which must not be merged
+ * with grindEnv() -- its shims would shadow the recording stubs the assertion reads.
+ */
+function run(d: string, args: string[], env?: Record<string, string>) {
   return spawnSync('bash', [GRIND, 'run', ...args], {
-    encoding: 'utf8', timeout: 60_000, env: env ?? process.env,
+    encoding: 'utf8', timeout: 60_000,
+    env: env ? { ...env, TMPDIR: d } : grindEnv({ TMPDIR: d }),
   })
 }
 
@@ -86,7 +98,7 @@ describe('grind.sh --notify', () => {
     const runner = script(d, 'runner.sh', 'exit 0')
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    const r = run([
+    const r = run(d, [
       '--journal', journal,
       '--check', check,
       '--runner', runner,
@@ -109,7 +121,7 @@ describe('grind.sh --notify', () => {
     const runner = script(d, 'runner.sh', 'exit 0')
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    const r = run([
+    const r = run(d, [
       '--journal', journal,
       '--check', check,
       '--runner', runner,
@@ -132,7 +144,7 @@ describe('grind.sh --notify', () => {
     const runner = script(d, 'runner.sh', 'exit 0')
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    const r = run([
+    const r = run(d, [
       '--journal', journal,
       '--check', check,
       '--runner', runner,
@@ -158,7 +170,7 @@ describe('grind.sh --notify', () => {
     const runner = script(d, 'runner.sh', 'exit 0')
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    const r = run([
+    const r = run(d, [
       '--journal', journal,
       '--check', check,
       '--runner', runner,
@@ -191,7 +203,7 @@ describe('grind.sh --notify', () => {
     const { journal, args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg', 'herdr'])
 
-    const r = run(args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = run(d, args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     const calls = readFileSync(log, 'utf8')
@@ -205,7 +217,7 @@ describe('grind.sh --notify', () => {
     const { args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg', 'claude'])
 
-    const r = run([...args, '--push'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = run(d, [...args, '--push'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     const calls = readFileSync(log, 'utf8')
@@ -218,7 +230,7 @@ describe('grind.sh --notify', () => {
     const { args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg', 'claude'])
 
-    const r = run(args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = run(d, args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     expect(readFileSync(log, 'utf8')).not.toMatch(/^claude /m)
@@ -229,7 +241,7 @@ describe('grind.sh --notify', () => {
     const { args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg'])
 
-    const r = run(args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = run(d, args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     const calls = readFileSync(log, 'utf8')
@@ -242,7 +254,7 @@ describe('grind.sh --notify', () => {
     const { args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg'])
 
-    const r = run([...args, '--notify-to', 'orchestrator'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = run(d, [...args, '--notify-to', 'orchestrator'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     expect(readFileSync(log, 'utf8')).toMatch(/^agent-msg send orchestrator /m)
@@ -253,7 +265,7 @@ describe('grind.sh --notify', () => {
     const { args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg', 'herdr'])
 
-    const r = run([...args, '--notify', 'none'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = run(d, [...args, '--notify', 'none'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     expect(existsSync(log)).toBe(false)
@@ -265,7 +277,7 @@ describe('grind.sh --notify', () => {
     const { env, log } = stubPath(d, ['agent-msg', 'herdr'])
     const n = notifier(d)
 
-    const r = run([...args, '--notify', n.path], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = run(d, [...args, '--notify', n.path], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     expect(readFileSync(n.out, 'utf8').trim()).toBe(`done 0 ${journal}`)
