@@ -47,7 +47,10 @@ def read_gz(path, cols):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--gold-dir", default=os.environ.get("GOLD_DIR", "/data/def14a_own/gold"))
-    ap.add_argument("--seed", type=int, default=20260928)
+    # 20260928 was the first split; it was scored once and is therefore SPENT
+    # (kept as holdout_20260928_spent.{tsv,json}). 20260929 is the precision
+    # round's split. A holdout that has been scored is no longer a holdout.
+    ap.add_argument("--seed", type=int, default=20260929)
     args = ap.parse_args()
     g = args.gold_dir
 
@@ -110,6 +113,11 @@ def main():
         "per_gold_set": per_set,
         "built": dt.datetime.now().astimezone().isoformat(),
         "sha256": {"holdout.tsv": sha256_of(hp), "gold_filelist.tsv": sha256_of(fl)},
+        "spent_splits": [
+            {"seed": 20260928, "scored_on": "2026-09-29",
+             "files": ["holdout_20260928_spent.tsv", "holdout_20260928_spent.json"],
+             "why_spent": "scored once as the post-gate holdout; a scored holdout is no longer a holdout"},
+        ],
     }
     sc = os.path.join(g, "holdout.json")
     with open(sc, "w") as fh:
