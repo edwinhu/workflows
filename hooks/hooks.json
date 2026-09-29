@@ -138,6 +138,11 @@
           {
             "type": "command",
             "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/work-hold.ts"
+          },
+          {
+            "type": "command",
+            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/early-stop.ts",
+            "timeout": 20
           }
         ]
       }

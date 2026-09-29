@@ -38,6 +38,17 @@ ANTI_SIM='
 
 You MUST actually perform this work with real tool calls. Do not simulate, summarize, or claim any completion you did not observe. If you cannot do it, say so explicitly with the exact error text and stop.'
 
+# A child ends its turn into nothing. In an interactive session a progress report or an offer to
+# continue is answered by the user; here the session simply exits with the deliverable unwritten,
+# and the caller sees a run that "succeeded" and produced no artifact. Kept BYTE-IDENTICAL to the
+# copies in farm-team.sh and grind.sh -- tests/child-standing-instruction.test.ts pins all three to
+# one string, which is what keeps three copies from drifting apart. No apostrophes, no $ and no
+# backticks in the text: it has to survive this single-quoted assignment, a quoted heredoc, and
+# grind's UNQUOTED one.
+CHILD_STANDING='
+
+NOBODY IS WATCHING THIS RUN. There is no one to answer a question, accept an offer, or take a next step you merely name. Do not end your turn with a progress report, a summary that announces the next step instead of taking it, a list of decisions that do not block you, or an offer to continue. While the deliverable is unmet, taking the next step IS your turn. End your turn only when you are genuinely blocked, and then say exactly what blocks you.'
+
 # Exit 2 is "you called me wrong" -- distinct from 1, "the delegation failed".
 refuse() { printf '%s\n' "$*" >&2; exit 2; }
 
@@ -204,7 +215,7 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
   # No --permission-mode: the runner inherits the user's default (auto), which keeps hard_deny --
   # the FERPA and licensed-data rules -- applying inside a dispatched run. The farmOutOnly policy
   # that used to fight this lives in main-thread-guard.sh now, and a hook can read FARM_OUT_CHILD.
-  local -a cmd=("$WRAPPER" -p "${prompt}${ANTI_SIM}" --output-format stream-json --verbose)
+  local -a cmd=("$WRAPPER" -p "${prompt}${ANTI_SIM}${CHILD_STANDING}" --output-format stream-json --verbose)
   [ -n "$agent" ] && cmd+=(--agent "$agent")
   # Per-row model override. Absent leaves the wrapper's own default -- which is what every
   # existing caller gets, since no row carried one until now.

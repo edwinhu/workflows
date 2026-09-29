@@ -34,6 +34,13 @@ You MUST actually spawn the teammates with real Agent tool calls and pass the
 `name` parameter. Do not simulate, summarize, or claim any completion you did
 not observe. Report the exact error text and stop if a spawn is rejected.
 EOF
+  # The lead ends its turn into nothing: no user answers an offer to continue, and the run exits
+  # with the deliverable unwritten. Kept BYTE-IDENTICAL to the copies in farm.sh and grind.sh --
+  # tests/child-standing-instruction.test.ts pins all three to one string.
+  cat <<'EOF'
+
+NOBODY IS WATCHING THIS RUN. There is no one to answer a question, accept an offer, or take a next step you merely name. Do not end your turn with a progress report, a summary that announces the next step instead of taking it, a list of decisions that do not block you, or an offer to continue. While the deliverable is unmet, taking the next step IS your turn. End your turn only when you are genuinely blocked, and then say exactly what blocks you.
+EOF
 } > "$TMP/prompt.txt"
 
 # Teams are off by default: without the env var the lead silently does not spawn anyone.

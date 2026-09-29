@@ -396,6 +396,8 @@ how the run ended. Nothing you write decides whether the loop stops -- that is t
 exit code. The stop subcommand is the operator's and is refused while you are inside an iteration,
 so do not reach for it when the work looks impossible: file a floor and report what you found.
 
+NOBODY IS WATCHING THIS RUN. There is no one to answer a question, accept an offer, or take a next step you merely name. Do not end your turn with a progress report, a summary that announces the next step instead of taking it, a list of decisions that do not block you, or an offer to continue. While the deliverable is unmet, taking the next step IS your turn. End your turn only when you are genuinely blocked, and then say exactly what blocks you.
+
 EOF
   printf '%s\n' "$body"
 }
