@@ -8,7 +8,7 @@ import {
   decide, statePath, parseJudgeVerdict, parseNoul,
   transcriptContext, renderHistory, pushRound,
   lastLedgerEntry, ledgerPath, ABANDONED, inFlight, ceilingReached, redispatchLine,
-  PASSED_GOAL_MET, PASSED_UNJUDGED,
+  PASSED_GOAL_MET, PASSED_UNJUDGED, unevaluatedNote, UNEVALUATED_AFTER_SECONDS,
 } from '../hooks/work-hold'
 
 // Tests in this file drive work-dispatch.sh as a real bash subprocess. Bun's 5s per-test default
@@ -145,6 +145,74 @@ describe('the hook', () => {
 
   test('statePath is per SESSION, so arming one does not hold another', () => {
     expect(statePath('a')).not.toBe(statePath('b'))
+  })
+})
+
+// ------------------------------------------------- the liveness stamp: is this hook running at all?
+//
+// A hold is armed by a script and enforced by a hook, registered independently. Measured 2026-09-28:
+// a session predating v6.25 kept its Stop registration on the DELETED hooks/hound.ts while running
+// the current work-dispatch.sh, so it armed a hold nothing ever evaluated — rounds 0 forever, no
+// release after a PASS — while cron-delete-guard.ts, whose path never changed, went on refusing every
+// CronDelete of the heartbeats. Nothing in the state distinguished that from a first round still
+// running, so the stamp is written on EVERY Stop this file processes.
+describe('lastEvaluatedAt — the hook proving it ran', () => {
+  const now = () => Math.floor(Date.now() / 1000)
+
+  test('a BLOCK stamps it', () => {
+    const r = run({}, { check: 'exit 1', startedAt: now(), ceilingMinutes: 720, maxRounds: 8, rounds: 0 })
+    expect(JSON.parse(r.stdout).decision).toBe('block')
+    expect(JSON.parse(readFileSync(r.path, 'utf8')).lastEvaluatedAt).toBeGreaterThan(now() - 120)
+  })
+
+  // The quietest path, and so the one most likely to be missed: while a round is worked by a
+  // detached process the hook allows the stop and writes nothing else.
+  test('an IN-FLIGHT allow stamps it too — the path that used to write nothing', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'work-hold-'))
+    const runDir = join(dir, 'run')
+    mkdirSync(runDir, { recursive: true })
+    writeFileSync(join(runDir, 'args.json'), '{}')
+    const path = join(dir, 'work-hold-test-session.json')
+    writeFileSync(path, JSON.stringify({
+      check: 'exit 1', run: runDir, startedAt: now(), ceilingMinutes: 720, maxRounds: 8, rounds: 0,
+    }))
+    const r = spawnSync('bun', [HOOK], {
+      input: JSON.stringify({ session_id: 'test-session' }),
+      encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: dir },
+    })
+    expect(r.status).toBe(0)
+    expect(r.stdout.trim()).toBe('')                       // allowed, no round counted
+    const s = JSON.parse(readFileSync(path, 'utf8'))
+    expect(s.rounds).toBe(0)
+    expect(s.lastEvaluatedAt).toBeGreaterThan(now() - 120)
+  })
+
+  test('a RESTORE stamps it — the ledger payload is arm-time state and would read as never evaluated', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'work-hold-'))
+    const armed = { check: 'exit 1', startedAt: 1, ceilingMinutes: 720, maxRounds: 8, rounds: 0 }
+    writeFileSync(join(dir, 'work-hold-test-session.releases.log'),
+      `2026-09-28T00:00:00\tarmed\t${JSON.stringify(armed)}\n`)
+    const r = spawnSync('bun', [HOOK], {
+      input: JSON.stringify({ session_id: 'test-session' }),
+      encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: dir },
+    })
+    expect(JSON.parse(r.stdout).decision).toBe('block')
+    expect(JSON.parse(readFileSync(join(dir, 'work-hold-test-session.json'), 'utf8')).lastEvaluatedAt)
+      .toBeGreaterThan(now() - 120)
+  })
+
+  test('unevaluatedNote is silent once the stamp exists, whatever its age', () => {
+    expect(unevaluatedNote({ startedAt: 1, lastEvaluatedAt: 1 }, 9_999_999)).toBeNull()
+  })
+
+  // A hold armed seconds ago has legitimately not been evaluated yet; firing there would make the
+  // diagnosis noise on every arm.
+  test('unevaluatedNote is silent inside the window, and names the remedy outside it', () => {
+    expect(unevaluatedNote({ startedAt: 1_000_000 }, 1_000_000 + UNEVALUATED_AFTER_SECONDS - 1)).toBeNull()
+    const note = unevaluatedNote({ startedAt: 1_000_000 }, 1_000_000 + 45 * 60)
+    expect(note).toContain('never evaluated since arm 45m ago')
+    expect(note).toContain("this session's Stop hook is not running work-hold.ts")
+    expect(note).toContain('/reload-plugins')
   })
 })
 
@@ -522,6 +590,48 @@ describe('work-hold.sh --status', () => {
       env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'status-none' },
     })
     expect(r.stdout.trim()).toBe('hold: not armed')
+  })
+
+  /** An armed state under a fresh TMPDIR, with whatever liveness stamp the case needs. */
+  const statusOf = (extra: Record<string, unknown>) => {
+    const dir = mkdtempSync(join(tmpdir(), 'holdstatus-'))
+    writeFileSync(join(dir, 'work-hold-status-skew.json'), JSON.stringify({
+      check: 'bun test x', startedAt: Math.floor(Date.now() / 1000) - 45 * 60,
+      ceilingMinutes: 720, maxRounds: 8, rounds: 0, ...extra,
+    }))
+    return spawnSync('bash', [ARM, '--status'], {
+      encoding: 'utf8',
+      env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'status-skew' },
+    })
+  }
+
+  // The user-visible half of the version-skew diagnosis: a hold frozen at rounds 0 looks identical to
+  // a first round still running, and --status is where someone goes to find out which it is.
+  test('reports an unevaluated hold as the Stop hook not running, with the remedy', () => {
+    const r = statusOf({})
+    expect(r.status).toBe(0)
+    expect(r.stdout).toContain('never evaluated since arm 45m ago')
+    expect(r.stdout).toContain('not running work-hold.ts')
+    expect(r.stdout).toContain('/reload-plugins')
+  })
+
+  test('reports how long ago the hook last checked, when it has', () => {
+    const r = statusOf({ lastEvaluatedAt: Math.floor(Date.now() / 1000) - 3 * 60 })
+    expect(r.stdout).toContain('checked: 3m ago by the Stop hook')
+    expect(r.stdout).not.toContain('/reload-plugins')
+  })
+
+  test('a hold armed moments ago is NOT reported as skewed — it has simply not stopped yet', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'holdstatus-'))
+    writeFileSync(join(dir, 'work-hold-status-fresh.json'), JSON.stringify({
+      check: 'bun test x', startedAt: Math.floor(Date.now() / 1000),
+      ceilingMinutes: 720, maxRounds: 8, rounds: 0,
+    }))
+    const r = spawnSync('bash', [ARM, '--status'], {
+      encoding: 'utf8',
+      env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'status-fresh' },
+    })
+    expect(r.stdout).not.toContain('/reload-plugins')
   })
 })
 
