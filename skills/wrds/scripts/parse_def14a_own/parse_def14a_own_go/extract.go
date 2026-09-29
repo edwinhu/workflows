@@ -556,6 +556,43 @@ func (c *compacted) seriesRowLabel(r []string) string {
 	return lbl
 }
 
+// fundLabelRow is the same row read WITHOUT a declared series list: a
+// full-width row that carries no number and whose text ends in the fund noun
+// ("Macquarie/First Trust Global Infrastructure Fund:"). A closed-end family
+// that declares no series in its SGML header still names every fund this way,
+// and without it one record holder of a dozen funds collapses onto one key.
+func (c *compacted) fundLabelRow(r []string) string {
+	txt := ""
+	for _, cell := range r {
+		v := flat(cell)
+		if v == "" {
+			continue
+		}
+		if _, ok := ParseShares(v); ok {
+			return ""
+		}
+		if _, _, _, pi := ParsePercent(v); pi {
+			return ""
+		}
+		if txt != "" && v != txt {
+			return ""
+		}
+		txt = v
+	}
+	if txt == "" || len(strings.Fields(txt)) > 14 || !reFundLabelLine.MatchString(txt) ||
+		reFundLabelNo.MatchString(txt) {
+		return ""
+	}
+	return strings.TrimRight(strings.TrimSpace(txt), ":.")
+}
+
+// Prose that happens to end in the fund noun: the bullet under a fund's heading
+// ("A series of Vanguard World Fund") names the family, not this table's fund.
+var reFundLabelNo = regexp.MustCompile(`(?i)^(?:a|an|the)\s|advised\s+by|net\s+assets|shareholder|nominee|owner|percent|record|outstanding`)
+
+// A line whose LAST word is the fund noun names a fund.
+var reFundLabelLine = regexp.MustCompile(`(?i)\b(?:fund|portfolio|trust|series)\b\s*[:.]?\s*$`)
+
 // splitStack breaks a cell into its non-empty lines. EDGAR proxies STACK one
 // value per share class inside a single cell, separated by <br>.
 func splitStack(raw string) []string {
@@ -1127,6 +1164,8 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 	for i := 0; i < c.nHeader && i < len(c.rows); i++ {
 		if lbl := c.seriesRowLabel(c.rows[i]); lbl != "" {
 			lastSeries = lbl
+		} else if lbl := c.fundLabelRow(c.rows[i]); lbl != "" {
+			lastSeries = lbl
 		}
 		// A holder whose row carries no number of its own — the name alone,
 		// with the percent on the qualifier row under it — falls inside the
@@ -1155,7 +1194,13 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 		}
 		// A full-width label row naming one of the filing's funds separates the
 		// funds a single table covers. It names no holder and carries no number.
-		if lbl := c.seriesRowLabel(r); lbl != "" {
+		// The declared series name wins; a fund-shaped label row is the fallback
+		// for a family that declares no series at all.
+		lbl := c.seriesRowLabel(r)
+		if lbl == "" {
+			lbl = c.fundLabelRow(r)
+		}
+		if lbl != "" {
 			lastSeries = lbl
 			for k := range lastClass {
 				lastClass[k] = ""
