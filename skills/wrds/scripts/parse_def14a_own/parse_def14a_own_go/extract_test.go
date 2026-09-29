@@ -1756,3 +1756,56 @@ func TestClassHeadingLabelsItsTable(t *testing.T) {
 		}
 	}
 }
+
+// A fund's 5% record holder is laid out over two grid rows: the holder's name
+// alone, then a parenthesised qualifier with the percent beside it. The
+// qualifier row was emitted as a holder of its own, and cleanHolderName then
+// stripped the parenthesis and left the name EMPTY -- so every such row in the
+// document collapsed onto one empty key.
+const wrappedParenNameHTML = `<html><body>
+<p>Shareholders with more than 5% record or beneficial ownership of this fund</p>
+<table>
+<tr><th>Title of Class</th><th>Name and Address of Shareholder</th><th>Percent of Class</th></tr>
+<tr><td>Investor Shares</td><td>Transamerica Premier Life Insurance Company</td><td></td></tr>
+<tr><td></td><td>(Vanguard Variable Annuity)</td><td>76.56%</td></tr>
+<tr><td></td><td>Transamerica Financial Life Insurance Company</td><td></td></tr>
+<tr><td></td><td>(Vanguard Variable Annuity)</td><td>5.06%</td></tr>
+</table></body></html>`
+
+func TestParenContinuationTakesTheNameAbove(t *testing.T) {
+	rows := ScreenRows(run(t, wrappedParenNameHTML))
+	for _, r := range rows {
+		if strings.TrimSpace(r.HolderName) == "" {
+			t.Errorf("a row was emitted with no holder name: %+v", r)
+		}
+	}
+	got := map[string]float64{}
+	for _, r := range rows {
+		if r.Percent != nil {
+			got[r.HolderName] = *r.Percent
+		}
+	}
+	if got["Transamerica Premier Life Insurance Company"] != 76.56 ||
+		got["Transamerica Financial Life Insurance Company"] != 5.06 {
+		t.Errorf("the qualifier row did not take the name above it: %v", got)
+	}
+}
+
+// A fund-family proxy heads each per-fund table with the FAMILY name, an em
+// dash, the fund, and its launch year: "Vanguard Variable Insurance
+// Fund—Balanced Portfolio (1991)". The declared series is "Balanced Portfolio",
+// and matching only whole-line or trailing-word-dropped forms missed it, so
+// every fund's record holders collapsed onto one key.
+func TestMatchSeriesInsideAFamilyHeading(t *testing.T) {
+	set := SeriesSet([]string{"Balanced Portfolio", "Equity Income Portfolio"})
+	for _, tc := range []struct{ line, want string }{
+		{"Vanguard Variable Insurance Fund—Balanced Portfolio (1991)", "Balanced Portfolio"},
+		{"Vanguard Variable Insurance Fund - Equity Income Portfolio", "Equity Income Portfolio"},
+		{"Balanced Portfolio", "Balanced Portfolio"},
+		{"Shareholders with more than 5% record ownership of this fund", ""},
+	} {
+		if got := MatchSeries(set, tc.line); got != tc.want {
+			t.Errorf("MatchSeries(%q) = %q, want %q", tc.line, got, tc.want)
+		}
+	}
+}
