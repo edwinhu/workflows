@@ -1884,3 +1884,39 @@ func TestASCIILeadingClassColumn(t *testing.T) {
 		}
 	}
 }
+
+// Two value-column pairs of one source row can carry the SAME label and the SAME
+// (empty) values -- a "*" in both percent columns of a two-class table whose
+// header rows do not tell the pairs apart. The two emitted records are then
+// identical in every field, so one of them is a second reading of the same cell
+// and nothing distinguishes it for any consumer.
+const identicalPairRecordHTML = `<html><body>
+<p>Security Ownership of Certain Beneficial Owners and Management</p>
+<table>
+<tr><th>Name of Beneficial Owner</th><th>Shares Beneficially Owned</th><th>Percent of Class</th><th>Shares Beneficially Owned</th><th>Percent of Class</th></tr>
+<tr><td>Terry J. Heimes</td><td></td><td>*</td><td></td><td>*</td></tr>
+<tr><td>Mary A. Roe</td><td>12,000</td><td>1.1</td><td>3,000</td><td>2.2</td></tr>
+<tr><td>John Q. Public</td><td>40,000</td><td>3.7</td><td>9,000</td><td>4.4</td></tr>
+</table></body></html>`
+
+func TestIdenticalRecordsFromOneRowCollapse(t *testing.T) {
+	rows := run(t, identicalPairRecordHTML)
+	n := 0
+	for _, r := range rows {
+		if r.HolderName == "Terry J. Heimes" {
+			n++
+		}
+	}
+	if n != 1 {
+		t.Errorf("identical records emitted %d times, want 1: %+v", n, rows)
+	}
+	m := 0
+	for _, r := range rows {
+		if r.HolderName == "Mary A. Roe" {
+			m++
+		}
+	}
+	if m != 2 {
+		t.Errorf("rows carrying DIFFERENT values must not be collapsed, got %d", m)
+	}
+}
