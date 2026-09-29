@@ -110,6 +110,11 @@ type holding struct {
 	shares *float64
 	pct    *float64
 	marker string
+	// lo/hi are the column span this holding occupies inside `rest`, so the
+	// ASCII header lines above the block can be read POSITIONALLY: a class
+	// stated over one (shares, percent) column pair belongs to that pair and
+	// to no other. -1 means no span was recorded.
+	lo, hi int
 }
 
 var reNumTok = regexp.MustCompile(`[0-9][0-9,]*(?:\.[0-9]+)?\s*%|\.[0-9]+\s*%|[0-9][0-9,]*(?:\.[0-9]+)?|\*|(?:^|\s)[\+#†‡](?:\s|$)`)
@@ -130,35 +135,61 @@ func isStarMarker(t string) bool {
 // sole-power / shared-power decomposition. With no percent anywhere, the last
 // share token is the holding.
 func textTokens(rest string) []holding {
-	rest = reFootnote.ReplaceAllString(rest, " ")
+	// Length-preserving, so every span recorded below still indexes the ORIGINAL
+	// `rest` and stays comparable with the header lines' column offsets.
+	rest = reFootnote.ReplaceAllStringFunc(rest, func(m string) string {
+		return strings.Repeat(" ", len(m))
+	})
 	var out []holding
 	var pendShares *float64
+	pendLo, pendHi := -1, -1
 	lastShares := (*float64)(nil)
+	lastLo, lastHi := -1, -1
 	anyPct := false
-	for _, tok := range reNumTok.FindAllString(rest, -1) {
-		t := strings.TrimSpace(tok)
+	// span merges the pending share column with the token that closes the
+	// holding, so a (shares, percent) pair spans both of its columns.
+	span := func(lo, hi int) (int, int) {
+		if pendShares == nil || pendLo < 0 {
+			return lo, hi
+		}
+		if pendLo < lo {
+			lo = pendLo
+		}
+		if pendHi > hi {
+			hi = pendHi
+		}
+		return lo, hi
+	}
+	for _, mi := range reNumTok.FindAllStringIndex(rest, -1) {
+		raw := rest[mi[0]:mi[1]]
+		t := strings.TrimSpace(raw)
+		lo := mi[0] + strings.Index(raw, t)
+		hi := lo + len(t)
 		switch {
 		case isStarMarker(t):
 			anyPct = true
-			out = append(out, holding{shares: pendShares, marker: "*"})
-			pendShares = nil
+			l, h := span(lo, hi)
+			out = append(out, holding{shares: pendShares, marker: "*", lo: l, hi: h})
+			pendShares, pendLo, pendHi = nil, -1, -1
 		case strings.HasSuffix(t, "%"):
 			anyPct = true
 			v, ok, mk, _ := ParsePercent(t)
-			h := holding{shares: pendShares, marker: mk}
+			l, h := span(lo, hi)
+			hd := holding{shares: pendShares, marker: mk, lo: l, hi: h}
 			if ok {
 				vv := v
-				h.pct = &vv
+				hd.pct = &vv
 			}
-			out = append(out, h)
-			pendShares = nil
+			out = append(out, hd)
+			pendShares, pendLo, pendHi = nil, -1, -1
 		case strings.Contains(t, ".") && !strings.Contains(t, ","):
 			// a bare decimal in the tail is the percent column
 			if v, ok, _, _ := ParsePercent(t + "%"); ok && v <= 100 {
 				anyPct = true
 				vv := v
-				out = append(out, holding{shares: pendShares, pct: &vv})
-				pendShares = nil
+				l, h := span(lo, hi)
+				out = append(out, holding{shares: pendShares, pct: &vv, lo: l, hi: h})
+				pendShares, pendLo, pendHi = nil, -1, -1
 				continue
 			}
 		default:
@@ -168,17 +199,19 @@ func textTokens(rest string) []holding {
 			if v, ok := ParseShares(t); ok {
 				vv := v
 				pendShares, lastShares = &vv, &vv
+				pendLo, pendHi = lo, hi
+				lastLo, lastHi = lo, hi
 			}
 		}
 	}
 	if !anyPct && lastShares != nil {
-		return []holding{{shares: lastShares}}
+		return []holding{{shares: lastShares, lo: lastLo, hi: lastHi}}
 	}
 	if pendShares != nil {
-		out = append(out, holding{shares: pendShares})
+		out = append(out, holding{shares: pendShares, lo: pendLo, hi: pendHi})
 	}
 	if reLessThan.MatchString(rest) {
-		out = append(out, holding{marker: "<1%"})
+		out = append(out, holding{marker: "<1%", lo: -1, hi: -1})
 	}
 	return out
 }
@@ -314,6 +347,10 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		// which contains which. Those lines carry no number so they are not
 		// block rows at all and the identity was simply lost.
 		stickyAt := textStickyLabels(clean, block)
+		// The header lines above the block, split into column groups with their
+		// character spans, so a class stated over ONE (shares, percent) pair can
+		// be attached to that pair and to no other.
+		hdrRows := textHeaderRows(clean, block[0])
 		var rows []Row
 		lastHolder := ""
 		// The class column's last value, forward-filled over the rows that leave
@@ -321,7 +358,7 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		lastColClass := ""
 		for _, ln := range block {
 			consumed[ln] = true
-			name, rest, ok := parseTextRow(clean[ln])
+			name, rest, restStart, ok := parseTextRowAt(clean[ln])
 			if !ok {
 				continue
 			}
@@ -406,6 +443,29 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 			if n == 0 {
 				continue
 			}
+			// The class stated over each value column, read off the header lines
+			// by POSITION. Used only when the header really distinguishes the
+			// columns -- two or more different labels over this row's cells --
+			// which is exactly the multi-class shape and nothing else.
+			colClass := make([]string, n)
+			if n > 1 {
+				distinct := map[string]bool{}
+				for k := 0; k < n; k++ {
+					if cells[k].lo < 0 {
+						continue
+					}
+					c := textColLabel(hdrRows, restStart+cells[k].lo, restStart+cells[k].hi)
+					colClass[k] = c
+					if c != "" {
+						distinct[c] = true
+					}
+				}
+				if len(distinct) < 2 {
+					for k := range colClass {
+						colClass[k] = ""
+					}
+				}
+			}
 			for k := 0; k < n; k++ {
 				rw := base
 				rw.TableIndex = i
@@ -426,6 +486,8 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 				}
 				rw.PctMarker = cells[k].marker
 				switch {
+				case colClass[k] != "":
+					rw.ShareClass = colClass[k]
 				case rowClass != "":
 					rw.ShareClass = rowClass
 				case n > 1 && k < len(classes):
@@ -928,3 +990,146 @@ func textStickyLabels(clean []string, block []int) map[int]string {
 // ("LIVESTRONG 2015 Portfolio") — so only a line that carries a VALUE is
 // excluded: a percent, a comma-grouped number or a decimal.
 var reTextValueish = regexp.MustCompile(`%|\d{1,3}(?:,\d{3})+|\d+\.\d`)
+
+// --- positional column labels --------------------------------------------
+//
+// An ASCII proxy states each class over its OWN (shares, percent) column pair,
+// on caption lines above the dashed rule:
+//
+//	                  BENEFICIAL OWNERSHIP OF         BENEFICIAL OWNERSHIP OF
+//	                  CLASS A COMMON STOCK(1)           CLASS B COMMON STOCK
+//	                 --------------------------     ----------------------------  PERCENTAGE
+//	                   NUMBER         PERCENT         NUMBER           PERCENT    OF COMBINED
+//	                 OF SHARES      OF CLASS(2)      OF SHARES       OF CLASS(3)  VOTING POWER
+//	Bradley Currey..  3,510,616(5)     13.64%        2,766,180(6)       23.56%      20.23%
+//
+// The class belongs to the COLUMN, not to a position in a list of class tokens
+// found anywhere in the header, and the class line itself carries none of the
+// "percent / shares / beneficial / amount" cues that collect a header line — so
+// every holding of a holder came out with one share_class and the rows collapsed
+// onto one grain key.
+
+type hdrGroup struct {
+	lo, hi int
+	text   string
+}
+
+var (
+	// A label that distinguishes one value column from another: a class or
+	// series, or the combined / total / voting-power column a multi-class table
+	// adds beside them.
+	reColLabelKeep = regexp.MustCompile(`(?i)\bclass\s+[a-d0-9]\b|\bcommon\s+stock\b|\bpreferred\b|\bordinary\s+shares\b|\bseries\s+[a-z0-9]+\b|\bvoting\s+power\b|\bcombined\b|\btotal\b|\bdepositary\b|\bunits?\b`)
+	// Header text that is only the shape of the column, never its identity.
+	reColLabelDrop = regexp.MustCompile(`(?i)^(?:number|percent|percentage|amount|shares?|no\.?|of\s+shares|of\s+class|%)[\s.():0-9]*$`)
+	// A preposition left at the head of a label whose first words were the
+	// dropped shape word on the line above.
+	reColLabelLead = regexp.MustCompile(`(?i)^(?:of|in|and|the)\s+`)
+)
+
+// textHeaderRows returns the header lines above a block, top to bottom, split
+// into whitespace-separated column groups with their character spans.
+func textHeaderRows(clean []string, first int) [][]hdrGroup {
+	var lines []int
+	blanks := 0
+	for ln := first - 1; ln >= 0 && first-ln <= 12; ln-- {
+		t := strings.TrimSpace(clean[ln])
+		if t == "" {
+			blanks++
+			if blanks >= 2 {
+				break
+			}
+			continue
+		}
+		blanks = 0
+		if _, _, ok := parseTextRow(clean[ln]); ok {
+			break // the previous block's last row: not this block's header
+		}
+		if reRuleLine.MatchString(t) {
+			lines = append(lines, ln)
+			continue
+		}
+		// Prose runs edge to edge with no interior column gap; a header line is
+		// columns, so it must have one (or be short enough to be a caption).
+		if !strings.Contains(t, "  ") && len(t) > 40 {
+			break
+		}
+		if reTextValueish.MatchString(t) && !reRuleLine.MatchString(t) {
+			break // a numeric line above the block is data, not a header
+		}
+		lines = append(lines, ln)
+	}
+	var out [][]hdrGroup
+	for i := len(lines) - 1; i >= 0; i-- {
+		if g := splitHdrGroups(clean[lines[i]]); len(g) > 0 {
+			out = append(out, g)
+		}
+	}
+	return out
+}
+
+// splitHdrGroups cuts a header line at every run of two or more spaces.
+func splitHdrGroups(l string) []hdrGroup {
+	var out []hdrGroup
+	i := 0
+	for i < len(l) {
+		if l[i] == ' ' {
+			i++
+			continue
+		}
+		j := i
+		for j < len(l) {
+			if l[j] == ' ' && j+1 < len(l) && l[j+1] == ' ' {
+				break
+			}
+			if l[j] == ' ' && j+1 >= len(l) {
+				break
+			}
+			j++
+		}
+		t := strings.TrimSpace(l[i:j])
+		if t != "" {
+			out = append(out, hdrGroup{lo: i, hi: j, text: t})
+		}
+		i = j
+	}
+	return out
+}
+
+// textColLabel reads the class stated over the column span [lo,hi) off the
+// header lines, keeping only the groups that identify the column rather than
+// describe its shape. Returns "" when the header states nothing positional.
+func textColLabel(hdr [][]hdrGroup, lo, hi int) string {
+	if lo < 0 || len(hdr) == 0 {
+		return ""
+	}
+	var parts []string
+	for _, line := range hdr {
+		best, bestOv := -1, 0
+		for k, g := range line {
+			ov := min(g.hi, hi) - max(g.lo, lo)
+			if ov > bestOv {
+				best, bestOv = k, ov
+			}
+		}
+		if best < 0 {
+			continue
+		}
+		t := line[best].text
+		if reRuleLine.MatchString(t) || reColLabelDrop.MatchString(t) {
+			continue
+		}
+		if !reColLabelKeep.MatchString(t) {
+			continue
+		}
+		parts = append(parts, t)
+	}
+	if len(parts) == 0 {
+		return ""
+	}
+	// The label wraps mid-phrase ("PERCENTAGE" / "OF COMBINED" / "VOTING
+	// POWER"), and the shape word above it was dropped, so a kept part can open
+	// with the preposition that joined it to the line above.
+	lbl := strings.Join(parts, " ")
+	lbl = reColLabelLead.ReplaceAllString(lbl, "")
+	return norm(cleanClassLabel(lbl))
+}
